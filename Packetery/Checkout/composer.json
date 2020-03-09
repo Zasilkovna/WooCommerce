@@ -1,0 +1,30 @@
+{
+    "name": "packetery/module-checkout",
+    "description": "module Packetery for Magento 2",
+    "type": "magento2-module",
+    "license": "AFL-3.0",
+    "authors": [
+        {
+            "name": "Packeta Innovations",
+            "email": "support@packeta.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Packetery\\Checkout\\": ""
+        }
+    },
+    "extra": {
+      "map": [
+        [
+          "*",
+          "Packetery/Checkout"
+        ]
+      ]
+    }
+}

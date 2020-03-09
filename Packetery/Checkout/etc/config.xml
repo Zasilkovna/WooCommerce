@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+	<default>
+		<widget>
+			<options>
+				<country/>
+			</options>
+		</widget>
+		<carriers>
+			<packetery>
+				<model>Packetery\Checkout\Model\Carrier\Packetery</model>
+				<active>0</active>
+				<title>Packeta</title>
+				<name>Pickup Point</name>
+				<price>0.00</price>
+				<specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+				<sallowspecific>0</sallowspecific>
+			</packetery>
+		</carriers>
+	</default>
+</config>

@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="Packetery_Checkout::packetery" title="Packeta" module="Packetery_Checkout" action="packetery/order/index" sortOrder="51" resource="Packetery_Checkout::packetery"/>
+    </menu>
+</config>

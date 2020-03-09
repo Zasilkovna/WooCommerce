@@ -1,0 +1,30 @@
+<?php
+
+namespace Packetery\Checkout\Block\Adminhtml\Order\Renderer;
+
+use Magento\Framework\DataObject;
+
+class ExportTime extends \Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer
+{
+    /** @var \Magento\Framework\Stdlib\DateTime\TimezoneInterface */
+    private $timezone;
+
+    public function __construct(
+        \Magento\Backend\Block\Context $context,
+        \Magento\Framework\Stdlib\DateTime\TimezoneInterface $timezone,
+        array $data = []
+    )
+    {
+        parent::__construct($context, $data);
+        $this->timezone = $timezone;
+    }
+
+    // Here we create a link to point the Order View page for the current value
+    public function render(DataObject $row)
+    {
+        $exportedAt = $row->getData('exported_at');
+        $isExported = $row->getData('exported');
+
+        return ($isExported && !is_null($exportedAt) ? $this->timezone->formatDate($exportedAt, \IntlDateFormatter::MEDIUM, TRUE) : "");
+    }
+}
