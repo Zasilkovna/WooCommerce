@@ -12,23 +12,22 @@ class ExportMass extends \Magento\Backend\App\Action
     protected $resultPageFactory;
     protected $directory_list;
 
-    /** @var \Magento\Framework\App\Response\RedirectInterface */
-    private $redirect;
-
     /** @var \Packetery\Checkout\Helper\Data */
     private $data;
+
+    /** @var \Magento\Backend\App\Action\Context */
+    private $context;
 
     public function __construct(
         \Magento\Backend\App\Action\Context  $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\App\Response\RedirectInterface $redirect,
         \Packetery\Checkout\Helper\Data $data
     ) {
         parent::__construct($context);
 
-        $this->redirect = $redirect;
         $this->resultPageFactory  = $resultPageFactory;
         $this->data = $data;
+        $this->context = $context;
     }
     public function execute()
     {
@@ -37,7 +36,7 @@ class ExportMass extends \Magento\Backend\App\Action
         if (empty($orderIds))
         {
             $this->messageManager->addError(__('No orders to export.'));
-            $this->_redirect($this->redirect->getRefererUrl());
+            $this->_redirect($this->_redirect->getRefererUrl());
 
             return;
         }
@@ -47,7 +46,7 @@ class ExportMass extends \Magento\Backend\App\Action
         if (!$content)
         {
             $this->messageManager->addError(__('Error! No export data found.'));
-            $this->_redirect($this->redirect->getRefererUrl());
+            $this->_redirect($this->_redirect->getRefererUrl());
 
             return;
         }

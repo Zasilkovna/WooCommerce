@@ -12,22 +12,17 @@ class ExportPacketeryCsvAll extends \Magento\Backend\App\Action
     protected $resultPageFactory;
     protected $directory_list;
 
-    /** @var \Magento\Framework\App\Response\RedirectInterface */
-    private $redirect;
-
     /** @var \Packetery\Checkout\Helper\Data */
     private $data;
 
     public function __construct(
         \Magento\Backend\App\Action\Context  $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Magento\Framework\App\Response\RedirectInterface $redirect,
         \Packetery\Checkout\Helper\Data $data
     ) {
         parent::__construct($context);
 
         $this->resultPageFactory  = $resultPageFactory;
-        $this->redirect = $redirect;
         $this->data = $data;
     }
     public function execute()
@@ -38,7 +33,7 @@ class ExportPacketeryCsvAll extends \Magento\Backend\App\Action
         if (!$content)
         {
             $this->messageManager->addError(__('Error! No export data found.'));
-            $this->_redirect($this->redirect->getRefererUrl());
+            $this->_redirect($this->_redirect->getRefererUrl());
 
             return;
         }

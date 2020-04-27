@@ -4,7 +4,7 @@
 
 ### Download module
 
-[Current version 2.0.1](https://github.com/Zasilkovna/magento2/archive/v2.0.1.zip)
+[Current version 2.0.2](https://github.com/Zasilkovna/magento2/archive/v2.0.2.zip)
 
 ### Installation
 
@@ -71,7 +71,7 @@ Multiple payment methods can be selected by holding the "Ctrl" button and clicki
 
 #### Supported versions:
 
-- Magento 2.3 and newer
+- Magento 2.2 and newer
 - If you have a problem using the Magento 2 module (eg 2.0), please contact us at [support@packeta.com](mailto:support@packeta.com)
 
 #### Poskytované funkce:
@@ -88,7 +88,7 @@ Multiple payment methods can be selected by holding the "Ctrl" button and clicki
 
 ### Stažení modulu
 
-[Aktuální verze 2.0.1](https://github.com/Zasilkovna/magento2/archive/v2.0.1.zip)
+[Aktuální verze 2.0.2](https://github.com/Zasilkovna/magento2/archive/v2.0.2.zip)
 
 ### Instalace
 
@@ -155,7 +155,7 @@ Vybrat více platebních metod je možné přidržením tlačítka "Ctrl" a klik
 
 #### Podporované verze:
 
-- Magento 2.3 a vyšší
+- Magento 2.2 a vyšší
 - Při problému s použitím modulu u nižší verze Magento 2 (např. 2.0) nás kontaktujte na adrese [technicka.podpora@zasilkovna.cz](mailto:technicka.podpora@zasilkovna.cz)
 
 #### Poskytované funkce:
