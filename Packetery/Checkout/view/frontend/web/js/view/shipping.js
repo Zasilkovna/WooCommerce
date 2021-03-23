@@ -97,7 +97,6 @@ define(
 				}else{
 					jQuery(".zas-box").hide();
 					jQuery("#packeta-branch-id").val("");
-					jQuery("#packeta-branch-name").val("");
 				}
 
 				//-------------------------
@@ -113,11 +112,6 @@ define(
 							packetaButton.attr('data-web-url', config.packetaOptions.webUrl);
 							packetaButton.attr('data-app-identity', config.packetaOptions.appIdentity);
 							packetaButton.attr('data-language', config.packetaOptions.language);
-
-							// ze session si vezmeme zemi, která byla vybraná ve formu a zkontrolujeme,
-							// jestli ji můžeme použít - pokud ne (nemělo by nastat, máme ošetřeno na BE),
-							// nastavíme první možnou zemi
-							countryCode = config.countryCodes.includes(countryCode) ? countryCode : config.countryCodes[0];
 							packetaButton.attr('data-country-code', countryCode);
 						}
 					}
@@ -170,29 +164,37 @@ function showSelectedPickupPoint(point)
 {
 	var pickedDeliveryPlace = document.getElementById('picked-delivery-place');
 	var packetaBranchId = document.getElementById('packeta-branch-id');
-	var packetaBranchName = document.getElementById('packeta-branch-name');
 
-	if(packetaBranchId && packetaBranchName && pickedDeliveryPlace)
-	{
-		packetaBranchId.value = null;
-		packetaBranchName.value = null;
-		pickedDeliveryPlace.innerText = "";
+    packetaBranchId.value = null;
+    pickedDeliveryPlace.innerText = "";
 
-		if(point)
-		{
-			pickedDeliveryPlace.innerText = (point ? point.name : "");
-			packetaBranchId.value = point.id;
-			packetaBranchName.value = point.name;
-			var inputMethod = document.querySelectorAll('input[value="packetery_packetery"]');
+    if(point)
+    {
+        var pointId = point.pickupPointType === 'external' ? point.carrierId : point.id;
+        pickedDeliveryPlace.innerText = (point ? point.name : "");
+        packetaBranchId.value = pointId;
+        var inputMethod = document.querySelectorAll('input[value="packetery_packetery"]');
 
-			if(inputMethod.length == 1)
-			{
-				inputMethod[0].checked = true;
-			}
+        if(inputMethod.length == 1)
+        {
+            inputMethod[0].checked = true;
+        }
 
-			// nastavíme, aby si pak pro založení objednávky převzal place-order.js, resp. OrderPlaceAfter.php
-			window.packetaPointId = point.id;
-			window.packetaPointName = point.name;
-		}
-	}
+        // nastavíme, aby si pak pro založení objednávky převzal place-order.js, resp. OrderPlaceAfter.php
+        window.packetaPoint = {
+            pointId: pointId ? pointId : null,
+            name: point.name ? point.name : null,
+            pickupPointType: point.pickupPointType ? point.pickupPointType : null,
+            carrierId: point.carrierId ? point.carrierId : null,
+            carrierPickupPointId: point.carrierPickupPointId ? point.carrierPickupPointId : null
+        };
+	} else {
+        window.packetaPoint = {
+            pointId: null,
+            name: null,
+            pickupPointType: null,
+            carrierId: null,
+            carrierPickupPointId: null
+        };
+    }
 }

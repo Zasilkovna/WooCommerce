@@ -68,6 +68,24 @@ class InstallSchema implements InstallSchemaInterface
             "type" => Table::TYPE_TEXT,
             'size'    => '1024'
         ],
+        "is_carrier" => [
+            "type" => Table::TYPE_BOOLEAN,
+            'attr' => [
+                'nullable' => false,
+                'default' => 0,
+                'comment' => 'Is Point_id ID of external carrier?',
+                'after' => 'point_name'
+            ]
+        ],
+        "carrier_pickup_point" => [
+            "type" => Table::TYPE_TEXT,
+            'size' => '40',
+            'attr' => [
+                'nullable' => true,
+                'comment' => 'External carrier pickup point ID',
+                'after' => 'is_carrier'
+            ]
+        ],
         "sender_label" => [
             "type" => Table::TYPE_TEXT,
             'size'    => '64'
@@ -134,7 +152,7 @@ class InstallSchema implements InstallSchemaInterface
         $setup->endSetup();
     }
 
-    private function table(&$setup)
+    private function table(SchemaSetupInterface &$setup)
     {
         $table = $setup->getConnection()->newTable(
             $setup->getTable('packetery_order')
@@ -147,16 +165,18 @@ class InstallSchema implements InstallSchemaInterface
         $setup->getConnection()->createTable($table);
     }
 
-    private function columns(&$table)
+    private function columns(Table &$table)
     {
         foreach ($this->schema as $name => $column) {
             $column['attr'] = (isset($column['attr'])) ? $column['attr'] : [];
             $column['size'] = (isset($column['size'])) ? $column['size'] : null;
+            $column['comment'] = (isset($column['comment'])) ? $column['comment'] : null;
             $table->addColumn(
                 $name,
                 $column['type'],
                 $column['size'],
-                $column['attr']
+                $column['attr'],
+                $column['comment']
             );
         }
     }

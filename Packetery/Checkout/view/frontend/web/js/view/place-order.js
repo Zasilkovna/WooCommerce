@@ -9,27 +9,12 @@ define([
 	return function (paymentData, messageContainer) {
 		var serviceUrl, payload;
 
-		let pointId = "";
-		let pointName = "";
-
-		if( window.packetaPointId !== undefined ){
-			if ( window.packetaPointId != "" ){
-				pointId = window.packetaPointId;
-			}
-		}
-		if( window.packetaPointName !== undefined ){
-			if ( window.packetaPointName != "" ){
-				pointName = window.packetaPointName;
-			}
-		}
-
 		payload = {
 			cartId: quote.getQuoteId(),
 			billingAddress: quote.billingAddress(),
 			paymentMethod: paymentData,
 			packetery:{
-				id: pointId,
-				name: pointName
+				point: window.packetaPoint,
 			}
 		};
 

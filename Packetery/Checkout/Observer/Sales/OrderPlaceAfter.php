@@ -3,23 +3,11 @@
 namespace Packetery\Checkout\Observer\Sales;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Phrase;
 
 class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
 	const SHIPPING_CODE = 'packetery';
-
-    const CZ_FICTIVE_BRANCH = array(
-        'id' => 540,
-        'name' => 'AA Andělská Hora',
-    );
-    const SK_FICTIVE_BRANCH = array(
-        'id' => 703,
-        'name' => 'Abovce',
-    );
-    const HU_FICTIVE_BRANCH = array(
-        'id' => 2485,
-        'name' => 'AA Angyalföld',
-    );
 
     /** @var CheckoutSession */
     protected $checkoutSession;
@@ -55,13 +43,6 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     public function execute(
         \Magento\Framework\Event\Observer $observer
     ) {
-
-        $fictiveBranches = array(
-            'cz' => self::CZ_FICTIVE_BRANCH,
-            'sk' => self::SK_FICTIVE_BRANCH,
-            'hu' => self::HU_FICTIVE_BRANCH,
-        );
-
         $order = $observer->getEvent()->getOrder();
         $country = strtolower($order->getShippingAddress()->getCountryId());
 
@@ -95,19 +76,29 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $postData = json_decode(file_get_contents("php://input"));
         $pointId = NULL;
         $pointName = NULL;
+        $point = NULL;
+        $isCarrier = false;
+        $carrierPickupPoint = null;
 
-        if ($postData && !empty($postData->packetery))
+        if ($postData)
         {
             // new order from frontend
-            $pointId = $postData->packetery->id;
-            $pointName = $postData->packetery->name;
+            $point = $postData->packetery->point;
+            $pointId = $point->pointId;
+            $pointName = $point->name;
+            $isCarrier = (bool)$point->carrierId;
+            $carrierPickupPoint = $point->carrierPickupPointId ?: null;
         }
         else
         {
-            // creating/editing order from admin
+            // creating order from admin
             $packetery = $this->getRealOrderPacketery($order);
-            $pointId = $packetery['point_id'];
-            $pointName = $packetery['point_name'];
+            if (!empty($packetery)) {
+                $pointId = $packetery['point_id'];
+                $pointName = $packetery['point_name'];
+                $isCarrier = (bool)$packetery['is_carrier'];
+                $carrierPickupPoint = $packetery['carrier_pickup_point'];
+            }
         }
 
 		$paymentMethod = $order->getPayment()->getMethod();
@@ -123,8 +114,10 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             'currency' => $order->getOrderCurrencyCode(),
             'value' => $order->getGrandTotal(),
             'weight' => $weight,
-            'point_id' => ($pointId ? $pointId : (isset($fictiveBranches[$country]) ? $fictiveBranches[$country]['id'] : self::CZ_FICTIVE_BRANCH['id'])),
-            'point_name' => ($pointId ? $pointName : (isset($fictiveBranches[$country]) ? $fictiveBranches[$country]['name'] : self::CZ_FICTIVE_BRANCH['name'])),
+            'point_id' => $pointId,
+            'point_name' => $pointName,
+            'is_carrier' => $isCarrier,
+            'carrier_pickup_point' => $carrierPickupPoint,
             'sender_label' => $this->getLabel(),
             'recipient_street' => $street,
             'recipient_house_number' => $houseNumber,
@@ -139,19 +132,14 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
     private function getRealOrderPacketery($order)
     {
-        $null = [
-            'point_id'   => NULL,
-            'point_name' => NULL,
-        ];
-
         $orderIdOriginal = self::getRealOrderId($order->getIncrementId());
         if (!is_numeric($orderIdOriginal))
         {
-            return $null;
+            return null;
         }
 
         $query = "
-            SELECT `point_id`, `point_name`
+            SELECT `point_id`, `point_name`, `is_carrier`, `carrier_pickup_point`
             FROM `packetery_order`
             WHERE `order_number` = :order_number
         ";
@@ -161,7 +149,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
         if (empty($data))
         {
-            return $null;
+            return null;
         }
 
         return $data;
@@ -213,8 +201,8 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $connection= $this->resourceConnection->getConnection();
 
 		$query = "INSERT INTO packetery_order
-					(`order_number`, `recipient_firstname`, `recipient_lastname`, `recipient_phone`, `recipient_company`, `recipient_email`, `cod` ,`currency`,`value`, `weight`,`point_id`,`point_name`,`recipient_street`,`recipient_house_number`,`recipient_city`,`recipient_zip`, `sender_label`, `exported`)
-					VALUES (:order_number, :recipient_firstname, :recipient_lastname, :recipient_phone, :recipient_company,:recipient_email, :cod, :currency, :value, :weight, :point_id, :point_name, :recipient_street, :recipient_house_number, :recipient_city, :recipient_zip, :sender_label, :exported)";
+					(`order_number`, `recipient_firstname`, `recipient_lastname`, `recipient_phone`, `recipient_company`, `recipient_email`, `cod` ,`currency`,`value`, `weight`,`point_id`,`point_name`,`is_carrier`,`carrier_pickup_point`,`recipient_street`,`recipient_house_number`,`recipient_city`,`recipient_zip`, `sender_label`, `exported`)
+					VALUES (:order_number, :recipient_firstname, :recipient_lastname, :recipient_phone, :recipient_company,:recipient_email, :cod, :currency, :value, :weight, :point_id, :point_name, :is_carrier, :carrier_pickup_point, :recipient_street, :recipient_house_number, :recipient_city, :recipient_zip, :sender_label, :exported)";
 
 		$connection->query($query, $data);
 	}

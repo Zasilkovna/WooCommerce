@@ -89,8 +89,6 @@ class Storeconfig extends \Magento\Framework\App\Action\Action
             // get language from getLocale()
             $locale = strstr($store->getLocale(), "_", TRUE);
 
-            $config['countryCodes'] = Packetery::getCountryCodes($this->scopeConfig);
-
             $config['packetaOptions'] = [
                 'webUrl'      => $this->storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_LINK),
                 'appIdentity' => $appIdentity,

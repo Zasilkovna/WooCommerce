@@ -112,6 +112,7 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
 
     /**
      * Basic for selection of exported data
+     * @return \Packetery\Checkout\Model\ResourceModel\Order\Collection
      */
     protected function loadDataSelection()
     {
@@ -146,7 +147,7 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
             $row->getData('recipient_house_number'),
             $row->getData('recipient_city'),
             $row->getData('recipient_zip'),
-            '',
+            $row->getData('carrier_pickup_point'),
             $row->getData('width'),
             $row->getData('height'),
             $row->getData('depth'),

@@ -4,7 +4,7 @@
 
 ### Download module
 
-[Current version 2.0.2](https://github.com/Zasilkovna/magento2/archive/v2.0.2.zip)
+[Current version 2.0.3](https://github.com/Zasilkovna/magento2/archive/v2.0.3.zip)
 
 ### Installation
 
@@ -16,6 +16,10 @@ Installation and registration of the module is done by CLI utility, which is par
 - re-deploy static content (not needed in dev mode): `bin/magento setup:static-content:deploy`
 - project recompiling: `bin/magento setup:di:compile`
 - clean cache: `bin/magento cache:clean`
+
+## Installation or upgrading
+
+Same as installation
 
 ### Configuration
 
@@ -88,7 +92,7 @@ Multiple payment methods can be selected by holding the "Ctrl" button and clicki
 
 ### Stažení modulu
 
-[Aktuální verze 2.0.2](https://github.com/Zasilkovna/magento2/archive/v2.0.2.zip)
+[Aktuální verze 2.0.3](https://github.com/Zasilkovna/magento2/archive/v2.0.3.zip)
 
 ### Instalace
 
@@ -100,6 +104,10 @@ Instalace a registrace modulu se provádí CLI utilitou, která je součástí M
 - re-deploy statického obsahu (není potřeba v dev módu): `bin/magento setup:static-content:deploy`
 - rekompilace projektu: `bin/magento setup:di:compile`
 - smazání cache: `bin/magento cache:clean`
+
+### Instalace nebo aktualizace modulu
+
+Postup stejný jako při instalaci
 
 ### Konfigurace
 
