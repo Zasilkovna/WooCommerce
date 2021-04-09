@@ -4,7 +4,7 @@
 
 ### Download module
 
-[Current version 2.0.3](https://github.com/Zasilkovna/magento2/archive/v2.0.3.zip)
+[Current version 2.0.4](https://github.com/Zasilkovna/magento2/archive/v2.0.4.zip)
 
 ### Installation
 
@@ -17,9 +17,14 @@ Installation and registration of the module is done by CLI utility, which is par
 - project recompiling: `bin/magento setup:di:compile`
 - clean cache: `bin/magento cache:clean`
 
-## Installation or upgrading
+## Upgrading
 
-Same as installation
+- disable Packetery_Checkout module
+- remove all previous source files
+- next steps are same as during installation
+- (optional) migrate old price rules from old data structure version 2.0.2 via: `bin/magento packetery:migrate-price-rules`
+- allow Packetery_Checkout module
+- check configuration
 
 ### Configuration
 
@@ -92,7 +97,7 @@ Multiple payment methods can be selected by holding the "Ctrl" button and clicki
 
 ### Stažení modulu
 
-[Aktuální verze 2.0.3](https://github.com/Zasilkovna/magento2/archive/v2.0.3.zip)
+[Aktuální verze 2.0.4](https://github.com/Zasilkovna/magento2/archive/v2.0.4.zip)
 
 ### Instalace
 
@@ -105,9 +110,14 @@ Instalace a registrace modulu se provádí CLI utilitou, která je součástí M
 - rekompilace projektu: `bin/magento setup:di:compile`
 - smazání cache: `bin/magento cache:clean`
 
-### Instalace nebo aktualizace modulu
+### Aktualizace modulu
 
-Postup stejný jako při instalaci
+- zakázat modul Packetery_Checkout
+- smazat zdrojové soubory
+- další postup stejný jako při instalaci
+- (nepovinné) zmigrovat pravidla cen ze staré verze 2.0.2 pomocí: `bin/magento packetery:migrate-price-rules`
+- povolit modul Packetery_Checkout
+- zkontrolovat konfiguraci
 
 ### Konfigurace
 

@@ -16,7 +16,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     public function upgrade(
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
-    ) {
+    ): void {
         $installer = $setup;
         $installer->startSetup();
 
@@ -43,6 +43,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'after' => 'is_carrier'
             ]
         );
+
+        $installSchema = new InstallSchema();
+        $installSchema->pricingRulesTable($setup);
+        $installSchema->weightRulesTable($setup);
 
         $installer->endSetup();
     }

@@ -5,154 +5,6 @@
             <label>Packeta</label>
         </tab>
 
-        <section id="widget" showInDefault="1" showInStore="0" showInWebsite="1" sortOrder="10" translate="label">
-            <label>Widget settings</label>
-            <tab>packetery</tab>
-            <resource>Packetery_Checkout::config_packetery_checkout</resource>
-            <group id="options" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
-                <label>Widget settings</label>
-                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>API key</label>
-                    <validate>required-entry</validate>
-                    <comment></comment>
-                    <backend_model>Packetery\Checkout\Block\System\Config\Form\ApiKeyValidate</backend_model>
-                </field>
-            </group>
-        </section>
-
-        <section id="packetery_rules" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Price rules</label>
-            <tab>packetery</tab>
-            <resource>Packetery_Checkout::config_packetery_checkout</resource>
-
-            <group id="rules_global" translate="label"  sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Global settings</label>
-                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
-                    <label>Default price</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="max_weight" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="5" translate="label" type="text">
-                    <label>Max. weight</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="free_shipping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>Free shipping</label>
-                </field>
-            </group>
-
-            <group id="rules_cz" translate="label"  sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Rules CZ</label>
-                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
-                    <label>Default price</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="free_shipping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>Free shipping</label>
-                </field>
-                <field id="rules" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Price rules</label>
-                    <frontend_model>Packetery\Checkout\Block\System\Config\Form\Field\Fields</frontend_model>
-                    <backend_model>Packetery\Checkout\Block\System\Config\Form\Rules</backend_model>
-                </field>
-            </group>
-
-            <group id="rules_sk" translate="label"  sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Rules SK</label>
-                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
-                    <label>Default price</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="free_shipping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>Free shipping</label>
-                </field>
-                <field id="rules" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Price rules</label>
-                    <frontend_model>Packetery\Checkout\Block\System\Config\Form\Field\Fields</frontend_model>
-                    <backend_model>Packetery\Checkout\Block\System\Config\Form\Rules</backend_model>
-                </field>
-            </group>
-
-            <group id="rules_pl" translate="label"  sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Rules PL</label>
-                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
-                    <label>Default price</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="free_shipping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>Free shipping</label>
-                </field>
-                <field id="rules" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Price rules</label>
-                    <frontend_model>Packetery\Checkout\Block\System\Config\Form\Field\Fields</frontend_model>
-                    <backend_model>Packetery\Checkout\Block\System\Config\Form\Rules</backend_model>
-                </field>
-            </group>
-
-            <group id="rules_hu" translate="label"  sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Rules HU</label>
-                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
-                    <label>Default price</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="free_shipping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>Free shipping</label>
-                </field>
-                <field id="rules" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Price rules</label>
-                    <frontend_model>Packetery\Checkout\Block\System\Config\Form\Field\Fields</frontend_model>
-                    <backend_model>Packetery\Checkout\Block\System\Config\Form\Rules</backend_model>
-                </field>
-            </group>
-
-            <group id="rules_ro" translate="label"  sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Rules RO</label>
-                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
-                    <label>Default price</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="free_shipping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>Free shipping</label>
-                </field>
-                <field id="rules" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Price rules</label>
-                    <frontend_model>Packetery\Checkout\Block\System\Config\Form\Field\Fields</frontend_model>
-                    <backend_model>Packetery\Checkout\Block\System\Config\Form\Rules</backend_model>
-                </field>
-            </group>
-
-            <group id="rules_default" translate="label"  sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Rules - other countries</label>
-                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="text">
-                    <label>Default price</label>
-                    <validate>required-entry validate-not-negative-number</validate>
-                </field>
-                <field id="free_shipping" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label" type="text">
-                    <label>Free shipping</label>
-                </field>
-                <field id="rules" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Price rules</label>
-                    <frontend_model>Packetery\Checkout\Block\System\Config\Form\Field\Fields</frontend_model>
-                    <backend_model>Packetery\Checkout\Block\System\Config\Form\Rules</backend_model>
-                </field>
-            </group>
-
-        </section>
-
-        <section id="packetery_cod" translate="label" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Cash on delivery</label>
-            <tab>packetery</tab>
-            <resource>Packetery_Checkout::config_packetery_checkout</resource>
-            <group id="general" translate="label"  sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Payment methods</label>
-                <field id="payment_methods" translate="Module" type="multiselect" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Method Name</label>
-                    <can_be_empty>1</can_be_empty>
-                    <source_model>Packetery\Checkout\Model\Misc\PaymentMethod</source_model>
-                    <comment>The payment methods selected above will be considered as cash on delivery (for Packeta).</comment>
-                </field>
-            </group>
-        </section>
-
         <section id="carriers" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1000" translate="label">
             <group id="packetery" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
                 <field id="version" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label" type="label">
@@ -161,7 +13,7 @@
                 </field>
                 <label>Packeta</label>
                 <field id="active" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="30" translate="label" type="select">
-                    <label>Enabled</label>
+                    <label>Enabled for Checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="title" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="40" translate="label" type="text">
@@ -172,7 +24,47 @@
                     <label>Method Name</label>
                     <validate>required-entry</validate>
                 </field>
-                <field id="sort_order" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="60" translate="label" type="text">
+                <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="60" translate="label" type="text">
+                    <label>API key</label>
+                    <validate>required-entry</validate>
+                    <backend_model>Packetery\Checkout\Block\System\Config\Form\ApiKeyValidate</backend_model>
+                </field>
+                <field id="default_price" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="61" translate="label" type="text">
+                    <label>Default price</label>
+                    <validate>required-entry validate-not-negative-number</validate>
+                </field>
+                <field id="max_weight" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="62" translate="label" type="text">
+                    <label>Max. weight</label>
+                    <validate>required-entry validate-not-negative-number</validate>
+                </field>
+                <field id="free_shipping_enable" translate="label" type="select" sortOrder="63" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Enable Free Shipping Threshold</label>
+                    <source_model>Magento\Config\Model\Config\Source\Enabledisable</source_model>
+                </field>
+                <field id="free_shipping_subtotal" translate="label" type="text" sortOrder="64" showInDefault="1" showInStore="1" showInWebsite="1">
+                    <label>Free Shipping Amount Threshold</label>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="free_shipping_enable">1</field>
+                    </depends>
+                </field>
+                <field id="cod_methods" translate="Module" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cash on delivery</label>
+                    <can_be_empty>1</can_be_empty>
+                    <source_model>Packetery\Checkout\Model\Misc\PaymentMethod</source_model>
+                    <comment>The payment methods selected above will be considered as cash on delivery (for Packeta).</comment>
+                </field>
+                <field id="sallowspecific" translate="label" type="select" sortOrder="1900" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Ship to Applicable Countries</label>
+                    <frontend_class>shipping-applicable-country</frontend_class>
+                    <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="1910" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Ship to Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                </field>
+                <field id="sort_order" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="9000" translate="label" type="text">
                     <label>Sort Order</label>
                 </field>
             </group>

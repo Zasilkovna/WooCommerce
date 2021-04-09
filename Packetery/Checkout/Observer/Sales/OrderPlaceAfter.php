@@ -12,26 +12,25 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /** @var CheckoutSession */
     protected $checkoutSession;
 
-    /** @var \Magento\Framework\App\Config */
-    private $scopeConfig;
-
     /** @var \Magento\Store\Model\StoreManagerInterface */
     private $storeManager;
 
     /** @var \\Magento\Framework\App\ResourceConnection */
     private $resourceConnection;
 
+    /** @var \Packetery\Checkout\Model\Carrier\PacketeryConfig */
+    private $packeteryConfig;
 
     public function __construct(
         CheckoutSession $checkoutSession,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\ResourceConnection $resourceConnection
+        \Magento\Framework\App\ResourceConnection $resourceConnection,
+        \Packetery\Checkout\Model\Carrier\PacketeryConfig $packeteryConfig
     ) {
-        $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
         $this->resourceConnection = $resourceConnection;
+        $this->packeteryConfig = $packeteryConfig;
     }
 
     /**
@@ -168,12 +167,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 	 */
 	private function isCod($methodCode)
 	{
-        $codPayments = $this->scopeConfig->getValue(
-            'packetery_cod/general/payment_methods',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
-        $codPayments = explode(',', $codPayments);
-
+        $codPayments = $this->packeteryConfig->getCodMethods();
 		return in_array($methodCode, $codPayments);
 	}
 
