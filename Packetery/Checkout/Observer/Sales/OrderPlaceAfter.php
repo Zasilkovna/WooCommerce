@@ -15,27 +15,27 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /** @var \Magento\Store\Model\StoreManagerInterface */
     private $storeManager;
 
-    /** @var \\Magento\Framework\App\ResourceConnection */
-    private $resourceConnection;
-
     /** @var \Packetery\Checkout\Model\Carrier\PacketeryConfig */
     private $packeteryConfig;
 
     /** @var \Packetery\Checkout\Model\Pricing\Service */
     private $pricingService;
 
+    /** @var \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory */
+    private $orderCollectionFactory;
+
     public function __construct(
         CheckoutSession $checkoutSession,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\ResourceConnection $resourceConnection,
         \Packetery\Checkout\Model\Carrier\PacketeryConfig $packeteryConfig,
-        \Packetery\Checkout\Model\Pricing\Service $pricingService
+        \Packetery\Checkout\Model\Pricing\Service $pricingService,
+        \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
     ) {
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
-        $this->resourceConnection = $resourceConnection;
         $this->packeteryConfig = $packeteryConfig;
         $this->pricingService = $pricingService;
+        $this->orderCollectionFactory = $orderCollectionFactory;
     }
 
     /**
@@ -159,14 +159,16 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             return null;
         }
 
-        $query = "
-            SELECT `point_id`, `point_name`, `is_carrier`, `carrier_pickup_point`
-            FROM `packetery_order`
-            WHERE `order_number` = :order_number
-        ";
+        $collection = $this->orderCollectionFactory->create();
+        $collection->addFilter('order_number', $orderIdOriginal);
+        $collection->load();
+        $item = $collection->fetchItem();
 
-        $data = $this->resourceConnection->getConnection()
-            ->fetchRow($query, ['order_number' => $orderIdOriginal]);
+        if (empty($item)) {
+            return null;
+        }
+
+        $data = $item->toArray(['point_id', 'point_name', 'is_carrier', 'carrier_pickup_point']);
 
         if (empty($data))
         {
@@ -207,19 +209,17 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         return null;
     }
 
-
 	/**
 	 * Save order data to packetery module
 	 * @package array $data
 	 */
-	private function saveData($data)
+	private function saveData(array $data): void
 	{
-        $connection= $this->resourceConnection->getConnection();
-
-		$query = "INSERT INTO packetery_order
-					(`order_number`, `recipient_firstname`, `recipient_lastname`, `recipient_phone`, `recipient_company`, `recipient_email`, `cod` ,`currency`,`value`, `weight`,`point_id`,`point_name`,`is_carrier`,`carrier_pickup_point`,`recipient_street`,`recipient_house_number`,`recipient_city`,`recipient_zip`, `sender_label`, `exported`)
-					VALUES (:order_number, :recipient_firstname, :recipient_lastname, :recipient_phone, :recipient_company,:recipient_email, :cod, :currency, :value, :weight, :point_id, :point_name, :is_carrier, :carrier_pickup_point, :recipient_street, :recipient_house_number, :recipient_city, :recipient_zip, :sender_label, :exported)";
-
-		$connection->query($query, $data);
+        /** @var \Packetery\Checkout\Model\ResourceModel\Order\Collection $collection */
+        $collection = $this->orderCollectionFactory->create();
+        $order = $collection->getNewEmptyItem();
+        $order->setData($data);
+        $collection->addItem($order);
+        $collection->save();
 	}
 }

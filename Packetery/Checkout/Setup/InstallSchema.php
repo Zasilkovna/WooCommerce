@@ -261,8 +261,8 @@ class InstallSchema implements InstallSchemaInterface
         ]);
 
         $table->addForeignKey(
-            $setup->getFkName('packetery_weight_rule','packetery_pricing_rule_id','packetery_pricing_rule', 'id'),
-            'packetery_pricing_rule_id', 'packetery_pricing_rule', 'id'
+            $setup->getFkName($setup->getTable('packetery_weight_rule'),'packetery_pricing_rule_id', $setup->getTable('packetery_pricing_rule'), 'id'),
+            'packetery_pricing_rule_id', $setup->getTable('packetery_pricing_rule'), 'id'
         );
 
         $table->setComment('Packetery weight rules. Relates to packetery pricing rules.');

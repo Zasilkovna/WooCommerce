@@ -15,15 +15,20 @@ class ExportPacketeryCsv extends \Magento\Backend\App\Action
     /** @var \Packetery\Checkout\Helper\Data */
     private $data;
 
+    /** @var \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory */
+    private $orderCollectionFactory;
+
     public function __construct(
         \Magento\Backend\App\Action\Context  $context,
         \Magento\Framework\View\Result\PageFactory $resultPageFactory,
-        \Packetery\Checkout\Helper\Data $data
+        \Packetery\Checkout\Helper\Data $data,
+        \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
     ) {
         parent::__construct($context);
 
         $this->resultPageFactory  = $resultPageFactory;
         $this->data = $data;
+        $this->orderCollectionFactory = $orderCollectionFactory;
     }
     public function execute()
     {
@@ -38,13 +43,19 @@ class ExportPacketeryCsv extends \Magento\Backend\App\Action
             return;
         }
 
-        $resources = \Magento\Framework\App\ObjectManager::getInstance()
-            ->get('Magento\Framework\App\ResourceConnection');
 
-        $connection = $resources->getConnection();
         $now = new \DateTime();
 
-        $connection->update('packetery_order', ['exported_at' => $now->format('Y-m-d H:i:s'), 'exported' => 1], ['exported <> ?' => 1]);
+        /** @var \Packetery\Checkout\Model\ResourceModel\Order\Collection $collection */
+        $collection = $this->orderCollectionFactory->create();
+        $collection->addFieldToFilter('exported', ['neq' => 1]);
+        $collection->setDataToAll(
+            [
+                'exported_at' => $now->format('Y-m-d H:i:s'),
+                'exported' => 1
+            ]
+        );
+        $collection->save();
 
         $this->_sendUploadResponse($this->data->getExportFileName(), $content);
 
