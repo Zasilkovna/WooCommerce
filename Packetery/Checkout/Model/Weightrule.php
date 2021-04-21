@@ -53,6 +53,6 @@ class Weightrule extends \Magento\Framework\Model\AbstractModel implements \Mage
     public function getMaxWeight(): ?float
     {
         $weight = $this->getData('max_weight');
-        return is_numeric($weight) ? (float) $weight : null;
+        return (is_numeric($weight) ? (float) $weight : null);
     }
 }

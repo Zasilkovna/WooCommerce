@@ -78,10 +78,16 @@
                 <resizeDefaultWidth>25</resizeDefaultWidth>
             </settings>
         </column>
-        <column name="country_id" class="Packetery\Checkout\Ui\Component\Pricingrule\Listing\Column\Country">
+        <column name="countryName" class="Packetery\Checkout\Ui\Component\Pricingrule\Listing\Column\Country">
             <settings>
                 <bodyTmpl>ui/grid/cells/text</bodyTmpl>
                 <label translate="true">Country</label>
+            </settings>
+        </column>
+        <column name="methodName" class="Packetery\Checkout\Ui\Component\Pricingrule\Listing\Column\Method">
+            <settings>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Delivery Method</label>
             </settings>
         </column>
         <column name="price" class="Packetery\Checkout\Ui\Component\Pricingrule\Listing\Column\Price">
@@ -96,10 +102,16 @@
                 <label translate="true">Max. weight</label>
             </settings>
         </column>
-        <column name="free_shipment">
+        <column name="free_shipment" class="Packetery\Checkout\Ui\Component\Pricingrule\Listing\Column\FreeShipment">
             <settings>
                 <bodyTmpl>ui/grid/cells/text</bodyTmpl>
                 <label translate="true">Free shipment threshold</label>
+            </settings>
+        </column>
+        <column name="pricingRuleEnabled" class="Packetery\Checkout\Ui\Component\Pricingrule\Listing\Column\PricingRuleEnabled">
+            <settings>
+                <bodyTmpl>ui/grid/cells/text</bodyTmpl>
+                <label translate="true">Pricing rule status</label>
             </settings>
         </column>
         <actionsColumn name="actions" class="Packetery\Checkout\Ui\Component\Pricingrule\Listing\Column\Actions" sortOrder="500">

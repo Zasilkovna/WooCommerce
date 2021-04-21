@@ -65,7 +65,7 @@ class Data extends AbstractHelper
      */
     public function getShortLocale(): ?string
     {
-        return strstr($this->localeResolver->getLocale(), "_", true) ?: null;
+        return (strstr($this->localeResolver->getLocale(), "_", true) ?: null);
     }
 
     /**

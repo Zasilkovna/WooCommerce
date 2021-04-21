@@ -199,10 +199,19 @@ class InstallSchema implements InstallSchemaInterface
             "country_id" => [
                 "type" => Table::TYPE_TEXT,
                 'attr' => [
-                    'nullable' => true,
+                    'nullable' => false,
                     'length' => '2',
                     'comment' => 'Country that relates to specified price',
-                    'after' => 'max_weight'
+                    'after' => 'free_shipment'
+                ]
+            ],
+            "method" => [
+                "type" => Table::TYPE_TEXT,
+                'attr' => [
+                    'nullable' => false,
+                    'length' => '64',
+                    'comment' => 'Related delivery method',
+                    'after' => 'country_id'
                 ]
             ]
         ]);
@@ -269,14 +278,14 @@ class InstallSchema implements InstallSchemaInterface
     private function columns(Table &$table, $schema): void
     {
         foreach ($schema as $name => $column) {
-            $column['attr'] = (isset($column['attr'])) ? $column['attr'] : [];
-            $column['attr']['comment'] = (isset($column['attr']['comment'])) ? $column['attr']['comment'] : null;
-            $column['attr']['length'] = (isset($column['attr']['length'])) ? $column['attr']['length'] : null;
-            $column['size'] = (isset($column['size'])) ? $column['size'] : null;
+            $column['attr'] = (isset($column['attr']) ? $column['attr'] : []);
+            $column['attr']['comment'] = (isset($column['attr']['comment']) ? $column['attr']['comment'] : null);
+            $column['attr']['length'] = (isset($column['attr']['length']) ? $column['attr']['length'] : null);
+            $column['size'] = (isset($column['size']) ? $column['size'] : null);
             $table->addColumn(
                 $name,
                 $column['type'],
-                $column['size'] ?: $column['attr']['length'],
+                ($column['size'] ?: $column['attr']['length']),
                 $column['attr'],
                 $column['attr']['comment']
             );

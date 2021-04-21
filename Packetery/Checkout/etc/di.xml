@@ -7,13 +7,6 @@
             </argument>
         </arguments>
     </type>
-    <type name="Magento\Framework\Console\CommandList">
-        <arguments>
-            <argument name="commands" xsi:type="array">
-                <item name="packetery_migratePriceRules" xsi:type="object">Packetery\Checkout\Console\Command\MigratePriceRules</item>
-            </argument>
-        </arguments>
-    </type>
     <virtualType name="Packetery\Checkout\Model\ResourceModel\Order\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">packetery_order</argument>

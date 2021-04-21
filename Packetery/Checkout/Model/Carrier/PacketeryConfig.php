@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Packetery\Checkout\Model\Carrier;
 
+use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
+
 class PacketeryConfig
 {
     /** @var \Packetery\Checkout\Model\Carrier\Packetery  */
@@ -24,7 +26,7 @@ class PacketeryConfig
      */
     public function getApiKey(): ?string
     {
-        return $this->packeteryCarrier->getConfigData('api_key') ?: null;
+        return ($this->packeteryCarrier->getConfigData('api_key') ?: null);
     }
 
     /**
@@ -32,15 +34,7 @@ class PacketeryConfig
      */
     public function getTitle()
     {
-        return $this->packeteryCarrier->getConfigData('title') ?: __("Packeta");
-    }
-
-    /**
-     * @return false|\Magento\Framework\Phrase|string
-     */
-    public function getName()
-    {
-        return $this->packeteryCarrier->getConfigData('name') ?: __("Z-Point");
+        return ($this->packeteryCarrier->getConfigData('title') ?: __("Packeta"));
     }
 
     /**
@@ -49,7 +43,7 @@ class PacketeryConfig
     public function getCodMethods(): array
     {
         $value = $this->packeteryCarrier->getConfigData('cod_methods');
-        return is_string($value) ? explode(',', $value) : [];
+        return (is_string($value) ? explode(',', $value) : []);
     }
 
     /**
@@ -58,7 +52,7 @@ class PacketeryConfig
     public function getDefaultPrice(): ?float
     {
         $value = $this->packeteryCarrier->getConfigData('default_price');
-        return is_numeric($value) ? (float)$value : null;
+        return (is_numeric($value) ? (float)$value : null);
     }
 
     /** kilos
@@ -67,7 +61,7 @@ class PacketeryConfig
     public function getMaxWeight(): ?float
     {
         $value = $this->packeteryCarrier->getConfigData('max_weight');
-        return is_numeric($value) ? (float)$value : null;
+        return (is_numeric($value) ? (float)$value : null);
     }
 
     /**
@@ -76,7 +70,7 @@ class PacketeryConfig
     private function getFreeShippingEnable(): ?int
     {
         $value = $this->packeteryCarrier->getConfigData('free_shipping_enable');
-        return is_numeric($value) ? (int)$value : null;
+        return (is_numeric($value) ? (int)$value : null);
     }
 
     /** Order value threshold
@@ -86,7 +80,7 @@ class PacketeryConfig
     {
         if ($this->getFreeShippingEnable() === 1) {
             $value = $this->packeteryCarrier->getConfigData('free_shipping_subtotal');
-            return is_numeric($value) ? (float)$value : null;
+            return (is_numeric($value) ? (float)$value : null);
         }
 
         return null;
@@ -94,13 +88,16 @@ class PacketeryConfig
 
     /** 1 => Specific countries
      *  0 => All countries
-     *  null => unspecified (most likely system specific value)
      * @return int|null
      */
-    public function getApplicableCountries(): ?int
+    public function getApplicableCountries(): int
     {
-        $value = $this->packeteryCarrier->getConfigData('sallowspecific');
-        return is_numeric($value) ? (int)$value : null;
+        $value = $this->packeteryCarrier->getConfigData('sallowspecific'); // "Use system value" resolves in 0
+        if (is_numeric($value)) {
+            return (int)$value;
+        }
+
+        throw new \Exception('sallowspecific config value was not restored');
     }
 
     /** Collection of allowed countries
@@ -109,6 +106,34 @@ class PacketeryConfig
     public function getSpecificCountries(): array
     {
         $value = $this->packeteryCarrier->getConfigData('specificcountry');
-        return is_string($value) ? explode(',', $value) : [];
+        return (is_string($value) ? explode(',', $value) : []);
+    }
+
+    /**
+     * @return \Packetery\Checkout\Model\Carrier\Config\AllowedMethods
+     */
+    public function getAllowedMethods(): AllowedMethods
+    {
+        $value = $this->packeteryCarrier->getConfigData('allowedMethods');
+        $methods = (is_string($value) ? explode(',', $value) : []);
+        return new AllowedMethods($methods);
+    }
+
+    /**
+     * @param string $countryId
+     * @return bool
+     */
+    public function hasSpecificCountryAllowed(string $countryId): bool
+    {
+        if ($this->getApplicableCountries() === 1) {
+            $countries = $this->getSpecificCountries();
+            return empty($countries) || in_array($countryId, $countries);
+        }
+
+        if ($this->getApplicableCountries() === 0) {
+            return true;
+        }
+
+        throw new \Exception('Unrecognized getApplicableCountries return value');
     }
 }

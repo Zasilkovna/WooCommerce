@@ -60,6 +60,7 @@
     <field name="country_id">
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
+                <item name="fit" xsi:type="boolean">true</item>
                 <item name="label" xsi:type="string">Country</item>
                 <item name="dataType" xsi:type="string">text</item>
                 <item name="formElement" xsi:type="string">select</item>
@@ -73,9 +74,28 @@
             </validation>
         </settings>
     </field>
+    <field name="method">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="fit" xsi:type="boolean">true</item>
+                <item name="notice" xsi:type="string">Methods are only available in predefined countries</item>
+                <item name="label" xsi:type="string">Method</item>
+                <item name="dataType" xsi:type="string">text</item>
+                <item name="formElement" xsi:type="string">select</item>
+                <item name="dataScope" xsi:type="string">method</item>
+            </item>
+            <item name="options" xsi:type="object">Packetery\Checkout\Model\Config\Source\MethodSelect</item>
+        </argument>
+        <settings>
+            <validation>
+                <rule name="required-entry" xsi:type="boolean">true</rule>
+            </validation>
+        </settings>
+    </field>
     <field name="free_shipment">
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
+                <item name="fit" xsi:type="boolean">true</item>
                 <item name="dataType" xsi:type="string">text</item>
                 <item name="label" xsi:type="string" translate="true">Free shipment threshold</item>
                 <item name="formElement" xsi:type="string">input</item>

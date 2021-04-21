@@ -6,20 +6,23 @@ namespace Packetery\Checkout\Setup;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Packetery\Checkout\Console\Command\MigratePriceRules;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 
 class UpgradeData implements UpgradeDataInterface
 {
-    /** @var \Magento\Config\Model\Config\Factory */
-    private $configFactory;
+    /** @var MigratePriceRules */
+    private $migratePriceRulesCommand;
 
     /**
      * UpgradeData constructor.
      *
-     * @param \Magento\Config\Model\Config\Factory $configFactory
+     * @param \Packetery\Checkout\Console\Command\MigratePriceRules $migratePriceRulesCommand
      */
-    public function __construct(\Magento\Config\Model\Config\Factory $configFactory)
+    public function __construct(MigratePriceRules $migratePriceRulesCommand)
     {
-        $this->configFactory = $configFactory;
+        $this->migratePriceRulesCommand = $migratePriceRulesCommand;
     }
 
     /**
@@ -29,11 +32,8 @@ class UpgradeData implements UpgradeDataInterface
         ModuleDataSetupInterface $setup,
         ModuleContextInterface $context
     ): void {
-        $configModel = $this->configFactory->create();
-
-        if (version_compare($context->getVersion(), "2.0.4", "<")) {
-            $configModel->setDataByPath('carriers/packetery/active', 0); // to make user to check values and to trigger validators
-            $configModel->save();
+        if (version_compare($context->getVersion(), "2.0.1", ">=") && version_compare($context->getVersion(), "2.0.3", "<")) {
+            $this->migratePriceRulesCommand->run(new ArrayInput([]), new NullOutput());
         }
     }
 }

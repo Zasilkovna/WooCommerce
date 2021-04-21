@@ -93,8 +93,8 @@ abstract class BaseTest extends \PHPUnit\Framework\TestCase
         } catch (\Throwable $e) {
         }
 
-        $actualExceptionClass = is_object($e) ? get_class($e) : null;
-        $this->assertEquals($exceptionClass, $actualExceptionClass, $e instanceof \Throwable ? $e->getMessage() : '');
+        $actualExceptionClass = (is_object($e) ? get_class($e) : null);
+        $this->assertEquals($exceptionClass, $actualExceptionClass, ($e instanceof \Throwable ? $e->getMessage() : ''));
     }
 
     /**

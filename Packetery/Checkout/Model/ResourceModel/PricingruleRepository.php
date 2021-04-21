@@ -48,6 +48,7 @@ class PricingruleRepository
         /** @var \Packetery\Checkout\Model\ResourceModel\Pricingrule\Collection $validation */
         $validation = $this->pricingRuleCollectionFactory->create();
         $validation->addFilter('country_id', $postData['country_id']);
+        $validation->addFilter('method', $postData['method']);
 
         if (isset($postData['id'])) {
             $validation->addFieldToFilter('id', ['nin' => [$postData['id']]]);
@@ -74,7 +75,7 @@ class PricingruleRepository
         $usedWeights = [];
         foreach ($weightRules as $weightRule) {
             $weight = $weightRule['max_weight'];
-            $key = is_numeric($weight) ? number_format((float)$weight, 4, '.', '') : null;
+            $key = (is_numeric($weight) ? number_format((float)$weight, 4, '.', '') : null);
 
             if (isset($usedWeights[$key])) {
                 return false;
@@ -98,19 +99,19 @@ class PricingruleRepository
      * @param array $postData
      * @param array $weightRules
      * @return \Packetery\Checkout\Model\Pricingrule
-     * @throws \Packetery\Checkout\Model\Exception\DuplicateCountryValidationException
-     * @throws \Packetery\Checkout\Model\Exception\MaxWeightValidationException
+     * @throws \Packetery\Checkout\Model\Exception\DuplicateCountry
+     * @throws \Packetery\Checkout\Model\Exception\InvalidMaxWeight
      * @throws \Packetery\Checkout\Model\Exception\PricingRuleNotFound
      * @throws \Packetery\Checkout\Model\Exception\WeightRuleMissing
      */
     public function savePricingRule(array $postData, array $weightRules): \Packetery\Checkout\Model\Pricingrule
     {
         if (!$this->validateDuplicateCountry($postData)) {
-            throw new \Packetery\Checkout\Model\Exception\DuplicateCountryValidationException();
+            throw new \Packetery\Checkout\Model\Exception\DuplicateCountry();
         }
 
         if (!$this->validatePricingRuleMaxWeight($weightRules)) {
-            throw new \Packetery\Checkout\Model\Exception\MaxWeightValidationException();
+            throw new \Packetery\Checkout\Model\Exception\InvalidMaxWeight();
         }
 
         if (empty($weightRules)) {

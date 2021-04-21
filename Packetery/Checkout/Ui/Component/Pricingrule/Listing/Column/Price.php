@@ -50,7 +50,7 @@ class Price extends Column
                 $collection->addExpressionFieldToSelect('maxPrice', 'MAX(price)', []);
                 $collection->load();
                 $data = $collection->toArray();
-                $row = isset($data['items']) ? array_shift($data['items']) : null;
+                $row = (isset($data['items']) ? array_shift($data['items']) : null);
 
                 if (!$row || empty($row['maxPrice'])) {
                     $item[$this->getData('name')] = '';

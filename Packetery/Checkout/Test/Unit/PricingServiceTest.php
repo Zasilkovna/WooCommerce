@@ -9,6 +9,7 @@ use Magento\Quote\Model\Quote\Address\RateResult\Method;
 use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
+use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
 use Packetery\Checkout\Model\Pricing;
 use Packetery\Checkout\Model\Pricingrule;
 use Packetery\Checkout\Model\Weightrule;
@@ -70,6 +71,7 @@ class PricingServiceTest extends BaseTest
         $service = $this->createProxy(
             Pricing\Service::class,
             [
+                'methodSelect' => $this->createProxy(\Packetery\Checkout\Model\Config\Source\MethodSelect::class),
                 'rateResultFactory' => $this->createFactoryMock($this->createProxy(Result::class), \Magento\Shipping\Model\Rate\ResultFactory::class),
                 'rateMethodFactory' => $this->createFactoryMock($this->createProxy(Method::class, ['priceCurrency' => $this->createMock(PriceCurrencyInterface::class)]), MethodFactory::class),
             ],
@@ -88,7 +90,7 @@ class PricingServiceTest extends BaseTest
         $config->method('getMaxWeight')->willReturn(10.0);
         $config->method('getFreeShippingThreshold')->willReturn(null);
         $config->method('getTitle')->willReturn('title');
-        $config->method('getName')->willReturn('name');
+        $config->method('getAllowedMethods')->willReturn(new AllowedMethods([AllowedMethods::PICKUP_POINT_DELIVERY]));
 
         $result = $service->collectRates(new Pricing\Request($request, $config, 'packetery'));
         $this->assertNotNull($result);
@@ -99,9 +101,8 @@ class PricingServiceTest extends BaseTest
         /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
         $method = array_shift($rates);
 
-        $this->assertEquals('name', $method->getData('method_title'));
         $this->assertEquals('title', $method->getData('carrier_title'));
-        $this->assertEquals('packetery', $method->getData('method'));
+        $this->assertEquals('pickupPointDelivery', $method->getData('method'));
         $this->assertEquals('packetery', $method->getData('carrier'));
         $this->assertEquals(58, $method->getData('cost'));
 
@@ -140,6 +141,7 @@ class PricingServiceTest extends BaseTest
         $service = $this->createProxy(
             Pricing\Service::class,
             [
+                'methodSelect' => $this->createProxy(\Packetery\Checkout\Model\Config\Source\MethodSelect::class),
                 'rateResultFactory' => $this->createFactoryMock($this->createProxy(Result::class), \Magento\Shipping\Model\Rate\ResultFactory::class),
                 'rateMethodFactory' => $this->createFactoryMock($this->createProxy(Method::class, ['priceCurrency' => $this->createMock(PriceCurrencyInterface::class)]), MethodFactory::class),
             ],
@@ -158,7 +160,7 @@ class PricingServiceTest extends BaseTest
         $config->method('getMaxWeight')->willReturn(10.0);
         $config->method('getFreeShippingThreshold')->willReturn(333.58);
         $config->method('getTitle')->willReturn('title');
-        $config->method('getName')->willReturn('name');
+        $config->method('getAllowedMethods')->willReturn(new AllowedMethods([AllowedMethods::PICKUP_POINT_DELIVERY]));
 
         $result = $service->collectRates(new Pricing\Request($request, $config, 'packetery'));
         $this->assertNotNull($result);
@@ -169,6 +171,71 @@ class PricingServiceTest extends BaseTest
         /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
         $method = array_shift($rates);
         $this->assertEquals(100, $method->getData('cost'));
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public function testAddressDeliveryMethodRateCollection()
+    {
+        $pricingRule = $this->createPricingRule(400, 'CZ');
+        $weightRules = [];
+
+        /** @var \Packetery\Checkout\Model\Pricing\Service|MockObject $service */
+        $service = $this->createProxy(
+            Pricing\Service::class,
+            [
+                'methodSelect' => $this->createProxy(\Packetery\Checkout\Model\Config\Source\MethodSelect::class),
+                'rateResultFactory' => $this->createFactoryMock($this->createProxy(Result::class), \Magento\Shipping\Model\Rate\ResultFactory::class),
+                'rateMethodFactory' => $this->createFactoryMock($this->createProxy(Method::class, ['priceCurrency' => $this->createMock(PriceCurrencyInterface::class)]), MethodFactory::class),
+            ],
+            ['getWeightRulesByPricingRule' => $weightRules, 'resolvePricingRule' => $pricingRule]
+        );
+
+        $request = $this->createProxyWithMethods(
+            \Magento\Quote\Model\Quote\Address\RateRequest::class,
+            [],
+            [],
+            ['getPackageWeight' => 5, 'getPackageValue' => 300, 'getDestCountryId' => $pricingRule->getCountryId()]
+        );
+
+        $config2 = $this->createMock(\Packetery\Checkout\Model\Carrier\PacketeryConfig::class);
+        $config2->method('getDefaultPrice')->willReturn(100.01);
+        $config2->method('getMaxWeight')->willReturn(10.0);
+        $config2->method('getFreeShippingThreshold')->willReturn(333.58);
+        $config2->method('getTitle')->willReturn('title');
+        $config2->method('getAllowedMethods')->willReturn(new AllowedMethods([AllowedMethods::ADDRESS_DELIVERY]));
+
+        $result = $service->collectRates(new Pricing\Request($request, $config2, 'packetery'));
+        $this->assertNotNull($result);
+
+        $rates = $result->getAllRates();
+        $this->assertNotEmpty($rates);
+
+        /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
+        $method = array_shift($rates);
+
+        $this->assertEquals(100.01, $method->getData('cost'));
+        $this->assertEquals(AllowedMethods::ADDRESS_DELIVERY, $method->getData('method')); // for CZ there is address delivery
+
+        $request = $this->createProxyWithMethods(
+            \Magento\Quote\Model\Quote\Address\RateRequest::class,
+            [],
+            [],
+            ['getPackageWeight' => 5, 'getPackageValue' => 400, 'getDestCountryId' => $pricingRule->getCountryId()]
+        );
+
+        $result = $service->collectRates(new Pricing\Request($request, $config2, 'packetery'));
+        $this->assertNotNull($result);
+
+        $rates = $result->getAllRates();
+        $this->assertNotEmpty($rates);
+
+        /** @var \Magento\Quote\Model\Quote\Address\RateResult\Method $method */
+        $method = array_shift($rates);
+
+        $this->assertEquals(0, $method->getData('cost')); // free shipping
+        $this->assertEquals(AllowedMethods::ADDRESS_DELIVERY, $method->getData('method')); // for CZ there is address delivery
     }
 
     /**
@@ -214,7 +281,7 @@ class PricingServiceTest extends BaseTest
      */
     protected function createFactoryMock($willCreate, $classsName = null)
     {
-        $factory = $this->getMockBuilder($classsName ?: \stdClass::class)
+        $factory = $this->getMockBuilder(($classsName ?: \stdClass::class))
             ->disableOriginalConstructor()
             ->disableOriginalClone()
             ->disableArgumentCloning()

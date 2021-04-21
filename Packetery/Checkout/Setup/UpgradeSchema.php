@@ -9,6 +9,18 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
+    /** @var \Packetery\Checkout\Setup\InstallSchema */
+    private $installSchema;
+
+    /**
+     * UpgradeSchema constructor.
+     *
+     * @param \Packetery\Checkout\Setup\InstallSchema $installSchema
+     */
+    public function __construct(InstallSchema $installSchema)
+    {
+        $this->installSchema = $installSchema;
+    }
 
     /**
      * {@inheritdoc}
@@ -17,11 +29,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ): void {
-        $installer = $setup;
-        $installer->startSetup();
+        $setup->startSetup();
 
-        $installer->getConnection()->addColumn(
-            $installer->getTable('packetery_order'),
+        $setup->getConnection()->addColumn(
+            $setup->getTable('packetery_order'),
             'is_carrier',
             [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
@@ -32,8 +43,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
             ]
         );
 
-        $installer->getConnection()->addColumn(
-            $installer->getTable('packetery_order'),
+        $setup->getConnection()->addColumn(
+            $setup->getTable('packetery_order'),
             'carrier_pickup_point',
             [
                 'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
@@ -44,10 +55,9 @@ class UpgradeSchema implements UpgradeSchemaInterface
             ]
         );
 
-        $installSchema = new InstallSchema();
-        $installSchema->pricingRulesTable($setup);
-        $installSchema->weightRulesTable($setup);
+        $this->installSchema->pricingRulesTable($setup);
+        $this->installSchema->weightRulesTable($setup);
 
-        $installer->endSetup();
+        $setup->endSetup();
     }
 }

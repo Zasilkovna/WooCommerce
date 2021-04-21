@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Packetery\Checkout\Console\Command;
 
+use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Packetery\Checkout\Model\Pricing;
 
 class MigratePriceRules extends Command
 {
@@ -36,7 +36,7 @@ class MigratePriceRules extends Command
     protected function configure(): void
     {
         $this->setName('packetery:migrate-price-rules');
-        $this->setDescription('Migrates price rules from 2.0.2 data structure to 2.0.4 data structure');
+        $this->setDescription('Migrates price rules to 2.0.3 data structure');
 
         parent::configure();
     }
@@ -66,8 +66,8 @@ class MigratePriceRules extends Command
         $configModel->setDataByPath('carriers/packetery/api_key', $apiKey);
         $configModel->setDataByPath('carriers/packetery/default_price', $globalPrice);
         $configModel->setDataByPath('carriers/packetery/max_weight', $globalMaxWeight);
-        $configModel->setDataByPath('carriers/packetery/free_shipping_enable', is_numeric($globalFreeShipping) ? 1 : 0);
-        $configModel->setDataByPath('carriers/packetery/free_shipping_subtotal', is_numeric($globalFreeShipping) ? $globalFreeShipping : '');
+        $configModel->setDataByPath('carriers/packetery/free_shipping_enable', (is_numeric($globalFreeShipping) ? 1 : 0));
+        $configModel->setDataByPath('carriers/packetery/free_shipping_subtotal', (is_numeric($globalFreeShipping) ? $globalFreeShipping : ''));
         $configModel->setDataByPath('carriers/packetery/cod_methods', $codMethods);
         $configModel->save();
 
@@ -80,7 +80,7 @@ class MigratePriceRules extends Command
             $countryFreeShipping = $configModel->getConfigDataValue("packetery_rules/rules_$country/free_shipping");
             $countryFreeShipping = str_replace(',', '.', (string)$countryFreeShipping);
             $countryRules = $configModel->getConfigDataValue("packetery_rules/rules_$country/rules"); // json e.g.: {"_1613049082069_69":{"from":"0","to":"5","price":"79"}}
-            $countryRules = json_decode($countryRules ?: '[]', true) ?: [];
+            $countryRules = (json_decode(($countryRules ?: '[]'), true) ?: []);
 
             if (!is_numeric($countryDefaultPrice)) {
                 continue; // price rules are not defined
@@ -104,9 +104,18 @@ class MigratePriceRules extends Command
             ];
 
             $pricingRule = [
-                'free_shipment' => is_numeric($countryFreeShipping) ? (float)$countryFreeShipping : null,
+                'free_shipment' => (is_numeric($countryFreeShipping) ? (float)$countryFreeShipping : null),
                 'country_id' => strtoupper($country),
+                'method' => AllowedMethods::PICKUP_POINT_DELIVERY,
             ];
+
+            usort($countryRules, function ($countryRuleA, $countryRuleB) {
+                if ($countryRuleA['from'] === $countryRuleB['from']) {
+                    return 0;
+                }
+
+                return ($countryRuleA['from'] > $countryRuleB['from'] ? 1 : -1);
+            });
 
             $previousCountryRule = null;
             foreach ($countryRules as $countryRule) {
@@ -117,10 +126,14 @@ class MigratePriceRules extends Command
                 $countryRuleTo = str_replace(',', '.', $countryRuleTo);
                 $countryRulePrice = (string)$countryRule['price'];
                 $countryRulePrice = str_replace(',', '.', $countryRulePrice);
-                $previousTo = $previousCountryRule ? $previousCountryRule['to'] : null;
-                $previousTo = $previousTo ? str_replace(',', '.', (string)$previousTo) : null;
+                $previousTo = ($previousCountryRule ? $previousCountryRule['to'] : null);
+                $previousTo = ($previousTo ? str_replace(',', '.', (string)$previousTo) : null);
 
                 if (!is_numeric($countryRuleFrom) || !is_numeric($countryRuleTo) || !is_numeric($countryRulePrice)) {
+                    continue;
+                }
+
+                if (empty($countryRuleTo)) {
                     continue;
                 }
 
@@ -148,10 +161,10 @@ class MigratePriceRules extends Command
 
             try {
                 $this->pricingruleRepository->savePricingRule($pricingRule, $weightRules);
-            } catch (\Packetery\Checkout\Model\Exception\DuplicateCountryValidationException $e) {
+            } catch (\Packetery\Checkout\Model\Exception\DuplicateCountry $e) {
                 $output->writeln("Price rule for $country already exists. Skipping.");
                 continue;
-            } catch (\Packetery\Checkout\Model\Exception\MaxWeightValidationException $e) {
+            } catch (\Packetery\Checkout\Model\Exception\InvalidMaxWeight $e) {
                 $output->writeln("Max weight for $country exceed maximum allowed. Skipping.");
                 continue;
             }

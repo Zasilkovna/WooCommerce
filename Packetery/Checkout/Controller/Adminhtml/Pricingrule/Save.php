@@ -81,7 +81,7 @@ class Save extends Action implements HttpPostActionInterface
 
         $postData = $this->getRequest()->getPostValue()['general'];
 
-        $weightRules = $postData['weightRules']['weightRules'] ?? [];
+        $weightRules = ($postData['weightRules']['weightRules'] ?? []);
         unset($postData['weightRules']);
 
         if (empty($postData['free_shipment']) && !is_numeric($postData['free_shipment'])) {
@@ -90,18 +90,18 @@ class Save extends Action implements HttpPostActionInterface
 
         try {
             $item = $this->pricingruleRepository->savePricingRule($postData, $weightRules);
-        } catch (\Packetery\Checkout\Model\Exception\DuplicateCountryValidationException $e) {
+        } catch (\Packetery\Checkout\Model\Exception\DuplicateCountry $e) {
             $this->messageManager->addErrorMessage(__('Price rule for specified country already exists'));
-            return $this->createPricingRuleDetailRedirect(isset($postData['id']) ? $postData['id'] : null);
-        } catch (\Packetery\Checkout\Model\Exception\MaxWeightValidationException $e) {
+            return $this->createPricingRuleDetailRedirect((isset($postData['id']) ? $postData['id'] : null));
+        } catch (\Packetery\Checkout\Model\Exception\InvalidMaxWeight $e) {
             $this->messageManager->addErrorMessage(__('The weight is invalid', $this->packeteryConfig->getMaxWeight()));
-            return $this->createPricingRuleDetailRedirect(isset($postData['id']) ? $postData['id'] : null);
+            return $this->createPricingRuleDetailRedirect((isset($postData['id']) ? $postData['id'] : null));
         } catch (\Packetery\Checkout\Model\Exception\PricingRuleNotFound $e) {
             $this->messageManager->addErrorMessage(__('Pricing rule not found'));
             return $this->resultFactory->create(ResultFactory::TYPE_REDIRECT)->setPath('packetery/pricingrule/items');
         } catch (\Packetery\Checkout\Model\Exception\WeightRuleMissing $e) {
             $this->messageManager->addErrorMessage(__('Weight rule is missing'));
-            return $this->createPricingRuleDetailRedirect(isset($postData['id']) ? $postData['id'] : null);
+            return $this->createPricingRuleDetailRedirect((isset($postData['id']) ? $postData['id'] : null));
         }
 
         $this->messageManager->addSuccessMessage(

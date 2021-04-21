@@ -169,7 +169,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
             'sortable' => false,
             'index' => 'point_name',
             'filter_condition_callback' => array($this, 'filterPointName'),
-            'renderer' => 'Packetery\Checkout\Block\Adminhtml\Order\Renderer\AddressPickupPoint'
+            'renderer' => 'Packetery\Checkout\Block\Adminhtml\Order\Renderer\DeliveryDestination'
         ));
 
         $this->addColumn('exported', array(

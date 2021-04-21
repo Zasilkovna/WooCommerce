@@ -60,10 +60,9 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
 
     /**
      * @param string $orderIds
-     *
-     * @return string
+     * @return string|null
      */
-    public function getCsvMassFileContents($orderIds)
+    public function getCsvMassFileContents($orderIds): ?string
     {
         $col = $this->loadDataSelection();
 
@@ -71,18 +70,14 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
 
         $collection = $col->load();
 
-        $contents = $this->getCsvHeader();
-
-        foreach ($collection as $row)
-        {
-            $order = $this->getExportRow($row);
-            $contents .= "," . implode(',', $order) . PHP_EOL;
-        }
-
-        return $contents;
+        return $this->createCsvContent($collection);
     }
 
-    public function getCsvAllFileContents($onlyNotExported = FALSE)
+    /**
+     * @param false $onlyNotExported
+     * @return string|null
+     */
+    public function getCsvAllFileContents($onlyNotExported = FALSE): ?string
     {
         $col = $this->loadDataSelection();
 
@@ -91,23 +86,8 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
             $col->getSelect()->where('exported = ?', 0);
         }
         $collection = $col->load();
-        $contents = $this->getCsvHeader();
 
-        foreach ($collection as $row)
-        {
-            $order = $this->getExportRow($row);
-            $contents .= "," . implode(',', $order) . PHP_EOL;
-        }
-
-        return $contents;
-    }
-
-    /**
-     * Header for CSV file
-     */
-    protected function getCsvHeader()
-    {
-        return '"version 5"' . PHP_EOL . PHP_EOL;
+        return $this->createCsvContent($collection);
     }
 
     /**
@@ -129,6 +109,7 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
     protected function getExportRow($row)
     {
         return [
+            '',
             $row->getData('order_number'),
             $row->getData('recipient_firstname'),
             $row->getData('recipient_lastname'),
@@ -175,4 +156,24 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
 			$collection->getSelect()->where("exported = 1");
 		}
 	}
+
+    /**
+     * @param iterable $collection
+     * @return string|null
+     */
+    private function createCsvContent(iterable $collection): ?string
+    {
+        // Write to memory (unless buffer exceeds limit then it will write to /tmp)
+        $fp = fopen('php://temp', 'w+');
+        fputcsv($fp, ['version 5']);
+        fputcsv($fp, []);
+        foreach ($collection as $row) {
+            $fields = $this->getExportRow($row);
+            fputcsv($fp, $fields);
+        }
+        rewind($fp); // Set the pointer back to the start
+        $contents = stream_get_contents($fp); // Fetch the contents of our CSV
+        fclose($fp);
+        return ($contents ?: null); // Close our pointer and free up memory and /tmp space
+    }
 }

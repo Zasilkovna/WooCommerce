@@ -20,9 +20,10 @@
                     <label>Title</label>
                     <validate>required-entry</validate>
                 </field>
-                <field id="name" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="50" translate="label" type="text">
-                    <label>Method Name</label>
-                    <validate>required-entry</validate>
+                <field id="allowedMethods" translate="label" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Allowed Methods</label>
+                    <source_model>Packetery\Checkout\Model\Config\Source\MethodSelect</source_model>
+                    <can_be_empty>1</can_be_empty>
                 </field>
                 <field id="api_key" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="60" translate="label" type="text">
                     <label>API key</label>

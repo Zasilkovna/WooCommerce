@@ -79,11 +79,6 @@ define(
 				},
 
 			selectShippingMethod: function (shippingMethod) {
-				if(shippingMethod.carrier_code=="packetery"){
-					jQuery(".zas-box").show();
-				}else{
-					jQuery(".zas-box").hide();
-				}
 				selectShippingMethodAction(shippingMethod);
 				checkoutData.setSelectedShippingRate(shippingMethod.carrier_code + '_' + shippingMethod.method_code);
 
@@ -92,12 +87,7 @@ define(
 			getconfigValue: function () {
 				var serviceUrl = url.build('packetery/config/storeconfig');
 
-				if( packeterySelected() ){
-					jQuery(".zas-box").show();
-				}else{
-					jQuery(".zas-box").hide();
-					jQuery("#packeta-branch-id").val("");
-				}
+                packeteryToggleBoxes();
 
 				//-------------------------
 
@@ -142,14 +132,35 @@ define(
 		};
 	});
 
-window.packeterySelected = function(){
-	if( jQuery(".radio:checked").length > 0 ){
-		if( jQuery(".radio:checked").val().indexOf("packetery_packetery") != -1 ){
-			return true;
-		}
-	}
-	return false;
+window.packeterySelected = function() {
+    if(jQuery(".packetery-method-wrapper .radio[value=packetery_pickupPointDelivery]:checked").length > 0) {
+        return true;
+    }
+
+    return false;
 };
+
+window.packeteryToggleBoxes = function() {
+    // to make sure our Open widget btn is properly displayed
+    var shippingMethodSelected = jQuery(".packetery-method-wrapper .radio[value^=packetery_]");
+    shippingMethodSelected.each(function() {
+        var $item = jQuery(this);
+        var checked = $item.is(':checked');
+        if(checked) {
+            $item.parents('.packetery-method-wrapper:first').next('.packetery-zas-box').show();
+        } else {
+            $item.parents('.packetery-method-wrapper:first').next('.packetery-zas-box').hide();
+        }
+    });
+};
+
+jQuery(document).ready(function() {
+    jQuery('body').on('change', '.packetery-method-wrapper .radio[value^=packetery_]', function() {
+        packeteryToggleBoxes();
+    }).on('click', '.packetery-method-wrapper', function() {
+        packeteryToggleBoxes();
+    });
+});
 
 // we create event listener for event of type message which widget uses to communicate with application
 window.shippingSelected = function(){
@@ -173,12 +184,6 @@ function showSelectedPickupPoint(point)
         var pointId = point.pickupPointType === 'external' ? point.carrierId : point.id;
         pickedDeliveryPlace.innerText = (point ? point.name : "");
         packetaBranchId.value = pointId;
-        var inputMethod = document.querySelectorAll('input[value="packetery_packetery"]');
-
-        if(inputMethod.length == 1)
-        {
-            inputMethod[0].checked = true;
-        }
 
         // nastavíme, aby si pak pro založení objednávky převzal place-order.js, resp. OrderPlaceAfter.php
         window.packetaPoint = {
