@@ -13,13 +13,11 @@ define(
 		'Magento_Checkout/js/model/shipping-rates-validator',
 		'Magento_Checkout/js/model/shipping-address/form-popup-state',
 		'Magento_Checkout/js/model/shipping-service',
-		'Magento_Checkout/js/action/select-shipping-method',
 		'Magento_Checkout/js/model/shipping-rate-registry',
 		'Magento_Checkout/js/action/set-shipping-information',
 		'Magento_Checkout/js/model/step-navigator',
 		'Magento_Ui/js/modal/modal',
 		'Magento_Checkout/js/model/checkout-data-resolver',
-		'Magento_Checkout/js/checkout-data',
 		'uiRegistry',
 		'mage/translate',
 		'mage/storage',
@@ -39,13 +37,11 @@ define(
 		shippingRatesValidator,
 		formPopUpState,
 		shippingService,
-		selectShippingMethodAction,
 		rateRegistry,
 		setShippingInformationAction,
 		stepNavigator,
 		modal,
 		checkoutDataResolver,
-		checkoutData,
 		registry,
 		$t,
 		storage,
@@ -53,43 +49,26 @@ define(
 		'use strict';
 
 		var mixin = {
+            setShippingInformation: function() {
+                if(!shippingSelected()) {
+                    var message = $t("Please select shipping method");
+                    alert(message);
+                    return;
+                }
 
-				setShippingInformation: function () {
+                if(packeterySelected() && jQuery("#packeta-branch-id").val() == "") {
+                    var message = $t("Please select pickup point");
+                    alert(message);
+                    return;
+                }
 
-					if( !shippingSelected() ){
-						var message = $t("Please select shipping method");
-						alert(message);
-						return;
-					}
-					if( packeterySelected() && jQuery("#packeta-branch-id").val() == "" ){
-						var message = $t("Please select pickup point");
-						alert(message);
-						return;
-					}
+                return this._super();
+            },
 
-					if (this.validateShippingInformation()) {
-						quote.billingAddress(null);
-						checkoutDataResolver.resolveBillingAddress();
-						setShippingInformationAction().done(
-							function () {
-								stepNavigator.next();
-							}
-						);
-					}
-				},
-
-			selectShippingMethod: function (shippingMethod) {
-				selectShippingMethodAction(shippingMethod);
-				checkoutData.setSelectedShippingRate(shippingMethod.carrier_code + '_' + shippingMethod.method_code);
-
-				return true;
-			},
 			getconfigValue: function () {
 				var serviceUrl = url.build('packetery/config/storeconfig');
 
                 packeteryToggleBoxes();
-
-				//-------------------------
 
 				storage.get(serviceUrl).done(
 					function (response) {
@@ -111,6 +90,7 @@ define(
 					}
 				);
 			},
+
 			packetaButtonClick: function () {
 				var packetaButton = jQuery('#open-packeta-widget');
 				var packetaApiKey = packetaButton.data('api-key');
@@ -124,7 +104,6 @@ define(
 
 				Packeta.Widget.pick(packetaApiKey, showSelectedPickupPoint, options);
 			}
-
 		};
 
 		return function (target) { // target == Result that Magento_Ui/.../default returns.
