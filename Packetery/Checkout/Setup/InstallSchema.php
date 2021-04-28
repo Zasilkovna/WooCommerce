@@ -45,7 +45,9 @@ class InstallSchema implements InstallSchemaInterface
         ],
         "cod" => [
             "type" => Table::TYPE_DECIMAL,
-            'length'    => '8,2'
+            "attr" => [
+                'length' => '20,4'
+            ]
         ],
         "currency" => [
             "type" => Table::TYPE_TEXT,
@@ -53,12 +55,17 @@ class InstallSchema implements InstallSchemaInterface
         ],
         "value" => [
             "type" => Table::TYPE_DECIMAL,
-            'length'    => '8,2',
-            "attr" => ['nullable' => false]
+            "attr" => [
+                'nullable' => false,
+                'length' => '20,4',
+            ]
         ],
         "weight" => [
             "type" => Table::TYPE_DECIMAL,
-            'length'    => '4,2'
+            "attr" => [
+                'nullable' => false,
+                'length' => '12,4',
+            ]
         ],
         "point_id" => [
             "type" => Table::TYPE_TEXT,
@@ -192,7 +199,7 @@ class InstallSchema implements InstallSchemaInterface
                 'attr' => [
                     'nullable' => true,
                     'after' => 'price',
-                    'length' => '11,2',
+                    'length' => '20,4',
                     'comment' => 'From what order value will be shipping for free?'
                 ],
             ],
@@ -245,7 +252,7 @@ class InstallSchema implements InstallSchemaInterface
                 'attr' => [
                     'nullable' => false,
                     'after' => 'id',
-                    'length' => '11,2',
+                    'length' => '20,4',
                     'comment' => 'Price for given constrains'
                 ],
             ],
@@ -254,7 +261,7 @@ class InstallSchema implements InstallSchemaInterface
                 'attr' => [
                     'nullable' => true,
                     'after' => 'price',
-                    'length' => '11,4',
+                    'length' => '12,4',
                     'comment' => 'Maximum weight in kilograms'
                 ],
             ]

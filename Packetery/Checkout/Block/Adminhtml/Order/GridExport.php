@@ -2,6 +2,8 @@
 
 namespace Packetery\Checkout\Block\Adminhtml\Order;
 
+use Magento\Framework\Pricing\PriceCurrencyInterface;
+
 class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
 {
 
@@ -104,6 +106,19 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
     }
 
     /**
+     * @param mixed $value
+     * @return string
+     */
+    private function formatNumber($value): string
+    {
+        if (is_numeric($value)) {
+            return number_format((float)$value, PriceCurrencyInterface::DEFAULT_PRECISION, '.', '');
+        }
+
+        return '';
+    }
+
+    /**
      * Prepare row for CSV export
      */
     protected function getExportRow($row)
@@ -116,9 +131,9 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
             $row->getData('recipient_company'),
             $row->getData('recipient_email'),
             $row->getData('recipient_phone'),
-            $row->getData('cod'),
+            $this->formatNumber($row->getData('cod')),
             $row->getData('currency'),
-            $row->getData('value'),
+            $this->formatNumber($row->getData('value')),
             '',
             $row->getData('point_id'),
             $row->getData('sender_label'),

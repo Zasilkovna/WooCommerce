@@ -6,3 +6,4 @@
       - Updated: pricing rules moved to dedicated admin section
       - Updated: place order mixins
       - Fixed: Magento installation with database prefix is now supported
+      - Fixed: Database DECIMAL types of Packeta tables now allow precision for order value, weight and COD

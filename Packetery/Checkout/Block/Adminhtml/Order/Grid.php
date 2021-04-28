@@ -162,6 +162,7 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'sortable' => true,
 			'type' => 'number',
 			'index' => 'value',
+            'renderer' => 'Packetery\Checkout\Block\Adminhtml\Order\Renderer\Value'
 		));
 
         $this->addColumn('point_name', array(
