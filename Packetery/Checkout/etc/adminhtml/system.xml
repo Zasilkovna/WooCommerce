@@ -52,7 +52,7 @@
                 <field id="cod_methods" translate="Module" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Cash on delivery</label>
                     <can_be_empty>1</can_be_empty>
-                    <source_model>Packetery\Checkout\Model\Misc\PaymentMethod</source_model>
+                    <source_model>Packetery\Checkout\Model\Config\Source\PaymentMethod</source_model>
                     <comment>The payment methods selected above will be considered as cash on delivery (for Packeta).</comment>
                 </field>
                 <field id="sallowspecific" translate="label" type="select" sortOrder="1900" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">

@@ -1,62 +1,44 @@
 define(
-	[
-		'jquery',
-		'underscore',
-		'Magento_Ui/js/form/form',
-		'ko',
-		'Magento_Customer/js/model/customer',
-		'Magento_Customer/js/model/address-list',
-		'Magento_Checkout/js/model/address-converter',
-		'Magento_Checkout/js/model/quote',
-		'Magento_Checkout/js/action/create-shipping-address',
-		'Magento_Checkout/js/action/select-shipping-address',
-		'Magento_Checkout/js/model/shipping-rates-validator',
-		'Magento_Checkout/js/model/shipping-address/form-popup-state',
-		'Magento_Checkout/js/model/shipping-service',
-		'Magento_Checkout/js/model/shipping-rate-registry',
-		'Magento_Checkout/js/action/set-shipping-information',
-		'Magento_Checkout/js/model/step-navigator',
-		'Magento_Ui/js/modal/modal',
-		'Magento_Checkout/js/model/checkout-data-resolver',
-		'uiRegistry',
-		'mage/translate',
-		'mage/storage',
-		'mage/url',
-		'Magento_Checkout/js/model/shipping-rate-service'
-	],function (
-		$,
-		_,
-		Component,
-		ko,
-		customer,
-		addressList,
-		addressConverter,
-		quote,
-		createShippingAddress,
-		selectShippingAddress,
-		shippingRatesValidator,
-		formPopUpState,
-		shippingService,
-		rateRegistry,
-		setShippingInformationAction,
-		stepNavigator,
-		modal,
-		checkoutDataResolver,
-		registry,
-		$t,
-		storage,
-		url) {
-		'use strict';
+    [
+        'Magento_Checkout/js/model/quote',
+        'mage/translate',
+        'mage/storage',
+        'mage/url',
+        'ko'
+    ], function(
+        quote,
+        $t,
+        storage,
+        url,
+        ko) {
+        'use strict';
 
-		var mixin = {
-            setShippingInformation: function() {
-                if(!shippingSelected()) {
-                    var message = $t("Please select shipping method");
-                    alert(message);
-                    return;
+        var config = null;
+        var mixin = {
+            isStoreConfigLoaded: ko.observable(false),
+            pickedDeliveryPlace: ko.observable(''),
+
+            packetaButtonClick: function() {
+                if(config === null) {
+                    return; // config not yet loaded
                 }
 
-                if(packeterySelected() && jQuery("#packeta-branch-id").val() == "") {
+                var packetaApiKey = config.apiKey;
+                var countryCode = (quote.shippingAddress().countryId).toLocaleLowerCase();
+
+                var options = {
+                    webUrl: config.packetaOptions.webUrl,
+                    appIdentity: config.packetaOptions.appIdentity,
+                    country: countryCode,
+                    language: config.packetaOptions.language,
+                };
+
+                Packeta.Widget.pick(packetaApiKey, showSelectedPickupPoint, options);
+            },
+
+            setShippingInformation: function() {
+                var packetaPoint = window.packetaPoint || {};
+                if(packeteryPickupPointSelected() && !packetaPoint.pointId) {
                     var message = $t("Please select pickup point");
                     alert(message);
                     return;
@@ -64,121 +46,74 @@ define(
 
                 return this._super();
             },
+        };
 
-			getconfigValue: function () {
-				var serviceUrl = url.build('packetery/config/storeconfig');
+        var resetPickedPacketaPoint = function() {
+            mixin.pickedDeliveryPlace('');
+            window.packetaPoint = {
+                pointId: null,
+                name: null,
+                pickupPointType: null,
+                carrierId: null,
+                carrierPickupPointId: null
+            };
+        };
 
-                packeteryToggleBoxes();
+        resetPickedPacketaPoint();
+        quote.shippingAddress.subscribe(function() {
+            resetPickedPacketaPoint();
+        });
 
-				storage.get(serviceUrl).done(
-					function (response) {
-						if (response.success) {
-							var config = JSON.parse(response.value);
-							var packetaButton = jQuery('#open-packeta-widget');
-							var countryCode = (quote.shippingAddress().countryId).toLocaleLowerCase();
+        var packeteryPickupPointSelected = function() {
+            var shippingMethod = quote.shippingMethod();
+            if(shippingMethod && shippingMethod['method_code'] === 'pickupPointDelivery') {
+                return true;
+            }
 
-							packetaButton.attr('data-api-key', config.apiKey);
-							packetaButton.attr('data-web-url', config.packetaOptions.webUrl);
-							packetaButton.attr('data-app-identity', config.packetaOptions.appIdentity);
-							packetaButton.attr('data-language', config.packetaOptions.language);
-							packetaButton.attr('data-country-code', countryCode);
-						}
-					}
-				).fail(
-					function (response) {
-						return response.value
-					}
-				);
-			},
+            return false;
+        };
 
-			packetaButtonClick: function () {
-				var packetaButton = jQuery('#open-packeta-widget');
-				var packetaApiKey = packetaButton.data('api-key');
+        var showSelectedPickupPoint = function(point) {
+            if(point) {
+                var pointId = point.pickupPointType === 'external' ? point.carrierId : point.id;
+                mixin.pickedDeliveryPlace(point ? point.name : "");
 
-				var options = {
-					webUrl: packetaButton.data('web-url'),
-					appIdentity: packetaButton.data('app-identity'),
-					country: packetaButton.data('country-code'),
-					language: packetaButton.data('language'),
-				};
-
-				Packeta.Widget.pick(packetaApiKey, showSelectedPickupPoint, options);
-			}
-		};
-
-		return function (target) { // target == Result that Magento_Ui/.../default returns.
-			return target.extend(mixin); // new result that all other modules receive
-		};
-	});
-
-window.packeterySelected = function() {
-    if(jQuery(".packetery-method-wrapper .radio[value=packetery_pickupPointDelivery]:checked").length > 0) {
-        return true;
-    }
-
-    return false;
-};
-
-window.packeteryToggleBoxes = function() {
-    // to make sure our Open widget btn is properly displayed
-    var shippingMethodSelected = jQuery(".packetery-method-wrapper .radio[value^=packetery_]");
-    shippingMethodSelected.each(function() {
-        var $item = jQuery(this);
-        var checked = $item.is(':checked');
-        if(checked) {
-            $item.parents('.packetery-method-wrapper:first').next('.packetery-zas-box').show();
-        } else {
-            $item.parents('.packetery-method-wrapper:first').next('.packetery-zas-box').hide();
+                // nastavíme, aby si pak pro založení objednávky převzal place-order.js, resp. OrderPlaceAfter.php
+                window.packetaPoint = {
+                    pointId: pointId ? pointId : null,
+                    name: point.name ? point.name : null,
+                    pickupPointType: point.pickupPointType ? point.pickupPointType : null,
+                    carrierId: point.carrierId ? point.carrierId : null,
+                    carrierPickupPointId: point.carrierPickupPointId ? point.carrierPickupPointId : null
+                };
+            } else {
+                resetPickedPacketaPoint();
+            }
         }
-    });
-};
 
-jQuery(document).ready(function() {
-    jQuery('body').on('change', '.packetery-method-wrapper .radio[value^=packetery_]', function() {
-        packeteryToggleBoxes();
-    }).on('click', '.packetery-method-wrapper', function() {
-        packeteryToggleBoxes();
-    });
-});
-
-// we create event listener for event of type message which widget uses to communicate with application
-window.shippingSelected = function(){
-	return( jQuery(".radio:checked").length > 0 );
-};
-
-/**
- * Callback po zavreni widgetu zasilkovny
- * @param {name, id, ..} point
- */
-function showSelectedPickupPoint(point)
-{
-	var pickedDeliveryPlace = document.getElementById('picked-delivery-place');
-	var packetaBranchId = document.getElementById('packeta-branch-id');
-
-    packetaBranchId.value = null;
-    pickedDeliveryPlace.innerText = "";
-
-    if(point)
-    {
-        var pointId = point.pickupPointType === 'external' ? point.carrierId : point.id;
-        pickedDeliveryPlace.innerText = (point ? point.name : "");
-        packetaBranchId.value = pointId;
-
-        // nastavíme, aby si pak pro založení objednávky převzal place-order.js, resp. OrderPlaceAfter.php
-        window.packetaPoint = {
-            pointId: pointId ? pointId : null,
-            name: point.name ? point.name : null,
-            pickupPointType: point.pickupPointType ? point.pickupPointType : null,
-            carrierId: point.carrierId ? point.carrierId : null,
-            carrierPickupPointId: point.carrierPickupPointId ? point.carrierPickupPointId : null
+        var loadStoreConfig = function() {
+            return new Promise(function(resolve) {
+                var serviceUrl = url.build('packetery/config/storeconfig');
+                storage.get(serviceUrl).done(
+                    function(response) {
+                        if(response.success) {
+                            config = JSON.parse(response.value);
+                            resolve(config);
+                        }
+                    }
+                ).fail(
+                    function(response) {
+                        return response.value
+                    }
+                );
+            });
         };
-	} else {
-        window.packetaPoint = {
-            pointId: null,
-            name: null,
-            pickupPointType: null,
-            carrierId: null,
-            carrierPickupPointId: null
+
+        loadStoreConfig().then(function() {
+            mixin.isStoreConfigLoaded(true);
+        });
+
+        return function(target) { // target == Result that Magento_Ui/.../default returns.
+            return target.extend(mixin); // new result that all other modules receive
         };
-    }
-}
+    });
