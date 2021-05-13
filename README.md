@@ -82,15 +82,15 @@ Multiple payment methods can be selected by holding the "Ctrl" button and clicki
 - Magento 2.2 and newer
 - If you have a problem using the Magento 2 module (eg 2.0), please contact us at [support@packeta.com](mailto:support@packeta.com)
 
-#### Poskytované funkce:
+#### Supported features:
 
-- Integration of widget for pickup points selections in the eshop cart
-- Set different prices for different target countries
-- Setting prices according to weighting rules
-- Free shipping from the specified price or weight of the order
-- Export orders to a csv file that can be imported in [client section](https://client.packeta.com/)
-
-
+- integration of widget v6 for pickup points selections in the eshop cart
+- external carrier pickup point support
+- address delivery support (in cz, sk, hu, pl and ro via "Home delivery HD")
+- set different prices for different target countries
+- setting prices according to weighting rules
+- free shipping from the specified price or weight of the order
+- export orders to a csv file that can be imported in [client section](https://client.packeta.com/)
 
 # Modul pro Magento 2
 
@@ -176,8 +176,10 @@ Vybrat více platebních metod je možné přidržením tlačítka "Ctrl" a klik
 
 #### Poskytované funkce:
 
-- Integrace widgetu v košíku eshopu
-- Nastavení různé ceny pro různé cílové země
-- Nastavení cen podle váhových pravidel
-- Doprava zdarma od zadané ceny nebo hmotnosti objednávky
-- Export zásilek do csv souboru, který lze importovat v [klientské sekci](https://client.packeta.com/)
+- integrace widgetu v6 v košíku eshopu
+- podpora výdejních míst externích dopravců
+- podpora doručení zásilek na adresu (v cz, sk, hu, pl a ro přes dopravce “Doručení na adresu HD”)
+- nastavení různé ceny pro různé cílové země
+- nastavení cen podle váhových pravidel
+- doprava zdarma od zadané ceny nebo hmotnosti objednávky
+- export zásilek do csv souboru, který lze importovat v [klientské sekci](https://client.packeta.com/)
