@@ -18,15 +18,12 @@ class Index extends \Magento\Backend\App\Action
     {
         /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
         $resultPage = $this->resultPageFactory->create();
-        $resultPage->getConfig()->getTitle()->prepend(__('Packeta - orders'));
-
-
+        $resultPage->setActiveMenu('Packetery_Checkout::orders');
+        $resultPage->getConfig()->getTitle()->prepend(__('Orders'));
 
         $resultPage->addContent(
             $resultPage->getLayout()->createBlock('Packetery\Checkout\Block\Adminhtml\Order')
         );
-
-
 
         return $resultPage;
     }

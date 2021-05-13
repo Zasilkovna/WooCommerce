@@ -9,7 +9,8 @@ use Magento\Framework\Setup\SchemaSetupInterface;
 
 class InstallSchema implements InstallSchemaInterface
 {
-    private $schema = [
+    /** @var array[]  */
+    private $orderTableSchema = [
         "id" => [
             "type" => Table::TYPE_INTEGER,
             "size" => null,
@@ -44,7 +45,9 @@ class InstallSchema implements InstallSchemaInterface
         ],
         "cod" => [
             "type" => Table::TYPE_DECIMAL,
-            'length'    => '8,2'
+            "attr" => [
+                'length' => '20,4'
+            ]
         ],
         "currency" => [
             "type" => Table::TYPE_TEXT,
@@ -52,12 +55,17 @@ class InstallSchema implements InstallSchemaInterface
         ],
         "value" => [
             "type" => Table::TYPE_DECIMAL,
-            'length'    => '8,2',
-            "attr" => ['nullable' => false]
+            "attr" => [
+                'nullable' => false,
+                'length' => '20,4',
+            ]
         ],
         "weight" => [
             "type" => Table::TYPE_DECIMAL,
-            'length'    => '4,2'
+            "attr" => [
+                'nullable' => false,
+                'length' => '12,4',
+            ]
         ],
         "point_id" => [
             "type" => Table::TYPE_TEXT,
@@ -67,6 +75,24 @@ class InstallSchema implements InstallSchemaInterface
         "point_name" => [
             "type" => Table::TYPE_TEXT,
             'size'    => '1024'
+        ],
+        "is_carrier" => [
+            "type" => Table::TYPE_BOOLEAN,
+            'attr' => [
+                'nullable' => false,
+                'default' => 0,
+                'comment' => 'Is Point_id ID of external carrier?',
+                'after' => 'point_name'
+            ]
+        ],
+        "carrier_pickup_point" => [
+            "type" => Table::TYPE_TEXT,
+            'size' => '40',
+            'attr' => [
+                'nullable' => true,
+                'comment' => 'External carrier pickup point ID',
+                'after' => 'is_carrier'
+            ]
         ],
         "sender_label" => [
             "type" => Table::TYPE_TEXT,
@@ -126,37 +152,149 @@ class InstallSchema implements InstallSchemaInterface
     public function install(
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
-    ) {
+    ): void {
         $setup->startSetup();
 
-        $this->table($setup);
+        $this->ordersTable($setup);
+        $this->pricingRulesTable($setup);
+        $this->weightRulesTable($setup);
 
         $setup->endSetup();
     }
 
-    private function table(&$setup)
+    /**
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
+    private function ordersTable(SchemaSetupInterface &$setup): void
     {
         $table = $setup->getConnection()->newTable(
             $setup->getTable('packetery_order')
         );
 
-        $this->columns($table);
+        $this->columns($table, $this->orderTableSchema);
 
         $table->setComment('Zásilkovna objednávky');
 
         $setup->getConnection()->createTable($table);
     }
 
-    private function columns(&$table)
+    /**
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
+    public function pricingRulesTable(SchemaSetupInterface &$setup): void
     {
-        foreach ($this->schema as $name => $column) {
-            $column['attr'] = (isset($column['attr'])) ? $column['attr'] : [];
-            $column['size'] = (isset($column['size'])) ? $column['size'] : null;
+        $table = $setup->getConnection()->newTable(
+            $setup->getTable('packetery_pricing_rule')
+        );
+
+        $this->columns($table, [
+            "id" => [
+                "type" => Table::TYPE_INTEGER,
+                "attr" => ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+            ],
+            "free_shipment" => [
+                "type" => Table::TYPE_DECIMAL,
+                'attr' => [
+                    'nullable' => true,
+                    'after' => 'price',
+                    'length' => '20,4',
+                    'comment' => 'From what order value will be shipping for free?'
+                ],
+            ],
+            "country_id" => [
+                "type" => Table::TYPE_TEXT,
+                'attr' => [
+                    'nullable' => false,
+                    'length' => '2',
+                    'comment' => 'Country that relates to specified price',
+                    'after' => 'free_shipment'
+                ]
+            ],
+            "method" => [
+                "type" => Table::TYPE_TEXT,
+                'attr' => [
+                    'nullable' => false,
+                    'length' => '64',
+                    'comment' => 'Related delivery method',
+                    'after' => 'country_id'
+                ]
+            ]
+        ]);
+
+        $table->setComment('Packetery pricing rules. Relates to packetery_weight_rules.');
+
+        $setup->getConnection()->createTable($table);
+    }
+
+    /**
+     * @param \Magento\Framework\Setup\SchemaSetupInterface $setup
+     * @throws \Zend_Db_Exception
+     */
+    public function weightRulesTable(SchemaSetupInterface &$setup): void
+    {
+        $table = $setup->getConnection()->newTable(
+            $setup->getTable('packetery_weight_rule')
+        );
+
+        $this->columns($table, [
+            "id" => [
+                "type" => Table::TYPE_INTEGER,
+                "attr" => ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+            ],
+            "packetery_pricing_rule_id" => [
+                "type" => Table::TYPE_INTEGER,
+                "attr" => ['unsigned' => true, 'nullable' => false],
+            ],
+            "price" => [
+                "type" => Table::TYPE_DECIMAL,
+                'attr' => [
+                    'nullable' => false,
+                    'after' => 'id',
+                    'length' => '20,4',
+                    'comment' => 'Price for given constrains'
+                ],
+            ],
+            "max_weight" => [
+                "type" => Table::TYPE_DECIMAL,
+                'attr' => [
+                    'nullable' => true,
+                    'after' => 'price',
+                    'length' => '12,4',
+                    'comment' => 'Maximum weight in kilograms'
+                ],
+            ]
+        ]);
+
+        $table->addForeignKey(
+            $setup->getFkName($setup->getTable('packetery_weight_rule'),'packetery_pricing_rule_id', $setup->getTable('packetery_pricing_rule'), 'id'),
+            'packetery_pricing_rule_id', $setup->getTable('packetery_pricing_rule'), 'id'
+        );
+
+        $table->setComment('Packetery weight rules. Relates to packetery pricing rules.');
+
+        $setup->getConnection()->createTable($table);
+    }
+
+    /**
+     * @param \Magento\Framework\DB\Ddl\Table $table
+     * @param $schema
+     * @throws \Zend_Db_Exception
+     */
+    private function columns(Table &$table, $schema): void
+    {
+        foreach ($schema as $name => $column) {
+            $column['attr'] = (isset($column['attr']) ? $column['attr'] : []);
+            $column['attr']['comment'] = (isset($column['attr']['comment']) ? $column['attr']['comment'] : null);
+            $column['attr']['length'] = (isset($column['attr']['length']) ? $column['attr']['length'] : null);
+            $column['size'] = (isset($column['size']) ? $column['size'] : null);
             $table->addColumn(
                 $name,
                 $column['type'],
-                $column['size'],
-                $column['attr']
+                ($column['size'] ?: $column['attr']['length']),
+                $column['attr'],
+                $column['attr']['comment']
             );
         }
     }

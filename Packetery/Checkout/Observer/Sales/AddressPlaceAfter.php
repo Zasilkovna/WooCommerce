@@ -2,8 +2,6 @@
 
 namespace Packetery\Checkout\Observer\Sales;
 
-use Magento\Checkout\Model\Session as CheckoutSession;
-
 class AddressPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
     /** @var \Magento\Framework\App\Config */
@@ -12,22 +10,22 @@ class AddressPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /** @var \Magento\Store\Model\StoreManagerInterface */
     private $storeManager;
 
-    /** @var \\Magento\Framework\App\ResourceConnection */
-    private $resourceConnection;
-
     /** @var \Magento\Sales\Api\OrderRepositoryInterface */
     protected $orderRepository;
+
+    /** @var \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory */
+    private $orderCollectionFactory;
 
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\ResourceConnection $resourceConnection,
-        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository
+        \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
+        \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->orderRepository = $orderRepository;
-        $this->resourceConnection = $resourceConnection;
+        $this->orderCollectionFactory = $orderCollectionFactory;
     }
 
     /**
@@ -46,8 +44,6 @@ class AddressPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $orderNumber = $order->getIncrementId();
         $address = $order->getShippingAddress();
 
-        $connection = $this->resourceConnection->getConnection();
-
         $streetMatches = [];
         $match = preg_match('/^(.*[^0-9]+) (([1-9][0-9]*)\/)?([1-9][0-9]*[a-cA-C]?)$/', $order->getShippingAddress()->getStreet()[0], $streetMatches);
 
@@ -63,18 +59,21 @@ class AddressPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             $street = $streetMatches[1];
         }
 
-        // update of packetery order address
-        $connection->update('packetery_order', [
-                'recipient_phone' => $address->getData('telephone'),
-                'recipient_street' => $street,
-                'recipient_house_number' => $houseNumber,
-                'recipient_city' => $address->getData('city'),
-                'recipient_zip' => $address->getData('postcode'),
-                'recipient_firstname' => $address->getData('firstname'),
-                'recipient_lastname' => $address->getData('lastname'),
-                'recipient_company' => $address->getData('company'),
-                'recipient_email' => $address->getData('email'),
-            ],
-            ['order_number = ?' => $orderNumber]);
+        $data = [
+            'recipient_phone' => $address->getData('telephone'),
+            'recipient_street' => $street,
+            'recipient_house_number' => $houseNumber,
+            'recipient_city' => $address->getData('city'),
+            'recipient_zip' => $address->getData('postcode'),
+            'recipient_firstname' => $address->getData('firstname'),
+            'recipient_lastname' => $address->getData('lastname'),
+            'recipient_company' => $address->getData('company'),
+            'recipient_email' => $address->getData('email'),
+        ];
+
+        $orderCollection = $this->orderCollectionFactory->create();
+        $orderCollection->addFilter('order_number', $orderNumber);
+        $orderCollection->setDataToAll($data);
+        $orderCollection->save();
     }
 }

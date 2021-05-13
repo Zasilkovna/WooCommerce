@@ -3,47 +3,49 @@
 namespace Packetery\Checkout\Observer\Sales;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
 
 class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
 	const SHIPPING_CODE = 'packetery';
 
-    const CZ_FICTIVE_BRANCH = array(
-        'id' => 540,
-        'name' => 'AA Andělská Hora',
-    );
-    const SK_FICTIVE_BRANCH = array(
-        'id' => 703,
-        'name' => 'Abovce',
-    );
-    const HU_FICTIVE_BRANCH = array(
-        'id' => 2485,
-        'name' => 'AA Angyalföld',
-    );
-
     /** @var CheckoutSession */
     protected $checkoutSession;
-
-    /** @var \Magento\Framework\App\Config */
-    private $scopeConfig;
 
     /** @var \Magento\Store\Model\StoreManagerInterface */
     private $storeManager;
 
-    /** @var \\Magento\Framework\App\ResourceConnection */
-    private $resourceConnection;
+    /** @var \Packetery\Checkout\Model\Carrier\PacketeryConfig */
+    private $packeteryConfig;
 
+    /** @var \Packetery\Checkout\Model\Pricing\Service */
+    private $pricingService;
+
+    /** @var \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory */
+    private $orderCollectionFactory;
 
     public function __construct(
         CheckoutSession $checkoutSession,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\App\ResourceConnection $resourceConnection
+        \Packetery\Checkout\Model\Carrier\PacketeryConfig $packeteryConfig,
+        \Packetery\Checkout\Model\Pricing\Service $pricingService,
+        \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
     ) {
-        $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
-        $this->resourceConnection = $resourceConnection;
+        $this->packeteryConfig = $packeteryConfig;
+        $this->pricingService = $pricingService;
+        $this->orderCollectionFactory = $orderCollectionFactory;
+    }
+
+    /**
+     * @param string $shippingMethod
+     * @return string
+     */
+    private function getDeliveryMethod(string $shippingMethod): string
+    {
+        $parts = explode('_', $shippingMethod);
+        return array_pop($parts);
     }
 
     /**
@@ -55,15 +57,8 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     public function execute(
         \Magento\Framework\Event\Observer $observer
     ) {
-
-        $fictiveBranches = array(
-            'cz' => self::CZ_FICTIVE_BRANCH,
-            'sk' => self::SK_FICTIVE_BRANCH,
-            'hu' => self::HU_FICTIVE_BRANCH,
-        );
-
+        /** @var \Magento\Sales\Model\Order $order */
         $order = $observer->getEvent()->getOrder();
-        $country = strtolower($order->getShippingAddress()->getCountryId());
 
         // IF PACKETERY SHIPPING IS NOT SELECTED, RETURN
         if (strpos($order->getShippingMethod(), self::SHIPPING_CODE) === false)
@@ -95,19 +90,36 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $postData = json_decode(file_get_contents("php://input"));
         $pointId = NULL;
         $pointName = NULL;
+        $point = NULL;
+        $isCarrier = false;
+        $carrierPickupPoint = null;
 
-        if ($postData && !empty($postData->packetery))
+        if ($postData)
         {
             // new order from frontend
-            $pointId = $postData->packetery->id;
-            $pointName = $postData->packetery->name;
+            $deliveryMethod = $this->getDeliveryMethod($order->getShippingMethod());
+            if ($deliveryMethod === AllowedMethods::PICKUP_POINT_DELIVERY) {
+                // pickup point delivery
+                $point = $postData->packetery->point;
+                $pointId = $point->pointId;
+                $pointName = $point->name;
+                $isCarrier = (bool)$point->carrierId;
+                $carrierPickupPoint = ($point->carrierPickupPointId ?: null);
+            } else {
+                $pointId = $this->pricingService->resolvePointId($deliveryMethod, $order->getShippingAddress()->getCountryId());
+                $pointName = $deliveryMethod; // translated on demand
+            }
         }
         else
         {
-            // creating/editing order from admin
+            // creating order from admin
             $packetery = $this->getRealOrderPacketery($order);
-            $pointId = $packetery['point_id'];
-            $pointName = $packetery['point_name'];
+            if (!empty($packetery)) {
+                $pointId = $packetery['point_id'];
+                $pointName = $packetery['point_name'];
+                $isCarrier = (bool)$packetery['is_carrier'];
+                $carrierPickupPoint = $packetery['carrier_pickup_point'];
+            }
         }
 
 		$paymentMethod = $order->getPayment()->getMethod();
@@ -123,8 +135,10 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             'currency' => $order->getOrderCurrencyCode(),
             'value' => $order->getGrandTotal(),
             'weight' => $weight,
-            'point_id' => ($pointId ? $pointId : (isset($fictiveBranches[$country]) ? $fictiveBranches[$country]['id'] : self::CZ_FICTIVE_BRANCH['id'])),
-            'point_name' => ($pointId ? $pointName : (isset($fictiveBranches[$country]) ? $fictiveBranches[$country]['name'] : self::CZ_FICTIVE_BRANCH['name'])),
+            'point_id' => $pointId,
+            'point_name' => $pointName,
+            'is_carrier' => $isCarrier,
+            'carrier_pickup_point' => $carrierPickupPoint,
             'sender_label' => $this->getLabel(),
             'recipient_street' => $street,
             'recipient_house_number' => $houseNumber,
@@ -139,29 +153,26 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
     private function getRealOrderPacketery($order)
     {
-        $null = [
-            'point_id'   => NULL,
-            'point_name' => NULL,
-        ];
-
         $orderIdOriginal = self::getRealOrderId($order->getIncrementId());
         if (!is_numeric($orderIdOriginal))
         {
-            return $null;
+            return null;
         }
 
-        $query = "
-            SELECT `point_id`, `point_name`
-            FROM `packetery_order`
-            WHERE `order_number` = :order_number
-        ";
+        $collection = $this->orderCollectionFactory->create();
+        $collection->addFilter('order_number', $orderIdOriginal);
+        $collection->load();
+        $item = $collection->fetchItem();
 
-        $data = $this->resourceConnection->getConnection()
-            ->fetchRow($query, ['order_number' => $orderIdOriginal]);
+        if (empty($item)) {
+            return null;
+        }
+
+        $data = $item->toArray(['point_id', 'point_name', 'is_carrier', 'carrier_pickup_point']);
 
         if (empty($data))
         {
-            return $null;
+            return null;
         }
 
         return $data;
@@ -180,12 +191,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 	 */
 	private function isCod($methodCode)
 	{
-        $codPayments = $this->scopeConfig->getValue(
-            'packetery_cod/general/payment_methods',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
-
-        $codPayments = explode(',', $codPayments);
-
+        $codPayments = $this->packeteryConfig->getCodMethods();
 		return in_array($methodCode, $codPayments);
 	}
 
@@ -203,19 +209,17 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         return null;
     }
 
-
 	/**
 	 * Save order data to packetery module
 	 * @package array $data
 	 */
-	private function saveData($data)
+	private function saveData(array $data): void
 	{
-        $connection= $this->resourceConnection->getConnection();
-
-		$query = "INSERT INTO packetery_order
-					(`order_number`, `recipient_firstname`, `recipient_lastname`, `recipient_phone`, `recipient_company`, `recipient_email`, `cod` ,`currency`,`value`, `weight`,`point_id`,`point_name`,`recipient_street`,`recipient_house_number`,`recipient_city`,`recipient_zip`, `sender_label`, `exported`)
-					VALUES (:order_number, :recipient_firstname, :recipient_lastname, :recipient_phone, :recipient_company,:recipient_email, :cod, :currency, :value, :weight, :point_id, :point_name, :recipient_street, :recipient_house_number, :recipient_city, :recipient_zip, :sender_label, :exported)";
-
-		$connection->query($query, $data);
+        /** @var \Packetery\Checkout\Model\ResourceModel\Order\Collection $collection */
+        $collection = $this->orderCollectionFactory->create();
+        $order = $collection->getNewEmptyItem();
+        $order->setData($data);
+        $collection->addItem($order);
+        $collection->save();
 	}
 }

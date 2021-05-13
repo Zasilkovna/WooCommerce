@@ -1,15 +1,24 @@
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="packetery_checkout_order_listing_data_source" xsi:type="string">Packetery\Checkout\Model\ResourceModel\Order\Collection</item>
+                <item name="packetery_checkout_order_listing_data_source" xsi:type="string">OrderGridCollection</item>
+                <item name="packetery_checkout_pricingrule_items_data_source" xsi:type="string">PricingruleGridCollection</item>
             </argument>
         </arguments>
     </type>
-    <virtualType name="Packetery\Checkout\Model\ResourceModel\Order\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+
+    <virtualType name="OrderGridCollection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">packetery_order</argument>
             <argument name="resourceModel" xsi:type="string">Packetery\Checkout\Model\ResourceModel\Order</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PricingruleGridCollection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">packetery_pricing_rule</argument>
+            <argument name="resourceModel" xsi:type="string">Packetery\Checkout\Model\ResourceModel\Pricingrule</argument>
         </arguments>
     </virtualType>
 </config>

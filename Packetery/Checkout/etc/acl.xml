@@ -7,6 +7,7 @@
 					<resource id="Magento_Backend::stores_settings">
 						<resource id="Magento_Config::config">
 							<resource id="Packetery_Checkout::config_packetery_checkout" title="widget"/>
+							<resource id="Packetery_Checkout::packetery" title="packetery"/>
 						</resource>
 					</resource>
 				</resource>
