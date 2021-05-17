@@ -56,7 +56,7 @@
 "The API key length must have %d characters!","The API key length must have %d characters!"
 "The specified API key is not valid!","The specified API key is not valid!"
 "Select pick-up point","Select pick-up point"
-"You must select delivery method","You must select delivery method"
+"You must select pick-up point","You must select pick-up point"
 "Method Name","Method Name"
 "Purchase Date","Purchase Date"
 "Title","Title"

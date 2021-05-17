@@ -124,7 +124,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         }
 
         if (empty($pointId)) {
-            throw new InputException(__('You must select delivery method'));
+            throw new InputException(__('You must select pick-up point'));
         }
 
 		$paymentMethod = $order->getPayment()->getMethod();
