@@ -56,6 +56,7 @@
 "The API key length must have %d characters!","Délka API klíče musí být %d znaků!"
 "The specified API key is not valid!","Zadaný API klíč není platný !"
 "Select pick-up point","Vybrat výdejní místo"
+"You must select delivery method","Musíte zvolit způsob doručení"
 "Method Name","Název metody"
 "Purchase Date","Datum objednávky"
 "Title","Název"

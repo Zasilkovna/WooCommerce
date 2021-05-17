@@ -3,6 +3,7 @@
 namespace Packetery\Checkout\Observer\Sales;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Exception\InputException;
 use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
 
 class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
@@ -120,6 +121,10 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
                 $isCarrier = (bool)$packetery['is_carrier'];
                 $carrierPickupPoint = $packetery['carrier_pickup_point'];
             }
+        }
+
+        if (empty($pointId)) {
+            throw new InputException(__('You must select delivery method'));
         }
 
 		$paymentMethod = $order->getPayment()->getMethod();
