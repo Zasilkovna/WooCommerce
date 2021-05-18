@@ -1,3 +1,5 @@
+2.0.4 - Fixed: Packeta order now can not be created without pickup point
+
 2.0.3 - Added: widget v6 integration allows pickup point selection for Germany and other countries
       - Added: other specific countries price rules
       - Added: allow specific countries via Packeta carrier configuration
