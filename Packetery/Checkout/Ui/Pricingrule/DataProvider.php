@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Packetery\Checkout\Ui;
+namespace Packetery\Checkout\Ui\Pricingrule;
 
 use Magento\Ui\DataProvider\AbstractDataProvider;
 

@@ -378,7 +378,6 @@
                 </item>
             </argument>
         </column>
-
     </columns>
     <listingToolbar name="listing_top">
         <!-- ... other block of code -->

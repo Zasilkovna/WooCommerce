@@ -30,7 +30,7 @@
 </argument>
 <dataSource name="packetery_pricingrule_item_detail_data_source">
     <argument name="dataProvider" xsi:type="configurableObject">
-        <argument name="class" xsi:type="string">Packetery\Checkout\Ui\DataProvider</argument>
+        <argument name="class" xsi:type="string">Packetery\Checkout\Ui\Pricingrule\DataProvider</argument>
         <argument name="name" xsi:type="string">packetery_pricingrule_item_detail_data_source</argument>
         <argument name="primaryFieldName" xsi:type="string">id</argument>
         <argument name="requestFieldName" xsi:type="string">id</argument>

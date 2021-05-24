@@ -36,12 +36,12 @@ define(
                 Packeta.Widget.pick(packetaApiKey, showSelectedPickupPoint, options);
             },
 
-            setShippingInformation: function() {
+            validateShippingInformation: function() {
                 var packetaPoint = window.packetaPoint || {};
                 if(packeteryPickupPointSelected() && !packetaPoint.pointId) {
                     var message = $t("Please select pickup point");
-                    alert(message);
-                    return;
+                    this.errorValidationMessage(message);
+                    return false;
                 }
 
                 return this._super();
@@ -59,10 +59,26 @@ define(
             };
         };
 
+        var createChangeSubscriber = function(callback, comparator) {
+            var lastVal = null;
+            var init = true;
+
+            return function (value) {
+                if(init || comparator(lastVal, value)) {
+                    init = false;
+                    lastVal = value;
+                    callback(value);
+                }
+
+                init = false;
+                lastVal = value;
+            };
+        };
+
         resetPickedPacketaPoint();
-        quote.shippingAddress.subscribe(function() {
-            resetPickedPacketaPoint();
-        });
+        quote.shippingAddress.subscribe(createChangeSubscriber(resetPickedPacketaPoint, function(lastValue, value) {
+            return lastValue.countryId !== value.countryId
+        }));
 
         var packeteryPickupPointSelected = function() {
             var shippingMethod = quote.shippingMethod();
@@ -91,25 +107,23 @@ define(
             }
         }
 
-        var loadStoreConfig = function() {
-            return new Promise(function(resolve) {
-                var serviceUrl = url.build('packetery/config/storeconfig');
-                storage.get(serviceUrl).done(
-                    function(response) {
-                        if(response.success) {
-                            config = JSON.parse(response.value);
-                            resolve(config);
-                        }
+        var loadStoreConfig = function(onSuccess) {
+            var serviceUrl = url.build('packetery/config/storeconfig');
+            storage.get(serviceUrl).done(
+                function(response) {
+                    if(response.success) {
+                        config = JSON.parse(response.value);
+                        onSuccess(config);
                     }
-                ).fail(
-                    function(response) {
-                        return response.value
-                    }
-                );
-            });
+                }
+            ).fail(
+                function(response) {
+                    return response.value
+                }
+            );
         };
 
-        loadStoreConfig().then(function() {
+        loadStoreConfig(function() {
             mixin.isStoreConfigLoaded(true);
         });
 

@@ -1,0 +1,10 @@
+<?php
+/** @var \Packetery\Checkout\Block\Adminhtml\DefaultJs $block */
+?>
+
+<script>
+    require([], function () {
+        window.packetery = window.packetery || {};
+        window.packetery.baseUrl = '<?= /** @noEscape */ $block->getBaseUrl(); ?>';
+    });
+</script>

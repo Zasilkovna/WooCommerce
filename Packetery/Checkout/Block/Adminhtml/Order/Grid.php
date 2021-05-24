@@ -192,6 +192,14 @@ class Grid extends \Magento\Backend\Block\Widget\Grid\Extended
 			'renderer' => 'Packetery\Checkout\Block\Adminhtml\Order\Renderer\ExportTime'
         ));
 
+        $this->addColumn('actions', array(
+            'header' => __('Actions'),
+            'sortable' => false,
+            'index' => 'actions',
+            'filter' => false,
+			'renderer' => 'Packetery\Checkout\Block\Adminhtml\Order\Renderer\Actions'
+        ));
+
 		$this->addExportType($this->getUrl('*/*/exportPacketeryCsv'), __('CSV - only not exported'));
 		$this->addExportType($this->getUrl('*/*/exportPacketeryCsvAll'), __('CSV - all records'));
 

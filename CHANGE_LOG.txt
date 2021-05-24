@@ -1,3 +1,8 @@
+2.0.5 - Fixed: guest is now able to select pickup point
+      - Fixed: frontend pickup point validation now works for guest
+      - Fixed: some older browser incompatibility
+      - Added: user interface for changing order pickup point in administration
+
 2.0.4 - Fixed: Packeta order now can not be created without pickup point
 
 2.0.3 - Added: widget v6 integration allows pickup point selection for Germany and other countries

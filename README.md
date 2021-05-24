@@ -4,7 +4,7 @@
 
 ### Download module
 
-[Current version 2.0.4](https://github.com/Zasilkovna/magento2/archive/v2.0.4.zip)
+[Current version 2.0.5](https://github.com/Zasilkovna/magento2/archive/v2.0.5.zip)
 
 ### Installation
 
@@ -96,7 +96,7 @@ Multiple payment methods can be selected by holding the "Ctrl" button and clicki
 
 ### Stažení modulu
 
-[Aktuální verze 2.0.4](https://github.com/Zasilkovna/magento2/archive/v2.0.4.zip)
+[Aktuální verze 2.0.5](https://github.com/Zasilkovna/magento2/archive/v2.0.5.zip)
 
 ### Instalace
 
