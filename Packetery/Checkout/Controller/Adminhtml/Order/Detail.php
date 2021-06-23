@@ -3,7 +3,7 @@
 namespace Packetery\Checkout\Controller\Adminhtml\Order;
 
 use Magento\Framework\Controller\AbstractResult;
-use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
+use Packetery\Checkout\Model\Carrier\Methods;
 
 class Detail extends \Magento\Backend\App\Action
 {
@@ -59,7 +59,7 @@ class Detail extends \Magento\Backend\App\Action
         $magentoOrder = $this->orderFactory->create()->loadByIncrementId($order->getData('order_number'));
         $shippingMethod = $magentoOrder->getShippingMethod(true);
 
-        if (!$shippingMethod || ($shippingMethod->getData('method') !== AllowedMethods::PICKUP_POINT_DELIVERY && $shippingMethod->getData('method') !== 'packetery')) {
+        if (!$shippingMethod || ($shippingMethod->getData('method') !== Methods::PICKUP_POINT_DELIVERY && $shippingMethod->getData('method') !== 'packetery')) {
             $this->messageManager->addErrorMessage(__('Page not found'));
             return $this->resultRedirectFactory->create()->setPath('*/*/index');
         }

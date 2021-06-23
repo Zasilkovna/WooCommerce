@@ -16,5 +16,15 @@
                 <value id="packetery" type="host">*.packeta.com</value>
             </values>
         </policy>
+        <policy id="style-src">
+            <values>
+                <value id="packetery" type="host">*.googleapis.com</value>
+            </values>
+        </policy>
+        <policy id="font-src">
+            <values>
+                <value id="packetery" type="host">*.gstatic.com</value>
+            </values>
+        </policy>
     </policies>
 </csp_whitelist>

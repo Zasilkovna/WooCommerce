@@ -18,8 +18,11 @@ class PricingruleRepository
     /** @var \Packetery\Checkout\Model\WeightruleFactory */
     private $weightruleFactory;
 
-    /** @var \Packetery\Checkout\Model\Carrier\PacketeryConfig */
-    private $packeteryConfig;
+    /** @var \Packetery\Checkout\Model\Pricing\Service */
+    private $pricingService;
+
+    /** @var \Packetery\Checkout\Model\Carrier\Facade */
+    private $carrierFacade;
 
     /**
      * PricingruleRepository constructor.
@@ -28,15 +31,17 @@ class PricingruleRepository
      * @param \Packetery\Checkout\Model\PricingruleFactory $pricingruleFactory
      * @param \Packetery\Checkout\Model\ResourceModel\Weightrule\CollectionFactory $weightRuleCollectionFactory
      * @param \Packetery\Checkout\Model\WeightruleFactory $weightruleFactory
-     * @param \Packetery\Checkout\Model\Carrier\PacketeryConfig $packeteryConfig
+     * @param \Packetery\Checkout\Model\Pricing\Service $pricingService
+     * @param \Packetery\Checkout\Model\Carrier\Facade $carrierFacade
      */
-    public function __construct(Pricingrule\CollectionFactory $pricingRuleCollectionFactory, \Packetery\Checkout\Model\PricingruleFactory $pricingruleFactory, Weightrule\CollectionFactory $weightRuleCollectionFactory, \Packetery\Checkout\Model\WeightruleFactory $weightruleFactory, \Packetery\Checkout\Model\Carrier\PacketeryConfig $packeteryConfig)
+    public function __construct(Pricingrule\CollectionFactory $pricingRuleCollectionFactory, \Packetery\Checkout\Model\PricingruleFactory $pricingruleFactory, Weightrule\CollectionFactory $weightRuleCollectionFactory, \Packetery\Checkout\Model\WeightruleFactory $weightruleFactory, \Packetery\Checkout\Model\Pricing\Service $pricingService, \Packetery\Checkout\Model\Carrier\Facade $carrierFacade)
     {
         $this->pricingRuleCollectionFactory = $pricingRuleCollectionFactory;
         $this->pricingruleFactory = $pricingruleFactory;
         $this->weightRuleCollectionFactory = $weightRuleCollectionFactory;
         $this->weightruleFactory = $weightruleFactory;
-        $this->packeteryConfig = $packeteryConfig;
+        $this->pricingService = $pricingService;
+        $this->carrierFacade = $carrierFacade;
     }
 
     /**
@@ -45,16 +50,14 @@ class PricingruleRepository
      */
     public function validateDuplicateCountry(array $postData): bool
     {
-        /** @var \Packetery\Checkout\Model\ResourceModel\Pricingrule\Collection $validation */
-        $validation = $this->pricingRuleCollectionFactory->create();
-        $validation->addFilter('country_id', $postData['country_id']);
-        $validation->addFilter('method', $postData['method']);
+        $carrierId = (isset($postData['carrier_id']) ? (int)$postData['carrier_id'] : null);
+        $resolvedPricingRule = $this->pricingService->resolvePricingRule($postData['method'], $postData['country_id'], $postData['carrier_code'], $carrierId);
 
-        if (isset($postData['id'])) {
-            $validation->addFieldToFilter('id', ['nin' => [$postData['id']]]);
+        if (isset($postData['id']) && $resolvedPricingRule !== null && $resolvedPricingRule->getId() == $postData['id']) {
+            return true;
         }
 
-        if ($validation->count() > 0) {
+        if ($resolvedPricingRule !== null) {
             return false;
         }
 
@@ -63,15 +66,11 @@ class PricingruleRepository
 
     /**
      * @param array $weightRules as assoc array
+     * @param float|null $maxWeight
      * @return bool
      */
-    public function validatePricingRuleMaxWeight(array $weightRules): bool
+    public function validatePricingRuleMaxWeight(array $weightRules, ?float $maxWeight = null): bool
     {
-        $globalMaxWeight = $this->packeteryConfig->getMaxWeight();
-        if (!is_numeric($globalMaxWeight)) {
-            return false;
-        }
-
         $usedWeights = [];
         foreach ($weightRules as $weightRule) {
             $weight = $weightRule['max_weight'];
@@ -83,12 +82,11 @@ class PricingruleRepository
 
             $usedWeights[$key] = 1;
 
-            if (empty($weight)) {
-                continue;
-            }
-
-            if ($weight > $globalMaxWeight) {
-                return false;
+            if ($maxWeight !== null) {
+                if ($weight > $maxWeight) {
+                    // weight is assumed to be always set
+                    return false;
+                }
             }
         }
 
@@ -110,7 +108,8 @@ class PricingruleRepository
             throw new \Packetery\Checkout\Model\Exception\DuplicateCountry();
         }
 
-        if (!$this->validatePricingRuleMaxWeight($weightRules)) {
+        $maxWeight = $this->carrierFacade->getMaxWeight($postData['carrier_code'], $postData['carrier_id']);
+        if (!$this->validatePricingRuleMaxWeight($weightRules, $maxWeight)) {
             throw new \Packetery\Checkout\Model\Exception\InvalidMaxWeight();
         }
 
@@ -179,5 +178,40 @@ class PricingruleRepository
         }
 
         return $item;
+    }
+
+    /**
+     * @param int $id
+     * @param bool $enabled
+     */
+    public function setPricingRuleEnabled(int $id, bool $enabled): void {
+        $rule = $this->pricingRuleCollectionFactory->create()->getItemById($id);
+        $rule->setData('enabled', $enabled);
+        $rule->save();
+    }
+
+    /**
+     * @param array $exclude
+     */
+    public function disablePricingRulesExcept(array $exclude): void {
+        $collection = $this->pricingRuleCollectionFactory->create();
+
+        if (!empty($exclude)) {
+            $collection->addFieldToFilter('main_table.id', ['nin' => $exclude]);
+        }
+
+        $collection->setDataToAll('enabled', 0);
+        $collection->save();
+    }
+
+    /**
+     * @param string $country
+     * @return \Packetery\Checkout\Model\Pricingrule[]
+     */
+    public function findBy(string $country, bool $enabled): array {
+        $collection = $this->pricingRuleCollectionFactory->create();
+        $collection->addFilter('main_table.country_id', $country);
+        $collection->addFilter('main_table.enabled', $enabled);
+        return $collection->getItems();
     }
 }

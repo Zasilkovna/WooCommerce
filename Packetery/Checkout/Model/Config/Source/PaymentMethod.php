@@ -7,7 +7,7 @@ namespace Packetery\Checkout\Model\Config\Source;
 use Magento\Payment\Api\Data\PaymentMethodInterface;
 use Magento\Store\Model\ScopeInterface;
 
-class PaymentMethod implements \Magento\Framework\Option\ArrayInterface
+class PaymentMethod implements \Magento\Framework\Data\OptionSourceInterface
 {
     /** @var \Magento\Framework\App\Config\ScopeConfigInterface*/
     private $scopeConfig;

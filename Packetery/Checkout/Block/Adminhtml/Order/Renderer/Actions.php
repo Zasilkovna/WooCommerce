@@ -4,7 +4,7 @@ namespace Packetery\Checkout\Block\Adminhtml\Order\Renderer;
 
 use Magento\Backend\Block\Widget\Grid\Column\Renderer\AbstractRenderer;
 use Magento\Framework\DataObject;
-use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
+use Packetery\Checkout\Model\Carrier\Methods;
 
 class Actions extends AbstractRenderer
 {
@@ -40,7 +40,7 @@ class Actions extends AbstractRenderer
 
         $html = '';
 
-        if ($shippingMethod && ($shippingMethod->getData('method') === AllowedMethods::PICKUP_POINT_DELIVERY || $shippingMethod->getData('method') === 'packetery')) {
+        if ($shippingMethod && ($shippingMethod->getData('method') === Methods::PICKUP_POINT_DELIVERY || $shippingMethod->getData('method') === 'packetery')) {
             $html = '<a href="' . $this->getUrl('packetery/order/detail', array('id' => $row->getData('id'))) . '" title="' . __('Edit') . '" >' . __('Edit') . '</a>';
         }
 

@@ -4,49 +4,39 @@ namespace Packetery\Checkout\Observer\Sales;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Exception\InputException;
-use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
+use Packetery\Checkout\Model\Carrier\AbstractBrain;
+use Packetery\Checkout\Model\Carrier\MethodCode;
+use Packetery\Checkout\Model\Carrier\Methods;
 
 class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
-	const SHIPPING_CODE = 'packetery';
-
     /** @var CheckoutSession */
     protected $checkoutSession;
 
     /** @var \Magento\Store\Model\StoreManagerInterface */
     private $storeManager;
 
-    /** @var \Packetery\Checkout\Model\Carrier\PacketeryConfig */
+    /** @var \Packetery\Checkout\Model\Carrier\Imp\Packetery\Config */
     private $packeteryConfig;
-
-    /** @var \Packetery\Checkout\Model\Pricing\Service */
-    private $pricingService;
 
     /** @var \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory */
     private $orderCollectionFactory;
 
+    /** @var \Magento\Shipping\Model\CarrierFactory */
+    private $carrierFactory;
+
     public function __construct(
         CheckoutSession $checkoutSession,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Packetery\Checkout\Model\Carrier\PacketeryConfig $packeteryConfig,
-        \Packetery\Checkout\Model\Pricing\Service $pricingService,
-        \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+        \Packetery\Checkout\Model\Carrier\Imp\Packetery\Carrier $packetery,
+        \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
+        \Magento\Shipping\Model\CarrierFactory $carrierFactory
     ) {
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
-        $this->packeteryConfig = $packeteryConfig;
-        $this->pricingService = $pricingService;
+        $this->packeteryConfig = $packetery->getPacketeryConfig();
         $this->orderCollectionFactory = $orderCollectionFactory;
-    }
-
-    /**
-     * @param string $shippingMethod
-     * @return string
-     */
-    private function getDeliveryMethod(string $shippingMethod): string
-    {
-        $parts = explode('_', $shippingMethod);
-        return array_pop($parts);
+        $this->carrierFactory = $carrierFactory;
     }
 
     /**
@@ -62,7 +52,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $order = $observer->getEvent()->getOrder();
 
         // IF PACKETERY SHIPPING IS NOT SELECTED, RETURN
-        if (strpos($order->getShippingMethod(), self::SHIPPING_CODE) === false)
+        if (strpos($order->getShippingMethod(), AbstractBrain::PREFIX) === false)
         {
             return;
         }
@@ -98,8 +88,9 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         if ($postData)
         {
             // new order from frontend
-            $deliveryMethod = $this->getDeliveryMethod($order->getShippingMethod());
-            if ($deliveryMethod === AllowedMethods::PICKUP_POINT_DELIVERY) {
+            $shippingMethod = $order->getShippingMethod(true);
+            $deliveryMethod = MethodCode::fromString($shippingMethod['method']);
+            if ($deliveryMethod->getMethod() === Methods::PICKUP_POINT_DELIVERY) {
                 // pickup point delivery
                 $point = $postData->packetery->point;
                 $pointId = $point->pointId;
@@ -107,8 +98,15 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
                 $isCarrier = (bool)$point->carrierId;
                 $carrierPickupPoint = ($point->carrierPickupPointId ?: null);
             } else {
-                $pointId = $this->pricingService->resolvePointId($deliveryMethod, $order->getShippingAddress()->getCountryId());
-                $pointName = $deliveryMethod; // translated on demand
+                /** @var \Packetery\Checkout\Model\Carrier\AbstractCarrier $carrier */
+                $carrier = $this->carrierFactory->create($shippingMethod['carrier_code']);
+                $pointId = $carrier->getPacketeryBrain()->resolvePointId(
+                    $deliveryMethod->getMethod(),
+                    $order->getShippingAddress()->getCountryId(),
+                    $carrier->getPacketeryBrain()->getDynamicCarrierById($deliveryMethod->getDynamicCarrierId())
+                );
+
+                $pointName = '';
             }
         }
         else

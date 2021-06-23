@@ -55,23 +55,33 @@ abstract class BaseTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @param string $className
+     * @param array $except
      * @return array
      * @throws \ReflectionException
      */
-    protected function createConstructorMocks(string $className):array
+    protected function createConstructorMocks(string $className, array $except = []):array
     {
         $rc = new \ReflectionClass($className);
         $constructor = $rc->getConstructor();
-        $params = $constructor->getParameters();
+        $params = ($constructor ? $constructor->getParameters() : []);
 
         $args = [];
         foreach ($params as $param) {
+            if (in_array($param->getName(), $except)) {
+                continue;
+            }
+
             if ($param->isDefaultValueAvailable()) {
                 $args[$param->getName()] = $param->getDefaultValue();
                 continue;
             }
 
             $classType = $param->getClass();
+
+            if ($classType === null) {
+                throw new \PHPUnit\Framework\Exception('mocking primitive constructor types not supported');
+            }
+
             $args[$param->getName()] = $this->createMock($classType->getName());
         }
 
@@ -150,9 +160,9 @@ abstract class BaseTest extends \PHPUnit\Framework\TestCase
      * @return \PHPUnit\Framework\MockObject\MockObject
      * @throws \ReflectionException
      */
-    protected function createProxyWithMethods($originalClassName, $args, $existingMethods, $addMethods): \PHPUnit\Framework\MockObject\MockObject
+    protected function createProxyWithMethods($originalClassName, $args, $existingMethods, $addMethods = []): \PHPUnit\Framework\MockObject\MockObject
     {
-        $constructorArguments = $this->createConstructorMocks($originalClassName);
+        $constructorArguments = $this->createConstructorMocks($originalClassName, array_keys($args));
 
         foreach ($args as $arg => $val) {
             $constructorArguments[$arg] = $val;

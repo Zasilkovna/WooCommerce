@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Packetery\Checkout\Console\Command;
 
-use Packetery\Checkout\Model\Carrier\Config\AllowedMethods;
+use Packetery\Checkout\Model\Carrier\Methods;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,17 +17,22 @@ class MigratePriceRules extends Command
     /** @var \Magento\Config\Model\Config\Factory */
     private $configFactory;
 
+    /** @var \Magento\Framework\App\Config\ValueFactory */
+    private $configValueFactory;
+
     /**
      * MigratePriceRules constructor.
      *
      * @param \Magento\Config\Model\Config\Factory $configFactory
      * @param \Packetery\Checkout\Model\ResourceModel\PricingruleRepository $pricingruleRepository
+     * @param \Magento\Framework\App\Config\ValueFactory $configValueFactory
      */
-    public function __construct(\Magento\Config\Model\Config\Factory $configFactory, \Packetery\Checkout\Model\ResourceModel\PricingruleRepository $pricingruleRepository)
+    public function __construct(\Magento\Config\Model\Config\Factory $configFactory, \Packetery\Checkout\Model\ResourceModel\PricingruleRepository $pricingruleRepository, \Magento\Framework\App\Config\ValueFactory $configValueFactory)
     {
         parent::__construct();
         $this->configFactory = $configFactory;
         $this->pricingruleRepository = $pricingruleRepository;
+        $this->configValueFactory = $configValueFactory;
     }
 
     /**
@@ -50,6 +55,14 @@ class MigratePriceRules extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $configDataCollection = $this->configValueFactory->create()->getCollection();
+        $configDataCollection->addFieldToFilter('scope_id', ['gt' => 0]);
+
+        if ($configDataCollection->getSize() > 0) {
+            $output->writeln("Multi scope not supported");
+            return;
+        }
+
         $output->writeln("Migration started");
 
         $configModel = $this->configFactory->create();
@@ -104,9 +117,12 @@ class MigratePriceRules extends Command
             ];
 
             $pricingRule = [
+                'carrier_code' => \Packetery\Checkout\Model\Carrier\Imp\Packetery\Brain::getCarrierCodeStatic(),
+                'carrier_id' => null,
+                'enabled' => false,
                 'free_shipment' => (is_numeric($countryFreeShipping) ? (float)$countryFreeShipping : null),
                 'country_id' => strtoupper($country),
-                'method' => AllowedMethods::PICKUP_POINT_DELIVERY,
+                'method' => Methods::PICKUP_POINT_DELIVERY,
             ];
 
             usort($countryRules, function ($countryRuleA, $countryRuleB) {

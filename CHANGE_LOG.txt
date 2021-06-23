@@ -1,3 +1,11 @@
+2.1.0 - Added: Packeta related checkout delivery option availability is based on specified pricing rules and carrier support of countries and delivery methods
+      - Removed: default price and specific countries GUI removed from delivery method configuration
+      - Added: Packeta multi-carrier ability and default price migration
+      - Added: non-intrusive carrier import from Packeta branch feed via command and cron job
+      - Updated: README.md installation steps
+      - Added: Support for Packeta external carriers (currently the module does not support: delivery to non-EU addresses, carriers who have prohibited cash on delivery, evening delivery Prague, Brno, Ostrava, Bratislava)
+      - Updated: Pricing rules configuration
+
 2.0.5 - Fixed: guest is now able to select pickup point
       - Fixed: frontend pickup point validation now works for guest
       - Fixed: some older browser incompatibility

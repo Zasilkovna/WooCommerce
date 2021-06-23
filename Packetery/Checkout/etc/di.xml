@@ -4,6 +4,7 @@
             <argument name="collections" xsi:type="array">
                 <item name="packetery_checkout_order_listing_data_source" xsi:type="string">OrderGridCollection</item>
                 <item name="packetery_checkout_pricingrule_items_data_source" xsi:type="string">PricingruleGridCollection</item>
+                <item name="packetery_checkout_carrierCountry_listing_data_source" xsi:type="string">CarrierCountryGridCollection</item>
             </argument>
         </arguments>
     </type>
@@ -21,4 +22,19 @@
             <argument name="resourceModel" xsi:type="string">Packetery\Checkout\Model\ResourceModel\Pricingrule</argument>
         </arguments>
     </virtualType>
+
+    <virtualType name="CarrierCountryGridCollection" type="Packetery\Checkout\Ui\Component\CarrierCountry\Listing\SearchResult">
+        <arguments>
+            <argument name="mainTable" xsi:type="string">packetery_carrier</argument>
+            <argument name="resourceModel" xsi:type="string">Packetery\Checkout\Model\ResourceModel\Carrier</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="packetery_importFeedCarriers" xsi:type="object">Packetery\Checkout\Console\Command\ImportFeedCarriers</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

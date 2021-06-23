@@ -1,0 +1,78 @@
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">
+                packetery_checkout_carrierCountry_listing.packetery_checkout_carrierCountry_listing_data_source
+            </item>
+            <item name="deps" xsi:type="string">
+                packetery_checkout_carrierCountry_listing.packetery_checkout_carrierCountry_listing_data_source
+            </item>
+        </item>
+        <item name="spinner" xsi:type="string">spinner_columns</item>
+    </argument>
+    <dataSource name="nameOfDataSource">
+        <argument name="dataProvider" xsi:type="configurableObject">
+            <argument name="class" xsi:type="string">
+                Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider
+            </argument>
+            <argument name="name" xsi:type="string">packetery_checkout_carrierCountry_listing_data_source</argument>
+            <argument name="primaryFieldName" xsi:type="string">country</argument>
+            <argument name="requestFieldName" xsi:type="string">country</argument>
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">Magento_Ui/js/grid/provider</item>
+                    <item name="update_url" xsi:type="url" path="mui/index/render"/>
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="indexField" xsi:type="string">country</item>
+                    </item>
+                </item>
+            </argument>
+        </argument>
+    </dataSource>
+    <listingToolbar>
+        <filters name="listing_filters"/>
+    </listingToolbar>
+    <columns name="spinner_columns">
+        <column name="countryName" class="Packetery\Checkout\Ui\Component\CarrierCountry\Listing\Column\Country">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="label" xsi:type="string" translate="true">Country</item>
+                </item>
+            </argument>
+        </column>
+        <column name="country">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="sortable" xsi:type="boolean">true</item>
+                    <item name="sorting" xsi:type="string">ASC</item>
+                    <item name="indexField" xsi:type="string">country</item>
+                    <item name="label" xsi:type="string" translate="true">Country Code</item>
+                </item>
+            </argument>
+        </column>
+        <column name="availableName" class="Packetery\Checkout\Ui\Component\CarrierCountry\Listing\Column\Available">
+            <argument name="data" xsi:type="array">
+                <item name="options" xsi:type="object">Packetery\Checkout\Ui\Component\CarrierCountry\Listing\Filter\AvailableSelect</item>
+                <item name="config" xsi:type="array">
+                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="filter" xsi:type="string">select</item>
+                    <item name="dataType" xsi:type="string">select</item>
+                    <item name="indexField" xsi:type="string">available</item>
+                    <item name="label" xsi:type="string" translate="true">Available</item>
+                </item>
+            </argument>
+        </column>
+        <actionsColumn name="actions" class="Packetery\Checkout\Ui\Component\CarrierCountry\Listing\Column\Actions" sortOrder="500">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="resizeEnabled" xsi:type="boolean">false</item>
+                    <item name="resizeDefaultWidth" xsi:type="string">107</item>
+                    <item name="indexField" xsi:type="string">country</item>
+                </item>
+            </argument>
+            <argument name="viewUrl" xsi:type="string">packetery/pricingrule/multiDetail</argument>
+        </actionsColumn>
+    </columns>
+</listing>

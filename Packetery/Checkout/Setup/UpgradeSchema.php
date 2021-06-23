@@ -87,6 +87,59 @@ class UpgradeSchema implements UpgradeSchemaInterface
             );
         }
 
+        if (version_compare($context->getVersion(), "2.1.0", "<")) {
+            $this->installSchema->carrierTable($setup);
+
+            $setup->getConnection()->addColumn(
+                $setup->getTable('packetery_pricing_rule'),
+                'carrier_code',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'default' => 'packetery',
+                    'nullable' => false,
+                    'length' => '64',
+                    'comment' => 'Magento unique carrier class identifier',
+                    'after' => 'method'
+                ]
+            );
+
+            $setup->getConnection()->modifyColumn(
+                $setup->getTable('packetery_pricing_rule'),
+                'carrier_code',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                    'nullable' => false,
+                    'length' => '64',
+                    'comment' => 'Magento unique carrier class identifier',
+                    'after' => 'method'
+                ]
+            );
+
+            $setup->getConnection()->addColumn(
+                $setup->getTable('packetery_pricing_rule'),
+                'carrier_id',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                    'nullable' => true,
+                    'length' => '11',
+                    'comment' => 'Dynamic carrier id from Mordor',
+                    'after' => 'carrier_code'
+                ]
+            );
+
+            $setup->getConnection()->addColumn(
+                $setup->getTable('packetery_pricing_rule'),
+                'enabled',
+                [
+                    'type' => \Magento\Framework\DB\Ddl\Table::TYPE_BOOLEAN,
+                    'default' => 0,
+                    'nullable' => false,
+                    'comment' => 'Is rule enabled?',
+                    'after' => 'carrier_id',
+                ]
+            );
+        }
+
         $setup->endSetup();
     }
 }

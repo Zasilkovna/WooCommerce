@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="packetery">
+        <job name="importFeedCarriers" instance="Packetery\Checkout\Console\Command\ImportFeedCarriers" method="runForCron">
+            <schedule>0 13 * * *</schedule><!-- every first minute of hour 13 -->
+        </job>
+    </group>
+</config>

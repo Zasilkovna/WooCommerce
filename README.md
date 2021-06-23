@@ -4,7 +4,7 @@
 
 ### Download module
 
-[Current version 2.0.5](https://github.com/Zasilkovna/magento2/archive/v2.0.5.zip)
+[Current version 2.1.0](https://github.com/Zasilkovna/magento2/archive/v2.1.0.zip)
 
 ### Installation
 
@@ -16,9 +16,13 @@ Installation and registration of the module is done by CLI utility, which is par
 - re-deploy static content (not needed in dev mode): `bin/magento setup:static-content:deploy`
 - project recompiling: `bin/magento setup:di:compile`
 - clean cache: `bin/magento cache:clean`
+- set Packeta configuration in administration for default scope even if Packeta carrier is inactive
+- import carriers: `bin/magento packetery:import-feed-carriers`
+- set or update call of `bin/magento cron:run`, in such way Packeta cron jobs can be processed
 
 ## Upgrading
 
+- set Packeta configuration in administration for default scope even if Packeta carrier is inactive
 - enable maintenance mode
 - remove all previous source files (remove app/code/Packetery folder)
 - next steps are same as during installation
@@ -39,24 +43,18 @@ and save the settings pressing the **Save config** button.
 #### Price rules
 
 ##### Global settings
-- **default price** - the shipping price applies if the country-specific default price is not filled
 - **Maximum weight** - for orders with a larger weight, the Packeta shipping method will not be offered in the cart
 - **free shipping** - if the order price is higher, free shipping
 
-##### Rules - other countries
+##### Rules
 
-These rules are not currently applied. They will be removed in the next version of the module.
+Enter prices and shipping pricing rules for each supported country here. Only kilograms are supported.
 
-##### Rules CZ (SK, PL, HU, RO)
-
-Enter prices and shipping pricing rules for each supported country here.
-
-- **default price** - the price will be applied if you do not fill in the pricing rules, or the order weight exceeds the set weighting rules for a particular country
 - **free shipping** - if the order price is higher, free shipping
 - **price rules** - here you can add more pricing rules for different weight ranges.
     - to create a new rule click on the button * Add Rule *
     - click the * Delete * button to delete the rule
-    - fill in the fields * Weight from *, * Weight to * and * Price * for each rule
+    - fill in the fields * Weight to * and * Price * for each rule
 
 #### Cash on delivery
 
@@ -79,24 +77,28 @@ Multiple payment methods can be selected by holding the "Ctrl" button and clicki
 
 #### Supported versions:
 
-- Magento 2.2 and newer
-- If you have a problem using the Magento 2 module (eg 2.0), please contact us at [support@packeta.com](mailto:support@packeta.com)
+- Magento 2.3, 2.4
+- If you have a problem using the module, please contact us by email: [support@packeta.com](mailto:support@packeta.com)
 
 #### Supported features:
 
-- integration of widget v6 for pickup points selections in the eshop cart
-- external carrier pickup point support
-- address delivery support (in cz, sk, hu, pl and ro via "Home delivery HD")
-- set different prices for different target countries
-- setting prices according to weighting rules
-- free shipping from the specified price or weight of the order
-- export orders to a csv file that can be imported in [client section](https://client.packeta.com/)
+- integration of widget v6 in the cart
+- support for external carriers' pickup points
+- delivery to an address via external carriers
+- setting different prices for each carrier
+- free shipping from the specified price
+- export shipments to a csv file that can be imported in [client section](https://client.packeta.com/)
+- possibility to change the pickup point for an existing order in the administration
+
+#### Restrictions:
+
+- currently the module does not support: delivery to non-EU addresses, carriers who have prohibited cash on delivery, evening delivery Prague, Brno, Ostrava, Bratislava
 
 # Modul pro Magento 2
 
 ### Stažení modulu
 
-[Aktuální verze 2.0.5](https://github.com/Zasilkovna/magento2/archive/v2.0.5.zip)
+[Aktuální verze 2.1.0](https://github.com/Zasilkovna/magento2/archive/v2.1.0.zip)
 
 ### Instalace
 
@@ -108,9 +110,13 @@ Instalace a registrace modulu se provádí CLI utilitou, která je součástí M
 - re-deploy statického obsahu (není potřeba v dev módu): `bin/magento setup:static-content:deploy`
 - rekompilace projektu: `bin/magento setup:di:compile`
 - smazání cache: `bin/magento cache:clean`
+- nastavte v administraci přepravce Zásilkovna pro výchozí kontext (scope), ikdyž je přepravce neaktivní
+- nahrajte přepravce: `bin/magento packetery:import-feed-carriers`
+- nastavte či upravte volání `bin/magento cron:run`, tak aby se Zásilkovní úlohy dokázaly zpracovat
 
 ### Aktualizace modulu
 
+- nastavte v administraci přepravce Zásilkovna pro výchozí kontext (scope), ikdyž je přepravce neaktivní
 - zapnout režim údržby
 - smazat zdrojové soubory (smazat složku app/code/Packetery)
 - další postup stejný jako při instalaci
@@ -131,24 +137,18 @@ a nastavení uložte kliknutím na tlačítko **Save Config**
 #### Cenová pravidla
 
 ##### Globální nastavení
-- **Výchozí cena** - cena za přepravu se použije v případě, že není vyplněna výchozí cena u konkrétní země
 - **Maximální váha** - u objednávek s větší hmotnostní nebude v košíku přepravní metoda Zásilkovna nabízena
 - **Doprava zdarma** - pokud bude cena objednávky vyšší bude doprava zdarma
 
-##### Pravidla - ostatní země
+##### Pravidla
 
-Tato pravidla se v současné době nepoužívají.  V příští verzi modulu budou odstraněna.
+Zde zadejte ceny a pravidla pro výpočet ceny přepravy pro každou podporovanou zemi zvlášť. Podporované jsou pouze váhy v kilogramech.
 
-##### Pravidla CZ (SK, PL, HU, RO)
-
-Zde zadejte ceny a pravidla pro výpočet ceny přepravy pro každou podporovanou zemi zvlášť.
-
-- **Výchozí cena** - cena se použije pokud nevyplníte cenová pravidla, nebo hmotnost objednávky přesáhne nastavená váhová pravidla pro konkrétní zemi
 - **Doprava zdarma** - pokud bude cena objednávky vyšší bude doprava zdarma
 - **Cenová pravidla** - zde můžete přidat více cenových pravidel, pro různá váhová rozmezí.  
     - pro vytvoření nového pravidla klikněte na tlačítko *Přidat pravidlo*
     - pro smazání pravidla klikněte na ikonu popelnice
-    - u každého pravidla vyplňte pole *Hmotnost od*, *Hmotnost do* a *Cena*
+    - u každého pravidla vyplňte pole *Hmotnost do* a *Cena*
 
 #### Dobírka
 
@@ -171,15 +171,19 @@ Vybrat více platebních metod je možné přidržením tlačítka "Ctrl" a klik
 
 #### Podporované verze:
 
-- Magento 2.2 a vyšší
-- Při problému s použitím modulu u nižší verze Magento 2 (např. 2.0) nás kontaktujte na adrese [technicka.podpora@zasilkovna.cz](mailto:technicka.podpora@zasilkovna.cz)
+- Magento 2.3, 2.4
+- Při problému s použitím modulu nás kontaktujte na emailu: [technicka.podpora@zasilkovna.cz](mailto:technicka.podpora@zasilkovna.cz)
 
 #### Poskytované funkce:
 
 - integrace widgetu v6 v košíku eshopu
 - podpora výdejních míst externích dopravců
-- podpora doručení zásilek na adresu (v cz, sk, hu, pl a ro přes dopravce “Doručení na adresu HD”)
-- nastavení různé ceny pro různé cílové země
-- nastavení cen podle váhových pravidel
-- doprava zdarma od zadané ceny nebo hmotnosti objednávky
+- doručení na adresu přes externí dopravce Zásilkovny
+- nastavení různé ceny pro jednotlivé dopravce
+- doprava zdarma od zadané ceny
 - export zásilek do csv souboru, který lze importovat v [klientské sekci](https://client.packeta.com/)
+- možnost změny výdejního místa u existující objednávky v administraci
+
+#### Omezení:
+
+- v současné době modul nepodporuje: doručení na adresu mimo EU, dopravce kteří mají zakázanou dobírku, večerní doručení Praha, Brno, Ostrava, Bratislava

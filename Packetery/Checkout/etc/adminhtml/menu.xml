@@ -3,6 +3,6 @@
     <menu>
         <add id="Packetery_Checkout::packetery" title="Packeta" module="Packetery_Checkout" action="packetery/order/index" sortOrder="51" resource="Packetery_Checkout::packetery"/>
         <add id="Packetery_Checkout::orders" parent="Packetery_Checkout::packetery" title="Orders" module="Packetery_Checkout" action="packetery/order/index" sortOrder="52" resource="Packetery_Checkout::packetery"/>
-        <add id="Packetery_Checkout::pricingRules" parent="Packetery_Checkout::packetery" title="Pricing rules" module="Packetery_Checkout" action="packetery/pricingrule/items" sortOrder="54" resource="Packetery_Checkout::packetery"/>
+        <add id="Packetery_Checkout::carrierCountries" parent="Packetery_Checkout::packetery" title="Pricing rules" module="Packetery_Checkout" action="packetery/pricingrule/carrierCountries" sortOrder="55" resource="Packetery_Checkout::packetery"/>
     </menu>
 </config>
