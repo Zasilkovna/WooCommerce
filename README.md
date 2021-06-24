@@ -26,6 +26,8 @@ Installation and registration of the module is done by CLI utility, which is par
 - enable maintenance mode
 - remove all previous source files (remove app/code/Packetery folder)
 - next steps are same as during installation
+- (optional) migrate configuration from 2.0.1 and 2.0.2 structure: `bin/magento packetery:migrate-price-rules`
+- (optional) migrate global price from structure of versions up to 2.0.5: `bin/magento packetery:migrate-default-price`
 - disable maintenance mode
 - check configuration
 
@@ -120,6 +122,8 @@ Instalace a registrace modulu se provádí CLI utilitou, která je součástí M
 - zapnout režim údržby
 - smazat zdrojové soubory (smazat složku app/code/Packetery)
 - další postup stejný jako při instalaci
+- (nepovinné) přemigrujte konfiguraci ze struktury verze 2.0.1 a 2.0.2: `bin/magento packetery:migrate-price-rules`
+- (nepovinné) přemigrujte globální cenu ze struktury verze až 2.0.5: `bin/magento packetery:migrate-default-price`
 - vypnout režim údržby
 - zkontrolovat konfiguraci
 

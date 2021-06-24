@@ -34,6 +34,8 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="packetery_importFeedCarriers" xsi:type="object">Packetery\Checkout\Console\Command\ImportFeedCarriers</item>
+                <item name="packetery_migrateDefaultPrice" xsi:type="object">Packetery\Checkout\Console\Command\MigrateDefaultPrice</item>
+                <item name="packetery_migratePriceRules" xsi:type="object">Packetery\Checkout\Console\Command\MigratePriceRules</item>
             </argument>
         </arguments>
     </type>
