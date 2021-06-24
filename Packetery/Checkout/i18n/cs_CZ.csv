@@ -53,7 +53,6 @@
 "Some prices are not filled","Některé ceny nejsou vyplněné"
 "The weight is invalid","Zadejte validní váhu. Váha se nesmí opakovat a nesmí být větší než maximální možná (%1)."
 "The API key length must have %d characters!","Délka API klíče musí být %d znaků!"
-"The specified API key is not valid!","Zadaný API klíč není platný !"
 "Select pick-up point","Vybrat výdejní místo"
 "You must select pick-up point","Musíte zvolit výdejní místo"
 "Method Name","Název metody"
