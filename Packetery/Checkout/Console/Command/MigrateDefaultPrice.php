@@ -78,11 +78,10 @@ class MigrateDefaultPrice extends Command
         $brain = $this->packeteryCarrier->getPacketeryBrain();
 
         $allowedMethods = $brain->getFinalAllowedMethods($config, $brain->getMethodSelect());
-        $sallowspecific = $configModel->getConfigDataValue('carriers/packetery/sallowspecific');
         $defaultPrice = $configModel->getConfigDataValue('carriers/packetery/default_price');
 
-        if ($sallowspecific !== '1' || !is_numeric($defaultPrice)) {
-            $output->writeln("No need to migrate");
+        if (!is_numeric($defaultPrice)) {
+            $output->writeln("Unable to migrate. Default price is missing.");
             return;
         }
 
