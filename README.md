@@ -19,18 +19,37 @@ This utility is available in Magento installation directory as "/bin/magento".
 - clean cache: `bin/magento cache:clean`
 - set Packeta configuration in administration for default scope even if Packeta carrier is inactive
 - import carriers: `bin/magento packetery:import-feed-carriers`
-- set or update call of `bin/magento cron:run`, in such way Packeta cron jobs can be processed
+- set up command `bin/magento cron:run` in cron, in order to update carriers regularly
 
 ## Upgrading
 
 - set Packeta configuration in administration for default scope even if Packeta carrier is inactive
-- enable maintenance mode
+- enable maintenance mode: `bin/magento maintenance:enable`
 - remove all previous source files (remove app/code/Packetery folder)
 - next steps are the same as during the installation
-- (optional) migrate configuration from 2.0.1 and 2.0.2 structure: `bin/magento packetery:migrate-price-rules`
-- (optional) migrate global price from structure of versions up to 2.0.5: `bin/magento packetery:migrate-default-price`
-- disable maintenance mode
+- (optional) Migrate pricing rules from versions 2.0.1 and 2.0.2: `bin/magento packetery:migrate-price-rules`
+- (optional) Migrate default price from versions up to 2.0.5: `bin/magento packetery:migrate-default-price`
+- disable maintenance mode: `bin/magento maintenance:disable`
 - check configuration
+
+#### Migration of pricing rules from versions 2.0.1 and 2.0.2
+
+Within this task, pricing rules are migrated to the following extent: for countries from the original list of rules
+are transferred the rules for the variant of delivery to the pickup point, including weight ranges and the free shipping price.
+
+Furthermore, the maximum weight and free shipping price valid for the entire module are transferred.
+
+Pricing rules are created as unavailable.
+
+As of version 2.0.3, it is not necessary to perform.
+
+#### Migration of default price from versions up to 2.0.5
+
+Within this task, the default price is migrated only if specific countries are selected in the global settings of the module.
+
+If all countries are selected, migration is not performed.
+
+Price rules are created as unavailable, without set maximum weight.
 
 ### Configuration and "How to" guide
 
@@ -69,7 +88,8 @@ This utility is available in Magento installation directory as "/bin/magento".
 
 ### Instalace
 
-Instalace a registrace modulu se provádí CLI utilitou, která je součástí Magento 2. Tato utitita je dostupná v instalačním adresáři Magenta jako "/bin/magento".
+Instalace a registrace modulu se provádí CLI utilitou, která je součástí Magento 2.
+Tato utilita je dostupná v instalačním adresáři Magenta jako "/bin/magento".
 
 - nakopírovat adresář 'Packetery' do adresáře: `/app/code`
 - povolení modulu pomocí CLI utility: `bin/magento module:enable Packetery_Checkout --clear-static-content`
@@ -79,18 +99,37 @@ Instalace a registrace modulu se provádí CLI utilitou, která je součástí M
 - smazání cache: `bin/magento cache:clean`
 - nastavte v administraci přepravce Zásilkovna pro výchozí kontext (scope), ikdyž je přepravce neaktivní
 - nahrajte přepravce: `bin/magento packetery:import-feed-carriers`
-- nastavte či upravte volání `bin/magento cron:run`, tak aby se Zásilkovní úlohy dokázaly zpracovat
+- nastavte si v cronu volání příkazu `bin/magento cron:run` tak, aby se vám aktualizovali přepravci.
 
 ### Aktualizace modulu
 
 - nastavte v administraci přepravce Zásilkovna pro výchozí kontext (scope), ikdyž je přepravce neaktivní
-- zapnout režim údržby
+- zapnout režim údržby: `bin/magento maintenance:enable`
 - smazat zdrojové soubory (smazat složku app/code/Packetery)
 - další postup stejný jako při instalaci
-- (nepovinné) přemigrujte konfiguraci ze struktury verze 2.0.1 a 2.0.2: `bin/magento packetery:migrate-price-rules`
-- (nepovinné) přemigrujte globální cenu ze struktury verze až 2.0.5: `bin/magento packetery:migrate-default-price`
-- vypnout režim údržby
+- (nepovinné) Migrace cenových pravidel z verzí 2.0.1 a 2.0.2: `bin/magento packetery:migrate-price-rules`
+- (nepovinné) Migrace výchozí ceny do verze 2.0.5: `bin/magento packetery:migrate-default-price`
+- vypnout režim údržby: `bin/magento maintenance:disable`
 - zkontrolovat konfiguraci
+
+#### Migrace cenových pravidel z verzí 2.0.1 a 2.0.2
+
+V rámci této úlohy se migrují cenová pravidla v tomto rozsahu: pro země z původního seznamu pravidel
+jsou pro variantu doručení na výdejní místo přenesena pravidla včetně hmotnostních rozsahů a ceny pro dopravu zdarma.
+
+Dále je přenesena i maximální hmotnost a cena pro dopravu zdarma platné pro celý modul.
+
+Cenová pravidla jsou vytvořena jako nedostupná.
+
+Od verze 2.0.3 není nutné provádět.
+
+#### Migrace výchozí ceny do verze 2.0.5
+
+V rámci této úlohy se migruje výchozí cena pouze v případě, že v globálním nastavení modulu jsou zvoleny specifické země.
+
+V případě, že jsou zvoleny všechny země, migrace se neprovádí. 
+
+Cenová pravidla jsou vytvořena jako nedostupná, bez nastavené maximální hmotnosti.
 
 ### Konfigurace a návod k použití
 
