@@ -98,3 +98,16 @@ function packetery_deactivate() {
 	//flush_rewrite_rules();
 }
 register_deactivation_hook( __FILE__, 'packetery_deactivate' );
+
+/**
+ * Uninstall hook.
+ */
+function packetery_uninstall() {
+	// todo delete options
+	//delete_option($option_name);
+
+	// todo drop a custom database tables
+	//global $wpdb;
+	//$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}mytable");
+}
+register_uninstall_hook(__FILE__, 'packetery_uninstall');
