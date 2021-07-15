@@ -1,0 +1,9 @@
+services:
+	plugin: Packetery\Plugin
+	latteEngine:
+		class: Latte\Engine
+		setup:
+			- setTempDirectory(%tempDir%/cache/view)
+			- addFilter('translate', [@translator ,'translate'])
+	latteProcessor: Packetery\LatteProcessor
+	translator: Packetery\Translator

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<ruleset name="WooCommerce Coding Standards">
+    <description>Packetery WP plugin coding standards ruleset.</description>
+
+    <file>src</file>
+    <file>packetery.php</file>
+
+    <!-- Configs -->
+    <config name="minimum_supported_wp_version" value="5.0" />
+
+    <!-- Rules -->
+    <rule ref="WooCommerce-Core" />
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array" value="packetery" />
+        </properties>
+    </rule>
+
+    <rule ref="PHPCompatibility">
+        <exclude-pattern>tests/</exclude-pattern>
+    </rule>
+</ruleset>
