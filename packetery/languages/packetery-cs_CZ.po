@@ -1,0 +1,50 @@
+# Copyright (C) 2021 Packeta
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: Packeta 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2021-07-15T10:28:16+02:00\n"
+"PO-Revision-Date: 2021-07-15 10:54+0200\n"
+"X-Generator: Poedit 3.0\n"
+"X-Domain: packetery\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"Language: cs_CZ\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+msgid "Packeta"
+msgstr "Zásilkovna"
+
+#. Plugin URI of the plugin
+msgid "https://www.packeta.com/todo-plugin-page/"
+msgstr "https://www.zasilkovna.cz/todo-plugin-page/"
+
+#. Description of the plugin
+msgid "Todo description."
+msgstr "Todo popis."
+
+#. Author URI of the plugin
+msgid "https://www.packeta.com/"
+msgstr "https://www.zasilkovna.cz/"
+
+#: packetery.php:48
+msgid "View Packeta settings"
+msgstr "Zobrazit Packeta nastavení"
+
+#: packetery.php:48
+msgid "Settings"
+msgstr "Nastavení"
+
+#: packetery.php:67
+msgid "View Packeta documentation"
+msgstr "Zobrazit Packeta dokumentaci"
+
+#: packetery.php:67
+msgid "Documentation"
+msgstr "Dokumentace"
