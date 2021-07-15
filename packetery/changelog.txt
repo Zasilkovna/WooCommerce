@@ -1,0 +1,5 @@
+*** WooCommerce Extension Template Changelog ***
+
+TODO: aktualizovat datum
+2021-07-15 - version 1.0.0
+* Initial release
