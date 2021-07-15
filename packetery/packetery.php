@@ -16,6 +16,8 @@
  * Author URI: https://www.packeta.com/
  * Developer: Packeta
  * Developer URI: https://www.packeta.com/
+ * Text Domain: packetery
+ * Domain Path: /languages
  *
  * WC requires at least: 5.0
  * WC tested up to: 5.5.0
@@ -46,8 +48,8 @@ if ( !in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', 
  */
 function packetery_plugin_action_links( $links ) {
 	$links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=todo' ) ). '" aria-label="' .
-		esc_attr__( 'View Packeta settings', plugin_basename(__FILE__) ) . '">' .
-		esc_html__( 'Settings', plugin_basename(__FILE__) ) . '</a>';
+		esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
+		esc_html__( 'Settings', 'packetery' ) . '</a>';
 
 	return $links;
 }
@@ -67,19 +69,16 @@ function packetery_plugin_row_meta( $links, $plugin_file_name ) {
 	}
 
 	$links[] = '<a href="' . esc_url( 'https://www.packeta.com/todo-plugin-docs/' ) . '" aria-label="' .
-		esc_attr__( 'View Packeta documentation', plugin_basename(__FILE__) ) . '">' .
-		esc_html__( 'Documentation', plugin_basename(__FILE__) ) . '</a>';
+		esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
+		esc_html__( 'Documentation', 'packetery' ) . '</a>';
 
 	return $links;
 }
 
 function packetery_init() {
 	// @link https://developer.wordpress.org/reference/functions/add_filter/
-	add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'packetery_plugin_action_links' );
+	add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'packetery_plugin_action_links' );
 	add_filter( 'plugin_row_meta', 'packetery_plugin_row_meta', 10, 2 );
-
-	// nepomohlo
-	load_plugin_textdomain(plugin_basename(__FILE__));
 
 	// todo for example register custom post type
 	//register_post_type( 'book', ['public' => true ] );
