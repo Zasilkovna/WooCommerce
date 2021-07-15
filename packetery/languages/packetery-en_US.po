@@ -19,32 +19,32 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 msgid "Packeta"
-msgstr ""
+msgstr "Packeta"
 
 #. Plugin URI of the plugin
 msgid "https://www.packeta.com/todo-plugin-page/"
-msgstr ""
+msgstr "https://www.packeta.com/todo-plugin-page/"
 
 #. Description of the plugin
 msgid "Todo description."
-msgstr ""
+msgstr "Todo description."
 
 #. Author URI of the plugin
 msgid "https://www.packeta.com/"
-msgstr ""
+msgstr "https://www.packeta.com/"
 
 #: packetery.php:48
 msgid "View Packeta settings"
-msgstr ""
+msgstr "View Packeta settings"
 
 #: packetery.php:48
 msgid "Settings"
-msgstr ""
+msgstr "Settings"
 
 #: packetery.php:67
 msgid "View Packeta documentation"
-msgstr ""
+msgstr "View Packeta documentation"
 
 #: packetery.php:67
 msgid "Documentation"
-msgstr ""
+msgstr "Documentation"

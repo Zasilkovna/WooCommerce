@@ -79,7 +79,7 @@ function packetery_init() {
 	add_filter( 'plugin_row_meta', 'packetery_plugin_row_meta', 10, 2 );
 
 	// nepomohlo
-	load_plugin_textdomain();
+	load_plugin_textdomain(plugin_basename(__FILE__));
 
 	// todo for example register custom post type
 	//register_post_type( 'book', ['public' => true ] );
