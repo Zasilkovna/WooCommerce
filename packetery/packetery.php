@@ -132,3 +132,82 @@ $configurator->createRobotLoader()
 
 $container = $configurator->createContainer();
 $container->getByType(\Packetery\Plugin::class)->run();
+
+function packetery_shipping_method_init() {
+	// Your class will go here
+	if (!class_exists('WC_Packetery_Shipping_Method')) {
+
+		class WC_Packetery_Shipping_Method extends WC_Shipping_Method
+		{
+			/**
+			 * Constructor for Packeta shipping class
+			 *
+			 * @access public
+			 * @param int $instance_id
+			 */
+			public function __construct( $instance_id = 0 ) {
+				parent::__construct();
+				$this->id = 'packetery_shipping_method';
+				$this->instance_id  = absint( $instance_id );
+				$this->method_title = __( 'Packeta Shipping Method', 'packetery' );
+				$this->title = __('Packeta Shipping Method');
+				$this->method_description = __('Description of Packeta shipping method'); //
+				$this->enabled = "yes"; // This can be added as an setting but for this example its forced enabled
+				$this->supports = array(
+					'shipping-zones',
+				);
+				$this->init();
+			}
+
+			/**
+			 * Init settings
+			 *
+			 * @access public
+			 * @return void
+			 */
+			public function init() {
+				// todo Load the settings API
+				//$this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings
+				//$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
+
+				// Save settings in admin if you have any defined
+				add_action('woocommerce_update_options_shipping_' . $this->id, array($this, 'process_admin_options'));
+			}
+
+			/**
+			 * calculate_shipping function.
+			 *
+			 * @access public
+			 * @param mixed $package
+			 * @return void
+			 */
+			public function calculate_shipping($package = array()) {
+				/* todo
+				$defaults = array(
+					'label' => '',   // Label for the rate
+					'cost' => '0',  // Amount for shipping or an array of costs (for per item shipping)
+					'taxes' => '',   // Pass an array of taxes, or pass nothing to have it calculated for you, or pass 'false' to calculate no tax for this method
+					'calc_tax' => 'per_order' // Calc tax per_order or per_item. Per item needs an array of costs passed via 'cost'
+				);
+				*/
+
+				// This is where you'll add your rates
+				$rate = array(
+					'label' => "Label for the rate",
+					'cost' => '70',
+					'calc_tax' => 'per_item'
+				);
+
+				// Register the rate
+				$this->add_rate($rate);
+			}
+		}
+	}
+}
+add_action('woocommerce_shipping_init', 'packetery_shipping_method_init');
+
+function packetery_add_shipping_method($methods) {
+	$methods['packetery_shipping_method'] = WC_Packetery_Shipping_Method::class;
+	return $methods;
+}
+add_filter('woocommerce_shipping_methods', 'packetery_add_shipping_method');
