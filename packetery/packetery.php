@@ -132,3 +132,79 @@ $configurator->createRobotLoader()
 
 $container = $configurator->createContainer();
 $container->getByType(\Packetery\Plugin::class)->run();
+
+/**
+ * @link https://docs.woocommerce.com/document/shipping-method-api/
+ */
+function packetery_shipping_method_init() {
+	// Your class will go here
+	if ( ! class_exists( 'WC_Packetery_Shipping_Method' ) ) {
+
+		class WC_Packetery_Shipping_Method extends WC_Shipping_Method {
+			/**
+			 * Constructor for Packeta shipping class
+			 *
+			 * @access public
+			 *
+			 * @param int $instance_id
+			 */
+			public function __construct( int $instance_id = 0 ) {
+				parent::__construct();
+				$this->id                 = 'packetery_shipping_method';
+				$this->instance_id        = absint( $instance_id );
+				$this->method_title       = __( 'Packeta Shipping Method', 'packetery' );
+				$this->title              = __( 'Packeta Shipping Method' );
+				$this->method_description = __( 'Description of Packeta shipping method' ); //
+				$this->enabled            = 'yes'; // This can be added as an setting but for this example its forced enabled
+				$this->supports           = array(
+					'shipping-zones',
+				);
+				$this->init();
+			}
+
+			/**
+			 * Init settings
+			 *
+			 * @access public
+			 * @return void
+			 */
+			public function init(): void {
+				// todo Load the settings API
+				//$this->init_form_fields(); // This is part of the settings API. Override the method to add your own settings
+				//$this->init_settings(); // This is part of the settings API. Loads settings you previously init.
+
+				// Save settings in admin if you have any defined
+				add_action( 'woocommerce_update_options_shipping_' . $this->id, array(
+					$this,
+					'process_admin_options'
+				) );
+			}
+
+			/**
+			 * calculate_shipping function.
+			 *
+			 * @access public
+			 *
+			 * @param array $package
+			 *
+			 * @return void
+			 */
+			public function calculate_shipping( array $package = array() ): void {
+				// TODO: This is where you'll add your rates
+				$defaultRate = array(
+					'label'    => 'Packeta shipping rate',
+					'cost'     => 0,
+					'taxes'    => '',
+					'calc_tax' => 'per_order'
+				);
+
+				// Register the rate
+				$this->add_rate( $defaultRate );
+			}
+		}
+	}
+}
+
+add_action( 'woocommerce_shipping_init', 'packetery_shipping_method_init' );
+
+add_filter( 'woocommerce_shipping_methods', array( '\Packetery\Plugin', 'add_shipping_method' ) );
