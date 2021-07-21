@@ -189,9 +189,9 @@ function packetery_shipping_method_init() {
 			 *
 			 * @return void
 			 */
-			public function calculate_shipping( $package = array() ): void {
+			public function calculate_shipping( array $package = array() ): void {
 				// TODO: This is where you'll add your rates
-				$rate = array(
+				$defaultRate = array(
 					'label'    => 'Packeta shipping rate',
 					'cost'     => 0,
 					'taxes'    => '',
@@ -199,7 +199,7 @@ function packetery_shipping_method_init() {
 				);
 
 				// Register the rate
-				$this->add_rate( $rate );
+				$this->add_rate( $defaultRate );
 			}
 		}
 	}
