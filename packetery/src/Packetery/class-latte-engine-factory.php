@@ -27,7 +27,6 @@ class Latte_Engine_Factory {
 	public function create( string $temp_dir ) {
 		$engine = new \Latte\Engine();
 		$engine->setTempDirectory( $temp_dir );
-		\Nette\Bridges\FormsLatte\FormMacros::install( $engine->getCompiler() );
 		return $engine;
 	}
 }

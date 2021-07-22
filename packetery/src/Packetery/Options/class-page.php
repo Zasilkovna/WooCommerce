@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Options;
 
+use Nette\Utils\Html;
+
 /**
  * Class Page
  *
@@ -58,16 +60,14 @@ class Page {
 	 * @return \Nette\Forms\Form
 	 */
 	private function create_form() {
-		$form = new \Nette\Forms\Form();
-		$form->setAction( 'options.php' );
-		$form->setMethod( 'post' );
-
+		$form      = new \Nette\Forms\Form();
 		$container = $form->addContainer( 'packetery_options' );
-		$container->addText( 'packetery_api_password', __( 'API password', 'packetery' ), 32, 32 );
-		$container->addText( 'packetery_sender', __( 'Sender', 'packetery' ), 32 );
+
+		$container->addText( 'packetery_api_password', $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/api-password-label.latte' ), 32, 32 );
+		$container->addText( 'packetery_sender', $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/sender-label.latte' ), 32 );
 		$container->addSelect(
 			'packetery_packeta_label_format',
-			__( 'Packeta Label Format', 'packetery' ),
+			$this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/packeta-label-format-label.latte' ),
 			array(
 				''               => '--',
 				'A6 on A6'       => __( '105x148 mm (A6) label on a page of the same size', 'packetery' ),
@@ -80,7 +80,7 @@ class Page {
 		)->checkDefaultValue( false )->setPrompt( '--' );
 		$container->addSelect(
 			'packetery_carrier_label_format',
-			__( 'Carrier Label Format', 'packetery' ),
+			$this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/carrier-label-format-label.latte' ),
 			array(
 				''         => '--',
 				'A6 on A4' => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
@@ -90,7 +90,7 @@ class Page {
 
 		$container->addCheckbox(
 			'packetery_allow_label_emailing',
-			__( 'Allow Label Emailing', 'packetery' )
+			$this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/allow-label-emailing-label.latte' )
 		);
 
 		$options = get_option( 'packetery_options' );
@@ -103,8 +103,22 @@ class Page {
 	 *  Admin_init callback.
 	 */
 	public function admin_init() {
+		$form = $this->create_form();
+
 		register_setting( 'packetery_options', 'packetery_options', array( $this, 'options_validate' ) );
 		add_settings_section( 'packetery_main', __( 'Main Settings', 'packetery' ), '', 'packeta-options' );
+
+		foreach ( $form['packetery_options']->getControls() as $control ) {
+			add_settings_field(
+				$control->getName(),
+				$control->getCaption(),
+				function () use ( $control ) {
+					$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/input.latte', array( 'input' => $control->getControlPart() ) );
+				},
+				'packeta-options',
+				'packetery_main'
+			);
+		}
 	}
 
 	/**
@@ -129,6 +143,6 @@ class Page {
 	 *  Renders page.
 	 */
 	public function render() {
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', array( 'form' => $this->create_form() ) );
+		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte' );
 	}
 }
