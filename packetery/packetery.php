@@ -189,7 +189,7 @@ function packetery_shipping_method_init() {
 			 *
 			 * @return void
 			 */
-			public function calculate_shipping( array $package = array() ): void {
+			public function calculate_shipping( $package = array() ): void {
 				// TODO: This is where you'll add your rates
 				$defaultRate = array(
 					'label'    => 'Packeta shipping rate',
@@ -207,4 +207,4 @@ function packetery_shipping_method_init() {
 
 add_action( 'woocommerce_shipping_init', 'packetery_shipping_method_init' );
 
-add_filter( 'woocommerce_shipping_methods', array( '\Packetery\Plugin', 'add_shipping_method' ) );
+add_filter( 'woocommerce_shipping_methods', array( \Packetery\Plugin::class, 'add_shipping_method' ) );
