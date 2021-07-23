@@ -11,8 +11,13 @@ class Plugin {
 		// register hooks
 	}
 
-	public static function add_shipping_method( $methods ) {
-		$methods['packetery_shipping_method'] = WC_Packetery_Shipping_Method::class;
+	/**
+	 * @param array $methods
+	 *
+	 * @return array
+	 */
+	public static function add_shipping_method( array $methods ): array {
+		$methods['packetery_shipping_method'] = \WC_Packetery_Shipping_Method::class;
 
 		return $methods;
 	}
