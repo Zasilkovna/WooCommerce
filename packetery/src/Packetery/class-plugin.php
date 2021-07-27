@@ -1,18 +1,33 @@
 <?php
+/**
+ * Main Packeta plugin class.
+ *
+ * @package Packetery
+ */
 
 declare( strict_types=1 );
 
 namespace Packetery;
 
+/**
+ * Class Plugin
+ *
+ * @package Packetery
+ */
 class Plugin {
 	public const DOMAIN = 'packetery';
 
+	/**
+	 * Method to register hooks
+	 */
 	public function run() {
-		// register hooks
+		// TODO: register hooks.
 	}
 
 	/**
-	 * @param array $methods
+	 * Adds Packeta method to available shipping methods.
+	 *
+	 * @param array $methods Previous state.
 	 *
 	 * @return array
 	 */
