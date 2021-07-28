@@ -87,10 +87,11 @@ function packetery_init() {
 add_action( 'init', 'packetery_init' );
 
 /**
- * Activate the plugin.
+ * Activate the plugin and create custom database table.
  */
 function packetery_activate() {
 	packetery_init();
+	\Packetery\CarrierRepository::create();
 }
 
 register_activation_hook( __FILE__, 'packetery_activate' );
@@ -104,12 +105,10 @@ function packetery_deactivate() {
 register_deactivation_hook( __FILE__, 'packetery_deactivate' );
 
 /**
- * Uninstall hook.
+ * Uninstall plugin and drop custom database table.
  */
 function packetery_uninstall() {
-	// todo drop a custom database tables
-	// todo global $wpdb;
-	// todo $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}mytable"); .
+	\Packetery\CarrierRepository::drop();
 }
 
 register_uninstall_hook( __FILE__, 'packetery_uninstall' );
