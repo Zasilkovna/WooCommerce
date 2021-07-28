@@ -48,7 +48,7 @@ class Page {
 				'render',
 			),
 			'dashicons-schedule',
-			55 // todo move item to last position in menu
+			55 // todo Move item to last position in menu.
 		);
 	}
 
@@ -59,17 +59,17 @@ class Page {
 	 */
 	private function create_form() {
 		// todo move to FormFactory. Create FormFactory when multiple forms exist.
-		\Nette\Forms\Validator::$messages[\Nette\Forms\Form::FILLED] = __( 'This field is required!', 'packetery' );
+		\Nette\Forms\Validator::$messages[ \Nette\Forms\Form::FILLED ] = __( 'This field is required!', 'packetery' );
 
 		$form = new \Nette\Forms\Form();
 		$form->setAction( 'options.php' );
 
 		$container = $form->addContainer( 'packetery_options' );
 		$container->addText( 'packetery_api_password', __( 'API password', 'packetery' ) )
-		          ->setRequired()
-		          ->addRule($form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!' ), '[a-z\d]{32}');
+					->setRequired()
+					->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', 'packetery' ), '[a-z\d]{32}' );
 		$container->addText( 'packetery_sender', __( 'Sender', 'packetery' ) )
-		          ->setRequired();
+					->setRequired();
 		$container->addSelect(
 			'packetery_packeta_label_format',
 			__( 'Packeta Label Format', 'packetery' ),
@@ -97,7 +97,7 @@ class Page {
 		);
 
 		$options = get_option( 'packetery_options' );
-		$container->setDefaults($options);
+		$container->setDefaults( $options );
 
 		return $form;
 	}
@@ -119,21 +119,21 @@ class Page {
 	 */
 	public function options_validate( $options ) {
 		$form = $this->create_form();
-		$form['packetery_options']->setValues($options);
-		if ($form->isValid() === false) {
+		$form['packetery_options']->setValues( $options );
+		if ( $form->isValid() === false ) {
 			foreach ( $form['packetery_options']->getControls() as $control ) {
-				if ($control->hasErrors() === false) {
+				if ( $control->hasErrors() === false ) {
 					continue;
 				}
 
-				add_settings_error($control->getCaption(), esc_attr( $control->getName() ), $control->getError());
-				$options[$control->getName()] = '';
+				add_settings_error( $control->getCaption(), esc_attr( $control->getName() ), $control->getError() );
+				$options[ $control->getName() ] = '';
 			}
 		}
 
 		$packetery_api_password = $form['packetery_options']['packetery_api_password'];
-		if ($packetery_api_password->hasErrors() === false) {
-			$api_pass = $packetery_api_password->getValue();
+		if ( $packetery_api_password->hasErrors() === false ) {
+			$api_pass                     = $packetery_api_password->getValue();
 			$options['packetery_api_key'] = substr( $api_pass, 0, 16 );
 		} else {
 			$options['packetery_api_key'] = '';
