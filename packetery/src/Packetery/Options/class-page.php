@@ -45,7 +45,7 @@ class Page {
 	/**
 	 * Registers WP callbacks.
 	 */
-	public function register() {
+	public function register(): void {
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_menu_page(
 			__( 'Settings', 'packetery' ),
@@ -66,7 +66,7 @@ class Page {
 	 *
 	 * @return \Nette\Forms\Form
 	 */
-	private function create_form() {
+	private function create_form(): \Nette\Forms\Form {
 		// todo move to FormFactory. Create FormFactory when multiple forms exist.
 		\Nette\Forms\Validator::$messages[ \Nette\Forms\Form::FILLED ] = __( 'This field is required!', 'packetery' );
 
@@ -115,7 +115,7 @@ class Page {
 	/**
 	 *  Admin_init callback.
 	 */
-	public function admin_init() {
+	public function admin_init(): void {
 		register_setting( 'packetery', 'packetery', array( $this, 'options_validate' ) );
 		add_settings_section( 'packetery_main', __( 'Main Settings', 'packetery' ), '', 'packeta-options' );
 	}
@@ -127,7 +127,7 @@ class Page {
 	 *
 	 * @return array
 	 */
-	public function options_validate( $options ) {
+	public function options_validate( $options ): array {
 		$form = $this->create_form();
 		$form['packetery']->setValues( $options );
 		if ( $form->isValid() === false ) {
@@ -155,7 +155,7 @@ class Page {
 	/**
 	 *  Renders page.
 	 */
-	public function render() {
+	public function render(): void {
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', array( 'form' => $this->create_form() ) );
 	}
 }

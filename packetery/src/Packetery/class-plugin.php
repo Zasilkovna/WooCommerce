@@ -79,7 +79,7 @@ class Plugin {
 	/**
 	 *  Add links to left admin menu.
 	 */
-	public function add_menu_pages() {
+	public function add_menu_pages(): void {
 		$this->options_page->register();
 	}
 
