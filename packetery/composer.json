@@ -5,7 +5,6 @@
         "nette/bootstrap": "^3.1",
         "latte/latte": "^2.10",
         "guzzlehttp/guzzle": "^7.3",
-        "woocommerce/woocommerce-sniffs": "^0.1.0",
-        "twbs/bootstrap": "4.0.0"
+        "woocommerce/woocommerce-sniffs": "^0.1.0"
     }
 }
