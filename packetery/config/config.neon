@@ -4,6 +4,3 @@ services:
 		class: Latte\Engine
 		setup:
 			- setTempDirectory(%tempDir%/cache/view)
-			- addFilter('translate', [@translator ,'translate'])
-	latteProcessor: Packetery\LatteProcessor
-	translator: Packetery\Translator
