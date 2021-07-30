@@ -19,8 +19,8 @@ class WC_Packetery_Shipping_Method extends WC_Shipping_Method {
 		$this->id                 = 'packetery_shipping_method';
 		$this->instance_id        = absint( $instance_id );
 		$this->method_title       = __( 'Packeta Shipping Method', 'packetery' );
-		$this->title              = __( 'Packeta Shipping Method' );
-		$this->method_description = __( 'Description of Packeta shipping method' );
+		$this->title              = __( 'Packeta Shipping Method', 'packetery' );
+		$this->method_description = __( 'Description of Packeta shipping method', 'packetery' );
 		$this->enabled            = 'yes'; // This can be added as an setting but for this example its forced enabled.
 		$this->supports           = array(
 			'shipping-zones',
