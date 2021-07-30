@@ -2,6 +2,7 @@
 <ruleset name="WooCommerce Coding Standards">
     <description>Packetery WP plugin coding standards ruleset.</description>
 
+    <file>cli</file>
     <file>src</file>
     <file>packetery.php</file>
 
