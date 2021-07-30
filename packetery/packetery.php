@@ -35,5 +35,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
 	exit;
 }
+
 $container = require __DIR__ . '/bootstrap.php';
 $container->getByType( \Packetery\Plugin::class )->run();

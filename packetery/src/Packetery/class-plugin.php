@@ -39,7 +39,7 @@ class Plugin {
 	 * @param Options\Page $options_page Options page.
 	 */
 	public function __construct( Options\Page $options_page ) {
-		$this->options_page = $options_page;
+		$this->options_page   = $options_page;
 		$this->main_file_path = PACKETERY_PLUGIN_DIR . '/packetery.php';
 	}
 
@@ -47,6 +47,8 @@ class Plugin {
 	 * Method to register hooks
 	 */
 	public function run() {
+		$this->load_textdomains();
+
 		add_action( 'init', array( $this, 'init' ) );
 
 		register_activation_hook( $this->main_file_path, array( $this, 'activate' ) );
@@ -81,6 +83,16 @@ class Plugin {
 	 */
 	public function add_menu_pages(): void {
 		$this->options_page->register();
+	}
+
+	/**
+	 * Loads plugin translations files.
+	 */
+	public function load_textdomains(): void {
+		$mo_files = \Nette\Utils\Finder::findFiles( '*.mo' )->from( PACKETERY_PLUGIN_DIR . '/languages' );
+		foreach ( $mo_files as $mo_file ) {
+			load_textdomain( 'packetery', $mo_file );
+		}
 	}
 
 	/**
@@ -124,8 +136,8 @@ class Plugin {
 	 */
 	public function plugin_action_links( array $links ): array {
 		$links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=todo' ) ) . '" aria-label="' .
-		           esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
-		           esc_html__( 'Settings', 'packetery' ) . '</a>';
+					esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
+					esc_html__( 'Settings', 'packetery' ) . '</a>';
 
 		return $links;
 	}
@@ -146,8 +158,8 @@ class Plugin {
 		}
 
 		$links[] = '<a href="' . esc_url( 'https://www.packeta.com/todo-plugin-docs/' ) . '" aria-label="' .
-		           esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
-		           esc_html__( 'Documentation', 'packetery' ) . '</a>';
+					esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
+					esc_html__( 'Documentation', 'packetery' ) . '</a>';
 
 		return $links;
 	}
