@@ -1,65 +1,65 @@
 <h1>Packeta - Options</h1>
 
 <form n:name=$form>
-    {php settings_fields('packetery_options')}
+    {php settings_fields('packetery')}
     {php settings_errors()}
 
     <table class="form-table" role="presentation">
         <tr>
             <th scope="row">
-                <label n:name=packetery_options-packetery_api_password />
+                <label n:name=packetery-api_password />
                 <p>
                     {= __( 'API password can be found in', 'packetery' )} <a
                             href="https://client.packeta.com/">{= __( 'client section', 'packetery' )}</a>
                 </p>
             </th>
             <td>
-                <input n:name=packetery_options-packetery_api_password>
+                <input n:name=packetery-api_password>
             </td>
         </tr>
         <tr>
             <th scope="row">
-                <label n:name=packetery_options-packetery_sender />
+                <label n:name=packetery-sender />
                 <p> {= __( 'Sender designation can be found in', 'packetery' )} <a
                             href="https://client.packeta.com/">{= __( 'client section', 'packetery' )}</a></p>
             </th>
             <td>
-                <input n:name=packetery_options-packetery_sender>
+                <input n:name=packetery-sender>
             </td>
         </tr>
         <tr>
             <th scope="row">
-                <label n:name=packetery_options-packetery_packeta_label_format />
+                <label n:name=packetery-packeta_label_format />
                 <p>
                     {= __( 'Relates to ', 'packetery' )} <a
                             href="https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetlabelpdf">{= __( 'documentation', 'packetery' )}</a>
                 </p>
             </th>
             <td>
-                <select n:name=packetery_options-packetery_packeta_label_format></select>
+                <select n:name=packetery-packeta_label_format></select>
             </td>
         </tr>
         <tr>
             <th scope="row">
-                <label n:name=packetery_options-packetery_carrier_label_format />
+                <label n:name=packetery-carrier_label_format />
                 <p>
                     {= __( 'Relates to ', 'packetery' )} <a
                             href="https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetscourierlabelspdf">{= __( 'documentation', 'packetery' )}</a>
                 </p>
             </th>
             <td>
-                <select n:name=packetery_options-packetery_carrier_label_format></select>
+                <select n:name=packetery-carrier_label_format></select>
             </td>
         </tr>
         <tr>
             <th scope="row">
-                <label n:name=packetery_options-packetery_allow_label_emailing />
+                <label n:name=packetery-allow_label_emailing />
                 <p>
                     {= __( 'If checked, the generated labels will be emailed to the e-shop administrator', 'packetery' )}
                 </p>
             </th>
             <td>
-                <input n:name=packetery_options-packetery_allow_label_emailing>
+                <input n:name=packetery-allow_label_emailing>
             </td>
         </tr>
     </table>

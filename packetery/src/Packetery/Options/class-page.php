@@ -25,12 +25,21 @@ class Page {
 	private $latte_engine;
 
 	/**
+	 * Options Provider
+	 *
+	 * @var Provider
+	 */
+	private $options_provider;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param \Latte\Engine $latte_engine Latte_engine.
+	 * @param Provider      $options_provider Options provider.
 	 */
-	public function __construct( \Latte\Engine $latte_engine ) {
-		$this->latte_engine = $latte_engine;
+	public function __construct( \Latte\Engine $latte_engine, Provider $options_provider ) {
+		$this->latte_engine     = $latte_engine;
+		$this->options_provider = $options_provider;
 	}
 
 	/**
@@ -64,14 +73,14 @@ class Page {
 		$form = new \Nette\Forms\Form();
 		$form->setAction( 'options.php' );
 
-		$container = $form->addContainer( 'packetery_options' );
-		$container->addText( 'packetery_api_password', __( 'API password', 'packetery' ) )
+		$container = $form->addContainer( 'packetery' );
+		$container->addText( 'api_password', __( 'API password', 'packetery' ) )
 					->setRequired()
 					->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', 'packetery' ), '[a-z\d]{32}' );
-		$container->addText( 'packetery_sender', __( 'Sender', 'packetery' ) )
+		$container->addText( 'sender', __( 'Sender', 'packetery' ) )
 					->setRequired();
 		$container->addSelect(
-			'packetery_packeta_label_format',
+			'packeta_label_format',
 			__( 'Packeta Label Format', 'packetery' ),
 			array(
 				'A6 on A4'       => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
@@ -83,7 +92,7 @@ class Page {
 			)
 		);
 		$container->addSelect(
-			'packetery_carrier_label_format',
+			'carrier_label_format',
 			__( 'Carrier Label Format', 'packetery' ),
 			array(
 				'A6 on A4' => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
@@ -92,12 +101,13 @@ class Page {
 		);
 
 		$container->addCheckbox(
-			'packetery_allow_label_emailing',
+			'allow_label_emailing',
 			__( 'Allow Label Emailing', 'packetery' )
 		);
 
-		$options = get_option( 'packetery_options' );
-		$container->setDefaults( $options );
+		if ( $this->options_provider->has_any() ) {
+			$container->setDefaults( $this->options_provider->data_to_array() );
+		}
 
 		return $form;
 	}
@@ -106,7 +116,7 @@ class Page {
 	 *  Admin_init callback.
 	 */
 	public function admin_init() {
-		register_setting( 'packetery_options', 'packetery_options', array( $this, 'options_validate' ) );
+		register_setting( 'packetery', 'packetery', array( $this, 'options_validate' ) );
 		add_settings_section( 'packetery_main', __( 'Main Settings', 'packetery' ), '', 'packeta-options' );
 	}
 
@@ -119,9 +129,9 @@ class Page {
 	 */
 	public function options_validate( $options ) {
 		$form = $this->create_form();
-		$form['packetery_options']->setValues( $options );
+		$form['packetery']->setValues( $options );
 		if ( $form->isValid() === false ) {
-			foreach ( $form['packetery_options']->getControls() as $control ) {
+			foreach ( $form['packetery']->getControls() as $control ) {
 				if ( $control->hasErrors() === false ) {
 					continue;
 				}
@@ -131,12 +141,12 @@ class Page {
 			}
 		}
 
-		$packetery_api_password = $form['packetery_options']['packetery_api_password'];
-		if ( $packetery_api_password->hasErrors() === false ) {
-			$api_pass                     = $packetery_api_password->getValue();
-			$options['packetery_api_key'] = substr( $api_pass, 0, 16 );
+		$api_password = $form['packetery']['api_password'];
+		if ( $api_password->hasErrors() === false ) {
+			$api_pass           = $api_password->getValue();
+			$options['api_key'] = substr( $api_pass, 0, 16 );
 		} else {
-			$options['packetery_api_key'] = '';
+			$options['api_key'] = '';
 		}
 
 		return $options;

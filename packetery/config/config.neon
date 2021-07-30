@@ -1,5 +1,9 @@
+parameters:
+    latteTempFolder: %tempDir%/cache/view
+
 services:
 	plugin: Packetery\Plugin
 	latteEngineFactory: Packetery\Latte_Engine_Factory
-	latteEngine: @latteEngineFactory::create(%tempDir%/cache/view)
+	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	optionsPage: Packetery\Options\Page
+	optionsProvider: Packetery\Options\Provider
