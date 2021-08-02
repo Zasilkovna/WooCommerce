@@ -181,11 +181,9 @@ class Plugin {
 	 * @return string[] All columns.
 	 */
 	public function add_order_list_columns( array $columns ): array {
-
 		$new_columns = array();
 
 		foreach ( $columns as $column_name => $column_info ) {
-
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
