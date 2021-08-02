@@ -1,8 +1,9 @@
 <h1>{__( 'Packeta', 'packetery' )} - {__( 'Options', 'packetery' )}</h1>
 
+{php settings_errors()}
+
 <form n:name=$form>
     {php settings_fields('packetery')}
-    {php settings_errors()}
 
     <table class="form-table" role="presentation">
         <tr>
