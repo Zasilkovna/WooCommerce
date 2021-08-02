@@ -60,6 +60,8 @@ class Plugin {
 		);
 
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
+		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
+		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
 	}
 
 	/**
@@ -144,4 +146,54 @@ class Plugin {
 		return $methods;
 	}
 
+	/**
+	 * Fills custom order list columns.
+	 *
+	 * @param string $column Current order column name.
+	 */
+	public function fill_custom_order_list_columns( $column ): void {
+		global $post;
+		$order = wc_get_order( $post->ID );
+
+		switch ( $column ) {
+			case 'packetery_destination':
+				$packetery_point_name = $order->get_meta( 'packetery_point_name' );
+				$packetery_point_id   = $order->get_meta( 'packetery_point_id' );
+
+				$country = $order->get_shipping_country();
+				if ( in_array( $country, array( 'CZ', 'SK', 'HU', 'RO' ), true ) ) {
+					echo esc_html( "$packetery_point_name ($packetery_point_id)" );
+				} else {
+					echo esc_html( $packetery_point_name );
+				}
+				break;
+			case 'packetery_packet_id':
+				$packet_id = $order->get_meta( $column );
+				echo '<a href="https://tracking.packeta.com/en/?id=' . esc_html( $packet_id ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
+				break;
+		}
+	}
+
+	/**
+	 * Add order list columns.
+	 *
+	 * @param string[] $columns Order list columns.
+	 * @return string[] All columns.
+	 */
+	public function add_order_list_columns( array $columns ): array {
+
+		$new_columns = array();
+
+		foreach ( $columns as $column_name => $column_info ) {
+
+			$new_columns[ $column_name ] = $column_info;
+
+			if ( 'order_total' === $column_name ) {
+				$new_columns['packetery_packet_id']   = __( 'Packet ID', 'packetery' );
+				$new_columns['packetery_destination'] = __( 'Destination', 'packetery' );
+			}
+		}
+
+		return $new_columns;
+	}
 }
