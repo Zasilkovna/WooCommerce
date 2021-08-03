@@ -16,7 +16,8 @@ namespace Packetery;
  */
 class Plugin {
 
-	public const DOMAIN = 'packetery';
+	public const DOMAIN       = 'packetery';
+	public const TRACKING_URL = 'https://tracking.packeta.com/?id=%s';
 
 	/**
 	 * Path to main plugin file.
@@ -147,6 +148,17 @@ class Plugin {
 	}
 
 	/**
+	 * Returns tracking URL.
+	 *
+	 * @param string $packet_id Packet ID.
+	 *
+	 * @return string
+	 */
+	public function get_tracking_url( string $packet_id ): string {
+		return sprintf( self::TRACKING_URL, rawurlencode( $packet_id ) );
+	}
+
+	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
@@ -168,8 +180,8 @@ class Plugin {
 				}
 				break;
 			case 'packetery_packet_id':
-				$packet_id = $order->get_meta( $column );
-				echo '<a href="https://tracking.packeta.com/en/?id=' . esc_html( $packet_id ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
+				$packet_id = (string) $order->get_meta( $column );
+				echo '<a href="' . esc_attr( $this->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
 				break;
 		}
 	}
@@ -187,8 +199,8 @@ class Plugin {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
-				$new_columns['packetery_packet_id']   = __( 'Packet ID', 'packetery' );
-				$new_columns['packetery_destination'] = __( 'Destination', 'packetery' );
+				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packetery' );
+				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}
 
