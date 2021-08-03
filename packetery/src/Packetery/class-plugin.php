@@ -173,15 +173,17 @@ class Plugin {
 				$packetery_point_id   = $order->get_meta( 'packetery_point_id' );
 
 				$country = $order->get_shipping_country();
-				if ( in_array( $country, array( 'CZ', 'SK', 'HU', 'RO' ), true ) ) {
+				if ( $packetery_point_name && $packetery_point_id && in_array( $country, array( 'CZ', 'SK', 'HU', 'RO' ), true ) ) {
 					echo esc_html( "$packetery_point_name ($packetery_point_id)" );
-				} else {
+				} elseif ( $packetery_point_name ) {
 					echo esc_html( $packetery_point_name );
 				}
 				break;
 			case 'packetery_packet_id':
 				$packet_id = (string) $order->get_meta( $column );
-				echo '<a href="' . esc_attr( $this->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
+				if ( $packet_id ) {
+					echo '<a href="' . esc_attr( $this->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
+				}
 				break;
 		}
 	}
