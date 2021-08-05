@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-08-03T09:35:52+02:00\n"
-"PO-Revision-Date: 2021-08-06 11:33+0200\n"
+"POT-Creation-Date: 2021-08-05T15:54:15+02:00\n"
+"PO-Revision-Date: 2021-08-05 15:57+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -18,7 +18,6 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: src/Packetery/Options/class-page.php:43
 msgid "Packeta"
 msgstr "Zásilkovna"
 
@@ -35,26 +34,29 @@ msgid "https://www.packeta.com/"
 msgstr "https://www.zasilkovna.cz/"
 
 #: packetery.php:48 src/Packetery/class-plugin.php:109
+#: src/Packetery/class-plugin.php:147
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
-#: packetery.php:51 src/Packetery/Options/class-page.php:42
+#: packetery.php:48 src/Packetery/class-plugin.php:110
 msgid "Settings"
 msgstr "Nastavení"
 
 #: packetery.php:67 src/Packetery/class-plugin.php:131
+#: src/Packetery/class-plugin.php:169
 msgid "View Packeta documentation"
 msgstr "Zobrazit Packeta dokumentaci"
 
 #: packetery.php:67 src/Packetery/class-plugin.php:132
+#: src/Packetery/class-plugin.php:170
 msgid "Documentation"
 msgstr "Dokumentace"
 
-#: src/Packetery/class-plugin.php:202
+#: src/Packetery/class-plugin.php:202 src/Packetery/class-plugin.php:231
 msgid "Barcode"
 msgstr "Trasovací číslo"
 
-#: src/Packetery/class-plugin.php:203
+#: src/Packetery/class-plugin.php:203 src/Packetery/class-plugin.php:232
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
 
@@ -139,3 +141,38 @@ msgid ""
 msgstr ""
 "Pokud je zaškrtnuto, vygenerované štítky budou zaslány e-mailem správci e-"
 "shopu."
+
+#: src/Packetery/Order/class-metabox.php:97
+msgid "Weight (kg)"
+msgstr "Váha (kg)"
+
+#: src/Packetery/Order/class-metabox.php:99
+#: src/Packetery/Order/class-metabox.php:102
+#: src/Packetery/Order/class-metabox.php:105
+#: src/Packetery/Order/class-metabox.php:108
+msgid "Provide numeric value!"
+msgstr "Zadejte číslo!"
+
+#: src/Packetery/Order/class-metabox.php:100
+msgid "Width (mm)"
+msgstr "Šířka (mm)"
+
+#: src/Packetery/Order/class-metabox.php:103
+msgid "Length (mm)"
+msgstr "Délka (mm)"
+
+#: src/Packetery/Order/class-metabox.php:106
+msgid "Height (mm)"
+msgstr "Výška (mm)"
+
+#: src/Packetery/Order/class-metabox.php:166
+msgid "Error happened in Packeta fields!"
+msgstr "Nastala chyba v polích Zásilkovny!"
+
+#: src/Packetery/Order/class-metabox.php:174
+msgid "Session has expired! Please try again."
+msgstr "Relace vypršela! Zkuste to prosím znovu."
+
+#: src/Packetery/Order/class-metabox.php:180
+msgid "You are not allowed to edit posts!"
+msgstr "Nejste oprávněni upravovat příspěvky!"
