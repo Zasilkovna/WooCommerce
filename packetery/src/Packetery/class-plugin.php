@@ -11,6 +11,7 @@ namespace Packetery;
 
 use Packetery\Carrier\Downloader;
 use Packetery\Carrier\Repository;
+use Packetery\Order;
 
 /**
  * Class Plugin
@@ -19,8 +20,7 @@ use Packetery\Carrier\Repository;
  */
 class Plugin {
 
-	public const DOMAIN       = 'packetery';
-	public const TRACKING_URL = 'https://tracking.packeta.com/?id=%s';
+	public const DOMAIN = 'packetery';
 
 	/**
 	 * Options page.
@@ -37,13 +37,6 @@ class Plugin {
 	private $carrier_downloader;
 
 	/**
-	 * Path to main plugin file.
-	 *
-	 * @var string Path to main plugin file.
-	 */
-	private $main_file_path;
-
-	/**
 	 * Carrier repository.
 	 *
 	 * @var Repository
@@ -51,27 +44,69 @@ class Plugin {
 	private $carrier_repository;
 
 	/**
+	 * Path to main plugin file.
+	 *
+	 * @var string Path to main plugin file.
+	 */
+	private $main_file_path;
+
+	/**
+	 * Admin edit order page Packeta metabox.
+	 *
+	 * @var Order\Metabox
+	 */
+	private $order_metabox;
+
+	/**
+	 * Message manager.
+	 *
+	 * @var Message_Manager
+	 */
+	private $message_manager;
+
+	/**
+	 * Generic Helper.
+	 *
+	 * @var Helper
+	 */
+	private $helper;
+
+	/**
 	 * Plugin constructor.
 	 *
+	 * @param Order\Metabox   $order_metabox Order metabox.
+	 * @param Message_Manager $message_manager Message manager.
+	 * @param Helper          $helper Helper.
 	 * @param Options\Page $options_page Options page.
 	 * @param Repository   $carrier_repository Carrier repository.
 	 * @param Downloader   $carrier_downloader Carrier downloader object.
 	 */
-	public function __construct( Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader ) {
+	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader ) {
 		$this->options_page       = $options_page;
 		$this->carrier_repository = $carrier_repository;
 		$this->carrier_downloader = $carrier_downloader;
-		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
+		$this->main_file_path  = PACKETERY_PLUGIN_DIR . '/packetery.php';
+		$this->order_metabox   = $order_metabox;
+		$this->message_manager = $message_manager;
+		$this->helper          = $helper;
+		$this->options_page    = $options_page;
 	}
 
 	/**
 	 * Method to register hooks
 	 */
-	public function run() {
+	public function run(): void {
 		$this->load_textdomains();
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		\Nette\Forms\Form::initialize();
 
+		add_action(
+			'admin_notices',
+			function () {
+				$this->message_manager->render();
+			}
+		);
 		add_action( 'init', array( $this, 'init' ) );
 
 		register_activation_hook( $this->main_file_path, array( $this, 'activate' ) );
@@ -99,6 +134,7 @@ class Plugin {
 		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
 		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
+		$this->order_metabox->register();
 
 		add_action(
 			'packetery_cron_carriers_hook',
@@ -220,17 +256,6 @@ class Plugin {
 	}
 
 	/**
-	 * Returns tracking URL.
-	 *
-	 * @param string $packet_id Packet ID.
-	 *
-	 * @return string
-	 */
-	public function get_tracking_url( string $packet_id ): string {
-		return sprintf( self::TRACKING_URL, rawurlencode( $packet_id ) );
-	}
-
-	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
@@ -254,7 +279,7 @@ class Plugin {
 			case 'packetery_packet_id':
 				$packet_id = (string) $order->get_meta( $column );
 				if ( $packet_id ) {
-					echo '<a href="' . esc_attr( $this->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
+					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
 				}
 				break;
 		}
