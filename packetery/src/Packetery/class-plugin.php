@@ -77,7 +77,7 @@ class Plugin {
 	 * @param Order\Metabox   $order_metabox Order metabox.
 	 * @param Message_Manager $message_manager Message manager.
 	 * @param Helper          $helper Helper.
-	 * @param Options\Page $options_page Options page.
+	 * @param Options\Page    $options_page Options page.
 	 * @param Repository   $carrier_repository Carrier repository.
 	 * @param Downloader   $carrier_downloader Carrier downloader object.
 	 */
