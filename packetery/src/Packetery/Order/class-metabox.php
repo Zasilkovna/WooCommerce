@@ -57,7 +57,6 @@ class Metabox {
 	 */
 	public function __construct( \Latte\Engine $latte_engine, Message_Manager $message_manager, Helper $helper ) {
 		$this->latte_engine = $latte_engine;
-		\Nette\Bridges\FormsLatte\FormMacros::install( $this->latte_engine->getCompiler() ); // todo remove when Page options are merged.
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
 	}
