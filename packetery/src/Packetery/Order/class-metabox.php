@@ -161,6 +161,10 @@ class Metabox {
 	 * @return mixed Order id.
 	 */
 	public function save_fields( $post_id ) {
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return $post_id;
+		}
+
 		if ( $this->order_form->isValid() === false ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
 			$this->message_manager->flash_error_message( __( 'Error happened in Packeta fields!', 'packetery' ) );
@@ -182,10 +186,10 @@ class Metabox {
 			return $post_id;
 		}
 
-		update_post_meta( $post_id, 'packetery_weight', ( is_numeric( $values->packetery_weight ) ? number_format( $values->packetery_weight, 4 ) : '' ) );
-		update_post_meta( $post_id, 'packetery_width', ( is_numeric( $values->packetery_width ) ? number_format( $values->packetery_width ) : '' ) );
-		update_post_meta( $post_id, 'packetery_length', ( is_numeric( $values->packetery_length ) ? number_format( $values->packetery_length ) : '' ) );
-		update_post_meta( $post_id, 'packetery_height', ( is_numeric( $values->packetery_height ) ? number_format( $values->packetery_height ) : '' ) );
+		update_post_meta( $post_id, 'packetery_weight', ( is_numeric( $values->packetery_weight ) ? number_format( $values->packetery_weight, 4, '.', '' ) : '' ) );
+		update_post_meta( $post_id, 'packetery_width', ( is_numeric( $values->packetery_width ) ? number_format( $values->packetery_width, 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, 'packetery_length', ( is_numeric( $values->packetery_length ) ? number_format( $values->packetery_length, 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, 'packetery_height', ( is_numeric( $values->packetery_height ) ? number_format( $values->packetery_height, 0, '.', '' ) : '' ) );
 
 		return $post_id;
 	}
