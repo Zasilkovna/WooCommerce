@@ -1,10 +1,10 @@
 {php $this->global->formsStack[] = $form}
 
-<input n:name=packetery_order_metabox_nonce>
+<input n:name=packetery_order_metabox_nonce />
 {foreach ['packetery_weight', 'packetery_width', 'packetery_length', 'packetery_height'] as $inputName}
     <p>
-        <label n:name=$inputName>{$form[$inputName]->getCaption()}</label>
-        <input n:name=$inputName>
+        <label n:name=$inputName />
+        <input n:name=$inputName />
     </p>
     <p>{inputError $inputName}</p>
 {/foreach}
