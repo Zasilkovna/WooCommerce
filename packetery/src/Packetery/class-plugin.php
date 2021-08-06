@@ -31,6 +31,13 @@ class Plugin {
 	private $options_page;
 
 	/**
+	 * Latte engine.
+	 *
+	 * @var \Latte\Engine
+	 */
+	private $latte_engine;
+
+	/**
 	 * Carrier downloader object.
 	 *
 	 * @var Downloader
@@ -86,12 +93,14 @@ class Plugin {
 	 * @param Message_Manager $message_manager Message manager.
 	 * @param Helper          $helper Helper.
 	 * @param Options\Page    $options_page Options page.
+	 * @param \Latte\Engine   $latte_engine Latte engine.
 	 * @param Repository      $carrier_repository Carrier repository.
 	 * @param Downloader      $carrier_downloader Carrier downloader object.
 	 * @param Checkout        $checkout Checkout class.
 	 */
-	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout ) {
+	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \Latte\Engine $latte_engine ) {
 		$this->options_page       = $options_page;
+		$this->latte_engine   = $latte_engine;
 		$this->carrier_repository = $carrier_repository;
 		$this->carrier_downloader = $carrier_downloader;
 		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
@@ -137,6 +146,18 @@ class Plugin {
 				if ( ! class_exists( 'WC_Packetery_Shipping_Method' ) ) {
 					require_once PACKETERY_PLUGIN_DIR . '/src/class-wc-packetery-shipping-method.php';
 				}
+			}
+		);
+
+		add_action(
+			'woocommerce_email_footer',
+			function () {
+				$this->latte_engine->render(
+					PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
+					array(
+						'order' => \Packetery\Order\Wrapper::from_globals(),
+					)
+				);
 			}
 		);
 

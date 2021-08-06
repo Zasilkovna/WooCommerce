@@ -136,6 +136,7 @@ msgid "Main Settings"
 msgstr "Hlavní nastavení"
 
 #: temp/cache/view/template-options-page.latte--19c711edd6.php:103
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:109
 msgid ""
 "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
@@ -176,3 +177,28 @@ msgstr "Relace vypršela! Zkuste to prosím znovu."
 #: src/Packetery/Order/class-metabox.php:180
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
+
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:15
+msgid "Packeta Information"
+msgstr "Zásilkovní Informace"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:21
+msgid "Pickup Point Name"
+msgstr "Název výdejního místa"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:29
+msgid "Pickup Point Detail"
+msgstr "Detail výdejního místa"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:34
+msgid "Link"
+msgstr "Odkaz"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:39
+msgid "Point Address"
+msgstr "Adresa výdejního místa"
+
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:16
+msgid "Options"
+msgstr "Nastavení"
