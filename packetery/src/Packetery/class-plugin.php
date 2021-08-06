@@ -84,7 +84,7 @@ class Plugin {
 	 * Enqueues javascript files for administration.
 	 */
 	public function admin_enqueue_scripts(): void {
-		wp_enqueue_script( 'live-form-validation', plugin_dir_url( $this->main_file_path ) . 'public/libs/live-form-validation.js', array(), '2.0-dev', false );
+		wp_enqueue_script( 'live-form-validation', plugin_dir_url( $this->main_file_path ) . 'public/libs/live-form-validation/live-form-validation.js', array(), '2.0-dev', false );
 	}
 
 	/**
