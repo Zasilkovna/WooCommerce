@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
 "POT-Creation-Date: 2021-08-03T09:35:52+02:00\n"
-"PO-Revision-Date: 2021-08-03 09:41+0200\n"
+"PO-Revision-Date: 2021-08-06 11:33+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -18,6 +18,7 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #. Author of the plugin
+#: src/Packetery/Options/class-page.php:43
 msgid "Packeta"
 msgstr "Zásilkovna"
 
@@ -37,7 +38,7 @@ msgstr "https://www.zasilkovna.cz/"
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
-#: packetery.php:48 src/Packetery/class-plugin.php:110
+#: packetery.php:51 src/Packetery/Options/class-page.php:42
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -56,3 +57,85 @@ msgstr "Trasovací číslo"
 #: src/Packetery/class-plugin.php:203
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
+
+#: src/class-wc-packetery-shipping-method.php:21
+#: src/class-wc-packetery-shipping-method.php:22
+msgid "Packeta Shipping Method"
+msgstr "Metoda přepravy Packeta"
+
+#: src/class-wc-packetery-shipping-method.php:23
+msgid "Description of Packeta shipping method"
+msgstr "Popis způsobu přepravy Packeta"
+
+#: src/Packetery/Options/class-page.php:71
+msgid "This field is required!"
+msgstr "Toto políčko je povinné!"
+
+#: src/Packetery/Options/class-page.php:77
+msgid "API password"
+msgstr "API heslo"
+
+#: src/Packetery/Options/class-page.php:79
+msgid ""
+"API password must be 32 characters long and must contain valid characters!"
+msgstr "API heslo musí být 32 znaků dlouhé a musí obsahovat validní znaky!"
+
+#: src/Packetery/Options/class-page.php:80
+msgid "Sender"
+msgstr "Odesílatel"
+
+#: src/Packetery/Options/class-page.php:84
+msgid "Packeta Label Format"
+msgstr "Formát štítku Zásilkovny"
+
+#: src/Packetery/Options/class-page.php:86
+#: src/Packetery/Options/class-page.php:98
+msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+msgstr "105x148 mm (A6) štítek na stránce o velikosti 210x297 mm (A4)"
+
+#: src/Packetery/Options/class-page.php:87
+msgid "105x148 mm (A6) label on a page of the same size"
+msgstr "Štítek 105x148 mm (A6) na stránce stejné velikosti"
+
+#: src/Packetery/Options/class-page.php:88
+msgid "105x74 mm (A7) label on a page of the same size"
+msgstr "štítek 105x74 mm (A7) na stránce stejné velikosti"
+
+#: src/Packetery/Options/class-page.php:89
+msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
+msgstr "105x74 mm (A7) štítek na stránce o velikosti 210x297 mm (A4)"
+
+#: src/Packetery/Options/class-page.php:90
+msgid "105x35 mm label on a page of size 210x297 mm (A4)"
+msgstr "Štítek 105x35 mm na stránce o rozměrech 210x297 mm (A4)"
+
+#: src/Packetery/Options/class-page.php:91
+msgid "50x74 mm (A8) label on a page of the same size"
+msgstr "štítek 50x74 mm (A8) na stránce stejné velikosti"
+
+#: src/Packetery/Options/class-page.php:96
+msgid "Carrier Label Format"
+msgstr "Formát štítku dopravce"
+
+#: src/Packetery/Options/class-page.php:99
+msgid ""
+"105x148 mm (A6) label on a page of the same size (offset argument is ignored "
+"for this format)"
+msgstr ""
+"štítek 105x148 mm (A6) na stránce stejné velikosti (argument posunu se u "
+"tohoto formátu ignoruje)."
+
+#: src/Packetery/Options/class-page.php:105
+msgid "Allow Label Emailing"
+msgstr "Dovolit rozesílání stítků emailem"
+
+#: src/Packetery/Options/class-page.php:120
+msgid "Main Settings"
+msgstr "Hlavní nastavení"
+
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:103
+msgid ""
+"If checked, the generated labels will be emailed to the e-shop administrator"
+msgstr ""
+"Pokud je zaškrtnuto, vygenerované štítky budou zaslány e-mailem správci e-"
+"shopu."

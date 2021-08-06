@@ -20,6 +20,13 @@ class Plugin {
 	public const TRACKING_URL = 'https://tracking.packeta.com/?id=%s';
 
 	/**
+	 * Options page.
+	 *
+	 * @var \Packetery\Options\Page Options page,
+	 */
+	private $options_page;
+
+	/**
 	 * Path to main plugin file.
 	 *
 	 * @var string Path to main plugin file.
@@ -28,15 +35,22 @@ class Plugin {
 
 	/**
 	 * Plugin constructor.
+	 *
+	 * @param Options\Page $options_page Options page.
 	 */
-	public function __construct() {
+	public function __construct( Options\Page $options_page ) {
+		$this->options_page   = $options_page;
 		$this->main_file_path = PACKETERY_PLUGIN_DIR . '/packetery.php';
 	}
 
 	/**
 	 * Method to register hooks
 	 */
-	public function run(): void {
+	public function run() {
+		$this->load_textdomains();
+
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+
 		add_action( 'init', array( $this, 'init' ) );
 
 		register_activation_hook( $this->main_file_path, array( $this, 'activate' ) );
@@ -63,6 +77,31 @@ class Plugin {
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
 		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
 		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
+		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
+	}
+
+	/**
+	 * Enqueues javascript files for administration.
+	 */
+	public function admin_enqueue_scripts(): void {
+		wp_enqueue_script( 'live-form-validation', plugin_dir_url( $this->main_file_path ) . 'public/libs/live-form-validation/live-form-validation.js', array(), '2.0-dev', false );
+	}
+
+	/**
+	 *  Add links to left admin menu.
+	 */
+	public function add_menu_pages(): void {
+		$this->options_page->register();
+	}
+
+	/**
+	 * Loads plugin translations files.
+	 */
+	public function load_textdomains(): void {
+		$mo_files = \Nette\Utils\Finder::findFiles( '*.mo' )->from( PACKETERY_PLUGIN_DIR . '/languages' );
+		foreach ( $mo_files as $mo_file ) {
+			load_textdomain( 'packetery', $mo_file );
+		}
 	}
 
 	/**
@@ -106,8 +145,8 @@ class Plugin {
 	 */
 	public function plugin_action_links( array $links ): array {
 		$links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=todo' ) ) . '" aria-label="' .
-				esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
-				esc_html__( 'Settings', 'packetery' ) . '</a>';
+					esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
+					esc_html__( 'Settings', 'packetery' ) . '</a>';
 
 		return $links;
 	}
@@ -128,8 +167,8 @@ class Plugin {
 		}
 
 		$links[] = '<a href="' . esc_url( 'https://www.packeta.com/todo-plugin-docs/' ) . '" aria-label="' .
-				esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
-				esc_html__( 'Documentation', 'packetery' ) . '</a>';
+					esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
+					esc_html__( 'Documentation', 'packetery' ) . '</a>';
 
 		return $links;
 	}

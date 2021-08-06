@@ -16,6 +16,7 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #. Author of the plugin
+#: src/Packetery/Options/class-page.php:52
 msgid "Packeta"
 msgstr ""
 
@@ -36,8 +37,8 @@ msgstr ""
 msgid "View Packeta settings"
 msgstr ""
 
-#: packetery.php:48
-#: src/Packetery/class-plugin.php:110
+#: packetery.php:51
+#: src/Packetery/Options/class-page.php:42
 msgid "Settings"
 msgstr ""
 
@@ -57,4 +58,78 @@ msgstr ""
 
 #: src/Packetery/class-plugin.php:203
 msgid "Pick up point or carrier"
+msgstr ""
+
+#: src/class-wc-packetery-shipping-method.php:21
+#: src/class-wc-packetery-shipping-method.php:22
+msgid "Packeta Shipping Method"
+msgstr ""
+
+#: src/class-wc-packetery-shipping-method.php:23
+msgid "Description of Packeta shipping method"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:71
+msgid "This field is required!"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:77
+msgid "API password"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:79
+msgid "API password must be 32 characters long and must contain valid characters!"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:80
+msgid "Sender"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:84
+msgid "Packeta Label Format"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:86
+#: src/Packetery/Options/class-page.php:98
+msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:87
+msgid "105x148 mm (A6) label on a page of the same size"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:88
+msgid "105x74 mm (A7) label on a page of the same size"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:89
+msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:90
+msgid "105x35 mm label on a page of size 210x297 mm (A4)"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:91
+msgid "50x74 mm (A8) label on a page of the same size"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:96
+msgid "Carrier Label Format"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:99
+msgid "105x148 mm (A6) label on a page of the same size (offset argument is ignored for this format)"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:105
+msgid "Allow Label Emailing"
+msgstr ""
+
+#: src/Packetery/Options/class-page.php:120
+msgid "Main Settings"
+msgstr ""
+
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:103
+msgid "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
