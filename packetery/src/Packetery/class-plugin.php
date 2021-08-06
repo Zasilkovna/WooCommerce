@@ -49,6 +49,8 @@ class Plugin {
 	public function run() {
 		$this->load_textdomains();
 
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+
 		add_action( 'init', array( $this, 'init' ) );
 
 		register_activation_hook( $this->main_file_path, array( $this, 'activate' ) );
@@ -76,6 +78,13 @@ class Plugin {
 		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
 		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
+	}
+
+	/**
+	 * Enqueues javascript files for administration.
+	 */
+	public function admin_enqueue_scripts(): void {
+		wp_enqueue_script( 'live-form-validation', plugin_dir_url( $this->main_file_path ) . 'public/libs/live-form-validation.js', array(), '2.0-dev', false );
 	}
 
 	/**
