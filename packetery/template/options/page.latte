@@ -1,56 +1,63 @@
-<h1>{__( 'Packeta', 'packetery' )} - {__( 'Options', 'packetery' )}</h1>
+<div id="packetery-options-page">
+    <h1>{__( 'Packeta', 'packetery' )} - {__( 'Options', 'packetery' )}</h1>
 
-{php settings_errors()}
+    {php settings_errors()}
 
-<form n:name=$form>
-    {php settings_fields('packetery')}
+    <form n:name=$form>
+        {php settings_fields('packetery')}
 
-    <table class="form-table" role="presentation">
-        <tr>
-            <th scope="row">
-                <label n:name=packetery-api_password />
-            </th>
-            <td>
-                <input n:name=packetery-api_password>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                <label n:name=packetery-sender />
-            </th>
-            <td>
-                <input n:name=packetery-sender>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                <label n:name=packetery-packeta_label_format />
-            </th>
-            <td>
-                <select n:name=packetery-packeta_label_format></select>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                <label n:name=packetery-carrier_label_format />
-            </th>
-            <td>
-                <select n:name=packetery-carrier_label_format></select>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">
-                <label n:name=packetery-allow_label_emailing />
-                <p>
-                    {__( 'If checked, the generated labels will be emailed to the e-shop administrator', 'packetery' )}
-                </p>
-            </th>
-            <td>
-                <input n:name=packetery-allow_label_emailing>
-            </td>
-        </tr>
-    </table>
-    <p class="submit">
-        <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
-    </p>
-</form>
+        <table class="form-table" role="presentation">
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-api_password />
+                </th>
+                <td>
+                    <input n:name=packetery-api_password>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-sender />
+                </th>
+                <td>
+                    <input n:name=packetery-sender>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-packeta_label_format />
+                </th>
+                <td>
+                    <select n:name=packetery-packeta_label_format></select>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-carrier_label_format />
+                </th>
+                <td>
+                    <select n:name=packetery-carrier_label_format></select>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-allow_label_emailing />
+                    <p>
+                        {__( 'If checked, the generated labels will be emailed to the e-shop administrator', 'packetery' )}
+                    </p>
+                </th>
+                <td>
+                    <input n:name=packetery-allow_label_emailing>
+                </td>
+            </tr>
+        </table>
+        <p class="submit">
+            <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
+        </p>
+    </form>
+</div>
+<style>
+    #packetery-options-page input[type=text],select {
+        width: 100%;
+    }
+</style>
