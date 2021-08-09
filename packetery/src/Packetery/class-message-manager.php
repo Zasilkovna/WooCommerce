@@ -52,7 +52,7 @@ class Message_Manager {
 	 * @param string $message Text.
 	 * @param string $type Type of message.
 	 */
-	private function flash_message( string $message, string $type = 'success' ): void {
+	public function flash_message( string $message, string $type = 'success' ): void {
 		$message          = array(
 			'type'    => $type,
 			'message' => $message,
@@ -60,15 +60,6 @@ class Message_Manager {
 		$this->messages[] = $message;
 
 		\set_transient( 'packetery_message_manager_messages', $this->messages, 120 );
-	}
-
-	/**
-	 * Shows error message to end user.
-	 *
-	 * @param string $message Message.
-	 */
-	public function flash_error_message( string $message ): void {
-		$this->flash_message( $message, 'error' );
 	}
 
 	/**

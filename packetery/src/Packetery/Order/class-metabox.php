@@ -170,7 +170,7 @@ class Metabox {
 
 		if ( $this->order_form->isValid() === false ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
-			$this->message_manager->flash_error_message( __( 'Error happened in Packeta fields!', 'packetery' ) );
+			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packetery' ), 'error' );
 
 			return $post_id;
 		}
@@ -178,13 +178,13 @@ class Metabox {
 		$values = $this->order_form->getValues();
 
 		if ( ! wp_verify_nonce( $values->packetery_order_metabox_nonce ) ) {
-			$this->message_manager->flash_error_message( __( 'Session has expired! Please try again.', 'packetery' ) );
+			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packetery' ), 'error' );
 
 			return $post_id;
 		}
 
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			$this->message_manager->flash_error_message( __( 'You are not allowed to edit posts!', 'packetery' ) );
+			$this->message_manager->flash_message( __( 'You are not allowed to edit posts!', 'packetery' ), 'error' );
 
 			return $post_id;
 		}
