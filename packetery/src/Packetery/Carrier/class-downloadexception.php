@@ -5,7 +5,7 @@
  * @package Packetery
  */
 
-namespace Packetery\API;
+namespace Packetery\Carrier;
 
 /**
  * Class DownloadException.

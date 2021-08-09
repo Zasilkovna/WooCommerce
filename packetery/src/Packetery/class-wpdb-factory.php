@@ -21,7 +21,7 @@ class Wpdb_Factory {
 	 *
 	 * @return \wpdb
 	 */
-	public function create() {
+	public function create(): \wpdb {
 		global $wpdb;
 		$wpdb->packetery_carrier = $wpdb->prefix . 'packetery_carrier';
 

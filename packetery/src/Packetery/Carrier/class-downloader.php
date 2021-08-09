@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Carrier;
 
 use Packetery\Options\Provider;
-use Packetery\API\DownloadException;
 
 /**
  * Class Downloader
