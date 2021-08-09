@@ -46,13 +46,22 @@ class Wrapper {
 	}
 
 	/**
+	 * Tells if order has Packeta shipping.
+	 *
+	 * @return bool
+	 */
+	public function is_packetery_related(): bool {
+		return $this->order->has_shipping_method( 'packetery_shipping_method' ); // todo Move to service?
+	}
+
+	/**
 	 * Gets meta from order and handles default value.
 	 *
 	 * @param string $key Meta order key.
 	 *
 	 * @return string|null
 	 */
-	private function get_meta( string $key ) {
+	private function get_meta_as_string( string $key ) {
 		$value = $this->order->get_meta( $key, true );
 		if ( ! $value ) {
 			return null;
@@ -62,12 +71,21 @@ class Wrapper {
 	}
 
 	/**
+	 * Selected pickup point ID
+	 *
+	 * @return string|null
+	 */
+	public function get_point_id(): ?string {
+		return $this->get_meta_as_string( 'packetery_point_id' );
+	}
+
+	/**
 	 * Packet ID
 	 *
 	 * @return string|null
 	 */
 	public function get_packet_id(): ?string {
-		return $this->get_meta( 'packetery_packet_id' );
+		return $this->get_meta_as_string( 'packetery_packet_id' );
 	}
 
 	/**
@@ -76,7 +94,7 @@ class Wrapper {
 	 * @return string|null
 	 */
 	public function get_point_name(): ?string {
-		return $this->get_meta( 'packetery_point_name' );
+		return $this->get_meta_as_string( 'packetery_point_name' );
 	}
 
 	/**
@@ -85,7 +103,7 @@ class Wrapper {
 	 * @return string|null
 	 */
 	public function get_point_url(): ?string {
-		return $this->get_meta( 'packetery_point_url' );
+		return $this->get_meta_as_string( 'packetery_point_url' );
 	}
 
 	/**
@@ -95,12 +113,19 @@ class Wrapper {
 	 */
 	public function get_point_address(): string {
 		return implode(
-			' ',
+			', ',
 			array_filter(
 				array(
-					$this->get_meta( 'packetery_point_street' ),
-					$this->get_meta( 'packetery_point_city' ),
-					$this->get_meta( 'packetery_point_zip' ),
+					$this->get_meta_as_string( 'packetery_point_street' ),
+					implode(
+						' ',
+						array_filter(
+							array(
+								$this->get_meta_as_string( 'packetery_point_zip' ),
+								$this->get_meta_as_string( 'packetery_point_city' ),
+							)
+						)
+					),
 				)
 			)
 		);

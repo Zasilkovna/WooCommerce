@@ -152,10 +152,15 @@ class Plugin {
 		add_action(
 			'woocommerce_email_footer',
 			function () {
+				$order = \Packetery\Order\Wrapper::from_globals();
+				if ( $order->is_packetery_related() === false ) {
+					return;
+				}
+
 				$this->latte_engine->render(
 					PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
 					array(
-						'order' => \Packetery\Order\Wrapper::from_globals(),
+						'order' => $order,
 					)
 				);
 			}
