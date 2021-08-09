@@ -17,6 +17,8 @@ namespace Packetery;
  */
 class Message_Manager {
 
+	public const TYPE_ERROR = 'error';
+
 	/**
 	 * Latte engine.
 	 *
