@@ -9,6 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
+use Packetery\Carrier\Downloader;
+use Packetery\Carrier\Repository;
+
 /**
  * Class Plugin
  *
@@ -27,6 +30,13 @@ class Plugin {
 	private $options_page;
 
 	/**
+	 * Carrier downloader object.
+	 *
+	 * @var Downloader
+	 */
+	private $carrier_downloader;
+
+	/**
 	 * Path to main plugin file.
 	 *
 	 * @var string Path to main plugin file.
@@ -34,13 +44,24 @@ class Plugin {
 	private $main_file_path;
 
 	/**
+	 * Carrier repository.
+	 *
+	 * @var Repository
+	 */
+	private $carrier_repository;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Options\Page $options_page Options page.
+	 * @param Repository   $carrier_repository Carrier repository.
+	 * @param Downloader   $carrier_downloader Carrier downloader object.
 	 */
-	public function __construct( Options\Page $options_page ) {
-		$this->options_page   = $options_page;
-		$this->main_file_path = PACKETERY_PLUGIN_DIR . '/packetery.php';
+	public function __construct( Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader ) {
+		$this->options_page       = $options_page;
+		$this->carrier_repository = $carrier_repository;
+		$this->carrier_downloader = $carrier_downloader;
+		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
 	}
 
 	/**
@@ -78,6 +99,16 @@ class Plugin {
 		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
 		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
+
+		add_action(
+			'packetery_cron_carriers_hook',
+			function () {
+				$this->carrier_downloader->run();
+			}
+		);
+		if ( ! wp_next_scheduled( 'packetery_cron_carriers_hook' ) ) {
+			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
+		}
 	}
 
 	/**
@@ -123,7 +154,7 @@ class Plugin {
 	 */
 	public function activate(): void {
 		$this->init();
-		CarrierRepository::create();
+		$this->carrier_repository->create_table();
 	}
 
 	/**
@@ -131,7 +162,9 @@ class Plugin {
 	 * Only a static class method or function can be used in an uninstall hook.
 	 */
 	public static function uninstall(): void {
-		CarrierRepository::drop();
+		$container  = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
+		$repository = $container->getByType( Repository::class );
+		$repository->drop();
 	}
 
 	/**
