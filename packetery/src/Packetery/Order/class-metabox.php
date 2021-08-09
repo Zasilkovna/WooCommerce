@@ -117,7 +117,7 @@ class Metabox {
 
 		if ( $packetery_packet_id ) {
 			$this->latte_engine->render(
-				PACKETERY_PLUGIN_DIR . '/template/Order/metabox-overview.latte',
+				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				array(
 					'packet_id'           => $packetery_packet_id,
 					'packet_tracking_url' => $this->helper->get_tracking_url( $packetery_packet_id ),
@@ -145,7 +145,7 @@ class Metabox {
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
 		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/Order/metabox-form.latte',
+			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			array(
 				'form' => $this->order_form,
 			)
