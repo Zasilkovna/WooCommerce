@@ -7,3 +7,9 @@ services:
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	optionsPage: Packetery\Options\Page
 	optionsProvider: Packetery\Options\Provider
+	carrier_downloader: Packetery\Carrier\Downloader
+	carrier_updater: Packetery\Carrier\Updater
+	carrier_repository: Packetery\Carrier\Repository
+	guzzle_client: GuzzleHttp\Client
+	wpdbFactory: Packetery\Wpdb_Factory
+	wpdb: @wpdbFactory::create()
