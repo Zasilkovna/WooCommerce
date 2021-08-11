@@ -62,7 +62,7 @@ class Repository {
 				`max_weight` float NOT NULL,
 				`deleted` boolean NOT NULL,
 				UNIQUE (`id`)
-			) ENGINE=MyISAM;'
+			) ' . $wpdb->get_charset_collate()
 		);
 	}
 
