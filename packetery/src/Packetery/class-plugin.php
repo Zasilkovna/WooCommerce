@@ -31,6 +31,13 @@ class Plugin {
 	private $options_page;
 
 	/**
+	 * Latte engine.
+	 *
+	 * @var \Latte\Engine
+	 */
+	private $latte_engine;
+
+	/**
 	 * Carrier downloader object.
 	 *
 	 * @var Downloader
@@ -89,9 +96,11 @@ class Plugin {
 	 * @param Repository      $carrier_repository Carrier repository.
 	 * @param Downloader      $carrier_downloader Carrier downloader object.
 	 * @param Checkout        $checkout Checkout class.
+	 * @param \Latte\Engine   $latte_engine Latte engine.
 	 */
-	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout ) {
+	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \Latte\Engine $latte_engine ) {
 		$this->options_page       = $options_page;
+		$this->latte_engine       = $latte_engine;
 		$this->carrier_repository = $carrier_repository;
 		$this->carrier_downloader = $carrier_downloader;
 		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
@@ -140,6 +149,7 @@ class Plugin {
 			}
 		);
 
+		add_action( 'woocommerce_email_footer', array( $this, 'render_email_footer' ) );
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
 		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
 		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
@@ -157,6 +167,23 @@ class Plugin {
 		if ( ! wp_next_scheduled( 'packetery_cron_carriers_hook' ) ) {
 			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
 		}
+	}
+
+	/**
+	 *  Renders email footer.
+	 */
+	public function render_email_footer(): void {
+		$order = \Packetery\Order\Entity::from_globals();
+		if ( $order->is_packetery_related() === false ) {
+			return;
+		}
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
+			array(
+				'order' => $order,
+			)
+		);
 	}
 
 	/**

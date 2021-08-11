@@ -1,0 +1,19 @@
+{varType \Packetery\Order\Entity $order}
+
+<h2>
+    {__( 'Shipping Detail', 'packetery' )}
+</h2>
+<table class="td" style="border-spacing: 0; border: 0; vertical-align: middle; width: 100%;">
+    <tr>
+        <th class="td">{__( 'Pickup Point Name', 'packetery' )}</th>
+        <td class="td">{$order->get_point_name()}</td>
+    </tr>
+    <tr>
+        <th class="td">{__( 'Pickup Point Detail', 'packetery' )}</th>
+        <td class="td"><a href="{$order->get_point_url()}">{__( 'Link', 'packetery' )}</a></td>
+    </tr>
+    <tr>
+        <th class="td">{__( 'Point Address', 'packetery' )}</th>
+        <td class="td">{$order->get_point_address()}</td>
+    </tr>
+</table>

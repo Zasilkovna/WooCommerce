@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-08-05T15:54:15+02:00\n"
-"PO-Revision-Date: 2021-08-06 13:33+0200\n"
+"POT-Creation-Date: 2021-08-11T09:52:30+02:00\n"
+"PO-Revision-Date: 2021-08-11 09:53+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -18,6 +18,9 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #. Author of the plugin
+#: src/Packetery/Options/class-page.php:52
+#: src/Packetery/Order/class-metabox.php:80
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:14
 msgid "Packeta"
 msgstr "Zásilkovna"
 
@@ -34,29 +37,30 @@ msgid "https://www.packeta.com/"
 msgstr "https://www.zasilkovna.cz/"
 
 #: packetery.php:48 src/Packetery/class-plugin.php:109
-#: src/Packetery/class-plugin.php:147
+#: src/Packetery/class-plugin.php:256
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
-#: packetery.php:48 src/Packetery/class-plugin.php:110
+#: packetery.php:51 src/Packetery/Options/class-page.php:42
+#: src/Packetery/class-plugin.php:257 src/Packetery/Options/class-page.php:51
 msgid "Settings"
 msgstr "Nastavení"
 
 #: packetery.php:67 src/Packetery/class-plugin.php:131
-#: src/Packetery/class-plugin.php:169
+#: src/Packetery/class-plugin.php:278
 msgid "View Packeta documentation"
 msgstr "Zobrazit Packeta dokumentaci"
 
 #: packetery.php:67 src/Packetery/class-plugin.php:132
-#: src/Packetery/class-plugin.php:170
+#: src/Packetery/class-plugin.php:279
 msgid "Documentation"
 msgstr "Dokumentace"
 
-#: src/Packetery/class-plugin.php:202 src/Packetery/class-plugin.php:231
+#: src/Packetery/class-plugin.php:202 src/Packetery/class-plugin.php:340
 msgid "Barcode"
 msgstr "Trasovací číslo"
 
-#: src/Packetery/class-plugin.php:203 src/Packetery/class-plugin.php:232
+#: src/Packetery/class-plugin.php:203 src/Packetery/class-plugin.php:341
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
 
@@ -136,6 +140,7 @@ msgid "Main Settings"
 msgstr "Hlavní nastavení"
 
 #: temp/cache/view/template-options-page.latte--19c711edd6.php:103
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:109
 msgid ""
 "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
@@ -143,6 +148,7 @@ msgstr ""
 "shopu."
 
 #: src/Packetery/Order/class-metabox.php:97
+#: src/Packetery/Order/class-metabox.php:96
 msgid "Weight (kg)"
 msgstr "Váha (kg)"
 
@@ -150,29 +156,92 @@ msgstr "Váha (kg)"
 #: src/Packetery/Order/class-metabox.php:102
 #: src/Packetery/Order/class-metabox.php:105
 #: src/Packetery/Order/class-metabox.php:108
+#: src/Packetery/Order/class-metabox.php:98
+#: src/Packetery/Order/class-metabox.php:101
+#: src/Packetery/Order/class-metabox.php:104
+#: src/Packetery/Order/class-metabox.php:107
 msgid "Provide numeric value!"
 msgstr "Zadejte číslo!"
 
 #: src/Packetery/Order/class-metabox.php:100
+#: src/Packetery/Order/class-metabox.php:99
 msgid "Width (mm)"
 msgstr "Šířka (mm)"
 
 #: src/Packetery/Order/class-metabox.php:103
+#: src/Packetery/Order/class-metabox.php:102
 msgid "Length (mm)"
 msgstr "Délka (mm)"
 
 #: src/Packetery/Order/class-metabox.php:106
+#: src/Packetery/Order/class-metabox.php:105
 msgid "Height (mm)"
 msgstr "Výška (mm)"
 
 #: src/Packetery/Order/class-metabox.php:166
+#: src/Packetery/Order/class-metabox.php:173
 msgid "Error happened in Packeta fields!"
 msgstr "Nastala chyba v polích Zásilkovny!"
 
 #: src/Packetery/Order/class-metabox.php:174
+#: src/Packetery/Order/class-metabox.php:181
 msgid "Session has expired! Please try again."
 msgstr "Relace vypršela! Zkuste to prosím znovu."
 
 #: src/Packetery/Order/class-metabox.php:180
+#: src/Packetery/Order/class-metabox.php:187
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:21
+msgid "Pickup Point Name"
+msgstr "Název výdejního místa"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:29
+msgid "Pickup Point Detail"
+msgstr "Detail výdejního místa"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:34
+msgid "Link"
+msgstr "Odkaz"
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:39
+msgid "Point Address"
+msgstr "Adresa výdejního místa"
+
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:16
+msgid "Options"
+msgstr "Nastavení"
+
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/class-downloader.php:66
+#: src/Packetery/Carrier/class-downloader.php:76
+#: src/Packetery/Carrier/class-downloader.php:87
+msgid "Carrier download failed: %failReason Please try again later."
+msgstr ""
+
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/class-downloader.php:77
+msgid "Failed to get the list."
+msgstr ""
+
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/class-downloader.php:88
+msgid "Invalid API response."
+msgstr ""
+
+#: src/Packetery/Carrier/class-downloader.php:95
+msgid "Carriers were updated."
+msgstr ""
+
+#. translators: keep %s intact.
+#: src/Packetery/class-checkout.php:201
+msgid "Pick up point attribute %s is not given."
+msgstr ""
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:15
+msgid "Shipping Detail"
+msgstr "Detail výdejního místa"
+
+#~ msgid "Packeta Information"
+#~ msgstr "Zásilkovní Informace"
