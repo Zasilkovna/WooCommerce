@@ -78,18 +78,18 @@ class Plugin {
 	 * @param Message_Manager $message_manager Message manager.
 	 * @param Helper          $helper Helper.
 	 * @param Options\Page    $options_page Options page.
-	 * @param Repository   $carrier_repository Carrier repository.
-	 * @param Downloader   $carrier_downloader Carrier downloader object.
+	 * @param Repository      $carrier_repository Carrier repository.
+	 * @param Downloader      $carrier_downloader Carrier downloader object.
 	 */
 	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader ) {
 		$this->options_page       = $options_page;
 		$this->carrier_repository = $carrier_repository;
 		$this->carrier_downloader = $carrier_downloader;
-		$this->main_file_path  = PACKETERY_PLUGIN_DIR . '/packetery.php';
-		$this->order_metabox   = $order_metabox;
-		$this->message_manager = $message_manager;
-		$this->helper          = $helper;
-		$this->options_page    = $options_page;
+		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
+		$this->order_metabox      = $order_metabox;
+		$this->message_manager    = $message_manager;
+		$this->helper             = $helper;
+		$this->options_page       = $options_page;
 	}
 
 	/**
