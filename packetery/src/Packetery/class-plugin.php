@@ -20,7 +20,8 @@ use Packetery\Order;
  */
 class Plugin {
 
-	public const DOMAIN = 'packetery';
+	public const VERSION = '1.0.0';
+	public const DOMAIN  = 'packetery';
 
 	/**
 	 * Options page.
@@ -72,6 +73,13 @@ class Plugin {
 	private $helper;
 
 	/**
+	 * Checkout object.
+	 *
+	 * @var Checkout
+	 */
+	private $checkout;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox   $order_metabox Order metabox.
@@ -80,8 +88,9 @@ class Plugin {
 	 * @param Options\Page    $options_page Options page.
 	 * @param Repository      $carrier_repository Carrier repository.
 	 * @param Downloader      $carrier_downloader Carrier downloader object.
+	 * @param Checkout        $checkout Checkout class.
 	 */
-	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader ) {
+	public function __construct( Order\Metabox $order_metabox, Message_Manager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout ) {
 		$this->options_page       = $options_page;
 		$this->carrier_repository = $carrier_repository;
 		$this->carrier_downloader = $carrier_downloader;
@@ -90,6 +99,7 @@ class Plugin {
 		$this->message_manager    = $message_manager;
 		$this->helper             = $helper;
 		$this->options_page       = $options_page;
+		$this->checkout           = $checkout;
 	}
 
 	/**
@@ -135,6 +145,8 @@ class Plugin {
 		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		$this->order_metabox->register();
+
+		$this->checkout->register_hooks();
 
 		add_action(
 			'packetery_cron_carriers_hook',

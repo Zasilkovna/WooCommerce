@@ -1,0 +1,88 @@
+<script>
+	jQuery(function ($) {
+		$.getScript("https://widget.packeta.com/v6/www/js/library.js")
+
+		var $widgetDiv = $('.packeta-widget');
+		var shippingMethodSelector = '#shipping_method input[type="radio"]';
+		var pickupPointAttributes = {
+			{foreach $pickup_point_attrs as $id => $attr}
+			'{$attr['name']|noescape}': '{$id|noescape}',
+			{/foreach}
+		};
+		var ratesWithInfo = [];
+		var saveInfoForCarrierRate = function (carrierRateId) {
+			for (attribute in pickupPointAttributes) {
+				$widgetDiv.data(carrierRateId + '-' + attribute, $('#' + attribute).val());
+			}
+			ratesWithInfo.push(carrierRateId);
+		}
+		var loadInfoForCarrierRate = function (carrierRateId) {
+			for (attribute in pickupPointAttributes) {
+				$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
+			}
+			$widgetDiv.find('.packeta-pickup-point-name').html($('#point_name').val());
+		}
+		var clearPickupPointInfo = function () {
+			for (carrierRateId of ratesWithInfo) {
+				for (attribute in pickupPointAttributes) {
+					$widgetDiv.data(carrierRateId + '-' + attribute, '');
+					$('#' + attribute).val('');
+				}
+			}
+			$widgetDiv.find('.packeta-pickup-point-name').html('');
+		}
+		var updateWidgetButtonVisibility = function(carrierRateId) {
+			if (this.value.startsWith('packeta-zpoint-')) {
+				if (!$widgetDiv.is(':visible')) {
+					$widgetDiv.show();
+				}
+				loadInfoForCarrierRate(this.value);
+			} else {
+				$widgetDiv.hide();
+			}
+
+		}
+
+		$(document).on('change', '#billing_country, #shipping_country, #ship-to-different-address-checkbox', function () {
+			var shippingCountry;
+			if ($('#shipping_country:visible').length === 1) {
+				shippingCountry = $('#shipping_country').val().toLowerCase();
+			} else {
+				shippingCountry = $('#billing_country').val().toLowerCase();
+			}
+			if (shippingCountry !== $widgetDiv.data('country')) {
+				clearPickupPointInfo();
+				// TODO: ve chvili volani je jeste vybrana stara metoda
+				updateWidgetButtonVisibility($(shippingMethodSelector + ':checked').val());
+			}
+		});
+
+		$(document).on('change', shippingMethodSelector, function () {
+			updateWidgetButtonVisibility(this.value);
+		});
+
+		$('.packeta-widget-button').click(function (e) {
+			e.preventDefault();
+			var widgetOptions = {
+				appIdentity: {$app_identity},
+				country: $widgetDiv.data('country'),
+				language: $widgetDiv.data('language'),
+				weight: $widgetDiv.data('weight'),
+			};
+			Packeta.Widget.pick({$packetery_api_key}, function (pickupPoint) {
+				if (pickupPoint != null) {
+
+					// show selected pickup point
+					$widgetDiv.find('.packeta-pickup-point-name').html(pickupPoint.name);
+
+					// fill hidden inputs
+					{foreach $pickup_point_attrs as $id => $attr}
+					$('#{$attr['name']|noescape}').val(pickupPoint.{$id|noescape});
+					{/foreach}
+
+					saveInfoForCarrierRate($(shippingMethodSelector + ':checked').val());
+				}
+			}, widgetOptions);
+		});
+	});
+</script>
