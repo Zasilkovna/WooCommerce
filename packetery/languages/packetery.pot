@@ -9,13 +9,16 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-08-05T15:54:15+02:00\n"
+"POT-Creation-Date: 2021-08-11T09:52:30+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
+#: src/Packetery/Options/class-page.php:52
+#: src/Packetery/Order/class-metabox.php:80
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:14
 msgid "Packeta"
 msgstr ""
 
@@ -33,29 +36,36 @@ msgstr ""
 
 #: packetery.php:48
 #: src/Packetery/class-plugin.php:109
+#: src/Packetery/class-plugin.php:256
 msgid "View Packeta settings"
 msgstr ""
 
 #: packetery.php:51
 #: src/Packetery/Options/class-page.php:42
+#: src/Packetery/class-plugin.php:257
+#: src/Packetery/Options/class-page.php:51
 msgid "Settings"
 msgstr ""
 
 #: packetery.php:67
 #: src/Packetery/class-plugin.php:131
+#: src/Packetery/class-plugin.php:278
 msgid "View Packeta documentation"
 msgstr ""
 
 #: packetery.php:67
 #: src/Packetery/class-plugin.php:132
+#: src/Packetery/class-plugin.php:279
 msgid "Documentation"
 msgstr ""
 
 #: src/Packetery/class-plugin.php:202
+#: src/Packetery/class-plugin.php:340
 msgid "Barcode"
 msgstr ""
 
 #: src/Packetery/class-plugin.php:203
+#: src/Packetery/class-plugin.php:341
 msgid "Pick up point or carrier"
 msgstr ""
 
@@ -134,8 +144,8 @@ msgstr ""
 msgid "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
 
-
 #: src/Packetery/Order/class-metabox.php:97
+#: src/Packetery/Order/class-metabox.php:96
 msgid "Weight (kg)"
 msgstr ""
 
@@ -143,33 +153,42 @@ msgstr ""
 #: src/Packetery/Order/class-metabox.php:102
 #: src/Packetery/Order/class-metabox.php:105
 #: src/Packetery/Order/class-metabox.php:108
+#: src/Packetery/Order/class-metabox.php:98
+#: src/Packetery/Order/class-metabox.php:101
+#: src/Packetery/Order/class-metabox.php:104
+#: src/Packetery/Order/class-metabox.php:107
 msgid "Provide numeric value!"
 msgstr ""
 
 #: src/Packetery/Order/class-metabox.php:100
+#: src/Packetery/Order/class-metabox.php:99
 msgid "Width (mm)"
 msgstr ""
 
 #: src/Packetery/Order/class-metabox.php:103
+#: src/Packetery/Order/class-metabox.php:102
 msgid "Length (mm)"
 msgstr ""
 
 #: src/Packetery/Order/class-metabox.php:106
+#: src/Packetery/Order/class-metabox.php:105
 msgid "Height (mm)"
 msgstr ""
 
 #: src/Packetery/Order/class-metabox.php:166
+#: src/Packetery/Order/class-metabox.php:173
 msgid "Error happened in Packeta fields!"
 msgstr ""
 
 #: src/Packetery/Order/class-metabox.php:174
+#: src/Packetery/Order/class-metabox.php:181
 msgid "Session has expired! Please try again."
 msgstr ""
 
 #: src/Packetery/Order/class-metabox.php:180
+#: src/Packetery/Order/class-metabox.php:187
 msgid "You are not allowed to edit posts!"
 msgstr ""
-
 
 #: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:21
 msgid "Pickup Point Name"
@@ -189,4 +208,34 @@ msgstr ""
 
 #: temp/cache/view/template-options-page.latte--19c711edd6.php:16
 msgid "Options"
+msgstr ""
+
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/class-downloader.php:66
+#: src/Packetery/Carrier/class-downloader.php:76
+#: src/Packetery/Carrier/class-downloader.php:87
+msgid "Carrier download failed: %failReason Please try again later."
+msgstr ""
+
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/class-downloader.php:77
+msgid "Failed to get the list."
+msgstr ""
+
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/class-downloader.php:88
+msgid "Invalid API response."
+msgstr ""
+
+#: src/Packetery/Carrier/class-downloader.php:95
+msgid "Carriers were updated."
+msgstr ""
+
+#. translators: keep %s intact.
+#: src/Packetery/class-checkout.php:201
+msgid "Pick up point attribute %s is not given."
+msgstr ""
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:15
+msgid "Shipping Detail"
 msgstr ""
