@@ -15,7 +15,7 @@ namespace Packetery\Order;
  *
  * @package Packetery\Order
  */
-class Wrapper {
+class Entity {
 
 	/**
 	 * Order.

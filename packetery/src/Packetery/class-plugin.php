@@ -173,7 +173,7 @@ class Plugin {
 	 *  Renders email footer.
 	 */
 	public function render_email_footer(): void {
-		$order = \Packetery\Order\Wrapper::from_globals();
+		$order = \Packetery\Order\Entity::from_globals();
 		if ( $order->is_packetery_related() === false ) {
 			return;
 		}
