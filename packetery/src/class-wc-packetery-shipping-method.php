@@ -56,15 +56,32 @@ class WC_Packetery_Shipping_Method extends WC_Shipping_Method {
 	 * @return void
 	 */
 	public function calculate_shipping( $package = array() ): void {
-		// TODO: This is where you'll add your rates.
-		$default_rate = array(
-			'label'    => 'Packeta shipping rate',
-			'cost'     => 0,
-			'taxes'    => '',
-			'calc_tax' => 'per_order',
+		$custom_rates = array(
+			array(
+				'label'    => 'Packeta ZPoint rate 1',
+				'id'       => 'packeta-zpoint-1',
+				'cost'     => 0,
+				'taxes'    => '',
+				'calc_tax' => 'per_order',
+			),
+			array(
+				'label'    => 'Packeta ZPoint rate 2',
+				'id'       => 'packeta-zpoint-2',
+				'cost'     => 0,
+				'taxes'    => '',
+				'calc_tax' => 'per_order',
+			),
+			array(
+				'label'    => 'Packeta HD rate',
+				'id'       => 'packeta-hd-1',
+				'cost'     => 0,
+				'taxes'    => '',
+				'calc_tax' => 'per_order',
+			),
 		);
 
-		// Register the rate.
-		$this->add_rate( $default_rate );
+		foreach ( $custom_rates as $custom_rate ) {
+			$this->add_rate( $custom_rate );
+		}
 	}
 }
