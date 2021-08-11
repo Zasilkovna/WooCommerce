@@ -2,6 +2,9 @@ parameters:
     latteTempFolder: %tempDir%/cache/view
 
 services:
+	helper: Packetery\Helper
+	message_manager: Packetery\Message_Manager
+	admin_order_page_metabox: Packetery\Order\Metabox
 	plugin: Packetery\Plugin
 	latteEngineFactory: Packetery\Latte_Engine_Factory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)

@@ -90,7 +90,7 @@ class Page {
 				'105x35mm on A4' => __( '105x35 mm label on a page of size 210x297 mm (A4)', 'packetery' ),
 				'A8 on A8'       => __( '50x74 mm (A8) label on a page of the same size', 'packetery' ),
 			)
-		);
+		)->checkDefaultValue( false );
 		$container->addSelect(
 			'carrier_label_format',
 			__( 'Carrier Label Format', 'packetery' ),
@@ -98,7 +98,7 @@ class Page {
 				'A6 on A4' => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
 				'A6 on A6' => __( '105x148 mm (A6) label on a page of the same size (offset argument is ignored for this format)', 'packetery' ),
 			)
-		);
+		)->checkDefaultValue( false );
 
 		$container->addCheckbox(
 			'allow_label_emailing',
