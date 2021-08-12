@@ -99,6 +99,17 @@ class Repository {
 	}
 
 	/**
+	 * Gets all active countries.
+	 *
+	 * @return array|null
+	 */
+	public function getCountries(): ?array {
+		$wpdb = $this->get_wpdb();
+
+		return $wpdb->get_results( 'SELECT `country` FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
+	}
+
+	/**
 	 * Set those not in feed as deleted.
 	 *
 	 * @param array $carriers_in_feed Carriers in feed.

@@ -1,0 +1,22 @@
+<div class="packetery-options-page">
+	<h1>{__( 'Packeta', 'packetery' )} - {__( 'Countries', 'packetery' )}</h1>
+
+	{if $countries}
+		<table>
+			<tr>
+				<th>{__( 'Country name', 'packetery' )}</th>
+				<th>{__( 'Country code', 'packetery' )}</th>
+				<th>{__( 'Action', 'packetery' )}</th>
+			</tr>
+			{foreach $countries as $country}
+				<tr>
+					<td>{$country['name']}</td>
+					<td>{$country['code']|upper}</td>
+					<td><a class="button" href="{$country['url']}">{__( 'Set up', 'packetery' )}</a></td>
+				</tr>
+			{/foreach}
+		</table>
+	{else}
+		{__( 'No active countries.', 'packetery' )}
+	{/if}
+</div>

@@ -57,19 +57,28 @@ class OptionsPage {
 	private $zpointCarriers;
 
 	/**
+	 * CountryListingPage.
+	 *
+	 * @var CountryListingPage CountryListingPage.
+	 */
+	private $countryListingPage;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param \Latte\Engine $latteEngine Latte_engine.
-	 * @param Repository    $carrierRepository Carrier repository.
-	 * @param FormFactory   $formFactory Form factory.
-	 * @param Request       $httpRequest Nette Request.
+	 * @param \Latte\Engine      $latteEngine Latte_engine.
+	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param FormFactory        $formFactory Form factory.
+	 * @param Request            $httpRequest Nette Request.
+	 * @param CountryListingPage $countryListingPage CountryListingPage.
 	 */
-	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest ) {
-		$this->latteEngine       = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
-		$this->formFactory       = $formFactory;
-		$this->httpRequest       = $httpRequest;
-		$this->zpointCarriers    = [
+	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
+		$this->latteEngine        = $latteEngine;
+		$this->carrierRepository  = $carrierRepository;
+		$this->formFactory        = $formFactory;
+		$this->httpRequest        = $httpRequest;
+		$this->countryListingPage = $countryListingPage;
+		$this->zpointCarriers     = [
 			'cz' => [
 				'id'   => 'zpointcz',
 				'name' => __( 'CZ Packeta pickup points', 'packetery' ),
@@ -253,7 +262,7 @@ class OptionsPage {
 				)
 			);
 		} else {
-			// TODO: countries overview - fix in PES-263, CountryListingPage class.
+			$this->countryListingPage->render();
 		}
 	}
 
