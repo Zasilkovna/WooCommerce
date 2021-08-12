@@ -15,5 +15,5 @@ services:
 	carrierRepository: Packetery\Carrier\Repository
 	guzzleClient: GuzzleHttp\Client
 	wpdbFactory: Packetery\WpdbFactory
-	wpdb: @wpdb_factory::create()
+	wpdb: @wpdbFactory::create()
 	checkout: Packetery\Checkout
