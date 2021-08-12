@@ -11,7 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Order;
 
 use Packetery\Helper;
-use Packetery\Message_Manager;
+use Packetery\MessageManager;
 
 /**
  * Class Metabox
@@ -30,7 +30,7 @@ class Metabox {
 	/**
 	 * Message manager.
 	 *
-	 * @var Message_Manager
+	 * @var MessageManager
 	 */
 	private $message_manager;
 
@@ -51,11 +51,11 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param \Latte\Engine   $latte_engine Latte engine.
-	 * @param Message_Manager $message_manager Message manager.
-	 * @param Helper          $helper Helper.
+	 * @param \Latte\Engine  $latte_engine    Latte engine.
+	 * @param MessageManager $message_manager Message manager.
+	 * @param Helper         $helper          Helper.
 	 */
-	public function __construct( \Latte\Engine $latte_engine, Message_Manager $message_manager, Helper $helper ) {
+	public function __construct( \Latte\Engine $latte_engine, MessageManager $message_manager, Helper $helper ) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
@@ -170,7 +170,7 @@ class Metabox {
 
 		if ( $this->order_form->isValid() === false ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
-			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packetery' ), Message_Manager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			return $post_id;
 		}
@@ -178,13 +178,13 @@ class Metabox {
 		$values = $this->order_form->getValues();
 
 		if ( ! wp_verify_nonce( $values->packetery_order_metabox_nonce ) ) {
-			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packetery' ), Message_Manager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			return $post_id;
 		}
 
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			$this->message_manager->flash_message( __( 'You are not allowed to edit posts!', 'packetery' ), Message_Manager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'You are not allowed to edit posts!', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			return $post_id;
 		}
