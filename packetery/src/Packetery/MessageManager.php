@@ -15,7 +15,7 @@ namespace Packetery;
  *
  * @package Packetery
  */
-class Message_Manager {
+class MessageManager {
 
 	public const TYPE_ERROR = 'error';
 

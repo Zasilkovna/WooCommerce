@@ -14,7 +14,7 @@ namespace Packetery;
  *
  * @package Packetery
  */
-class Wpdb_Factory {
+class WpdbFactory {
 
 	/**
 	 * Creates wpdb factory

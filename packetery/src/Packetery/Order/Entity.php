@@ -36,11 +36,17 @@ class Entity {
 	/**
 	 * Creates value object from global variables.
 	 *
-	 * @return static
+	 * @param bool $needed
+	 *
+	 * @return static|null
 	 */
-	public static function from_globals(): self {
+	public static function from_globals(bool $needed = true): ?self {
 		global $post;
 		$order = wc_get_order( $post->ID );
+
+		if (!$needed && !$order instanceof \WC_Order) {
+			return null;
+		}
 
 		return new self( $order );
 	}

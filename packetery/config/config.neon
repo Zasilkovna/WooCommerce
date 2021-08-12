@@ -3,17 +3,17 @@ parameters:
 
 services:
 	helper: Packetery\Helper
-	message_manager: Packetery\Message_Manager
-	admin_order_page_metabox: Packetery\Order\Metabox
+	messageManager: Packetery\MessageManager
+	adminOrderPageMetabox: Packetery\Order\Metabox
 	plugin: Packetery\Plugin
-	latteEngineFactory: Packetery\Latte_Engine_Factory
+	latteEngineFactory: Packetery\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	optionsPage: Packetery\Options\Page
 	optionsProvider: Packetery\Options\Provider
-	carrier_downloader: Packetery\Carrier\Downloader
-	carrier_updater: Packetery\Carrier\Updater
-	carrier_repository: Packetery\Carrier\Repository
-	guzzle_client: GuzzleHttp\Client
-	wpdb_factory: Packetery\Wpdb_Factory
+	carrierDownloader: Packetery\Carrier\Downloader
+	carrierUpdater: Packetery\Carrier\Updater
+	carrierRepository: Packetery\Carrier\Repository
+	guzzleClient: GuzzleHttp\Client
+	wpdbFactory: Packetery\WpdbFactory
 	wpdb: @wpdb_factory::create()
 	checkout: Packetery\Checkout

@@ -32,11 +32,11 @@
 			$widgetDiv.find('.packeta-pickup-point-name').html('');
 		}
 		var updateWidgetButtonVisibility = function(carrierRateId) {
-			if (this.value.startsWith('packeta-zpoint-')) {
+			if (carrierRateId.startsWith('packeta-zpoint-')) {
 				if (!$widgetDiv.is(':visible')) {
 					$widgetDiv.show();
 				}
-				loadInfoForCarrierRate(this.value);
+				loadInfoForCarrierRate(carrierRateId);
 			} else {
 				$widgetDiv.hide();
 			}

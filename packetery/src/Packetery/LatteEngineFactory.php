@@ -15,7 +15,7 @@ namespace Packetery;
  *
  * @package Packetery
  */
-class Latte_Engine_Factory {
+class LatteEngineFactory {
 
 	/**
 	 * Creates latte engine factory

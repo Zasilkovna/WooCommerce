@@ -10,7 +10,10 @@
     <config name="minimum_supported_wp_version" value="5.0" />
 
     <!-- Rules -->
-    <rule ref="WooCommerce-Core" />
+    <rule ref="WooCommerce-Core">
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+    </rule>
 
     <rule ref="WordPress.WP.I18n">
         <properties>

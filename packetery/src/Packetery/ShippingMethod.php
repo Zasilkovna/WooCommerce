@@ -1,14 +1,17 @@
 <?php
 /**
  * Packeta shipping method class.
-
+ *
  * @package Packetery
  */
+
+namespace Packetery;
 
 /**
  * Packeta shipping method class.
  */
-class WC_Packetery_Shipping_Method extends WC_Shipping_Method {
+class ShippingMethod extends \WC_Shipping_Method {
+
 	/**
 	 * Constructor for Packeta shipping class
 	 *
@@ -39,7 +42,7 @@ class WC_Packetery_Shipping_Method extends WC_Shipping_Method {
 		// $this->init_settings(); // This is part of the settings API. Loads settings you previously init.
 
 		// Save settings in admin if you have any defined.
-		add_action(
+		\add_action(
 			'woocommerce_update_options_shipping_' . $this->id,
 			array(
 				$this,
