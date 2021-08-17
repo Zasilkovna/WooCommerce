@@ -6,5 +6,13 @@
         "latte/latte": "^2.10",
         "guzzlehttp/guzzle": "^7.3",
         "woocommerce/woocommerce-sniffs": "^0.1.0"
+    },
+    "config": {
+        "platform": {
+            "php": "7.2.34"
+        }
+    },
+    "require-dev": {
+        "tracy/tracy": "^2.8"
     }
 }

@@ -1,0 +1,114 @@
+<div class="packetery-carrier-options-page">
+	<h2>{$carrier_data['data']['name']}</h2>
+
+	{var $form = $carrier_data['form']}
+	<form n:name=$form>
+		{var $carrierId = $carrier_data['data']['id']}
+		{php settings_fields('packetery_carrier_' . $carrierId)}
+
+		<table class="form-table" role="presentation">
+			<tr>
+				<th scope="row">
+					<label n:name=packetery_carrier_$carrierId-active />
+				</th>
+				<td>
+					<input n:name=packetery_carrier_$carrierId-active>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">
+					<label n:name=packetery_carrier_$carrierId-name />
+				</th>
+				<td>
+					<input n:name=packetery_carrier_$carrierId-name>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">
+					<label>{__( 'Weight rules', 'packetery' )}</label>
+				</th>
+				<td class="js-weight-rules">
+					<table>
+						{define weightRules}
+							<tr n:class="$class ?? ''" n:formContainer="$container[$id]">
+								<th scope="row">
+									<label n:name=weight />
+								</th>
+								<td>
+									<input n:name=weight>
+								</td>
+								<th scope="row">
+									<label n:name=price />
+								</th>
+								<td>
+									<input n:name=price>
+								</td>
+								<td>
+									<button type="button" class="js-delete">{__( 'Delete weight rule', 'packetery' )}</button>
+								</td>
+							</tr>
+						{/define}
+
+						{var $container = $form['packetery_carrier_' . $carrierId]['weight_limits']}
+						{foreach $container->getComponents() as $weightId => $tmp}
+							{include weightRules id => $weightId, container => $container, class => ($weightId == 0 ? 'js-template' : '')}
+						{/foreach}
+					</table>
+
+					<button type="button" class="js-add">{__( 'Add weight rule', 'packetery' )}</button>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">
+					<label>{__( 'COD surcharge rules', 'packetery' )}</label>
+				</th>
+				<td class="js-surcharge-rules">
+					<table>
+						{define surchargeRules}
+							<tr n:class="$class ?? ''" n:formContainer="$container[$id]">
+								<th scope="row">
+									<label n:name=order_price />
+								</th>
+								<td>
+									<input n:name=order_price>
+								</td>
+								<th scope="row">
+									<label n:name=surcharge />
+								</th>
+								<td>
+									<input n:name=surcharge>
+								</td>
+								<td>
+									<button type="button" class="js-delete">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
+								</td>
+							</tr>
+						{/define}
+
+						{var $container = $form['packetery_carrier_' . $carrierId]['surcharge_limits']}
+						{foreach $container->getComponents() as $surchargeId => $tmp}
+							{include surchargeRules id => $surchargeId, container => $container, class => ($surchargeId == 0 ? 'js-template' : '')}
+						{/foreach}
+					</table>
+
+					<button type="button" class="js-add">{__( 'Add COD surcharge rule', 'packetery' )}</button>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">
+					<label n:name=packetery_carrier_$carrierId-free_shipping_limit />
+				</th>
+				<td>
+					<input n:name=packetery_carrier_$carrierId-free_shipping_limit>
+					<p>
+						{__( 'After exceeding this amount, shipping is free.', 'packetery' )}
+					</p>
+				</td>
+			</tr>
+		</table>
+
+		<p class="submit">
+			<input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
+		</p>
+
+	</form>
+</div>
