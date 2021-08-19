@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Options;
 
+use Nette\Forms\Form;
 use Nette\Http\Request;
 use Packetery\Carrier\Repository;
 use Packetery\FormFactory;
@@ -131,19 +132,19 @@ class Country {
 
 		$weightLimits = $container->addContainer( 'weight_limits' );
 		if ( empty( $carrierData['weight_limits'] ) ) {
-			$this->addWeightLimit( $form, $weightLimits, 0 );
+			$this->addWeightLimit( $weightLimits, 0 );
 		} else {
 			foreach ( $carrierData['weight_limits'] as $index => $limit ) {
-				$this->addWeightLimit( $form, $weightLimits, $index );
+				$this->addWeightLimit( $weightLimits, $index );
 			}
 		}
 
 		$surchargeLimits = $container->addContainer( 'surcharge_limits' );
 		if ( empty( $carrierData['surcharge_limits'] ) ) {
-			$this->addSurchargeLimit( $form, $surchargeLimits, 0 );
+			$this->addSurchargeLimit( $surchargeLimits, 0 );
 		} else {
 			foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
-				$this->addSurchargeLimit( $form, $surchargeLimits, $index );
+				$this->addSurchargeLimit( $surchargeLimits, $index );
 			}
 		}
 
@@ -313,37 +314,35 @@ class Country {
 	/**
 	 * Adds limit fields to form.
 	 *
-	 * @param \Nette\Forms\Form      $form Form.
 	 * @param \Nette\Forms\Container $weightLimits Container.
 	 * @param int                    $index Index.
 	 *
 	 * @return void
 	 */
-	private function addWeightLimit( \Nette\Forms\Form $form, \Nette\Forms\Container $weightLimits, int $index ): void {
+	private function addWeightLimit( \Nette\Forms\Container $weightLimits, int $index ): void {
 		$limit = $weightLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
 		$item->setRequired();
-		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
 		$item->setRequired();
-		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 	}
 
 	/**
 	 * Adds limit fields to form.
 	 *
-	 * @param \Nette\Forms\Form      $form Form.
 	 * @param \Nette\Forms\Container $surchargeLimits Container.
 	 * @param int                    $index Index.
 	 *
 	 * @return void
 	 */
-	private function addSurchargeLimit( \Nette\Forms\Form $form, \Nette\Forms\Container $surchargeLimits, int $index ): void {
+	private function addSurchargeLimit( \Nette\Forms\Container $surchargeLimits, int $index ): void {
 		$limit = $surchargeLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
-		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
-		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 	}
 
 }
