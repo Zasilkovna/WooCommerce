@@ -12,7 +12,7 @@ $configurator->setTempDirectory( __DIR__ . '/temp' );
 $configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->register();
 
 if ( class_exists( Tracy\Debugger::class ) ) {
-	Tracy\Debugger::enable( Tracy\Debugger::DEVELOPMENT );
+	$configurator->enableDebugger();
 }
 
 return $configurator->createContainer();

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Options;
 
+use Nette\Http\Request;
 use Packetery\Carrier\Repository;
 use Packetery\FormFactory;
 
@@ -24,14 +25,14 @@ class Country {
 	 *
 	 * @var \Latte\Engine Latte engine.
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Carrier repository.
 	 *
 	 * @var Repository Carrier repository.
 	 */
-	private $carrier_repository;
+	private $carrierRepository;
 
 	/**
 	 * Form factory.
@@ -39,6 +40,13 @@ class Country {
 	 * @var FormFactory Form factory.
 	 */
 	private $formFactory;
+
+	/**
+	 * Nette Request.
+	 *
+	 * @var Request Nette Request.
+	 */
+	private $httpRequest;
 
 	/**
 	 * Internal pickup points.
@@ -50,30 +58,32 @@ class Country {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param \Latte\Engine $latte_engine Latte_engine.
-	 * @param Repository    $carrier_repository Carrier repository.
+	 * @param \Latte\Engine $latteEngine Latte_engine.
+	 * @param Repository    $carrierRepository Carrier repository.
 	 * @param FormFactory   $formFactory Form factory.
+	 * @param Request       $httpRequest Nette Request.
 	 */
-	public function __construct( \Latte\Engine $latte_engine, Repository $carrier_repository, FormFactory $formFactory ) {
-		$this->latte_engine       = $latte_engine;
-		$this->carrier_repository = $carrier_repository;
-		$this->formFactory        = $formFactory;
-		$this->zpointCarriers     = [
+	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest ) {
+		$this->latteEngine       = $latteEngine;
+		$this->carrierRepository = $carrierRepository;
+		$this->formFactory       = $formFactory;
+		$this->httpRequest       = $httpRequest;
+		$this->zpointCarriers    = [
 			'cz' => [
 				'id'   => 'zpointcz',
-				'name' => __( 'CZ Zásilkovna výdejní místa', 'packetery' ),
+				'name' => __( 'CZ Packeta pickup points', 'packetery' ),
 			],
 			'sk' => [
 				'id'   => 'zpointsk',
-				'name' => __( 'SK Zásilkovna výdejní místa', 'packetery' ),
+				'name' => __( 'SK Packeta pickup points', 'packetery' ),
 			],
 			'hu' => [
 				'id'   => 'zpointhu',
-				'name' => __( 'HU Zásilkovna výdejní místa', 'packetery' ),
+				'name' => __( 'HU Packeta pickup points', 'packetery' ),
 			],
 			'ro' => [
 				'id'   => 'zpointro',
-				'name' => __( 'RO Zásilkovna výdejní místa', 'packetery' ),
+				'name' => __( 'RO Packeta pickup points', 'packetery' ),
 			],
 		];
 	}
@@ -99,15 +109,14 @@ class Country {
 	/**
 	 * Creates settings form.
 	 *
-	 * @param array $carrier_data Country data.
+	 * @param array $carrierData Country data.
 	 *
 	 * @return \Nette\Forms\Form
 	 */
-	private function create_form( array $carrier_data ): \Nette\Forms\Form {
-		$optionId = 'packetery_carrier_' . $carrier_data['id'];
+	private function createForm( array $carrierData ): \Nette\Forms\Form {
+		$optionId = 'packetery_carrier_' . $carrierData['id'];
 		$form     = $this->formFactory->create( $optionId );
-		global $wp;
-		$form->setAction( add_query_arg( $wp->query_vars, '' ) );
+		$form->setAction( $this->httpRequest->getUrl() );
 
 		$container = $form->addContainer( $optionId );
 
@@ -120,41 +129,45 @@ class Country {
 					->setRequired()
 					->addRule( $form::MIN_LENGTH, __( 'Carrier display name must have at least 2 characters!', 'packetery' ), 2 );
 
-		$weight_limits       = $container->addContainer( 'weight_limits' );
-		$weight_limits_count = 0;
-		if ( isset( $carrier_data['weight_limits'] ) ) {
-			$weight_limits_count = count( $carrier_data['weight_limits'] );
+		$weightLimits      = $container->addContainer( 'weight_limits' );
+		$weightLimitsCount = 0;
+		if ( isset( $carrierData['weight_limits'] ) && count( $carrierData['weight_limits'] ) !== 0 ) {
+			$weightLimitsCount = count( $carrierData['weight_limits'] ) - 1;
 		}
-		for ( $i = 0; $i <= $weight_limits_count; $i ++ ) {
-			$limit = $weight_limits->addContainer( (string) $i );
-			$item  = $limit->addInteger( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
+		for ( $i = 0; $i <= $weightLimitsCount; $i ++ ) {
+			$limit = $weightLimits->addContainer( (string) $i );
+			$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
+			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 			if ( 0 === $i ) {
 				$item->setRequired();
 			}
-			$item = $limit->addInteger( 'price', __( 'Price', 'packetery' ) );
+			$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
+			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 			if ( 0 === $i ) {
 				$item->setRequired();
 			}
 		}
 
-		$surcharge_limits       = $container->addContainer( 'surcharge_limits' );
-		$surcharge_limits_count = 0;
-		if ( isset( $carrier_data['surcharge_limits'] ) ) {
-			$surcharge_limits_count = count( $carrier_data['surcharge_limits'] );
+		$surchargeLimits      = $container->addContainer( 'surcharge_limits' );
+		$surchargeLimitsCount = 0;
+		if ( isset( $carrierData['surcharge_limits'] ) && count( $carrierData['surcharge_limits'] ) !== 0 ) {
+			$surchargeLimitsCount = count( $carrierData['surcharge_limits'] ) - 1;
 		}
-		for ( $i = 0; $i <= $surcharge_limits_count; $i ++ ) {
-			$limit = $surcharge_limits->addContainer( (string) $i );
-			$limit->addInteger( 'order_price', __( 'Order price up to', 'packetery' ) );
-			$limit->addInteger( 'surcharge', __( 'Surcharge', 'packetery' ) );
+		for ( $i = 0; $i <= $surchargeLimitsCount; $i ++ ) {
+			$limit = $surchargeLimits->addContainer( (string) $i );
+			$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
+			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+			$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
+			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		}
 
 		$container->addInteger( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
 		$container->addHidden( 'id' );
 
 		$carrierOptions       = get_option( $optionId );
-		$carrierOptions['id'] = $carrier_data['id'];
+		$carrierOptions['id'] = $carrierData['id'];
 		if ( empty( $carrierOptions['name'] ) ) {
-			$carrierOptions['name'] = $carrier_data['name'];
+			$carrierOptions['name'] = $carrierData['name'];
 		}
 		$container->setDefaults( $carrierOptions );
 
@@ -168,16 +181,16 @@ class Country {
 	 *
 	 * @return array
 	 */
-	public function options_validate( array $options ): array {
+	public function validateOptions( array $options ): array {
 		if ( ! empty( $options['id'] ) ) {
-			$options = $this->mergeNewOptions( $options, 'weight_limits' );
+			$options = $this->validateAndMergeNewLimits( $options, 'weight_limits' );
 			$options = $this->checkOverlappingAndSort(
 				$options,
 				'weight_limits',
 				'weight',
 				__( 'Weight rules are overlapping, fix it please.', 'packetery' )
 			);
-			$options = $this->mergeNewOptions( $options, 'surcharge_limits' );
+			$options = $this->validateAndMergeNewLimits( $options, 'surcharge_limits' );
 			$options = $this->checkOverlappingAndSort(
 				$options,
 				'surcharge_limits',
@@ -185,7 +198,7 @@ class Country {
 				__( 'Surcharge rules are overlapping, fix it please.', 'packetery' )
 			);
 
-			$form     = $this->create_form( $options );
+			$form     = $this->createForm( $options );
 			$optionId = 'packetery_carrier_' . $options['id'];
 			$form[ $optionId ]->setValues( $options );
 			if ( $form->isValid() === false ) {
@@ -205,16 +218,16 @@ class Country {
 	/**
 	 * Save data if validated.
 	 */
-	public function process_form(): void {
-		$factory = new \Nette\Http\RequestFactory();
-		$request = $factory->fromGlobals();
-
-		$post = $request->getPost();
+	public function processForm(): void {
+		$post = $this->httpRequest->getPost();
 		if ( $post ) {
-			$options = $this->options_validate( $post[ $post['option_page'] ] );
+			$options = $this->validateOptions( $post[ $post['option_page'] ] );
 			if ( ! get_settings_errors() ) {
 				$optionId = 'packetery_carrier_' . $options['id'];
 				update_option( $optionId, $options );
+				if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
+					exit;
+				}
 			}
 		}
 	}
@@ -235,33 +248,32 @@ class Country {
 		}
 		*/
 
-		if ( isset( $_GET['code'] ) ) {
-			$this->process_form();
-
-			$country_iso      = sanitize_text_field( wp_unslash( $_GET['code'] ) );
-			$country_carriers = $this->carrier_repository->get_by_country( $country_iso );
+		$countryIso = $this->httpRequest->getQuery( 'code' );
+		if ( $countryIso ) {
+			$this->processForm();
+			$countryCarriers = $this->carrierRepository->getByCountry( $countryIso );
 			// Add PP for 'cz', 'sk', 'hu', 'ro'.
-			if ( ! empty( $this->zpointCarriers[ $country_iso ] ) ) {
-				array_unshift( $country_carriers, $this->zpointCarriers[ $country_iso ] );
+			if ( ! empty( $this->zpointCarriers[ $countryIso ] ) ) {
+				array_unshift( $countryCarriers, $this->zpointCarriers[ $countryIso ] );
 			}
 
-			$carriers_data = array();
-			foreach ( $country_carriers as $carrier_data ) {
-				$optionId = 'packetery_carrier_' . $carrier_data['id'];
+			$carriersData = array();
+			foreach ( $countryCarriers as $carrierData ) {
+				$optionId = 'packetery_carrier_' . $carrierData['id'];
 				$options  = get_option( $optionId );
 				if ( false !== $options ) {
-					$carrier_data += $options;
+					$carrierData += $options;
 				}
-				$carriers_data[] = array(
-					'form' => $this->create_form( $carrier_data ),
-					'data' => $carrier_data,
+				$carriersData[] = array(
+					'form' => $this->createForm( $carrierData ),
+					'data' => $carrierData,
 				);
 			}
-			$this->latte_engine->render(
+			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/options/country.latte',
 				array(
-					'forms'       => $carriers_data,
-					'country_iso' => $country_iso,
+					'forms'       => $carriersData,
+					'country_iso' => $countryIso,
 				)
 			);
 		} else {
@@ -273,25 +285,31 @@ class Country {
 	 * Transforms new_ keys to common numeric.
 	 *
 	 * @param array  $options Options to merge.
-	 * @param string $options_key Container id.
+	 * @param string $limitsContainer Container id.
 	 *
 	 * @return array
 	 */
-	private function mergeNewOptions( array $options, string $options_key ): array {
-		$new_options = array();
-		if ( isset( $options[ $options_key ] ) ) {
-			foreach ( $options[ $options_key ] as $key => $option ) {
+	private function validateAndMergeNewLimits( array $options, string $limitsContainer ): array {
+		$newOptions = array();
+		if ( isset( $options[ $limitsContainer ] ) ) {
+			foreach ( $options[ $limitsContainer ] as $key => $option ) {
 				$keys = array_keys( $option );
 				if ( $option[ $keys[0] ] && $option[ $keys[1] ] ) {
 					if ( is_int( $key ) ) {
-						$new_options[ $key ] = $option;
+						$newOptions[ $key ] = $option;
 					}
 					if ( 0 === strpos( (string) $key, 'new_' ) ) {
-						$new_options[] = $option;
+						$newOptions[] = $option;
 					}
+				} elseif (
+					( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) ||
+					( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) )
+				) {
+					// TODO: JS validation.
+					add_settings_error( $limitsContainer, $limitsContainer, esc_attr__( 'Please fill in both values for each rule.', 'packetery' ) );
 				}
 			}
-			$options[ $options_key ] = $new_options;
+			$options[ $limitsContainer ] = $newOptions;
 		}
 
 		return $options;
@@ -308,11 +326,11 @@ class Country {
 	 * @return array
 	 */
 	private function checkOverlappingAndSort( array $options, string $limitsContainer, string $limitKey, string $overlappingMessage ): array {
-		$limitsWeight = array_column( $options[ $limitsContainer ], $limitKey );
-		if ( count( array_unique( $limitsWeight, SORT_NUMERIC ) ) !== count( $limitsWeight ) ) {
+		$limits = array_column( $options[ $limitsContainer ], $limitKey );
+		if ( count( array_unique( $limits, SORT_NUMERIC ) ) !== count( $limits ) ) {
 			add_settings_error( $limitsContainer, $limitsContainer, esc_attr( $overlappingMessage ) );
 		}
-		array_multisort( $limitsWeight, SORT_ASC, $options[ $limitsContainer ] );
+		array_multisort( $limits, SORT_ASC, $options[ $limitsContainer ] );
 
 		return $options;
 	}

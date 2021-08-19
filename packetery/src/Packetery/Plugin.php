@@ -57,7 +57,7 @@ class Plugin {
 	 *
 	 * @var Country
 	 */
-	private $options_country;
+	private $optionsCountry;
 
 	/**
 	 * Path to main plugin file.
@@ -105,9 +105,9 @@ class Plugin {
 	 * @param Downloader     $carrier_downloader Carrier downloader object.
 	 * @param Checkout       $checkout           Checkout class.
 	 * @param \Latte\Engine  $latte_engine       Latte engine.
-	 * @param Country        $options_country Country options page.
+	 * @param Country        $optionsCountry     Country options page.
 	 */
-	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \Latte\Engine $latte_engine, Country $options_country ) {
+	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \Latte\Engine $latte_engine, Country $optionsCountry ) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
 		$this->carrier_repository = $carrier_repository;
@@ -118,7 +118,7 @@ class Plugin {
 		$this->helper             = $helper;
 		$this->options_page       = $options_page;
 		$this->checkout           = $checkout;
-		$this->options_country    = $options_country;
+		$this->optionsCountry     = $optionsCountry;
 	}
 
 	/**
@@ -200,7 +200,7 @@ class Plugin {
 	 */
 	public function add_menu_pages(): void {
 		$this->options_page->register();
-		$this->options_country->register();
+		$this->optionsCountry->register();
 	}
 
 	/**

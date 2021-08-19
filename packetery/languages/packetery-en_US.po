@@ -4,20 +4,24 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
+"POT-Creation-Date: 2021-08-18T23:58:43+02:00\n"
+"PO-Revision-Date: 2021-08-19 14:38+0200\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: en_US\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-07-15T10:28:16+02:00\n"
-"PO-Revision-Date: 2021-07-15 10:52+0200\n"
 "X-Generator: Poedit 3.0\n"
 "X-Domain: packetery\n"
-"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: en_US\n"
 
 #. Plugin Name of the plugin
 #. Author of the plugin
+#: src/Packetery/Options/Page.php:63 src/Packetery/Order/Metabox.php:80
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:14
+#: temp/cache/view/template-options-country.latte--3fede3af3a.php:14
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 msgid "Packeta"
 msgstr "Packeta"
 
@@ -33,18 +37,302 @@ msgstr "Todo description."
 msgid "https://www.packeta.com/"
 msgstr "https://www.packeta.com/"
 
-#: packetery.php:48
-msgid "View Packeta settings"
-msgstr "View Packeta settings"
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/Downloader.php:66
+#: src/Packetery/Carrier/Downloader.php:76
+#: src/Packetery/Carrier/Downloader.php:87
+msgid "Carrier download failed: %failReason Please try again later."
+msgstr "Carrier download failed: %failReason Please try again later."
 
-#: packetery.php:48
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/Downloader.php:77
+msgid "Failed to get the list."
+msgstr "Failed to get the list."
+
+#. translators: keep %failReason placeholder intact.
+#: src/Packetery/Carrier/Downloader.php:88
+msgid "Invalid API response."
+msgstr "Invalid API response."
+
+#: src/Packetery/Carrier/Downloader.php:95
+msgid "Carriers were updated."
+msgstr "Carriers were updated."
+
+#. translators: keep %s intact.
+#: src/Packetery/Checkout.php:201
+msgid "Pick up point attribute %s is not given."
+msgstr "Pick up point attribute %s is not given."
+
+#: src/Packetery/FormFactory.php:26
+msgid "This field is required!"
+msgstr "This field is required!"
+
+#: src/Packetery/Options/Country.php:74
+msgid "CZ Packeta pickup points"
+msgstr "CZ Packeta pickup points"
+
+#: src/Packetery/Options/Country.php:78
+msgid "SK Packeta pickup points"
+msgstr "SK Packeta pickup points"
+
+#: src/Packetery/Options/Country.php:82
+msgid "HU Packeta pickup points"
+msgstr "HU Packeta pickup points"
+
+#: src/Packetery/Options/Country.php:86
+msgid "RO Packeta pickup points"
+msgstr "RO Packeta pickup points"
+
+#: src/Packetery/Options/Country.php:97 src/Packetery/Options/Country.php:98
+msgid "Carrier settings"
+msgstr "Carrier settings"
+
+#: src/Packetery/Options/Country.php:125
+msgid "Active carrier"
+msgstr "Active carrier"
+
+#: src/Packetery/Options/Country.php:128
+msgid "Display name"
+msgstr "Display name"
+
+#: src/Packetery/Options/Country.php:130
+msgid "Carrier display name must have at least 2 characters!"
+msgstr "Carrier display name must have at least 2 characters!"
+
+#: src/Packetery/Options/Country.php:139
+msgid "Weight up to (kg)"
+msgstr "Weight up to (kg)"
+
+#: src/Packetery/Options/Country.php:140 src/Packetery/Options/Country.php:145
+#: src/Packetery/Options/Country.php:159 src/Packetery/Options/Country.php:161
+msgid "Please enter a valid decimal number."
+msgstr "Please enter a valid decimal number."
+
+#: src/Packetery/Options/Country.php:144
+msgid "Price"
+msgstr "Price"
+
+#: src/Packetery/Options/Country.php:158
+msgid "Order price up to"
+msgstr "Order price up to"
+
+#: src/Packetery/Options/Country.php:160
+msgid "Surcharge"
+msgstr "Surcharge"
+
+#: src/Packetery/Options/Country.php:164
+msgid "Free shipping limit"
+msgstr "Free shipping limit"
+
+#: src/Packetery/Options/Country.php:191
+msgid "Weight rules are overlapping, fix it please."
+msgstr "Weight rules are overlapping, fix it please."
+
+#: src/Packetery/Options/Country.php:198
+msgid "Surcharge rules are overlapping, fix it please."
+msgstr "Surcharge rules are overlapping, fix it please."
+
+#: src/Packetery/Options/Country.php:309
+msgid "Please fill in both values for each rule."
+msgstr "Please fill in both values for each rule."
+
+#: src/Packetery/Options/Page.php:62 src/Packetery/Plugin.php:260
 msgid "Settings"
 msgstr "Settings"
 
-#: packetery.php:67
+#: src/Packetery/Options/Page.php:85
+msgid "API password"
+msgstr "API password"
+
+#: src/Packetery/Options/Page.php:87
+msgid ""
+"API password must be 32 characters long and must contain valid characters!"
+msgstr ""
+"API password must be 32 characters long and must contain valid characters!"
+
+#: src/Packetery/Options/Page.php:88
+msgid "Sender"
+msgstr "Sender"
+
+#: src/Packetery/Options/Page.php:92
+msgid "Packeta Label Format"
+msgstr "Packeta Label Format"
+
+#: src/Packetery/Options/Page.php:94 src/Packetery/Options/Page.php:106
+msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+msgstr "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+
+#: src/Packetery/Options/Page.php:95
+msgid "105x148 mm (A6) label on a page of the same size"
+msgstr "105x148 mm (A6) label on a page of the same size"
+
+#: src/Packetery/Options/Page.php:96
+msgid "105x74 mm (A7) label on a page of the same size"
+msgstr "105x74 mm (A7) label on a page of the same size"
+
+#: src/Packetery/Options/Page.php:97
+msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
+msgstr "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
+
+#: src/Packetery/Options/Page.php:98
+msgid "105x35 mm label on a page of size 210x297 mm (A4)"
+msgstr "105x35 mm label on a page of size 210x297 mm (A4)"
+
+#: src/Packetery/Options/Page.php:99
+msgid "50x74 mm (A8) label on a page of the same size"
+msgstr "50x74 mm (A8) label on a page of the same size"
+
+#: src/Packetery/Options/Page.php:104
+msgid "Carrier Label Format"
+msgstr "Carrier Label Format"
+
+#: src/Packetery/Options/Page.php:107
+msgid ""
+"105x148 mm (A6) label on a page of the same size (offset argument is ignored "
+"for this format)"
+msgstr ""
+"105x148 mm (A6) label on a page of the same size (offset argument is ignored "
+"for this format)"
+
+#: src/Packetery/Options/Page.php:113
+msgid "Allow Label Emailing"
+msgstr "Allow Label Emailing"
+
+#: src/Packetery/Options/Page.php:128
+msgid "Main Settings"
+msgstr "Main Settings"
+
+#: src/Packetery/Order/Metabox.php:96
+msgid "Weight (kg)"
+msgstr "Weight (kg)"
+
+#: src/Packetery/Order/Metabox.php:98 src/Packetery/Order/Metabox.php:101
+#: src/Packetery/Order/Metabox.php:104 src/Packetery/Order/Metabox.php:107
+msgid "Provide numeric value!"
+msgstr "Provide numeric value!"
+
+#: src/Packetery/Order/Metabox.php:99
+msgid "Width (mm)"
+msgstr "Width (mm)"
+
+#: src/Packetery/Order/Metabox.php:102
+msgid "Length (mm)"
+msgstr "Length (mm)"
+
+#: src/Packetery/Order/Metabox.php:105
+msgid "Height (mm)"
+msgstr "Height (mm)"
+
+#: src/Packetery/Order/Metabox.php:173
+msgid "Error happened in Packeta fields!"
+msgstr "Error happened in Packeta fields!"
+
+#: src/Packetery/Order/Metabox.php:181
+msgid "Session has expired! Please try again."
+msgstr "Session has expired! Please try again."
+
+#: src/Packetery/Order/Metabox.php:187
+msgid "You are not allowed to edit posts!"
+msgstr "You are not allowed to edit posts!"
+
+#: src/Packetery/Plugin.php:259
+msgid "View Packeta settings"
+msgstr "View Packeta settings"
+
+#: src/Packetery/Plugin.php:281
 msgid "View Packeta documentation"
 msgstr "View Packeta documentation"
 
-#: packetery.php:67
+#: src/Packetery/Plugin.php:282
 msgid "Documentation"
 msgstr "Documentation"
+
+#: src/Packetery/Plugin.php:343
+msgid "Barcode"
+msgstr "Barcode"
+
+#: src/Packetery/Plugin.php:344
+msgid "Pick up point or carrier"
+msgstr "Pick up point or carrier"
+
+#: src/Packetery/ShippingMethod.php:24 src/Packetery/ShippingMethod.php:25
+msgid "Packeta Shipping Method"
+msgstr "Packeta Shipping Method"
+
+#: src/Packetery/ShippingMethod.php:26
+msgid "Description of Packeta shipping method"
+msgstr "Description of Packeta shipping method"
+
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:27
+msgid "Choose pickup point"
+msgstr "Choose pickup point"
+
+#: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:68
+msgid "Weight rules"
+msgstr "Weight rules"
+
+#: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:85
+msgid "Add weight rule"
+msgstr "Add weight rule"
+
+#: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:92
+msgid "COD surcharge rules"
+msgstr "COD surcharge rules"
+
+#: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:109
+msgid "Add COD surcharge rule"
+msgstr "Add COD surcharge rule"
+
+#: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:129
+msgid "After exceeding this amount, shipping is free."
+msgstr "After exceeding this amount, shipping is free."
+
+#: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:207
+msgid "Delete weight rule"
+msgstr "Delete weight rule"
+
+#: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:258
+msgid "Delete COD surcharge rule"
+msgstr "Delete COD surcharge rule"
+
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:16
+msgid "Countries"
+msgstr "Countries"
+
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:24
+msgid "Country name"
+msgstr "Country name"
+
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:27
+msgid "Country code"
+msgstr "Country code"
+
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:30
+msgid "Action"
+msgstr "Action"
+
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:46
+msgid "Set up"
+msgstr "Set up"
+
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:57
+msgid "No active countries."
+msgstr "No active countries."
+
+#: temp/cache/view/template-options-country.latte--3fede3af3a.php:16
+msgid "Country options"
+msgstr "Country options"
+
+#: temp/cache/view/template-options-country.latte--3fede3af3a.php:33
+msgid "No known carrier for this country."
+msgstr "No known carrier for this country."
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:16
+msgid "Options"
+msgstr "Options"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:109
+msgid ""
+"If checked, the generated labels will be emailed to the e-shop administrator"
+msgstr ""
+"If checked, the generated labels will be emailed to the e-shop administrator"

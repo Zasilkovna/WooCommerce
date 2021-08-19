@@ -17,20 +17,14 @@
                         multiplier.deleteOption(this);
                     })
                     .each(function () {
-                        var $wrapper = $(this);
-                        var $inputs = $wrapper.find('input[type="number"]');
-                        // add only if there is something in last row
-                        if ($inputs.eq(-2).val() || $inputs.eq(-1).val()) {
-                            multiplier.addOption($wrapper.find('.js-add'), $wrapper, false);
-                        }
-                        multiplier.toggleDeleteButton($wrapper);
+                        multiplier.toggleDeleteButton($(this));
                     });
             };
 
             this.addOption = function (button, $wrappers, setFocus) {
                 var wrapperClassName = $wrappers.first().attr('class'),
                     $wrapper = $(button).closest('.' + wrapperClassName),
-                    $template = getTemplate($wrapper);
+                    $template = getTemplateClone($wrapper);
 
                 updateIds($template, newId++);
                 $wrapper.find('table').append($template);
@@ -77,9 +71,9 @@
             var prefix = 'new_',
                 newId = findMaxNewId();
 
-            function getTemplate($wrapper) {
+            function getTemplateClone($wrapper) {
                 var $template = $wrapper.find('.js-template').clone().removeClass('js-template');
-                $template.find('input').val('').removeAttr('required').removeAttr('data-nette-rules');
+                $template.find('input').val('');
                 return $template;
             }
 

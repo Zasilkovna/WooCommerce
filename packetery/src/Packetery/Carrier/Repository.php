@@ -92,7 +92,7 @@ class Repository {
 	 *
 	 * @return array|null
 	 */
-	public function get_by_country( string $country ): ?array {
+	public function getByCountry( string $country ): ?array {
 		$wpdb = $this->get_wpdb();
 
 		return $wpdb->get_results( $wpdb->prepare( 'SELECT `id`, `name` FROM `' . $wpdb->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false', $country ), ARRAY_A );
