@@ -161,7 +161,8 @@ class Country {
 			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		}
 
-		$container->addInteger( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
+		$item = $container->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
+		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$container->addHidden( 'id' );
 
 		$carrierOptions       = get_option( $optionId );

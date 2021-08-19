@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
 "POT-Creation-Date: 2021-08-18T23:58:43+02:00\n"
-"PO-Revision-Date: 2021-08-19 14:35+0200\n"
+"PO-Revision-Date: 2021-08-19 14:45+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -101,7 +101,7 @@ msgstr "Název dopravce musí mít alespoň dva znaky!"
 
 #: src/Packetery/Options/Country.php:139
 msgid "Weight up to (kg)"
-msgstr "Váha do (kg)"
+msgstr "Hmotnost do (kg)"
 
 #: src/Packetery/Options/Country.php:140 src/Packetery/Options/Country.php:145
 #: src/Packetery/Options/Country.php:159 src/Packetery/Options/Country.php:161
@@ -203,7 +203,7 @@ msgstr "Hlavní nastavení"
 
 #: src/Packetery/Order/Metabox.php:96
 msgid "Weight (kg)"
-msgstr "Váha (kg)"
+msgstr "Hmotnost (kg)"
 
 #: src/Packetery/Order/Metabox.php:98 src/Packetery/Order/Metabox.php:101
 #: src/Packetery/Order/Metabox.php:104 src/Packetery/Order/Metabox.php:107
