@@ -129,36 +129,22 @@ class Country {
 					->setRequired()
 					->addRule( $form::MIN_LENGTH, __( 'Carrier display name must have at least 2 characters!', 'packetery' ), 2 );
 
-		$weightLimits      = $container->addContainer( 'weight_limits' );
-		$weightLimitsCount = 0;
-		if ( isset( $carrierData['weight_limits'] ) && count( $carrierData['weight_limits'] ) !== 0 ) {
-			$weightLimitsCount = count( $carrierData['weight_limits'] ) - 1;
-		}
-		for ( $i = 0; $i <= $weightLimitsCount; $i ++ ) {
-			$limit = $weightLimits->addContainer( (string) $i );
-			$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
-			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
-			if ( 0 === $i ) {
-				$item->setRequired();
-			}
-			$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
-			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
-			if ( 0 === $i ) {
-				$item->setRequired();
+		$weightLimits = $container->addContainer( 'weight_limits' );
+		if ( empty( $carrierData['weight_limits'] ) ) {
+			$this->addWeightLimit( $form, $weightLimits, 0 );
+		} else {
+			foreach ( $carrierData['weight_limits'] as $index => $limit ) {
+				$this->addWeightLimit( $form, $weightLimits, $index );
 			}
 		}
 
-		$surchargeLimits      = $container->addContainer( 'surcharge_limits' );
-		$surchargeLimitsCount = 0;
-		if ( isset( $carrierData['surcharge_limits'] ) && count( $carrierData['surcharge_limits'] ) !== 0 ) {
-			$surchargeLimitsCount = count( $carrierData['surcharge_limits'] ) - 1;
-		}
-		for ( $i = 0; $i <= $surchargeLimitsCount; $i ++ ) {
-			$limit = $surchargeLimits->addContainer( (string) $i );
-			$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
-			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
-			$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
-			$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$surchargeLimits = $container->addContainer( 'surcharge_limits' );
+		if ( empty( $carrierData['surcharge_limits'] ) ) {
+			$this->addSurchargeLimit( $form, $surchargeLimits, 0 );
+		} else {
+			foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
+				$this->addSurchargeLimit( $form, $surchargeLimits, $index );
+			}
 		}
 
 		$item = $container->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
@@ -237,23 +223,11 @@ class Country {
 	 *  Renders page.
 	 */
 	public function render(): void {
-		// TODO: Processing form data without nonce verification - fix in PES-263.
-		/*
-		if (
-			! isset( $_GET['_wpnonce'] ) ||
-			! wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ), 'packetery_country' )
-		) {
-			wp_nonce_ays( '' );
-
-			return;
-		}
-		*/
-
 		$countryIso = $this->httpRequest->getQuery( 'code' );
 		if ( $countryIso ) {
 			$this->processForm();
 			$countryCarriers = $this->carrierRepository->getByCountry( $countryIso );
-			// Add PP for 'cz', 'sk', 'hu', 'ro'.
+			// Add PP carriers for 'cz', 'sk', 'hu', 'ro'.
 			if ( ! empty( $this->zpointCarriers[ $countryIso ] ) ) {
 				array_unshift( $countryCarriers, $this->zpointCarriers[ $countryIso ] );
 			}
@@ -334,6 +308,42 @@ class Country {
 		array_multisort( $limits, SORT_ASC, $options[ $limitsContainer ] );
 
 		return $options;
+	}
+
+	/**
+	 * Adds limit fields to form.
+	 *
+	 * @param \Nette\Forms\Form      $form Form.
+	 * @param \Nette\Forms\Container $weightLimits Container.
+	 * @param int                    $index Index.
+	 *
+	 * @return void
+	 */
+	private function addWeightLimit( \Nette\Forms\Form $form, \Nette\Forms\Container $weightLimits, int $index ): void {
+		$limit = $weightLimits->addContainer( (string) $index );
+		$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
+		$item->setRequired();
+		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
+		$item->setRequired();
+		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+	}
+
+	/**
+	 * Adds limit fields to form.
+	 *
+	 * @param \Nette\Forms\Form      $form Form.
+	 * @param \Nette\Forms\Container $surchargeLimits Container.
+	 * @param int                    $index Index.
+	 *
+	 * @return void
+	 */
+	private function addSurchargeLimit( \Nette\Forms\Form $form, \Nette\Forms\Container $surchargeLimits, int $index ): void {
+		$limit = $surchargeLimits->addContainer( (string) $index );
+		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
+		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
+		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 	}
 
 }
