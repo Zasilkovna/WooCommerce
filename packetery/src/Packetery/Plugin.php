@@ -12,7 +12,7 @@ namespace Packetery;
 use Packetery\Carrier\Downloader;
 use Packetery\Carrier\Repository;
 use Packetery\Order;
-use Packetery\Options\Country;
+use Packetery\Carrier\OptionsPage;
 
 /**
  * Class Plugin
@@ -55,9 +55,9 @@ class Plugin {
 	/**
 	 * Country options page.
 	 *
-	 * @var Country
+	 * @var OptionsPage
 	 */
-	private $optionsCountry;
+	private $carrierOptionsPage;
 
 	/**
 	 * Path to main plugin file.
@@ -105,9 +105,9 @@ class Plugin {
 	 * @param Downloader     $carrier_downloader Carrier downloader object.
 	 * @param Checkout       $checkout           Checkout class.
 	 * @param \Latte\Engine  $latte_engine       Latte engine.
-	 * @param Country        $optionsCountry     Country options page.
+	 * @param OptionsPage    $carrierOptionsPage Carrier options page.
 	 */
-	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \Latte\Engine $latte_engine, Country $optionsCountry ) {
+	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \Latte\Engine $latte_engine, OptionsPage $carrierOptionsPage ) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
 		$this->carrier_repository = $carrier_repository;
@@ -118,7 +118,7 @@ class Plugin {
 		$this->helper             = $helper;
 		$this->options_page       = $options_page;
 		$this->checkout           = $checkout;
-		$this->optionsCountry     = $optionsCountry;
+		$this->carrierOptionsPage = $carrierOptionsPage;
 	}
 
 	/**
@@ -200,7 +200,7 @@ class Plugin {
 	 */
 	public function add_menu_pages(): void {
 		$this->options_page->register();
-		$this->optionsCountry->register();
+		$this->carrierOptionsPage->register();
 	}
 
 	/**

@@ -17,5 +17,5 @@ services:
 	wpdbFactory: Packetery\WpdbFactory
 	wpdb: @wpdbFactory::create()
 	checkout: Packetery\Checkout
-	optionsCountry: Packetery\Options\Country
+	carrierOptionsPage: Packetery\Carrier\OptionsPage
 	formFactory: Packetery\FormFactory

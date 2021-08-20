@@ -1,25 +1,24 @@
 <?php
 /**
- * Class Country
+ * Class OptionsPage
  *
  * @package Packetery\Options
  */
 
 declare( strict_types=1 );
 
-namespace Packetery\Options;
+namespace Packetery\Carrier;
 
 use Nette\Forms\Form;
 use Nette\Http\Request;
-use Packetery\Carrier\Repository;
 use Packetery\FormFactory;
 
 /**
- * Class Country
+ * Class OptionsPage
  *
  * @package Packetery\Options
  */
-class Country {
+class OptionsPage {
 
 	/**
 	 * Latte_engine.
@@ -110,7 +109,7 @@ class Country {
 	/**
 	 * Creates settings form.
 	 *
-	 * @param array $carrierData Country data.
+	 * @param array $carrierData Carrier data.
 	 *
 	 * @return \Nette\Forms\Form
 	 */
@@ -253,7 +252,7 @@ class Country {
 				)
 			);
 		} else {
-			// TODO: countries overview - fix in PES-263.
+			// TODO: countries overview - fix in PES-263, CountryListingPage class.
 		}
 	}
 
@@ -270,6 +269,10 @@ class Country {
 		if ( isset( $options[ $limitsContainer ] ) ) {
 			foreach ( $options[ $limitsContainer ] as $key => $option ) {
 				$keys = array_keys( $option );
+
+				$option[ $keys[0] ] = str_replace( ',', '.', $option[ $keys[0] ] );
+				$option[ $keys[1] ] = str_replace( ',', '.', $option[ $keys[1] ] );
+
 				if ( $option[ $keys[0] ] && $option[ $keys[1] ] ) {
 					if ( is_int( $key ) ) {
 						$newOptions[ $key ] = $option;
