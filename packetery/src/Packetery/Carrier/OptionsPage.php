@@ -223,9 +223,9 @@ class OptionsPage {
 			}
 
 			$carriersData = array();
+			$post = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
-				$post = $this->httpRequest->getPost();
-				if ( ! empty( $post ) ) {
+				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
 					$carrierData = $post;
 				} else {
 					$options = get_option( 'packetery_carrier_' . $carrierData['id'] );
