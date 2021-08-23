@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Carrier;
 
 use Nette\Forms\Form;
+use Nette\Forms\Validator;
 use Nette\Http\Request;
 use Packetery\FormFactory;
 
@@ -223,7 +224,7 @@ class OptionsPage {
 			}
 
 			$carriersData = array();
-			$post = $this->httpRequest->getPost();
+			$post         = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
 					$form = $this->createForm( $post );
@@ -287,6 +288,7 @@ class OptionsPage {
 
 	/**
 	 * Validates limits.
+	 * TODO: JS validation.
 	 *
 	 * @param Form   $form Form.
 	 * @param array  $options Options to merge.
@@ -298,13 +300,10 @@ class OptionsPage {
 		if ( isset( $options[ $limitsContainer ] ) ) {
 			foreach ( $options[ $limitsContainer ] as $key => $option ) {
 				$keys = array_keys( $option );
-				if (
-					( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) ||
-					( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) )
-				) {
-					// TODO: JS validation.
-					$errorMessage = __( 'Please fill in both values for each rule.', 'packetery' );
-					$form[$limitsContainer][$key][$keys[0]]->addError( $errorMessage );
+				if ( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) {
+					$form[ $limitsContainer ][ $key ][ $keys[1] ]->addError( Validator::$messages[ Form::FILLED ] );
+				} elseif ( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) ) {
+					$form[ $limitsContainer ][ $key ][ $keys[0] ]->addError( Validator::$messages[ Form::FILLED ] );
 				}
 			}
 		}

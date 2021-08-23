@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-08-18T23:58:43+02:00\n"
-"PO-Revision-Date: 2021-08-19 14:38+0200\n"
+"POT-Creation-Date: 2021-08-23T01:44:47+02:00\n"
+"PO-Revision-Date: 2021-08-23 16:21+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -19,6 +19,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: src/Packetery/Options/Page.php:63 src/Packetery/Order/Metabox.php:80
+#: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:14
 #: temp/cache/view/template-options-country.latte--3fede3af3a.php:14
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
@@ -58,6 +59,71 @@ msgstr "Invalid API response."
 msgid "Carriers were updated."
 msgstr "Carriers were updated."
 
+#: src/Packetery/Carrier/OptionsPage.php:75
+msgid "CZ Packeta pickup points"
+msgstr "CZ Packeta pickup points"
+
+#: src/Packetery/Carrier/OptionsPage.php:79
+msgid "SK Packeta pickup points"
+msgstr "SK Packeta pickup points"
+
+#: src/Packetery/Carrier/OptionsPage.php:83
+msgid "HU Packeta pickup points"
+msgstr "HU Packeta pickup points"
+
+#: src/Packetery/Carrier/OptionsPage.php:87
+msgid "RO Packeta pickup points"
+msgstr "RO Packeta pickup points"
+
+#: src/Packetery/Carrier/OptionsPage.php:98
+#: src/Packetery/Carrier/OptionsPage.php:99
+msgid "Carrier settings"
+msgstr "Carrier settings"
+
+#: src/Packetery/Carrier/OptionsPage.php:125
+msgid "Active carrier"
+msgstr "Active carrier"
+
+#: src/Packetery/Carrier/OptionsPage.php:128
+msgid "Display name"
+msgstr "Display name"
+
+#: src/Packetery/Carrier/OptionsPage.php:149
+msgid "Free shipping limit"
+msgstr "Free shipping limit"
+
+#: src/Packetery/Carrier/OptionsPage.php:150
+#: src/Packetery/Carrier/OptionsPage.php:359
+#: src/Packetery/Carrier/OptionsPage.php:362
+#: src/Packetery/Carrier/OptionsPage.php:376
+#: src/Packetery/Carrier/OptionsPage.php:378
+msgid "Please enter a valid decimal number."
+msgstr "Please enter a valid decimal number."
+
+#: src/Packetery/Carrier/OptionsPage.php:180
+msgid "Weight rules are overlapping, fix it please."
+msgstr "Weight rules are overlapping, fix it please."
+
+#: src/Packetery/Carrier/OptionsPage.php:188
+msgid "Surcharge rules are overlapping, fix it please."
+msgstr "Surcharge rules are overlapping, fix it please."
+
+#: src/Packetery/Carrier/OptionsPage.php:357
+msgid "Weight up to (kg)"
+msgstr "Weight up to (kg)"
+
+#: src/Packetery/Carrier/OptionsPage.php:360
+msgid "Price"
+msgstr "Price"
+
+#: src/Packetery/Carrier/OptionsPage.php:375
+msgid "Order price up to"
+msgstr "Order price up to"
+
+#: src/Packetery/Carrier/OptionsPage.php:377
+msgid "Surcharge"
+msgstr "Surcharge"
+
 #. translators: keep %s intact.
 #: src/Packetery/Checkout.php:201
 msgid "Pick up point attribute %s is not given."
@@ -66,75 +132,6 @@ msgstr "Pick up point attribute %s is not given."
 #: src/Packetery/FormFactory.php:26
 msgid "This field is required!"
 msgstr "This field is required!"
-
-#: src/Packetery/Options/Country.php:74
-msgid "CZ Packeta pickup points"
-msgstr "CZ Packeta pickup points"
-
-#: src/Packetery/Options/Country.php:78
-msgid "SK Packeta pickup points"
-msgstr "SK Packeta pickup points"
-
-#: src/Packetery/Options/Country.php:82
-msgid "HU Packeta pickup points"
-msgstr "HU Packeta pickup points"
-
-#: src/Packetery/Options/Country.php:86
-msgid "RO Packeta pickup points"
-msgstr "RO Packeta pickup points"
-
-#: src/Packetery/Options/Country.php:97 src/Packetery/Options/Country.php:98
-msgid "Carrier settings"
-msgstr "Carrier settings"
-
-#: src/Packetery/Options/Country.php:125
-msgid "Active carrier"
-msgstr "Active carrier"
-
-#: src/Packetery/Options/Country.php:128
-msgid "Display name"
-msgstr "Display name"
-
-#: src/Packetery/Options/Country.php:130
-msgid "Carrier display name must have at least 2 characters!"
-msgstr "Carrier display name must have at least 2 characters!"
-
-#: src/Packetery/Options/Country.php:139
-msgid "Weight up to (kg)"
-msgstr "Weight up to (kg)"
-
-#: src/Packetery/Options/Country.php:140 src/Packetery/Options/Country.php:145
-#: src/Packetery/Options/Country.php:159 src/Packetery/Options/Country.php:161
-msgid "Please enter a valid decimal number."
-msgstr "Please enter a valid decimal number."
-
-#: src/Packetery/Options/Country.php:144
-msgid "Price"
-msgstr "Price"
-
-#: src/Packetery/Options/Country.php:158
-msgid "Order price up to"
-msgstr "Order price up to"
-
-#: src/Packetery/Options/Country.php:160
-msgid "Surcharge"
-msgstr "Surcharge"
-
-#: src/Packetery/Options/Country.php:164
-msgid "Free shipping limit"
-msgstr "Free shipping limit"
-
-#: src/Packetery/Options/Country.php:191
-msgid "Weight rules are overlapping, fix it please."
-msgstr "Weight rules are overlapping, fix it please."
-
-#: src/Packetery/Options/Country.php:198
-msgid "Surcharge rules are overlapping, fix it please."
-msgstr "Surcharge rules are overlapping, fix it please."
-
-#: src/Packetery/Options/Country.php:309
-msgid "Please fill in both values for each rule."
-msgstr "Please fill in both values for each rule."
 
 #: src/Packetery/Options/Page.php:62 src/Packetery/Plugin.php:260
 msgid "Settings"
@@ -263,37 +260,54 @@ msgstr "Packeta Shipping Method"
 msgid "Description of Packeta shipping method"
 msgstr "Description of Packeta shipping method"
 
-#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:27
-msgid "Choose pickup point"
-msgstr "Choose pickup point"
-
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:63
 #: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:68
 msgid "Weight rules"
 msgstr "Weight rules"
 
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:80
 #: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:85
 msgid "Add weight rule"
 msgstr "Add weight rule"
 
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:87
 #: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:92
 msgid "COD surcharge rules"
 msgstr "COD surcharge rules"
 
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:104
 #: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:109
 msgid "Add COD surcharge rule"
 msgstr "Add COD surcharge rule"
 
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:124
 #: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:129
 msgid "After exceeding this amount, shipping is free."
 msgstr "After exceeding this amount, shipping is free."
 
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:202
 #: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:207
 msgid "Delete weight rule"
 msgstr "Delete weight rule"
 
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:259
 #: temp/cache/view/template-options-carrier.latte--5d57d2a9c9.php:258
 msgid "Delete COD surcharge rule"
 msgstr "Delete COD surcharge rule"
+
+#: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:16
+#: temp/cache/view/template-options-country.latte--3fede3af3a.php:16
+msgid "Country options"
+msgstr "Country options"
+
+#: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:33
+#: temp/cache/view/template-options-country.latte--3fede3af3a.php:33
+msgid "No known carrier for this country."
+msgstr "No known carrier for this country."
+
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:27
+msgid "Choose pickup point"
+msgstr "Choose pickup point"
 
 #: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:16
 msgid "Countries"
@@ -319,14 +333,6 @@ msgstr "Set up"
 msgid "No active countries."
 msgstr "No active countries."
 
-#: temp/cache/view/template-options-country.latte--3fede3af3a.php:16
-msgid "Country options"
-msgstr "Country options"
-
-#: temp/cache/view/template-options-country.latte--3fede3af3a.php:33
-msgid "No known carrier for this country."
-msgstr "No known carrier for this country."
-
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:16
 msgid "Options"
 msgstr "Options"
@@ -336,3 +342,9 @@ msgid ""
 "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
 "If checked, the generated labels will be emailed to the e-shop administrator"
+
+#~ msgid "Carrier display name must have at least 2 characters!"
+#~ msgstr "Carrier display name must have at least 2 characters!"
+
+#~ msgid "Please fill in both values for each rule."
+#~ msgstr "Please fill in both values for each rule."
