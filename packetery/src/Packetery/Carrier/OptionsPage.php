@@ -11,7 +11,6 @@ namespace Packetery\Carrier;
 
 use Nette\Forms\Form;
 use Nette\Http\Request;
-use Nette\Utils\ArrayHash;
 use Packetery\FormFactory;
 
 /**
@@ -60,9 +59,9 @@ class OptionsPage {
 	 * Plugin constructor.
 	 *
 	 * @param \Latte\Engine $latteEngine Latte_engine.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param FormFactory $formFactory Form factory.
-	 * @param Request $httpRequest Nette Request.
+	 * @param Repository    $carrierRepository Carrier repository.
+	 * @param FormFactory   $formFactory Form factory.
+	 * @param Request       $httpRequest Nette Request.
 	 */
 	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest ) {
 		$this->latteEngine       = $latteEngine;
@@ -128,7 +127,7 @@ class OptionsPage {
 		);
 
 		$container->addText( 'name', __( 'Display name', 'packetery' ) )
-		          ->setRequired();
+			->setRequired();
 
 		$weightLimits = $container->addContainer( 'weight_limits' );
 		if ( empty( $carrierData['weight_limits'] ) ) {
@@ -153,7 +152,7 @@ class OptionsPage {
 		$container->addHidden( 'id' )->setRequired();
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
-		$form->onSuccess[] = [ $this, 'updateOptions' ];
+		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
 		$carrierOptions       = get_option( $optionId );
 		$carrierOptions['id'] = $carrierData['id'];
@@ -168,40 +167,44 @@ class OptionsPage {
 	/**
 	 * Validates options.
 	 *
-	 * @param Form $form
+	 * @param Form $form Form.
 	 */
 	public function validateOptions( Form $form ): void {
-		// todo sniffer
 		list( $optionId, $options ) = $this->getOptionsFromData( $form );
 
-		$options = $this->validateAndMergeNewLimits( $form, $options, 'weight_limits' );
-		$options = $this->checkOverlappingAndSort(
+		$this->validateLimits( $form, $options, 'weight_limits' );
+		$this->checkOverlapping(
 			$form,
 			$options,
 			'weight_limits',
 			'weight',
 			__( 'Weight rules are overlapping, fix it please.', 'packetery' )
 		);
-		$options = $this->validateAndMergeNewLimits( $form, $options, 'surcharge_limits' );
-		$options = $this->checkOverlappingAndSort(
+		$this->validateLimits( $form, $options, 'surcharge_limits' );
+		$this->checkOverlapping(
 			$form,
 			$options,
 			'surcharge_limits',
 			'order_price',
 			__( 'Surcharge rules are overlapping, fix it please.', 'packetery' )
 		);
-
-		// todo fix: hodnoty s new klici se neulozi
-		$form[ $optionId ]->setValues( $options );
 	}
 
 	/**
-	 * @param Form $form
+	 * Saves carrier options. onSuccess callback.
+	 *
+	 * @param Form $form Form.
 	 *
 	 * @return void
 	 */
 	public function updateOptions( Form $form ): void {
-		list($optionId, $options) = $this->getOptionsFromData($form);
+		list($optionId, $options) = $this->getOptionsFromData( $form );
+
+		$options = $this->mergeNewLimits( $options, 'weight_limits' );
+		$options = $this->sortLimits( $options, 'weight_limits', 'weight' );
+		$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
+		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
+
 		update_option( $optionId, $options );
 		if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
 			exit;
@@ -209,7 +212,9 @@ class OptionsPage {
 	}
 
 	/**
-	 * @param Form $form
+	 * Gets options from form data.
+	 *
+	 * @param Form $form Form.
 	 *
 	 * @return array
 	 */
@@ -218,23 +223,6 @@ class OptionsPage {
 		$optionId = array_keys( $formData )[0];
 
 		return [ $optionId, (array) $formData[ $optionId ] ];
-	}
-
-	/**
-	 * Save data if validated.
-	 *
-	 * @param array $forms Forms for all carriers.
-	 */
-	public function processForm(array $forms): void {
-		/** @var Form $form */
-		foreach ( $forms as $form ) {
-			if ( $form->isSubmitted() ) {
-				break;
-			}
-		}
-		if ( $form ) {
-			$form->fireEvents();
-		}
 	}
 
 	/**
@@ -253,17 +241,27 @@ class OptionsPage {
 			$carriersData = array();
 			foreach ( $countryCarriers as $carrierData ) {
 				$optionId = 'packetery_carrier_' . $carrierData['id'];
-				$options  = get_option( $optionId );
-				if ( false !== $options ) {
-					$carrierData += $options;
+
+				$post = $this->httpRequest->getPost();
+				if ( ! empty( $post[ $optionId ] ) ) {
+					$carrierData = $post[ $optionId ];
+				} else {
+					$options = get_option( $optionId );
+					if ( false !== $options ) {
+						$carrierData += $options;
+					}
 				}
+
+				$form = $this->createForm( $carrierData );
+				if ( $form->isSubmitted() ) {
+					$form->fireEvents();
+				}
+
 				$carriersData[] = array(
-					'form' => $this->createForm( $carrierData ),
+					'form' => $form,
 					'data' => $carrierData,
 				);
 			}
-
-			$this->processForm(array_column($carriersData, 'form'));
 
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/options/country.latte',
@@ -280,17 +278,16 @@ class OptionsPage {
 	/**
 	 * Transforms new_ keys to common numeric.
 	 *
-	 * @param array $options Options to merge.
+	 * @param array  $options Options to merge.
 	 * @param string $limitsContainer Container id.
 	 *
 	 * @return array
 	 */
-	private function validateAndMergeNewLimits(Form $form, array $options, string $limitsContainer ): array {
+	private function mergeNewLimits( array $options, string $limitsContainer ): array {
 		$newOptions = array();
 		if ( isset( $options[ $limitsContainer ] ) ) {
 			foreach ( $options[ $limitsContainer ] as $key => $option ) {
 				$keys = array_keys( $option );
-
 				if ( $option[ $keys[0] ] && $option[ $keys[1] ] ) {
 					if ( is_int( $key ) ) {
 						$newOptions[ $key ] = $option;
@@ -298,15 +295,6 @@ class OptionsPage {
 					if ( 0 === strpos( (string) $key, 'new_' ) ) {
 						$newOptions[] = $option;
 					}
-				} elseif (
-					( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) ||
-					( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) )
-				) {
-					// TODO: JS validation.
-					// todo use {inputError
-					$errorMessage = __( 'Please fill in both values for each rule.', 'packetery' );
-					add_settings_error( $limitsContainer, $limitsContainer, esc_attr( $errorMessage ) );
-					$form->addError( $errorMessage );
 				}
 			}
 			$options[ $limitsContainer ] = $newOptions;
@@ -316,22 +304,61 @@ class OptionsPage {
 	}
 
 	/**
-	 * Checks rules overlapping and sorts rules.
+	 * Validates limits.
 	 *
-	 * @param array $options Form data.
+	 * @param Form   $form Form.
+	 * @param array  $options Options to merge.
+	 * @param string $limitsContainer Container id.
+	 *
+	 * @return void
+	 */
+	private function validateLimits( Form $form, array $options, string $limitsContainer ): void {
+		if ( isset( $options[ $limitsContainer ] ) ) {
+			foreach ( $options[ $limitsContainer ] as $option ) {
+				$keys = array_keys( $option );
+				if (
+					( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) ||
+					( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) )
+				) {
+					// TODO: JS validation.
+					$errorMessage = __( 'Please fill in both values for each rule.', 'packetery' );
+					add_settings_error( $limitsContainer, $limitsContainer, esc_attr( $errorMessage ) );
+					$form->addError( $errorMessage );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Checks rules overlapping.
+	 *
+	 * @param Form   $form Form.
+	 * @param array  $options Form data.
 	 * @param string $limitsContainer Container id.
 	 * @param string $limitKey Rule id.
 	 * @param string $overlappingMessage Error message.
 	 *
-	 * @return array
+	 * @return void
 	 */
-	private function checkOverlappingAndSort(Form $form, array $options, string $limitsContainer, string $limitKey, string $overlappingMessage ): array {
+	private function checkOverlapping( Form $form, array $options, string $limitsContainer, string $limitKey, string $overlappingMessage ): void {
 		$limits = array_column( $options[ $limitsContainer ], $limitKey );
 		if ( count( array_unique( $limits, SORT_NUMERIC ) ) !== count( $limits ) ) {
-			// todo use {inputError
 			add_settings_error( $limitsContainer, $limitsContainer, esc_attr( $overlappingMessage ) );
-			$form->addError($overlappingMessage);
+			$form->addError( $overlappingMessage );
 		}
+	}
+
+	/**
+	 * Sorts rules.
+	 *
+	 * @param array  $options Form data.
+	 * @param string $limitsContainer Container id.
+	 * @param string $limitKey Rule id.
+	 *
+	 * @return array
+	 */
+	private function sortLimits( array $options, string $limitsContainer, string $limitKey ): array {
+		$limits = array_column( $options[ $limitsContainer ], $limitKey );
 		array_multisort( $limits, SORT_ASC, $options[ $limitsContainer ] );
 
 		return $options;
@@ -341,11 +368,11 @@ class OptionsPage {
 	 * Adds limit fields to form.
 	 *
 	 * @param \Nette\Forms\Container $weightLimits Container.
-	 * @param int $index Index.
+	 * @param int|string             $index Index.
 	 *
 	 * @return void
 	 */
-	private function addWeightLimit( \Nette\Forms\Container $weightLimits, int $index ): void {
+	private function addWeightLimit( \Nette\Forms\Container $weightLimits, $index ): void {
 		$limit = $weightLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
 		$item->setRequired();
@@ -359,11 +386,11 @@ class OptionsPage {
 	 * Adds limit fields to form.
 	 *
 	 * @param \Nette\Forms\Container $surchargeLimits Container.
-	 * @param int $index Index.
+	 * @param int|string             $index Index.
 	 *
 	 * @return void
 	 */
-	private function addSurchargeLimit( \Nette\Forms\Container $surchargeLimits, int $index ): void {
+	private function addSurchargeLimit( \Nette\Forms\Container $surchargeLimits, $index ): void {
 		$limit = $surchargeLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
