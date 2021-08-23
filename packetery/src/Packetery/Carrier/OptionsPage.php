@@ -226,15 +226,15 @@ class OptionsPage {
 			$post = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
-					$carrierData = $post;
+					$form = $this->createForm( $post );
 				} else {
 					$options = get_option( 'packetery_carrier_' . $carrierData['id'] );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
+					$form = $this->createForm( $carrierData );
 				}
 
-				$form = $this->createForm( $carrierData );
 				if ( $form->isSubmitted() ) {
 					$form->fireEvents();
 				}
@@ -296,7 +296,7 @@ class OptionsPage {
 	 */
 	private function validateLimits( Form $form, array $options, string $limitsContainer ): void {
 		if ( isset( $options[ $limitsContainer ] ) ) {
-			foreach ( $options[ $limitsContainer ] as $option ) {
+			foreach ( $options[ $limitsContainer ] as $key => $option ) {
 				$keys = array_keys( $option );
 				if (
 					( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) ||
@@ -304,8 +304,7 @@ class OptionsPage {
 				) {
 					// TODO: JS validation.
 					$errorMessage = __( 'Please fill in both values for each rule.', 'packetery' );
-					add_settings_error( $limitsContainer, $limitsContainer, esc_attr( $errorMessage ) );
-					$form->addError( $errorMessage );
+					$form[$limitsContainer][$key][$keys[0]]->addError( $errorMessage );
 				}
 			}
 		}
