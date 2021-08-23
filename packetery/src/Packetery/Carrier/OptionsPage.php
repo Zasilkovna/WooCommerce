@@ -119,17 +119,15 @@ class OptionsPage {
 		$form = $this->formFactory->create( $optionId );
 		$form->setAction( $this->httpRequest->getUrl() );
 
-		$container = $form->addContainer( $optionId );
-
-		$container->addCheckbox(
+		$form->addCheckbox(
 			'active',
 			__( 'Active carrier', 'packetery' )
 		);
 
-		$container->addText( 'name', __( 'Display name', 'packetery' ) )
+		$form->addText( 'name', __( 'Display name', 'packetery' ) )
 			->setRequired();
 
-		$weightLimits = $container->addContainer( 'weight_limits' );
+		$weightLimits = $form->addContainer( 'weight_limits' );
 		if ( empty( $carrierData['weight_limits'] ) ) {
 			$this->addWeightLimit( $weightLimits, 0 );
 		} else {
@@ -138,7 +136,7 @@ class OptionsPage {
 			}
 		}
 
-		$surchargeLimits = $container->addContainer( 'surcharge_limits' );
+		$surchargeLimits = $form->addContainer( 'surcharge_limits' );
 		if ( empty( $carrierData['surcharge_limits'] ) ) {
 			$this->addSurchargeLimit( $surchargeLimits, 0 );
 		} else {
@@ -147,9 +145,9 @@ class OptionsPage {
 			}
 		}
 
-		$item = $container->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
+		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
-		$container->addHidden( 'id' )->setRequired();
+		$form->addHidden( 'id' )->setRequired();
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
@@ -159,7 +157,7 @@ class OptionsPage {
 		if ( empty( $carrierOptions['name'] ) ) {
 			$carrierOptions['name'] = $carrierData['name'];
 		}
-		$container->setDefaults( $carrierOptions );
+		$form->setDefaults( $carrierOptions );
 
 		return $form;
 	}
@@ -170,7 +168,7 @@ class OptionsPage {
 	 * @param Form $form Form.
 	 */
 	public function validateOptions( Form $form ): void {
-		list( $optionId, $options ) = $this->getOptionsFromData( $form );
+		$options = $form->getValues( 'array' );
 
 		$this->validateLimits( $form, $options, 'weight_limits' );
 		$this->checkOverlapping(
@@ -198,31 +196,17 @@ class OptionsPage {
 	 * @return void
 	 */
 	public function updateOptions( Form $form ): void {
-		list($optionId, $options) = $this->getOptionsFromData( $form );
+		$options = $form->getValues( 'array' );
 
 		$options = $this->mergeNewLimits( $options, 'weight_limits' );
 		$options = $this->sortLimits( $options, 'weight_limits', 'weight' );
 		$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
 		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 
-		update_option( $optionId, $options );
+		update_option( 'packetery_carrier_' . $options['id'], $options );
 		if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
 			exit;
 		}
-	}
-
-	/**
-	 * Gets options from form data.
-	 *
-	 * @param Form $form Form.
-	 *
-	 * @return array
-	 */
-	private function getOptionsFromData( Form $form ): array {
-		$formData = $form->getValues( 'array' );
-		$optionId = array_keys( $formData )[0];
-
-		return [ $optionId, (array) $formData[ $optionId ] ];
 	}
 
 	/**
@@ -240,13 +224,11 @@ class OptionsPage {
 
 			$carriersData = array();
 			foreach ( $countryCarriers as $carrierData ) {
-				$optionId = 'packetery_carrier_' . $carrierData['id'];
-
 				$post = $this->httpRequest->getPost();
-				if ( ! empty( $post[ $optionId ] ) ) {
-					$carrierData = $post[ $optionId ];
+				if ( ! empty( $post ) ) {
+					$carrierData = $post;
 				} else {
-					$options = get_option( $optionId );
+					$options = get_option( 'packetery_carrier_' . $carrierData['id'] );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
@@ -264,7 +246,7 @@ class OptionsPage {
 			}
 
 			$this->latteEngine->render(
-				PACKETERY_PLUGIN_DIR . '/template/options/country.latte',
+				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
 				array(
 					'forms'       => $carriersData,
 					'country_iso' => $countryIso,

@@ -3,24 +3,21 @@
 
 	{var $form = $carrier_data['form']}
 	<form n:name=$form>
-		{var $carrierId = $carrier_data['data']['id']}
-		{php settings_fields('packetery_carrier_' . $carrierId)}
-
 		<table class="form-table" role="presentation">
 			<tr>
 				<th scope="row">
-					<label n:name=packetery_carrier_$carrierId-active />
+					<label n:name=active />
 				</th>
 				<td>
-					<input n:name=packetery_carrier_$carrierId-active>
+					<input n:name=active>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
-					<label n:name=packetery_carrier_$carrierId-name />
+					<label n:name=name />
 				</th>
 				<td>
-					<input n:name=packetery_carrier_$carrierId-name>
+					<input n:name=name>
 				</td>
 			</tr>
 			<tr>
@@ -50,7 +47,7 @@
 							</tr>
 						{/define}
 
-						{var $container = $form['packetery_carrier_' . $carrierId]['weight_limits']}
+						{var $container = $form['weight_limits']}
 						{foreach $container->getComponents() as $weightId => $tmp}
 							{include weightRules id => $weightId, container => $container, class => ($weightId == 0 ? 'js-template' : '')}
 						{/foreach}
@@ -86,7 +83,7 @@
 							</tr>
 						{/define}
 
-						{var $container = $form['packetery_carrier_' . $carrierId]['surcharge_limits']}
+						{var $container = $form['surcharge_limits']}
 						{foreach $container->getComponents() as $surchargeId => $tmp}
 							{include surchargeRules id => $surchargeId, container => $container, class => ($surchargeId == 0 ? 'js-template' : '')}
 						{/foreach}
@@ -97,10 +94,10 @@
 			</tr>
 			<tr>
 				<th scope="row">
-					<label n:name=packetery_carrier_$carrierId-free_shipping_limit />
+					<label n:name=free_shipping_limit />
 				</th>
 				<td>
-					<input n:name=packetery_carrier_$carrierId-free_shipping_limit>
+					<input n:name=free_shipping_limit>
 					<p>
 						{__( 'After exceeding this amount, shipping is free.', 'packetery' )}
 					</p>
