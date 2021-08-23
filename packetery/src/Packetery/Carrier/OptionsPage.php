@@ -228,16 +228,15 @@ class OptionsPage {
 			foreach ( $countryCarriers as $carrierData ) {
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
 					$form = $this->createForm( $post );
+					if ( $form->isSubmitted() ) {
+						$form->fireEvents();
+					}
 				} else {
 					$options = get_option( 'packetery_carrier_' . $carrierData['id'] );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
 					$form = $this->createForm( $carrierData );
-				}
-
-				if ( $form->isSubmitted() ) {
-					$form->fireEvents();
 				}
 
 				$carriersData[] = array(
