@@ -86,6 +86,19 @@ class Repository {
 	}
 
 	/**
+	 * Gets all active carriers.
+	 *
+	 * @param string $country ISO code.
+	 *
+	 * @return array|null
+	 */
+	public function getByCountry( string $country ): ?array {
+		$wpdb = $this->get_wpdb();
+
+		return $wpdb->get_results( $wpdb->prepare( 'SELECT `id`, `name` FROM `' . $wpdb->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false', $country ), ARRAY_A );
+	}
+
+	/**
 	 * Set those not in feed as deleted.
 	 *
 	 * @param array $carriers_in_feed Carriers in feed.
