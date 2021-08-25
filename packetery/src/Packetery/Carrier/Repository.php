@@ -104,9 +104,10 @@ class Repository {
 	 * @return array|null
 	 */
 	public function getCountries(): ?array {
-		$wpdb = $this->get_wpdb();
+		$wpdb      = $this->get_wpdb();
+		$countries = $wpdb->get_results( 'SELECT `country` FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
 
-		return $wpdb->get_results( 'SELECT `country` FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
+		return array_column( $countries, 'country' );
 	}
 
 	/**

@@ -47,10 +47,7 @@ class CountryListingPage {
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
-			[
-				'countries' => $countries,
-				'nonce'     => wp_create_nonce( 'packetery_countries' ),
-			]
+			[ 'countries' => $countries ]
 		);
 	}
 
@@ -60,8 +57,8 @@ class CountryListingPage {
 	 * @return array Data.
 	 */
 	private function getActiveCountries(): array {
-		$countries         = $this->carrierRepository->getCountries();
-		$countries         = array_column( $countries, 'country' );
+		$countries = $this->carrierRepository->getCountries();
+
 		$internalCountries = [ 'cz', 'sk', 'hu', 'ro' ];
 		$countries         = array_unique( array_merge( $internalCountries, $countries ) );
 
@@ -78,25 +75,23 @@ class CountryListingPage {
 			$countriesFinal,
 			static function ( $a, $b ) {
 				if ( 'cz' === $a['code'] ) {
-					return - 2;
+					return - 1;
 				}
 				if ( 'sk' === $a['code'] ) {
+					if ( 'cz' === $b['code'] ) {
+						return 1;
+					}
+
 					return - 1;
 				}
 				if ( 'cz' === $b['code'] ) {
-					return 2;
+					return 1;
 				}
 				if ( 'sk' === $b['code'] ) {
 					return 1;
 				}
-				if ( $a['name'] < $b['name'] ) {
-					return - 1;
-				}
-				if ( $a['name'] > $b['name'] ) {
-					return 1;
-				}
 
-				return 0;
+				return strnatcmp( $a['name'], $b['name'] );
 			}
 		);
 
