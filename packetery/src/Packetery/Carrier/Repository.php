@@ -143,4 +143,30 @@ class Repository {
 		$wpdb->update( $wpdb->packetery_carrier, $data, array( 'id' => $carrier_id ) );
 	}
 
+	/**
+	 * Returns internal pickup points configuration
+	 *
+	 * @return array[]
+	 */
+	public function getZpointCarriers() {
+		return [
+			'cz' => [
+				'id'   => 'zpointcz',
+				'name' => __( 'CZ Packeta pickup points', 'packetery' ),
+			],
+			'sk' => [
+				'id'   => 'zpointsk',
+				'name' => __( 'SK Packeta pickup points', 'packetery' ),
+			],
+			'hu' => [
+				'id'   => 'zpointhu',
+				'name' => __( 'HU Packeta pickup points', 'packetery' ),
+			],
+			'ro' => [
+				'id'   => 'zpointro',
+				'name' => __( 'RO Packeta pickup points', 'packetery' ),
+			],
+		];
+	}
+
 }

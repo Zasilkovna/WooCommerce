@@ -7,6 +7,8 @@
 
 namespace Packetery\Carrier;
 
+use Latte\Engine;
+
 /**
  * Class CountryListingPage
  *
@@ -17,7 +19,7 @@ class CountryListingPage {
 	/**
 	 * Latte_engine.
 	 *
-	 * @var \Latte\Engine Latte engine.
+	 * @var Engine Latte engine.
 	 */
 	private $latteEngine;
 
@@ -31,10 +33,10 @@ class CountryListingPage {
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param \Latte\Engine $latteEngine Latte engine.
-	 * @param Repository    $carrierRepository Carrier repository.
+	 * @param Engine     $latteEngine Latte engine.
+	 * @param Repository $carrierRepository Carrier repository.
 	 */
-	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository ) {
+	public function __construct( Engine $latteEngine, Repository $carrierRepository ) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
 	}
@@ -59,7 +61,7 @@ class CountryListingPage {
 	private function getActiveCountries(): array {
 		$countries = $this->carrierRepository->getCountries();
 
-		$internalCountries = [ 'cz', 'sk', 'hu', 'ro' ];
+		$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
 		$countries         = array_unique( array_merge( $internalCountries, $countries ) );
 
 		$countriesFinal = [];

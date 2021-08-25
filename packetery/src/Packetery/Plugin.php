@@ -311,8 +311,9 @@ class Plugin {
 				$packetery_point_name = $order->get_meta( 'packetery_point_name' );
 				$packetery_point_id   = $order->get_meta( 'packetery_point_id' );
 
-				$country = $order->get_shipping_country();
-				if ( $packetery_point_name && $packetery_point_id && in_array( $country, array( 'CZ', 'SK', 'HU', 'RO' ), true ) ) {
+				$country           = $order->get_shipping_country();
+				$internalCountries = array_keys( array_change_key_case( $this->carrier_repository->getZpointCarriers(), CASE_UPPER ) );
+				if ( $packetery_point_name && $packetery_point_id && in_array( $country, $internalCountries, true ) ) {
 					echo esc_html( "$packetery_point_name ($packetery_point_id)" );
 				} elseif ( $packetery_point_name ) {
 					echo esc_html( $packetery_point_name );

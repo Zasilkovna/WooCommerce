@@ -50,13 +50,6 @@ class OptionsPage {
 	private $httpRequest;
 
 	/**
-	 * Internal pickup points.
-	 *
-	 * @var string[] Internal pickup points.
-	 */
-	private $zpointCarriers;
-
-	/**
 	 * CountryListingPage.
 	 *
 	 * @var CountryListingPage CountryListingPage.
@@ -78,24 +71,6 @@ class OptionsPage {
 		$this->formFactory        = $formFactory;
 		$this->httpRequest        = $httpRequest;
 		$this->countryListingPage = $countryListingPage;
-		$this->zpointCarriers     = [
-			'cz' => [
-				'id'   => 'zpointcz',
-				'name' => __( 'CZ Packeta pickup points', 'packetery' ),
-			],
-			'sk' => [
-				'id'   => 'zpointsk',
-				'name' => __( 'SK Packeta pickup points', 'packetery' ),
-			],
-			'hu' => [
-				'id'   => 'zpointhu',
-				'name' => __( 'HU Packeta pickup points', 'packetery' ),
-			],
-			'ro' => [
-				'id'   => 'zpointro',
-				'name' => __( 'RO Packeta pickup points', 'packetery' ),
-			],
-		];
 	}
 
 	/**
@@ -227,9 +202,10 @@ class OptionsPage {
 		if ( $countryIso ) {
 
 			$countryCarriers = $this->carrierRepository->getByCountry( $countryIso );
-			// Add PP carriers for 'cz', 'sk', 'hu', 'ro'.
-			if ( ! empty( $this->zpointCarriers[ $countryIso ] ) ) {
-				array_unshift( $countryCarriers, $this->zpointCarriers[ $countryIso ] );
+			// Add internal pickup point carriers.
+			$zpointCarriers = $this->carrierRepository->getZpointCarriers();
+			if ( ! empty( $zpointCarriers[ $countryIso ] ) ) {
+				array_unshift( $countryCarriers, $zpointCarriers[ $countryIso ] );
 			}
 
 			$carriersData = array();
