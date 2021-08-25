@@ -65,9 +65,9 @@ class Checkout {
 	);
 
 	/**
-	 * Latte engine
+	 * PacketeryLatte engine
 	 *
-	 * @var \Latte\Engine
+	 * @var \PacketeryLatte\Engine
 	 */
 	private $latte_engine;
 
@@ -81,10 +81,10 @@ class Checkout {
 	/**
 	 * Checkout constructor.
 	 *
-	 * @param \Latte\Engine $latte_engine Latte engine.
+	 * @param \PacketeryLatte\Engine $latte_engine PacketeryLatte engine.
 	 * @param Provider      $options_provider Options provider.
 	 */
-	public function __construct( \Latte\Engine $latte_engine, Provider $options_provider ) {
+	public function __construct( \PacketeryLatte\Engine $latte_engine, Provider $options_provider ) {
 		$this->latte_engine     = $latte_engine;
 		$this->options_provider = $options_provider;
 	}

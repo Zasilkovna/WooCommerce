@@ -21,9 +21,9 @@ use Packetery\MessageManager;
 class Metabox {
 
 	/**
-	 * Latte engine.
+	 * PacketeryLatte engine.
 	 *
-	 * @var \Latte\Engine
+	 * @var \PacketeryLatte\Engine
 	 */
 	private $latte_engine;
 
@@ -44,18 +44,18 @@ class Metabox {
 	/**
 	 * Order form.
 	 *
-	 * @var \Nette\Forms\Form
+	 * @var \PacketeryNette\Forms\Form
 	 */
 	private $order_form;
 
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param \Latte\Engine  $latte_engine    Latte engine.
+	 * @param \PacketeryLatte\Engine  $latte_engine    PacketeryLatte engine.
 	 * @param MessageManager $message_manager Message manager.
 	 * @param Helper         $helper          Helper.
 	 */
-	public function __construct( \Latte\Engine $latte_engine, MessageManager $message_manager, Helper $helper ) {
+	public function __construct( \PacketeryLatte\Engine $latte_engine, MessageManager $message_manager, Helper $helper ) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
@@ -65,7 +65,7 @@ class Metabox {
 	 *  Registers related hooks.
 	 */
 	public function register(): void {
-		$this->order_form = new \Nette\Forms\Form();
+		$this->order_form = new \PacketeryNette\Forms\Form();
 		$this->add_fields();
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_fields' ) );

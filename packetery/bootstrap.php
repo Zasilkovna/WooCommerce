@@ -2,9 +2,9 @@
 
 define( 'PACKETERY_PLUGIN_DIR', __DIR__ );
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/packetery_vendor/autoload.php';
 
-$configurator = new \Nette\Bootstrap\Configurator();
+$configurator = new \PacketeryNette\Bootstrap\Configurator();
 $configurator->setDebugMode( WP_DEBUG );
 
 if ( class_exists( Tracy\Debugger::class ) ) {

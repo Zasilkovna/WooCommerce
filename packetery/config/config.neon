@@ -13,7 +13,7 @@ services:
 	carrierDownloader: Packetery\Carrier\Downloader
 	carrierUpdater: Packetery\Carrier\Updater
 	carrierRepository: Packetery\Carrier\Repository
-	guzzleClient: GuzzleHttp\Client
+	guzzleClient: PacketeryGuzzleHttp\Client
 	wpdbFactory: Packetery\WpdbFactory
 	wpdb: @wpdbFactory::create()
 	checkout: Packetery\Checkout

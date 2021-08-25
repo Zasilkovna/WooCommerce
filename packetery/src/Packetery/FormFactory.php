@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
-use Nette\Forms\Form;
-use Nette\Forms\Validator;
+use PacketeryNette\Forms\Form;
+use PacketeryNette\Forms\Validator;
 
 /**
  * Class FormFactory

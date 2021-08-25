@@ -20,9 +20,9 @@ use Packetery\FormFactory;
 class Page {
 
 	/**
-	 * Latte_engine.
+	 * PacketeryLatte_engine.
 	 *
-	 * @var \Latte\Engine Latte engine.
+	 * @var \PacketeryLatte\Engine PacketeryLatte engine.
 	 */
 	private $latte_engine;
 
@@ -43,11 +43,11 @@ class Page {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param \Latte\Engine $latte_engine Latte_engine.
+	 * @param \PacketeryLatte\Engine $latte_engine PacketeryLatte_engine.
 	 * @param Provider      $options_provider Options provider.
 	 * @param FormFactory   $formFactory Form factory.
 	 */
-	public function __construct( \Latte\Engine $latte_engine, Provider $options_provider, FormFactory $formFactory ) {
+	public function __construct( \PacketeryLatte\Engine $latte_engine, Provider $options_provider, FormFactory $formFactory ) {
 		$this->latte_engine     = $latte_engine;
 		$this->options_provider = $options_provider;
 		$this->formFactory      = $formFactory;
@@ -75,9 +75,9 @@ class Page {
 	/**
 	 * Creates settings form.
 	 *
-	 * @return \Nette\Forms\Form
+	 * @return \PacketeryNette\Forms\Form
 	 */
-	private function create_form(): \Nette\Forms\Form {
+	private function create_form(): \PacketeryNette\Forms\Form {
 		$form = $this->formFactory->create();
 		$form->setAction( 'options.php' );
 
