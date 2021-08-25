@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-08-23T01:44:47+02:00\n"
-"PO-Revision-Date: 2021-08-23 16:21+0200\n"
+"POT-Creation-Date: 2021-08-23T10:44:46+02:00\n"
+"PO-Revision-Date: 2021-08-24 13:41+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -19,6 +19,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: src/Packetery/Options/Page.php:63 src/Packetery/Order/Metabox.php:80
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:14
 #: temp/cache/view/template-options-country.latte--3fede3af3a.php:14
@@ -59,68 +60,68 @@ msgstr "Invalid API response."
 msgid "Carriers were updated."
 msgstr "Carriers were updated."
 
-#: src/Packetery/Carrier/OptionsPage.php:75
+#: src/Packetery/Carrier/OptionsPage.php:84
 msgid "CZ Packeta pickup points"
 msgstr "CZ Packeta pickup points"
 
-#: src/Packetery/Carrier/OptionsPage.php:79
+#: src/Packetery/Carrier/OptionsPage.php:88
 msgid "SK Packeta pickup points"
 msgstr "SK Packeta pickup points"
 
-#: src/Packetery/Carrier/OptionsPage.php:83
+#: src/Packetery/Carrier/OptionsPage.php:92
 msgid "HU Packeta pickup points"
 msgstr "HU Packeta pickup points"
 
-#: src/Packetery/Carrier/OptionsPage.php:87
+#: src/Packetery/Carrier/OptionsPage.php:96
 msgid "RO Packeta pickup points"
 msgstr "RO Packeta pickup points"
 
-#: src/Packetery/Carrier/OptionsPage.php:98
-#: src/Packetery/Carrier/OptionsPage.php:99
+#: src/Packetery/Carrier/OptionsPage.php:107
+#: src/Packetery/Carrier/OptionsPage.php:108
 msgid "Carrier settings"
 msgstr "Carrier settings"
 
-#: src/Packetery/Carrier/OptionsPage.php:125
+#: src/Packetery/Carrier/OptionsPage.php:134
 msgid "Active carrier"
 msgstr "Active carrier"
 
-#: src/Packetery/Carrier/OptionsPage.php:128
+#: src/Packetery/Carrier/OptionsPage.php:137
 msgid "Display name"
 msgstr "Display name"
 
-#: src/Packetery/Carrier/OptionsPage.php:149
+#: src/Packetery/Carrier/OptionsPage.php:158
 msgid "Free shipping limit"
 msgstr "Free shipping limit"
 
-#: src/Packetery/Carrier/OptionsPage.php:150
-#: src/Packetery/Carrier/OptionsPage.php:359
-#: src/Packetery/Carrier/OptionsPage.php:362
-#: src/Packetery/Carrier/OptionsPage.php:376
-#: src/Packetery/Carrier/OptionsPage.php:378
+#: src/Packetery/Carrier/OptionsPage.php:159
+#: src/Packetery/Carrier/OptionsPage.php:367
+#: src/Packetery/Carrier/OptionsPage.php:370
+#: src/Packetery/Carrier/OptionsPage.php:384
+#: src/Packetery/Carrier/OptionsPage.php:386
 msgid "Please enter a valid decimal number."
 msgstr "Please enter a valid decimal number."
 
-#: src/Packetery/Carrier/OptionsPage.php:180
+#: src/Packetery/Carrier/OptionsPage.php:189
 msgid "Weight rules are overlapping, fix it please."
 msgstr "Weight rules are overlapping, fix it please."
 
-#: src/Packetery/Carrier/OptionsPage.php:188
+#: src/Packetery/Carrier/OptionsPage.php:197
 msgid "Surcharge rules are overlapping, fix it please."
 msgstr "Surcharge rules are overlapping, fix it please."
 
-#: src/Packetery/Carrier/OptionsPage.php:357
+#: src/Packetery/Carrier/OptionsPage.php:365
 msgid "Weight up to (kg)"
 msgstr "Weight up to (kg)"
 
-#: src/Packetery/Carrier/OptionsPage.php:360
+#: src/Packetery/Carrier/OptionsPage.php:368
 msgid "Price"
 msgstr "Price"
 
-#: src/Packetery/Carrier/OptionsPage.php:375
+#: src/Packetery/Carrier/OptionsPage.php:383
 msgid "Order price up to"
 msgstr "Order price up to"
 
-#: src/Packetery/Carrier/OptionsPage.php:377
+#: src/Packetery/Carrier/OptionsPage.php:385
 msgid "Surcharge"
 msgstr "Surcharge"
 
@@ -295,6 +296,36 @@ msgstr "Delete weight rule"
 msgid "Delete COD surcharge rule"
 msgstr "Delete COD surcharge rule"
 
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:16
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:16
+msgid "Countries"
+msgstr "Countries"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:24
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:24
+msgid "Country name"
+msgstr "Country name"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:27
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:27
+msgid "Country code"
+msgstr "Country code"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:30
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:30
+msgid "Action"
+msgstr "Action"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:46
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:46
+msgid "Set up"
+msgstr "Set up"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:57
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:57
+msgid "No active countries."
+msgstr "No active countries."
+
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:16
 #: temp/cache/view/template-options-country.latte--3fede3af3a.php:16
 msgid "Country options"
@@ -308,30 +339,6 @@ msgstr "No known carrier for this country."
 #: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:27
 msgid "Choose pickup point"
 msgstr "Choose pickup point"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:16
-msgid "Countries"
-msgstr "Countries"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:24
-msgid "Country name"
-msgstr "Country name"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:27
-msgid "Country code"
-msgstr "Country code"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:30
-msgid "Action"
-msgstr "Action"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:46
-msgid "Set up"
-msgstr "Set up"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:57
-msgid "No active countries."
-msgstr "No active countries."
 
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:16
 msgid "Options"

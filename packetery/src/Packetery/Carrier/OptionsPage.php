@@ -50,43 +50,27 @@ class OptionsPage {
 	private $httpRequest;
 
 	/**
-	 * Internal pickup points.
+	 * CountryListingPage.
 	 *
-	 * @var string[] Internal pickup points.
+	 * @var CountryListingPage CountryListingPage.
 	 */
-	private $zpointCarriers;
+	private $countryListingPage;
 
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param \Latte\Engine $latteEngine Latte_engine.
-	 * @param Repository    $carrierRepository Carrier repository.
-	 * @param FormFactory   $formFactory Form factory.
-	 * @param Request       $httpRequest Nette Request.
+	 * @param \Latte\Engine      $latteEngine Latte_engine.
+	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param FormFactory        $formFactory Form factory.
+	 * @param Request            $httpRequest Nette Request.
+	 * @param CountryListingPage $countryListingPage CountryListingPage.
 	 */
-	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest ) {
-		$this->latteEngine       = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
-		$this->formFactory       = $formFactory;
-		$this->httpRequest       = $httpRequest;
-		$this->zpointCarriers    = [
-			'cz' => [
-				'id'   => 'zpointcz',
-				'name' => __( 'CZ Packeta pickup points', 'packetery' ),
-			],
-			'sk' => [
-				'id'   => 'zpointsk',
-				'name' => __( 'SK Packeta pickup points', 'packetery' ),
-			],
-			'hu' => [
-				'id'   => 'zpointhu',
-				'name' => __( 'HU Packeta pickup points', 'packetery' ),
-			],
-			'ro' => [
-				'id'   => 'zpointro',
-				'name' => __( 'RO Packeta pickup points', 'packetery' ),
-			],
-		];
+	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
+		$this->latteEngine        = $latteEngine;
+		$this->carrierRepository  = $carrierRepository;
+		$this->formFactory        = $formFactory;
+		$this->httpRequest        = $httpRequest;
+		$this->countryListingPage = $countryListingPage;
 	}
 
 	/**
@@ -218,9 +202,10 @@ class OptionsPage {
 		if ( $countryIso ) {
 
 			$countryCarriers = $this->carrierRepository->getByCountry( $countryIso );
-			// Add PP carriers for 'cz', 'sk', 'hu', 'ro'.
-			if ( ! empty( $this->zpointCarriers[ $countryIso ] ) ) {
-				array_unshift( $countryCarriers, $this->zpointCarriers[ $countryIso ] );
+			// Add internal pickup point carriers.
+			$zpointCarriers = $this->carrierRepository->getZpointCarriers();
+			if ( ! empty( $zpointCarriers[ $countryIso ] ) ) {
+				array_unshift( $countryCarriers, $zpointCarriers[ $countryIso ] );
 			}
 
 			$carriersData = array();
@@ -253,7 +238,7 @@ class OptionsPage {
 				)
 			);
 		} else {
-			// TODO: countries overview - fix in PES-263, CountryListingPage class.
+			$this->countryListingPage->render();
 		}
 	}
 

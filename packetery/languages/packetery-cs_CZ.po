@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-08-23T01:44:47+02:00\n"
-"PO-Revision-Date: 2021-08-23 16:21+0200\n"
+"POT-Creation-Date: 2021-08-23T10:44:46+02:00\n"
+"PO-Revision-Date: 2021-08-24 13:41+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -19,6 +19,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: src/Packetery/Options/Page.php:63 src/Packetery/Order/Metabox.php:80
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:14
 #: temp/cache/view/template-options-country.latte--3fede3af3a.php:14
@@ -59,68 +60,68 @@ msgstr ""
 msgid "Carriers were updated."
 msgstr ""
 
-#: src/Packetery/Carrier/OptionsPage.php:75
+#: src/Packetery/Carrier/OptionsPage.php:84
 msgid "CZ Packeta pickup points"
 msgstr "CZ Zásilkovna výdejní místa"
 
-#: src/Packetery/Carrier/OptionsPage.php:79
+#: src/Packetery/Carrier/OptionsPage.php:88
 msgid "SK Packeta pickup points"
 msgstr "SK Zásilkovna výdejní místa"
 
-#: src/Packetery/Carrier/OptionsPage.php:83
+#: src/Packetery/Carrier/OptionsPage.php:92
 msgid "HU Packeta pickup points"
 msgstr "HU Zásilkovna výdejní místa"
 
-#: src/Packetery/Carrier/OptionsPage.php:87
+#: src/Packetery/Carrier/OptionsPage.php:96
 msgid "RO Packeta pickup points"
 msgstr "RO Zásilkovna výdejní místa"
 
-#: src/Packetery/Carrier/OptionsPage.php:98
-#: src/Packetery/Carrier/OptionsPage.php:99
+#: src/Packetery/Carrier/OptionsPage.php:107
+#: src/Packetery/Carrier/OptionsPage.php:108
 msgid "Carrier settings"
-msgstr "Nastavení dopravce"
+msgstr "Nastavení dopravců"
 
-#: src/Packetery/Carrier/OptionsPage.php:125
+#: src/Packetery/Carrier/OptionsPage.php:134
 msgid "Active carrier"
 msgstr "Aktivní dopravce"
 
-#: src/Packetery/Carrier/OptionsPage.php:128
+#: src/Packetery/Carrier/OptionsPage.php:137
 msgid "Display name"
 msgstr "Zobrazovaný název"
 
-#: src/Packetery/Carrier/OptionsPage.php:149
+#: src/Packetery/Carrier/OptionsPage.php:158
 msgid "Free shipping limit"
 msgstr "Limit pro dopravu zdarma"
 
-#: src/Packetery/Carrier/OptionsPage.php:150
-#: src/Packetery/Carrier/OptionsPage.php:359
-#: src/Packetery/Carrier/OptionsPage.php:362
-#: src/Packetery/Carrier/OptionsPage.php:376
-#: src/Packetery/Carrier/OptionsPage.php:378
+#: src/Packetery/Carrier/OptionsPage.php:159
+#: src/Packetery/Carrier/OptionsPage.php:367
+#: src/Packetery/Carrier/OptionsPage.php:370
+#: src/Packetery/Carrier/OptionsPage.php:384
+#: src/Packetery/Carrier/OptionsPage.php:386
 msgid "Please enter a valid decimal number."
 msgstr "Zadejte prosím platné desetinné číslo."
 
-#: src/Packetery/Carrier/OptionsPage.php:180
+#: src/Packetery/Carrier/OptionsPage.php:189
 msgid "Weight rules are overlapping, fix it please."
 msgstr "Váhová pravidla se překrývají, opravte to prosím."
 
-#: src/Packetery/Carrier/OptionsPage.php:188
+#: src/Packetery/Carrier/OptionsPage.php:197
 msgid "Surcharge rules are overlapping, fix it please."
 msgstr "Pravidla přirážky se překrývají, opravte to prosím."
 
-#: src/Packetery/Carrier/OptionsPage.php:357
+#: src/Packetery/Carrier/OptionsPage.php:365
 msgid "Weight up to (kg)"
 msgstr "Hmotnost do (kg)"
 
-#: src/Packetery/Carrier/OptionsPage.php:360
+#: src/Packetery/Carrier/OptionsPage.php:368
 msgid "Price"
 msgstr "Cena"
 
-#: src/Packetery/Carrier/OptionsPage.php:375
+#: src/Packetery/Carrier/OptionsPage.php:383
 msgid "Order price up to"
 msgstr "Částka za objednávku do"
 
-#: src/Packetery/Carrier/OptionsPage.php:377
+#: src/Packetery/Carrier/OptionsPage.php:385
 msgid "Surcharge"
 msgstr "Přirážka"
 
@@ -294,6 +295,36 @@ msgstr "Smazat váhové pravidlo"
 msgid "Delete COD surcharge rule"
 msgstr "Smazat pravidlo přirážky k dobírce."
 
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:16
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:16
+msgid "Countries"
+msgstr "Země"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:24
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:24
+msgid "Country name"
+msgstr "Název země"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:27
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:27
+msgid "Country code"
+msgstr "Kód země"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:30
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:30
+msgid "Action"
+msgstr "Akce"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:46
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:46
+msgid "Set up"
+msgstr "Nastavit"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:57
+#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:57
+msgid "No active countries."
+msgstr "Žádné aktivní země."
+
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:16
 #: temp/cache/view/template-options-country.latte--3fede3af3a.php:16
 msgid "Country options"
@@ -307,30 +338,6 @@ msgstr "Pro tuto zemi neevidujeme žádného dopravce."
 #: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:27
 msgid "Choose pickup point"
 msgstr ""
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:16
-msgid "Countries"
-msgstr "Země"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:24
-msgid "Country name"
-msgstr "Název země"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:27
-msgid "Country code"
-msgstr "Kód země"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:30
-msgid "Action"
-msgstr "Akce"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:46
-msgid "Set up"
-msgstr "Nastavit"
-
-#: temp/cache/view/template-options-countries.latte--2ef9f5399b.php:57
-msgid "No active countries."
-msgstr "Žádné aktivní země."
 
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:16
 msgid "Options"

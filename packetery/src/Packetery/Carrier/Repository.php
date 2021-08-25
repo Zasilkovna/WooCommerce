@@ -99,6 +99,18 @@ class Repository {
 	}
 
 	/**
+	 * Gets all active countries.
+	 *
+	 * @return array
+	 */
+	public function getCountries(): array {
+		$wpdb      = $this->get_wpdb();
+		$countries = $wpdb->get_results( 'SELECT `country` FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
+
+		return array_column( ( $countries ?: [] ), 'country' );
+	}
+
+	/**
 	 * Set those not in feed as deleted.
 	 *
 	 * @param array $carriers_in_feed Carriers in feed.
@@ -129,6 +141,32 @@ class Repository {
 	public function update( array $data, int $carrier_id ): void {
 		$wpdb = $this->get_wpdb();
 		$wpdb->update( $wpdb->packetery_carrier, $data, array( 'id' => $carrier_id ) );
+	}
+
+	/**
+	 * Returns internal pickup points configuration
+	 *
+	 * @return array[]
+	 */
+	public function getZpointCarriers() {
+		return [
+			'cz' => [
+				'id'   => 'zpointcz',
+				'name' => __( 'CZ Packeta pickup points', 'packetery' ),
+			],
+			'sk' => [
+				'id'   => 'zpointsk',
+				'name' => __( 'SK Packeta pickup points', 'packetery' ),
+			],
+			'hu' => [
+				'id'   => 'zpointhu',
+				'name' => __( 'HU Packeta pickup points', 'packetery' ),
+			],
+			'ro' => [
+				'id'   => 'zpointro',
+				'name' => __( 'RO Packeta pickup points', 'packetery' ),
+			],
+		];
 	}
 
 }

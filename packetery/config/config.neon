@@ -19,3 +19,4 @@ services:
 	checkout: Packetery\Checkout
 	carrierOptionsPage: Packetery\Carrier\OptionsPage
 	formFactory: Packetery\FormFactory
+	countryListingPage: Packetery\Carrier\CountryListingPage
