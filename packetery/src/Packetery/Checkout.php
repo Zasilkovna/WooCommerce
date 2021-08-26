@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery;
 
 use Packetery\Options\Provider;
+use PacketeryLatte\Engine;
 
 /**
  * Class Checkout
@@ -67,7 +68,7 @@ class Checkout {
 	/**
 	 * PacketeryLatte engine
 	 *
-	 * @var \PacketeryLatte\Engine
+	 * @var Engine
 	 */
 	private $latte_engine;
 
@@ -81,10 +82,10 @@ class Checkout {
 	/**
 	 * Checkout constructor.
 	 *
-	 * @param \PacketeryLatte\Engine $latte_engine PacketeryLatte engine.
+	 * @param Engine                 $latte_engine PacketeryLatte engine.
 	 * @param Provider               $options_provider Options provider.
 	 */
-	public function __construct( \PacketeryLatte\Engine $latte_engine, Provider $options_provider ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider ) {
 		$this->latte_engine     = $latte_engine;
 		$this->options_provider = $options_provider;
 	}

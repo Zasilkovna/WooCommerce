@@ -9,8 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Carrier;
 
-use PacketeryGuzzleHttp as GuzzleHttp;
 use Packetery\Options\Provider;
+use PacketeryGuzzleHttp\Client;
+use PacketeryGuzzleHttp\Exception\GuzzleException;
+use PacketeryGuzzleHttp\PacketeryPsr7\Response;
 
 /**
  * Class Downloader
@@ -23,7 +25,7 @@ class Downloader {
 	/**
 	 * Guzzle client.
 	 *
-	 * @var GuzzleHttp\Client Guzzle client.
+	 * @var Client Guzzle client.
 	 */
 	private $client;
 
@@ -44,11 +46,11 @@ class Downloader {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param GuzzleHttp\Client $guzzle_client Guzzle client.
+	 * @param Client            $guzzle_client Guzzle client.
 	 * @param Updater           $carrier_updater Carrier updater.
 	 * @param Provider          $options_provider Options provider.
 	 */
-	public function __construct( GuzzleHttp\Client $guzzle_client, Updater $carrier_updater, Provider $options_provider ) {
+	public function __construct( Client $guzzle_client, Updater $carrier_updater, Provider $options_provider ) {
 		$this->client           = $guzzle_client;
 		$this->carrier_updater  = $carrier_updater;
 		$this->options_provider = $options_provider;
@@ -120,10 +122,10 @@ class Downloader {
 			/**
 			 * Guzzle response.
 			 *
-			 * @var GuzzleHttp\PacketeryPsr7\Response $result Guzzle response.
+			 * @var Response $result Guzzle response.
 			 */
 			$result = $this->client->get( $url );
-		} catch ( GuzzleHttp\Exception\GuzzleException $exception ) {
+		} catch ( GuzzleException $exception ) {
 			throw new DownloadException( $exception->getMessage() );
 		}
 

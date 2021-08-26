@@ -13,6 +13,9 @@ use Packetery\Carrier\Downloader;
 use Packetery\Carrier\Repository;
 use Packetery\Order;
 use Packetery\Carrier\OptionsPage;
+use PacketeryLatte\Engine;
+use PacketeryNette\Forms\Form;
+use PacketeryNette\Utils\Finder;
 
 /**
  * Class Plugin
@@ -34,7 +37,7 @@ class Plugin {
 	/**
 	 * PacketeryLatte engine.
 	 *
-	 * @var \PacketeryLatte\Engine
+	 * @var Engine
 	 */
 	private $latte_engine;
 
@@ -104,10 +107,10 @@ class Plugin {
 	 * @param Repository             $carrier_repository Carrier repository.
 	 * @param Downloader             $carrier_downloader Carrier downloader object.
 	 * @param Checkout               $checkout           Checkout class.
-	 * @param \PacketeryLatte\Engine $latte_engine       PacketeryLatte engine.
+	 * @param Engine                 $latte_engine       PacketeryLatte engine.
 	 * @param OptionsPage            $carrierOptionsPage Carrier options page.
 	 */
-	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \PacketeryLatte\Engine $latte_engine, OptionsPage $carrierOptionsPage ) {
+	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, Engine $latte_engine, OptionsPage $carrierOptionsPage ) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
 		$this->carrier_repository = $carrier_repository;
@@ -128,7 +131,7 @@ class Plugin {
 		$this->load_textdomains();
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-		\PacketeryNette\Forms\Form::initialize();
+		Form::initialize();
 
 		add_action(
 			'admin_notices',
@@ -207,7 +210,7 @@ class Plugin {
 	 * Loads plugin translations files.
 	 */
 	public function load_textdomains(): void {
-		$mo_files = \PacketeryNette\Utils\Finder::findFiles( '*.mo' )->from( PACKETERY_PLUGIN_DIR . '/languages' );
+		$mo_files = Finder::findFiles( '*.mo' )->from( PACKETERY_PLUGIN_DIR . '/languages' );
 		foreach ( $mo_files as $mo_file ) {
 			load_textdomain( 'packetery', $mo_file );
 		}

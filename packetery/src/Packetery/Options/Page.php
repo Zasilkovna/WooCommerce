@@ -11,6 +11,8 @@ declare( strict_types=1 );
 namespace Packetery\Options;
 
 use Packetery\FormFactory;
+use PacketeryLatte\Engine;
+use PacketeryNette\Forms\Form;
 
 /**
  * Class Page
@@ -22,7 +24,7 @@ class Page {
 	/**
 	 * PacketeryLatte_engine.
 	 *
-	 * @var \PacketeryLatte\Engine PacketeryLatte engine.
+	 * @var Engine PacketeryLatte engine.
 	 */
 	private $latte_engine;
 
@@ -43,11 +45,11 @@ class Page {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param \PacketeryLatte\Engine $latte_engine PacketeryLatte_engine.
+	 * @param Engine                 $latte_engine PacketeryLatte_engine.
 	 * @param Provider               $options_provider Options provider.
 	 * @param FormFactory            $formFactory Form factory.
 	 */
-	public function __construct( \PacketeryLatte\Engine $latte_engine, Provider $options_provider, FormFactory $formFactory ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider, FormFactory $formFactory ) {
 		$this->latte_engine     = $latte_engine;
 		$this->options_provider = $options_provider;
 		$this->formFactory      = $formFactory;
@@ -75,9 +77,9 @@ class Page {
 	/**
 	 * Creates settings form.
 	 *
-	 * @return \PacketeryNette\Forms\Form
+	 * @return Form
 	 */
-	private function create_form(): \PacketeryNette\Forms\Form {
+	private function create_form(): Form {
 		$form = $this->formFactory->create();
 		$form->setAction( 'options.php' );
 

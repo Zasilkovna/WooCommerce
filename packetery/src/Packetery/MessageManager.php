@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
+use PacketeryLatte\Engine;
+
 /**
  * Class Message_Manager
  *
@@ -22,7 +24,7 @@ class MessageManager {
 	/**
 	 * PacketeryLatte engine.
 	 *
-	 * @var \PacketeryLatte\Engine
+	 * @var Engine
 	 */
 	private $latte_engine;
 
@@ -36,9 +38,9 @@ class MessageManager {
 	/**
 	 * Message_Manager constructor.
 	 *
-	 * @param \PacketeryLatte\Engine $latte_engine PacketeryLatte engine.
+	 * @param Engine $latte_engine PacketeryLatte engine.
 	 */
-	public function __construct( \PacketeryLatte\Engine $latte_engine ) {
+	public function __construct( Engine $latte_engine ) {
 		$messages = \get_transient( 'packetery_message_manager_messages' );
 		if ( ! $messages ) {
 			$messages = array();

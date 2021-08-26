@@ -10,6 +10,9 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
+use PacketeryLatte\Engine;
+use PacketeryNette\Bridges\FormsPacketeryLatte\FormMacros;
+
 /**
  * Class PacketeryLatte_Engine_Factory
  *
@@ -22,12 +25,12 @@ class LatteEngineFactory {
 	 *
 	 * @param string $temp_dir Temporary folder.
 	 *
-	 * @return \PacketeryLatte\Engine
+	 * @return Engine
 	 */
 	public function create( string $temp_dir ) {
-		$engine = new \PacketeryLatte\Engine();
+		$engine = new Engine();
 		$engine->setTempDirectory( $temp_dir );
-		\PacketeryNette\Bridges\FormsPacketeryLatte\FormMacros::install( $engine->getCompiler() );
+		FormMacros::install( $engine->getCompiler() );
 		return $engine;
 	}
 }
