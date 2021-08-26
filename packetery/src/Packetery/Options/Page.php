@@ -45,9 +45,9 @@ class Page {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine                 $latte_engine PacketeryLatte_engine.
-	 * @param Provider               $options_provider Options provider.
-	 * @param FormFactory            $formFactory Form factory.
+	 * @param Engine      $latte_engine PacketeryLatte_engine.
+	 * @param Provider    $options_provider Options provider.
+	 * @param FormFactory $formFactory Form factory.
 	 */
 	public function __construct( Engine $latte_engine, Provider $options_provider, FormFactory $formFactory ) {
 		$this->latte_engine     = $latte_engine;

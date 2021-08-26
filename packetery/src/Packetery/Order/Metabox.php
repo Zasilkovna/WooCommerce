@@ -53,9 +53,9 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine                 $latte_engine    PacketeryLatte engine.
-	 * @param MessageManager         $message_manager Message manager.
-	 * @param Helper                 $helper          Helper.
+	 * @param Engine         $latte_engine    PacketeryLatte engine.
+	 * @param MessageManager $message_manager Message manager.
+	 * @param Helper         $helper          Helper.
 	 */
 	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper ) {
 		$this->latte_engine    = $latte_engine;

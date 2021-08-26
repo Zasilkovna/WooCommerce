@@ -82,8 +82,8 @@ class Checkout {
 	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine                 $latte_engine PacketeryLatte engine.
-	 * @param Provider               $options_provider Options provider.
+	 * @param Engine   $latte_engine PacketeryLatte engine.
+	 * @param Provider $options_provider Options provider.
 	 */
 	public function __construct( Engine $latte_engine, Provider $options_provider ) {
 		$this->latte_engine     = $latte_engine;

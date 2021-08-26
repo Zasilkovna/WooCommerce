@@ -46,9 +46,9 @@ class Downloader {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param Client            $guzzle_client Guzzle client.
-	 * @param Updater           $carrier_updater Carrier updater.
-	 * @param Provider          $options_provider Options provider.
+	 * @param Client   $guzzle_client Guzzle client.
+	 * @param Updater  $carrier_updater Carrier updater.
+	 * @param Provider $options_provider Options provider.
 	 */
 	public function __construct( Client $guzzle_client, Updater $carrier_updater, Provider $options_provider ) {
 		$this->client           = $guzzle_client;

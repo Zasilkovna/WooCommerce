@@ -61,11 +61,11 @@ class OptionsPage {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine                 $latteEngine PacketeryLatte_engine.
-	 * @param Repository             $carrierRepository Carrier repository.
-	 * @param FormFactory            $formFactory Form factory.
-	 * @param Request                $httpRequest Nette Request.
-	 * @param CountryListingPage     $countryListingPage CountryListingPage.
+	 * @param Engine             $latteEngine PacketeryLatte_engine.
+	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param FormFactory        $formFactory Form factory.
+	 * @param Request            $httpRequest Nette Request.
+	 * @param CountryListingPage $countryListingPage CountryListingPage.
 	 */
 	public function __construct( Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
 		$this->latteEngine        = $latteEngine;
