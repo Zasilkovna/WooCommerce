@@ -60,10 +60,10 @@ class OptionsPage {
 	 * Plugin constructor.
 	 *
 	 * @param \PacketeryLatte\Engine $latteEngine PacketeryLatte_engine.
-	 * @param Repository         $carrierRepository Carrier repository.
-	 * @param FormFactory        $formFactory Form factory.
-	 * @param Request       $httpRequest Nette Request.
-	 * @param CountryListingPage $countryListingPage CountryListingPage.
+	 * @param Repository             $carrierRepository Carrier repository.
+	 * @param FormFactory            $formFactory Form factory.
+	 * @param Request                $httpRequest Nette Request.
+	 * @param CountryListingPage     $countryListingPage CountryListingPage.
 	 */
 	public function __construct( \PacketeryLatte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
 		$this->latteEngine        = $latteEngine;
@@ -332,7 +332,7 @@ class OptionsPage {
 	 * Adds limit fields to form.
 	 *
 	 * @param \PacketeryNette\Forms\Container $weightLimits Container.
-	 * @param int|string             $index Index.
+	 * @param int|string                      $index Index.
 	 *
 	 * @return void
 	 */
@@ -350,7 +350,7 @@ class OptionsPage {
 	 * Adds limit fields to form.
 	 *
 	 * @param \PacketeryNette\Forms\Container $surchargeLimits Container.
-	 * @param int|string             $index Index.
+	 * @param int|string                      $index Index.
 	 *
 	 * @return void
 	 */

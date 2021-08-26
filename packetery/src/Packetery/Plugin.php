@@ -97,15 +97,15 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox  $order_metabox      Order metabox.
-	 * @param MessageManager $message_manager    Message manager.
-	 * @param Helper         $helper             Helper.
-	 * @param Options\Page   $options_page       Options page.
-	 * @param Repository     $carrier_repository Carrier repository.
-	 * @param Downloader     $carrier_downloader Carrier downloader object.
-	 * @param Checkout       $checkout           Checkout class.
-	 * @param \PacketeryLatte\Engine  $latte_engine       PacketeryLatte engine.
-	 * @param OptionsPage    $carrierOptionsPage Carrier options page.
+	 * @param Order\Metabox          $order_metabox      Order metabox.
+	 * @param MessageManager         $message_manager    Message manager.
+	 * @param Helper                 $helper             Helper.
+	 * @param Options\Page           $options_page       Options page.
+	 * @param Repository             $carrier_repository Carrier repository.
+	 * @param Downloader             $carrier_downloader Carrier downloader object.
+	 * @param Checkout               $checkout           Checkout class.
+	 * @param \PacketeryLatte\Engine $latte_engine       PacketeryLatte engine.
+	 * @param OptionsPage            $carrierOptionsPage Carrier options page.
 	 */
 	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, \PacketeryLatte\Engine $latte_engine, OptionsPage $carrierOptionsPage ) {
 		$this->options_page       = $options_page;

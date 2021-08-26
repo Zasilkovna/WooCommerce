@@ -8,8 +8,8 @@
 declare( strict_types=1 );
 
 namespace Packetery\Carrier;
-use PacketeryGuzzleHttp as GuzzleHttp;
 
+use PacketeryGuzzleHttp as GuzzleHttp;
 use Packetery\Options\Provider;
 
 /**
@@ -45,8 +45,8 @@ class Downloader {
 	 * Downloader constructor.
 	 *
 	 * @param GuzzleHttp\Client $guzzle_client Guzzle client.
-	 * @param Updater            $carrier_updater Carrier updater.
-	 * @param Provider           $options_provider Options provider.
+	 * @param Updater           $carrier_updater Carrier updater.
+	 * @param Provider          $options_provider Options provider.
 	 */
 	public function __construct( GuzzleHttp\Client $guzzle_client, Updater $carrier_updater, Provider $options_provider ) {
 		$this->client           = $guzzle_client;

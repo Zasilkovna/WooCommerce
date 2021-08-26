@@ -40,11 +40,11 @@ class Entity {
 	 *
 	 * @return static|null
 	 */
-	public static function from_globals(bool $needed = true): ?self {
+	public static function from_globals( bool $needed = true ): ?self {
 		global $post;
 		$order = wc_get_order( $post->ID );
 
-		if (!$needed && !$order instanceof \WC_Order) {
+		if ( ! $needed && ! $order instanceof \WC_Order ) {
 			return null;
 		}
 
