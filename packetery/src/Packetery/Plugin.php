@@ -167,6 +167,12 @@ class Plugin {
 		if ( ! wp_next_scheduled( 'packetery_cron_carriers_hook' ) ) {
 			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
 		}
+
+		add_action( 'woocommerce_admin_order_data_after_shipping_address', function (\WC_Order $order) {
+			$this->latte_engine->render(PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte', [
+				'order' => new Order\Entity($order)
+			]);
+		} );
 	}
 
 	/**
