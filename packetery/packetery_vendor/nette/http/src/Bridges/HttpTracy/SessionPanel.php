@@ -7,16 +7,16 @@
 
 declare(strict_types=1);
 
-namespace PacketeryNette\Bridges\HttpTracy;
+namespace PacketeryNette\Bridges\HttpPacketeryTracy;
 
 use PacketeryNette;
-use Tracy;
+use PacketeryTracy;
 
 
 /**
  * Session panel for Debugger Bar.
  */
-class SessionPanel implements Tracy\IBarPanel
+class SessionPanel implements PacketeryTracy\IBarPanel
 {
 	use PacketeryNette\SmartObject;
 

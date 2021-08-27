@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../src/tracy.php';
 
-Tracy\OutputDebugger::enable();
+PacketeryTracy\OutputDebugger::enable();
 
 
 function head()

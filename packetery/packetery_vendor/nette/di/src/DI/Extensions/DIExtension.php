@@ -87,9 +87,9 @@ final class DIExtension extends PacketeryNette\DI\CompilerExtension
 
 		if (
 			$this->debugMode &&
-			($this->config->debugger ?? $this->getContainerBuilder()->getByType(\Tracy\Bar::class))
+			($this->config->debugger ?? $this->getContainerBuilder()->getByType(\PacketeryTracy\Bar::class))
 		) {
-			$this->enableTracyIntegration();
+			$this->enablePacketeryTracyIntegration();
 		}
 
 		$this->initializeTaggedServices();
@@ -131,11 +131,11 @@ final class DIExtension extends PacketeryNette\DI\CompilerExtension
 	}
 
 
-	private function enableTracyIntegration(): void
+	private function enablePacketeryTracyIntegration(): void
 	{
-		PacketeryNette\Bridges\DITracy\ContainerPanel::$compilationTime = $this->time;
+		PacketeryNette\Bridges\DIPacketeryTracy\ContainerPanel::$compilationTime = $this->time;
 		$this->initialization->addBody($this->getContainerBuilder()->formatPhp('?;', [
-			new PacketeryNette\DI\Definitions\Statement('@Tracy\Bar::addPanel', [new PacketeryNette\DI\Definitions\Statement(PacketeryNette\Bridges\DITracy\ContainerPanel::class)]),
+			new PacketeryNette\DI\Definitions\Statement('@PacketeryTracy\Bar::addPanel', [new PacketeryNette\DI\Definitions\Statement(PacketeryNette\Bridges\DIPacketeryTracy\ContainerPanel::class)]),
 		]));
 	}
 }

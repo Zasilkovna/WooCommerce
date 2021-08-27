@@ -1,40 +1,40 @@
 <?php
 
 /**
- * This file is part of the Tracy (https://tracy.nette.org)
+ * This file is part of the PacketeryTracy (https://tracy.nette.org)
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 declare(strict_types=1);
 
-namespace Tracy\Bridges\PacketeryPsr;
+namespace PacketeryTracy\Bridges\PacketeryPsr;
 
 use PacketeryPsr;
-use Tracy;
+use PacketeryTracy;
 
 
 /**
- * Tracy\ILogger to PacketeryPsr\Log\LoggerInterface adapter.
+ * PacketeryTracy\ILogger to PacketeryPsr\Log\LoggerInterface adapter.
  */
-class TracyToPacketeryPsrLoggerAdapter extends PacketeryPsr\Log\AbstractLogger
+class PacketeryTracyToPacketeryPsrLoggerAdapter extends PacketeryPsr\Log\AbstractLogger
 {
-	/** PSR-3 log level to Tracy logger level mapping */
+	/** PSR-3 log level to PacketeryTracy logger level mapping */
 	private const LEVEL_MAP = [
-		PacketeryPsr\Log\LogLevel::EMERGENCY => Tracy\ILogger::CRITICAL,
-		PacketeryPsr\Log\LogLevel::ALERT => Tracy\ILogger::CRITICAL,
-		PacketeryPsr\Log\LogLevel::CRITICAL => Tracy\ILogger::CRITICAL,
-		PacketeryPsr\Log\LogLevel::ERROR => Tracy\ILogger::ERROR,
-		PacketeryPsr\Log\LogLevel::WARNING => Tracy\ILogger::WARNING,
-		PacketeryPsr\Log\LogLevel::NOTICE => Tracy\ILogger::WARNING,
-		PacketeryPsr\Log\LogLevel::INFO => Tracy\ILogger::INFO,
-		PacketeryPsr\Log\LogLevel::DEBUG => Tracy\ILogger::DEBUG,
+		PacketeryPsr\Log\LogLevel::EMERGENCY => PacketeryTracy\ILogger::CRITICAL,
+		PacketeryPsr\Log\LogLevel::ALERT => PacketeryTracy\ILogger::CRITICAL,
+		PacketeryPsr\Log\LogLevel::CRITICAL => PacketeryTracy\ILogger::CRITICAL,
+		PacketeryPsr\Log\LogLevel::ERROR => PacketeryTracy\ILogger::ERROR,
+		PacketeryPsr\Log\LogLevel::WARNING => PacketeryTracy\ILogger::WARNING,
+		PacketeryPsr\Log\LogLevel::NOTICE => PacketeryTracy\ILogger::WARNING,
+		PacketeryPsr\Log\LogLevel::INFO => PacketeryTracy\ILogger::INFO,
+		PacketeryPsr\Log\LogLevel::DEBUG => PacketeryTracy\ILogger::DEBUG,
 	];
 
-	/** @var Tracy\ILogger */
+	/** @var PacketeryTracy\ILogger */
 	private $tracyLogger;
 
 
-	public function __construct(Tracy\ILogger $tracyLogger)
+	public function __construct(PacketeryTracy\ILogger $tracyLogger)
 	{
 		$this->tracyLogger = $tracyLogger;
 	}
@@ -42,7 +42,7 @@ class TracyToPacketeryPsrLoggerAdapter extends PacketeryPsr\Log\AbstractLogger
 
 	public function log($level, $message, array $context = [])
 	{
-		$level = self::LEVEL_MAP[$level] ?? Tracy\ILogger::ERROR;
+		$level = self::LEVEL_MAP[$level] ?? PacketeryTracy\ILogger::ERROR;
 
 		if (isset($context['exception']) && $context['exception'] instanceof \Throwable) {
 			$this->tracyLogger->log($context['exception'], $level);

@@ -13,8 +13,8 @@ if (@!include __DIR__ . '/../vendor/autoload.php') {
 
 
 use PacketeryNette\Forms\Form;
-use Tracy\Debugger;
-use Tracy\Dumper;
+use PacketeryTracy\Debugger;
+use PacketeryTracy\Dumper;
 
 Debugger::enable();
 

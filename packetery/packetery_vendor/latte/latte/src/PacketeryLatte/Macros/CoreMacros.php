@@ -623,7 +623,7 @@ class CoreMacros extends MacroSet
 		$node->validate(null);
 		$args = $writer->formatArgs();
 		return $writer->write(
-			'Tracy\Debugger::barDump(' . ($args ? "($args)" : 'get_defined_vars()') . ', %var) %node.line;',
+			'PacketeryTracy\Debugger::barDump(' . ($args ? "($args)" : 'get_defined_vars()') . ', %var) %node.line;',
 			$args ?: 'variables'
 		);
 	}

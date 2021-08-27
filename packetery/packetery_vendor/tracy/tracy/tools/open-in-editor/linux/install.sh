@@ -20,7 +20,7 @@ fi
 # --------------------------------------------------------------
 
 echo "[Desktop Entry]
-Name=Tracy Open Editor
+Name=PacketeryTracy Open Editor
 Exec=tracy-openeditor.sh %u
 Terminal=false
 NoDisplay=true

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 require __DIR__ . '/../src/tracy.php';
 
-use Tracy\Debugger;
+use PacketeryTracy\Debugger;
 
-// For security reasons, Tracy is visible only on localhost.
-// You may force Tracy to run in development mode by passing the Debugger::DEVELOPMENT instead of Debugger::DETECT.
+// For security reasons, PacketeryTracy is visible only on localhost.
+// You may force PacketeryTracy to run in development mode by passing the Debugger::DEVELOPMENT instead of Debugger::DETECT.
 Debugger::enable(Debugger::DETECT, __DIR__ . '/log');
 
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="assets/style.css">
 
-<h1>Tracy: dump() demo</h1>
+<h1>PacketeryTracy: dump() demo</h1>
 
 <?php
 
@@ -65,7 +65,7 @@ $arr = [
 	'single line' => 'hello',
 	'binary' => "binary\xA0string",
 	'multi line' => "first\r\nsecond\nthird\n   indented line",
-	'long' => str_repeat('tracy ', 1000), // affected by Tracy\Debugger::$maxLength
+	'long' => str_repeat('tracy ', 1000), // affected by PacketeryTracy\Debugger::$maxLength
 ];
 
 dump($arr);
@@ -95,5 +95,5 @@ dump($arr);
 
 
 if (Debugger::$productionMode) {
-	echo '<p><b>For security reasons, Tracy is visible only on localhost. Look into the source code to see how to enable Tracy.</b></p>';
+	echo '<p><b>For security reasons, PacketeryTracy is visible only on localhost. Look into the source code to see how to enable PacketeryTracy.</b></p>';
 }

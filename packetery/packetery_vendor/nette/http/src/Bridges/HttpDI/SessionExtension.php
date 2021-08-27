@@ -75,8 +75,8 @@ class SessionExtension extends PacketeryNette\DI\CompilerExtension
 		$this->compiler->addExportedType(PacketeryNette\Http\IRequest::class);
 
 		if ($this->debugMode && $config->debugger) {
-			$session->addSetup('@Tracy\Bar::addPanel', [
-				new PacketeryNette\DI\Definitions\Statement(PacketeryNette\Bridges\HttpTracy\SessionPanel::class),
+			$session->addSetup('@PacketeryTracy\Bar::addPanel', [
+				new PacketeryNette\DI\Definitions\Statement(PacketeryNette\Bridges\HttpPacketeryTracy\SessionPanel::class),
 			]);
 		}
 

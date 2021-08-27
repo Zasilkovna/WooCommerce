@@ -21,7 +21,7 @@
 	},
 	"suggest": {
 		"nette/robot-loader": "to use Configurator::createRobotLoader()",
-		"tracy/tracy": "to use Configurator::enableTracy()"
+		"tracy/tracy": "to use Configurator::enablePacketeryTracy()"
 	},
 	"require-dev": {
 		"nette/application": "^3.1",

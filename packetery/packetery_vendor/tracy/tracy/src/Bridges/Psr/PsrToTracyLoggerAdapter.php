@@ -1,31 +1,31 @@
 <?php
 
 /**
- * This file is part of the Tracy (https://tracy.nette.org)
+ * This file is part of the PacketeryTracy (https://tracy.nette.org)
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 declare(strict_types=1);
 
-namespace Tracy\Bridges\PacketeryPsr;
+namespace PacketeryTracy\Bridges\PacketeryPsr;
 
 use PacketeryPsr;
-use Tracy;
+use PacketeryTracy;
 
 
 /**
- * PacketeryPsr\Log\LoggerInterface to Tracy\ILogger adapter.
+ * PacketeryPsr\Log\LoggerInterface to PacketeryTracy\ILogger adapter.
  */
-class PacketeryPsrToTracyLoggerAdapter implements Tracy\ILogger
+class PacketeryPsrToPacketeryTracyLoggerAdapter implements PacketeryTracy\ILogger
 {
-	/** Tracy logger level to PSR-3 log level mapping */
+	/** PacketeryTracy logger level to PSR-3 log level mapping */
 	private const LEVEL_MAP = [
-		Tracy\ILogger::DEBUG => PacketeryPsr\Log\LogLevel::DEBUG,
-		Tracy\ILogger::INFO => PacketeryPsr\Log\LogLevel::INFO,
-		Tracy\ILogger::WARNING => PacketeryPsr\Log\LogLevel::WARNING,
-		Tracy\ILogger::ERROR => PacketeryPsr\Log\LogLevel::ERROR,
-		Tracy\ILogger::EXCEPTION => PacketeryPsr\Log\LogLevel::ERROR,
-		Tracy\ILogger::CRITICAL => PacketeryPsr\Log\LogLevel::CRITICAL,
+		PacketeryTracy\ILogger::DEBUG => PacketeryPsr\Log\LogLevel::DEBUG,
+		PacketeryTracy\ILogger::INFO => PacketeryPsr\Log\LogLevel::INFO,
+		PacketeryTracy\ILogger::WARNING => PacketeryPsr\Log\LogLevel::WARNING,
+		PacketeryTracy\ILogger::ERROR => PacketeryPsr\Log\LogLevel::ERROR,
+		PacketeryTracy\ILogger::EXCEPTION => PacketeryPsr\Log\LogLevel::ERROR,
+		PacketeryTracy\ILogger::CRITICAL => PacketeryPsr\Log\LogLevel::CRITICAL,
 	];
 
 	/** @var PacketeryPsr\Log\LoggerInterface */
@@ -41,11 +41,11 @@ class PacketeryPsrToTracyLoggerAdapter implements Tracy\ILogger
 	public function log($value, $level = self::INFO)
 	{
 		if ($value instanceof \Throwable) {
-			$message = Tracy\Helpers::getClass($value) . ': ' . $value->getMessage() . ($value->getCode() ? ' #' . $value->getCode() : '') . ' in ' . $value->getFile() . ':' . $value->getLine();
+			$message = PacketeryTracy\Helpers::getClass($value) . ': ' . $value->getMessage() . ($value->getCode() ? ' #' . $value->getCode() : '') . ' in ' . $value->getFile() . ':' . $value->getLine();
 			$context = ['exception' => $value];
 
 		} elseif (!is_string($value)) {
-			$message = trim(Tracy\Dumper::toText($value));
+			$message = trim(PacketeryTracy\Dumper::toText($value));
 			$context = [];
 
 		} else {

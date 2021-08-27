@@ -1,20 +1,20 @@
 <?php
 
 /**
- * This file is part of the Tracy (https://tracy.nette.org)
+ * This file is part of the PacketeryTracy (https://tracy.nette.org)
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 declare(strict_types=1);
 
-namespace Tracy\Bridges\PacketeryNette;
+namespace PacketeryTracy\Bridges\PacketeryNette;
 
 use PacketeryNette;
-use Tracy;
+use PacketeryTracy;
 
 
 /**
- * Tracy logger bridge for PacketeryNette Mail.
+ * PacketeryTracy logger bridge for PacketeryNette Mail.
  */
 class MailSender
 {
@@ -42,7 +42,7 @@ class MailSender
 		$host = preg_replace('#[^\w.-]+#', '', $_SERVER['SERVER_NAME'] ?? php_uname('n'));
 
 		$mail = new PacketeryNette\Mail\Message;
-		$mail->setHeader('X-Mailer', 'Tracy');
+		$mail->setHeader('X-Mailer', 'PacketeryTracy');
 		if ($this->fromEmail || PacketeryNette\Utils\Validators::isEmail("noreply@$host")) {
 			$mail->setFrom($this->fromEmail ?: "noreply@$host");
 		}
@@ -50,7 +50,7 @@ class MailSender
 			$mail->addTo(trim($item));
 		}
 		$mail->setSubject('PHP: An error occurred on the server ' . $host);
-		$mail->setBody(Tracy\Logger::formatMessage($message) . "\n\nsource: " . Tracy\Helpers::getSource());
+		$mail->setBody(PacketeryTracy\Logger::formatMessage($message) . "\n\nsource: " . PacketeryTracy\Helpers::getSource());
 
 		$this->mailer->send($mail);
 	}

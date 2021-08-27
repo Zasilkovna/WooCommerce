@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/../src/tracy.php';
 
-use Tracy\Debugger;
+use PacketeryTracy\Debugger;
 
 $arr = [10, 20, ['key1' => 'val1', 'key2' => true]];
 
@@ -40,6 +40,6 @@ try {
 ?>
 <!DOCTYPE html><link rel="stylesheet" href="assets/style.css">
 
-<h1>Tracy: FireLogger demo</h1>
+<h1>PacketeryTracy: FireLogger demo</h1>
 
 <p>How to <a href="https://tracy.nette.org/#toc-firelogger">enable FireLogger</a>?</p>

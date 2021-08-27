@@ -109,7 +109,7 @@ class DateInput extends PacketeryNette\Forms\Controls\BaseControl
 }
 
 
-Tracy\Debugger::enable();
+PacketeryTracy\Debugger::enable();
 
 $form = new Form;
 
@@ -121,7 +121,7 @@ $form->addSubmit('submit', 'Send');
 
 if ($form->isSuccess()) {
 	echo '<h2>Form was submitted and successfully validated</h2>';
-	Tracy\Dumper::dump($form->getValues());
+	PacketeryTracy\Dumper::dump($form->getValues());
 	exit;
 }
 

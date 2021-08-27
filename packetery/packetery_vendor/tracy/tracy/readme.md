@@ -1,4 +1,4 @@
-[Tracy](https://tracy.nette.org) - PHP debugger
+[PacketeryTracy](https://tracy.nette.org) - PHP debugger
 ==============================================
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/tracy/tracy.svg)](https://packagist.org/packages/tracy/tracy)
@@ -11,7 +11,7 @@
 Introduction
 ------------
 
-Tracy library is a useful helper for everyday PHP programmers. It helps you to:
+PacketeryTracy library is a useful helper for everyday PHP programmers. It helps you to:
 
 - quickly detect and correct errors
 - log errors
@@ -20,16 +20,16 @@ Tracy library is a useful helper for everyday PHP programmers. It helps you to:
 - see memory consumption
 
 
-PHP is a perfect language for making hardly detectable errors because it gives great flexibility to programmers. Tracy\Debugger is more valuable because of that. It is an ultimate tool among the diagnostic ones.
-If you are meeting Tracy for the first time, believe me, your life starts to be divided into one before the Tracy and the one with her. Welcome to the good part!
+PHP is a perfect language for making hardly detectable errors because it gives great flexibility to programmers. PacketeryTracy\Debugger is more valuable because of that. It is an ultimate tool among the diagnostic ones.
+If you are meeting PacketeryTracy for the first time, believe me, your life starts to be divided into one before the PacketeryTracy and the one with her. Welcome to the good part!
 
 Documentation can be found on the [website](https://tracy.nette.org).
 
 
-[Support Tracy](https://github.com/sponsors/dg)
+[Support PacketeryTracy](https://github.com/sponsors/dg)
 -----------------------------------------------
 
-Do you like Tracy? Are you looking forward to the new features?
+Do you like PacketeryTracy? Are you looking forward to the new features?
 
 [![Buy me a coffee](https://files.nette.org/icons/donation-3.svg)](https://github.com/sponsors/dg)
 
@@ -47,30 +47,30 @@ composer require tracy/tracy
 
 Alternatively, you can download the whole package or [tracy.phar](https://github.com/nette/tracy/releases) file.
 
-| Tracy     | compatible with PHP | compatible with browsers
+| PacketeryTracy     | compatible with PHP | compatible with browsers
 |-----------|---------------|----------
-| Tracy 2.8 | PHP 7.2 – 8.0 | Chrome 55+, Firefox 53+, Safari 11+ and iOS Safari 11+
-| Tracy 2.7 | PHP 7.1 – 8.0 | Chrome 55+, Firefox 53+, MS Edge 16+, Safari 11+ and iOS Safari 11+
-| Tracy 2.6 | PHP 7.1 – 8.0 | Chrome 49+, Firefox 45+, MS Edge 14+, Safari 10+ and iOS Safari 10.2+
-| Tracy 2.5 | PHP 5.4 – 7.4 | Chrome 49+, Firefox 45+, MS Edge 12+, Safari 10+ and iOS Safari 10.2+
-| Tracy 2.4 | PHP 5.4 – 7.2 | Chrome 29+, Firefox 28+, IE 11+ (except AJAX), MS Edge 12+, Safari 9+ and iOS Safari 9.2+
+| PacketeryTracy 2.8 | PHP 7.2 – 8.0 | Chrome 55+, Firefox 53+, Safari 11+ and iOS Safari 11+
+| PacketeryTracy 2.7 | PHP 7.1 – 8.0 | Chrome 55+, Firefox 53+, MS Edge 16+, Safari 11+ and iOS Safari 11+
+| PacketeryTracy 2.6 | PHP 7.1 – 8.0 | Chrome 49+, Firefox 45+, MS Edge 14+, Safari 10+ and iOS Safari 10.2+
+| PacketeryTracy 2.5 | PHP 5.4 – 7.4 | Chrome 49+, Firefox 45+, MS Edge 12+, Safari 10+ and iOS Safari 10.2+
+| PacketeryTracy 2.4 | PHP 5.4 – 7.2 | Chrome 29+, Firefox 28+, IE 11+ (except AJAX), MS Edge 12+, Safari 9+ and iOS Safari 9.2+
 
 
 Usage
 -----
 
-Activating Tracy is easy. Simply add these two lines of code, preferably just after library loading (like `require 'vendor/autoload.php'`) and before any output is sent to browser:
+Activating PacketeryTracy is easy. Simply add these two lines of code, preferably just after library loading (like `require 'vendor/autoload.php'`) and before any output is sent to browser:
 
 ```php
-use Tracy\Debugger;
+use PacketeryTracy\Debugger;
 
 Debugger::enable();
 ```
 
 The first thing you will notice on the website is a Debugger Bar.
 
-(If you do not see anything, it means that Tracy is running in production mode. For security reasons, Tracy is visible only on localhost.
-You may force Tracy to run in development mode by passing the `Debugger::DEVELOPMENT` as the first parameter of `enable()` method.)
+(If you do not see anything, it means that PacketeryTracy is running in production mode. For security reasons, PacketeryTracy is visible only on localhost.
+You may force PacketeryTracy to run in development mode by passing the `Debugger::DEVELOPMENT` as the first parameter of `enable()` method.)
 
 The `enable()` involves changing the error reporting level to E_ALL.
 
@@ -113,19 +113,19 @@ Stack trace:
 #5 /sandbox/temp/cache/latte/15206b353f351f6bfca2c36cc.php(17): Nette\ComponentModel\Co in <b>/sandbox/vendor/nette/utils/src/Utils/ObjectMixin.php</b> on line <b>100</b><br />
 ```
 
-It is not so easy to navigate through this output. If you enable Tracy, both errors and exceptions are displayed in a completely different form:
+It is not so easy to navigate through this output. If you enable PacketeryTracy, both errors and exceptions are displayed in a completely different form:
 
-[![Uncaught exception rendered by Tracy](https://nette.github.io/tracy/images/tracy-exception.png)](https://nette.github.io/tracy/tracy-exception.html)
+[![Uncaught exception rendered by PacketeryTracy](https://nette.github.io/tracy/images/tracy-exception.png)](https://nette.github.io/tracy/tracy-exception.html)
 
 The error message literally screams. You can see a part of the source code with the highlighted line where the error occurred. A message clearly explains an error. The entire site is [interactive, try it](https://nette.github.io/tracy/tracy-exception.html).
 
 And you know what? Fatal errors are captured and displayed in the same way. No need to install any extension (click for live example):
 
-[![Fatal error rendered by Tracy](https://nette.github.io/tracy/images/tracy-error.png)](https://nette.github.io/tracy/tracy-error.html)
+[![Fatal error rendered by PacketeryTracy](https://nette.github.io/tracy/images/tracy-error.png)](https://nette.github.io/tracy/tracy-error.html)
 
-Errors like a typo in a variable name or an attempt to open a nonexistent file generate reports of E_NOTICE or E_WARNING level. These can be easily overlooked and/or can be completely hidden in a web page graphic layout. Let Tracy manage them:
+Errors like a typo in a variable name or an attempt to open a nonexistent file generate reports of E_NOTICE or E_WARNING level. These can be easily overlooked and/or can be completely hidden in a web page graphic layout. Let PacketeryTracy manage them:
 
-[![Notice rendered by Tracy](https://nette.github.io/tracy/images/tracy-notice2.png)](https://nette.github.io/tracy/tracy-debug-bar.html)
+[![Notice rendered by PacketeryTracy](https://nette.github.io/tracy/images/tracy-notice2.png)](https://nette.github.io/tracy/tracy-debug-bar.html)
 
 Or they may be displayed like errors:
 
@@ -134,7 +134,7 @@ Debugger::$strictMode = true; // display all errors
 Debugger::$strictMode = E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED; // all errors except deprecated notices
 ```
 
-[![Notice rendered by Tracy](https://nette.github.io/tracy/images/tracy-notice.png)](https://nette.github.io/tracy/tracy-notice.html)
+[![Notice rendered by PacketeryTracy](https://nette.github.io/tracy/images/tracy-notice.png)](https://nette.github.io/tracy/tracy-notice.html)
 
 In order to detect misspellings when assigning to an object, we use [trait Nette\SmartObject](https://doc.nette.org/en/3.0/smartobject).
 
@@ -142,7 +142,7 @@ In order to detect misspellings when assigning to an object, we use [trait Nette
 Content Security Policy
 -----------------------
 
-If your site uses Content Security Policy, you'll need to add `'nonce-<value>'` to `script-src` and eventually the same nonce to `style-src` for Tracy to work properly. Some 3rd plugins may require additional directives. Avoid adding `'unsafe-inline'` & `'unsafe-eval'` in production mode, if you can.
+If your site uses Content Security Policy, you'll need to add `'nonce-<value>'` to `script-src` and eventually the same nonce to `style-src` for PacketeryTracy to work properly. Some 3rd plugins may require additional directives. Avoid adding `'unsafe-inline'` & `'unsafe-eval'` in production mode, if you can.
 
 Configuration example for [Nette Framework](https://nette.org):
 
@@ -157,8 +157,8 @@ http:
 Faster loading
 --------------
 
-The basic integration is straightforward, however if you have slow blocking scripts in web page, they can slow the Tracy loading.
-The solution is to place `<?php Tracy\Debugger::renderLoader() ?>` into your template before
+The basic integration is straightforward, however if you have slow blocking scripts in web page, they can slow the PacketeryTracy loading.
+The solution is to place `<?php PacketeryTracy\Debugger::renderLoader() ?>` into your template before
 any scripts:
 
 ```html
@@ -166,7 +166,7 @@ any scripts:
 <html>
 <head>
 	<title>...<title>
-	<?php Tracy\Debugger::renderLoader() ?>
+	<?php PacketeryTracy\Debugger::renderLoader() ?>
 	<link rel="stylesheet" href="assets/style.css">
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
@@ -176,15 +176,15 @@ any scripts:
 AJAX and redirected requests
 ----------------------------
 
-Tracy is able to show Debug bar and Bluescreens for AJAX and redirected requests. You just have to start session before Tracy:
+PacketeryTracy is able to show Debug bar and Bluescreens for AJAX and redirected requests. You just have to start session before PacketeryTracy:
 
 ```php
 session_start();
 Debugger::enable();
 ```
 
-In case you use non-standard session handler, you can start Tracy immediately (in order to handle any errors), then initialize your session handler
-and then inform Tracy that session is ready to use via `dispatch()`:
+In case you use non-standard session handler, you can start PacketeryTracy immediately (in order to handle any errors), then initialize your session handler
+and then inform PacketeryTracy that session is ready to use via `dispatch()`:
 
 ```php
 Debugger::enable();
@@ -205,7 +205,7 @@ When the error page is displayed, you can click on file names and they will open
 Production mode and error logging
 ---------------------------------
 
-As you can see, Tracy is quite eloquent. It is appreciated in a development environment, but on a production server, it would cause a disaster. Any debugging information cannot be listed there. Therefore Tracy has an environment autodetection and logging functionality. Instead of showing herself, Tracy stores information into a log file and shows the visitor a user-comprehensible server error message:
+As you can see, PacketeryTracy is quite eloquent. It is appreciated in a development environment, but on a production server, it would cause a disaster. Any debugging information cannot be listed there. Therefore PacketeryTracy has an environment autodetection and logging functionality. Instead of showing herself, PacketeryTracy stores information into a log file and shows the visitor a user-comprehensible server error message:
 
 [![Server Error 500](https://nette.github.io/tracy/images/tracy-error2.png)](https://nette.github.io/tracy/tracy-production.html)
 
@@ -215,7 +215,7 @@ The output mode is set by the first parameter of `Debugger::enable()`. You can s
 
 If it is not specified, the default value `Debugger::DETECT` is used. In this case, the system detects a server by IP address. The production mode is chosen if an application is accessed via a public IP address. A local IP address leads to development mode. It is not necessary to set the mode in most cases. The mode is correctly recognized when you are launching the application on your local server or in production.
 
-In the production mode, Tracy automatically captures all errors and exceptions into a text log. Unless you specify otherwise, it will be stored in log/error.log. This error logging is extremely useful. Imagine, that all users of your application are actually betatesters. They are doing cutting-edge work for free when hunting bugs and you would be silly if you threw away their valuable reports to a recycle bin unnoticed.
+In the production mode, PacketeryTracy automatically captures all errors and exceptions into a text log. Unless you specify otherwise, it will be stored in log/error.log. This error logging is extremely useful. Imagine, that all users of your application are actually betatesters. They are doing cutting-edge work for free when hunting bugs and you would be silly if you threw away their valuable reports to a recycle bin unnoticed.
 
 If you need to log your own messages or caught exceptions, use the method `log()`:
 
@@ -237,13 +237,13 @@ A directory for errors logging can be set by the second parameter of the enable(
 Debugger::enable(Debugger::DETECT, __DIR__ . '/mylog');
 ```
 
-If you want Tracy to log PHP errors like `E_NOTICE` or `E_WARNING` with detailed information (HTML report), set `Debugger::$logSeverity`:
+If you want PacketeryTracy to log PHP errors like `E_NOTICE` or `E_WARNING` with detailed information (HTML report), set `Debugger::$logSeverity`:
 
 ```php
 Debugger::$logSeverity = E_NOTICE | E_WARNING;
 ```
 
-For a real professional the error log is a crucial source of information and he or she wants to be notified about any new error immediately. Tracy helps him. She is capable of sending an email for every new error record. The variable $email identifies where to send these e-mails:
+For a real professional the error log is a crucial source of information and he or she wants to be notified about any new error immediately. PacketeryTracy helps him. She is capable of sending an email for every new error record. The variable $email identifies where to send these e-mails:
 
 ```php
 Debugger::$email = 'admin@example.com';
@@ -251,7 +251,7 @@ Debugger::$email = 'admin@example.com';
 
 If you use the Nette Framework, you can set this and others in the configuration file.
 
-To protect your e-mail box from flood, Tracy sends **only one message** and creates a file `email-sent`. When a developer receives the e-mail notification, he checks the log, corrects his application and deletes the `email-sent` monitoring file. This activates the e-mail sending again.
+To protect your e-mail box from flood, PacketeryTracy sends **only one message** and creates a file `email-sent`. When a developer receives the e-mail notification, he checks the log, corrects his application and deletes the `email-sent` monitoring file. This activates the e-mail sending again.
 
 
 Variable dumping
@@ -263,14 +263,14 @@ Every debugging developer is a good friend with the function `var_dump`, which l
 $arr = [10, 20.2, true, null, 'hello'];
 
 dump($arr);
-// or Tracy\Debugger::dump($arr);
+// or PacketeryTracy\Debugger::dump($arr);
 ```
 
 generates the output:
 
 ![dump](https://nette.github.io/tracy/images/tracy-dump.png)
 
-You can also change the nesting depth by `Debugger::$maxDepth` and displayed strings length by `Debugger::$maxLength`. Naturally, lower values accelerate Tracy rendering.
+You can also change the nesting depth by `Debugger::$maxDepth` and displayed strings length by `Debugger::$maxLength`. Naturally, lower values accelerate PacketeryTracy rendering.
 
 ```php
 Debugger::$maxDepth = 2; // default: 7
@@ -282,7 +282,7 @@ The `dump()` function can display useful location information:
 
 ```php
 Debugger::$showLocation = true; // shows tooltip with path to the file, where the dump() was called, and tooltips for every dumped objects
-Debugger::$showLocation = Tracy\Dumper::LOCATION_CLASS; // shows only tooltips for every dumped object containing path to the file
+Debugger::$showLocation = PacketeryTracy\Dumper::LOCATION_CLASS; // shows only tooltips for every dumped object containing path to the file
 Debugger::$showLocation = false; // hides all location information
 ```
 
@@ -345,10 +345,10 @@ How to do it?
 
 Navigate to the [demo page](https://examples.nette.org/tracy/) and you will see messages sent from PHP.
 
-Because Tracy\Debugger communicates with FireLogger via HTTP headers, you must call the logging function before the PHP script sends anything to output. It is also possible to enable output buffering and delay the output.
+Because PacketeryTracy\Debugger communicates with FireLogger via HTTP headers, you must call the logging function before the PHP script sends anything to output. It is also possible to enable output buffering and delay the output.
 
 ```php
-use Tracy\Debugger;
+use PacketeryTracy\Debugger;
 
 Debugger::fireLog('Hello World'); // send string into FireLogger console
 
@@ -365,10 +365,10 @@ The result looks like this:
 Custom Logger
 -------------
 
-We can create a custom logger to log errors, uncatched exceptions, and also be called by `Tracy\Debugger::log()`. Logger implements the interface Tracy\ILogger.
+We can create a custom logger to log errors, uncatched exceptions, and also be called by `PacketeryTracy\Debugger::log()`. Logger implements the interface PacketeryTracy\ILogger.
 
 ```php
-use Tracy\ILogger;
+use PacketeryTracy\ILogger;
 
 class SlackLogger implements ILogger
 {
@@ -382,7 +382,7 @@ class SlackLogger implements ILogger
 And then we activate it:
 
 ```php
-Tracy\Debugger::setLogger(new SlackLogger);
+PacketeryTracy\Debugger::setLogger(new SlackLogger);
 ```
 
 If we use the full Nette Framework, we can set it in the NEON configuration file:
@@ -396,7 +396,7 @@ services:
 nginx
 -----
 
-If Tracy does not work on nginx, it is probably misconfigured. If there is something like
+If PacketeryTracy does not work on nginx, it is probably misconfigured. If there is something like
 
 ```nginx
 try_files $uri $uri/ /index.php;
@@ -417,9 +417,9 @@ This is a list of unofficial integrations to other frameworks and CMS:
 - [Drupal 7](http://drupal.org/project/traced)
 - Laravel framework: [recca0120/laravel-tracy](https://github.com/recca0120/laravel-tracy), [whipsterCZ/laravel-tracy](https://github.com/whipsterCZ/laravel-tracy)
 - [OpenCart](https://github.com/BurdaPraha/oc_tracy)
-- [ProcessWire CMS/CMF](https://github.com/adrianbj/TracyDebugger)
+- [ProcessWire CMS/CMF](https://github.com/adrianbj/PacketeryTracyDebugger)
 - [Slim Framework](https://github.com/runcmf/runtracy)
-- Symfony framework: [kutny/tracy-bundle](https://github.com/kutny/tracy-bundle), [VasekPurchart/Tracy-Blue-Screen-Bundle](https://github.com/VasekPurchart/Tracy-Blue-Screen-Bundle)
-- [Wordpress](https://github.com/ktstudio/WP-Tracy)
+- Symfony framework: [kutny/tracy-bundle](https://github.com/kutny/tracy-bundle), [VasekPurchart/PacketeryTracy-Blue-Screen-Bundle](https://github.com/VasekPurchart/PacketeryTracy-Blue-Screen-Bundle)
+- [Wordpress](https://github.com/ktstudio/WP-PacketeryTracy)
 
 ... feel free to be famous, create an integration for your favourite platform!

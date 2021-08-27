@@ -13,7 +13,7 @@ use Composer\Autoload\ClassLoader;
 use PacketeryLatte;
 use PacketeryNette;
 use PacketeryNette\DI;
-use Tracy;
+use PacketeryTracy;
 
 
 /**
@@ -47,7 +47,7 @@ class Configurator
 		'search' => [PacketeryNette\DI\Extensions\SearchExtension::class, ['%tempDir%/cache/nette.search']],
 		'security' => [PacketeryNette\Bridges\SecurityDI\SecurityExtension::class, ['%debugMode%']],
 		'session' => [PacketeryNette\Bridges\HttpDI\SessionExtension::class, ['%debugMode%', '%consoleMode%']],
-		'tracy' => [Tracy\Bridges\PacketeryNette\TracyExtension::class, ['%debugMode%', '%consoleMode%']],
+		'tracy' => [PacketeryTracy\Bridges\PacketeryNette\PacketeryTracyExtension::class, ['%debugMode%', '%consoleMode%']],
 	];
 
 	/** @var string[] of classes which shouldn't be autowired */
@@ -187,27 +187,27 @@ class Configurator
 	}
 
 
-	public function enableTracy(string $logDirectory = null, string $email = null): void
+	public function enablePacketeryTracy(string $logDirectory = null, string $email = null): void
 	{
-		if (!class_exists(Tracy\Debugger::class)) {
-			throw new PacketeryNette\NotSupportedException('Tracy not found, do you have `tracy/tracy` package installed?');
+		if (!class_exists(PacketeryTracy\Debugger::class)) {
+			throw new PacketeryNette\NotSupportedException('PacketeryTracy not found, do you have `tracy/tracy` package installed?');
 		}
 
-		Tracy\Debugger::$strictMode = true;
-		Tracy\Debugger::enable(!$this->staticParameters['debugMode'], $logDirectory, $email);
-		Tracy\Bridges\PacketeryNette\Bridge::initialize();
-		if (class_exists(PacketeryLatte\Bridges\Tracy\BlueScreenPanel::class)) {
-			PacketeryLatte\Bridges\Tracy\BlueScreenPanel::initialize();
+		PacketeryTracy\Debugger::$strictMode = true;
+		PacketeryTracy\Debugger::enable(!$this->staticParameters['debugMode'], $logDirectory, $email);
+		PacketeryTracy\Bridges\PacketeryNette\Bridge::initialize();
+		if (class_exists(PacketeryLatte\Bridges\PacketeryTracy\BlueScreenPanel::class)) {
+			PacketeryLatte\Bridges\PacketeryTracy\BlueScreenPanel::initialize();
 		}
 	}
 
 
 	/**
-	 * Alias for enableTracy()
+	 * Alias for enablePacketeryTracy()
 	 */
 	public function enableDebugger(string $logDirectory = null, string $email = null): void
 	{
-		$this->enableTracy($logDirectory, $email);
+		$this->enablePacketeryTracy($logDirectory, $email);
 	}
 
 

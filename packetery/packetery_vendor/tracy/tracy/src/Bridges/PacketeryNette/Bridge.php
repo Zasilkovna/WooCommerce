@@ -1,19 +1,19 @@
 <?php
 
 /**
- * This file is part of the Tracy (https://tracy.nette.org)
+ * This file is part of the PacketeryTracy (https://tracy.nette.org)
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 declare(strict_types=1);
 
-namespace Tracy\Bridges\PacketeryNette;
+namespace PacketeryTracy\Bridges\PacketeryNette;
 
 use Latte;
 use PacketeryNette;
-use Tracy;
-use Tracy\BlueScreen;
-use Tracy\Helpers;
+use PacketeryTracy;
+use PacketeryTracy\BlueScreen;
+use PacketeryTracy\Helpers;
 
 
 /**
@@ -23,7 +23,7 @@ class Bridge
 {
 	public static function initialize(): void
 	{
-		$blueScreen = Tracy\Debugger::getBlueScreen();
+		$blueScreen = PacketeryTracy\Debugger::getBlueScreen();
 		$blueScreen->addPanel([self::class, 'renderLatteError']);
 		$blueScreen->addAction([self::class, 'renderLatteUnknownMacro']);
 		$blueScreen->addAction([self::class, 'renderMemberAccessException']);

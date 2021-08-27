@@ -485,7 +485,7 @@ By default, Nette automatically starts a session if the HTTP request contains a 
 
 PHP sends HTTP headers affecting caching when starting the session, see `session_cache_limiter`, and possibly a cookie with the session ID. Therefore, it is always necessary to start the session before sending any output to the browser, otherwise an exception will be thrown. So if you know that a session will be used during page rendering, start it manually before, for example in the presenter.
 
-In developer mode, Tracy starts the session because it uses it to display redirection and AJAX requests bars in the Tracy Bar.
+In developer mode, PacketeryTracy starts the session because it uses it to display redirection and AJAX requests bars in the PacketeryTracy Bar.
 
 
 Section
