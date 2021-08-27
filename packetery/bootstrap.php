@@ -3,13 +3,14 @@
 use PacketeryNette\Bootstrap\Configurator;
 
 define( 'PACKETERY_PLUGIN_DIR', __DIR__ );
+defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
 
 require_once __DIR__ . '/packetery_vendor/autoload.php';
 
 $configurator = new Configurator();
 $configurator->setDebugMode( WP_DEBUG );
 
-if ( getenv( 'PACKETERY_DEBUG' ) === '1' ) {
+if ( PACKETERY_DEBUG ) {
 	$configurator->enableDebugger();
 }
 
