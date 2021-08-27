@@ -86,7 +86,37 @@ class Repository {
 	}
 
 	/**
-	 * Gets all active carriers.
+	 * Gets all active carriers including internal pickup point carriers.
+	 *
+	 * @return array|null
+	 */
+	public function getAllIncludingZpoints(): ?array {
+		$wpdb = $this->get_wpdb();
+
+		$carriers       = $wpdb->get_results( 'SELECT `id`, `is_pickup_points`  FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false', ARRAY_A );
+		$zpointCarriers = $this->getZpointCarriers();
+		foreach ( $zpointCarriers as $zpointCarrier ) {
+			array_unshift( $carriers, $zpointCarrier );
+		}
+
+		return $carriers;
+	}
+
+	/**
+	 * Gets is_pickup_point attribute of a carrier.
+	 *
+	 * @param int $carrierId Carrier id.
+	 *
+	 * @return string|null
+	 */
+	public function getIsPickupPoints( int $carrierId ): ?string {
+		$wpdb = $this->get_wpdb();
+
+		return $wpdb->get_var( $wpdb->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s', $carrierId ) );
+	}
+
+	/**
+	 * Gets all active carriers for a country.
 	 *
 	 * @param string $country ISO code.
 	 *
@@ -96,6 +126,23 @@ class Repository {
 		$wpdb = $this->get_wpdb();
 
 		return $wpdb->get_results( $wpdb->prepare( 'SELECT `id`, `name` FROM `' . $wpdb->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false', $country ), ARRAY_A );
+	}
+
+	/**
+	 * Gets all active carriers for a country including internal pickup point carriers.
+	 *
+	 * @param string $country ISO code.
+	 *
+	 * @return array|null
+	 */
+	public function getByCountryIncludingZpoints( string $country ): ?array {
+		$countryCarriers = $this->getByCountry( $country );
+		$zpointCarriers  = $this->getZpointCarriers();
+		if ( ! empty( $zpointCarriers[ $country ] ) ) {
+			array_unshift( $countryCarriers, $zpointCarriers[ $country ] );
+		}
+
+		return $countryCarriers;
 	}
 
 	/**
@@ -148,23 +195,27 @@ class Repository {
 	 *
 	 * @return array[]
 	 */
-	public function getZpointCarriers() {
+	public function getZpointCarriers(): array {
 		return [
 			'cz' => [
-				'id'   => 'zpointcz',
-				'name' => __( 'CZ Packeta pickup points', 'packetery' ),
+				'id'               => 'zpointcz',
+				'name'             => __( 'CZ Packeta pickup points', 'packetery' ),
+				'is_pickup_points' => 1,
 			],
 			'sk' => [
-				'id'   => 'zpointsk',
-				'name' => __( 'SK Packeta pickup points', 'packetery' ),
+				'id'               => 'zpointsk',
+				'name'             => __( 'SK Packeta pickup points', 'packetery' ),
+				'is_pickup_points' => 1,
 			],
 			'hu' => [
-				'id'   => 'zpointhu',
-				'name' => __( 'HU Packeta pickup points', 'packetery' ),
+				'id'               => 'zpointhu',
+				'name'             => __( 'HU Packeta pickup points', 'packetery' ),
+				'is_pickup_points' => 1,
 			],
 			'ro' => [
-				'id'   => 'zpointro',
-				'name' => __( 'RO Packeta pickup points', 'packetery' ),
+				'id'               => 'zpointro',
+				'name'             => __( 'RO Packeta pickup points', 'packetery' ),
+				'is_pickup_points' => 1,
 			],
 		];
 	}

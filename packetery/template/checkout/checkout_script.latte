@@ -32,16 +32,31 @@
 			$widgetDiv.find('.packeta-pickup-point-name').html('');
 		}
 		var updateWidgetButtonVisibility = function(carrierRateId) {
-			if (carrierRateId.startsWith('packeta-zpoint-')) {
+			if (typeof carrierConfig[carrierRateId] !== 'undefined' &&
+				parseInt(carrierConfig[carrierRateId]['is_pickup_points']) === 1
+			) {
 				if (!$widgetDiv.is(':visible')) {
+					$widgetDiv.data('carriers', carrierConfig[carrierRateId]['carriers']);
 					$widgetDiv.show();
 				}
 				loadInfoForCarrierRate(carrierRateId);
 			} else {
 				$widgetDiv.hide();
 			}
-
 		}
+		var carrierConfig = {
+			{foreach $carriers as $carrier}
+			{var $optionId = $carrierPrefix . $carrier['id']}
+			'{$optionId|noescape}': {
+				'is_pickup_points': {$carrier['is_pickup_points']},
+				{if $carrier['is_pickup_points']}
+				'carriers': {(is_numeric($carrier['id']) ? $carrier['id'] : 'packeta')},
+				{/if}
+			},
+			{/foreach}
+		};
+
+		updateWidgetButtonVisibility($(shippingMethodSelector + ':checked').val());
 
 		$(document).on('change', '#billing_country, #shipping_country, #ship-to-different-address-checkbox', function () {
 			var shippingCountry;
@@ -68,6 +83,7 @@
 				country: $widgetDiv.data('country'),
 				language: $widgetDiv.data('language'),
 				weight: $widgetDiv.data('weight'),
+				carriers: $widgetDiv.data('carriers'),
 			};
 			Packeta.Widget.pick({$packetery_api_key}, function (pickupPoint) {
 				if (pickupPoint != null) {
@@ -83,6 +99,10 @@
 					saveInfoForCarrierRate($(shippingMethodSelector + ':checked').val());
 				}
 			}, widgetOptions);
+		});
+
+		$(document).on('change', '#payment input[type="radio"]', function () {
+			jQuery('body').trigger('update_checkout');
 		});
 	});
 </script>

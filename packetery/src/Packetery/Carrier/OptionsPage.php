@@ -202,16 +202,9 @@ class OptionsPage {
 	public function render(): void {
 		$countryIso = $this->httpRequest->getQuery( 'code' );
 		if ( $countryIso ) {
-
-			$countryCarriers = $this->carrierRepository->getByCountry( $countryIso );
-			// Add internal pickup point carriers.
-			$zpointCarriers = $this->carrierRepository->getZpointCarriers();
-			if ( ! empty( $zpointCarriers[ $countryIso ] ) ) {
-				array_unshift( $countryCarriers, $zpointCarriers[ $countryIso ] );
-			}
-
-			$carriersData = array();
-			$post         = $this->httpRequest->getPost();
+			$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryIso );
+			$carriersData    = array();
+			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
 					$form = $this->createForm( $post );

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
+use Packetery\Carrier\Repository;
 use Packetery\Options\Provider;
 use PacketeryLatte\Engine;
 
@@ -19,7 +20,8 @@ use PacketeryLatte\Engine;
  */
 class Checkout {
 
-	const NONCE_ACTION = 'packetery_checkout';
+	const NONCE_ACTION   = 'packetery_checkout';
+	const CARRIER_PREFIX = 'packetery_carrier_';
 
 	/**
 	 * Pickup point attributes configuration.
@@ -80,60 +82,87 @@ class Checkout {
 	private $options_provider;
 
 	/**
+	 * Carrier repository.
+	 *
+	 * @var Repository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine   $latte_engine PacketeryLatte engine.
 	 * @param Provider $options_provider Options provider.
+	 * @param Repository    $carrierRepository Carrier repository.
 	 */
 	public function __construct( Engine $latte_engine, Provider $options_provider ) {
 		$this->latte_engine     = $latte_engine;
 		$this->options_provider = $options_provider;
+		$this->carrierRepository = $carrierRepository;
 	}
 
 	/**
-	 * Check if order is bound with Packeta
+	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
+	 *
+	 * @param string $chosenMethod Shipping rate id.
+	 * @param array  $matches Array with carrier id.
 	 *
 	 * @return bool
 	 */
-	public static function is_packetery_order(): bool {
-		$chosen_methods = WC()->session->get( 'chosen_shipping_methods' );
-		foreach ( $chosen_methods as $method ) {
-			if ( strpos( $method, 'packeta-zpoint-' ) !== false ) {
-				return true;
-			}
+	public function isPickupPointMethod( string $chosenMethod, array &$matches ): bool {
+		if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\d+)$/', $chosenMethod, $matches ) ) {
+			$isPickupPoints = $this->carrierRepository->getIsPickupPoints( (int) $matches[1] );
+
+			return ( '1' === $isPickupPoints );
 		}
 
 		return false;
 	}
 
 	/**
+	 * Check if chosen shipping rate is bound with Packeta pickup points
+	 *
+	 * @return bool
+	 */
+	public function isPickupPointOrder(): bool {
+		$chosenMethod = wc_get_chosen_shipping_method_ids()[0];
+		$matches      = [];
+
+		return $this->isPickupPointMethod( $chosenMethod, $matches );
+	}
+
+	/**
 	 * Renders widget button and information about chosen pickup point
 	 */
-	public function render_widget_button(): void {
-		if ( self::is_packetery_order() ) {
-			$language = substr( get_locale(), 0, 2 );
+	public function renderWidgetButton(): void {
+		$language = substr( get_locale(), 0, 2 );
 
-			$country = strtolower( WC()->customer->get_shipping_country() );
-			if ( ! $country ) {
-				$country = strtolower( WC()->customer->get_billing_country() );
-			}
-			if ( ! $country ) {
-				$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/error_country.latte' );
-				return;
-			}
-
-			$weight = WC()->cart->cart_contents_weight;
-			$weight = wc_get_weight( $weight, 'kg' );
-
-			$this->latte_engine->render(
-				PACKETERY_PLUGIN_DIR . '/template/checkout/widget_button.latte',
-				array(
-					'language' => $language,
-					'country'  => $country,
-					'weight'   => $weight,
-				)
-			);
+		$country = $this->getCustomerCountry();
+		if ( ! $country ) {
+			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/error_country.latte' );
+			return;
 		}
+
+		$weight = $this->getCartWeightKg();
+
+		$carriers     = '';
+		$matches      = [];
+		$chosenMethod = wc_get_chosen_shipping_method_ids()[0];
+		if ( strpos( $chosenMethod, 'zpoint' ) !== false ) {
+			$carriers = 'packeta';
+		} elseif ( $this->isPickupPointMethod( $chosenMethod, $matches ) ) {
+			$carriers = $matches[1];
+		}
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/checkout/widget_button.latte',
+			array(
+				'language' => $language,
+				'country'  => $country,
+				'weight'   => number_format( $weight, 3 ),
+				'carriers' => $carriers,
+			)
+		);
 	}
 
 	/**
@@ -148,6 +177,8 @@ class Checkout {
 				'app_identity'       => $app_identity,
 				'pickup_point_attrs' => self::$pickup_point_attrs,
 				'packetery_api_key'  => $this->options_provider->get_api_key(),
+				'carrierPrefix'      => self::CARRIER_PREFIX,
+				'carriers'           => $this->carrierRepository->getAllIncludingZpoints(),
 			)
 		);
 	}
@@ -176,8 +207,8 @@ class Checkout {
 	/**
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
-	public static function validate_pickup_point_data(): void {
-		if ( self::is_packetery_order() ) {
+	public function validatePickupPointData(): void {
+		if ( $this->isPickupPointOrder() ) {
 			if (
 				! isset( $_POST['_wpnonce'] ) ||
 				! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), self::NONCE_ACTION )
@@ -185,7 +216,6 @@ class Checkout {
 				wp_nonce_ays( '' );
 			}
 
-			// TODO: validate carrier_id and point_carrier_id.
 			$required_attrs = array_filter(
 				array_combine(
 					array_column( self::$pickup_point_attrs, 'name' ),
@@ -198,11 +228,34 @@ class Checkout {
 					$attr_value = sanitize_text_field( wp_unslash( $_POST[ $attr ] ) );
 				}
 				if ( ! $attr_value ) {
-					// translators: keep %s intact.
-					wc_add_notice( sprintf( __( 'Pick up point attribute %s is not given.', 'packetery' ), $attr ), 'error' );
+					$this->pickupPointNotice( $attr );
 				}
 			}
+			$carrierId = null;
+			if ( isset( $_POST['carrier_id'] ) ) {
+				$carrierId = sanitize_text_field( wp_unslash( $_POST['carrier_id'] ) );
+			}
+			$pointCarrierId = null;
+			if ( isset( $_POST['point_carrier_id'] ) ) {
+				$pointCarrierId = sanitize_text_field( wp_unslash( $_POST['point_carrier_id'] ) );
+			}
+			if ( $carrierId && ! $pointCarrierId ) {
+				$this->pickupPointNotice( 'point_carrier_id' );
+			}
+			if ( ! $carrierId && $pointCarrierId ) {
+				$this->pickupPointNotice( 'carrier_id' );
+			}
 		}
+	}
+
+	/**
+	 * Add notice about missing attribute.
+	 *
+	 * @param string $attr Attribute name.
+	 */
+	private function pickupPointNotice( string $attr ): void {
+		// translators: keep %s intact.
+		wc_add_notice( sprintf( __( 'Pick up point attribute %s is not given.', 'packetery' ), $attr ), 'error' );
 	}
 
 	/**
@@ -210,8 +263,8 @@ class Checkout {
 	 *
 	 * @param int $order_id Order id.
 	 */
-	public static function update_order_meta( int $order_id ): void {
-		if ( self::is_packetery_order() ) {
+	public function updateOrderMeta( int $order_id ): void {
+		if ( $this->isPickupPointOrder() ) {
 			if (
 				! isset( $_POST['_wpnonce'] ) ||
 				! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), self::NONCE_ACTION )
@@ -238,12 +291,134 @@ class Checkout {
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
-		add_action( 'woocommerce_review_order_before_payment', array( $this, 'render_widget_button' ) );
+		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
 		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
 		add_filter( 'woocommerce_checkout_fields', array( __CLASS__, 'add_pickup_point_fields' ) );
 		add_action( 'woocommerce_after_order_notes', array( __CLASS__, 'render_nonce_field' ) );
-		add_action( 'woocommerce_checkout_process', array( __CLASS__, 'validate_pickup_point_data' ) );
-		add_action( 'woocommerce_checkout_update_order_meta', array( __CLASS__, 'update_order_meta' ) );
+		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
+		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
+		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
+	}
+
+	/**
+	 * Updates shipping rates cost based on cart properties.
+	 */
+	public function updateShippingRates(): void {
+		$customRates = $this->getShippingRates();
+
+		$packages = WC()->shipping()->get_packages();
+		foreach ( $packages as $i => $package ) {
+			if ( ! empty( $package['rates'] ) ) {
+				foreach ( $package['rates'] as $key => $rate ) {
+					if ( isset( $customRates[ $rate->get_id() ] ) ) {
+						$rate->set_cost( $customRates[ $rate->get_id() ]['cost'] );
+						WC()->shipping->packages[ $i ]['rates'][ $key ] = $rate;
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets customer country from WC cart.
+	 *
+	 * @return string
+	 */
+	public function getCustomerCountry(): string {
+		$country = strtolower( WC()->customer->get_shipping_country() );
+		if ( ! $country ) {
+			$country = strtolower( WC()->customer->get_billing_country() );
+		}
+
+		return $country;
+	}
+
+	/**
+	 * Gets cart contents weight in kg.
+	 *
+	 * @return float|int
+	 */
+	public function getCartWeightKg() {
+		$weight = WC()->cart->cart_contents_weight;
+		$weight = wc_get_weight( $weight, 'kg' );
+
+		return $weight;
+	}
+
+	/**
+	 * Prepare shipping rates based on cart properties.
+	 *
+	 * @return array
+	 */
+	public function getShippingRates(): array {
+		$customerCountry   = $this->getCustomerCountry();
+		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
+		$carrierOptions    = [];
+		foreach ( $availableCarriers as $carrier ) {
+			$optionId                    = 'packetery_carrier_' . $carrier['id'];
+			$carrierOptions[ $optionId ] = get_option( $optionId );
+		}
+
+		$cartPrice  = WC()->cart->get_cart_total();
+		$cartWeight = $this->getCartWeightKg();
+
+		// TODO: replace with $this->options_provider->get_cod_payment_method();.
+		$codMethod = 'cod';
+
+		$isCod        = false;
+		$chosenMethod = WC()->session->get( 'chosen_payment_method' );
+		if ( ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
+			$isCod = true;
+		}
+
+		$customRates = [];
+		foreach ( $carrierOptions as $optionId => $options ) {
+			if ( is_array( $options ) ) {
+				$customRates[ $optionId ] = [
+					'label'    => $options['name'],
+					'id'       => $optionId,
+					'cost'     => $this->getRateCost( $options, $cartPrice, $cartWeight, $isCod ),
+					'taxes'    => '',
+					'calc_tax' => 'per_order',
+				];
+			}
+		}
+
+		return $customRates;
+	}
+
+	/**
+	 * Computes custom rate cost for carrier using cart contents.
+	 *
+	 * @param array     $carrierOptions Carrier options.
+	 * @param string    $cartPrice Price.
+	 * @param float|int $cartWeight Weight.
+	 * @param bool      $isCod COD.
+	 *
+	 * @return int|float
+	 */
+	private function getRateCost( array $carrierOptions, string $cartPrice, $cartWeight, bool $isCod ) {
+		$cost = 0;
+		if ( $carrierOptions['free_shipping_limit'] && $cartPrice >= $carrierOptions['free_shipping_limit'] ) {
+			$cost = 0;
+		} else {
+			foreach ( $carrierOptions['weight_limits'] as $weightLimit ) {
+				if ( $cartWeight <= $weightLimit['weight'] ) {
+					$cost = $weightLimit['price'];
+					break;
+				}
+			}
+			if ( $isCod ) {
+				foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
+					if ( $cartPrice <= $weightLimit['order_price'] ) {
+						$cost += $weightLimit['surcharge'];
+						break;
+					}
+				}
+			}
+		}
+
+		return $cost;
 	}
 
 }

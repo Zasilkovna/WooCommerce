@@ -13,6 +13,13 @@ namespace Packetery;
 class ShippingMethod extends \WC_Shipping_Method {
 
 	/**
+	 * Checkout object.
+	 *
+	 * @var Checkout
+	 */
+	private $checkout;
+
+	/**
 	 * Constructor for Packeta shipping class
 	 *
 	 * @param int $instance_id Shipping method instance id.
@@ -29,6 +36,9 @@ class ShippingMethod extends \WC_Shipping_Method {
 			'shipping-zones',
 		);
 		$this->init();
+
+		$container      = CompatibilityBridge::getContainer();
+		$this->checkout = $container->getByType( Checkout::class );
 	}
 
 	/**
@@ -53,38 +63,16 @@ class ShippingMethod extends \WC_Shipping_Method {
 
 	/**
 	 * Function to calculate shipping fee.
+	 * Triggered by cart contents change, country change.
 	 *
 	 * @param array $package Order information.
 	 *
 	 * @return void
 	 */
 	public function calculate_shipping( $package = array() ): void {
-		$custom_rates = array(
-			array(
-				'label'    => 'Packeta ZPoint rate 1',
-				'id'       => 'packeta-zpoint-1',
-				'cost'     => 0,
-				'taxes'    => '',
-				'calc_tax' => 'per_order',
-			),
-			array(
-				'label'    => 'Packeta ZPoint rate 2',
-				'id'       => 'packeta-zpoint-2',
-				'cost'     => 0,
-				'taxes'    => '',
-				'calc_tax' => 'per_order',
-			),
-			array(
-				'label'    => 'Packeta HD rate',
-				'id'       => 'packeta-hd-1',
-				'cost'     => 0,
-				'taxes'    => '',
-				'calc_tax' => 'per_order',
-			),
-		);
-
-		foreach ( $custom_rates as $custom_rate ) {
-			$this->add_rate( $custom_rate );
+		$customRates = $this->checkout->getShippingRates();
+		foreach ( $customRates as $customRate ) {
+			$this->add_rate( $customRate );
 		}
 	}
 }
