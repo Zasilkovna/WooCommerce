@@ -5,17 +5,20 @@
  * @package Packetery
  */
 
+use PacketeryLatte\Engine;
+use PacketeryNette\Utils\Finder;
+
 $container    = require __DIR__ . '/../bootstrap-cli.php';
-$latte_engine = $container->getByType( \PacketeryLatte\Engine::class );
+$latte_engine = $container->getByType( Engine::class );
 
 if ( is_dir( $container->parameters['latteTempFolder'] ) ) {
-	$files_to_delete = \PacketeryNette\Utils\Finder::findFiles( '*' )->from( $container->parameters['latteTempFolder'] );
+	$files_to_delete = Finder::findFiles( '*' )->from( $container->parameters['latteTempFolder'] );
 	foreach ( $files_to_delete as $file_to_delete ) {
 		unlink( $file_to_delete );
 	}
 }
 
-$finder = \PacketeryNette\Utils\Finder::findFiles( '*.latte' )->from( PACKETERY_PLUGIN_DIR . '/template' );
+$finder = Finder::findFiles( '*.latte' )->from( PACKETERY_PLUGIN_DIR . '/template' );
 foreach ( $finder as $file ) {
 	$latte_engine->warmupCache( $file );
 }

@@ -25,6 +25,8 @@
  */
 
 // Exit if accessed directly.
+use Packetery\Plugin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
@@ -37,4 +39,4 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
 }
 
 $container = require __DIR__ . '/bootstrap.php';
-$container->getByType( \Packetery\Plugin::class )->run();
+$container->getByType( Plugin::class )->run();
