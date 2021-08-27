@@ -7,7 +7,7 @@ require_once __DIR__ . '/packetery_vendor/autoload.php';
 $configurator = new \PacketeryNette\Bootstrap\Configurator();
 $configurator->setDebugMode( WP_DEBUG );
 
-if ( class_exists( Tracy\Debugger::class ) ) {
+if ( getenv( 'PACKETERY_DEBUG' ) === '1' ) {
 	$configurator->enableDebugger();
 }
 
