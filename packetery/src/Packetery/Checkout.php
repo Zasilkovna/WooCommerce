@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
+use Nette\Http\Request;
 use Packetery\Carrier\Repository;
 use Packetery\Options\Provider;
 use PacketeryLatte\Engine;
@@ -20,8 +21,8 @@ use PacketeryLatte\Engine;
  */
 class Checkout {
 
-	const NONCE_ACTION   = 'packetery_checkout';
-	const CARRIER_PREFIX = 'packetery_carrier_';
+	private const NONCE_ACTION   = 'packetery_checkout';
+	private const CARRIER_PREFIX = 'packetery_carrier_';
 
 	/**
 	 * Pickup point attributes configuration.
@@ -84,9 +85,16 @@ class Checkout {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository
+	 * @var Repository Carrier repository.
 	 */
 	private $carrierRepository;
+
+	/**
+	 * Http request.
+	 *
+	 * @var Request Http request.
+	 */
+	private $httpRequest;
 
 	/**
 	 * Checkout constructor.
@@ -94,11 +102,13 @@ class Checkout {
 	 * @param Engine   $latte_engine PacketeryLatte engine.
 	 * @param Provider $options_provider Options provider.
 	 * @param Repository    $carrierRepository Carrier repository.
+	 * @param Request       $httpRequest Http request.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest ) {
 		$this->latte_engine     = $latte_engine;
 		$this->options_provider = $options_provider;
 		$this->carrierRepository = $carrierRepository;
+		$this->httpRequest       = $httpRequest;
 	}
 
 	/**
@@ -110,6 +120,12 @@ class Checkout {
 	 * @return bool
 	 */
 	public function isPickupPointMethod( string $chosenMethod, array &$matches ): bool {
+		if ( strpos( $chosenMethod, 'zpoint' ) !== false ) {
+			$matches[1] = 'packeta';
+
+			return true;
+		}
+
 		if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\d+)$/', $chosenMethod, $matches ) ) {
 			$isPickupPoints = $this->carrierRepository->getIsPickupPoints( (int) $matches[1] );
 
@@ -125,7 +141,7 @@ class Checkout {
 	 * @return bool
 	 */
 	public function isPickupPointOrder(): bool {
-		$chosenMethod = wc_get_chosen_shipping_method_ids()[0];
+		$chosenMethod = $this->getChosenMethod();
 		$matches      = [];
 
 		return $this->isPickupPointMethod( $chosenMethod, $matches );
@@ -147,10 +163,8 @@ class Checkout {
 
 		$carriers     = '';
 		$matches      = [];
-		$chosenMethod = wc_get_chosen_shipping_method_ids()[0];
-		if ( strpos( $chosenMethod, 'zpoint' ) !== false ) {
-			$carriers = 'packeta';
-		} elseif ( $this->isPickupPointMethod( $chosenMethod, $matches ) ) {
+		$chosenMethod = $this->getChosenMethod();
+		if ( $this->isPickupPointMethod( $chosenMethod, $matches ) ) {
 			$carriers = $matches[1];
 		}
 
@@ -194,11 +208,12 @@ class Checkout {
 	 */
 	public static function add_pickup_point_fields( array $fields ): array {
 		foreach ( self::$pickup_point_attrs as $attr ) {
-			$fields['shipping'][ $attr['name'] ] = array(
-				// You can use label key for other types.
-				'type'     => 'hidden',
-				'required' => false,
-			);
+			$fields['shipping'][ $attr['name'] ] = [
+				'type'              => 'text',
+				'required'          => false,
+				// For older WooCommerce. See woocommerce_form_field function.
+				'custom_attributes' => [ 'style' => 'display: none;' ],
+			];
 		}
 
 		return $fields;
@@ -209,10 +224,8 @@ class Checkout {
 	 */
 	public function validatePickupPointData(): void {
 		if ( $this->isPickupPointOrder() ) {
-			if (
-				! isset( $_POST['_wpnonce'] ) ||
-				! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), self::NONCE_ACTION )
-			) {
+			$post = $this->httpRequest->getPost();
+			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
 				wp_nonce_ays( '' );
 			}
 
@@ -224,20 +237,20 @@ class Checkout {
 			);
 			foreach ( $required_attrs as $attr => $required ) {
 				$attr_value = null;
-				if ( isset( $_POST[ $attr ] ) ) {
-					$attr_value = sanitize_text_field( wp_unslash( $_POST[ $attr ] ) );
+				if ( isset( $post[ $attr ] ) ) {
+					$attr_value = $post[ $attr ];
 				}
 				if ( ! $attr_value ) {
 					$this->pickupPointNotice( $attr );
 				}
 			}
 			$carrierId = null;
-			if ( isset( $_POST['carrier_id'] ) ) {
-				$carrierId = sanitize_text_field( wp_unslash( $_POST['carrier_id'] ) );
+			if ( isset( $post['carrier_id'] ) ) {
+				$carrierId = $post['carrier_id'];
 			}
 			$pointCarrierId = null;
-			if ( isset( $_POST['point_carrier_id'] ) ) {
-				$pointCarrierId = sanitize_text_field( wp_unslash( $_POST['point_carrier_id'] ) );
+			if ( isset( $post['point_carrier_id'] ) ) {
+				$pointCarrierId = $post['point_carrier_id'];
 			}
 			if ( $carrierId && ! $pointCarrierId ) {
 				$this->pickupPointNotice( 'point_carrier_id' );
@@ -265,16 +278,13 @@ class Checkout {
 	 */
 	public function updateOrderMeta( int $order_id ): void {
 		if ( $this->isPickupPointOrder() ) {
-			if (
-				! isset( $_POST['_wpnonce'] ) ||
-				! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ), self::NONCE_ACTION )
-			) {
+			$post = $this->httpRequest->getPost();
+			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
 				wp_nonce_ays( '' );
 			}
 			foreach ( self::$pickup_point_attrs as $attr ) {
-				if ( isset( $_POST[ $attr['name'] ] ) ) {
-					$attr_value = sanitize_text_field( wp_unslash( $_POST[ $attr['name'] ] ) );
-					update_post_meta( $order_id, 'packetery_' . $attr['name'], sanitize_text_field( $attr_value ) );
+				if ( isset( $post[ $attr['name'] ] ) ) {
+					update_post_meta( $order_id, 'packetery_' . $attr['name'], $post[ $attr['name'] ] );
 				}
 			}
 		}
@@ -359,7 +369,7 @@ class Checkout {
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice  = WC()->cart->get_cart_total();
+		$cartPrice  = WC()->cart->get_total( 'raw' );
 		$cartWeight = $this->getCartWeightKg();
 
 		// TODO: replace with $this->options_provider->get_cod_payment_method();.
@@ -391,13 +401,13 @@ class Checkout {
 	 * Computes custom rate cost for carrier using cart contents.
 	 *
 	 * @param array     $carrierOptions Carrier options.
-	 * @param string    $cartPrice Price.
+	 * @param float     $cartPrice Price.
 	 * @param float|int $cartWeight Weight.
 	 * @param bool      $isCod COD.
 	 *
 	 * @return int|float
 	 */
-	private function getRateCost( array $carrierOptions, string $cartPrice, $cartWeight, bool $isCod ) {
+	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight, bool $isCod ) {
 		$cost = 0;
 		if ( $carrierOptions['free_shipping_limit'] && $cartPrice >= $carrierOptions['free_shipping_limit'] ) {
 			$cost = 0;
@@ -421,4 +431,17 @@ class Checkout {
 		return $cost;
 	}
 
+	/**
+	 * Get chosen shipping rate id.
+	 *
+	 * @return string
+	 */
+	private function getChosenMethod(): string {
+		$chosenMethods = wc_get_chosen_shipping_method_ids();
+		if ( ! empty( $chosenMethods[0] ) ) {
+			return $chosenMethods[0];
+		}
+
+		return '';
+	}
 }

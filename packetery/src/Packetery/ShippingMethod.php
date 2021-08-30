@@ -69,7 +69,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 *
 	 * @return void
 	 */
-	public function calculate_shipping( $package = array() ): void {
+	public function calculate_shipping( $package = [] ): void {
 		$customRates = $this->checkout->getShippingRates();
 		foreach ( $customRates as $customRate ) {
 			$this->add_rate( $customRate );

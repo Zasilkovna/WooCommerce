@@ -203,7 +203,7 @@ class OptionsPage {
 		$countryIso = $this->httpRequest->getQuery( 'code' );
 		if ( $countryIso ) {
 			$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryIso );
-			$carriersData    = array();
+			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
