@@ -369,7 +369,7 @@ class Checkout {
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice  = WC()->cart->get_total( 'raw' );
+		$cartPrice  = (float) WC()->cart->get_total( 'raw' );
 		$cartWeight = $this->getCartWeightKg();
 
 		// TODO: replace with $this->options_provider->get_cod_payment_method();.
