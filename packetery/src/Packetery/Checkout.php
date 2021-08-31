@@ -28,39 +28,39 @@ class Checkout {
 	 */
 	public static $pickup_point_attrs = array(
 		'id'                   => array(
-			'name'     => 'point_id',
+			'name'     => 'packetery_point_id',
 			'required' => true,
 		),
 		'name'                 => array(
-			'name'     => 'point_name',
+			'name'     => 'packetery_point_name',
 			'required' => true,
 		),
 		'city'                 => array(
-			'name'     => 'point_city',
+			'name'     => 'packetery_point_city',
 			'required' => true,
 		),
 		'zip'                  => array(
-			'name'     => 'point_zip',
+			'name'     => 'packetery_point_zip',
 			'required' => true,
 		),
 		'street'               => array(
-			'name'     => 'point_street',
+			'name'     => 'packetery_point_street',
 			'required' => true,
 		),
 		'pickupPointType'      => array(
-			'name'     => 'point_type',
+			'name'     => 'packetery_point_type',
 			'required' => true,
 		),
 		'carrierId'            => array(
-			'name'     => 'carrier_id',
+			'name'     => 'packetery_carrier_id',
 			'required' => false,
 		),
 		'carrierPickupPointId' => array(
-			'name'     => 'point_carrier_id',
+			'name'     => 'packetery_point_carrier_id',
 			'required' => false,
 		),
 		'url'                  => array(
-			'name'     => 'point_url',
+			'name'     => 'packetery_point_url',
 			'required' => true,
 		),
 	);

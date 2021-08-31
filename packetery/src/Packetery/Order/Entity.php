@@ -61,6 +61,15 @@ class Entity {
 	}
 
 	/**
+	 * Tells if order is related to Packeta pickup point.
+	 *
+	 * @return bool
+	 */
+	public function isPacketeryPickupPointRelated(): bool {
+		return $this->is_packetery_related() && null !== $this->get_point_id();
+	}
+
+	/**
 	 * Gets meta from order and handles default value.
 	 *
 	 * @param string $key Meta order key.
