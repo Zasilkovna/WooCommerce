@@ -168,11 +168,26 @@ class Plugin {
 			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
 		}
 
-		add_action( 'woocommerce_admin_order_data_after_shipping_address', function (\WC_Order $order) {
-			$this->latte_engine->render(PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte', [
-				'order' => new Order\Entity($order)
-			]);
-		} );
+		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
+	}
+
+	/**
+	 * Renders delivery detail for packetery orders.
+	 *
+	 * @param \WC_Order $order WordPress order.
+	 */
+	public function renderDeliveryDetail( \WC_Order $order ): void {
+		$orderEntity = new Order\Entity( $order );
+		if ( false === $orderEntity->is_packetery_related() ) {
+			return;
+		}
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
+			[
+				'order' => $orderEntity,
+			]
+		);
 	}
 
 	/**
