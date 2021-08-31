@@ -7,7 +7,7 @@
 
 namespace Packetery\Carrier;
 
-use Latte\Engine;
+use PacketeryLatte\Engine;
 
 /**
  * Class CountryListingPage
@@ -17,9 +17,9 @@ use Latte\Engine;
 class CountryListingPage {
 
 	/**
-	 * Latte_engine.
+	 * PacketeryLatteEngine.
 	 *
-	 * @var Engine Latte engine.
+	 * @var Engine PacketeryLatte engine.
 	 */
 	private $latteEngine;
 
@@ -33,7 +33,7 @@ class CountryListingPage {
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine     $latteEngine Latte engine.
+	 * @param Engine     $latteEngine PacketeryLatte engine.
 	 * @param Repository $carrierRepository Carrier repository.
 	 */
 	public function __construct( Engine $latteEngine, Repository $carrierRepository ) {

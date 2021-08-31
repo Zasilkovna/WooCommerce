@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
+use PacketeryLatte\Engine;
+
 /**
  * Class Message_Manager
  *
@@ -20,9 +22,9 @@ class MessageManager {
 	public const TYPE_ERROR = 'error';
 
 	/**
-	 * Latte engine.
+	 * PacketeryLatte engine.
 	 *
-	 * @var \Latte\Engine
+	 * @var Engine
 	 */
 	private $latte_engine;
 
@@ -36,9 +38,9 @@ class MessageManager {
 	/**
 	 * Message_Manager constructor.
 	 *
-	 * @param \Latte\Engine $latte_engine Latte engine.
+	 * @param Engine $latte_engine PacketeryLatte engine.
 	 */
-	public function __construct( \Latte\Engine $latte_engine ) {
+	public function __construct( Engine $latte_engine ) {
 		$messages = \get_transient( 'packetery_message_manager_messages' );
 		if ( ! $messages ) {
 			$messages = array();

@@ -1,13 +1,16 @@
 <?php
 
+use PacketeryNette\Bootstrap\Configurator;
+
 define( 'PACKETERY_PLUGIN_DIR', __DIR__ );
+defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/packetery_vendor/autoload.php';
 
-$configurator = new \Nette\Bootstrap\Configurator();
+$configurator = new Configurator();
 $configurator->setDebugMode( WP_DEBUG );
 
-if ( class_exists( Tracy\Debugger::class ) ) {
+if ( PACKETERY_DEBUG ) {
 	$configurator->enableDebugger();
 }
 

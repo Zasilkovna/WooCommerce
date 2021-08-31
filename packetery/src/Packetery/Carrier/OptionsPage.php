@@ -9,9 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Carrier;
 
-use Nette\Forms\Form;
-use Nette\Forms\Validator;
-use Nette\Http\Request;
+use PacketeryLatte\Engine;
+use PacketeryNette\Forms\Container;
+use PacketeryNette\Forms\Form;
+use PacketeryNette\Forms\Validator;
+use PacketeryNette\Http\Request;
 use Packetery\FormFactory;
 
 /**
@@ -22,9 +24,9 @@ use Packetery\FormFactory;
 class OptionsPage {
 
 	/**
-	 * Latte_engine.
+	 * PacketeryLatte_engine.
 	 *
-	 * @var \Latte\Engine Latte engine.
+	 * @var Engine PacketeryLatte engine.
 	 */
 	private $latteEngine;
 
@@ -43,9 +45,9 @@ class OptionsPage {
 	private $formFactory;
 
 	/**
-	 * Nette Request.
+	 * PacketeryNette Request.
 	 *
-	 * @var Request Nette Request.
+	 * @var Request PacketeryNette Request.
 	 */
 	private $httpRequest;
 
@@ -59,13 +61,13 @@ class OptionsPage {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param \Latte\Engine      $latteEngine Latte_engine.
+	 * @param Engine             $latteEngine PacketeryLatte_engine.
 	 * @param Repository         $carrierRepository Carrier repository.
 	 * @param FormFactory        $formFactory Form factory.
 	 * @param Request            $httpRequest Nette Request.
 	 * @param CountryListingPage $countryListingPage CountryListingPage.
 	 */
-	public function __construct( \Latte\Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
+	public function __construct( Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
 		$this->formFactory        = $formFactory;
@@ -96,9 +98,9 @@ class OptionsPage {
 	 *
 	 * @param array $carrierData Carrier data.
 	 *
-	 * @return \Nette\Forms\Form
+	 * @return Form
 	 */
-	private function createForm( array $carrierData ): \Nette\Forms\Form {
+	private function createForm( array $carrierData ): Form {
 		$optionId = 'packetery_carrier_' . $carrierData['id'];
 
 		$form = $this->formFactory->create( $optionId );
@@ -331,12 +333,12 @@ class OptionsPage {
 	/**
 	 * Adds limit fields to form.
 	 *
-	 * @param \Nette\Forms\Container $weightLimits Container.
-	 * @param int|string             $index Index.
+	 * @param Container  $weightLimits Container.
+	 * @param int|string $index Index.
 	 *
 	 * @return void
 	 */
-	private function addWeightLimit( \Nette\Forms\Container $weightLimits, $index ): void {
+	private function addWeightLimit( Container $weightLimits, $index ): void {
 		$limit = $weightLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
 		$item->setRequired();
@@ -349,12 +351,12 @@ class OptionsPage {
 	/**
 	 * Adds limit fields to form.
 	 *
-	 * @param \Nette\Forms\Container $surchargeLimits Container.
-	 * @param int|string             $index Index.
+	 * @param Container  $surchargeLimits Container.
+	 * @param int|string $index Index.
 	 *
 	 * @return void
 	 */
-	private function addSurchargeLimit( \Nette\Forms\Container $surchargeLimits, $index ): void {
+	private function addSurchargeLimit( Container $surchargeLimits, $index ): void {
 		$limit = $surchargeLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
