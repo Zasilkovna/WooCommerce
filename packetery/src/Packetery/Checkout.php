@@ -384,13 +384,16 @@ class Checkout {
 		$customRates = [];
 		foreach ( $carrierOptions as $optionId => $options ) {
 			if ( is_array( $options ) ) {
-				$customRates[ $optionId ] = [
-					'label'    => $options['name'],
-					'id'       => $optionId,
-					'cost'     => $this->getRateCost( $options, $cartPrice, $cartWeight, $isCod ),
-					'taxes'    => '',
-					'calc_tax' => 'per_order',
-				];
+				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight, $isCod );
+				if ( null !== $cost ) {
+					$customRates[ $optionId ] = [
+						'label'    => $options['name'],
+						'id'       => $optionId,
+						'cost'     => $cost,
+						'taxes'    => '',
+						'calc_tax' => 'per_order',
+					];
+				}
 			}
 		}
 
@@ -405,10 +408,10 @@ class Checkout {
 	 * @param float|int $cartWeight Weight.
 	 * @param bool      $isCod COD.
 	 *
-	 * @return int|float
+	 * @return int|float|null
 	 */
 	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight, bool $isCod ) {
-		$cost = 0;
+		$cost = null;
 		if ( $carrierOptions['free_shipping_limit'] && $cartPrice >= $carrierOptions['free_shipping_limit'] ) {
 			$cost = 0;
 		} else {
@@ -418,7 +421,7 @@ class Checkout {
 					break;
 				}
 			}
-			if ( $isCod ) {
+			if ( $isCod && is_numeric( $cost ) ) {
 				foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
 					if ( $cartPrice <= $weightLimit['order_price'] ) {
 						$cost += $weightLimit['surcharge'];
