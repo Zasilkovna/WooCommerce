@@ -134,7 +134,7 @@ class GridExport extends \Magento\Backend\Block\Widget\Grid\Extended
             $this->formatNumber($row->getData('cod')),
             $row->getData('currency'),
             $this->formatNumber($row->getData('value')),
-            '',
+            $this->formatNumber($row->getData('weight')),
             $row->getData('point_id'),
             $row->getData('sender_label'),
             '',

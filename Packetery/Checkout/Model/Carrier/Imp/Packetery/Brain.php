@@ -22,15 +22,17 @@ class Brain extends \Packetery\Checkout\Model\Carrier\AbstractBrain
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Packetery\Checkout\Model\Carrier\Imp\Packetery\MethodSelect $methodSelect
      * @param \Packetery\Checkout\Model\ResourceModel\Carrier\CollectionFactory $carrierCollectionFactory
+     * @param \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
      */
     public function __construct(
         \Magento\Framework\App\Request\Http $httpRequest,
         \Packetery\Checkout\Model\Pricing\Service $pricingService,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Packetery\Checkout\Model\Carrier\Imp\Packetery\MethodSelect $methodSelect,
-        \Packetery\Checkout\Model\ResourceModel\Carrier\CollectionFactory $carrierCollectionFactory
+        \Packetery\Checkout\Model\ResourceModel\Carrier\CollectionFactory $carrierCollectionFactory,
+        \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
     ) {
-        parent::__construct($httpRequest, $pricingService, $scopeConfig);
+        parent::__construct($httpRequest, $pricingService, $scopeConfig, $weightCalculator);
         $this->methodSelect = $methodSelect;
         $this->carrierCollectionFactory = $carrierCollectionFactory;
     }

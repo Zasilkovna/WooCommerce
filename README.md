@@ -4,7 +4,7 @@
 
 ### Download module
 
-[Current version 2.1.0](https://github.com/Zasilkovna/magento2/archive/v2.1.0.zip)
+[Current version 2.2.0](https://github.com/Zasilkovna/magento2/archive/v2.2.0.zip)
 
 ### Installation
 
@@ -72,6 +72,7 @@ Price rules are created as unavailable, without set maximum weight.
 - delivery to an address via external carriers
 - setting different prices for each carrier
 - free shipping from the specified price
+- possibility of bulk weight adjustment in the shipment list
 - export shipments to a CSV file that can be imported in [client section](https://client.packeta.com/)
 - possibility to change the pickup point for an existing order in the administration
 
@@ -84,7 +85,7 @@ Price rules are created as unavailable, without set maximum weight.
 
 ### Stažení modulu
 
-[Aktuální verze 2.1.0](https://github.com/Zasilkovna/magento2/archive/v2.1.0.zip)
+[Aktuální verze 2.2.0](https://github.com/Zasilkovna/magento2/archive/v2.2.0.zip)
 
 ### Instalace
 
@@ -152,6 +153,7 @@ Cenová pravidla jsou vytvořena jako nedostupná, bez nastavené maximální hm
 - doručení na adresu přes externí dopravce Zásilkovny
 - nastavení různé ceny pro jednotlivé dopravce
 - doprava zdarma od zadané ceny
+- možnost hromadné úpravy hmotnosti v seznamu zásilek
 - export zásilek do csv souboru, který lze importovat v [klientské sekci](https://client.packeta.com/)
 - možnost změny výdejního místa u existující objednávky v administraci
 

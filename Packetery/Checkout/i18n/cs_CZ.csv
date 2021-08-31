@@ -29,6 +29,7 @@
 "Exported","Exportováno"
 "Export date","Datum exportu"
 "CSV - only not exported","CSV - Pouze neexportované"
+"CSV - selected only","CSV - Vybrané záznamy"
 "CSV - all records","CSV - Všechny záznamy"
 "Order status","Stav objednávky"
 "Yes","Ano"
@@ -97,3 +98,4 @@
 "Use carrier?","Použít přepravce?"
 "Carrier name","Název přepravce"
 "Packeta Carriers","Přepravci Zásilkovny"
+"Weight","Váha"

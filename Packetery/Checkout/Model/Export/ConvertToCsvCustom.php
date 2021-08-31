@@ -1,36 +1,18 @@
 <?php
-/**
- * Copyright © 2013-2017 Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- */
+
+declare(strict_types=1);
+
 namespace Packetery\Checkout\Model\Export;
 
-use Magento\Framework\App\Filesystem\DirectoryList;
-use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Filesystem;
 use Magento\Ui\Component\MassAction\Filter;
-use Magento\Ui\Model\Export\MetadataProvider;
 
-/**
- * Class ConvertToXls
- */
 class ConvertToCsvCustom
 {
     /**
-     * @var DirectoryList
+     * @var int
      */
-    protected $directory;
-
-    /**
-     * @var MetadataProvider
-     */
-    protected $metadataProvider;
-
-    /**
-     * @var int|null
-     */
-    protected $pageSize = null;
+    protected $pageSize;
 
     /**
      * @var Filter
@@ -38,68 +20,48 @@ class ConvertToCsvCustom
     protected $filter;
 
     /**
-     * @param Filesystem $filesystem
-     * @param Filter $filter
-     * @param MetadataProvider $metadataProvider
+     * ConvertToCsvCustom constructor.
+     *
+     * @param \Magento\Ui\Component\MassAction\Filter $filter
      * @param int $pageSize
-     * @throws FileSystemException
      */
     public function __construct(
-        Filesystem $filesystem,
         Filter $filter,
-        MetadataProvider $metadataProvider,
-        $pageSize = 200
+        int $pageSize = 200
     ) {
         $this->filter = $filter;
-        $this->directory = $filesystem->getDirectoryWrite(DirectoryList::VAR_DIR);
-        $this->metadataProvider = $metadataProvider;
         $this->pageSize = $pageSize;
     }
 
     /**
-     * Returns CSV file
+     * Returns item IDs.
      *
      * @return array
      * @throws LocalizedException
      */
-    public function getCsvFile()
-    {
+    public function getItemIds(): array {
         $component = $this->filter->getComponent();
-
-        $name = md5(microtime());
-        $file = 'export/' . $component->getName() . $name . '.csv';
 
         $this->filter->prepareComponent($component);
         $this->filter->applySelectionOnTargetProvider();
         $dataProvider = $component->getContext()->getDataProvider();
-        $fields = $this->metadataProvider->getFields($component);
-        $options = $this->metadataProvider->getOptions();
 
-        $this->directory->create('export');
-        $stream = $this->directory->openFile($file, 'w+');
-        $stream->lock();
-        $stream->writeCsv($this->metadataProvider->getHeaders($component));
         $i = 1;
         $searchCriteria = $dataProvider->getSearchCriteria()
             ->setCurrentPage($i)
             ->setPageSize($this->pageSize);
-        $totalCount = (int) $dataProvider->getSearchResult()->getTotalCount();
+        $totalCount = (int)$dataProvider->getSearchResult()->getTotalCount();
+
+        $orderIds = [];
         while ($totalCount > 0) {
             $items = $dataProvider->getSearchResult()->getItems();
             foreach ($items as $item) {
-                $this->metadataProvider->convertDate($item, $component->getName());
-                $stream->writeCsv($this->metadataProvider->getRowData($item, $fields, $options));
+                $orderIds[] = $item->getId();
             }
             $searchCriteria->setCurrentPage(++$i);
             $totalCount = $totalCount - $this->pageSize;
         }
-        $stream->unlock();
-        $stream->close();
 
-        return [
-            'type' => 'filename',
-            'value' => $file,
-            'rm' => true  // can delete file after use
-        ];
+        return $orderIds;
     }
 }

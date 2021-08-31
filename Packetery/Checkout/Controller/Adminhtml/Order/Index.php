@@ -21,10 +21,6 @@ class Index extends \Magento\Backend\App\Action
         $resultPage->setActiveMenu('Packetery_Checkout::orders');
         $resultPage->getConfig()->getTitle()->prepend(__('Orders'));
 
-        $resultPage->addContent(
-            $resultPage->getLayout()->createBlock('Packetery\Checkout\Block\Adminhtml\Order')
-        );
-
         return $resultPage;
     }
 }

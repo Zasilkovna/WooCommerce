@@ -9,7 +9,7 @@
         </arguments>
     </type>
 
-    <virtualType name="OrderGridCollection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
+    <virtualType name="OrderGridCollection" type="Packetery\Checkout\Ui\Component\Order\Listing\SearchResult">
         <arguments>
             <argument name="mainTable" xsi:type="string">packetery_order</argument>
             <argument name="resourceModel" xsi:type="string">Packetery\Checkout\Model\ResourceModel\Order</argument>

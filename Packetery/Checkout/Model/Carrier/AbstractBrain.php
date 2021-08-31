@@ -27,21 +27,38 @@ abstract class AbstractBrain
     /** @var \Magento\Framework\App\Config\ScopeConfigInterface */
     private $scopeConfig;
 
+    /** @var \Packetery\Checkout\Model\Weight\Calculator */
+    private $weightCalculator;
+
     /**
      * AbstractBrain constructor.
      *
      * @param \Magento\Framework\App\Request\Http $httpRequest
      * @param \Packetery\Checkout\Model\Pricing\Service $pricingService
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
      */
     public function __construct(
         \Magento\Framework\App\Request\Http $httpRequest,
         \Packetery\Checkout\Model\Pricing\Service $pricingService,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
     ) {
         $this->httpRequest = $httpRequest;
         $this->pricingService = $pricingService;
         $this->scopeConfig = $scopeConfig;
+        $this->weightCalculator = $weightCalculator;
+    }
+
+    /**
+     * @param \Magento\Quote\Model\Quote\Address\RateRequest $request
+     * @return float
+     */
+    public function getRateRequestWeight(RateRequest $request): float {
+        /** @var \Magento\Quote\Model\Quote\Item[] $allItems */
+        $allItems = $request->getAllItems();
+        $allItems = \Packetery\Checkout\Model\Weight\Item::transformItems($allItems);
+        return $this->weightCalculator->getItemsWeight($allItems);
     }
 
     /**
@@ -195,6 +212,10 @@ abstract class AbstractBrain
 
             $methods[$selectedMethod] = $brain->getMethodSelect()->getLabelByValue($selectedMethod);
         }
+
+        $packeteryWeight = $this->getRateRequestWeight($request);
+        $request = clone $request;
+        $request->setPackageWeight($packeteryWeight);
 
         return $this->pricingService->collectRates($request, $carrier->getCarrierCode(), $config, $methods, ($dynamicCarrier ? $dynamicCarrier->getCarrierId() : null));
     }

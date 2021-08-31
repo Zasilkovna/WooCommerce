@@ -25,18 +25,33 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /** @var \Magento\Shipping\Model\CarrierFactory */
     private $carrierFactory;
 
+    /** @var \Packetery\Checkout\Model\Weight\Calculator */
+    private $weightCalculator;
+
+    /**
+     * OrderPlaceAfter constructor.
+     *
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Store\Model\StoreManagerInterface $storeManager
+     * @param \Packetery\Checkout\Model\Carrier\Imp\Packetery\Carrier $packetery
+     * @param \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
+     * @param \Magento\Shipping\Model\CarrierFactory $carrierFactory
+     * @param \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
+     */
     public function __construct(
         CheckoutSession $checkoutSession,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Packetery\Checkout\Model\Carrier\Imp\Packetery\Carrier $packetery,
         \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
-        \Magento\Shipping\Model\CarrierFactory $carrierFactory
+        \Magento\Shipping\Model\CarrierFactory $carrierFactory,
+        \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
     ) {
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
         $this->packeteryConfig = $packetery->getPacketeryConfig();
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->carrierFactory = $carrierFactory;
+        $this->weightCalculator = $weightCalculator;
     }
 
     /**
@@ -72,11 +87,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             $street = $streetMatches[1];
         }
 
-        $weight = 0;
-        foreach ($order->getAllItems() as $item)
-        {
-            $weight += ($item->getWeight() * $item->getQtyOrdered());
-        }
+        $weight = $this->weightCalculator->getOrderWeight($order);
 
         $postData = json_decode(file_get_contents("php://input"));
         $pointId = NULL;
