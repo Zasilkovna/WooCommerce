@@ -67,6 +67,7 @@
 			}
 			if (shippingCountry !== $widgetDiv.data('country')) {
 				clearPickupPointInfo();
+				$widgetDiv.data('country', shippingCountry);
 				// TODO: ve chvili volani je jeste vybrana stara metoda
 				updateWidgetButtonVisibility($(shippingMethodSelector + ':checked').val());
 			}

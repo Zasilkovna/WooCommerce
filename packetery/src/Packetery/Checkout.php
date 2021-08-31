@@ -21,8 +21,8 @@ use PacketeryLatte\Engine;
  */
 class Checkout {
 
-	private const NONCE_ACTION   = 'packetery_checkout';
-	private const CARRIER_PREFIX = 'packetery_carrier_';
+	public const CARRIER_PREFIX = 'packetery_carrier_';
+	private const NONCE_ACTION  = 'packetery_checkout';
 
 	/**
 	 * Pickup point attributes configuration.
@@ -229,6 +229,7 @@ class Checkout {
 				wp_nonce_ays( '' );
 			}
 
+			$error          = false;
 			$required_attrs = array_filter(
 				array_combine(
 					array_column( self::$pickup_point_attrs, 'name' ),
@@ -241,7 +242,7 @@ class Checkout {
 					$attr_value = $post[ $attr ];
 				}
 				if ( ! $attr_value ) {
-					$this->pickupPointNotice( $attr );
+					$error = true;
 				}
 			}
 			$carrierId = null;
@@ -253,22 +254,15 @@ class Checkout {
 				$pointCarrierId = $post['point_carrier_id'];
 			}
 			if ( $carrierId && ! $pointCarrierId ) {
-				$this->pickupPointNotice( 'point_carrier_id' );
+				$error = true;
 			}
 			if ( ! $carrierId && $pointCarrierId ) {
-				$this->pickupPointNotice( 'carrier_id' );
+				$error = true;
+			}
+			if ( $error ) {
+				wc_add_notice( __( 'Pick up point is not chosen.', 'packetery' ), 'error' );
 			}
 		}
-	}
-
-	/**
-	 * Add notice about missing attribute.
-	 *
-	 * @param string $attr Attribute name.
-	 */
-	private function pickupPointNotice( string $attr ): void {
-		// translators: keep %s intact.
-		wc_add_notice( sprintf( __( 'Pick up point attribute %s is not given.', 'packetery' ), $attr ), 'error' );
 	}
 
 	/**
@@ -365,11 +359,12 @@ class Checkout {
 		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
 		$carrierOptions    = [];
 		foreach ( $availableCarriers as $carrier ) {
-			$optionId                    = 'packetery_carrier_' . $carrier['id'];
+			$optionId                    = self::CARRIER_PREFIX . $carrier['id'];
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice  = (float) WC()->cart->get_total( 'raw' );
+		$cartPrice = (float) WC()->cart->get_subtotal();
+
 		$cartWeight = $this->getCartWeightKg();
 
 		// TODO: replace with $this->options_provider->get_cod_payment_method();.

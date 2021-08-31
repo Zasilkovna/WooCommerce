@@ -14,6 +14,7 @@ use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Forms\Validator;
 use PacketeryNette\Http\Request;
+use Packetery\Checkout;
 use Packetery\FormFactory;
 
 /**
@@ -101,7 +102,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createForm( array $carrierData ): Form {
-		$optionId = 'packetery_carrier_' . $carrierData['id'];
+		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
 
 		$form = $this->formFactory->create( $optionId );
 		$form->setAction( $this->httpRequest->getUrl() );
@@ -190,7 +191,7 @@ class OptionsPage {
 		$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
 		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 
-		update_option( 'packetery_carrier_' . $options['id'], $options );
+		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
 		if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
 			exit;
 		}
@@ -212,7 +213,7 @@ class OptionsPage {
 						$form->fireEvents();
 					}
 				} else {
-					$options = get_option( 'packetery_carrier_' . $carrierData['id'] );
+					$options = get_option( Checkout::CARRIER_PREFIX . $carrierData['id'] );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
