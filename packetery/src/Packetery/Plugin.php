@@ -178,7 +178,7 @@ class Plugin {
 	 */
 	public function renderDeliveryDetail( \WC_Order $order ): void {
 		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->is_packetery_related() || null === $orderEntity->get_point_url() ) {
+		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
 			return;
 		}
 
