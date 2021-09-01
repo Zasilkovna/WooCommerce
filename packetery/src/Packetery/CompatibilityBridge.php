@@ -7,7 +7,7 @@
 
 namespace Packetery;
 
-use Nette\DI\Container;
+use PacketeryNette\DI\Container;
 
 /**
  * Class CompatibilityBridge.

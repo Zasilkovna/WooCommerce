@@ -9,10 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery;
 
-use Nette\Http\Request;
 use Packetery\Carrier\Repository;
 use Packetery\Options\Provider;
 use PacketeryLatte\Engine;
+use PacketeryNette\Http\Request;
 
 /**
  * Class Checkout
@@ -99,14 +99,14 @@ class Checkout {
 	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine   $latte_engine PacketeryLatte engine.
-	 * @param Provider $options_provider Options provider.
-	 * @param Repository    $carrierRepository Carrier repository.
-	 * @param Request       $httpRequest Http request.
+	 * @param Engine     $latte_engine PacketeryLatte engine.
+	 * @param Provider   $options_provider Options provider.
+	 * @param Repository $carrierRepository Carrier repository.
+	 * @param Request    $httpRequest Http request.
 	 */
 	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest ) {
-		$this->latte_engine     = $latte_engine;
-		$this->options_provider = $options_provider;
+		$this->latte_engine      = $latte_engine;
+		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
 	}
