@@ -14,6 +14,7 @@ use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Forms\Validator;
 use PacketeryNette\Http\Request;
+use Packetery\Checkout;
 use Packetery\FormFactory;
 
 /**
@@ -64,7 +65,7 @@ class OptionsPage {
 	 * @param Engine             $latteEngine PacketeryLatte_engine.
 	 * @param Repository         $carrierRepository Carrier repository.
 	 * @param FormFactory        $formFactory Form factory.
-	 * @param Request            $httpRequest Nette Request.
+	 * @param Request            $httpRequest PacketeryNette Request.
 	 * @param CountryListingPage $countryListingPage CountryListingPage.
 	 */
 	public function __construct( Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
@@ -101,7 +102,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createForm( array $carrierData ): Form {
-		$optionId = 'packetery_carrier_' . $carrierData['id'];
+		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
 
 		$form = $this->formFactory->create( $optionId );
 		$form->setAction( $this->httpRequest->getUrl() );
@@ -190,7 +191,7 @@ class OptionsPage {
 		$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
 		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 
-		update_option( 'packetery_carrier_' . $options['id'], $options );
+		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
 		if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
 			exit;
 		}
@@ -202,16 +203,9 @@ class OptionsPage {
 	public function render(): void {
 		$countryIso = $this->httpRequest->getQuery( 'code' );
 		if ( $countryIso ) {
-
-			$countryCarriers = $this->carrierRepository->getByCountry( $countryIso );
-			// Add internal pickup point carriers.
-			$zpointCarriers = $this->carrierRepository->getZpointCarriers();
-			if ( ! empty( $zpointCarriers[ $countryIso ] ) ) {
-				array_unshift( $countryCarriers, $zpointCarriers[ $countryIso ] );
-			}
-
-			$carriersData = array();
-			$post         = $this->httpRequest->getPost();
+			$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryIso );
+			$carriersData    = [];
+			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
 					$form = $this->createForm( $post );
@@ -219,7 +213,7 @@ class OptionsPage {
 						$form->fireEvents();
 					}
 				} else {
-					$options = get_option( 'packetery_carrier_' . $carrierData['id'] );
+					$options = get_option( Checkout::CARRIER_PREFIX . $carrierData['id'] );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
