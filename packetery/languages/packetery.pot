@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-08-31T21:46:28+02:00\n"
+"POT-Creation-Date: 2021-08-31T22:19:06+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -21,6 +21,7 @@ msgstr ""
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:15
 msgid "Packeta"
 msgstr ""
 
@@ -320,10 +321,43 @@ msgstr ""
 msgid "Choose pickup point"
 msgstr ""
 
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:15
+msgid "Shipping Detail"
+msgstr ""
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:21
+msgid "Pickup Point Name"
+msgstr ""
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:29
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:34
+msgid "Pickup Point Detail"
+msgstr ""
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:34
+msgid "Link"
+msgstr ""
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:39
+msgid "Point Address"
+msgstr ""
+
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:16
 msgid "Options"
 msgstr ""
 
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:109
 msgid "If checked, the generated labels will be emailed to the e-shop administrator"
+msgstr ""
+
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:17
+msgid "pickup point detail"
+msgstr ""
+
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:22
+msgid "Name"
+msgstr ""
+
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:27
+msgid "Address"
 msgstr ""

@@ -8,6 +8,8 @@
 use PacketeryLatte\Engine;
 use PacketeryNette\Utils\Finder;
 
+require_once __DIR__ . '/../../../../wp-includes/wp-db.php';
+
 $container    = require __DIR__ . '/../bootstrap-cli.php';
 $latte_engine = $container->getByType( Engine::class );
 

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-08-31T21:46:28+02:00\n"
-"PO-Revision-Date: 2021-09-01 09:02+0200\n"
+"POT-Creation-Date: 2021-08-31T22:19:06+02:00\n"
+"PO-Revision-Date: 2021-09-01 09:33+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -22,6 +22,7 @@ msgstr ""
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:15
 msgid "Packeta"
 msgstr "Zásilkovna"
 
@@ -321,6 +322,27 @@ msgstr "Pro tuto zemi neevidujeme žádného dopravce."
 msgid "Choose pickup point"
 msgstr "Výběr místa vyzvednutí"
 
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:15
+msgid "Shipping Detail"
+msgstr "Detail výdejního místa"
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:21
+msgid "Pickup Point Name"
+msgstr "Název výdejního místa"
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:29
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:34
+msgid "Pickup Point Detail"
+msgstr "Detail výdejního místa"
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:34
+msgid "Link"
+msgstr "Odkaz"
+
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:39
+msgid "Point Address"
+msgstr "Adresa výdejního místa"
+
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:16
 msgid "Options"
 msgstr "Nastavení"
@@ -332,29 +354,17 @@ msgstr ""
 "Pokud je zaškrtnuto, vygenerované štítky budou zaslány e-mailem správci e-"
 "shopu."
 
-#~ msgid "Shipping Detail"
-#~ msgstr "Detail výdejního místa"
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:17
+msgid "pickup point detail"
+msgstr "detail výdejního místa"
 
-#~ msgid "Pickup Point Name"
-#~ msgstr "Název výdejního místa"
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:22
+msgid "Name"
+msgstr "Název"
 
-#~ msgid "Pickup Point Detail"
-#~ msgstr "Detail výdejního místa"
-
-#~ msgid "Link"
-#~ msgstr "Odkaz"
-
-#~ msgid "Point Address"
-#~ msgstr "Adresa výdejního místa"
-
-#~ msgid "pickup point detail"
-#~ msgstr "detail výdejního místa"
-
-#~ msgid "Name"
-#~ msgstr "Název"
-
-#~ msgid "Address"
-#~ msgstr "Adresa"
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:27
+msgid "Address"
+msgstr "Adresa"
 
 #~ msgid "Carrier display name must have at least 2 characters!"
 #~ msgstr "Název dopravce musí mít alespoň dva znaky!"
