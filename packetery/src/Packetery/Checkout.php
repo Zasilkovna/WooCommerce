@@ -278,7 +278,7 @@ class Checkout {
 			}
 			foreach ( self::$pickup_point_attrs as $attr ) {
 				if ( isset( $post[ $attr['name'] ] ) ) {
-					update_post_meta( $order_id, 'packetery_' . $attr['name'], $post[ $attr['name'] ] );
+					update_post_meta( $order_id, $attr['name'], $post[ $attr['name'] ] );
 				}
 			}
 		}
