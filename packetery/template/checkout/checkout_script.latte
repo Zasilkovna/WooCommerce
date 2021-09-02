@@ -47,12 +47,12 @@
 			if (typeof carrierConfig[carrierRateId] !== 'undefined' &&
 				parseInt(carrierConfig[carrierRateId]['is_pickup_points']) === 1
 			) {
+				$widgetDiv.data('carriers', carrierConfig[carrierRateId]['carriers']);
 				if (!$widgetDiv.is(':visible')) {
-					$widgetDiv.data('carriers', carrierConfig[carrierRateId]['carriers']);
 					$widgetDiv.show();
 				}
 				loadInfoForCarrierRate(carrierRateId);
-			} else {
+			} else if ($widgetDiv.is(':visible')) {
 				$widgetDiv.hide();
 			}
 		};
