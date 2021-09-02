@@ -166,6 +166,10 @@ class Page {
 	 *  Renders page.
 	 */
 	public function render(): void {
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', array( 'form' => $this->create_form() ) );
+		$latteParams = [ 'form' => $this->create_form() ];
+		if ( ! extension_loaded( 'soap' ) ) {
+			$latteParams['error'] = __( 'This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator.', 'packetery' );
+		}
+		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}
 }
