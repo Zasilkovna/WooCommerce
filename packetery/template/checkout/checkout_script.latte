@@ -3,35 +3,47 @@
 		$.getScript("https://widget.packeta.com/v6/www/js/library.js")
 
 		var $widgetDiv = $('.packeta-widget');
-		var shippingMethodSelector = '#shipping_method input[type="radio"]';
+
+		var shippingMethodSelector = '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]';
+		var getShippingRateId = function () {
+			var $radios = $('#shipping_method input[type="radio"]');
+			if ($radios.length) {
+				return $radios.filter(':checked').val();
+			}
+			return $('#shipping_method input[type="hidden"]').val();
+		};
+
 		var pickupPointAttributes = {
 			{foreach $pickup_point_attrs as $id => $attr}
 			'{$attr['name']|noescape}': '{$id|noescape}',
 			{/foreach}
 		};
+
 		var ratesWithInfo = [];
 		var saveInfoForCarrierRate = function (carrierRateId) {
-			for (attribute in pickupPointAttributes) {
+			for (var attribute in pickupPointAttributes) {
 				$widgetDiv.data(carrierRateId + '-' + attribute, $('#' + attribute).val());
 			}
 			ratesWithInfo.push(carrierRateId);
-		}
+		};
+
 		var loadInfoForCarrierRate = function (carrierRateId) {
-			for (attribute in pickupPointAttributes) {
+			for (var attribute in pickupPointAttributes) {
 				$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
 			}
 			$widgetDiv.find('.packeta-pickup-point-name').html($('#point_name').val());
-		}
+		};
 		var clearPickupPointInfo = function () {
-			for (carrierRateId of ratesWithInfo) {
-				for (attribute in pickupPointAttributes) {
+			for (var carrierRateId of ratesWithInfo) {
+				for (var attribute in pickupPointAttributes) {
 					$widgetDiv.data(carrierRateId + '-' + attribute, '');
 					$('#' + attribute).val('');
 				}
 			}
 			$widgetDiv.find('.packeta-pickup-point-name').html('');
-		}
-		var updateWidgetButtonVisibility = function(carrierRateId) {
+		};
+
+		var updateWidgetButtonVisibility = function (carrierRateId) {
 			if (typeof carrierConfig[carrierRateId] !== 'undefined' &&
 				parseInt(carrierConfig[carrierRateId]['is_pickup_points']) === 1
 			) {
@@ -43,7 +55,8 @@
 			} else {
 				$widgetDiv.hide();
 			}
-		}
+		};
+
 		var carrierConfig = {
 			{foreach $carriers as $carrier}
 			{var $optionId = $carrierPrefix . $carrier['id']}
@@ -56,7 +69,7 @@
 			{/foreach}
 		};
 
-		updateWidgetButtonVisibility($(shippingMethodSelector + ':checked').val());
+		updateWidgetButtonVisibility(getShippingRateId());
 
 		$(document).on('change', '#billing_country, #shipping_country, #ship-to-different-address-checkbox', function () {
 			var shippingCountry;
@@ -69,7 +82,7 @@
 				clearPickupPointInfo();
 				$widgetDiv.data('country', shippingCountry);
 				// TODO: ve chvili volani je jeste vybrana stara metoda
-				updateWidgetButtonVisibility($(shippingMethodSelector + ':checked').val());
+				updateWidgetButtonVisibility(getShippingRateId());
 			}
 		});
 
@@ -97,7 +110,7 @@
 					$('#{$attr['name']|noescape}').val(pickupPoint.{$id|noescape});
 					{/foreach}
 
-					saveInfoForCarrierRate($(shippingMethodSelector + ':checked').val());
+					saveInfoForCarrierRate(getShippingRateId());
 				}
 			}, widgetOptions);
 		});
