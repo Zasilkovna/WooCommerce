@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-08-31T22:19:06+02:00\n"
-"PO-Revision-Date: 2021-09-01 09:34+0200\n"
+"POT-Creation-Date: 2021-09-01T14:19:34+02:00\n"
+"PO-Revision-Date: 2021-09-02 11:56+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -198,6 +198,14 @@ msgstr "Allow Label Emailing"
 msgid "Main Settings"
 msgstr "Main Settings"
 
+#: src/Packetery/Options/Page.php:171
+msgid ""
+"This plugin requires an active SOAP library for proper operation. Contact "
+"your web hosting administrator."
+msgstr ""
+"This plugin requires an active SOAP library for proper operation. Contact "
+"your web hosting administrator."
+
 #: src/Packetery/Order/Metabox.php:98
 msgid "Weight (kg)"
 msgstr "Weight (kg)"
@@ -348,7 +356,7 @@ msgstr "Point Address"
 msgid "Options"
 msgstr "Options"
 
-#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:109
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:118
 msgid ""
 "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
