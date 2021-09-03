@@ -269,17 +269,34 @@ class Checkout {
 	/**
 	 * Saves pickup point information to order
 	 *
-	 * @param int $order_id Order id.
+	 * @param int $orderId Order id.
 	 */
-	public function updateOrderMeta( int $order_id ): void {
-		if ( $this->isPickupPointOrder() ) {
-			$post = $this->httpRequest->getPost();
-			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
-				wp_nonce_ays( '' );
+	public function updateOrderMeta( int $orderId ): void {
+		$chosenMethod = $this->getChosenMethod();
+		if ( false !== strpos( $chosenMethod, self::CARRIER_PREFIX ) ) {
+			$rates    = $this->getShippingRates();
+			$rateName = $rates[ $chosenMethod ]['label'];
+			update_post_meta( $orderId, 'packetery_rate_name', $rateName );
+
+			$matches = [];
+			if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\w+)$/', $chosenMethod, $matches ) ) {
+				if ( false !== strpos( $chosenMethod, 'zpoint' ) ) {
+					$carrierId = 'packeta';
+				} else {
+					$carrierId = $matches[1];
+				}
+				update_post_meta( $orderId, 'packetery_carrier_id', $carrierId );
 			}
-			foreach ( self::$pickup_point_attrs as $attr ) {
-				if ( isset( $post[ $attr['name'] ] ) ) {
-					update_post_meta( $order_id, $attr['name'], $post[ $attr['name'] ] );
+
+			if ( $this->isPickupPointOrder() ) {
+				$post = $this->httpRequest->getPost();
+				if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
+					wp_nonce_ays( '' );
+				}
+				foreach ( self::$pickup_point_attrs as $attr ) {
+					if ( isset( $post[ $attr['name'] ] ) ) {
+						update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
+					}
 				}
 			}
 		}
