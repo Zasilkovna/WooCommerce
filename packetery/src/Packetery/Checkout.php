@@ -278,14 +278,16 @@ class Checkout {
 			$rateName = $rates[ $chosenMethod ]['label'];
 			update_post_meta( $orderId, 'packetery_rate_name', $rateName );
 
-			$matches = [];
-			if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\w+)$/', $chosenMethod, $matches ) ) {
-				if ( false !== strpos( $chosenMethod, 'zpoint' ) ) {
-					$carrierId = 'packeta';
-				} else {
-					$carrierId = $matches[1];
+			if ( empty( $post['packetery_carrier_id'] ) ) {
+				$matches = [];
+				if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\w+)$/', $chosenMethod, $matches ) ) {
+					if ( false !== strpos( $chosenMethod, 'zpoint' ) ) {
+						$carrierId = 'packeta';
+					} else {
+						$carrierId = $matches[1];
+					}
+					update_post_meta( $orderId, 'packetery_carrier_id', $carrierId );
 				}
-				update_post_meta( $orderId, 'packetery_carrier_id', $carrierId );
 			}
 
 			if ( $this->isPickupPointOrder() ) {
