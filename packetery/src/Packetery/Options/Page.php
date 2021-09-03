@@ -110,6 +110,21 @@ class Page {
 			)
 		)->checkDefaultValue( false );
 
+		$gateways = WC()->payment_gateways->get_available_payment_gateways();
+		$enabledGateways = [];
+		if( $gateways ) {
+			foreach( $gateways as $gateway ) {
+				if( $gateway->is_available() ) {
+					$enabledGateways[$gateway->id] = $gateway->title;
+				}
+			}
+		}
+		$container->addSelect(
+			'cod_payment_method',
+			__( 'Payment method that represents cash on delivery', 'packetery' ),
+			$enabledGateways
+		)->checkDefaultValue( false );
+
 		$container->addCheckbox(
 			'allow_label_emailing',
 			__( 'Allow Label Emailing', 'packetery' )
