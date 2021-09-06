@@ -98,19 +98,38 @@ class Plugin {
 	private $checkout;
 
 	/**
+	 * Order BulkActions.
+	 *
+	 * @var Order\BulkActions
+	 */
+	private $orderBulkActions;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox  $order_metabox      Order metabox.
-	 * @param MessageManager $message_manager    Message manager.
-	 * @param Helper         $helper             Helper.
-	 * @param Options\Page   $options_page       Options page.
-	 * @param Repository     $carrier_repository Carrier repository.
-	 * @param Downloader     $carrier_downloader Carrier downloader object.
-	 * @param Checkout       $checkout           Checkout class.
-	 * @param Engine         $latte_engine       PacketeryLatte engine.
-	 * @param OptionsPage    $carrierOptionsPage Carrier options page.
+	 * @param Order\Metabox     $order_metabox Order metabox.
+	 * @param MessageManager    $message_manager Message manager.
+	 * @param Helper            $helper Helper.
+	 * @param Options\Page      $options_page Options page.
+	 * @param Repository        $carrier_repository Carrier repository.
+	 * @param Downloader        $carrier_downloader Carrier downloader object.
+	 * @param Checkout          $checkout Checkout class.
+	 * @param Engine            $latte_engine PacketeryLatte engine.
+	 * @param OptionsPage       $carrierOptionsPage Carrier options page.
+	 * @param Order\BulkActions $orderBulkActions Order BulkActions.
 	 */
-	public function __construct( Order\Metabox $order_metabox, MessageManager $message_manager, Helper $helper, Options\Page $options_page, Repository $carrier_repository, Downloader $carrier_downloader, Checkout $checkout, Engine $latte_engine, OptionsPage $carrierOptionsPage ) {
+	public function __construct(
+		Order\Metabox $order_metabox,
+		MessageManager $message_manager,
+		Helper $helper,
+		Options\Page $options_page,
+		Repository $carrier_repository,
+		Downloader $carrier_downloader,
+		Checkout $checkout,
+		Engine $latte_engine,
+		OptionsPage $carrierOptionsPage,
+		Order\BulkActions $orderBulkActions
+	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
 		$this->carrier_repository = $carrier_repository;
@@ -122,6 +141,7 @@ class Plugin {
 		$this->options_page       = $options_page;
 		$this->checkout           = $checkout;
 		$this->carrierOptionsPage = $carrierOptionsPage;
+		$this->orderBulkActions   = $orderBulkActions;
 	}
 
 	/**
@@ -172,6 +192,8 @@ class Plugin {
 		}
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
+
+		$this->orderBulkActions->register();
 	}
 
 	/**
