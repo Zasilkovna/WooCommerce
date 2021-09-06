@@ -71,19 +71,8 @@
 
 		updateWidgetButtonVisibility(getShippingRateId());
 
-		$(document).on('change', '#billing_country, #shipping_country, #ship-to-different-address-checkbox', function () {
-			var shippingCountry;
-			if ($('#shipping_country:visible').length === 1) {
-				shippingCountry = $('#shipping_country').val().toLowerCase();
-			} else {
-				shippingCountry = $('#billing_country').val().toLowerCase();
-			}
-			if (shippingCountry !== $widgetDiv.data('country')) {
-				clearPickupPointInfo();
-				$widgetDiv.data('country', shippingCountry);
-				// TODO: ve chvili volani je jeste vybrana stara metoda
-				updateWidgetButtonVisibility(getShippingRateId());
-			}
+		$(document).on('updated_checkout', function () {
+			updateWidgetButtonVisibility(getShippingRateId());
 		});
 
 		$(document).on('change', shippingMethodSelector, function () {
