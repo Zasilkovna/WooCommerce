@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-01T14:19:34+02:00\n"
-"PO-Revision-Date: 2021-09-02 11:56+0200\n"
+"POT-Creation-Date: 2021-09-06T13:03:43+02:00\n"
+"PO-Revision-Date: 2021-09-06 13:06+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -132,7 +132,7 @@ msgstr "Není vybráno výdejní místo."
 msgid "This field is required!"
 msgstr "Toto políčko je povinné!"
 
-#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:284
+#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:317
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -205,6 +205,14 @@ msgstr ""
 "Tento plugin pro správné fungování vyžaduje aktivní knihovnu SOAP. "
 "Kontaktujte správce vašeho webhostingu."
 
+#: src/Packetery/Order/BulkActions.php:31
+msgid "actionSubmitOrders"
+msgstr "Podat zásilky do Zásilkovny"
+
+#: src/Packetery/Order/BulkActions.php:32
+msgid "actionPrintLabels"
+msgstr "Tisk štítků"
+
 #: src/Packetery/Order/Metabox.php:98
 msgid "Weight (kg)"
 msgstr "Hmotnost (kg)"
@@ -238,23 +246,23 @@ msgstr "Relace vypršela! Zkuste to prosím znovu."
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
-#: src/Packetery/Plugin.php:283
+#: src/Packetery/Plugin.php:316
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
-#: src/Packetery/Plugin.php:305
+#: src/Packetery/Plugin.php:338
 msgid "View Packeta documentation"
 msgstr "Zobrazit Packeta dokumentaci"
 
-#: src/Packetery/Plugin.php:306
+#: src/Packetery/Plugin.php:339
 msgid "Documentation"
 msgstr "Dokumentace"
 
-#: src/Packetery/Plugin.php:368
+#: src/Packetery/Plugin.php:401
 msgid "Barcode"
 msgstr "Trasovací číslo"
 
-#: src/Packetery/Plugin.php:369
+#: src/Packetery/Plugin.php:402
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
 

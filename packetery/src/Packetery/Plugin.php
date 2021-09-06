@@ -193,7 +193,18 @@ class Plugin {
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 
-		$this->orderBulkActions->register();
+		// Adding custom actions to dropdown in admin order list.
+		add_filter( 'bulk_actions-edit-shop_order', [ $this->orderBulkActions, 'addActions' ], 20, 1 );
+		// Execute the action for selected orders.
+		add_filter(
+			'handle_bulk_actions-edit-shop_order',
+			[
+				$this->orderBulkActions,
+				'handleActions',
+			],
+			10,
+			3
+		);
 	}
 
 	/**

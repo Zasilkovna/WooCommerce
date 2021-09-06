@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-01T14:19:34+02:00\n"
-"PO-Revision-Date: 2021-09-02 11:56+0200\n"
+"POT-Creation-Date: 2021-09-06T13:03:43+02:00\n"
+"PO-Revision-Date: 2021-09-06 13:07+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -132,7 +132,7 @@ msgstr "Pick up point is not chosen."
 msgid "This field is required!"
 msgstr "This field is required!"
 
-#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:284
+#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:317
 msgid "Settings"
 msgstr "Settings"
 
@@ -206,6 +206,14 @@ msgstr ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
 
+#: src/Packetery/Order/BulkActions.php:31
+msgid "actionSubmitOrders"
+msgstr "Submit orders to Packeta"
+
+#: src/Packetery/Order/BulkActions.php:32
+msgid "actionPrintLabels"
+msgstr "Print labels"
+
 #: src/Packetery/Order/Metabox.php:98
 msgid "Weight (kg)"
 msgstr "Weight (kg)"
@@ -239,23 +247,23 @@ msgstr "Session has expired! Please try again."
 msgid "You are not allowed to edit posts!"
 msgstr "You are not allowed to edit posts!"
 
-#: src/Packetery/Plugin.php:283
+#: src/Packetery/Plugin.php:316
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
 
-#: src/Packetery/Plugin.php:305
+#: src/Packetery/Plugin.php:338
 msgid "View Packeta documentation"
 msgstr "View Packeta documentation"
 
-#: src/Packetery/Plugin.php:306
+#: src/Packetery/Plugin.php:339
 msgid "Documentation"
 msgstr "Documentation"
 
-#: src/Packetery/Plugin.php:368
+#: src/Packetery/Plugin.php:401
 msgid "Barcode"
 msgstr "Barcode"
 
-#: src/Packetery/Plugin.php:369
+#: src/Packetery/Plugin.php:402
 msgid "Pick up point or carrier"
 msgstr "Pick up point or carrier"
 

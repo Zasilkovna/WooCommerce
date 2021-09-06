@@ -15,40 +15,29 @@ namespace Packetery\Order;
 class BulkActions {
 
 	/**
-	 * Registers BulkActions hooks.
-	 */
-	public function register(): void {
-		// Adding a custom action to admin order list bulk dropdown.
-		add_filter( 'bulk_actions-edit-shop_order', [ $this, 'bulkActionsEditShopOrder' ], 20, 1 );
-
-		// Make the action from selected orders.
-		add_filter( 'handle_bulk_actions-edit-shop_order', [ $this, 'handleBulkActionsEditShopOrder' ], 10, 3 );
-	}
-
-	/**
-	 * Hook filter method.
+	 * Adds custom actions to dropdown in admin order list.
 	 *
 	 * @param array $actions Array of action.
 	 *
 	 * @return array
 	 */
-	public function bulkActionsEditShopOrder( array $actions ): array {
-		$actions['submit_to_api'] = __( 'Submit orders to Packeta', 'packetery' );
-		$actions['print_labels']  = __( 'Print labels', 'packetery' );
+	public function addActions( array $actions ): array {
+		$actions['submit_to_api'] = __( 'actionSubmitOrders', 'packetery' );
+		$actions['print_labels']  = __( 'actionPrintLabels', 'packetery' );
 
 		return $actions;
 	}
 
 	/**
-	 * Hook filter method.
+	 * Executes the action for selected orders and returns url to redirect to.
 	 *
 	 * @param string $redirectTo Url.
-	 * @param string $action Action.
+	 * @param string $action Action id.
 	 * @param array  $postIds Order ids.
 	 *
 	 * @return string
 	 */
-	public function handleBulkActionsEditShopOrder( string $redirectTo, string $action, array $postIds ): string {
+	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
 		return $redirectTo;
 	}
 }
