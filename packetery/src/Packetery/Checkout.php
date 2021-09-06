@@ -274,10 +274,6 @@ class Checkout {
 	public function updateOrderMeta( int $orderId ): void {
 		$chosenMethod = $this->getChosenMethod();
 		if ( false !== strpos( $chosenMethod, self::CARRIER_PREFIX ) ) {
-			$rates    = $this->getShippingRates();
-			$rateName = $rates[ $chosenMethod ]['label'];
-			update_post_meta( $orderId, 'packetery_rate_name', $rateName );
-
 			if ( empty( $post['packetery_carrier_id'] ) ) {
 				$matches = [];
 				if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\w+)$/', $chosenMethod, $matches ) ) {
