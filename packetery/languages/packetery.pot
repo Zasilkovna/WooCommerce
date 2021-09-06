@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-09-01T14:19:34+02:00\n"
+"POT-Creation-Date: 2021-09-06T13:03:43+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -132,7 +132,7 @@ msgid "This field is required!"
 msgstr ""
 
 #: src/Packetery/Options/Page.php:64
-#: src/Packetery/Plugin.php:284
+#: src/Packetery/Plugin.php:317
 msgid "Settings"
 msgstr ""
 
@@ -197,6 +197,14 @@ msgstr ""
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
+#: src/Packetery/Order/BulkActions.php:31
+msgid "actionSubmitOrders"
+msgstr ""
+
+#: src/Packetery/Order/BulkActions.php:32
+msgid "actionPrintLabels"
+msgstr ""
+
 #: src/Packetery/Order/Metabox.php:98
 msgid "Weight (kg)"
 msgstr ""
@@ -232,23 +240,23 @@ msgstr ""
 msgid "You are not allowed to edit posts!"
 msgstr ""
 
-#: src/Packetery/Plugin.php:283
+#: src/Packetery/Plugin.php:316
 msgid "View Packeta settings"
 msgstr ""
 
-#: src/Packetery/Plugin.php:305
+#: src/Packetery/Plugin.php:338
 msgid "View Packeta documentation"
 msgstr ""
 
-#: src/Packetery/Plugin.php:306
+#: src/Packetery/Plugin.php:339
 msgid "Documentation"
 msgstr ""
 
-#: src/Packetery/Plugin.php:368
+#: src/Packetery/Plugin.php:401
 msgid "Barcode"
 msgstr ""
 
-#: src/Packetery/Plugin.php:369
+#: src/Packetery/Plugin.php:402
 msgid "Pick up point or carrier"
 msgstr ""
 

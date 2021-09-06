@@ -20,3 +20,4 @@ services:
 	carrierOptionsPage: Packetery\Carrier\OptionsPage
 	formFactory: Packetery\FormFactory
 	countryListingPage: Packetery\Carrier\CountryListingPage
+	orderBulkActions: Packetery\Order\BulkActions
