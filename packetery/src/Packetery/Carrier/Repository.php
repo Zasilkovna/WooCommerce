@@ -119,6 +119,19 @@ class Repository {
 	}
 
 	/**
+	 * Checks if carrier requires dimensions.
+	 *
+	 * @param int $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public function requiresSize( int $carrierId ): bool {
+		$wpdb = $this->get_wpdb();
+
+		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT `requires_size` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s', $carrierId ) );
+	}
+
+	/**
 	 * Gets all active carriers for a country.
 	 *
 	 * @param string $country ISO code.

@@ -233,6 +233,8 @@ class Plugin {
 			10,
 			3
 		);
+		// Print packets export result.
+		add_action( 'admin_notices', [ $this->orderBulkActions, 'adminNotices' ] );
 	}
 
 	/**

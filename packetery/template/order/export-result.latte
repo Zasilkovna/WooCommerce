@@ -1,0 +1,11 @@
+{if !$info && !$error && $success}
+	<div class="updated"><p>{__('shipmentsSubmittedSuccessfully', 'packetery')}</p></div>
+{else}
+	{if $info}
+		<div class="updated" style="border-left-color: #72aee6;"><p>{$info}</p></div>
+	{/if}
+
+	{if $error}
+		<div class="updated" style="border-left-color: #d63638;"><p>{$error}</p></div>
+	{/if}
+{/if}
