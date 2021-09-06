@@ -71,19 +71,19 @@
 
 		updateWidgetButtonVisibility(getShippingRateId());
 
-        $(document).on('updated_checkout', function () {
-            var shippingCountry;
-            if ($('#shipping_country:visible').length === 1) {
-                shippingCountry = $('#shipping_country').val().toLowerCase();
-            } else {
-                shippingCountry = $('#billing_country').val().toLowerCase();
-            }
-            if (shippingCountry !== $widgetDiv.data('country')) {
-                clearPickupPointInfo();
-                $widgetDiv.data('country', shippingCountry);
-            }
-            updateWidgetButtonVisibility(getShippingRateId());
-        });
+		$(document).on('updated_checkout', function () {
+			var shippingCountry;
+			if ($('#shipping_country:visible').length === 1) {
+				shippingCountry = $('#shipping_country').val().toLowerCase();
+			} else {
+				shippingCountry = $('#billing_country').val().toLowerCase();
+			}
+			if (shippingCountry !== $widgetDiv.data('country')) {
+				clearPickupPointInfo();
+				$widgetDiv.data('country', shippingCountry);
+			}
+			updateWidgetButtonVisibility(getShippingRateId());
+		});
 
 		$(document).on('change', shippingMethodSelector, function () {
 			updateWidgetButtonVisibility(this.value);
