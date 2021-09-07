@@ -1,0 +1,21 @@
+<h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
+
+{if isset($form)}
+    <form n:name=$form>
+        <table class="form-table" role="presentation">
+            <tr>
+                <th scope="row">
+                    <label n:name=offset />
+                </th>
+                <td>
+                    <select n:name=offset></select>
+                </td>
+            </tr>
+        </table>
+        <p class="submit">
+            <input type="submit" name="submit" id="submit" value="{__( 'printLabels' )}" class="button button-primary">
+        </p>
+    </form>
+{else}
+    {* TODO: in PES-290 *}
+{/if}

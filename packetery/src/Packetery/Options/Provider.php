@@ -127,4 +127,44 @@ class Provider {
 	public function getCodPaymentMethod(): string {
 		return (string) $this->get( 'cod_payment_method' );
 	}
+
+	/**
+	 * Provides available labels.
+	 *
+	 * @return array[]
+	 */
+	public function getLabelFormats() {
+		return [
+			'A6 on A4'       => [
+				'name'         => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
+				'directLabels' => true,
+				'maxOffset'    => 3,
+			],
+			'A6 on A6'       => [
+				'name'         => __( '105x148 mm (A6) label on a page of the same size', 'packetery' ),
+				'directLabels' => true,
+				'maxOffset'    => 0,
+			],
+			'A7 on A7'       => [
+				'name'         => __( '105x74 mm (A7) label on a page of the same size', 'packetery' ),
+				'directLabels' => false,
+				'maxOffset'    => 0,
+			],
+			'A7 on A4'       => [
+				'name'         => __( '105x74 mm (A7) label on a page of size 210x297 mm (A4)', 'packetery' ),
+				'directLabels' => false,
+				'maxOffset'    => 7,
+			],
+			'105x35mm on A4' => [
+				'name'         => __( '105x35 mm label on a page of size 210x297 mm (A4)', 'packetery' ),
+				'directLabels' => false,
+				'maxOffset'    => 15,
+			],
+			'A8 on A8'       => [
+				'name'         => __( '50x74 mm (A8) label on a page of the same size', 'packetery' ),
+				'directLabels' => false,
+				'maxOffset'    => 0,
+			],
+		];
+	}
 }

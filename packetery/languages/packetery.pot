@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-09-06T13:03:43+02:00\n"
+"POT-Creation-Date: 2021-09-07T15:38:24+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -22,6 +22,7 @@ msgstr ""
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:15
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:13
 msgid "Packeta"
 msgstr ""
 
@@ -132,7 +133,7 @@ msgid "This field is required!"
 msgstr ""
 
 #: src/Packetery/Options/Page.php:64
-#: src/Packetery/Plugin.php:317
+#: src/Packetery/Plugin.php:329
 msgid "Settings"
 msgstr ""
 
@@ -148,61 +149,71 @@ msgstr ""
 msgid "Sender"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:94
+#: src/Packetery/Options/Page.php:97
 msgid "Packeta Label Format"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:96
-#: src/Packetery/Options/Page.php:108
-msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
-msgstr ""
-
-#: src/Packetery/Options/Page.php:97
-msgid "105x148 mm (A6) label on a page of the same size"
-msgstr ""
-
-#: src/Packetery/Options/Page.php:98
-msgid "105x74 mm (A7) label on a page of the same size"
-msgstr ""
-
-#: src/Packetery/Options/Page.php:99
-msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
-msgstr ""
-
-#: src/Packetery/Options/Page.php:100
-msgid "105x35 mm label on a page of size 210x297 mm (A4)"
-msgstr ""
-
-#: src/Packetery/Options/Page.php:101
-msgid "50x74 mm (A8) label on a page of the same size"
-msgstr ""
-
-#: src/Packetery/Options/Page.php:106
+#: src/Packetery/Options/Page.php:104
 msgid "Carrier Label Format"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:109
+#: src/Packetery/Options/Page.php:106
+#: src/Packetery/Options/Provider.php:130
+msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+msgstr ""
+
+#: src/Packetery/Options/Page.php:107
 msgid "105x148 mm (A6) label on a page of the same size (offset argument is ignored for this format)"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:115
+#: src/Packetery/Options/Page.php:113
 msgid "Allow Label Emailing"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:130
+#: src/Packetery/Options/Page.php:128
 msgid "Main Settings"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:171
+#: src/Packetery/Options/Page.php:169
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
-#: src/Packetery/Order/BulkActions.php:31
+#: src/Packetery/Options/Provider.php:135
+msgid "105x148 mm (A6) label on a page of the same size"
+msgstr ""
+
+#: src/Packetery/Options/Provider.php:140
+msgid "105x74 mm (A7) label on a page of the same size"
+msgstr ""
+
+#: src/Packetery/Options/Provider.php:145
+msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
+msgstr ""
+
+#: src/Packetery/Options/Provider.php:150
+msgid "105x35 mm label on a page of size 210x297 mm (A4)"
+msgstr ""
+
+#: src/Packetery/Options/Provider.php:155
+msgid "50x74 mm (A8) label on a page of the same size"
+msgstr ""
+
+#: src/Packetery/Order/BulkActions.php:25
 msgid "actionSubmitOrders"
 msgstr ""
 
-#: src/Packetery/Order/BulkActions.php:32
+#: src/Packetery/Order/BulkActions.php:26
 msgid "actionPrintLabels"
+msgstr ""
+
+#: src/Packetery/Order/LabelPrint.php:109
+msgid "labelsOffset"
+msgstr ""
+
+#: src/Packetery/Order/LabelPrint.php:136
+#: src/Packetery/Order/LabelPrint.php:137
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:46
+msgid "printLabels"
 msgstr ""
 
 #: src/Packetery/Order/Metabox.php:98
@@ -240,23 +251,23 @@ msgstr ""
 msgid "You are not allowed to edit posts!"
 msgstr ""
 
-#: src/Packetery/Plugin.php:316
+#: src/Packetery/Plugin.php:328
 msgid "View Packeta settings"
 msgstr ""
 
-#: src/Packetery/Plugin.php:338
+#: src/Packetery/Plugin.php:350
 msgid "View Packeta documentation"
 msgstr ""
 
-#: src/Packetery/Plugin.php:339
+#: src/Packetery/Plugin.php:351
 msgid "Documentation"
 msgstr ""
 
-#: src/Packetery/Plugin.php:401
+#: src/Packetery/Plugin.php:413
 msgid "Barcode"
 msgstr ""
 
-#: src/Packetery/Plugin.php:402
+#: src/Packetery/Plugin.php:414
 msgid "Pick up point or carrier"
 msgstr ""
 
@@ -372,4 +383,8 @@ msgstr ""
 
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:27
 msgid "Address"
+msgstr ""
+
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
+msgid "labelPrinting"
 msgstr ""
