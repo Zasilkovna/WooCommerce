@@ -1,7 +1,7 @@
 <div id="packetery-options-page">
     <h1>{__( 'Packeta', 'packetery' )} - {__( 'Options', 'packetery' )}</h1>
 
-	{if $error}
+	{if isset($error)}
 		<div class="notice notice-error">
 			<p><strong>{$error}</strong></p>
 		</div>
