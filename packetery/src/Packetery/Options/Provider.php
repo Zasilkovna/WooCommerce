@@ -118,4 +118,13 @@ class Provider {
 	public function get_allow_label_emailing(): ?bool {
 		return (bool) $this->get( 'allow_label_emailing' );
 	}
+
+	/**
+	 * Which payment rate id COD?
+	 *
+	 * @return string Content.
+	 */
+	public function getCodPaymentMethod(): string {
+		return (string) $this->get( 'cod_payment_method' );
+	}
 }

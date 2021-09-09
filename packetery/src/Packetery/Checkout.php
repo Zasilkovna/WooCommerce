@@ -367,10 +367,8 @@ class Checkout {
 
 		$cartWeight = $this->getCartWeightKg();
 
-		// TODO: replace with $this->options_provider->get_cod_payment_method();.
-		$codMethod = 'cod';
-
 		$isCod        = false;
+		$codMethod    = $this->options_provider->getCodPaymentMethod();
 		$chosenMethod = WC()->session->get( 'chosen_payment_method' );
 		if ( ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
 			$isCod = true;
