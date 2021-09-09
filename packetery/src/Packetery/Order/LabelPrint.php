@@ -71,23 +71,18 @@ class LabelPrint {
 	 * Prepares form and renders template.
 	 */
 	public function render(): void {
-		$latteParams = [];
-		// TODO: in PES-290: links to PDF(s) and/or errors.
-		if ( ! $this->httpRequest->getQuery( 'print' ) ) {
-			$availableFormats  = $this->optionsProvider->getLabelFormats();
-			$chosenLabelFormat = $this->optionsProvider->get_packeta_label_format();
-			$maxOffset         = $availableFormats[ $chosenLabelFormat ]['maxOffset'];
-			if ( 0 === $maxOffset ) {
-				$this->redirectToPrint( 0 );
-			}
-
-			$form = $this->createForm( $maxOffset );
-			if ( $form->isSubmitted() ) {
-				$form->fireEvents();
-			}
-			$latteParams['form'] = $form;
+		$availableFormats  = $this->optionsProvider->getLabelFormats();
+		$chosenLabelFormat = $this->optionsProvider->get_packeta_label_format();
+		$maxOffset         = $availableFormats[ $chosenLabelFormat ]['maxOffset'];
+		if ( 0 === $maxOffset ) {
+			$this->redirectToPrint( 0 );
 		}
-		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte', $latteParams );
+
+		$form = $this->createForm( $maxOffset );
+		if ( $form->isSubmitted() ) {
+			$form->fireEvents();
+		}
+		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte', [ 'form' => $form ] );
 	}
 
 	/**
@@ -102,7 +97,8 @@ class LabelPrint {
 
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
-			$availableOffsets[] = $i;
+			// translators: %s is offset.
+			$availableOffsets[ $i ] = ( $i === 0 ? __( 'dontSkipAnyField', 'packetery' ) : sprintf( __( 'skip%sFields', 'packetery' ), $i ) );
 		}
 		$form->addSelect(
 			'offset',

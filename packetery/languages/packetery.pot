@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-09-08T04:15:56+02:00\n"
+"POT-Creation-Date: 2021-09-08T09:20:14+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -165,39 +165,43 @@ msgstr ""
 msgid "105x148 mm (A6) label on a page of the same size (offset argument is ignored for this format)"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:113
+#: src/Packetery/Options/Page.php:118
+msgid "Payment method that represents cash on delivery"
+msgstr ""
+
+#: src/Packetery/Options/Page.php:124
 msgid "Allow Label Emailing"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:128
+#: src/Packetery/Options/Page.php:139
 msgid "Main Settings"
 msgstr ""
 
-#: src/Packetery/Options/Page.php:169
+#: src/Packetery/Options/Page.php:180
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
-#: src/Packetery/Options/Provider.php:130
+#: src/Packetery/Options/Provider.php:139
 msgid "labelNameA6onA4"
 msgstr ""
 
-#: src/Packetery/Options/Provider.php:135
+#: src/Packetery/Options/Provider.php:144
 msgid "labelNameA6onA6"
 msgstr ""
 
-#: src/Packetery/Options/Provider.php:140
+#: src/Packetery/Options/Provider.php:149
 msgid "labelNameA7onA7"
 msgstr ""
 
-#: src/Packetery/Options/Provider.php:145
+#: src/Packetery/Options/Provider.php:154
 msgid "labelNameA7onA4"
 msgstr ""
 
-#: src/Packetery/Options/Provider.php:150
+#: src/Packetery/Options/Provider.php:159
 msgid "labelName105x35onA4"
 msgstr ""
 
-#: src/Packetery/Options/Provider.php:155
+#: src/Packetery/Options/Provider.php:164
 msgid "labelNameA8onA8"
 msgstr ""
 
@@ -209,13 +213,23 @@ msgstr ""
 msgid "actionPrintLabels"
 msgstr ""
 
-#: src/Packetery/Order/LabelPrint.php:109
+#. translators: %s is offset.
+#: src/Packetery/Order/LabelPrint.php:106
+msgid "dontSkipAnyField"
+msgstr ""
+
+#. translators: %s is offset.
+#: src/Packetery/Order/LabelPrint.php:106
+msgid "skip%sFields"
+msgstr ""
+
+#: src/Packetery/Order/LabelPrint.php:110
 msgid "labelsOffset"
 msgstr ""
 
-#: src/Packetery/Order/LabelPrint.php:136
 #: src/Packetery/Order/LabelPrint.php:137
-#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:46
+#: src/Packetery/Order/LabelPrint.php:138
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:45
 msgid "printLabels"
 msgstr ""
 
@@ -372,7 +386,7 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:118
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:136
 msgid "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
 
