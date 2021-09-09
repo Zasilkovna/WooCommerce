@@ -112,12 +112,8 @@ class Page {
 
 		$gateways = WC()->payment_gateways->get_available_payment_gateways();
 		$enabledGateways = [];
-		if( $gateways ) {
-			foreach( $gateways as $gateway ) {
-				if( $gateway->is_available() ) {
-					$enabledGateways[$gateway->id] = $gateway->title;
-				}
-			}
+		foreach ( $gateways as $gateway ) {
+			$enabledGateways[ $gateway->id ] = $gateway->title;
 		}
 		$container->addSelect(
 			'cod_payment_method',

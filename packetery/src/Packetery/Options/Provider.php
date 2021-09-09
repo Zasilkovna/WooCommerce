@@ -124,7 +124,7 @@ class Provider {
 	 *
 	 * @return string Content.
 	 */
-	public function get_cod_payment_method(): string {
+	public function getCodPaymentMethod(): string {
 		return (string) $this->get( 'cod_payment_method' );
 	}
 }
