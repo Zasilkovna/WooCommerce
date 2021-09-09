@@ -7,6 +7,7 @@
 
 namespace Packetery\Order;
 
+use Packetery\Api\Soap\Packet;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use WC_Order;
@@ -34,21 +35,21 @@ class BulkActions {
 	/**
 	 * OrderApi.
 	 *
-	 * @var OrderApi
+	 * @var Packet
 	 */
-	private $orderApi;
+	private $packetApi;
 
 	/**
 	 * BulkActions constructor.
 	 *
-	 * @param Engine   $latteEngine Latte engine.
-	 * @param Request  $httpRequest HTTP request.
-	 * @param OrderApi $orderApi OrderApi.
+	 * @param Engine $latteEngine Latte engine.
+	 * @param Request $httpRequest HTTP request.
+	 * @param Packet $packetApi OrderApi.
 	 */
-	public function __construct( Engine $latteEngine, Request $httpRequest, OrderApi $orderApi ) {
+	public function __construct( Engine $latteEngine, Request $httpRequest, Packet $packetApi ) {
 		$this->latteEngine = $latteEngine;
 		$this->httpRequest = $httpRequest;
-		$this->orderApi    = $orderApi;
+		$this->packetApi   = $packetApi;
 	}
 
 	/**
@@ -70,7 +71,7 @@ class BulkActions {
 	 *
 	 * @param string $redirectTo Url.
 	 * @param string $action Action id.
-	 * @param array  $postIds Order ids.
+	 * @param array $postIds Order ids.
 	 *
 	 * @return string
 	 */
@@ -84,7 +85,7 @@ class BulkActions {
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$results = $this->orderApi->createPacket( $order, $results );
+					$results = $this->packetApi->createPacket( $order, $results );
 				}
 			}
 
@@ -108,5 +109,40 @@ class BulkActions {
 		}
 
 		return $redirectTo;
+	}
+
+	/**
+	 * Prints packets export result.
+	 */
+	public function adminNotices(): void {
+		$get = $this->httpRequest->query;
+		if ( empty( $get['submit_to_api'] ) ) {
+			return;
+		}
+
+		$latteParams    = [
+			'success' => null,
+			'info'    => null,
+			'error'   => null,
+		];
+		$submittedCount = ( isset( $get['submitted_count'] ) ? (int) $get['submitted_count'] : 0 );
+		if ( $submittedCount ) {
+			/* translators: %s: count of orders. */
+			$latteParams['success'] = sprintf( __( 'someShipments%sSubmitted', 'packetery' ), $submittedCount );
+		}
+
+		$skippedCount = ( isset( $get['skipped_count'] ) ? (int) $get['skipped_count'] : 0 );
+		if ( $skippedCount ) {
+			/* translators: %s: count of orders. */
+			$latteParams['info'] = sprintf( __( 'someShipments%sSkipped', 'packetery' ), $skippedCount );
+		}
+
+		$errors = ( isset( $get['errors'] ) ? (int) $get['errors'] : 0 );
+		if ( $errors ) {
+			/* translators: %s: count of orders. */
+			$latteParams['error'] = sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors );
+		}
+
+		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/export-result.latte', $latteParams );
 	}
 }

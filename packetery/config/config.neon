@@ -24,4 +24,4 @@ services:
 	orderBulkActions: Packetery\Order\BulkActions
 	labelPrint: Packetery\Order\LabelPrint
 	gridExtender: Packetery\Order\GridExtender
-	orderApi: Packetery\Order\OrderApi
+	packetApi: Packetery\Api\Soap\Packet

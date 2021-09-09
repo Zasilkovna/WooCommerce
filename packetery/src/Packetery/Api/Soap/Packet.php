@@ -5,7 +5,7 @@
  * @package Packetery\Order
  */
 
-namespace Packetery\Order;
+namespace Packetery\Api\Soap;
 
 use Packetery\Carrier\Repository;
 use Packetery\Options\Provider;
@@ -18,7 +18,7 @@ use WC_Order;
  *
  * @package Packetery\Order
  */
-class OrderApi {
+class Packet extends Base {
 	/**
 	 * Options provider.
 	 *
@@ -54,7 +54,7 @@ class OrderApi {
 	 */
 	public function createPacket( WC_Order $order, array $results ): array {
 		$orderData   = $order->get_data();
-		$soapClient  = new SoapClient( 'http://www.zasilkovna.cz/api/soap.wsdl' );
+		$soapClient  = new SoapClient( self::WSDL_URL );
 		$apiPassword = $this->optionsProvider->get_api_password();
 
 		$shippingMethods    = $order->get_shipping_methods();
@@ -159,37 +159,5 @@ class OrderApi {
 		}
 
 		return $attributes;
-	}
-
-	/**
-	 * Gets human readable errors form SoapFault exception.
-	 *
-	 * @param SoapFault $exception Exception.
-	 *
-	 * @return string
-	 */
-	private function getSoapFaultErrors( SoapFault $exception ): string {
-		$errors = '';
-
-		if ( isset( $exception->detail->PacketAttributesFault->attributes->fault ) ) {
-			if ( is_array( $exception->detail->PacketAttributesFault->attributes->fault ) && count( $exception->detail->PacketAttributesFault->attributes->fault ) > 1 ) {
-				foreach ( $exception->detail->PacketAttributesFault->attributes->fault as $fault ) {
-					$errors .= $fault->name . ': ' . $fault->fault . ' ';
-				}
-			} else {
-				$fault   = $exception->detail->PacketAttributesFault->attributes->fault;
-				$errors .= $fault->name . ': ' . $fault->fault . ' ';
-			}
-		}
-
-		if ( '' === $errors ) {
-			$errors = $exception->faultstring;
-		}
-
-		// TODO: update before release.
-		$logger = wc_get_logger();
-		$logger->error( $errors );
-
-		return $errors;
 	}
 }
