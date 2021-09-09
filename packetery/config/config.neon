@@ -25,3 +25,4 @@ services:
 	labelPrint: Packetery\Order\LabelPrint
 	gridExtender: Packetery\Order\GridExtender
 	packetApi: Packetery\Api\Soap\Packet
+	orderApiClient: Packetery\Api\OrderClient

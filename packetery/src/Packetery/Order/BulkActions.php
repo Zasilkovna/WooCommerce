@@ -7,7 +7,7 @@
 
 namespace Packetery\Order;
 
-use Packetery\Api\Soap\Packet;
+use Packetery\Api\OrderClient;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use WC_Order;
@@ -35,21 +35,21 @@ class BulkActions {
 	/**
 	 * OrderApi.
 	 *
-	 * @var Packet
+	 * @var OrderClient
 	 */
-	private $packetApi;
+	private $orderApiClient;
 
 	/**
 	 * BulkActions constructor.
 	 *
-	 * @param Engine $latteEngine Latte engine.
-	 * @param Request $httpRequest HTTP request.
-	 * @param Packet $packetApi OrderApi.
+	 * @param Engine      $latteEngine Latte engine.
+	 * @param Request     $httpRequest HTTP request.
+	 * @param OrderClient $orderApiClient Order API Client.
 	 */
-	public function __construct( Engine $latteEngine, Request $httpRequest, Packet $packetApi ) {
-		$this->latteEngine = $latteEngine;
-		$this->httpRequest = $httpRequest;
-		$this->packetApi   = $packetApi;
+	public function __construct( Engine $latteEngine, Request $httpRequest, OrderClient $orderApiClient ) {
+		$this->latteEngine    = $latteEngine;
+		$this->httpRequest    = $httpRequest;
+		$this->orderApiClient = $orderApiClient;
 	}
 
 	/**
@@ -85,7 +85,7 @@ class BulkActions {
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$results = $this->packetApi->createPacket( $order, $results );
+					$results = $this->orderApiClient->submitPacket( $order, $results );
 				}
 			}
 

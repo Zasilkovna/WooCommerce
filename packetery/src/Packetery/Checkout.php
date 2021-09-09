@@ -261,7 +261,7 @@ class Checkout {
 	}
 
 	/**
-	 * Saves pickup point information to order
+	 * Saves pickup point and other Packeta information to order.
 	 *
 	 * @param int $orderId Order id.
 	 */
@@ -270,6 +270,7 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
+		update_post_meta( $orderId, 'packetery_weight', $this->getCartWeightKg() );
 		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
 			$carrierId = $this->getCarrierId( $chosenMethod );
 			if ( $carrierId ) {

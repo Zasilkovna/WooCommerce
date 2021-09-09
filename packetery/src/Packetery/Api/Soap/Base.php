@@ -29,7 +29,7 @@ class Base {
 		$errors = '';
 
 		if ( isset( $exception->detail->PacketAttributesFault->attributes->fault ) ) {
-			if ( is_array( $exception->detail->PacketAttributesFault->attributes->fault ) && count( $exception->detail->PacketAttributesFault->attributes->fault ) > 1 ) {
+			if ( is_array( $exception->detail->PacketAttributesFault->attributes->fault ) ) {
 				foreach ( $exception->detail->PacketAttributesFault->attributes->fault as $fault ) {
 					$errors .= sprintf( '%s: %s ', $fault->name, $fault->fault );
 				}

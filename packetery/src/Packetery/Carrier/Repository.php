@@ -119,16 +119,41 @@ class Repository {
 	}
 
 	/**
-	 * Checks if carrier requires dimensions.
+	 * Gets Carrier value object by id.
 	 *
 	 * @param int $carrierId Carrier id.
 	 *
-	 * @return bool
+	 * @return Carrier|null
 	 */
-	public function requiresSize( int $carrierId ): bool {
-		$wpdb = $this->get_wpdb();
+	public function getById( int $carrierId ): ?Carrier {
+		$wpdb   = $this->get_wpdb();
+		$result = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT
+					`id`,
+					`name`,
+					`is_pickup_points`,
+					`has_carrier_direct_label`,
+					`separate_house_number`,
+					`customs_declarations`,
+					`requires_email`,
+					`requires_phone`,
+					`requires_size`,
+					`disallows_cod`,
+					`country`,
+					`currency`,
+					`max_weight`,
+					`deleted`
+				FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s',
+				$carrierId
+			),
+			ARRAY_A
+		);
+		if ( null === $result ) {
+			return null;
+		}
 
-		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT `requires_size` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s', $carrierId ) );
+		return new Carrier( $result );
 	}
 
 	/**
