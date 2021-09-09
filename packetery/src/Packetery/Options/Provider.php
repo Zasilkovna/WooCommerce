@@ -136,32 +136,32 @@ class Provider {
 	public function getLabelFormats() {
 		return [
 			'A6 on A4'       => [
-				'name'         => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
+				'name'         => __( 'labelNameA6onA4', 'packetery' ),
 				'directLabels' => true,
 				'maxOffset'    => 3,
 			],
 			'A6 on A6'       => [
-				'name'         => __( '105x148 mm (A6) label on a page of the same size', 'packetery' ),
+				'name'         => __( 'labelNameA6onA6', 'packetery' ),
 				'directLabels' => true,
 				'maxOffset'    => 0,
 			],
 			'A7 on A7'       => [
-				'name'         => __( '105x74 mm (A7) label on a page of the same size', 'packetery' ),
+				'name'         => __( 'labelNameA7onA7', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 0,
 			],
 			'A7 on A4'       => [
-				'name'         => __( '105x74 mm (A7) label on a page of size 210x297 mm (A4)', 'packetery' ),
+				'name'         => __( 'labelNameA7onA4', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 7,
 			],
 			'105x35mm on A4' => [
-				'name'         => __( '105x35 mm label on a page of size 210x297 mm (A4)', 'packetery' ),
+				'name'         => __( 'labelName105x35onA4', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 15,
 			],
 			'A8 on A8'       => [
-				'name'         => __( '50x74 mm (A8) label on a page of the same size', 'packetery' ),
+				'name'         => __( 'labelNameA8onA8', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 0,
 			],

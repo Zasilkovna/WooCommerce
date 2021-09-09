@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-07T15:38:24+02:00\n"
-"PO-Revision-Date: 2021-09-08 11:11+0200\n"
+"POT-Creation-Date: 2021-09-08T04:15:56+02:00\n"
+"PO-Revision-Date: 2021-09-09 09:10+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -158,7 +158,7 @@ msgstr "Formát štítku Zásilkovny"
 msgid "Carrier Label Format"
 msgstr "Formát štítku dopravce"
 
-#: src/Packetery/Options/Page.php:106 src/Packetery/Options/Provider.php:130
+#: src/Packetery/Options/Page.php:106
 msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
 msgstr "105x148 mm (A6) štítek na stránce o velikosti 210x297 mm (A4)"
 
@@ -186,24 +186,28 @@ msgstr ""
 "Tento plugin pro správné fungování vyžaduje aktivní knihovnu SOAP. "
 "Kontaktujte správce vašeho webhostingu."
 
+#: src/Packetery/Options/Provider.php:130
+msgid "labelNameA6onA4"
+msgstr "štítek 105x148 mm (A6) na stránce o velikosti 210x297 mm (A4)"
+
 #: src/Packetery/Options/Provider.php:135
-msgid "105x148 mm (A6) label on a page of the same size"
-msgstr "Štítek 105x148 mm (A6) na stránce stejné velikosti"
+msgid "labelNameA6onA6"
+msgstr "štítek 105x148 mm (A6) na stránce stejné velikosti"
 
 #: src/Packetery/Options/Provider.php:140
-msgid "105x74 mm (A7) label on a page of the same size"
+msgid "labelNameA7onA7"
 msgstr "štítek 105x74 mm (A7) na stránce stejné velikosti"
 
 #: src/Packetery/Options/Provider.php:145
-msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
-msgstr "105x74 mm (A7) štítek na stránce o velikosti 210x297 mm (A4)"
+msgid "labelNameA7onA4"
+msgstr "štítek 105x74 mm (A7) na stránce o velikosti 210x297 mm (A4)"
 
 #: src/Packetery/Options/Provider.php:150
-msgid "105x35 mm label on a page of size 210x297 mm (A4)"
-msgstr "Štítek 105x35 mm na stránce o rozměrech 210x297 mm (A4)"
+msgid "labelName105x35onA4"
+msgstr "štítek 105x35 mm na stránce o rozměrech 210x297 mm (A4)"
 
 #: src/Packetery/Options/Provider.php:155
-msgid "50x74 mm (A8) label on a page of the same size"
+msgid "labelNameA8onA8"
 msgstr "štítek 50x74 mm (A8) na stránce stejné velikosti"
 
 #: src/Packetery/Order/BulkActions.php:25
@@ -396,6 +400,21 @@ msgstr "Adresa"
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
 msgid "labelPrinting"
 msgstr "Tisk štítků"
+
+#~ msgid "105x148 mm (A6) label on a page of the same size"
+#~ msgstr "Štítek 105x148 mm (A6) na stránce stejné velikosti"
+
+#~ msgid "105x74 mm (A7) label on a page of the same size"
+#~ msgstr "štítek 105x74 mm (A7) na stránce stejné velikosti"
+
+#~ msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
+#~ msgstr "105x74 mm (A7) štítek na stránce o velikosti 210x297 mm (A4)"
+
+#~ msgid "105x35 mm label on a page of size 210x297 mm (A4)"
+#~ msgstr "Štítek 105x35 mm na stránce o rozměrech 210x297 mm (A4)"
+
+#~ msgid "50x74 mm (A8) label on a page of the same size"
+#~ msgstr "štítek 50x74 mm (A8) na stránce stejné velikosti"
 
 #~ msgid "Carrier display name must have at least 2 characters!"
 #~ msgstr "Název dopravce musí mít alespoň dva znaky!"
