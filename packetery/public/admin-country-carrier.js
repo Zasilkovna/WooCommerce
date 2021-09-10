@@ -21,19 +21,14 @@
                     });
             };
 
-            this.addOption = function (button, $wrappers, setFocus) {
+            this.addOption = function (button, $wrappers) {
                 var wrapperClassName = $wrappers.first().attr('class'),
                     $wrapper = $(button).closest('.' + wrapperClassName),
                     $template = getTemplateClone($wrapper);
 
                 updateIds($template, newId++);
                 $wrapper.find('table').append($template);
-                if (typeof setFocus === 'undefined') {
-                    setFocus = true;
-                }
-                if (setFocus) {
-                    $('input', $template).eq(0).focus();
-                }
+                $('input', $template).eq(0).focus();
                 this.toggleDeleteButton($wrapper);
             };
 
@@ -72,7 +67,7 @@
                 newId = findMaxNewId();
 
             function getTemplateClone($wrapper) {
-                var $template = $wrapper.find('.js-template').clone().removeClass('js-template');
+                var $template = $wrapper.find('tr').first().clone();
                 $template.find('input').val('');
                 return $template;
             }
