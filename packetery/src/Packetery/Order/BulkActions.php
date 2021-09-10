@@ -38,6 +38,10 @@ class BulkActions {
 	 * @return string
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
+		if ( 'print_labels' === $action ) {
+			return add_query_arg( [ 'orderIds' => implode( ',', $postIds ) ], 'admin.php?page=label-print' );
+		}
+
 		return $redirectTo;
 	}
 }

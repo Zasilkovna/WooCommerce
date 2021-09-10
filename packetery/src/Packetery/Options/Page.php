@@ -33,7 +33,7 @@ class Page {
 	 *
 	 * @var Provider
 	 */
-	private $options_provider;
+	private $optionsProvider;
 
 	/**
 	 * Form factory.
@@ -46,13 +46,13 @@ class Page {
 	 * Plugin constructor.
 	 *
 	 * @param Engine      $latte_engine PacketeryLatte_engine.
-	 * @param Provider    $options_provider Options provider.
+	 * @param Provider    $optionsProvider Options provider.
 	 * @param FormFactory $formFactory Form factory.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, FormFactory $formFactory ) {
-		$this->latte_engine     = $latte_engine;
-		$this->options_provider = $options_provider;
-		$this->formFactory      = $formFactory;
+	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory ) {
+		$this->latte_engine    = $latte_engine;
+		$this->optionsProvider = $optionsProvider;
+		$this->formFactory     = $formFactory;
 	}
 
 	/**
@@ -89,18 +89,16 @@ class Page {
 					->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', 'packetery' ), '[a-z\d]{32}' );
 		$container->addText( 'sender', __( 'Sender', 'packetery' ) )
 					->setRequired();
+
+		$availableFormats = $this->optionsProvider->getLabelFormats();
+		$labelFormats     = array_filter( array_combine( array_keys( $availableFormats ), array_column( $availableFormats, 'name' ) ) );
 		$container->addSelect(
 			'packeta_label_format',
 			__( 'Packeta Label Format', 'packetery' ),
-			array(
-				'A6 on A4'       => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
-				'A6 on A6'       => __( '105x148 mm (A6) label on a page of the same size', 'packetery' ),
-				'A7 on A7'       => __( '105x74 mm (A7) label on a page of the same size', 'packetery' ),
-				'A7 on A4'       => __( '105x74 mm (A7) label on a page of size 210x297 mm (A4)', 'packetery' ),
-				'105x35mm on A4' => __( '105x35 mm label on a page of size 210x297 mm (A4)', 'packetery' ),
-				'A8 on A8'       => __( '50x74 mm (A8) label on a page of the same size', 'packetery' ),
-			)
+			$labelFormats
 		)->checkDefaultValue( false );
+
+		// TODO: remove in another ticket.
 		$container->addSelect(
 			'carrier_label_format',
 			__( 'Carrier Label Format', 'packetery' ),
@@ -126,8 +124,8 @@ class Page {
 			__( 'Allow Label Emailing', 'packetery' )
 		);
 
-		if ( $this->options_provider->has_any() ) {
-			$container->setDefaults( $this->options_provider->data_to_array() );
+		if ( $this->optionsProvider->has_any() ) {
+			$container->setDefaults( $this->optionsProvider->data_to_array() );
 		}
 
 		return $form;

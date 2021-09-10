@@ -21,3 +21,4 @@ services:
 	formFactory: Packetery\FormFactory
 	countryListingPage: Packetery\Carrier\CountryListingPage
 	orderBulkActions: Packetery\Order\BulkActions
+	labelPrint: Packetery\Order\LabelPrint

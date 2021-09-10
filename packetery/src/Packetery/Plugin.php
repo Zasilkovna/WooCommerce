@@ -105,6 +105,13 @@ class Plugin {
 	private $orderBulkActions;
 
 	/**
+	 * Label printing.
+	 *
+	 * @var Order\LabelPrint
+	 */
+	private $labelPrint;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox     $order_metabox Order metabox.
@@ -117,6 +124,7 @@ class Plugin {
 	 * @param Engine            $latte_engine PacketeryLatte engine.
 	 * @param OptionsPage       $carrierOptionsPage Carrier options page.
 	 * @param Order\BulkActions $orderBulkActions Order BulkActions.
+	 * @param Order\LabelPrint  $labelPrint Label printing.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -128,7 +136,8 @@ class Plugin {
 		Checkout $checkout,
 		Engine $latte_engine,
 		OptionsPage $carrierOptionsPage,
-		Order\BulkActions $orderBulkActions
+		Order\BulkActions $orderBulkActions,
+		Order\LabelPrint $labelPrint
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -142,6 +151,7 @@ class Plugin {
 		$this->checkout           = $checkout;
 		$this->carrierOptionsPage = $carrierOptionsPage;
 		$this->orderBulkActions   = $orderBulkActions;
+		$this->labelPrint         = $labelPrint;
 	}
 
 	/**
@@ -177,6 +187,7 @@ class Plugin {
 		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
 		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
+		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
 		$this->order_metabox->register();
 
 		$this->checkout->register_hooks();
@@ -258,6 +269,7 @@ class Plugin {
 	public function add_menu_pages(): void {
 		$this->options_page->register();
 		$this->carrierOptionsPage->register();
+		$this->labelPrint->register();
 	}
 
 	/**
