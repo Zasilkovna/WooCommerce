@@ -33,7 +33,7 @@ class Page {
 	 *
 	 * @var Provider
 	 */
-	private $options_provider;
+	private $optionsProvider;
 
 	/**
 	 * Form factory.
@@ -46,13 +46,13 @@ class Page {
 	 * Plugin constructor.
 	 *
 	 * @param Engine      $latte_engine PacketeryLatte_engine.
-	 * @param Provider    $options_provider Options provider.
+	 * @param Provider    $optionsProvider Options provider.
 	 * @param FormFactory $formFactory Form factory.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, FormFactory $formFactory ) {
-		$this->latte_engine     = $latte_engine;
-		$this->options_provider = $options_provider;
-		$this->formFactory      = $formFactory;
+	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory ) {
+		$this->latte_engine    = $latte_engine;
+		$this->optionsProvider = $optionsProvider;
+		$this->formFactory     = $formFactory;
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Page {
 		$container->addText( 'sender', __( 'Sender', 'packetery' ) )
 					->setRequired();
 
-		$availableFormats = $this->options_provider->getLabelFormats();
+		$availableFormats = $this->optionsProvider->getLabelFormats();
 		$labelFormats     = array_filter( array_combine( array_keys( $availableFormats ), array_column( $availableFormats, 'name' ) ) );
 		$container->addSelect(
 			'packeta_label_format',
@@ -124,8 +124,8 @@ class Page {
 			__( 'Allow Label Emailing', 'packetery' )
 		);
 
-		if ( $this->options_provider->has_any() ) {
-			$container->setDefaults( $this->options_provider->data_to_array() );
+		if ( $this->optionsProvider->has_any() ) {
+			$container->setDefaults( $this->optionsProvider->data_to_array() );
 		}
 
 		return $form;

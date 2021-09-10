@@ -75,7 +75,7 @@ class LabelPrint {
 		$chosenLabelFormat = $this->optionsProvider->get_packeta_label_format();
 		$maxOffset         = $availableFormats[ $chosenLabelFormat ]['maxOffset'];
 		if ( 0 === $maxOffset ) {
-			$this->redirectToPrint( 0 );
+			$this->prepareLabels( 0 );
 		}
 
 		$form = $this->createForm( $maxOffset );
@@ -120,7 +120,7 @@ class LabelPrint {
 	 */
 	public function setOffset( Form $form ): void {
 		$data = $form->getValues( 'array' );
-		$this->redirectToPrint( $data['offset'] );
+		$this->prepareLabels( $data['offset'] );
 	}
 
 	/**
@@ -156,21 +156,11 @@ class LabelPrint {
 	}
 
 	/**
-	 * Redirects to page with labels.
+	 * Prepares labels.
 	 *
 	 * @param int $offset Offset value.
 	 */
-	private function redirectToPrint( int $offset ): void {
-		$redirectTo = add_query_arg(
-			[
-				'orderIds' => $this->httpRequest->getQuery( 'orderIds' ),
-				'print'    => true,
-				'offset'   => $offset,
-			],
-			$this->httpRequest->getUrl()
-		);
-		if ( wp_safe_redirect( $redirectTo, 303 ) ) {
-			exit;
-		}
+	private function prepareLabels( int $offset ): void {
+		// TODO: prepare labels here.
 	}
 }
