@@ -273,28 +273,23 @@ class Checkout {
 	 */
 	public function updateOrderMeta( int $orderId ): void {
 		$chosenMethod = $this->getChosenMethod();
-		if ( false !== strpos( $chosenMethod, self::CARRIER_PREFIX ) ) {
-			if ( empty( $post['packetery_carrier_id'] ) ) {
-				$matches = [];
-				if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\w+)$/', $chosenMethod, $matches ) ) {
-					if ( false !== strpos( $chosenMethod, 'zpoint' ) ) {
-						$carrierId = 'packeta';
-					} else {
-						$carrierId = $matches[1];
-					}
-					update_post_meta( $orderId, 'packetery_carrier_id', $carrierId );
-				}
+		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
+			return;
+		}
+		if ( empty( $post['packetery_carrier_id'] ) ) {
+			$carrierId = $this->getCarrierId( $chosenMethod );
+			if ( $carrierId ) {
+				update_post_meta( $orderId, 'packetery_carrier_id', $carrierId );
 			}
-
-			if ( $this->isPickupPointOrder() ) {
-				$post = $this->httpRequest->getPost();
-				if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
-					wp_nonce_ays( '' );
-				}
-				foreach ( self::$pickup_point_attrs as $attr ) {
-					if ( isset( $post[ $attr['name'] ] ) ) {
-						update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
-					}
+		}
+		if ( $this->isPickupPointOrder() ) {
+			$post = $this->httpRequest->getPost();
+			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
+				wp_nonce_ays( '' );
+			}
+			foreach ( self::$pickup_point_attrs as $attr ) {
+				if ( isset( $post[ $attr['name'] ] ) ) {
+					update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
 				}
 			}
 		}
@@ -455,5 +450,37 @@ class Checkout {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Gets carrier id from chosen shipping method.
+	 *
+	 * @param string $chosenMethod Chosen shipping method.
+	 *
+	 * @return string|null
+	 */
+	private function getCarrierId( string $chosenMethod ): ?string {
+		$carrierId = null;
+		$matches   = [];
+		if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\w+)$/', $chosenMethod, $matches ) ) {
+			if ( false !== strpos( $chosenMethod, 'zpoint' ) ) {
+				$carrierId = 'packeta';
+			} else {
+				$carrierId = $matches[1];
+			}
+		}
+
+		return $carrierId;
+	}
+
+	/**
+	 * Checks if chosen shipping method is one of packetery.
+	 *
+	 * @param string $chosenMethod Chosen shipping method.
+	 *
+	 * @return false|int
+	 */
+	private function isPacketeryOrder( string $chosenMethod ) {
+		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) !== false );
 	}
 }
