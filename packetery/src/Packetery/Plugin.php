@@ -84,13 +84,6 @@ class Plugin {
 	private $message_manager;
 
 	/**
-	 * Generic Helper.
-	 *
-	 * @var Helper
-	 */
-	private $helper;
-
-	/**
 	 * Checkout object.
 	 *
 	 * @var Checkout
@@ -112,24 +105,30 @@ class Plugin {
 	private $labelPrint;
 
 	/**
+	 * Order grid extender.
+	 *
+	 * @var Order\GridExtender
+	 */
+	private $gridExtender;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox     $order_metabox Order metabox.
-	 * @param MessageManager    $message_manager Message manager.
-	 * @param Helper            $helper Helper.
-	 * @param Options\Page      $options_page Options page.
-	 * @param Repository        $carrier_repository Carrier repository.
-	 * @param Downloader        $carrier_downloader Carrier downloader object.
-	 * @param Checkout          $checkout Checkout class.
-	 * @param Engine            $latte_engine PacketeryLatte engine.
-	 * @param OptionsPage       $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions $orderBulkActions Order BulkActions.
-	 * @param Order\LabelPrint  $labelPrint Label printing.
+	 * @param Order\Metabox      $order_metabox Order metabox.
+	 * @param MessageManager     $message_manager Message manager.
+	 * @param Options\Page       $options_page Options page.
+	 * @param Repository         $carrier_repository Carrier repository.
+	 * @param Downloader         $carrier_downloader Carrier downloader object.
+	 * @param Checkout           $checkout Checkout class.
+	 * @param Engine             $latte_engine PacketeryLatte engine.
+	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
+	 * @param Order\BulkActions  $orderBulkActions Order BulkActions.
+	 * @param Order\LabelPrint   $labelPrint Label printing.
+	 * @param Order\GridExtender $gridExtender Order grid extender.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
 		MessageManager $message_manager,
-		Helper $helper,
 		Options\Page $options_page,
 		Repository $carrier_repository,
 		Downloader $carrier_downloader,
@@ -137,7 +136,8 @@ class Plugin {
 		Engine $latte_engine,
 		OptionsPage $carrierOptionsPage,
 		Order\BulkActions $orderBulkActions,
-		Order\LabelPrint $labelPrint
+		Order\LabelPrint $labelPrint,
+		Order\GridExtender $gridExtender
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -146,12 +146,12 @@ class Plugin {
 		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
 		$this->order_metabox      = $order_metabox;
 		$this->message_manager    = $message_manager;
-		$this->helper             = $helper;
 		$this->options_page       = $options_page;
 		$this->checkout           = $checkout;
 		$this->carrierOptionsPage = $carrierOptionsPage;
 		$this->orderBulkActions   = $orderBulkActions;
 		$this->labelPrint         = $labelPrint;
+		$this->gridExtender       = $gridExtender;
 	}
 
 	/**
@@ -184,8 +184,14 @@ class Plugin {
 
 		add_action( 'woocommerce_email_footer', array( $this, 'render_email_footer' ) );
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
-		add_filter( 'manage_edit-shop_order_columns', array( $this, 'add_order_list_columns' ) );
-		add_action( 'manage_shop_order_posts_custom_column', array( $this, 'fill_custom_order_list_columns' ) );
+
+		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
+		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'addSelect' ] );
+		add_filter( 'request', [ $this->gridExtender, 'addQueryVarsToRequest' ] );
+		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
+		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );
+		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->gridExtender, 'addQueryVars' ], 10, 2 );
+
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
 		$this->order_metabox->register();
@@ -364,57 +370,5 @@ class Plugin {
 		$methods['packetery_shipping_method'] = \Packetery\ShippingMethod::class;
 
 		return $methods;
-	}
-
-	/**
-	 * Fills custom order list columns.
-	 *
-	 * @param string $column Current order column name.
-	 */
-	public function fill_custom_order_list_columns( $column ): void {
-		global $post;
-		$order = wc_get_order( $post->ID );
-
-		switch ( $column ) {
-			case 'packetery_destination':
-				$packetery_point_name = $order->get_meta( 'packetery_point_name' );
-				$packetery_point_id   = $order->get_meta( 'packetery_point_id' );
-
-				$country           = $order->get_shipping_country();
-				$internalCountries = array_keys( array_change_key_case( $this->carrier_repository->getZpointCarriers(), CASE_UPPER ) );
-				if ( $packetery_point_name && $packetery_point_id && in_array( $country, $internalCountries, true ) ) {
-					echo esc_html( "$packetery_point_name ($packetery_point_id)" );
-				} elseif ( $packetery_point_name ) {
-					echo esc_html( $packetery_point_name );
-				}
-				break;
-			case 'packetery_packet_id':
-				$packet_id = (string) $order->get_meta( $column );
-				if ( $packet_id ) {
-					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
-				}
-				break;
-		}
-	}
-
-	/**
-	 * Add order list columns.
-	 *
-	 * @param string[] $columns Order list columns.
-	 * @return string[] All columns.
-	 */
-	public function add_order_list_columns( array $columns ): array {
-		$new_columns = array();
-
-		foreach ( $columns as $column_name => $column_info ) {
-			$new_columns[ $column_name ] = $column_info;
-
-			if ( 'order_total' === $column_name ) {
-				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packetery' );
-				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packetery' );
-			}
-		}
-
-		return $new_columns;
 	}
 }

@@ -22,3 +22,4 @@ services:
 	countryListingPage: Packetery\Carrier\CountryListingPage
 	orderBulkActions: Packetery\Order\BulkActions
 	labelPrint: Packetery\Order\LabelPrint
+	gridExtender: Packetery\Order\GridExtender

@@ -1,0 +1,5 @@
+<select name="packetery_order_type">
+	<option value="">{__( 'packetaMethodType', 'packetery' )}</option>
+	<option value="carriers"{if $packeteryOrderType === 'carriers'} selected="selected"{/if}>{__( 'carrierPackets', 'packetery' )}</option>
+	<option value="packeta"{if $packeteryOrderType === 'packeta'} selected="selected"{/if}>{__( 'packetaPickupPointPackets', 'packetery' )}</option>
+</select>
