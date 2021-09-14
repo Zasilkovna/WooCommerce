@@ -49,7 +49,7 @@
 
 						{var $container = $form['weight_limits']}
 						{foreach $container->getComponents() as $weightId => $tmp}
-							{include weightRules id => $weightId, container => $container, class => ($weightId == 0 ? 'js-template' : '')}
+							{include weightRules id => $weightId, container => $container}
 						{/foreach}
 					</table>
 
@@ -87,7 +87,7 @@
 
 						{var $container = $form['surcharge_limits']}
 						{foreach $container->getComponents() as $surchargeId => $tmp}
-							{include surchargeRules id => $surchargeId, container => $container, class => ($surchargeId == 0 ? 'js-template' : '')}
+							{include surchargeRules id => $surchargeId, container => $container}
 						{/foreach}
 					</table>
 

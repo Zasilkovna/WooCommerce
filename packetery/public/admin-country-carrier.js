@@ -21,19 +21,14 @@
                     });
             };
 
-            this.addOption = function (button, $wrappers, setFocus) {
+            this.addOption = function (button, $wrappers) {
                 var wrapperClassName = $wrappers.first().attr('class'),
                     $wrapper = $(button).closest('.' + wrapperClassName),
                     $template = getTemplateClone($wrapper);
 
                 updateIds($template, newId++);
                 $wrapper.find('table').append($template);
-                if (typeof setFocus === 'undefined') {
-                    setFocus = true;
-                }
-                if (setFocus) {
-                    $('input', $template).eq(0).focus();
-                }
+                $('input', $template).eq(0).focus();
                 this.toggleDeleteButton($wrapper);
             };
 
@@ -72,7 +67,7 @@
                 newId = findMaxNewId();
 
             function getTemplateClone($wrapper) {
-                var $template = $wrapper.find('.js-template').clone().removeClass('js-template');
+                var $template = $wrapper.find('tr').first().clone();
                 $template.find('input').val('');
                 return $template;
             }
@@ -84,7 +79,7 @@
                 $('input, select, label, span', $html).each(function (i, element) {
                     var $element = $(element);
 
-                    updateId($element, 'name', id);
+                    updateId($element, 'name', id, ['[', ']']);
                     updateId($element, 'data-lfv-message-id', id, ['-', '-']);
                     updateId($element, 'for', id, ['-', '-']);
                     updateId($element, 'id', id, ['-', '-']);
@@ -96,12 +91,10 @@
                 if (!value) {
                     return;
                 }
-                if (typeof delimiters === 'undefined') {
-                    delimiters = ['[', ']'];
-                }
 
                 // don't use data() because we want the raw values, not parsed json arrays/objects
-                $element.attr(attrName, value.replace(delimiters[0] + '0' + delimiters[1], delimiters[0] + prefix + id + delimiters[1]));
+                var regExp = new RegExp('\\' + delimiters[0] + '(new_)?\\d+\\' + delimiters[1]);
+                $element.attr(attrName, value.replace(regExp, delimiters[0] + prefix + id + delimiters[1]));
             }
 
         };
