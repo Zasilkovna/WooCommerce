@@ -186,7 +186,7 @@ class Plugin {
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
 
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
-		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'addSelect' ] );
+		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
 		add_filter( 'request', [ $this->gridExtender, 'addQueryVarsToRequest' ] );
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );

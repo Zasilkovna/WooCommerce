@@ -106,7 +106,7 @@ class GridExtender {
 	/**
 	 * Adds select to order grid.
 	 */
-	public function addSelect(): void {
+	public function renderOrderTypeSelect(): void {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/type-select.latte',
 			[
@@ -142,38 +142,38 @@ class GridExtender {
 	 */
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get['packetery_to_submit'] ) ) {
-			$queryVars['meta_query'] = array(
-				array(
-					'key'     => 'packetery_carrier_id',
+			$queryVars['meta_query'] = [
+				[
+					'key'     => Entity::META_CARRIER_ID,
 					'value'   => '',
 					'compare' => '!=',
-				),
-				array(
-					'key'     => 'packetery_is_exported',
+				],
+				[
+					'key'     => Entity::META_IS_EXPORTED,
 					'value'   => '',
 					'compare' => '=',
-				),
-			);
+				],
+			];
 		}
 
 		if ( ! empty( $get['packetery_to_print'] ) ) {
-			$queryVars['meta_query'] = array(
-				array(
-					'key'     => 'packetery_packet_id',
+			$queryVars['meta_query'] = [
+				[
+					'key'     => Entity::META_PACKET_ID,
 					'value'   => '',
 					'compare' => '!=',
-				),
-			);
+				],
+			];
 		}
 
 		if ( ! empty( $get['packetery_order_type'] ) ) {
-			$queryVars['meta_query'] = array(
-				array(
-					'key'     => 'packetery_carrier_id',
-					'value'   => 'packeta',
-					'compare' => ( 'packeta' === $get['packetery_order_type'] ? '=' : '!=' ),
-				),
-			);
+			$queryVars['meta_query'] = [
+				[
+					'key'     => Entity::META_CARRIER_ID,
+					'value'   => Repository::INTERNAL_PICKUP_POINTS_ID,
+					'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
+				],
+			];
 		}
 
 		return $queryVars;
@@ -201,7 +201,7 @@ class GridExtender {
 					echo esc_html( $packetery_point_name );
 				}
 				break;
-			case 'packetery_packet_id':
+			case Entity::META_PACKET_ID:
 				$packet_id = (string) $order->get_meta( $column );
 				if ( $packet_id ) {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
@@ -224,7 +224,7 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
-				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packetery' );
+				$new_columns[Entity::META_PACKET_ID]   = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}

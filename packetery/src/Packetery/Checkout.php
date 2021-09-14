@@ -11,6 +11,7 @@ namespace Packetery;
 
 use Packetery\Carrier\Repository;
 use Packetery\Options\Provider;
+use Packetery\Order\Entity;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -55,7 +56,7 @@ class Checkout {
 			'required' => true,
 		),
 		'carrierId'            => array(
-			'name'     => 'packetery_carrier_id',
+			'name'     => Entity::META_CARRIER_ID,
 			'required' => false,
 		),
 		'carrierPickupPointId' => array(
@@ -121,7 +122,7 @@ class Checkout {
 	 */
 	public function isPickupPointMethod( string $chosenMethod, array &$matches ): bool {
 		if ( strpos( $chosenMethod, 'zpoint' ) !== false ) {
-			$matches[1] = 'packeta';
+			$matches[1] = Repository::INTERNAL_PICKUP_POINTS_ID;
 
 			return true;
 		}

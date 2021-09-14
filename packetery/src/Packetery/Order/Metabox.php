@@ -115,7 +115,7 @@ class Metabox {
 	public function render_metabox(): void {
 		global $post;
 		$order               = wc_get_order( $post->ID );
-		$packetery_packet_id = $order->get_meta( 'packetery_packet_id' );
+		$packetery_packet_id = $order->get_meta( Entity::META_PACKET_ID );
 
 		if ( $packetery_packet_id ) {
 			$this->latte_engine->render(
