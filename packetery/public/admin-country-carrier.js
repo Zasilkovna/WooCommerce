@@ -79,7 +79,7 @@
                 $('input, select, label, span', $html).each(function (i, element) {
                     var $element = $(element);
 
-                    updateId($element, 'name', id);
+                    updateId($element, 'name', id, ['[', ']']);
                     updateId($element, 'data-lfv-message-id', id, ['-', '-']);
                     updateId($element, 'for', id, ['-', '-']);
                     updateId($element, 'id', id, ['-', '-']);
@@ -91,12 +91,10 @@
                 if (!value) {
                     return;
                 }
-                if (typeof delimiters === 'undefined') {
-                    delimiters = ['[', ']'];
-                }
 
                 // don't use data() because we want the raw values, not parsed json arrays/objects
-                $element.attr(attrName, value.replace(delimiters[0] + '0' + delimiters[1], delimiters[0] + prefix + id + delimiters[1]));
+                var regExp = new RegExp('\\' + delimiters[0] + '(new_)?\\d+\\' + delimiters[1]);
+                $element.attr(attrName, value.replace(regExp, delimiters[0] + prefix + id + delimiters[1]));
             }
 
         };
