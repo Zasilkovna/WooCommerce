@@ -272,6 +272,7 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
+		// TODO: use Entity::META_CARRIER_ID.
 		if ( empty( $post['packetery_carrier_id'] ) ) {
 			$carrierId = $this->getCarrierId( $chosenMethod );
 			if ( $carrierId ) {
@@ -459,13 +460,13 @@ class Checkout {
 		if ( strpos( $chosenMethod, self::CARRIER_PREFIX ) !== 0 ) {
 			return null;
 		}
-		$methodIdParts = explode( '_', $chosenMethod );
-		if ( strpos( $methodIdParts[2], 'zpoint' ) === 0 ) {
+		$methodIdParts = explode( self::CARRIER_PREFIX, $chosenMethod );
+		if ( strpos( $methodIdParts[1], 'zpoint' ) === 0 ) {
 			// TODO: use constant Repository::INTERNAL_PICKUP_POINTS_ID.
 			return 'packeta';
 		}
 
-		return $methodIdParts[2];
+		return $methodIdParts[1];
 	}
 
 
