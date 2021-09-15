@@ -143,6 +143,7 @@ class GridExtender {
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get['packetery_to_submit'] ) ) {
 			$queryVars['meta_query'] = [
+				'relation' => 'AND',
 				[
 					'key'     => Entity::META_CARRIER_ID,
 					'value'   => '',
@@ -150,18 +151,21 @@ class GridExtender {
 				],
 				[
 					'key'     => Entity::META_IS_EXPORTED,
-					'value'   => '',
-					'compare' => '=',
+					'compare' => 'NOT EXISTS',
 				],
 			];
 		}
 
 		if ( ! empty( $get['packetery_to_print'] ) ) {
 			$queryVars['meta_query'] = [
+				'relation' => 'AND',
 				[
 					'key'     => Entity::META_PACKET_ID,
-					'value'   => '',
-					'compare' => '!=',
+					'compare' => 'EXISTS',
+				],
+				[
+					'key'     => Entity::META_LABEL_PREPARED,
+					'compare' => 'NOT EXISTS',
 				],
 			];
 		}
@@ -224,8 +228,8 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
-				$new_columns[Entity::META_PACKET_ID]   = __( 'Barcode', 'packetery' );
-				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packetery' );
+				$new_columns[ Entity::META_PACKET_ID ] = __( 'Barcode', 'packetery' );
+				$new_columns['packetery_destination']  = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}
 
