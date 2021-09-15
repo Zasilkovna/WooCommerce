@@ -115,25 +115,21 @@ class Checkout {
 	/**
 	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
 	 *
-	 * @param string $chosenMethod Shipping rate id.
-	 * @param array  $matches Array with carrier id.
+	 * @param string $carrierId Carrier id.
 	 *
 	 * @return bool
 	 */
-	public function isPickupPointMethod( string $chosenMethod, array &$matches ): bool {
-		if ( strpos( $chosenMethod, 'zpoint' ) !== false ) {
-			$matches[1] = Repository::INTERNAL_PICKUP_POINTS_ID;
-
+	public function isPickupPointCarrier( string $carrierId ): bool {
+		if ( null === $carrierId ) {
+			return false;
+		}
+		// TODO: use constant Repository::INTERNAL_PICKUP_POINTS_ID.
+		if ( 'packeta' === $carrierId ) {
 			return true;
 		}
+		$isPickupPoints = $this->carrierRepository->getIsPickupPoints( (int) $carrierId );
 
-		if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\d+)$/', $chosenMethod, $matches ) ) {
-			$isPickupPoints = $this->carrierRepository->getIsPickupPoints( (int) $matches[1] );
-
-			return ( '1' === $isPickupPoints );
-		}
-
-		return false;
+		return ( '1' === $isPickupPoints );
 	}
 
 	/**
@@ -143,9 +139,9 @@ class Checkout {
 	 */
 	public function isPickupPointOrder(): bool {
 		$chosenMethod = $this->getChosenMethod();
-		$matches      = [];
+		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $this->isPickupPointMethod( $chosenMethod, $matches );
+		return $this->isPickupPointCarrier( $carrierId );
 	}
 
 	/**
@@ -163,10 +159,10 @@ class Checkout {
 		$weight = $this->getCartWeightKg();
 
 		$carriers     = '';
-		$matches      = [];
 		$chosenMethod = $this->getChosenMethod();
-		if ( $this->isPickupPointMethod( $chosenMethod, $matches ) ) {
-			$carriers = $matches[1];
+		$carrierId    = $this->getCarrierId( $chosenMethod );
+		if ( $this->isPickupPointCarrier( $carrierId ) ) {
+			$carriers = $carrierId;
 		}
 
 		$this->latte_engine->render(
@@ -459,19 +455,19 @@ class Checkout {
 	 *
 	 * @return string|null
 	 */
-	private function getCarrierId( string $chosenMethod ): ?string {
-		$carrierId = null;
-		$matches   = [];
-		if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\w+)$/', $chosenMethod, $matches ) ) {
-			if ( false !== strpos( $chosenMethod, 'zpoint' ) ) {
-				$carrierId = 'packeta';
-			} else {
-				$carrierId = $matches[1];
-			}
+	public function getCarrierId( string $chosenMethod ): ?string {
+		if ( strpos( $chosenMethod, self::CARRIER_PREFIX ) !== 0 ) {
+			return null;
+		}
+		$methodIdParts = explode( '_', $chosenMethod );
+		if ( strpos( $methodIdParts[2], 'zpoint' ) === 0 ) {
+			// TODO: use constant Repository::INTERNAL_PICKUP_POINTS_ID.
+			return 'packeta';
 		}
 
-		return $carrierId;
+		return $methodIdParts[2];
 	}
+
 
 	/**
 	 * Checks if chosen shipping method is one of packetery.
