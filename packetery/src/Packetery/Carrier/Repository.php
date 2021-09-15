@@ -110,12 +110,12 @@ class Repository {
 	 *
 	 * @param int $carrierId Carrier id.
 	 *
-	 * @return string|null
+	 * @return bool
 	 */
-	public function getIsPickupPoints( int $carrierId ): ?string {
+	public function hasPickupPoints( int $carrierId ): bool {
 		$wpdb = $this->get_wpdb();
 
-		return $wpdb->get_var( $wpdb->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s', $carrierId ) );
+		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s', $carrierId ) );
 	}
 
 	/**

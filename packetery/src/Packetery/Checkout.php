@@ -127,9 +127,8 @@ class Checkout {
 		if ( 'packeta' === $carrierId ) {
 			return true;
 		}
-		$isPickupPoints = $this->carrierRepository->getIsPickupPoints( (int) $carrierId );
 
-		return ( '1' === $isPickupPoints );
+		return $this->carrierRepository->hasPickupPoints( (int) $carrierId );
 	}
 
 	/**
