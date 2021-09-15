@@ -115,11 +115,11 @@ class Checkout {
 	/**
 	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
 	 *
-	 * @param string $carrierId Carrier id.
+	 * @param string|null $carrierId Carrier id.
 	 *
 	 * @return bool
 	 */
-	public function isPickupPointCarrier( string $carrierId ): bool {
+	public function isPickupPointCarrier( ?string $carrierId ): bool {
 		if ( null === $carrierId ) {
 			return false;
 		}
