@@ -1,22 +1,47 @@
 <?php
 /**
- * Class Base
+ * Class Packet.
  *
  * @package Packetery\Api\Soap
  */
 
 namespace Packetery\Api\Soap;
 
+use Packetery\Api\Soap\Request\CreatePacket as CreatePacketRequest;
+use Packetery\Api\Soap\Response\CreatePacket as CreatePacketResponse;
+use SoapClient;
 use SoapFault;
 
 /**
- * Class Base
+ * Class Packet.
  *
  * @package Packetery\Api\Soap
  */
-class Base {
+class Client {
 
 	protected const WSDL_URL = 'http://www.zasilkovna.cz/api/soap.wsdl';
+
+	/**
+	 * Submits packet data to Packeta API.
+	 *
+	 * @param string              $apiPassword API password.
+	 * @param CreatePacketRequest $request Packet attributes.
+	 *
+	 * @return CreatePacketResponse
+	 */
+	public function createPacket( string $apiPassword, CreatePacketRequest $request ): CreatePacketResponse {
+		// todo 288 password do property? factorka v neonu?
+		$response = new CreatePacketResponse();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$packet = $soapClient->createPacket( $apiPassword, $request->getAsArray() );
+			$response->setBarcode( $packet->barcode );
+		} catch ( SoapFault $exception ) {
+			$response->setErrors( $this->getSoapFaultErrors( $exception ) );
+		}
+
+		return $response;
+	}
 
 	/**
 	 * Gets human readable errors form SoapFault exception.
@@ -49,5 +74,4 @@ class Base {
 
 		return $errors;
 	}
-
 }

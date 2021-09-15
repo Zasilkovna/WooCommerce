@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Carrier;
 
+use Packetery\Entities\Carrier;
+
 /**
  * Class CarrierRepository
  *

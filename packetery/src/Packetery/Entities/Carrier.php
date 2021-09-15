@@ -2,95 +2,109 @@
 /**
  * Class Carrier
  *
- * @package Packetery\Carrier
+ * @package Packetery\Entities
  */
 
-namespace Packetery\Carrier;
+namespace Packetery\Entities;
 
 /**
  * Class Carrier
  *
- * @package Packetery\Carrier
+ * @package Packetery\Entities
  */
 class Carrier {
+
 	/**
 	 * Carrier id.
 	 *
 	 * @var int
 	 */
 	private $id;
+
 	/**
 	 * Carrier name.
 	 *
 	 * @var string
 	 */
 	private $name;
+
 	/**
 	 * Carrier isPickupPoints.
 	 *
 	 * @var bool
 	 */
 	private $isPickupPoints;
+
 	/**
 	 * Carrier hasCarrierDirectLabel.
 	 *
 	 * @var bool
 	 */
 	private $hasCarrierDirectLabel;
+
 	/**
 	 * Carrier separateHouseNumber.
 	 *
 	 * @var bool
 	 */
 	private $separateHouseNumber;
+
 	/**
 	 * Carrier customsDeclarations.
 	 *
 	 * @var bool
 	 */
 	private $customsDeclarations;
+
 	/**
 	 * Carrier requiresEmail.
 	 *
 	 * @var bool
 	 */
 	private $requiresEmail;
+
 	/**
 	 * Carrier requiresPhone.
 	 *
 	 * @var bool
 	 */
 	private $requiresPhone;
+
 	/**
 	 * Carrier requiresSize.
 	 *
 	 * @var bool
 	 */
 	private $requiresSize;
+
 	/**
 	 * Carrier disallowsCod.
 	 *
 	 * @var bool
 	 */
 	private $disallowsCod;
+
 	/**
 	 * Carrier country.
 	 *
 	 * @var string
 	 */
 	private $country;
+
 	/**
 	 * Carrier currency.
 	 *
 	 * @var string
 	 */
 	private $currency;
+
 	/**
 	 * Carrier maxWeight.
 	 *
 	 * @var bool
 	 */
 	private $maxWeight;
+
 	/**
 	 * Carrier deleted.
 	 *
@@ -104,6 +118,7 @@ class Carrier {
 	 * @param array $carrierData Data from db.
 	 */
 	public function __construct( array $carrierData ) {
+		// todo 288 jednotlive property do konstruktoru.
 		$this->id                    = (int) $carrierData['id'];
 		$this->name                  = $carrierData['name'];
 		$this->isPickupPoints        = (bool) $carrierData['is_pickup_points'];
@@ -143,7 +158,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getIsPickupPoints(): bool {
+	public function hasPickupPoints(): bool {
 		return $this->isPickupPoints;
 	}
 
@@ -152,7 +167,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getHasCarrierDirectLabel(): bool {
+	public function hasDirectLabel(): bool {
 		return $this->hasCarrierDirectLabel;
 	}
 
@@ -161,7 +176,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getSeparateHouseNumber(): bool {
+	public function requiresSeparateHouseNumber(): bool {
 		return $this->separateHouseNumber;
 	}
 
@@ -170,7 +185,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getCustomsDeclarations(): bool {
+	public function requiresCustomsDeclarations(): bool {
 		return $this->customsDeclarations;
 	}
 
@@ -179,7 +194,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getRequiresEmail(): bool {
+	public function requiresEmail(): bool {
 		return $this->requiresEmail;
 	}
 
@@ -188,7 +203,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getRequiresPhone(): bool {
+	public function requiresPhone(): bool {
 		return $this->requiresPhone;
 	}
 
@@ -197,7 +212,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getRequiresSize(): bool {
+	public function requiresSize(): bool {
 		return $this->requiresSize;
 	}
 
@@ -206,8 +221,8 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getDisallowsCod(): bool {
-		return $this->disallowsCod;
+	public function supportsCod(): bool {
+		return ! $this->disallowsCod;
 	}
 
 	/**
@@ -242,7 +257,7 @@ class Carrier {
 	 *
 	 * @return bool
 	 */
-	public function getDeleted(): bool {
+	public function isDeleted(): bool {
 		return $this->deleted;
 	}
 

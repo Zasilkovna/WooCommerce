@@ -5,9 +5,10 @@
  * @package Packetery\Api
  */
 
-namespace Packetery\Api;
+namespace Packetery\Order;
 
-use Packetery\Api\Soap\Packet;
+use Packetery\Api\Soap\Client;
+use Packetery\Api\Soap\Request\CreatePacket;
 use Packetery\Carrier\Repository;
 use Packetery\Options\Provider;
 use WC_Order;
@@ -17,7 +18,8 @@ use WC_Order;
  *
  * @package Packetery\Api
  */
-class OrderClient {
+class CreatePacketClient {
+	// todo vyhledove prejmenovat
 	/**
 	 * Options provider.
 	 *
@@ -35,7 +37,7 @@ class OrderClient {
 	/**
 	 * Packet API.
 	 *
-	 * @var Packet Packet API.
+	 * @var Client Packet API.
 	 */
 	private $packetApi;
 
@@ -44,9 +46,9 @@ class OrderClient {
 	 *
 	 * @param Provider   $optionsProvider Options Provider.
 	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Packet     $packetApi Packet API.
+	 * @param Client     $packetApi Packet API.
 	 */
-	public function __construct( Provider $optionsProvider, Repository $carrierRepository, Packet $packetApi ) {
+	public function __construct( Provider $optionsProvider, Repository $carrierRepository, Client $packetApi ) {
 		$this->optionsProvider   = $optionsProvider;
 		$this->carrierRepository = $carrierRepository;
 		$this->packetApi         = $packetApi;
@@ -67,18 +69,18 @@ class OrderClient {
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
 		if ( 'packetery_shipping_method' === $shippingMethodId && ! $order->get_meta( 'packetery_is_exported' ) ) {
-			$apiPassword = $this->optionsProvider->get_api_password();
-			$attributes  = $this->preparePacketAttributes( $order, $orderData );
+			$apiPassword         = $this->optionsProvider->get_api_password();
+			$createPacketRequest = $this->preparePacketAttributes( $order, $orderData );
 			// TODO: update before release.
 			$logger = wc_get_logger();
-			$logger->info( wp_json_encode( $attributes ) );
+			$logger->info( wp_json_encode( $createPacketRequest ) );
 
-			$packet = $this->packetApi->createPacket( $apiPassword, $attributes );
-			if ( ! empty( $packet->errors ) ) {
-				$results['ERROR'][] = $packet->errors;
+			$packet = $this->packetApi->createPacket( $apiPassword, $createPacketRequest );
+			if ( $packet->getErrors() ) {
+				$results['ERROR'][] = $packet->getErrors();
 			} else {
 				update_post_meta( $orderData['id'], 'packetery_is_exported', '1' );
-				update_post_meta( $orderData['id'], 'packetery_packet_id', $packet->barcode );
+				update_post_meta( $orderData['id'], 'packetery_packet_id', $packet->getBarcode() );
 				$results['SUCCESS'][] = $orderData['id'];
 			}
 		} else {
@@ -94,9 +96,9 @@ class OrderClient {
 	 * @param WC_Order $order WC order.
 	 * @param array    $orderData Order data.
 	 *
-	 * @return array
+	 * @return CreatePacket
 	 */
-	private function preparePacketAttributes( WC_Order $order, array $orderData ): array {
+	private function preparePacketAttributes( WC_Order $order, array $orderData ): CreatePacket {
 		$weight          = (float) $order->get_meta( 'packetery_weight' );
 		$orderTotalPrice = $order->get_total( 'raw' );
 		$codMethod       = $this->optionsProvider->getCodPaymentMethod();
@@ -115,40 +117,43 @@ class OrderClient {
 		}
 
 		$contactInfo = $this->getContactInfo( $order, $orderData );
-		$attributes  = [
-			'number'    => $orderData['id'],
-			'name'      => $contactInfo['name'],
-			'surname'   => $contactInfo['surname'],
-			'email'     => $orderData['billing']['email'],
-			'phone'     => $contactInfo['phone'],
-			'addressId' => $addressId,
-			'value'     => $orderTotalPrice,
-			'eshop'     => $this->optionsProvider->get_sender(),
-			'weight'    => $weight,
-		];
+
+		$request = new CreatePacket();
+		$request->setNumber( $orderData['id'] );
+		$request->setName( $contactInfo['name'] );
+		$request->setSurname( $contactInfo['surname'] );
+		$request->setEmail( $orderData['billing']['email'] );
+		$request->setPhone( $contactInfo['phone'] );
+		$request->setAddressId( $addressId );
+		$request->setValue( $orderTotalPrice );
+		$request->setEshop( $this->optionsProvider->get_sender() );
+		$request->setWeight( $weight );
+
 		if ( ! empty( $carrierId ) && empty( $pointId ) ) {
-			$attributes['street'] = $contactInfo['street'];
-			$attributes['city']   = $contactInfo['city'];
-			$attributes['zip']    = $contactInfo['zip'];
+			$request->setStreet( $contactInfo['street'] );
+			$request->setCity( $contactInfo['city'] );
+			$request->setZip( $contactInfo['zip'] );
 		}
 		if ( $orderData['payment_method'] === $codMethod ) {
-			$attributes['cod'] = $orderTotalPrice;
+			$request->setCod( $orderTotalPrice );
 		}
 		if ( ! empty( $pointCarrierId ) ) {
-			$attributes['carrierPickupPoint'] = $pointCarrierId;
+			$request->setCarrierPickupPoint( $pointCarrierId );
 		}
 		if ( true === $checkForRequiredSize ) {
 			$carrier = $this->carrierRepository->getById( $carrierId );
-			if ( $carrier && $carrier->getRequiresSize() ) {
-				$attributes['size'] = [
-					'length' => $order->get_meta( 'packetery_length' ),
-					'width'  => $order->get_meta( 'packetery_width' ),
-					'height' => $order->get_meta( 'packetery_height' ),
-				];
+			if ( $carrier && $carrier->requiresSize() ) {
+				$request->setSize(
+					[
+						'length' => $order->get_meta( 'packetery_length' ),
+						'width'  => $order->get_meta( 'packetery_width' ),
+						'height' => $order->get_meta( 'packetery_height' ),
+					]
+				);
 			}
 		}
 
-		return $attributes;
+		return $request;
 	}
 
 	/**
