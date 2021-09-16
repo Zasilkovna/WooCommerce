@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-09-08T09:20:14+02:00\n"
+"POT-Creation-Date: 2021-09-11T16:44:32+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -133,7 +133,7 @@ msgid "This field is required!"
 msgstr ""
 
 #: src/Packetery/Options/Page.php:64
-#: src/Packetery/Plugin.php:329
+#: src/Packetery/Plugin.php:335
 msgid "Settings"
 msgstr ""
 
@@ -213,22 +213,38 @@ msgstr ""
 msgid "actionPrintLabels"
 msgstr ""
 
+#: src/Packetery/Order/GridExtender.php:85
+msgid "packetaOrdersToSubmit"
+msgstr ""
+
+#: src/Packetery/Order/GridExtender.php:98
+msgid "packetaOrdersToPrint"
+msgstr ""
+
+#: src/Packetery/Order/GridExtender.php:227
+msgid "Barcode"
+msgstr ""
+
+#: src/Packetery/Order/GridExtender.php:228
+msgid "Pick up point or carrier"
+msgstr ""
+
 #. translators: %s is offset.
-#: src/Packetery/Order/LabelPrint.php:106
+#: src/Packetery/Order/LabelPrint.php:101
 msgid "dontSkipAnyField"
 msgstr ""
 
 #. translators: %s is offset.
-#: src/Packetery/Order/LabelPrint.php:106
+#: src/Packetery/Order/LabelPrint.php:101
 msgid "skip%sFields"
 msgstr ""
 
-#: src/Packetery/Order/LabelPrint.php:110
+#: src/Packetery/Order/LabelPrint.php:105
 msgid "labelsOffset"
 msgstr ""
 
-#: src/Packetery/Order/LabelPrint.php:137
-#: src/Packetery/Order/LabelPrint.php:138
+#: src/Packetery/Order/LabelPrint.php:132
+#: src/Packetery/Order/LabelPrint.php:133
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:45
 msgid "printLabels"
 msgstr ""
@@ -268,24 +284,16 @@ msgstr ""
 msgid "You are not allowed to edit posts!"
 msgstr ""
 
-#: src/Packetery/Plugin.php:328
+#: src/Packetery/Plugin.php:334
 msgid "View Packeta settings"
 msgstr ""
 
-#: src/Packetery/Plugin.php:350
+#: src/Packetery/Plugin.php:356
 msgid "View Packeta documentation"
 msgstr ""
 
-#: src/Packetery/Plugin.php:351
+#: src/Packetery/Plugin.php:357
 msgid "Documentation"
-msgstr ""
-
-#: src/Packetery/Plugin.php:413
-msgid "Barcode"
-msgstr ""
-
-#: src/Packetery/Plugin.php:414
-msgid "Pick up point or carrier"
 msgstr ""
 
 #: src/Packetery/ShippingMethod.php:31
@@ -404,4 +412,16 @@ msgstr ""
 
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
 msgid "labelPrinting"
+msgstr ""
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:14
+msgid "packetaMethodType"
+msgstr ""
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:21
+msgid "carrierPackets"
+msgstr ""
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:28
+msgid "packetaPickupPointPackets"
 msgstr ""

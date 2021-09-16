@@ -15,6 +15,9 @@ namespace Packetery\Carrier;
  * @package Packetery
  */
 class Repository {
+
+	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
+
 	/**
 	 * WordPress wpdb object from global
 	 *

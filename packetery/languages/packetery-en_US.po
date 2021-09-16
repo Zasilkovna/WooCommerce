@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-08T09:20:14+02:00\n"
-"PO-Revision-Date: 2021-09-09 14:00+0200\n"
+"POT-Creation-Date: 2021-09-11T16:44:32+02:00\n"
+"PO-Revision-Date: 2021-09-14 10:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -133,7 +133,7 @@ msgstr "Pick up point is not chosen."
 msgid "This field is required!"
 msgstr "This field is required!"
 
-#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:329
+#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:335
 msgid "Settings"
 msgstr "Settings"
 
@@ -173,7 +173,7 @@ msgstr ""
 
 #: src/Packetery/Options/Page.php:118
 msgid "Payment method that represents cash on delivery"
-msgstr ""
+msgstr "Payment method that represents cash on delivery"
 
 #: src/Packetery/Options/Page.php:124
 msgid "Allow Label Emailing"
@@ -223,22 +223,38 @@ msgstr "Submit orders to Packeta"
 msgid "actionPrintLabels"
 msgstr "Print labels"
 
+#: src/Packetery/Order/GridExtender.php:85
+msgid "packetaOrdersToSubmit"
+msgstr "Packeta orders to submit"
+
+#: src/Packetery/Order/GridExtender.php:98
+msgid "packetaOrdersToPrint"
+msgstr "Packeta orders to print"
+
+#: src/Packetery/Order/GridExtender.php:227
+msgid "Barcode"
+msgstr "Barcode"
+
+#: src/Packetery/Order/GridExtender.php:228
+msgid "Pick up point or carrier"
+msgstr "Pick up point or carrier"
+
 #. translators: %s is offset.
-#: src/Packetery/Order/LabelPrint.php:106
+#: src/Packetery/Order/LabelPrint.php:101
 msgid "dontSkipAnyField"
 msgstr "don't skip any field on a print sheet"
 
 #. translators: %s is offset.
-#: src/Packetery/Order/LabelPrint.php:106
+#: src/Packetery/Order/LabelPrint.php:101
 msgid "skip%sFields"
 msgstr "skip %s fields on first sheet"
 
-#: src/Packetery/Order/LabelPrint.php:110
+#: src/Packetery/Order/LabelPrint.php:105
 msgid "labelsOffset"
 msgstr "Skip fields"
 
-#: src/Packetery/Order/LabelPrint.php:137
-#: src/Packetery/Order/LabelPrint.php:138
+#: src/Packetery/Order/LabelPrint.php:132
+#: src/Packetery/Order/LabelPrint.php:133
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:45
 #, fuzzy
 #| msgid "actionPrintLabels"
@@ -278,25 +294,17 @@ msgstr "Session has expired! Please try again."
 msgid "You are not allowed to edit posts!"
 msgstr "You are not allowed to edit posts!"
 
-#: src/Packetery/Plugin.php:328
+#: src/Packetery/Plugin.php:334
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
 
-#: src/Packetery/Plugin.php:350
+#: src/Packetery/Plugin.php:356
 msgid "View Packeta documentation"
 msgstr "View Packeta documentation"
 
-#: src/Packetery/Plugin.php:351
+#: src/Packetery/Plugin.php:357
 msgid "Documentation"
 msgstr "Documentation"
-
-#: src/Packetery/Plugin.php:413
-msgid "Barcode"
-msgstr "Barcode"
-
-#: src/Packetery/Plugin.php:414
-msgid "Pick up point or carrier"
-msgstr "Pick up point or carrier"
 
 #: src/Packetery/ShippingMethod.php:31 src/Packetery/ShippingMethod.php:32
 msgid "Packeta Shipping Method"
@@ -416,6 +424,18 @@ msgstr "Address"
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
 msgid "labelPrinting"
 msgstr "Print labels"
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:14
+msgid "packetaMethodType"
+msgstr "Packeta shipping method"
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:21
+msgid "carrierPackets"
+msgstr "Carrier packets"
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:28
+msgid "packetaPickupPointPackets"
+msgstr "Packeta pickup points packets"
 
 #~ msgid "105x148 mm (A6) label on a page of the same size"
 #~ msgstr "105x148 mm (A6) label on a page of the same size"

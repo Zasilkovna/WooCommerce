@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-08T09:20:14+02:00\n"
-"PO-Revision-Date: 2021-09-09 13:59+0200\n"
+"POT-Creation-Date: 2021-09-11T16:44:32+02:00\n"
+"PO-Revision-Date: 2021-09-14 10:37+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -133,7 +133,7 @@ msgstr "Není vybráno výdejní místo."
 msgid "This field is required!"
 msgstr "Toto políčko je povinné!"
 
-#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:329
+#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:335
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -222,22 +222,38 @@ msgstr "Podat zásilky do Zásilkovny"
 msgid "actionPrintLabels"
 msgstr "Tisk štítků"
 
+#: src/Packetery/Order/GridExtender.php:85
+msgid "packetaOrdersToSubmit"
+msgstr "Zásilkovna - zásilky k podání"
+
+#: src/Packetery/Order/GridExtender.php:98
+msgid "packetaOrdersToPrint"
+msgstr "Zásilkovna - zásilky k tisku"
+
+#: src/Packetery/Order/GridExtender.php:227
+msgid "Barcode"
+msgstr "Trasovací číslo"
+
+#: src/Packetery/Order/GridExtender.php:228
+msgid "Pick up point or carrier"
+msgstr "Výdejní místo či přepravce"
+
 #. translators: %s is offset.
-#: src/Packetery/Order/LabelPrint.php:106
+#: src/Packetery/Order/LabelPrint.php:101
 msgid "dontSkipAnyField"
 msgstr "nevynechávat žádná pole"
 
 #. translators: %s is offset.
-#: src/Packetery/Order/LabelPrint.php:106
+#: src/Packetery/Order/LabelPrint.php:101
 msgid "skip%sFields"
 msgstr "vynechat %s polí na první stránce"
 
-#: src/Packetery/Order/LabelPrint.php:110
+#: src/Packetery/Order/LabelPrint.php:105
 msgid "labelsOffset"
 msgstr "Vynechat polí"
 
-#: src/Packetery/Order/LabelPrint.php:137
-#: src/Packetery/Order/LabelPrint.php:138
+#: src/Packetery/Order/LabelPrint.php:132
+#: src/Packetery/Order/LabelPrint.php:133
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:45
 msgid "printLabels"
 msgstr "Vytisknout štítky"
@@ -275,25 +291,17 @@ msgstr "Relace vypršela! Zkuste to prosím znovu."
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
-#: src/Packetery/Plugin.php:328
+#: src/Packetery/Plugin.php:334
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
-#: src/Packetery/Plugin.php:350
+#: src/Packetery/Plugin.php:356
 msgid "View Packeta documentation"
 msgstr "Zobrazit Packeta dokumentaci"
 
-#: src/Packetery/Plugin.php:351
+#: src/Packetery/Plugin.php:357
 msgid "Documentation"
 msgstr "Dokumentace"
-
-#: src/Packetery/Plugin.php:413
-msgid "Barcode"
-msgstr "Trasovací číslo"
-
-#: src/Packetery/Plugin.php:414
-msgid "Pick up point or carrier"
-msgstr "Výdejní místo či přepravce"
 
 #: src/Packetery/ShippingMethod.php:31 src/Packetery/ShippingMethod.php:32
 msgid "Packeta Shipping Method"
@@ -414,6 +422,18 @@ msgstr "Adresa"
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
 msgid "labelPrinting"
 msgstr "Tisk štítků"
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:14
+msgid "packetaMethodType"
+msgstr "Přepravní metoda Zásilkovny"
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:21
+msgid "carrierPackets"
+msgstr "Zásilky na dopravce"
+
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:28
+msgid "packetaPickupPointPackets"
+msgstr "Zásilky na výdejní místa Zásilkovny"
 
 #~ msgid "105x148 mm (A6) label on a page of the same size"
 #~ msgstr "Štítek 105x148 mm (A6) na stránce stejné velikosti"
