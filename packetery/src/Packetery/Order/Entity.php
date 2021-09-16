@@ -17,10 +17,10 @@ namespace Packetery\Order;
  */
 class Entity {
 
-	public const META_CARRIER_ID     = 'packetery_carrier_id';
-	public const META_IS_EXPORTED    = 'packetery_is_exported';
-	public const META_PACKET_ID      = 'packetery_packet_id';
-	public const META_LABEL_PREPARED = 'packetery_label_prepared';
+	public const META_CARRIER_ID       = 'packetery_carrier_id';
+	public const META_IS_EXPORTED      = 'packetery_is_exported';
+	public const META_PACKET_ID        = 'packetery_packet_id';
+	public const META_IS_LABEL_PRINTED = 'packetery_is_label_printed';
 
 	/**
 	 * Order.

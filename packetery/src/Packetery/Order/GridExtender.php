@@ -164,7 +164,7 @@ class GridExtender {
 					'compare' => 'EXISTS',
 				],
 				[
-					'key'     => Entity::META_LABEL_PREPARED,
+					'key'     => Entity::META_IS_LABEL_PRINTED,
 					'compare' => 'NOT EXISTS',
 				],
 			];
