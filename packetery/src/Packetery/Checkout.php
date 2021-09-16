@@ -123,8 +123,7 @@ class Checkout {
 		if ( null === $carrierId ) {
 			return false;
 		}
-		// TODO: use constant Repository::INTERNAL_PICKUP_POINTS_ID.
-		if ( 'packeta' === $carrierId ) {
+		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
 			return true;
 		}
 
@@ -271,11 +270,10 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
-		// TODO: use Entity::META_CARRIER_ID.
-		if ( empty( $post['packetery_carrier_id'] ) ) {
+		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
 			$carrierId = $this->getCarrierId( $chosenMethod );
 			if ( $carrierId ) {
-				update_post_meta( $orderId, 'packetery_carrier_id', $carrierId );
+				update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
 			}
 		}
 		if ( $this->isPickupPointOrder() ) {
@@ -461,8 +459,7 @@ class Checkout {
 		}
 		$methodIdParts = explode( self::CARRIER_PREFIX, $chosenMethod );
 		if ( strpos( $methodIdParts[1], 'zpoint' ) === 0 ) {
-			// TODO: use constant Repository::INTERNAL_PICKUP_POINTS_ID.
-			return 'packeta';
+			return Repository::INTERNAL_PICKUP_POINTS_ID;
 		}
 
 		return $methodIdParts[1];
