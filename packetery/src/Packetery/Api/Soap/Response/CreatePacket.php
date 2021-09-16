@@ -24,7 +24,7 @@ class CreatePacket {
 	/**
 	 * Errors.
 	 *
-	 * @var string
+	 * @var array
 	 */
 	private $errors;
 
@@ -40,9 +40,9 @@ class CreatePacket {
 	/**
 	 * Sets errors.
 	 *
-	 * @param string $errors Errors.
+	 * @param array $errors Errors.
 	 */
-	public function setErrors( string $errors ): void {
+	public function setErrors( array $errors ): void {
 		$this->errors = $errors;
 	}
 
@@ -58,9 +58,18 @@ class CreatePacket {
 	/**
 	 * Gets errors.
 	 *
+	 * @return array
+	 */
+	public function getErrors(): array {
+		return $this->errors;
+	}
+
+	/**
+	 * Gets errors as string.
+	 *
 	 * @return string
 	 */
-	public function getErrors(): string {
-		return $this->errors;
+	public function getErrorsAsString(): string {
+		return implode( ', ', $this->errors );
 	}
 }

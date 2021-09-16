@@ -32,7 +32,7 @@ class Checkout {
 	 */
 	public static $pickup_point_attrs = array(
 		'id'                   => array(
-			'name'     => 'packetery_point_id',
+			'name'     => Entity::META_POINT_ID,
 			'required' => true,
 		),
 		'name'                 => array(
@@ -60,7 +60,7 @@ class Checkout {
 			'required' => false,
 		),
 		'carrierPickupPointId' => array(
-			'name'     => 'packetery_point_carrier_id',
+			'name'     => Entity::META_POINT_CARRIER_ID,
 			'required' => false,
 		),
 		'url'                  => array(

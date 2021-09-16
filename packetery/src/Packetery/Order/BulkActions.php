@@ -34,21 +34,21 @@ class BulkActions {
 	/**
 	 * OrderApi.
 	 *
-	 * @var CreatePacketClient
+	 * @var PacketSubmitter
 	 */
-	private $orderApiClient;
+	private $packetSubmitter;
 
 	/**
 	 * BulkActions constructor.
 	 *
-	 * @param Engine             $latteEngine Latte engine.
-	 * @param Request            $httpRequest HTTP request.
-	 * @param CreatePacketClient $orderApiClient Order API Client.
+	 * @param Engine          $latteEngine Latte engine.
+	 * @param Request         $httpRequest HTTP request.
+	 * @param PacketSubmitter $packetSubmitter Order API Client.
 	 */
-	public function __construct( Engine $latteEngine, Request $httpRequest, CreatePacketClient $orderApiClient ) {
-		$this->latteEngine    = $latteEngine;
-		$this->httpRequest    = $httpRequest;
-		$this->orderApiClient = $orderApiClient;
+	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter ) {
+		$this->latteEngine     = $latteEngine;
+		$this->httpRequest     = $httpRequest;
+		$this->packetSubmitter = $packetSubmitter;
 	}
 
 	/**
@@ -84,7 +84,7 @@ class BulkActions {
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$results = $this->orderApiClient->submitPacket( $order, $results );
+					$results = $this->packetSubmitter->submitPacket( $order, $results );
 				}
 			}
 
@@ -92,16 +92,17 @@ class BulkActions {
 				'submit_to_api'   => '1',
 				'submitted_count' => null,
 				'skipped_count'   => null,
-				'errors'          => null,
+				'error_count'     => null,
 			];
-			if ( ! empty( $results['SUCCESS'] ) ) {
-				$queryArgs['submitted_count'] = count( $results['SUCCESS'] );
+
+			if ( ! empty( $results['submitted'] ) ) {
+				$queryArgs['submitted_count'] = count( $results['submitted'] );
 			}
-			if ( ! empty( $results['INFO'] ) ) {
-				$queryArgs['skipped_count'] = count( $results['INFO'] );
+			if ( ! empty( $results['skipped'] ) ) {
+				$queryArgs['skipped_count'] = count( $results['skipped'] );
 			}
-			if ( ! empty( $results['ERROR'] ) ) {
-				$queryArgs['errors'] = count( $results['ERROR'] );
+			if ( ! empty( $results['error'] ) ) {
+				$queryArgs['error_count'] = count( $results['error'] );
 			}
 
 			return add_query_arg( $queryArgs, $redirectTo );
@@ -136,7 +137,7 @@ class BulkActions {
 			$latteParams['info'] = sprintf( __( 'someShipments%sSkipped', 'packetery' ), $skippedCount );
 		}
 
-		$errors = ( isset( $get['errors'] ) ? (int) $get['errors'] : 0 );
+		$errors = ( isset( $get['error_count'] ) ? (int) $get['error_count'] : 0 );
 		if ( $errors ) {
 			/* translators: %s: count of orders. */
 			$latteParams['error'] = sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors );

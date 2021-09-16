@@ -19,22 +19,36 @@ use SoapFault;
  */
 class Client {
 
-	protected const WSDL_URL = 'http://www.zasilkovna.cz/api/soap.wsdl';
+	private const WSDL_URL = 'http://www.zasilkovna.cz/api/soap.wsdl';
+
+	/**
+	 * API password.
+	 *
+	 * @var string
+	 */
+	private $apiPassword;
+
+	/**
+	 * Client constructor.
+	 *
+	 * @param string $apiPassword Api password.
+	 */
+	public function __construct( string $apiPassword ) {
+		$this->apiPassword = $apiPassword;
+	}
 
 	/**
 	 * Submits packet data to Packeta API.
 	 *
-	 * @param string              $apiPassword API password.
 	 * @param CreatePacketRequest $request Packet attributes.
 	 *
 	 * @return CreatePacketResponse
 	 */
-	public function createPacket( string $apiPassword, CreatePacketRequest $request ): CreatePacketResponse {
-		// todo 288 password do property? factorka v neonu?
+	public function createPacket( CreatePacketRequest $request ): CreatePacketResponse {
 		$response = new CreatePacketResponse();
 		try {
 			$soapClient = new SoapClient( self::WSDL_URL );
-			$packet = $soapClient->createPacket( $apiPassword, $request->getAsArray() );
+			$packet     = $soapClient->createPacket( $this->apiPassword, $request->getSubmittableData() );
 			$response->setBarcode( $packet->barcode );
 		} catch ( SoapFault $exception ) {
 			$response->setErrors( $this->getSoapFaultErrors( $exception ) );
@@ -48,29 +62,21 @@ class Client {
 	 *
 	 * @param SoapFault $exception Exception.
 	 *
-	 * @return string
+	 * @return array
 	 */
-	protected function getSoapFaultErrors( SoapFault $exception ): string {
-		$errors = '';
+	protected function getSoapFaultErrors( SoapFault $exception ): array {
+		$errors   = [];
+		$errors[] = $exception->faultstring;
 
-		if ( isset( $exception->detail->PacketAttributesFault->attributes->fault ) ) {
-			if ( is_array( $exception->detail->PacketAttributesFault->attributes->fault ) ) {
-				foreach ( $exception->detail->PacketAttributesFault->attributes->fault as $fault ) {
-					$errors .= sprintf( '%s: %s ', $fault->name, $fault->fault );
-				}
-			} else {
-				$fault   = $exception->detail->PacketAttributesFault->attributes->fault;
-				$errors .= sprintf( '%s: %s ', $fault->name, $fault->fault );
+		if ( ! empty( $exception->detail->PacketAttributesFault->attributes->fault ) ) {
+			$faults = $exception->detail->PacketAttributesFault->attributes->fault ?? [];
+			if ( ! is_array( $faults ) ) {
+				$faults = [ $faults ];
+			}
+			foreach ( $faults as $fault ) {
+				$errors[] = sprintf( '%s: %s', $fault->name, $fault->fault );
 			}
 		}
-
-		if ( '' === $errors ) {
-			$errors = $exception->faultstring;
-		}
-
-		// TODO: update before release.
-		$logger = wc_get_logger();
-		$logger->error( $errors );
 
 		return $errors;
 	}

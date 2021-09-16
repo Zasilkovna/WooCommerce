@@ -195,7 +195,7 @@ class GridExtender {
 		switch ( $column ) {
 			case 'packetery_destination':
 				$packetery_point_name = $order->get_meta( 'packetery_point_name' );
-				$packetery_point_id   = $order->get_meta( 'packetery_point_id' );
+				$packetery_point_id   = $order->get_meta( Entity::META_POINT_ID );
 
 				$country           = $order->get_shipping_country();
 				$internalCountries = array_keys( array_change_key_case( $this->carrierRepository->getZpointCarriers(), CASE_UPPER ) );

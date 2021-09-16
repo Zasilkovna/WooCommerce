@@ -9,7 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Carrier;
 
-use Packetery\Entities\Carrier;
+use Packetery\Entity;
+use Packetery\EntityFactory;
 
 /**
  * Class CarrierRepository
@@ -28,12 +29,21 @@ class Repository {
 	private $wpdb;
 
 	/**
+	 * Carrier Entity Factory.
+	 *
+	 * @var EntityFactory\Carrier
+	 */
+	private $carrierEntityFactory;
+
+	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb $wpdb wpdb.
+	 * @param \wpdb                 $wpdb wpdb.
+	 * @param EntityFactory\Carrier $carrierEntityFactory Carrier Entity Factory.
 	 */
-	public function __construct( \wpdb $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( \wpdb $wpdb, EntityFactory\Carrier $carrierEntityFactory ) {
+		$this->wpdb                 = $wpdb;
+		$this->carrierEntityFactory = $carrierEntityFactory;
 	}
 
 	/**
@@ -125,9 +135,9 @@ class Repository {
 	 *
 	 * @param int $carrierId Carrier id.
 	 *
-	 * @return Carrier|null
+	 * @return Entity\Carrier|null
 	 */
-	public function getById( int $carrierId ): ?Carrier {
+	public function getById( int $carrierId ): ?Entity\Carrier {
 		$wpdb   = $this->get_wpdb();
 		$result = $wpdb->get_row(
 			$wpdb->prepare(
@@ -155,7 +165,7 @@ class Repository {
 			return null;
 		}
 
-		return new Carrier( $result );
+		return $this->carrierEntityFactory->create( $result );
 	}
 
 	/**

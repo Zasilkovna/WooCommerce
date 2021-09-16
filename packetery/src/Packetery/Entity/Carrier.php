@@ -5,7 +5,7 @@
  * @package Packetery\Entities
  */
 
-namespace Packetery\Entities;
+namespace Packetery\Entity;
 
 /**
  * Class Carrier
@@ -33,28 +33,28 @@ class Carrier {
 	 *
 	 * @var bool
 	 */
-	private $isPickupPoints;
+	private $hasPickupPoints;
 
 	/**
 	 * Carrier hasCarrierDirectLabel.
 	 *
 	 * @var bool
 	 */
-	private $hasCarrierDirectLabel;
+	private $hasDirectLabel;
 
 	/**
 	 * Carrier separateHouseNumber.
 	 *
 	 * @var bool
 	 */
-	private $separateHouseNumber;
+	private $requiresSeparateHouseNumber;
 
 	/**
 	 * Carrier customsDeclarations.
 	 *
 	 * @var bool
 	 */
-	private $customsDeclarations;
+	private $requiresCustomsDeclarations;
 
 	/**
 	 * Carrier requiresEmail.
@@ -82,7 +82,7 @@ class Carrier {
 	 *
 	 * @var bool
 	 */
-	private $disallowsCod;
+	private $supportsCod;
 
 	/**
 	 * Carrier country.
@@ -92,7 +92,7 @@ class Carrier {
 	private $country;
 
 	/**
-	 * Carrier currency.
+	 * Carrier maxWeight.
 	 *
 	 * @var string
 	 */
@@ -110,29 +110,56 @@ class Carrier {
 	 *
 	 * @var bool
 	 */
-	private $deleted;
+	private $isDeleted;
 
 	/**
 	 * Carrier constructor.
 	 *
-	 * @param array $carrierData Data from db.
+	 * @param int    $id Carrier id.
+	 * @param string $name Carrier name.
+	 * @param bool   $hasPickupPoints Carrier isPickupPoints.
+	 * @param bool   $hasDirectLabel Carrier hasCarrierDirectLabel.
+	 * @param bool   $requiresSeparateHouseNumber Carrier separateHouseNumber.
+	 * @param bool   $requiresCustomsDeclarations Carrier customsDeclarations.
+	 * @param bool   $requiresEmail Carrier requiresEmail.
+	 * @param bool   $requiresPhone Carrier requiresPhone.
+	 * @param bool   $requiresSize Carrier requiresSize.
+	 * @param bool   $supportsCod Carrier disallowsCod.
+	 * @param string $country Carrier country.
+	 * @param string $currency Carrier currency.
+	 * @param bool   $maxWeight Carrier maxWeight.
+	 * @param bool   $isDeleted Carrier deleted.
 	 */
-	public function __construct( array $carrierData ) {
-		// todo 288 jednotlive property do konstruktoru.
-		$this->id                    = (int) $carrierData['id'];
-		$this->name                  = $carrierData['name'];
-		$this->isPickupPoints        = (bool) $carrierData['is_pickup_points'];
-		$this->hasCarrierDirectLabel = (bool) $carrierData['has_carrier_direct_label'];
-		$this->separateHouseNumber   = (bool) $carrierData['separate_house_number'];
-		$this->customsDeclarations   = (bool) $carrierData['customs_declarations'];
-		$this->requiresEmail         = (bool) $carrierData['requires_email'];
-		$this->requiresPhone         = (bool) $carrierData['requires_phone'];
-		$this->requiresSize          = (bool) $carrierData['requires_size'];
-		$this->disallowsCod          = (bool) $carrierData['disallows_cod'];
-		$this->country               = $carrierData['country'];
-		$this->currency              = $carrierData['currency'];
-		$this->maxWeight             = (bool) $carrierData['max_weight'];
-		$this->deleted               = (bool) $carrierData['deleted'];
+	public function __construct(
+		int $id,
+		string $name,
+		bool $hasPickupPoints,
+		bool $hasDirectLabel,
+		bool $requiresSeparateHouseNumber,
+		bool $requiresCustomsDeclarations,
+		bool $requiresEmail,
+		bool $requiresPhone,
+		bool $requiresSize,
+		bool $supportsCod,
+		string $country,
+		string $currency,
+		bool $maxWeight,
+		bool $isDeleted
+	) {
+		$this->id                          = $id;
+		$this->name                        = $name;
+		$this->hasPickupPoints             = $hasPickupPoints;
+		$this->hasDirectLabel              = $hasDirectLabel;
+		$this->requiresSeparateHouseNumber = $requiresSeparateHouseNumber;
+		$this->requiresCustomsDeclarations = $requiresCustomsDeclarations;
+		$this->requiresEmail               = $requiresEmail;
+		$this->requiresPhone               = $requiresPhone;
+		$this->requiresSize                = $requiresSize;
+		$this->supportsCod                 = $supportsCod;
+		$this->country                     = $country;
+		$this->currency                    = $currency;
+		$this->maxWeight                   = $maxWeight;
+		$this->isDeleted                   = $isDeleted;
 	}
 
 	/**
@@ -159,7 +186,7 @@ class Carrier {
 	 * @return bool
 	 */
 	public function hasPickupPoints(): bool {
-		return $this->isPickupPoints;
+		return $this->hasPickupPoints;
 	}
 
 	/**
@@ -168,7 +195,7 @@ class Carrier {
 	 * @return bool
 	 */
 	public function hasDirectLabel(): bool {
-		return $this->hasCarrierDirectLabel;
+		return $this->hasDirectLabel;
 	}
 
 	/**
@@ -177,7 +204,7 @@ class Carrier {
 	 * @return bool
 	 */
 	public function requiresSeparateHouseNumber(): bool {
-		return $this->separateHouseNumber;
+		return $this->requiresSeparateHouseNumber;
 	}
 
 	/**
@@ -186,7 +213,7 @@ class Carrier {
 	 * @return bool
 	 */
 	public function requiresCustomsDeclarations(): bool {
-		return $this->customsDeclarations;
+		return $this->requiresCustomsDeclarations;
 	}
 
 	/**
@@ -222,7 +249,7 @@ class Carrier {
 	 * @return bool
 	 */
 	public function supportsCod(): bool {
-		return ! $this->disallowsCod;
+		return $this->supportsCod;
 	}
 
 	/**
@@ -258,7 +285,7 @@ class Carrier {
 	 * @return bool
 	 */
 	public function isDeleted(): bool {
-		return $this->deleted;
+		return $this->isDeleted;
 	}
 
 }

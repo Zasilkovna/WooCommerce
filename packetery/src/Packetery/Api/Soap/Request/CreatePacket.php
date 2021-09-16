@@ -124,8 +124,17 @@ class CreatePacket {
 	 *
 	 * @return array
 	 */
-	public function getAsArray(): array {
-		return array_filter( get_object_vars( $this ) );
+	public function __toArray(): array {
+		return get_object_vars( $this );
+	}
+
+	/**
+	 * Gets submittable data.
+	 *
+	 * @return array
+	 */
+	public function getSubmittableData(): array {
+		return array_filter( $this->__toArray() );
 	}
 
 	/**
@@ -257,9 +266,15 @@ class CreatePacket {
 	/**
 	 * Sets size.
 	 *
-	 * @param array $size Size.
+	 * @param float $length Packet length.
+	 * @param float $width Packet width.
+	 * @param float $height Packet height.
 	 */
-	public function setSize( array $size ): void {
-		$this->size = $size;
+	public function setSize( float $length, float $width, float $height ): void {
+		$this->size = [
+			'length' => $length,
+			'width'  => $width,
+			'height' => $height,
+		];
 	}
 }

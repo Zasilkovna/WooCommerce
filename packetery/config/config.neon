@@ -24,5 +24,7 @@ services:
 	orderBulkActions: Packetery\Order\BulkActions
 	labelPrint: Packetery\Order\LabelPrint
 	gridExtender: Packetery\Order\GridExtender
-	packetApi: Packetery\Api\Soap\Client
-	orderApiClient: Packetery\Order\CreatePacketClient
+	soapClientFactory: Packetery\SoapClientFactory
+	soapApiClient: @soapClientFactory::create()
+	- Packetery\Order\PacketSubmitter
+	- Packetery\EntityFactory\Carrier
