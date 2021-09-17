@@ -454,7 +454,7 @@ class Checkout {
 	 * @return string|null
 	 */
 	public function getCarrierId( string $chosenMethod ): ?string {
-		if ( strpos( $chosenMethod, self::CARRIER_PREFIX ) !== 0 ) {
+		if ( ! $this->isPacketeryOrder( $chosenMethod ) ) {
 			return null;
 		}
 		$methodIdParts = explode( self::CARRIER_PREFIX, $chosenMethod );
