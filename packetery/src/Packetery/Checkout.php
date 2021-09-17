@@ -115,25 +115,19 @@ class Checkout {
 	/**
 	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
 	 *
-	 * @param string $chosenMethod Shipping rate id.
-	 * @param array  $matches Array with carrier id.
+	 * @param string|null $carrierId Carrier id.
 	 *
 	 * @return bool
 	 */
-	public function isPickupPointMethod( string $chosenMethod, array &$matches ): bool {
-		if ( strpos( $chosenMethod, 'zpoint' ) !== false ) {
-			$matches[1] = Repository::INTERNAL_PICKUP_POINTS_ID;
-
+	public function isPickupPointCarrier( ?string $carrierId ): bool {
+		if ( null === $carrierId ) {
+			return false;
+		}
+		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
 			return true;
 		}
 
-		if ( preg_match( '/^' . self::CARRIER_PREFIX . '(\d+)$/', $chosenMethod, $matches ) ) {
-			$isPickupPoints = $this->carrierRepository->getIsPickupPoints( (int) $matches[1] );
-
-			return ( '1' === $isPickupPoints );
-		}
-
-		return false;
+		return $this->carrierRepository->hasPickupPoints( (int) $carrierId );
 	}
 
 	/**
@@ -143,9 +137,9 @@ class Checkout {
 	 */
 	public function isPickupPointOrder(): bool {
 		$chosenMethod = $this->getChosenMethod();
-		$matches      = [];
+		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $this->isPickupPointMethod( $chosenMethod, $matches );
+		return $this->isPickupPointCarrier( $carrierId );
 	}
 
 	/**
@@ -163,10 +157,10 @@ class Checkout {
 		$weight = $this->getCartWeightKg();
 
 		$carriers     = '';
-		$matches      = [];
 		$chosenMethod = $this->getChosenMethod();
-		if ( $this->isPickupPointMethod( $chosenMethod, $matches ) ) {
-			$carriers = $matches[1];
+		$carrierId    = $this->getCarrierId( $chosenMethod );
+		if ( $this->isPickupPointCarrier( $carrierId ) ) {
+			$carriers = $carrierId;
 		}
 
 		$this->latte_engine->render(
@@ -269,9 +263,19 @@ class Checkout {
 	/**
 	 * Saves pickup point information to order
 	 *
-	 * @param int $order_id Order id.
+	 * @param int $orderId Order id.
 	 */
-	public function updateOrderMeta( int $order_id ): void {
+	public function updateOrderMeta( int $orderId ): void {
+		$chosenMethod = $this->getChosenMethod();
+		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
+			return;
+		}
+		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
+			$carrierId = $this->getCarrierId( $chosenMethod );
+			if ( $carrierId ) {
+				update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
+			}
+		}
 		if ( $this->isPickupPointOrder() ) {
 			$post = $this->httpRequest->getPost();
 			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
@@ -279,7 +283,7 @@ class Checkout {
 			}
 			foreach ( self::$pickup_point_attrs as $attr ) {
 				if ( isset( $post[ $attr['name'] ] ) ) {
-					update_post_meta( $order_id, $attr['name'], $post[ $attr['name'] ] );
+					update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
 				}
 			}
 		}
@@ -440,5 +444,37 @@ class Checkout {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Gets carrier id from chosen shipping method.
+	 *
+	 * @param string $chosenMethod Chosen shipping method.
+	 *
+	 * @return string|null
+	 */
+	public function getCarrierId( string $chosenMethod ): ?string {
+		if ( ! $this->isPacketeryOrder( $chosenMethod ) ) {
+			return null;
+		}
+		$methodIdParts = explode( self::CARRIER_PREFIX, $chosenMethod );
+		$carrierId = $methodIdParts[0];
+		if ( strpos( $carrierId, 'zpoint' ) === 0 ) {
+			return Repository::INTERNAL_PICKUP_POINTS_ID;
+		}
+
+		return $carrierId;
+	}
+
+
+	/**
+	 * Checks if chosen shipping method is one of packetery.
+	 *
+	 * @param string $chosenMethod Chosen shipping method.
+	 *
+	 * @return bool
+	 */
+	private function isPacketeryOrder( string $chosenMethod ): bool {
+		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) === 0 );
 	}
 }
