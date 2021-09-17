@@ -281,7 +281,11 @@ class Plugin {
 	 * Gets current locale.
 	 */
 	private function getLocale(): string {
-		return apply_filters( 'plugin_locale', ( ( is_admin() && function_exists( 'get_user_locale' ) ) ? get_user_locale() : get_locale() ), self::DOMAIN );
+		return apply_filters(
+			'plugin_locale',
+			( ( is_admin() && function_exists( 'get_user_locale' ) ) ? get_user_locale() : get_locale() ),
+			self::DOMAIN
+		);
 	}
 
 	/**
