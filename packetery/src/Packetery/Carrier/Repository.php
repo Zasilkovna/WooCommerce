@@ -115,7 +115,7 @@ class Repository {
 	public function hasPickupPoints( int $carrierId ): bool {
 		$wpdb = $this->get_wpdb();
 
-		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s', $carrierId ) );
+		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %d', $carrierId ) );
 	}
 
 	/**

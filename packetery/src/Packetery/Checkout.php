@@ -458,11 +458,12 @@ class Checkout {
 			return null;
 		}
 		$methodIdParts = explode( self::CARRIER_PREFIX, $chosenMethod );
-		if ( strpos( $methodIdParts[1], 'zpoint' ) === 0 ) {
+		$carrierId = $methodIdParts[0];
+		if ( strpos( $carrierId, 'zpoint' ) === 0 ) {
 			return Repository::INTERNAL_PICKUP_POINTS_ID;
 		}
 
-		return $methodIdParts[1];
+		return $carrierId;
 	}
 
 
@@ -471,9 +472,9 @@ class Checkout {
 	 *
 	 * @param string $chosenMethod Chosen shipping method.
 	 *
-	 * @return false|int
+	 * @return bool
 	 */
-	private function isPacketeryOrder( string $chosenMethod ) {
-		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) !== false );
+	private function isPacketeryOrder( string $chosenMethod ): bool {
+		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) === 0 );
 	}
 }
