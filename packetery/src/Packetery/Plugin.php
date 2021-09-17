@@ -260,8 +260,8 @@ class Plugin {
 	 *  Renders email footer.
 	 */
 	public function render_email_footer(): void {
-		$order = \Packetery\Order\Entity::from_globals( false );
-		if ( $order === null || $order->is_packetery_related() === false ) {
+		$order = \Packetery\Order\Entity::fromGlobals();
+		if ( $order === null || $order->isPacketeryRelated() === false ) {
 			return;
 		}
 
@@ -419,7 +419,7 @@ class Plugin {
 	 * @return array
 	 */
 	public function add_shipping_method( array $methods ): array {
-		$methods['packetery_shipping_method'] = \Packetery\ShippingMethod::class;
+		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 
 		return $methods;
 	}

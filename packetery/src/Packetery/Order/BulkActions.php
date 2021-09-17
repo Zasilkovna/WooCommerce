@@ -5,6 +5,8 @@
  * @package Packetery\Order
  */
 
+declare( strict_types=1 );
+
 namespace Packetery\Order;
 
 use PacketeryLatte\Engine;
@@ -80,30 +82,24 @@ class BulkActions {
 		}
 
 		if ( 'submit_to_api' === $action ) {
-			$results = [];
+			$results = [
+				'submitted' => [],
+				'skipped'   => [],
+				'error'     => [],
+			];
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$results = $this->packetSubmitter->submitPacket( $order, $results );
+					$this->packetSubmitter->submitPacket( $order, $results );
 				}
 			}
 
 			$queryArgs = [
 				'submit_to_api'   => '1',
-				'submitted_count' => null,
-				'skipped_count'   => null,
-				'error_count'     => null,
+				'submitted_count' => count( $results['submitted'] ),
+				'skipped_count'   => count( $results['skipped'] ),
+				'error_count'     => count( $results['error'] ),
 			];
-
-			if ( ! empty( $results['submitted'] ) ) {
-				$queryArgs['submitted_count'] = count( $results['submitted'] );
-			}
-			if ( ! empty( $results['skipped'] ) ) {
-				$queryArgs['skipped_count'] = count( $results['skipped'] );
-			}
-			if ( ! empty( $results['error'] ) ) {
-				$queryArgs['error_count'] = count( $results['error'] );
-			}
 
 			return add_query_arg( $queryArgs, $redirectTo );
 		}
@@ -127,8 +123,7 @@ class BulkActions {
 		];
 		$submittedCount = ( isset( $get['submitted_count'] ) ? (int) $get['submitted_count'] : 0 );
 		if ( $submittedCount ) {
-			/* translators: %s: count of orders. */
-			$latteParams['success'] = sprintf( __( 'someShipments%sSubmitted', 'packetery' ), $submittedCount );
+			$latteParams['success'] = ! empty( $get['submitted_count'] );
 		}
 
 		$skippedCount = ( isset( $get['skipped_count'] ) ? (int) $get['skipped_count'] : 0 );

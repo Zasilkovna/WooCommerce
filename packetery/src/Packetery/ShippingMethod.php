@@ -5,12 +5,16 @@
  * @package Packetery
  */
 
+declare( strict_types=1 );
+
 namespace Packetery;
 
 /**
  * Packeta shipping method class.
  */
 class ShippingMethod extends \WC_Shipping_Method {
+
+	public const PACKETERY_METHOD_ID = 'packetery_shipping_method';
 
 	/**
 	 * Checkout object.
@@ -26,7 +30,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 */
 	public function __construct( int $instance_id = 0 ) {
 		parent::__construct();
-		$this->id                 = 'packetery_shipping_method';
+		$this->id                 = self::PACKETERY_METHOD_ID;
 		$this->instance_id        = absint( $instance_id );
 		$this->method_title       = __( 'Packeta Shipping Method', 'packetery' );
 		$this->title              = __( 'Packeta Shipping Method', 'packetery' );

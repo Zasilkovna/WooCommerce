@@ -110,16 +110,16 @@ class Metabox {
 	 */
 	public function add_fields(): void {
 		$this->order_form->addHidden( 'packetery_order_metabox_nonce' );
-		$this->order_form->addText( 'packetery_weight', __( 'Weight (kg)', 'packetery' ) )
+		$this->order_form->addText( Entity::META_WEIGHT, __( 'Weight (kg)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( 'packetery_width', __( 'Width (mm)', 'packetery' ) )
+		$this->order_form->addText( Entity::META_WIDTH, __( 'Width (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( 'packetery_length', __( 'Length (mm)', 'packetery' ) )
+		$this->order_form->addText( Entity::META_LENGTH, __( 'Length (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( 'packetery_height', __( 'Height (mm)', 'packetery' ) )
+		$this->order_form->addText( Entity::META_HEIGHT, __( 'Height (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
 	}
@@ -129,29 +129,30 @@ class Metabox {
 	 */
 	public function render_metabox(): void {
 		global $post;
-		$order               = wc_get_order( $post->ID );
-		$packetery_packet_id = $order->get_meta( Entity::META_PACKET_ID );
+		$order             = wc_get_order( $post->ID );
+		$entity            = new Entity( $order );
+		$packeteryPacketId = $entity->getPacketId();
 
-		if ( $packetery_packet_id ) {
+		if ( $packeteryPacketId ) {
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
-				array(
-					'packet_id'           => $packetery_packet_id,
-					'packet_tracking_url' => $this->helper->get_tracking_url( $packetery_packet_id ),
-				)
+				[
+					'packet_id'           => $packeteryPacketId,
+					'packet_tracking_url' => $this->helper->get_tracking_url( $packeteryPacketId ),
+				]
 			);
 
 			return;
 		}
 
 		$this->order_form->setDefaults(
-			array(
+			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				'packetery_weight'              => get_post_meta( $post->ID, 'packetery_weight', true ),
-				'packetery_width'               => get_post_meta( $post->ID, 'packetery_width', true ),
-				'packetery_length'              => get_post_meta( $post->ID, 'packetery_length', true ),
-				'packetery_height'              => get_post_meta( $post->ID, 'packetery_height', true ),
-			)
+				Entity::META_WEIGHT             => get_post_meta( $post->ID, Entity::META_WEIGHT, true ),
+				Entity::META_WIDTH              => get_post_meta( $post->ID, Entity::META_WIDTH, true ),
+				Entity::META_LENGTH             => get_post_meta( $post->ID, Entity::META_LENGTH, true ),
+				Entity::META_HEIGHT             => get_post_meta( $post->ID, Entity::META_HEIGHT, true ),
+			]
 		);
 
 		$prev_invalid_values = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
@@ -208,10 +209,10 @@ class Metabox {
 			return $post_id;
 		}
 
-		update_post_meta( $post_id, 'packetery_weight', ( is_numeric( $values->packetery_weight ) ? number_format( $values->packetery_weight, 4, '.', '' ) : '' ) );
-		update_post_meta( $post_id, 'packetery_width', ( is_numeric( $values->packetery_width ) ? number_format( $values->packetery_width, 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, 'packetery_length', ( is_numeric( $values->packetery_length ) ? number_format( $values->packetery_length, 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, 'packetery_height', ( is_numeric( $values->packetery_height ) ? number_format( $values->packetery_height, 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values->packetery_weight ) ? number_format( $values->packetery_weight, 4, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_WIDTH, ( is_numeric( $values->packetery_width ) ? number_format( $values->packetery_width, 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_LENGTH, ( is_numeric( $values->packetery_length ) ? number_format( $values->packetery_length, 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_HEIGHT, ( is_numeric( $values->packetery_height ) ? number_format( $values->packetery_height, 0, '.', '' ) : '' ) );
 
 		return $post_id;
 	}

@@ -5,6 +5,8 @@
  * @package Packetery\Order
  */
 
+declare( strict_types=1 );
+
 namespace Packetery\Order;
 
 use PacketeryLatte\Engine;
@@ -191,11 +193,12 @@ class GridExtender {
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
 		$order = wc_get_order( $post->ID );
+		$entity = new Entity($order);
 
 		switch ( $column ) {
 			case 'packetery_destination':
-				$packetery_point_name = $order->get_meta( 'packetery_point_name' );
-				$packetery_point_id   = $order->get_meta( Entity::META_POINT_ID );
+				$packetery_point_name = $entity->getPointName();
+				$packetery_point_id   = $entity->getPointId();
 
 				$country           = $order->get_shipping_country();
 				$internalCountries = array_keys( array_change_key_case( $this->carrierRepository->getZpointCarriers(), CASE_UPPER ) );
@@ -206,7 +209,7 @@ class GridExtender {
 				}
 				break;
 			case Entity::META_PACKET_ID:
-				$packet_id = (string) $order->get_meta( $column );
+				$packet_id = $entity->getPacketId();
 				if ( $packet_id ) {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
 				}

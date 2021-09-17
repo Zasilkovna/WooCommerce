@@ -5,6 +5,8 @@
  * @package Packetery\Api\Soap\Response
  */
 
+declare( strict_types=1 );
+
 namespace Packetery\Api\Soap\Response;
 
 /**

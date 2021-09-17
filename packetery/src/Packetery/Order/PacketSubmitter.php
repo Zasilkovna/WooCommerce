@@ -5,18 +5,19 @@
  * @package Packetery\Api
  */
 
+declare( strict_types=1 );
+
 namespace Packetery\Order;
 
 use Packetery\Api\Soap\Client;
 use Packetery\Api\Soap\Request\CreatePacket;
 use Packetery\Carrier\Repository;
 use Packetery\Options\Provider;
+use Packetery\ShippingMethod;
 use WC_Order;
 
 /**
  * Class PacketSubmitter
- *
- * TODO: better name.
  *
  * @package Packetery\Api
  */
@@ -63,14 +64,15 @@ class PacketSubmitter {
 	 *
 	 * @return array
 	 */
-	public function submitPacket( WC_Order $order, array $results ): array {
+	public function submitPacket( WC_Order $order, array &$results ): array {
+		$entity          = new Entity( $order );
 		$orderData       = $order->get_data();
 		$shippingMethods = $order->get_shipping_methods();
 		$shippingMethod  = reset( $shippingMethods );
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if ( 'packetery_shipping_method' === $shippingMethodId && ! $order->get_meta( Entity::META_IS_EXPORTED ) ) {
+		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $entity->isExported() ) {
 			$createPacketRequest = $this->preparePacketAttributes( $order, $orderData );
 			// TODO: update before release.
 			$logger = wc_get_logger();
@@ -106,13 +108,14 @@ class PacketSubmitter {
 	 * @return CreatePacket
 	 */
 	private function preparePacketAttributes( WC_Order $order, array $orderData ): CreatePacket {
+		$entity          = new Entity( $order );
 		$orderTotalPrice = $order->get_total( 'raw' );
 		$codMethod       = $this->optionsProvider->getCodPaymentMethod();
 
 		$checkForRequiredSize  = false;
-		$pointId               = $order->get_meta( Entity::META_POINT_ID );
-		$carrierId             = $order->get_meta( Entity::META_CARRIER_ID );
-		$pointCarrierId        = $order->get_meta( Entity::META_POINT_CARRIER_ID );
+		$pointId               = $entity->getPointId();
+		$carrierId             = $entity->getCarrierId();
+		$pointCarrierId        = $entity->getPointCarrierId();
 		$isHomeDelivery        = ! empty( $carrierId ) && empty( $pointId );
 		$isExternalPickupPoint = ! empty( $pointCarrierId );
 		if ( $isExternalPickupPoint || $isHomeDelivery ) {
@@ -127,10 +130,10 @@ class PacketSubmitter {
 		$request = new CreatePacket();
 		$request->setNumber( $orderData['id'] );
 		$request->setEmail( $orderData['billing']['email'] );
-		$request->setAddressId( $addressId );
+		$request->setAddressId( (int) $addressId );
 		$request->setValue( $orderTotalPrice );
 		$request->setEshop( $this->optionsProvider->get_sender() );
-		$request->setWeight( (float) $order->get_meta( 'packetery_weight' ) );
+		$request->setWeight( $entity->getWeight() );
 		$this->prepareContactInfo( $order, $orderData, $request, $isHomeDelivery );
 
 		if ( $orderData['payment_method'] === $codMethod ) {
@@ -143,9 +146,9 @@ class PacketSubmitter {
 			$carrier = $this->carrierRepository->getById( $carrierId );
 			if ( $carrier && $carrier->requiresSize() ) {
 				$request->setSize(
-					(float) $order->get_meta( 'packetery_length' ),
-					(float) $order->get_meta( 'packetery_width' ),
-					(float) $order->get_meta( 'packetery_height' )
+					$entity->getLength(),
+					$entity->getWidth(),
+					$entity->getHeight()
 				);
 			}
 		}
@@ -162,26 +165,19 @@ class PacketSubmitter {
 	 * @param bool         $isHomeDelivery Home delivery flag.
 	 */
 	private function prepareContactInfo( WC_Order $order, array $orderData, CreatePacket $request, bool $isHomeDelivery ): void {
+		$source = $order->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'];
+
+		$request->setName( $source['first_name'] );
+		$request->setSurname( $source['last_name'] );
+		if ( $isHomeDelivery ) {
+			$request->setStreet( $source['address_1'] );
+			$request->setCity( $source['city'] );
+			$request->setZip( $source['postcode'] );
+		}
+		// Shipping address phone is optional.
 		$request->setPhone( $orderData['billing']['phone'] );
-		if ( $order->has_shipping_address() ) {
-			$request->setName( $orderData['shipping']['first_name'] );
-			$request->setSurname( $orderData['shipping']['last_name'] );
-			if ( $isHomeDelivery ) {
-				$request->setStreet( $orderData['shipping']['address_1'] );
-				$request->setCity( $orderData['shipping']['city'] );
-				$request->setZip( $orderData['shipping']['postcode'] );
-			}
-			if ( ! empty( $orderData['shipping']['phone'] ) ) {
-				$request->setPhone( $orderData['shipping']['phone'] );
-			}
-		} else {
-			$request->setName( $orderData['billing']['first_name'] );
-			$request->setSurname( $orderData['billing']['last_name'] );
-			if ( $isHomeDelivery ) {
-				$request->setStreet( $orderData['billing']['address_1'] );
-				$request->setCity( $orderData['billing']['city'] );
-				$request->setZip( $orderData['billing']['postcode'] );
-			}
+		if ( ! empty( $source['phone'] ) ) {
+			$request->setPhone( $source['phone'] );
 		}
 	}
 }

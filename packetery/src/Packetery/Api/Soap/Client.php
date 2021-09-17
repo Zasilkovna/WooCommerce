@@ -5,10 +5,12 @@
  * @package Packetery\Api\Soap
  */
 
+declare( strict_types=1 );
+
 namespace Packetery\Api\Soap;
 
-use Packetery\Api\Soap\Request\CreatePacket as CreatePacketRequest;
-use Packetery\Api\Soap\Response\CreatePacket as CreatePacketResponse;
+use Packetery\Api\Soap\Request;
+use Packetery\Api\Soap\Response;
 use SoapClient;
 use SoapFault;
 
@@ -40,12 +42,12 @@ class Client {
 	/**
 	 * Submits packet data to Packeta API.
 	 *
-	 * @param CreatePacketRequest $request Packet attributes.
+	 * @param Request\CreatePacket $request Packet attributes.
 	 *
-	 * @return CreatePacketResponse
+	 * @return Response\CreatePacket
 	 */
-	public function createPacket( CreatePacketRequest $request ): CreatePacketResponse {
-		$response = new CreatePacketResponse();
+	public function createPacket( Request\CreatePacket $request ): Response\CreatePacket {
+		$response = new Response\CreatePacket();
 		try {
 			$soapClient = new SoapClient( self::WSDL_URL );
 			$packet     = $soapClient->createPacket( $this->apiPassword, $request->getSubmittableData() );
@@ -68,14 +70,12 @@ class Client {
 		$errors   = [];
 		$errors[] = $exception->faultstring;
 
-		if ( ! empty( $exception->detail->PacketAttributesFault->attributes->fault ) ) {
-			$faults = $exception->detail->PacketAttributesFault->attributes->fault ?? [];
-			if ( ! is_array( $faults ) ) {
-				$faults = [ $faults ];
-			}
-			foreach ( $faults as $fault ) {
-				$errors[] = sprintf( '%s: %s', $fault->name, $fault->fault );
-			}
+		$faults = $exception->detail->PacketAttributesFault->attributes->fault ?? [];
+		if ( $faults && ! is_array( $faults ) ) {
+			$faults = [ $faults ];
+		}
+		foreach ( $faults as $fault ) {
+			$errors[] = sprintf( '%s: %s', $fault->name, $fault->fault );
 		}
 
 		return $errors;

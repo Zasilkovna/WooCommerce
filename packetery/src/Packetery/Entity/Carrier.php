@@ -29,28 +29,28 @@ class Carrier {
 	private $name;
 
 	/**
-	 * Carrier isPickupPoints.
+	 * Carrier hasPickupPoints.
 	 *
 	 * @var bool
 	 */
 	private $hasPickupPoints;
 
 	/**
-	 * Carrier hasCarrierDirectLabel.
+	 * Carrier hasDirectLabel.
 	 *
 	 * @var bool
 	 */
 	private $hasDirectLabel;
 
 	/**
-	 * Carrier separateHouseNumber.
+	 * Carrier requiresSeparateHouseNumber.
 	 *
 	 * @var bool
 	 */
 	private $requiresSeparateHouseNumber;
 
 	/**
-	 * Carrier customsDeclarations.
+	 * Carrier requiresCustomsDeclarations.
 	 *
 	 * @var bool
 	 */
@@ -78,7 +78,7 @@ class Carrier {
 	private $requiresSize;
 
 	/**
-	 * Carrier disallowsCod.
+	 * Carrier supportsCod.
 	 *
 	 * @var bool
 	 */
@@ -92,7 +92,7 @@ class Carrier {
 	private $country;
 
 	/**
-	 * Carrier maxWeight.
+	 * Carrier currency.
 	 *
 	 * @var string
 	 */
@@ -106,7 +106,7 @@ class Carrier {
 	private $maxWeight;
 
 	/**
-	 * Carrier deleted.
+	 * Carrier isDeleted.
 	 *
 	 * @var bool
 	 */
@@ -117,18 +117,18 @@ class Carrier {
 	 *
 	 * @param int    $id Carrier id.
 	 * @param string $name Carrier name.
-	 * @param bool   $hasPickupPoints Carrier isPickupPoints.
-	 * @param bool   $hasDirectLabel Carrier hasCarrierDirectLabel.
-	 * @param bool   $requiresSeparateHouseNumber Carrier separateHouseNumber.
-	 * @param bool   $requiresCustomsDeclarations Carrier customsDeclarations.
+	 * @param bool   $hasPickupPoints Carrier hasPickupPoints.
+	 * @param bool   $hasDirectLabel Carrier hasDirectLabel.
+	 * @param bool   $requiresSeparateHouseNumber Carrier requiresSeparateHouseNumber.
+	 * @param bool   $requiresCustomsDeclarations Carrier requiresCustomsDeclarations.
 	 * @param bool   $requiresEmail Carrier requiresEmail.
 	 * @param bool   $requiresPhone Carrier requiresPhone.
 	 * @param bool   $requiresSize Carrier requiresSize.
-	 * @param bool   $supportsCod Carrier disallowsCod.
+	 * @param bool   $supportsCod Carrier supportsCod.
 	 * @param string $country Carrier country.
 	 * @param string $currency Carrier currency.
 	 * @param bool   $maxWeight Carrier maxWeight.
-	 * @param bool   $isDeleted Carrier deleted.
+	 * @param bool   $isDeleted Carrier isDeleted.
 	 */
 	public function __construct(
 		int $id,

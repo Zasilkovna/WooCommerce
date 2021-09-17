@@ -36,19 +36,19 @@ class Checkout {
 			'required' => true,
 		),
 		'name'                 => array(
-			'name'     => 'packetery_point_name',
+			'name'     => Entity::META_POINT_NAME,
 			'required' => true,
 		),
 		'city'                 => array(
-			'name'     => 'packetery_point_city',
+			'name'     => Entity::META_POINT_CITY,
 			'required' => true,
 		),
 		'zip'                  => array(
-			'name'     => 'packetery_point_zip',
+			'name'     => Entity::META_POINT_ZIP,
 			'required' => true,
 		),
 		'street'               => array(
-			'name'     => 'packetery_point_street',
+			'name'     => Entity::META_POINT_STREET,
 			'required' => true,
 		),
 		'pickupPointType'      => array(
@@ -64,7 +64,7 @@ class Checkout {
 			'required' => false,
 		),
 		'url'                  => array(
-			'name'     => 'packetery_point_url',
+			'name'     => Entity::META_POINT_URL,
 			'required' => true,
 		),
 	);
@@ -270,7 +270,7 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
-		update_post_meta( $orderId, 'packetery_weight', $this->getCartWeightKg() );
+		update_post_meta( $orderId, Entity::META_WEIGHT, $this->getCartWeightKg() );
 		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
 			$carrierId = $this->getCarrierId( $chosenMethod );
 			if ( $carrierId ) {

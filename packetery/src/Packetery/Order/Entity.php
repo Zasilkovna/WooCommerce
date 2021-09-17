@@ -7,8 +7,10 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Order;
+
+use Packetery\ShippingMethod;
+use WC_Order;
 
 /**
  * Class Entity
@@ -17,37 +19,44 @@ namespace Packetery\Order;
  */
 class Entity {
 
-	public const META_CARRIER_ID = 'packetery_carrier_id';
-	public const META_IS_EXPORTED = 'packetery_is_exported';
-	public const META_PACKET_ID = 'packetery_packet_id';
+	public const META_CARRIER_ID       = 'packetery_carrier_id';
+	public const META_IS_EXPORTED      = 'packetery_is_exported';
+	public const META_PACKET_ID        = 'packetery_packet_id';
 	public const META_IS_LABEL_PRINTED = 'packetery_is_label_printed';
-	public const META_POINT_ID = 'packetery_point_id';
+	public const META_POINT_ID         = 'packetery_point_id';
 	public const META_POINT_CARRIER_ID = 'packetery_point_carrier_id';
+	public const META_POINT_NAME       = 'packetery_point_name';
+	public const META_POINT_URL        = 'packetery_point_url';
+	public const META_POINT_STREET     = 'packetery_point_street';
+	public const META_POINT_ZIP        = 'packetery_point_zip';
+	public const META_POINT_CITY       = 'packetery_point_city';
+	public const META_WEIGHT           = 'packetery_weight';
+	public const META_LENGTH           = 'packetery_length';
+	public const META_WIDTH            = 'packetery_width';
+	public const META_HEIGHT           = 'packetery_height';
 
 	/**
 	 * Order.
 	 *
-	 * @var \WC_Order
+	 * @var WC_Order
 	 */
 	private $order;
 
 	/**
 	 * Entity constructor.
 	 *
-	 * @param \WC_Order $order Order.
+	 * @param WC_Order $order Order.
 	 */
-	public function __construct( \WC_Order $order ) {
+	public function __construct( WC_Order $order ) {
 		$this->order = $order;
 	}
 
 	/**
 	 * Creates value object from global variables.
 	 *
-	 * @param bool $needed
-	 *
 	 * @return static|null
 	 */
-	public static function from_globals( bool $needed = true ): ?self {
+	public static function fromGlobals(): ?self {
 		global $post;
 		return self::fromPostId( $post->ID, $needed );
 	}
@@ -63,7 +72,7 @@ class Entity {
 	public static function fromPostId( $postId, bool $needed = true ): ?self {
 		$order = wc_get_order( $postId );
 
-		if ( ! $needed && ! $order instanceof \WC_Order ) {
+		if ( ! $order instanceof WC_Order ) {
 			return null;
 		}
 
@@ -75,8 +84,8 @@ class Entity {
 	 *
 	 * @return bool
 	 */
-	public function is_packetery_related(): bool {
-		return $this->order->has_shipping_method( 'packetery_shipping_method' ); // todo Move to service?
+	public function isPacketeryRelated(): bool {
+		return $this->order->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ); // todo Move to service?
 	}
 
 	/**
@@ -85,7 +94,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isPacketeryPickupPointRelated(): bool {
-		return $this->is_packetery_related() && null !== $this->get_point_id();
+		return $this->isPacketeryRelated() && null !== $this->getPointId();
 	}
 
 	/**
@@ -95,7 +104,7 @@ class Entity {
 	 *
 	 * @return string|null
 	 */
-	private function get_meta_as_string( string $key ) {
+	private function getMetaAsString( string $key ): ?string {
 		$value = $this->order->get_meta( $key, true );
 		if ( ! $value ) {
 			return null;
@@ -109,8 +118,8 @@ class Entity {
 	 *
 	 * @return string|null
 	 */
-	public function get_point_id(): ?string {
-		return $this->get_meta_as_string( Entity::META_POINT_ID );
+	public function getPointId(): ?string {
+		return $this->getMetaAsString( self::META_POINT_ID );
 	}
 
 	/**
@@ -118,8 +127,8 @@ class Entity {
 	 *
 	 * @return string|null
 	 */
-	public function get_packet_id(): ?string {
-		return $this->get_meta_as_string( self::META_PACKET_ID );
+	public function getPacketId(): ?string {
+		return $this->getMetaAsString( self::META_PACKET_ID );
 	}
 
 	/**
@@ -127,8 +136,8 @@ class Entity {
 	 *
 	 * @return string|null
 	 */
-	public function get_point_name(): ?string {
-		return $this->get_meta_as_string( 'packetery_point_name' );
+	public function getPointName(): ?string {
+		return $this->getMetaAsString( self::META_POINT_NAME );
 	}
 
 	/**
@@ -136,8 +145,8 @@ class Entity {
 	 *
 	 * @return string|null
 	 */
-	public function get_point_url(): ?string {
-		return $this->get_meta_as_string( 'packetery_point_url' );
+	public function getPointUrl(): ?string {
+		return $this->getMetaAsString( self::META_POINT_URL );
 	}
 
 	/**
@@ -145,23 +154,86 @@ class Entity {
 	 *
 	 * @return string
 	 */
-	public function get_point_address(): string {
+	public function getPointAddress(): string {
 		return implode(
 			', ',
 			array_filter(
 				array(
-					$this->get_meta_as_string( 'packetery_point_street' ),
+					$this->getMetaAsString( self::META_POINT_STREET ),
 					implode(
 						' ',
 						array_filter(
 							array(
-								$this->get_meta_as_string( 'packetery_point_zip' ),
-								$this->get_meta_as_string( 'packetery_point_city' ),
+								$this->getMetaAsString( self::META_POINT_ZIP ),
+								$this->getMetaAsString( self::META_POINT_CITY ),
 							)
 						)
 					),
 				)
 			)
 		);
+	}
+
+	/**
+	 * Gets carrier id.
+	 *
+	 * @return string|null
+	 */
+	public function getCarrierId(): ?string {
+		return $this->getMetaAsString( self::META_CARRIER_ID );
+	}
+
+	/**
+	 * Gets carrier pickup point id.
+	 *
+	 * @return string|null
+	 */
+	public function getPointCarrierId(): ?string {
+		return $this->getMetaAsString( self::META_POINT_CARRIER_ID );
+	}
+
+	/**
+	 * Tells if is packet submitted.
+	 *
+	 * @return bool
+	 */
+	public function isExported(): bool {
+		return (bool) $this->getMetaAsString( self::META_IS_EXPORTED );
+	}
+
+	/**
+	 * Gets weight.
+	 *
+	 * @return float
+	 */
+	public function getWeight(): float {
+		return (float) $this->getMetaAsString( self::META_WEIGHT );
+	}
+
+	/**
+	 * Gets length.
+	 *
+	 * @return float
+	 */
+	public function getLength(): float {
+		return (float) $this->getMetaAsString( self::META_LENGTH );
+	}
+
+	/**
+	 * Gets width.
+	 *
+	 * @return float
+	 */
+	public function getWidth(): float {
+		return (float) $this->getMetaAsString( self::META_WIDTH );
+	}
+
+	/**
+	 * Gets height.
+	 *
+	 * @return float
+	 */
+	public function getHeight(): float {
+		return (float) $this->getMetaAsString( self::META_HEIGHT );
 	}
 }

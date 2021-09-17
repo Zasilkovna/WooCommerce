@@ -5,6 +5,8 @@
  * @package Packetery\Api\Soap\Request
  */
 
+declare( strict_types=1 );
+
 namespace Packetery\Api\Soap\Request;
 
 /**
@@ -52,7 +54,7 @@ class CreatePacket {
 	/**
 	 * Pickup point or carrier id.
 	 *
-	 * @var string
+	 * @var int
 	 */
 	private $addressId;
 
@@ -185,9 +187,9 @@ class CreatePacket {
 	/**
 	 * Sets address id.
 	 *
-	 * @param string $addressId Address id.
+	 * @param int $addressId Address id.
 	 */
-	public function setAddressId( string $addressId ): void {
+	public function setAddressId( int $addressId ): void {
 		$this->addressId = $addressId;
 	}
 
