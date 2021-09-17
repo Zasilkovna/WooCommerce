@@ -7,7 +7,7 @@
 
 namespace Packetery\EntityFactory;
 
-use Packetery\Entity\Carrier as CarrierEntity;
+use Packetery\Entity;
 
 /**
  * Class Carrier.
@@ -21,10 +21,10 @@ class Carrier {
 	 *
 	 * @param array $dbResult Data from db.
 	 *
-	 * @return CarrierEntity
+	 * @return Entity\Carrier
 	 */
-	public function create( array $dbResult ): CarrierEntity {
-		return new CarrierEntity(
+	public function create( array $dbResult ): Entity\Carrier {
+		return new Entity\Carrier(
 			(int) $dbResult['id'],
 			$dbResult['name'],
 			(bool) $dbResult['is_pickup_points'],

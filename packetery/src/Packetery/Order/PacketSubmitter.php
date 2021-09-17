@@ -128,10 +128,10 @@ class PacketSubmitter {
 		}
 
 		$request = new CreatePacket();
-		$request->setNumber( $orderData['id'] );
+		$request->setNumber( (string) $orderData['id'] );
 		$request->setEmail( $orderData['billing']['email'] );
 		$request->setAddressId( (int) $addressId );
-		$request->setValue( $orderTotalPrice );
+		$request->setValue( (float) $orderTotalPrice );
 		$request->setEshop( $this->optionsProvider->get_sender() );
 		$request->setWeight( $entity->getWeight() );
 		$this->prepareContactInfo( $order, $orderData, $request, $isHomeDelivery );
@@ -143,7 +143,7 @@ class PacketSubmitter {
 			$request->setCarrierPickupPoint( $pointCarrierId );
 		}
 		if ( true === $checkForRequiredSize ) {
-			$carrier = $this->carrierRepository->getById( $carrierId );
+			$carrier = $this->carrierRepository->getById( (int) $carrierId );
 			if ( $carrier && $carrier->requiresSize() ) {
 				$request->setSize(
 					$entity->getLength(),
