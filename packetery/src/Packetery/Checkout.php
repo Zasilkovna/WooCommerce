@@ -457,8 +457,8 @@ class Checkout {
 		if ( ! $this->isPacketeryOrder( $chosenMethod ) ) {
 			return null;
 		}
-		$methodIdParts = explode( self::CARRIER_PREFIX, $chosenMethod );
-		$carrierId = $methodIdParts[0];
+
+		$carrierId = str_replace( self::CARRIER_PREFIX, '', $chosenMethod );
 		if ( strpos( $carrierId, 'zpoint' ) === 0 ) {
 			return Repository::INTERNAL_PICKUP_POINTS_ID;
 		}
