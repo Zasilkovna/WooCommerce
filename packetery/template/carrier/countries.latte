@@ -2,20 +2,24 @@
 	<h1>{__( 'Packeta', 'packetery' )} - {__( 'Carriers', 'packetery' )}</h1>
 
 	{if $carrierUpdaterResult}
-		<p>
-			{$carrierUpdaterResult}
-		</p>
+		<div class="notice notice-{$carrierUpdaterClass} is-dismissible">
+			<p>
+				{$carrierUpdaterResult}
+			</p>
+		</div>
 	{/if}
 
-	{if $lastUpdate}
-		<p>
-			{__('lastCarrierUpdateDatetime', 'packetery')}: {$lastUpdate}
-		</p>
-	{/if}
+	<div class="card">
+		{if $lastUpdate}
+			<p>
+				{__('lastCarrierUpdateDatetime', 'packetery')}: {$lastUpdate}
+			</p>
+		{/if}
 
-	<p>
-		<a href="{$updateLink}" class="button button-primary">{__('runCarrierUpdate', 'packetery')}</a>
-	</p>
+		<p>
+			<a href="{$updateLink}" class="button button-primary">{__('runCarrierUpdate', 'packetery')}</a>
+		</p>
+	</div>
 
 	<h2>{__( 'Packeta', 'packetery' )} - {__( 'Countries', 'packetery' )}</h2>
 
