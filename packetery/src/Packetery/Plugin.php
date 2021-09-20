@@ -296,12 +296,12 @@ class Plugin {
 		$locale = $this->getLocale();
 
 		$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-$locale.mo";
+		$result = load_textdomain( $domain, $moFile );
 
-		if ( is_file( $moFile ) === false ) {
+		if ( false === $result ) {
 			$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-en_US.mo";
+			load_textdomain( $domain, $moFile );
 		}
-
-		load_textdomain( $domain, $moFile );
 	}
 
 	/**
