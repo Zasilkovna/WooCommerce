@@ -60,7 +60,7 @@ class CreatePacket {
 	/**
 	 * Gets errors.
 	 *
-	 * @return array
+	 * @return array|null
 	 */
 	public function getErrors(): ?array {
 		return $this->errors;
