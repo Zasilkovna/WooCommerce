@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-11T16:44:32+02:00\n"
-"PO-Revision-Date: 2021-09-14 10:36+0200\n"
+"POT-Creation-Date: 2021-09-20T08:33:25+02:00\n"
+"PO-Revision-Date: 2021-09-20 08:36+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -20,6 +20,7 @@ msgstr ""
 #. Author of the plugin
 #: src/Packetery/Options/Page.php:65 src/Packetery/Order/Metabox.php:82
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:49
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:15
@@ -40,23 +41,23 @@ msgid "https://www.packeta.com/"
 msgstr "https://www.packeta.com/"
 
 #. translators: keep %failReason placeholder intact.
-#: src/Packetery/Carrier/Downloader.php:69
-#: src/Packetery/Carrier/Downloader.php:79
-#: src/Packetery/Carrier/Downloader.php:90
+#: src/Packetery/Carrier/Downloader.php:70
+#: src/Packetery/Carrier/Downloader.php:80
+#: src/Packetery/Carrier/Downloader.php:91
 msgid "Carrier download failed: %failReason Please try again later."
 msgstr "Carrier download failed: %failReason Please try again later."
 
 #. translators: keep %failReason placeholder intact.
-#: src/Packetery/Carrier/Downloader.php:80
+#: src/Packetery/Carrier/Downloader.php:81
 msgid "Failed to get the list."
 msgstr "Failed to get the list."
 
 #. translators: keep %failReason placeholder intact.
-#: src/Packetery/Carrier/Downloader.php:91
+#: src/Packetery/Carrier/Downloader.php:92
 msgid "Invalid API response."
 msgstr "Invalid API response."
 
-#: src/Packetery/Carrier/Downloader.php:98
+#: src/Packetery/Carrier/Downloader.php:100
 msgid "Carriers were updated."
 msgstr "Carriers were updated."
 
@@ -109,23 +110,23 @@ msgstr "Order price up to"
 msgid "Surcharge"
 msgstr "Surcharge"
 
-#: src/Packetery/Carrier/Repository.php:202
+#: src/Packetery/Carrier/Repository.php:205
 msgid "CZ Packeta pickup points"
 msgstr "CZ Packeta pickup points"
 
-#: src/Packetery/Carrier/Repository.php:207
+#: src/Packetery/Carrier/Repository.php:210
 msgid "SK Packeta pickup points"
 msgstr "SK Packeta pickup points"
 
-#: src/Packetery/Carrier/Repository.php:212
+#: src/Packetery/Carrier/Repository.php:215
 msgid "HU Packeta pickup points"
 msgstr "HU Packeta pickup points"
 
-#: src/Packetery/Carrier/Repository.php:217
+#: src/Packetery/Carrier/Repository.php:220
 msgid "RO Packeta pickup points"
 msgstr "RO Packeta pickup points"
 
-#: src/Packetery/Checkout.php:263
+#: src/Packetery/Checkout.php:258
 msgid "Pick up point is not chosen."
 msgstr "Pick up point is not chosen."
 
@@ -231,11 +232,11 @@ msgstr "Packeta orders to submit"
 msgid "packetaOrdersToPrint"
 msgstr "Packeta orders to print"
 
-#: src/Packetery/Order/GridExtender.php:227
+#: src/Packetery/Order/GridExtender.php:231
 msgid "Barcode"
 msgstr "Barcode"
 
-#: src/Packetery/Order/GridExtender.php:228
+#: src/Packetery/Order/GridExtender.php:232
 msgid "Pick up point or carrier"
 msgstr "Pick up point or carrier"
 
@@ -343,26 +344,38 @@ msgid "Delete COD surcharge rule"
 msgstr "Delete COD surcharge rule"
 
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:16
+msgid "Carriers"
+msgstr "Carriers"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:32
+msgid "lastCarrierUpdateDatetime"
+msgstr "Date of last update of carriers"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:44
+msgid "runCarrierUpdate"
+msgstr "Run update of carriers"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:51
 msgid "Countries"
 msgstr "Countries"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:24
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:59
 msgid "Country name"
 msgstr "Country name"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:27
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:62
 msgid "Country code"
 msgstr "Country code"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:30
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:65
 msgid "Action"
 msgstr "Action"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:46
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:81
 msgid "Set up"
 msgstr "Set up"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:57
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:92
 msgid "No active countries."
 msgstr "No active countries."
 

@@ -20,7 +20,8 @@ use PacketeryGuzzleHttp\PacketeryPsr7\Response;
  * @package Packetery
  */
 class Downloader {
-	private const API_URL = 'https://www.zasilkovna.cz/api/v4/%s/branch.json?address-delivery';
+	private const API_URL                   = 'https://www.zasilkovna.cz/api/v4/%s/branch.json?address-delivery';
+	public const OPTION_LAST_CARRIER_UPDATE = 'packetery_last_carrier_update';
 
 	/**
 	 * Guzzle client.
@@ -94,6 +95,7 @@ class Downloader {
 			exit;
 		}
 		$this->carrier_updater->save( $carriers );
+		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( 'Y-m-d H:i:s' ) );
 
 		echo esc_html__( 'Carriers were updated.', 'packetery' );
 	}

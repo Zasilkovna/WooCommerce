@@ -8,6 +8,7 @@
 namespace Packetery\Carrier;
 
 use PacketeryLatte\Engine;
+use PacketeryNette\Http\Request;
 
 /**
  * Class CountryListingPage
@@ -31,14 +32,32 @@ class CountryListingPage {
 	private $carrierRepository;
 
 	/**
+	 * Carrier downloader.
+	 *
+	 * @var Downloader
+	 */
+	private $downloader;
+
+	/**
+	 * Http request.
+	 *
+	 * @var Request
+	 */
+	private $httpRequest;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine     $latteEngine PacketeryLatte engine.
 	 * @param Repository $carrierRepository Carrier repository.
+	 * @param Downloader $downloader Carrier downloader.
+	 * @param Request    $httpRequest Http request.
 	 */
-	public function __construct( Engine $latteEngine, Repository $carrierRepository ) {
+	public function __construct( Engine $latteEngine, Repository $carrierRepository, Downloader $downloader, Request $httpRequest ) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
+		$this->downloader        = $downloader;
+		$this->httpRequest       = $httpRequest;
 	}
 
 	/**
@@ -47,9 +66,25 @@ class CountryListingPage {
 	public function render(): void {
 		$countries = $this->getActiveCountries();
 
+		$carrierUpdaterResult = null;
+		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
+			ob_start();
+			$this->downloader->run();
+			$carrierUpdaterResult = ob_get_clean();
+		}
+
+		$url        = $this->httpRequest->getUrl();
+		$updateLink = add_query_arg( [ 'update_carriers' => '1' ], $url );
+		$lastUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
-			[ 'countries' => $countries ]
+			[
+				'updateLink'           => $updateLink,
+				'countries'            => $countries,
+				'carrierUpdaterResult' => $carrierUpdaterResult,
+				'lastUpdate'           => $lastUpdate,
+			]
 		);
 	}
 
