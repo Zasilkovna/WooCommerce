@@ -71,7 +71,7 @@ class Downloader {
 					array( '%failReason' => $e->getMessage() )
 				)
 			);
-			exit;
+			return;
 		}
 		if ( ! $carriers ) {
 			echo esc_html(
@@ -81,7 +81,7 @@ class Downloader {
 					array( '%failReason' => __( 'Failed to get the list.', 'packetery' ) )
 				)
 			);
-			exit;
+			return;
 		}
 		$validation_result = $this->carrier_updater->validate_carrier_data( $carriers );
 		if ( ! $validation_result ) {
@@ -92,7 +92,7 @@ class Downloader {
 					array( '%failReason' => __( 'Invalid API response.', 'packetery' ) )
 				)
 			);
-			exit;
+			return;
 		}
 		$this->carrier_updater->save( $carriers );
 		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( 'Y-m-d H:i:s' ) );

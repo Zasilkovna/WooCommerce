@@ -73,8 +73,7 @@ class CountryListingPage {
 			$carrierUpdaterResult = ob_get_clean();
 		}
 
-		$url        = $this->httpRequest->getUrl();
-		$updateLink = add_query_arg( [ 'update_carriers' => '1' ], $url );
+		$updateLink = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getAbsoluteUrl();
 		$lastUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
 
 		$this->latteEngine->render(
