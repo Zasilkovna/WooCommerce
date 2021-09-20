@@ -1,12 +1,14 @@
 {* TODO: without updated class, nothing was visible, therefore inline style were used to override green border *}
-{if !$info && !$error && $success}
+{if !$skipped && !$errors && $success}
 	<div class="updated"><p>{__('shipmentsSubmittedSuccessfully', 'packetery')}</p></div>
 {else}
-	{if $info}
-		<div class="updated" style="border-left-color: #72aee6;"><p>{$info}</p></div>
+	{if $skipped}
+		<div class="updated" style="border-left-color: #72aee6;">
+			<p>{sprintf( __( 'someShipments%sSkipped', 'packetery' ), $skipped )}</p></div>
 	{/if}
 
-	{if $error}
-		<div class="updated" style="border-left-color: #d63638;"><p>{$error}</p></div>
+	{if $errors}
+		<div class="updated" style="border-left-color: #d63638;">
+			<p>{sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors )}</p></div>
 	{/if}
 {/if}
