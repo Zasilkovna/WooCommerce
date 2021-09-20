@@ -122,6 +122,13 @@ class CreatePacket {
 	private $size;
 
 	/**
+	 * Packet note.
+	 *
+	 * @var string
+	 */
+	private $note;
+
+	/**
 	 * Gets all properties as array.
 	 *
 	 * @return array
@@ -278,5 +285,14 @@ class CreatePacket {
 			'width'  => $width,
 			'height' => $height,
 		];
+	}
+
+	/**
+	 * Sets packet note.
+	 *
+	 * @param string $note Packet note.
+	 */
+	public function setNote( string $note ): void {
+		$this->note = $note;
 	}
 }

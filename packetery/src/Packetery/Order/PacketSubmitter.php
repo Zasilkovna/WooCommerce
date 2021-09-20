@@ -77,7 +77,7 @@ class PacketSubmitter {
 			// TODO: update before release.
 			$logger = wc_get_logger();
 			if ( $logger ) {
-				$logger->info( wp_json_encode( $createPacketRequest ) );
+				$logger->info( wp_json_encode( $createPacketRequest->getSubmittableData() ) );
 			}
 
 			$response = $this->soapApiClient->createPacket( $createPacketRequest );
@@ -171,6 +171,9 @@ class PacketSubmitter {
 		$request->setSurname( $source['last_name'] );
 		if ( $isHomeDelivery ) {
 			$request->setStreet( $source['address_1'] );
+			if ( ! empty( $source['address_2'] ) ) {
+				$request->setNote( $source['address_2'] );
+			}
 			$request->setCity( $source['city'] );
 			$request->setZip( $source['postcode'] );
 		}

@@ -181,7 +181,7 @@ class Carrier {
 	}
 
 	/**
-	 * Gets carrier isPickupPoints.
+	 * Gets carrier hasPickupPoints.
 	 *
 	 * @return bool
 	 */
@@ -244,7 +244,7 @@ class Carrier {
 	}
 
 	/**
-	 * Gets carrier disallowsCod.
+	 * Gets carrier supportsCod.
 	 *
 	 * @return bool
 	 */
@@ -280,7 +280,7 @@ class Carrier {
 	}
 
 	/**
-	 * Gets carrier deleted.
+	 * Gets carrier isDeleted.
 	 *
 	 * @return bool
 	 */
