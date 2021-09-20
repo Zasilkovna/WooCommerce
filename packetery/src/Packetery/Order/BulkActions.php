@@ -132,7 +132,7 @@ class BulkActions {
 			$latteParams['info'] = sprintf( __( 'someShipments%sSkipped', 'packetery' ), $skippedCount );
 		}
 
-		$errors = ( isset( $get['error_count'] ) ? (int) $get['error_count'] : 0 );
+		$errors = (int) ( $get['error_count'] ?? 0 );
 		if ( $errors ) {
 			/* translators: %s: count of orders. */
 			$latteParams['error'] = sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors );

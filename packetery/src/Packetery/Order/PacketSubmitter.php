@@ -120,17 +120,17 @@ class PacketSubmitter {
 		$isExternalPickupPoint = ! empty( $pointCarrierId );
 		if ( $isExternalPickupPoint || $isHomeDelivery ) {
 			// External pickup points or home delivery.
-			$addressId            = $carrierId;
+			$addressId            = (int) $carrierId;
 			$checkForRequiredSize = true;
 		} else {
 			// Internal pickup points.
-			$addressId = $pointId;
+			$addressId = (int) $pointId;
 		}
 
 		$request = new CreatePacket();
 		$request->setNumber( (string) $orderData['id'] );
 		$request->setEmail( $orderData['billing']['email'] );
-		$request->setAddressId( (int) $addressId );
+		$request->setAddressId( $addressId );
 		$request->setValue( (float) $orderTotalPrice );
 		$request->setEshop( $this->optionsProvider->get_sender() );
 		$request->setWeight( $entity->getWeight() );
