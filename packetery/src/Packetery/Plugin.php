@@ -201,7 +201,7 @@ class Plugin {
 		add_action(
 			'packetery_cron_carriers_hook',
 			function () {
-				$this->carrier_downloader->run();
+				$this->carrier_downloader->runAndRender();
 			}
 		);
 		if ( ! wp_next_scheduled( 'packetery_cron_carriers_hook' ) ) {

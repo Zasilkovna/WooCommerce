@@ -20,7 +20,8 @@ use PacketeryGuzzleHttp\PacketeryPsr7\Response;
  * @package Packetery
  */
 class Downloader {
-	private const API_URL = 'https://www.zasilkovna.cz/api/v4/%s/branch.json?address-delivery';
+	private const API_URL                   = 'https://www.zasilkovna.cz/api/v4/%s/branch.json?address-delivery';
+	public const OPTION_LAST_CARRIER_UPDATE = 'packetery_last_carrier_update';
 
 	/**
 	 * Guzzle client.
@@ -57,45 +58,59 @@ class Downloader {
 	}
 
 	/**
-	 * Cron job. No authorization needed - job is registered internally.
+	 * Runs update and returns result.
+	 *
+	 * @return array
 	 */
-	public function run(): void {
+	public function run(): array {
 		try {
 			$carriers = $this->fetch_as_array();
 		} catch ( \Exception $e ) {
-			echo esc_html(
+			return [
 				strtr(
 				// translators: keep %failReason placeholder intact.
 					__( 'Carrier download failed: %failReason Please try again later.', 'packetery' ),
 					array( '%failReason' => $e->getMessage() )
-				)
-			);
-			exit;
+				),
+				'error',
+			];
 		}
 		if ( ! $carriers ) {
-			echo esc_html(
+			return [
 				strtr(
 				// translators: keep %failReason placeholder intact.
 					__( 'Carrier download failed: %failReason Please try again later.', 'packetery' ),
 					array( '%failReason' => __( 'Failed to get the list.', 'packetery' ) )
-				)
-			);
-			exit;
+				),
+				'error',
+			];
 		}
 		$validation_result = $this->carrier_updater->validate_carrier_data( $carriers );
 		if ( ! $validation_result ) {
-			echo esc_html(
+			return [
 				strtr(
 				// translators: keep %failReason placeholder intact.
 					__( 'Carrier download failed: %failReason Please try again later.', 'packetery' ),
 					array( '%failReason' => __( 'Invalid API response.', 'packetery' ) )
-				)
-			);
-			exit;
+				),
+				'error',
+			];
 		}
 		$this->carrier_updater->save( $carriers );
+		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( 'Y-m-d H:i:s' ) );
 
-		echo esc_html__( 'Carriers were updated.', 'packetery' );
+		return [
+			__( 'Carriers were updated.', 'packetery' ),
+			'success',
+		];
+	}
+
+	/**
+	 * Cron job. No authorization needed - job is registered internally.
+	 */
+	public function runAndRender(): void {
+		[ $message, $class ] = $this->run();
+		echo esc_html( $message );
 	}
 
 	/**

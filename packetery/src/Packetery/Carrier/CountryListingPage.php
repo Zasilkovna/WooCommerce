@@ -8,6 +8,7 @@
 namespace Packetery\Carrier;
 
 use PacketeryLatte\Engine;
+use PacketeryNette\Http\Request;
 
 /**
  * Class CountryListingPage
@@ -31,14 +32,32 @@ class CountryListingPage {
 	private $carrierRepository;
 
 	/**
+	 * Carrier downloader.
+	 *
+	 * @var Downloader
+	 */
+	private $downloader;
+
+	/**
+	 * Http request.
+	 *
+	 * @var Request
+	 */
+	private $httpRequest;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine     $latteEngine PacketeryLatte engine.
 	 * @param Repository $carrierRepository Carrier repository.
+	 * @param Downloader $downloader Carrier downloader.
+	 * @param Request    $httpRequest Http request.
 	 */
-	public function __construct( Engine $latteEngine, Repository $carrierRepository ) {
+	public function __construct( Engine $latteEngine, Repository $carrierRepository, Downloader $downloader, Request $httpRequest ) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
+		$this->downloader        = $downloader;
+		$this->httpRequest       = $httpRequest;
 	}
 
 	/**
@@ -47,9 +66,27 @@ class CountryListingPage {
 	public function render(): void {
 		$countries = $this->getActiveCountries();
 
+		$carriersUpdateParams = [];
+		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
+			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
+			$carriersUpdateParams = [
+				'result'      => $carrierUpdaterResult,
+				'resultClass' => $carrierUpdaterClass,
+			];
+		}
+
+		$carriersUpdateParams['link'] = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getAbsoluteUrl();
+		$carriersUpdateParams['lastUpdate'] = gmdate(
+			get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
+			strtotime( get_option( Downloader::OPTION_LAST_CARRIER_UPDATE ) )
+		);
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
-			[ 'countries' => $countries ]
+			[
+				'carriersUpdate' => $carriersUpdateParams,
+				'countries'      => $countries,
+			]
 		);
 	}
 

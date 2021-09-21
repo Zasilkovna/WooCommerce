@@ -1,5 +1,29 @@
 <div class="packetery-options-page">
-	<h1>{__( 'Packeta', 'packetery' )} - {__( 'Countries', 'packetery' )}</h1>
+	<h1>{__( 'Packeta', 'packetery' )} - {__( 'Carriers', 'packetery' )}</h1>
+
+	{if isset($carriersUpdate['result'])}
+		<div class="notice notice-{$carriersUpdate['resultClass']} is-dismissible">
+			<p>
+				{$carriersUpdate['result']}
+			</p>
+		</div>
+	{/if}
+
+	<div class="card">
+		<h2>{__( 'Packeta', 'packetery' )} - {__( 'carriersUpdate', 'packetery' )}</h2>
+
+		{if $carriersUpdate['lastUpdate']}
+			<p>
+				{__('lastCarrierUpdateDatetime', 'packetery')}: {$carriersUpdate['lastUpdate']}
+			</p>
+		{/if}
+
+		<p>
+			<a href="{$carriersUpdate['link']}" class="button button-primary">{__('runCarrierUpdate', 'packetery')}</a>
+		</p>
+	</div>
+
+	<h2>{__( 'Packeta', 'packetery' )} - {__( 'Countries', 'packetery' )}</h2>
 
 	{if $countries}
 		<table>
