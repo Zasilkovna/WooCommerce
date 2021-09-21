@@ -260,16 +260,14 @@ class Plugin {
 	 *  Renders email footer.
 	 */
 	public function render_email_footer(): void {
-		$order = \Packetery\Order\Entity::fromGlobals();
-		if ( $order === null || $order->isPacketeryRelated() === false ) {
+		$orderEntity = Order\Entity::fromGlobals();
+		if ( $orderEntity === null || $orderEntity->isPacketeryRelated() === false ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
-			array(
-				'order' => $order,
-			)
+			[ 'order' => $orderEntity ]
 		);
 	}
 

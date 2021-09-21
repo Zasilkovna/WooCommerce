@@ -128,17 +128,20 @@ class Metabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		global $post;
-		$order             = wc_get_order( $post->ID );
-		$entity            = new Entity( $order );
-		$packeteryPacketId = $entity->getPacketId();
+		/**
+		 * We know for sure $post exists and thus $entity is never null.
+		 *
+		 * @var Entity $entity
+		 */
+		$entity   = Entity::fromGlobals();
+		$packetId = $entity->getPacketId();
 
-		if ( $packeteryPacketId ) {
+		if ( $packetId ) {
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				[
-					'packet_id'           => $packeteryPacketId,
-					'packet_tracking_url' => $this->helper->get_tracking_url( $packeteryPacketId ),
+					'packet_id'           => $packetId,
+					'packet_tracking_url' => $this->helper->get_tracking_url( $packetId ),
 				]
 			);
 
@@ -148,10 +151,10 @@ class Metabox {
 		$this->order_form->setDefaults(
 			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				Entity::META_WEIGHT             => get_post_meta( $post->ID, Entity::META_WEIGHT, true ),
-				Entity::META_WIDTH              => get_post_meta( $post->ID, Entity::META_WIDTH, true ),
-				Entity::META_LENGTH             => get_post_meta( $post->ID, Entity::META_LENGTH, true ),
-				Entity::META_HEIGHT             => get_post_meta( $post->ID, Entity::META_HEIGHT, true ),
+				Entity::META_WEIGHT             => $entity->getWeight(),
+				Entity::META_WIDTH              => $entity->getWidth(),
+				Entity::META_LENGTH             => $entity->getLength(),
+				Entity::META_HEIGHT             => $entity->getHeight(),
 			]
 		);
 

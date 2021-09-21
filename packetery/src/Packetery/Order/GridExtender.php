@@ -197,21 +197,21 @@ class GridExtender {
 
 		switch ( $column ) {
 			case 'packetery_destination':
-				$packetery_point_name = $entity->getPointName();
-				$packetery_point_id   = $entity->getPointId();
+				$pointName = $entity->getPointName();
+				$pointId   = $entity->getPointId();
 
-				$country           = $order->get_shipping_country();
-				$internalCountries = array_keys( array_change_key_case( $this->carrierRepository->getZpointCarriers(), CASE_UPPER ) );
-				if ( $packetery_point_name && $packetery_point_id && in_array( $country, $internalCountries, true ) ) {
-					echo esc_html( "$packetery_point_name ($packetery_point_id)" );
-				} elseif ( $packetery_point_name ) {
-					echo esc_html( $packetery_point_name );
+				$country = strtolower( $order->get_shipping_country() );
+				$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
+				if ( $pointName && $pointId && in_array( $country, $internalCountries, true ) ) {
+					echo esc_html( "$pointName ($pointId)" );
+				} elseif ( $pointName ) {
+					echo esc_html( $pointName );
 				}
 				break;
 			case Entity::META_PACKET_ID:
-				$packet_id = $entity->getPacketId();
-				if ( $packet_id ) {
-					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packet_id ) ) . '" target="_blank">' . esc_html( $packet_id ) . '</a>';
+				$packetId = $entity->getPacketId();
+				if ( $packetId ) {
+					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">' . esc_html( $packetId ) . '</a>';
 				}
 				break;
 		}

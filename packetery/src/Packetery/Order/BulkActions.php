@@ -83,9 +83,9 @@ class BulkActions {
 
 		if ( 'submit_to_api' === $action ) {
 			$results = [
-				'submitted' => [],
-				'skipped'   => [],
-				'error'     => [],
+				'success' => 0,
+				'ignored' => 0,
+				'errors'  => 0,
 			];
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
@@ -94,12 +94,8 @@ class BulkActions {
 				}
 			}
 
-			$queryArgs = [
-				'submit_to_api'   => '1',
-				'submitted_count' => count( $results['submitted'] ),
-				'skipped_count'   => count( $results['skipped'] ),
-				'error_count'     => count( $results['error'] ),
-			];
+			$queryArgs                  = $results;
+			$queryArgs['submit_to_api'] = true;
 
 			return add_query_arg( $queryArgs, $redirectTo );
 		}
@@ -117,9 +113,9 @@ class BulkActions {
 		}
 
 		$latteParams = [
-			'success' => (int) ( $get['submitted_count'] ?? 0 ),
-			'skipped' => (int) ( $get['skipped_count'] ?? 0 ),
-			'errors'  => (int) ( $get['error_count'] ?? 0 ),
+			'success' => (int) ( $get['success'] ?? 0 ),
+			'ignored' => (int) ( $get['ignored'] ?? 0 ),
+			'errors'  => (int) ( $get['errors'] ?? 0 ),
 		];
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/export-result.latte', $latteParams );
 	}

@@ -270,7 +270,6 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
-		update_post_meta( $orderId, Entity::META_WEIGHT, $this->getCartWeightKg() );
 		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
 			$carrierId = $this->getCarrierId( $chosenMethod );
 			if ( $carrierId ) {

@@ -75,7 +75,7 @@ class CreatePacket {
 	/**
 	 * Package weight.
 	 *
-	 * @var float
+	 * @var float|null
 	 */
 	private $weight;
 
@@ -221,9 +221,9 @@ class CreatePacket {
 	/**
 	 * Sets weight.
 	 *
-	 * @param float $weight Weight.
+	 * @param ?float $weight Weight.
 	 */
-	public function setWeight( float $weight ): void {
+	public function setWeight( ?float $weight ): void {
 		$this->weight = $weight;
 	}
 
@@ -275,11 +275,11 @@ class CreatePacket {
 	/**
 	 * Sets size.
 	 *
-	 * @param float $length Packet length.
-	 * @param float $width Packet width.
-	 * @param float $height Packet height.
+	 * @param float|null $length Packet length.
+	 * @param float|null $width Packet width.
+	 * @param float|null $height Packet height.
 	 */
-	public function setSize( float $length, float $width, float $height ): void {
+	public function setSize( ?float $length, ?float $width, ?float $height ): void {
 		$this->size = [
 			'length' => $length,
 			'width'  => $width,

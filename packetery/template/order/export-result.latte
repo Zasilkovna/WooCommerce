@@ -1,10 +1,10 @@
 {* TODO: without updated class, nothing was visible, therefore inline style were used to override green border *}
-{if !$skipped && !$errors && $success}
+{if !$ignored && !$errors && $success}
 	<div class="updated"><p>{__('shipmentsSubmittedSuccessfully', 'packetery')}</p></div>
 {else}
-	{if $skipped}
+	{if $ignored}
 		<div class="updated" style="border-left-color: #72aee6;">
-			<p>{sprintf( __( 'someShipments%sSkipped', 'packetery' ), $skipped )}</p></div>
+			<p>{sprintf( __( 'someShipments%sSkipped', 'packetery' ), $ignored )}</p></div>
 	{/if}
 
 	{if $errors}

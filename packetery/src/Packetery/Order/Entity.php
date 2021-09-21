@@ -98,7 +98,7 @@ class Entity {
 	}
 
 	/**
-	 * Gets meta from order and handles default value.
+	 * Gets meta property of order as string.
 	 *
 	 * @param string $key Meta order key.
 	 *
@@ -111,6 +111,22 @@ class Entity {
 		}
 
 		return (string) $value;
+	}
+
+	/**
+	 * Gets meta property of order as float.
+	 *
+	 * @param string $key Meta order key.
+	 *
+	 * @return float|null
+	 */
+	private function getMetaAsFloat( string $key ): ?float {
+		$value = $this->order->get_meta( $key, true );
+		if ( ! $value ) {
+			return null;
+		}
+
+		return (float) $value;
 	}
 
 	/**
@@ -204,36 +220,49 @@ class Entity {
 	/**
 	 * Gets weight.
 	 *
-	 * @return float
+	 * @return float|null
 	 */
-	public function getWeight(): float {
-		return (float) $this->getMetaAsString( self::META_WEIGHT );
+	public function getWeight(): ?float {
+		$metaWeight = $this->getMetaAsFloat( self::META_WEIGHT );
+		if ( $metaWeight ) {
+			return $metaWeight;
+		}
+
+		$weight = 0;
+		foreach ( $this->order->get_items() as $item ) {
+			$quantity      = $item->get_quantity();
+			$product       = $item->get_product();
+			$productWeight = $product->get_weight();
+			$weight       += ( $productWeight * $quantity );
+		}
+
+		return wc_get_weight( $weight, 'kg' );
 	}
 
 	/**
 	 * Gets length.
 	 *
-	 * @return float
+	 * @return float|null
 	 */
-	public function getLength(): float {
-		return (float) $this->getMetaAsString( self::META_LENGTH );
+	public function getLength(): ?float {
+		return $this->getMetaAsFloat( self::META_LENGTH );
 	}
 
 	/**
 	 * Gets width.
 	 *
-	 * @return float
+	 * @return float|null
 	 */
-	public function getWidth(): float {
-		return (float) $this->getMetaAsString( self::META_WIDTH );
+	public function getWidth(): ?float {
+		return $this->getMetaAsFloat( self::META_WIDTH );
 	}
 
 	/**
 	 * Gets height.
 	 *
-	 * @return float
+	 * @return float|null
 	 */
-	public function getHeight(): float {
-		return (float) $this->getMetaAsString( self::META_HEIGHT );
+	public function getHeight(): ?float {
+		return $this->getMetaAsFloat( self::META_HEIGHT );
 	}
 }

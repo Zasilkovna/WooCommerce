@@ -86,14 +86,14 @@ class PacketSubmitter {
 				if ( $logger ) {
 					$logger->error( $response->getErrorsAsString() );
 				}
-				$results['error'][] = $response->getErrors();
+				$results['errors']++;
 			} else {
 				update_post_meta( $orderData['id'], Entity::META_IS_EXPORTED, '1' );
 				update_post_meta( $orderData['id'], Entity::META_PACKET_ID, $response->getBarcode() );
-				$results['submitted'][] = $orderData['id'];
+				$results['success']++;
 			}
 		} else {
-			$results['skipped'][] = $orderData['id'];
+			$results['ignored']++;
 		}
 
 		return $results;
