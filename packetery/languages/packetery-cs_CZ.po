@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-20T08:33:25+02:00\n"
-"PO-Revision-Date: 2021-09-20 08:33+0200\n"
+"POT-Creation-Date: 2021-09-21T09:55:05+02:00\n"
+"PO-Revision-Date: 2021-09-21 09:55+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -20,7 +20,8 @@ msgstr ""
 #. Author of the plugin
 #: src/Packetery/Options/Page.php:65 src/Packetery/Order/Metabox.php:82
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:49
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:35
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:62
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:15
@@ -41,23 +42,23 @@ msgid "https://www.packeta.com/"
 msgstr "https://www.zasilkovna.cz/"
 
 #. translators: keep %failReason placeholder intact.
-#: src/Packetery/Carrier/Downloader.php:70
-#: src/Packetery/Carrier/Downloader.php:80
-#: src/Packetery/Carrier/Downloader.php:91
+#: src/Packetery/Carrier/Downloader.php:72
+#: src/Packetery/Carrier/Downloader.php:82
+#: src/Packetery/Carrier/Downloader.php:93
 msgid "Carrier download failed: %failReason Please try again later."
 msgstr ""
 
 #. translators: keep %failReason placeholder intact.
-#: src/Packetery/Carrier/Downloader.php:81
+#: src/Packetery/Carrier/Downloader.php:83
 msgid "Failed to get the list."
 msgstr ""
 
 #. translators: keep %failReason placeholder intact.
-#: src/Packetery/Carrier/Downloader.php:92
+#: src/Packetery/Carrier/Downloader.php:94
 msgid "Invalid API response."
 msgstr ""
 
-#: src/Packetery/Carrier/Downloader.php:100
+#: src/Packetery/Carrier/Downloader.php:103
 msgid "Carriers were updated."
 msgstr ""
 
@@ -344,35 +345,41 @@ msgstr "Smazat pravidlo přirážky k dobírce."
 msgid "Carriers"
 msgstr "Dopravci"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:32
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:37
+#, fuzzy
+#| msgid "Carriers update"
+msgid "carriersUpdate"
+msgstr "Aktualizace dopravců"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:44
 msgid "lastCarrierUpdateDatetime"
 msgstr "Datum poslední aktualizace dopravců"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:44
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:56
 msgid "runCarrierUpdate"
 msgstr "Provést aktualizaci dopravců"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:51
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:64
 msgid "Countries"
 msgstr "Země"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:59
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:72
 msgid "Country name"
 msgstr "Název země"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:62
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:75
 msgid "Country code"
 msgstr "Kód země"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:65
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:78
 msgid "Action"
 msgstr "Akce"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:81
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:94
 msgid "Set up"
 msgstr "Nastavit"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:92
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:105
 msgid "No active countries."
 msgstr "Žádné aktivní země."
 
