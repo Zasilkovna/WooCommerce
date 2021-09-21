@@ -66,14 +66,17 @@ class CountryListingPage {
 	public function render(): void {
 		$countries = $this->getActiveCountries();
 
-		$carrierUpdaterResult = null;
-		$carrierUpdaterClass  = null;
+		$carriersUpdateParams = [];
 		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
 			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
+			$carriersUpdateParams = [
+				'result'      => $carrierUpdaterResult,
+				'resultClass' => $carrierUpdaterClass,
+			];
 		}
 
-		$updateLink = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getAbsoluteUrl();
-		$lastUpdate = gmdate(
+		$carriersUpdateParams['link'] = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getAbsoluteUrl();
+		$carriersUpdateParams['lastUpdate'] = gmdate(
 			get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
 			strtotime( get_option( Downloader::OPTION_LAST_CARRIER_UPDATE ) )
 		);
@@ -81,11 +84,8 @@ class CountryListingPage {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
 			[
-				'updateLink'           => $updateLink,
-				'countries'            => $countries,
-				'carrierUpdaterResult' => $carrierUpdaterResult,
-				'carrierUpdaterClass'  => $carrierUpdaterClass,
-				'lastUpdate'           => $lastUpdate,
+				'carriersUpdate' => $carriersUpdateParams,
+				'countries'      => $countries,
 			]
 		);
 	}
