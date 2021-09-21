@@ -207,23 +207,31 @@ class OptionsPage {
 			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
-				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
-					$form = $this->createForm( $post );
-					if ( $form->isSubmitted() ) {
-						$form->fireEvents();
-					}
+				$carrierEntity = $this->carrierRepository->getById( (int) $carrierData['id'] );
+				if ( ! Repository::CUSTOMS_DECLARATIONS_ALLOWED && null !== $carrierEntity && $carrierEntity->requiresCustomsDeclarations() ) {
+					$carriersData[] = [
+						'message' => __( 'cannotUseThisCarrierBecauseRequiresCustomsDeclaration', 'packetery' ),
+						'data'    => $carrierData,
+					];
 				} else {
-					$options = get_option( Checkout::CARRIER_PREFIX . $carrierData['id'] );
-					if ( false !== $options ) {
-						$carrierData += $options;
+					if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
+						$form = $this->createForm( $post );
+						if ( $form->isSubmitted() ) {
+							$form->fireEvents();
+						}
+					} else {
+						$options = get_option( Checkout::CARRIER_PREFIX . $carrierData['id'] );
+						if ( false !== $options ) {
+							$carrierData += $options;
+						}
+						$form = $this->createForm( $carrierData );
 					}
-					$form = $this->createForm( $carrierData );
-				}
 
-				$carriersData[] = array(
-					'form' => $form,
-					'data' => $carrierData,
-				);
+					$carriersData[] = [
+						'form' => $form,
+						'data' => $carrierData,
+					];
+				}
 			}
 
 			$this->latteEngine->render(
