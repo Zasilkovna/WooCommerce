@@ -245,6 +245,7 @@ class Plugin {
 		}
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
+		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
 
 		// Adding custom actions to dropdown in admin order list.
 		add_filter( 'bulk_actions-edit-shop_order', [ $this->orderBulkActions, 'addActions' ], 20, 1 );
@@ -278,6 +279,23 @@ class Plugin {
 			[
 				'order' => $orderEntity,
 			]
+		);
+	}
+
+	/**
+	 * Renders delivery detail for packetery orders, on "thank you" page and in frontend detail.
+	 *
+	 * @param WC_Order $order WordPress order.
+	 */
+	public function renderOrderDetail( WC_Order $order ): void {
+		$orderEntity = new Order\Entity( $order );
+		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+			return;
+		}
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/order/order-detail.latte',
+			[ 'order' => $orderEntity ]
 		);
 	}
 
