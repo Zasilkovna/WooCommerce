@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Order;
+namespace PacketeryModule\Order;
 
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -82,7 +82,7 @@ class BulkActions {
 		}
 
 		if ( 'submit_to_api' === $action ) {
-			$results = [
+			$resultsCounter = [
 				'success' => 0,
 				'ignored' => 0,
 				'errors'  => 0,
@@ -90,11 +90,11 @@ class BulkActions {
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$this->packetSubmitter->submitPacket( $order, $results );
+					$this->packetSubmitter->submitPacket( $order, $resultsCounter );
 				}
 			}
 
-			$queryArgs                  = $results;
+			$queryArgs                  = $resultsCounter;
 			$queryArgs['submit_to_api'] = true;
 
 			return add_query_arg( $queryArgs, $redirectTo );

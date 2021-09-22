@@ -7,11 +7,10 @@
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Order;
+namespace PacketeryModule\Order;
 
 use Packetery\Helper;
-use Packetery\MessageManager;
+use PacketeryModule\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http\Request;

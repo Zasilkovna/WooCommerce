@@ -7,8 +7,7 @@
 
 declare( strict_types=1 );
 
-
-namespace Packetery;
+namespace PacketeryModule;
 
 use PacketeryLatte\Engine;
 

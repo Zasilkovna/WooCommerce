@@ -7,9 +7,9 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Order;
+namespace PacketeryModule\Order;
 
-use Packetery\ShippingMethod;
+use PacketeryModule\ShippingMethod;
 use WC_Order;
 
 /**
@@ -30,6 +30,7 @@ class Entity {
 	public const META_POINT_STREET     = 'packetery_point_street';
 	public const META_POINT_ZIP        = 'packetery_point_zip';
 	public const META_POINT_CITY       = 'packetery_point_city';
+	public const META_POINT_TYPE       = 'packetery_point_type';
 	public const META_WEIGHT           = 'packetery_weight';
 	public const META_LENGTH           = 'packetery_length';
 	public const META_WIDTH            = 'packetery_width';
@@ -209,6 +210,15 @@ class Entity {
 	}
 
 	/**
+	 * Gets pickup point type.
+	 *
+	 * @return string|null
+	 */
+	public function getPointType(): ?string {
+		return $this->getMetaAsString( self::META_POINT_TYPE );
+	}
+
+	/**
 	 * Tells if is packet submitted.
 	 *
 	 * @return bool
@@ -264,5 +274,47 @@ class Entity {
 	 */
 	public function getHeight(): ?float {
 		return $this->getMetaAsFloat( self::META_HEIGHT );
+	}
+
+	/**
+	 * Checks if is home delivery. In that case, carrierId is set and pointId is not set.
+	 *
+	 * @return bool
+	 */
+	public function isHomeDelivery(): bool {
+		return $this->getPointType() === null;
+	}
+
+	/**
+	 * Checks if is external pickup point delivery. In that case, pointCarrierId is set.
+	 *
+	 * @return bool
+	 */
+	public function isExternalPickupPointDelivery(): bool {
+		$ppType = $this->getPointType();
+
+		return ( $ppType && 'external' === $ppType );
+	}
+
+	/**
+	 * Checks if uses external carrier.
+	 *
+	 * @return bool
+	 */
+	public function isExternalCarrier(): bool {
+		return $this->getCarrierId() !== 'packeta';
+	}
+
+	/**
+	 * Gets pickup point/carrier id.
+	 *
+	 * @return int
+	 */
+	public function getAddressId(): int {
+		if ( $this->isExternalPickupPointDelivery() || $this->isHomeDelivery() ) {
+			return (int) $this->getCarrierId();
+		}
+
+		return (int) $this->getPointId();
 	}
 }

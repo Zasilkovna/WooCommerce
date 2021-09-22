@@ -7,13 +7,13 @@
 
 declare( strict_types=1 );
 
-namespace Packetery;
+namespace PacketeryModule;
 
-use Packetery\Carrier\Downloader;
-use Packetery\Carrier\OptionsPage;
-use Packetery\Carrier\Repository;
-use Packetery\Order;
-use Packetery\Product;
+use PacketeryModule\Carrier\Downloader;
+use PacketeryModule\Carrier\OptionsPage;
+use PacketeryModule\Carrier\Repository;
+use PacketeryModule\Order;
+use PacketeryModule\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 

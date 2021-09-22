@@ -5,7 +5,9 @@
  * @package Packetery
  */
 
-namespace Packetery\Carrier;
+declare( strict_types=1 );
+
+namespace PacketeryModule\Carrier;
 
 /**
  * Class DownloadException.

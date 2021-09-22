@@ -5,7 +5,9 @@
  * @package Packetery\EntityFactory
  */
 
-namespace Packetery\EntityFactory;
+declare( strict_types=1 );
+
+namespace PacketeryModule\EntityFactory;
 
 use Packetery\Entity;
 

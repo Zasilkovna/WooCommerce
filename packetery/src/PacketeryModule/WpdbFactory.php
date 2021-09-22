@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-namespace Packetery;
+namespace PacketeryModule;
 
 /**
  * Class Wpdb_Factory

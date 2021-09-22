@@ -7,8 +7,7 @@
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Options;
+namespace PacketeryModule\Options;
 
 /**
  * Class Provider

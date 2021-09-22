@@ -7,10 +7,9 @@
 
 declare( strict_types=1 );
 
+namespace PacketeryModule\Options;
 
-namespace Packetery\Options;
-
-use Packetery\FormFactory;
+use PacketeryModule\FormFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 

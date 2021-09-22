@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-namespace Packetery;
+namespace PacketeryModule;
 
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Forms\Validator;

@@ -53,7 +53,8 @@ class Client {
 			$packet     = $soapClient->createPacket( $this->apiPassword, $request->getSubmittableData() );
 			$response->setBarcode( $packet->barcode );
 		} catch ( SoapFault $exception ) {
-			$response->setErrors( $this->getSoapFaultErrors( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+			$response->setValidationErrors( $this->getValidationErrors( $exception ) );
 		}
 
 		return $response;
@@ -66,9 +67,8 @@ class Client {
 	 *
 	 * @return array
 	 */
-	protected function getSoapFaultErrors( SoapFault $exception ): array {
-		$errors   = [];
-		$errors[] = $exception->faultstring;
+	protected function getValidationErrors( SoapFault $exception ): array {
+		$errors = [];
 
 		$faults = $exception->detail->PacketAttributesFault->attributes->fault ?? [];
 		if ( $faults && ! is_array( $faults ) ) {

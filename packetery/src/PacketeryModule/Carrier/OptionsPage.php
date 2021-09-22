@@ -7,15 +7,15 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Carrier;
+namespace PacketeryModule\Carrier;
 
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Forms\Validator;
 use PacketeryNette\Http\Request;
-use Packetery\Checkout;
-use Packetery\FormFactory;
+use PacketeryModule\Checkout;
+use PacketeryModule\FormFactory;
 
 /**
  * Class OptionsPage

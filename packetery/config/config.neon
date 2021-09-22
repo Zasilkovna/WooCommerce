@@ -3,27 +3,27 @@ parameters:
 
 services:
 	- Packetery\Product\DataTab
-	helper: Packetery\Helper
-	messageManager: Packetery\MessageManager
-	adminOrderPageMetabox: Packetery\Order\Metabox
-	plugin: Packetery\Plugin
-	latteEngineFactory: Packetery\LatteEngineFactory
+	- Packetery\Helper
+	- PacketeryModule\MessageManager
+	- PacketeryModule\Order\Metabox
+	- PacketeryModule\Plugin
+	latteEngineFactory: PacketeryModule\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
-	optionsPage: Packetery\Options\Page
-	optionsProvider: Packetery\Options\Provider
-	carrierDownloader: Packetery\Carrier\Downloader
-	carrierUpdater: Packetery\Carrier\Updater
-	carrierRepository: Packetery\Carrier\Repository
-	guzzleClient: PacketeryGuzzleHttp\Client
-	wpdbFactory: Packetery\WpdbFactory
+	- PacketeryModule\Options\Page
+	optionsProvider: PacketeryModule\Options\Provider
+	- PacketeryModule\Carrier\Downloader
+	- PacketeryModule\Carrier\Updater
+	- PacketeryModule\Carrier\Repository
+	- PacketeryGuzzleHttp\Client
+	wpdbFactory: PacketeryModule\WpdbFactory
 	wpdb: @wpdbFactory::create()
-	checkout: Packetery\Checkout
-	carrierOptionsPage: Packetery\Carrier\OptionsPage
-	formFactory: Packetery\FormFactory
-	countryListingPage: Packetery\Carrier\CountryListingPage
-	orderBulkActions: Packetery\Order\BulkActions
-	labelPrint: Packetery\Order\LabelPrint
-	gridExtender: Packetery\Order\GridExtender
+	- PacketeryModule\Checkout
+	- PacketeryModule\Carrier\OptionsPage
+	- PacketeryModule\FormFactory
+	- PacketeryModule\Carrier\CountryListingPage
+	- PacketeryModule\Order\BulkActions
+	- PacketeryModule\Order\LabelPrint
+	- PacketeryModule\Order\GridExtender
 	- Packetery\Api\Soap\Client(@optionsProvider::get_api_password())
-	- Packetery\Order\PacketSubmitter
-	- Packetery\EntityFactory\Carrier
+	- PacketeryModule\Order\PacketSubmitter
+	- PacketeryModule\EntityFactory\Carrier

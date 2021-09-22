@@ -24,11 +24,18 @@ class CreatePacket {
 	private $barcode;
 
 	/**
-	 * Errors.
+	 * Packet attributes errors.
 	 *
 	 * @var array
 	 */
-	private $errors;
+	private $validationErrors;
+
+	/**
+	 * Fault string.
+	 *
+	 * @var string
+	 */
+	private $faultString;
 
 	/**
 	 * Sets barcode.
@@ -40,12 +47,21 @@ class CreatePacket {
 	}
 
 	/**
+	 * Sets fault string.
+	 *
+	 * @param string $faultString Fault string.
+	 */
+	public function setFaultString( string $faultString ): void {
+		$this->faultString = $faultString;
+	}
+
+	/**
 	 * Sets errors.
 	 *
 	 * @param array $errors Errors.
 	 */
-	public function setErrors( array $errors ): void {
-		$this->errors = $errors;
+	public function setValidationErrors( array $errors ): void {
+		$this->validationErrors = $errors;
 	}
 
 	/**
@@ -58,20 +74,32 @@ class CreatePacket {
 	}
 
 	/**
+	 * Gets fault string.
+	 *
+	 * @return string|null
+	 */
+	public function getFaultString(): ?string {
+		return $this->faultString;
+	}
+
+	/**
 	 * Gets errors.
 	 *
 	 * @return array|null
 	 */
-	public function getErrors(): ?array {
-		return $this->errors;
+	public function getValidationErrors(): ?array {
+		return $this->validationErrors;
 	}
 
 	/**
-	 * Gets errors as string.
+	 * Gets all errors as string.
 	 *
 	 * @return string
 	 */
 	public function getErrorsAsString(): string {
-		return implode( ', ', $this->errors );
+		$allErrors = $this->validationErrors;
+		array_unshift( $allErrors, $this->faultString );
+
+		return implode( ', ', $allErrors );
 	}
 }

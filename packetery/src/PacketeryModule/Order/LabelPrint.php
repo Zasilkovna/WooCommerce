@@ -5,10 +5,12 @@
  * @package Packetery\Order
  */
 
-namespace Packetery\Order;
+declare( strict_types=1 );
 
-use Packetery\FormFactory;
-use Packetery\Options\Provider;
+namespace PacketeryModule\Order;
+
+use PacketeryModule\FormFactory;
+use PacketeryModule\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http\Request;

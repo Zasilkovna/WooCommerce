@@ -7,10 +7,10 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Carrier;
+namespace PacketeryModule\Carrier;
 
 use Packetery\Entity;
-use Packetery\EntityFactory;
+use PacketeryModule\EntityFactory;
 
 /**
  * Class CarrierRepository

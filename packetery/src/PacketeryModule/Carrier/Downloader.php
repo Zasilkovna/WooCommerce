@@ -7,9 +7,9 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Carrier;
+namespace PacketeryModule\Carrier;
 
-use Packetery\Options\Provider;
+use PacketeryModule\Options\Provider;
 use PacketeryGuzzleHttp\Client;
 use PacketeryGuzzleHttp\Exception\GuzzleException;
 use PacketeryGuzzleHttp\PacketeryPsr7\Response;

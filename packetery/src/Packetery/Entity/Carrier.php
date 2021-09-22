@@ -5,6 +5,8 @@
  * @package Packetery\Entities
  */
 
+declare( strict_types=1 );
+
 namespace Packetery\Entity;
 
 /**

@@ -5,7 +5,9 @@
  * @package Packetery
  */
 
-namespace Packetery;
+declare( strict_types=1 );
+
+namespace PacketeryModule;
 
 use PacketeryNette\DI\Container;
 

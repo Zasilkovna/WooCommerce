@@ -5,7 +5,9 @@
  * @package Packetery\Carrier
  */
 
-namespace Packetery\Carrier;
+declare( strict_types=1 );
+
+namespace PacketeryModule\Carrier;
 
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;

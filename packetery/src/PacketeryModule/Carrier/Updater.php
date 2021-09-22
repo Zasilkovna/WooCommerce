@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Carrier;
+namespace PacketeryModule\Carrier;
 
 /**
  * Class CarrierUpdater.

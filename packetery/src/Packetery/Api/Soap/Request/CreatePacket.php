@@ -9,6 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Api\Soap\Request;
 
+use Packetery\Entity\Address;
+use Packetery\Entity\Size;
+
 /**
  * Class CreatePacket.
  *
@@ -87,6 +90,13 @@ class CreatePacket {
 	private $street;
 
 	/**
+	 * Customer houseNumber for address delivery.
+	 *
+	 * @var string
+	 */
+	private $houseNumber;
+
+	/**
 	 * Customer city for address delivery.
 	 *
 	 * @var string
@@ -127,6 +137,35 @@ class CreatePacket {
 	 * @var string
 	 */
 	private $note;
+
+	/**
+	 * CreatePacket constructor.
+	 *
+	 * @param string $number Order id.
+	 * @param string $name Customer name.
+	 * @param string $surname Customer surname.
+	 * @param float  $value Order value.
+	 * @param float  $weight Packet weight.
+	 * @param int    $addressId Carrier or pickup point id.
+	 * @param string $eshop Sender label.
+	 */
+	public function __construct(
+		string $number,
+		string $name,
+		string $surname,
+		float $value,
+		float $weight,
+		int $addressId,
+		string $eshop
+	) {
+		$this->number    = $number;
+		$this->name      = $name;
+		$this->surname   = $surname;
+		$this->value     = $value;
+		$this->weight    = $weight;
+		$this->addressId = $addressId;
+		$this->eshop     = $eshop;
+	}
 
 	/**
 	 * Gets all properties as array.
@@ -273,18 +312,27 @@ class CreatePacket {
 	}
 
 	/**
+	 * Sets address.
+	 *
+	 * @param Address $address Address.
+	 */
+	public function setAddress( Address $address ): void {
+		$addressArray = $address->__toArray();
+		$this->street = $addressArray['street'];
+		$this->city   = $addressArray['city'];
+		$this->zip    = $addressArray['zip'];
+		if ( $addressArray['houseNumber'] ) {
+			$this->houseNumber = $addressArray['houseNumber'];
+		}
+	}
+
+	/**
 	 * Sets size.
 	 *
-	 * @param float|null $length Packet length.
-	 * @param float|null $width Packet width.
-	 * @param float|null $height Packet height.
+	 * @param Size $size Size.
 	 */
-	public function setSize( ?float $length, ?float $width, ?float $height ): void {
-		$this->size = [
-			'length' => $length,
-			'width'  => $width,
-			'height' => $height,
-		];
+	public function setSize( Size $size ): void {
+		$this->size = $size->__toArray();
 	}
 
 	/**

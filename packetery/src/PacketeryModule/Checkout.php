@@ -7,11 +7,11 @@
 
 declare( strict_types=1 );
 
-namespace Packetery;
+namespace PacketeryModule;
 
-use Packetery\Carrier\Repository;
-use Packetery\Options\Provider;
-use Packetery\Order\Entity;
+use PacketeryModule\Carrier\Repository;
+use PacketeryModule\Options\Provider;
+use PacketeryModule\Order\Entity;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -52,7 +52,7 @@ class Checkout {
 			'required' => true,
 		),
 		'pickupPointType'      => array(
-			'name'     => 'packetery_point_type',
+			'name'     => Entity::META_POINT_TYPE,
 			'required' => true,
 		),
 		'carrierId'            => array(
