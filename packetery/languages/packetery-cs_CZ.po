@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-09-22T14:44:11+02:00\n"
-"PO-Revision-Date: 2021-09-22 14:44+0200\n"
+"POT-Creation-Date: 2021-09-22T16:29:07+02:00\n"
+"PO-Revision-Date: 2021-09-22 16:33+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -19,7 +19,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #. Author of the plugin
 #: src/Packetery/Options/Page.php:65 src/Packetery/Order/Metabox.php:82
-#: src/Packetery/Product/Tab.php:69
+#: src/Packetery/Product/Tab.php:84
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:14
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:35
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:62
@@ -136,7 +136,7 @@ msgstr "Není vybráno výdejní místo."
 msgid "This field is required!"
 msgstr "Toto políčko je povinné!"
 
-#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:346
+#: src/Packetery/Options/Page.php:64 src/Packetery/Plugin.php:347
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -294,20 +294,20 @@ msgstr "Relace vypršela! Zkuste to prosím znovu."
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
-#: src/Packetery/Plugin.php:345
+#: src/Packetery/Plugin.php:346
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
-#: src/Packetery/Plugin.php:367
+#: src/Packetery/Plugin.php:368
 msgid "View Packeta documentation"
 msgstr "Zobrazit Packeta dokumentaci"
 
-#: src/Packetery/Plugin.php:368
+#: src/Packetery/Plugin.php:369
 msgid "Documentation"
 msgstr "Dokumentace"
 
-#: src/Packetery/Product/Tab.php:83
-msgid "Age verification 18+"
+#: src/Packetery/Product/Tab.php:101
+msgid "ageVerification18PlusLabel"
 msgstr "Ověření věku 18+"
 
 #: src/Packetery/ShippingMethod.php:31 src/Packetery/ShippingMethod.php:32

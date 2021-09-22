@@ -39,6 +39,13 @@ class Tab {
 	private $latteEngine;
 
 	/**
+	 * Product to be processed.
+	 *
+	 * @var Product\Entity
+	 */
+	private $product;
+
+	/**
 	 * Tab constructor.
 	 *
 	 * @param FormFactory $formFactory Factory engine.
@@ -68,14 +75,15 @@ class Tab {
 	 * @return array
 	 */
 	public function registerTab( array $tabs ): array {
-		$product = Product\Entity::fromGlobals();
-		if ( false === $product->isRelevant() ) {
+		$this->product = Product\Entity::fromGlobals();
+		if ( false === $this->product->isRelevant() ) {
 			return $tabs;
 		}
 
 		$tabs[ self::NAME ] = [
 			'label'  => __( 'Packeta', 'packetery' ),
 			'target' => self::NAME,
+			'class' => [ 'hide_if_virtual', 'hide_if_downloadable' ],
 		];
 
 		return $tabs;
@@ -87,15 +95,13 @@ class Tab {
 	 * @return Form
 	 */
 	private function createForm(): Form {
-		$product = Product\Entity::fromGlobals();
+		$this->product = Product\Entity::fromGlobals();
 
 		$form = $this->formFactory->createForm();
-		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'Age verification 18+', 'packetery' ) );
+		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'ageVerification18PlusLabel', 'packetery' ) );
 
 		$form->setDefaults(
-			[
-				Product\Entity::META_AGE_VERIFICATION_18_PLUS => $product->isAgeVerification18PlusEnabled(),
-			]
+			[ Product\Entity::META_AGE_VERIFICATION_18_PLUS => $this->product->isAgeVerification18PlusEnabled() ]
 		);
 
 		return $form;
@@ -109,9 +115,7 @@ class Tab {
 	public function render(): void {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product/tab.latte',
-			[
-				'form' => $this->createForm(),
-			]
+			[ 'form' => $this->createForm() ]
 		);
 	}
 
@@ -121,19 +125,24 @@ class Tab {
 	 * @param int|string $postId Post ID.
 	 */
 	public function saveData( $postId ): void {
-		$product = Product\Entity::fromPostId( $postId );
-		if ( false === $product->isRelevant() ) {
+		$this->product = Product\Entity::fromPostId( $postId );
+		if ( false === $this->product->isRelevant() ) {
 			return;
 		}
 
 		$form              = $this->createForm();
-		$form->onSuccess[] = function ( Form $form ) use ( $postId ) {
-			$values = $form->getValues( 'array' );
-			update_post_meta( $postId, Product\Entity::META_AGE_VERIFICATION_18_PLUS, ( $values[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ] ? '1' : '0' ) );
-		};
+		$form->onSuccess[] = [ $this, 'processFormData' ];
 
 		if ( $form->isSubmitted() ) {
 			$form->fireEvents();
 		}
+	}
+
+	/**
+	 * @param Form $form Form.
+	 */
+	public function processFormData( Form $form ): void {
+		$values = $form->getValues( 'array' );
+		update_post_meta( $this->product->getId(), Product\Entity::META_AGE_VERIFICATION_18_PLUS, ( $values[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ] ? '1' : '0' ) );
 	}
 }

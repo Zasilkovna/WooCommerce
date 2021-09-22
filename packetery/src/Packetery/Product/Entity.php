@@ -76,4 +76,13 @@ class Entity {
 	public function isAgeVerification18PlusEnabled(): bool {
 		return $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
 	}
+
+	/**
+	 * Gets product ID.
+	 *
+	 * @return int
+	 */
+	public function getId(): int {
+		return $this->product->get_id();
+	}
 }
