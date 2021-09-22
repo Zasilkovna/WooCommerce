@@ -18,6 +18,8 @@
         <exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase"/>
         <exclude name="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase"/>
         <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+        <exclude name="PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore"/>
+        <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodDoubleUnderscore"/>
     </rule>
 
     <rule ref="WordPress.WP.I18n">
