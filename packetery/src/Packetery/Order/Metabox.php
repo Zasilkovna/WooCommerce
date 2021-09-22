@@ -77,6 +77,11 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
+		$order = Entity::from_globals( false );
+		if ( null === $order || false === $order->is_packetery_related() ) {
+			return;
+		}
+
 		add_meta_box(
 			'packetery_metabox',
 			__( 'Packeta', 'packetery' ),
@@ -86,7 +91,7 @@ class Metabox {
 			),
 			'shop_order',
 			'side',
-			'core'
+			'high'
 		);
 	}
 
@@ -162,6 +167,11 @@ class Metabox {
 	 * @return mixed Order id.
 	 */
 	public function save_fields( $post_id ) {
+		$order = Entity::fromPostId( $post_id, false );
+		if ( null === $order || false === $order->is_packetery_related() ) {
+			return $post_id;
+		}
+
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return $post_id;
 		}

@@ -2,3 +2,30 @@
 .packetery-options-page input[type=text] {
     width: 100%;
 }
+
+.packetery-order-metabox-label-cell {
+    text-align: left;
+}
+
+.packetery-order-metabox-input {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.packetery-table {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.packetery-table-row {
+    display: table-row;
+}
+
+.packetery-table-cell {
+    display: table-cell;
+    box-sizing: border-box;
+    text-align: left;
+    overflow: hidden;
+}

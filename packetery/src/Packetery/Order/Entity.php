@@ -47,7 +47,19 @@ class Entity {
 	 */
 	public static function from_globals( bool $needed = true ): ?self {
 		global $post;
-		$order = wc_get_order( $post->ID );
+		return self::fromPostId( $post->ID, $needed );
+	}
+
+	/**
+	 * Creates value object from post id.
+	 *
+	 * @param int|string $postId
+	 * @param bool $needed
+	 *
+	 * @return static|null
+	 */
+	public static function fromPostId( $postId, bool $needed = true ): ?self {
+		$order = wc_get_order( $postId );
 
 		if ( ! $needed && ! $order instanceof \WC_Order ) {
 			return null;
