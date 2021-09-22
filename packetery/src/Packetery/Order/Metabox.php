@@ -14,6 +14,7 @@ use Packetery\Helper;
 use Packetery\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
+use PacketeryNette\Http\Request;
 
 /**
  * Class Metabox
@@ -51,16 +52,25 @@ class Metabox {
 	private $order_form;
 
 	/**
+	 * HTTP request.
+	 *
+	 * @var Request
+	 */
+	private $request;
+
+	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine         $latte_engine    PacketeryLatte engine.
 	 * @param MessageManager $message_manager Message manager.
 	 * @param Helper         $helper          Helper.
+	 * @param Request        $request
 	 */
-	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper ) {
+	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper, Request $request ) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
+		$this->request         = $request;
 	}
 
 	/**
@@ -168,16 +178,13 @@ class Metabox {
 	 */
 	public function save_fields( $post_id ) {
 		$order = Entity::fromPostId( $post_id, false );
-		if ( null === $order || false === $order->is_packetery_related() ) {
-			return $post_id;
-		}
 
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		if (
+			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
+			! isset( $this->request->post['packetery_order_metabox_nonce'] ) ||
+			null === $order || false === $order->is_packetery_related()
+		) {
 			return $post_id;
-		}
-
-		if ( ! isset( $_POST['packetery_order_metabox_nonce'] ) ) {
-			return $post_id; // Form is not rendered to user.
 		}
 
 		if ( $this->order_form->isValid() === false ) {
