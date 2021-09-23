@@ -75,11 +75,6 @@ class Tab {
 	 * @return array
 	 */
 	public function registerTab( array $tabs ): array {
-		$this->product = Product\Entity::fromGlobals();
-		if ( false === $this->product->isRelevant() ) {
-			return $tabs;
-		}
-
 		$tabs[ self::NAME ] = [
 			'label'  => __( 'Packeta', 'packetery' ),
 			'target' => self::NAME,
