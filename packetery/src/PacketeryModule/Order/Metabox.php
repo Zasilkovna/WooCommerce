@@ -63,7 +63,7 @@ class Metabox {
 	 * @param Engine         $latte_engine    PacketeryLatte engine.
 	 * @param MessageManager $message_manager Message manager.
 	 * @param Helper         $helper          Helper.
-	 * @param Request        $request
+	 * @param Request        $request         Http request.
 	 */
 	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper, Request $request ) {
 		$this->latte_engine    = $latte_engine;
@@ -180,7 +180,7 @@ class Metabox {
 	 * @return mixed Order id.
 	 */
 	public function save_fields( $post_id ) {
-		$order = Entity::fromPostId( $post_id, false );
+		$order = Entity::fromPostId( $post_id );
 
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||

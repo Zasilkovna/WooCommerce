@@ -139,24 +139,31 @@ class CreatePacket {
 	private $note;
 
 	/**
+	 * Adult content presence flag.
+	 *
+	 * @var int
+	 */
+	private $adultContent;
+
+	/**
 	 * CreatePacket constructor.
 	 *
-	 * @param string $number Order id.
-	 * @param string $name Customer name.
-	 * @param string $surname Customer surname.
-	 * @param float  $value Order value.
-	 * @param float  $weight Packet weight.
-	 * @param int    $addressId Carrier or pickup point id.
-	 * @param string $eshop Sender label.
+	 * @param string|null $number Order id.
+	 * @param string|null $name Customer name.
+	 * @param string|null $surname Customer surname.
+	 * @param float|null  $value Order value.
+	 * @param float|null  $weight Packet weight.
+	 * @param int|null    $addressId Carrier or pickup point id.
+	 * @param string|null $eshop Sender label.
 	 */
 	public function __construct(
-		string $number,
-		string $name,
-		string $surname,
-		float $value,
-		float $weight,
-		int $addressId,
-		string $eshop
+		?string $number,
+		?string $name,
+		?string $surname,
+		?float $value,
+		?float $weight,
+		?int $addressId,
+		?string $eshop
 	) {
 		$this->number    = $number;
 		$this->name      = $name;
@@ -345,5 +352,77 @@ class CreatePacket {
 	 */
 	public function setNote( string $note ): void {
 		$this->note = $note;
+	}
+
+	/**
+	 * Sets adult content presence flag.
+	 *
+	 * @param int $adultContent Adult content presence flag.
+	 */
+	public function setAdultContent( int $adultContent ): void {
+		$this->adultContent = $adultContent;
+	}
+
+	/**
+	 * Gets order id.
+	 *
+	 * @return string|null
+	 */
+	public function getNumber(): ?string {
+		return $this->number;
+	}
+
+	/**
+	 * Gets customer name.
+	 *
+	 * @return string|null
+	 */
+	public function getName(): ?string {
+		return $this->name;
+	}
+
+	/**
+	 * Gets customer surname.
+	 *
+	 * @return string|null
+	 */
+	public function getSurname(): ?string {
+		return $this->surname;
+	}
+
+	/**
+	 * Gets order value.
+	 *
+	 * @return float|null
+	 */
+	public function getValue(): ?float {
+		return $this->value;
+	}
+
+	/**
+	 * Gets order weight.
+	 *
+	 * @return float|null
+	 */
+	public function getWeight(): ?float {
+		return $this->weight;
+	}
+
+	/**
+	 * Gets carrier or internal pickup point id.
+	 *
+	 * @return int|null
+	 */
+	public function getAddressId(): ?int {
+		return $this->addressId;
+	}
+
+	/**
+	 * Gets sender label.
+	 *
+	 * @return string|null
+	 */
+	public function getEshop(): ?string {
+		return $this->eshop;
 	}
 }

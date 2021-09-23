@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Validator;
 
+use Packetery\Api\Soap\Request;
+
 /**
  * Class CreatePacket
  *
@@ -19,26 +21,20 @@ class CreatePacket {
 	/**
 	 * Validates data needed to instantiate.
 	 *
-	 * @param string|null $number Order id.
-	 * @param string|null $name Customer name.
-	 * @param string|null $surname Customer surname.
-	 * @param float|null  $value Order value.
-	 * @param float|null  $weight Packet weight.
-	 * @param int|null    $addressId Carrier or pickup point id.
-	 * @param string|null $eshop Sender label.
+	 * @param Request\CreatePacket $request CreatePacket request.
 	 *
 	 * @return bool
 	 */
-	public function validate(
-		?string $number,
-		?string $name,
-		?string $surname,
-		?float $value,
-		?float $weight,
-		?int $addressId,
-		?string $eshop
-	): bool {
-		return ( $number && $name && $surname && $value && $weight && $addressId && $eshop );
+	public function validate( Request\CreatePacket $request ): bool {
+		return (
+			$request->getNumber() &&
+			$request->getName() &&
+			$request->getSurname() &&
+			$request->getValue() &&
+			$request->getWeight() &&
+			$request->getAddressId() &&
+			$request->getEshop()
+		);
 	}
 
 }

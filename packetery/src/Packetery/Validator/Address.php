@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Validator;
 
+use Packetery\Entity;
+
 /**
  * Class Address
  *
@@ -19,14 +21,12 @@ class Address {
 	/**
 	 * Validates data needed to instantiate.
 	 *
-	 * @param string|null $street Street.
-	 * @param string|null $city City.
-	 * @param string|null $zip Zip.
+	 * @param Entity\Address $address Address entity.
 	 *
 	 * @return bool
 	 */
-	public function validate( ?string $street, ?string $city, ?string $zip ): bool {
-		return ( $street && $city && $zip );
+	public function validate( Entity\Address $address ): bool {
+		return ( $address->getStreet() && $address->getStreet() && $address->getZip() );
 	}
 
 

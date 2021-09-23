@@ -39,11 +39,11 @@ class Size {
 	/**
 	 * Size constructor.
 	 *
-	 * @param float $length Length.
-	 * @param float $width Width.
-	 * @param float $height Height.
+	 * @param float|null $length Length.
+	 * @param float|null $width Width.
+	 * @param float|null $height Height.
 	 */
-	public function __construct( float $length, float $width, float $height ) {
+	public function __construct( ?float $length, ?float $width, ?float $height ) {
 		$this->length = $length;
 		$this->width  = $width;
 		$this->height = $height;

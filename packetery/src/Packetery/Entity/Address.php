@@ -47,11 +47,11 @@ class Address {
 	/**
 	 * Address constructor.
 	 *
-	 * @param string $street Street.
-	 * @param string $city City.
-	 * @param string $zip Zip.
+	 * @param string|null $street Street.
+	 * @param string|null $city City.
+	 * @param string|null $zip Zip.
 	 */
-	public function __construct( string $street, string $city, string $zip ) {
+	public function __construct( ?string $street, ?string $city, ?string $zip ) {
 		$this->street = $street;
 		$this->city   = $city;
 		$this->zip    = $zip;

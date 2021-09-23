@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Validator;
 
+use Packetery\Entity;
+
 /**
  * Class Size
  *
@@ -19,14 +21,12 @@ class Size {
 	/**
 	 * Validates data needed to instantiate.
 	 *
-	 * @param float|null $length Length.
-	 * @param float|null $width Width.
-	 * @param float|null $height Height.
+	 * @param Entity\Size $size Size entity.
 	 *
 	 * @return bool
 	 */
-	public function validate( ?float $length, ?float $width, ?float $height ): bool {
-		return ( $length && $width && $height );
+	public function validate( Entity\Size $size ): bool {
+		return ( $size->getLength() && $size->getWidth() && $size->getHeight() );
 	}
 
 }

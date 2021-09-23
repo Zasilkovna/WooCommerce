@@ -117,7 +117,7 @@ class PacketSubmitter {
 				if ( $logger ) {
 					$logger->info( $orderData['id'] . ': ' . $e->getMessage() );
 				}
-				$resultsCounter['ignored']++;
+				$resultsCounter['errors']++;
 
 				return;
 			}
@@ -157,8 +157,10 @@ class PacketSubmitter {
 		$orderValue = (float) $order->get_total( 'raw' );
 		$entity     = new Entity( $order );
 
-		$this->validateRequiredRequestData( $orderId, $contactInfo, $orderValue, $entity );
 		$request = $this->createRequest( $orderId, $contactInfo, $orderValue, $entity );
+		if ( ! $this->createPacketValidator->validate( $request ) ) {
+			throw new IncompleteRequestException( 'All required packet attributes are not set.' );
+		}
 		$this->addHomeDeliveryDetails( $entity, $contactInfo, $request );
 
 		// Shipping address phone is optional.
@@ -175,30 +177,6 @@ class PacketSubmitter {
 		$this->addExternalCarrierDetails( $entity, $request );
 
 		return $request;
-	}
-
-	/**
-	 * Validates if all required data are set.
-	 *
-	 * @param string|null $id Order id.
-	 * @param array|null  $contactInformation Contact info.
-	 * @param float|null  $orderTotalPrice Order value.
-	 * @param Entity      $entity Order entity.
-	 *
-	 * @throws IncompleteRequestException For the case request is not eligible to be sent to API.
-	 */
-	private function validateRequiredRequestData( ?string $id, ?array $contactInformation, ?float $orderTotalPrice, Entity $entity ): void {
-		if ( ! $this->createPacketValidator->validate(
-			$id,
-			$contactInformation['first_name'],
-			$contactInformation['last_name'],
-			$orderTotalPrice,
-			$entity->getWeight(),
-			$entity->getAddressId(),
-			$this->optionsProvider->get_sender()
-		) ) {
-			throw new IncompleteRequestException( 'All required packet attributes are not set.' );
-		}
 	}
 
 	/**
@@ -236,10 +214,10 @@ class PacketSubmitter {
 		if ( ! $entity->isHomeDelivery() ) {
 			return;
 		}
-		if ( ! $this->addressValidator->validate( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] ) ) {
+		$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
+		if ( ! $this->addressValidator->validate( $address ) ) {
 			throw new IncompleteRequestException( 'Address is not complete.' );
 		}
-		$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		$request->setAddress( $address );
 		// Additional address information.
 		if ( ! empty( $contactInfo['address_2'] ) ) {
@@ -266,10 +244,10 @@ class PacketSubmitter {
 		$carrierId = $entity->getCarrierId();
 		$carrier   = $this->carrierRepository->getById( (int) $carrierId );
 		if ( $carrier && $carrier->requiresSize() ) {
-			if ( ! $this->sizeValidator->validate( $entity->getLength(), $entity->getWidth(), $entity->getHeight() ) ) {
+			$size = new Size( $entity->getLength(), $entity->getWidth(), $entity->getHeight() );
+			if ( ! $this->sizeValidator->validate( $size ) ) {
 				throw new IncompleteRequestException( 'All packet dimensions are not set.' );
 			}
-			$size = new Size( $entity->getLength(), $entity->getWidth(), $entity->getHeight() );
 			$request->setSize( $size );
 		}
 	}
