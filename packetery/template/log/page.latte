@@ -1,0 +1,43 @@
+{varType Packetery\Log\Entity[] $rows}
+
+<div id="packetery-log-page">
+    <h1>{__( 'Packeta', 'packetery' )} - {__( 'logsPageTitle', 'packetery' )}</h1>
+
+    <div class="packetery-table">
+        <div class="packetery-table-row">
+            <div class="packetery-table-cell">
+                <strong>{__( 'status', 'packetery' )}</strong>
+            </div>
+            <div class="packetery-table-cell">
+                <strong>{__( 'dateAndTime', 'packetery' )}</strong>
+            </div>
+            <div class="packetery-table-cell">
+                <strong>{__( 'action', 'packetery' )}</strong>
+            </div>
+            <div class="packetery-table-cell">
+                <strong>{__( 'note', 'packetery' )}</strong>
+            </div>
+        </div>
+
+        {foreach $rows as $row}
+        <div class="packetery-table-row">
+            <div class="packetery-table-cell">
+                {$row->getStatus()}
+            </div>
+            <div class="packetery-table-cell">
+                {$row->getDateFormatted()}
+            </div>
+            <div class="packetery-table-cell">
+                {$row->getTranslatedAction()}
+            </div>
+            <div class="packetery-table-cell">
+                {$row->getNote()}
+            </div>
+        </div>
+        {/foreach}
+    </div>
+
+    <div n:if="empty($rows)" class="packetery-table-row">
+        {__( 'logListIsEmpty', 'packetery' )}
+    </div>
+</div>
