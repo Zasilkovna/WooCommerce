@@ -157,7 +157,7 @@ class Plugin {
 	 * Method to register hooks
 	 */
 	public function run(): void {
-		$this->loadTranslation();
+		add_action( 'init', array( $this, 'loadTranslation' ), -1000 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		Form::initialize();
@@ -283,7 +283,7 @@ class Plugin {
 	private function getLocale(): string {
 		return apply_filters(
 			'plugin_locale',
-			( ( is_admin() && function_exists( 'get_user_locale' ) ) ? get_user_locale() : get_locale() ),
+			( is_admin() ? get_user_locale() : get_locale() ),
 			self::DOMAIN
 		);
 	}
