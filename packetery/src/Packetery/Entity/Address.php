@@ -58,12 +58,39 @@ class Address {
 	}
 
 	/**
-	 * Gets all properties as array.
+	 * Gets street.
 	 *
-	 * @return array
+	 * @return string|null
 	 */
-	public function __toArray(): array {
-		return get_object_vars( $this );
+	public function getStreet(): ?string {
+		return $this->street;
+	}
+
+	/**
+	 * Gets city.
+	 *
+	 * @return string|null
+	 */
+	public function getCity(): ?string {
+		return $this->city;
+	}
+
+	/**
+	 * Gets zip.
+	 *
+	 * @return string|null
+	 */
+	public function getZip(): ?string {
+		return $this->zip;
+	}
+
+	/**
+	 * Gets house number.
+	 *
+	 * @return string|null
+	 */
+	public function getHouseNumber(): ?string {
+		return $this->houseNumber;
 	}
 
 	/**

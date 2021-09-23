@@ -317,12 +317,11 @@ class CreatePacket {
 	 * @param Address $address Address.
 	 */
 	public function setAddress( Address $address ): void {
-		$addressArray = $address->__toArray();
-		$this->street = $addressArray['street'];
-		$this->city   = $addressArray['city'];
-		$this->zip    = $addressArray['zip'];
-		if ( $addressArray['houseNumber'] ) {
-			$this->houseNumber = $addressArray['houseNumber'];
+		$this->street = $address->getStreet();
+		$this->city   = $address->getCity();
+		$this->zip    = $address->getZip();
+		if ( $address->getHouseNumber() ) {
+			$this->houseNumber = $address->getHouseNumber();
 		}
 	}
 
@@ -332,7 +331,11 @@ class CreatePacket {
 	 * @param Size $size Size.
 	 */
 	public function setSize( Size $size ): void {
-		$this->size = $size->__toArray();
+		$this->size = [
+			'lenght' => $size->getLength(),
+			'width'  => $size->getWidth(),
+			'height' => $size->getHeight(),
+		];
 	}
 
 	/**

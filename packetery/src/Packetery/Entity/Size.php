@@ -50,11 +50,29 @@ class Size {
 	}
 
 	/**
-	 * Gets all properties as array.
+	 * Gets length.
 	 *
-	 * @return array
+	 * @return float|null
 	 */
-	public function __toArray(): array {
-		return get_object_vars( $this );
+	public function getLength(): ?float {
+		return $this->length;
+	}
+
+	/**
+	 * Gets width.
+	 *
+	 * @return float|null
+	 */
+	public function getWidth(): ?float {
+		return $this->width;
+	}
+
+	/**
+	 * Gets height.
+	 *
+	 * @return float|null
+	 */
+	public function getHeight(): ?float {
+		return $this->height;
 	}
 }

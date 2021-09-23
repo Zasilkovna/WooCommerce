@@ -277,12 +277,12 @@ class Entity {
 	}
 
 	/**
-	 * Checks if is home delivery. In that case, carrierId is set and pointId is not set.
+	 * Checks if is home delivery. In that case pointId is not set.
 	 *
 	 * @return bool
 	 */
 	public function isHomeDelivery(): bool {
-		return $this->getPointType() === null;
+		return ($this->getCarrierId() !== null && $this->getPointType() === null);
 	}
 
 	/**
