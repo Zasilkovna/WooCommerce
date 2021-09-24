@@ -86,8 +86,8 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		$order = Entity::from_globals( false );
-		if ( null === $order || false === $order->is_packetery_related() ) {
+		$order = Entity::fromGlobals();
+		if ( null === $order || false === $order->isPacketeryRelated() ) {
 			return;
 		}
 
@@ -185,7 +185,7 @@ class Metabox {
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			! isset( $this->request->post['packetery_order_metabox_nonce'] ) ||
-			null === $order || false === $order->is_packetery_related()
+			null === $order || false === $order->isPacketeryRelated()
 		) {
 			return $post_id;
 		}

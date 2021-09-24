@@ -59,13 +59,14 @@ class Entity {
 	 */
 	public static function fromGlobals(): ?self {
 		global $post;
+
 		return self::fromPostId( $post->ID );
 	}
 
 	/**
 	 * Creates value object from post id.
 	 *
-	 * @param int|string $postId
+	 * @param int|string $postId Post id.
 	 *
 	 * @return static|null
 	 */
@@ -104,13 +105,10 @@ class Entity {
 	 *
 	 * @return string|null
 	 */
-	private function getMetaAsString( string $key ): ?string {
+	private function getMetaAsNullableString( string $key ): ?string {
 		$value = $this->order->get_meta( $key, true );
-		if ( ! $value ) {
-			return null;
-		}
 
-		return (string) $value;
+		return ( ( null !== $value && '' !== $value ) ? (string) $value : null );
 	}
 
 	/**
@@ -120,13 +118,10 @@ class Entity {
 	 *
 	 * @return float|null
 	 */
-	private function getMetaAsFloat( string $key ): ?float {
+	private function getMetaAsNullableFloat( string $key ): ?float {
 		$value = $this->order->get_meta( $key, true );
-		if ( ! $value ) {
-			return null;
-		}
 
-		return (float) $value;
+		return ( ( null !== $value && '' !== $value ) ? (float) $value : null );
 	}
 
 	/**
@@ -135,7 +130,7 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getPointId(): ?string {
-		return $this->getMetaAsString( self::META_POINT_ID );
+		return $this->getMetaAsNullableString( self::META_POINT_ID );
 	}
 
 	/**
@@ -144,7 +139,7 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getPacketId(): ?string {
-		return $this->getMetaAsString( self::META_PACKET_ID );
+		return $this->getMetaAsNullableString( self::META_PACKET_ID );
 	}
 
 	/**
@@ -153,7 +148,7 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getPointName(): ?string {
-		return $this->getMetaAsString( self::META_POINT_NAME );
+		return $this->getMetaAsNullableString( self::META_POINT_NAME );
 	}
 
 	/**
@@ -162,7 +157,34 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getPointUrl(): ?string {
-		return $this->getMetaAsString( self::META_POINT_URL );
+		return $this->getMetaAsNullableString( self::META_POINT_URL );
+	}
+
+	/**
+	 * Point street.
+	 *
+	 * @return string|null
+	 */
+	public function getPointStreet(): ?string {
+		return $this->getMetaAsNullableString( self::META_POINT_STREET );
+	}
+
+	/**
+	 * Point city.
+	 *
+	 * @return string|null
+	 */
+	public function getPointCity(): ?string {
+		return $this->getMetaAsNullableString( self::META_POINT_CITY );
+	}
+
+	/**
+	 * Point zip.
+	 *
+	 * @return string|null
+	 */
+	public function getPointZip(): ?string {
+		return $this->getMetaAsNullableString( self::META_POINT_ZIP );
 	}
 
 	/**
@@ -174,18 +196,18 @@ class Entity {
 		return implode(
 			', ',
 			array_filter(
-				array(
-					$this->getMetaAsString( self::META_POINT_STREET ),
+				[
+					$this->getPointStreet(),
 					implode(
 						' ',
 						array_filter(
-							array(
-								$this->getMetaAsString( self::META_POINT_ZIP ),
-								$this->getMetaAsString( self::META_POINT_CITY ),
-							)
+							[
+								$this->getPointZip(),
+								$this->getPointCity(),
+							]
 						)
 					),
-				)
+				]
 			)
 		);
 	}
@@ -196,7 +218,7 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getCarrierId(): ?string {
-		return $this->getMetaAsString( self::META_CARRIER_ID );
+		return $this->getMetaAsNullableString( self::META_CARRIER_ID );
 	}
 
 	/**
@@ -205,7 +227,7 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getPointCarrierId(): ?string {
-		return $this->getMetaAsString( self::META_POINT_CARRIER_ID );
+		return $this->getMetaAsNullableString( self::META_POINT_CARRIER_ID );
 	}
 
 	/**
@@ -214,7 +236,7 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getPointType(): ?string {
-		return $this->getMetaAsString( self::META_POINT_TYPE );
+		return $this->getMetaAsNullableString( self::META_POINT_TYPE );
 	}
 
 	/**
@@ -223,7 +245,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isExported(): bool {
-		return (bool) $this->getMetaAsString( self::META_IS_EXPORTED );
+		return (bool) $this->getMetaAsNullableString( self::META_IS_EXPORTED );
 	}
 
 	/**
@@ -232,7 +254,7 @@ class Entity {
 	 * @return float|null
 	 */
 	public function getWeight(): ?float {
-		$metaWeight = $this->getMetaAsFloat( self::META_WEIGHT );
+		$metaWeight = $this->getMetaAsNullableFloat( self::META_WEIGHT );
 		if ( $metaWeight ) {
 			return $metaWeight;
 		}
@@ -254,7 +276,7 @@ class Entity {
 	 * @return float|null
 	 */
 	public function getLength(): ?float {
-		return $this->getMetaAsFloat( self::META_LENGTH );
+		return $this->getMetaAsNullableFloat( self::META_LENGTH );
 	}
 
 	/**
@@ -263,7 +285,7 @@ class Entity {
 	 * @return float|null
 	 */
 	public function getWidth(): ?float {
-		return $this->getMetaAsFloat( self::META_WIDTH );
+		return $this->getMetaAsNullableFloat( self::META_WIDTH );
 	}
 
 	/**
@@ -272,7 +294,7 @@ class Entity {
 	 * @return float|null
 	 */
 	public function getHeight(): ?float {
-		return $this->getMetaAsFloat( self::META_HEIGHT );
+		return $this->getMetaAsNullableFloat( self::META_HEIGHT );
 	}
 
 	/**
@@ -281,7 +303,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isHomeDelivery(): bool {
-		return ($this->getCarrierId() !== null && $this->getPointType() === null);
+		return ( $this->getCarrierId() !== null && $this->getPointType() === null );
 	}
 
 	/**
@@ -301,7 +323,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isExternalCarrier(): bool {
-		return $this->getCarrierId() !== 'packeta';
+		return ( 'packeta' !== $this->getCarrierId() );
 	}
 
 	/**

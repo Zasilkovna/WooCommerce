@@ -27,6 +27,7 @@ services:
 	- Packetery\Api\Soap\Client(@optionsProvider::get_api_password())
 	- PacketeryModule\Order\PacketSubmitter
 	- PacketeryModule\EntityFactory\Carrier
+	- PacketeryModule\EntityFactory\Order
 	- Packetery\Validator\Address
-	- Packetery\Validator\CreatePacket
 	- Packetery\Validator\Size
+	- Packetery\Validator\Order

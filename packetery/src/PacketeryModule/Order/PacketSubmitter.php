@@ -12,11 +12,8 @@ namespace PacketeryModule\Order;
 use Packetery\Api\IncompleteRequestException;
 use Packetery\Api\Soap\Client;
 use Packetery\Api\Soap\Request\CreatePacket;
-use Packetery\Entity\Address;
-use Packetery\Entity\Size;
 use Packetery\Validator;
-use PacketeryModule\Carrier\Repository;
-use PacketeryModule\Options\Provider;
+use PacketeryModule\EntityFactory;
 use PacketeryModule\ShippingMethod;
 use WC_Order;
 
@@ -26,19 +23,6 @@ use WC_Order;
  * @package Packetery\Api
  */
 class PacketSubmitter {
-	/**
-	 * Options provider.
-	 *
-	 * @var Provider Options provider.
-	 */
-	private $optionsProvider;
-
-	/**
-	 * Carrier repository.
-	 *
-	 * @var Repository Carrier repository.
-	 */
-	private $carrierRepository;
 
 	/**
 	 * SOAP API Client.
@@ -48,50 +32,34 @@ class PacketSubmitter {
 	private $soapApiClient;
 
 	/**
-	 * CreatePacket validator.
+	 * Order entity factory.
 	 *
-	 * @var Validator\CreatePacket
+	 * @var EntityFactory\Order
 	 */
-	private $createPacketValidator;
+	private $orderFactory;
 
 	/**
-	 * Address validator.
+	 * Order validator.
 	 *
-	 * @var Validator\Address
+	 * @var Validator\Order
 	 */
-	private $addressValidator;
-
-	/**
-	 * Size validator.
-	 *
-	 * @var Validator\Size
-	 */
-	private $sizeValidator;
+	private $orderValidator;
 
 	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Provider               $optionsProvider Options Provider.
-	 * @param Repository             $carrierRepository Carrier repository.
-	 * @param Client                 $soapApiClient SOAP API Client.
-	 * @param Validator\CreatePacket $createPacketValidator CreatePacket validator.
-	 * @param Validator\Address      $addressValidator Address validator.
-	 * @param Validator\Size         $sizeValidator Size validator.
+	 * @param Client              $soapApiClient SOAP API Client.
+	 * @param EntityFactory\Order $orderFactory Order entity factory.
+	 * @param Validator\Order     $orderValidator Order validator.
 	 */
 	public function __construct(
-		Provider $optionsProvider,
-		Repository $carrierRepository,
 		Client $soapApiClient,
-		Validator\CreatePacket $createPacketValidator,
-		Validator\Address $addressValidator,
-		Validator\Size $sizeValidator
+		EntityFactory\Order $orderFactory,
+		Validator\Order $orderValidator
 	) {
-		$this->optionsProvider       = $optionsProvider;
-		$this->carrierRepository     = $carrierRepository;
-		$this->soapApiClient         = $soapApiClient;
-		$this->createPacketValidator = $createPacketValidator;
-		$this->addressValidator      = $addressValidator;
-		$this->sizeValidator         = $sizeValidator;
+		$this->soapApiClient  = $soapApiClient;
+		$this->orderFactory   = $orderFactory;
+		$this->orderValidator = $orderValidator;
 	}
 
 	/**
@@ -112,12 +80,12 @@ class PacketSubmitter {
 			// TODO: update logging before release, handle errors.
 			$logger = wc_get_logger();
 			try {
-				$createPacketRequest = $this->preparePacketAttributes( $order );
+				$createPacketRequest = $this->preparePacketRequest( $order );
 			} catch ( IncompleteRequestException $e ) {
 				if ( $logger ) {
 					$logger->info( $orderData['id'] . ': ' . $e->getMessage() );
 				}
-				$resultsCounter['errors']++;
+				$resultsCounter['errors'] ++;
 
 				return;
 			}
@@ -130,14 +98,14 @@ class PacketSubmitter {
 				if ( $logger ) {
 					$logger->error( $response->getErrorsAsString() );
 				}
-				$resultsCounter['errors']++;
+				$resultsCounter['errors'] ++;
 			} else {
 				update_post_meta( $orderData['id'], Entity::META_IS_EXPORTED, '1' );
 				update_post_meta( $orderData['id'], Entity::META_PACKET_ID, $response->getBarcode() );
-				$resultsCounter['success']++;
+				$resultsCounter['success'] ++;
 			}
 		} else {
-			$resultsCounter['ignored']++;
+			$resultsCounter['ignored'] ++;
 		}
 	}
 
@@ -149,106 +117,13 @@ class PacketSubmitter {
 	 * @return CreatePacket
 	 * @throws IncompleteRequestException For the case request is not eligible to be sent to API.
 	 */
-	private function preparePacketAttributes( WC_Order $order ): CreatePacket {
-		$orderData   = $order->get_data();
-		$orderId     = (string) $orderData['id'];
-		$contactInfo = ( $order->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
-		// Type cast of $orderTotalPrice is needed, PHPDoc is wrong.
-		$orderValue = (float) $order->get_total( 'raw' );
-		$entity     = new Entity( $order );
-
-		$request = $this->createRequest( $orderId, $contactInfo, $orderValue, $entity );
-		if ( ! $this->createPacketValidator->validate( $request ) ) {
-			throw new IncompleteRequestException( 'All required packet attributes are not set.' );
-		}
-		$this->addHomeDeliveryDetails( $entity, $contactInfo, $request );
-
-		// Shipping address phone is optional.
-		$request->setPhone( $orderData['billing']['phone'] );
-		if ( ! empty( $contactInfo['phone'] ) ) {
-			$request->setPhone( $contactInfo['phone'] );
+	private function preparePacketRequest( WC_Order $order ): CreatePacket {
+		$commonEntity = $this->orderFactory->create( $order );
+		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
+			throw new IncompleteRequestException( 'All required order attributes are not set.' );
 		}
 
-		$request->setEmail( $orderData['billing']['email'] );
-		$codMethod = $this->optionsProvider->getCodPaymentMethod();
-		if ( $orderData['payment_method'] === $codMethod ) {
-			$request->setCod( $orderValue );
-		}
-		$this->addExternalCarrierDetails( $entity, $request );
-
-		return $request;
+		return new CreatePacket( $commonEntity );
 	}
 
-	/**
-	 * Creates CreatePacket request.
-	 *
-	 * @param string $orderId Order id.
-	 * @param array  $contactInformation Contact info.
-	 * @param float  $orderTotalPrice Order value.
-	 * @param Entity $entity Order entity.
-	 *
-	 * @return CreatePacket
-	 */
-	private function createRequest( string $orderId, array $contactInformation, float $orderTotalPrice, Entity $entity ): CreatePacket {
-		return new CreatePacket(
-			$orderId,
-			$contactInformation['first_name'],
-			$contactInformation['last_name'],
-			$orderTotalPrice,
-			$entity->getWeight(),
-			$entity->getAddressId(),
-			$this->optionsProvider->get_sender()
-		);
-	}
-
-	/**
-	 * Adds data to request if applicable.
-	 *
-	 * @param Entity       $entity Order entity.
-	 * @param array        $contactInfo Contact info.
-	 * @param CreatePacket $request CreatePacket request.
-	 *
-	 * @throws IncompleteRequestException For the case request is not eligible to be sent to API.
-	 */
-	private function addHomeDeliveryDetails( Entity $entity, array $contactInfo, CreatePacket $request ): void {
-		if ( ! $entity->isHomeDelivery() ) {
-			return;
-		}
-		$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
-		if ( ! $this->addressValidator->validate( $address ) ) {
-			throw new IncompleteRequestException( 'Address is not complete.' );
-		}
-		$request->setAddress( $address );
-		// Additional address information.
-		if ( ! empty( $contactInfo['address_2'] ) ) {
-			$request->setNote( $contactInfo['address_2'] );
-		}
-	}
-
-	/**
-	 * Adds data to request if applicable.
-	 *
-	 * @param Entity       $entity Order entity.
-	 * @param CreatePacket $request CreatePacket request.
-	 *
-	 * @throws IncompleteRequestException For the case request is not eligible to be sent to API.
-	 */
-	private function addExternalCarrierDetails( Entity $entity, CreatePacket $request ): void {
-		if ( ! $entity->isExternalCarrier() ) {
-			return;
-		}
-		if ( $entity->isExternalPickupPointDelivery() ) {
-			$pointCarrierId = $entity->getPointCarrierId();
-			$request->setCarrierPickupPoint( $pointCarrierId );
-		}
-		$carrierId = $entity->getCarrierId();
-		$carrier   = $this->carrierRepository->getById( (int) $carrierId );
-		if ( $carrier && $carrier->requiresSize() ) {
-			$size = new Size( $entity->getLength(), $entity->getWidth(), $entity->getHeight() );
-			if ( ! $this->sizeValidator->validate( $size ) ) {
-				throw new IncompleteRequestException( 'All packet dimensions are not set.' );
-			}
-			$request->setSize( $size );
-		}
-	}
 }
