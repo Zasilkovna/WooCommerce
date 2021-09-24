@@ -30,15 +30,15 @@ class Manager {
 	 * @return void
 	 */
 	public function registerPostType(): void {
-		$definition = array(
-			'labels'          => array( 'name' => __( 'Logs', 'packetery' ) ),
+		$definition = [
+			'labels'          => [ 'name' => __( 'Logs', 'packetery' ) ],
 			'public'          => false,
 			'query_var'       => false,
 			'rewrite'         => false,
 			'capability_type' => 'post',
-			'supports'        => array( 'title', 'editor' ),
+			'supports'        => [ 'title', 'editor' ],
 			'can_export'      => false,
-		);
+		];
 
 		register_post_type( self::POST_TYPE, $definition );
 	}
@@ -56,15 +56,15 @@ class Manager {
 	 * @return int The ID of the new log entry
 	 */
 	public function add( string $status, string $action, string $note ): int {
-		$logData = array(
+		$logData = [
 			'post_title'   => 'packetery_log',
 			'post_content' => $note,
-		);
+		];
 
-		$metaData = array(
+		$metaData = [
 			'packetery_status' => $status,
 			'packetery_action' => $action,
-		);
+		];
 
 		return $this->insertLog( $logData, $metaData );
 	}
@@ -77,7 +77,7 @@ class Manager {
 	 *
 	 * @return int The ID of the newly created log item
 	 */
-	private function insertLog( array $logData = array(), array $logMeta = array() ): int {
+	private function insertLog( array $logData = [], array $logMeta = [] ): int {
 		$defaults = array(
 			'post_type'    => self::POST_TYPE,
 			'post_status'  => 'publish',
@@ -105,13 +105,13 @@ class Manager {
 	 *
 	 * @return Entity[]
 	 */
-	public function getLogs( array $arguments = array() ): array {
-		$defaults = array(
+	public function getLogs( array $arguments = [] ): array {
+		$defaults = [
 			'post_parent' => 0,
 			'post_type'   => self::POST_TYPE,
 			'post_status' => 'publish',
 			'log_type'    => false,
-		);
+		];
 
 		$queryArgs = wp_parse_args( $arguments, $defaults );
 		$logs      = get_posts( $queryArgs );
@@ -125,6 +125,6 @@ class Manager {
 			);
 		}
 
-		return array();
+		return [];
 	}
 }

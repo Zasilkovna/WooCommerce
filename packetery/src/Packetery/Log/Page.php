@@ -54,10 +54,7 @@ class Page {
 			__( 'logsPageTitle', 'packetery' ),
 			'manage_options',
 			'packeta-logs',
-			array(
-				$this,
-				'render',
-			)
+			[ $this, 'render']
 		);
 	}
 
@@ -65,10 +62,12 @@ class Page {
 	 * Renders Page.
 	 */
 	public function render(): void {
-		$rows = $this->manager->getLogs( array(
-			'orderby'          => 'date',
-			'order'            => 'DESC',
-		) );
+		$rows = $this->manager->getLogs(
+			[
+				'orderby' => 'date',
+				'order'   => 'DESC',
+			]
+		);
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/log/page.latte', [ 'rows' => $rows ] );
 	}
