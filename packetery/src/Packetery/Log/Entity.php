@@ -17,6 +17,14 @@ namespace Packetery\Log;
  */
 class Entity {
 
+	public const ACTION_PACKET_SENDING      = 'packet-sending';
+	public const ACTION_LABEL_PRINT         = 'label-print';
+	public const ACTION_CARRIER_LIST_UPDATE = 'carrier-list-update';
+	public const ACTION_CARRIER_LABEL_PRINT = 'carrier-label-print';
+
+	public const STATUS_SUCCESS = 'success';
+	public const STATUS_ERROR   = 'error';
+
 	/**
 	 * Post.
 	 *
@@ -78,13 +86,13 @@ class Entity {
 		$action = $this->getAction();
 
 		switch ( $action ) {
-			case ActionEnum::PACKET_SENDING:
+			case self::ACTION_PACKET_SENDING:
 				return __( 'logAction_packet-sending', 'packetery' );
-			case ActionEnum::CARRIER_LABEL_PRINT:
+			case self::ACTION_CARRIER_LABEL_PRINT:
 				return __( 'logAction_carrier-label-print', 'packetery' );
-			case ActionEnum::LABEL_PRINT:
+			case self::ACTION_LABEL_PRINT:
 				return __( 'logAction_label-print', 'packetery' );
-			case ActionEnum::CARRIER_LIST_UPDATE:
+			case self::ACTION_CARRIER_LIST_UPDATE:
 				return __( 'logAction_carrier-list-update', 'packetery' );
 		}
 

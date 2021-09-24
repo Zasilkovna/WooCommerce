@@ -118,7 +118,7 @@ class Manager {
 
 		if ( $logs ) {
 			return array_map(
-				function ( \WP_Post $log ) {
+				static function ( \WP_Post $log ) {
 					return new Entity( $log );
 				},
 				$logs
