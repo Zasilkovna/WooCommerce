@@ -264,9 +264,9 @@ class Plugin {
 	 * Enqueues javascript files for administration.
 	 */
 	public function admin_enqueue_scripts(): void {
-		wp_enqueue_script( 'live-form-validation', plugin_dir_url( $this->main_file_path ) . 'public/libs/live-form-validation/live-form-validation.js', array(), '2.0-dev', false );
-		wp_enqueue_script( 'admin-country-carrier', plugin_dir_url( $this->main_file_path ) . 'public/admin-country-carrier.js', array(), self::VERSION, true );
-		wp_enqueue_style( 'packetery-admin-styles', plugin_dir_url( $this->main_file_path ) . 'public/admin.css', array(), self::VERSION );
+		wp_enqueue_script( 'live-form-validation', plugin_dir_url( $this->main_file_path ) . 'public/libs/live-form-validation/live-form-validation.js', array(), time(), false );
+		wp_enqueue_script( 'admin-country-carrier', plugin_dir_url( $this->main_file_path ) . 'public/admin-country-carrier.js', array(), time(), true );
+		wp_enqueue_style( 'packetery-admin-styles', plugin_dir_url( $this->main_file_path ) . 'public/admin.css', array(), time() );
 	}
 
 	/**
