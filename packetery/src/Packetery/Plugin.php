@@ -157,7 +157,7 @@ class Plugin {
 	 * Method to register hooks
 	 */
 	public function run(): void {
-		add_action( 'init', array( $this, 'loadTranslation' ), -1000 );
+		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		Form::initialize();
