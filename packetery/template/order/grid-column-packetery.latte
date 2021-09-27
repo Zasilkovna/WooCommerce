@@ -1,0 +1,12 @@
+{varType \Packetery\Order\Entity $order}
+{varType string $nonce}
+
+<a class="packetery-order-inline-edit" href="#"
+   data-order-data="{= json_encode(
+	   [
+		   'id' => $order->getId(),
+		   'packetery_weight' => $order->getPacketeryWeight(),
+	   ]
+   )}"
+   data-nonce="{$nonce}"
+>&#9998;</a>

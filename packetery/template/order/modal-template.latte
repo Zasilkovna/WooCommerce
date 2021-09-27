@@ -1,0 +1,44 @@
+<script type="text/template" id="tmpl-wc-packetery-modal-view-order">
+    <div class="wc-backbone-modal" data-packetery-modal>
+        <div class="wc-backbone-modal-content">
+            <section class="wc-backbone-modal-main" role="main">
+                <header class="wc-backbone-modal-header">
+                    <h1>{php esc_html_e( sprintf( __( 'Order #%s', 'woocommerce' ), '{{ data.data.id }}' ) )}</h1>
+                    <button class="modal-close modal-close-link dashicons dashicons-no-alt">
+                        <span class="screen-reader-text">{php esc_html_e( 'Close modal panel', 'woocommerce' )}</span>
+                    </button>
+                </header>
+                <article>
+                    <div class="notice is-dismissible hidden"><p></p><button type="button" class="notice-dismiss"><span class="screen-reader-text"></span></button></div>
+
+                    <div class="wc-order-preview-table-wrapper">
+                        <form>
+                            <div class="packetery-table">
+                                <div class="packetery-table-row">
+                                    <div class="packetery-table-cell">
+                                        <label>
+                                            {__( 'Weight', 'packetery' )}
+                                            <input type="text" name="packetery_weight" value="{{ data.data.packetery_weight }}">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </article>
+                <footer>
+                    <div class="inner">
+                        <div id="publishing-action">
+                            <span class="spinner"></span>
+                            <a class="button button-primary button-large packetery-save-button" aria-label="{__( 'Save', 'packetery' )}"
+                               data-order-data="{{ JSON.stringify(data.data) }}"
+                               data-order-nonce="{{ data.nonce }}"
+                            >{__( 'Save', 'packetery' )}</a>
+                        </div>
+                    </div>
+                </footer>
+            </section>
+        </div>
+    </div>
+    <div class="wc-backbone-modal-backdrop modal-close"></div>
+</script>

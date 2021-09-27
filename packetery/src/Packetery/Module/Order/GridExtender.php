@@ -229,6 +229,14 @@ class GridExtender {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
 				}
 				break;
+			case 'packetery':
+				$orderEntity = Entity::from_globals();
+				$nonce = Helper::getApiNonce();
+				$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte', [
+					'order' => $orderEntity,
+					'nonce' => $nonce
+				] );
+				break;
 		}
 	}
 
@@ -248,6 +256,7 @@ class GridExtender {
 			if ( 'order_total' === $column_name ) {
 				$new_columns[ Entity::META_PACKET_ID ] = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']  = __( 'Pick up point or carrier', 'packetery' );
+				$new_columns['packetery']  = __( 'Packeta', 'packetery' );
 			}
 		}
 
