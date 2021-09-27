@@ -15,7 +15,6 @@ use Packetery\Order;
 use Packetery\Carrier\OptionsPage;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
-use PacketeryNette\Utils\Finder;
 
 /**
  * Class Plugin
@@ -158,7 +157,7 @@ class Plugin {
 	 * Method to register hooks
 	 */
 	public function run(): void {
-		$this->load_textdomains();
+		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		Form::initialize();
@@ -301,12 +300,29 @@ class Plugin {
 	}
 
 	/**
-	 * Loads plugin translations files.
+	 * Gets current locale.
 	 */
-	public function load_textdomains(): void {
-		$mo_files = Finder::findFiles( '*.mo' )->from( PACKETERY_PLUGIN_DIR . '/languages' );
-		foreach ( $mo_files as $mo_file ) {
-			load_textdomain( 'packetery', $mo_file );
+	private function getLocale(): string {
+		return apply_filters(
+			'plugin_locale',
+			( is_admin() ? get_user_locale() : get_locale() ),
+			self::DOMAIN
+		);
+	}
+
+	/**
+	 * Loads plugin translation file by user locale.
+	 */
+	public function loadTranslation(): void {
+		$domain = self::DOMAIN;
+		$locale = $this->getLocale();
+
+		$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-$locale.mo";
+		$result = load_textdomain( $domain, $moFile );
+
+		if ( false === $result ) {
+			$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-en_US.mo";
+			load_textdomain( $domain, $moFile );
 		}
 	}
 
