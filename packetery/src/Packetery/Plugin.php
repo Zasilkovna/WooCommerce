@@ -160,7 +160,7 @@ class Plugin {
 	public function run(): void {
 		$this->load_textdomains();
 
-		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		Form::initialize();
 
 		add_action(
@@ -261,23 +261,28 @@ class Plugin {
 	}
 
 	/**
-	 * Enqueues javascript files for administration.
+	 * Enqueues admin JS file.
+	 *
+	 * @param string $name     Name of script.
+	 * @param string $file     Relative file path.
+	 * @param bool   $inFooter Tells where to include script.
 	 */
-	public function admin_enqueue_scripts(): void {
+	private function enqueueScript( string $name, string $file, bool $inFooter ): void {
 		wp_enqueue_script(
-			'live-form-validation',
-			plugin_dir_url( $this->main_file_path ) . 'public/libs/live-form-validation/live-form-validation.js',
+			$name,
+			plugin_dir_url( $this->main_file_path ) . $file,
 			[],
-			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/public/libs/live-form-validation/live-form-validation.js' ) ),
-			false
+			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) ),
+			$inFooter
 		);
-		wp_enqueue_script(
-			'admin-country-carrier',
-			plugin_dir_url( $this->main_file_path ) . 'public/admin-country-carrier.js',
-			[],
-			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/public/admin-country-carrier.js' ) ),
-			true
-		);
+	}
+
+	/**
+	 * Enqueues javascript files and stylesheets for administration.
+	 */
+	public function enqueueAdminAssets(): void {
+		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false );
+		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
 		wp_enqueue_style(
 			'packetery-admin-styles',
 			plugin_dir_url( $this->main_file_path ) . 'public/admin.css',
