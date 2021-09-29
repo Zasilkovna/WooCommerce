@@ -78,13 +78,13 @@ class Manager {
 	 * @return int The ID of the newly created log item
 	 */
 	private function insertLog( array $logData = [], array $logMeta = [] ): int {
-		$defaults = array(
+		$defaults = [
 			'post_type'    => self::POST_TYPE,
 			'post_status'  => 'publish',
 			'post_parent'  => 0,
 			'post_content' => '',
 			'log_type'     => false,
-		);
+		];
 
 		$args  = wp_parse_args( $logData, $defaults );
 		$logId = wp_insert_post( $args );
