@@ -64,16 +64,16 @@ class Entity {
 	 *
 	 * @return bool
 	 */
-	public function isRelevant(): bool {
+	public function isPhysical(): bool {
 		return false === $this->product->is_virtual() && false === $this->product->is_downloadable();
 	}
 
 	/**
-	 * Is age verification enabled?
+	 * Is age verification required?
 	 *
 	 * @return bool
 	 */
-	public function isAgeVerification18PlusEnabled(): bool {
+	public function isAgeVerification18PlusRequired(): bool {
 		return $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
 	}
 

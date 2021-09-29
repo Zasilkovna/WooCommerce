@@ -20,7 +20,7 @@ use PacketeryNette\Forms\FormFactory;
  *
  * @package Packetery\Product
  */
-class Tab {
+class DataTab {
 
 	const NAME = 'packetery-tab';
 
@@ -37,13 +37,6 @@ class Tab {
 	 * @var Engine
 	 */
 	private $latteEngine;
-
-	/**
-	 * Product to be processed.
-	 *
-	 * @var Product\Entity
-	 */
-	private $product;
 
 	/**
 	 * Tab constructor.
@@ -78,7 +71,7 @@ class Tab {
 		$tabs[ self::NAME ] = [
 			'label'  => __( 'Packeta', 'packetery' ),
 			'target' => self::NAME,
-			'class' => [ 'hide_if_virtual', 'hide_if_downloadable' ],
+			'class'  => [ 'hide_if_virtual', 'hide_if_downloadable' ],
 		];
 
 		return $tabs;
@@ -87,16 +80,16 @@ class Tab {
 	/**
 	 * Creates form instance.
 	 *
+	 * @param Product\Entity $product Related product.
+	 *
 	 * @return Form
 	 */
-	private function createForm(): Form {
-		$this->product = Product\Entity::fromGlobals();
-
+	private function createForm( Product\Entity $product ): Form {
 		$form = $this->formFactory->createForm();
 		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'ageVerification18PlusLabel', 'packetery' ) );
 
 		$form->setDefaults(
-			[ Product\Entity::META_AGE_VERIFICATION_18_PLUS => $this->product->isAgeVerification18PlusEnabled() ]
+			[ Product\Entity::META_AGE_VERIFICATION_18_PLUS => $product->isAgeVerification18PlusRequired() ]
 		);
 
 		return $form;
@@ -109,8 +102,8 @@ class Tab {
 	 */
 	public function render(): void {
 		$this->latteEngine->render(
-			PACKETERY_PLUGIN_DIR . '/template/product/tab.latte',
-			[ 'form' => $this->createForm() ]
+			PACKETERY_PLUGIN_DIR . '/template/product/data-tab-panel.latte',
+			[ 'form' => $this->createForm( Product\Entity::fromGlobals() ) ]
 		);
 	}
 
@@ -120,13 +113,15 @@ class Tab {
 	 * @param int|string $postId Post ID.
 	 */
 	public function saveData( $postId ): void {
-		$this->product = Product\Entity::fromPostId( $postId );
-		if ( false === $this->product->isRelevant() ) {
+		$product = Product\Entity::fromPostId( $postId );
+		if ( false === $product->isPhysical() ) {
 			return;
 		}
 
-		$form              = $this->createForm();
-		$form->onSuccess[] = [ $this, 'processFormData' ];
+		$form              = $this->createForm( $product );
+		$form->onSuccess[] = function( Form $form, array $values ) use ( $product ) {
+			$this->processFormData( $product->getId(), $values );
+		};
 
 		if ( $form->isSubmitted() ) {
 			$form->fireEvents();
@@ -134,10 +129,18 @@ class Tab {
 	}
 
 	/**
-	 * @param Form $form Form.
+	 * Process form data.
+	 *
+	 * @param int   $productId Product ID.
+	 * @param array $values    Form values.
 	 */
-	public function processFormData( Form $form ): void {
-		$values = $form->getValues( 'array' );
-		update_post_meta( $this->product->getId(), Product\Entity::META_AGE_VERIFICATION_18_PLUS, ( $values[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ] ? '1' : '0' ) );
+	public function processFormData( int $productId, array $values ): void {
+		foreach ( $values as $attr => $value ) {
+			if ( is_bool( $value ) ) {
+				$value = $value ? '1' : '0';
+			}
+
+			update_post_meta( $productId, $attr, $value );
+		}
 	}
 }

@@ -114,7 +114,7 @@ class Plugin {
 	/**
 	 * Product tab.
 	 *
-	 * @var Product\Tab
+	 * @var Product\DataTab
 	 */
 	private $productTab;
 
@@ -132,7 +132,7 @@ class Plugin {
 	 * @param Order\BulkActions  $orderBulkActions   Order BulkActions.
 	 * @param Order\LabelPrint   $labelPrint         Label printing.
 	 * @param Order\GridExtender $gridExtender       Order grid extender.
-	 * @param Product\Tab        $productTab         Product tab.
+	 * @param Product\DataTab    $productTab         Product tab.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -146,7 +146,7 @@ class Plugin {
 		Order\BulkActions $orderBulkActions,
 		Order\LabelPrint $labelPrint,
 		Order\GridExtender $gridExtender,
-		Product\Tab $productTab
+		Product\DataTab $productTab
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
