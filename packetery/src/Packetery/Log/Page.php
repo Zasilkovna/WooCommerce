@@ -54,7 +54,7 @@ class Page {
 			__( 'logsPageTitle', 'packetery' ),
 			'manage_options',
 			'packeta-logs',
-			[ $this, 'render']
+			[ $this, 'render' ]
 		);
 	}
 
