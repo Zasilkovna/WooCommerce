@@ -110,9 +110,9 @@ class Order {
 	/**
 	 * Adult content presence flag.
 	 *
-	 * @var bool
+	 * @var bool|null
 	 */
-	private $adultContent = false;
+	private $adultContent;
 
 	/**
 	 * Packet ID
@@ -138,9 +138,9 @@ class Order {
 	/**
 	 * Tells if carrier requires size.
 	 *
-	 * @var bool
+	 * @var bool|null
 	 */
-	private $carrierRequiresSize = false;
+	private $carrierRequiresSize;
 
 	/**
 	 * Order entity constructor.
@@ -181,12 +181,12 @@ class Order {
 	}
 
 	/**
-	 * Tells if order is related to Packeta pickup point.
+	 * Tells if order has to be shipped to pickup point, run by Packeta or an external carrier.
 	 *
 	 * @return bool
 	 */
-	public function isPacketeryPickupPointRelated(): bool {
-		return ( null !== $this->pickupPoint && null !== $this->pickupPoint->getPointId() );
+	public function isPickupPointDelivery(): bool {
+		return ( null !== $this->pickupPoint && null !== $this->pickupPoint->getId() );
 	}
 
 	/**
@@ -207,7 +207,7 @@ class Order {
 		if ( null === $this->pickupPoint ) {
 			return false;
 		}
-		$ppType = $this->pickupPoint->getPointType();
+		$ppType = $this->pickupPoint->getType();
 
 		return ( $ppType && 'external' === $ppType );
 	}
@@ -215,15 +215,18 @@ class Order {
 	/**
 	 * Gets pickup point/carrier id.
 	 *
-	 * @return int
+	 * @return int|null
 	 */
-	public function getAddressId(): int {
+	public function getAddressId(): ?int {
 		if ( $this->isExternalPickupPointDelivery() || $this->isHomeDelivery() ) {
 			return (int) $this->getCarrierId();
 		}
 
-		// Pickup point has to be set.
-		return (int) $this->pickupPoint->getPointId();
+		if ( null === $this->pickupPoint ) {
+			return null;
+		}
+
+		return $this->pickupPoint->getId();
 	}
 
 	/**
@@ -328,9 +331,9 @@ class Order {
 	/**
 	 * Sets adult content presence flag.
 	 *
-	 * @param int $adultContent Adult content presence flag.
+	 * @param bool $adultContent Adult content presence flag.
 	 */
-	public function setAdultContent( int $adultContent ): void {
+	public function setAdultContent( bool $adultContent ): void {
 		$this->adultContent = $adultContent;
 	}
 
@@ -357,7 +360,7 @@ class Order {
 	 *
 	 * @param string|null $packetId Packet id.
 	 */
-	public function setPacketID( ?string $packetId ): void {
+	public function setPacketId( ?string $packetId ): void {
 		$this->packetId = $packetId;
 	}
 
@@ -484,9 +487,9 @@ class Order {
 	/**
 	 * Checks if carrier requires size.
 	 *
-	 * @return bool
+	 * @return bool|null
 	 */
-	public function carrierRequiresSize(): bool {
+	public function carrierRequiresSize(): ?bool {
 		return $this->carrierRequiresSize;
 	}
 

@@ -170,33 +170,28 @@ class CreatePacket {
 			$this->carrierPickupPoint = $pickupPoint->getCarrierPointId();
 		}
 
-		$address = $order->getDeliveryAddress();
-		if ( null !== $address ) {
-			$this->street = $address->getStreet();
-			$this->city   = $address->getCity();
-			$this->zip    = $address->getZip();
-			if ( $address->getHouseNumber() ) {
-				$this->houseNumber = $address->getHouseNumber();
+		if ( $order->isHomeDelivery() ) {
+			$address = $order->getDeliveryAddress();
+			if ( null !== $address ) {
+				$this->street = $address->getStreet();
+				$this->city   = $address->getCity();
+				$this->zip    = $address->getZip();
+				if ( $address->getHouseNumber() ) {
+					$this->houseNumber = $address->getHouseNumber();
+				}
 			}
 		}
 
-		$size = $order->getSize();
-		if ( null !== $size ) {
-			$this->size = [
-				'length' => $size->getLength(),
-				'width'  => $size->getWidth(),
-				'height' => $size->getHeight(),
-			];
+		if ( $order->carrierRequiresSize() ) {
+			$size = $order->getSize();
+			if ( null !== $size ) {
+				$this->size = [
+					'length' => $size->getLength(),
+					'width'  => $size->getWidth(),
+					'height' => $size->getHeight(),
+				];
+			}
 		}
-	}
-
-	/**
-	 * Gets all properties as array.
-	 *
-	 * @return array
-	 */
-	public function __toArray(): array {
-		return get_object_vars( $this );
 	}
 
 	/**
@@ -205,12 +200,7 @@ class CreatePacket {
 	 * @return array
 	 */
 	public function getSubmittableData(): array {
-		$rawData = array_filter( $this->__toArray() );
-		if ( isset( $rawData['adultContent'] ) ) {
-			$rawData['adultContent'] = (int) $rawData['adultContent'];
-		}
-
-		return $rawData;
+		return array_filter( get_object_vars( $this ) );
 	}
 
 }

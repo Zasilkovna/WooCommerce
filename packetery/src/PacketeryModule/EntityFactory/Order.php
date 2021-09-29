@@ -74,7 +74,7 @@ class Order {
 			$moduleOrder->getCarrierId()
 		);
 
-		$orderEntity->setPacketID( $moduleOrder->getPacketId() );
+		$orderEntity->setPacketId( $moduleOrder->getPacketId() );
 		$orderEntity->setIsExported( $moduleOrder->isExported() );
 		// TODO: setAdultContent.
 
@@ -118,9 +118,6 @@ class Order {
 	 * @param Entity\Order       $orderEntity CreatePacket request.
 	 */
 	private function addHomeDeliveryDetails( ModuleOrder\Entity $moduleOrder, array $contactInfo, Entity\Order $orderEntity ): void {
-		if ( ! $moduleOrder->isHomeDelivery() ) {
-			return;
-		}
 		$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		$orderEntity->setDeliveryAddress( $address );
 		// Additional address information.
@@ -136,16 +133,13 @@ class Order {
 	 * @param Entity\Order       $orderEntity CreatePacket request.
 	 */
 	private function addExternalCarrierDetails( ModuleOrder\Entity $moduleOrder, Entity\Order $orderEntity ): void {
-		if ( ! $moduleOrder->isExternalCarrier() ) {
-			return;
+		$carrier = null;
+		if ( $moduleOrder->isExternalCarrier() ) {
+			$carrier = $this->carrierRepository->getById( (int) $orderEntity->getCarrierId() );
 		}
-		$carrierId = $moduleOrder->getCarrierId();
-		$carrier   = $this->carrierRepository->getById( (int) $carrierId );
-		if ( $carrier && $carrier->requiresSize() ) {
-			$orderEntity->setCarrierRequiresSize( true );
-			$size = new Size( $moduleOrder->getLength(), $moduleOrder->getWidth(), $moduleOrder->getHeight() );
-			$orderEntity->setSize( $size );
-		}
+		$orderEntity->setCarrierRequiresSize( $carrier && $carrier->requiresSize() );
+		$size = new Size( $moduleOrder->getLength(), $moduleOrder->getWidth(), $moduleOrder->getHeight() );
+		$orderEntity->setSize( $size );
 	}
 
 }

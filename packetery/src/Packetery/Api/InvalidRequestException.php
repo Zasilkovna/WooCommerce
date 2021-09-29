@@ -1,6 +1,6 @@
 <?php
 /**
- * Class IncompleteRequestException.
+ * Class InvalidRequestException.
  *
  * @package Packetery\Api
  */
@@ -10,10 +10,10 @@ declare( strict_types=1 );
 namespace Packetery\Api;
 
 /**
- * Class IncompleteRequestException.
+ * Class InvalidRequestException.
  *
  * @package Packetery\Api
  */
-class IncompleteRequestException extends \Exception {
+class InvalidRequestException extends \Exception {
 
 }

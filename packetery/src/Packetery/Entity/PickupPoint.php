@@ -17,44 +17,44 @@ class PickupPoint {
 	/**
 	 * Selected pickup point ID
 	 *
-	 * @var string|null
+	 * @var int|null
 	 */
-	private $pointId;
+	private $id;
 
 	/**
 	 * Point name.
 	 *
 	 * @var string|null
 	 */
-	private $pointName;
+	private $name;
 
 	/**
 	 * Link to official Packeta detail page.
 	 *
 	 * @var string|null
 	 */
-	private $pointUrl;
+	private $url;
 
 	/**
 	 * Pickup point street.
 	 *
 	 * @var string|null
 	 */
-	private $pointStreet;
+	private $street;
 
 	/**
 	 * Pickup point zip.
 	 *
 	 * @var string|null
 	 */
-	private $pointZip;
+	private $zip;
 
 	/**
 	 * Pickup point city.
 	 *
 	 * @var string|null
 	 */
-	private $pointCity;
+	private $city;
 
 	/**
 	 * Carrier pickup point id.
@@ -68,72 +68,47 @@ class PickupPoint {
 	 *
 	 * @var string|null
 	 */
-	private $pointType;
+	private $type;
 
 	/**
 	 * PickupPoint constructor.
 	 *
-	 * @param string|null $pointId Point id.
-	 * @param string|null $pointType Point type.
-	 * @param string|null $pointName Point name.
-	 * @param string|null $pointCity Point city.
-	 * @param string|null $pointZip Point zip.
-	 * @param string|null $pointStreet Point street.
-	 * @param string|null $pointUrl Point url.
+	 * @param int|null $id Point id.
+	 * @param string|null $type Point type.
+	 * @param string|null $name Point name.
+	 * @param string|null $city Point city.
+	 * @param string|null $zip Point zip.
+	 * @param string|null $street Point street.
+	 * @param string|null $url Point url.
 	 * @param string|null $carrierPointId Carrier point id.
 	 */
 	public function __construct(
-		?string $pointId,
-		?string $pointType,
-		?string $pointName,
-		?string $pointCity,
-		?string $pointZip,
-		?string $pointStreet,
-		?string $pointUrl,
+		?int $id,
+		?string $type,
+		?string $name,
+		?string $city,
+		?string $zip,
+		?string $street,
+		?string $url,
 		?string $carrierPointId
 	) {
-		$this->pointId        = $pointId;
-		$this->pointType      = $pointType;
-		$this->pointName      = $pointName;
-		$this->pointCity      = $pointCity;
-		$this->pointZip       = $pointZip;
-		$this->pointStreet    = $pointStreet;
-		$this->pointUrl       = $pointUrl;
+		$this->id             = $id;
+		$this->type           = $type;
+		$this->name           = $name;
+		$this->city           = $city;
+		$this->zip            = $zip;
+		$this->street         = $street;
+		$this->url            = $url;
 		$this->carrierPointId = $carrierPointId;
-	}
-
-	/**
-	 * Dynamically crafted point address.
-	 *
-	 * @return string
-	 */
-	public function getPointAddress(): string {
-		return implode(
-			', ',
-			array_filter(
-				[
-					$this->getPointStreet(),
-					implode(
-						' ',
-						array_filter(
-							[
-								$this->getPointZip(),
-								$this->getPointCity(),
-							]
-						)
-					),
-				]
-			)
-		);
 	}
 
 	/**
 	 * Selected pickup point ID
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getPointId(): ?string {
-		return $this->pointId;
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
@@ -141,8 +116,8 @@ class PickupPoint {
 	 *
 	 * @return string|null
 	 */
-	public function getPointName(): ?string {
-		return $this->pointName;
+	public function getName(): ?string {
+		return $this->name;
 	}
 
 	/**
@@ -150,8 +125,8 @@ class PickupPoint {
 	 *
 	 * @return string|null
 	 */
-	public function getPointUrl(): ?string {
-		return $this->pointUrl;
+	public function getUrl(): ?string {
+		return $this->url;
 	}
 
 	/**
@@ -159,8 +134,8 @@ class PickupPoint {
 	 *
 	 * @return string|null
 	 */
-	private function getPointStreet(): ?string {
-		return $this->pointStreet;
+	public function getStreet(): ?string {
+		return $this->street;
 	}
 
 	/**
@@ -168,8 +143,8 @@ class PickupPoint {
 	 *
 	 * @return string|null
 	 */
-	private function getPointZip(): ?string {
-		return $this->pointZip;
+	public function getZip(): ?string {
+		return $this->zip;
 	}
 
 	/**
@@ -177,8 +152,8 @@ class PickupPoint {
 	 *
 	 * @return string|null
 	 */
-	private function getPointCity(): ?string {
-		return $this->pointCity;
+	public function getCity(): ?string {
+		return $this->city;
 	}
 
 	/**
@@ -195,8 +170,8 @@ class PickupPoint {
 	 *
 	 * @return string|null
 	 */
-	public function getPointType(): ?string {
-		return $this->pointType;
+	public function getType(): ?string {
+		return $this->type;
 	}
 
 

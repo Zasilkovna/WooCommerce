@@ -19,6 +19,31 @@ use Packetery\Entity;
 class Order {
 
 	/**
+	 * Address validator.
+	 *
+	 * @var Address
+	 */
+	private $addressValidator;
+
+	/**
+	 * Size validator.
+	 *
+	 * @var Size
+	 */
+	private $sizeValidator;
+
+	/**
+	 * Order constructor.
+	 *
+	 * @param Address $addressValidator Address validator.
+	 * @param Size    $sizeValidator Size validator.
+	 */
+	public function __construct( Address $addressValidator, Size $sizeValidator ) {
+		$this->addressValidator = $addressValidator;
+		$this->sizeValidator    = $sizeValidator;
+	}
+
+	/**
 	 * Validates data needed to submit packet.
 	 *
 	 * @param Entity\Order $order Order entity.
@@ -26,7 +51,6 @@ class Order {
 	 * @return bool
 	 */
 	public function validate( Entity\Order $order ): bool {
-		// TODO: validatePickupPoint?
 		return (
 			$order->getNumber() &&
 			$order->getName() &&
@@ -54,7 +78,7 @@ class Order {
 				return false;
 			}
 
-			return ( $address->getStreet() && $address->getCity() && $address->getZip() );
+			return $this->addressValidator->validate( $address );
 		}
 
 		return true;
@@ -74,7 +98,7 @@ class Order {
 				return false;
 			}
 
-			return ( $size->getLength() && $size->getWidth() && $size->getHeight() );
+			return $this->sizeValidator->validate( $size );
 		}
 
 		return true;

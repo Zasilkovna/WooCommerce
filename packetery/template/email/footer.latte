@@ -1,4 +1,4 @@
-{varType \Packetery\Order\Entity $order}
+{varType \PacketeryModule\Order\Entity $order}
 
 <h2>
     {__( 'Shipping Detail', 'packetery' )}
@@ -14,6 +14,6 @@
     </tr>
     <tr>
         <th class="td">{__( 'Point Address', 'packetery' )}</th>
-        <td class="td">{$order->getPointAddress()}</td>
+        <td class="td">{$order->getPointStreet()}, {$order->getPointZip()} {$order->getPointCity()}</td>
     </tr>
 </table>

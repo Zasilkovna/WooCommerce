@@ -127,10 +127,12 @@ class Entity {
 	/**
 	 * Selected pickup point ID
 	 *
-	 * @return string|null
+	 * @return int|null
 	 */
-	public function getPointId(): ?string {
-		return $this->getMetaAsNullableString( self::META_POINT_ID );
+	public function getPointId(): ?int {
+		$value = $this->getMetaAsNullableString( self::META_POINT_ID );
+
+		return ( null !== $value ? (int) $value : null );
 	}
 
 	/**
@@ -185,31 +187,6 @@ class Entity {
 	 */
 	public function getPointZip(): ?string {
 		return $this->getMetaAsNullableString( self::META_POINT_ZIP );
-	}
-
-	/**
-	 * Dynamically crafted point address.
-	 *
-	 * @return string
-	 */
-	public function getPointAddress(): string {
-		return implode(
-			', ',
-			array_filter(
-				[
-					$this->getPointStreet(),
-					implode(
-						' ',
-						array_filter(
-							[
-								$this->getPointZip(),
-								$this->getPointCity(),
-							]
-						)
-					),
-				]
-			)
-		);
 	}
 
 	/**

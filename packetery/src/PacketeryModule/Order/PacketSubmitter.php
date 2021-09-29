@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace PacketeryModule\Order;
 
-use Packetery\Api\IncompleteRequestException;
+use Packetery\Api\InvalidRequestException;
 use Packetery\Api\Soap\Client;
 use Packetery\Api\Soap\Request\CreatePacket;
 use Packetery\Validator;
@@ -81,7 +81,7 @@ class PacketSubmitter {
 			$logger = wc_get_logger();
 			try {
 				$createPacketRequest = $this->preparePacketRequest( $order );
-			} catch ( IncompleteRequestException $e ) {
+			} catch ( InvalidRequestException $e ) {
 				if ( $logger ) {
 					$logger->info( $orderData['id'] . ': ' . $e->getMessage() );
 				}
@@ -115,12 +115,12 @@ class PacketSubmitter {
 	 * @param WC_Order $order WC order.
 	 *
 	 * @return CreatePacket
-	 * @throws IncompleteRequestException For the case request is not eligible to be sent to API.
+	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketRequest( WC_Order $order ): CreatePacket {
 		$commonEntity = $this->orderFactory->create( $order );
 		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
-			throw new IncompleteRequestException( 'All required order attributes are not set.' );
+			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
 
 		return new CreatePacket( $commonEntity );

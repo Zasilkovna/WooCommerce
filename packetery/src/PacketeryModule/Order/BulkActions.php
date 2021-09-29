@@ -104,9 +104,9 @@ class BulkActions {
 	}
 
 	/**
-	 * Prints packets export result.
+	 * Renders packets export result.
 	 */
-	public function adminNotices(): void {
+	public function renderPacketsExportResult(): void {
 		$get = $this->httpRequest->query;
 		if ( empty( $get['submit_to_api'] ) ) {
 			return;

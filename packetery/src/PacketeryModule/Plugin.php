@@ -13,9 +13,11 @@ use PacketeryModule\Carrier\Downloader;
 use PacketeryModule\Carrier\OptionsPage;
 use PacketeryModule\Carrier\Repository;
 use PacketeryModule\Order;
+use PacketeryModule\Options;
 use PacketeryModule\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
+use WC_Order;
 
 /**
  * Class Plugin
@@ -30,7 +32,7 @@ class Plugin {
 	/**
 	 * Options page.
 	 *
-	 * @var \Packetery\Options\Page Options page,
+	 * @var Options\Page Options page,
 	 */
 	private $options_page;
 
@@ -234,15 +236,15 @@ class Plugin {
 			3
 		);
 		// Print packets export result.
-		add_action( 'admin_notices', [ $this->orderBulkActions, 'adminNotices' ] );
+		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ] );
 	}
 
 	/**
 	 * Renders delivery detail for packetery orders.
 	 *
-	 * @param \WC_Order $order WordPress order.
+	 * @param WC_Order $order WordPress order.
 	 */
-	public function renderDeliveryDetail( \WC_Order $order ): void {
+	public function renderDeliveryDetail( WC_Order $order ): void {
 		$orderEntity = new Order\Entity( $order );
 		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
 			return;
