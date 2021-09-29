@@ -70,7 +70,7 @@ class Client {
 	protected function getValidationErrors( SoapFault $exception ): array {
 		$errors = [];
 
-		$faults = $exception->detail->PacketAttributesFault->attributes->fault ?? [];
+		$faults = ( $exception->detail->PacketAttributesFault->attributes->fault ?? [] );
 		if ( $faults && ! is_array( $faults ) ) {
 			$faults = [ $faults ];
 		}
