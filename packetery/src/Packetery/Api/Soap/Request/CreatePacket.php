@@ -182,7 +182,8 @@ class CreatePacket {
 			}
 		}
 
-		if ( $order->carrierRequiresSize() ) {
+		$carrier = $order->getCarrier();
+		if ( null !== $carrier && $carrier->requiresSize() ) {
 			$size = $order->getSize();
 			if ( null !== $size ) {
 				$this->size = [

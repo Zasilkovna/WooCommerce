@@ -92,12 +92,17 @@ class Order {
 			$orderEntity->setPickupPoint( $pickupPoint );
 		}
 
-		$this->addHomeDeliveryDetails( $moduleOrder, $contactInfo, $orderEntity );
+		$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
+		$orderEntity->setDeliveryAddress( $address );
 
 		// Shipping address phone is optional.
 		$orderEntity->setPhone( $orderData['billing']['phone'] );
 		if ( ! empty( $contactInfo['phone'] ) ) {
 			$orderEntity->setPhone( $contactInfo['phone'] );
+		}
+		// Additional address information.
+		if ( ! empty( $contactInfo['address_2'] ) ) {
+			$orderEntity->setNote( $contactInfo['address_2'] );
 		}
 
 		$orderEntity->setEmail( $orderData['billing']['email'] );
@@ -105,41 +110,15 @@ class Order {
 		if ( $orderData['payment_method'] === $codMethod ) {
 			$orderEntity->setCod( $orderValue );
 		}
-		$this->addExternalCarrierDetails( $moduleOrder, $orderEntity );
-
-		return $orderEntity;
-	}
-
-	/**
-	 * Adds data to request if applicable.
-	 *
-	 * @param ModuleOrder\Entity $moduleOrder Order entity.
-	 * @param array              $contactInfo Contact info.
-	 * @param Entity\Order       $orderEntity CreatePacket request.
-	 */
-	private function addHomeDeliveryDetails( ModuleOrder\Entity $moduleOrder, array $contactInfo, Entity\Order $orderEntity ): void {
-		$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
-		$orderEntity->setDeliveryAddress( $address );
-		// Additional address information.
-		if ( ! empty( $contactInfo['address_2'] ) ) {
-			$orderEntity->setNote( $contactInfo['address_2'] );
-		}
-	}
-
-	/**
-	 * Adds data to request if applicable.
-	 *
-	 * @param ModuleOrder\Entity $moduleOrder Order entity.
-	 * @param Entity\Order       $orderEntity CreatePacket request.
-	 */
-	private function addExternalCarrierDetails( ModuleOrder\Entity $moduleOrder, Entity\Order $orderEntity ): void {
-		$carrier = null;
-		if ( $moduleOrder->isExternalCarrier() ) {
-			$carrier = $this->carrierRepository->getById( (int) $orderEntity->getCarrierId() );
-		}
-		$orderEntity->setCarrierRequiresSize( $carrier && $carrier->requiresSize() );
 		$size = new Size( $moduleOrder->getLength(), $moduleOrder->getWidth(), $moduleOrder->getHeight() );
 		$orderEntity->setSize( $size );
+
+		if ( $moduleOrder->isExternalCarrier() ) {
+			$carrier = $this->carrierRepository->getById( (int) $orderEntity->getCarrierId() );
+			$orderEntity->setCarrier( $carrier );
+		}
+
+		return $orderEntity;
 	}
 
 }

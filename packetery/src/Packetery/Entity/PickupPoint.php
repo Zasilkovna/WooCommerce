@@ -73,7 +73,7 @@ class PickupPoint {
 	/**
 	 * PickupPoint constructor.
 	 *
-	 * @param int|null $id Point id.
+	 * @param int|null    $id Point id.
 	 * @param string|null $type Point type.
 	 * @param string|null $name Point name.
 	 * @param string|null $city Point city.

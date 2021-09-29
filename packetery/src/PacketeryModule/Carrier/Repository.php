@@ -14,6 +14,7 @@ use PacketeryModule\EntityFactory;
 
 /**
  * Class CarrierRepository
+ * TODO: cache - some queries may run more times during request.
  *
  * @package Packetery
  */

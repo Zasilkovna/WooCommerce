@@ -24,6 +24,13 @@ class Order {
 	private $number;
 
 	/**
+	 * Order carrier object.
+	 *
+	 * @var Carrier|null
+	 */
+	private $carrier;
+
+	/**
 	 * Order pickup point object.
 	 *
 	 * @var PickupPoint|null
@@ -136,13 +143,6 @@ class Order {
 	private $isExported;
 
 	/**
-	 * Tells if carrier requires size.
-	 *
-	 * @var bool|null
-	 */
-	private $carrierRequiresSize;
-
-	/**
 	 * Order entity constructor.
 	 *
 	 * @param string|null $number Order id.
@@ -227,6 +227,15 @@ class Order {
 		}
 
 		return $this->pickupPoint->getId();
+	}
+
+	/**
+	 * Sets carrier.
+	 *
+	 * @param Carrier|null $carrier Carrier.
+	 */
+	public function setCarrier( ?Carrier $carrier ): void {
+		$this->carrier = $carrier;
 	}
 
 	/**
@@ -347,15 +356,6 @@ class Order {
 	}
 
 	/**
-	 * Sets if carrier requires size.
-	 *
-	 * @param bool $requiresSize Carrier requires size flag.
-	 */
-	public function setCarrierRequiresSize( bool $requiresSize ): void {
-		$this->carrierRequiresSize = $requiresSize;
-	}
-
-	/**
 	 * Sets packet id.
 	 *
 	 * @param string|null $packetId Packet id.
@@ -371,6 +371,15 @@ class Order {
 	 */
 	public function setIsExported( bool $isExported ): void {
 		$this->isExported = $isExported;
+	}
+
+	/**
+	 * Gets carrier object.
+	 *
+	 * @return Carrier|null
+	 */
+	public function getCarrier(): ?Carrier {
+		return $this->carrier;
 	}
 
 	/**
@@ -482,15 +491,6 @@ class Order {
 	 */
 	public function containsAdultContent(): ?bool {
 		return $this->adultContent;
-	}
-
-	/**
-	 * Checks if carrier requires size.
-	 *
-	 * @return bool|null
-	 */
-	public function carrierRequiresSize(): ?bool {
-		return $this->carrierRequiresSize;
 	}
 
 	/**
