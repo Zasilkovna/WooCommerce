@@ -10,9 +10,10 @@ declare( strict_types=1 );
 namespace Packetery;
 
 use Packetery\Carrier\Downloader;
+use Packetery\Carrier\OptionsPage;
 use Packetery\Carrier\Repository;
 use Packetery\Order;
-use Packetery\Carrier\OptionsPage;
+use Packetery\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -111,19 +112,27 @@ class Plugin {
 	private $gridExtender;
 
 	/**
+	 * Product tab.
+	 *
+	 * @var Product\DataTab
+	 */
+	private $productTab;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox      $order_metabox Order metabox.
-	 * @param MessageManager     $message_manager Message manager.
-	 * @param Options\Page       $options_page Options page.
+	 * @param Order\Metabox      $order_metabox      Order metabox.
+	 * @param MessageManager     $message_manager    Message manager.
+	 * @param Options\Page       $options_page       Options page.
 	 * @param Repository         $carrier_repository Carrier repository.
 	 * @param Downloader         $carrier_downloader Carrier downloader object.
-	 * @param Checkout           $checkout Checkout class.
-	 * @param Engine             $latte_engine PacketeryLatte engine.
+	 * @param Checkout           $checkout           Checkout class.
+	 * @param Engine             $latte_engine       PacketeryLatte engine.
 	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions  $orderBulkActions Order BulkActions.
-	 * @param Order\LabelPrint   $labelPrint Label printing.
-	 * @param Order\GridExtender $gridExtender Order grid extender.
+	 * @param Order\BulkActions  $orderBulkActions   Order BulkActions.
+	 * @param Order\LabelPrint   $labelPrint         Label printing.
+	 * @param Order\GridExtender $gridExtender       Order grid extender.
+	 * @param Product\DataTab    $productTab         Product tab.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -136,7 +145,8 @@ class Plugin {
 		OptionsPage $carrierOptionsPage,
 		Order\BulkActions $orderBulkActions,
 		Order\LabelPrint $labelPrint,
-		Order\GridExtender $gridExtender
+		Order\GridExtender $gridExtender,
+		Product\DataTab $productTab
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -151,6 +161,7 @@ class Plugin {
 		$this->orderBulkActions   = $orderBulkActions;
 		$this->labelPrint         = $labelPrint;
 		$this->gridExtender       = $gridExtender;
+		$this->productTab         = $productTab;
 	}
 
 	/**
@@ -196,6 +207,7 @@ class Plugin {
 		$this->order_metabox->register();
 
 		$this->checkout->register_hooks();
+		$this->productTab->register();
 
 		add_action(
 			'packetery_cron_carriers_hook',
