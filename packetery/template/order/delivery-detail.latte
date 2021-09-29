@@ -1,4 +1,4 @@
-{varType \Packetery\Order\Entity $order}
+{varType \PacketeryModule\Order\Entity $order}
 
 <div class="clear"></div>
 <div>
@@ -6,7 +6,7 @@
 		{__( 'Packeta', 'packetery' )} - {__( 'pickup point detail', 'packetery' )}
 	</h3>
 
-	<p><strong>{__( 'Name', 'packetery' )}</strong>: {$order->get_point_name()}</p>
-	<p><strong>{__( 'Address', 'packetery' )}</strong>: {$order->get_point_address()}</p>
-	<p><a target="_blank" href="{$order->get_point_url()}">{__( 'Pickup Point Detail', 'packetery' )}</a></p>
+    <p><strong>{__( 'Name', 'packetery' )}</strong>: {$order->getPointName()}</p>
+    <p><strong>{__( 'Address', 'packetery' )}</strong>: {$order->getPointStreet()}, {$order->getPointZip()} {$order->getPointCity()}</p>
+    <p><a target="_blank" href="{$order->getPointUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a></p>
 </div>
