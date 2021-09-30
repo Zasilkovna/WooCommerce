@@ -1,11 +1,9 @@
 <h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
 
-{if $response}
-	{if $response->getFaultString()}
-		<div class="notice notice-error">
-			<p><strong>{__('printFailedMoreInformationInLog', 'packetery')}</strong></p>
-		</div>
-	{/if}
+{if $errors}
+	<div class="notice notice-error">
+		<p><strong>{__('printFailedMoreInformationInLog', 'packetery')}</strong></p>
+	</div>
 {else}
 	<form n:name=$form>
 		<table class="form-table" role="presentation">

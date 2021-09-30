@@ -83,47 +83,32 @@ class LabelPrint {
 	}
 
 	/**
-	 * Prepares form and renders template.
+	 * Returns form object and information about label formats.
+	 *
+	 * @return array
 	 */
-	public function render(): void {
+	private function getForm(): array {
 		$availableFormats  = $this->optionsProvider->getLabelFormats();
 		$chosenLabelFormat = $this->optionsProvider->get_packeta_label_format();
 		$maxOffset         = $availableFormats[ $chosenLabelFormat ]['maxOffset'];
-		$response          = null;
-		if ( 0 === $maxOffset ) {
-			$response = $this->prepareLabels( 0 );
-		}
+		$form              = $this->createForm( $maxOffset );
 
-		$form = $this->createForm( $maxOffset );
-		if ( $form->isSubmitted() ) {
-			$data = $form->getValues( 'array' );
-			$response = $this->prepareLabels( $data['offset'] );
-		}
+		return [ $chosenLabelFormat, $maxOffset, $form ];
+	}
 
-		if ( $response && ! $response->getFaultString() ) {
-			$pdfFilename = str_replace( ' ', '_', $chosenLabelFormat ) . '.pdf';
-			file_put_contents( PACKETERY_PLUGIN_DIR . '/temp/pdf/' . $pdfFilename, $response->getPdf() );
+	/**
+	 * Prepares form and renders template.
+	 */
+	public function render(): void {
+		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getForm();
 
-			if ( wp_safe_redirect(
-				add_query_arg(
-					[
-						'labels' => $pdfFilename,
-						'action' => 'download',
-						'nonce'  => wp_create_nonce(),
-					]
-				)
-			) ) {
-				exit;
-			}
-
-			return;
-		}
+		$errors = $this->httpRequest->getQuery( 'errors' );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte',
 			[
-				'form'     => $form,
-				'response' => $response,
+				'form'   => $form,
+				'errors' => $errors,
 			]
 		);
 	}
@@ -132,19 +117,31 @@ class LabelPrint {
 	 * Outputs pdf.
 	 */
 	public function showLabelsPdf(): void {
-		$pdfFilename = $this->httpRequest->getQuery( 'labels' );
-		if (
-			$pdfFilename &&
-			$this->httpRequest->getQuery( 'page' ) === 'label-print' &&
-			$this->httpRequest->getQuery( 'action' ) === 'download' &&
-			wp_verify_nonce( $this->httpRequest->getQuery( 'nonce' ) )
-		) {
-			$pdfPath = PACKETERY_PLUGIN_DIR . '/temp/pdf/' . $pdfFilename;
-			header( 'Content-Type: ' . mime_content_type( $pdfPath ) );
+		if ( ! $this->httpRequest->getQuery( 'orderIds' ) ) {
+			return;
+		}
+
+		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getForm();
+		$response                                 = null;
+		if ( 0 === $maxOffset ) {
+			$response = $this->prepareLabels( 0 );
+		} elseif ( $form->isSubmitted() ) {
+			$data     = $form->getValues( 'array' );
+			$response = $this->prepareLabels( $data['offset'] );
+		}
+
+		if ( $response ) {
+			if ( $response->getFaultString() && wp_safe_redirect( add_query_arg( [ 'errors' => true ] ) ) ) {
+				exit;
+			}
+			header( 'Content-Type: application/pdf' );
 			header( 'Content-Transfer-Encoding: Binary' );
-			header( 'Content-Length: ' . filesize( $pdfPath ) );
+			header( 'Content-Length: ' . strlen( $response->getPdf() ) );
+			$pdfFilename = 'packeta_labels_' . strtolower( str_replace( ' ', '_', $chosenLabelFormat ) ) . '.pdf';
 			header( 'Content-Disposition: attachment; filename="' . $pdfFilename . '"' );
-			readfile( $pdfPath );
+			// @codingStandardsIgnoreStart
+			echo $response->getPdf();
+			// @codingStandardsIgnoreEnd
 			exit;
 		}
 	}
@@ -158,6 +155,7 @@ class LabelPrint {
 	 */
 	public function createForm( int $maxOffset ): Form {
 		$form = $this->formFactory->create();
+		$form->setAction( $this->httpRequest->getUrl() );
 
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
