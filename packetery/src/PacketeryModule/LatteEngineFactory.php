@@ -30,7 +30,7 @@ class LatteEngineFactory {
 		$engine = new Engine();
 		$engine->setTempDirectory( $temp_dir );
 		FormMacros::install( $engine->getCompiler() );
-		$engine->addFilter( 'wp_datetime', function ( \DateTimeImmutable $value ) {
+		$engine->addFilter( 'wpDateTime', function ( \DateTimeInterface $value ) {
 			return $value->format( wc_date_format() . ' ' . wc_time_format() );
 		} );
 		return $engine;

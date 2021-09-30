@@ -20,12 +20,12 @@
         </div>
 
         {foreach $rows as $row}
-        <div class="packetery-table-row">
+        <div n:class="packetery-table-row, 'log-' . $row->status">
             <div class="packetery-table-cell">
-                {$row->status}
+                {$translatedStatuses[$row->status] ?? $row->status}
             </div>
             <div class="packetery-table-cell">
-                {$row->date|wp_datetime}
+                {$row->date|wpDateTime}
             </div>
             <div class="packetery-table-cell">
                 {$translatedActions[$row->action] ?? $row->action}

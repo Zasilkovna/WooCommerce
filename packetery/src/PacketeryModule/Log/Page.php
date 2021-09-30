@@ -71,13 +71,19 @@ class Page {
 			Record::ACTION_CARRIER_LIST_UPDATE => __( 'logAction_carrier-list-update', 'packetery' ),
 		];
 
+		$translatedStatuses = [
+			Record::STATUS_ERROR   => __( 'statusError', 'packetery' ),
+			Record::STATUS_SUCCESS => __( 'statusSuccess', 'packetery' ),
+		];
+
 		$rows = $this->logger->getRecords( [ 'date' => 'DESC' ] );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/log/page.latte',
 			[
-				'rows'              => $rows,
-				'translatedActions' => $translatedActions,
+				'rows'               => $rows,
+				'translatedActions'  => $translatedActions,
+				'translatedStatuses' => $translatedStatuses,
 			]
 		);
 	}

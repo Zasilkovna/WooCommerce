@@ -59,7 +59,7 @@ class PostLogger implements ILogger {
 	public function add( Record $record ): void {
 		$logData = [
 			'post_title'   => $record->title ?? '',
-			'post_content' => wp_json_encode( ( $record->params ?? [] ) ),
+			'post_content' => ( ! empty( $record->params ) ? wp_json_encode( $record->params ) : '' ),
 			'post_type'    => self::POST_TYPE,
 			'post_status'  => 'publish',
 			'post_parent'  => 0,
