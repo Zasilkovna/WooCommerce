@@ -2,15 +2,15 @@
 /**
  * Packetery product tab.
  *
- * @package Packetery\Product
+ * @package PacketeryModule\Product
  */
 
 declare( strict_types=1 );
 
 
-namespace Packetery\Product;
+namespace PacketeryModule\Product;
 
-use Packetery\Product;
+use PacketeryModule\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Forms\FormFactory;
@@ -18,7 +18,7 @@ use PacketeryNette\Forms\FormFactory;
 /**
  * Class Tab
  *
- * @package Packetery\Product
+ * @package PacketeryModule\Product
  */
 class DataTab {
 

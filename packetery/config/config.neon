@@ -2,7 +2,7 @@ parameters:
     latteTempFolder: %tempDir%/cache/view
 
 services:
-	- Packetery\Product\DataTab
+	- PacketeryModule\Product\DataTab
 	- Packetery\Helper
 	- PacketeryModule\MessageManager
 	- PacketeryModule\Order\Metabox

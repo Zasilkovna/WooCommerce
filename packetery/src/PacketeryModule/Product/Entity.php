@@ -2,18 +2,18 @@
 /**
  * Product entity.
  *
- * @package Packetery\Product
+ * @package PacketeryModule\Product
  */
 
 declare( strict_types=1 );
 
 
-namespace Packetery\Product;
+namespace PacketeryModule\Product;
 
 /**
  * Class Entity
  *
- * @package Packetery\Product
+ * @package PacketeryModule\Product
  */
 class Entity {
 
