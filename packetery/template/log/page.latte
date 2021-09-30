@@ -1,4 +1,4 @@
-{varType Packetery\Log\Entity[] $rows}
+{varType Packetery\Log\Record[] $rows}
 
 <div id="packetery-log-page">
     <h1>{__( 'Packeta', 'packetery' )} - {__( 'logsPageTitle', 'packetery' )}</h1>
@@ -22,13 +22,13 @@
         {foreach $rows as $row}
         <div class="packetery-table-row">
             <div class="packetery-table-cell">
-                {$row->getStatus()}
+                {$row->status}
             </div>
             <div class="packetery-table-cell">
-                {$row->getDateFormatted()}
+                {$row->date|wp_datetime}
             </div>
             <div class="packetery-table-cell">
-                {$row->getTranslatedAction()}
+                {$translatedActions[$row->action] ?? $row->action}
             </div>
             <div class="packetery-table-cell">
                 {$row->getNote()}

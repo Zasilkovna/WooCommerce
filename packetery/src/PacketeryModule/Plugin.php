@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace PacketeryModule;
 
+use Packetery\Log\ILogger;
+use PacketeryModule\Log;
 use PacketeryModule\Carrier\Downloader;
 use PacketeryModule\Carrier\OptionsPage;
 use PacketeryModule\Carrier\Repository;
@@ -121,6 +123,20 @@ class Plugin {
 	private $productTab;
 
 	/**
+	 * Log page.
+	 *
+	 * @var Log\Page
+	 */
+	private $logPage;
+
+	/**
+	 * Log manager.
+	 *
+	 * @var ILogger
+	 */
+	private $logger;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox      $order_metabox      Order metabox.
@@ -135,6 +151,8 @@ class Plugin {
 	 * @param Order\LabelPrint   $labelPrint         Label printing.
 	 * @param Order\GridExtender $gridExtender       Order grid extender.
 	 * @param Product\DataTab    $productTab         Product tab.
+	 * @param Log\Page           $logPage            Log page.
+	 * @param Log\PostLogger     $logger             Log manager.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -148,7 +166,9 @@ class Plugin {
 		Order\BulkActions $orderBulkActions,
 		Order\LabelPrint $labelPrint,
 		Order\GridExtender $gridExtender,
-		Product\DataTab $productTab
+		Product\DataTab $productTab,
+		Log\Page $logPage,
+		ILogger $logger
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -164,6 +184,8 @@ class Plugin {
 		$this->labelPrint         = $labelPrint;
 		$this->gridExtender       = $gridExtender;
 		$this->productTab         = $productTab;
+		$this->logPage            = $logPage;
+		$this->logger             = $logger;
 	}
 
 	/**
@@ -171,6 +193,7 @@ class Plugin {
 	 */
 	public function run(): void {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
+		add_action( 'init', [ $this->logger, 'register' ], 5 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		Form::initialize();
