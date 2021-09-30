@@ -26,16 +26,16 @@ class Client {
 	/**
 	 * API password.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $apiPassword;
 
 	/**
 	 * Client constructor.
 	 *
-	 * @param string $apiPassword Api password.
+	 * @param string|null $apiPassword Api password.
 	 */
-	public function __construct( string $apiPassword ) {
+	public function __construct( ?string $apiPassword ) {
 		$this->apiPassword = $apiPassword;
 	}
 
