@@ -66,6 +66,6 @@ class Record {
 	 * @return string
 	 */
 	public function getNote(): string {
-		return $this->title . ': ' . print_r( $this->params, true );
+		return implode( ': ', array_filter( [ $this->title, wp_json_encode( $this->params ) ] ) );
 	}
 }

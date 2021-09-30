@@ -73,6 +73,12 @@ class Page {
 
 		$rows = $this->logger->getRecords( [ 'date' => 'DESC' ] );
 
-		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/log/page.latte', [ 'rows' => $rows, 'translatedActions' => $translatedActions ] );
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/log/page.latte',
+			[
+				'rows'              => $rows,
+				'translatedActions' => $translatedActions,
+			]
+		);
 	}
 }
