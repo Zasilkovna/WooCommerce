@@ -1,4 +1,9 @@
 <?php
+/**
+ * Class PostLogger
+ *
+ * @package PacketeryModule\Log
+ */
 
 declare( strict_types=1 );
 
@@ -8,6 +13,11 @@ namespace PacketeryModule\Log;
 use Packetery\Log\ILogger;
 use Packetery\Log\Record;
 
+/**
+ * Class PostLogger
+ *
+ * @package PacketeryModule\Log
+ */
 class PostLogger implements ILogger {
 
 	/**
@@ -49,7 +59,7 @@ class PostLogger implements ILogger {
 	public function add( Record $record ): void {
 		$logData = [
 			'post_title'   => $record->title ?? '',
-			'post_content' => serialize( ( $record->params ?? [] ) ),
+			'post_content' => wp_json_encode( ( $record->params ?? [] ) ),
 			'post_type'    => self::POST_TYPE,
 			'post_status'  => 'publish',
 			'post_parent'  => 0,
@@ -73,7 +83,7 @@ class PostLogger implements ILogger {
 	/**
 	 * Retrieve all connected logs. Used for retrieving logs related to particular items, such as a specific purchase.
 	 *
-	 * @param array $sorting
+	 * @param array $sorting Sorting.
 	 *
 	 * @return Record[]
 	 */
@@ -96,15 +106,18 @@ class PostLogger implements ILogger {
 			return [];
 		}
 
-		return array_map( static function ( \WP_Post $log ) {
-			$record         = new Record();
-			$record->status = get_post_meta( $log->ID, 'packetery_status', true );
-			$record->date   = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
-			$record->action = get_post_meta( $log->ID, 'packetery_action', true );
-			$record->title  = $log->post_title;
-			$record->params = unserialize( $log->post_content, [ 'allowed_classes' => true ] );
+		return array_map(
+			static function ( \WP_Post $log ) {
+				$record         = new Record();
+				$record->status = get_post_meta( $log->ID, 'packetery_status', true );
+				$record->date   = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
+				$record->action = get_post_meta( $log->ID, 'packetery_action', true );
+				$record->title  = $log->post_title;
+				$record->params = json_decode( $log->post_content );
 
-			return $record;
-		}, $logs );
+				return $record;
+			},
+			$logs
+		);
 	}
 }

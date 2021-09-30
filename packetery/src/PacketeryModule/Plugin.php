@@ -152,7 +152,7 @@ class Plugin {
 	 * @param Order\GridExtender $gridExtender       Order grid extender.
 	 * @param Product\DataTab    $productTab         Product tab.
 	 * @param Log\Page           $logPage            Log page.
-	 * @param Log\PostLogger     $logger             Log manager.
+	 * @param ILogger            $logger             Log manager.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
