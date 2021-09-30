@@ -1,18 +1,26 @@
 <h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
 
-<form n:name=$form>
-	<table class="form-table" role="presentation">
-		<tr>
-			<th scope="row">
-				<label n:name=offset />
-			</th>
-			<td>
-				<select n:name=offset></select>
-			</td>
-		</tr>
-	</table>
-	<p class="submit">
-		<input type="submit" name="submit" id="submit" value="{__( 'printLabels', 'packetery' )}"
-			   class="button button-primary">
-	</p>
-</form>
+{if $response}
+	{if $response->getFaultString()}
+		<div class="notice notice-error">
+			<p><strong>{__('printFailedMoreInformationInLog', 'packetery')}</strong></p>
+		</div>
+	{/if}
+{else}
+	<form n:name=$form>
+		<table class="form-table" role="presentation">
+			<tr>
+				<th scope="row">
+					<label n:name=offset />
+				</th>
+				<td>
+					<select n:name=offset></select>
+				</td>
+			</tr>
+		</table>
+		<p class="submit">
+			<input type="submit" name="submit" id="submit" value="{__( 'printLabels', 'packetery' )}"
+				   class="button button-primary">
+		</p>
+	</form>
+{/if}

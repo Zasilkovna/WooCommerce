@@ -261,6 +261,8 @@ class Plugin {
 		);
 		// Print packets export result.
 		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ] );
+
+		add_action( 'admin_init', [ $this->labelPrint, 'showLabelsPdf' ] );
 	}
 
 	/**

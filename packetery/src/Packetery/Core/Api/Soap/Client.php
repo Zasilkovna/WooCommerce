@@ -61,6 +61,26 @@ class Client {
 	}
 
 	/**
+	 * Asks for labels.
+	 *
+	 * @param Request\PacketsLabelsPdf $request Packet attributes.
+	 *
+	 * @return Response\PacketsLabelsPdf
+	 */
+	public function packetsLabelsPdf( Request\PacketsLabelsPdf $request ): Response\PacketsLabelsPdf {
+		$response = new Response\PacketsLabelsPdf();
+		try {
+			$soapClient  = new SoapClient( self::WSDL_URL );
+			$pdfContents = $soapClient->packetsLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getFormat(), $request->getOffset() );
+			$response->setPdf( $pdfContents );
+		} catch ( SoapFault $exception ) {
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Gets human readable errors form SoapFault exception.
 	 *
 	 * @param SoapFault $exception Exception.
