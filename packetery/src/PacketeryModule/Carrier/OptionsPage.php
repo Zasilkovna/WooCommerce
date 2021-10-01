@@ -207,6 +207,10 @@ class OptionsPage {
 			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrierData ) {
+				$carrierEntity = null;
+				if ( is_numeric( (int) $carrierData['id'] ) ) {
+					$carrierEntity = $this->carrierRepository->getById( (int) $carrierData['id'] );
+				}
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
 					$form = $this->createForm( $post );
 					if ( $form->isSubmitted() ) {
@@ -219,11 +223,11 @@ class OptionsPage {
 					}
 					$form = $this->createForm( $carrierData );
 				}
-
-				$carriersData[] = array(
-					'form' => $form,
-					'data' => $carrierData,
-				);
+				$carriersData[] = [
+					'form'   => $form,
+					'data'   => $carrierData,
+					'entity' => $carrierEntity,
+				];
 			}
 
 			$this->latteEngine->render(
