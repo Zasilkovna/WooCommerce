@@ -294,7 +294,7 @@ class Plugin {
 		}
 
 		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/order/order-detail.latte',
+			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
 			[ 'order' => $orderEntity ]
 		);
 	}

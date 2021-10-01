@@ -11,7 +11,7 @@
 			<td>
 				{$order->getPointName()}
 
-				{if $order->getCarrierId() === 'packeta'}
+				{if !$order->isExternalCarrier()}
 					<br>
 					<a class="button" target="_blank"
 					   href="{$order->getPointUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a>
