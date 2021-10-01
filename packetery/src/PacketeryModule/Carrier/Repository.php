@@ -20,7 +20,8 @@ use PacketeryModule\EntityFactory;
  */
 class Repository {
 
-	public const INTERNAL_PICKUP_POINTS_ID    = 'packeta';
+	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
+	// Do not change, will be removed after customs declarations implementation.
 	public const CUSTOMS_DECLARATIONS_ALLOWED = false;
 
 	/**
