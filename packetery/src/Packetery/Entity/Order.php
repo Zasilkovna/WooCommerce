@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Entity;
 
+use PacketeryModule\Carrier\Repository;
+
 /**
  * Class Order
  *
@@ -195,7 +197,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isExternalCarrier(): bool {
-		return ( 'packeta' !== $this->getCarrierId() );
+		return ( Repository::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
 	}
 
 	/**

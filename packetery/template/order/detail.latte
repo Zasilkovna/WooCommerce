@@ -1,0 +1,30 @@
+{varType \PacketeryModule\Order\Entity $order}
+
+<section class="packetery-order-detail">
+
+	<h2 class="woocommerce-order-details__title">{__( 'Packeta', 'packetery' )} - {__( 'selectedPickupPoint', 'packetery' )}</h2>
+
+	<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
+		<tbody>
+		<tr>
+			<th scope="row">{__( 'pickupPointName', 'packetery' )}</th>
+			<td>
+				{$order->getPointName()}
+
+				{if $order->isInternalPickupPointDelivery()}
+					<br>
+					<a class="button" target="_blank"
+					   href="{$order->getPointUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a>
+				{/if}
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">{__( 'Address', 'packetery' )}</th>
+			<td>
+				{$order->getPointStreet()}, {$order->getPointZip()} {$order->getPointCity()}
+			</td>
+		</tr>
+		</tbody>
+	</table>
+
+</section>

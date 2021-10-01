@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace PacketeryModule\Order;
 
+use PacketeryModule\Carrier\Repository;
 use PacketeryModule\ShippingMethod;
 use WC_Order;
 
@@ -300,7 +301,16 @@ class Entity {
 	 * @return bool
 	 */
 	public function isExternalCarrier(): bool {
-		return ( 'packeta' !== $this->getCarrierId() );
+		return ( Repository::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
+	}
+
+	/**
+	 * Checks if uses internal pickup point.
+	 *
+	 * @return bool
+	 */
+	public function isInternalPickupPointDelivery(): bool {
+		return ( Repository::INTERNAL_PICKUP_POINTS_ID === $this->getCarrierId() );
 	}
 
 	/**
