@@ -81,9 +81,10 @@ class CountryListingPage {
 
 		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
 		if ( false !== $lastCarrierUpdate ) {
-			$carriersUpdateParams['lastUpdate'] = gmdate(
-				get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
-				strtotime( $lastCarrierUpdate )
+			$date = new \DateTime( gmdate( 'c', strtotime( $lastCarrierUpdate ) ) );
+			$date->setTimezone( wp_timezone() );
+			$carriersUpdateParams['lastUpdate'] = $date->format(
+				get_option( 'date_format' ) . ' ' . get_option( 'time_format' )
 			);
 		}
 
