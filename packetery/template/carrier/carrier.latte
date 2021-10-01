@@ -1,8 +1,13 @@
 <div class="packetery-carrier-options-page">
 	<h2>{$carrier_data['data']['name']}</h2>
 
-	{if isset($carrier_data['form'])}
-		{var $form = $carrier_data['form']}
+	{varType Packetery\Entity\Carrier $carrier_data['entity']}
+	{if isset($carrier_data['entity']) && $carrier_data['entity']->requiresCustomsDeclarations()}
+		<div class="notice notice-info">
+			<p>{__( 'cannotUseThisCarrierBecauseRequiresCustomsDeclaration', 'packetery' )}</p>
+		</div>
+	{elseif isset($carrier_data['form'])}
+	{var $form = $carrier_data['form']}
 		<form n:name=$form>
 			<table class="form-table" role="presentation">
 				<tr>
@@ -114,10 +119,6 @@
 			</p>
 
 		</form>
-	{elseif isset($carrier_data['message'])}
-		<div class="notice notice-info">
-			<p>{$carrier_data['message']}</p>
-		</div>
 	{/if}
 
 	<hr>
