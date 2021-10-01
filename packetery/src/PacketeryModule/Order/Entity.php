@@ -305,6 +305,15 @@ class Entity {
 	}
 
 	/**
+	 * Checks if uses internal pickup point.
+	 *
+	 * @return bool
+	 */
+	public function isInternalPickupPointDelivery(): bool {
+		return ( Repository::INTERNAL_PICKUP_POINTS_ID === $this->getCarrierId() );
+	}
+
+	/**
 	 * Gets pickup point/carrier id.
 	 *
 	 * @return int
