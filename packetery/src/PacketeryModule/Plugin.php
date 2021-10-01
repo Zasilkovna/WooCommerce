@@ -334,6 +334,7 @@ class Plugin {
 		$this->options_page->register();
 		$this->carrierOptionsPage->register();
 		$this->labelPrint->register();
+		$this->logPage->register();
 	}
 
 	/**
