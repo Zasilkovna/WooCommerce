@@ -270,6 +270,7 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
+		$post = $this->httpRequest->getPost();
 		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
 			$carrierId = $this->getCarrierId( $chosenMethod );
 			if ( $carrierId ) {
@@ -277,12 +278,14 @@ class Checkout {
 			}
 		}
 		if ( $this->isPickupPointOrder() ) {
-			$post = $this->httpRequest->getPost();
 			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
 				wp_nonce_ays( '' );
 			}
 			foreach ( self::$pickup_point_attrs as $attr ) {
-				if ( isset( $post[ $attr['name'] ] ) ) {
+				if (
+					isset( $post[ $attr['name'] ] ) &&
+					( Entity::META_CARRIER_ID !== $attr['name'] || $post[ $attr['name'] ] )
+				) {
 					update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
 				}
 			}
