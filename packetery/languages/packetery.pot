@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-10-01T08:52:48+02:00\n"
+"POT-Creation-Date: 2021-10-01T12:00:44+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -19,14 +19,15 @@ msgstr ""
 #: src/PacketeryModule/Options/Page.php:64
 #: src/PacketeryModule/Order/Metabox.php:96
 #: src/PacketeryModule/Product/DataTab.php:72
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:14
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:35
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:62
-#: temp/cache/view/template-carrier-country.latte--945e85605b.php:14
-#: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:15
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:14
-#: temp/cache/view/template-order-delivery-detail.latte--296d1c9ef5.php:17
-#: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:13
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:35
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:62
+#: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:15
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:17
+#: temp/cache/view/template-order-detail.latte--1643311247.php:16
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:13
 msgid "Packeta"
 msgstr ""
 
@@ -138,7 +139,7 @@ msgstr ""
 
 #: src/PacketeryModule/Log/Page.php:55
 #: src/PacketeryModule/Log/Page.php:56
-#: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:17
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:17
 msgid "logsPageTitle"
 msgstr ""
 
@@ -171,7 +172,7 @@ msgid "Logs"
 msgstr ""
 
 #: src/PacketeryModule/Options/Page.php:63
-#: src/PacketeryModule/Plugin.php:411
+#: src/PacketeryModule/Plugin.php:429
 msgid "Settings"
 msgstr ""
 
@@ -283,7 +284,7 @@ msgstr ""
 
 #: src/PacketeryModule/Order/LabelPrint.php:134
 #: src/PacketeryModule/Order/LabelPrint.php:135
-#: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:45
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:45
 msgid "printLabels"
 msgstr ""
 
@@ -322,15 +323,15 @@ msgstr ""
 msgid "You are not allowed to edit posts!"
 msgstr ""
 
-#: src/PacketeryModule/Plugin.php:410
+#: src/PacketeryModule/Plugin.php:428
 msgid "View Packeta settings"
 msgstr ""
 
-#: src/PacketeryModule/Plugin.php:432
+#: src/PacketeryModule/Plugin.php:450
 msgid "View Packeta documentation"
 msgstr ""
 
-#: src/PacketeryModule/Plugin.php:433
+#: src/PacketeryModule/Plugin.php:451
 msgid "Documentation"
 msgstr ""
 
@@ -347,171 +348,181 @@ msgstr ""
 msgid "Description of Packeta shipping method"
 msgstr ""
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:63
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:63
 msgid "Weight rules"
 msgstr ""
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:80
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:80
 msgid "Add weight rule"
 msgstr ""
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:87
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:87
 msgid "COD surcharge rules"
 msgstr ""
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:104
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:104
 msgid "Add COD surcharge rule"
 msgstr ""
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:124
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:124
 msgid "After exceeding this amount, shipping is free."
 msgstr ""
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:202
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:202
 msgid "Delete weight rule"
 msgstr ""
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:259
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:259
 msgid "Delete COD surcharge rule"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:16
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:16
 msgid "Carriers"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:37
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:37
 msgid "carriersUpdate"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:44
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:44
 msgid "lastCarrierUpdateDatetime"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:56
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:56
 msgid "runCarrierUpdate"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:64
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:64
 msgid "Countries"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:72
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:72
 msgid "Country name"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:75
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:75
 msgid "Country code"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:78
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:78
 msgid "Action"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:94
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:94
 msgid "Set up"
 msgstr ""
 
-#: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:105
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:105
 msgid "No active countries."
 msgstr ""
 
-#: temp/cache/view/template-carrier-country.latte--945e85605b.php:16
+#: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:16
 msgid "Country options"
 msgstr ""
 
-#: temp/cache/view/template-carrier-country.latte--945e85605b.php:33
+#: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:33
 msgid "No known carrier for this country."
 msgstr ""
 
-#: temp/cache/view/template-checkout-widget_button.latte--90235cda26.php:30
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:30
 msgid "Choose pickup point"
 msgstr ""
 
-#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:15
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:15
 msgid "Shipping Detail"
 msgstr ""
 
-#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:21
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:21
 msgid "Pickup Point Name"
 msgstr ""
 
-#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:29
-#: temp/cache/view/template-order-delivery-detail.latte--296d1c9ef5.php:40
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:29
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:40
+#: temp/cache/view/template-order-detail.latte--1643311247.php:39
 msgid "Pickup Point Detail"
 msgstr ""
 
-#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:34
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:34
 msgid "Link"
 msgstr ""
 
-#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:39
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:39
 msgid "Point Address"
 msgstr ""
 
-#: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:24
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:24
 msgid "status"
 msgstr ""
 
-#: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:29
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:29
 msgid "dateAndTime"
 msgstr ""
 
-#: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:34
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:34
 msgid "action"
 msgstr ""
 
-#: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:39
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:39
 msgid "note"
 msgstr ""
 
-#: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:80
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:80
 msgid "logListIsEmpty"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:16
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:16
 msgid "Options"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:136
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:136
 msgid "If checked, the generated labels will be emailed to the e-shop administrator"
 msgstr ""
 
-#: temp/cache/view/template-order-delivery-detail.latte--296d1c9ef5.php:19
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:19
 msgid "pickup point detail"
 msgstr ""
 
-#: temp/cache/view/template-order-delivery-detail.latte--296d1c9ef5.php:24
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:24
 msgid "Name"
 msgstr ""
 
-#: temp/cache/view/template-order-delivery-detail.latte--296d1c9ef5.php:29
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:29
+#: temp/cache/view/template-order-detail.latte--1643311247.php:47
 msgid "Address"
 msgstr ""
 
-#: temp/cache/view/template-order-export-result.latte--98a9fec8db.php:15
+#: temp/cache/view/template-order-detail.latte--1643311247.php:18
+msgid "selectedPickupPoint"
+msgstr ""
+
+#: temp/cache/view/template-order-detail.latte--1643311247.php:25
+msgid "pickupPointName"
+msgstr ""
+
+#: temp/cache/view/template-order-export-result.latte--fb07c53896.php:15
 msgid "shipmentsSubmittedSuccessfully"
 msgstr ""
 
-#: temp/cache/view/template-order-export-result.latte--98a9fec8db.php:24
+#: temp/cache/view/template-order-export-result.latte--fb07c53896.php:24
 msgid "someShipments%sSkipped"
 msgstr ""
 
-#: temp/cache/view/template-order-export-result.latte--98a9fec8db.php:33
+#: temp/cache/view/template-order-export-result.latte--fb07c53896.php:33
 msgid "someShipments%sFailed"
 msgstr ""
 
-#: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:15
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
 msgid "labelPrinting"
 msgstr ""
 
-#: temp/cache/view/template-order-type-select.latte--7dab07c900.php:14
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:14
 msgid "packetaMethodType"
 msgstr ""
 
-#: temp/cache/view/template-order-type-select.latte--7dab07c900.php:21
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:21
 msgid "carrierPackets"
 msgstr ""
 
-#: temp/cache/view/template-order-type-select.latte--7dab07c900.php:28
+#: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:29
 msgid "packetaPickupPointPackets"
 msgstr ""
