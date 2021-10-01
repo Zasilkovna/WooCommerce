@@ -362,4 +362,23 @@ class Entity {
 
 		return (int) $this->getPointId();
 	}
+
+	/**
+	 * @return int
+	 */
+	public function getId(): int {
+		return $this->order->get_id();
+	}
+
+	/**
+	 * @return float|null
+	 */
+	public function getPacketeryWeight(): ?float {
+		$value = $this->getMetaAsNullableString( self::META_WEIGHT );
+		if ( false === is_numeric( $value ) ) {
+			return null;
+		}
+
+		return (float) $value;
+	}
 }
