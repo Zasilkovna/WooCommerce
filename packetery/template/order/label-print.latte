@@ -1,10 +1,6 @@
 <h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
 
-{if $errors}
-	<div class="notice notice-error">
-		<p><strong>{__('printFailedMoreInformationInLog', 'packetery')}</strong></p>
-	</div>
-{else}
+{if !$errors}
 	<form n:name=$form>
 		<table class="form-table" role="presentation">
 			<tr>

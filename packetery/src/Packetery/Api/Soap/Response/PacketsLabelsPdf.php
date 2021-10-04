@@ -26,15 +26,15 @@ class PacketsLabelsPdf {
 	 *
 	 * @var string
 	 */
-	private $pdf;
+	private $pdfContents;
 
 	/**
 	 * Sets pdf contents.
 	 *
 	 * @param string $pdfContents Pdf contents.
 	 */
-	public function setPdf( string $pdfContents ): void {
-		$this->pdf = $pdfContents;
+	public function setPdfContents( string $pdfContents ): void {
+		$this->pdfContents = $pdfContents;
 	}
 
 	/**
@@ -51,8 +51,8 @@ class PacketsLabelsPdf {
 	 *
 	 * @return string
 	 */
-	public function getPdf(): string {
-		return $this->pdf;
+	public function getPdfContents(): string {
+		return $this->pdfContents;
 	}
 
 	/**

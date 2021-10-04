@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Module\FormFactory;
+use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -60,26 +61,36 @@ class LabelPrint {
 	private $soapApiClient;
 
 	/**
+	 * Message Manager.
+	 *
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
 	 * LabelPrint constructor.
 	 *
-	 * @param Engine       $latteEngine Latte Engine.
-	 * @param Provider     $optionsProvider Options provider.
-	 * @param FormFactory  $formFactory Form factory.
-	 * @param Http\Request $httpRequest Http Request.
-	 * @param Client       $soapApiClient SOAP API Client.
+	 * @param Engine         $latteEngine Latte Engine.
+	 * @param Provider       $optionsProvider Options provider.
+	 * @param FormFactory    $formFactory Form factory.
+	 * @param Http\Request   $httpRequest Http Request.
+	 * @param Client         $soapApiClient SOAP API Client.
+	 * @param MessageManager $messageManager Message Manager.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Provider $optionsProvider,
 		FormFactory $formFactory,
 		Http\Request $httpRequest,
-		Client $soapApiClient
+		Client $soapApiClient,
+		MessageManager $messageManager
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
 		$this->httpRequest     = $httpRequest;
 		$this->soapApiClient   = $soapApiClient;
+		$this->messageManager  = $messageManager;
 	}
 
 	/**
@@ -87,7 +98,7 @@ class LabelPrint {
 	 *
 	 * @return array
 	 */
-	private function getForm(): array {
+	private function getFormAndLabelsInfo(): array {
 		$availableFormats  = $this->optionsProvider->getLabelFormats();
 		$chosenLabelFormat = $this->optionsProvider->get_packeta_label_format();
 		$maxOffset         = $availableFormats[ $chosenLabelFormat ]['maxOffset'];
@@ -100,9 +111,13 @@ class LabelPrint {
 	 * Prepares form and renders template.
 	 */
 	public function render(): void {
-		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getForm();
+		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getFormAndLabelsInfo();
 
 		$errors = $this->httpRequest->getQuery( 'errors' );
+
+		if ( $errors ) {
+			$this->messageManager->flash_message( 'test', 'error' );
+		}
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte',
@@ -121,7 +136,7 @@ class LabelPrint {
 			return;
 		}
 
-		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getForm();
+		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getFormAndLabelsInfo();
 		$response                                 = null;
 		if ( 0 === $maxOffset ) {
 			$response = $this->prepareLabels( 0 );
@@ -131,16 +146,19 @@ class LabelPrint {
 		}
 
 		if ( $response ) {
-			if ( $response->getFaultString() && wp_safe_redirect( add_query_arg( [ 'errors' => true ] ) ) ) {
+			if (
+				$response->getFaultString() &&
+				wp_safe_redirect( $this->httpRequest->getUrl()->withQueryParameter( 'errors', true ) )
+			) {
 				exit;
 			}
 			header( 'Content-Type: application/pdf' );
 			header( 'Content-Transfer-Encoding: Binary' );
-			header( 'Content-Length: ' . strlen( $response->getPdf() ) );
+			header( 'Content-Length: ' . strlen( $response->getPdfContents() ) );
 			$pdfFilename = 'packeta_labels_' . strtolower( str_replace( ' ', '_', $chosenLabelFormat ) ) . '.pdf';
 			header( 'Content-Disposition: attachment; filename="' . $pdfFilename . '"' );
 			// @codingStandardsIgnoreStart
-			echo $response->getPdf();
+			echo $response->getPdfContents();
 			// @codingStandardsIgnoreEnd
 			exit;
 		}
@@ -216,12 +234,12 @@ class LabelPrint {
 		$labelRelatedOrders = [];
 		if ( $orderIds ) {
 			foreach ( $orderIds as $orderId ) {
-				$order = new Entity( wc_get_order( $orderId ) );
-				if ( null === $order->getPacketId() ) {
+				$order = Entity::fromPostId( $orderId );
+				if ( null === $order || null === $order->getPacketId() ) {
 					continue;
 				}
 				$labelRelatedOrders[] = $orderId;
-				$packetIds[]          = ltrim( $order->getPacketId(), 'Z' );
+				$packetIds[]          = $this->getPacketNumber( $order );
 			}
 		}
 		if ( $packetIds ) {
@@ -237,5 +255,16 @@ class LabelPrint {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Gets packet number without leading Z.
+	 *
+	 * @param Entity $order Order.
+	 *
+	 * @return string
+	 */
+	private function getPacketNumber( Entity $order ): string {
+		return ltrim( $order->getPacketId(), 'Z' );
 	}
 }

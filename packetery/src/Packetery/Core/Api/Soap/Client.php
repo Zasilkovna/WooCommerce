@@ -72,7 +72,7 @@ class Client {
 		try {
 			$soapClient  = new SoapClient( self::WSDL_URL );
 			$pdfContents = $soapClient->packetsLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getFormat(), $request->getOffset() );
-			$response->setPdf( $pdfContents );
+			$response->setPdfContents( $pdfContents );
 		} catch ( SoapFault $exception ) {
 			$response->setFaultString( $exception->faultstring );
 		}
