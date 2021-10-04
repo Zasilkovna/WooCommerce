@@ -63,7 +63,7 @@
 			'{$optionId|noescape}': {
 				'is_pickup_points': {$carrier['is_pickup_points']},
 				{if $carrier['is_pickup_points']}
-				'carriers': {(is_numeric($carrier['id']) ? $carrier['id'] : PacketeryModule\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID)},
+				'carriers': {(is_numeric($carrier['id']) ? $carrier['id'] : Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID)},
 				{/if}
 			},
 			{/foreach}
