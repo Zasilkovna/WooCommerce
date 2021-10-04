@@ -384,7 +384,7 @@ class Checkout {
 
 		$customRates = [];
 		foreach ( $carrierOptions as $optionId => $options ) {
-			if ( is_array( $options ) ) {
+			if ( is_array( $options ) && $options['active'] === true ) {
 				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight, $isCod );
 				if ( null !== $cost ) {
 					$customRates[ $optionId ] = [
