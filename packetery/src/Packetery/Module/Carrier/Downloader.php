@@ -97,7 +97,7 @@ class Downloader {
 			];
 		}
 		$this->carrier_updater->save( $carriers );
-		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( 'Y-m-d H:i:s' ) );
+		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( DATE_ATOM ) );
 
 		return [
 			__( 'Carriers were updated.', 'packetery' ),
