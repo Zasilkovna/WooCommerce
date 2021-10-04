@@ -8,10 +8,12 @@
         <th class="td">{__( 'Pickup Point Name', 'packetery' )}</th>
         <td class="td">{$order->getPointName()}</td>
     </tr>
-    <tr>
-        <th class="td">{__( 'Pickup Point Detail', 'packetery' )}</th>
-        <td class="td"><a href="{$order->getPointUrl()}">{__( 'Link', 'packetery' )}</a></td>
-    </tr>
+	{if $order->isInternalPickupPointDelivery()}
+		<tr>
+			<th class="td">{__( 'Pickup Point Detail', 'packetery' )}</th>
+			<td class="td"><a href="{$order->getPointUrl()}">{__( 'Link', 'packetery' )}</a></td>
+		</tr>
+	{/if}
     <tr>
         <th class="td">{__( 'Point Address', 'packetery' )}</th>
         <td class="td">{$order->getPointStreet()}, {$order->getPointZip()} {$order->getPointCity()}</td>
