@@ -35,7 +35,7 @@
 				}
 			} ).done( function( response ) {
 				if ( response.message ) {
-					$packeteryModal.find( '.notice p' ).text(response.message).removeClass( 'hidden' ); // todo redesign messages?
+					$packeteryModal.find( '.notice' ).addClass( 'notice-' + response.type ).removeClass( 'hidden' ).find( 'p' ).text(response.message);
 				}
 			} ).always( function( response ) {
 				$target.removeClass( 'disabled' );

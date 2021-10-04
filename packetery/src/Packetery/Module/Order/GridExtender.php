@@ -230,10 +230,9 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$orderEntity = Entity::from_globals();
 				$nonce = Helper::getApiNonce();
 				$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte', [
-					'order' => $orderEntity,
+					'order' => $entity,
 					'nonce' => $nonce
 				] );
 				break;
