@@ -196,6 +196,12 @@ class Plugin {
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
+		add_action(
+			'wp_enqueue_scripts',
+			function () {
+				$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
+			}
+		);
 		Form::initialize();
 
 		add_action(
@@ -332,17 +338,27 @@ class Plugin {
 	}
 
 	/**
+	 * Enqueues CSS file.
+	 *
+	 * @param string $name Name of script.
+	 * @param string $file Relative file path.
+	 */
+	private function enqueueStyle( string $name, string $file ): void {
+		wp_enqueue_style(
+			$name,
+			plugin_dir_url( $this->main_file_path ) . $file,
+			[],
+			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) )
+		);
+	}
+
+	/**
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
 		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false );
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
-		wp_enqueue_style(
-			'packetery-admin-styles',
-			plugin_dir_url( $this->main_file_path ) . 'public/admin.css',
-			[],
-			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/public/admin.css' ) )
-		);
+		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 	}
 
 	/**

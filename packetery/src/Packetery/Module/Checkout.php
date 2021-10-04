@@ -14,6 +14,7 @@ use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use PacketeryNette\Utils\Image;
 
 /**
  * Class Checkout
@@ -170,6 +171,7 @@ class Checkout {
 				'country'  => $country,
 				'weight'   => number_format( $weight, 3 ),
 				'carriers' => $carriers,
+				'logo'     => Image::fromFile( PACKETERY_PLUGIN_DIR . '/public/packeta-symbol.png' ),
 			)
 		);
 	}
