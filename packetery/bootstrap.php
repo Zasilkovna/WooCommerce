@@ -1,6 +1,6 @@
 <?php
 
-use PacketeryModule\CompatibilityBridge;
+use Packetery\Module\CompatibilityBridge;
 use PacketeryNette\Bootstrap\Configurator;
 
 defined( 'PACKETERY_PLUGIN_DIR' ) || define( 'PACKETERY_PLUGIN_DIR', __DIR__ );

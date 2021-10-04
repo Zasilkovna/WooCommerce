@@ -25,7 +25,7 @@
  */
 
 // Exit if accessed directly.
-use PacketeryModule\Plugin;
+use Packetery\Module\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
