@@ -466,31 +466,4 @@ class Plugin {
 		return $methods;
 	}
 
-	/**
-	 * Gets current timezone.
-	 *
-	 * @return \DateTimeZone
-	 */
-	public static function getTimezone(): \DateTimeZone {
-		// Since WordPress 5.3.0 .
-		if ( function_exists( 'wp_timezone' ) ) {
-			return wp_timezone();
-		}
-
-		$timezoneString = get_option( 'timezone_string' );
-		if ( $timezoneString ) {
-			$timezoneOffset = $timezoneString;
-		} else {
-			$offset    = (float) get_option( 'gmt_offset' );
-			$hours     = (int) $offset;
-			$minutes   = ( $offset - $hours );
-			$sign      = ( $offset < 0 ) ? '-' : '+';
-			$absHour  = abs( $hours );
-			$absMins  = abs( $minutes * 60 );
-			$timezoneOffset = sprintf( '%s%02d:%02d', $sign, $absHour, $absMins );
-		}
-
-		return new \DateTimeZone( $timezoneOffset );
-	}
-
 }

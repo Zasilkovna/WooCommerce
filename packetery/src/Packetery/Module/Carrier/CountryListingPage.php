@@ -84,7 +84,7 @@ class CountryListingPage {
 		if ( false !== $lastCarrierUpdate ) {
 			$date = \DateTime::createFromFormat( DATE_ATOM, $lastCarrierUpdate );
 			if ( false !== $date ) {
-				$date->setTimezone( Plugin::getTimezone() );
+				$date->setTimezone( wp_timezone() );
 				$carriersUpdateParams['lastUpdate'] = $date->format(
 					get_option( 'date_format' ) . ' ' . get_option( 'time_format' )
 				);
