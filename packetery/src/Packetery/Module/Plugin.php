@@ -243,6 +243,14 @@ class Plugin {
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
+		add_action( 'admin_head', function () {
+			$nonce        = wp_create_nonce( 'wp_rest' );
+			$orderSaveUrl = $this->orderController->getRoute( '/save' );
+			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/order/modal-template.latte', [
+				'nonce'        => $nonce,
+				'orderSaveUrl' => $orderSaveUrl,
+			] );
+		} );
 		$this->order_metabox->register();
 
 		$this->checkout->register_hooks();
@@ -380,6 +388,7 @@ class Plugin {
 		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false );
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true );
 	}
 
 	/**

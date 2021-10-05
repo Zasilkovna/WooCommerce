@@ -238,12 +238,8 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$nonce        = wp_create_nonce( 'wp_rest' );
-				$orderSaveUrl = $this->orderController->getRoute( '/save' );
 				$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte', [
-					'order'        => $entity,
-					'nonce'        => $nonce,
-					'orderSaveUrl' => $orderSaveUrl,
+					'order'        => $entity
 				] );
 				break;
 		}

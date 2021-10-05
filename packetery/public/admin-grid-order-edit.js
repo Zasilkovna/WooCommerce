@@ -7,9 +7,7 @@
 			$target.WCBackboneModal( {
 				template: "wc-packetery-modal-view-order",
 				variable: {
-					"data": $target.data( 'order-data' ),
-					"nonce": $target.data( 'nonce' ),
-					"orderSaveUrl": $target.data( 'order-save-url' ),
+					"order": $target.data( 'order-data' )
 				}
 			} );
 		} ).on( 'click', '.packetery-save-button', function( e ) {
@@ -18,7 +16,7 @@
 				return;
 			}
 
-			var data = $target.data( 'order-data' );
+			var orderId = $target.data( 'order-id' );
 			var orderSaveUrl = $target.data( 'order-save-url' );
 			var nonce = $target.data( 'nonce' );
 			var $packeteryModal = $target.closest( '[data-packetery-modal]' );
@@ -38,7 +36,7 @@
 					xhr.setRequestHeader( 'X-WP-Nonce', nonce );
 				},
 				data: {
-					orderId: data.id,
+					orderId: orderId,
 					packeteryWeight: packeteryWeight
 				}
 			} ).fail( function( response ) {

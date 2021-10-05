@@ -3,7 +3,7 @@
         <div class="wc-backbone-modal-content">
             <section class="wc-backbone-modal-main" role="main">
                 <header class="wc-backbone-modal-header">
-                    <h1>{php esc_html_e( sprintf( __( 'Order #%s', 'woocommerce' ), '{{ data.data.id }}' ) )}</h1>
+                    <h1>{php esc_html_e( sprintf( __( 'Order #%s', 'woocommerce' ), '{{ data.order.id }}' ) )}</h1>
                     <button class="modal-close modal-close-link dashicons dashicons-no-alt">
                         <span class="screen-reader-text">{__( 'Close modal panel', 'woocommerce' )}</span>
                     </button>
@@ -22,7 +22,7 @@
                                     <div class="packetery-table-cell">
                                         <label>
                                             {__( 'Weight', 'packetery' )}
-                                            <input type="number" step="0.001" name="packetery_weight" value="{{ data.data.packetery_weight }}">
+                                            <input type="number" step="0.001" name="packetery_weight" value="{{ data.order.packetery_weight }}">
                                         </label>
                                     </div>
                                 </div>
@@ -35,9 +35,9 @@
                         <div id="publishing-action">
                             <span class="spinner"></span>
                             <a class="button button-primary button-large packetery-save-button" aria-label="{__( 'Save', 'packetery' )}"
-                               data-order-data="{{ JSON.stringify(data.data) }}"
-                               data-nonce="{{ data.nonce }}"
-                               data-order-save-url="{{ data.orderSaveUrl }}"
+                               data-order-id="{{ data.order.id }}"
+                               data-nonce="{$nonce}"
+                               data-order-save-url="{$orderSaveUrl}"
                             >{__( 'Save', 'packetery' )}</a>
                         </div>
                     </div>
