@@ -200,20 +200,6 @@ class Plugin {
 	}
 
 	/**
-	 * Creates WordPress REST API nonce to avoid CSRF.
-	 *
-	 * @return string
-	 */
-	public static function getApiNonce(): string {
-		static $nonce;
-		if ( ! $nonce ) {
-			$nonce = wp_create_nonce( 'wp_rest' );
-		}
-
-		return $nonce;
-	}
-
-	/**
 	 * Method to register hooks
 	 */
 	public function run(): void {

@@ -32,7 +32,9 @@ class Controller extends WP_REST_Controller {
 			[
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => [ $this, 'updateItem' ],
-				'permission_callback' => [ $this, 'permissionCallback' ],
+				'permission_callback' => function () {
+					return current_user_can( 'edit_posts' );
+				},
 			],
 		] );
 	}
@@ -46,15 +48,6 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function getRoute( string $route ): string {
 		return get_rest_url( null, $this->namespace . "/{$this->rest_base}{$route}" );
-	}
-
-	/**
-	 * Is logged user allowed to call endpoint?
-	 *
-	 * @return bool
-	 */
-	public function permissionCallback(): bool {
-		return true;
 	}
 
 	/**

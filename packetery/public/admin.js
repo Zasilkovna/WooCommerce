@@ -34,10 +34,12 @@
 				type: 'POST',
 				dataType: 'json',
 				url: orderSaveUrl,
+				beforeSend: function ( xhr ) {
+					xhr.setRequestHeader( 'X-WP-Nonce', nonce );
+				},
 				data: {
 					orderId: data.id,
-					packeteryWeight: packeteryWeight,
-					nonce: nonce
+					packeteryWeight: packeteryWeight
 				}
 			} ).fail( function( response ) {
 				var message = (response.responseJSON && response.responseJSON.message) || 'Error';
