@@ -259,9 +259,9 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
+				$new_columns['packetery']  = __( 'Packeta', 'packetery' );
 				$new_columns[ Entity::META_PACKET_ID ] = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']  = __( 'Pick up point or carrier', 'packetery' );
-				$new_columns['packetery']  = __( 'Packeta', 'packetery' );
 			}
 		}
 
