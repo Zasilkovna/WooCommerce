@@ -29,17 +29,4 @@ class Helper {
 		return sprintf( self::TRACKING_URL, rawurlencode( $packet_id ) );
 	}
 
-	/**
-	 * Creates WordPress REST API nonce to avoid CSRF.
-	 *
-	 * @return string
-	 */
-	public static function getApiNonce(): string {
-		static $nonce;
-		if ( ! $nonce ) {
-			$nonce = wp_create_nonce( 'wp_rest' );
-		}
-
-		return $nonce;
-	}
 }

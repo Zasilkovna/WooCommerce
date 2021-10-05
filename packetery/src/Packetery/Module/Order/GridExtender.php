@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -50,23 +51,30 @@ class GridExtender {
 	private $httpRequest;
 
 	/**
+	 * @var Controller
+	 */
+	private $orderController;
+
+	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper     $helper Helper.
+	 * @param Helper     $helper            Helper.
 	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Engine     $latteEngine Latte Engine.
-	 * @param Request    $httpRequest Http Request.
+	 * @param Engine     $latteEngine       Latte Engine.
+	 * @param Request    $httpRequest       Http Request.
+	 * @param Controller $orderController
 	 */
 	public function __construct(
 		Helper $helper,
 		Repository $carrierRepository,
 		Engine $latteEngine,
-		Request $httpRequest
+		Request $httpRequest, Controller $orderController
 	) {
 		$this->helper            = $helper;
 		$this->carrierRepository = $carrierRepository;
 		$this->latteEngine       = $latteEngine;
 		$this->httpRequest       = $httpRequest;
+		$this->orderController   = $orderController;
 	}
 
 	/**
@@ -230,10 +238,12 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$nonce = Helper::getApiNonce();
+				$nonce        = Plugin::getApiNonce();
+				$orderSaveUrl = $this->orderController->getRoute( '/save' );
 				$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte', [
-					'order' => $entity,
-					'nonce' => $nonce
+					'order'        => $entity,
+					'nonce'        => $nonce,
+					'orderSaveUrl' => $orderSaveUrl,
 				] );
 				break;
 		}

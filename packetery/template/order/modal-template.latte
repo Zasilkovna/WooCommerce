@@ -5,12 +5,16 @@
                 <header class="wc-backbone-modal-header">
                     <h1>{php esc_html_e( sprintf( __( 'Order #%s', 'woocommerce' ), '{{ data.data.id }}' ) )}</h1>
                     <button class="modal-close modal-close-link dashicons dashicons-no-alt">
-                        <span class="screen-reader-text">{php esc_html_e( 'Close modal panel', 'woocommerce' )}</span>
+                        <span class="screen-reader-text">{__( 'Close modal panel', 'woocommerce' )}</span>
                     </button>
                 </header>
+                <div class="notice is-dismissible hidden">
+                    <p></p>
+                    <button type="button" class="notice-dismiss">
+                        <span class="screen-reader-text"></span>
+                    </button>
+                </div>
                 <article>
-                    <div class="notice is-dismissible hidden"><p></p><button type="button" class="notice-dismiss"><span class="screen-reader-text"></span></button></div>
-
                     <div class="wc-order-preview-table-wrapper">
                         <form>
                             <div class="packetery-table">
@@ -18,7 +22,7 @@
                                     <div class="packetery-table-cell">
                                         <label>
                                             {__( 'Weight', 'packetery' )}
-                                            <input type="text" name="packetery_weight" value="{{ data.data.packetery_weight }}">
+                                            <input type="number" step="0.001" name="packetery_weight" value="{{ data.data.packetery_weight }}">
                                         </label>
                                     </div>
                                 </div>
@@ -33,6 +37,7 @@
                             <a class="button button-primary button-large packetery-save-button" aria-label="{__( 'Save', 'packetery' )}"
                                data-order-data="{{ JSON.stringify(data.data) }}"
                                data-order-nonce="{{ data.nonce }}"
+                               data-order-save-url="{{ data.orderSaveUrl }}"
                             >{__( 'Save', 'packetery' )}</a>
                         </div>
                     </div>

@@ -1,7 +1,8 @@
-{varType \Packetery\Order\Entity $order}
+{varType \Packetery\Module\Order\Entity $order}
 {varType string $nonce}
+{varType string $orderSaveUrl}
 
-<a class="packetery-order-inline-edit" href="#"
+<a class="packetery-order-inline-edit button" href="#"
    data-order-data="{= json_encode(
 	   [
 		   'id' => $order->getId(),
@@ -9,4 +10,5 @@
 	   ]
    )}"
    data-nonce="{$nonce}"
+   data-order-save-url="{$orderSaveUrl}"
 >&#9998;</a>
