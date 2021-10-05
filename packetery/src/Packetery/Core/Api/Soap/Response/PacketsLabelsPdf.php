@@ -5,7 +5,9 @@
  * @package Packetery\Api\Soap\Response
  */
 
-namespace Packetery\Api\Soap\Response;
+declare( strict_types=1 );
+
+namespace Packetery\Core\Api\Soap\Response;
 
 /**
  * Class PacketsLabelsPdf.

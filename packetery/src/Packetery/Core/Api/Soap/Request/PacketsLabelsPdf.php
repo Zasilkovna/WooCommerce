@@ -5,7 +5,9 @@
  * @package Packetery\Api\Soap\Request
  */
 
-namespace Packetery\Api\Soap\Request;
+declare( strict_types=1 );
+
+namespace Packetery\Core\Api\Soap\Request;
 
 /**
  * Class PacketsLabelsPdf
@@ -38,9 +40,9 @@ class PacketsLabelsPdf {
 	/**
 	 * PacketsLabelsPdf constructor.
 	 *
-	 * @param string[] $packetIds Packet ids.
-	 * @param string   $labelFormat Label format.
-	 * @param int      $offset Offset.
+	 * @param array  $packetIds Packet ids.
+	 * @param string $labelFormat Label format.
+	 * @param int    $offset Offset.
 	 */
 	public function __construct( array $packetIds, string $labelFormat, int $offset ) {
 		$this->packetIds   = $packetIds;

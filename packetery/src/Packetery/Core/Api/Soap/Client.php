@@ -63,7 +63,7 @@ class Client {
 	/**
 	 * Asks for labels.
 	 *
-	 * @param Request\PacketsLabelsPdf $request Packet attributes.
+	 * @param Request\PacketsLabelsPdf $request Label request.
 	 *
 	 * @return Response\PacketsLabelsPdf
 	 */

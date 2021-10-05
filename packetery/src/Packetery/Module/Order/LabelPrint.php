@@ -94,74 +94,57 @@ class LabelPrint {
 	}
 
 	/**
-	 * Returns form object and information about label formats.
-	 *
-	 * @return array
-	 */
-	private function getFormAndLabelsInfo(): array {
-		$availableFormats  = $this->optionsProvider->getLabelFormats();
-		$chosenLabelFormat = $this->optionsProvider->get_packeta_label_format();
-		$maxOffset         = $availableFormats[ $chosenLabelFormat ]['maxOffset'];
-		$form              = $this->createForm( $maxOffset );
-
-		return [ $chosenLabelFormat, $maxOffset, $form ];
-	}
-
-	/**
 	 * Prepares form and renders template.
 	 */
 	public function render(): void {
-		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getFormAndLabelsInfo();
-
-		$errors = $this->httpRequest->getQuery( 'errors' );
-
-		if ( $errors ) {
-			$this->messageManager->flash_message( 'test', 'error' );
-		}
-
+		$form = $this->createForm( $this->optionsProvider->getPacketaLabelMaxOffset() );
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte',
-			[
-				'form'   => $form,
-				'errors' => $errors,
-			]
+			[ 'form' => $form ]
 		);
 	}
 
 	/**
 	 * Outputs pdf.
 	 */
-	public function showLabelsPdf(): void {
-		if ( ! $this->httpRequest->getQuery( 'orderIds' ) ) {
+	public function outputLabelsPdf(): void {
+		if (
+			! $this->httpRequest->getQuery( 'orderIds' ) ||
+			$this->httpRequest->getQuery( 'page' ) !== 'label-print'
+		) {
 			return;
 		}
 
-		[ $chosenLabelFormat, $maxOffset, $form ] = $this->getFormAndLabelsInfo();
-		$response                                 = null;
+		$maxOffset = $this->optionsProvider->getPacketaLabelMaxOffset();
+		$form      = $this->createForm( $maxOffset );
 		if ( 0 === $maxOffset ) {
-			$response = $this->prepareLabels( 0 );
+			$offset = 0;
 		} elseif ( $form->isSubmitted() ) {
-			$data     = $form->getValues( 'array' );
-			$response = $this->prepareLabels( $data['offset'] );
+			$data   = $form->getValues( 'array' );
+			$offset = $data['offset'];
+		} else {
+			return;
 		}
 
-		if ( $response ) {
-			if (
-				$response->getFaultString() &&
-				wp_safe_redirect( $this->httpRequest->getUrl()->withQueryParameter( 'errors', true ) )
-			) {
+		$response = $this->prepareLabels( $offset );
+		if ( ! $response || $response->getFaultString() ) {
+			$message = ( null !== $response && $response->getFaultString() ) ?
+				__( 'labelPrintFailedMoreInfoInLog', 'packetery' ) :
+				__( 'youSelectedOrdersThatWereNotSubmitted', 'packetery' );
+			$this->messageManager->flash_message( $message, 'error' );
+			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
-			header( 'Content-Type: application/pdf' );
-			header( 'Content-Transfer-Encoding: Binary' );
-			header( 'Content-Length: ' . strlen( $response->getPdfContents() ) );
-			$pdfFilename = 'packeta_labels_' . strtolower( str_replace( ' ', '_', $chosenLabelFormat ) ) . '.pdf';
-			header( 'Content-Disposition: attachment; filename="' . $pdfFilename . '"' );
-			// @codingStandardsIgnoreStart
-			echo $response->getPdfContents();
-			// @codingStandardsIgnoreEnd
-			exit;
 		}
+
+		header( 'Content-Type: application/pdf' );
+		header( 'Content-Transfer-Encoding: Binary' );
+		header( 'Content-Length: ' . strlen( $response->getPdfContents() ) );
+		header( 'Content-Disposition: attachment; filename="' . $this->getFilename() . '"' );
+		// @codingStandardsIgnoreStart
+		echo $response->getPdfContents();
+		// @codingStandardsIgnoreEnd
+		exit;
 	}
 
 	/**
@@ -229,42 +212,40 @@ class LabelPrint {
 	 * @return Response\PacketsLabelsPdf|null
 	 */
 	private function prepareLabels( int $offset ): ?Response\PacketsLabelsPdf {
-		$orderIds           = explode( ',', $this->httpRequest->getQuery( 'orderIds' ) );
-		$packetIds          = [];
-		$labelRelatedOrders = [];
-		if ( $orderIds ) {
-			foreach ( $orderIds as $orderId ) {
-				$order = Entity::fromPostId( $orderId );
-				if ( null === $order || null === $order->getPacketId() ) {
-					continue;
-				}
-				$labelRelatedOrders[] = $orderId;
-				$packetIds[]          = $this->getPacketNumber( $order );
-			}
-		}
-		if ( $packetIds ) {
-			$request  = new Request\PacketsLabelsPdf( $packetIds, $this->optionsProvider->get_packeta_label_format(), $offset );
-			$response = $this->soapApiClient->packetsLabelsPdf( $request );
-			if ( ! $response->getFaultString() ) {
-				foreach ( $labelRelatedOrders as $id ) {
-					update_post_meta( $id, Entity::META_IS_LABEL_PRINTED, 1 );
-				}
-			}
+		$orderIds        = explode( ',', $this->httpRequest->getQuery( 'orderIds' ) );
+		$packetIds       = [];
+		$printedOrderIds = [];
 
-			return $response;
+		foreach ( $orderIds as $orderId ) {
+			$order = Entity::fromPostId( $orderId );
+			if ( null === $order || null === $order->getPacketId() ) {
+				continue;
+			}
+			$printedOrderIds[] = $orderId;
+			$packetIds[]       = $order->extractPacketNumber();
 		}
 
-		return null;
+		if ( ! $packetIds ) {
+			return null;
+		}
+
+		$request  = new Request\PacketsLabelsPdf( $packetIds, $this->optionsProvider->get_packeta_label_format(), $offset );
+		$response = $this->soapApiClient->packetsLabelsPdf( $request );
+		if ( ! $response->getFaultString() ) {
+			foreach ( $printedOrderIds as $id ) {
+				update_post_meta( $id, Entity::META_IS_LABEL_PRINTED, 1 );
+			}
+		}
+
+		return $response;
 	}
 
 	/**
-	 * Gets packet number without leading Z.
-	 *
-	 * @param Entity $order Order.
+	 * Gets filename for label pdf.
 	 *
 	 * @return string
 	 */
-	private function getPacketNumber( Entity $order ): string {
-		return ltrim( $order->getPacketId(), 'Z' );
+	private function getFilename(): string {
+		return 'packeta_labels_' . strtolower( str_replace( ' ', '_', $this->optionsProvider->get_packeta_label_format() ) ) . '.pdf';
 	}
 }
