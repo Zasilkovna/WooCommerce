@@ -36,4 +36,5 @@
 
 #packetery-options-page input[type=text],select {
     width: 500px;
+    max-width: none;
 }
