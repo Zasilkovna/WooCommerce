@@ -1,6 +1,5 @@
-
-.packetery-options-page input[type=text] {
-    width: 100%;
+.packetery-carrier-options-page input[type=text] {
+    width: 300px;
 }
 
 .packetery-order-metabox-label-cell {
