@@ -33,3 +33,7 @@
 .log-error {
     font-weight: bold;
 }
+
+#packetery-options-page input[type=text],select {
+    width: 500px;
+}

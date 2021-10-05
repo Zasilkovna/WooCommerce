@@ -118,11 +118,6 @@ class Page {
 			$enabledGateways
 		)->checkDefaultValue( false );
 
-		$container->addCheckbox(
-			'allow_label_emailing',
-			__( 'Allow Label Emailing', 'packetery' )
-		);
-
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );
 		}
