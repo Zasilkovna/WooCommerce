@@ -146,15 +146,6 @@ class Entity {
 	}
 
 	/**
-	 * Gets packet number without leading Z.
-	 *
-	 * @return string
-	 */
-	public function extractPacketNumber(): string {
-		return ltrim( $this->getPacketId(), 'Z' );
-	}
-
-	/**
 	 * Point name.
 	 *
 	 * @return string|null

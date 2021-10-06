@@ -78,7 +78,9 @@ class BulkActions {
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
 		if ( 'print_labels' === $action ) {
-			return add_query_arg( [ 'orderIds' => implode( ',', $postIds ) ], 'admin.php?page=label-print' );
+			set_transient( 'packetery_label_print_order_ids', $postIds );
+
+			return 'admin.php?page=label-print';
 		}
 
 		if ( 'submit_to_api' === $action ) {

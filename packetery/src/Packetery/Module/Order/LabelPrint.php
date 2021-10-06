@@ -109,7 +109,7 @@ class LabelPrint {
 	 */
 	public function outputLabelsPdf(): void {
 		if (
-			! $this->httpRequest->getQuery( 'orderIds' ) ||
+			! get_transient( 'packetery_label_print_order_ids' ) ||
 			$this->httpRequest->getQuery( 'page' ) !== 'label-print'
 		) {
 			return;
@@ -127,6 +127,7 @@ class LabelPrint {
 		}
 
 		$response = $this->prepareLabels( $offset );
+		delete_transient( 'packetery_label_print_order_ids' );
 		if ( ! $response || $response->getFaultString() ) {
 			$message = ( null !== $response && $response->getFaultString() ) ?
 				__( 'labelPrintFailedMoreInfoInLog', 'packetery' ) :
@@ -212,17 +213,18 @@ class LabelPrint {
 	 * @return Response\PacketsLabelsPdf|null
 	 */
 	private function prepareLabels( int $offset ): ?Response\PacketsLabelsPdf {
-		$orderIds        = explode( ',', $this->httpRequest->getQuery( 'orderIds' ) );
+		$orderIds        = get_transient( 'packetery_label_print_order_ids' );
 		$packetIds       = [];
 		$printedOrderIds = [];
 
+		$orderEntities = $this->loadOrderEntities( $orderIds );
 		foreach ( $orderIds as $orderId ) {
-			$order = Entity::fromPostId( $orderId );
+			$order = $orderEntities[ $orderId ];
 			if ( null === $order || null === $order->getPacketId() ) {
 				continue;
 			}
 			$printedOrderIds[] = $orderId;
-			$packetIds[]       = $order->extractPacketNumber();
+			$packetIds[]       = $order->getPacketId();
 		}
 
 		if ( ! $packetIds ) {
@@ -247,5 +249,28 @@ class LabelPrint {
 	 */
 	private function getFilename(): string {
 		return 'packeta_labels_' . strtolower( str_replace( ' ', '_', $this->optionsProvider->get_packeta_label_format() ) ) . '.pdf';
+	}
+
+	/**
+	 * Loads order entities by list of ids.
+	 *
+	 * @param array $orderIds Order ids.
+	 *
+	 * @return array
+	 */
+	private function loadOrderEntities( array $orderIds ): array {
+		$orderEntities = [];
+		$posts         = get_posts( [
+			'post_type'   => 'shop_order',
+			'post__in'    => $orderIds,
+			'post_status' => 'any',
+			'nopaging'    => true,
+		] );
+		foreach ( $posts as $post ) {
+			$wcOrder                             = wc_get_order( $post );
+			$orderEntities[ $wcOrder->get_id() ] = new Entity( $wcOrder );
+		}
+
+		return $orderEntities;
 	}
 }
