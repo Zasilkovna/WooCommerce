@@ -12,11 +12,13 @@
 	<div class="card">
 		<h2>{__( 'Packeta', 'packetery' )} - {__( 'carriersUpdate', 'packetery' )}</h2>
 
-		{if $carriersUpdate['lastUpdate']}
-			<p>
+		<p>
+			{if isset($carriersUpdate['lastUpdate'])}
 				{__('lastCarrierUpdateDatetime', 'packetery')}: {$carriersUpdate['lastUpdate']}
-			</p>
-		{/if}
+			{else}
+				{__('carrierListNeverDownloaded', 'packetery')}
+			{/if}
+		</p>
 
 		<p>
 			<a href="{$carriersUpdate['link']}" class="button button-primary">{__('runCarrierUpdate', 'packetery')}</a>

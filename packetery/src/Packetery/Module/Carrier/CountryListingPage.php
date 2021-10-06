@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use PacketeryLatte\Engine;
+use PacketeryModule\Plugin;
 use PacketeryNette\Http\Request;
 
 /**
@@ -81,10 +82,13 @@ class CountryListingPage {
 
 		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
 		if ( false !== $lastCarrierUpdate ) {
-			$carriersUpdateParams['lastUpdate'] = gmdate(
-				get_option( 'date_format' ) . ' ' . get_option( 'time_format' ),
-				strtotime( $lastCarrierUpdate )
-			);
+			$date = \DateTime::createFromFormat( DATE_ATOM, $lastCarrierUpdate );
+			if ( false !== $date ) {
+				$date->setTimezone( wp_timezone() );
+				$carriersUpdateParams['lastUpdate'] = $date->format(
+					get_option( 'date_format' ) . ' ' . get_option( 'time_format' )
+				);
+			}
 		}
 
 		$this->latteEngine->render(

@@ -465,4 +465,5 @@ class Plugin {
 
 		return $methods;
 	}
+
 }
