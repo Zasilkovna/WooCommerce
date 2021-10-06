@@ -60,16 +60,25 @@ class Page {
 	public function register(): void {
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_menu_page(
-			__( 'Settings', 'packetery' ),
 			__( 'Packeta', 'packetery' ),
+			__( 'Packeta', 'packetery' ),
+			'manage_options',
+			'packeta-options',
+			'',
+			'dashicons-schedule',
+			55 // todo Move item to last position in menu.
+		);
+		add_submenu_page(
+			'packeta-options',
+			__( 'Settings', 'packetery' ),
+			__( 'Settings', 'packetery' ),
 			'manage_options',
 			'packeta-options',
 			array(
 				$this,
 				'render',
 			),
-			'dashicons-schedule',
-			55 // todo Move item to last position in menu.
+			1
 		);
 	}
 
@@ -117,11 +126,6 @@ class Page {
 			__( 'Payment method that represents cash on delivery', 'packetery' ),
 			$enabledGateways
 		)->checkDefaultValue( false );
-
-		$container->addCheckbox(
-			'allow_label_emailing',
-			__( 'Allow Label Emailing', 'packetery' )
-		);
 
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );
@@ -178,6 +182,10 @@ class Page {
 		if ( ! extension_loaded( 'soap' ) ) {
 			$latteParams['error'] = __( 'This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator.', 'packetery' );
 		}
+
+		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
+		$latteParams['senderLink']      = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/senders' ] ) );
+
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}
 }
