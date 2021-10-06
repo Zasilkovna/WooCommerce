@@ -51,7 +51,7 @@ class Client {
 		try {
 			$soapClient = new SoapClient( self::WSDL_URL );
 			$packet     = $soapClient->createPacket( $this->apiPassword, $request->getSubmittableData() );
-			$response->setBarcode( $packet->barcode );
+			$response->setId( $packet->id );
 		} catch ( SoapFault $exception ) {
 			$response->setFaultString( $exception->faultstring );
 			$response->setValidationErrors( $this->getValidationErrors( $exception ) );

@@ -211,7 +211,7 @@ class GridExtender {
 			case Entity::META_PACKET_ID:
 				$packetId = $entity->getPacketId();
 				if ( $packetId ) {
-					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">' . esc_html( $packetId ) . '</a>';
+					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
 				}
 				break;
 		}
