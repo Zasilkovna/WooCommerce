@@ -68,6 +68,13 @@ class LabelPrint {
 	private $messageManager;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
+
+	/**
 	 * LabelPrint constructor.
 	 *
 	 * @param Engine         $latteEngine Latte Engine.
@@ -76,6 +83,7 @@ class LabelPrint {
 	 * @param Http\Request   $httpRequest Http Request.
 	 * @param Client         $soapApiClient SOAP API Client.
 	 * @param MessageManager $messageManager Message Manager.
+	 * @param Repository     $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -83,7 +91,8 @@ class LabelPrint {
 		FormFactory $formFactory,
 		Http\Request $httpRequest,
 		Client $soapApiClient,
-		MessageManager $messageManager
+		MessageManager $messageManager,
+		Repository $orderRepository
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
@@ -91,6 +100,7 @@ class LabelPrint {
 		$this->httpRequest     = $httpRequest;
 		$this->soapApiClient   = $soapApiClient;
 		$this->messageManager  = $messageManager;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -217,7 +227,7 @@ class LabelPrint {
 		$packetIds       = [];
 		$printedOrderIds = [];
 
-		$orderEntities = $this->loadOrderEntities( $orderIds );
+		$orderEntities = $this->orderRepository->getEntitiesByIds( $orderIds );
 		foreach ( $orderIds as $orderId ) {
 			$order = $orderEntities[ $orderId ];
 			if ( null === $order || null === $order->getPacketId() ) {
@@ -249,28 +259,5 @@ class LabelPrint {
 	 */
 	private function getFilename(): string {
 		return 'packeta_labels_' . strtolower( str_replace( ' ', '_', $this->optionsProvider->get_packeta_label_format() ) ) . '.pdf';
-	}
-
-	/**
-	 * Loads order entities by list of ids.
-	 *
-	 * @param array $orderIds Order ids.
-	 *
-	 * @return array
-	 */
-	private function loadOrderEntities( array $orderIds ): array {
-		$orderEntities = [];
-		$posts         = get_posts( [
-			'post_type'   => 'shop_order',
-			'post__in'    => $orderIds,
-			'post_status' => 'any',
-			'nopaging'    => true,
-		] );
-		foreach ( $posts as $post ) {
-			$wcOrder                             = wc_get_order( $post );
-			$orderEntities[ $wcOrder->get_id() ] = new Entity( $wcOrder );
-		}
-
-		return $orderEntities;
 	}
 }
