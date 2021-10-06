@@ -1,11 +1,18 @@
-.packetery-widget-button-row {
-	display: flex;
-	width: 100%;
-	margin-bottom: 5px;
+#packetery-widget-button-wrapper .packetery-widget-button-row .button {
+	position: relative;
+	margin-left: 50px;
 }
 
-.packetery-widget-button-row .packetery-logo {
+#packetery-widget-button-wrapper .packetery-widget-button-row .button:before {
+	content: " ";
+	position: absolute;
+	left: -50px;
+	top: 0;
 	width: 45px;
-	height: 45px;
-	margin-right: 5px;
+	height: 100%;
+	display: grid;
+	background-color: #ba0b0b;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
 }
