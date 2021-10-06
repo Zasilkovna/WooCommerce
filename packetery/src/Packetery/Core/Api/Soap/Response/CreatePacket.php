@@ -17,7 +17,14 @@ namespace Packetery\Core\Api\Soap\Response;
 class CreatePacket {
 
 	/**
-	 * Barcode.
+	 * Barcode without leading Z.
+	 *
+	 * @var int
+	 */
+	private $id;
+
+	/**
+	 * Barcode with leading Z.
 	 *
 	 * @var string
 	 */
@@ -36,6 +43,15 @@ class CreatePacket {
 	 * @var string
 	 */
 	private $faultString;
+
+	/**
+	 * Sets id.
+	 *
+	 * @param int $id Id.
+	 */
+	public function setId( int $id ): void {
+		$this->id = $id;
+	}
 
 	/**
 	 * Sets barcode.
@@ -62,6 +78,15 @@ class CreatePacket {
 	 */
 	public function setValidationErrors( array $errors ): void {
 		$this->validationErrors = $errors;
+	}
+
+	/**
+	 * Gets id.
+	 *
+	 * @return int
+	 */
+	public function getId(): int {
+		return $this->id;
 	}
 
 	/**

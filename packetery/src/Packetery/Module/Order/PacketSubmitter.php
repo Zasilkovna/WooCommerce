@@ -101,7 +101,7 @@ class PacketSubmitter {
 				$resultsCounter['errors'] ++;
 			} else {
 				update_post_meta( $orderData['id'], Entity::META_IS_EXPORTED, '1' );
-				update_post_meta( $orderData['id'], Entity::META_PACKET_ID, $response->getBarcode() );
+				update_post_meta( $orderData['id'], Entity::META_PACKET_ID, $response->getId() );
 				$resultsCounter['success'] ++;
 			}
 		} else {
