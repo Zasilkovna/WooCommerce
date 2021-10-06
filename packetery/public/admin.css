@@ -38,3 +38,9 @@
     width: 500px;
     max-width: none;
 }
+
+.packetery-help-block {
+    font-style: italic;
+    color: #959595;
+    display: block;
+}
