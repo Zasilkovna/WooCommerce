@@ -217,7 +217,6 @@ class GridExtender {
 				if ( $packetId ) {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">' . esc_html( $packetId ) . '</a>';
 				}
-				echo ' [' . $entity->getCarrierId() . '] ';
 				break;
 		}
 	}
