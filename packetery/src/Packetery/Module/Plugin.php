@@ -409,9 +409,31 @@ class Plugin {
 	 * Only a static class method or function can be used in an uninstall hook.
 	 */
 	public static function uninstall(): void {
+		if ( defined( 'PACKETERY_DEBUG' ) && PACKETERY_DEBUG === true ) {
+			return;
+		}
+
+		global $wpdb;
+		$pluginOptions = $wpdb->get_results( "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE 'packetery%'" );
+		foreach ( $pluginOptions as $option ) {
+			delete_option( $option->option_name );
+		}
+
 		$container  = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
 		$repository = $container->getByType( Repository::class );
 		$repository->drop();
+
+		$logEntries = get_posts(
+			[
+				'post_type'   => Log\PostLogger::POST_TYPE,
+				'post_status' => 'any',
+				'nopaging'    => true,
+				'fields'      => 'ids',
+			]
+		);
+		foreach ( $logEntries as $logEntryId ) {
+			wp_delete_post( $logEntryId, true );
+		}
 	}
 
 	/**

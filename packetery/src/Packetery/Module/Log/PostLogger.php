@@ -25,7 +25,7 @@ class PostLogger implements ILogger {
 	 *
 	 * @var string
 	 */
-	private const POST_TYPE = 'packetery_log';
+	public const POST_TYPE = 'packetery_log';
 
 	/**
 	 * Registers the wp_log Post Type
