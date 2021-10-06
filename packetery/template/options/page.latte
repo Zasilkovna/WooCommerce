@@ -21,7 +21,7 @@
                     <input n:name=packetery-api_password>
                     <div class="packetery-help-block">
                         <p>
-                            {php echo sprintf( __( 'apiPasswordCanBeFoundAt%sUrl', 'packetery' ), $apiPasswordLink ) }
+                            {sprintf( __( 'apiPasswordCanBeFoundAt%sUrl', 'packetery' ), $apiPasswordLink )|noescape}
                         </p>
                     </div>
                 </td>
@@ -34,7 +34,7 @@
                     <input n:name=packetery-sender>
                     <div class="packetery-help-block">
                         <p>
-                            {php echo sprintf( __( 'senderCanBeFoundAt%sUrl', 'packetery' ), $senderLink ) }
+                            {sprintf( __( 'senderCanBeFoundAt%sUrl', 'packetery' ), $senderLink )|noescape}
                         </p>
                     </div>
                 </td>
