@@ -199,7 +199,7 @@ class OptionsPage {
 		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
-		$this->messageManager->flash_message( __( 'Settings saved.' ) );
+		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ) );
 
 		if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
 			exit;
