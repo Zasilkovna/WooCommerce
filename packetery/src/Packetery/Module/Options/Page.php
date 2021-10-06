@@ -60,16 +60,25 @@ class Page {
 	public function register(): void {
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_menu_page(
-			__( 'Settings', 'packetery' ),
 			__( 'Packeta', 'packetery' ),
+			__( 'Packeta', 'packetery' ),
+			'manage_options',
+			'packeta-options',
+			'',
+			'dashicons-schedule',
+			55 // todo Move item to last position in menu.
+		);
+		add_submenu_page(
+			'packeta-options',
+			__( 'Settings', 'packetery' ),
+			__( 'Settings', 'packetery' ),
 			'manage_options',
 			'packeta-options',
 			array(
 				$this,
 				'render',
 			),
-			'dashicons-schedule',
-			55 // todo Move item to last position in menu.
+			1
 		);
 	}
 
