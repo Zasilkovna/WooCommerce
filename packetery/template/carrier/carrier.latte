@@ -34,21 +34,18 @@
 						<table>
 							{define weightRules}
 								<tr n:class="$class ?? ''" n:formContainer="$container[$id]">
-									<th scope="row">
-										<label n:name=weight />
-									</th>
 									<td>
-										<input n:name=weight>
-									</td>
-									<th scope="row">
-										<label n:name=price />
-									</th>
-									<td>
-										<input n:name=price>
-									</td>
-									<td>
-										<button type="button"
-												class="js-delete">{__( 'Delete weight rule', 'packetery' )}</button>
+										<div class="packetery-label">
+											<label n:name=weight />
+										</div>
+										<input n:name=weight> <br>
+
+										<div class="packetery-label">
+											<label n:name=price />
+										</div>
+										<input n:name=price><br>
+
+										<button type="button" class="js-delete button">{__( 'Delete weight rule', 'packetery' )}</button>
 									</td>
 								</tr>
 							{/define}
@@ -59,7 +56,7 @@
 							{/foreach}
 						</table>
 
-						<button type="button" class="js-add">{__( 'Add weight rule', 'packetery' )}</button>
+						<button type="button" class="js-add button">{__( 'Add weight rule', 'packetery' )}</button>
 					</td>
 				</tr>
 				<tr>
@@ -70,23 +67,19 @@
 						<table>
 							{define surchargeRules}
 								<tr n:class="$class ?? ''" n:formContainer="$container[$id]">
-									<th scope="row">
-										<label n:name=order_price />
-									</th>
 									<td>
+										<div class="packetery-label">
+											<label n:name=order_price />
+										</div>
 										<input n:name=order_price>
 										<p>{inputError order_price}</p>
-									</td>
-									<th scope="row">
-										<label n:name=surcharge />
-									</th>
-									<td>
+										<div class="packetery-label">
+											<label n:name=surcharge />
+										</div>
 										<input n:name=surcharge>
 										<p>{inputError surcharge}</p>
-									</td>
-									<td>
-										<button type="button"
-												class="js-delete">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
+
+										<button type="button" class="js-delete button">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
 									</td>
 								</tr>
 							{/define}
@@ -97,7 +90,7 @@
 							{/foreach}
 						</table>
 
-						<button type="button" class="js-add">{__( 'Add COD surcharge rule', 'packetery' )}</button>
+						<button type="button" class="js-add button">{__( 'Add COD surcharge rule', 'packetery' )}</button>
 					</td>
 				</tr>
 				<tr>
