@@ -404,6 +404,10 @@ class Plugin {
 	 * Activates plugin.
 	 */
 	public function activate(): void {
+		if ( false === PACKETERY_DEBUG ) {
+			$this->options_page->setDefaultValues();
+		}
+
 		$this->init();
 		$this->carrier_repository->create_table();
 	}
