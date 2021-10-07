@@ -9,10 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Helper;
+use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\Repository;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
-use Packetery\Module\Carrier\Repository;
-use Packetery\Core\Helper;
 
 /**
  * Class GridExtender.
@@ -205,6 +206,16 @@ class GridExtender {
 				$pointId   = $entity->getPointId();
 
 				$country = strtolower( $order->get_shipping_country() );
+
+				if ( $entity->isHomeDelivery() ) {
+					$homeDeliveryCarrier = $this->carrierRepository->getById( (int) $entity->getCarrierId() );
+					if ( $homeDeliveryCarrier ) {
+						$homeDeliveryCarrierEntity = new Carrier\Entity( $homeDeliveryCarrier );
+						echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
+					}
+					break;
+				}
+
 				$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
 				if ( $pointName && $pointId && in_array( $country, $internalCountries, true ) ) {
 					echo esc_html( "$pointName ($pointId)" );
