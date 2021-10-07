@@ -83,6 +83,37 @@ class Page {
 	}
 
 	/**
+	 * Returns prefilled values shown to user.
+	 */
+	private function getPrefillValues(): array {
+		$form               = $this->create_form();
+		$packeteryContainer = $form['packetery'];
+
+		$firstPacketaLabelKeys = array_keys( $packeteryContainer['packeta_label_format']->items );
+		$firstPacketaLabel     = array_shift( $firstPacketaLabelKeys );
+		$firstCarrierLabelKeys = array_keys( $packeteryContainer['carrier_label_format']->items );
+		$firstCarrierLabel     = array_shift( $firstCarrierLabelKeys );
+
+		return [
+			'packetery' => [
+				'packeta_label_format' => $firstPacketaLabel,
+				'carrier_label_format' => $firstCarrierLabel,
+			],
+		];
+	}
+
+	/**
+	 * Prefill option.
+	 */
+	public function prefillOption(): void {
+		$prefilledValues               = $this->getPrefillValues();
+		$value                         = get_option( 'packetery' );
+		$value['packeta_label_format'] = $value['packeta_label_format'] ?? $prefilledValues['packetery']['packeta_label_format'];
+		$value['carrier_label_format'] = $value['carrier_label_format'] ?? $prefilledValues['packetery']['carrier_label_format'];
+		update_option( 'packetery', $value );
+	}
+
+	/**
 	 * Creates settings form.
 	 *
 	 * @return Form

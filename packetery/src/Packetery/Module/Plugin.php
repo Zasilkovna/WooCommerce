@@ -402,6 +402,7 @@ class Plugin {
 	 * Activates plugin.
 	 */
 	public function activate(): void {
+		$this->options_page->prefillOption();
 		$this->init();
 		$this->carrier_repository->create_table();
 	}
