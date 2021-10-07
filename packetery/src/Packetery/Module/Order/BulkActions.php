@@ -62,7 +62,8 @@ class BulkActions {
 	 */
 	public function addActions( array $actions ): array {
 		$actions['submit_to_api'] = __( 'actionSubmitOrders', 'packetery' );
-		$actions['print_labels']  = __( 'actionPrintLabels', 'packetery' );
+		$actions['print_packetery_labels']  = __( 'actionPrintLabels', 'packetery' );
+		$actions['print_carrier_labels']  = __( 'actionPrintCarrierLabels', 'packetery' );
 
 		return $actions;
 	}
@@ -77,10 +78,13 @@ class BulkActions {
 	 * @return string
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
-		if ( 'print_labels' === $action ) {
-			set_transient( 'packetery_label_print_order_ids', $postIds );
+		if ( in_array( $action, [ 'print_packetery_labels', 'print_carrier_labels' ] ) ) {
+			set_transient( LabelPrint::getOrderIdsTransientName(), $postIds );
 
-			return 'admin.php?page=label-print';
+			return add_query_arg( [
+				'page'   => 'label-print',
+				'label_type' => $action,
+			], 'admin.php' );
 		}
 
 		if ( 'submit_to_api' === $action ) {

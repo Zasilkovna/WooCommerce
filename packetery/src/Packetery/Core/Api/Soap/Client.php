@@ -61,7 +61,7 @@ class Client {
 	}
 
 	/**
-	 * Asks for labels.
+	 * Asks for packeta labels.
 	 *
 	 * @param Request\PacketsLabelsPdf $request Label request.
 	 *
@@ -73,6 +73,46 @@ class Client {
 			$soapClient  = new SoapClient( self::WSDL_URL );
 			$pdfContents = $soapClient->packetsLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getFormat(), $request->getOffset() );
 			$response->setPdfContents( $pdfContents );
+		} catch ( SoapFault $exception ) {
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Asks for carrier labels.
+	 *
+	 * @param Request\PacketsCourierLabelsPdf $request Label request.
+	 *
+	 * @return Response\PacketsCourierLabelsPdf
+	 */
+	public function packetsCarrierLabelsPdf( Request\PacketsCourierLabelsPdf $request ): Response\PacketsCourierLabelsPdf {
+		$response = new Response\PacketsCourierLabelsPdf();
+		try {
+			$soapClient  = new SoapClient( self::WSDL_URL );
+			$pdfContents = $soapClient->packetsCourierLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getOffset(), $request->getFormat() );
+			$response->setPdfContents( $pdfContents );
+		} catch ( SoapFault $exception ) {
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Requests carrier number for a packet.
+	 *
+	 * @param Request\PacketCourierNumber $request PacketCourierNumber request.
+	 *
+	 * @return Response\PacketCourierNumber
+	 */
+	public function packetCourierNumber( Request\PacketCourierNumber $request ): Response\PacketCourierNumber {
+		$response = new Response\PacketCourierNumber();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$number     = $soapClient->packetCourierNumber( $this->apiPassword, $request->getPacketId() );
+			$response->setNumber( $number );
 		} catch ( SoapFault $exception ) {
 			$response->setFaultString( $exception->faultstring );
 		}

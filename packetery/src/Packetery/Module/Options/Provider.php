@@ -170,14 +170,16 @@ class Provider {
 	/**
 	 * Gets maximum offset for selected packeta labels format.
 	 *
+	 * @param string $format Selected format.
+	 *
 	 * @return int
 	 */
-	public function getPacketaLabelMaxOffset(): int {
-		if ( null === $this->get_packeta_label_format() ) {
+	public function getLabelMaxOffset( string $format ): int {
+		if ( '' === $format ) {
 			return 0;
 		}
 		$availableFormats = $this->getLabelFormats();
 
-		return $availableFormats[ $this->get_packeta_label_format() ]['maxOffset'];
+		return $availableFormats[ $format ]['maxOffset'];
 	}
 }
