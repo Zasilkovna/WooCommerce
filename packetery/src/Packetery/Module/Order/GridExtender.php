@@ -80,12 +80,14 @@ class GridExtender {
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
+					'post_status'         => false,
 					'packetery_to_submit' => '1',
 					'packetery_to_print'  => false,
 				]
 			),
 			'title'      => __( 'packetaOrdersToSubmit', 'packetery' ),
 			'orderCount' => count( $orders ),
+			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
@@ -93,12 +95,14 @@ class GridExtender {
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
+					'post_status'         => false,
 					'packetery_to_submit' => false,
 					'packetery_to_print'  => '1',
 				]
 			),
 			'title'      => __( 'packetaOrdersToPrint', 'packetery' ),
 			'orderCount' => count( $orders ),
+			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
