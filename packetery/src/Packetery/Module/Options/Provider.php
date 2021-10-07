@@ -173,6 +173,9 @@ class Provider {
 	 * @return int
 	 */
 	public function getPacketaLabelMaxOffset(): int {
+		if ( null === $this->get_packeta_label_format() ) {
+			return 0;
+		}
 		$availableFormats = $this->getLabelFormats();
 
 		return $availableFormats[ $this->get_packeta_label_format() ]['maxOffset'];

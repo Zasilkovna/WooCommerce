@@ -227,13 +227,12 @@ class LabelPrint {
 		$packetIds       = [];
 		$printedOrderIds = [];
 
-		$orderEntities = $this->orderRepository->getEntitiesByIds( $orderIds );
-		foreach ( $orderIds as $orderId ) {
-			$order = $orderEntities[ $orderId ];
-			if ( null === $order || null === $order->getPacketId() ) {
+		$orderEntities = $this->orderRepository->getOrdersByIds( $orderIds );
+		foreach ( $orderEntities as $order ) {
+			if ( null === $order->getPacketId() ) {
 				continue;
 			}
-			$printedOrderIds[] = $orderId;
+			$printedOrderIds[] = $order->getPostId();
 			$packetIds[]       = $order->getPacketId();
 		}
 
@@ -241,11 +240,11 @@ class LabelPrint {
 			return null;
 		}
 
-		$request  = new Request\PacketsLabelsPdf( $packetIds, $this->optionsProvider->get_packeta_label_format(), $offset );
+		$request  = new Request\PacketsLabelsPdf( $packetIds, (string) $this->optionsProvider->get_packeta_label_format(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		if ( ! $response->getFaultString() ) {
 			foreach ( $printedOrderIds as $id ) {
-				update_post_meta( $id, Entity::META_IS_LABEL_PRINTED, 1 );
+				update_post_meta( $id, Entity::META_IS_LABEL_PRINTED, true );
 			}
 		}
 

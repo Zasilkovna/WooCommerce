@@ -21,9 +21,9 @@ class Repository {
 	 *
 	 * @param array $orderIds Order ids.
 	 *
-	 * @return array
+	 * @return \Packetery\Module\Order\Entity[]
 	 */
-	public function getEntitiesByIds( array $orderIds ): array {
+	public function getOrdersByIds( array $orderIds ): array {
 		$orderEntities = [];
 		$posts         = get_posts(
 			[
@@ -34,8 +34,10 @@ class Repository {
 			]
 		);
 		foreach ( $posts as $post ) {
-			$wcOrder                             = wc_get_order( $post );
-			$orderEntities[ $wcOrder->get_id() ] = new Entity( $wcOrder );
+			$wcOrder = wc_get_order( $post );
+			if ( $wcOrder ) {
+				$orderEntities[] = new \Packetery\Module\Order\Entity( $wcOrder );
+			}
 		}
 
 		return $orderEntities;
