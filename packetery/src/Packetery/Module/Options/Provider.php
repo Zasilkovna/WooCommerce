@@ -121,10 +121,15 @@ class Provider {
 	/**
 	 * Which payment rate id COD?
 	 *
-	 * @return string Content.
+	 * @return string|null Content.
 	 */
-	public function getCodPaymentMethod(): string {
-		return (string) $this->get( 'cod_payment_method' );
+	public function getCodPaymentMethod(): ?string {
+		$value = $this->get( 'cod_payment_method' );
+		if ( ! $value ) {
+			return null;
+		}
+
+		return $value;
 	}
 
 	/**
