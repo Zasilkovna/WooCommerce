@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use PacketeryLatte\Engine;
-use PacketeryModule\Plugin;
 use PacketeryNette\Http\Request;
 
 /**
@@ -67,15 +66,20 @@ class CountryListingPage {
 	 *  Renders page.
 	 */
 	public function render(): void {
-		$countries = $this->getActiveCountries();
-
 		$carriersUpdateParams = [ 'lastUpdate' => null ];
 		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
+			set_transient( 'packetery_run_update_carriers', true );
+			if ( wp_safe_redirect( $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', null )->getAbsoluteUrl() ) ) {
+				exit;
+			}
+		}
+		if ( get_transient( 'packetery_run_update_carriers' ) ) {
 			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
 			$carriersUpdateParams                           = [
 				'result'      => $carrierUpdaterResult,
 				'resultClass' => $carrierUpdaterClass,
 			];
+			delete_transient( 'packetery_run_update_carriers' );
 		}
 
 		$carriersUpdateParams['link'] = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getAbsoluteUrl();
@@ -91,6 +95,7 @@ class CountryListingPage {
 			}
 		}
 
+		$countries = $this->getActiveCountries();
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
 			[
