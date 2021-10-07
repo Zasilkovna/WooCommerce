@@ -40,12 +40,12 @@ class PacketsCourierLabelsPdf {
 	/**
 	 * PacketsLabelsPdf constructor.
 	 *
-	 * @param array[] $packetIdAndCarrierNumberPairs Packet ids.
+	 * @param array[] $packetIdsWithCourierNumbers Packet ids.
 	 * @param string  $labelFormat Label format.
 	 * @param int     $offset Offset.
 	 */
-	public function __construct( array $packetIdAndCarrierNumberPairs, string $labelFormat, int $offset ) {
-		$this->packetIdsWithCourierNumbers = $packetIdAndCarrierNumberPairs;
+	public function __construct( array $packetIdsWithCourierNumbers, string $labelFormat, int $offset ) {
+		$this->packetIdsWithCourierNumbers = $packetIdsWithCourierNumbers;
 		$this->labelFormat                 = $labelFormat;
 		$this->offset                      = $offset;
 	}

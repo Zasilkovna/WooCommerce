@@ -151,6 +151,13 @@ class LabelPrint {
 
 			return;
 		}
+
+		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
+		$packetIds       = $this->getPacketIdsFromTransient( $isCarrierLabels );
+		if ( ! $packetIds ) {
+			return;
+		}
+
 		$maxOffset = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
 		$form      = $this->createForm( $maxOffset );
 		if ( 0 === $maxOffset ) {
@@ -162,7 +169,11 @@ class LabelPrint {
 			return;
 		}
 
-		$response = $this->requestLabels( $offset );
+		if ( $isCarrierLabels ) {
+			$response = $this->requestCarrierLabels( $offset, $packetIds );
+		} else {
+			$response = $this->requestPacketaLabels( $offset, $packetIds );
+		}
 		delete_transient( self::getOrderIdsTransientName() );
 		if ( ! $response || $response->hasFault() ) {
 			$message = ( null !== $response && $response->hasFault() ) ?
@@ -244,30 +255,40 @@ class LabelPrint {
 	/**
 	 * Prepares labels.
 	 *
-	 * @param int $offset Offset value.
+	 * @param int   $offset Offset value.
+	 * @param array $packetIds Packet ids.
 	 *
-	 * @return Response\PacketsLabelsPdf|Response\PacketsCourierLabelsPdf|null
+	 * @return Response\PacketsLabelsPdf|null
 	 */
-	private function requestLabels( int $offset ): ?object {
-		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$packetIds       = $this->getPacketIdsFromTransient( $isCarrierLabels );
-		if ( ! $packetIds ) {
-			return null;
-		}
-
-		if ( $isCarrierLabels ) {
-			$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
-			$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
-			$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
-		} else {
-			$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
-			$response = $this->soapApiClient->packetsLabelsPdf( $request );
-		}
-
+	private function requestPacketaLabels( int $offset, array $packetIds ): ?Response\PacketsLabelsPdf {
+		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
+		$response = $this->soapApiClient->packetsLabelsPdf( $request );
+		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
 				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
-				if ( $isCarrierLabels && isset( $packetIdsWithCourierNumbers[ $orderId ] ) ) {
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Prepares carrier labels.
+	 *
+	 * @param int   $offset Offset value.
+	 * @param array $packetIds Packet ids.
+	 *
+	 * @return Response\PacketsCourierLabelsPdf|null
+	 */
+	private function requestCarrierLabels( int $offset, array $packetIds ): ?Response\PacketsCourierLabelsPdf {
+		$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
+		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
+		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
+		if ( ! $response->hasFault() ) {
+			foreach ( array_keys( $packetIds ) as $orderId ) {
+				if ( isset( $packetIdsWithCourierNumbers[ $orderId ] ) ) {
+					update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
 					update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
 				}
 			}
