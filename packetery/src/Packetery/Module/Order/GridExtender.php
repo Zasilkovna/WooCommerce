@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
+use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\Repository;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -204,7 +205,10 @@ class GridExtender {
 
 				if ( $entity->isHomeDelivery() ) {
 					$homeDeliveryCarrier = $this->carrierRepository->getById( (int) $entity->getCarrierId() );
-					echo esc_html( ( $homeDeliveryCarrier ? $homeDeliveryCarrier->getName() : '' ) );
+					if ( $homeDeliveryCarrier ) {
+						$homeDeliveryCarrierEntity = new Carrier\Entity( $homeDeliveryCarrier );
+						echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
+					}
 					break;
 				}
 

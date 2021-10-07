@@ -24,6 +24,8 @@ use Packetery\Module\FormFactory;
  */
 class OptionsPage {
 
+	public const FORM_FIELD_NAME = 'name';
+
 	/**
 	 * PacketeryLatte_engine.
 	 *
@@ -112,7 +114,7 @@ class OptionsPage {
 			__( 'Active carrier', 'packetery' )
 		);
 
-		$form->addText( 'name', __( 'Display name', 'packetery' ) )
+		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packetery' ) )
 			->setRequired();
 
 		$weightLimits = $form->addContainer( 'weight_limits' );
@@ -142,8 +144,8 @@ class OptionsPage {
 
 		$carrierOptions       = get_option( $optionId );
 		$carrierOptions['id'] = $carrierData['id'];
-		if ( empty( $carrierOptions['name'] ) ) {
-			$carrierOptions['name'] = $carrierData['name'];
+		if ( empty( $carrierOptions[ self::FORM_FIELD_NAME ] ) ) {
+			$carrierOptions[ self::FORM_FIELD_NAME ] = $carrierData['name'];
 		}
 		$form->setDefaults( $carrierOptions );
 
