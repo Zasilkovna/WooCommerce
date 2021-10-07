@@ -227,8 +227,8 @@ class LabelPrint {
 		$packetIds       = [];
 		$printedOrderIds = [];
 
-		$orderEntities = $this->orderRepository->getOrdersByIds( $orderIds );
-		foreach ( $orderEntities as $order ) {
+		$orders = $this->orderRepository->getOrdersByIds( $orderIds );
+		foreach ( $orders as $order ) {
 			if ( null === $order->getPacketId() ) {
 				continue;
 			}
