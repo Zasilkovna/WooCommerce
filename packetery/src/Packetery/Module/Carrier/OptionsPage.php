@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
@@ -60,6 +61,11 @@ class OptionsPage {
 	private $countryListingPage;
 
 	/**
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Engine             $latteEngine PacketeryLatte_engine.
@@ -68,12 +74,13 @@ class OptionsPage {
 	 * @param Request            $httpRequest PacketeryNette Request.
 	 * @param CountryListingPage $countryListingPage CountryListingPage.
 	 */
-	public function __construct( Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage ) {
+	public function __construct( Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage, MessageManager $messageManager) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
 		$this->formFactory        = $formFactory;
 		$this->httpRequest        = $httpRequest;
 		$this->countryListingPage = $countryListingPage;
+		$this->messageManager     = $messageManager;
 	}
 
 	/**
@@ -192,6 +199,8 @@ class OptionsPage {
 		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
+		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ) );
+
 		if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
 			exit;
 		}

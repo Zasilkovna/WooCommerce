@@ -1,6 +1,19 @@
+.packetery-carrier-options-page input[type=text] {
+    width: 600px;
+}
 
-.packetery-options-page input[type=text] {
-    width: 100%;
+.packetery-carrier-options-page .packetery-label {
+    font-weight: bold;
+}
+
+.packetery-carrier-options-page .form-table td {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 30px;
+}
+
+.packetery-carrier-options-page .form-table th {
+    padding: 0;
 }
 
 .packetery-order-metabox-label-cell {
