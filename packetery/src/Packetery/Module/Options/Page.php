@@ -20,6 +20,10 @@ use PacketeryNette\Forms\Form;
  */
 class Page {
 
+	private const FORM_FIELDS_CONTAINER           = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
+
 	/**
 	 * PacketeryLatte_engine.
 	 *
@@ -87,17 +91,17 @@ class Page {
 	 */
 	private function getPrefillValues(): array {
 		$form               = $this->create_form();
-		$packeteryContainer = $form['packetery'];
+		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
 
-		$firstPacketaLabelKeys = array_keys( $packeteryContainer['packeta_label_format']->items );
+		$firstPacketaLabelKeys = array_keys( $packeteryContainer[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ]->items );
 		$firstPacketaLabel     = array_shift( $firstPacketaLabelKeys );
-		$firstCarrierLabelKeys = array_keys( $packeteryContainer['carrier_label_format']->items );
+		$firstCarrierLabelKeys = array_keys( $packeteryContainer[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ]->items );
 		$firstCarrierLabel     = array_shift( $firstCarrierLabelKeys );
 
 		return [
-			'packetery' => [
-				'packeta_label_format' => $firstPacketaLabel,
-				'carrier_label_format' => $firstCarrierLabel,
+			self::FORM_FIELDS_CONTAINER => [
+				self::FORM_FIELD_PACKETA_LABEL_FORMAT => $firstPacketaLabel,
+				self::FORM_FIELD_CARRIER_LABEL_FORMAT => $firstCarrierLabel,
 			],
 		];
 	}
@@ -106,11 +110,11 @@ class Page {
 	 * Prefill option.
 	 */
 	public function prefillOption(): void {
-		$prefilledValues               = $this->getPrefillValues();
-		$value                         = get_option( 'packetery' );
-		$value['packeta_label_format'] = $value['packeta_label_format'] ?? $prefilledValues['packetery']['packeta_label_format'];
-		$value['carrier_label_format'] = $value['carrier_label_format'] ?? $prefilledValues['packetery']['carrier_label_format'];
-		update_option( 'packetery', $value );
+		$prefilledValues = $this->getPrefillValues();
+		$value           = get_option( self::FORM_FIELDS_CONTAINER );
+		$value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] = $value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] ?? $prefilledValues['packetery'][ self::FORM_FIELD_PACKETA_LABEL_FORMAT ];
+		$value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] = $value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] ?? $prefilledValues['packetery'][ self::FORM_FIELD_CARRIER_LABEL_FORMAT ];
+		update_option( self::FORM_FIELDS_CONTAINER, $value );
 	}
 
 	/**
@@ -122,7 +126,7 @@ class Page {
 		$form = $this->formFactory->create();
 		$form->setAction( 'options.php' );
 
-		$container = $form->addContainer( 'packetery' );
+		$container = $form->addContainer( self::FORM_FIELDS_CONTAINER );
 		$container->addText( 'api_password', __( 'API password', 'packetery' ) )
 					->setRequired()
 					->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', 'packetery' ), '[a-z\d]{32}' );
@@ -132,14 +136,14 @@ class Page {
 		$availableFormats = $this->optionsProvider->getLabelFormats();
 		$labelFormats     = array_filter( array_combine( array_keys( $availableFormats ), array_column( $availableFormats, 'name' ) ) );
 		$container->addSelect(
-			'packeta_label_format',
+			self::FORM_FIELD_PACKETA_LABEL_FORMAT,
 			__( 'Packeta Label Format', 'packetery' ),
 			$labelFormats
 		)->checkDefaultValue( false );
 
 		// TODO: remove in another ticket.
 		$container->addSelect(
-			'carrier_label_format',
+			self::FORM_FIELD_CARRIER_LABEL_FORMAT,
 			__( 'Carrier Label Format', 'packetery' ),
 			array(
 				'A6 on A4' => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
@@ -169,7 +173,7 @@ class Page {
 	 *  Admin_init callback.
 	 */
 	public function admin_init(): void {
-		register_setting( 'packetery', 'packetery', array( $this, 'options_validate' ) );
+		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, array( $this, 'options_validate' ) );
 		add_settings_section( 'packetery_main', __( 'Main Settings', 'packetery' ), '', 'packeta-options' );
 	}
 
@@ -182,9 +186,9 @@ class Page {
 	 */
 	public function options_validate( $options ): array {
 		$form = $this->create_form();
-		$form['packetery']->setValues( $options );
+		$form[ self::FORM_FIELDS_CONTAINER ]->setValues( $options );
 		if ( $form->isValid() === false ) {
-			foreach ( $form['packetery']->getControls() as $control ) {
+			foreach ( $form[ self::FORM_FIELDS_CONTAINER ]->getControls() as $control ) {
 				if ( $control->hasErrors() === false ) {
 					continue;
 				}
@@ -194,7 +198,7 @@ class Page {
 			}
 		}
 
-		$api_password = $form['packetery']['api_password'];
+		$api_password = $form[ self::FORM_FIELDS_CONTAINER ]['api_password'];
 		if ( $api_password->hasErrors() === false ) {
 			$api_pass           = $api_password->getValue();
 			$options['api_key'] = substr( $api_pass, 0, 16 );
