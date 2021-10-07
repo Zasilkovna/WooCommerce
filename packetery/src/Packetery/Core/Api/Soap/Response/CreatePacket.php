@@ -14,7 +14,7 @@ namespace Packetery\Core\Api\Soap\Response;
  *
  * @package Packetery\Api\Soap\Response
  */
-class CreatePacket {
+class CreatePacket extends BaseResponse {
 
 	/**
 	 * Barcode without leading Z.
@@ -38,13 +38,6 @@ class CreatePacket {
 	private $validationErrors;
 
 	/**
-	 * Fault string.
-	 *
-	 * @var string
-	 */
-	private $faultString;
-
-	/**
 	 * Sets id.
 	 *
 	 * @param int $id Id.
@@ -60,15 +53,6 @@ class CreatePacket {
 	 */
 	public function setBarcode( string $barcode ): void {
 		$this->barcode = $barcode;
-	}
-
-	/**
-	 * Sets fault string.
-	 *
-	 * @param string $faultString Fault string.
-	 */
-	public function setFaultString( string $faultString ): void {
-		$this->faultString = $faultString;
 	}
 
 	/**
@@ -99,15 +83,6 @@ class CreatePacket {
 	}
 
 	/**
-	 * Gets fault string.
-	 *
-	 * @return string|null
-	 */
-	public function getFaultString(): ?string {
-		return $this->faultString;
-	}
-
-	/**
 	 * Gets errors.
 	 *
 	 * @return array|null
@@ -123,7 +98,7 @@ class CreatePacket {
 	 */
 	public function getErrorsAsString(): string {
 		$allErrors = $this->validationErrors;
-		array_unshift( $allErrors, $this->faultString );
+		array_unshift( $allErrors, $this->getFaultString() );
 
 		return implode( ', ', $allErrors );
 	}

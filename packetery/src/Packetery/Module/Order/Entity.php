@@ -36,6 +36,7 @@ class Entity {
 	public const META_LENGTH           = 'packetery_length';
 	public const META_WIDTH            = 'packetery_width';
 	public const META_HEIGHT           = 'packetery_height';
+	public const META_CARRIER_NUMBER   = 'packetery_carrier_number';
 
 	/**
 	 * Order.
@@ -224,6 +225,15 @@ class Entity {
 	 */
 	public function getPointType(): ?string {
 		return $this->getMetaAsNullableString( self::META_POINT_TYPE );
+	}
+
+	/**
+	 * Gets packet carrier number.
+	 *
+	 * @return string|null
+	 */
+	public function getCarrierNumber(): ?string {
+		return $this->getMetaAsNullableString( self::META_CARRIER_NUMBER );
 	}
 
 	/**

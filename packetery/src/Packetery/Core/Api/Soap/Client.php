@@ -53,6 +53,7 @@ class Client {
 			$packet     = $soapClient->createPacket( $this->apiPassword, $request->getSubmittableData() );
 			$response->setId( $packet->id );
 		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
 			$response->setValidationErrors( $this->getValidationErrors( $exception ) );
 		}
@@ -61,7 +62,7 @@ class Client {
 	}
 
 	/**
-	 * Asks for labels.
+	 * Asks for packeta labels.
 	 *
 	 * @param Request\PacketsLabelsPdf $request Label request.
 	 *
@@ -74,6 +75,7 @@ class Client {
 			$pdfContents = $soapClient->packetsLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getFormat(), $request->getOffset() );
 			$response->setPdfContents( $pdfContents );
 		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
 		}
 
@@ -81,7 +83,49 @@ class Client {
 	}
 
 	/**
-	 * Gets human readable errors form SoapFault exception.
+	 * Asks for carrier labels.
+	 *
+	 * @param Request\PacketsCourierLabelsPdf $request Label request.
+	 *
+	 * @return Response\PacketsCourierLabelsPdf
+	 */
+	public function packetsCarrierLabelsPdf( Request\PacketsCourierLabelsPdf $request ): Response\PacketsCourierLabelsPdf {
+		$response = new Response\PacketsCourierLabelsPdf();
+		try {
+			$soapClient  = new SoapClient( self::WSDL_URL );
+			$pdfContents = $soapClient->packetsCourierLabelsPdf( $this->apiPassword, $request->getPacketIdsWithCourierNumbers(), $request->getOffset(), $request->getFormat() );
+			$response->setPdfContents( $pdfContents );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Requests carrier number for a packet.
+	 *
+	 * @param Request\PacketCourierNumber $request PacketCourierNumber request.
+	 *
+	 * @return Response\PacketCourierNumber
+	 */
+	public function packetCourierNumber( Request\PacketCourierNumber $request ): Response\PacketCourierNumber {
+		$response = new Response\PacketCourierNumber();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$number     = $soapClient->packetCourierNumber( $this->apiPassword, $request->getPacketId() );
+			$response->setNumber( $number );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Gets human readable errors from SoapFault exception.
 	 *
 	 * @param SoapFault $exception Exception.
 	 *
@@ -99,5 +143,16 @@ class Client {
 		}
 
 		return $errors;
+	}
+
+	/**
+	 * Gets fault identifier from SoapFault exception.
+	 *
+	 * @param SoapFault $exception Exception.
+	 *
+	 * @return int|string
+	 */
+	private function getFaultIdentifier( SoapFault $exception ): string {
+		return array_keys( get_object_vars( $exception->detail ) )[0];
 	}
 }

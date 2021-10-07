@@ -106,7 +106,6 @@ class Page {
 			$labelFormats
 		)->checkDefaultValue( false );
 
-		// TODO: remove in another ticket.
 		$container->addSelect(
 			'carrier_label_format',
 			__( 'Carrier Label Format', 'packetery' ),
@@ -116,7 +115,7 @@ class Page {
 			)
 		)->checkDefaultValue( false );
 
-		$gateways = WC()->payment_gateways->get_available_payment_gateways();
+		$gateways        = WC()->payment_gateways->get_available_payment_gateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
 			$enabledGateways[ $gateway->id ] = $gateway->title;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class PacketsLabelsPdf.
+ * Class PacketsCourierLabelsPdf.
  *
  * @package Packetery\Api\Soap\Response
  */
@@ -10,11 +10,11 @@ declare( strict_types=1 );
 namespace Packetery\Core\Api\Soap\Response;
 
 /**
- * Class PacketsLabelsPdf.
+ * Class PacketsCourierLabelsPdf.
  *
  * @package Packetery\Api\Soap\Response
  */
-class PacketsLabelsPdf extends BaseResponse {
+class PacketsCourierLabelsPdf extends BaseResponse {
 
 	/**
 	 * Pdf contents.
@@ -40,5 +40,6 @@ class PacketsLabelsPdf extends BaseResponse {
 	public function getPdfContents(): string {
 		return $this->pdfContents;
 	}
+
 
 }
