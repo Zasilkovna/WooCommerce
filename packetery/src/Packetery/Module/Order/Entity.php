@@ -126,6 +126,15 @@ class Entity {
 	}
 
 	/**
+	 * Gets order post id.
+	 *
+	 * @return int|null
+	 */
+	public function getPostId(): ?int {
+		return $this->order->get_id();
+	}
+
+	/**
 	 * Selected pickup point ID
 	 *
 	 * @return int|null

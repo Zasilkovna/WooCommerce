@@ -24,6 +24,7 @@ services:
 	- Packetery\Module\FormFactory
 	- Packetery\Module\Carrier\CountryListingPage
 	- Packetery\Module\Order\BulkActions
+	- Packetery\Module\Order\Repository
 	- Packetery\Module\Order\LabelPrint
 	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())

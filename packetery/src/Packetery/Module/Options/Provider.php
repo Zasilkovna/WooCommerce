@@ -132,7 +132,7 @@ class Provider {
 	 *
 	 * @return array[]
 	 */
-	public function getLabelFormats() {
+	public function getLabelFormats(): array {
 		return [
 			'A6 on A4'       => [
 				'name'         => __( 'labelNameA6onA4', 'packetery' ),
@@ -165,5 +165,19 @@ class Provider {
 				'maxOffset'    => 0,
 			],
 		];
+	}
+
+	/**
+	 * Gets maximum offset for selected packeta labels format.
+	 *
+	 * @return int
+	 */
+	public function getPacketaLabelMaxOffset(): int {
+		if ( null === $this->get_packeta_label_format() ) {
+			return 0;
+		}
+		$availableFormats = $this->getLabelFormats();
+
+		return $availableFormats[ $this->get_packeta_label_format() ]['maxOffset'];
 	}
 }
