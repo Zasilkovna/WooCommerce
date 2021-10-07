@@ -402,7 +402,10 @@ class Plugin {
 	 * Activates plugin.
 	 */
 	public function activate(): void {
-		$this->options_page->prefillOption();
+		if ( false === PACKETERY_DEBUG ) {
+			$this->options_page->setDefaultValues();
+		}
+
 		$this->init();
 		$this->carrier_repository->create_table();
 	}

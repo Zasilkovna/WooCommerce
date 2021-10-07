@@ -24,6 +24,9 @@ class Page {
 	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
 	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
 
+	private const DEFAULT_VALUE_PACKETA_LABEL_FORMAT = 'A6 on A4';
+	private const DEFAULT_VALUE_CARRIER_LABEL_FORMAT = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+
 	/**
 	 * PacketeryLatte_engine.
 	 *
@@ -87,33 +90,12 @@ class Page {
 	}
 
 	/**
-	 * Returns prefilled values shown to user.
+	 * Sets default values.
 	 */
-	private function getPrefillValues(): array {
-		$form               = $this->create_form();
-		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
-
-		$firstPacketaLabelKeys = array_keys( $packeteryContainer[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ]->items );
-		$firstPacketaLabel     = array_shift( $firstPacketaLabelKeys );
-		$firstCarrierLabelKeys = array_keys( $packeteryContainer[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ]->items );
-		$firstCarrierLabel     = array_shift( $firstCarrierLabelKeys );
-
-		return [
-			self::FORM_FIELDS_CONTAINER => [
-				self::FORM_FIELD_PACKETA_LABEL_FORMAT => $firstPacketaLabel,
-				self::FORM_FIELD_CARRIER_LABEL_FORMAT => $firstCarrierLabel,
-			],
-		];
-	}
-
-	/**
-	 * Prefill option.
-	 */
-	public function prefillOption(): void {
-		$prefilledValues = $this->getPrefillValues();
-		$value           = get_option( self::FORM_FIELDS_CONTAINER );
-		$value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] = $value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] ?? $prefilledValues['packetery'][ self::FORM_FIELD_PACKETA_LABEL_FORMAT ];
-		$value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] = $value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] ?? $prefilledValues['packetery'][ self::FORM_FIELD_CARRIER_LABEL_FORMAT ];
+	public function setDefaultValues(): void {
+		$value                                          = get_option( self::FORM_FIELDS_CONTAINER );
+		$value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+		$value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] = self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT;
 		update_option( self::FORM_FIELDS_CONTAINER, $value );
 	}
 
@@ -139,7 +121,7 @@ class Page {
 			self::FORM_FIELD_PACKETA_LABEL_FORMAT,
 			__( 'Packeta Label Format', 'packetery' ),
 			$labelFormats
-		)->checkDefaultValue( false );
+		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT );
 
 		// TODO: remove in another ticket.
 		$container->addSelect(
@@ -149,7 +131,7 @@ class Page {
 				'A6 on A4' => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
 				'A6 on A6' => __( '105x148 mm (A6) label on a page of the same size (offset argument is ignored for this format)', 'packetery' ),
 			)
-		)->checkDefaultValue( false );
+		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
 		$gateways = WC()->payment_gateways->get_available_payment_gateways();
 		$enabledGateways = [];
