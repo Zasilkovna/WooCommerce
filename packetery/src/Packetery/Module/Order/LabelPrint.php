@@ -286,11 +286,9 @@ class LabelPrint {
 		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 		if ( ! $response->hasFault() ) {
-			foreach ( array_keys( $packetIds ) as $orderId ) {
-				if ( isset( $packetIdsWithCourierNumbers[ $orderId ] ) ) {
-					update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
-					update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
-				}
+			foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
+				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
+				update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
 			}
 		}
 
