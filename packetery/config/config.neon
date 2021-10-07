@@ -34,3 +34,4 @@ services:
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order
+	- Packetery\Module\Options\Repository

@@ -411,9 +411,34 @@ class Plugin {
 	 * Only a static class method or function can be used in an uninstall hook.
 	 */
 	public static function uninstall(): void {
-		$container  = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
-		$repository = $container->getByType( Repository::class );
-		$repository->drop();
+		if ( defined( 'PACKETERY_DEBUG' ) && PACKETERY_DEBUG === true ) {
+			return;
+		}
+
+		$container = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
+
+		$optionsRepository = $container->getByType( Options\Repository::class );
+		$pluginOptions     = $optionsRepository->getPluginOptions();
+		foreach ( $pluginOptions as $option ) {
+			delete_option( $option->option_name );
+		}
+
+		$carrierRepository = $container->getByType( Carrier\Repository::class );
+		$carrierRepository->drop();
+
+		$logEntries = get_posts(
+			[
+				'post_type'   => Log\PostLogger::POST_TYPE,
+				'post_status' => 'any',
+				'nopaging'    => true,
+				'fields'      => 'ids',
+			]
+		);
+		foreach ( $logEntries as $logEntryId ) {
+			wp_delete_post( $logEntryId, true );
+		}
+
+		unregister_post_type( Log\PostLogger::POST_TYPE );
 	}
 
 	/**
