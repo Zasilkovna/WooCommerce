@@ -7,7 +7,7 @@
  * @wordpress-plugin
  *
  * Plugin Name: Packeta
- * Plugin URI: https://www.packeta.com/todo-plugin-page/
+ * Plugin URI:
  * Description: Todo description.
  * Version: 1.0.0
  * Author: Packeta

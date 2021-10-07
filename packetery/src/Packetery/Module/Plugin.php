@@ -393,12 +393,11 @@ class Plugin {
 	public function init(): void {
 		add_filter(
 			'plugin_action_links_' . plugin_basename( $this->main_file_path ),
-			array(
+			[
 				$this,
-				'plugin_action_links',
-			)
+				'addPluginActionLinks',
+			]
 		);
-		add_filter( 'plugin_row_meta', array( $this, 'plugin_row_meta' ), 10, 2 );
 	}
 
 	/**
@@ -445,7 +444,7 @@ class Plugin {
 	}
 
 	/**
-	 * Show action links on the plugin screen.
+	 * Adds action links visible at the plugin screen.
 	 *
 	 * @link https://developer.wordpress.org/reference/hooks/plugin_action_links_plugin_file/
 	 *
@@ -453,32 +452,12 @@ class Plugin {
 	 *
 	 * @return array
 	 */
-	public function plugin_action_links( array $links ): array {
-		$links[] = '<a href="' . esc_url( admin_url( 'admin.php?page=packeta-options' ) ) . '" aria-label="' .
+	public function addPluginActionLinks( array $links ): array {
+		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=packeta-options' ) ) . '" aria-label="' .
 					esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
 					esc_html__( 'Settings', 'packetery' ) . '</a>';
 
-		return $links;
-	}
-
-	/**
-	 * Show row meta on the plugin screen.
-	 *
-	 * @link https://developer.wordpress.org/reference/hooks/plugin_row_meta/
-	 *
-	 * @param array  $links Plugin Row Meta.
-	 * @param string $plugin_file_name Plugin Base file.
-	 *
-	 * @return array
-	 */
-	public function plugin_row_meta( array $links, string $plugin_file_name ): array {
-		if ( ! strpos( $plugin_file_name, basename( $this->main_file_path ) ) ) {
-			return $links;
-		}
-
-		$links[] = '<a href="' . esc_url( 'https://www.packeta.com/todo-plugin-docs/' ) . '" aria-label="' .
-					esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
-					esc_html__( 'Documentation', 'packetery' ) . '</a>';
+		array_unshift( $links, $settingsLink );
 
 		return $links;
 	}
