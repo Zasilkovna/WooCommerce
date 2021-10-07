@@ -413,15 +413,16 @@ class Plugin {
 			return;
 		}
 
-		global $wpdb;
-		$pluginOptions = $wpdb->get_results( "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE 'packetery%'" );
+		$container = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
+
+		$optionsRepository = $container->getByType( Options\Repository::class );
+		$pluginOptions     = $optionsRepository->getPluginOptions();
 		foreach ( $pluginOptions as $option ) {
 			delete_option( $option->option_name );
 		}
 
-		$container  = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
-		$repository = $container->getByType( Repository::class );
-		$repository->drop();
+		$carrierRepository = $container->getByType( Carrier\Repository::class );
+		$carrierRepository->drop();
 
 		$logEntries = get_posts(
 			[
@@ -434,6 +435,8 @@ class Plugin {
 		foreach ( $logEntries as $logEntryId ) {
 			wp_delete_post( $logEntryId, true );
 		}
+
+		unregister_post_type( Log\PostLogger::POST_TYPE );
 	}
 
 	/**
