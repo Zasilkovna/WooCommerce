@@ -194,7 +194,6 @@ class Plugin {
 	public function run(): void {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
-		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		Form::initialize();
@@ -202,13 +201,7 @@ class Plugin {
 		add_action(
 			'admin_notices',
 			function () {
-				$this->message_manager->render( MessageManager::RENDERER_WORDPRESS );
-			}
-		);
-		add_action(
-			'packetery_admin_notices',
-			function () {
-				$this->message_manager->render( MessageManager::RENDERER_PACKETERY );
+				$this->message_manager->render();
 			}
 		);
 		add_action( 'init', array( $this, 'init' ) );
