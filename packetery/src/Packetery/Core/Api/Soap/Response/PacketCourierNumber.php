@@ -14,13 +14,7 @@ namespace Packetery\Core\Api\Soap\Response;
  *
  * @package Packetery\Core\Api\Soap\Response
  */
-class PacketCourierNumber {
-	/**
-	 * Fault string.
-	 *
-	 * @var string
-	 */
-	private $faultString;
+class PacketCourierNumber extends BaseResponse {
 
 	/**
 	 * Packet carrier number.
@@ -39,30 +33,12 @@ class PacketCourierNumber {
 	}
 
 	/**
-	 * Sets fault string.
-	 *
-	 * @param string $faultString Fault string.
-	 */
-	public function setFaultString( string $faultString ): void {
-		$this->faultString = $faultString;
-	}
-
-	/**
 	 * Gets packet carrier number
 	 *
 	 * @return string
 	 */
 	public function getNumber(): string {
 		return $this->number;
-	}
-
-	/**
-	 * Gets fault string.
-	 *
-	 * @return string|null
-	 */
-	public function getFaultString(): ?string {
-		return $this->faultString;
 	}
 
 }

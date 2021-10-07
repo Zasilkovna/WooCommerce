@@ -25,6 +25,10 @@ use PacketeryNette\Http;
  * @package Packetery\Order
  */
 class LabelPrint {
+	const ACTION_PACKETA_LABELS = 'print_packeta_labels';
+	const ACTION_CARRIER_LABELS = 'print_carrier_labels';
+	const LABEL_TYPE_PARAM      = 'label_type';
+
 	/**
 	 * PacketeryLatte Engine.
 	 *
@@ -132,7 +136,7 @@ class LabelPrint {
 		$packetaLabelFormat = ( $this->optionsProvider->get_packeta_label_format() ?? '' );
 		$carrierLabelFormat = ( $this->optionsProvider->get_carrier_label_format() ?? '' );
 
-		return ( $this->httpRequest->getQuery( 'label_type' ) === 'print_carrier_labels' ? $carrierLabelFormat : $packetaLabelFormat );
+		return ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS ? $carrierLabelFormat : $packetaLabelFormat );
 	}
 
 	/**
@@ -160,8 +164,8 @@ class LabelPrint {
 
 		$response = $this->requestLabels( $offset );
 		delete_transient( self::getOrderIdsTransientName() );
-		if ( ! $response || $response->getFaultString() ) {
-			$message = ( null !== $response && $response->getFaultString() ) ?
+		if ( ! $response || $response->hasFault() ) {
+			$message = ( null !== $response && $response->hasFault() ) ?
 				__( 'labelPrintFailedMoreInfoInLog', 'packetery' ) :
 				__( 'youSelectedOrdersThatWereNotSubmitted', 'packetery' );
 			$this->messageManager->flash_message( $message, 'error' );
@@ -242,29 +246,29 @@ class LabelPrint {
 	 *
 	 * @param int $offset Offset value.
 	 *
-	 * @return Response\PacketsLabelsPdf|null
+	 * @return Response\PacketsLabelsPdf|Response\PacketsCourierLabelsPdf|null
 	 */
-	private function requestLabels( int $offset ): ?Response\PacketsLabelsPdf {
-		$isCarrierLabels = ( $this->httpRequest->getQuery( 'label_type' ) === 'print_carrier_labels' );
-		$packetIds       = $this->getPacketIds( $isCarrierLabels );
+	private function requestLabels( int $offset ): ?object {
+		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
+		$packetIds       = $this->getPacketIdsFromTransient( $isCarrierLabels );
 		if ( ! $packetIds ) {
 			return null;
 		}
 
 		if ( $isCarrierLabels ) {
-			$carrierPacketNumbers = $this->getCarrierPacketNumbers( $packetIds );
-			$request              = new Request\PacketsCourierLabelsPdf( array_values( $carrierPacketNumbers ), $this->getLabelFormat(), $offset );
-			$response             = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
+			$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
+			$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
+			$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 		} else {
 			$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 			$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		}
 
-		if ( ! $response->getFaultString() ) {
+		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
 				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
-				if ( $isCarrierLabels ) {
-					update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $carrierPacketNumbers[ $orderId ]['courierNumber'] );
+				if ( $isCarrierLabels && isset( $packetIdsWithCourierNumbers[ $orderId ] ) ) {
+					update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
 				}
 			}
 		}
@@ -286,9 +290,9 @@ class LabelPrint {
 	 *
 	 * @param bool $isCarrierLabels Are carrier labels requested?.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
-	private function getPacketIds( bool $isCarrierLabels ): array {
+	private function getPacketIdsFromTransient( bool $isCarrierLabels ): array {
 		$orderIds  = get_transient( self::getOrderIdsTransientName() );
 		$orders    = $this->orderRepository->getOrdersByIds( $orderIds );
 		$packetIds = [];
@@ -307,25 +311,30 @@ class LabelPrint {
 	/**
 	 * Gets carrier packet numbers from API.
 	 *
-	 * @param array $packetIds List of packet ids.
+	 * @param string[] $packetIds List of packet ids.
 	 *
-	 * @return array
+	 * @return array[]
 	 */
-	private function getCarrierPacketNumbers( array $packetIds ): array {
-		$carrierPacketNumbers = [];
+	private function getPacketIdsWithCourierNumbers( array $packetIds ): array {
+		$pairs = [];
 		foreach ( $packetIds as $orderId => $packetId ) {
-			$numberRequest  = new Request\PacketCourierNumber( $packetId );
-			$numberResponse = $this->soapApiClient->packetCourierNumber( $numberRequest );
-			if ( $numberResponse->getFaultString() ) {
+			$request  = new Request\PacketCourierNumber( $packetId );
+			$response = $this->soapApiClient->packetCourierNumber( $request );
+			if ( $response->hasFault() ) {
+				if ( $response->hasWrongPassword() ) {
+					$this->messageManager->flash_message( __( 'pleaseSetProperPassword', 'packetery' ), 'error' );
+
+					return [];
+				}
 				continue;
 			}
-			$carrierPacketNumbers[ $orderId ] = [
+			$pairs[ $orderId ] = [
 				'packetId'      => $packetId,
-				'courierNumber' => $numberResponse->getNumber(),
+				'courierNumber' => $response->getNumber(),
 			];
 		}
 
-		return $carrierPacketNumbers;
+		return $pairs;
 	}
 
 }

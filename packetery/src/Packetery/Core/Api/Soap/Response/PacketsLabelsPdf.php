@@ -14,14 +14,7 @@ namespace Packetery\Core\Api\Soap\Response;
  *
  * @package Packetery\Api\Soap\Response
  */
-class PacketsLabelsPdf {
-
-	/**
-	 * Fault string.
-	 *
-	 * @var string
-	 */
-	private $faultString;
+class PacketsLabelsPdf extends BaseResponse {
 
 	/**
 	 * Pdf contents.
@@ -40,30 +33,12 @@ class PacketsLabelsPdf {
 	}
 
 	/**
-	 * Sets fault string.
-	 *
-	 * @param string $faultString Fault string.
-	 */
-	public function setFaultString( string $faultString ): void {
-		$this->faultString = $faultString;
-	}
-
-	/**
 	 * Gets pdf contents.
 	 *
 	 * @return string
 	 */
 	public function getPdfContents(): string {
 		return $this->pdfContents;
-	}
-
-	/**
-	 * Gets fault string.
-	 *
-	 * @return string|null
-	 */
-	public function getFaultString(): ?string {
-		return $this->faultString;
 	}
 
 }

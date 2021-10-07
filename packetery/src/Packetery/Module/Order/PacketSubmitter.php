@@ -94,7 +94,7 @@ class PacketSubmitter {
 			}
 
 			$response = $this->soapApiClient->createPacket( $createPacketRequest );
-			if ( $response->getFaultString() ) {
+			if ( $response->hasFault() ) {
 				if ( $logger ) {
 					$logger->error( $response->getErrorsAsString() );
 				}

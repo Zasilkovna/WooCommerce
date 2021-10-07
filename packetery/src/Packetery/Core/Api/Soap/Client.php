@@ -53,6 +53,7 @@ class Client {
 			$packet     = $soapClient->createPacket( $this->apiPassword, $request->getSubmittableData() );
 			$response->setId( $packet->id );
 		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
 			$response->setValidationErrors( $this->getValidationErrors( $exception ) );
 		}
@@ -74,6 +75,7 @@ class Client {
 			$pdfContents = $soapClient->packetsLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getFormat(), $request->getOffset() );
 			$response->setPdfContents( $pdfContents );
 		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
 		}
 
@@ -91,9 +93,10 @@ class Client {
 		$response = new Response\PacketsCourierLabelsPdf();
 		try {
 			$soapClient  = new SoapClient( self::WSDL_URL );
-			$pdfContents = $soapClient->packetsCourierLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getOffset(), $request->getFormat() );
+			$pdfContents = $soapClient->packetsCourierLabelsPdf( $this->apiPassword, $request->getPacketIdsWithCourierNumbers(), $request->getOffset(), $request->getFormat() );
 			$response->setPdfContents( $pdfContents );
 		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
 		}
 
@@ -114,6 +117,7 @@ class Client {
 			$number     = $soapClient->packetCourierNumber( $this->apiPassword, $request->getPacketId() );
 			$response->setNumber( $number );
 		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
 		}
 
@@ -121,7 +125,7 @@ class Client {
 	}
 
 	/**
-	 * Gets human readable errors form SoapFault exception.
+	 * Gets human readable errors from SoapFault exception.
 	 *
 	 * @param SoapFault $exception Exception.
 	 *
@@ -139,5 +143,16 @@ class Client {
 		}
 
 		return $errors;
+	}
+
+	/**
+	 * Gets fault identifier from SoapFault exception.
+	 *
+	 * @param SoapFault $exception Exception.
+	 *
+	 * @return int|string
+	 */
+	private function getFaultIdentifier( SoapFault $exception ): string {
+		return array_keys( get_object_vars( $exception->detail ) )[0];
 	}
 }
