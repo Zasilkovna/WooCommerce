@@ -404,6 +404,10 @@ class Plugin {
 	public function activate(): void {
 		$this->init();
 		$this->carrier_repository->create_table();
+		$versionCheck = get_option( 'packetery_version' );
+		if ( $versionCheck === false ) {
+			update_option( 'packetery_version', self::VERSION );
+		}
 	}
 
 	/**
