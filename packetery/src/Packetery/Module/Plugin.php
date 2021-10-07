@@ -10,12 +10,12 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
-use Packetery\Module\Log;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
-use Packetery\Module\Order;
+use Packetery\Module\Log;
 use Packetery\Module\Options;
+use Packetery\Module\Order;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -303,17 +303,20 @@ class Plugin {
 
 	/**
 	 *  Renders email footer.
+	 *
+	 * @param \WC_Email|null $email Email data.
 	 */
-	public function render_email_footer(): void {
-		$orderEntity = Order\Entity::fromGlobals();
-		if ( $orderEntity === null || $orderEntity->isPacketeryRelated() === false ) {
+	public function render_email_footer( ?\WC_Email $email ): void {
+		if ( null === $email || ! $email->object instanceof \WC_Order ) {
 			return;
 		}
 
-		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
-			[ 'order' => $orderEntity ]
-		);
+		$orderEntity = new Order\Entity( $email->object );
+		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+			return;
+		}
+
+		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/email/footer.latte', [ 'order' => $orderEntity ] );
 	}
 
 	/**
