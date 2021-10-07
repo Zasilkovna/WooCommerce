@@ -141,7 +141,7 @@ class Page {
 			'cod_payment_method',
 			__( 'Payment method that represents cash on delivery', 'packetery' ),
 			$enabledGateways
-		)->checkDefaultValue( false );
+		)->setPrompt( '--' )->checkDefaultValue( false );
 
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );

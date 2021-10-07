@@ -378,7 +378,7 @@ class Checkout {
 		$isCod        = false;
 		$codMethod    = $this->options_provider->getCodPaymentMethod();
 		$chosenMethod = WC()->session->get( 'chosen_payment_method' );
-		if ( ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
+		if ( $codMethod !== null && ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
 			$isCod = true;
 		}
 
