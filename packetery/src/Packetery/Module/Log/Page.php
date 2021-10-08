@@ -65,10 +65,11 @@ class Page {
 	 */
 	public function render(): void {
 		$translatedActions = [
-			Record::ACTION_PACKET_SENDING      => __( 'logAction_packet-sending', 'packetery' ),
-			Record::ACTION_CARRIER_LABEL_PRINT => __( 'logAction_carrier-label-print', 'packetery' ),
-			Record::ACTION_LABEL_PRINT         => __( 'logAction_label-print', 'packetery' ),
-			Record::ACTION_CARRIER_LIST_UPDATE => __( 'logAction_carrier-list-update', 'packetery' ),
+			Record::ACTION_PACKET_SENDING            => __( 'logAction_packet-sending', 'packetery' ),
+			Record::ACTION_CARRIER_LABEL_PRINT       => __( 'logAction_carrier-label-print', 'packetery' ),
+			Record::ACTION_LABEL_PRINT               => __( 'logAction_label-print', 'packetery' ),
+			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'logAction_carrier-list-update', 'packetery' ),
+			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'logAction_carrier-number-retrieving', 'packetery' ),
 		];
 
 		$translatedStatuses = [

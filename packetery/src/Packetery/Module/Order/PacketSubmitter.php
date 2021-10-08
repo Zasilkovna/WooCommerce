@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
+use Packetery\Core\Log;
 use Packetery\Core\Validator;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\ShippingMethod;
@@ -46,20 +47,30 @@ class PacketSubmitter {
 	private $orderValidator;
 
 	/**
+	 * ILogger.
+	 *
+	 * @var Log\ILogger
+	 */
+	private $logger;
+
+	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client              $soapApiClient SOAP API Client.
-	 * @param EntityFactory\Order $orderFactory Order entity factory.
+	 * @param Client              $soapApiClient  SOAP API Client.
+	 * @param EntityFactory\Order $orderFactory   Order entity factory.
 	 * @param Validator\Order     $orderValidator Order validator.
+	 * @param Log\ILogger         $logger         Logger.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		EntityFactory\Order $orderFactory,
-		Validator\Order $orderValidator
+		Validator\Order $orderValidator,
+		Log\ILogger $logger
 	) {
 		$this->soapApiClient  = $soapApiClient;
 		$this->orderFactory   = $orderFactory;
 		$this->orderValidator = $orderValidator;
+		$this->logger         = $logger;
 	}
 
 	/**
@@ -77,32 +88,53 @@ class PacketSubmitter {
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
 		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $entity->isExported() ) {
-			// TODO: update logging before release, handle errors.
-			$logger = wc_get_logger();
 			try {
 				$createPacketRequest = $this->preparePacketRequest( $order );
 			} catch ( InvalidRequestException $e ) {
-				if ( $logger ) {
-					$logger->info( $orderData['id'] . ': ' . $e->getMessage() );
-				}
+				$record = new Log\Record();
+				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
+				$record->action = Log\Record::ACTION_PACKET_SENDING;
+				$record->status = Log\Record::STATUS_ERROR;
+				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
+				$record->params = [
+					'orderId'      => $orderData['id'],
+					'errorMessage' => $e->getMessage(),
+				];
+				$this->logger->add( $record );
+
 				$resultsCounter['errors'] ++;
 
 				return;
 			}
-			if ( $logger ) {
-				$logger->info( wp_json_encode( $createPacketRequest->getSubmittableData() ) );
-			}
 
 			$response = $this->soapApiClient->createPacket( $createPacketRequest );
 			if ( $response->hasFault() ) {
-				if ( $logger ) {
-					$logger->error( $response->getErrorsAsString() );
-				}
+				$record = new Log\Record();
+				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
+				$record->action = Log\Record::ACTION_PACKET_SENDING;
+				$record->status = Log\Record::STATUS_ERROR;
+				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
+				$record->params = [
+					'request'      => $createPacketRequest->getSubmittableData(),
+					'errorMessage' => $response->getErrorsAsString(),
+				];
+				$this->logger->add( $record );
+
 				$resultsCounter['errors'] ++;
 			} else {
 				update_post_meta( $orderData['id'], Entity::META_IS_EXPORTED, '1' );
 				update_post_meta( $orderData['id'], Entity::META_PACKET_ID, $response->getId() );
 				$resultsCounter['success'] ++;
+
+				$record = new Log\Record();
+				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
+				$record->action = Log\Record::ACTION_PACKET_SENDING;
+				$record->status = Log\Record::STATUS_SUCCESS;
+				$record->title  = 'Akce “Vytvoření zásilky” proběhla úspěšně.'; // todo translate.
+				$record->params = [
+					'packetId' => $response->getId(),
+				];
+				$this->logger->add( $record );
 			}
 		} else {
 			$resultsCounter['ignored'] ++;

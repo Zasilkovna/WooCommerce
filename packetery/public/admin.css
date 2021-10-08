@@ -142,3 +142,32 @@
     float: right;
     padding: .5em 1em !important;
 }
+
+#packetery-log-page {
+    padding-right: 1em;
+}
+
+tbody .packetery-log-column-note {
+    word-break: break-word;
+}
+
+.packetery-log-table {
+    border: 1px solid #c3c4c7;
+    border-collapse: collapse;
+}
+
+.packetery-log-table tr:nth-child(odd) {
+    background-color: white;
+}
+
+.packetery-log-table tr:nth-child(even), .packetery-log-table th {
+    background-color: #f6f7f7;
+}
+
+.packetery-log-table td, .packetery-log-table th {
+    padding: 0.5em 1em;
+}
+
+.packetery-log-table tr:hover td {
+    background-color: #dedddd;
+}
