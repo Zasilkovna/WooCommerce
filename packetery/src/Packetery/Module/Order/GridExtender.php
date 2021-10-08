@@ -197,8 +197,8 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-		$order = wc_get_order( $post->ID );
-		$entity = new Entity($order);
+		$order  = wc_get_order( $post->ID );
+		$entity = new Entity( $order );
 
 		switch ( $column ) {
 			case 'packetery_destination':

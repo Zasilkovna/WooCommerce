@@ -93,7 +93,7 @@ class Page {
 	 * Sets default values.
 	 */
 	public function setDefaultValues(): void {
-		$value                                          = get_option( self::FORM_FIELDS_CONTAINER );
+		$value = get_option( self::FORM_FIELDS_CONTAINER );
 		$value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 		$value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] = self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT;
 		update_option( self::FORM_FIELDS_CONTAINER, $value );

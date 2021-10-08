@@ -63,6 +63,8 @@ class OptionsPage {
 	private $countryListingPage;
 
 	/**
+	 * Message manager.
+	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
@@ -75,8 +77,16 @@ class OptionsPage {
 	 * @param FormFactory        $formFactory Form factory.
 	 * @param Request            $httpRequest PacketeryNette Request.
 	 * @param CountryListingPage $countryListingPage CountryListingPage.
+	 * @param MessageManager     $messageManager Message manager.
 	 */
-	public function __construct( Engine $latteEngine, Repository $carrierRepository, FormFactory $formFactory, Request $httpRequest, CountryListingPage $countryListingPage, MessageManager $messageManager) {
+	public function __construct(
+		Engine $latteEngine,
+		Repository $carrierRepository,
+		FormFactory $formFactory,
+		Request $httpRequest,
+		CountryListingPage $countryListingPage,
+		MessageManager $messageManager
+	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
 		$this->formFactory        = $formFactory;
