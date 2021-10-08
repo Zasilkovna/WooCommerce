@@ -120,10 +120,6 @@
     padding-right: 20px;
 }
 
-#packetery-log-page .packetery-table-cell-filled {
-    word-break: break-all;
-}
-
 .packetery-log-column {
     text-align: center;
 }
