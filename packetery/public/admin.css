@@ -116,6 +116,39 @@
     padding: .5em 1em !important;
 }
 
+#packetery-log-page {
+    padding-right: 20px;
+}
+
 #packetery-log-page .packetery-table-cell-filled {
     word-break: break-all;
+}
+
+.packetery-log-column {
+    text-align: center;
+}
+
+.packetery-log-column-status {
+    width: 100px;
+}
+
+.packetery-log-column-date {
+    width: 150px;
+}
+
+.packetery-log-column-action {
+    width: 150px;
+}
+
+tbody .packetery-log-column-note {
+    text-align: left;
+    word-break: break-word;
+}
+
+.packetery-log-table tr:hover td {
+    background-color: #dedddd;
+}
+
+.packetery-log-table tbody td {
+    padding-bottom: 10px;
 }
