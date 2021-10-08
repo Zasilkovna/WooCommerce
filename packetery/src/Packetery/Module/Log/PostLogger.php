@@ -59,7 +59,7 @@ class PostLogger implements ILogger {
 	public function add( Record $record ): void {
 		$logData = [
 			'post_title'   => $record->title ?? '',
-			'post_content' => ( ! empty( $record->params ) ? wp_json_encode( $record->params ) : '' ),
+			'post_content' => ( ! empty( $record->params ) ? wp_json_encode( $record->params, ILogger::JSON_FLAGS ) : '' ),
 			'post_type'    => self::POST_TYPE,
 			'post_status'  => 'publish',
 			'post_parent'  => 0,
@@ -69,7 +69,29 @@ class PostLogger implements ILogger {
 		$metaData = [
 			'packetery_status' => ( $record->status ?? '' ),
 			'packetery_action' => ( $record->action ?? '' ),
+			'packetery_custom_id' => ( $record->customId ?? '' ),
 		];
+
+		if ( $record->customId ) {
+			$oldPostIds = get_posts(
+				[
+					'post_type'   => self::POST_TYPE,
+					'post_status' => 'any',
+					'nopaging'    => true,
+					'fields'      => 'ids',
+					'meta_query' => [
+						[
+							'key'     => 'packetery_custom_id',
+							'value'   => $record->customId,
+						],
+					],
+				]
+			);
+
+			foreach ( $oldPostIds as $old_post_id ) {
+				wp_delete_post( $old_post_id ); // There can be only one record with such custom id. We always want newest one.
+			}
+		}
 
 		$logId = wp_insert_post( $logData );
 
@@ -96,7 +118,8 @@ class PostLogger implements ILogger {
 		];
 
 		$arguments = [
-			'orderby' => $sorting,
+			'orderby'     => $sorting,
+			'numberposts' => 1000,
 		];
 
 		$queryArgs = wp_parse_args( $arguments, $defaults );
@@ -108,12 +131,13 @@ class PostLogger implements ILogger {
 
 		return array_map(
 			static function ( \WP_Post $log ) {
-				$record         = new Record();
-				$record->status = get_post_meta( $log->ID, 'packetery_status', true );
-				$record->date   = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
-				$record->action = get_post_meta( $log->ID, 'packetery_action', true );
-				$record->title  = $log->post_title;
-				$record->params = json_decode( $log->post_content );
+				$record           = new Record();
+				$record->customId = get_post_meta( $log->ID, 'packetery_custom_id', true );
+				$record->status   = get_post_meta( $log->ID, 'packetery_status', true );
+				$record->date     = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
+				$record->action   = get_post_meta( $log->ID, 'packetery_action', true );
+				$record->title    = $log->post_title;
+				$record->params   = json_decode( $log->post_content, true, 512, ILogger::JSON_FLAGS );
 
 				return $record;
 			},

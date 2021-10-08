@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
+use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
@@ -79,15 +80,21 @@ class LabelPrint {
 	private $orderRepository;
 
 	/**
+	 * @var Log\ILogger
+	 */
+	private $logger;
+
+	/**
 	 * LabelPrint constructor.
 	 *
-	 * @param Engine         $latteEngine Latte Engine.
+	 * @param Engine         $latteEngine     Latte Engine.
 	 * @param Provider       $optionsProvider Options provider.
-	 * @param FormFactory    $formFactory Form factory.
-	 * @param Http\Request   $httpRequest Http Request.
-	 * @param Client         $soapApiClient SOAP API Client.
-	 * @param MessageManager $messageManager Message Manager.
+	 * @param FormFactory    $formFactory     Form factory.
+	 * @param Http\Request   $httpRequest     Http Request.
+	 * @param Client         $soapApiClient   SOAP API Client.
+	 * @param MessageManager $messageManager  Message Manager.
 	 * @param Repository     $orderRepository Order repository.
+	 * @param Log\ILogger    $logger          Logger.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -96,7 +103,8 @@ class LabelPrint {
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
-		Repository $orderRepository
+		Repository $orderRepository,
+		Log\ILogger $logger
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
@@ -105,6 +113,7 @@ class LabelPrint {
 		$this->soapApiClient   = $soapApiClient;
 		$this->messageManager  = $messageManager;
 		$this->orderRepository = $orderRepository;
+		$this->logger          = $logger;
 	}
 
 	/**
@@ -268,6 +277,26 @@ class LabelPrint {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
 				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
 			}
+
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_LABEL_PRINT;
+			$record->status = Log\Record::STATUS_SUCCESS;
+			$record->title  = 'Akce “Tisk štítků” proběhla úspěšně. '; // todo translate
+			$this->logger->add( $record );
+		} else {
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_LABEL_PRINT;
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = 'Akce “Tisk štítků” skončila chybou.'; // todo translate
+			$record->params = [
+				'request'      => [
+					'packetIds' => implode(',', $request->getPacketIds()),
+					'format' => $request->getFormat(),
+					'offset' => $request->getOffset(),
+				],
+				'errorMessage' => $response->getFaultString(),
+			];
+			$this->logger->add( $record );
 		}
 
 		return $response;
@@ -290,6 +319,27 @@ class LabelPrint {
 				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
 				update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
 			}
+
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
+			$record->status = Log\Record::STATUS_SUCCESS;
+			$record->title  = 'Akce “Tisk štítků externích dopravců” proběhla úspěšně.'; // todo translate
+			$this->logger->add( $record );
+		} else {
+
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = 'Akce “Tisk štítků externích dopravců” skončila chybou.'; // todo translate
+			$record->params = [
+				'request'      => [
+					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
+					'format' => $request->getFormat(),
+					'offset' => $request->getOffset(),
+				],
+				'errorMessage' => $response->getFaultString(),
+			];
+			$this->logger->add( $record );
 		}
 
 		return $response;
@@ -345,6 +395,17 @@ class LabelPrint {
 
 					return [];
 				}
+
+				$record           = new Log\Record();
+				$record->setCustomId( [ Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING, $packetId ] );
+				$record->action   = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
+				$record->status   = Log\Record::STATUS_ERROR;
+				$record->title    = 'Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná.';
+				$record->params   = [
+					'packetId'     => $request->getPacketId(),
+					'errorMessage' => $response->getFaultString(),
+				];
+				$this->logger->add( $record );
 				continue;
 			}
 			$pairs[ $orderId ] = [

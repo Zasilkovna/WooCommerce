@@ -115,3 +115,7 @@
     float: right;
     padding: .5em 1em !important;
 }
+
+#packetery-log-page .packetery-table-cell-filled {
+    word-break: break-all;
+}
