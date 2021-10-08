@@ -75,11 +75,12 @@ class PostLogger implements ILogger {
 		if ( $record->customId ) {
 			$oldPostIds = get_posts(
 				[
-					'post_type'   => self::POST_TYPE,
-					'post_status' => 'any',
-					'nopaging'    => true,
-					'fields'      => 'ids',
-					'meta_query'  => [
+					'post_type'      => self::POST_TYPE,
+					'post_status'    => 'any',
+					'nopaging'       => true,
+					'posts_per_page' => - 1,
+					'fields'         => 'ids',
+					'meta_query'     => [
 						[
 							'key'   => 'packetery_custom_id',
 							'value' => $record->customId,
