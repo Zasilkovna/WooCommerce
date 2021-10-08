@@ -120,7 +120,7 @@ class PostLogger implements ILogger {
 
 		$arguments = [
 			'orderby'     => $sorting,
-			'numberposts' => 1000,
+			'numberposts' => 100,
 		];
 
 		$queryArgs = wp_parse_args( $arguments, $defaults );
