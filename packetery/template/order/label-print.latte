@@ -1,18 +1,23 @@
-<h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
-
-<form n:name=$form>
-	<table class="form-table" role="presentation">
-		<tr>
-			<th scope="row">
-				<label n:name=offset />
-			</th>
-			<td>
-				<select n:name=offset></select>
-			</td>
-		</tr>
-	</table>
-	<p class="submit">
-		<input type="submit" name="submit" id="submit" value="{__( 'printLabels', 'packetery' )}"
-			   class="button button-primary">
-	</p>
-</form>
+<div class="packetery-offset-wrapper">
+	<section>
+		<h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
+	</section>
+	<form n:name=$form class="packetery-offset">
+		<section>
+			<table class="form-table" role="presentation">
+				<tr>
+					<th scope="row">
+						<label n:name=offset />
+					</th>
+					<td>
+						<select n:name=offset></select>
+					</td>
+				</tr>
+			</table>
+		</section>
+		<div class="packetery-actions">
+			<input type="submit" name="submit" id="submit" value="{__( 'printLabels', 'packetery' )}"
+				   class="packetery-button button button-primary">
+		</div>
+	</form>
+</div>
