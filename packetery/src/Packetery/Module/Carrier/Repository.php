@@ -208,7 +208,7 @@ class Repository {
 		$wpdb      = $this->get_wpdb();
 		$countries = $wpdb->get_results( 'SELECT `country` FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
 
-		return array_column( ( $countries ?: [] ), 'country' );
+		return array_column( ( $countries ? $countries : [] ), 'country' );
 	}
 
 	/**

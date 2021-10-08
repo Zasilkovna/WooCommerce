@@ -170,7 +170,7 @@ class Checkout {
 				'country'  => $country,
 				'weight'   => number_format( $weight, 3 ),
 				'carriers' => $carriers,
-				'logo'     => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png' ,
+				'logo'     => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
 			)
 		);
 	}
@@ -379,13 +379,13 @@ class Checkout {
 		$isCod        = false;
 		$codMethod    = $this->options_provider->getCodPaymentMethod();
 		$chosenMethod = WC()->session->get( 'chosen_payment_method' );
-		if ( $codMethod !== null && ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
+		if ( null !== $codMethod && ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
 			$isCod = true;
 		}
 
 		$customRates = [];
 		foreach ( $carrierOptions as $optionId => $options ) {
-			if ( is_array( $options ) && $options['active'] === true ) {
+			if ( is_array( $options ) && true === $options['active'] ) {
 				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight, $isCod );
 				if ( null !== $cost ) {
 					$customRates[ $optionId ] = [

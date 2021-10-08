@@ -427,7 +427,7 @@ class Plugin {
 		$this->init();
 		$this->carrier_repository->create_table();
 		$versionCheck = get_option( 'packetery_version' );
-		if ( $versionCheck === false ) {
+		if ( false === $versionCheck ) {
 			update_option( 'packetery_version', self::VERSION );
 		}
 	}
