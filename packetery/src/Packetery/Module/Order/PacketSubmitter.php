@@ -91,12 +91,12 @@ class PacketSubmitter {
 			try {
 				$createPacketRequest = $this->preparePacketRequest( $order );
 			} catch ( InvalidRequestException $e ) {
-				$record           = new Log\Record();
+				$record = new Log\Record();
 				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
-				$record->action   = Log\Record::ACTION_PACKET_SENDING;
-				$record->status   = Log\Record::STATUS_ERROR;
-				$record->title    = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate
-				$record->params   = [
+				$record->action = Log\Record::ACTION_PACKET_SENDING;
+				$record->status = Log\Record::STATUS_ERROR;
+				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
+				$record->params = [
 					'orderId'      => $orderData['id'],
 					'errorMessage' => $e->getMessage(),
 				];
@@ -109,12 +109,12 @@ class PacketSubmitter {
 
 			$response = $this->soapApiClient->createPacket( $createPacketRequest );
 			if ( $response->hasFault() ) {
-				$record           = new Log\Record();
+				$record = new Log\Record();
 				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
-				$record->action   = Log\Record::ACTION_PACKET_SENDING;
-				$record->status   = Log\Record::STATUS_ERROR;
-				$record->title    = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate
-				$record->params   = [
+				$record->action = Log\Record::ACTION_PACKET_SENDING;
+				$record->status = Log\Record::STATUS_ERROR;
+				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
+				$record->params = [
 					'request'      => $createPacketRequest->getSubmittableData(),
 					'errorMessage' => $response->getErrorsAsString(),
 				];
@@ -126,12 +126,12 @@ class PacketSubmitter {
 				update_post_meta( $orderData['id'], Entity::META_PACKET_ID, $response->getId() );
 				$resultsCounter['success'] ++;
 
-				$record           = new Log\Record();
+				$record = new Log\Record();
 				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
-				$record->action   = Log\Record::ACTION_PACKET_SENDING;
-				$record->status   = Log\Record::STATUS_SUCCESS;
-				$record->title    = 'Akce “Vytvoření zásilky” proběhla úspěšně.'; // todo translate
-				$record->params   = [
+				$record->action = Log\Record::ACTION_PACKET_SENDING;
+				$record->status = Log\Record::STATUS_SUCCESS;
+				$record->title  = 'Akce “Vytvoření zásilky” proběhla úspěšně.'; // todo translate.
+				$record->params = [
 					'packetId' => $response->getId(),
 				];
 				$this->logger->add( $record );

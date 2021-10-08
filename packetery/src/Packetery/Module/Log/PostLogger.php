@@ -67,8 +67,8 @@ class PostLogger implements ILogger {
 		];
 
 		$metaData = [
-			'packetery_status' => ( $record->status ?? '' ),
-			'packetery_action' => ( $record->action ?? '' ),
+			'packetery_status'    => ( $record->status ?? '' ),
+			'packetery_action'    => ( $record->action ?? '' ),
 			'packetery_custom_id' => ( $record->customId ?? '' ),
 		];
 
@@ -79,10 +79,10 @@ class PostLogger implements ILogger {
 					'post_status' => 'any',
 					'nopaging'    => true,
 					'fields'      => 'ids',
-					'meta_query' => [
+					'meta_query'  => [
 						[
-							'key'     => 'packetery_custom_id',
-							'value'   => $record->customId,
+							'key'   => 'packetery_custom_id',
+							'value' => $record->customId,
 						],
 					],
 				]

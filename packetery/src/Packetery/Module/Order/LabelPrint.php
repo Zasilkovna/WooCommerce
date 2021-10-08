@@ -80,6 +80,8 @@ class LabelPrint {
 	private $orderRepository;
 
 	/**
+	 * Logger.
+	 *
 	 * @var Log\ILogger
 	 */
 	private $logger;
@@ -281,18 +283,18 @@ class LabelPrint {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = 'Akce “Tisk štítků” proběhla úspěšně. '; // todo translate
+			$record->title  = 'Akce “Tisk štítků” proběhla úspěšně. '; // todo translate.
 			$this->logger->add( $record );
 		} else {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = 'Akce “Tisk štítků” skončila chybou.'; // todo translate
+			$record->title  = 'Akce “Tisk štítků” skončila chybou.'; // todo translate.
 			$record->params = [
 				'request'      => [
-					'packetIds' => implode(',', $request->getPacketIds()),
-					'format' => $request->getFormat(),
-					'offset' => $request->getOffset(),
+					'packetIds' => implode( ',', $request->getPacketIds() ),
+					'format'    => $request->getFormat(),
+					'offset'    => $request->getOffset(),
 				],
 				'errorMessage' => $response->getFaultString(),
 			];
@@ -323,19 +325,19 @@ class LabelPrint {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = 'Akce “Tisk štítků externích dopravců” proběhla úspěšně.'; // todo translate
+			$record->title  = 'Akce “Tisk štítků externích dopravců” proběhla úspěšně.'; // todo translate.
 			$this->logger->add( $record );
 		} else {
 
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = 'Akce “Tisk štítků externích dopravců” skončila chybou.'; // todo translate
+			$record->title  = 'Akce “Tisk štítků externích dopravců” skončila chybou.'; // todo translate.
 			$record->params = [
 				'request'      => [
 					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
-					'format' => $request->getFormat(),
-					'offset' => $request->getOffset(),
+					'format'                      => $request->getFormat(),
+					'offset'                      => $request->getOffset(),
 				],
 				'errorMessage' => $response->getFaultString(),
 			];
@@ -396,12 +398,12 @@ class LabelPrint {
 					return [];
 				}
 
-				$record           = new Log\Record();
+				$record = new Log\Record();
 				$record->setCustomId( [ Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING, $packetId ] );
-				$record->action   = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
-				$record->status   = Log\Record::STATUS_ERROR;
-				$record->title    = 'Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná.';
-				$record->params   = [
+				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
+				$record->status = Log\Record::STATUS_ERROR;
+				$record->title  = 'Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná.';
+				$record->params = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),
 				];
