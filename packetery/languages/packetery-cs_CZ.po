@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-10-01T12:00:44+02:00\n"
-"PO-Revision-Date: 2021-10-01 12:02+0200\n"
+"POT-Creation-Date: 2021-10-08T16:30:29+02:00\n"
+"PO-Revision-Date: 2021-10-08 16:34+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -17,32 +17,40 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
 
 #. Plugin Name of the plugin
-#. Author of the plugin
-#: src/Packetery/Module/Options/Page.php:64
+#: src/Packetery/Module/Options/Page.php:70
+#: src/Packetery/Module/Options/Page.php:71
 #: src/Packetery/Module/Order/Metabox.php:96
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:35
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:62
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:66
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-log-page.latte--5aba213aff.php:15
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:17
 #: temp/cache/view/template-order-detail.latte--1643311247.php:16
-#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:13
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
 msgid "Packeta"
 msgstr "Zásilkovna"
 
-#. Plugin URI of the plugin
-msgid "https://www.packeta.com/todo-plugin-page/"
-msgstr "https://www.zasilkovna.cz/todo-plugin-page/"
-
 #. Description of the plugin
-msgid "Todo description."
-msgstr "Todo popis."
+msgid ""
+"With the help of our official plugin, You can choose pickup points of "
+"Packeta and it's external carriers in all of Europe, or utilize address "
+"delivery for 25 countries in the European Union, straight from the cart in "
+"Your eshop. You can submit all of Your orders to Packeta with one click."
+msgstr ""
+"Pomocí tohoto oficiálního pluginu můžete v košíku eshopu vybírat výdejní "
+"místa Zásilkovny i externích dopravců v celé Evropě, nebo vybrat doručení na "
+"adresu do 25 zemí Evropské unie. Objednávky do Zásilkovny můžete odesílat "
+"hromadně na jedno kliknutí."
+
+#. Author of the plugin
+msgid "Zásilkovna s.r.o."
+msgstr "Zásilkovna s.r.o."
 
 #. Author URI of the plugin
-msgid "https://www.packeta.com/"
+msgid "https://www.zasilkovna.cz/"
 msgstr "https://www.zasilkovna.cz/"
 
 #. translators: keep %failReason placeholder intact.
@@ -50,68 +58,72 @@ msgstr "https://www.zasilkovna.cz/"
 #: src/Packetery/Module/Carrier/Downloader.php:82
 #: src/Packetery/Module/Carrier/Downloader.php:93
 msgid "Carrier download failed: %failReason Please try again later."
-msgstr ""
+msgstr "Stažení dopravců selhalo: %failReason Zkuste to prosím později."
 
 #. translators: keep %failReason placeholder intact.
 #: src/Packetery/Module/Carrier/Downloader.php:83
 msgid "Failed to get the list."
-msgstr ""
+msgstr "Nepodařilo se získat seznam."
 
 #. translators: keep %failReason placeholder intact.
 #: src/Packetery/Module/Carrier/Downloader.php:94
 msgid "Invalid API response."
-msgstr ""
+msgstr "Neplatná odpověď API."
 
 #: src/Packetery/Module/Carrier/Downloader.php:103
 msgid "Carriers were updated."
-msgstr ""
+msgstr "Dopravci byli aktualizováni."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:85
-#: src/Packetery/Module/Carrier/OptionsPage.php:86
+#: src/Packetery/Module/Carrier/OptionsPage.php:104
+#: src/Packetery/Module/Carrier/OptionsPage.php:105
 msgid "Carrier settings"
 msgstr "Nastavení dopravců"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:112
+#: src/Packetery/Module/Carrier/OptionsPage.php:131
 msgid "Active carrier"
 msgstr "Aktivní dopravce"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:115
+#: src/Packetery/Module/Carrier/OptionsPage.php:134
 msgid "Display name"
 msgstr "Zobrazovaný název"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:136
+#: src/Packetery/Module/Carrier/OptionsPage.php:155
 msgid "Free shipping limit"
 msgstr "Limit pro dopravu zdarma"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:137
-#: src/Packetery/Module/Carrier/OptionsPage.php:339
-#: src/Packetery/Module/Carrier/OptionsPage.php:342
-#: src/Packetery/Module/Carrier/OptionsPage.php:356
-#: src/Packetery/Module/Carrier/OptionsPage.php:358
+#: src/Packetery/Module/Carrier/OptionsPage.php:156
+#: src/Packetery/Module/Carrier/OptionsPage.php:364
+#: src/Packetery/Module/Carrier/OptionsPage.php:367
+#: src/Packetery/Module/Carrier/OptionsPage.php:381
+#: src/Packetery/Module/Carrier/OptionsPage.php:383
 msgid "Please enter a valid decimal number."
 msgstr "Zadejte prosím platné desetinné číslo."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:167
+#: src/Packetery/Module/Carrier/OptionsPage.php:186
 msgid "Weight rules are overlapping, fix it please."
 msgstr "Váhová pravidla se překrývají, opravte to prosím."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:175
+#: src/Packetery/Module/Carrier/OptionsPage.php:194
 msgid "Surcharge rules are overlapping, fix it please."
 msgstr "Pravidla přirážky se překrývají, opravte to prosím."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:337
+#: src/Packetery/Module/Carrier/OptionsPage.php:214
+msgid "settingsSaved"
+msgstr "Nastavení uloženo"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:362
 msgid "Weight up to (kg)"
 msgstr "Hmotnost do (kg)"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:340
+#: src/Packetery/Module/Carrier/OptionsPage.php:365
 msgid "Price"
 msgstr "Cena"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:355
+#: src/Packetery/Module/Carrier/OptionsPage.php:380
 msgid "Order price up to"
 msgstr "Částka za objednávku do"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:357
+#: src/Packetery/Module/Carrier/OptionsPage.php:382
 msgid "Surcharge"
 msgstr "Přirážka"
 
@@ -131,7 +143,7 @@ msgstr "HU Zásilkovna výdejní místa"
 msgid "RO Packeta pickup points"
 msgstr "RO Zásilkovna výdejní místa"
 
-#: src/Packetery/Module/Checkout.php:258
+#: src/Packetery/Module/Checkout.php:259
 msgid "Pick up point is not chosen."
 msgstr "Není vybráno výdejní místo."
 
@@ -160,11 +172,15 @@ msgstr "Tisk štítku"
 msgid "logAction_carrier-list-update"
 msgstr "Aktualizace seznamu dopravců"
 
-#: src/Packetery/Module/Log/Page.php:75
+#: src/Packetery/Module/Log/Page.php:72
+msgid "logAction_carrier-number-retrieving"
+msgstr "Získání trasovacího čísla externího dopravce"
+
+#: src/Packetery/Module/Log/Page.php:76
 msgid "statusError"
 msgstr "Chyba"
 
-#: src/Packetery/Module/Log/Page.php:76
+#: src/Packetery/Module/Log/Page.php:77
 msgid "statusSuccess"
 msgstr "Úspěch"
 
@@ -172,56 +188,51 @@ msgstr "Úspěch"
 msgid "Logs"
 msgstr "Logy"
 
-#: src/Packetery/Module/Options/Page.php:63 src/Packetery/Module/Plugin.php:429
+#: src/Packetery/Module/Options/Page.php:80
+#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:482
 msgid "Settings"
 msgstr "Nastavení"
 
-#: src/Packetery/Module/Options/Page.php:86
+#: src/Packetery/Module/Options/Page.php:112
 msgid "API password"
 msgstr "API heslo"
 
-#: src/Packetery/Module/Options/Page.php:88
+#: src/Packetery/Module/Options/Page.php:114
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr "API heslo musí být 32 znaků dlouhé a musí obsahovat validní znaky!"
 
-#: src/Packetery/Module/Options/Page.php:89
+#: src/Packetery/Module/Options/Page.php:115
 msgid "Sender"
 msgstr "Odesílatel"
 
-#: src/Packetery/Module/Options/Page.php:96
+#: src/Packetery/Module/Options/Page.php:122
 msgid "Packeta Label Format"
 msgstr "Formát štítku Zásilkovny"
 
-#: src/Packetery/Module/Options/Page.php:103
+#: src/Packetery/Module/Options/Page.php:128
 msgid "Carrier Label Format"
 msgstr "Formát štítku dopravce"
 
-#: src/Packetery/Module/Options/Page.php:105
-msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
-msgstr "105x148 mm (A6) štítek na stránce o velikosti 210x297 mm (A4)"
+#: src/Packetery/Module/Options/Page.php:130
+#: src/Packetery/Module/Options/Provider.php:143
+msgid "labelNameA6onA4"
+msgstr "1/4 A4, tisk na A4, 4ks/stránka"
 
-#: src/Packetery/Module/Options/Page.php:106
-msgid ""
-"105x148 mm (A6) label on a page of the same size (offset argument is ignored "
-"for this format)"
-msgstr ""
-"štítek 105x148 mm (A6) na stránce stejné velikosti (argument posunu se u "
-"tohoto formátu ignoruje)."
+#: src/Packetery/Module/Options/Page.php:131
+#: src/Packetery/Module/Options/Provider.php:148
+msgid "labelNameA6onA6"
+msgstr "1/4 A4, přímý tisk, 1ks/stránka"
 
-#: src/Packetery/Module/Options/Page.php:117
+#: src/Packetery/Module/Options/Page.php:142
 msgid "Payment method that represents cash on delivery"
-msgstr ""
+msgstr "Platební metoda, která reprezentuje dobírku."
 
-#: src/Packetery/Module/Options/Page.php:123
-msgid "Allow Label Emailing"
-msgstr "Dovolit rozesílání stítků emailem"
-
-#: src/Packetery/Module/Options/Page.php:138
+#: src/Packetery/Module/Options/Page.php:158
 msgid "Main Settings"
 msgstr "Hlavní nastavení"
 
-#: src/Packetery/Module/Options/Page.php:179
+#: src/Packetery/Module/Options/Page.php:199
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -229,29 +240,21 @@ msgstr ""
 "Tento plugin pro správné fungování vyžaduje aktivní knihovnu SOAP. "
 "Kontaktujte správce vašeho webhostingu."
 
-#: src/Packetery/Module/Options/Provider.php:138
-msgid "labelNameA6onA4"
-msgstr "štítek 105x148 mm (A6) na stránce o velikosti 210x297 mm (A4)"
-
-#: src/Packetery/Module/Options/Provider.php:143
-msgid "labelNameA6onA6"
-msgstr "štítek 105x148 mm (A6) na stránce stejné velikosti"
-
-#: src/Packetery/Module/Options/Provider.php:148
-msgid "labelNameA7onA7"
-msgstr "štítek 105x74 mm (A7) na stránce stejné velikosti"
-
 #: src/Packetery/Module/Options/Provider.php:153
-msgid "labelNameA7onA4"
-msgstr "štítek 105x74 mm (A7) na stránce o velikosti 210x297 mm (A4)"
+msgid "labelNameA7onA7"
+msgstr "1/8 A4, přímý tisk, 1ks/stránka"
 
 #: src/Packetery/Module/Options/Provider.php:158
-msgid "labelName105x35onA4"
-msgstr "štítek 105x35 mm na stránce o rozměrech 210x297 mm (A4)"
+msgid "labelNameA7onA4"
+msgstr "1/8 A4, tisk na A4, 8ks/stránka"
 
 #: src/Packetery/Module/Options/Provider.php:163
+msgid "labelName105x35onA4"
+msgstr "105x35mm, tisk na A4, 16ks/stránka"
+
+#: src/Packetery/Module/Options/Provider.php:168
 msgid "labelNameA8onA8"
-msgstr "štítek 50x74 mm (A8) na stránce stejné velikosti"
+msgstr "1/16 A4, přímý tisk, 1ks/stránka"
 
 #: src/Packetery/Module/Order/BulkActions.php:64
 msgid "actionSubmitOrders"
@@ -261,41 +264,61 @@ msgstr "Podat zásilky do Zásilkovny"
 msgid "actionPrintLabels"
 msgstr "Tisk štítků"
 
-#: src/Packetery/Module/Order/GridExtender.php:87
+#: src/Packetery/Module/Order/BulkActions.php:66
+msgid "actionPrintCarrierLabels"
+msgstr "Tisk štítků dopravců"
+
+#: src/Packetery/Module/Order/GridExtender.php:89
 msgid "packetaOrdersToSubmit"
 msgstr "Zásilkovna - zásilky k podání"
 
-#: src/Packetery/Module/Order/GridExtender.php:100
+#: src/Packetery/Module/Order/GridExtender.php:104
 msgid "packetaOrdersToPrint"
 msgstr "Zásilkovna - zásilky k tisku"
 
-#: src/Packetery/Module/Order/GridExtender.php:234
+#: src/Packetery/Module/Order/GridExtender.php:249
 msgid "Barcode"
 msgstr "Trasovací číslo"
 
-#: src/Packetery/Module/Order/GridExtender.php:235
+#: src/Packetery/Module/Order/GridExtender.php:250
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
 
+#: src/Packetery/Module/Order/LabelPrint.php:161
+msgid "noOrdersSelected"
+msgstr "Nebyly vybrány žádné objednávky."
+
+#: src/Packetery/Module/Order/LabelPrint.php:191
+msgid "labelPrintFailedMoreInfoInLog"
+msgstr "Tisk štítků se nezdařil. Bližší Informace najdete v Packeta logu."
+
+#: src/Packetery/Module/Order/LabelPrint.php:192
+msgid "youSelectedOrdersThatWereNotSubmitted"
+msgstr "Vybrali jste objednávky, které ještě nebyly podány."
+
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:103
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "dontSkipAnyField"
 msgstr "nevynechávat žádná pole"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:103
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "skip%sFields"
 msgstr "vynechat %s polí na první stránce"
 
-#: src/Packetery/Module/Order/LabelPrint.php:107
+#: src/Packetery/Module/Order/LabelPrint.php:227
 msgid "labelsOffset"
 msgstr "Vynechat polí"
 
-#: src/Packetery/Module/Order/LabelPrint.php:134
-#: src/Packetery/Module/Order/LabelPrint.php:135
-#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:45
+#: src/Packetery/Module/Order/LabelPrint.php:240
+#: src/Packetery/Module/Order/LabelPrint.php:241
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:49
 msgid "printLabels"
 msgstr "Vytisknout štítky"
+
+#: src/Packetery/Module/Order/LabelPrint.php:395
+msgid "pleaseSetProperPassword"
+msgstr "Nastavte prosím platné API heslo."
 
 #: src/Packetery/Module/Order/Metabox.php:112
 msgid "Weight (kg)"
@@ -332,17 +355,9 @@ msgstr "Relace vypršela! Zkuste to prosím znovu."
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
-#: src/Packetery/Module/Plugin.php:428
+#: src/Packetery/Module/Plugin.php:481
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
-
-#: src/Packetery/Module/Plugin.php:450
-msgid "View Packeta documentation"
-msgstr "Zobrazit Packeta dokumentaci"
-
-#: src/Packetery/Module/Plugin.php:451
-msgid "Documentation"
-msgstr "Dokumentace"
 
 #: src/Packetery/Module/Product/DataTab.php:89
 msgid "ageVerification18PlusLabel"
@@ -357,31 +372,35 @@ msgstr "Metoda přepravy Packeta"
 msgid "Description of Packeta shipping method"
 msgstr "Popis způsobu přepravy Packeta"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:63
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:25
+msgid "cannotUseThisCarrierBecauseRequiresCustomsDeclaration"
+msgstr "Tohoto dopravce nelze použít, protože vyžaduje zadání celní deklarace"
+
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:72
 msgid "Weight rules"
 msgstr "Váhová pravidla"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:80
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:89
 msgid "Add weight rule"
 msgstr "Přidat váhové pravidlo"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:87
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:96
 msgid "COD surcharge rules"
 msgstr "Pravidla přirážky k dobírce"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:104
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:113
 msgid "Add COD surcharge rule"
 msgstr "Přidat pravidlo přirážky k dobírce"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:124
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:133
 msgid "After exceeding this amount, shipping is free."
 msgstr "Po překročení této částky je dopravné zdarma."
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:202
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:216
 msgid "Delete weight rule"
 msgstr "Smazat váhové pravidlo"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:259
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:275
 msgid "Delete COD surcharge rule"
 msgstr "Smazat pravidlo přirážky k dobírce."
 
@@ -397,31 +416,37 @@ msgstr "Aktualizace dopravců"
 msgid "lastCarrierUpdateDatetime"
 msgstr "Datum poslední aktualizace dopravců"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:56
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:51
+msgid "carrierListNeverDownloaded"
+msgstr ""
+"Seznam dopravců zatím nebyl stažen, pokračujte kliknutím na tlačítko Provést "
+"aktualizaci dopravců"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:60
 msgid "runCarrierUpdate"
 msgstr "Provést aktualizaci dopravců"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:64
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:68
 msgid "Countries"
 msgstr "Země"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:72
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:76
 msgid "Country name"
 msgstr "Název země"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:75
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:79
 msgid "Country code"
 msgstr "Kód země"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:78
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:82
 msgid "Action"
 msgstr "Akce"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:94
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:98
 msgid "Set up"
 msgstr "Nastavit"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:105
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:109
 msgid "No active countries."
 msgstr "Žádné aktivní země."
 
@@ -433,7 +458,7 @@ msgstr "Nastavení země"
 msgid "No known carrier for this country."
 msgstr "Pro tuto zemi neevidujeme žádného dopravce."
 
-#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:30
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:31
 msgid "Choose pickup point"
 msgstr "Výběr místa vyzvednutí"
 
@@ -445,17 +470,17 @@ msgstr "Detail výdejního místa"
 msgid "Pickup Point Name"
 msgstr "Název výdejního místa"
 
-#: temp/cache/view/template-email-footer.latte--62887fd91f.php:29
-#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:40
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:31
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:43
 #: temp/cache/view/template-order-detail.latte--1643311247.php:39
 msgid "Pickup Point Detail"
 msgstr "Detail výdejního místa"
 
-#: temp/cache/view/template-email-footer.latte--62887fd91f.php:34
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:36
 msgid "Link"
 msgstr "Odkaz"
 
-#: temp/cache/view/template-email-footer.latte--62887fd91f.php:39
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:43
 msgid "Point Address"
 msgstr "Adresa výdejního místa"
 
@@ -463,19 +488,19 @@ msgstr "Adresa výdejního místa"
 msgid "status"
 msgstr "Stav"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:29
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:27
 msgid "dateAndTime"
 msgstr "Datum a čas"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:34
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:30
 msgid "action"
 msgstr "Akce"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:39
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:33
 msgid "note"
 msgstr "Poznámka"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:80
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:72
 msgid "logListIsEmpty"
 msgstr "Seznam logů je prázdný"
 
@@ -483,12 +508,13 @@ msgstr "Seznam logů je prázdný"
 msgid "Options"
 msgstr "Nastavení"
 
-#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:136
-msgid ""
-"If checked, the generated labels will be emailed to the e-shop administrator"
-msgstr ""
-"Pokud je zaškrtnuto, vygenerované štítky budou zaslány e-mailem správci e-"
-"shopu."
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:57
+msgid "apiPasswordCanBeFoundAt%sUrl"
+msgstr "API heslo můžete nalézt na adrese %s"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:80
+msgid "senderCanBeFoundAt%sUrl"
+msgstr "Označení odesílatele můžete nalézt na adrese %s"
 
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:19
 msgid "pickup point detail"
@@ -525,9 +551,13 @@ msgstr ""
 msgid "someShipments%sFailed"
 msgstr "Některé zásilky (celkem %s) se nepodařilo odeslat do Zásilkovny."
 
-#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:17
 msgid "labelPrinting"
-msgstr "Tisk štítků"
+msgstr "tisk štítků"
+
+#: temp/cache/view/template-order-metabox-overview.latte--d1e44237b2.php:15
+msgid "packetTrackingOnline"
+msgstr "Sledování zásilky online"
 
 #: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:14
 msgid "packetaMethodType"
@@ -540,6 +570,38 @@ msgstr "Zásilky na dopravce"
 #: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:29
 msgid "packetaPickupPointPackets"
 msgstr "Zásilky na výdejní místa Zásilkovny"
+
+#~ msgid "Todo description."
+#~ msgstr "Todo popis."
+
+#~ msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+#~ msgstr "105x148 mm (A6) štítek na stránce o velikosti 210x297 mm (A4)"
+
+#~ msgid ""
+#~ "105x148 mm (A6) label on a page of the same size (offset argument is "
+#~ "ignored for this format)"
+#~ msgstr ""
+#~ "štítek 105x148 mm (A6) na stránce stejné velikosti (argument posunu se u "
+#~ "tohoto formátu ignoruje)."
+
+#~ msgid "https://www.packeta.com/todo-plugin-page/"
+#~ msgstr "https://www.zasilkovna.cz/todo-plugin-page/"
+
+#~ msgid "Allow Label Emailing"
+#~ msgstr "Dovolit rozesílání stítků emailem"
+
+#~ msgid "View Packeta documentation"
+#~ msgstr "Zobrazit Packeta dokumentaci"
+
+#~ msgid "Documentation"
+#~ msgstr "Dokumentace"
+
+#~ msgid ""
+#~ "If checked, the generated labels will be emailed to the e-shop "
+#~ "administrator"
+#~ msgstr ""
+#~ "Pokud je zaškrtnuto, vygenerované štítky budou zaslány e-mailem správci e-"
+#~ "shopu."
 
 #~ msgid "Check age 18+"
 #~ msgstr "Ověření věku 18+"
