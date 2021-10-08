@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-10-01T12:00:44+02:00\n"
-"PO-Revision-Date: 2021-10-01 12:02+0200\n"
+"POT-Creation-Date: 2021-10-08T16:30:29+02:00\n"
+"PO-Revision-Date: 2021-10-08 16:35+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -17,33 +17,41 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
-#. Author of the plugin
-#: src/Packetery/Module/Options/Page.php:64
+#: src/Packetery/Module/Options/Page.php:70
+#: src/Packetery/Module/Options/Page.php:71
 #: src/Packetery/Module/Order/Metabox.php:96
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:35
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:62
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:66
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
 #: temp/cache/view/template-log-page.latte--5aba213aff.php:15
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:17
 #: temp/cache/view/template-order-detail.latte--1643311247.php:16
-#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:13
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
 msgid "Packeta"
 msgstr "Packeta"
 
-#. Plugin URI of the plugin
-msgid "https://www.packeta.com/todo-plugin-page/"
-msgstr "https://www.packeta.com/todo-plugin-page/"
-
 #. Description of the plugin
-msgid "Todo description."
-msgstr "Todo description."
+msgid ""
+"With the help of our official plugin, You can choose pickup points of "
+"Packeta and it's external carriers in all of Europe, or utilize address "
+"delivery for 25 countries in the European Union, straight from the cart in "
+"Your eshop. You can submit all of Your orders to Packeta with one click."
+msgstr ""
+"With the help of our official plugin, You can choose pickup points of "
+"Packeta and it's external carriers in all of Europe, or utilize address "
+"delivery for 25 countries in the European Union, straight from the cart in "
+"Your eshop. You can submit all of Your orders to Packeta with one click."
+
+#. Author of the plugin
+msgid "Zásilkovna s.r.o."
+msgstr "Zásilkovna s.r.o."
 
 #. Author URI of the plugin
-msgid "https://www.packeta.com/"
-msgstr "https://www.packeta.com/"
+msgid "https://www.zasilkovna.cz/"
+msgstr "https://www.zasilkovna.cz/"
 
 #. translators: keep %failReason placeholder intact.
 #: src/Packetery/Module/Carrier/Downloader.php:72
@@ -66,52 +74,56 @@ msgstr "Invalid API response."
 msgid "Carriers were updated."
 msgstr "Carriers were updated."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:85
-#: src/Packetery/Module/Carrier/OptionsPage.php:86
+#: src/Packetery/Module/Carrier/OptionsPage.php:104
+#: src/Packetery/Module/Carrier/OptionsPage.php:105
 msgid "Carrier settings"
 msgstr "Carrier settings"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:112
+#: src/Packetery/Module/Carrier/OptionsPage.php:131
 msgid "Active carrier"
 msgstr "Active carrier"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:115
+#: src/Packetery/Module/Carrier/OptionsPage.php:134
 msgid "Display name"
 msgstr "Display name"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:136
+#: src/Packetery/Module/Carrier/OptionsPage.php:155
 msgid "Free shipping limit"
 msgstr "Free shipping limit"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:137
-#: src/Packetery/Module/Carrier/OptionsPage.php:339
-#: src/Packetery/Module/Carrier/OptionsPage.php:342
-#: src/Packetery/Module/Carrier/OptionsPage.php:356
-#: src/Packetery/Module/Carrier/OptionsPage.php:358
+#: src/Packetery/Module/Carrier/OptionsPage.php:156
+#: src/Packetery/Module/Carrier/OptionsPage.php:364
+#: src/Packetery/Module/Carrier/OptionsPage.php:367
+#: src/Packetery/Module/Carrier/OptionsPage.php:381
+#: src/Packetery/Module/Carrier/OptionsPage.php:383
 msgid "Please enter a valid decimal number."
 msgstr "Please enter a valid decimal number."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:167
+#: src/Packetery/Module/Carrier/OptionsPage.php:186
 msgid "Weight rules are overlapping, fix it please."
 msgstr "Weight rules are overlapping, fix it please."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:175
+#: src/Packetery/Module/Carrier/OptionsPage.php:194
 msgid "Surcharge rules are overlapping, fix it please."
 msgstr "Surcharge rules are overlapping, fix it please."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:337
+#: src/Packetery/Module/Carrier/OptionsPage.php:214
+msgid "settingsSaved"
+msgstr "Settings saved"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:362
 msgid "Weight up to (kg)"
 msgstr "Weight up to (kg)"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:340
+#: src/Packetery/Module/Carrier/OptionsPage.php:365
 msgid "Price"
 msgstr "Price"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:355
+#: src/Packetery/Module/Carrier/OptionsPage.php:380
 msgid "Order price up to"
 msgstr "Order price up to"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:357
+#: src/Packetery/Module/Carrier/OptionsPage.php:382
 msgid "Surcharge"
 msgstr "Surcharge"
 
@@ -131,7 +143,7 @@ msgstr "HU Packeta pickup points"
 msgid "RO Packeta pickup points"
 msgstr "RO Packeta pickup points"
 
-#: src/Packetery/Module/Checkout.php:258
+#: src/Packetery/Module/Checkout.php:259
 msgid "Pick up point is not chosen."
 msgstr "Pick up point is not chosen."
 
@@ -160,11 +172,15 @@ msgstr "Label print"
 msgid "logAction_carrier-list-update"
 msgstr "Carrier list update"
 
-#: src/Packetery/Module/Log/Page.php:75
+#: src/Packetery/Module/Log/Page.php:72
+msgid "logAction_carrier-number-retrieving"
+msgstr "Getting external carrier tracking number"
+
+#: src/Packetery/Module/Log/Page.php:76
 msgid "statusError"
 msgstr "Error"
 
-#: src/Packetery/Module/Log/Page.php:76
+#: src/Packetery/Module/Log/Page.php:77
 msgid "statusSuccess"
 msgstr "Success"
 
@@ -172,85 +188,72 @@ msgstr "Success"
 msgid "Logs"
 msgstr "Logy"
 
-#: src/Packetery/Module/Options/Page.php:63 src/Packetery/Module/Plugin.php:429
+#: src/Packetery/Module/Options/Page.php:80
+#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:482
 msgid "Settings"
 msgstr "Settings"
 
-#: src/Packetery/Module/Options/Page.php:86
+#: src/Packetery/Module/Options/Page.php:112
 msgid "API password"
 msgstr "API password"
 
-#: src/Packetery/Module/Options/Page.php:88
+#: src/Packetery/Module/Options/Page.php:114
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr ""
 "API password must be 32 characters long and must contain valid characters!"
 
-#: src/Packetery/Module/Options/Page.php:89
+#: src/Packetery/Module/Options/Page.php:115
 msgid "Sender"
 msgstr "Sender"
 
-#: src/Packetery/Module/Options/Page.php:96
+#: src/Packetery/Module/Options/Page.php:122
 msgid "Packeta Label Format"
 msgstr "Packeta Label Format"
 
-#: src/Packetery/Module/Options/Page.php:103
+#: src/Packetery/Module/Options/Page.php:128
 msgid "Carrier Label Format"
 msgstr "Carrier Label Format"
 
-#: src/Packetery/Module/Options/Page.php:105
-msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
-msgstr "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
-
-#: src/Packetery/Module/Options/Page.php:106
-msgid ""
-"105x148 mm (A6) label on a page of the same size (offset argument is ignored "
-"for this format)"
-msgstr ""
-"105x148 mm (A6) label on a page of the same size (offset argument is ignored "
-"for this format)"
-
-#: src/Packetery/Module/Options/Page.php:117
-msgid "Payment method that represents cash on delivery"
-msgstr "Payment method that represents cash on delivery"
-
-#: src/Packetery/Module/Options/Page.php:123
-msgid "Allow Label Emailing"
-msgstr "Allow Label Emailing"
-
-#: src/Packetery/Module/Options/Page.php:138
-msgid "Main Settings"
-msgstr "Main Settings"
-
-#: src/Packetery/Module/Options/Page.php:179
-msgid ""
-"This plugin requires an active SOAP library for proper operation. Contact "
-"your web hosting administrator."
-msgstr ""
-"This plugin requires an active SOAP library for proper operation. Contact "
-"your web hosting administrator."
-
-#: src/Packetery/Module/Options/Provider.php:138
+#: src/Packetery/Module/Options/Page.php:130
+#: src/Packetery/Module/Options/Provider.php:143
 msgid "labelNameA6onA4"
 msgstr "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
 
-#: src/Packetery/Module/Options/Provider.php:143
+#: src/Packetery/Module/Options/Page.php:131
+#: src/Packetery/Module/Options/Provider.php:148
 msgid "labelNameA6onA6"
 msgstr "105x148 mm (A6) label on a page of the same size"
 
-#: src/Packetery/Module/Options/Provider.php:148
+#: src/Packetery/Module/Options/Page.php:142
+msgid "Payment method that represents cash on delivery"
+msgstr "Payment method that represents cash on delivery"
+
+#: src/Packetery/Module/Options/Page.php:158
+msgid "Main Settings"
+msgstr "Main Settings"
+
+#: src/Packetery/Module/Options/Page.php:199
+msgid ""
+"This plugin requires an active SOAP library for proper operation. Contact "
+"your web hosting administrator."
+msgstr ""
+"This plugin requires an active SOAP library for proper operation. Contact "
+"your web hosting administrator."
+
+#: src/Packetery/Module/Options/Provider.php:153
 msgid "labelNameA7onA7"
 msgstr "105x74 mm (A7) label on a page of the same size"
 
-#: src/Packetery/Module/Options/Provider.php:153
+#: src/Packetery/Module/Options/Provider.php:158
 msgid "labelNameA7onA4"
 msgstr "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
 
-#: src/Packetery/Module/Options/Provider.php:158
+#: src/Packetery/Module/Options/Provider.php:163
 msgid "labelName105x35onA4"
 msgstr "105x35 mm label on a page of size 210x297 mm (A4)"
 
-#: src/Packetery/Module/Options/Provider.php:163
+#: src/Packetery/Module/Options/Provider.php:168
 msgid "labelNameA8onA8"
 msgstr "50x74 mm (A8) label on a page of the same size"
 
@@ -262,41 +265,61 @@ msgstr "Submit orders to Packeta"
 msgid "actionPrintLabels"
 msgstr "Print labels"
 
-#: src/Packetery/Module/Order/GridExtender.php:87
+#: src/Packetery/Module/Order/BulkActions.php:66
+msgid "actionPrintCarrierLabels"
+msgstr "Print carrier labels"
+
+#: src/Packetery/Module/Order/GridExtender.php:89
 msgid "packetaOrdersToSubmit"
 msgstr "Packeta orders to submit"
 
-#: src/Packetery/Module/Order/GridExtender.php:100
+#: src/Packetery/Module/Order/GridExtender.php:104
 msgid "packetaOrdersToPrint"
 msgstr "Packeta orders to print"
 
-#: src/Packetery/Module/Order/GridExtender.php:234
+#: src/Packetery/Module/Order/GridExtender.php:249
 msgid "Barcode"
 msgstr "Barcode"
 
-#: src/Packetery/Module/Order/GridExtender.php:235
+#: src/Packetery/Module/Order/GridExtender.php:250
 msgid "Pick up point or carrier"
 msgstr "Pick up point or carrier"
 
+#: src/Packetery/Module/Order/LabelPrint.php:161
+msgid "noOrdersSelected"
+msgstr "No orders were selected"
+
+#: src/Packetery/Module/Order/LabelPrint.php:191
+msgid "labelPrintFailedMoreInfoInLog"
+msgstr "Label printing failed, you can find more information in Packeta log."
+
+#: src/Packetery/Module/Order/LabelPrint.php:192
+msgid "youSelectedOrdersThatWereNotSubmitted"
+msgstr "You selected orders that were not submitted yet"
+
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:103
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "dontSkipAnyField"
 msgstr "don't skip any field on a print sheet"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:103
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "skip%sFields"
 msgstr "skip %s fields on first sheet"
 
-#: src/Packetery/Module/Order/LabelPrint.php:107
+#: src/Packetery/Module/Order/LabelPrint.php:227
 msgid "labelsOffset"
 msgstr "Skip fields"
 
-#: src/Packetery/Module/Order/LabelPrint.php:134
-#: src/Packetery/Module/Order/LabelPrint.php:135
-#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:45
+#: src/Packetery/Module/Order/LabelPrint.php:240
+#: src/Packetery/Module/Order/LabelPrint.php:241
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:49
 msgid "printLabels"
 msgstr "Print labels"
+
+#: src/Packetery/Module/Order/LabelPrint.php:395
+msgid "pleaseSetProperPassword"
+msgstr "Please set proper API password."
 
 #: src/Packetery/Module/Order/Metabox.php:112
 msgid "Weight (kg)"
@@ -333,17 +356,9 @@ msgstr "Session has expired! Please try again."
 msgid "You are not allowed to edit posts!"
 msgstr "You are not allowed to edit posts!"
 
-#: src/Packetery/Module/Plugin.php:428
+#: src/Packetery/Module/Plugin.php:481
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
-
-#: src/Packetery/Module/Plugin.php:450
-msgid "View Packeta documentation"
-msgstr "View Packeta documentation"
-
-#: src/Packetery/Module/Plugin.php:451
-msgid "Documentation"
-msgstr "Documentation"
 
 #: src/Packetery/Module/Product/DataTab.php:89
 msgid "ageVerification18PlusLabel"
@@ -358,31 +373,35 @@ msgstr "Packeta Shipping Method"
 msgid "Description of Packeta shipping method"
 msgstr "Description of Packeta shipping method"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:63
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:25
+msgid "cannotUseThisCarrierBecauseRequiresCustomsDeclaration"
+msgstr "Cannot use this carrier because requires customs declaration"
+
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:72
 msgid "Weight rules"
 msgstr "Weight rules"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:80
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:89
 msgid "Add weight rule"
 msgstr "Add weight rule"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:87
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:96
 msgid "COD surcharge rules"
 msgstr "COD surcharge rules"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:104
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:113
 msgid "Add COD surcharge rule"
 msgstr "Add COD surcharge rule"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:124
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:133
 msgid "After exceeding this amount, shipping is free."
 msgstr "After exceeding this amount, shipping is free."
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:202
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:216
 msgid "Delete weight rule"
 msgstr "Delete weight rule"
 
-#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:259
+#: temp/cache/view/template-carrier-carrier.latte--bed1539344.php:275
 msgid "Delete COD surcharge rule"
 msgstr "Delete COD surcharge rule"
 
@@ -398,31 +417,35 @@ msgstr "Carriers update"
 msgid "lastCarrierUpdateDatetime"
 msgstr "Date of last update of carriers"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:56
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:51
+msgid "carrierListNeverDownloaded"
+msgstr "Carrier list was not yet downloaded"
+
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:60
 msgid "runCarrierUpdate"
 msgstr "Run update of carriers"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:64
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:68
 msgid "Countries"
 msgstr "Countries"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:72
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:76
 msgid "Country name"
 msgstr "Country name"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:75
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:79
 msgid "Country code"
 msgstr "Country code"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:78
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:82
 msgid "Action"
 msgstr "Action"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:94
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:98
 msgid "Set up"
 msgstr "Set up"
 
-#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:105
+#: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:109
 msgid "No active countries."
 msgstr "No active countries."
 
@@ -434,7 +457,7 @@ msgstr "Country options"
 msgid "No known carrier for this country."
 msgstr "No known carrier for this country."
 
-#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:30
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:31
 msgid "Choose pickup point"
 msgstr "Choose pickup point"
 
@@ -446,17 +469,17 @@ msgstr "Shipping Detail"
 msgid "Pickup Point Name"
 msgstr "Pickup Point Name"
 
-#: temp/cache/view/template-email-footer.latte--62887fd91f.php:29
-#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:40
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:31
+#: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:43
 #: temp/cache/view/template-order-detail.latte--1643311247.php:39
 msgid "Pickup Point Detail"
 msgstr "Pickup Point Detail"
 
-#: temp/cache/view/template-email-footer.latte--62887fd91f.php:34
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:36
 msgid "Link"
 msgstr "Link"
 
-#: temp/cache/view/template-email-footer.latte--62887fd91f.php:39
+#: temp/cache/view/template-email-footer.latte--62887fd91f.php:43
 msgid "Point Address"
 msgstr "Point Address"
 
@@ -464,19 +487,19 @@ msgstr "Point Address"
 msgid "status"
 msgstr "Status"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:29
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:27
 msgid "dateAndTime"
 msgstr "Date and time"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:34
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:30
 msgid "action"
 msgstr "Action"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:39
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:33
 msgid "note"
 msgstr "Note"
 
-#: temp/cache/view/template-log-page.latte--5aba213aff.php:80
+#: temp/cache/view/template-log-page.latte--5aba213aff.php:72
 msgid "logListIsEmpty"
 msgstr "Log list is empty"
 
@@ -484,11 +507,13 @@ msgstr "Log list is empty"
 msgid "Options"
 msgstr "Options"
 
-#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:136
-msgid ""
-"If checked, the generated labels will be emailed to the e-shop administrator"
-msgstr ""
-"If checked, the generated labels will be emailed to the e-shop administrator"
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:57
+msgid "apiPasswordCanBeFoundAt%sUrl"
+msgstr "API password can be found at %s"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:80
+msgid "senderCanBeFoundAt%sUrl"
+msgstr "Sender label can be found at %s"
 
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:19
 msgid "pickup point detail"
@@ -525,9 +550,13 @@ msgstr ""
 msgid "someShipments%sFailed"
 msgstr "Some shipments (%s in total) failed to be submitted to Packeta."
 
-#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:15
+#: temp/cache/view/template-order-label-print.latte--63d5284f15.php:17
 msgid "labelPrinting"
 msgstr "Print labels"
+
+#: temp/cache/view/template-order-metabox-overview.latte--d1e44237b2.php:15
+msgid "packetTrackingOnline"
+msgstr "Packet tracking online"
 
 #: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:14
 msgid "packetaMethodType"
@@ -540,6 +569,38 @@ msgstr "Carrier packets"
 #: temp/cache/view/template-order-type-select.latte--cce92ae4aa.php:29
 msgid "packetaPickupPointPackets"
 msgstr "Packeta pickup points packets"
+
+#~ msgid "Todo description."
+#~ msgstr "Todo description."
+
+#~ msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+#~ msgstr "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+
+#~ msgid ""
+#~ "105x148 mm (A6) label on a page of the same size (offset argument is "
+#~ "ignored for this format)"
+#~ msgstr ""
+#~ "105x148 mm (A6) label on a page of the same size (offset argument is "
+#~ "ignored for this format)"
+
+#~ msgid "https://www.packeta.com/todo-plugin-page/"
+#~ msgstr "https://www.packeta.com/todo-plugin-page/"
+
+#~ msgid "Allow Label Emailing"
+#~ msgstr "Allow Label Emailing"
+
+#~ msgid "View Packeta documentation"
+#~ msgstr "View Packeta documentation"
+
+#~ msgid "Documentation"
+#~ msgstr "Documentation"
+
+#~ msgid ""
+#~ "If checked, the generated labels will be emailed to the e-shop "
+#~ "administrator"
+#~ msgstr ""
+#~ "If checked, the generated labels will be emailed to the e-shop "
+#~ "administrator"
 
 #~ msgid "105x148 mm (A6) label on a page of the same size"
 #~ msgstr "105x148 mm (A6) label on a page of the same size"

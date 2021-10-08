@@ -126,10 +126,10 @@ class Page {
 		$container->addSelect(
 			self::FORM_FIELD_CARRIER_LABEL_FORMAT,
 			__( 'Carrier Label Format', 'packetery' ),
-			array(
-				'A6 on A4' => __( '105x148 mm (A6) label on a page of size 210x297 mm (A4)', 'packetery' ),
-				'A6 on A6' => __( '105x148 mm (A6) label on a page of the same size (offset argument is ignored for this format)', 'packetery' ),
-			)
+			[
+				'A6 on A4' => __( 'labelNameA6onA4', 'packetery' ),
+				'A6 on A6' => __( 'labelNameA6onA6', 'packetery' ),
+			]
 		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
 		$gateways        = WC()->payment_gateways->get_available_payment_gateways();
