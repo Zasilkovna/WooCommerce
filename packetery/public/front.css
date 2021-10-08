@@ -1,0 +1,18 @@
+#packetery-widget-button-wrapper .packetery-widget-button-row .button {
+	position: relative;
+	margin-left: 50px;
+}
+
+#packetery-widget-button-wrapper .packetery-widget-button-row .button:before {
+	content: " ";
+	position: absolute;
+	left: -50px;
+	top: 0;
+	width: 45px;
+	height: 100%;
+	display: grid;
+	background-color: #ba0b0b;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+}

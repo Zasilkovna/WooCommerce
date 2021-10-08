@@ -170,6 +170,7 @@ class Checkout {
 				'country'  => $country,
 				'weight'   => number_format( $weight, 3 ),
 				'carriers' => $carriers,
+				'logo'     => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png' ,
 			)
 		);
 	}
