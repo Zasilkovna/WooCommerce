@@ -283,7 +283,7 @@ class LabelPrint {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = 'Akce “Tisk štítků” proběhla úspěšně. '; // todo translate.
+			$record->title  = 'Akce “Tisk štítků” proběhla úspěšně.'; // todo translate.
 			$this->logger->add( $record );
 		} else {
 			$record         = new Log\Record();
@@ -328,7 +328,6 @@ class LabelPrint {
 			$record->title  = 'Akce “Tisk štítků externích dopravců” proběhla úspěšně.'; // todo translate.
 			$this->logger->add( $record );
 		} else {
-
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_ERROR;
