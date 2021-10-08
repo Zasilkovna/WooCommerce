@@ -1,5 +1,32 @@
-.packetery-carrier-options-page input[type=text] {
-    width: 600px;
+.packetery-carrier-options-page #frm-packetery_carrier_zpointcz-name, .packetery-rule {
+    width: 700px;
+}
+
+.packetery-rule {
+    display: table;
+    float: left;
+    margin-right: 1em;
+}
+
+.packetery-rule > * {
+    display: table-cell;
+    box-sizing: border-box;
+    width: 25%;
+    overflow: hidden;
+}
+
+.packetery-rule > :nth-child(3) {
+    padding-left: 1em;
+}
+
+.packetery-rule input {
+    width: 100%;
+    margin: 0;
+}
+
+.packetery-carrier-options-page .js-delete.button {
+    position: relative;
+    top: 2px;
 }
 
 .packetery-carrier-options-page .packetery-label {
