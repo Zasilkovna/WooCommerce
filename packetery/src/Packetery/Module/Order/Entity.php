@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\Product;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 
@@ -265,6 +266,23 @@ class Entity {
 		}
 
 		return wc_get_weight( $weight, 'kg' );
+	}
+
+	/**
+	 * Finds out if adult content is present.
+	 *
+	 * @return bool
+	 */
+	public function containsAdultContent(): bool {
+		foreach ( $this->order->get_items() as $item ) {
+			$itemData      = $item->get_data();
+			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
+			if ( $productEntity->isAgeVerification18PlusRequired() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

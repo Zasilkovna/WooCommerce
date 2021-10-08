@@ -76,7 +76,7 @@ class Order {
 
 		$orderEntity->setPacketId( $moduleOrder->getPacketId() );
 		$orderEntity->setIsExported( $moduleOrder->isExported() );
-		// TODO: setAdultContent.
+		$orderEntity->setAdultContent( $moduleOrder->containsAdultContent() );
 
 		if ( ! $moduleOrder->isHomeDelivery() ) {
 			$pickupPoint = new Entity\PickupPoint(
