@@ -1,0 +1,39 @@
+{varType Packetery\Core\Log\Record[] $rows}
+
+<div id="packetery-log-page">
+    <h1>{__( 'Packeta', 'packetery' )} - {__( 'logsPageTitle', 'packetery' )}</h1>
+
+    <table class="packetery-log-table">
+        <thead>
+            <tr>
+                <th class="packetery-log-column packetery-log-column-status">{__( 'status', 'packetery' )}</th>
+                <th class="packetery-log-column packetery-log-column-date">{__( 'dateAndTime', 'packetery' )}</th>
+                <th class="packetery-log-column packetery-log-column-action">{__( 'action', 'packetery' )}</th>
+                <th class="packetery-log-column packetery-log-column-note">{__( 'note', 'packetery' )}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {foreach $rows as $row}
+            <tr n:class="'log-' . $row->status">
+                <td class="packetery-log-column packetery-log-column-status">
+                    {$translatedStatuses[$row->status] ?? $row->status}
+                </td>
+                <td class="packetery-log-column packetery-log-column-date">
+                    {$row->date|wpDateTime}
+                </td>
+                <td class="packetery-log-column packetery-log-column-action">
+                    {$translatedActions[$row->action] ?? $row->action}
+                </td>
+                <td class="packetery-log-column packetery-log-column-note">
+                    {$row->getNote()}
+                </td>
+            </tr>
+            {/foreach}
+            <tr n:if="empty($rows)">
+                <td>
+                    {__( 'logListIsEmpty', 'packetery' )}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

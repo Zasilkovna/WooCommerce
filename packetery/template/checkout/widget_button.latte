@@ -1,0 +1,21 @@
+<div id="packetery-widget-button-wrapper">
+    <div
+        class="form-row place-order packeta-widget"
+        data-language="{$language}"
+        data-country="{$country}"
+        data-weight="{$weight}"
+        data-carriers="{$carriers}"
+    >
+        <div class="packetery-widget-button-row packeta-widget-button">
+            <button class="button alt">
+                {__( 'Choose pickup point', 'packetery' )}
+            </button>
+        </div>
+        <p class="packeta-pickup-point-name"></p>
+    </div>
+</div>
+<style>
+    #packetery-widget-button-wrapper .packetery-widget-button-row .button:before {
+	    background-image: url({$logo});
+    }
+</style>

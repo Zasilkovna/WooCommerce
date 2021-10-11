@@ -1,0 +1,4 @@
+/.idea/
+/packetery/vendor
+/packetery/temp/*
+!/packetery/temp/.gitignore

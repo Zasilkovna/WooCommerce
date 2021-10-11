@@ -1,0 +1,173 @@
+.packetery-carrier-options-page #frm-packetery_carrier_zpointcz-name, .packetery-rule {
+    width: 700px;
+}
+
+.packetery-rule {
+    display: table;
+    float: left;
+    margin-right: 1em;
+}
+
+.packetery-rule > * {
+    display: table-cell;
+    box-sizing: border-box;
+    width: 25%;
+    overflow: hidden;
+}
+
+.packetery-rule > :nth-child(3) {
+    padding-left: 1em;
+}
+
+.packetery-rule input {
+    width: 100%;
+    margin: 0;
+}
+
+.packetery-carrier-options-page .js-delete.button {
+    position: relative;
+    top: 2px;
+}
+
+.packetery-carrier-options-page .packetery-label {
+    font-weight: bold;
+}
+
+.packetery-carrier-options-page .form-table td {
+    padding-top: 0;
+    padding-left: 0;
+    padding-bottom: 30px;
+}
+
+.packetery-carrier-options-page .form-table th {
+    padding: 0;
+}
+
+.packetery-order-metabox-label-cell {
+    text-align: left;
+}
+
+.packetery-order-metabox-input {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.packetery-table {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.packetery-table-row {
+    display: table-row;
+}
+
+.packetery-table-cell {
+    display: table-cell;
+    box-sizing: border-box;
+    text-align: left;
+    overflow: hidden;
+}
+
+.log-error {
+    font-weight: bold;
+}
+
+#packetery-options-page input[type=text], #packetery-options-page select {
+    width: 500px;
+    max-width: none;
+}
+
+.packetery-help-block {
+    font-style: italic;
+    color: #959595;
+    display: block;
+}
+
+.packetery-offset-wrapper {
+    text-align: center;
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.packetery-offset-wrapper, .packetery-offset {
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .13);
+}
+
+.packetery-offset th {
+    vertical-align: middle;
+}
+
+.packetery-offset th label, .packetery-offset-wrapper h1 {
+    color: #555;
+}
+
+.packetery-offset-wrapper h1 {
+    text-align: left;
+    font-weight: 400;
+}
+
+.packetery-offset th label {
+    font-weight: 400;
+    display: block;
+    cursor: pointer;
+}
+
+.packetery-offset-wrapper section {
+    padding: 16px 24px;
+}
+
+.packetery-offset select {
+    width: 100%;
+    color: #646970;
+    height: 54px;
+}
+
+.packetery-actions {
+    overflow: hidden;
+    border-top: 1px solid #eee;
+    padding: 23px 24px 24px;
+}
+
+.wp-core-ui .packetery-button {
+    font-size: 1.25em;
+    line-height: 1.5em !important;
+    background-color: #bb77ae;
+    border-color: #a36597;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 1px 0 #a36597;
+    text-shadow: 0 -1px 1px #a36597, 1px 0 1px #a36597, 0 1px 1px #a36597, -1px 0 1px #a36597;
+    float: right;
+    padding: .5em 1em !important;
+}
+
+#packetery-log-page {
+    padding-right: 1em;
+}
+
+tbody .packetery-log-column-note {
+    word-break: break-word;
+}
+
+.packetery-log-table {
+    border: 1px solid #c3c4c7;
+    border-collapse: collapse;
+}
+
+.packetery-log-table tr:nth-child(odd) {
+    background-color: white;
+}
+
+.packetery-log-table tr:nth-child(even), .packetery-log-table th {
+    background-color: #f6f7f7;
+}
+
+.packetery-log-table td, .packetery-log-table th {
+    padding: 0.5em 1em;
+}
+
+.packetery-log-table tr:hover td {
+    background-color: #dedddd;
+}

@@ -1,0 +1,37 @@
+parameters:
+    latteTempFolder: %tempDir%/cache/view
+
+services:
+	- Packetery\Module\Log\PostLogger
+	- Packetery\Module\Log\Page
+	- Packetery\Module\Product\DataTab
+	- Packetery\Core\Helper
+	- Packetery\Module\MessageManager
+	- Packetery\Module\Order\Metabox
+	- Packetery\Module\Plugin
+	latteEngineFactory: Packetery\Module\LatteEngineFactory
+	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
+	- Packetery\Module\Options\Page
+	optionsProvider: Packetery\Module\Options\Provider
+	- Packetery\Module\Carrier\Downloader
+	- Packetery\Module\Carrier\Updater
+	- Packetery\Module\Carrier\Repository
+	- PacketeryGuzzleHttp\Client
+	wpdbFactory: Packetery\Module\WpdbFactory
+	wpdb: @wpdbFactory::create()
+	- Packetery\Module\Checkout
+	- Packetery\Module\Carrier\OptionsPage
+	- Packetery\Module\FormFactory
+	- Packetery\Module\Carrier\CountryListingPage
+	- Packetery\Module\Order\BulkActions
+	- Packetery\Module\Order\Repository
+	- Packetery\Module\Order\LabelPrint
+	- Packetery\Module\Order\GridExtender
+	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
+	- Packetery\Module\Order\PacketSubmitter
+	- Packetery\Module\EntityFactory\Carrier
+	- Packetery\Module\EntityFactory\Order
+	- Packetery\Core\Validator\Address
+	- Packetery\Core\Validator\Size
+	- Packetery\Core\Validator\Order
+	- Packetery\Module\Options\Repository

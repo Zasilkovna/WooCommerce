@@ -1,0 +1,71 @@
+<div id="packetery-options-page">
+    <h1>{__( 'Packeta', 'packetery' )} - {__( 'Options', 'packetery' )}</h1>
+
+	{if isset($error)}
+		<div class="notice notice-error">
+			<p><strong>{$error}</strong></p>
+		</div>
+	{/if}
+
+    {php settings_errors()}
+
+    <form n:name=$form>
+        {php settings_fields('packetery')}
+
+        <table class="form-table" role="presentation">
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-api_password />
+                </th>
+                <td>
+                    <input n:name=packetery-api_password>
+                    <div class="packetery-help-block">
+                        <p>
+                            {sprintf( __( 'apiPasswordCanBeFoundAt%sUrl', 'packetery' ), $apiPasswordLink )|noescape}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-sender />
+                </th>
+                <td>
+                    <input n:name=packetery-sender>
+                    <div class="packetery-help-block">
+                        <p>
+                            {sprintf( __( 'senderCanBeFoundAt%sUrl', 'packetery' ), $senderLink )|noescape}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-packeta_label_format />
+                </th>
+                <td>
+                    <select n:name=packetery-packeta_label_format></select>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-carrier_label_format />
+                </th>
+                <td>
+                    <select n:name=packetery-carrier_label_format></select>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-cod_payment_method />
+                </th>
+                <td>
+                    <select n:name=packetery-cod_payment_method></select>
+                </td>
+            </tr>
+        </table>
+        <p class="submit">
+            <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
+        </p>
+    </form>
+</div>

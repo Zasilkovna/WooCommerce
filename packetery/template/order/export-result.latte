@@ -1,0 +1,18 @@
+{* TODO: without updated class, nothing was visible, therefore inline style were used to override green border *}
+{if !$ignored && !$errors && $success}
+	<div class="updated">
+		<p>{__('shipmentsSubmittedSuccessfully', 'packetery')}</p>
+	</div>
+{else}
+	{if $ignored}
+		<div class="updated" style="border-left-color: #72aee6;">
+			<p>{sprintf( __( 'someShipments%sSkipped', 'packetery' ), $ignored )}</p>
+		</div>
+	{/if}
+
+	{if $errors}
+		<div class="updated" style="border-left-color: #d63638;">
+			<p>{sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors )}</p>
+		</div>
+	{/if}
+{/if}
