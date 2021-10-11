@@ -73,3 +73,5 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.0.0 =
 * Initial version
+= 1.0.1 =
+* UPDATED: Logging behaviour

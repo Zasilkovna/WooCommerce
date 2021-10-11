@@ -398,7 +398,6 @@ class LabelPrint {
 				}
 
 				$record = new Log\Record();
-				$record->setCustomId( [ Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING, $packetId ] );
 				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
 				$record->status = Log\Record::STATUS_ERROR;
 				$record->title  = 'Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná.';

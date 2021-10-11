@@ -27,13 +27,6 @@ class Record {
 	public const STATUS_ERROR   = 'error';
 
 	/**
-	 * Custom unique record id that is used to delete old duplicates.
-	 *
-	 * @var string
-	 */
-	public $customId;
-
-	/**
 	 * Action.
 	 *
 	 * @var string
@@ -83,14 +76,5 @@ class Record {
 				]
 			)
 		);
-	}
-
-	/**
-	 * Sets custom record ID.
-	 *
-	 * @param string[] $values Values.
-	 */
-	public function setCustomId( array $values ): void {
-		$this->customId = implode( '_', $values );
 	}
 }

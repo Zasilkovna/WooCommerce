@@ -71,30 +71,7 @@ class PostLogger implements ILogger {
 		$metaData = [
 			'packetery_status'    => ( $record->status ?? '' ),
 			'packetery_action'    => ( $record->action ?? '' ),
-			'packetery_custom_id' => ( $record->customId ?? '' ),
 		];
-
-		if ( $record->customId ) {
-			$oldPostIds = get_posts(
-				[
-					'post_type'      => self::POST_TYPE,
-					'post_status'    => 'any',
-					'nopaging'       => true,
-					'posts_per_page' => - 1,
-					'fields'         => 'ids',
-					'meta_query'     => [
-						[
-							'key'   => 'packetery_custom_id',
-							'value' => $record->customId,
-						],
-					],
-				]
-			);
-
-			foreach ( $oldPostIds as $old_post_id ) {
-				wp_delete_post( $old_post_id ); // There can be only one record with such custom id. We always want newest one.
-			}
-		}
 
 		$logId = wp_insert_post( $logData );
 
