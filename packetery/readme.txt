@@ -71,7 +71,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.0.1 =
+* Updated: logger no longer deletes older records
+* Fixed: logger handles double quotes in error messages
+
 = 1.0.0 =
 * Initial version
-= 1.0.1 =
-* UPDATED: Logging behaviour
