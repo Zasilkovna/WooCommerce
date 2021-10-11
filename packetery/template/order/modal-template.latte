@@ -16,18 +16,34 @@
                 </div>
                 <article>
                     <div class="wc-order-preview-table-wrapper">
-                        <form>
+                        {form $form}
                             <div class="packetery-table">
                                 <div class="packetery-table-row">
                                     <div class="packetery-table-cell">
-                                        <label>
-                                            {__( 'Weight', 'packetery' )}
-                                            <input type="number" step="0.001" name="packetery_weight" value="{{ data.order.packetery_weight }}">
-                                        </label>
+{*                                        <label>*}
+{*                                            {__( 'Weight', 'packetery' )}*}
+
+{*                                            <input n:name="weight" type="number" step="0.001" name="packetery_weight" value="{{ data.order.packetery_weight }}">*}
+{*                                        </label>*}
+                                        {label packetery_weight}
+                                        {input packetery_weight}
+                                        {input submit}
                                     </div>
                                 </div>
                             </div>
-                        </form>
+                        {/form}
+{*                        <form n:name=$form>*}
+{*                            <div class="packetery-table">*}
+{*                                <div class="packetery-table-row">*}
+{*                                    <div class="packetery-table-cell">*}
+{*                                        <label>*}
+{*                                            {__( 'Weight', 'packetery' )}*}
+{*                                            <input n:name="weight" type="number" step="0.001" name="packetery_weight" value="{{ data.order.packetery_weight }}">*}
+{*                                        </label>*}
+{*                                    </div>*}
+{*                                </div>*}
+{*                            </div>*}
+{*                        </form>*}
                     </div>
                 </article>
                 <footer>

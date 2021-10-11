@@ -152,6 +152,13 @@ class Plugin {
 	private $orderController;
 
 	/**
+	 * Order modal.
+	 *
+	 * @var Order\Modal
+	 */
+	private $orderModal;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox      $order_metabox      Order metabox.
@@ -170,6 +177,7 @@ class Plugin {
 	 * @param ILogger            $logger             Log manager.
 	 * @param Address\Repository $addressRepository  Address repository.
 	 * @param Order\Controller   $orderController    Order controller.
+	 * @param Order\Modal        $orderModal         Order modal.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -187,7 +195,8 @@ class Plugin {
 		Log\Page $logPage,
 		ILogger $logger,
 		Address\Repository $addressRepository,
-		Order\Controller $orderController
+		Order\Controller $orderController,
+		Order\Modal $orderModal
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -207,6 +216,7 @@ class Plugin {
 		$this->logger             = $logger;
 		$this->addressRepository  = $addressRepository;
 		$this->orderController    = $orderController;
+		$this->orderModal         = $orderModal;
 	}
 
 	/**
@@ -253,20 +263,7 @@ class Plugin {
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
-		add_action(
-			'admin_head',
-			function () {
-				$nonce        = wp_create_nonce( 'wp_rest' );
-				$orderSaveUrl = $this->orderController->getRoute( '/save' );
-				$this->latte_engine->render(
-					PACKETERY_PLUGIN_DIR . '/template/order/modal-template.latte',
-					[
-						'nonce'        => $nonce,
-						'orderSaveUrl' => $orderSaveUrl,
-					]
-				);
-			}
-		);
+		$this->orderModal->register();
 		$this->order_metabox->register();
 
 		$this->checkout->register_hooks();
