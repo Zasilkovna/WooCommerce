@@ -66,6 +66,8 @@ class PostLogger implements ILogger {
 			'log_type'     => false,
 		];
 
+		$logData['post_content'] = str_replace('\\', '&quot;', $logData['post_content']);
+
 		$metaData = [
 			'packetery_status'    => ( $record->status ?? '' ),
 			'packetery_action'    => ( $record->action ?? '' ),
@@ -132,13 +134,13 @@ class PostLogger implements ILogger {
 
 		return array_map(
 			static function ( \WP_Post $log ) {
-				$record           = new Record();
-				$record->customId = get_post_meta( $log->ID, 'packetery_custom_id', true );
-				$record->status   = get_post_meta( $log->ID, 'packetery_status', true );
-				$record->date     = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
-				$record->action   = get_post_meta( $log->ID, 'packetery_action', true );
-				$record->title    = $log->post_title;
-				$record->params   = json_decode( $log->post_content, true, 512, ILogger::JSON_FLAGS );
+				$record         = new Record();
+				$record->status = get_post_meta( $log->ID, 'packetery_status', true );
+				$record->date   = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
+				$record->action = get_post_meta( $log->ID, 'packetery_action', true );
+				$record->title  = $log->post_title;
+				$postContent    = str_replace( '&quot;', '\\', $log->post_content );
+				$record->params = @json_decode( $postContent, true, 512, ILogger::JSON_FLAGS );
 
 				return $record;
 			},
