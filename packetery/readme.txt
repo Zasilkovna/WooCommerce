@@ -71,5 +71,8 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.0.1 =
+* Bugfix: Carrier name input width css rule to cover all carriers.
+
 = 1.0.0 =
 * Initial version
