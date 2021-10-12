@@ -77,7 +77,12 @@ class GridExtender {
 	 * @return array
 	 */
 	public function addFilterLinks( array $var ): array {
-		$orders      = wc_get_orders( [ 'packetery_to_submit' => '1' ] );
+		$orders      = wc_get_orders(
+			[
+				'packetery_to_submit' => '1',
+				'nopaging'            => true,
+			]
+		);
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
@@ -92,7 +97,12 @@ class GridExtender {
 		];
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
-		$orders      = wc_get_orders( [ 'packetery_to_print' => '1' ] );
+		$orders      = wc_get_orders(
+			[
+				'packetery_to_print' => '1',
+				'nopaging'           => true,
+			]
+		);
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
