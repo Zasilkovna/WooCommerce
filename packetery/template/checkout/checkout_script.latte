@@ -1,10 +1,10 @@
 <script>
 	(function($) {
-		var checkoutMain = function () {
+		var widgetHdAllowed = {= PACKETERY_ALLOW_WIDGET_HD};
 
+		var checkoutMain = function () {
 			var $widgetDiv = $('.packeta-widget');
 
-			var shippingMethodSelector = '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]';
 			var getShippingRateId = function () {
 				var $radios = $('#shipping_method input[type="radio"]');
 				if ($radios.length) {
@@ -18,6 +18,7 @@
 				'{$attr['name']|noescape}': '{$id|noescape}',
                 {/foreach}
 			};
+			var homeDeliveryAttrs = {$homeDeliveryAttrs};
 
 			var ratesWithInfo = [];
 			var saveInfoForCarrierRate = function (carrierRateId) {
@@ -31,8 +32,9 @@
 				for (var attribute in pickupPointAttributes) {
 					$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
 				}
-				$widgetDiv.find('.packeta-pickup-point-name').html($('#point_name').val());
+				$widgetDiv.find('.packeta-pickup-point-name').html($widgetDiv.data(carrierRateId + '-packetery_point_name'));
 			};
+
 			var clearPickupPointInfo = function () {
 				for (var carrierRateId of ratesWithInfo) {
 					for (var attribute in pickupPointAttributes) {
@@ -40,37 +42,38 @@
 						$('#' + attribute).val('');
 					}
 				}
-				$widgetDiv.find('.packeta-pickup-point-name').html(''); // todo hide?
+				$widgetDiv.find('.packeta-pickup-point-name').html('');
+			};
+
+			var hasPickupPoints = function( carrierRateId ) {
+				return parseInt( carrierConfig[carrierRateId]['is_pickup_points'] ) === 1;
+			};
+
+			var hasHomeDelivery = function( carrierRateId ) {
+				return !hasPickupPoints( carrierRateId );
 			};
 
 			var updateWidgetButtonVisibility = function (carrierRateId) {
-
-				if (typeof carrierConfig[carrierRateId] !== 'undefined' &&
-				    parseInt(carrierConfig[carrierRateId]['is_pickup_points']) === 1
-				) {
-					$widgetDiv.data('carriers', carrierConfig[carrierRateId]['carriers']);
-					if (!$widgetDiv.is(':visible')) {
-						$widgetDiv.show();
-					}
-					loadInfoForCarrierRate(carrierRateId);
-					$widgetDiv.find('button').html('Výběr místa vyzvednutí');
-				} else if (
-					typeof carrierConfig[carrierRateId] !== 'undefined' && parseInt(carrierConfig[carrierRateId]['is_pickup_points']) === 0
-				) {
-					$widgetDiv.data('carriers', carrierConfig[carrierRateId]['carriers']);
-					if (!$widgetDiv.is(':visible')) {
-						$widgetDiv.show();
-					}
-
-					for (var attribute in pickupPointAttributes) {
-						$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
-					}
-					$widgetDiv.find('.packeta-pickup-point-name').html('');
-					$widgetDiv.find('button').html('Výběr adresy doručení');
-					// $widgetDiv.find('.packeta-pickup-point-name').html($('#point_name').val());
-				}
-				else if ($widgetDiv.is(':visible')) {
+				if ( typeof carrierConfig[carrierRateId] === 'undefined' ) {
 					$widgetDiv.hide();
+					return;
+				}
+
+				var _hasPickupPoints = hasPickupPoints( carrierRateId ),
+                _hasHomeDelivery = !_hasPickupPoints;
+
+				$widgetDiv.data('carriers', carrierConfig[carrierRateId]['carriers']);
+
+				if ( _hasPickupPoints ) {
+					loadInfoForCarrierRate( carrierRateId );
+					$widgetDiv.find('button').html({__( 'Choose pickup point', 'packetery' )});
+					$widgetDiv.show();
+				}
+
+				if ( widgetHdAllowed && _hasHomeDelivery ) {
+					$widgetDiv.find( '.packeta-pickup-point-name' ).html( '' );
+					$widgetDiv.find('button').html({__( 'Choose address', 'packetery' )});
+					$widgetDiv.show();
 				}
 			};
 
@@ -88,6 +91,29 @@
 
 			updateWidgetButtonVisibility(getShippingRateId());
 
+			var getDestinationAddress = function() {
+				var extractDestination = function(section) {
+					var address = {};
+
+					address.street = $('#' + section + '_address_1').val();
+					address.street = address.street + ' ' + $('#' + section + '_address_2').val();
+					address.houseNumber = '';
+					address.city = $('#' + section + '_city').val();
+					address.country = $('#' + section + '_country').val().toLowerCase();
+					address.postCode = $('#' + section + '_postcode').val();
+					address.gps = '';
+					address.county = '';
+
+					return address;
+				};
+
+				if ($('#shipping_country:visible').length === 1) {
+					return extractDestination( 'shipping' );
+				} else {
+					return extractDestination( 'billing' );
+				}
+			};
+
 			$(document).on('updated_checkout', function () {
 				var shippingCountry;
 				if ($('#shipping_country:visible').length === 1) {
@@ -102,18 +128,13 @@
 				updateWidgetButtonVisibility(getShippingRateId());
 			});
 
+			var shippingMethodSelector = '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]';
 			$(document).on('change', shippingMethodSelector, function () {
 				updateWidgetButtonVisibility(this.value);
 			});
 
 			$('.packeta-widget-button').click(function (e) {
 				e.preventDefault();
-
-				var carrierRateId = getShippingRateId();
-				console.log(carrierRateId);
-				if ( typeof carrierConfig[carrierRateId] !== 'undefined' && parseInt(carrierConfig[carrierRateId]['is_pickup_points']) === 0 ) {
-
-				}
 
 				var widgetOptions = {
 					appIdentity: {$app_identity},
@@ -122,20 +143,50 @@
 					weight: $widgetDiv.data('weight'),
 					carriers: $widgetDiv.data('carriers'),
 				};
-				Packeta.Widget.pick({$packetery_api_key}, function (pickupPoint) {
-					if (pickupPoint != null) {
 
-						// show selected pickup point
-						$widgetDiv.find('.packeta-pickup-point-name').html(pickupPoint.name);
+				var carrierRateId = getShippingRateId();
+				if ( widgetHdAllowed && hasHomeDelivery( carrierRateId ) ) {
+					widgetOptions.layout = 'hd';
 
-						// fill hidden inputs
-                        {foreach $pickup_point_attrs as $id => $attr}
-						$('#{$attr['name']|noescape}').val(pickupPoint.{$id|noescape});
-                        {/foreach}
+					var destinationAddress = getDestinationAddress();
+					widgetOptions.houseNumber = destinationAddress.houseNumber;
+					widgetOptions.street = destinationAddress.street;
+					widgetOptions.city = destinationAddress.city;
+					widgetOptions.postCode = destinationAddress.postCode;
+					widgetOptions.carrierId = widgetOptions.carriers; // todo is it correct?
 
-						saveInfoForCarrierRate(getShippingRateId());
-					}
-				}, widgetOptions);
+					Packeta.Widget.pick({$packetery_api_key}, function (selectedAddress) {
+						if (selectedAddress != null) {
+
+							// todo save selected address to shipping address
+
+							for ( var homeDeliveryAttrKey in homeDeliveryAttrs ) {
+								if ( homeDeliveryAttrs.hasOwnProperty( homeDeliveryAttrKey ) ) {
+									$( '#' + homeDeliveryAttrs[ homeDeliveryAttrKey ].name ).val( JSON.stringify( selectedAddress[ homeDeliveryAttrKey ] ) );
+								}
+							}
+
+							saveInfoForCarrierRate( getShippingRateId() );
+						}
+					}, widgetOptions);
+				}
+
+				if ( hasPickupPoints( carrierRateId ) ) {
+					Packeta.Widget.pick({$packetery_api_key}, function (pickupPoint) {
+						if (pickupPoint != null) {
+
+							// show selected pickup point
+							$widgetDiv.find('.packeta-pickup-point-name').html(pickupPoint.name);
+
+							// fill hidden inputs
+                            {foreach $pickup_point_attrs as $id => $attr}
+							$('#{$attr['name']|noescape}').val(pickupPoint.{$id|noescape});
+                            {/foreach}
+
+							saveInfoForCarrierRate(getShippingRateId());
+						}
+					}, widgetOptions);
+				}
 			});
 
 			$(document).on('change', '#payment input[type="radio"]', function () {
@@ -143,12 +194,19 @@
 			});
 		};
 
-		$.when(
-			$.getScript( "https://widget.packeta.com/v6/www/js/library.js" ),
-			// $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ),
+		var dependencies = [];
+		dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
+
+		if ( widgetHdAllowed ) {
+			dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ) );
+		}
+
+		dependencies.push(
 			$.Deferred(function( deferred ){
-				$( deferred.resolve );
-			})
-		).done( checkoutMain );
+                $( deferred.resolve );
+            })
+        );
+
+		$.when.apply($, dependencies).done( checkoutMain );
 	})(jQuery);
 </script>

@@ -70,6 +70,38 @@ class Checkout {
 	);
 
 	/**
+	 * Home delivery attributes configuration.
+	 *
+	 * @var array[]
+	 */
+	private static $homeDeliveryAttrs = [
+		'houseNumber' => [
+			'name'     => 'packetery_address_street',
+			'required' => false,
+		],
+		'street'      => [
+			'name'     => 'packetery_address_street',
+			'required' => false,
+		],
+		'city'        => [
+			'name'     => 'packetery_address_city',
+			'required' => false,
+		],
+		'postCode'    => [
+			'name'     => 'packetery_address_postCode',
+			'required' => false,
+		],
+		'country'     => [
+			'name'     => 'packetery_address_country',
+			'required' => false,
+		],
+		'gps'         => [
+			'name'     => 'packetery_address_gps',
+			'required' => false,
+		],
+	];
+
+	/**
 	 * PacketeryLatte engine
 	 *
 	 * @var Engine
@@ -159,6 +191,18 @@ class Checkout {
 	}
 
 	/**
+	 * Check if chosen shipping rate is bound with Packeta home delivery
+	 *
+	 * @return bool
+	 */
+	public function isHomeDeliveryOrder(): bool {
+		$chosenMethod = $this->getChosenMethod();
+		$carrierId    = $this->getCarrierId( $chosenMethod );
+
+		return $this->isHomeDeliveryCarrier( $carrierId );
+	}
+
+	/**
 	 * Renders widget button and information about chosen pickup point
 	 */
 	public function renderWidgetButton(): void {
@@ -199,13 +243,14 @@ class Checkout {
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/checkout_script.latte',
-			array(
-				'app_identity'       => $app_identity,
-				'pickup_point_attrs' => self::$pickup_point_attrs,
-				'packetery_api_key'  => $this->options_provider->get_api_key(),
-				'carrierPrefix'      => self::CARRIER_PREFIX,
-				'carriers'           => $this->carrierRepository->getAllIncludingZpoints(),
-			)
+			[
+				'app_identity'               => $app_identity,
+				'pickup_point_attrs'         => self::$pickup_point_attrs,
+				'homeDeliveryAttrs'          => self::$homeDeliveryAttrs,
+				'packetery_api_key'          => $this->options_provider->get_api_key(),
+				'carrierPrefix'              => self::CARRIER_PREFIX,
+				'carriers'                   => $this->carrierRepository->getAllIncludingZpoints(),
+			]
 		);
 	}
 
@@ -224,6 +269,14 @@ class Checkout {
 				'type'              => 'text',
 				'required'          => false,
 				// For older WooCommerce. See woocommerce_form_field function.
+				'custom_attributes' => [ 'style' => 'display: none;' ],
+			];
+		}
+
+		foreach ( self::$homeDeliveryAttrs as $attr ) {
+			$fields['shipping'][ $attr['name'] ] = [
+				'type'              => 'text',
+				'required'          => false,
 				'custom_attributes' => [ 'style' => 'display: none;' ],
 			];
 		}
@@ -294,10 +347,12 @@ class Checkout {
 				update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
 			}
 		}
+
+		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
+			wp_nonce_ays( '' );
+		}
+
 		if ( $this->isPickupPointOrder() ) {
-			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
-				wp_nonce_ays( '' );
-			}
 			foreach ( self::$pickup_point_attrs as $attr ) {
 				if (
 					isset( $post[ $attr['name'] ] ) &&
@@ -305,6 +360,23 @@ class Checkout {
 				) {
 					update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
 				}
+			}
+		}
+
+		if ( $this->isHomeDeliveryOrder() ) {
+			$logData = [
+				'post_title'   => 'title',
+				'post_content' => '',
+				'post_type'    => 'packetery_address',
+				'post_status'  => 'publish',
+				'post_parent'  => $orderId,
+				'log_type'     => false,
+			];
+
+			$addressId = wp_insert_post( $logData );
+
+			foreach ( self::$homeDeliveryAttrs as $attributeData ) {
+				update_post_meta( $addressId, $attributeData['name'], $post[ $attributeData['name'] ] );
 			}
 		}
 	}
@@ -320,6 +392,7 @@ class Checkout {
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
+		add_action( 'init', [ $this, 'registerAddressPostType' ] );
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
 		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
 		add_filter( 'woocommerce_checkout_fields', array( __CLASS__, 'add_pickup_point_fields' ) );
@@ -327,6 +400,25 @@ class Checkout {
 		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
+	}
+
+	/**
+	 * Register address post type.
+	 */
+	public function registerAddressPostType(): void {
+		// todo create dedicated class Address\PostType ?
+
+		$definition = [
+			'labels'          => [ 'name' => __( 'Addresses', 'packetery' ) ],
+			'public'          => false,
+			'query_var'       => false,
+			'rewrite'         => false,
+			'capability_type' => 'post',
+			'supports'        => [ 'title', 'editor' ],
+			'can_export'      => false,
+		];
+
+		register_post_type( 'packetery_address', $definition );
 	}
 
 	/**
