@@ -39,7 +39,7 @@ With the help of our official plugin, You can choose pickup points of Packeta an
 
 = Setting up of the module in WordPress Administration: =
 
-* In the Packeta>Settings menu. Fill in the API password, sender, pick the label format and choose the payment method for cash on delivery.
+* In the Packeta>Settings menu. Fill in the API password, sender label (found under the indication column in the client section), pick the label format and choose the payment method for cash on delivery.
 * In the Packeta>Carrier settings menu, first update the list of carriers and countries, by clicking on the "Update the carrier list" button.
 * In the Packeta>Carrier settings menu, choose the country, to which You want to deliver packets using Packeta and press the "Set up" button
 * For each carrier fill out the following:
