@@ -131,6 +131,22 @@ class Checkout {
 	}
 
 	/**
+	 * @param string|null $carrierId Carrier ID
+	 *
+	 * @return bool
+	 */
+	public function isHomeDeliveryCarrier( ?string $carrierId ): bool {
+		if ( null === $carrierId ) {
+			return false;
+		}
+		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+			return false;
+		}
+
+		return false === $this->carrierRepository->hasPickupPoints( (int) $carrierId );
+	}
+
+	/**
 	 * Check if chosen shipping rate is bound with Packeta pickup points
 	 *
 	 * @return bool
