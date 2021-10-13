@@ -261,7 +261,7 @@ class Entity {
 		foreach ( $this->order->get_items() as $item ) {
 			$quantity      = $item->get_quantity();
 			$product       = $item->get_product();
-			$productWeight = $product->get_weight();
+			$productWeight = (float) $product->get_weight();
 			$weight       += ( $productWeight * $quantity );
 		}
 
