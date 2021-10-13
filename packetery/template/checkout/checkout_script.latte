@@ -112,13 +112,13 @@
 
 				if ( _hasPickupPoints ) {
 					loadInfoForCarrierRate( carrierRateId );
-					$widgetDiv.find('button').html({__( 'Choose pickup point', 'packetery' )});
+					$widgetDiv.find('button').html({__( 'choosePickupPoint', 'packetery' )});
 					$widgetDiv.show();
 				}
 
 				if ( widgetHdAllowed && _hasHomeDelivery ) {
 					loadInfoForHDCarrierRate( carrierRateId );
-					$widgetDiv.find('button').html({__( 'Choose address', 'packetery' )});
+					$widgetDiv.find('button').html({__( 'chooseAddress', 'packetery' )});
 					$widgetDiv.show();
 				}
 			};
