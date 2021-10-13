@@ -31,10 +31,12 @@
 			var hdRatesWithInfo = [];
 			var saveInfoForHDCarrierRate = function (carrierRateId) {
 				for (var attributeKey in homeDeliveryAttributes) {
-					if ( homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
-						var attribute = homeDeliveryAttributes[attributeKey].name;
-						$widgetDiv.data(carrierRateId + '-' + attribute, $('#' + attribute).val());
+					if ( ! homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+						continue;
 					}
+
+					var attribute = homeDeliveryAttributes[attributeKey].name;
+					$widgetDiv.data(carrierRateId + '-' + attribute, $('#' + attribute).val());
 				}
 				hdRatesWithInfo.push(carrierRateId);
 			};
