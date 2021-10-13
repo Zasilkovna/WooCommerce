@@ -389,6 +389,7 @@ class LabelPrint {
 			if ( null === $order->getPacketId() ) {
 				continue;
 			}
+			// todo pouzit druhy typ entity a zrusit isExternalCarrier
 			if ( ! $isCarrierLabels || $order->isExternalCarrier() ) {
 				$packetIds[ $order->getPostId() ] = $order->getPacketId();
 			}

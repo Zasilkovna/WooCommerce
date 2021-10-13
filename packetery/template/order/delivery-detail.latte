@@ -8,7 +8,7 @@
 
     <p><strong>{__( 'Name', 'packetery' )}</strong>: {$order->getPointName()}</p>
     <p><strong>{__( 'Address', 'packetery' )}</strong>: {$order->getPointStreet()}, {$order->getPointZip()} {$order->getPointCity()}</p>
-	{if $order->isInternalPickupPointDelivery()}
+	{if $order->getPointUrl()}
 		<p><a class="button" target="_blank"
 			  href="{$order->getPointUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a></p>
 	{/if}

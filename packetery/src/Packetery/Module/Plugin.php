@@ -307,7 +307,7 @@ class Plugin {
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
 		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		if ( false === $orderEntity->isPickupPointDelivery() ) {
 			return;
 		}
 
@@ -326,7 +326,7 @@ class Plugin {
 	 */
 	public function renderOrderDetail( WC_Order $order ): void {
 		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		if ( false === $orderEntity->isPickupPointDelivery() ) {
 			return;
 		}
 
@@ -347,7 +347,7 @@ class Plugin {
 		}
 
 		$orderEntity = new Order\Entity( $email->object );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		if ( false === $orderEntity->isPickupPointDelivery() ) {
 			return;
 		}
 

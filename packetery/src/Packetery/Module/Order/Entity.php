@@ -84,24 +84,6 @@ class Entity {
 	}
 
 	/**
-	 * Tells if order has Packeta shipping.
-	 *
-	 * @return bool
-	 */
-	public function isPacketeryRelated(): bool {
-		return $this->order->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ); // todo Move to service?
-	}
-
-	/**
-	 * Tells if order is related to Packeta pickup point.
-	 *
-	 * @return bool
-	 */
-	public function isPacketeryPickupPointRelated(): bool {
-		return $this->isPacketeryRelated() && null !== $this->getPointId();
-	}
-
-	/**
 	 * Gets meta property of order as string.
 	 *
 	 * @param string $key Meta order key.
@@ -143,7 +125,7 @@ class Entity {
 	 */
 	public function getPointId(): ?int {
 		$value = $this->getMetaAsNullableString( self::META_POINT_ID );
-
+		// todo osetrit id ext. prepravcu
 		return ( null !== $value ? (int) $value : null );
 	}
 
@@ -202,7 +184,7 @@ class Entity {
 	}
 
 	/**
-	 * Gets carrier id.
+	 * Gets carrier id. todo muze byt null?
 	 *
 	 * @return string|null
 	 */
@@ -312,55 +294,33 @@ class Entity {
 		return $this->getMetaAsNullableFloat( self::META_HEIGHT );
 	}
 
+	// todo nesla by vsude pouzivat obecna entita? a tohle jen jako adapter
+
 	/**
-	 * Checks if is home delivery. In that case pointId is not set.
+	 * Tells if order has Packeta shipping.
 	 *
 	 * @return bool
 	 */
-	public function isHomeDelivery(): bool {
-		return ( $this->getCarrierId() !== null && $this->getPointType() === null );
+	public function isPacketeryRelated(): bool {
+		return $this->order->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID );
 	}
 
 	/**
-	 * Checks if is external pickup point delivery. In that case, pointCarrierId is set.
+	 * Tells if order is related to Packeta pickup point. // todo do sablon poslat pp entitu a dat pryc
 	 *
 	 * @return bool
 	 */
-	public function isExternalPickupPointDelivery(): bool {
-		$ppType = $this->getPointType();
-
-		return ( $ppType && 'external' === $ppType );
+	public function isPickupPointDelivery(): bool {
+		return $this->isPacketeryRelated() && null !== $this->getPointId();
 	}
 
 	/**
-	 * Checks if uses external carrier.
+	 * Checks if uses external carrier. // todo to be removed
 	 *
 	 * @return bool
 	 */
 	public function isExternalCarrier(): bool {
 		return ( Repository::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
-	}
-
-	/**
-	 * Checks if uses internal pickup point.
-	 *
-	 * @return bool
-	 */
-	public function isInternalPickupPointDelivery(): bool {
-		return ( Repository::INTERNAL_PICKUP_POINTS_ID === $this->getCarrierId() );
-	}
-
-	/**
-	 * Gets pickup point/carrier id.
-	 *
-	 * @return int
-	 */
-	public function getAddressId(): int {
-		if ( $this->isExternalPickupPointDelivery() || $this->isHomeDelivery() ) {
-			return (int) $this->getCarrierId();
-		}
-
-		return (int) $this->getPointId();
 	}
 
 	/**

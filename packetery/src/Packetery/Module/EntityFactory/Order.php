@@ -88,10 +88,9 @@ class Order {
 		$orderEntity->setIsExported( $moduleOrder->isExported() );
 		$orderEntity->setAdultContent( $moduleOrder->containsAdultContent() );
 
-		if ( ! $moduleOrder->isHomeDelivery() ) {
+		if ( $moduleOrder->getPointId() ) {
 			$pickupPoint = new Entity\PickupPoint(
 				$moduleOrder->getPointId(),
-				$moduleOrder->getPointType(),
 				$moduleOrder->getPointName(),
 				$moduleOrder->getPointCity(),
 				$moduleOrder->getPointZip(),
@@ -127,7 +126,7 @@ class Order {
 		$size = new Size( $moduleOrder->getLength(), $moduleOrder->getWidth(), $moduleOrder->getHeight() );
 		$orderEntity->setSize( $size );
 
-		if ( $moduleOrder->isExternalCarrier() ) {
+		if ( $orderEntity->isExternalCarrier() ) {
 			$carrier = $this->carrierRepository->getById( (int) $orderEntity->getCarrierId() );
 			$orderEntity->setCarrier( $carrier );
 		}

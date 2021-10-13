@@ -64,17 +64,9 @@ class PickupPoint {
 	private $carrierPointId;
 
 	/**
-	 * Pickup point type.
-	 *
-	 * @var string|null
-	 */
-	private $type;
-
-	/**
 	 * PickupPoint constructor.
 	 *
 	 * @param int|null    $id Point id.
-	 * @param string|null $type Point type.
 	 * @param string|null $name Point name.
 	 * @param string|null $city Point city.
 	 * @param string|null $zip Point zip.
@@ -84,7 +76,6 @@ class PickupPoint {
 	 */
 	public function __construct(
 		?int $id,
-		?string $type,
 		?string $name,
 		?string $city,
 		?string $zip,
@@ -93,7 +84,6 @@ class PickupPoint {
 		?string $carrierPointId
 	) {
 		$this->id             = $id;
-		$this->type           = $type;
 		$this->name           = $name;
 		$this->city           = $city;
 		$this->zip            = $zip;
@@ -164,15 +154,5 @@ class PickupPoint {
 	public function getCarrierPointId(): ?string {
 		return $this->carrierPointId;
 	}
-
-	/**
-	 * Gets pickup point type.
-	 *
-	 * @return string|null
-	 */
-	public function getType(): ?string {
-		return $this->type;
-	}
-
 
 }

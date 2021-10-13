@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\EntityFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -57,6 +58,13 @@ class GridExtender {
 	private $orderController;
 
 	/**
+	 *
+	 *
+	 * @var EntityFactory\Order
+	 */
+	private $entityFactory;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param Helper     $helper            Helper.
@@ -70,13 +78,15 @@ class GridExtender {
 		Repository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
-		Controller $orderController
+		Controller $orderController,
+		EntityFactory\Order $entityFactory
 	) {
 		$this->helper            = $helper;
 		$this->carrierRepository = $carrierRepository;
 		$this->latteEngine       = $latteEngine;
 		$this->httpRequest       = $httpRequest;
 		$this->orderController   = $orderController;
+		$this->entityFactory = $entityFactory;
 	}
 
 	/**
@@ -207,34 +217,33 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-		$order  = wc_get_order( $post->ID );
-		$entity = new Entity( $order );
+		$wcOrder  = wc_get_order( $post->ID );
+		$order = $this->entityFactory->create( $wcOrder );
 
 		switch ( $column ) {
 			case 'packetery_destination':
-				$pointName = $entity->getPointName();
-				$pointId   = $entity->getPointId();
-
-				$country = strtolower( $order->get_shipping_country() );
-
-				if ( $entity->isHomeDelivery() ) {
-					$homeDeliveryCarrier = $this->carrierRepository->getById( (int) $entity->getCarrierId() );
-					if ( $homeDeliveryCarrier ) {
-						$homeDeliveryCarrierEntity = new Carrier\Entity( $homeDeliveryCarrier );
-						echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
+				$pickupPoint = $order->getPickupPoint();
+				if ( null !== $pickupPoint ) {
+					$pointName         = $pickupPoint->getName();
+					$pointId           = $pickupPoint->getId();
+					// todo k objednavce nebo PP?
+					$country           = strtolower( $wcOrder->get_shipping_country() );
+					$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
+					if ( in_array( $country, $internalCountries, true ) ) {
+						echo esc_html( "$pointName ($pointId)" );
+					} else {
+						echo esc_html( $pointName );
 					}
 					break;
 				}
-
-				$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
-				if ( $pointName && $pointId && in_array( $country, $internalCountries, true ) ) {
-					echo esc_html( "$pointName ($pointId)" );
-				} elseif ( $pointName ) {
-					echo esc_html( $pointName );
+				$homeDeliveryCarrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
+				if ( $homeDeliveryCarrier ) {
+					$homeDeliveryCarrierEntity = new Carrier\Entity( $homeDeliveryCarrier );
+					echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
 				}
 				break;
 			case Entity::META_PACKET_ID:
-				$packetId = $entity->getPacketId();
+				$packetId = $order->getPacketId();
 				if ( $packetId ) {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
 				}

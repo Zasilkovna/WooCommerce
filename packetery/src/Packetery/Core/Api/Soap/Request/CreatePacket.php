@@ -166,8 +166,8 @@ class CreatePacket {
 		$this->phone        = $order->getPhone();
 
 		$pickupPoint = $order->getPickupPoint();
-		if ( null !== $pickupPoint ) {
-			$this->carrierPickupPoint = $pickupPoint->getCarrierPointId();
+		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {
+			$this->carrierPickupPoint = $pickupPoint->getId();
 		}
 
 		if ( $order->isHomeDelivery() ) {

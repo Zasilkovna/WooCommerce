@@ -9,9 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use Packetery\Core\Validator;
 use Packetery\Module\Carrier\Repository;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
@@ -53,6 +51,7 @@ class Checkout {
 			'name'     => Entity::META_POINT_STREET,
 			'required' => true,
 		),
+		// todo zahodit
 		'pickupPointType'      => array(
 			'name'     => Entity::META_POINT_TYPE,
 			'required' => true,
@@ -61,6 +60,7 @@ class Checkout {
 			'name'     => Entity::META_CARRIER_ID,
 			'required' => false,
 		),
+		// todo zahodit?
 		'carrierPickupPointId' => array(
 			'name'     => Entity::META_POINT_CARRIER_ID,
 			'required' => false,
@@ -360,7 +360,10 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
+
 		$post = $this->httpRequest->getPost();
+
+		// Save carrier id for home delivery (we got no id from widget).
 		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
 			$carrierId = $this->getCarrierId( $chosenMethod );
 			if ( $carrierId ) {
@@ -374,12 +377,33 @@ class Checkout {
 
 		if ( $this->isPickupPointOrder() ) {
 			foreach ( self::$pickupPointAttrs as $attr ) {
-				if (
-					isset( $post[ $attr['name'] ] ) &&
-					( Entity::META_CARRIER_ID !== $attr['name'] || $post[ $attr['name'] ] )
-				) {
-					update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
+				$attrName = $attr['name'];
+				if ( ! isset( $post[ $attrName ] ) ) {
+					continue;
 				}
+				$attrValue = $post[ $attrName ];
+
+				$isNotCarrierIdOrIsNotEmpty = Entity::META_CARRIER_ID !== $attrName || $attrValue;
+				$isNotUrlOrIsValidUrl       = Entity::META_POINT_URL !== $attrName || filter_var( $attrValue, FILTER_FLAG_HOST_REQUIRED );
+				if (
+					$isNotCarrierIdOrIsNotEmpty &&
+					$isNotUrlOrIsValidUrl
+				) {
+					update_post_meta( $orderId, $attrName, $attrValue );
+				}
+				// todo OR, pridat podminku na int.PP
+				$filters = [
+					Entity::META_CARRIER_ID => function ( $value ) {
+						return ! empty( $value );
+					},
+					Entity::META_POINT_URL  => function ( $value ) {
+						return filter_var( $value, FILTER_FLAG_HOST_REQUIRED );
+					},
+				];
+				if ( ! isset( $filters[ $attrName ] ) || call_user_func( $filters[ $attrName ], $attrValue ) ) {
+					update_post_meta( $orderId, $attrName, $attrValue );
+				}
+
 			}
 		}
 
