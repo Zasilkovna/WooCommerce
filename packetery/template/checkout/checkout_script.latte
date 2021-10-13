@@ -18,7 +18,7 @@
 				'{$attr['name']|noescape}': '{$id|noescape}',
                 {/foreach}
 			};
-			var homeDeliveryAttrs = {$homeDeliveryAttrs};
+			var homeDeliveryAttributes = {$homeDeliveryAttrs};
 
 			var ratesWithInfo = [];
 			var saveInfoForCarrierRate = function (carrierRateId) {
@@ -28,11 +28,22 @@
 				ratesWithInfo.push(carrierRateId);
 			};
 
+			var hdRatesWithInfo = [];
+			var saveInfoForHDCarrierRate = function (carrierRateId) {
+				for (var attributeKey in homeDeliveryAttributes) {
+					if ( homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+						var attribute = homeDeliveryAttributes[attributeKey].name;
+						$widgetDiv.data(carrierRateId + '-' + attribute, $('#' + attribute).val());
+					}
+				}
+				hdRatesWithInfo.push(carrierRateId);
+			};
+
 			var loadInfoForCarrierRate = function (carrierRateId) {
 				for (var attribute in pickupPointAttributes) {
 					$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
 				}
-				$widgetDiv.find('.packeta-pickup-point-name').html($widgetDiv.data(carrierRateId + '-packetery_point_name'));
+				$widgetDiv.find('.packeta-widget-info').html($widgetDiv.data(carrierRateId + '-packetery_point_name'));
 			};
 
 			var clearPickupPointInfo = function () {
@@ -42,7 +53,28 @@
 						$('#' + attribute).val('');
 					}
 				}
-				$widgetDiv.find('.packeta-pickup-point-name').html('');
+				$widgetDiv.find('.packeta-widget-info').html('');
+			};
+
+			var clearHDInfo = function () {
+				for (var carrierRateIdKey in hdRatesWithInfo) {
+					if ( ! hdRatesWithInfo.hasOwnProperty( carrierRateIdKey ) ) {
+						continue;
+					}
+
+					var carrierRateId = hdRatesWithInfo[carrierRateIdKey];
+					for (var attributeKey in homeDeliveryAttributes) {
+						if ( ! homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+							continue;
+						}
+
+						var attribute = homeDeliveryAttributes[attributeKey].name;
+						$widgetDiv.data(carrierRateId + '-' + attribute, '');
+						$('#' + attribute).val('');
+					}
+				}
+
+				$widgetDiv.find('.packeta-widget-info').html('');
 			};
 
 			var hasPickupPoints = function( carrierRateId ) {
@@ -71,7 +103,7 @@
 				}
 
 				if ( widgetHdAllowed && _hasHomeDelivery ) {
-					$widgetDiv.find( '.packeta-pickup-point-name' ).html( '' );
+					$widgetDiv.find( '.packeta-widget-info' ).html( '' );
 					$widgetDiv.find('button').html({__( 'Choose address', 'packetery' )});
 					$widgetDiv.show();
 				}
@@ -114,6 +146,19 @@
 				}
 			};
 
+			var addressToString = function( address ) {
+				var filterEmpty = function( word ) {
+                    return !!word;
+				};
+
+				return [
+					[address.street, address.houseNumber].filter(filterEmpty).join(' '),
+					[address.city, address.postCode].filter(filterEmpty).join(' '),
+					address.county,
+					address.country
+                ].filter(filterEmpty).join(', ');
+            };
+
 			$(document).on('updated_checkout', function () {
 				var shippingCountry;
 				if ($('#shipping_country:visible').length === 1) {
@@ -123,6 +168,7 @@
 				}
 				if (shippingCountry !== $widgetDiv.data('country')) {
 					clearPickupPointInfo();
+					clearHDInfo();
 					$widgetDiv.data('country', shippingCountry);
 				}
 				updateWidgetButtonVisibility(getShippingRateId());
@@ -159,14 +205,37 @@
 						if (selectedAddress != null) {
 
 							// todo save selected address to shipping address
+                            // todo rm
+							selectedAddress.street = 'My street';
+							selectedAddress.houseNumber = '123';
+							selectedAddress.city = 'Chomutov';
+							selectedAddress.postCode = '431 00';
+							selectedAddress.country = 'cz';
+							selectedAddress.gps = {
+								lon: "14.654",
+								lat: 58.888,
+                            };
 
-							for ( var homeDeliveryAttrKey in homeDeliveryAttrs ) {
-								if ( homeDeliveryAttrs.hasOwnProperty( homeDeliveryAttrKey ) ) {
-									$( '#' + homeDeliveryAttrs[ homeDeliveryAttrKey ].name ).val( JSON.stringify( selectedAddress[ homeDeliveryAttrKey ] ) );
+							// show selected address
+							$widgetDiv.find('.packeta-widget-info').html(addressToString(selectedAddress));
+
+							for ( var homeDeliveryAttrKey in homeDeliveryAttributes ) {
+								if ( ! homeDeliveryAttributes.hasOwnProperty( homeDeliveryAttrKey ) ) {
+									continue;
+                                }
+
+                                var addressFieldValue = selectedAddress[ homeDeliveryAttrKey ];
+                                var $hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
+
+								if ( homeDeliveryAttrKey === 'gps' ) {
+									$hiddenPacketeryFormField.val( JSON.stringify( addressFieldValue ) ); // gps is object
+									continue;
 								}
+
+								$hiddenPacketeryFormField.val( addressFieldValue );
 							}
 
-							saveInfoForCarrierRate( getShippingRateId() );
+							saveInfoForHDCarrierRate( getShippingRateId() );
 						}
 					}, widgetOptions);
 				}
@@ -176,14 +245,14 @@
 						if (pickupPoint != null) {
 
 							// show selected pickup point
-							$widgetDiv.find('.packeta-pickup-point-name').html(pickupPoint.name);
+							$widgetDiv.find('.packeta-widget-info').html(pickupPoint.name);
 
 							// fill hidden inputs
                             {foreach $pickup_point_attrs as $id => $attr}
 							$('#{$attr['name']|noescape}').val(pickupPoint.{$id|noescape});
                             {/foreach}
 
-							saveInfoForCarrierRate(getShippingRateId());
+							saveInfoForCarrierRate( getShippingRateId() );
 						}
 					}, widgetOptions);
 				}
@@ -198,12 +267,12 @@
 		dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
 
 		if ( widgetHdAllowed ) {
-			dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ) );
+			// dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ) );
 		}
 
 		dependencies.push(
 			$.Deferred(function( deferred ){
-                $( deferred.resolve );
+                $( deferred.resolve ); // wait for DOM to be loaded
             })
         );
 

@@ -76,28 +76,25 @@ class Checkout {
 	 */
 	private static $homeDeliveryAttrs = [
 		'houseNumber' => [
-			'name'     => 'packetery_address_street',
-			'required' => false,
+			'name'     => 'packetery_address_houseNumber',
 		],
 		'street'      => [
 			'name'     => 'packetery_address_street',
-			'required' => false,
 		],
 		'city'        => [
 			'name'     => 'packetery_address_city',
-			'required' => false,
 		],
 		'postCode'    => [
 			'name'     => 'packetery_address_postCode',
-			'required' => false,
+		],
+		'county'     => [
+			'name'     => 'packetery_address_county',
 		],
 		'country'     => [
 			'name'     => 'packetery_address_country',
-			'required' => false,
 		],
 		'gps'         => [
 			'name'     => 'packetery_address_gps',
-			'required' => false,
 		],
 	];
 
@@ -365,12 +362,11 @@ class Checkout {
 
 		if ( $this->isHomeDeliveryOrder() ) {
 			$logData = [
-				'post_title'   => 'title',
-				'post_content' => '',
+				'post_title'   => '', // required
+				'post_content' => '', // required
 				'post_type'    => 'packetery_address',
 				'post_status'  => 'publish',
 				'post_parent'  => $orderId,
-				'log_type'     => false,
 			];
 
 			$addressId = wp_insert_post( $logData );
