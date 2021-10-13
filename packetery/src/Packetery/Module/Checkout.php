@@ -145,42 +145,6 @@ class Checkout {
 	}
 
 	/**
-	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
-	 *
-	 * @param string|null $carrierId Carrier id.
-	 *
-	 * @return bool
-	 */
-	public function isPickupPointCarrier( ?string $carrierId ): bool {
-		if ( null === $carrierId ) {
-			return false;
-		}
-		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
-			return true;
-		}
-
-		return $this->carrierRepository->hasPickupPoints( (int) $carrierId );
-	}
-
-	/**
-	 * Checks if carrier is home delivery carrier.
-	 *
-	 * @param string|null $carrierId Carrier ID.
-	 *
-	 * @return bool
-	 */
-	public function isHomeDeliveryCarrier( ?string $carrierId ): bool {
-		if ( null === $carrierId ) {
-			return false;
-		}
-		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
-			return false;
-		}
-
-		return false === $this->carrierRepository->hasPickupPoints( (int) $carrierId );
-	}
-
-	/**
 	 * Check if chosen shipping rate is bound with Packeta pickup points
 	 *
 	 * @return bool
@@ -189,7 +153,7 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $this->isPickupPointCarrier( $carrierId );
+		return $this->carrierRepository->isPickupPointCarrier( $carrierId );
 	}
 
 	/**
@@ -201,7 +165,7 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $this->isHomeDeliveryCarrier( $carrierId );
+		return $this->carrierRepository->isHomeDeliveryCarrier( $carrierId );
 	}
 
 	/**
@@ -221,7 +185,7 @@ class Checkout {
 		$carriers     = '';
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
-		if ( $this->isPickupPointCarrier( $carrierId ) ) {
+		if ( $this->carrierRepository->isPickupPointCarrier( $carrierId ) ) {
 			$carriers = $carrierId;
 		}
 
