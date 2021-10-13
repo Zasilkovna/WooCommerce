@@ -76,28 +76,28 @@ class Checkout {
 	 */
 	private static $homeDeliveryAttrs = [
 		'houseNumber' => [
-			'name'     => 'packetery_address_houseNumber',
+			'name' => 'packetery_address_houseNumber',
 		],
 		'street'      => [
-			'name'     => 'packetery_address_street',
+			'name' => 'packetery_address_street',
 		],
 		'city'        => [
-			'name'     => 'packetery_address_city',
+			'name' => 'packetery_address_city',
 		],
 		'postCode'    => [
-			'name'     => 'packetery_address_postCode',
+			'name' => 'packetery_address_postCode',
 		],
-		'county'     => [
-			'name'     => 'packetery_address_county',
+		'county'      => [
+			'name' => 'packetery_address_county',
 		],
 		'country'     => [
-			'name'     => 'packetery_address_country',
+			'name' => 'packetery_address_country',
 		],
-		'gps_lon'         => [
-			'name'     => 'packetery_address_gps_lon',
+		'gps_lon'     => [
+			'name' => 'packetery_address_gps_lon',
 		],
-		'gps_lat'         => [
-			'name'     => 'packetery_address_gps_lat',
+		'gps_lat'     => [
+			'name' => 'packetery_address_gps_lat',
 		],
 	];
 
@@ -244,12 +244,12 @@ class Checkout {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/checkout_script.latte',
 			[
-				'app_identity'               => $app_identity,
-				'pickup_point_attrs'         => self::$pickup_point_attrs,
-				'homeDeliveryAttrs'          => self::$homeDeliveryAttrs,
-				'packetery_api_key'          => $this->options_provider->get_api_key(),
-				'carrierPrefix'              => self::CARRIER_PREFIX,
-				'carriers'                   => $this->carrierRepository->getAllIncludingZpoints(),
+				'app_identity'       => $app_identity,
+				'pickup_point_attrs' => self::$pickup_point_attrs,
+				'homeDeliveryAttrs'  => self::$homeDeliveryAttrs,
+				'packetery_api_key'  => $this->options_provider->get_api_key(),
+				'carrierPrefix'      => self::CARRIER_PREFIX,
+				'carriers'           => $this->carrierRepository->getAllIncludingZpoints(),
 			]
 		);
 	}
