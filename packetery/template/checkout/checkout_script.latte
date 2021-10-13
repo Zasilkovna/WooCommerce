@@ -48,6 +48,18 @@
 				$widgetDiv.find('.packeta-widget-info').html($widgetDiv.data(carrierRateId + '-packetery_point_name'));
 			};
 
+			var loadInfoForHDCarrierRate = function (carrierRateId) {
+				for (var attributeKey in homeDeliveryAttributes) {
+					if ( ! homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+						continue;
+					}
+
+					var attribute = homeDeliveryAttributes[attributeKey].name;
+					$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
+				}
+				$widgetDiv.find('.packeta-widget-info').html($widgetDiv.data(carrierRateId + '-packetery_address_street'));
+			};
+
 			var clearPickupPointInfo = function () {
 				for (var carrierRateId of ratesWithInfo) {
 					for (var attribute in pickupPointAttributes) {
@@ -105,7 +117,7 @@
 				}
 
 				if ( widgetHdAllowed && _hasHomeDelivery ) {
-					$widgetDiv.find( '.packeta-widget-info' ).html( '' );
+					loadInfoForHDCarrierRate( carrierRateId );
 					$widgetDiv.find('button').html({__( 'Choose address', 'packetery' )});
 					$widgetDiv.show();
 				}
@@ -147,19 +159,6 @@
 					return extractDestination( 'billing' );
 				}
 			};
-
-			var addressToString = function( address ) {
-				var filterEmpty = function( word ) {
-                    return !!word;
-				};
-
-				return [
-					[address.street, address.houseNumber].filter(filterEmpty).join(' '),
-					[address.city, address.postCode].filter(filterEmpty).join(' '),
-					address.county,
-					address.country
-                ].filter(filterEmpty).join(', ');
-            };
 
 			$(document).on('updated_checkout', function () {
 				var shippingCountry;
@@ -219,7 +218,7 @@
                             };
 
 							// show selected address
-							$widgetDiv.find('.packeta-widget-info').html(addressToString(selectedAddress));
+							$widgetDiv.find('.packeta-widget-info').html( selectedAddress.street );
 
 							for ( var homeDeliveryAttrKey in homeDeliveryAttributes ) {
 								if ( ! homeDeliveryAttributes.hasOwnProperty( homeDeliveryAttrKey ) ) {
