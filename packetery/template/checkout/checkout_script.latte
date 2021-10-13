@@ -100,8 +100,9 @@
 			};
 
 			var updateWidgetButtonVisibility = function (carrierRateId) {
+				$widgetDiv.hide();
+
 				if ( typeof carrierConfig[carrierRateId] === 'undefined' ) {
-					$widgetDiv.hide();
 					return;
 				}
 
