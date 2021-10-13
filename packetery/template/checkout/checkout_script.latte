@@ -206,7 +206,7 @@
 						if (selectedAddress != null) {
 
 							// todo save selected address to shipping address
-                            // todo rm
+                            // todo remove and test before publishing!
 							selectedAddress.street = 'My street';
 							selectedAddress.houseNumber = '123';
 							selectedAddress.city = 'Chomutov';
@@ -272,6 +272,7 @@
 		dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
 
 		if ( widgetHdAllowed ) {
+			// todo uncomment and test before publishing!
 			// dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ) );
 		}
 
