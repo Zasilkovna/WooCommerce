@@ -142,9 +142,7 @@ class Entity {
 	 * @return string|null
 	 */
 	public function getPointId(): ?string {
-		$value = $this->getMetaAsNullableString( self::META_POINT_ID );
-
-		return ( $value ?? null );
+		return $this->getMetaAsNullableString( self::META_POINT_ID );
 	}
 
 	/**
