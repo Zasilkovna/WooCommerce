@@ -10,10 +10,15 @@
 					"order": $target.data( 'order-data' )
 				}
 			} );
-		} ).on( 'click', '.packetery-save-button', function( e ) {
+
+			setTimeout(function() {
+				Nette.init();
+			}, 200);
+
+		} ).on( 'submit', '#order-modal-edit-form', function( e ) {
 			var $target = $( e.target );
 			if ( $target.hasClass( 'disabled' ) ) {
-				return;
+				return false;
 			}
 
 			var orderId = $target.data( 'order-id' );
@@ -48,6 +53,8 @@
 				$target.removeClass( 'disabled' );
 				$packeteryModal.find( '.spinner' ).removeClass( 'is-active' );
 			} );
+
+			return false;
 		} ).on( 'click', '[data-packetery-modal] .notice-dismiss', function( e ) {
 			var $target = $( e.target );
 			$target.closest( '.notice' ).addClass( 'hidden' );
