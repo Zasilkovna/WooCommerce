@@ -225,13 +225,17 @@
 									continue;
                                 }
 
-                                var addressFieldValue = selectedAddress[ homeDeliveryAttrKey ];
-                                var $hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
-
-								if ( homeDeliveryAttrKey === 'gps' ) {
-									$hiddenPacketeryFormField.val( JSON.stringify( addressFieldValue ) ); // gps is object
-									continue;
-								}
+								var addressFieldValue, $hiddenPacketeryFormField;
+								if ( homeDeliveryAttrKey === 'gps_lon' ) {
+									addressFieldValue = selectedAddress['gps']['lon'];
+									$hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
+								} else if ( homeDeliveryAttrKey === 'gps_lat' ) {
+									addressFieldValue = selectedAddress['gps']['lat'];
+									$hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
+								} else {
+									addressFieldValue = selectedAddress[ homeDeliveryAttrKey ];
+									$hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
+                                }
 
 								$hiddenPacketeryFormField.val( addressFieldValue );
 							}

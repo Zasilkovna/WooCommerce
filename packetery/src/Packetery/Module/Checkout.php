@@ -93,8 +93,11 @@ class Checkout {
 		'country'     => [
 			'name'     => 'packetery_address_country',
 		],
-		'gps'         => [
-			'name'     => 'packetery_address_gps',
+		'gps_lon'         => [
+			'name'     => 'packetery_address_gps_lon',
+		],
+		'gps_lat'         => [
+			'name'     => 'packetery_address_gps_lat',
 		],
 	];
 
