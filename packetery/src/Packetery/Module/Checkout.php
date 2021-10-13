@@ -163,7 +163,9 @@ class Checkout {
 	}
 
 	/**
-	 * @param string|null $carrierId Carrier ID
+	 * Checks if carrier is home delivery carrier.
+	 *
+	 * @param string|null $carrierId Carrier ID.
 	 *
 	 * @return bool
 	 */
@@ -365,8 +367,8 @@ class Checkout {
 
 		if ( $this->isHomeDeliveryOrder() ) {
 			$logData = [
-				'post_title'   => '', // required
-				'post_content' => '', // required
+				'post_title'   => '', // required.
+				'post_content' => '', // required.
 				'post_type'    => 'packetery_address',
 				'post_status'  => 'publish',
 				'post_parent'  => $orderId,
