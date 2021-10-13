@@ -5,7 +5,7 @@ use PacketeryNette\Bootstrap\Configurator;
 
 defined( 'PACKETERY_PLUGIN_DIR' ) || define( 'PACKETERY_PLUGIN_DIR', __DIR__ );
 defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
-defined( 'PACKETERY_ALLOW_WIDGET_HD' ) || define( 'PACKETERY_ALLOW_WIDGET_HD', true ); // todo
+defined( 'PACKETERY_ALLOW_WIDGET_HD' ) || define( 'PACKETERY_ALLOW_WIDGET_HD', false ); // todo
 
 require_once __DIR__ . '/packetery_vendor/autoload.php';
 
