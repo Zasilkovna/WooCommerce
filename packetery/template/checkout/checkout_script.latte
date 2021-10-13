@@ -45,7 +45,7 @@
 				for (var attribute in pickupPointAttributes) {
 					$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
 				}
-				$widgetDiv.find('.packeta-widget-info').html($widgetDiv.data(carrierRateId + '-packetery_point_name'));
+				$widgetDiv.find('.packeta-widget-info').html('').html($widgetDiv.data(carrierRateId + '-packetery_point_name'));
 			};
 
 			var loadInfoForHDCarrierRate = function (carrierRateId) {
@@ -57,7 +57,7 @@
 					var attribute = homeDeliveryAttributes[attributeKey].name;
 					$('#' + attribute).val($widgetDiv.data(carrierRateId + '-' + attribute));
 				}
-				$widgetDiv.find('.packeta-widget-info').html($widgetDiv.data(carrierRateId + '-packetery_address_street'));
+				$widgetDiv.find('.packeta-widget-info').html('').html($widgetDiv.data(carrierRateId + '-packetery_address_street'));
 			};
 
 			var clearPickupPointInfo = function () {
