@@ -277,7 +277,7 @@ class Repository {
 	/**
 	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
 	 *
-	 * @param string|null                $carrierId Carrier id.
+	 * @param string|null $carrierId Carrier id.
 	 *
 	 * @return bool
 	 */
@@ -285,7 +285,7 @@ class Repository {
 		if ( null === $carrierId ) {
 			return false;
 		}
-		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
 			return true;
 		}
 
@@ -295,7 +295,7 @@ class Repository {
 	/**
 	 * Checks if carrier is home delivery carrier.
 	 *
-	 * @param string|null                $carrierId Carrier ID.
+	 * @param string|null $carrierId Carrier ID.
 	 *
 	 * @return bool
 	 */
@@ -303,7 +303,7 @@ class Repository {
 		if ( null === $carrierId ) {
 			return false;
 		}
-		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
 			return false;
 		}
 
