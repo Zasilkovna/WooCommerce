@@ -200,9 +200,7 @@
 				var widgetOptions = {
 					appIdentity: {$app_identity},
 					country: $widgetDiv.data( 'country' ),
-					language: $widgetDiv.data( 'language' ),
-					weight: $widgetDiv.data( 'weight' ),
-					carriers: $widgetDiv.data( 'carriers' ),
+					language: $widgetDiv.data( 'language' )
 				};
 
 				var carrierRateId = getShippingRateId();
@@ -260,6 +258,9 @@
 				}
 
 				if ( hasPickupPoints( carrierRateId ) ) {
+					widgetOptions.weight = $widgetDiv.data( 'weight' );
+					widgetOptions.carriers = $widgetDiv.data( 'carriers' );
+
 					Packeta.Widget.pick({$packetery_api_key}, function( pickupPoint ) {
 						if ( pickupPoint != null ) {
 
