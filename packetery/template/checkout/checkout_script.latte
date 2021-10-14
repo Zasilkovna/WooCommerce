@@ -89,6 +89,19 @@
 				$widgetDiv.find( '.packeta-widget-info' ).html( '' );
 			};
 
+			var resetHDInfo = function() {
+                for ( var attributeKey in homeDeliveryAttributes ) {
+                    if ( !homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+                        continue;
+                    }
+
+                    var attribute = homeDeliveryAttributes[ attributeKey ].name;
+                    $( '#' + attribute ).val( '' );
+                }
+
+				$widgetDiv.find( '.packeta-widget-info' ).html( '' );
+			};
+
 			var hasPickupPoints = function( carrierRateId ) {
 				return parseInt( carrierConfig[ carrierRateId ][ 'is_pickup_points' ] ) === 1;
 			};
@@ -99,6 +112,7 @@
 
 			var updateWidgetButtonVisibility = function( carrierRateId ) {
 				$widgetDiv.hide();
+				resetHDInfo();
 
 				if ( typeof carrierConfig[ carrierRateId ] === 'undefined' ) {
 					return;
