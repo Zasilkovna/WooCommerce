@@ -144,6 +144,19 @@
 						</p>
 					</td>
 				</tr>
+				{if isset($form['address_validation'])}
+				<tr>
+					<th scope="row">
+						<label n:name=address_validation />
+					</th>
+					<td>
+						<select n:name=address_validation></select>
+						<p>
+							{__( 'addressValidationDescription', 'packetery' )}
+						</p>
+					</td>
+				</tr>
+				{/if}
 			</table>
 
 			<p class="submit">
