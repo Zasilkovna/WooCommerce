@@ -156,6 +156,17 @@ class OptionsPage {
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$form->addHidden( 'id' )->setRequired();
 
+		$carrier = $this->carrierRepository->getById( (int) $carrierData['id'] );
+		if ( $carrier && false === $carrier->hasPickupPoints() ) {
+			$addressValidationOptions = [
+				'none'     => __( 'no address validation', 'packetery' ),
+				'optional' => __( 'optional address validation', 'packetery' ),
+				'required' => __( 'required address validation', 'packetery' ),
+			];
+			$form->addSelect( 'address_validation', __( 'addressValidation', 'packetery' ), $addressValidationOptions )
+				->setDefaultValue( 'none' );
+		}
+
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
