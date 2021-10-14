@@ -130,18 +130,27 @@ class Checkout {
 	private $httpRequest;
 
 	/**
+	 * Address repository.
+	 *
+	 * @var Address\Repository
+	 */
+	private $addressRepository;
+
+	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine     $latte_engine PacketeryLatte engine.
-	 * @param Provider   $options_provider Options provider.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Request    $httpRequest Http request.
+	 * @param Engine             $latte_engine      PacketeryLatte engine.
+	 * @param Provider           $options_provider  Options provider.
+	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param Request            $httpRequest       Http request.
+	 * @param Address\Repository $addressRepository Address repository.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository ) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
+		$this->addressRepository = $addressRepository;
 	}
 
 	/**
@@ -330,19 +339,15 @@ class Checkout {
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
-			$logData = [
-				'post_title'   => '', // required.
-				'post_content' => '', // required.
-				'post_type'    => 'packetery_address',
-				'post_status'  => 'publish',
-				'post_parent'  => $orderId,
+			$address = [
+				'active' => 1,
 			];
 
-			$addressId = wp_insert_post( $logData );
-
-			foreach ( self::$homeDeliveryAttrs as $attributeData ) {
-				update_post_meta( $addressId, $attributeData['name'], $post[ $attributeData['name'] ] );
+			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
+				$address[ $field ] = $post[ $attributeData['name'] ];
 			}
+
+			$this->addressRepository->save( $orderId, $address );
 		}
 	}
 
@@ -357,7 +362,6 @@ class Checkout {
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
-		add_action( 'init', [ $this, 'registerAddressPostType' ] );
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
 		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
 		add_filter( 'woocommerce_checkout_fields', array( __CLASS__, 'add_pickup_point_fields' ) );
@@ -365,25 +369,6 @@ class Checkout {
 		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
-	}
-
-	/**
-	 * Register address post type.
-	 */
-	public function registerAddressPostType(): void {
-		// todo create dedicated class Address\PostType ?
-
-		$definition = [
-			'labels'          => [ 'name' => __( 'Addresses', 'packetery' ) ],
-			'public'          => false,
-			'query_var'       => false,
-			'rewrite'         => false,
-			'capability_type' => 'post',
-			'supports'        => [ 'title', 'editor' ],
-			'can_export'      => false,
-		];
-
-		register_post_type( 'packetery_address', $definition );
 	}
 
 	/**

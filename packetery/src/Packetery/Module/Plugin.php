@@ -20,6 +20,7 @@ use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use WC_Order;
+use Packetery\Module\Address;
 
 /**
  * Class Plugin
@@ -137,6 +138,13 @@ class Plugin {
 	private $logger;
 
 	/**
+	 * Address repository.
+	 *
+	 * @var Address\Repository
+	 */
+	private $addressRepository;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox      $order_metabox      Order metabox.
@@ -153,6 +161,7 @@ class Plugin {
 	 * @param Product\DataTab    $productTab         Product tab.
 	 * @param Log\Page           $logPage            Log page.
 	 * @param ILogger            $logger             Log manager.
+	 * @param Address\Repository $addressRepository  Address repository.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -168,7 +177,8 @@ class Plugin {
 		Order\GridExtender $gridExtender,
 		Product\DataTab $productTab,
 		Log\Page $logPage,
-		ILogger $logger
+		ILogger $logger,
+		Address\Repository $addressRepository
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -186,6 +196,7 @@ class Plugin {
 		$this->productTab         = $productTab;
 		$this->logPage            = $logPage;
 		$this->logger             = $logger;
+		$this->addressRepository  = $addressRepository;
 	}
 
 	/**
@@ -194,6 +205,7 @@ class Plugin {
 	public function run(): void {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
+		add_action( 'init', [ $this->addressRepository, 'register' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		add_action(
