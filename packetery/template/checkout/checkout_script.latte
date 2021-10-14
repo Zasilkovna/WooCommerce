@@ -1,7 +1,5 @@
 <script>
 	(function( $ ) {
-		var widgetHdAllowed = {= PACKETERY_ALLOW_WIDGET_HD};
-
 		var checkoutMain = function() {
 			var $widgetDiv = $( '.packeta-widget' );
 
@@ -117,7 +115,7 @@
 					$widgetDiv.show();
 				}
 
-				if ( widgetHdAllowed && _hasHomeDelivery ) {
+				if ( _hasHomeDelivery ) {
 					loadInfoForHDCarrierRate( carrierRateId );
 					$widgetDiv.find( 'button' ).html({__( 'chooseAddress', 'packetery' )});
 					$widgetDiv.show();
@@ -194,7 +192,7 @@
 				};
 
 				var carrierRateId = getShippingRateId();
-				if ( widgetHdAllowed && hasHomeDelivery( carrierRateId ) ) {
+				if ( hasHomeDelivery( carrierRateId ) ) {
 					widgetOptions.layout = 'hd';
 
 					var destinationAddress = getDestinationAddress();
@@ -273,10 +271,8 @@
 		var dependencies = [];
 		dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
 
-		if ( widgetHdAllowed ) {
-			// todo uncomment and test before publishing!
-			// dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ) );
-		}
+		// todo uncomment and test before publishing!
+		// dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ) );
 
 		dependencies.push(
 			$.Deferred( function( deferred ) {
