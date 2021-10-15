@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\EntityFactory;
 
 use Packetery\Core\Entity;
+use Packetery\Module\Adapter;
 
 /**
  * Class Address
@@ -27,14 +28,10 @@ class Address {
 	 * @return Entity\Address|null
 	 */
 	public function fromPostId( int $addressId ): ?Entity\Address {
-		$metadata    = get_post_meta( $addressId );
-		$street      = array_shift( $metadata['street'] );
-		$city        = array_shift( $metadata['city'] );
-		$zip         = array_shift( $metadata['postCode'] );
-		$houseNumber = array_shift( $metadata['houseNumber'] );
+		$meta    = Adapter::getAllPostMeta( $addressId );
 
-		$address = new Entity\Address( $street, $city, $zip );
-		$address->setHouseNumber( $houseNumber );
+		$address = new Entity\Address( $meta['street'], $meta['city'], $meta['postCode'] );
+		$address->setHouseNumber( $meta['houseNumber'] );
 
 		return $address;
 	}
