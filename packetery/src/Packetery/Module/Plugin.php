@@ -370,6 +370,7 @@ class Plugin {
 	public function enqueueFrontAssets(): void {
 		$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
 		$this->enqueueScript( 'packetery-widget-hd-library', 'public/widget-hd-library.js', false );
+		$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false );
 	}
 
 	/**
