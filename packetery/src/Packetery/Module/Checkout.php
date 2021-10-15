@@ -162,7 +162,7 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $this->carrierRepository->isPickupPointCarrier( $carrierId );
+		return $carrierId && $this->carrierRepository->isPickupPointCarrier( $carrierId );
 	}
 
 	/**
@@ -174,7 +174,7 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $this->carrierRepository->isHomeDeliveryCarrier( $carrierId );
+		return $carrierId && $this->carrierRepository->isHomeDeliveryCarrier( $carrierId );
 	}
 
 	/**
@@ -194,7 +194,7 @@ class Checkout {
 		$carriers     = '';
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
-		if ( $this->carrierRepository->isPickupPointCarrier( $carrierId ) ) {
+		if ( $carrierId && $this->carrierRepository->isPickupPointCarrier( $carrierId ) ) {
 			$carriers = $carrierId;
 		}
 

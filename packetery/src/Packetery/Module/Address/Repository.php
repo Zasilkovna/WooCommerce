@@ -19,7 +19,7 @@ use Packetery\Module\EntityFactory;
  * @package Packetery\Module\Address
  */
 class Repository {
-	public const POST_TYPE = 'packetery_address';
+	public const SHIPPING_POST_TYPE = 'packetery_address';
 
 	/**
 	 * Address factory.
@@ -51,7 +51,7 @@ class Repository {
 			'can_export'      => false,
 		];
 
-		register_post_type( self::POST_TYPE, $definition );
+		register_post_type( self::SHIPPING_POST_TYPE, $definition );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Repository {
 	public function getActiveByOrderId( int $orderId ): ?Entity\Address {
 		$postIds = get_posts(
 			[
-				'post_type'   => self::POST_TYPE,
+				'post_type'   => self::SHIPPING_POST_TYPE,
 				'post_status' => 'any',
 				'nopaging'    => true,
 				'numberposts' => 1,
@@ -97,7 +97,7 @@ class Repository {
 		$addressData = [
 			'post_title'   => '', // required.
 			'post_content' => '', // required.
-			'post_type'    => self::POST_TYPE,
+			'post_type'    => self::SHIPPING_POST_TYPE,
 			'post_status'  => 'publish',
 			'post_parent'  => $orderId,
 		];
