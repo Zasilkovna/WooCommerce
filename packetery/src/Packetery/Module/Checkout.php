@@ -85,7 +85,8 @@ class Checkout {
 			'name' => 'packetery_address_city',
 		],
 		'postCode'    => [
-			'name' => 'packetery_address_postCode',
+			'name'              => 'packetery_address_postCode',
+			'widgetResultField' => 'postcode',
 		],
 		'county'      => [
 			'name' => 'packetery_address_county',
@@ -93,11 +94,11 @@ class Checkout {
 		'country'     => [
 			'name' => 'packetery_address_country',
 		],
-		'gps_lon'     => [
-			'name' => 'packetery_address_gps_lon',
+		'latitude'    => [
+			'name' => 'packetery_address_latitude',
 		],
-		'gps_lat'     => [
-			'name' => 'packetery_address_gps_lat',
+		'longitude'   => [
+			'name' => 'packetery_address_longitude',
 		],
 	];
 

@@ -208,12 +208,7 @@ class Plugin {
 		add_action( 'init', [ $this->addressRepository, 'register' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
-		add_action(
-			'wp_enqueue_scripts',
-			function () {
-				$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-			}
-		);
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
 		Form::initialize();
 
 		add_action(
@@ -367,6 +362,14 @@ class Plugin {
 			[],
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) )
 		);
+	}
+
+	/**
+	 * Enqueues javascript files and stylesheets for checkout.
+	 */
+	public function enqueueFrontAssets(): void {
+		$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
+		$this->enqueueScript( 'packetery-widget-hd-library', 'public/widget-hd-library.js', false );
 	}
 
 	/**

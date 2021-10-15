@@ -214,46 +214,34 @@
 					widgetOptions.postCode = destinationAddress.postCode;
 					widgetOptions.carrierId = carrierConfig[ carrierRateId ][ 'id' ];
 
-					Packeta.Widget.pick({$packetery_api_key}, function( selectedAddress ) {
-						if ( selectedAddress != null ) {
+					Packeta.WidgetHD.pick({$packetery_api_key}, function( result ) {
+                        if ( !result || !result.address ) {
+                            $widgetDiv.find( '.packeta-widget-info' ).html( {__( 'addressValidationIsOutOfOrder', 'packetery' )} );
+                            return;
+                        }
 
-							// todo save selected address to shipping address
-							// todo remove and test before publishing!
-							selectedAddress.street = 'My street';
-							selectedAddress.houseNumber = '123';
-							selectedAddress.city = 'Chomutov';
-							selectedAddress.postCode = '431 00';
-							selectedAddress.country = 'cz';
-							selectedAddress.gps = {
-								lon: "14.654",
-								lat: 58.888,
-							};
+                        var selectedAddress = result.address;
 
-							// show selected address
-							$widgetDiv.find( '.packeta-widget-info' ).html( selectedAddress.street );
+                        // todo save selected address to shipping address
 
-							for ( var homeDeliveryAttrKey in homeDeliveryAttributes ) {
-								if ( !homeDeliveryAttributes.hasOwnProperty( homeDeliveryAttrKey ) ) {
-									continue;
-								}
+                        // show selected address
+                        $widgetDiv.find( '.packeta-widget-info' ).html( selectedAddress.street );
 
-								var addressFieldValue, $hiddenPacketeryFormField;
-								if ( homeDeliveryAttrKey === 'gps_lon' ) {
-									addressFieldValue = selectedAddress[ 'gps' ][ 'lon' ];
-									$hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
-								} else if ( homeDeliveryAttrKey === 'gps_lat' ) {
-									addressFieldValue = selectedAddress[ 'gps' ][ 'lat' ];
-									$hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
-								} else {
-									addressFieldValue = selectedAddress[ homeDeliveryAttrKey ];
-									$hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
-								}
+                        for ( var homeDeliveryAttrKey in homeDeliveryAttributes ) {
+                            if ( !homeDeliveryAttributes.hasOwnProperty( homeDeliveryAttrKey ) ) {
+                                continue;
+                            }
 
-								$hiddenPacketeryFormField.val( addressFieldValue );
-							}
+                            var addressFieldValue, $hiddenPacketeryFormField;
+                            var widgetField = homeDeliveryAttributes[ homeDeliveryAttrKey ].widgetResultField || homeDeliveryAttrKey;
 
-							saveInfoForHDCarrierRate( getShippingRateId() );
-						}
+                            addressFieldValue = selectedAddress[widgetField];
+                            $hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
+
+                            $hiddenPacketeryFormField.val( addressFieldValue );
+                        }
+
+                        saveInfoForHDCarrierRate( getShippingRateId() );
 					}, widgetOptions );
 				}
 
@@ -285,9 +273,6 @@
 
 		var dependencies = [];
 		dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
-
-		// todo uncomment and test before publishing!
-		// dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library-hd.js" ) );
 
 		dependencies.push(
 			$.Deferred( function( deferred ) {
