@@ -23,6 +23,22 @@ class Controller extends WP_REST_Controller {
 	protected $rest_base = 'order';
 
 	/**
+	 * Order modal.
+	 *
+	 * @var Modal
+	 */
+	private $orderModal;
+
+	/**
+	 * Controller constructor.
+	 *
+	 * @param Modal $orderModal
+	 */
+	public function __construct( Modal $orderModal ) {
+		$this->orderModal = $orderModal;
+	}
+
+	/**
 	 * Register the routes of the controller.
 	 *
 	 * @return void
@@ -63,9 +79,28 @@ class Controller extends WP_REST_Controller {
 		$packeteryWeight = $parameters['packeteryWeight'];
 		$orderId         = $parameters['orderId'];
 
-		update_post_meta( $orderId, Order\Entity::META_WEIGHT, $packeteryWeight );
+		$form = $this->orderModal->createForm();
+		$form->setValues([
+			'packetery_weight' => $packeteryWeight
+		]);
+
+		if ( false === $form->isValid()) {
+			$message = __( 'FormIsInvalid', 'packetery' );
+			foreach ( $form->getErrors() as $error ) {
+				$message = $error;
+				break;
+			}
+
+			return new \WP_Error( 'form_invalid', $message);
+		}
+
+		$packeteryWeightTransformed = $form['packetery_weight']->getValue();
+		update_post_meta( $orderId, Order\Entity::META_WEIGHT, $packeteryWeightTransformed );
 
 		$data['message'] = __( 'Success', 'packetery' );
+		$data['data'] = [
+			'packetery_weight' => $packeteryWeightTransformed
+		];
 
 		return new WP_REST_Response( $data, 200 );
 	}

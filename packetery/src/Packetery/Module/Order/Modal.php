@@ -26,11 +26,6 @@ class Modal {
 	private $latteEngine;
 
 	/**
-	 * @var Controller
-	 */
-	private $orderController;
-
-	/**
 	 * @var \Packetery\Module\FormFactory
 	 */
 	private $formFactory;
@@ -42,9 +37,8 @@ class Modal {
 	 * @param Controller                    $orderController Order controller.
 	 * @param \Packetery\Module\FormFactory $formFactory
 	 */
-	public function __construct( Engine $latteEngine, Controller $orderController, \Packetery\Module\FormFactory $formFactory ) {
+	public function __construct( Engine $latteEngine, \Packetery\Module\FormFactory $formFactory ) {
 		$this->latteEngine     = $latteEngine;
-		$this->orderController = $orderController;
 		$this->formFactory = $formFactory;
 	}
 
@@ -57,7 +51,7 @@ class Modal {
 
 	public function renderTemplate(): void {
 		$nonce        = wp_create_nonce( 'wp_rest' );
-		$orderSaveUrl = $this->orderController->getRoute( '/save' );
+		$orderSaveUrl = get_rest_url( null, 'packetery/v1/order/save' ); // TODO: build the URL
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/modal-template.latte',
 			[
