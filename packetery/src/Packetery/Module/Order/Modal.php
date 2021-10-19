@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Module\FormFactory;
+use Packetery\Module\Order;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -26,20 +28,26 @@ class Modal {
 	private $latteEngine;
 
 	/**
-	 * @var \Packetery\Module\FormFactory
+	 * @var FormFactory
 	 */
 	private $formFactory;
 
 	/**
+	 * @var ControllerRouter
+	 */
+	private $orderControllerRouter;
+
+	/**
 	 * Modal constructor.
 	 *
-	 * @param Engine                        $latteEngine     Latte engine.
-	 * @param Controller                    $orderController Order controller.
-	 * @param \Packetery\Module\FormFactory $formFactory
+	 * @param Engine      $latteEngine     Latte engine.
+	 * @param Controller  $orderController Order controller.
+	 * @param FormFactory $formFactory     Form factory.
 	 */
-	public function __construct( Engine $latteEngine, \Packetery\Module\FormFactory $formFactory ) {
-		$this->latteEngine     = $latteEngine;
-		$this->formFactory = $formFactory;
+	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController ) {
+		$this->latteEngine           = $latteEngine;
+		$this->formFactory           = $formFactory;
+		$this->orderControllerRouter = $orderController;
 	}
 
 	/**
@@ -49,9 +57,12 @@ class Modal {
 		add_action( 'admin_head', [ $this, 'renderTemplate' ] );
 	}
 
+	/**
+	 * Renders template.
+	 */
 	public function renderTemplate(): void {
 		$nonce        = wp_create_nonce( 'wp_rest' );
-		$orderSaveUrl = get_rest_url( null, 'packetery/v1/order/save' ); // TODO: build the URL
+		$orderSaveUrl = $this->orderControllerRouter->getRouteUrl( Controller::PATH_SAVE_MODAL );
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/modal-template.latte',
 			[
@@ -69,14 +80,14 @@ class Modal {
 	 */
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
-		$form->addText( 'packetery_weight', __( 'Weight', 'packetery' ) )
+		$form->addText( Order\Entity::META_WEIGHT, __( 'Weight', 'packetery' ) )
 			 ->setRequired( false )
 			 ->addRule( Form::FLOAT );
 
 		$form->addSubmit( 'submit',  __( 'Save', 'packetery' ) );
 
 		$form->setDefaults( [
-			'packetery_weight' => '{{ data.order.packetery_weight }}'
+			Order\Entity::META_WEIGHT => '{{ data.order.packetery_weight }}'
 		] );
 
 		return $form;

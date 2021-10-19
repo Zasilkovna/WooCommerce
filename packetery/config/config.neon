@@ -38,4 +38,5 @@ services:
 	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
 	- Packetery\Module\Order\Controller
+	- Packetery\Module\Order\ControllerRouter
 	- Packetery\Module\Order\Modal

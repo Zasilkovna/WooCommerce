@@ -3,7 +3,7 @@
 	$( function() {
 		var $lastModalButtonClicked;
 
-		$( 'body' ).on( 'click', '.packetery-order-inline-edit', function( e ) {
+		$( 'body' ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
 			var $target = $( e.target );
 			$lastModalButtonClicked = $target;
 

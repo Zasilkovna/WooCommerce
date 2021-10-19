@@ -20,8 +20,8 @@
                             <div class="packetery-table">
                                 <div class="packetery-table-row">
                                     <div class="packetery-table-cell">
-                                        {label packetery_weight}
-                                        {input packetery_weight}
+                                        {label Packetery\Module\Order\Entity::META_WEIGHT}
+                                        {input Packetery\Module\Order\Entity::META_WEIGHT}
                                     </div>
                                 </div>
                             </div>
@@ -31,11 +31,6 @@
                     <div class="inner">
                         <div id="publishing-action">
                             <span class="spinner"></span>
-{*                            <button class="button button-primary button-large packetery-save-button" aria-label="{__( 'Save', 'packetery' )}"*}
-{*                               data-order-id="{{ data.order.id }}"*}
-{*                               data-nonce="{$nonce}"*}
-{*                               data-order-save-url="{$orderSaveUrl}"*}
-{*                            >{__( 'Save', 'packetery' )}</button>*}
                             {input submit, 'class' => 'button button-primary button-large packetery-save-button'}
                         </div>
                     </div>

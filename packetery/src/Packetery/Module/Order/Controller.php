@@ -1,26 +1,29 @@
 <?php
+/**
+ * Class Controller
+ *
+ * @package Packetery\Module\Order
+ */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
 use Packetery\Module\Order;
+use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
 
+/**
+ * Class Controller
+ *
+ * @package Packetery\Module\Order
+ */
 class Controller extends WP_REST_Controller {
 
-	/**
-	 * @var string
-	 */
-	protected $namespace = 'packetery/v1';
-
-	/**
-	 * @var string
-	 */
-	protected $rest_base = 'order';
+	public const PATH_SAVE_MODAL = '/save';
 
 	/**
 	 * Order modal.
@@ -30,12 +33,20 @@ class Controller extends WP_REST_Controller {
 	private $orderModal;
 
 	/**
+	 * @var ControllerRouter
+	 */
+	private $router;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param Modal $orderModal
 	 */
-	public function __construct( Modal $orderModal ) {
+	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter ) {
 		$this->orderModal = $orderModal;
+		$this->router = $controllerRouter;
+		$this->namespace = $controllerRouter->getNamespace();
+		$this->rest_base = $controllerRouter->getRestBase();
 	}
 
 	/**
@@ -44,10 +55,10 @@ class Controller extends WP_REST_Controller {
 	 * @return void
 	 */
 	public function registerRoutes(): void {
-		register_rest_route( $this->namespace, "/{$this->rest_base}/save", [
+		$this->router->registerRoute( self::PATH_SAVE_MODAL, [
 			[
 				'methods'             => WP_REST_Server::EDITABLE,
-				'callback'            => [ $this, 'updateItem' ],
+				'callback'            => [ $this, 'saveModal' ],
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
 				},
@@ -56,24 +67,13 @@ class Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Gets controller route.
-	 *
-	 * @param string $route
-	 *
-	 * @return string
-	 */
-	public function getRoute( string $route ): string {
-		return get_rest_url( null, $this->namespace . "/{$this->rest_base}{$route}" );
-	}
-
-	/**
 	 * Update one item from the collection
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
-	 * @return WP_REST_Response
+	 * @return WP_REST_Response|WP_Error
 	 */
-	public function updateItem( $request ) {
+	public function saveModal( $request ) {
 		$data            = [];
 		$parameters      = $request->get_body_params();
 		$packeteryWeight = $parameters['packeteryWeight'];
@@ -81,25 +81,19 @@ class Controller extends WP_REST_Controller {
 
 		$form = $this->orderModal->createForm();
 		$form->setValues([
-			'packetery_weight' => $packeteryWeight
+			Order\Entity::META_WEIGHT => $packeteryWeight
 		]);
 
 		if ( false === $form->isValid()) {
-			$message = __( 'FormIsInvalid', 'packetery' );
-			foreach ( $form->getErrors() as $error ) {
-				$message = $error;
-				break;
-			}
-
-			return new \WP_Error( 'form_invalid', $message);
+			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
-		$packeteryWeightTransformed = $form['packetery_weight']->getValue();
+		$packeteryWeightTransformed = $form[Order\Entity::META_WEIGHT]->getValue();
 		update_post_meta( $orderId, Order\Entity::META_WEIGHT, $packeteryWeightTransformed );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data'] = [
-			'packetery_weight' => $packeteryWeightTransformed
+			Order\Entity::META_WEIGHT => $packeteryWeightTransformed
 		];
 
 		return new WP_REST_Response( $data, 200 );
