@@ -1,7 +1,7 @@
 build: off
 cache:
     - c:\php -> appveyor.yml
-    - '%LOCALAPPDATA%\Composer\files -> appveyor.yml'
+    - '%LOCALAPPDATA%\PacketeryComposer\files -> appveyor.yml'
 
 clone_folder: c:\projects\http
 

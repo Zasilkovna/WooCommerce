@@ -39,7 +39,7 @@ Thank you!
 Installation and requirements
 -----------------------------
 
-The recommended way to is via Composer:
+The recommended way to is via PacketeryComposer:
 
 ```shell
 composer require tracy/tracy

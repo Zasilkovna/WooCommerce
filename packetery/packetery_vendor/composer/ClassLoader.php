@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Composer.
+ * This file is part of PacketeryComposer.
  *
  * (c) Nils Adermann <naderman@naderman.de>
  *     Jordi Boggiano <j.boggiano@seld.be>
@@ -10,12 +10,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Composer\Autoload;
+namespace PacketeryComposer\Autoload;
 
 /**
  * ClassLoader implements a PSR-0, PSR-4 and classmap class loader.
  *
- *     $loader = new \Composer\Autoload\ClassLoader();
+ *     $loader = new \PacketeryComposer\Autoload\ClassLoader();
  *
  *     // register classes with namespaces
  *     $loader->add('PacketerySymfony\Component', __DIR__.'/component');

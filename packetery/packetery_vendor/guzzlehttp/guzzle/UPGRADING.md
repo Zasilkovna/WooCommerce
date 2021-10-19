@@ -78,7 +78,7 @@ functions that wrap handlers (or are injected into a
 - Guzzle now uses `Psr\Http\Message\UriInterface` (implements in
   `GuzzleHttp\Psr7\Uri`) for URI support. `GuzzleHttp\Url` is now gone.
 - Static functions in `GuzzleHttp\Utils` have been moved to namespaced
-  functions under the `GuzzleHttp` namespace. This requires either a Composer
+  functions under the `GuzzleHttp` namespace. This requires either a PacketeryComposer
   based autoloader or you to include functions.php.
 - `GuzzleHttp\ClientInterface::getDefaultOption` has been renamed to
   `GuzzleHttp\ClientInterface::getConfig`.
