@@ -241,12 +241,14 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$this->latteEngine->render(
-					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
-					[
-						'order' => $entity,
-					]
-				);
+				if ($entity->isPacketeryRelated()) {
+					$this->latteEngine->render(
+						PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
+						[
+							'order' => $entity,
+						]
+					);
+				}
 				break;
 		}
 	}
