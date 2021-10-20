@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Composer.
+ * This file is part of PacketeryComposer.
  *
  * (c) Nils Adermann <naderman@naderman.de>
  *     Jordi Boggiano <j.boggiano@seld.be>
@@ -10,13 +10,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Composer;
+namespace PacketeryComposer;
 
-use Composer\Autoload\ClassLoader;
-use Composer\Semver\VersionParser;
+use PacketeryComposer\Autoload\ClassLoader;
+use PacketeryComposer\Semver\VersionParser;
 
 /**
- * This class is copied in every Composer installed project and available to all
+ * This class is copied in every PacketeryComposer installed project and available to all
  *
  * See also https://getcomposer.org/doc/07-runtime.md#installed-versions
  *
@@ -95,7 +95,7 @@ class InstalledVersions
      *
      * e.g. If you want to know whether version 2.3+ of package foo/bar is installed, you would call:
      *
-     *   Composer\InstalledVersions::satisfies(new VersionParser, 'foo/bar', '^2.3')
+     *   PacketeryComposer\InstalledVersions::satisfies(new VersionParser, 'foo/bar', '^2.3')
      *
      * @param  VersionParser $parser      Install composer/semver to have access to this class and functionality
      * @param  string        $packageName
@@ -303,7 +303,7 @@ class InstalledVersions
     private static function getInstalled()
     {
         if (null === self::$canGetVendors) {
-            self::$canGetVendors = method_exists('Composer\Autoload\ClassLoader', 'getRegisteredLoaders');
+            self::$canGetVendors = method_exists('PacketeryComposer\Autoload\ClassLoader', 'getRegisteredLoaders');
         }
 
         $installed = array();

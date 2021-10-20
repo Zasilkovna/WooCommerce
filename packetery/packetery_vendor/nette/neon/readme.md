@@ -31,7 +31,7 @@ Thank you!
 Usage
 =====
 
-Install via Composer:
+Install via PacketeryComposer:
 
 ```
 composer require nette/neon

@@ -22,7 +22,7 @@ If you like Nette, **[please make a donation now](https://nette.org/donate)**. T
 Installation
 ------------
 
-The recommended way to install is via Composer:
+The recommended way to install is via PacketeryComposer:
 
 ```
 composer require nette/component-model

@@ -41,7 +41,7 @@ Thank you!
 Installation
 ------------
 
-The recommended way to install is via Composer:
+The recommended way to install is via PacketeryComposer:
 
 ```shell
 composer require nette/robot-loader
@@ -123,7 +123,7 @@ Fortunately, RobotLoader works in such a way that for multiple concurrent reques
 PSR-4
 -----
 
-Today, Composer can be used for autoloading in compliance with PSR-4. Simply saying, it is a system where the namespaces and class names correspond to the directory structure and file names, ie `App\Router\RouterFactory` is located in the file `/path/to/App/Router/RouterFactory.php`.
+Today, PacketeryComposer can be used for autoloading in compliance with PSR-4. Simply saying, it is a system where the namespaces and class names correspond to the directory structure and file names, ie `App\Router\RouterFactory` is located in the file `/path/to/App/Router/RouterFactory.php`.
 
 RobotLoader is not tied to any fixed structure, therefore, it is useful in situations where it does not suit you to have the directory structure designed as namespaces in PHP, or when you are developing an application that has historically not used such conventions. It is also possible to use both loaders together.
 

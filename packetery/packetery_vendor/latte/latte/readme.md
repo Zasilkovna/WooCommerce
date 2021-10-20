@@ -79,7 +79,7 @@ $latte->render('template.view', $parameters);
 Installation
 ============
 
-The recommended way to install Latte is via Composer (alternatively you can [download package](https://github.com/nette/latte/releases)):
+The recommended way to install Latte is via PacketeryComposer (alternatively you can [download package](https://github.com/nette/latte/releases)):
 
 ```
 composer require latte/latte
