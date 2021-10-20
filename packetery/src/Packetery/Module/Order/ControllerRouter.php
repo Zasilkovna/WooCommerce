@@ -17,11 +17,15 @@ namespace Packetery\Module\Order;
  */
 class ControllerRouter {
 	/**
+	 * Namespace.
+	 *
 	 * @var string
 	 */
 	private $namespace = 'packetery/v1';
 
 	/**
+	 * Rest base,
+	 *
 	 * @var string
 	 */
 	private $restBase = 'order';
@@ -36,7 +40,7 @@ class ControllerRouter {
 	}
 
 	/**
-	 * Gets REST base.
+	 * Gets rest base.
 	 *
 	 * @return string
 	 */
@@ -47,7 +51,7 @@ class ControllerRouter {
 	/**
 	 * Gets route URL.
 	 *
-	 * @param string $path
+	 * @param string $path Short relative URL path.
 	 */
 	public function getRouteUrl( string $path ): string {
 		return get_rest_url( null, $this->namespace . $this->getRoute( $path ) );
@@ -56,7 +60,7 @@ class ControllerRouter {
 	/**
 	 * Gets route.
 	 *
-	 * @param string $path
+	 * @param string $path Short relative URL path.
 	 */
 	public function getRoute( string $path ): string {
 		return "/{$this->restBase}{$path}";
@@ -65,8 +69,8 @@ class ControllerRouter {
 	/**
 	 * Register route.
 	 *
-	 * @param string $path
-	 * @param array  $params
+	 * @param string $path   Short relative URL path.
+	 * @param array  $params Route configuration.
 	 */
 	public function registerRoute( string $path, array $params ): void {
 		register_rest_route( $this->namespace, $this->getRoute( $path ), $params );

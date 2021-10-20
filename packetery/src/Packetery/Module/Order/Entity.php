@@ -364,6 +364,8 @@ class Entity {
 	}
 
 	/**
+	 * Gets order ID.
+	 *
 	 * @return int
 	 */
 	public function getId(): int {
@@ -371,6 +373,8 @@ class Entity {
 	}
 
 	/**
+	 * Gets packetery weight.
+	 *
 	 * @return float|null
 	 */
 	public function getPacketeryWeight(): ?float {

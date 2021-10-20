@@ -402,7 +402,7 @@ class Plugin {
 		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false );
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
-		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, ['jquery', 'wp-util', 'backbone'] );
+		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 	}
 
 	/**

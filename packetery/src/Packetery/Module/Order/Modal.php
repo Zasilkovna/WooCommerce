@@ -23,16 +23,22 @@ use PacketeryNette\Forms\Form;
 class Modal {
 
 	/**
+	 * Latte engine.
+	 *
 	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
+	 * Form factory.
+	 *
 	 * @var FormFactory
 	 */
 	private $formFactory;
 
 	/**
+	 * Order controller.
+	 *
 	 * @var ControllerRouter
 	 */
 	private $orderControllerRouter;
@@ -40,9 +46,9 @@ class Modal {
 	/**
 	 * Modal constructor.
 	 *
-	 * @param Engine      $latteEngine     Latte engine.
-	 * @param Controller  $orderController Order controller.
-	 * @param FormFactory $formFactory     Form factory.
+	 * @param Engine           $latteEngine     Latte engine.
+	 * @param FormFactory      $formFactory     Form factory.
+	 * @param ControllerRouter $orderController Order controller.
 	 */
 	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController ) {
 		$this->latteEngine           = $latteEngine;
@@ -68,7 +74,7 @@ class Modal {
 			[
 				'nonce'        => $nonce,
 				'orderSaveUrl' => $orderSaveUrl,
-				'form'         => $this->createForm()
+				'form'         => $this->createForm(),
 			]
 		);
 	}
@@ -84,12 +90,14 @@ class Modal {
 			 ->setRequired( false )
 			 ->addRule( Form::FLOAT );
 
-		$form->addSubmit( 'submit',  __( 'Save', 'packetery' ) );
-		$form->addButton( 'cancel',  __( 'Cancel', 'packetery' ) );
+		$form->addSubmit( 'submit', __( 'Save', 'packetery' ) );
+		$form->addButton( 'cancel', __( 'Cancel', 'packetery' ) );
 
-		$form->setDefaults( [
-			Order\Entity::META_WEIGHT => '{{ data.order.packetery_weight }}'
-		] );
+		$form->setDefaults(
+			[
+				Order\Entity::META_WEIGHT => '{{ data.order.packetery_weight }}',
+			]
+		);
 
 		return $form;
 	}
