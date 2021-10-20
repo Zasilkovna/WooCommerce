@@ -71,5 +71,8 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.1.0 =
+* Added: Order editation modal in order grid. User is now able to edit order weight in order grid.
+
 = 1.0.0 =
 * Initial version
