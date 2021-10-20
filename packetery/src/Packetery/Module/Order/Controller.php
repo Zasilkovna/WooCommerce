@@ -88,12 +88,12 @@ class Controller extends WP_REST_Controller {
 			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
-		$packeteryWeightTransformed = $form[Order\Entity::META_WEIGHT]->getValue();
-		update_post_meta( $orderId, Order\Entity::META_WEIGHT, $packeteryWeightTransformed );
+		$values = $form->getValues( 'array' );
+		update_post_meta( $orderId, Order\Entity::META_WEIGHT, $values[Order\Entity::META_WEIGHT] );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data'] = [
-			Order\Entity::META_WEIGHT => $packeteryWeightTransformed
+			Order\Entity::META_WEIGHT => $values[Order\Entity::META_WEIGHT]
 		];
 
 		return new WP_REST_Response( $data, 200 );
