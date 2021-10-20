@@ -58,18 +58,18 @@ class PacketeryComposerAutoloaderInit4f3b6d3f9c75bbda82e4e3ccf8d23cd2
             $includeFiles = require __DIR__ . '/autoload_files.php';
         }
         foreach ($includeFiles as $fileIdentifier => $file) {
-            composerRequire4f3b6d3f9c75bbda82e4e3ccf8d23cd2($fileIdentifier, $file);
+            packeteryComposerRequire4f3b6d3f9c75bbda82e4e3ccf8d23cd2($fileIdentifier, $file);
         }
 
         return $loader;
     }
 }
 
-function composerRequire4f3b6d3f9c75bbda82e4e3ccf8d23cd2($fileIdentifier, $file)
+function packeteryComposerRequire4f3b6d3f9c75bbda82e4e3ccf8d23cd2($fileIdentifier, $file)
 {
-    if (empty($GLOBALS['__composer_autoload_files'][$fileIdentifier])) {
+    if (empty($GLOBALS['__packetery_composer_autoload_files'][$fileIdentifier])) {
         require $file;
 
-        $GLOBALS['__composer_autoload_files'][$fileIdentifier] = true;
+        $GLOBALS['__packetery_composer_autoload_files'][$fileIdentifier] = true;
     }
 }
