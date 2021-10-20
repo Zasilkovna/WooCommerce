@@ -85,6 +85,7 @@ class Modal {
 			 ->addRule( Form::FLOAT );
 
 		$form->addSubmit( 'submit',  __( 'Save', 'packetery' ) );
+		$form->addButton( 'cancel',  __( 'Cancel', 'packetery' ) );
 
 		$form->setDefaults( [
 			Order\Entity::META_WEIGHT => '{{ data.order.packetery_weight }}'
