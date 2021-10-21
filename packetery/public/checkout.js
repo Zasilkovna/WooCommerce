@@ -205,7 +205,7 @@ var packeteryLoadCheckout = function( settings ) {
 				widgetOptions.postcode = destinationAddress.postCode;
 				widgetOptions.carrierId = carrierConfig[ carrierRateId ][ 'id' ];
 
-				Packeta.WidgetHD.pick( packeteryApiKey, function( result ) {
+				PacketaHD.Widget.pick( packeteryApiKey, function( result ) {
 					if ( !result || !result.address ) {
 						$widgetDiv.find( '.packeta-widget-info' ).html( translations.addressValidationIsOutOfOrder );
 						return;
@@ -276,6 +276,7 @@ var packeteryLoadCheckout = function( settings ) {
 	var $ = settings.jQuery;
 	var dependencies = [];
 	dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
+	dependencies.push( $.getScript( "https://widget-hd.packeta.com/www/js/library-hd.js" ) );
 
 	dependencies.push(
 		$.Deferred( function( deferred ) {
