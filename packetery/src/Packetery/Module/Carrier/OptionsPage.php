@@ -162,9 +162,9 @@ class OptionsPage {
 		$carrier = $this->carrierRepository->getById( (int) $carrierData['id'] );
 		if ( $carrier && false === $carrier->hasPickupPoints() ) {
 			$addressValidationOptions = [
-				'none'     => __( 'no address validation', 'packetery' ),
-				'optional' => __( 'optional address validation', 'packetery' ),
-				'required' => __( 'required address validation', 'packetery' ),
+				'none'     => __( 'noAddressValidation', 'packetery' ),
+				'optional' => __( 'optionalAddressValidation', 'packetery' ),
+				'required' => __( 'requiredAddressValidation', 'packetery' ),
 			];
 			$form->addSelect( 'address_validation', __( 'addressValidation', 'packetery' ), $addressValidationOptions )
 				->setDefaultValue( 'none' );
