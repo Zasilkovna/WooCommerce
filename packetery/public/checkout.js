@@ -190,7 +190,6 @@ var packeteryLoadCheckout = function( settings ) {
 			e.preventDefault();
 
 			var widgetOptions = {
-				appIdentity: appIdentity,
 				country: $widgetDiv.data( 'country' ),
 				language: $widgetDiv.data( 'language' )
 			};
@@ -238,6 +237,7 @@ var packeteryLoadCheckout = function( settings ) {
 			}
 
 			if ( hasPickupPoints( carrierRateId ) ) {
+				widgetOptions.appIdentity = appIdentity;
 				widgetOptions.weight = $widgetDiv.data( 'weight' );
 				widgetOptions.carriers = $widgetDiv.data( 'carriers' );
 
