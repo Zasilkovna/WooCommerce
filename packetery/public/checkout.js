@@ -213,6 +213,11 @@ var packeteryLoadCheckout = function( settings ) {
 
 					var selectedAddress = result.address;
 
+					if ( selectedAddress.country !== widgetOptions.country ) {
+						$widgetDiv.find( '.packeta-widget-info' ).html( translations.invalidAddressCountrySelected );
+						return;
+					}
+
 					// todo save selected address to shipping address
 
 					// show selected address
