@@ -147,14 +147,9 @@ var packeteryLoadCheckout = function( settings ) {
 				var address = {};
 
 				address.street = $( '#' + section + '_address_1' ).val();
-				address.street = address.street + ' ' + $( '#' + section + '_address_2' ).val();
-				address.houseNumber = '';
 				address.city = $( '#' + section + '_city' ).val();
 				address.country = $( '#' + section + '_country' ).val().toLowerCase();
 				address.postCode = $( '#' + section + '_postcode' ).val();
-				address.longitude = '';
-				address.latitude = '';
-				address.county = '';
 
 				return address;
 			};
@@ -199,7 +194,6 @@ var packeteryLoadCheckout = function( settings ) {
 				widgetOptions.layout = 'hd';
 
 				var destinationAddress = getDestinationAddress();
-				widgetOptions.houseNumber = destinationAddress.houseNumber;
 				widgetOptions.street = destinationAddress.street;
 				widgetOptions.city = destinationAddress.city;
 				widgetOptions.postcode = destinationAddress.postCode;
