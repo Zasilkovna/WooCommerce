@@ -1,14 +1,6 @@
 var packeteryLoadCheckout = function( settings ) {
 	var packeteryCheckout = function( settings ) {
-		var $ = settings.jQuery,
-			pickupPointAttsReformatted = settings.pickupPointAttsReformatted,
-			pickupPointAttrs = settings.pickupPointAttrs,
-			homeDeliveryAttrs = settings.homeDeliveryAttrs,
-			carrierConfig = settings.carrierConfig,
-			packeteryApiKey = settings.packeteryApiKey,
-			translations = settings.translations,
-			appIdentity = settings.appIdentity
-		;
+		var $ = settings.jQuery;
 
 		var $widgetDiv = $( '.packeta-widget' );
 
@@ -20,11 +12,11 @@ var packeteryLoadCheckout = function( settings ) {
 			return $( '#shipping_method input[type="hidden"]' ).val();
 		};
 
-		var homeDeliveryAttributes = homeDeliveryAttrs;
+		var homeDeliveryAttributes = settings.homeDeliveryAttrs;
 
 		var ratesWithInfo = [];
 		var saveInfoForCarrierRate = function( carrierRateId ) {
-			for ( var attribute in pickupPointAttsReformatted ) {
+			for ( var attribute in settings.pickupPointAttsReformatted ) {
 				$widgetDiv.data( carrierRateId + '-' + attribute, $( '#' + attribute ).val() );
 			}
 			ratesWithInfo.push( carrierRateId );
@@ -44,7 +36,7 @@ var packeteryLoadCheckout = function( settings ) {
 		};
 
 		var loadInfoForCarrierRate = function( carrierRateId ) {
-			for ( var attribute in pickupPointAttsReformatted ) {
+			for ( var attribute in settings.pickupPointAttsReformatted ) {
 				$( '#' + attribute ).val( $widgetDiv.data( carrierRateId + '-' + attribute ) );
 			}
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( $widgetDiv.data( carrierRateId + '-packetery_point_name' ) );
@@ -64,7 +56,7 @@ var packeteryLoadCheckout = function( settings ) {
 
 		var clearPickupPointInfo = function() {
 			for ( var carrierRateId of ratesWithInfo ) {
-				for ( var attribute in pickupPointAttsReformatted ) {
+				for ( var attribute in settings.pickupPointAttsReformatted ) {
 					$widgetDiv.data( carrierRateId + '-' + attribute, '' );
 					$( '#' + attribute ).val( '' );
 				}
@@ -106,11 +98,23 @@ var packeteryLoadCheckout = function( settings ) {
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' );
 		};
 
+		var hasCarrierConfig = function( carrierRateId ) {
+			return typeof settings.carrierConfig[ carrierRateId ] !== 'undefined';
+		};
+
 		var hasPickupPoints = function( carrierRateId ) {
-			return parseInt( carrierConfig[ carrierRateId ][ 'is_pickup_points' ] ) === 1;
+			if ( !hasCarrierConfig( carrierRateId ) ) {
+				return false;
+			}
+
+			return parseInt( settings.carrierConfig[ carrierRateId ][ 'is_pickup_points' ] ) === 1;
 		};
 
 		var hasHomeDelivery = function( carrierRateId ) {
+			if ( !hasCarrierConfig( carrierRateId ) ) {
+				return false;
+			}
+
 			return !hasPickupPoints( carrierRateId );
 		};
 
@@ -118,24 +122,24 @@ var packeteryLoadCheckout = function( settings ) {
 			$widgetDiv.hide();
 			resetHDInfo();
 
-			if ( typeof carrierConfig[ carrierRateId ] === 'undefined' ) {
+			if ( !hasCarrierConfig( carrierRateId ) ) {
 				return;
 			}
 
 			var _hasPickupPoints = hasPickupPoints( carrierRateId ),
 				_hasHomeDelivery = !_hasPickupPoints;
 
-			$widgetDiv.data( 'carriers', carrierConfig[ carrierRateId ][ 'carriers' ] );
+			$widgetDiv.data( 'carriers', settings.carrierConfig[ carrierRateId ][ 'carriers' ] );
 
 			if ( _hasPickupPoints ) {
 				loadInfoForCarrierRate( carrierRateId );
-				$widgetDiv.find( 'button' ).html( translations.choosePickupPoint );
+				$widgetDiv.find( 'button' ).html( settings.translations.choosePickupPoint );
 				$widgetDiv.show();
 			}
 
 			if ( _hasHomeDelivery ) {
 				loadInfoForHDCarrierRate( carrierRateId );
-				$widgetDiv.find( 'button' ).html( translations.chooseAddress );
+				$widgetDiv.find( 'button' ).html( settings.translations.chooseAddress );
 				$widgetDiv.show();
 			}
 		};
@@ -197,25 +201,25 @@ var packeteryLoadCheckout = function( settings ) {
 				widgetOptions.street = destinationAddress.street;
 				widgetOptions.city = destinationAddress.city;
 				widgetOptions.postcode = destinationAddress.postCode;
-				widgetOptions.carrierId = carrierConfig[ carrierRateId ][ 'id' ];
+				widgetOptions.carrierId = settings.carrierConfig[ carrierRateId ][ 'id' ];
 
-				PacketaHD.Widget.pick( packeteryApiKey, function( result ) {
+				PacketaHD.Widget.pick( settings.packeteryApiKey, function( result ) {
 					if ( !result || !result.address ) {
-						$widgetDiv.find( '.packeta-widget-info' ).html( translations.addressValidationIsOutOfOrder );
+						$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressValidationIsOutOfOrder );
 						return;
 					}
 
 					var selectedAddress = result.address;
 
 					if ( selectedAddress.country !== widgetOptions.country ) {
-						$widgetDiv.find( '.packeta-widget-info' ).html( translations.invalidAddressCountrySelected );
+						$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.invalidAddressCountrySelected );
 						return;
 					}
 
 					// todo save selected address to shipping address
 
 					// show selected address
-					$widgetDiv.find( '.packeta-widget-info' ).html( translations.addressSaved );
+					$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressSaved );
 
 					for ( var homeDeliveryAttrKey in homeDeliveryAttributes ) {
 						if ( !homeDeliveryAttributes.hasOwnProperty( homeDeliveryAttrKey ) ) {
@@ -236,27 +240,27 @@ var packeteryLoadCheckout = function( settings ) {
 			}
 
 			if ( hasPickupPoints( carrierRateId ) ) {
-				widgetOptions.appIdentity = appIdentity;
+				widgetOptions.appIdentity = settings.appIdentity;
 				widgetOptions.weight = $widgetDiv.data( 'weight' );
 				widgetOptions.carriers = $widgetDiv.data( 'carriers' );
 
-				Packeta.Widget.pick( packeteryApiKey, function( pickupPoint ) {
+				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint != null ) {
 
 						// show selected pickup point
 						$widgetDiv.find( '.packeta-widget-info' ).html( pickupPoint.name );
 
 						// fill hidden inputs
-						for ( var pickupPointAttrKey in pickupPointAttrs ) {
-							if ( !pickupPointAttrs.hasOwnProperty( pickupPointAttrKey ) ) {
+						for ( var pickupPointAttrKey in settings.pickupPointAttrs ) {
+							if ( !settings.pickupPointAttrs.hasOwnProperty( pickupPointAttrKey ) ) {
 								continue;
 							}
 
 							var addressFieldValue, $hiddenPacketeryFormField;
-							var widgetField = pickupPointAttrs[ pickupPointAttrKey ].widgetResultField || pickupPointAttrKey;
+							var widgetField = settings.pickupPointAttrs[ pickupPointAttrKey ].widgetResultField || pickupPointAttrKey;
 
 							addressFieldValue = pickupPoint[ widgetField ];
-							$hiddenPacketeryFormField = $( '#' + pickupPointAttrs[ pickupPointAttrKey ].name );
+							$hiddenPacketeryFormField = $( '#' + settings.pickupPointAttrs[ pickupPointAttrKey ].name );
 
 							$hiddenPacketeryFormField.val( addressFieldValue );
 						}
