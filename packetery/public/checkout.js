@@ -12,8 +12,6 @@ var packeteryLoadCheckout = function( settings ) {
 			return $( '#shipping_method input[type="hidden"]' ).val();
 		};
 
-		var homeDeliveryAttributes = settings.homeDeliveryAttrs;
-
 		var ratesWithInfo = [];
 		var saveInfoForCarrierRate = function( carrierRateId ) {
 			for ( var attribute in settings.pickupPointAttsReformatted ) {
@@ -24,12 +22,12 @@ var packeteryLoadCheckout = function( settings ) {
 
 		var hdRatesWithInfo = [];
 		var saveInfoForHDCarrierRate = function( carrierRateId ) {
-			for ( var attributeKey in homeDeliveryAttributes ) {
-				if ( !homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+			for ( var attributeKey in settings.homeDeliveryAttrs ) {
+				if ( !settings.homeDeliveryAttrs.hasOwnProperty( attributeKey ) ) {
 					continue;
 				}
 
-				var attribute = homeDeliveryAttributes[ attributeKey ].name;
+				var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
 				$widgetDiv.data( carrierRateId + '-' + attribute, $( '#' + attribute ).val() );
 			}
 			hdRatesWithInfo.push( carrierRateId );
@@ -43,12 +41,12 @@ var packeteryLoadCheckout = function( settings ) {
 		};
 
 		var loadInfoForHDCarrierRate = function( carrierRateId ) {
-			for ( var attributeKey in homeDeliveryAttributes ) {
-				if ( !homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+			for ( var attributeKey in settings.homeDeliveryAttrs ) {
+				if ( !settings.homeDeliveryAttrs.hasOwnProperty( attributeKey ) ) {
 					continue;
 				}
 
-				var attribute = homeDeliveryAttributes[ attributeKey ].name;
+				var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
 				$( '#' + attribute ).val( $widgetDiv.data( carrierRateId + '-' + attribute ) );
 			}
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( $widgetDiv.data( carrierRateId + '-packetery_address_street' ) );
@@ -71,12 +69,12 @@ var packeteryLoadCheckout = function( settings ) {
 				}
 
 				var carrierRateId = hdRatesWithInfo[ carrierRateIdKey ];
-				for ( var attributeKey in homeDeliveryAttributes ) {
-					if ( !homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+				for ( var attributeKey in settings.homeDeliveryAttrs ) {
+					if ( !settings.homeDeliveryAttrs.hasOwnProperty( attributeKey ) ) {
 						continue;
 					}
 
-					var attribute = homeDeliveryAttributes[ attributeKey ].name;
+					var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
 					$widgetDiv.data( carrierRateId + '-' + attribute, '' );
 					$( '#' + attribute ).val( '' );
 				}
@@ -86,12 +84,12 @@ var packeteryLoadCheckout = function( settings ) {
 		};
 
 		var resetHDInfo = function() {
-			for ( var attributeKey in homeDeliveryAttributes ) {
-				if ( !homeDeliveryAttributes.hasOwnProperty( attributeKey ) ) {
+			for ( var attributeKey in settings.homeDeliveryAttrs ) {
+				if ( !settings.homeDeliveryAttrs.hasOwnProperty( attributeKey ) ) {
 					continue;
 				}
 
-				var attribute = homeDeliveryAttributes[ attributeKey ].name;
+				var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
 				$( '#' + attribute ).val( '' );
 			}
 
