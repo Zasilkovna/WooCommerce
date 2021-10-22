@@ -31,7 +31,7 @@ class Adapter {
 
 		$meta = [];
 		foreach ( $postMeta as $key => $item ) {
-			$meta[ $key ] = array_shift( $item ); // WordPress vrací strukturu řešící situaci, kdy existuje několik hodnot pro jeden klíč.
+			$meta[ $key ] = array_shift( $item ); // WordPress returns structure addressing multiple values for single key.
 		}
 
 		return $meta;
