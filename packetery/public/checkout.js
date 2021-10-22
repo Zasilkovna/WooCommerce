@@ -183,6 +183,22 @@ var packeteryLoadCheckout = function( settings ) {
 			updateWidgetButtonVisibility( this.value );
 		} );
 
+		var fillHiddenFields = function( data, target ) {
+			for ( var attrKey in data ) {
+				if ( !data.hasOwnProperty( attrKey ) ) {
+					continue;
+				}
+
+				var addressFieldValue, $hiddenPacketeryFormField;
+				var widgetField = data[ attrKey ].widgetResultField || attrKey;
+
+				addressFieldValue = target[ widgetField ];
+				$hiddenPacketeryFormField = $( '#' + data[ attrKey ].name );
+
+				$hiddenPacketeryFormField.val( addressFieldValue );
+			}
+		};
+
 		$( '.packeta-widget-button' ).click( function( e ) {
 			e.preventDefault();
 
@@ -216,24 +232,9 @@ var packeteryLoadCheckout = function( settings ) {
 
 					// todo save selected address to shipping address
 
-					// show selected address
-					$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressSaved );
-
-					for ( var homeDeliveryAttrKey in homeDeliveryAttributes ) {
-						if ( !homeDeliveryAttributes.hasOwnProperty( homeDeliveryAttrKey ) ) {
-							continue;
-						}
-
-						var addressFieldValue, $hiddenPacketeryFormField;
-						var widgetField = homeDeliveryAttributes[ homeDeliveryAttrKey ].widgetResultField || homeDeliveryAttrKey;
-
-						addressFieldValue = selectedAddress[ widgetField ];
-						$hiddenPacketeryFormField = $( '#' + homeDeliveryAttributes[ homeDeliveryAttrKey ].name );
-
-						$hiddenPacketeryFormField.val( addressFieldValue );
-					}
-
+					fillHiddenFields( settings.homeDeliveryAttrs, selectedAddress );
 					saveInfoForHDCarrierRate( getShippingRateId() );
+					$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressSaved );
 				}, widgetOptions );
 			}
 
@@ -243,28 +244,13 @@ var packeteryLoadCheckout = function( settings ) {
 				widgetOptions.carriers = $widgetDiv.data( 'carriers' );
 
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
-					if ( pickupPoint != null ) {
-
-						// show selected pickup point
-						$widgetDiv.find( '.packeta-widget-info' ).html( pickupPoint.name );
-
-						// fill hidden inputs
-						for ( var pickupPointAttrKey in settings.pickupPointAttrs ) {
-							if ( !settings.pickupPointAttrs.hasOwnProperty( pickupPointAttrKey ) ) {
-								continue;
-							}
-
-							var addressFieldValue, $hiddenPacketeryFormField;
-							var widgetField = settings.pickupPointAttrs[ pickupPointAttrKey ].widgetResultField || pickupPointAttrKey;
-
-							addressFieldValue = pickupPoint[ widgetField ];
-							$hiddenPacketeryFormField = $( '#' + settings.pickupPointAttrs[ pickupPointAttrKey ].name );
-
-							$hiddenPacketeryFormField.val( addressFieldValue );
-						}
-
-						saveInfoForCarrierRate( getShippingRateId() );
+					if ( pickupPoint == null ) {
+						return;
 					}
+
+					fillHiddenFields( settings.pickupPointAttrs, pickupPoint );
+					saveInfoForCarrierRate( getShippingRateId() );
+					$widgetDiv.find( '.packeta-widget-info' ).html( pickupPoint.name );
 				}, widgetOptions );
 			}
 		} );
