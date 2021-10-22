@@ -28,7 +28,7 @@ class Address {
 	 * @return Entity\Address|null
 	 */
 	public function fromPostId( int $addressId ): ?Entity\Address {
-		$meta    = Adapter::getAllPostMeta( $addressId );
+		$meta    = Adapter::getAllUniquePostMeta( $addressId );
 
 		$address = new Entity\Address( $meta['street'], $meta['city'], $meta['postCode'] );
 		$address->setHouseNumber( $meta['houseNumber'] );
