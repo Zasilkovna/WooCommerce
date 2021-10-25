@@ -222,7 +222,7 @@ class Checkout {
 		$weight       = $this->getCartWeightKg();
 
 		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/checkout/checkout_script.latte',
+			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
 			[
 				'settings' => [
 					'current' => [
