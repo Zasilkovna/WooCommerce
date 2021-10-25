@@ -184,12 +184,12 @@ class Checkout {
 	public function renderWidgetButton(): void {
 		$country = $this->getCustomerCountry();
 		if ( ! $country ) {
-			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/error_country.latte' );
+			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/country-error.latte' );
 			return;
 		}
 
 		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/checkout/widget_button.latte',
+			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			array(
 				'logo'     => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
 			)
