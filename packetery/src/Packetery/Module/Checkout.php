@@ -182,30 +182,15 @@ class Checkout {
 	 * Renders widget button and information about chosen pickup point
 	 */
 	public function renderWidgetButton(): void {
-		$language = substr( get_locale(), 0, 2 );
-
 		$country = $this->getCustomerCountry();
 		if ( ! $country ) {
 			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/error_country.latte' );
 			return;
 		}
 
-		$weight = $this->getCartWeightKg();
-
-		$carriers     = '';
-		$chosenMethod = $this->getChosenMethod();
-		$carrierId    = $this->getCarrierId( $chosenMethod );
-		if ( $carrierId && $this->carrierRepository->isPickupPointCarrier( $carrierId ) ) {
-			$carriers = $carrierId;
-		}
-
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget_button.latte',
 			array(
-				'language' => $language,
-				'country'  => $country,
-				'weight'   => number_format( $weight, 3 ),
-				'carriers' => $carriers,
 				'logo'     => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
 			)
 		);
@@ -232,10 +217,19 @@ class Checkout {
 			}
 		}
 
+		$language     = substr( get_locale(), 0, 2 );
+		$country      = $this->getCustomerCountry();
+		$weight       = $this->getCartWeightKg();
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/checkout_script.latte',
 			[
 				'settings' => [
+					'current' => [
+						'language' => $language,
+						'country' => $country,
+						'weight' => $weight,
+					],
 					'carrierConfig' => $carrierConfig,
 					'pickupPointAttrs' => self::$pickup_point_attrs,
 					'homeDeliveryAttrs'  => self::$homeDeliveryAttrs,
@@ -246,7 +240,7 @@ class Checkout {
 						'chooseAddress' => __( 'chooseAddress', 'packetery' ),
 						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
 						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
-						'addressSaved' => __( 'addressSaved', 'packetery' )
+						'addressSaved' => __( 'addressSaved', 'packetery' ),
 					]
 				]
 			]

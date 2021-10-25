@@ -1,6 +1,15 @@
 var packeteryLoadCheckout = function( $, settings ) {
 	var packeteryCheckout = function( settings ) {
 		var $widgetDiv = $( '.packeta-widget' );
+		var currentRateValues = {};
+
+		var getCurrentRateValue = function( carrierRateId, attribute, defaultValue ) {
+			if ( typeof currentRateValues[ carrierRateId + '-' + attribute ] === 'undefined' ) {
+				return defaultValue;
+			}
+
+			return currentRateValues[ carrierRateId + '-' + attribute ];
+		}
 
 		var getShippingRateId = function() {
 			var $selectedRadio = $( '#shipping_method input[type="radio"]:checked' );
@@ -18,7 +27,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				}
 
 				var attribute = settings.pickupPointAttrs[attributeKey].name;
-				$widgetDiv.data( carrierRateId + '-' + attribute, $( '#' + attribute ).val() );
+				currentRateValues[carrierRateId + '-' + attribute] = $( '#' + attribute ).val();
 			}
 			ratesWithInfo.push( carrierRateId );
 		};
@@ -31,7 +40,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				}
 
 				var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
-				$widgetDiv.data( carrierRateId + '-' + attribute, $( '#' + attribute ).val() ); // TODO: use JS
+				currentRateValues[carrierRateId + '-' + attribute] = $( '#' + attribute ).val();
 			}
 			hdRatesWithInfo.push( carrierRateId );
 		};
@@ -43,9 +52,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 				}
 
 				var attribute = settings.pickupPointAttrs[attributeKey].name;
-				$( '#' + attribute ).val( $widgetDiv.data( carrierRateId + '-' + attribute ) );
+				$( '#' + attribute ).val( getCurrentRateValue( carrierRateId, attribute, '' ) );
 			}
-			$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( $widgetDiv.data( carrierRateId + '-packetery_point_name' ) );
+
+			$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getCurrentRateValue( carrierRateId, 'packetery_point_name', '' ) );
 		};
 
 		var loadInfoForHDCarrierRate = function( carrierRateId ) {
@@ -55,9 +65,9 @@ var packeteryLoadCheckout = function( $, settings ) {
 				}
 
 				var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
-				$( '#' + attribute ).val( $widgetDiv.data( carrierRateId + '-' + attribute ) );
+				$( '#' + attribute ).val( getCurrentRateValue( carrierRateId, attribute, '' ) );
 			}
-			$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( $widgetDiv.data( carrierRateId + '-packetery_address_street' ) );
+			$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getCurrentRateValue( carrierRateId, 'packetery_address_street', '' ) );
 		};
 
 		var clearPickupPointInfo = function() {
@@ -74,7 +84,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					}
 
 					var attribute = settings.pickupPointAttrs[attributeKey].name;
-					$widgetDiv.data( carrierRateId + '-' + attribute, '' );
+					currentRateValues[carrierRateId + '-' + attribute] = '';
 					$( '#' + attribute ).val( '' );
 				}
 			}
@@ -94,7 +104,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					}
 
 					var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
-					$widgetDiv.data( carrierRateId + '-' + attribute, '' );
+					currentRateValues[carrierRateId + '-' + attribute] = '';
 					$( '#' + attribute ).val( '' );
 				}
 			}
@@ -146,8 +156,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 			var _hasPickupPoints = hasPickupPoints( carrierRateId ),
 				_hasHomeDelivery = !_hasPickupPoints;
 
-			$widgetDiv.data( 'carriers', settings.carrierConfig[ carrierRateId ][ 'carriers' ] );
-
 			if ( _hasPickupPoints ) {
 				loadInfoForCarrierRate( carrierRateId );
 				$widgetDiv.find( 'button' ).html( settings.translations.choosePickupPoint );
@@ -189,15 +197,15 @@ var packeteryLoadCheckout = function( $, settings ) {
 			} else {
 				shippingCountry = $( '#billing_country' ).val().toLowerCase();
 			}
-			if ( shippingCountry !== $widgetDiv.data( 'country' ) ) {
+			if ( shippingCountry !== settings.current.country ) {
 				clearPickupPointInfo();
 				clearHDInfo();
-				$widgetDiv.data( 'country', shippingCountry );
+				settings.current.country = shippingCountry;
 			}
 			updateWidgetButtonVisibility( getShippingRateId() );
 		} );
 
-		var shippingMethodSelector = '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]';
+		var shippingMethodSelector = '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]'; // todo remove?
 		$( document ).on( 'change', shippingMethodSelector, function() {
 			updateWidgetButtonVisibility( this.value );
 		} );
@@ -222,8 +230,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 			e.preventDefault();
 
 			var widgetOptions = {
-				country: $widgetDiv.data( 'country' ),
-				language: $widgetDiv.data( 'language' )
+				country: settings.current.country,
+				language: settings.current.language
 			};
 
 			var carrierRateId = getShippingRateId();
@@ -259,8 +267,11 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( hasPickupPoints( carrierRateId ) ) {
 				widgetOptions.appIdentity = settings.appIdentity;
-				widgetOptions.weight = $widgetDiv.data( 'weight' );
-				widgetOptions.carriers = $widgetDiv.data( 'carriers' );
+				widgetOptions.weight = settings.current.weight;
+				widgetOptions.carriers = settings.carrierConfig[ carrierRateId ].carriers;
+
+				console.log(widgetOptions);
+				console.log(settings.carrierConfig);
 
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint == null ) {
