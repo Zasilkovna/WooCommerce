@@ -225,11 +225,9 @@ class Checkout {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
 			[
 				'settings' => [
-					'current' => [
-						'language' => $language,
-						'country' => $country,
-						'weight' => $weight,
-					],
+					'language' => $language,
+					'country' => $country,
+					'weight' => $weight,
 					'carrierConfig' => $carrierConfig,
 					'pickupPointAttrs' => self::$pickup_point_attrs,
 					'homeDeliveryAttrs'  => self::$homeDeliveryAttrs,

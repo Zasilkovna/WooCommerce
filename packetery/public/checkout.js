@@ -197,10 +197,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 			} else {
 				shippingCountry = $( '#billing_country' ).val().toLowerCase();
 			}
-			if ( shippingCountry !== settings.current.country ) {
+			if ( shippingCountry !== settings.country ) {
 				clearPickupPointInfo();
 				clearHDInfo();
-				settings.current.country = shippingCountry;
+				settings.country = shippingCountry;
 			}
 			updateWidgetButtonVisibility( getShippingRateId() );
 		} );
@@ -230,8 +230,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 			e.preventDefault();
 
 			var widgetOptions = {
-				country: settings.current.country,
-				language: settings.current.language
+				country: settings.country,
+				language: settings.language
 			};
 
 			var carrierRateId = getShippingRateId();
@@ -267,7 +267,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( hasPickupPoints( carrierRateId ) ) {
 				widgetOptions.appIdentity = settings.appIdentity;
-				widgetOptions.weight = settings.current.weight;
+				widgetOptions.weight = settings.weight;
 				widgetOptions.carriers = settings.carrierConfig[ carrierRateId ].carriers;
 
 				console.log(widgetOptions);
