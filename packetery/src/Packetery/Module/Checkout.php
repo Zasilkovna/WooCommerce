@@ -75,6 +75,11 @@ class Checkout {
 	 * @var array[]
 	 */
 	private static $homeDeliveryAttrs = [
+		'active' => [
+			'name'                => 'packetery_address_active',
+			'isWidgetResultField' => false,
+			'castToInt'           => true,
+		],
 		'houseNumber' => [
 			'name' => 'packetery_address_houseNumber',
 		],
@@ -355,15 +360,19 @@ class Checkout {
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
-			$address = [
-				'active' => 1,
-			];
-
 			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
-				$address[ $field ] = $post[ $attributeData['name'] ];
+				$value = $post[ $attributeData['name'] ];
+
+				if ( $attributeData['castToInt'] ?? false ) {
+					$value = (int) $value;
+				}
+
+				$address[ $field ] = $value;
 			}
 
-			$this->addressRepository->save( $orderId, $address );
+			if ( $address['active'] === 1 ) {
+				$this->addressRepository->save( $orderId, $address );
+			}
 		}
 	}
 

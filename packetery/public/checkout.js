@@ -216,11 +216,14 @@ var packeteryLoadCheckout = function( $, settings ) {
 					continue;
 				}
 
-				var addressFieldValue, $hiddenPacketeryFormField;
-				var widgetField = data[ attrKey ].widgetResultField || attrKey;
+				if ( false === data[ attrKey ].isWidgetResultField ) {
+					continue;
+				}
 
+				var addressFieldValue;
+				var $hiddenPacketeryFormField = $( '#' + data[ attrKey ].name );
+				var widgetField = data[ attrKey ].widgetResultField || attrKey;
 				addressFieldValue = target[ widgetField ];
-				$hiddenPacketeryFormField = $( '#' + data[ attrKey ].name );
 
 				$hiddenPacketeryFormField.val( addressFieldValue );
 			}
@@ -259,6 +262,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					// todo save selected address to shipping address
 
+					$( '#' + settings.homeDeliveryAttrs[ 'active' ].name ).val( '1' );
 					fillHiddenFields( settings.homeDeliveryAttrs, selectedAddress );
 					saveInfoForHDCarrierRate( getShippingRateId() );
 					$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressSaved );
