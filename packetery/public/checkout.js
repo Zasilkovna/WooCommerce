@@ -132,17 +132,13 @@ var packeteryLoadCheckout = function( $, settings ) {
 		};
 
 		$( document ).on( 'updated_checkout', function() {
-			var shippingCountry;
-			if ( $( '#shipping_country:visible' ).length === 1 ) {
-				shippingCountry = $( '#shipping_country' ).val().toLowerCase();
-			} else {
-				shippingCountry = $( '#billing_country' ).val().toLowerCase();
-			}
-			if ( shippingCountry !== settings.country ) {
+			var destinationAddress = getDestinationAddress();
+			if ( destinationAddress.country !== settings.country ) {
 				clearInfo( settings.pickupPointAttrs );
 				clearInfo( settings.homeDeliveryAttrs );
-				settings.country = shippingCountry;
+				settings.country = destinationAddress.country;
 			}
+
 			updateWidgetButtonVisibility( getShippingRateId() );
 		} );
 
