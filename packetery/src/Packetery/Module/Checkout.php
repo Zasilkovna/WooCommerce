@@ -30,7 +30,7 @@ class Checkout {
 	 *
 	 * @var array[]
 	 */
-	public static $pickup_point_attrs = array(
+	public static $pickupPointAttrs = array(
 		'id'                   => array(
 			'name'     => Entity::META_POINT_ID,
 			'required' => true,
@@ -234,7 +234,7 @@ class Checkout {
 					'country'           => $country,
 					'weight'            => $weight,
 					'carrierConfig'     => $carrierConfig,
-					'pickupPointAttrs'  => self::$pickup_point_attrs,
+					'pickupPointAttrs'  => self::$pickupPointAttrs,
 					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
 					'appIdentity'       => $appIdentity,
 					'packeteryApiKey'   => $this->options_provider->get_api_key(),
@@ -260,7 +260,7 @@ class Checkout {
 	 * @return array
 	 */
 	public static function add_pickup_point_fields( array $fields ): array {
-		foreach ( self::$pickup_point_attrs as $attr ) {
+		foreach ( self::$pickupPointAttrs as $attr ) {
 			$fields['shipping'][ $attr['name'] ] = [
 				'type'              => 'text',
 				'required'          => false,
@@ -293,8 +293,8 @@ class Checkout {
 			$error          = false;
 			$required_attrs = array_filter(
 				array_combine(
-					array_column( self::$pickup_point_attrs, 'name' ),
-					array_column( self::$pickup_point_attrs, 'required' )
+					array_column( self::$pickupPointAttrs, 'name' ),
+					array_column( self::$pickupPointAttrs, 'required' )
 				)
 			);
 			foreach ( $required_attrs as $attr => $required ) {
@@ -349,7 +349,7 @@ class Checkout {
 		}
 
 		if ( $this->isPickupPointOrder() ) {
-			foreach ( self::$pickup_point_attrs as $attr ) {
+			foreach ( self::$pickupPointAttrs as $attr ) {
 				if (
 					isset( $post[ $attr['name'] ] ) &&
 					( Entity::META_CARRIER_ID !== $attr['name'] || $post[ $attr['name'] ] )
