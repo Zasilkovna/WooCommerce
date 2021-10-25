@@ -205,8 +205,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			updateWidgetButtonVisibility( getShippingRateId() );
 		} );
 
-		var shippingMethodSelector = '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]'; // todo remove?
-		$( document ).on( 'change', shippingMethodSelector, function() {
+		$( document ).on( 'change', '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]', function() {
 			updateWidgetButtonVisibility( this.value );
 		} );
 
