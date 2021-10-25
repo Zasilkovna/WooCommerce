@@ -1,15 +1,15 @@
 var packeteryLoadCheckout = function( $, settings ) {
 	var packeteryCheckout = function( settings ) {
 		var $widgetDiv = $( '.packeta-widget' );
-		var currentRateValues = {};
+		var rateAttrValues = {};
 		var ratesWithInfo = {};
 
-		var getCurrentRateValue = function( carrierRateId, attribute, defaultValue ) {
-			if ( typeof currentRateValues[ carrierRateId + '-' + attribute ] === 'undefined' ) {
+		var getRateAttrValue = function( carrierRateId, attribute, defaultValue ) {
+			if ( typeof rateAttrValues[ carrierRateId + '-' + attribute ] === 'undefined' ) {
 				return defaultValue;
 			}
 
-			return currentRateValues[ carrierRateId + '-' + attribute ];
+			return rateAttrValues[ carrierRateId + '-' + attribute ];
 		}
 
 		var getShippingRateId = function() {
@@ -27,7 +27,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				}
 
 				var attribute = attrs[ attributeKey ].name;
-				$( '#' + attribute ).val( getCurrentRateValue( carrierRateId, attribute, '' ) );
+				$( '#' + attribute ).val( getRateAttrValue( carrierRateId, attribute, '' ) );
 			}
 		};
 
@@ -43,7 +43,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					}
 
 					var attribute = attrs[ attributeKey ].name;
-					currentRateValues[ carrierRateId + '-' + attribute ] = '';
+					rateAttrValues[ carrierRateId + '-' + attribute ] = '';
 					$( '#' + attribute ).val( '' );
 				}
 			}
@@ -96,14 +96,14 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( _hasPickupPoints ) {
 				loadInfoForCarrierRate( carrierRateId, settings.pickupPointAttrs );
-				$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getCurrentRateValue( carrierRateId, 'packetery_point_name', '' ) );
+				$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getRateAttrValue( carrierRateId, 'packetery_point_name', '' ) );
 				$widgetDiv.find( 'button' ).html( settings.translations.choosePickupPoint );
 				$widgetDiv.show();
 			}
 
 			if ( _hasHomeDelivery ) {
 				loadInfoForCarrierRate( carrierRateId, settings.homeDeliveryAttrs );
-				$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getCurrentRateValue( carrierRateId, 'packetery_address_street', '' ) );
+				$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) );
 				$widgetDiv.find( 'button' ).html( settings.translations.chooseAddress );
 				$widgetDiv.show();
 			}
@@ -151,7 +151,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
 			$( '#' + name ).val( addressFieldValue );
-			currentRateValues[ carrierRateId + '-' + name ] = addressFieldValue;
+			rateAttrValues[ carrierRateId + '-' + name ] = addressFieldValue;
 			ratesWithInfo[ carrierRateId ] = true;
 		};
 
