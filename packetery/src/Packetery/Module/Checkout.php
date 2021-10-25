@@ -191,7 +191,7 @@ class Checkout {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			array(
-				'logo'     => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
+				'logo' => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
 			)
 		);
 	}
@@ -213,34 +213,34 @@ class Checkout {
 			];
 
 			if ( $carrier['is_pickup_points'] ) {
-				$carrierConfig[ $optionId ]['carriers'] = ( is_numeric( $carrier['id'] ) ? $carrier['id'] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+				$carrierConfig[ $optionId ]['carriers'] = ( is_numeric( $carrier['id'] ) ? $carrier['id'] : Repository::INTERNAL_PICKUP_POINTS_ID );
 			}
 		}
 
-		$language     = substr( get_locale(), 0, 2 );
-		$country      = $this->getCustomerCountry();
-		$weight       = $this->getCartWeightKg();
+		$language = substr( get_locale(), 0, 2 );
+		$country  = $this->getCustomerCountry();
+		$weight   = $this->getCartWeightKg();
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
 			[
 				'settings' => [
-					'language' => $language,
-					'country' => $country,
-					'weight' => $weight,
-					'carrierConfig' => $carrierConfig,
-					'pickupPointAttrs' => self::$pickup_point_attrs,
-					'homeDeliveryAttrs'  => self::$homeDeliveryAttrs,
-					'appIdentity' => $appIdentity,
-					'packeteryApiKey' => $this->options_provider->get_api_key(),
-					'translations' => [
-						'choosePickupPoint' => __( 'choosePickupPoint', 'packetery' ),
-						'chooseAddress' => __( 'chooseAddress', 'packetery' ),
+					'language'          => $language,
+					'country'           => $country,
+					'weight'            => $weight,
+					'carrierConfig'     => $carrierConfig,
+					'pickupPointAttrs'  => self::$pickup_point_attrs,
+					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
+					'appIdentity'       => $appIdentity,
+					'packeteryApiKey'   => $this->options_provider->get_api_key(),
+					'translations'      => [
+						'choosePickupPoint'             => __( 'choosePickupPoint', 'packetery' ),
+						'chooseAddress'                 => __( 'chooseAddress', 'packetery' ),
 						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
 						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
-						'addressSaved' => __( 'addressSaved', 'packetery' ),
-					]
-				]
+						'addressSaved'                  => __( 'addressSaved', 'packetery' ),
+					],
+				],
 			]
 		);
 	}
