@@ -1,11 +1,6 @@
 <script>
 	(function() {
-		var pickupPointAttsReformatted = {
-            {foreach $pickup_point_attrs as $id => $attr}
-			'{$attr['name']|noescape}': '{$id|noescape}',
-            {/foreach}
-		};
-
+		// TODO: move to PHP
 		var carrierConfig = {
             {foreach $carriers as $carrier}
             {var $optionId = $carrierPrefix . $carrier['id']}
@@ -21,7 +16,6 @@
 
 		packeteryLoadCheckout( {
             jQuery,
-			pickupPointAttsReformatted: pickupPointAttsReformatted,
 			carrierConfig: carrierConfig,
 			pickupPointAttrs: {$pickup_point_attrs},
 			homeDeliveryAttrs: {$homeDeliveryAttrs},

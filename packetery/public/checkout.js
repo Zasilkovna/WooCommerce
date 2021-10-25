@@ -14,35 +14,37 @@ var packeteryLoadCheckout = function( settings ) {
 
 		var ratesWithInfo = [];
 		var saveInfoForCarrierRate = function( carrierRateId ) {
-			for ( var attribute in settings.pickupPointAttsReformatted ) {
-				if ( !settings.pickupPointAttsReformatted.hasOwnProperty( attribute ) ) {
+			for ( var attributeKey in settings.pickupPointAttrs ) {
+				if ( !settings.pickupPointAttrs.hasOwnProperty( attributeKey ) ) {
 					continue;
 				}
 
+				var attribute = settings.pickupPointAttrs[attributeKey].name;
 				$widgetDiv.data( carrierRateId + '-' + attribute, $( '#' + attribute ).val() );
 			}
 			ratesWithInfo.push( carrierRateId );
 		};
 
 		var hdRatesWithInfo = [];
-		var saveInfoForHDCarrierRate = function( carrierRateId ) {
+		var saveInfoForHDCarrierRate = function( carrierRateId ) { // TODO: merge with PP logic
 			for ( var attributeKey in settings.homeDeliveryAttrs ) {
 				if ( !settings.homeDeliveryAttrs.hasOwnProperty( attributeKey ) ) {
 					continue;
 				}
 
 				var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
-				$widgetDiv.data( carrierRateId + '-' + attribute, $( '#' + attribute ).val() );
+				$widgetDiv.data( carrierRateId + '-' + attribute, $( '#' + attribute ).val() ); // TODO: use JS
 			}
 			hdRatesWithInfo.push( carrierRateId );
 		};
 
 		var loadInfoForCarrierRate = function( carrierRateId ) {
-			for ( var attribute in settings.pickupPointAttsReformatted ) {
-				if ( !settings.pickupPointAttsReformatted.hasOwnProperty( attribute ) ) {
+			for ( var attributeKey in settings.pickupPointAttrs ) {
+				if ( !settings.pickupPointAttrs.hasOwnProperty( attributeKey ) ) {
 					continue;
 				}
 
+				var attribute = settings.pickupPointAttrs[attributeKey].name;
 				$( '#' + attribute ).val( $widgetDiv.data( carrierRateId + '-' + attribute ) );
 			}
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( $widgetDiv.data( carrierRateId + '-packetery_point_name' ) );
@@ -68,11 +70,12 @@ var packeteryLoadCheckout = function( settings ) {
 
 				var carrierRateId = ratesWithInfo[carrierRateIdKey];
 
-				for ( var attribute in settings.pickupPointAttsReformatted ) {
-					if ( !settings.pickupPointAttsReformatted.hasOwnProperty( attribute ) ) {
+				for ( var attributeKey in settings.pickupPointAttrs ) {
+					if ( !settings.pickupPointAttrs.hasOwnProperty( attributeKey ) ) {
 						continue;
 					}
 
+					var attribute = settings.pickupPointAttrs[attributeKey].name;
 					$widgetDiv.data( carrierRateId + '-' + attribute, '' );
 					$( '#' + attribute ).val( '' );
 				}
