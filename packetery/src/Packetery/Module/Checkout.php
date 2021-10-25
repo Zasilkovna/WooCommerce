@@ -215,17 +215,40 @@ class Checkout {
 	 * Renders main checkout script
 	 */
 	public function render_after_checkout_form(): void {
-		$app_identity = 'woocommerce-' . get_bloginfo( 'version' ) . '-' . WC_VERSION . '-' . Plugin::VERSION;
+		$appIdentity = 'woocommerce-' . get_bloginfo( 'version' ) . '-' . WC_VERSION . '-' . Plugin::VERSION;
+
+		$carrierConfig = [];
+		$carriers      = $this->carrierRepository->getAllIncludingZpoints();
+
+		foreach ( $carriers as $carrier ) {
+			$optionId                   = self::CARRIER_PREFIX . $carrier['id'];
+			$carrierConfig[ $optionId ] = [
+				'id'               => $carrier['id'],
+				'is_pickup_points' => $carrier['is_pickup_points'],
+			];
+
+			if ( $carrier['is_pickup_points'] ) {
+				$carrierConfig[ $optionId ]['carriers'] = ( is_numeric( $carrier['id'] ) ? $carrier['id'] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+			}
+		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/checkout_script.latte',
 			[
-				'app_identity'       => $app_identity,
-				'pickup_point_attrs' => self::$pickup_point_attrs,
-				'homeDeliveryAttrs'  => self::$homeDeliveryAttrs,
-				'packetery_api_key'  => $this->options_provider->get_api_key(),
-				'carrierPrefix'      => self::CARRIER_PREFIX,
-				'carriers'           => $this->carrierRepository->getAllIncludingZpoints(),
+				'settings' => [
+					'carrierConfig' => $carrierConfig,
+					'pickupPointAttrs' => self::$pickup_point_attrs,
+					'homeDeliveryAttrs'  => self::$homeDeliveryAttrs,
+					'appIdentity' => $appIdentity,
+					'packeteryApiKey' => $this->options_provider->get_api_key(),
+					'translations' => [
+						'choosePickupPoint' => __( 'choosePickupPoint', 'packetery' ),
+						'chooseAddress' => __( 'chooseAddress', 'packetery' ),
+						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
+						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
+						'addressSaved' => __( 'addressSaved', 'packetery' )
+					]
+				]
 			]
 		);
 	}

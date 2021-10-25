@@ -1,7 +1,5 @@
-var packeteryLoadCheckout = function( settings ) {
+var packeteryLoadCheckout = function( $, settings ) {
 	var packeteryCheckout = function( settings ) {
-		var $ = settings.jQuery;
-
 		var $widgetDiv = $( '.packeta-widget' );
 
 		var getShippingRateId = function() {
@@ -281,7 +279,6 @@ var packeteryLoadCheckout = function( settings ) {
 		} );
 	};
 
-	var $ = settings.jQuery;
 	var dependencies = [];
 	dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
 	dependencies.push( $.getScript( "https://widget-hd.packeta.com/www/js/library-hd.js" ) );

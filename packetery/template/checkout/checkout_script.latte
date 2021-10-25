@@ -1,33 +1,3 @@
 <script>
-	(function() {
-		// TODO: move to PHP
-		var carrierConfig = {
-            {foreach $carriers as $carrier}
-            {var $optionId = $carrierPrefix . $carrier['id']}
-			'{$optionId|noescape}': {
-				'id': {$carrier['id']},
-				'is_pickup_points': {$carrier['is_pickup_points']},
-                {if $carrier['is_pickup_points']}
-				'carriers': {(is_numeric($carrier['id']) ? $carrier['id'] : Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID)},
-                {/if}
-			},
-            {/foreach}
-		};
-
-		packeteryLoadCheckout( {
-            jQuery,
-			carrierConfig: carrierConfig,
-			pickupPointAttrs: {$pickup_point_attrs},
-			homeDeliveryAttrs: {$homeDeliveryAttrs},
-			appIdentity: {$app_identity},
-			packeteryApiKey: {$packetery_api_key},
-            translations: {
-	            choosePickupPoint: {__( 'choosePickupPoint', 'packetery' )},
-	            chooseAddress: {__( 'chooseAddress', 'packetery' )},
-	            addressValidationIsOutOfOrder: {__( 'addressValidationIsOutOfOrder', 'packetery' )},
-	            invalidAddressCountrySelected: {__( 'invalidAddressCountrySelected', 'packetery' )},
-	            addressSaved: {__( 'addressSaved', 'packetery' )}
-            }
-        } );
-	})();
+	packeteryLoadCheckout( jQuery, {$settings});
 </script>
