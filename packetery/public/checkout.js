@@ -97,14 +97,14 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( _hasPickupPoints ) {
 				loadInfoForCarrierRate( carrierRateId, settings.pickupPointAttrs );
-				$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getRateAttrValue( carrierRateId, 'packetery_point_name', '' ) );
+				$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_point_name', '' ) );
 				$widgetDiv.find( 'button' ).html( settings.translations.choosePickupPoint );
 				$widgetDiv.show();
 			}
 
 			if ( _hasHomeDelivery ) {
 				loadInfoForCarrierRate( carrierRateId, settings.homeDeliveryAttrs );
-				$widgetDiv.find( '.packeta-widget-info' ).html( '' ).html( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) );
+				$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) );
 				$widgetDiv.find( 'button' ).html( settings.translations.chooseAddress );
 				$widgetDiv.show();
 			}
