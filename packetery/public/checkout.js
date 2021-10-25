@@ -270,9 +270,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.weight = settings.weight;
 				widgetOptions.carriers = settings.carrierConfig[ carrierRateId ].carriers;
 
-				console.log(widgetOptions);
-				console.log(settings.carrierConfig);
-
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint == null ) {
 						return;
