@@ -50,13 +50,13 @@ var packeteryLoadCheckout = function( $, settings ) {
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' );
 		};
 
-		var resetHDInfo = function() {
-			for ( var attributeKey in settings.homeDeliveryAttrs ) {
-				if ( !settings.homeDeliveryAttrs.hasOwnProperty( attributeKey ) ) {
+		var resetInfo = function( attrs ) {
+			for ( var attributeKey in attrs ) {
+				if ( !attrs.hasOwnProperty( attributeKey ) ) {
 					continue;
 				}
 
-				var attribute = settings.homeDeliveryAttrs[ attributeKey ].name;
+				var attribute = attrs[ attributeKey ].name;
 				$( '#' + attribute ).val( '' );
 			}
 
@@ -85,7 +85,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var updateWidgetButtonVisibility = function( carrierRateId ) {
 			$widgetDiv.hide();
-			resetHDInfo();
+			resetInfo( settings.pickupPointAttrs ); // clear active hidden field values
+			resetInfo( settings.homeDeliveryAttrs );
 
 			if ( !hasCarrierConfig( carrierRateId ) ) {
 				return;
