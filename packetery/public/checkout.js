@@ -5,9 +5,9 @@ var packeteryLoadCheckout = function( settings ) {
 		var $widgetDiv = $( '.packeta-widget' );
 
 		var getShippingRateId = function() {
-			var $radios = $( '#shipping_method input[type="radio"]' );
-			if ( $radios.length ) {
-				return $radios.filter( ':checked' ).val();
+			var $selectedRadio = $( '#shipping_method input[type="radio"]:checked' );
+			if ( $selectedRadio.length ) {
+				return $selectedRadio.val();
 			}
 			return $( '#shipping_method input[type="hidden"]' ).val();
 		};
