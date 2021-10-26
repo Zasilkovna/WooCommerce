@@ -188,9 +188,13 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.carrierId = settings.carrierConfig[ carrierRateId ][ 'id' ];
 
 				PacketaHD.Widget.pick( settings.packeteryApiKey, function( result ) {
-					if ( !result || !result.address ) {
+					if ( !result ) {
 						$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressValidationIsOutOfOrder );
 						return;
+					}
+
+					if ( !result.address ) {
+						return; // Widget was closed.
 					}
 
 					var selectedAddress = result.address;
