@@ -75,12 +75,12 @@ class Checkout {
 	 * @var array[]
 	 */
 	private static $homeDeliveryAttrs = [
-		'active' => [
-			'name'                => 'packetery_address_active',
-			'isWidgetResultField' => false,
-			'castToInt'           => true,
+		'active' => [ // Post type address field called 'active'
+			'name'                => 'packetery_address_active', // Name of checkout hidden form field. Must be unique in entire form.
+			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
+			'castToInt'           => true, // Will backend cast value passed by browser to integer? Default value is false.
 		],
-		'houseNumber' => [
+		'houseNumber' => [ // post type address field called 'houseNumber'
 			'name' => 'packetery_address_houseNumber',
 		],
 		'street'      => [
@@ -91,7 +91,7 @@ class Checkout {
 		],
 		'postCode'    => [
 			'name'              => 'packetery_address_postCode',
-			'widgetResultField' => 'postcode',
+			'widgetResultField' => 'postcode', // Widget returns address object containing specified field. By default it is the array key 'postCode', but in this case it is 'postcode'.
 		],
 		'county'      => [
 			'name' => 'packetery_address_county',
@@ -189,15 +189,15 @@ class Checkout {
 	public function renderWidgetButton(): void {
 		$country = $this->getCustomerCountry();
 		if ( ! $country ) {
-			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/country-error.latte' );
+			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/country-error.latte' ); // TODO: Figure out reason. Under what circumstances customer country is empty.
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
-			array(
+			[
 				'logo' => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
-			)
+			]
 		);
 	}
 
@@ -222,17 +222,13 @@ class Checkout {
 			}
 		}
 
-		$language = substr( get_locale(), 0, 2 );
-		$country  = $this->getCustomerCountry();
-		$weight   = $this->getCartWeightKg();
-
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
 			[
 				'settings' => [
-					'language'          => $language,
-					'country'           => $country,
-					'weight'            => $weight,
+					'language'          => substr( get_locale(), 0, 2 ),
+					'country'           => $this->getCustomerCountry(),
+					'weight'            => $this->getCartWeightKg(),
 					'carrierConfig'     => $carrierConfig,
 					'pickupPointAttrs'  => self::$pickupPointAttrs,
 					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
@@ -243,7 +239,6 @@ class Checkout {
 						'chooseAddress'                 => __( 'chooseAddress', 'packetery' ),
 						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
 						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
-						'addressSaved'                  => __( 'addressSaved', 'packetery' ),
 					],
 				],
 			]
@@ -371,7 +366,7 @@ class Checkout {
 			}
 
 			if ( $address['active'] === 1 ) {
-				$this->addressRepository->save( $orderId, $address );
+				$this->addressRepository->save( $orderId, $address ); // TODO: think about address modifications by users
 			}
 		}
 	}

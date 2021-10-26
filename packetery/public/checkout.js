@@ -114,14 +114,12 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var getDestinationAddress = function() {
 			var extractDestination = function( section ) {
-				var address = {};
-
-				address.street = $( '#' + section + '_address_1' ).val();
-				address.city = $( '#' + section + '_city' ).val();
-				address.country = $( '#' + section + '_country' ).val().toLowerCase();
-				address.postCode = $( '#' + section + '_postcode' ).val();
-
-				return address;
+				return {
+					street: $( '#' + section + '_address_1' ).val(),
+					city: $( '#' + section + '_city' ).val(),
+					country: $( '#' + section + '_country' ).val().toLowerCase(),
+					postCode: $( '#' + section + '_postcode' ).val()
+				};
 			};
 
 			if ( $( '#shipping_country:visible' ).length === 1 ) {
