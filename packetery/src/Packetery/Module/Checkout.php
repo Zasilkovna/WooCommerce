@@ -30,7 +30,7 @@ class Checkout {
 	 *
 	 * @var array[]
 	 */
-	public static $pickup_point_attrs = array(
+	public static $pickupPointAttrs = array(
 		'id'                   => array(
 			'name'     => Entity::META_POINT_ID,
 			'required' => true,
@@ -70,6 +70,44 @@ class Checkout {
 	);
 
 	/**
+	 * Home delivery attributes configuration.
+	 *
+	 * @var array[]
+	 */
+	private static $homeDeliveryAttrs = [
+		'active' => [ // Post type address field called 'active'
+			'name'                => 'packetery_address_active', // Name of checkout hidden form field. Must be unique in entire form.
+			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
+			'castToInt'           => true, // Will backend cast value passed by browser to integer? Default value is false.
+		],
+		'houseNumber' => [ // post type address field called 'houseNumber'
+			'name' => 'packetery_address_houseNumber',
+		],
+		'street'      => [
+			'name' => 'packetery_address_street',
+		],
+		'city'        => [
+			'name' => 'packetery_address_city',
+		],
+		'postCode'    => [
+			'name'              => 'packetery_address_postCode',
+			'widgetResultField' => 'postcode', // Widget returns address object containing specified field. By default it is the array key 'postCode', but in this case it is 'postcode'.
+		],
+		'county'      => [
+			'name' => 'packetery_address_county',
+		],
+		'country'     => [
+			'name' => 'packetery_address_country',
+		],
+		'latitude'    => [
+			'name' => 'packetery_address_latitude',
+		],
+		'longitude'   => [
+			'name' => 'packetery_address_longitude',
+		],
+	];
+
+	/**
 	 * PacketeryLatte engine
 	 *
 	 * @var Engine
@@ -98,36 +136,27 @@ class Checkout {
 	private $httpRequest;
 
 	/**
+	 * Address repository.
+	 *
+	 * @var Address\Repository
+	 */
+	private $addressRepository;
+
+	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine     $latte_engine PacketeryLatte engine.
-	 * @param Provider   $options_provider Options provider.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Request    $httpRequest Http request.
+	 * @param Engine             $latte_engine      PacketeryLatte engine.
+	 * @param Provider           $options_provider  Options provider.
+	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param Request            $httpRequest       Http request.
+	 * @param Address\Repository $addressRepository Address repository.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository ) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
-	}
-
-	/**
-	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
-	 *
-	 * @param string|null $carrierId Carrier id.
-	 *
-	 * @return bool
-	 */
-	public function isPickupPointCarrier( ?string $carrierId ): bool {
-		if ( null === $carrierId ) {
-			return false;
-		}
-		if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
-			return true;
-		}
-
-		return $this->carrierRepository->hasPickupPoints( (int) $carrierId );
+		$this->addressRepository = $addressRepository;
 	}
 
 	/**
@@ -139,39 +168,36 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $this->isPickupPointCarrier( $carrierId );
+		return $carrierId && $this->carrierRepository->isPickupPointCarrier( $carrierId );
+	}
+
+	/**
+	 * Check if chosen shipping rate is bound with Packeta home delivery
+	 *
+	 * @return bool
+	 */
+	public function isHomeDeliveryOrder(): bool {
+		$chosenMethod = $this->getChosenMethod();
+		$carrierId    = $this->getCarrierId( $chosenMethod );
+
+		return $carrierId && $this->carrierRepository->isHomeDeliveryCarrier( $carrierId );
 	}
 
 	/**
 	 * Renders widget button and information about chosen pickup point
 	 */
 	public function renderWidgetButton(): void {
-		$language = substr( get_locale(), 0, 2 );
-
 		$country = $this->getCustomerCountry();
 		if ( ! $country ) {
-			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/error_country.latte' );
+			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/country-error.latte' ); // TODO: Figure out reason. Under what circumstances customer country is empty.
 			return;
 		}
 
-		$weight = $this->getCartWeightKg();
-
-		$carriers     = '';
-		$chosenMethod = $this->getChosenMethod();
-		$carrierId    = $this->getCarrierId( $chosenMethod );
-		if ( $this->isPickupPointCarrier( $carrierId ) ) {
-			$carriers = $carrierId;
-		}
-
 		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/checkout/widget_button.latte',
-			array(
-				'language' => $language,
-				'country'  => $country,
-				'weight'   => number_format( $weight, 3 ),
-				'carriers' => $carriers,
-				'logo'     => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
-			)
+			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
+			[
+				'logo' => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
+			]
 		);
 	}
 
@@ -179,17 +205,43 @@ class Checkout {
 	 * Renders main checkout script
 	 */
 	public function render_after_checkout_form(): void {
-		$app_identity = 'woocommerce-' . get_bloginfo( 'version' ) . '-' . WC_VERSION . '-' . Plugin::VERSION;
+		$appIdentity = 'woocommerce-' . get_bloginfo( 'version' ) . '-' . WC_VERSION . '-' . Plugin::VERSION;
+
+		$carrierConfig = [];
+		$carriers      = $this->carrierRepository->getAllIncludingZpoints();
+
+		foreach ( $carriers as $carrier ) {
+			$optionId                   = self::CARRIER_PREFIX . $carrier['id'];
+			$carrierConfig[ $optionId ] = [
+				'id'               => $carrier['id'],
+				'is_pickup_points' => $carrier['is_pickup_points'],
+			];
+
+			if ( $carrier['is_pickup_points'] ) {
+				$carrierConfig[ $optionId ]['carriers'] = ( is_numeric( $carrier['id'] ) ? $carrier['id'] : Repository::INTERNAL_PICKUP_POINTS_ID );
+			}
+		}
 
 		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/checkout/checkout_script.latte',
-			array(
-				'app_identity'       => $app_identity,
-				'pickup_point_attrs' => self::$pickup_point_attrs,
-				'packetery_api_key'  => $this->options_provider->get_api_key(),
-				'carrierPrefix'      => self::CARRIER_PREFIX,
-				'carriers'           => $this->carrierRepository->getAllIncludingZpoints(),
-			)
+			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
+			[
+				'settings' => [
+					'language'          => substr( get_locale(), 0, 2 ),
+					'country'           => $this->getCustomerCountry(),
+					'weight'            => $this->getCartWeightKg(),
+					'carrierConfig'     => $carrierConfig,
+					'pickupPointAttrs'  => self::$pickupPointAttrs,
+					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
+					'appIdentity'       => $appIdentity,
+					'packeteryApiKey'   => $this->options_provider->get_api_key(),
+					'translations'      => [
+						'choosePickupPoint'             => __( 'choosePickupPoint', 'packetery' ),
+						'chooseAddress'                 => __( 'chooseAddress', 'packetery' ),
+						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
+						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
+					],
+				],
+			]
 		);
 	}
 
@@ -203,11 +255,19 @@ class Checkout {
 	 * @return array
 	 */
 	public static function add_pickup_point_fields( array $fields ): array {
-		foreach ( self::$pickup_point_attrs as $attr ) {
+		foreach ( self::$pickupPointAttrs as $attr ) {
 			$fields['shipping'][ $attr['name'] ] = [
 				'type'              => 'text',
 				'required'          => false,
 				// For older WooCommerce. See woocommerce_form_field function.
+				'custom_attributes' => [ 'style' => 'display: none;' ],
+			];
+		}
+
+		foreach ( self::$homeDeliveryAttrs as $attr ) {
+			$fields['shipping'][ $attr['name'] ] = [
+				'type'              => 'text',
+				'required'          => false,
 				'custom_attributes' => [ 'style' => 'display: none;' ],
 			];
 		}
@@ -228,8 +288,8 @@ class Checkout {
 			$error          = false;
 			$required_attrs = array_filter(
 				array_combine(
-					array_column( self::$pickup_point_attrs, 'name' ),
-					array_column( self::$pickup_point_attrs, 'required' )
+					array_column( self::$pickupPointAttrs, 'name' ),
+					array_column( self::$pickupPointAttrs, 'required' )
 				)
 			);
 			foreach ( $required_attrs as $attr => $required ) {
@@ -278,17 +338,37 @@ class Checkout {
 				update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
 			}
 		}
+
+		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
+			wp_nonce_ays( '' );
+		}
+
 		if ( $this->isPickupPointOrder() ) {
-			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
-				wp_nonce_ays( '' );
-			}
-			foreach ( self::$pickup_point_attrs as $attr ) {
+			foreach ( self::$pickupPointAttrs as $attr ) {
 				if (
 					isset( $post[ $attr['name'] ] ) &&
 					( Entity::META_CARRIER_ID !== $attr['name'] || $post[ $attr['name'] ] )
 				) {
 					update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
 				}
+			}
+		}
+
+		if ( $this->isHomeDeliveryOrder() ) {
+			$address = [];
+
+			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
+				$value = $post[ $attributeData['name'] ];
+
+				if ( $attributeData['castToInt'] ?? false ) {
+					$value = (int) $value;
+				}
+
+				$address[ $field ] = $value;
+			}
+
+			if ( $address['active'] === 1 ) {
+				$this->addressRepository->save( $orderId, $address ); // TODO: think about address modifications by users
 			}
 		}
 	}
