@@ -355,6 +355,8 @@ class Checkout {
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
+			$address = [];
+
 			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
 				$value = $post[ $attributeData['name'] ];
 
