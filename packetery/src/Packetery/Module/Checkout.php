@@ -75,7 +75,7 @@ class Checkout {
 	 * @var array[]
 	 */
 	private static $homeDeliveryAttrs = [
-		'active' => [ // Post type address field called 'active'
+		'active'      => [ // Post type address field called 'active'
 			'name'                => 'packetery_address_active', // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
 			'castToInt'           => true, // Will backend cast value passed by browser to integer? Default value is false.
@@ -220,6 +220,17 @@ class Checkout {
 			if ( $carrier['is_pickup_points'] ) {
 				$carrierConfig[ $optionId ]['carriers'] = ( is_numeric( $carrier['id'] ) ? $carrier['id'] : Repository::INTERNAL_PICKUP_POINTS_ID );
 			}
+
+			if ( ! $carrier['is_pickup_points'] ) {
+				$carrierOption = get_option( $optionId );
+
+				$addressValidation = 'none';
+				if ( $carrierOption ) {
+					$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
+				}
+
+				$carrierConfig[ $optionId ]['address_validation'] = $addressValidation;
+			}
 		}
 
 		$this->latte_engine->render(
@@ -279,12 +290,12 @@ class Checkout {
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
 	public function validatePickupPointData(): void {
-		if ( $this->isPickupPointOrder() ) {
-			$post = $this->httpRequest->getPost();
-			if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
-				wp_nonce_ays( '' );
-			}
+		$post = $this->httpRequest->getPost();
+		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
+			wp_nonce_ays( '' );
+		}
 
+		if ( $this->isPickupPointOrder() ) {
 			$error          = false;
 			$required_attrs = array_filter(
 				array_combine(
@@ -317,6 +328,22 @@ class Checkout {
 			}
 			if ( $error ) {
 				wc_add_notice( __( 'Pick up point is not chosen.', 'packetery' ), 'error' );
+			}
+		}
+
+		if ( $this->isHomeDeliveryOrder() ) {
+			$chosenMethod  = $this->getChosenMethod();
+			$carrierId     = $this->getCarrierId( $chosenMethod );
+			$optionId      = self::CARRIER_PREFIX . $carrierId;
+			$carrierOption = get_option( $optionId );
+
+			$addressValidation = 'none';
+			if ( $carrierOption ) {
+				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
+			}
+
+			if ( 'required' === $addressValidation && '1' !== $post[ self::$homeDeliveryAttrs['active']['name'] ] ) {
+				wc_add_notice( __( 'widgetAddressIsNotChosen', 'packetery' ), 'error' );
 			}
 		}
 	}
