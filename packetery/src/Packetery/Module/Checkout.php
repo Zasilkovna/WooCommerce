@@ -9,13 +9,13 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Core\Validator;
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\Entity;
-use Packetery\Module\EntityFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
-use Packetery\Core\Validator;
 
 /**
  * Class Checkout
@@ -145,11 +145,15 @@ class Checkout {
 	private $addressRepository;
 
 	/**
+	 * Address validator.
+	 *
 	 * @var Validator\Address
 	 */
 	private $addressValidator;
 
 	/**
+	 * Address factory.
+	 *
 	 * @var EntityFactory\Address
 	 */
 	private $addressFactory;
@@ -165,7 +169,7 @@ class Checkout {
 	 * @param Validator\Address     $addressValidator  Address validator.
 	 * @param EntityFactory\Address $addressFactory    Address entity factory.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository, \Packetery\Core\Validator\Address $addressValidator, EntityFactory\Address $addressFactory ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository, Validator\Address $addressValidator, EntityFactory\Address $addressFactory ) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;

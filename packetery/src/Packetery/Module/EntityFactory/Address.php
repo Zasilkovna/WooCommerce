@@ -39,6 +39,7 @@ class Address {
 	/**
 	 * Create address object from post using checkout attributes.
 	 *
+	 * @param array $post       POST data.
 	 * @param array $attributes Attributes.
 	 *
 	 * @return Entity\Address
