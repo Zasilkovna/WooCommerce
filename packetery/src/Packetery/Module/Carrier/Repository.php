@@ -276,4 +276,34 @@ class Repository {
 		];
 	}
 
+	/**
+	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
+	 *
+	 * @param string $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public function isPickupPointCarrier( string $carrierId ): bool {
+		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+			return true;
+		}
+
+		return $this->hasPickupPoints( (int) $carrierId );
+	}
+
+	/**
+	 * Checks if carrier is home delivery carrier.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isHomeDeliveryCarrier( string $carrierId ): bool {
+		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+			return false;
+		}
+
+		return false === $this->hasPickupPoints( (int) $carrierId );
+	}
+
 }
