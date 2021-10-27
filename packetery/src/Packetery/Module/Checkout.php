@@ -270,6 +270,16 @@ class Checkout {
 			[ 'fields' => array_column( self::$pickup_point_attrs, 'name' ) ]
 		);
 
+		// TODO: fix me
+//		foreach ( self::$homeDeliveryAttrs as $attr ) {
+//			$fields['shipping'][ $attr['name'] ] = [
+//				'type'              => 'text',
+//				'required'          => false,
+//				'custom_attributes' => [ 'style' => 'display: none;' ],
+//			];
+//		}
+
+
 		wp_nonce_field( self::NONCE_ACTION );
 	}
 
@@ -395,6 +405,24 @@ class Checkout {
 
 			if ( '1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
+			}
+		}
+
+		if ( $this->isHomeDeliveryOrder() ) {
+			$address = [];
+
+			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
+				$value = $post[ $attributeData['name'] ];
+
+				if ( $attributeData['castToInt'] ?? false ) {
+					$value = (int) $value;
+				}
+
+				$address[ $field ] = $value;
+			}
+
+			if ( $address['active'] === 1 ) {
+				$this->addressRepository->save( $orderId, $address ); // TODO: think about address modifications by users
 			}
 		}
 	}
