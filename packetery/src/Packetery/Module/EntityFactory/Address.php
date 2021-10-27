@@ -28,10 +28,32 @@ class Address {
 	 * @return Entity\Address|null
 	 */
 	public function fromPostId( int $addressId ): ?Entity\Address {
-		$meta    = Adapter::getAllUniquePostMeta( $addressId );
+		$meta = Adapter::getAllUniquePostMeta( $addressId );
 
 		$address = new Entity\Address( $meta['street'], $meta['city'], $meta['postCode'] );
 		$address->setHouseNumber( $meta['houseNumber'] );
+
+		return $address;
+	}
+
+	/**
+	 * Create address object from post using checkout attributes.
+	 *
+	 * @param array $attributes Attributes.
+	 *
+	 * @return Entity\Address
+	 */
+	public function fromPostUsingCheckoutAttributes( array $post, array $attributes ): Entity\Address {
+		$address = new Entity\Address(
+			( $post[ $attributes['street']['name'] ] ?? null ),
+			( $post[ $attributes['city']['name'] ] ?? null ),
+			( $post[ $attributes['postCode']['name'] ] ?? null )
+		);
+
+		$houseNumber = ( $post[ $attributes['houseNumber']['name'] ] ?? null );
+		if ( $houseNumber ) {
+			$address->setHouseNumber( $houseNumber );
+		}
 
 		return $address;
 	}

@@ -12,8 +12,10 @@ namespace Packetery\Module;
 use Packetery\Module\Carrier\Repository;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\Entity;
+use Packetery\Module\EntityFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use Packetery\Core\Validator;
 
 /**
  * Class Checkout
@@ -143,20 +145,34 @@ class Checkout {
 	private $addressRepository;
 
 	/**
+	 * @var Validator\Address
+	 */
+	private $addressValidator;
+
+	/**
+	 * @var EntityFactory\Address
+	 */
+	private $addressFactory;
+
+	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine             $latte_engine      PacketeryLatte engine.
-	 * @param Provider           $options_provider  Options provider.
-	 * @param Repository         $carrierRepository Carrier repository.
-	 * @param Request            $httpRequest       Http request.
-	 * @param Address\Repository $addressRepository Address repository.
+	 * @param Engine                $latte_engine      PacketeryLatte engine.
+	 * @param Provider              $options_provider  Options provider.
+	 * @param Repository            $carrierRepository Carrier repository.
+	 * @param Request               $httpRequest       Http request.
+	 * @param Address\Repository    $addressRepository Address repository.
+	 * @param Validator\Address     $addressValidator  Address validator.
+	 * @param EntityFactory\Address $addressFactory    Address entity factory.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository, \Packetery\Core\Validator\Address $addressValidator, EntityFactory\Address $addressFactory ) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
 		$this->addressRepository = $addressRepository;
+		$this->addressValidator  = $addressValidator;
+		$this->addressFactory    = $addressFactory;
 	}
 
 	/**
@@ -344,6 +360,14 @@ class Checkout {
 
 			if ( 'required' === $addressValidation && '1' !== $post[ self::$homeDeliveryAttrs['active']['name'] ] ) {
 				wc_add_notice( __( 'widgetAddressIsNotChosen', 'packetery' ), 'error' );
+				return;
+			}
+
+			if ( '1' === $post[ self::$homeDeliveryAttrs['active']['name'] ] ) {
+				$address = $this->addressFactory->fromPostUsingCheckoutAttributes( $post, self::$homeDeliveryAttrs );
+				if ( false === $this->addressValidator->validate( $address ) ) {
+					wc_add_notice( __( 'widgetAddressIsNotValid', 'packetery' ), 'error' );
+				}
 			}
 		}
 	}
