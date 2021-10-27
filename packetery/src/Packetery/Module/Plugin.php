@@ -20,6 +20,7 @@ use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use WC_Order;
+use Packetery\Module\Address;
 
 /**
  * Class Plugin
@@ -137,6 +138,13 @@ class Plugin {
 	private $logger;
 
 	/**
+	 * Address repository.
+	 *
+	 * @var Address\Repository
+	 */
+	private $addressRepository;
+
+	/**
 	 * Options exporter.
 	 *
 	 * @var Options\Exporter
@@ -177,6 +185,7 @@ class Plugin {
 		Product\DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
+		Address\Repository $addressRepository,
 		Options\Exporter $exporter
 	) {
 		$this->options_page       = $options_page;
@@ -195,6 +204,7 @@ class Plugin {
 		$this->productTab         = $productTab;
 		$this->logPage            = $logPage;
 		$this->logger             = $logger;
+		$this->addressRepository  = $addressRepository;
 		$this->exporter           = $exporter;
 	}
 
@@ -205,14 +215,10 @@ class Plugin {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
 		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
+		add_action( 'init', [ $this->addressRepository, 'register' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
-		add_action(
-			'wp_enqueue_scripts',
-			function () {
-				$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-			}
-		);
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
 		Form::initialize();
 
 		add_action(
@@ -368,6 +374,14 @@ class Plugin {
 			[],
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) )
 		);
+	}
+
+	/**
+	 * Enqueues javascript files and stylesheets for checkout.
+	 */
+	public function enqueueFrontAssets(): void {
+		$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
+		$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false );
 	}
 
 	/**
