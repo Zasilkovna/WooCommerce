@@ -241,7 +241,7 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				if ($entity->isPacketeryRelated()) {
+				if ( $entity->isPacketeryRelated() ) {
 					$this->latteEngine->render(
 						PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 						[
