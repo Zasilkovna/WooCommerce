@@ -69,7 +69,7 @@ class CountryListingPage {
 		$carriersUpdateParams = [ 'lastUpdate' => null ];
 		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
 			set_transient( 'packetery_run_update_carriers', true );
-			if ( wp_safe_redirect( $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', null )->getAbsoluteUrl() ) ) {
+			if ( wp_safe_redirect( $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', null )->getRelativeUrl() ) ) {
 				exit;
 			}
 		}
@@ -82,7 +82,7 @@ class CountryListingPage {
 			delete_transient( 'packetery_run_update_carriers' );
 		}
 
-		$carriersUpdateParams['link'] = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getAbsoluteUrl();
+		$carriersUpdateParams['link'] = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getRelativeUrl();
 
 		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
 		if ( false !== $lastCarrierUpdate ) {
