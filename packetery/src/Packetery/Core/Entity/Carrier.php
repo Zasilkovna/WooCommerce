@@ -103,7 +103,7 @@ class Carrier {
 	/**
 	 * Carrier maxWeight.
 	 *
-	 * @var bool
+	 * @var float
 	 */
 	private $maxWeight;
 
@@ -129,7 +129,7 @@ class Carrier {
 	 * @param bool   $supportsCod Carrier supportsCod.
 	 * @param string $country Carrier country.
 	 * @param string $currency Carrier currency.
-	 * @param bool   $maxWeight Carrier maxWeight.
+	 * @param float  $maxWeight Carrier maxWeight.
 	 * @param bool   $isDeleted Carrier isDeleted.
 	 */
 	public function __construct(
@@ -145,7 +145,7 @@ class Carrier {
 		bool $supportsCod,
 		string $country,
 		string $currency,
-		bool $maxWeight,
+		float $maxWeight,
 		bool $isDeleted
 	) {
 		$this->id                          = $id;
@@ -275,9 +275,9 @@ class Carrier {
 	/**
 	 * Gets carrier maxWeight.
 	 *
-	 * @return bool
+	 * @return float
 	 */
-	public function getMaxWeight(): bool {
+	public function getMaxWeight(): float {
 		return $this->maxWeight;
 	}
 

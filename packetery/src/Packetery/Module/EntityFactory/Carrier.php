@@ -39,7 +39,7 @@ class Carrier {
 			! (bool) $dbResult['disallows_cod'],
 			$dbResult['country'],
 			$dbResult['currency'],
-			(bool) $dbResult['max_weight'],
+			(float) $dbResult['max_weight'],
 			(bool) $dbResult['deleted']
 		);
 	}
