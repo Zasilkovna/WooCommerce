@@ -63,6 +63,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 			$widgetDiv.find( '.packeta-widget-info' ).html( '' );
 		};
 
+		var getAddressValidation = function( carrierRateId ) {
+			return settings.carrierConfig[ carrierRateId ][ 'address_validation' ];
+		};
+
 		var hasCarrierConfig = function( carrierRateId ) {
 			return typeof settings.carrierConfig[ carrierRateId ] !== 'undefined';
 		};
@@ -100,6 +104,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 				$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_point_name', '' ) );
 				$widgetDiv.find( 'button' ).html( settings.translations.choosePickupPoint );
 				$widgetDiv.show();
+			}
+
+			if ( _hasHomeDelivery && 'none' === getAddressValidation( carrierRateId ) ) {
+				return;
 			}
 
 			if ( _hasHomeDelivery ) {
