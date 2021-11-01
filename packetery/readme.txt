@@ -72,6 +72,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.1 =
+* Fixed: corrected count of orders in filtering links.
 * Bugfix: save carrier's maximum weight correctly as float
 
 = 1.0.0 =
