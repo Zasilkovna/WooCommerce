@@ -371,18 +371,4 @@ class Entity {
 	public function getId(): int {
 		return $this->order->get_id();
 	}
-
-	/**
-	 * Gets packetery weight.
-	 *
-	 * @return float|null
-	 */
-	public function getPacketeryWeight(): ?float {
-		$value = $this->getMetaAsNullableString( self::META_WEIGHT );
-		if ( false === is_numeric( $value ) ) {
-			return null;
-		}
-
-		return (float) $value;
-	}
 }
