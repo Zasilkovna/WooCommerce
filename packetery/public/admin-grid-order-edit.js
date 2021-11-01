@@ -56,7 +56,6 @@
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
 				orderData.packetery_weight = response.data.packetery_weight;
 				$lastModalButtonClicked.data( 'order-data', orderData );
-				$lastModalButtonClicked.attr( 'data-order-data', JSON.stringify( orderData ) ); // todo how to join?
 			} ).always( function() {
 				$target.removeClass( 'disabled' );
 				$packeteryModal.find( '.spinner' ).removeClass( 'is-active' );
