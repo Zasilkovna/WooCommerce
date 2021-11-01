@@ -12,7 +12,6 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\Repository;
-use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
