@@ -57,47 +57,37 @@ class PickupPoint {
 	private $city;
 
 	/**
-	 * Carrier pickup point id.
-	 *
-	 * @var string|null
-	 */
-	private $carrierPointId;
-
-	/**
 	 * PickupPoint constructor.
 	 *
-	 * @param int|null    $id Point id.
+	 * @param string|null $id Point id.
 	 * @param string|null $name Point name.
 	 * @param string|null $city Point city.
 	 * @param string|null $zip Point zip.
 	 * @param string|null $street Point street.
 	 * @param string|null $url Point url.
-	 * @param string|null $carrierPointId Carrier point id.
 	 */
 	public function __construct(
-		?int $id,
+		?string $id,
 		?string $name,
 		?string $city,
 		?string $zip,
 		?string $street,
-		?string $url,
-		?string $carrierPointId
+		?string $url
 	) {
-		$this->id             = $id;
-		$this->name           = $name;
-		$this->city           = $city;
-		$this->zip            = $zip;
-		$this->street         = $street;
-		$this->url            = $url;
-		$this->carrierPointId = $carrierPointId;
+		$this->id     = $id;
+		$this->name   = $name;
+		$this->city   = $city;
+		$this->zip    = $zip;
+		$this->street = $street;
+		$this->url    = $url;
 	}
 
 	/**
 	 * Selected pickup point ID
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getId(): ?int {
+	public function getId(): ?string {
 		return $this->id;
 	}
 
@@ -144,15 +134,6 @@ class PickupPoint {
 	 */
 	public function getCity(): ?string {
 		return $this->city;
-	}
-
-	/**
-	 * Gets carrier pickup point id.
-	 *
-	 * @return string|null
-	 */
-	public function getCarrierPointId(): ?string {
-		return $this->carrierPointId;
 	}
 
 }

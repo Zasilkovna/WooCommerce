@@ -13,6 +13,7 @@ use Packetery\Core\Log\ILogger;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
@@ -159,6 +160,13 @@ class Plugin {
 	private $orderModal;
 
 	/**
+	 * PickupPoint factory.
+	 *
+	 * @var EntityFactory\PickupPoint
+	 */
+	private $pickupPointFactory;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox      $order_metabox      Order metabox.
@@ -178,6 +186,7 @@ class Plugin {
 	 * @param Address\Repository $addressRepository  Address repository.
 	 * @param Order\Controller   $orderController    Order controller.
 	 * @param Order\Modal        $orderModal         Order modal.
+	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -196,7 +205,8 @@ class Plugin {
 		ILogger $logger,
 		Address\Repository $addressRepository,
 		Order\Controller $orderController,
-		Order\Modal $orderModal
+		Order\Modal $orderModal,
+		EntityFactory\PickupPoint $pickupPointFactory
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -217,6 +227,7 @@ class Plugin {
 		$this->addressRepository  = $addressRepository;
 		$this->orderController    = $orderController;
 		$this->orderModal         = $orderModal;
+		$this->pickupPointFactory = $pickupPointFactory;
 	}
 
 	/**
@@ -306,16 +317,14 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
-		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPickupPointDelivery() ) {
+		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
+		if ( null === $pickupPoint->getId() ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
-			[
-				'order' => $orderEntity,
-			]
+			[ 'pickupPoint' => $pickupPoint ]
 		);
 	}
 
@@ -325,14 +334,14 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $order ): void {
-		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPickupPointDelivery() ) {
+		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
+		if ( null === $pickupPoint->getId() ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
-			[ 'order' => $orderEntity ]
+			[ 'pickupPoint' => $pickupPoint ]
 		);
 	}
 
@@ -346,12 +355,15 @@ class Plugin {
 			return;
 		}
 
-		$orderEntity = new Order\Entity( $email->object );
-		if ( false === $orderEntity->isPickupPointDelivery() ) {
+		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $email->object );
+		if ( null === $pickupPoint->getId() ) {
 			return;
 		}
 
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/email/footer.latte', [ 'order' => $orderEntity ] );
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
+			[ 'pickupPoint' => $pickupPoint ]
+		);
 	}
 
 	/**

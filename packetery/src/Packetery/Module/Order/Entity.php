@@ -9,9 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Carrier\Repository;
 use Packetery\Module\Product;
-use Packetery\Module\ShippingMethod;
 use WC_Order;
 
 /**
@@ -26,13 +24,11 @@ class Entity {
 	public const META_PACKET_ID        = 'packetery_packet_id';
 	public const META_IS_LABEL_PRINTED = 'packetery_is_label_printed';
 	public const META_POINT_ID         = 'packetery_point_id';
-	public const META_POINT_CARRIER_ID = 'packetery_point_carrier_id';
 	public const META_POINT_NAME       = 'packetery_point_name';
 	public const META_POINT_URL        = 'packetery_point_url';
 	public const META_POINT_STREET     = 'packetery_point_street';
 	public const META_POINT_ZIP        = 'packetery_point_zip';
 	public const META_POINT_CITY       = 'packetery_point_city';
-	public const META_POINT_TYPE       = 'packetery_point_type';
 	public const META_WEIGHT           = 'packetery_weight';
 	public const META_LENGTH           = 'packetery_length';
 	public const META_WIDTH            = 'packetery_width';
@@ -53,34 +49,6 @@ class Entity {
 	 */
 	public function __construct( WC_Order $order ) {
 		$this->order = $order;
-	}
-
-	/**
-	 * Creates value object from global variables.
-	 *
-	 * @return static|null
-	 */
-	public static function fromGlobals(): ?self {
-		global $post;
-
-		return self::fromPostId( $post->ID );
-	}
-
-	/**
-	 * Creates value object from post id.
-	 *
-	 * @param int|string $postId Post id.
-	 *
-	 * @return static|null
-	 */
-	public static function fromPostId( $postId ): ?self {
-		$order = wc_get_order( $postId );
-
-		if ( ! $order instanceof WC_Order ) {
-			return null;
-		}
-
-		return new self( $order );
 	}
 
 	/**
@@ -121,12 +89,10 @@ class Entity {
 	/**
 	 * Selected pickup point ID
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getPointId(): ?int {
-		$value = $this->getMetaAsNullableString( self::META_POINT_ID );
-		// todo osetrit id ext. prepravcu
-		return ( null !== $value ? (int) $value : null );
+	public function getPointId(): ?string {
+		return $this->getMetaAsNullableString( self::META_POINT_ID );
 	}
 
 	/**
@@ -184,30 +150,12 @@ class Entity {
 	}
 
 	/**
-	 * Gets carrier id. todo muze byt null?
+	 * Gets carrier id.
 	 *
 	 * @return string|null
 	 */
 	public function getCarrierId(): ?string {
 		return $this->getMetaAsNullableString( self::META_CARRIER_ID );
-	}
-
-	/**
-	 * Gets carrier pickup point id.
-	 *
-	 * @return string|null
-	 */
-	public function getPointCarrierId(): ?string {
-		return $this->getMetaAsNullableString( self::META_POINT_CARRIER_ID );
-	}
-
-	/**
-	 * Gets pickup point type.
-	 *
-	 * @return string|null
-	 */
-	public function getPointType(): ?string {
-		return $this->getMetaAsNullableString( self::META_POINT_TYPE );
 	}
 
 	/**
@@ -292,35 +240,6 @@ class Entity {
 	 */
 	public function getHeight(): ?float {
 		return $this->getMetaAsNullableFloat( self::META_HEIGHT );
-	}
-
-	// todo nesla by vsude pouzivat obecna entita? a tohle jen jako adapter
-
-	/**
-	 * Tells if order has Packeta shipping.
-	 *
-	 * @return bool
-	 */
-	public function isPacketeryRelated(): bool {
-		return $this->order->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID );
-	}
-
-	/**
-	 * Tells if order is related to Packeta pickup point. // todo do sablon poslat pp entitu a dat pryc
-	 *
-	 * @return bool
-	 */
-	public function isPickupPointDelivery(): bool {
-		return $this->isPacketeryRelated() && null !== $this->getPointId();
-	}
-
-	/**
-	 * Checks if uses external carrier. // todo to be removed
-	 *
-	 * @return bool
-	 */
-	public function isExternalCarrier(): bool {
-		return ( Repository::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
 	}
 
 	/**

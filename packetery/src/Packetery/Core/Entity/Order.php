@@ -174,22 +174,21 @@ class Order {
 	}
 
 	/**
-	 * Tells if order has to be shipped to pickup point, run by Packeta or an external carrier.
-	 *
-	 * @return bool
-	 */
-	public function isPickupPointDelivery(): bool {
-		// todo musi tam byt getId? spis ne
-		return ( null !== $this->pickupPoint && null !== $this->pickupPoint->getId() );
-	}
-
-	/**
 	 * Checks if is home delivery. In that case pointId is not set.
 	 *
 	 * @return bool
 	 */
 	public function isHomeDelivery(): bool {
-		return null === $this->pickupPoint;
+		return ( null === $this->pickupPoint );
+	}
+
+	/**
+	 * Tells if order has to be shipped to pickup point, run by Packeta or an external carrier.
+	 *
+	 * @return bool
+	 */
+	public function isPickupPointDelivery(): bool {
+		return ( null !== $this->pickupPoint );
 	}
 
 	/**
@@ -408,11 +407,11 @@ class Order {
 	}
 
 	/**
-	 * Gets carrier id. todo muze byt null?
+	 * Gets carrier id.
 	 *
-	 * @return string|null
+	 * @return string
 	 */
-	public function getCarrierId(): ?string {
+	public function getCarrierId(): string {
 		return $this->carrierId;
 	}
 

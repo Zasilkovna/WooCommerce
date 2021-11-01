@@ -58,7 +58,7 @@ class GridExtender {
 	private $orderController;
 
 	/**
-	 *
+	 * Order entity factory.
 	 *
 	 * @var EntityFactory\Order
 	 */
@@ -72,6 +72,7 @@ class GridExtender {
 	 * @param Engine     $latteEngine       Latte Engine.
 	 * @param Request    $httpRequest       Http Request.
 	 * @param Controller $orderController   Order controller.
+	 * @param EntityFactory\Order $entityFactory Order factory.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -217,16 +218,17 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-		$wcOrder  = wc_get_order( $post->ID );
-		$order = $this->entityFactory->create( $wcOrder );
-
+		$wcOrder = wc_get_order( $post->ID );
+		$order   = $this->entityFactory->create( $wcOrder );
+		if ( null === $order ) {
+			return;
+		}
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
 				if ( null !== $pickupPoint ) {
 					$pointName         = $pickupPoint->getName();
 					$pointId           = $pickupPoint->getId();
-					// todo k objednavce nebo PP?
 					$country           = strtolower( $wcOrder->get_shipping_country() );
 					$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
 					if ( in_array( $country, $internalCountries, true ) ) {
@@ -249,14 +251,13 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				if ( $entity->isPacketeryRelated() ) {
-					$this->latteEngine->render(
-						PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
-						[
-							'order' => $entity,
-						]
-					);
-				}
+				// todo 383 if ( $entity->isPacketeryRelated() ) {
+				$this->latteEngine->render(
+					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
+					[
+						'order' => $entity,
+					]
+				);
 				break;
 		}
 	}
