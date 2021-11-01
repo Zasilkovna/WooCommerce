@@ -15,6 +15,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Module\Carrier\Repository;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order as ModuleOrder;
+use Packetery\Module\Address as ModuleAddress;
 use WC_Order;
 
 /**
@@ -39,14 +40,23 @@ class Order {
 	private $carrierRepository;
 
 	/**
+	 * Address repository.
+	 *
+	 * @var ModuleAddress\Repository
+	 */
+	private $addressRepository;
+
+	/**
 	 * Order constructor.
 	 *
-	 * @param Provider   $optionsProvider Options Provider.
-	 * @param Repository $carrierRepository Carrier repository.
+	 * @param Provider                 $optionsProvider   Options Provider.
+	 * @param Repository               $carrierRepository Carrier repository.
+	 * @param ModuleAddress\Repository $addressRepository Address repository.
 	 */
-	public function __construct( Provider $optionsProvider, Repository $carrierRepository ) {
+	public function __construct( Provider $optionsProvider, Repository $carrierRepository, ModuleAddress\Repository $addressRepository ) {
 		$this->optionsProvider   = $optionsProvider;
 		$this->carrierRepository = $carrierRepository;
+		$this->addressRepository = $addressRepository;
 	}
 
 	/**
@@ -92,7 +102,11 @@ class Order {
 			$orderEntity->setPickupPoint( $pickupPoint );
 		}
 
-		$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
+		$address = $this->addressRepository->getActiveValidatedByOrderId( $order->get_id() );
+		if ( null === $address ) {
+			$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
+		}
+
 		$orderEntity->setDeliveryAddress( $address );
 
 		// Shipping address phone is optional.
