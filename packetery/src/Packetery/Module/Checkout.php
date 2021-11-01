@@ -77,12 +77,12 @@ class Checkout {
 	 * @var array[]
 	 */
 	private static $homeDeliveryAttrs = [
-		'active'      => [ // Post type address field called 'active'
+		'active'      => [ // Post type address field called 'active'.
 			'name'                => 'packetery_address_active', // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
 			'castToInt'           => true, // Will backend cast value passed by browser to integer? Default value is false.
 		],
-		'houseNumber' => [ // post type address field called 'houseNumber'
+		'houseNumber' => [ // post type address field called 'houseNumber'.
 			'name' => 'packetery_address_houseNumber',
 		],
 		'street'      => [
@@ -415,7 +415,7 @@ class Checkout {
 			}
 
 			if ( $address['active'] === 1 ) {
-				$this->addressRepository->save( $orderId, $address ); // TODO: think about address modifications by users
+				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
 	}
