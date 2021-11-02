@@ -77,7 +77,7 @@ class Checkout {
 	 * @var array[]
 	 */
 	private static $homeDeliveryAttrs = [
-		'isValidated'      => [
+		'isValidated' => [
 			'name'                => 'packetery_address_isValidated', // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
 		],
@@ -146,11 +146,11 @@ class Checkout {
 	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine                $latte_engine      PacketeryLatte engine.
-	 * @param Provider              $options_provider  Options provider.
-	 * @param Repository            $carrierRepository Carrier repository.
-	 * @param Request               $httpRequest       Http request.
-	 * @param Address\Repository    $addressRepository Address repository.
+	 * @param Engine             $latte_engine      PacketeryLatte engine.
+	 * @param Provider           $options_provider  Options provider.
+	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param Request            $httpRequest       Http request.
+	 * @param Address\Repository $addressRepository Address repository.
 	 */
 	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository ) {
 		$this->latte_engine      = $latte_engine;
@@ -392,11 +392,11 @@ class Checkout {
 					continue;
 				}
 
-				$value = $post[ $attributeData['name'] ];
+				$value             = $post[ $attributeData['name'] ];
 				$address[ $field ] = $value;
 			}
 
-			if ( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] === '1' ) {
+			if ( '1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
