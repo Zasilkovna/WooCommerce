@@ -2,14 +2,13 @@ var packeteryLoadCheckout = function( $, settings ) {
 	var packeteryCheckout = function( settings ) {
 		var $widgetDiv = $( '.packeta-widget' );
 		var rateAttrValues = {};
-		var ratesWithInfo = {};
 
 		var getRateAttrValue = function( carrierRateId, attribute, defaultValue ) {
-			if ( typeof rateAttrValues[ carrierRateId + '-' + attribute ] === 'undefined' ) {
+			if ( typeof rateAttrValues[ carrierRateId ] === 'undefined' || typeof rateAttrValues[ carrierRateId ][ attribute ] === 'undefined' ) {
 				return defaultValue;
 			}
 
-			return rateAttrValues[ carrierRateId + '-' + attribute ];
+			return rateAttrValues[ carrierRateId ][ attribute ];
 		}
 
 		var getShippingRateId = function() {
@@ -32,8 +31,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 		};
 
 		var clearInfo = function( attrs ) {
-			for ( var carrierRateId in ratesWithInfo ) {
-				if ( !ratesWithInfo.hasOwnProperty( carrierRateId ) ) {
+			for ( var carrierRateId in rateAttrValues ) {
+				if ( !rateAttrValues.hasOwnProperty( carrierRateId ) ) {
 					continue;
 				}
 
@@ -43,7 +42,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 					}
 
 					var attribute = attrs[ attributeKey ].name;
-					rateAttrValues[ carrierRateId + '-' + attribute ] = '';
+					rateAttrValues[ carrierRateId ] = rateAttrValues[ carrierRateId ] || {};
+					rateAttrValues[ carrierRateId ][ attribute ] = '';
 					$( '#' + attribute ).val( '' );
 				}
 			}
@@ -154,8 +154,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
 			$( '#' + name ).val( addressFieldValue );
-			rateAttrValues[ carrierRateId + '-' + name ] = addressFieldValue;
-			ratesWithInfo[ carrierRateId ] = true;
+			rateAttrValues[ carrierRateId ] = rateAttrValues[ carrierRateId ] || {};
+			rateAttrValues[ carrierRateId ][ name ] = addressFieldValue;
 		};
 
 		var fillHiddenFields = function( carrierRateId, data, target ) {
@@ -212,7 +212,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					// todo save selected address to shipping address
 
-					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'active' ].name, '1' );
+					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '1' );
 					fillHiddenFields( carrierRateId, settings.homeDeliveryAttrs, selectedAddress );
 					$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) );
 				}, widgetOptions );
