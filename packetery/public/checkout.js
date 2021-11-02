@@ -2,7 +2,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 	var packeteryCheckout = function( settings ) {
 		var $widgetDiv = $( '.packeta-widget' );
 		var rateAttrValues = {};
-		var ratesWithInfo = {};
 
 		var getRateAttrValue = function( carrierRateId, attribute, defaultValue ) {
 			if ( typeof rateAttrValues[ carrierRateId ][ attribute ] === 'undefined' ) {
@@ -32,8 +31,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 		};
 
 		var clearInfo = function( attrs ) {
-			for ( var carrierRateId in ratesWithInfo ) {
-				if ( !ratesWithInfo.hasOwnProperty( carrierRateId ) ) {
+			for ( var carrierRateId in rateAttrValues ) {
+				if ( !rateAttrValues.hasOwnProperty( carrierRateId ) ) {
 					continue;
 				}
 
@@ -155,7 +154,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
 			$( '#' + name ).val( addressFieldValue );
 			rateAttrValues[ carrierRateId ][ name ] = addressFieldValue;
-			ratesWithInfo[ carrierRateId ] = true;
 		};
 
 		var fillHiddenFields = function( carrierRateId, data, target ) {
