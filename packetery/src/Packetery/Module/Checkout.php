@@ -308,7 +308,7 @@ class Checkout {
 	/**
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
-	public function validatePickupPointData(): void {
+	public function validateCheckoutData(): void {
 		$post = $this->httpRequest->getPost();
 		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
 			wp_nonce_ays( '' );
@@ -442,7 +442,7 @@ class Checkout {
 		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
 		add_filter( 'woocommerce_checkout_fields', array( __CLASS__, 'add_pickup_point_fields' ) );
 		add_action( 'woocommerce_after_order_notes', array( __CLASS__, 'render_nonce_field' ) );
-		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
+		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
 	}
