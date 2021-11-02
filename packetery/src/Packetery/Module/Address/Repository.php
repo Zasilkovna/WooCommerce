@@ -61,7 +61,7 @@ class Repository {
 	 *
 	 * @return Entity\Address|null
 	 */
-	public function getActiveValidatedByOrderId( int $orderId ): ?Entity\Address {
+	public function getValidatedByOrderId( int $orderId ): ?Entity\Address {
 		$postIds = get_posts(
 			[
 				'post_type'   => self::POST_TYPE_VALIDATED_ADDRESS,
@@ -70,12 +70,6 @@ class Repository {
 				'numberposts' => 1,
 				'fields'      => 'ids',
 				'post_parent' => $orderId,
-				'meta_query'  => [
-					[
-						'key'   => 'active',
-						'value' => '1',
-					],
-				],
 			]
 		);
 
