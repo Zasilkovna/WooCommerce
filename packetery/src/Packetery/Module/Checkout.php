@@ -77,8 +77,8 @@ class Checkout {
 	 * @var array[]
 	 */
 	private static $homeDeliveryAttrs = [
-		'active'      => [ // Post type address field called 'active'.
-			'name'                => 'packetery_address_active', // Name of checkout hidden form field. Must be unique in entire form.
+		'isAddressValidated'      => [
+			'name'                => 'packetery_address_isAddressValidated', // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
 			'castToInt'           => true, // Will backend cast value passed by browser to integer? Default value is false.
 		],
@@ -362,12 +362,12 @@ class Checkout {
 				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 			}
 
-			if ( 'required' === $addressValidation && '1' !== $post[ self::$homeDeliveryAttrs['active']['name'] ] ) {
+			if ( 'required' === $addressValidation && '1' !== $post[ self::$homeDeliveryAttrs['isAddressValidated']['name'] ] ) {
 				wc_add_notice( __( 'widgetAddressIsNotChosen', 'packetery' ), 'error' );
 				return;
 			}
 
-			if ( '1' === $post[ self::$homeDeliveryAttrs['active']['name'] ] ) {
+			if ( '1' === $post[ self::$homeDeliveryAttrs['isAddressValidated']['name'] ] ) {
 				$address = $this->addressFactory->fromPostUsingCheckoutAttributes( $post, self::$homeDeliveryAttrs );
 				if ( false === $this->addressValidator->validate( $address ) ) {
 					wc_add_notice( __( 'widgetAddressIsNotValid', 'packetery' ), 'error' );
@@ -422,7 +422,7 @@ class Checkout {
 				$address[ $field ] = $value;
 			}
 
-			if ( $address['active'] === 1 ) {
+			if ( $address['isAddressValidated'] === 1 ) {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
