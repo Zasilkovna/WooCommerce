@@ -212,7 +212,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					// todo save selected address to shipping address
 
-					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isAddressValidated' ].name, '1' );
+					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '1' );
 					fillHiddenFields( carrierRateId, settings.homeDeliveryAttrs, selectedAddress );
 					$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) );
 				}, widgetOptions );
