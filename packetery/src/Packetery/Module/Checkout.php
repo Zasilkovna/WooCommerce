@@ -77,10 +77,9 @@ class Checkout {
 	 * @var array[]
 	 */
 	private static $homeDeliveryAttrs = [
-		'active'      => [ // Post type address field called 'active'.
-			'name'                => 'packetery_address_active', // Name of checkout hidden form field. Must be unique in entire form.
+		'isValidated' => [
+			'name'                => 'packetery_address_isValidated', // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
-			'castToInt'           => true, // Will backend cast value passed by browser to integer? Default value is false.
 		],
 		'houseNumber' => [ // post type address field called 'houseNumber'.
 			'name' => 'packetery_address_houseNumber',
@@ -145,38 +144,20 @@ class Checkout {
 	private $addressRepository;
 
 	/**
-	 * Address validator.
-	 *
-	 * @var Validator\Address
-	 */
-	private $addressValidator;
-
-	/**
-	 * Address factory.
-	 *
-	 * @var EntityFactory\Address
-	 */
-	private $addressFactory;
-
-	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine                $latte_engine      PacketeryLatte engine.
-	 * @param Provider              $options_provider  Options provider.
-	 * @param Repository            $carrierRepository Carrier repository.
-	 * @param Request               $httpRequest       Http request.
-	 * @param Address\Repository    $addressRepository Address repository.
-	 * @param Validator\Address     $addressValidator  Address validator.
-	 * @param EntityFactory\Address $addressFactory    Address entity factory.
+	 * @param Engine             $latte_engine      PacketeryLatte engine.
+	 * @param Provider           $options_provider  Options provider.
+	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param Request            $httpRequest       Http request.
+	 * @param Address\Repository $addressRepository Address repository.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository, Validator\Address $addressValidator, EntityFactory\Address $addressFactory ) {
+	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository ) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
 		$this->addressRepository = $addressRepository;
-		$this->addressValidator  = $addressValidator;
-		$this->addressFactory    = $addressFactory;
 	}
 
 	/**
@@ -301,7 +282,7 @@ class Checkout {
 	/**
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
-	public function validatePickupPointData(): void {
+	public function validateCheckoutData(): void {
 		$post = $this->httpRequest->getPost();
 		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
 			wp_nonce_ays( '' );
@@ -354,16 +335,9 @@ class Checkout {
 				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 			}
 
-			if ( 'required' === $addressValidation && '1' !== $post[ self::$homeDeliveryAttrs['active']['name'] ] ) {
+			if ( 'required' === $addressValidation && '1' !== $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) {
 				wc_add_notice( __( 'widgetAddressIsNotChosen', 'packetery' ), 'error' );
 				return;
-			}
-
-			if ( '1' === $post[ self::$homeDeliveryAttrs['active']['name'] ] ) {
-				$address = $this->addressFactory->fromPostUsingCheckoutAttributes( $post, self::$homeDeliveryAttrs );
-				if ( false === $this->addressValidator->validate( $address ) ) {
-					wc_add_notice( __( 'widgetAddressIsNotValid', 'packetery' ), 'error' );
-				}
 			}
 		}
 	}
@@ -405,16 +379,16 @@ class Checkout {
 			$address = [];
 
 			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
-				$value = $post[ $attributeData['name'] ];
-
-				if ( $attributeData['castToInt'] ?? false ) {
-					$value = (int) $value;
+				$isWidgetResultField = ( $attributeData['isWidgetResultField'] ?? true );
+				if ( false === $isWidgetResultField ) {
+					continue;
 				}
 
+				$value             = $post[ $attributeData['name'] ];
 				$address[ $field ] = $value;
 			}
 
-			if ( $address['active'] === 1 ) {
+			if ( '1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
