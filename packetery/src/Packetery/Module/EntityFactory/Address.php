@@ -36,27 +36,4 @@ class Address {
 
 		return $address;
 	}
-
-	/**
-	 * Create address object from post using checkout attributes.
-	 *
-	 * @param array $post       POST data.
-	 * @param array $attributes Attributes.
-	 *
-	 * @return Entity\Address
-	 */
-	public function fromPostUsingCheckoutAttributes( array $post, array $attributes ): Entity\Address {
-		$address = new Entity\Address(
-			( $post[ $attributes['street']['name'] ] ?? null ),
-			( $post[ $attributes['city']['name'] ] ?? null ),
-			( $post[ $attributes['postCode']['name'] ] ?? null )
-		);
-
-		$houseNumber = ( $post[ $attributes['houseNumber']['name'] ] ?? null );
-		if ( $houseNumber ) {
-			$address->setHouseNumber( $houseNumber );
-		}
-
-		return $address;
-	}
 }
