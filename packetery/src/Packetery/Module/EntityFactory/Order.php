@@ -102,7 +102,7 @@ class Order {
 			$orderEntity->setPickupPoint( $pickupPoint );
 		}
 
-		$address = $this->addressRepository->getActiveValidatedByOrderId( $order->get_id() );
+		$address = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
 		if ( null === $address ) {
 			$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		}
