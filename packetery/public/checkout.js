@@ -5,11 +5,11 @@ var packeteryLoadCheckout = function( $, settings ) {
 		var ratesWithInfo = {};
 
 		var getRateAttrValue = function( carrierRateId, attribute, defaultValue ) {
-			if ( typeof rateAttrValues[ carrierRateId + '-' + attribute ] === 'undefined' ) {
+			if ( typeof rateAttrValues[ carrierRateId ][ attribute ] === 'undefined' ) {
 				return defaultValue;
 			}
 
-			return rateAttrValues[ carrierRateId + '-' + attribute ];
+			return rateAttrValues[ carrierRateId ][ attribute ];
 		}
 
 		var getShippingRateId = function() {
@@ -43,7 +43,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					}
 
 					var attribute = attrs[ attributeKey ].name;
-					rateAttrValues[ carrierRateId + '-' + attribute ] = '';
+					rateAttrValues[ carrierRateId ][ attribute ] = '';
 					$( '#' + attribute ).val( '' );
 				}
 			}
@@ -154,7 +154,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
 			$( '#' + name ).val( addressFieldValue );
-			rateAttrValues[ carrierRateId + '-' + name ] = addressFieldValue;
+			rateAttrValues[ carrierRateId ][ name ] = addressFieldValue;
 			ratesWithInfo[ carrierRateId ] = true;
 		};
 
