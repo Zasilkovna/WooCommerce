@@ -80,7 +80,6 @@ class Checkout {
 		'isAddressValidated'      => [
 			'name'                => 'packetery_address_isAddressValidated', // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
-			'castToInt'           => true, // Will backend cast value passed by browser to integer? Default value is false.
 		],
 		'houseNumber' => [ // post type address field called 'houseNumber'.
 			'name' => 'packetery_address_houseNumber',
@@ -413,16 +412,16 @@ class Checkout {
 			$address = [];
 
 			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
-				$value = $post[ $attributeData['name'] ];
-
-				if ( $attributeData['castToInt'] ?? false ) {
-					$value = (int) $value;
+				$isWidgetResultField = ( $attributeData['isWidgetResultField'] ?? true );
+				if ( false === $isWidgetResultField ) {
+					continue;
 				}
 
+				$value = $post[ $attributeData['name'] ];
 				$address[ $field ] = $value;
 			}
 
-			if ( $address['isAddressValidated'] === 1 ) {
+			if ( $post[ self::$homeDeliveryAttrs['isAddressValidated']['name'] ] === '1' ) {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
