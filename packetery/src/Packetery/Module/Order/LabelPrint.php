@@ -124,7 +124,16 @@ class LabelPrint {
 	 * @return string
 	 */
 	public static function getOrderIdsTransientName(): string {
-		return 'packetery_label_print_order_ids_' . get_current_user_id();
+		return 'packetery_label_print_order_ids_' . wp_get_session_token();
+	}
+
+	/**
+	 * Generates id of transient to store back link.
+	 *
+	 * @return string
+	 */
+	public static function getBackLinkTransientName(): string {
+		return 'packetery_label_print_back_link_' . wp_get_session_token();
 	}
 
 	/**
@@ -132,9 +141,20 @@ class LabelPrint {
 	 */
 	public function render(): void {
 		$form = $this->createForm( $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() ) );
+
+		$count    = 0;
+		$orderIds = get_transient( self::getOrderIdsTransientName() );
+		if ( $orderIds ) {
+			$count = count( $orderIds );
+		}
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte',
-			[ 'form' => $form ]
+			[
+				'form' => $form,
+				'count' => $count,
+				'backLink' => get_transient( self::getBackLinkTransientName() ),
+			]
 		);
 	}
 
@@ -189,7 +209,6 @@ class LabelPrint {
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
-		delete_transient( self::getOrderIdsTransientName() );
 		if ( ! $response || $response->hasFault() ) {
 			$message = ( null !== $response && $response->hasFault() ) ?
 				__( 'labelPrintFailedMoreInfoInLog', 'packetery' ) :
