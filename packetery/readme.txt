@@ -72,6 +72,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.1 =
+* Updated: logger no longer deletes older records
+* Fixed: logger handles double quotes in error messages
 * Fixed: corrected count of orders in filtering links.
 * Fixed: save carrier's maximum weight correctly as float.
 * Fixed: carrier name input width css rule to cover all carriers.
