@@ -50,23 +50,33 @@ class GridExtender {
 	private $httpRequest;
 
 	/**
+	 * Controller.
+	 *
+	 * @var Controller
+	 */
+	private $orderController;
+
+	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper     $helper Helper.
+	 * @param Helper     $helper            Helper.
 	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Engine     $latteEngine Latte Engine.
-	 * @param Request    $httpRequest Http Request.
+	 * @param Engine     $latteEngine       Latte Engine.
+	 * @param Request    $httpRequest       Http Request.
+	 * @param Controller $orderController   Order controller.
 	 */
 	public function __construct(
 		Helper $helper,
 		Repository $carrierRepository,
 		Engine $latteEngine,
-		Request $httpRequest
+		Request $httpRequest,
+		Controller $orderController
 	) {
 		$this->helper            = $helper;
 		$this->carrierRepository = $carrierRepository;
 		$this->latteEngine       = $latteEngine;
 		$this->httpRequest       = $httpRequest;
+		$this->orderController   = $orderController;
 	}
 
 	/**
@@ -282,6 +292,16 @@ class GridExtender {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
 				}
 				break;
+			case 'packetery':
+				if ( $entity->isPacketeryRelated() ) {
+					$this->latteEngine->render(
+						PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
+						[
+							'order' => $entity,
+						]
+					);
+				}
+				break;
 		}
 	}
 
@@ -299,6 +319,7 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
+				$new_columns['packetery']              = __( 'Packeta', 'packetery' );
 				$new_columns[ Entity::META_PACKET_ID ] = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']  = __( 'Pick up point or carrier', 'packetery' );
 			}
