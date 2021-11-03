@@ -2,8 +2,8 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
-Tested up to: 5.7.2
-Stable tag: 5.7.2
+Tested up to: 5.8.1
+Stable tag: 1.0.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -74,6 +74,10 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 = 1.0.1 =
 * Updated: logger no longer deletes older records
 * Fixed: logger handles double quotes in error messages
+* Fixed: corrected count of orders in filtering links.
+* Fixed: save carrier's maximum weight correctly as float.
+* Fixed: carrier name input width css rule to cover all carriers.
+* Fixed: pickup point id will be stored as a string, because external carriers may require it.
 
 = 1.0.0 =
 * Initial version
