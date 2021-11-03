@@ -79,6 +79,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: save carrier's maximum weight correctly as float.
 * Fixed: carrier name input width css rule to cover all carriers.
 * Fixed: pickup point id will be stored as a string, because external carriers may require it.
+* Fixed: exception handling during CreatePacket API call - faultstring used when no detail property is returned
 
 = 1.0.0 =
 * Initial version
