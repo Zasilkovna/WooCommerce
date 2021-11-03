@@ -2,6 +2,8 @@ parameters:
     latteTempFolder: %tempDir%/cache/view
 
 services:
+	- Packetery\Module\Address\Repository
+	- Packetery\Module\EntityFactory\Address
 	- Packetery\Module\Log\PostLogger
 	- Packetery\Module\Log\Page
 	- Packetery\Module\Product\DataTab
@@ -35,3 +37,6 @@ services:
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
+	- Packetery\Module\Order\Controller
+	- Packetery\Module\Order\ControllerRouter
+	- Packetery\Module\Order\Modal

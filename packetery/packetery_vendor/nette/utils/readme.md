@@ -32,7 +32,7 @@ In package nette/utils you will find a set of [useful classes](https://doc.nette
 Installation
 ------------
 
-The recommended way to install is via Composer:
+The recommended way to install is via PacketeryComposer:
 
 ```
 composer require nette/utils

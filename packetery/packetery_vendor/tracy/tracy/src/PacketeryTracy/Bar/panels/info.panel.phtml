@@ -57,9 +57,9 @@ $info = [
 $info = array_map('strval', array_filter($info + (array) $this->data));
 
 $packages = $devPackages = [];
-if (class_exists('Composer\Autoload\ClassLoader', false)) {
+if (class_exists('PacketeryComposer\Autoload\ClassLoader', false)) {
 	$baseDir = (function () {
-		@include dirname((new \ReflectionClass('Composer\Autoload\ClassLoader'))->getFileName()) . '/autoload_psr4.php'; // @ may not exist
+		@include dirname((new \ReflectionClass('PacketeryComposer\Autoload\ClassLoader'))->getFileName()) . '/autoload_psr4.php'; // @ may not exist
 		return $baseDir;
 	})();
 	$composer = @json_decode((string) file_get_contents($baseDir . '/composer.lock')); // @ may not exist or be valid
@@ -104,7 +104,7 @@ if (class_exists('Composer\Autoload\ClassLoader', false)) {
 </table>
 
 <?php if ($packages || $devPackages): ?>
-	<h2><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^div .tracy-InfoPanel-packages">Composer Packages (<?= count($packages), $devPackages ? ' + ' . count($devPackages) . ' dev' : '' ?>)</a></h2>
+	<h2><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^div .tracy-InfoPanel-packages">PacketeryComposer Packages (<?= count($packages), $devPackages ? ' + ' . count($devPackages) . ' dev' : '' ?>)</a></h2>
 
 	<div class="tracy-InfoPanel-packages tracy-collapsed">
 	<?php if ($packages): ?>

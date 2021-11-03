@@ -23,6 +23,7 @@ class FormFactory {
 	 * Plugin constructor.
 	 */
 	public function __construct() {
+		Validator::$messages[ Form::FLOAT ]  = __( 'pleaseEnterValidNumber', 'packetery' );
 		Validator::$messages[ Form::FILLED ] = __( 'This field is required!', 'packetery' );
 	}
 

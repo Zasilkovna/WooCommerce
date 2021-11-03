@@ -199,7 +199,7 @@
   `multipart` in the same request.
 * Several fixes for HHVM support.
 * Functions are now conditionally required using an additional level of
-  indirection to help with global Composer installations.
+  indirection to help with global PacketeryComposer installations.
 
 ## 6.0.1 - 2015-05-27
 
@@ -536,7 +536,7 @@ interfaces.
 
 * Various fixes to multipart/form-data POST uploads
 * Wrapping function.php in an if-statement to ensure Guzzle can be used
-  globally and in a Composer install
+  globally and in a PacketeryComposer install
 * Fixed an issue with generating and merging in events to an event array
 * POST headers are only applied before sending a request to allow you to change
   the query aggregator used before uploading

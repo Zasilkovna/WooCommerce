@@ -124,7 +124,7 @@ class OptionsPage {
 		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
 
 		$form = $this->formFactory->create( $optionId );
-		$form->setAction( $this->httpRequest->getUrl() );
+		$form->setAction( $this->httpRequest->getUrl()->getRelativeUrl() );
 
 		$form->addCheckbox(
 			'active',
@@ -155,6 +155,17 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$form->addHidden( 'id' )->setRequired();
+
+		$carrier = $this->carrierRepository->getById( (int) $carrierData['id'] );
+		if ( $carrier && false === $carrier->hasPickupPoints() ) {
+			$addressValidationOptions = [
+				'none'     => __( 'noAddressValidation', 'packetery' ),
+				'optional' => __( 'optionalAddressValidation', 'packetery' ),
+				'required' => __( 'requiredAddressValidation', 'packetery' ),
+			];
+			$form->addSelect( 'address_validation', __( 'addressValidation', 'packetery' ), $addressValidationOptions )
+				->setDefaultValue( 'none' );
+		}
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
@@ -213,7 +224,7 @@ class OptionsPage {
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
 		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ) );
 
-		if ( wp_safe_redirect( $this->httpRequest->getUrl(), 303 ) ) {
+		if ( wp_safe_redirect( $this->httpRequest->getUrl()->getRelativeUrl(), 303 ) ) {
 			exit;
 		}
 	}

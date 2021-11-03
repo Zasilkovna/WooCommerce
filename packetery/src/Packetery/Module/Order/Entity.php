@@ -261,7 +261,7 @@ class Entity {
 		foreach ( $this->order->get_items() as $item ) {
 			$quantity      = $item->get_quantity();
 			$product       = $item->get_product();
-			$productWeight = $product->get_weight();
+			$productWeight = (float) $product->get_weight();
 			$weight       += ( $productWeight * $quantity );
 		}
 
@@ -361,5 +361,14 @@ class Entity {
 		}
 
 		return (int) $this->getPointId();
+	}
+
+	/**
+	 * Gets order ID.
+	 *
+	 * @return int
+	 */
+	public function getId(): int {
+		return $this->order->get_id();
 	}
 }

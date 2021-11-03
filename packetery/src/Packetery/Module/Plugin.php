@@ -20,6 +20,7 @@ use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use WC_Order;
+use Packetery\Module\Address;
 
 /**
  * Class Plugin
@@ -28,7 +29,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION = '1.0.0';
+	public const VERSION = '1.1.0';
 	public const DOMAIN  = 'packetery';
 
 	/**
@@ -137,6 +138,27 @@ class Plugin {
 	private $logger;
 
 	/**
+	 * Address repository.
+	 *
+	 * @var Address\Repository
+	 */
+	private $addressRepository;
+
+	/**
+	 * Order controller.
+	 *
+	 * @var Order\Controller
+	 */
+	private $orderController;
+
+	/**
+	 * Order modal.
+	 *
+	 * @var Order\Modal
+	 */
+	private $orderModal;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox      $order_metabox      Order metabox.
@@ -153,6 +175,9 @@ class Plugin {
 	 * @param Product\DataTab    $productTab         Product tab.
 	 * @param Log\Page           $logPage            Log page.
 	 * @param ILogger            $logger             Log manager.
+	 * @param Address\Repository $addressRepository  Address repository.
+	 * @param Order\Controller   $orderController    Order controller.
+	 * @param Order\Modal        $orderModal         Order modal.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -168,7 +193,10 @@ class Plugin {
 		Order\GridExtender $gridExtender,
 		Product\DataTab $productTab,
 		Log\Page $logPage,
-		ILogger $logger
+		ILogger $logger,
+		Address\Repository $addressRepository,
+		Order\Controller $orderController,
+		Order\Modal $orderModal
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -186,6 +214,9 @@ class Plugin {
 		$this->productTab         = $productTab;
 		$this->logPage            = $logPage;
 		$this->logger             = $logger;
+		$this->addressRepository  = $addressRepository;
+		$this->orderController    = $orderController;
+		$this->orderModal         = $orderModal;
 	}
 
 	/**
@@ -194,14 +225,11 @@ class Plugin {
 	public function run(): void {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
+		add_action( 'init', [ $this->addressRepository, 'register' ] );
+		add_action( 'rest_api_init', [ $this->orderController, 'registerRoutes' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
-		add_action(
-			'wp_enqueue_scripts',
-			function () {
-				$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-			}
-		);
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
 		Form::initialize();
 
 		add_action(
@@ -235,6 +263,7 @@ class Plugin {
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
+		$this->orderModal->register();
 		$this->order_metabox->register();
 
 		$this->checkout->register_hooks();
@@ -331,12 +360,13 @@ class Plugin {
 	 * @param string $name     Name of script.
 	 * @param string $file     Relative file path.
 	 * @param bool   $inFooter Tells where to include script.
+	 * @param array  $deps     Script dependencies.
 	 */
-	private function enqueueScript( string $name, string $file, bool $inFooter ): void {
+	private function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
 		wp_enqueue_script(
 			$name,
 			plugin_dir_url( $this->main_file_path ) . $file,
-			[],
+			$deps,
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) ),
 			$inFooter
 		);
@@ -358,12 +388,21 @@ class Plugin {
 	}
 
 	/**
+	 * Enqueues javascript files and stylesheets for checkout.
+	 */
+	public function enqueueFrontAssets(): void {
+		$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
+		$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false );
+	}
+
+	/**
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
 		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false );
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 	}
 
 	/**

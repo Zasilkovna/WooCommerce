@@ -46,20 +46,20 @@ $promise->wait();
 ## Installing Guzzle
 
 The recommended way to install Guzzle is through
-[Composer](http://getcomposer.org).
+[PacketeryComposer](http://getcomposer.org).
 
 ```bash
-# Install Composer
+# Install PacketeryComposer
 curl -sS https://getcomposer.org/installer | php
 ```
 
-Next, run the Composer command to install the latest stable version of Guzzle:
+Next, run the PacketeryComposer command to install the latest stable version of Guzzle:
 
 ```bash
 composer require guzzlehttp/guzzle
 ```
 
-After installing, you need to require Composer's autoloader:
+After installing, you need to require PacketeryComposer's autoloader:
 
 ```php
 require 'vendor/autoload.php';

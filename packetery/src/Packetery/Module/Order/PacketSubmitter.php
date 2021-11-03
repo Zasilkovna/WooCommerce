@@ -151,9 +151,12 @@ class PacketSubmitter {
 	 */
 	private function preparePacketRequest( WC_Order $order ): CreatePacket {
 		$commonEntity = $this->orderFactory->create( $order );
+		// TODO: extend validator to return specific errors.
+		/*
 		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
 			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
+		*/
 
 		return new CreatePacket( $commonEntity );
 	}

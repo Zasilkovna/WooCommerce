@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace PacketeryNette\Bootstrap;
 
-use Composer\Autoload\ClassLoader;
+use PacketeryComposer\Autoload\ClassLoader;
 use PacketeryLatte;
 use PacketeryNette;
 use PacketeryNette\DI;

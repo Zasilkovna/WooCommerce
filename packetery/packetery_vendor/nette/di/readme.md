@@ -31,7 +31,7 @@ Thank you!
 Installation
 ------------
 
-The recommended way to install is via Composer:
+The recommended way to install is via PacketeryComposer:
 
 ```
 composer require nette/di
