@@ -125,21 +125,18 @@ class Page {
 		$container->addText( 'sender', __( 'Sender', 'packetery' ) )
 					->setRequired();
 
-		$availableFormats = $this->optionsProvider->getLabelFormats();
-		$labelFormats     = array_filter( array_combine( array_keys( $availableFormats ), array_column( $availableFormats, 'name' ) ) );
+		$packetaLabelFormats = $this->optionsProvider->getPacketaLabelFormats();
 		$container->addSelect(
 			self::FORM_FIELD_PACKETA_LABEL_FORMAT,
 			__( 'Packeta Label Format', 'packetery' ),
-			$labelFormats
+			$packetaLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT );
 
+		$carrierLabelFormats = $this->optionsProvider->getCarrierLabelFormat();
 		$container->addSelect(
 			self::FORM_FIELD_CARRIER_LABEL_FORMAT,
 			__( 'Carrier Label Format', 'packetery' ),
-			[
-				'A6 on A4' => __( 'labelNameA6onA4', 'packetery' ),
-				'A6 on A6' => __( 'labelNameA6onA6', 'packetery' ),
-			]
+			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
 		$gateways        = WC()->payment_gateways->get_available_payment_gateways();
