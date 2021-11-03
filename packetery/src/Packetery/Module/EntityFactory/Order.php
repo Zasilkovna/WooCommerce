@@ -57,9 +57,9 @@ class Order {
 	/**
 	 * Order constructor.
 	 *
-	 * @param Provider                 $optionsProvider   Options Provider.
-	 * @param Repository               $carrierRepository Carrier repository.
-	 * @param ModuleAddress\Repository $addressRepository Address repository.
+	 * @param Provider                  $optionsProvider   Options Provider.
+	 * @param Repository                $carrierRepository Carrier repository.
+	 * @param ModuleAddress\Repository  $addressRepository Address repository.
 	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
 	 */
 	public function __construct(
@@ -70,7 +70,7 @@ class Order {
 	) {
 		$this->optionsProvider    = $optionsProvider;
 		$this->carrierRepository  = $carrierRepository;
-		$this->addressRepository = $addressRepository;
+		$this->addressRepository  = $addressRepository;
 		$this->pickupPointFactory = $pickupPointFactory;
 	}
 

@@ -67,11 +67,11 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper     $helper            Helper.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Engine     $latteEngine       Latte Engine.
-	 * @param Request    $httpRequest       Http Request.
-	 * @param Controller $orderController   Order controller.
+	 * @param Helper              $helper            Helper.
+	 * @param Repository          $carrierRepository Carrier repository.
+	 * @param Engine              $latteEngine       Latte Engine.
+	 * @param Request             $httpRequest       Http Request.
+	 * @param Controller          $orderController   Order controller.
 	 * @param EntityFactory\Order $entityFactory Order factory.
 	 */
 	public function __construct(
@@ -87,7 +87,7 @@ class GridExtender {
 		$this->latteEngine       = $latteEngine;
 		$this->httpRequest       = $httpRequest;
 		$this->orderController   = $orderController;
-		$this->entityFactory = $entityFactory;
+		$this->entityFactory     = $entityFactory;
 	}
 
 	/**
@@ -251,12 +251,9 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				// todo 383 if ( $entity->isPacketeryRelated() ) {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
-					[
-						'order' => $entity,
-					]
+					[ 'order' => $order ]
 				);
 				break;
 		}

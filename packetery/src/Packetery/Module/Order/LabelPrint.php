@@ -151,8 +151,8 @@ class LabelPrint {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte',
 			[
-				'form' => $form,
-				'count' => $count,
+				'form'     => $form,
+				'count'    => $count,
 				'backLink' => get_transient( self::getBackLinkTransientName() ),
 			]
 		);

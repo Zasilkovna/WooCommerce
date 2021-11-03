@@ -169,23 +169,23 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox      $order_metabox      Order metabox.
-	 * @param MessageManager     $message_manager    Message manager.
-	 * @param Options\Page       $options_page       Options page.
-	 * @param Repository         $carrier_repository Carrier repository.
-	 * @param Downloader         $carrier_downloader Carrier downloader object.
-	 * @param Checkout           $checkout           Checkout class.
-	 * @param Engine             $latte_engine       PacketeryLatte engine.
-	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions  $orderBulkActions   Order BulkActions.
-	 * @param Order\LabelPrint   $labelPrint         Label printing.
-	 * @param Order\GridExtender $gridExtender       Order grid extender.
-	 * @param Product\DataTab    $productTab         Product tab.
-	 * @param Log\Page           $logPage            Log page.
-	 * @param ILogger            $logger             Log manager.
-	 * @param Address\Repository $addressRepository  Address repository.
-	 * @param Order\Controller   $orderController    Order controller.
-	 * @param Order\Modal        $orderModal         Order modal.
+	 * @param Order\Metabox             $order_metabox      Order metabox.
+	 * @param MessageManager            $message_manager    Message manager.
+	 * @param Options\Page              $options_page       Options page.
+	 * @param Repository                $carrier_repository Carrier repository.
+	 * @param Downloader                $carrier_downloader Carrier downloader object.
+	 * @param Checkout                  $checkout           Checkout class.
+	 * @param Engine                    $latte_engine       PacketeryLatte engine.
+	 * @param OptionsPage               $carrierOptionsPage Carrier options page.
+	 * @param Order\BulkActions         $orderBulkActions   Order BulkActions.
+	 * @param Order\LabelPrint          $labelPrint         Label printing.
+	 * @param Order\GridExtender        $gridExtender       Order grid extender.
+	 * @param Product\DataTab           $productTab         Product tab.
+	 * @param Log\Page                  $logPage            Log page.
+	 * @param ILogger                   $logger             Log manager.
+	 * @param Address\Repository        $addressRepository  Address repository.
+	 * @param Order\Controller          $orderController    Order controller.
+	 * @param Order\Modal               $orderModal         Order modal.
 	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
 	 */
 	public function __construct(

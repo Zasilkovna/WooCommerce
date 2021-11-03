@@ -31,7 +31,7 @@ class Checkout {
 	 * @var array[]
 	 */
 	public static $pickupPointAttrs = array(
-		'id'                   => array(
+		'id'        => array(
 			'name'     => Entity::META_POINT_ID,
 			'required' => true,
 		),
@@ -375,7 +375,6 @@ class Checkout {
 				if ( $isNotCarrierIdOrIsNotEmpty && $isNotUrlOrIsValidUrl ) {
 					update_post_meta( $orderId, $attrName, $attrValue );
 				}
-
 			}
 		}
 
