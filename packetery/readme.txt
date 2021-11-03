@@ -72,6 +72,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.1 =
+* Fixed: user no longer sees messages from other sessions
 * Updated: logger no longer deletes older records
 * Fixed: logger handles double quotes in error messages
 * Fixed: corrected count of orders in filtering links.

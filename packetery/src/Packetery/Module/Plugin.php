@@ -194,6 +194,7 @@ class Plugin {
 	public function run(): void {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
+		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		add_action(
