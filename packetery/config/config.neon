@@ -46,4 +46,7 @@ services:
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
+	- Packetery\Module\Order\Controller
+	- Packetery\Module\Order\ControllerRouter
+	- Packetery\Module\Order\Modal
 	- Packetery\Module\Options\Exporter

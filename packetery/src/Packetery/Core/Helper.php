@@ -28,4 +28,5 @@ class Helper {
 	public function get_tracking_url( string $packet_id ): string {
 		return sprintf( self::TRACKING_URL, rawurlencode( $packet_id ) );
 	}
+
 }
