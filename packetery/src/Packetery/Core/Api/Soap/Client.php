@@ -153,6 +153,10 @@ class Client {
 	 * @return int|string
 	 */
 	private function getFaultIdentifier( SoapFault $exception ): string {
-		return array_keys( get_object_vars( $exception->detail ) )[0];
+		if ( isset( $exception->detail ) ) {
+			return array_keys( get_object_vars( $exception->detail ) )[0];
+		}
+
+		return $exception->faultstring;
 	}
 }
