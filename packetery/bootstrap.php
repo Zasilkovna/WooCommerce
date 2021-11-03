@@ -12,7 +12,7 @@ $configurator = new Configurator();
 $configurator->setDebugMode( WP_DEBUG );
 
 if ( PACKETERY_DEBUG ) {
-	$configurator->enableDebugger();
+	$configurator->enableDebugger( PACKETERY_PLUGIN_DIR . '/log' );
 }
 
 $configurator->addConfig( __DIR__ . '/config/config.neon' );

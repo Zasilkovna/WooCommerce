@@ -362,4 +362,13 @@ class Entity {
 
 		return (int) $this->getPointId();
 	}
+
+	/**
+	 * Gets order ID.
+	 *
+	 * @return int
+	 */
+	public function getId(): int {
+		return $this->order->get_id();
+	}
 }
