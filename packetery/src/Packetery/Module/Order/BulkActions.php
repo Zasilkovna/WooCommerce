@@ -79,7 +79,8 @@ class BulkActions {
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
 		if ( in_array( $action, [ LabelPrint::ACTION_PACKETA_LABELS, LabelPrint::ACTION_CARRIER_LABELS ], true ) ) {
-			set_transient( LabelPrint::getOrderIdsTransientName(), $postIds );
+			set_transient( LabelPrint::getOrderIdsTransientName(), $postIds, 60 * 60 );
+			set_transient( LabelPrint::getBackLinkTransientName(), $redirectTo, 60 * 60 );
 
 			return add_query_arg(
 				[
