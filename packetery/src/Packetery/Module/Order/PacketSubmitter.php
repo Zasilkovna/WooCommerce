@@ -92,7 +92,6 @@ class PacketSubmitter {
 				$createPacketRequest = $this->preparePacketRequest( $order );
 			} catch ( InvalidRequestException $e ) {
 				$record = new Log\Record();
-				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_ERROR;
 				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
@@ -110,7 +109,6 @@ class PacketSubmitter {
 			$response = $this->soapApiClient->createPacket( $createPacketRequest );
 			if ( $response->hasFault() ) {
 				$record = new Log\Record();
-				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_ERROR;
 				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
@@ -127,7 +125,6 @@ class PacketSubmitter {
 				$resultsCounter['success'] ++;
 
 				$record = new Log\Record();
-				$record->setCustomId( [ Log\Record::ACTION_PACKET_SENDING, $orderData['id'] ] );
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_SUCCESS;
 				$record->title  = 'Akce “Vytvoření zásilky” proběhla úspěšně.'; // todo translate.
