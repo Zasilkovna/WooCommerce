@@ -361,4 +361,13 @@ class Entity {
 		// Typing to int is safe in case of internal pickup points.
 		return (int) $this->getPointId();
 	}
+
+	/**
+	 * Gets order ID.
+	 *
+	 * @return int
+	 */
+	public function getId(): int {
+		return $this->order->get_id();
+	}
 }
