@@ -228,7 +228,8 @@ class Order {
 			return null;
 		}
 
-		return $this->pickupPoint->getId();
+		// Typing to int is safe in case of internal pickup points.
+		return (int) $this->pickupPoint->getId();
 	}
 
 	/**
