@@ -32,7 +32,7 @@ class MessageManager {
 	 *
 	 * @var array
 	 */
-	private $messages;
+	private $messages = [];
 
 	/**
 	 * Message_Manager constructor.
@@ -40,13 +40,26 @@ class MessageManager {
 	 * @param Engine $latte_engine PacketeryLatte engine.
 	 */
 	public function __construct( Engine $latte_engine ) {
-		$messages = \get_transient( 'packetery_message_manager_messages' );
+		$this->latte_engine = $latte_engine;
+	}
+
+	/**
+	 * Inits manager.
+	 */
+	public function init(): void {
+		$messages = get_transient( $this->getTransientName() );
 		if ( ! $messages ) {
-			$messages = array();
+			$messages = [];
 		}
 
-		$this->messages     = $messages;
-		$this->latte_engine = $latte_engine;
+		$this->messages = $messages;
+	}
+
+	/**
+	 * Gets transient name.
+	 */
+	private function getTransientName(): string {
+		return 'packetery_message_manager_messages_' . wp_get_session_token();
 	}
 
 	/**
@@ -56,13 +69,13 @@ class MessageManager {
 	 * @param string $type Type of message.
 	 */
 	public function flash_message( string $message, string $type = 'success' ): void {
-		$message          = array(
+		$message          = [
 			'type'    => $type,
 			'message' => $message,
-		);
+		];
 		$this->messages[] = $message;
 
-		\set_transient( 'packetery_message_manager_messages', $this->messages, 120 );
+		set_transient( $this->getTransientName(), $this->messages, 120 );
 	}
 
 	/**
@@ -72,9 +85,9 @@ class MessageManager {
 		foreach ( $this->messages as $message ) {
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/admin-notice.latte',
-				array(
+				[
 					'message' => $message,
-				)
+				]
 			);
 		}
 		$this->clear();
@@ -84,7 +97,7 @@ class MessageManager {
 	 * Delete messages.
 	 */
 	private function clear() {
-		$this->messages = array();
-		\delete_transient( 'packetery_message_manager_messages' );
+		$this->messages = [];
+		delete_transient( $this->getTransientName() );
 	}
 }
