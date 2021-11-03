@@ -72,6 +72,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.1.0 =
+* Added: Information about the count of printed labels and "back" link added to label offset setting form.
+* Added: Possibility to print the same labels again in one printing session.
 * Added: Order editation modal in order grid. User is now able to edit order weight in order grid.
 
 = 1.0.1 =
