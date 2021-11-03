@@ -29,7 +29,7 @@ use Packetery\Module\Address;
  */
 class Plugin {
 
-	public const VERSION = '1.0.1';
+	public const VERSION = '1.1.0';
 	public const DOMAIN  = 'packetery';
 
 	/**
@@ -145,6 +145,20 @@ class Plugin {
 	private $addressRepository;
 
 	/**
+	 * Order controller.
+	 *
+	 * @var Order\Controller
+	 */
+	private $orderController;
+
+	/**
+	 * Order modal.
+	 *
+	 * @var Order\Modal
+	 */
+	private $orderModal;
+
+	/**
 	 * Options exporter.
 	 *
 	 * @var Options\Exporter
@@ -154,21 +168,24 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox      $order_metabox Order metabox.
-	 * @param MessageManager     $message_manager Message manager.
-	 * @param Options\Page       $options_page Options page.
+	 * @param Order\Metabox      $order_metabox      Order metabox.
+	 * @param MessageManager     $message_manager    Message manager.
+	 * @param Options\Page       $options_page       Options page.
 	 * @param Repository         $carrier_repository Carrier repository.
 	 * @param Downloader         $carrier_downloader Carrier downloader object.
-	 * @param Checkout           $checkout Checkout class.
-	 * @param Engine             $latte_engine PacketeryLatte engine.
+	 * @param Checkout           $checkout           Checkout class.
+	 * @param Engine             $latte_engine       PacketeryLatte engine.
 	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions  $orderBulkActions Order BulkActions.
-	 * @param Order\LabelPrint   $labelPrint Label printing.
-	 * @param Order\GridExtender $gridExtender Order grid extender.
-	 * @param Product\DataTab    $productTab Product tab.
-	 * @param Log\Page           $logPage Log page.
-	 * @param ILogger            $logger Log manager.
-	 * @param Options\Exporter   $exporter Options exporter.
+	 * @param Order\BulkActions  $orderBulkActions   Order BulkActions.
+	 * @param Order\LabelPrint   $labelPrint         Label printing.
+	 * @param Order\GridExtender $gridExtender       Order grid extender.
+	 * @param Product\DataTab    $productTab         Product tab.
+	 * @param Log\Page           $logPage            Log page.
+	 * @param ILogger            $logger             Log manager.
+	 * @param Address\Repository $addressRepository  Address repository.
+	 * @param Order\Controller   $orderController    Order controller.
+	 * @param Order\Modal        $orderModal         Order modal.
+	 * @param Options\Exporter   $exporter           Options exporter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -186,6 +203,8 @@ class Plugin {
 		Log\Page $logPage,
 		ILogger $logger,
 		Address\Repository $addressRepository,
+		Order\Controller $orderController,
+		Order\Modal $orderModal,
 		Options\Exporter $exporter
 	) {
 		$this->options_page       = $options_page;
@@ -205,6 +224,8 @@ class Plugin {
 		$this->logPage            = $logPage;
 		$this->logger             = $logger;
 		$this->addressRepository  = $addressRepository;
+		$this->orderController    = $orderController;
+		$this->orderModal         = $orderModal;
 		$this->exporter           = $exporter;
 	}
 
@@ -216,6 +237,7 @@ class Plugin {
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
 		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
 		add_action( 'init', [ $this->addressRepository, 'register' ] );
+		add_action( 'rest_api_init', [ $this->orderController, 'registerRoutes' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
@@ -252,6 +274,7 @@ class Plugin {
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
+		$this->orderModal->register();
 		$this->order_metabox->register();
 
 		$this->checkout->register_hooks();
@@ -350,12 +373,13 @@ class Plugin {
 	 * @param string $name     Name of script.
 	 * @param string $file     Relative file path.
 	 * @param bool   $inFooter Tells where to include script.
+	 * @param array  $deps     Script dependencies.
 	 */
-	private function enqueueScript( string $name, string $file, bool $inFooter ): void {
+	private function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
 		wp_enqueue_script(
 			$name,
 			plugin_dir_url( $this->main_file_path ) . $file,
-			[],
+			$deps,
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) ),
 			$inFooter
 		);
@@ -391,6 +415,7 @@ class Plugin {
 		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false );
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 	}
 
 	/**
