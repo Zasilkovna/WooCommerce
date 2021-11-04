@@ -203,7 +203,7 @@ class Order {
 	 *
 	 * @return int|null
 	 */
-	public function getAddressId(): ?int {
+	public function getPickupPointOrCarrierId(): ?int {
 		if ( $this->isExternalCarrier() ) {
 			return (int) $this->getCarrierId();
 		}
