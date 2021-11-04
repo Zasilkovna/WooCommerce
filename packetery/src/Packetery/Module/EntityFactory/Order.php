@@ -85,8 +85,6 @@ class Order {
 		$orderData   = $order->get_data();
 		$orderId     = (string) $orderData['id'];
 		$contactInfo = ( $order->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
-		// Type cast of $orderTotalPrice is needed, PHPDoc is wrong.
-		$orderValue  = (float) $order->get_total( 'raw' );
 		$moduleOrder = new ModuleOrder\Entity( $order );
 
 		if ( null === $moduleOrder->getCarrierId() ) {
@@ -97,7 +95,7 @@ class Order {
 			$orderId,
 			$contactInfo['first_name'],
 			$contactInfo['last_name'],
-			$orderValue,
+			$moduleOrder->getTotalPrice(),
 			$moduleOrder->getWeight(),
 			$this->optionsProvider->get_sender(),
 			$moduleOrder->getCarrierId()
@@ -132,7 +130,7 @@ class Order {
 		$orderEntity->setEmail( $orderData['billing']['email'] );
 		$codMethod = $this->optionsProvider->getCodPaymentMethod();
 		if ( $orderData['payment_method'] === $codMethod ) {
-			$orderEntity->setCod( $orderValue );
+			$orderEntity->setCod( $moduleOrder->getTotalPrice() );
 		}
 		$size = new Size( $moduleOrder->getLength(), $moduleOrder->getWidth(), $moduleOrder->getHeight() );
 		$orderEntity->setSize( $size );

@@ -250,4 +250,14 @@ class Entity {
 	public function getId(): int {
 		return $this->order->get_id();
 	}
+
+	/**
+	 * Type cast of get_total result is needed, PHPDoc is wrong.
+	 *
+	 * @return float
+	 */
+	public function getTotalPrice(): float {
+		return (float) $this->order->get_total( 'raw' );
+	}
+
 }

@@ -43,10 +43,13 @@ class PickupPoint {
 	 *
 	 * @param WC_Order $wcOrder WC order.
 	 *
-	 * @return Entity\PickupPoint
+	 * @return Entity\PickupPoint|null
 	 */
-	public function fromWcOrder( WC_Order $wcOrder ): Entity\PickupPoint {
+	public function fromWcOrder( WC_Order $wcOrder ): ?Entity\PickupPoint {
 		$moduleOrder = new Order\Entity( $wcOrder );
+		if ( $moduleOrder->getPointId() === null ) {
+			return null;
+		}
 
 		return $this->create( $moduleOrder );
 	}

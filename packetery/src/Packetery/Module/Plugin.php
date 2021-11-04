@@ -318,7 +318,7 @@ class Plugin {
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
 		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
-		if ( null === $pickupPoint->getId() ) {
+		if ( null === $pickupPoint ) {
 			return;
 		}
 
@@ -335,7 +335,7 @@ class Plugin {
 	 */
 	public function renderOrderDetail( WC_Order $order ): void {
 		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
-		if ( null === $pickupPoint->getId() ) {
+		if ( null === $pickupPoint ) {
 			return;
 		}
 
@@ -356,7 +356,7 @@ class Plugin {
 		}
 
 		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $email->object );
-		if ( null === $pickupPoint->getId() ) {
+		if ( null === $pickupPoint ) {
 			return;
 		}
 

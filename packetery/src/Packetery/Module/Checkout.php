@@ -369,10 +369,16 @@ class Checkout {
 				if ( ! isset( $post[ $attrName ] ) ) {
 					continue;
 				}
-				$attrValue                  = $post[ $attrName ];
-				$isNotCarrierIdOrIsNotEmpty = Entity::META_CARRIER_ID !== $attrName || $attrValue;
-				$isNotUrlOrIsValidUrl       = Entity::META_POINT_URL !== $attrName || filter_var( $attrValue, FILTER_VALIDATE_URL );
-				if ( $isNotCarrierIdOrIsNotEmpty && $isNotUrlOrIsValidUrl ) {
+				$attrValue = $post[ $attrName ];
+
+				$saveMeta = true;
+				if (
+					( Entity::META_CARRIER_ID === $attrName && ! $attrValue ) ||
+					( Entity::META_POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
+				) {
+					$saveMeta = false;
+				}
+				if ( $saveMeta ) {
 					update_post_meta( $orderId, $attrName, $attrValue );
 				}
 			}
