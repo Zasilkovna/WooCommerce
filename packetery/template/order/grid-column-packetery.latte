@@ -1,9 +1,9 @@
-{varType \Packetery\Module\Order\Entity $order}
+{varType \Packetery\Core\Entity\Order $order}
 
 <a data-packetery-order-inline-edit class="button"
    data-order-data="{= json_encode(
 	   [
-		   'id' => $order->getId(),
+		   'id' => $order->getNumber(),
 		   'packetery_weight' => $order->getWeight(),
 	   ]
    )}"
