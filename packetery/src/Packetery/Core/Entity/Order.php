@@ -9,8 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Entity;
 
-use Packetery\Module\Carrier\Repository;
-
 /**
  * Class Order
  *
@@ -179,7 +177,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isHomeDelivery(): bool {
-		return ( null !== $this->getCarrierId() && null === $this->pickupPoint );
+		return ( null === $this->pickupPoint );
 	}
 
 	/**
@@ -188,7 +186,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isPickupPointDelivery(): bool {
-		return ( null !== $this->pickupPoint && null !== $this->pickupPoint->getId() );
+		return ( null !== $this->pickupPoint );
 	}
 
 	/**
@@ -197,21 +195,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isExternalCarrier(): bool {
-		return ( Repository::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
-	}
-
-	/**
-	 * Checks if is external pickup point delivery. In that case, pointCarrierId is set.
-	 *
-	 * @return bool
-	 */
-	public function isExternalPickupPointDelivery(): bool {
-		if ( null === $this->pickupPoint ) {
-			return false;
-		}
-		$ppType = $this->pickupPoint->getType();
-
-		return ( $ppType && 'external' === $ppType );
+		return ( Carrier::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
 	}
 
 	/**
@@ -219,8 +203,8 @@ class Order {
 	 *
 	 * @return int|null
 	 */
-	public function getAddressId(): ?int {
-		if ( $this->isExternalPickupPointDelivery() || $this->isHomeDelivery() ) {
+	public function getPickupPointOrCarrierId(): ?int {
+		if ( $this->isExternalCarrier() ) {
 			return (int) $this->getCarrierId();
 		}
 
@@ -424,9 +408,9 @@ class Order {
 	/**
 	 * Gets carrier id.
 	 *
-	 * @return string|null
+	 * @return string
 	 */
-	public function getCarrierId(): ?string {
+	public function getCarrierId(): string {
 		return $this->carrierId;
 	}
 

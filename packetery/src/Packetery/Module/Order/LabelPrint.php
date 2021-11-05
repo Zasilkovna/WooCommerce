@@ -26,9 +26,9 @@ use PacketeryNette\Http;
  * @package Packetery\Order
  */
 class LabelPrint {
-	const ACTION_PACKETA_LABELS = 'print_packeta_labels';
-	const ACTION_CARRIER_LABELS = 'print_carrier_labels';
-	const LABEL_TYPE_PARAM      = 'label_type';
+	public const ACTION_PACKETA_LABELS = 'print_packeta_labels';
+	public const ACTION_CARRIER_LABELS = 'print_carrier_labels';
+	public const LABEL_TYPE_PARAM      = 'label_type';
 
 	/**
 	 * PacketeryLatte Engine.
@@ -151,8 +151,8 @@ class LabelPrint {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte',
 			[
-				'form' => $form,
-				'count' => $count,
+				'form'     => $form,
+				'count'    => $count,
 				'backLink' => get_transient( self::getBackLinkTransientName() ),
 			]
 		);
@@ -393,7 +393,7 @@ class LabelPrint {
 				continue;
 			}
 			if ( ! $isCarrierLabels || $order->isExternalCarrier() ) {
-				$packetIds[ $order->getPostId() ] = $order->getPacketId();
+				$packetIds[ $order->getNumber() ] = $order->getPacketId();
 			}
 		}
 

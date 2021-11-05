@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -58,18 +59,33 @@ class Metabox {
 	private $request;
 
 	/**
+	 * Order factory.
+	 *
+	 * @var EntityFactory\Order
+	 */
+	private $orderFactory;
+
+	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine         $latte_engine    PacketeryLatte engine.
-	 * @param MessageManager $message_manager Message manager.
-	 * @param Helper         $helper          Helper.
-	 * @param Request        $request         Http request.
+	 * @param Engine              $latte_engine PacketeryLatte engine.
+	 * @param MessageManager      $message_manager Message manager.
+	 * @param Helper              $helper Helper.
+	 * @param Request             $request Http request.
+	 * @param EntityFactory\Order $orderFactory Order factory.
 	 */
-	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper, Request $request ) {
+	public function __construct(
+		Engine $latte_engine,
+		MessageManager $message_manager,
+		Helper $helper,
+		Request $request,
+		EntityFactory\Order $orderFactory
+	) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
 		$this->request         = $request;
+		$this->orderFactory    = $orderFactory;
 	}
 
 	/**
@@ -86,8 +102,8 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		$order = Entity::fromGlobals();
-		if ( null === $order || false === $order->isPacketeryRelated() ) {
+		$order = $this->orderFactory->fromGlobals();
+		if ( null === $order ) {
 			return;
 		}
 
@@ -127,13 +143,11 @@ class Metabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		/**
-		 * We know for sure $post exists and thus $entity is never null.
-		 *
-		 * @var Entity $entity
-		 */
-		$entity   = Entity::fromGlobals();
-		$packetId = $entity->getPacketId();
+		$order = $this->orderFactory->fromGlobals();
+		if ( null === $order ) {
+			return;
+		}
+		$packetId = $order->getPacketId();
 
 		if ( $packetId ) {
 			$this->latte_engine->render(
@@ -150,10 +164,10 @@ class Metabox {
 		$this->order_form->setDefaults(
 			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				Entity::META_WEIGHT             => $entity->getWeight(),
-				Entity::META_WIDTH              => $entity->getWidth(),
-				Entity::META_LENGTH             => $entity->getLength(),
-				Entity::META_HEIGHT             => $entity->getHeight(),
+				Entity::META_WEIGHT             => $order->getWeight(),
+				Entity::META_WIDTH              => $order->getWidth(),
+				Entity::META_LENGTH             => $order->getLength(),
+				Entity::META_HEIGHT             => $order->getHeight(),
 			]
 		);
 
@@ -180,8 +194,7 @@ class Metabox {
 	 * @return mixed Order id.
 	 */
 	public function save_fields( $post_id ) {
-		$order = Entity::fromPostId( $post_id );
-
+		$order = $this->orderFactory->fromPostId( $post_id );
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			null === $this->request->getPost( 'packetery_order_metabox_nonce' ) ||

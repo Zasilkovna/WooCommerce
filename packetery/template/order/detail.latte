@@ -1,4 +1,4 @@
-{varType \Packetery\Module\Order\Entity $order}
+{varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
 
 <section class="packetery-order-detail">
 
@@ -9,19 +9,19 @@
 		<tr>
 			<th scope="row">{__( 'pickupPointName', 'packetery' )}</th>
 			<td>
-				{$order->getPointName()}
+				{$pickupPoint->getName()}
 
-				{if $order->isInternalPickupPointDelivery()}
+				{if $pickupPoint->getUrl()}
 					<br>
 					<a class="button" target="_blank"
-					   href="{$order->getPointUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a>
+					   href="{$pickupPoint->getUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a>
 				{/if}
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">{__( 'Address', 'packetery' )}</th>
 			<td>
-				{$order->getPointStreet()}, {$order->getPointZip()} {$order->getPointCity()}
+				{$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}
 			</td>
 		</tr>
 		</tbody>
