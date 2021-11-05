@@ -14,6 +14,7 @@ use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
@@ -160,6 +161,13 @@ class Plugin {
 	private $orderModal;
 
 	/**
+	 * PickupPoint factory.
+	 *
+	 * @var EntityFactory\PickupPoint
+	 */
+	private $pickupPointFactory;
+
+	/**
 	 * Options exporter.
 	 *
 	 * @var Options\Exporter
@@ -169,24 +177,25 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox      $order_metabox      Order metabox.
-	 * @param MessageManager     $message_manager    Message manager.
-	 * @param Options\Page       $options_page       Options page.
+	 * @param Order\Metabox             $order_metabox      Order metabox.
+	 * @param MessageManager            $message_manager    Message manager.
+	 * @param Options\Page              $options_page       Options page.
 	 * @param Repository         $carrierRepository Carrier repository.
-	 * @param Downloader         $carrier_downloader Carrier downloader object.
-	 * @param Checkout           $checkout           Checkout class.
-	 * @param Engine             $latte_engine       PacketeryLatte engine.
-	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions  $orderBulkActions   Order BulkActions.
-	 * @param Order\LabelPrint   $labelPrint         Label printing.
-	 * @param Order\GridExtender $gridExtender       Order grid extender.
-	 * @param Product\DataTab    $productTab         Product tab.
-	 * @param Log\Page           $logPage            Log page.
-	 * @param ILogger            $logger             Log manager.
-	 * @param Address\Repository $addressRepository  Address repository.
-	 * @param Order\Controller   $orderController    Order controller.
-	 * @param Order\Modal        $orderModal         Order modal.
-	 * @param Options\Exporter   $exporter           Options exporter.
+	 * @param Downloader                $carrier_downloader Carrier downloader object.
+	 * @param Checkout                  $checkout           Checkout class.
+	 * @param Engine                    $latte_engine       PacketeryLatte engine.
+	 * @param OptionsPage               $carrierOptionsPage Carrier options page.
+	 * @param Order\BulkActions         $orderBulkActions   Order BulkActions.
+	 * @param Order\LabelPrint          $labelPrint         Label printing.
+	 * @param Order\GridExtender        $gridExtender       Order grid extender.
+	 * @param Product\DataTab           $productTab         Product tab.
+	 * @param Log\Page                  $logPage            Log page.
+	 * @param ILogger                   $logger             Log manager.
+	 * @param Address\Repository        $addressRepository  Address repository.
+	 * @param Order\Controller          $orderController    Order controller.
+	 * @param Order\Modal               $orderModal         Order modal.
+	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
+	 * @param Options\Exporter          $exporter           Options exporter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -206,6 +215,7 @@ class Plugin {
 		Address\Repository $addressRepository,
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
+		EntityFactory\PickupPoint $pickupPointFactory,
 		Options\Exporter $exporter
 	) {
 		$this->options_page       = $options_page;
@@ -227,6 +237,7 @@ class Plugin {
 		$this->addressRepository  = $addressRepository;
 		$this->orderController    = $orderController;
 		$this->orderModal         = $orderModal;
+		$this->pickupPointFactory = $pickupPointFactory;
 		$this->exporter           = $exporter;
 	}
 
@@ -320,16 +331,14 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
-		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
+		if ( null === $pickupPoint ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
-			[
-				'order' => $orderEntity,
-			]
+			[ 'pickupPoint' => $pickupPoint ]
 		);
 	}
 
@@ -339,14 +348,14 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $order ): void {
-		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
+		if ( null === $pickupPoint ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
-			[ 'order' => $orderEntity ]
+			[ 'pickupPoint' => $pickupPoint ]
 		);
 	}
 
@@ -360,12 +369,15 @@ class Plugin {
 			return;
 		}
 
-		$orderEntity = new Order\Entity( $email->object );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $email->object );
+		if ( null === $pickupPoint ) {
 			return;
 		}
 
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/email/footer.latte', [ 'order' => $orderEntity ] );
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
+			[ 'pickupPoint' => $pickupPoint ]
+		);
 	}
 
 	/**
