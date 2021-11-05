@@ -9,9 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use Packetery\Core\Validator;
 use Packetery\Module\Carrier\Repository;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
@@ -33,39 +31,31 @@ class Checkout {
 	 * @var array[]
 	 */
 	public static $pickupPointAttrs = array(
-		'id'                   => array(
+		'id'        => array(
 			'name'     => Entity::META_POINT_ID,
 			'required' => true,
 		),
-		'name'                 => array(
+		'name'      => array(
 			'name'     => Entity::META_POINT_NAME,
 			'required' => true,
 		),
-		'city'                 => array(
+		'city'      => array(
 			'name'     => Entity::META_POINT_CITY,
 			'required' => true,
 		),
-		'zip'                  => array(
+		'zip'       => array(
 			'name'     => Entity::META_POINT_ZIP,
 			'required' => true,
 		),
-		'street'               => array(
+		'street'    => array(
 			'name'     => Entity::META_POINT_STREET,
 			'required' => true,
 		),
-		'pickupPointType'      => array(
-			'name'     => Entity::META_POINT_TYPE,
-			'required' => true,
-		),
-		'carrierId'            => array(
+		'carrierId' => array(
 			'name'     => Entity::META_CARRIER_ID,
 			'required' => false,
 		),
-		'carrierPickupPointId' => array(
-			'name'     => Entity::META_POINT_CARRIER_ID,
-			'required' => false,
-		),
-		'url'                  => array(
+		'url'       => array(
 			'name'     => Entity::META_POINT_URL,
 			'required' => true,
 		),
@@ -360,12 +350,13 @@ class Checkout {
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
+
 		$post = $this->httpRequest->getPost();
-		if ( empty( $post[ Entity::META_CARRIER_ID ] ) ) {
-			$carrierId = $this->getCarrierId( $chosenMethod );
-			if ( $carrierId ) {
-				update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
-			}
+
+		// Save carrier id for home delivery (we got no id from widget).
+		$carrierId = $this->getCarrierId( $chosenMethod );
+		if ( empty( $post[ Entity::META_CARRIER_ID ] ) && $carrierId ) {
+			update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
 		}
 
 		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
@@ -374,11 +365,21 @@ class Checkout {
 
 		if ( $this->isPickupPointOrder() ) {
 			foreach ( self::$pickupPointAttrs as $attr ) {
+				$attrName = $attr['name'];
+				if ( ! isset( $post[ $attrName ] ) ) {
+					continue;
+				}
+				$attrValue = $post[ $attrName ];
+
+				$saveMeta = true;
 				if (
-					isset( $post[ $attr['name'] ] ) &&
-					( Entity::META_CARRIER_ID !== $attr['name'] || $post[ $attr['name'] ] )
+					( Entity::META_CARRIER_ID === $attrName && ! $attrValue ) ||
+					( Entity::META_POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
 				) {
-					update_post_meta( $orderId, $attr['name'], $post[ $attr['name'] ] );
+					$saveMeta = false;
+				}
+				if ( $saveMeta ) {
+					update_post_meta( $orderId, $attrName, $attrValue );
 				}
 			}
 		}
