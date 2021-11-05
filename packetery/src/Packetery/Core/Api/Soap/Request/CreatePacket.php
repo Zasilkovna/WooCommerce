@@ -156,7 +156,7 @@ class CreatePacket {
 		$this->surname   = $order->getSurname();
 		$this->value     = $order->getValue();
 		$this->weight    = $order->getWeight();
-		$this->addressId = $order->getAddressId();
+		$this->addressId = $order->getPickupPointOrCarrierId();
 		$this->eshop     = $order->getEshop();
 		// Optional attributes.
 		$this->adultContent = (int) $order->containsAdultContent();
@@ -166,8 +166,8 @@ class CreatePacket {
 		$this->phone        = $order->getPhone();
 
 		$pickupPoint = $order->getPickupPoint();
-		if ( null !== $pickupPoint ) {
-			$this->carrierPickupPoint = $pickupPoint->getCarrierPointId();
+		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {
+			$this->carrierPickupPoint = $pickupPoint->getId();
 		}
 
 		if ( $order->isHomeDelivery() ) {
