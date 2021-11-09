@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Module\Checkout;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -66,7 +67,7 @@ class CountryListingPage {
 	 *  Renders page.
 	 */
 	public function render(): void {
-		$carriersUpdateParams = [ 'lastUpdate' => null ];
+		$carriersUpdateParams = [];
 		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
 			set_transient( 'packetery_run_update_carriers', true );
 			if ( wp_safe_redirect( $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', null )->getRelativeUrl() ) ) {
@@ -82,18 +83,8 @@ class CountryListingPage {
 			delete_transient( 'packetery_run_update_carriers' );
 		}
 
-		$carriersUpdateParams['link'] = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getRelativeUrl();
-
-		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
-		if ( false !== $lastCarrierUpdate ) {
-			$date = \DateTime::createFromFormat( DATE_ATOM, $lastCarrierUpdate );
-			if ( false !== $date ) {
-				$date->setTimezone( wp_timezone() );
-				$carriersUpdateParams['lastUpdate'] = $date->format(
-					get_option( 'date_format' ) . ' ' . get_option( 'time_format' )
-				);
-			}
-		}
+		$carriersUpdateParams['link']       = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getRelativeUrl();
+		$carriersUpdateParams['lastUpdate'] = $this->getLastUpdate();
 
 		$countries = $this->getActiveCountries();
 		$this->latteEngine->render(
@@ -150,6 +141,54 @@ class CountryListingPage {
 		);
 
 		return $countriesFinal;
+	}
+
+	/**
+	 * Gets last update datetime.
+	 *
+	 * @return string|null
+	 */
+	public function getLastUpdate(): ?string {
+		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
+		if ( false !== $lastCarrierUpdate ) {
+			$date = \DateTime::createFromFormat( DATE_ATOM, $lastCarrierUpdate );
+			if ( false !== $date ) {
+				$date->setTimezone( wp_timezone() );
+
+				return $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets options of active carriers.
+	 *
+	 * @return array
+	 */
+	public function getCarriersForOptionsExport(): array {
+		$activeCarriers = [];
+		$allCarriers    = $this->carrierRepository->getAllIncludingZpoints();
+		foreach ( $allCarriers as $carrier ) {
+			$optionId       = Checkout::CARRIER_PREFIX . $carrier['id'];
+			$carrierOptions = get_option( $optionId );
+			if ( false !== $carrierOptions ) {
+				unset( $carrierOptions['id'] );
+				$originalName   = $carrier['name'];
+				$cartName = $carrierOptions['name'];
+				unset( $carrierOptions['name'] );
+				$addition = [
+					'original_name' => $originalName,
+					'cart_name' => $cartName,
+				];
+				$carrierOptions = array_merge( $addition, $carrierOptions );
+
+				$activeCarriers[ $optionId ] = $carrierOptions;
+			}
+		}
+
+		return $activeCarriers;
 	}
 
 }

@@ -68,4 +68,16 @@
             <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
         </p>
     </form>
+
+    <h2>{__( 'Support', 'packetery' )}</h2>
+
+    <p>{__( 'optionsExportInfo', 'packetery' )}</p>
+
+    <p><a href="{$exportLink}" class="button">{__( 'exportPluginSettings', 'packetery' )}</a></p>
+
+    {if isset($lastExport)}
+        <p>{__( 'settingsExportDatetime', 'packetery' )}: {$lastExport}</p>
+    {else}
+        <p>{__( 'settingsNotYetExported', 'packetery' )}</p>
+    {/if}
 </div>

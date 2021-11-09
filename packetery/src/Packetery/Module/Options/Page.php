@@ -12,6 +12,7 @@ namespace Packetery\Module\Options;
 use Packetery\Module\FormFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
+use PacketeryNette\Http;
 
 /**
  * Class Page
@@ -49,16 +50,25 @@ class Page {
 	private $formFactory;
 
 	/**
+	 * Http request.
+	 *
+	 * @var Http\Request
+	 */
+	private $httpRequest;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine      $latte_engine PacketeryLatte_engine.
-	 * @param Provider    $optionsProvider Options provider.
-	 * @param FormFactory $formFactory Form factory.
+	 * @param Engine       $latte_engine PacketeryLatte_engine.
+	 * @param Provider     $optionsProvider Options provider.
+	 * @param FormFactory  $formFactory Form factory.
+	 * @param Http\Request $httpRequest Http request.
 	 */
-	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory ) {
+	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, Http\Request $httpRequest ) {
 		$this->latte_engine    = $latte_engine;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
+		$this->httpRequest     = $httpRequest;
 	}
 
 	/**
@@ -201,6 +211,20 @@ class Page {
 
 		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
 		$latteParams['senderLink']      = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/senders' ] ) );
+		$latteParams['exportLink']      = $this->httpRequest->getUrl()->withQueryParameter( 'action', 'export-settings' )->getRelativeUrl();
+
+		$lastExport       = null;
+		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );
+		if ( false !== $lastExportOption ) {
+			$date = \DateTime::createFromFormat( DATE_ATOM, $lastExportOption );
+			if ( false !== $date ) {
+				$date->setTimezone( wp_timezone() );
+				$lastExport = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
+			}
+		}
+		if ( $lastExport ) {
+			$latteParams['lastExport'] = $lastExport;
+		}
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}

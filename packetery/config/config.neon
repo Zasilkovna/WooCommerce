@@ -35,3 +35,4 @@ services:
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
+	- Packetery\Module\Options\Exporter

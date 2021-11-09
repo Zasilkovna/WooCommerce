@@ -1,0 +1,21 @@
+
+==== Versions:
+Packeta plugin: {Packetery\Module\Plugin::VERSION}
+WordPress: {get_bloginfo( 'version' )}
+WooCommerce: {php echo WC_VERSION}
+Template: {$template}
+PHP: {php echo PHP_VERSION}
+SOAP: {php var_export(extension_loaded('soap'))}
+
+==== Global settings:
+{$globalSettings}
+
+==== Date of last update of carriers: {$lastCarrierUpdate}
+
+==== Active carriers:
+{$activeCarriers}
+
+==== Packeta log (last 5 days):
+{$lastFiveDaysLogs}
+
+==== Generated: {gmdate('Y-m-d H:i:s')}
