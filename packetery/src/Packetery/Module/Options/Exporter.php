@@ -103,14 +103,22 @@ class Exporter {
 			unset( $globalSettings['api_key'] );
 		}
 
-		$activeTheme        = wp_get_theme();
-		$themeLatestVersion = \WC_Admin_Status::get_latest_theme_version( $activeTheme );
-		$latteParams        = [
-			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
+		$activeTheme            = wp_get_theme();
+		$themeLatestVersion     = \WC_Admin_Status::get_latest_theme_version( $activeTheme );
+		$themeLatestVersionInfo = ( $themeLatestVersion !== $activeTheme->version ? ' (' . $themeLatestVersion . ' available)' : '' );
+		$latteParams            = [
+			'wpVersion'         => get_bloginfo( 'version' ),
+			'wcVersion'         => WC_VERSION,
+			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
+			'phpVersion'        => PHP_VERSION,
+			'soap'              => var_export( extension_loaded( 'soap' ), true ),
+			'wpDebug'           => var_export( WP_DEBUG, true ),
+			'packetaDebug'      => var_export( PACKETERY_DEBUG, true ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
+			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'activeCarriers'    => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
 			'lastFiveDaysLogs'  => $this->formatVariable( $this->postLogger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ),
-			'template'          => $activeTheme->name . ' ' . $activeTheme->version . ( $themeLatestVersion !== $activeTheme->version ? ' (' . $themeLatestVersion . ' available)' : '' ),
+			'generated'         => gmdate( 'Y-m-d H:i:s' ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
@@ -118,20 +126,11 @@ class Exporter {
 		header( 'Content-Type: text/plain' );
 		header( 'Content-Transfer-Encoding: Binary' );
 		header( 'Content-Length: ' . strlen( $txtContents ) );
-		header( 'Content-Disposition: attachment; filename="' . $this->getFilename() . '"' );
+		header( 'Content-Disposition: attachment; filename="packeta_options_export_' . gmdate( 'Y-m-d-H-i-s' ) . '.txt"' );
 		// @codingStandardsIgnoreStart
 		echo $txtContents;
 		// @codingStandardsIgnoreEnd
 		exit;
-	}
-
-	/**
-	 * Gets export filename.
-	 *
-	 * @return string
-	 */
-	private function getFilename(): string {
-		return 'packeta_options_export_' . gmdate( 'Y-m-d-H-i-s' ) . '.txt';
 	}
 
 	/**

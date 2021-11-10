@@ -1,11 +1,13 @@
 
 ==== Versions:
 Packeta plugin: {Packetery\Module\Plugin::VERSION}
-WordPress: {get_bloginfo( 'version' )}
-WooCommerce: {php echo WC_VERSION}
+WordPress: {$wpVersion}
+WooCommerce: {$wcVersion}
 Template: {$template}
-PHP: {php echo PHP_VERSION}
-SOAP: {php var_export(extension_loaded('soap'))}
+PHP: {$phpVersion}
+SOAP: {$soap}
+WP debug: {$wpDebug}
+Packeta debug: {$packetaDebug}
 
 ==== Global settings:
 {$globalSettings}
@@ -18,4 +20,4 @@ SOAP: {php var_export(extension_loaded('soap'))}
 ==== Packeta log (last 5 days):
 {$lastFiveDaysLogs}
 
-==== Generated: {gmdate('Y-m-d H:i:s')}
+==== Generated: {$generated}

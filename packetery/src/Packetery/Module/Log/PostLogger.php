@@ -66,11 +66,11 @@ class PostLogger implements ILogger {
 			'log_type'     => false,
 		];
 
-		$logData['post_content'] = str_replace('\\', '&quot;', $logData['post_content']);
+		$logData['post_content'] = str_replace( '\\', '&quot;', $logData['post_content'] );
 
 		$metaData = [
-			'packetery_status'    => ( $record->status ?? '' ),
-			'packetery_action'    => ( $record->action ?? '' ),
+			'packetery_status' => ( $record->status ?? '' ),
+			'packetery_action' => ( $record->action ?? '' ),
 		];
 
 		$logId = wp_insert_post( $logData );

@@ -175,12 +175,12 @@ class CountryListingPage {
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
-				$originalName   = $carrier['name'];
-				$cartName = $carrierOptions['name'];
+				$originalName = $carrier['name'];
+				$cartName     = $carrierOptions['name'];
 				unset( $carrierOptions['name'] );
-				$addition = [
+				$addition       = [
 					'original_name' => $originalName,
-					'cart_name' => $cartName,
+					'cart_name'     => $cartName,
 				];
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
