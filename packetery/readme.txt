@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.8.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -71,5 +71,16 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.0.1 =
+* Fixed: user no longer sees messages from other sessions
+* Updated: logger no longer deletes older records
+* Fixed: logger handles double quotes in error messages
+* Fixed: corrected count of orders in filtering links.
+* Fixed: save carrier's maximum weight correctly as float.
+* Fixed: carrier name input width css rule to cover all carriers.
+* Fixed: pickup point id will be stored as a string, because external carriers may require it.
+* Fixed: exception handling during CreatePacket API call - faultstring used when no detail property is returned
+* Added: Settings export to help solve various issues.
+
 = 1.0.0 =
 * Initial version

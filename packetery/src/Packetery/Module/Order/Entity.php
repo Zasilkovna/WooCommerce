@@ -139,12 +139,10 @@ class Entity {
 	/**
 	 * Selected pickup point ID
 	 *
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function getPointId(): ?int {
-		$value = $this->getMetaAsNullableString( self::META_POINT_ID );
-
-		return ( null !== $value ? (int) $value : null );
+	public function getPointId(): ?string {
+		return $this->getMetaAsNullableString( self::META_POINT_ID );
 	}
 
 	/**
@@ -360,6 +358,7 @@ class Entity {
 			return (int) $this->getCarrierId();
 		}
 
+		// Typing to int is safe in case of internal pickup points.
 		return (int) $this->getPointId();
 	}
 }

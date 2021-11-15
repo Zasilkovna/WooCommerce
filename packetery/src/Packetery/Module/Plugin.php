@@ -28,7 +28,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION = '1.0.0';
+	public const VERSION = '1.0.1';
 	public const DOMAIN  = 'packetery';
 
 	/**
@@ -137,22 +137,30 @@ class Plugin {
 	private $logger;
 
 	/**
+	 * Options exporter.
+	 *
+	 * @var Options\Exporter
+	 */
+	private $exporter;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox      $order_metabox      Order metabox.
-	 * @param MessageManager     $message_manager    Message manager.
-	 * @param Options\Page       $options_page       Options page.
+	 * @param Order\Metabox      $order_metabox Order metabox.
+	 * @param MessageManager     $message_manager Message manager.
+	 * @param Options\Page       $options_page Options page.
 	 * @param Repository         $carrier_repository Carrier repository.
 	 * @param Downloader         $carrier_downloader Carrier downloader object.
-	 * @param Checkout           $checkout           Checkout class.
-	 * @param Engine             $latte_engine       PacketeryLatte engine.
+	 * @param Checkout           $checkout Checkout class.
+	 * @param Engine             $latte_engine PacketeryLatte engine.
 	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions  $orderBulkActions   Order BulkActions.
-	 * @param Order\LabelPrint   $labelPrint         Label printing.
-	 * @param Order\GridExtender $gridExtender       Order grid extender.
-	 * @param Product\DataTab    $productTab         Product tab.
-	 * @param Log\Page           $logPage            Log page.
-	 * @param ILogger            $logger             Log manager.
+	 * @param Order\BulkActions  $orderBulkActions Order BulkActions.
+	 * @param Order\LabelPrint   $labelPrint Label printing.
+	 * @param Order\GridExtender $gridExtender Order grid extender.
+	 * @param Product\DataTab    $productTab Product tab.
+	 * @param Log\Page           $logPage Log page.
+	 * @param ILogger            $logger Log manager.
+	 * @param Options\Exporter   $exporter Options exporter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -168,7 +176,8 @@ class Plugin {
 		Order\GridExtender $gridExtender,
 		Product\DataTab $productTab,
 		Log\Page $logPage,
-		ILogger $logger
+		ILogger $logger,
+		Options\Exporter $exporter
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -186,6 +195,7 @@ class Plugin {
 		$this->productTab         = $productTab;
 		$this->logPage            = $logPage;
 		$this->logger             = $logger;
+		$this->exporter           = $exporter;
 	}
 
 	/**
@@ -194,6 +204,7 @@ class Plugin {
 	public function run(): void {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
+		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		add_action(
@@ -269,6 +280,8 @@ class Plugin {
 		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ] );
 
 		add_action( 'admin_init', [ $this->labelPrint, 'outputLabelsPdf' ] );
+
+		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
 	}
 
 	/**

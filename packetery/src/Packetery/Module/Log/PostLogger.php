@@ -66,33 +66,12 @@ class PostLogger implements ILogger {
 			'log_type'     => false,
 		];
 
+		$logData['post_content'] = str_replace( '\\', '&quot;', $logData['post_content'] );
+
 		$metaData = [
-			'packetery_status'    => ( $record->status ?? '' ),
-			'packetery_action'    => ( $record->action ?? '' ),
-			'packetery_custom_id' => ( $record->customId ?? '' ),
+			'packetery_status' => ( $record->status ?? '' ),
+			'packetery_action' => ( $record->action ?? '' ),
 		];
-
-		if ( $record->customId ) {
-			$oldPostIds = get_posts(
-				[
-					'post_type'      => self::POST_TYPE,
-					'post_status'    => 'any',
-					'nopaging'       => true,
-					'posts_per_page' => - 1,
-					'fields'         => 'ids',
-					'meta_query'     => [
-						[
-							'key'   => 'packetery_custom_id',
-							'value' => $record->customId,
-						],
-					],
-				]
-			);
-
-			foreach ( $oldPostIds as $old_post_id ) {
-				wp_delete_post( $old_post_id ); // There can be only one record with such custom id. We always want newest one.
-			}
-		}
 
 		$logId = wp_insert_post( $logData );
 
@@ -111,6 +90,72 @@ class PostLogger implements ILogger {
 	 * @return Record[]
 	 */
 	public function getRecords( array $sorting = [] ): array {
+		$arguments = [
+			'orderby'     => $sorting,
+			'numberposts' => 100,
+		];
+
+		$logs = $this->getLogs( $arguments );
+		if ( ! $logs ) {
+			return [];
+		}
+
+		return array_map(
+			static function ( \WP_Post $log ) {
+				$record         = new Record();
+				$record->status = get_post_meta( $log->ID, 'packetery_status', true );
+				$record->date   = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
+				$record->action = get_post_meta( $log->ID, 'packetery_action', true );
+				$record->title  = $log->post_title;
+				$postContent    = str_replace( '&quot;', '\\', $log->post_content );
+				$record->params = @json_decode( $postContent, true, 512, ILogger::JSON_FLAGS );
+
+				return $record;
+			},
+			$logs
+		);
+	}
+
+	/**
+	 * Gets logs for given period as array.
+	 *
+	 * @param array $dateQuery Date_query compatible array.
+	 *
+	 * @return array
+	 */
+	public function getForPeriodAsArray( array $dateQuery ): array {
+		$arguments = [
+			'orderby'    => [ 'date' => 'ASC' ],
+			'date_query' => $dateQuery,
+		];
+
+		$logs = $this->getLogs( $arguments );
+		if ( ! $logs ) {
+			return [];
+		}
+
+		return array_map(
+			static function ( \WP_Post $log ) {
+				return [
+					'date'   => \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) )->format( wc_date_format() . ' ' . wc_time_format() ),
+					'action' => get_post_meta( $log->ID, 'packetery_action', true ),
+					'status' => get_post_meta( $log->ID, 'packetery_status', true ),
+					'title'  => $log->post_title,
+					'params' => json_decode( $log->post_content, true, 512, ILogger::JSON_FLAGS ),
+				];
+			},
+			$logs
+		);
+	}
+
+	/**
+	 * Gets PostLogger posts.
+	 *
+	 * @param array $arguments Arguments for wp_parse_args.
+	 *
+	 * @return int[]|\WP_Post[]
+	 */
+	private function getLogs( array $arguments ): array {
 		$defaults = [
 			'post_parent' => 0,
 			'post_type'   => self::POST_TYPE,
@@ -118,31 +163,9 @@ class PostLogger implements ILogger {
 			'log_type'    => false,
 		];
 
-		$arguments = [
-			'orderby'     => $sorting,
-			'numberposts' => 100,
-		];
-
 		$queryArgs = wp_parse_args( $arguments, $defaults );
-		$logs      = get_posts( $queryArgs );
 
-		if ( ! $logs ) {
-			return [];
-		}
-
-		return array_map(
-			static function ( \WP_Post $log ) {
-				$record           = new Record();
-				$record->customId = get_post_meta( $log->ID, 'packetery_custom_id', true );
-				$record->status   = get_post_meta( $log->ID, 'packetery_status', true );
-				$record->date     = \DateTimeImmutable::createFromMutable( wc_string_to_datetime( $log->post_date ) );
-				$record->action   = get_post_meta( $log->ID, 'packetery_action', true );
-				$record->title    = $log->post_title;
-				$record->params   = json_decode( $log->post_content, true, 512, ILogger::JSON_FLAGS );
-
-				return $record;
-			},
-			$logs
-		);
+		return get_posts( $queryArgs );
 	}
+
 }

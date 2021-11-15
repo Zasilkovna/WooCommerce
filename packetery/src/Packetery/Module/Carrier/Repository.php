@@ -109,7 +109,7 @@ class Repository {
 	public function getAllIncludingZpoints(): ?array {
 		$wpdb = $this->get_wpdb();
 
-		$carriers       = $wpdb->get_results( 'SELECT `id`, `is_pickup_points`  FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false', ARRAY_A );
+		$carriers       = $wpdb->get_results( 'SELECT `id`, `name`, `is_pickup_points`  FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false', ARRAY_A );
 		$zpointCarriers = $this->getZpointCarriers();
 		foreach ( $zpointCarriers as $zpointCarrier ) {
 			array_unshift( $carriers, $zpointCarrier );
