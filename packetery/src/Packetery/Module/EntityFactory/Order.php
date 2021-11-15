@@ -164,6 +164,10 @@ class Order {
 	public function fromPostId( $postId ): ?Entity\Order {
 		$order = wc_get_order( $postId );
 
+		if ( ! $order instanceof WC_Order ) {
+			return null;
+		}
+
 		return $this->create( $order );
 	}
 
