@@ -75,6 +75,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Added: Information about the count of printed labels and "back" link added to label offset setting form.
 * Added: Possibility to print the same labels again in one printing session.
 * Added: Order editation modal in order grid. User is now able to edit order weight in order grid.
+* Added: List of active carriers added to carrier settings section.
 
 = 1.0.7 =
 * Fixed: the label print page displays a message to the user if no suitable orders are selected
