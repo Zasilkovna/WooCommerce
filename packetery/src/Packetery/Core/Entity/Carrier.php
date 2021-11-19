@@ -21,7 +21,7 @@ class Carrier {
 	/**
 	 * Carrier id.
 	 *
-	 * @var int
+	 * @var string
 	 */
 	private $id;
 
@@ -119,7 +119,7 @@ class Carrier {
 	/**
 	 * Carrier constructor.
 	 *
-	 * @param int    $id Carrier id.
+	 * @param string $id Carrier id.
 	 * @param string $name Carrier name.
 	 * @param bool   $hasPickupPoints Carrier hasPickupPoints.
 	 * @param bool   $hasDirectLabel Carrier hasDirectLabel.
@@ -135,7 +135,7 @@ class Carrier {
 	 * @param bool   $isDeleted Carrier isDeleted.
 	 */
 	public function __construct(
-		int $id,
+		string $id,
 		string $name,
 		bool $hasPickupPoints,
 		bool $hasDirectLabel,
@@ -167,11 +167,20 @@ class Carrier {
 	}
 
 	/**
+	 * Returns all properties as array.
+	 *
+	 * @return array
+	 */
+	public function __toArray(): array {
+		return get_object_vars( $this );
+	}
+
+	/**
 	 * Gets carrier id.
 	 *
-	 * @return int
+	 * @return string
 	 */
-	public function getId(): int {
+	public function getId(): string {
 		return $this->id;
 	}
 
