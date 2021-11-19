@@ -294,7 +294,7 @@ class OptionsPage {
 				$carriersData[] = [
 					'form'    => $form,
 					'formTemplate' => $formTemplate,
-					'carrier' => $carrier,
+					'carrier'      => $carrier,
 				];
 			}
 
