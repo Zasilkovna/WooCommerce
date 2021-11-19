@@ -503,7 +503,7 @@ class Checkout {
 		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
 		$carrierOptions    = [];
 		foreach ( $availableCarriers as $carrier ) {
-			$optionId                    = self::CARRIER_PREFIX . $carrier['id'];
+			$optionId                    = self::CARRIER_PREFIX . $carrier->getId();
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
 

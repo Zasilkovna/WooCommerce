@@ -25,9 +25,9 @@ class Carrier {
 	 *
 	 * @return Entity\Carrier
 	 */
-	public function create( array $dbResult ): Entity\Carrier {
+	public function fromDbResult( array $dbResult ): Entity\Carrier {
 		return new Entity\Carrier(
-			(int) $dbResult['id'],
+			$dbResult['id'],
 			$dbResult['name'],
 			(bool) $dbResult['is_pickup_points'],
 			(bool) $dbResult['has_carrier_direct_label'],
@@ -41,6 +41,32 @@ class Carrier {
 			$dbResult['currency'],
 			(float) $dbResult['max_weight'],
 			(bool) $dbResult['deleted']
+		);
+	}
+
+	/**
+	 * Carrier factory.
+	 *
+	 * @param array $zpointCarrierData Data from db.
+	 *
+	 * @return Entity\Carrier
+	 */
+	public function fromZpointCarrierData( array $zpointCarrierData ): Entity\Carrier {
+		return new Entity\Carrier(
+			(string) $zpointCarrierData['id'],
+			$zpointCarrierData['name'],
+			(bool) $zpointCarrierData['is_pickup_points'],
+			false,
+			false,
+			false,
+			false,
+			false,
+			false,
+			true,
+			$zpointCarrierData['country'],
+			$zpointCarrierData['currency'],
+			10,
+			false
 		);
 	}
 }
