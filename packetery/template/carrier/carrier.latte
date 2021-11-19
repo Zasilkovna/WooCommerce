@@ -1,8 +1,9 @@
 <div class="packetery-carrier-options-page">
-	<h2>{$carrier_data['data']['name']}</h2>
+	{varType Packetery\Core\Entity\Carrier $carrier}
+	{var $carrier = $carrier_data['carrier']}
+	<h2>{$carrier->getName()}</h2>
 
-	{varType Packetery\Entity\Carrier $carrier_data['entity']}
-	{if isset($carrier_data['entity']) && $carrier_data['entity']->requiresCustomsDeclarations()}
+	{if $carrier->requiresCustomsDeclarations()}
 		<div class="notice notice-info">
 			<p>{__( 'cannotUseThisCarrierBecauseRequiresCustomsDeclaration', 'packetery' )}</p>
 		</div>
