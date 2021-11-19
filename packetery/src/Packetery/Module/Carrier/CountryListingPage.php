@@ -233,4 +233,24 @@ class CountryListingPage {
 		return $carriersWithSomeOptions;
 	}
 
+	/**
+	 * Gets array of active carriers names by country code.
+	 *
+	 * @param string $countryCode Country code.
+	 *
+	 * @return array
+	 */
+	private function getActiveCarriersNamesByCountry( string $countryCode ): array {
+		$activeCarriers  = [];
+		$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryCode );
+		foreach ( $countryCarriers as $carrier ) {
+			$optionId       = Checkout::CARRIER_PREFIX . $carrier->getId();
+			$carrierOptions = get_option( $optionId );
+			if ( false !== $carrierOptions && $carrierOptions['active'] ) {
+				$activeCarriers[] = $carrier->getName();
+			}
+		}
+
+		return $activeCarriers;
+	}
 }
