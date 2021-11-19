@@ -247,27 +247,23 @@ class OptionsPage {
 			$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryIso );
 			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
-			foreach ( $countryCarriers as $carrierData ) {
-				$carrierEntity = null;
-				if ( is_numeric( (int) $carrierData['id'] ) ) {
-					$carrierEntity = $this->carrierRepository->getById( (int) $carrierData['id'] );
-				}
-				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
+			foreach ( $countryCarriers as $carrier ) {
+				if ( ! empty( $post ) && $post['id'] === $carrier->getId() ) {
 					$form = $this->createForm( $post );
 					if ( $form->isSubmitted() ) {
 						$form->fireEvents();
 					}
 				} else {
-					$options = get_option( Checkout::CARRIER_PREFIX . $carrierData['id'] );
+					$carrierData = $carrier->__toArray();
+					$options     = get_option( Checkout::CARRIER_PREFIX . $carrier->getId() );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
 					$form = $this->createForm( $carrierData );
 				}
 				$carriersData[] = [
-					'form'   => $form,
-					'data'   => $carrierData,
-					'entity' => $carrierEntity,
+					'form'    => $form,
+					'carrier' => $carrier,
 				];
 			}
 

@@ -115,9 +115,10 @@ class CountryListingPage {
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
+			$activeCarriers   = $this->getActiveCarriersNamesByCountry( $country );
 			$countriesFinal[] = [
-				'code' => $country,
-				'name' => \Locale::getDisplayRegion( '-' . $country, get_locale() ),
+				'code'           => $country,
+				'name'           => \Locale::getDisplayRegion( '-' . $country, get_locale() ),
 				'url'  => add_query_arg(
 					[
 						'page' => OptionsPage::SLUG,
@@ -125,6 +126,7 @@ class CountryListingPage {
 					],
 					get_admin_url( null, 'admin.php' )
 				),
+				'activeCarriers' => $activeCarriers,
 			];
 		}
 
@@ -203,4 +205,24 @@ class CountryListingPage {
 		return $activeCarriers;
 	}
 
+	/**
+	 * Gets array of active carriers names by country code.
+	 *
+	 * @param string $countryCode Country code.
+	 *
+	 * @return array
+	 */
+	private function getActiveCarriersNamesByCountry( string $countryCode ): array {
+		$activeCarriers  = [];
+		$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryCode );
+		foreach ( $countryCarriers as $carrier ) {
+			$optionId       = Checkout::CARRIER_PREFIX . $carrier->getId();
+			$carrierOptions = get_option( $optionId );
+			if ( false !== $carrierOptions && $carrierOptions['active'] ) {
+				$activeCarriers[] = $carrier->getName();
+			}
+		}
+
+		return $activeCarriers;
+	}
 }

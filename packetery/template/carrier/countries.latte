@@ -32,12 +32,14 @@
 			<tr>
 				<th>{__( 'Country name', 'packetery' )}</th>
 				<th>{__( 'Country code', 'packetery' )}</th>
+				<th>{__( 'activeCarrier', 'packetery' )}</th>
 				<th>{__( 'Action', 'packetery' )}</th>
 			</tr>
 			{foreach $countries as $country}
 				<tr>
 					<td>{$country['name']}</td>
 					<td>{$country['code']|upper}</td>
+					<td>{implode(', ', $country['activeCarriers'])}</td>
 					<td><a class="button" href="{$country['url']}">{__( 'Set up', 'packetery' )}</a></td>
 				</tr>
 			{/foreach}
