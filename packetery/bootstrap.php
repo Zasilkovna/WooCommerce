@@ -9,7 +9,7 @@ defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
 require_once __DIR__ . '/packetery_vendor/autoload.php';
 
 $configurator = new Configurator();
-$configurator->setDebugMode( WP_DEBUG );
+$configurator->setDebugMode( PACKETERY_DEBUG );
 
 if ( PACKETERY_DEBUG ) {
 	$configurator->enableDebugger();

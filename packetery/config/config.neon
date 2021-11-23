@@ -1,6 +1,9 @@
 parameters:
     latteTempFolder: %tempDir%/cache/view
 
+session:
+    autoStart: false
+
 services:
 	- Packetery\Module\Log\PostLogger
 	- Packetery\Module\Log\Page
