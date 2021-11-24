@@ -178,7 +178,7 @@ class LabelPrint {
 			return;
 		}
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), 'info' );
+			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY );
 
 			return;
 		}
@@ -209,7 +209,7 @@ class LabelPrint {
 			$message = ( null !== $response && $response->hasFault() ) ?
 				__( 'labelPrintFailedMoreInfoInLog', 'packetery' ) :
 				__( 'youSelectedOrdersThatWereNotSubmitted', 'packetery' );
-			$this->messageManager->flash_message( $message, 'error' );
+			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -411,7 +411,7 @@ class LabelPrint {
 			$response = $this->soapApiClient->packetCourierNumber( $request );
 			if ( $response->hasFault() ) {
 				if ( $response->hasWrongPassword() ) {
-					$this->messageManager->flash_message( __( 'pleaseSetProperPassword', 'packetery' ), 'error' );
+					$this->messageManager->flash_message( __( 'pleaseSetProperPassword', 'packetery' ), MessageManager::TYPE_ERROR );
 
 					return [];
 				}

@@ -20,6 +20,7 @@ class MessageManager {
 
 	public const TYPE_ERROR   = 'error';
 	public const TYPE_SUCCESS = 'success';
+	public const TYPE_INFO    = 'info';
 
 	public const RENDERER_WORDPRESS = 'wordpress';
 	public const RENDERER_PACKETERY = 'packetery';
