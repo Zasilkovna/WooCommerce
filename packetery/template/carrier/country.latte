@@ -1,7 +1,7 @@
 <div class="packetery-options-page">
 	<h1>{__( 'Packeta', 'packetery' )} - {__( 'Country options', 'packetery' )}: {$country_iso|upper}</h1>
 
-	{php do_action( 'packetery_admin_notices' )}
+	{php do_action( 'packetery_admin_notices', 'carrier-country' )}
 	{php settings_errors()}
 
 	{if $forms}

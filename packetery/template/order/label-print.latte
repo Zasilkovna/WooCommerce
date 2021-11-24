@@ -1,7 +1,7 @@
 <div class="packetery-offset-wrapper">
 	<section>
 		<h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
-		{php do_action( 'packetery_admin_notices' )}
+		{php do_action( 'packetery_admin_notices', 'label-print' )}
 		<p>
 			{if $count === 1}
 				{sprintf(__( 'willBePrinted1%sLabels', 'packetery' ), $count)}

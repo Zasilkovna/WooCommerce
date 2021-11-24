@@ -178,7 +178,7 @@ class LabelPrint {
 			return;
 		}
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY );
+			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'label-print' );
 
 			return;
 		}

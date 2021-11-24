@@ -262,8 +262,8 @@ class Plugin {
 		);
 		add_action(
 			'packetery_admin_notices',
-			function () {
-				$this->message_manager->render( MessageManager::RENDERER_PACKETERY );
+			function ( string $context ) {
+				$this->message_manager->render( MessageManager::RENDERER_PACKETERY, $context );
 			}
 		);
 		add_action( 'init', array( $this, 'init' ) );

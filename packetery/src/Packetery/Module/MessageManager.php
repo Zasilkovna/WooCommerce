@@ -75,12 +75,14 @@ class MessageManager {
 	 * @param string $message  Text.
 	 * @param string $type     Type of message.
 	 * @param string $renderer Renderer of message.
+	 * @param string $context  Message context.
 	 */
-	public function flash_message( string $message, string $type = self::TYPE_SUCCESS, string $renderer = self::RENDERER_WORDPRESS ): void {
+	public function flash_message( string $message, string $type = self::TYPE_SUCCESS, string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
 		$message          = [
 			'type'     => $type,
 			'message'  => $message,
 			'renderer' => $renderer,
+			'context'  => $context,
 		];
 		$this->messages[] = $message;
 
@@ -91,10 +93,15 @@ class MessageManager {
 	 * Renders messages.
 	 *
 	 * @param string $renderer Message renderer.
+	 * @param string $context  Message context.
 	 */
-	public function render( string $renderer = self::RENDERER_WORDPRESS ): void {
+	public function render( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
 		foreach ( $this->messages as $key => $message ) {
 			if ( $message['renderer'] !== $renderer ) {
+				continue;
+			}
+
+			if ( $message['context'] !== $context ) {
 				continue;
 			}
 
