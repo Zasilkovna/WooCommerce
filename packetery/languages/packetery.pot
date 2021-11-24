@@ -9,14 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-10-08T16:30:29+02:00\n"
+"POT-Creation-Date: 2021-11-24T11:09:52+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
 
 #. Plugin Name of the plugin
-#: src/Packetery/Module/Options/Page.php:70
-#: src/Packetery/Module/Options/Page.php:71
+#: src/Packetery/Module/Options/Page.php:80
+#: src/Packetery/Module/Options/Page.php:81
 #: src/Packetery/Module/Order/Metabox.php:96
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
@@ -179,51 +179,51 @@ msgstr ""
 msgid "Logs"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:80
-#: src/Packetery/Module/Options/Page.php:81
-#: src/Packetery/Module/Plugin.php:482
+#: src/Packetery/Module/Options/Page.php:90
+#: src/Packetery/Module/Options/Page.php:91
+#: src/Packetery/Module/Plugin.php:495
 msgid "Settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:112
+#: src/Packetery/Module/Options/Page.php:122
 msgid "API password"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:114
+#: src/Packetery/Module/Options/Page.php:124
 msgid "API password must be 32 characters long and must contain valid characters!"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:115
+#: src/Packetery/Module/Options/Page.php:125
 msgid "Sender"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:122
+#: src/Packetery/Module/Options/Page.php:132
 msgid "Packeta Label Format"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:128
+#: src/Packetery/Module/Options/Page.php:138
 msgid "Carrier Label Format"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:130
+#: src/Packetery/Module/Options/Page.php:140
 #: src/Packetery/Module/Options/Provider.php:143
 msgid "labelNameA6onA4"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:131
+#: src/Packetery/Module/Options/Page.php:141
 #: src/Packetery/Module/Options/Provider.php:148
 msgid "labelNameA6onA6"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:142
+#: src/Packetery/Module/Options/Page.php:152
 msgid "Payment method that represents cash on delivery"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:158
+#: src/Packetery/Module/Options/Page.php:168
 msgid "Main Settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:199
+#: src/Packetery/Module/Options/Page.php:209
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
@@ -255,19 +255,19 @@ msgstr ""
 msgid "actionPrintCarrierLabels"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:89
+#: src/Packetery/Module/Order/GridExtender.php:94
 msgid "packetaOrdersToSubmit"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:104
+#: src/Packetery/Module/Order/GridExtender.php:114
 msgid "packetaOrdersToPrint"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:249
+#: src/Packetery/Module/Order/GridExtender.php:259
 msgid "Barcode"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:250
+#: src/Packetery/Module/Order/GridExtender.php:260
 msgid "Pick up point or carrier"
 msgstr ""
 
@@ -342,7 +342,7 @@ msgstr ""
 msgid "You are not allowed to edit posts!"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:481
+#: src/Packetery/Module/Plugin.php:494
 msgid "View Packeta settings"
 msgstr ""
 
@@ -499,6 +499,30 @@ msgstr ""
 
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:80
 msgid "senderCanBeFoundAt%sUrl"
+msgstr ""
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:151
+msgid "Support"
+msgstr ""
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:156
+msgid "optionsExportInfo1"
+msgstr ""
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:160
+msgid "optionsExportInfo2"
+msgstr ""
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:167
+msgid "exportPluginSettings"
+msgstr ""
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:173
+msgid "settingsExportDatetime"
+msgstr ""
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:181
+msgid "settingsNotYetExported"
 msgstr ""
 
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:19

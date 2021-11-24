@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-10-08T16:30:29+02:00\n"
-"PO-Revision-Date: 2021-10-08 16:35+0200\n"
+"POT-Creation-Date: 2021-11-24T11:09:52+01:00\n"
+"PO-Revision-Date: 2021-11-24 11:13+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #. Plugin Name of the plugin
-#: src/Packetery/Module/Options/Page.php:70
-#: src/Packetery/Module/Options/Page.php:71
+#: src/Packetery/Module/Options/Page.php:80
+#: src/Packetery/Module/Options/Page.php:81
 #: src/Packetery/Module/Order/Metabox.php:96
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
@@ -188,52 +188,52 @@ msgstr "Success"
 msgid "Logs"
 msgstr "Logy"
 
-#: src/Packetery/Module/Options/Page.php:80
-#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:482
+#: src/Packetery/Module/Options/Page.php:90
+#: src/Packetery/Module/Options/Page.php:91 src/Packetery/Module/Plugin.php:495
 msgid "Settings"
 msgstr "Settings"
 
-#: src/Packetery/Module/Options/Page.php:112
+#: src/Packetery/Module/Options/Page.php:122
 msgid "API password"
 msgstr "API password"
 
-#: src/Packetery/Module/Options/Page.php:114
+#: src/Packetery/Module/Options/Page.php:124
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr ""
 "API password must be 32 characters long and must contain valid characters!"
 
-#: src/Packetery/Module/Options/Page.php:115
+#: src/Packetery/Module/Options/Page.php:125
 msgid "Sender"
 msgstr "Sender"
 
-#: src/Packetery/Module/Options/Page.php:122
+#: src/Packetery/Module/Options/Page.php:132
 msgid "Packeta Label Format"
 msgstr "Packeta Label Format"
 
-#: src/Packetery/Module/Options/Page.php:128
+#: src/Packetery/Module/Options/Page.php:138
 msgid "Carrier Label Format"
 msgstr "Carrier Label Format"
 
-#: src/Packetery/Module/Options/Page.php:130
+#: src/Packetery/Module/Options/Page.php:140
 #: src/Packetery/Module/Options/Provider.php:143
 msgid "labelNameA6onA4"
 msgstr "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
 
-#: src/Packetery/Module/Options/Page.php:131
+#: src/Packetery/Module/Options/Page.php:141
 #: src/Packetery/Module/Options/Provider.php:148
 msgid "labelNameA6onA6"
 msgstr "105x148 mm (A6) label on a page of the same size"
 
-#: src/Packetery/Module/Options/Page.php:142
+#: src/Packetery/Module/Options/Page.php:152
 msgid "Payment method that represents cash on delivery"
 msgstr "Payment method that represents cash on delivery"
 
-#: src/Packetery/Module/Options/Page.php:158
+#: src/Packetery/Module/Options/Page.php:168
 msgid "Main Settings"
 msgstr "Main Settings"
 
-#: src/Packetery/Module/Options/Page.php:199
+#: src/Packetery/Module/Options/Page.php:209
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -269,19 +269,19 @@ msgstr "Print labels"
 msgid "actionPrintCarrierLabels"
 msgstr "Print carrier labels"
 
-#: src/Packetery/Module/Order/GridExtender.php:89
+#: src/Packetery/Module/Order/GridExtender.php:94
 msgid "packetaOrdersToSubmit"
 msgstr "Packeta orders to submit"
 
-#: src/Packetery/Module/Order/GridExtender.php:104
+#: src/Packetery/Module/Order/GridExtender.php:114
 msgid "packetaOrdersToPrint"
 msgstr "Packeta orders to print"
 
-#: src/Packetery/Module/Order/GridExtender.php:249
+#: src/Packetery/Module/Order/GridExtender.php:259
 msgid "Barcode"
 msgstr "Barcode"
 
-#: src/Packetery/Module/Order/GridExtender.php:250
+#: src/Packetery/Module/Order/GridExtender.php:260
 msgid "Pick up point or carrier"
 msgstr "Pick up point or carrier"
 
@@ -356,7 +356,7 @@ msgstr "Session has expired! Please try again."
 msgid "You are not allowed to edit posts!"
 msgstr "You are not allowed to edit posts!"
 
-#: src/Packetery/Module/Plugin.php:481
+#: src/Packetery/Module/Plugin.php:494
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
 
@@ -514,6 +514,37 @@ msgstr "API password can be found at %s"
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:80
 msgid "senderCanBeFoundAt%sUrl"
 msgstr "Sender label can be found at %s"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:151
+msgid "Support"
+msgstr "Support"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:156
+msgid "optionsExportInfo1"
+msgstr ""
+"By clicking the button, you will export the settings of your plugin into a "
+"separate file. The export does not contain any sensitive information about "
+"your e-shop. Please send the resulting file to the technical support of "
+"Packeta (you can find the e-mail address here:"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:160
+msgid "optionsExportInfo2"
+msgstr ""
+") along with the description of your problem. For a better understanding of "
+"your problem, we recommend adding screenshots, which show the problem (if "
+"possible)."
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:167
+msgid "exportPluginSettings"
+msgstr "Export the plugin settings"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:173
+msgid "settingsExportDatetime"
+msgstr "Date and time of the last export of settings"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:181
+msgid "settingsNotYetExported"
+msgstr "The settings have not been exported yet."
 
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:19
 msgid "pickup point detail"
