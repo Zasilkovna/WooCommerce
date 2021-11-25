@@ -26,13 +26,9 @@
                 <div class="packetery-table-cell packetery-order-metabox-label-cell">
                 </div>
                 <div class="packetery-table-cell">
-                    <input n:name=Packetery\Module\Order\Entity::META_POINT_ID />
-                    <input n:name=Packetery\Module\Order\Entity::META_POINT_NAME />
-                    <input n:name=Packetery\Module\Order\Entity::META_POINT_STREET />
-                    <input n:name=Packetery\Module\Order\Entity::META_POINT_CITY />
-                    <input n:name=Packetery\Module\Order\Entity::META_POINT_ZIP />
-                    <input n:name=Packetery\Module\Order\Entity::META_POINT_URL />
-                    <input n:name=Packetery\Module\Order\Entity::META_CARRIER_ID />
+                    {foreach Packetery\Module\Checkout::$pickupPointAttrs as $attr}
+                        <input n:name=$attr[name] />
+                    {/foreach}
                     <input class="packetery-order-metabox-input" n:name=packetery_pick_pickup_point />
                     <p data-packetery-widget-info></p>
                 </div>

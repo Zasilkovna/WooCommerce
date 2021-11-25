@@ -18,13 +18,15 @@ var packeteryLoadPickupPointPicker = function( $, settings ) {
 					return;
 				}
 
-				$widgetDiv.find( '[name=packetery_point_id]' ).val(point.id || '');
-				$widgetDiv.find( '[name=packetery_point_name]' ).val(point.name || '');
-				$widgetDiv.find( '[name=packetery_point_city]' ).val(point.city || '');
-				$widgetDiv.find( '[name=packetery_point_zip]' ).val(point.zip || '');
-				$widgetDiv.find( '[name=packetery_point_street]' ).val(point.street || '');
-				$widgetDiv.find( '[name=packetery_point_url]' ).val(point.url || '');
-				$widgetDiv.find( '[name=packetery_carrier_id]' ).val(point.carrierId || '');
+				for ( var attrKey in settings.pickupPointAttrs ) {
+					if ( ! settings.pickupPointAttrs.hasOwnProperty(attrKey) ) {
+						continue;
+					}
+
+					var attr = settings.pickupPointAttrs[attrKey];
+
+					$widgetDiv.find( '[name=' + attr.name + ']' ).val(point[attrKey] || '');
+				}
 
 				$widgetDiv.find( '[data-packetery-widget-info]' ).html( point.name );
 			}, widgetOptions );
