@@ -21,22 +21,24 @@
                 </div>
             {/foreach}
 
-            {if $order->isPickupPointDelivery()}
-            <div class="packetery-table-row">
-                <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                </div>
-                <div class="packetery-table-cell">
-                    {foreach Packetery\Module\Checkout::$pickupPointAttrs as $attr}
-                        <input n:name=$attr[name] />
-                    {/foreach}
-                    <input class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_pickup_point />
-                    <p data-packetery-widget-info></p>
-                </div>
-            </div>
-            <script>
-                packeteryLoadPickupPointPicker( jQuery, {$widgetSettings} );
-            </script>
-            {/if}
         </div>
+
+        {if $order->isPickupPointDelivery()}
+            {foreach Packetery\Module\Checkout::$pickupPointAttrs as $attr}
+                <input n:name=$attr[name] />
+            {/foreach}
+            <div id="packetery-widget-button-wrapper">
+                <button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_pickup_point >{$form[packetery_pick_pickup_point]->getCaption()}</button>
+                <span data-packetery-widget-info></span>
+            </div>
+            <style>
+	            #packetery-widget-button-wrapper {
+                    margin-top: 6px;
+                }
+            </style>
+            <script>
+			    packeteryLoadPickupPointPicker( jQuery, {$widgetSettings} );
+            </script>
+        {/if}
     </div>
 {/formContext}
