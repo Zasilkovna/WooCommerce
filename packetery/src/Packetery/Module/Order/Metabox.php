@@ -12,6 +12,8 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Options;
+use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http\Request;
@@ -66,26 +68,36 @@ class Metabox {
 	private $orderFactory;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine              $latte_engine PacketeryLatte engine.
+	 * @param Engine              $latte_engine    PacketeryLatte engine.
 	 * @param MessageManager      $message_manager Message manager.
-	 * @param Helper              $helper Helper.
-	 * @param Request             $request Http request.
-	 * @param EntityFactory\Order $orderFactory Order factory.
+	 * @param Helper              $helper          Helper.
+	 * @param Request             $request         Http request.
+	 * @param EntityFactory\Order $orderFactory    Order factory.
+	 * @param Options\Provider    $optionsProvider Options provider.
 	 */
 	public function __construct(
 		Engine $latte_engine,
 		MessageManager $message_manager,
 		Helper $helper,
 		Request $request,
-		EntityFactory\Order $orderFactory
+		EntityFactory\Order $orderFactory,
+		Options\Provider $optionsProvider
 	) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
 		$this->request         = $request;
 		$this->orderFactory    = $orderFactory;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -137,6 +149,16 @@ class Metabox {
 		$this->order_form->addText( Entity::META_HEIGHT, __( 'Height (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
+
+		// Widget fields
+		$this->order_form->addHidden(Entity::META_POINT_ID);
+		$this->order_form->addHidden(Entity::META_POINT_NAME);
+		$this->order_form->addHidden(Entity::META_POINT_STREET);
+		$this->order_form->addHidden(Entity::META_POINT_CITY);
+		$this->order_form->addHidden(Entity::META_POINT_URL);
+		$this->order_form->addHidden(Entity::META_POINT_ZIP);
+		$this->order_form->addHidden(Entity::META_CARRIER_ID);
+		$this->order_form->addButton('packetery_pick_pickup_point', __( 'choosePickupPoint', 'packetery' ));
 	}
 
 	/**
@@ -178,11 +200,23 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
+		$wpOrder = wc_get_order( $order->getNumber() );
+		$widgetSettings = [
+			'packeteryApiKey' => $this->optionsProvider->get_api_key(),
+			'country' => mb_strtolower($wpOrder->get_shipping_country()),
+			'language' => substr( get_locale(), 0, 2 ),
+			'appIdentity' => Plugin::getAppIdentity(),
+			'weight' => $order->getWeight(),
+			'carriers' => $order->getWidgetCarriersParam(),
+		];
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
-			array(
+			[
 				'form' => $this->order_form,
-			)
+				'order' => $order,
+				'widgetSettings' => $widgetSettings
+			]
 		);
 	}
 
@@ -210,9 +244,9 @@ class Metabox {
 			return $post_id;
 		}
 
-		$values = $this->order_form->getValues();
+		$values = $this->order_form->getValues( 'array' );
 
-		if ( ! wp_verify_nonce( $values->packetery_order_metabox_nonce ) ) {
+		if ( ! wp_verify_nonce( $values['packetery_order_metabox_nonce'] ) ) {
 			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			return $post_id;
@@ -224,10 +258,20 @@ class Metabox {
 			return $post_id;
 		}
 
-		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values->packetery_weight ) ? number_format( $values->packetery_weight, 4, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_WIDTH, ( is_numeric( $values->packetery_width ) ? number_format( $values->packetery_width, 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_LENGTH, ( is_numeric( $values->packetery_length ) ? number_format( $values->packetery_length, 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_HEIGHT, ( is_numeric( $values->packetery_height ) ? number_format( $values->packetery_height, 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values[Entity::META_WEIGHT] ) ? number_format( $values[Entity::META_WEIGHT], 4, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_WIDTH, ( is_numeric( $values[Entity::META_WIDTH] ) ? number_format( $values[Entity::META_WIDTH], 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_LENGTH, ( is_numeric( $values[Entity::META_LENGTH] ) ? number_format( $values[Entity::META_LENGTH], 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_HEIGHT, ( is_numeric( $values[Entity::META_HEIGHT] ) ? number_format( $values[Entity::META_HEIGHT], 0, '.', '' ) : '' ) );
+
+		if ($values[Entity::META_POINT_ID] && $order->isPickupPointDelivery()) {
+			update_post_meta( $post_id, Entity::META_POINT_ID, $values[Entity::META_POINT_ID] );
+			update_post_meta( $post_id, Entity::META_POINT_NAME, $values[Entity::META_POINT_NAME] );
+			update_post_meta( $post_id, Entity::META_POINT_STREET, $values[Entity::META_POINT_STREET] );
+			update_post_meta( $post_id, Entity::META_POINT_CITY, $values[Entity::META_POINT_CITY] );
+			update_post_meta( $post_id, Entity::META_POINT_ZIP, $values[Entity::META_POINT_ZIP] );
+			update_post_meta( $post_id, Entity::META_POINT_URL, $values[Entity::META_POINT_URL] );
+			update_post_meta( $post_id, Entity::META_CARRIER_ID, !empty($values[Entity::META_CARRIER_ID]) ? $values[Entity::META_CARRIER_ID] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+		}
 
 		return $post_id;
 	}
