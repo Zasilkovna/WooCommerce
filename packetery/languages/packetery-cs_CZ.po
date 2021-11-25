@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-10-08T16:30:29+02:00\n"
-"PO-Revision-Date: 2021-10-08 16:34+0200\n"
+"POT-Creation-Date: 2021-11-24T11:09:52+01:00\n"
+"PO-Revision-Date: 2021-11-24 11:13+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
 
 #. Plugin Name of the plugin
-#: src/Packetery/Module/Options/Page.php:70
-#: src/Packetery/Module/Options/Page.php:71
+#: src/Packetery/Module/Options/Page.php:80
+#: src/Packetery/Module/Options/Page.php:81
 #: src/Packetery/Module/Order/Metabox.php:96
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
@@ -188,51 +188,51 @@ msgstr "Úspěch"
 msgid "Logs"
 msgstr "Logy"
 
-#: src/Packetery/Module/Options/Page.php:80
-#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:482
+#: src/Packetery/Module/Options/Page.php:90
+#: src/Packetery/Module/Options/Page.php:91 src/Packetery/Module/Plugin.php:495
 msgid "Settings"
 msgstr "Nastavení"
 
-#: src/Packetery/Module/Options/Page.php:112
+#: src/Packetery/Module/Options/Page.php:122
 msgid "API password"
 msgstr "API heslo"
 
-#: src/Packetery/Module/Options/Page.php:114
+#: src/Packetery/Module/Options/Page.php:124
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr "API heslo musí být 32 znaků dlouhé a musí obsahovat validní znaky!"
 
-#: src/Packetery/Module/Options/Page.php:115
+#: src/Packetery/Module/Options/Page.php:125
 msgid "Sender"
 msgstr "Odesílatel"
 
-#: src/Packetery/Module/Options/Page.php:122
+#: src/Packetery/Module/Options/Page.php:132
 msgid "Packeta Label Format"
 msgstr "Formát štítku Zásilkovny"
 
-#: src/Packetery/Module/Options/Page.php:128
+#: src/Packetery/Module/Options/Page.php:138
 msgid "Carrier Label Format"
 msgstr "Formát štítku dopravce"
 
-#: src/Packetery/Module/Options/Page.php:130
+#: src/Packetery/Module/Options/Page.php:140
 #: src/Packetery/Module/Options/Provider.php:143
 msgid "labelNameA6onA4"
 msgstr "1/4 A4, tisk na A4, 4ks/stránka"
 
-#: src/Packetery/Module/Options/Page.php:131
+#: src/Packetery/Module/Options/Page.php:141
 #: src/Packetery/Module/Options/Provider.php:148
 msgid "labelNameA6onA6"
 msgstr "1/4 A4, přímý tisk, 1ks/stránka"
 
-#: src/Packetery/Module/Options/Page.php:142
+#: src/Packetery/Module/Options/Page.php:152
 msgid "Payment method that represents cash on delivery"
 msgstr "Platební metoda, která reprezentuje dobírku."
 
-#: src/Packetery/Module/Options/Page.php:158
+#: src/Packetery/Module/Options/Page.php:168
 msgid "Main Settings"
 msgstr "Hlavní nastavení"
 
-#: src/Packetery/Module/Options/Page.php:199
+#: src/Packetery/Module/Options/Page.php:209
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -268,19 +268,19 @@ msgstr "Tisk štítků"
 msgid "actionPrintCarrierLabels"
 msgstr "Tisk štítků dopravců"
 
-#: src/Packetery/Module/Order/GridExtender.php:89
+#: src/Packetery/Module/Order/GridExtender.php:94
 msgid "packetaOrdersToSubmit"
 msgstr "Zásilkovna - zásilky k podání"
 
-#: src/Packetery/Module/Order/GridExtender.php:104
+#: src/Packetery/Module/Order/GridExtender.php:114
 msgid "packetaOrdersToPrint"
 msgstr "Zásilkovna - zásilky k tisku"
 
-#: src/Packetery/Module/Order/GridExtender.php:249
+#: src/Packetery/Module/Order/GridExtender.php:259
 msgid "Barcode"
 msgstr "Trasovací číslo"
 
-#: src/Packetery/Module/Order/GridExtender.php:250
+#: src/Packetery/Module/Order/GridExtender.php:260
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
 
@@ -355,7 +355,7 @@ msgstr "Relace vypršela! Zkuste to prosím znovu."
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
-#: src/Packetery/Module/Plugin.php:481
+#: src/Packetery/Module/Plugin.php:494
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
@@ -515,6 +515,35 @@ msgstr "API heslo můžete nalézt na adrese %s"
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:80
 msgid "senderCanBeFoundAt%sUrl"
 msgstr "Označení odesílatele můžete nalézt na adrese %s"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:151
+msgid "Support"
+msgstr "Podpora"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:156
+msgid "optionsExportInfo1"
+msgstr ""
+"Kliknutím na tlačítko provedete export nastavení pluginu do souboru. Export "
+"neobsahuje žádné citlivé informace z vašeho eshopu. Výsledný soubor zašlete "
+"na technickou podporu Zásilkovny (e-mail kontakt najdete zde:"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:160
+msgid "optionsExportInfo2"
+msgstr ""
+") společně s popisem vašeho problému. Pro lepší pochopení problému "
+"doporučujeme připojit i screeny, které jej zachycují (pokud je to možné)."
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:167
+msgid "exportPluginSettings"
+msgstr "Export nastavení pluginu"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:173
+msgid "settingsExportDatetime"
+msgstr "Datum a čas posledního exportu nastavení"
+
+#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:181
+msgid "settingsNotYetExported"
+msgstr "Export nastavení zatím ještě nebyl proveden."
 
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:19
 msgid "pickup point detail"
