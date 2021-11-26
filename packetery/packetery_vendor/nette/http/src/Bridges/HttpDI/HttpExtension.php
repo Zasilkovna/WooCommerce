@@ -133,10 +133,12 @@ class HttpExtension extends PacketeryNette\DI\CompilerExtension
 			}
 		}
 
-		$this->initialization->addBody(
-			'PacketeryNette\Http\Helpers::initCookie($this->getService(?), $response);',
-			[$this->prefix('request')]
-		);
+		// Original nette logic was moved to Plugin::run to avoid blaming Packeta plugin for errors of other plugins.
+		// Other plugins echoed something and Packeta plugin was unable to set response headers.
+//		$this->initialization->addBody(
+//			'PacketeryNette\Http\Helpers::initCookie($this->getService(?), $response);',
+//			[$this->prefix('request')]
+//		);
 	}
 
 
