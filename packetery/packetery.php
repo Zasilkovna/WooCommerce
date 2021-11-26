@@ -37,5 +37,14 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
 	exit;
 }
 
+if ( php_sapi_name() === 'cli' ) {
+	return;
+}
+
+if ( headers_sent() ) {
+	trigger_error( 'Packeta plugin is unable to bootstrap because HTTP headers are already sent. Issue is probably caused by other plugin.', E_USER_WARNING );
+	return;
+}
+
 $container = require __DIR__ . '/bootstrap.php';
 $container->getByType( Plugin::class )->run();
