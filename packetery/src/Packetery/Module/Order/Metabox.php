@@ -213,7 +213,8 @@ class Metabox {
 			[
 				'form' => $this->order_form,
 				'order' => $order,
-				'widgetSettings' => $widgetSettings
+				'widgetSettings' => $widgetSettings,
+				'logo' => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
 			]
 		);
 	}
