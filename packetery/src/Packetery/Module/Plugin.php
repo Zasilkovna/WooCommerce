@@ -18,9 +18,7 @@ use Packetery\Module\Options;
 use Packetery\Module\Order;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
-use PacketeryNette\Http\Helpers;
-use PacketeryNette\Http\Request;
-use PacketeryNette\Http\Response;
+use PacketeryNette\Forms\Form;
 use WC_Order;
 
 /**
@@ -146,39 +144,23 @@ class Plugin {
 	private $exporter;
 
 	/**
-	 * HTTP Request.
-	 *
-	 * @var Request
-	 */
-	private $request;
-
-	/**
-	 * HTTP Response.
-	 *
-	 * @var Response
-	 */
-	private $response;
-
-	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox      $order_metabox      Order metabox.
-	 * @param MessageManager     $message_manager    Message manager.
-	 * @param Options\Page       $options_page       Options page.
+	 * @param Order\Metabox      $order_metabox Order metabox.
+	 * @param MessageManager     $message_manager Message manager.
+	 * @param Options\Page       $options_page Options page.
 	 * @param Repository         $carrier_repository Carrier repository.
 	 * @param Downloader         $carrier_downloader Carrier downloader object.
-	 * @param Checkout           $checkout           Checkout class.
-	 * @param Engine             $latte_engine       PacketeryLatte engine.
+	 * @param Checkout           $checkout Checkout class.
+	 * @param Engine             $latte_engine PacketeryLatte engine.
 	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions  $orderBulkActions   Order BulkActions.
-	 * @param Order\LabelPrint   $labelPrint         Label printing.
-	 * @param Order\GridExtender $gridExtender       Order grid extender.
-	 * @param Product\DataTab    $productTab         Product tab.
-	 * @param Log\Page           $logPage            Log page.
-	 * @param ILogger            $logger             Log manager.
-	 * @param Options\Exporter   $exporter           Options exporter.
-	 * @param Request            $request            Request.
-	 * @param Response           $response           Response.
+	 * @param Order\BulkActions  $orderBulkActions Order BulkActions.
+	 * @param Order\LabelPrint   $labelPrint Label printing.
+	 * @param Order\GridExtender $gridExtender Order grid extender.
+	 * @param Product\DataTab    $productTab Product tab.
+	 * @param Log\Page           $logPage Log page.
+	 * @param ILogger            $logger Log manager.
+	 * @param Options\Exporter   $exporter Options exporter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -195,9 +177,7 @@ class Plugin {
 		Product\DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
-		Options\Exporter $exporter,
-		Request $request,
-		Response $response
+		Options\Exporter $exporter
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
@@ -216,8 +196,6 @@ class Plugin {
 		$this->logPage            = $logPage;
 		$this->logger             = $logger;
 		$this->exporter           = $exporter;
-		$this->request = $request;
-		$this->response = $response;
 	}
 
 	/**
@@ -235,6 +213,7 @@ class Plugin {
 				$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
 			}
 		);
+		Form::initialize();
 
 		add_action(
 			'admin_notices',
@@ -441,8 +420,6 @@ class Plugin {
 	 * Inits plugin.
 	 */
 	public function init(): void {
-		Helpers::initCookie( $this->request, $this->response );
-
 		add_filter(
 			'plugin_action_links_' . plugin_basename( $this->main_file_path ),
 			[

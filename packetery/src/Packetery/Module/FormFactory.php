@@ -11,7 +11,6 @@ namespace Packetery\Module;
 
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Forms\Validator;
-use PacketeryNette\Http\Request;
 
 /**
  * Class FormFactory
@@ -21,18 +20,10 @@ use PacketeryNette\Http\Request;
 class FormFactory {
 
 	/**
-	 * @var Request
-	 */
-	private $request;
-
-	/**
 	 * Plugin constructor.
-	 *
-	 * @param Request $request
 	 */
-	public function __construct( Request $request) {
+	public function __construct() {
 		Validator::$messages[ Form::FILLED ] = __( 'This field is required!', 'packetery' );
-		$this->request = $request;
 	}
 
 	/**
@@ -43,8 +34,6 @@ class FormFactory {
 	 * @return Form
 	 */
 	public function create( ?string $name = null ): Form {
-		$form = new Form( $name );
-		$form->httpRequest = $this->request;
-		return $form;
+		return new Form( $name );
 	}
 }

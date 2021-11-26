@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
-use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -59,34 +58,25 @@ class Metabox {
 	private $request;
 
 	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory
-	 */
-	private $formFactory;
-
-	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine         $latte_engine    PacketeryLatte engine.
 	 * @param MessageManager $message_manager Message manager.
 	 * @param Helper         $helper          Helper.
 	 * @param Request        $request         Http request.
-	 * @param FormFactory    $formFactory     Form factory.
 	 */
-	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper, Request $request, FormFactory $formFactory ) {
+	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper, Request $request ) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
 		$this->request         = $request;
-		$this->formFactory     = $formFactory;
 	}
 
 	/**
 	 *  Registers related hooks.
 	 */
 	public function register(): void {
-		$this->order_form = $this->formFactory->create();
+		$this->order_form = new Form();
 		$this->add_fields();
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_fields' ) );
