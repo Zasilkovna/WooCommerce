@@ -19,13 +19,13 @@ var packeteryLoadPickupPointPicker = function( $, settings ) {
 				}
 
 				for ( var attrKey in settings.pickupPointAttrs ) {
-					if ( ! settings.pickupPointAttrs.hasOwnProperty(attrKey) ) {
+					if ( !settings.pickupPointAttrs.hasOwnProperty( attrKey ) ) {
 						continue;
 					}
 
-					var attr = settings.pickupPointAttrs[attrKey];
+					var attr = settings.pickupPointAttrs[ attrKey ];
 
-					$widgetDiv.find( '[name=' + attr.name + ']' ).val(point[attrKey] || '');
+					$widgetDiv.find( '[name=' + attr.name + ']' ).val( point[ attrKey ] || '' );
 				}
 
 				$widgetDiv.find( '[data-packetery-widget-info]' ).html( point.name );

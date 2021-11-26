@@ -567,8 +567,8 @@ class Order {
 	 * @return string|null
 	 */
 	public function getWidgetCarriersParam(): ?string {
-		if ($this->isPickupPointDelivery()) {
-			return is_numeric($this->getCarrierId()) ? $this->getCarrierId() : Carrier::INTERNAL_PICKUP_POINTS_ID;
+		if ( $this->isPickupPointDelivery() ) {
+			return is_numeric( $this->getCarrierId() ) ? $this->getCarrierId() : Carrier::INTERNAL_PICKUP_POINTS_ID;
 		}
 
 		return null;

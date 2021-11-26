@@ -151,11 +151,10 @@ class Metabox {
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
 
-		// Widget fields
 		foreach ( Checkout::$pickupPointAttrs as $attrs ) {
-			$this->order_form->addHidden($attrs['name']);
+			$this->order_form->addHidden( $attrs['name'] );
 		}
-		$this->order_form->addButton('packetery_pick_pickup_point', __( 'choosePickupPoint', 'packetery' ));
+		$this->order_form->addButton( 'packetery_pick_pickup_point', __( 'choosePickupPoint', 'packetery' ) );
 	}
 
 	/**
@@ -197,24 +196,24 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
-		$wpOrder = wc_get_order( $order->getNumber() );
+		$wpOrder        = wc_get_order( $order->getNumber() );
 		$widgetSettings = [
-			'packeteryApiKey' => $this->optionsProvider->get_api_key(),
-			'country' => mb_strtolower($wpOrder->get_shipping_country()),
-			'language' => substr( get_locale(), 0, 2 ),
-			'appIdentity' => Plugin::getAppIdentity(),
-			'weight' => $order->getWeight(),
-			'carriers' => $order->getWidgetCarriersParam(),
-			'pickupPointAttrs' => Checkout::$pickupPointAttrs
+			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
+			'country'          => mb_strtolower( $wpOrder->get_shipping_country() ),
+			'language'         => substr( get_locale(), 0, 2 ),
+			'appIdentity'      => Plugin::getAppIdentity(),
+			'weight'           => $order->getWeight(),
+			'carriers'         => $order->getWidgetCarriersParam(),
+			'pickupPointAttrs' => Checkout::$pickupPointAttrs,
 		];
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form' => $this->order_form,
-				'order' => $order,
+				'form'           => $this->order_form,
+				'order'          => $order,
 				'widgetSettings' => $widgetSettings,
-				'logo' => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
+				'logo'           => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/packeta-symbol.png',
 			]
 		);
 	}
@@ -236,7 +235,7 @@ class Metabox {
 			return $post_id;
 		}
 
-		if ( $this->order_form->isValid() === false ) {
+		if ( false === $this->order_form->isValid() ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
 			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packetery' ), MessageManager::TYPE_ERROR );
 
@@ -257,17 +256,17 @@ class Metabox {
 			return $post_id;
 		}
 
-		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values[Entity::META_WEIGHT] ) ? number_format( $values[Entity::META_WEIGHT], 4, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_WIDTH, ( is_numeric( $values[Entity::META_WIDTH] ) ? number_format( $values[Entity::META_WIDTH], 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_LENGTH, ( is_numeric( $values[Entity::META_LENGTH] ) ? number_format( $values[Entity::META_LENGTH], 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_HEIGHT, ( is_numeric( $values[Entity::META_HEIGHT] ) ? number_format( $values[Entity::META_HEIGHT], 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? number_format( $values[ Entity::META_WEIGHT ], 4, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_WIDTH, ( is_numeric( $values[ Entity::META_WIDTH ] ) ? number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_LENGTH, ( is_numeric( $values[ Entity::META_LENGTH ] ) ? number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_HEIGHT, ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : '' ) );
 
-		if ($values[Entity::META_POINT_ID] && $order->isPickupPointDelivery()) {
-			foreach (Checkout::$pickupPointAttrs as $pickupPointAttr) {
-				$value = $values[$pickupPointAttr['name']];
+		if ( $values[ Entity::META_POINT_ID ] && $order->isPickupPointDelivery() ) {
+			foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
+				$value = $values[ $pickupPointAttr['name'] ];
 
-				if ( $pickupPointAttr['name'] === Entity::META_CARRIER_ID ) {
-					$value = !empty($values[Entity::META_CARRIER_ID]) ? $values[Entity::META_CARRIER_ID] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
+				if ( Entity::META_CARRIER_ID === $pickupPointAttr['name'] ) {
+					$value = ( ! empty( $values[ Entity::META_CARRIER_ID ] ) ? $values[ Entity::META_CARRIER_ID ] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 				}
 
 				update_post_meta( $post_id, $pickupPointAttr['name'], $value );
