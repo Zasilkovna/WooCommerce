@@ -203,7 +203,7 @@ class Metabox {
 			'language'         => substr( get_locale(), 0, 2 ),
 			'appIdentity'      => Plugin::getAppIdentity(),
 			'weight'           => $order->getWeight(),
-			'carriers'         => $order->getWidgetCarriersParam(),
+			'carriers'         => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
 			'pickupPointAttrs' => Checkout::$pickupPointAttrs,
 		];
 
