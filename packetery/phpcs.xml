@@ -21,6 +21,7 @@
         <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
         <exclude name="PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore"/>
         <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodDoubleUnderscore"/>
+        <exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
     </rule>
 
     <rule ref="WordPress.WP.I18n">
