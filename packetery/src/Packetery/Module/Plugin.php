@@ -260,12 +260,6 @@ class Plugin {
 				$this->message_manager->render( MessageManager::RENDERER_WORDPRESS );
 			}
 		);
-		add_action(
-			'packetery_admin_notices',
-			function ( string $context ) {
-				$this->message_manager->render( MessageManager::RENDERER_PACKETERY, $context );
-			}
-		);
 		add_action( 'init', array( $this, 'init' ) );
 
 		register_activation_hook( $this->main_file_path, array( $this, 'activate' ) );

@@ -96,6 +96,18 @@ class MessageManager {
 	 * @param string $context  Message context.
 	 */
 	public function render( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
+		echo $this->renderToString( $renderer, $context );
+	}
+
+	/**
+	 * Renders messages.
+	 *
+	 * @param string $renderer Message renderer.
+	 * @param string $context  Message context.
+	 */
+	public function renderToString( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): string {
+		$output = '';
+
 		foreach ( $this->messages as $key => $message ) {
 			if ( $message['renderer'] !== $renderer ) {
 				continue;
@@ -105,7 +117,7 @@ class MessageManager {
 				continue;
 			}
 
-			$this->latteEngine->render(
+			$output .= $this->latteEngine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/admin-notice.latte',
 				[
 					'message' => $message,
@@ -116,5 +128,6 @@ class MessageManager {
 		}
 
 		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );
+		return $output;
 	}
 }

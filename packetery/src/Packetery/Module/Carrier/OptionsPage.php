@@ -260,10 +260,11 @@ class OptionsPage {
 
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
-				array(
-					'forms'       => $carriersData,
-					'country_iso' => $countryIso,
-				)
+				[
+					'forms'         => $carriersData,
+					'country_iso'   => $countryIso,
+					'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+				]
 			);
 		} else {
 			$this->countryListingPage->render();
