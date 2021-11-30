@@ -81,6 +81,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: pickup point id will be stored as a string, because external carriers may require it.
 * Fixed: exception handling during CreatePacket API call - faultstring used when no detail property is returned
 * Added: Settings export to help solve various issues.
+* Fixed: CLI error. Plugin now does not bootstrap in CLI environment.
+* Fixed: Exception when HTTP response headers are already sent. Plugin now does not bootstrap in such case.
 
 = 1.0.0 =
 * Initial version
