@@ -428,6 +428,7 @@ class Plugin {
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+		$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
 	}
 
 	/**
@@ -563,4 +564,12 @@ class Plugin {
 		return $methods;
 	}
 
+	/**
+	 * Gets software identity for Packeta APIs.
+	 *
+	 * @return string
+	 */
+	public static function getAppIdentity(): string {
+		return 'woocommerce-' . get_bloginfo( 'version' ) . '-' . WC_VERSION . '-' . self::VERSION;
+	}
 }
