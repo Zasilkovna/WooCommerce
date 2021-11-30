@@ -70,7 +70,7 @@ class CountryListingPage {
 		$carriersUpdateParams = [];
 		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
 			set_transient( 'packetery_run_update_carriers', true );
-			if ( wp_safe_redirect( $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', null )->getRelativeUrl() ) ) {
+			if ( wp_safe_redirect( add_query_arg( [ 'page' => 'packeta-country' ], get_admin_url( null, 'admin.php' ) ) ) ) {
 				exit;
 			}
 		}
@@ -83,7 +83,13 @@ class CountryListingPage {
 			delete_transient( 'packetery_run_update_carriers' );
 		}
 
-		$carriersUpdateParams['link']       = $this->httpRequest->getUrl()->withQueryParameter( 'update_carriers', '1' )->getRelativeUrl();
+		$carriersUpdateParams['link']       = add_query_arg(
+			[
+				'page'            => 'packeta-country',
+				'update_carriers' => '1',
+			],
+			get_admin_url( null, 'admin.php' )
+		);
 		$carriersUpdateParams['lastUpdate'] = $this->getLastUpdate();
 
 		$countries = $this->getActiveCountries();

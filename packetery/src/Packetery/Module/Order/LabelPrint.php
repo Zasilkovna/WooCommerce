@@ -215,7 +215,6 @@ class LabelPrint {
 	 */
 	public function createForm( int $maxOffset ): Form {
 		$form = $this->formFactory->create();
-		$form->setAction( $this->httpRequest->getUrl()->getRelativeUrl() );
 
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
