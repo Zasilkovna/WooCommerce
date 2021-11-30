@@ -222,7 +222,7 @@ class OptionsPage {
 		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
-		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ) );
+		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect( $this->httpRequest->getUrl()->getRelativeUrl(), 303 ) ) {
 			exit;
@@ -260,10 +260,11 @@ class OptionsPage {
 
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
-				array(
-					'forms'       => $carriersData,
-					'country_iso' => $countryIso,
-				)
+				[
+					'forms'         => $carriersData,
+					'country_iso'   => $countryIso,
+					'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+				]
 			);
 		} else {
 			$this->countryListingPage->render();
