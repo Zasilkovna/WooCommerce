@@ -16,6 +16,7 @@ use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http;
@@ -273,14 +274,7 @@ class LabelPrint {
 	 * Hides submenu item.
 	 */
 	public function hideFromMenus(): void {
-		global $submenu;
-		if ( isset( $submenu['packeta-options'] ) ) {
-			foreach ( $submenu['packeta-options'] as $key => $menu ) {
-				if ( 'label-print' === $menu[2] ) {
-					unset( $submenu['packeta-options'][ $key ] );
-				}
-			}
-		}
+		Plugin::hideSubmenuItem( 'label-print' );
 	}
 
 	/**

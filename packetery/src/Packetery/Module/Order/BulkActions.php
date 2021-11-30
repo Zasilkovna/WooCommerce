@@ -78,6 +78,18 @@ class BulkActions {
 	 * @return string
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
+		if ( CollectionPrint::ACTION_PRINT_ORDER_COLLECTION === $action ) {
+			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
+
+//			$this->httpRequest->getUrl()->withQueryParameter()->getRelativeUrl();
+			return add_query_arg(
+				[
+					'page' => 'packeta-order-collection-print',
+				],
+				'admin.php'
+			);
+		}
+
 		if ( in_array( $action, [ LabelPrint::ACTION_PACKETA_LABELS, LabelPrint::ACTION_CARRIER_LABELS ], true ) ) {
 			set_transient( LabelPrint::getOrderIdsTransientName(), $postIds, 60 * 60 );
 			set_transient( LabelPrint::getBackLinkTransientName(), $redirectTo, 60 * 60 );

@@ -62,6 +62,31 @@ class Client {
 	}
 
 	/**
+	 * Create shipment.
+	 *
+	 * @param Request\CreateShipment $request Request.
+	 *
+	 * @return Response\CreateShipment
+	 */
+	public function createShipment( Request\CreateShipment $request ): Response\CreateShipment {
+		$response = new Response\CreateShipment();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$packet     = $soapClient->createShipment( $this->apiPassword, $request->getPacketIds(), $request->getCustomBarcode() );
+			$response->setId( $packet->id );
+			$response->setChecksum( $packet->checksum );
+			$response->setBarcode( $packet->barcode );
+			$response->setBarcodeText( $packet->barcodeText );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+			// TODO: Add validation errors?
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Asks for packeta labels.
 	 *
 	 * @param Request\PacketsLabelsPdf $request Label request.
