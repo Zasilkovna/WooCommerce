@@ -257,7 +257,7 @@ class Plugin {
 		add_action(
 			'admin_notices',
 			function () {
-				$this->message_manager->render();
+				$this->message_manager->render( MessageManager::RENDERER_WORDPRESS );
 			}
 		);
 		add_action( 'init', array( $this, 'init' ) );
