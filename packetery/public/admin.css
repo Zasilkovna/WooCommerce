@@ -179,6 +179,20 @@ tbody .packetery-log-column-note {
     background-color: #dedddd;
 }
 
+#packetery-widget-button-wrapper {
+    margin-top: 6px;
+}
+
+#packetery-widget-button-wrapper .packetery-widget-button-row {
+    display: flex;
+}
+
+#packetery-widget-button-wrapper .packetery-widget-button-row img {
+    width: 45px;
+    margin-right: 6px;
+    border-radius: 3px;
+}
+
 .packetery-hidden {
     display: none;
 }

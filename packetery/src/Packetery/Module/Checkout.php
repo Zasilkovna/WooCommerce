@@ -193,11 +193,25 @@ class Checkout {
 	}
 
 	/**
+	 * Gets widget carriers param.
+	 *
+	 * @param bool   $isPickupPoints Is context pickup point related?
+	 * @param string $carrierId      Carrier id.
+	 *
+	 * @return string|null
+	 */
+	public static function getWidgetCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
+		if ( $isPickupPoints ) {
+			return ( is_numeric( $carrierId ) ? $carrierId : Repository::INTERNAL_PICKUP_POINTS_ID );
+		}
+
+		return null;
+	}
+
+	/**
 	 * Renders main checkout script
 	 */
 	public function render_after_checkout_form(): void {
-		$appIdentity = 'woocommerce-' . get_bloginfo( 'version' ) . '-' . WC_VERSION . '-' . Plugin::VERSION;
-
 		$carrierConfig = [];
 		$carriers      = $this->carrierRepository->getAllIncludingZpoints();
 
@@ -209,7 +223,7 @@ class Checkout {
 			];
 
 			if ( $carrier['is_pickup_points'] ) {
-				$carrierConfig[ $optionId ]['carriers'] = ( is_numeric( $carrier['id'] ) ? $carrier['id'] : Repository::INTERNAL_PICKUP_POINTS_ID );
+				$carrierConfig[ $optionId ]['carriers'] = self::getWidgetCarriersParam( (bool) $carrier['is_pickup_points'], (string) $carrier['id'] );
 			}
 
 			if ( ! $carrier['is_pickup_points'] ) {
@@ -234,7 +248,7 @@ class Checkout {
 					'carrierConfig'     => $carrierConfig,
 					'pickupPointAttrs'  => self::$pickupPointAttrs,
 					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
-					'appIdentity'       => $appIdentity,
+					'appIdentity'       => Plugin::getAppIdentity(),
 					'packeteryApiKey'   => $this->options_provider->get_api_key(),
 					'translations'      => [
 						'choosePickupPoint'             => __( 'choosePickupPoint', 'packetery' ),

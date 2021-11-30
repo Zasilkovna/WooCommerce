@@ -560,5 +560,4 @@ class Order {
 	public function getPhone(): ?string {
 		return $this->phone;
 	}
-
 }
