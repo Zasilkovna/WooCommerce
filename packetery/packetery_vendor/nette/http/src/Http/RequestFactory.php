@@ -67,6 +67,15 @@ class RequestFactory
 		[$post, $cookies] = $this->getGetPostCookie($url);
 		[$remoteAddr, $remoteHost] = $this->getClient($url);
 
+		// TODO: packetery - custom code
+		$wpHomeUrl = home_url();
+		if ($wpHomeUrl) {
+			$wpUrl = new Url($wpHomeUrl);
+			$url->setScheme($wpUrl->getScheme());
+			$url->setHost($wpUrl->getHost());
+			$url->setPort($wpUrl->getPort());
+		}
+
 		return new Request(
 			new UrlScript($url, $this->getScriptPath($url)),
 			$post,
