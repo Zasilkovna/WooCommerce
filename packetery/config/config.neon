@@ -1,6 +1,15 @@
 parameters:
     latteTempFolder: %tempDir%/cache/view
 
+session:
+    autoStart: false
+
+http:
+    headers:
+        X-Powered-By: ''
+        Content-Type: ''
+    frames: true
+
 services:
 	- Packetery\Module\Log\PostLogger
 	- Packetery\Module\Log\Page
