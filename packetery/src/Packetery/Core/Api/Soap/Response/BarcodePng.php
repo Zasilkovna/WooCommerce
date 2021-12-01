@@ -22,23 +22,23 @@ class BarcodePng extends BaseResponse {
 	 *
 	 * @var string|null
 	 */
-	private $image;
+	private $imageContent;
 
 	/**
 	 * Image.
 	 *
 	 * @return string|null
 	 */
-	public function getImage(): ?string {
-		return $this->image;
+	public function getImageContent(): ?string {
+		return $this->imageContent;
 	}
 
 	/**
 	 * Sets image.
 	 *
-	 * @param string|null $image
+	 * @param string|null $imageContent Image content.
 	 */
-	public function setImage( ?string $image ): void {
-		$this->image = $image;
+	public function setImageContent( ?string $imageContent ): void {
+		$this->imageContent = $imageContent;
 	}
 }

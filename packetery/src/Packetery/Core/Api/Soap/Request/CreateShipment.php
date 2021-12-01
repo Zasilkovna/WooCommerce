@@ -17,11 +17,15 @@ namespace Packetery\Core\Api\Soap\Request;
 class CreateShipment {
 
 	/**
+	 * Packet IDs.
+	 *
 	 * @var string[]
 	 */
 	private $packetIds;
 
 	/**
+	 * Custom barcode.
+	 *
 	 * @var string|null
 	 */
 	private $customBarcode;
@@ -29,11 +33,10 @@ class CreateShipment {
 	/**
 	 * CreateShipment constructor.
 	 *
-	 * @param string[]    $packetIds     Packet IDs.
-	 * @param string|null $customBarcode Custom barcode.
+	 * @param string[] $packetIds     Packet IDs.
 	 */
 	public function __construct( array $packetIds ) {
-		$this->packetIds     = $packetIds;
+		$this->packetIds = $packetIds;
 	}
 
 	/**

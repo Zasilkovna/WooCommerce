@@ -1,31 +1,56 @@
 <?php
+/**
+ * Class CreateShipment
+ *
+ * @package Packetery\Core\Api\Soap\Response
+ */
 
 declare( strict_types=1 );
 
 
 namespace Packetery\Core\Api\Soap\Response;
 
+/**
+ * Class CreateShipment
+ *
+ * @package Packetery\Core\Api\Soap\Response
+ */
 class CreateShipment extends BaseResponse {
 
 	/**
+	 * Shipment ID.
+	 *
 	 * @var int
 	 */
 	private $id;
 
 	/**
+	 * Checksum.
+	 *
 	 * @var string
 	 */
 	private $checksum;
 
 	/**
+	 * Barcode.
+	 *
 	 * @var string
 	 */
 	private $barcode;
 
 	/**
+	 * Barcode text.
+	 *
 	 * @var string
 	 */
 	private $barcodeText;
+
+	/**
+	 * Invalid packet IDs.
+	 *
+	 * @var int[]
+	 */
+	private $invalidPacketIds = [];
 
 	/**
 	 * Gets ID.
@@ -39,7 +64,7 @@ class CreateShipment extends BaseResponse {
 	/**
 	 * Sets ID.
 	 *
-	 * @param int $id
+	 * @param int $id ID.
 	 */
 	public function setId( int $id ): void {
 		$this->id = $id;
@@ -97,5 +122,23 @@ class CreateShipment extends BaseResponse {
 	 */
 	public function setBarcodeText( string $barcodeText ): void {
 		$this->barcodeText = $barcodeText;
+	}
+
+	/**
+	 * Gets invalid packet IDs.
+	 *
+	 * @return int[]
+	 */
+	public function getInvalidPacketIds(): array {
+		return $this->invalidPacketIds;
+	}
+
+	/**
+	 * Sets invalid packet IDs.
+	 *
+	 * @param array $invalidPacketIds Invalid packets.
+	 */
+	public function setInvalidPacketIds( array $invalidPacketIds ): void {
+		$this->invalidPacketIds = $invalidPacketIds;
 	}
 }

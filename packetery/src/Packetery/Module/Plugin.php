@@ -225,27 +225,27 @@ class Plugin {
 		EntityFactory\PickupPoint $pickupPointFactory,
 		Options\Exporter $exporter, Order\CollectionPrint $orderCollectionPrint
 	) {
-		$this->options_page       = $options_page;
-		$this->latte_engine       = $latte_engine;
-		$this->carrier_repository = $carrier_repository;
-		$this->carrier_downloader = $carrier_downloader;
-		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
-		$this->order_metabox      = $order_metabox;
-		$this->message_manager    = $message_manager;
-		$this->options_page       = $options_page;
-		$this->checkout           = $checkout;
-		$this->carrierOptionsPage = $carrierOptionsPage;
-		$this->orderBulkActions   = $orderBulkActions;
-		$this->labelPrint         = $labelPrint;
-		$this->gridExtender       = $gridExtender;
-		$this->productTab         = $productTab;
-		$this->logPage            = $logPage;
-		$this->logger             = $logger;
-		$this->addressRepository  = $addressRepository;
-		$this->orderController    = $orderController;
-		$this->orderModal         = $orderModal;
-		$this->pickupPointFactory = $pickupPointFactory;
-		$this->exporter           = $exporter;
+		$this->options_page         = $options_page;
+		$this->latte_engine         = $latte_engine;
+		$this->carrier_repository   = $carrier_repository;
+		$this->carrier_downloader   = $carrier_downloader;
+		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packetery.php';
+		$this->order_metabox        = $order_metabox;
+		$this->message_manager      = $message_manager;
+		$this->options_page         = $options_page;
+		$this->checkout             = $checkout;
+		$this->carrierOptionsPage   = $carrierOptionsPage;
+		$this->orderBulkActions     = $orderBulkActions;
+		$this->labelPrint           = $labelPrint;
+		$this->gridExtender         = $gridExtender;
+		$this->productTab           = $productTab;
+		$this->logPage              = $logPage;
+		$this->logger               = $logger;
+		$this->addressRepository    = $addressRepository;
+		$this->orderController      = $orderController;
+		$this->orderModal           = $orderModal;
+		$this->pickupPointFactory   = $pickupPointFactory;
+		$this->exporter             = $exporter;
 		$this->orderCollectionPrint = $orderCollectionPrint;
 	}
 

@@ -80,7 +80,21 @@ class Client {
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
-			// TODO: Add validation errors?
+
+			if ( isset( $exception->detail ) && isset( $exception->detail->PacketIdsFault ) ) {
+				$invalidPacketIds         = (array) $exception->detail->PacketIdsFault->ids->packetId;
+				$invalidPacketIdsFiltered = [];
+
+				foreach ( $invalidPacketIds as $invalidPacketId ) {
+					if ( empty( $invalidPacketId ) ) {
+						continue;
+					}
+
+					$invalidPacketIdsFiltered[] = $invalidPacketId;
+				}
+
+				$response->setInvalidPacketIds( $invalidPacketIdsFiltered );
+			}
 		}
 
 		return $response;
@@ -97,12 +111,11 @@ class Client {
 		$response = new Response\BarcodePng();
 		try {
 			$soapClient = new SoapClient( self::WSDL_URL );
-			$data     = $soapClient->barcodePng( $this->apiPassword, $request->getBarcode() );
-			$response->setImage( $data );
+			$data       = $soapClient->barcodePng( $this->apiPassword, $request->getBarcode() );
+			$response->setImageContent( $data );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
-			// TODO: Add validation errors?
 		}
 
 		return $response;

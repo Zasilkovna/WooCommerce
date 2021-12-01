@@ -84,7 +84,7 @@ class BulkActions {
 
 			return add_query_arg(
 				[
-					'page'   => CollectionPrint::PAGE_SLUG,
+					'page' => CollectionPrint::PAGE_SLUG,
 				],
 				admin_url( 'admin.php' )
 			);

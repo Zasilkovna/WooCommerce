@@ -12,10 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
-use Packetery\Core\Log;
-use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http;
@@ -27,7 +24,7 @@ use PacketeryNette\Http;
  */
 class CollectionPrint {
 	const ACTION_PRINT_ORDER_COLLECTION = 'packetery_print_order_collection';
-	const PAGE_SLUG = 'packeta-order-collection-print';
+	const PAGE_SLUG                     = 'packeta-order-collection-print';
 
 	/**
 	 * PacketeryLatte Engine.
@@ -35,20 +32,6 @@ class CollectionPrint {
 	 * @var Engine PacketeryLatte engine.
 	 */
 	private $latteEngine;
-
-	/**
-	 * Options Provider
-	 *
-	 * @var Provider
-	 */
-	private $optionsProvider;
-
-	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory Form factory.
-	 */
-	private $formFactory;
 
 	/**
 	 * Http Request.
@@ -79,42 +62,26 @@ class CollectionPrint {
 	private $orderRepository;
 
 	/**
-	 * Logger.
-	 *
-	 * @var Log\ILogger
-	 */
-	private $logger;
-
-	/**
 	 * LabelPrint constructor.
 	 *
 	 * @param Engine         $latteEngine     Latte Engine.
-	 * @param Provider       $optionsProvider Options provider.
-	 * @param FormFactory    $formFactory     Form factory.
 	 * @param Http\Request   $httpRequest     Http Request.
 	 * @param Client         $soapApiClient   SOAP API Client.
 	 * @param MessageManager $messageManager  Message Manager.
 	 * @param Repository     $orderRepository Order repository.
-	 * @param Log\ILogger    $logger          Logger.
 	 */
 	public function __construct(
 		Engine $latteEngine,
-		Provider $optionsProvider,
-		FormFactory $formFactory,
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
-		Repository $orderRepository,
-		Log\ILogger $logger
+		Repository $orderRepository
 	) {
 		$this->latteEngine     = $latteEngine;
-		$this->optionsProvider = $optionsProvider;
-		$this->formFactory     = $formFactory;
 		$this->httpRequest     = $httpRequest;
 		$this->soapApiClient   = $soapApiClient;
 		$this->messageManager  = $messageManager;
 		$this->orderRepository = $orderRepository;
-		$this->logger          = $logger;
 	}
 
 	/**
@@ -144,11 +111,16 @@ class CollectionPrint {
 		$orderIds  = get_transient( self::getOrderIdsTransientName() );
 		$orders    = $this->orderRepository->getOrdersByIds( $orderIds );
 		$packetIds = [];
+		$wpOrders  = [];
+
 		foreach ( $orders as $order ) {
 			if ( null === $order->getPacketId() ) {
 				continue;
 			}
-			$packetIds[ $order->getNumber() ] = $order->getPacketId();
+
+			$orderNumber               = $order->getNumber();
+			$packetIds[ $orderNumber ] = $order->getPacketId();
+			$wpOrders[ $orderNumber ]  = wc_get_order( $orderNumber );
 		}
 
 		if ( ! $packetIds ) {
@@ -156,10 +128,23 @@ class CollectionPrint {
 		}
 
 		$shipmentResult = $this->requestShipment( $packetIds );
+		if ( $shipmentResult->hasFault() && $shipmentResult->getInvalidPacketIds() ) {
+			$packetIds      = array_diff( $packetIds, $shipmentResult->getInvalidPacketIds() );
+			$shipmentResult = $this->requestShipment( $packetIds );
+		}
+
+		if ( $shipmentResult->hasFault() ) {
+			delete_transient( self::getOrderIdsTransientName() );
+			$this->messageManager->flash_message( __( 'unexpectedError', 'packetery' ), MessageManager::TYPE_ERROR );
+			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
+				exit;
+			}
+		}
+
 		$shipmentBarcodeResult = $this->requestBarcodePng( $shipmentResult->getBarcode() );
 		delete_transient( self::getOrderIdsTransientName() );
 		if ( $shipmentResult->hasFault() ) {
-			$this->messageManager->flash_message( __( 'unexpectedErrorPleaseTryAgain', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'unexpectedError', 'packetery' ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -168,10 +153,14 @@ class CollectionPrint {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/collection-print.latte',
 			[
-//				'shipmentBarcode' => \PacketeryNette\Utils\Image::fromFile(PACKETERY_PLUGIN_DIR . '/public/packeta-symbol.png'),
-//				'orders'          => $orders,
-				'shipmentBarcode' => $shipmentBarcodeResult->getImage(),
-				'orders'          => $orders,
+				'shipmentBarcodeText' => $shipmentResult->getBarcodeText(),
+				'shipmentBarcode'     => $shipmentBarcodeResult->getImageContent(),
+				'orders'              => $orders,
+				'packetIds'           => $packetIds,
+				'wpOrders'            => $wpOrders,
+				'orderCount'          => count( $packetIds ),
+				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
+				'stylesheet'          => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/order-collection-print.css',
 			]
 		);
 		exit;
@@ -210,7 +199,7 @@ class CollectionPrint {
 	 * @return Response\CreateShipment
 	 */
 	private function requestShipment( array $packetIds ): Response\CreateShipment {
-		$request  = new Request\CreateShipment( array_values( $packetIds ) );
+		$request = new Request\CreateShipment( array_values( $packetIds ) );
 		return $this->soapApiClient->createShipment( $request );
 	}
 
@@ -222,7 +211,7 @@ class CollectionPrint {
 	 * @return Response\BarcodePng
 	 */
 	private function requestBarcodePng( string $barcode ): Response\BarcodePng {
-		$request  = new Request\BarcodePng( $barcode );
+		$request = new Request\BarcodePng( $barcode );
 		return $this->soapApiClient->barcodePng( $request );
 	}
 }

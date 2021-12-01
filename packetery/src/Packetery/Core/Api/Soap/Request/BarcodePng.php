@@ -18,6 +18,8 @@ namespace Packetery\Core\Api\Soap\Request;
 class BarcodePng {
 
 	/**
+	 * Barcode.
+	 *
 	 * @var string
 	 */
 	private $barcode;
