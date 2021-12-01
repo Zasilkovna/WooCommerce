@@ -212,7 +212,16 @@ class OptionsPage {
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
 		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ) );
 
-		if ( wp_safe_redirect( get_admin_url( null, 'admin.php?page=packeta-country&code=' . $this->httpRequest->getQuery( 'code' ) ), 303 ) ) {
+		if ( wp_safe_redirect(
+			add_query_arg(
+				[
+					'page' => 'packeta-country',
+					'code' => $this->httpRequest->getQuery( 'code' ),
+				],
+				get_admin_url( null, 'admin.php' )
+			),
+			303
+		) ) {
 			exit;
 		}
 	}

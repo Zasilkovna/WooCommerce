@@ -12,7 +12,6 @@ namespace Packetery\Module\Options;
 use Packetery\Module\FormFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
-use PacketeryNette\Http;
 
 /**
  * Class Page
