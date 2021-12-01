@@ -61,9 +61,10 @@ class BulkActions {
 	 * @return array
 	 */
 	public function addActions( array $actions ): array {
-		$actions['submit_to_api']                     = __( 'actionSubmitOrders', 'packetery' );
-		$actions[ LabelPrint::ACTION_PACKETA_LABELS ] = __( 'actionPrintLabels', 'packetery' );
-		$actions[ LabelPrint::ACTION_CARRIER_LABELS ] = __( 'actionPrintCarrierLabels', 'packetery' );
+		$actions['submit_to_api']                                  = __( 'actionSubmitOrders', 'packetery' );
+		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'actionPrintLabels', 'packetery' );
+		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'actionPrintCarrierLabels', 'packetery' );
+		$actions[ CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ] = __( 'actionPrintOrderCollection', 'packetery' );
 
 		return $actions;
 	}
@@ -81,12 +82,11 @@ class BulkActions {
 		if ( CollectionPrint::ACTION_PRINT_ORDER_COLLECTION === $action ) {
 			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
 
-//			$this->httpRequest->getUrl()->withQueryParameter()->getRelativeUrl();
 			return add_query_arg(
 				[
-					'page' => 'packeta-order-collection-print',
+					'page'   => CollectionPrint::PAGE_SLUG,
 				],
-				'admin.php'
+				admin_url( 'admin.php' )
 			);
 		}
 

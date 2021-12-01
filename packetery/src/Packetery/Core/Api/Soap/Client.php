@@ -87,6 +87,28 @@ class Client {
 	}
 
 	/**
+	 * Barcode PNG.
+	 *
+	 * @param Request\BarcodePng $request Request.
+	 *
+	 * @return Response\BarcodePng
+	 */
+	public function barcodePng( Request\BarcodePng $request ): Response\BarcodePng {
+		$response = new Response\BarcodePng();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$data     = $soapClient->barcodePng( $this->apiPassword, $request->getBarcode() );
+			$response->setImage( $data );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+			// TODO: Add validation errors?
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Asks for packeta labels.
 	 *
 	 * @param Request\PacketsLabelsPdf $request Label request.

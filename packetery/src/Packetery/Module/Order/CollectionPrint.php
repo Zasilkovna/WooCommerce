@@ -18,7 +18,6 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Form;
 use PacketeryNette\Http;
 
 /**
@@ -27,7 +26,8 @@ use PacketeryNette\Http;
  * @package Packetery\Order
  */
 class CollectionPrint {
-	const ACTION_PRINT_ORDER_COLLECTION = 'print_order_collection';
+	const ACTION_PRINT_ORDER_COLLECTION = 'packetery_print_order_collection';
+	const PAGE_SLUG = 'packeta-order-collection-print';
 
 	/**
 	 * PacketeryLatte Engine.
@@ -129,74 +129,52 @@ class CollectionPrint {
 	/**
 	 * Prepares form and renders template.
 	 */
-	public function render(): void {
-		$form = $this->createForm( $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() ) );
-		$this->latteEngine->render(
-			PACKETERY_PLUGIN_DIR . '/template/order/collection-print.latte',
-			[ 'form' => $form ]
-		);
-	}
-
-	/**
-	 * Outputs pdf.
-	 */
-	public function outputLabelsPdf(): void {
-		if ( $this->httpRequest->getQuery( 'page' ) !== 'order-collection-print' ) {
+	public function print(): void {
+		if ( $this->httpRequest->getQuery( 'page' ) !== self::PAGE_SLUG ) {
 			return;
 		}
+
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
 			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), 'info' );
-
-			return;
-		}
-
-		$packetIds       = $this->getPacketIdsFromTransient();
-		if ( ! $packetIds ) {
-			return;
-		}
-
-		$response = $this->requestShipment( $packetIds );
-		delete_transient( self::getOrderIdsTransientName() );
-		if ( $response->hasFault() ) {
-			$this->messageManager->flash_message( __( 'youSelectedOrdersThatWereNotSubmitted', 'packetery' ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
 		}
 
-		header( 'Content-Type: application/pdf' );
-		header( 'Content-Transfer-Encoding: Binary' );
-		header( 'Content-Length: ' . strlen( $response->getPdfContents() ) );
-		header( 'Content-Disposition: attachment; filename="' . $this->getFilename() . '"' );
-		// @codingStandardsIgnoreStart
-		echo $response->getPdfContents();
-		// @codingStandardsIgnoreEnd
-		exit;
-	}
-
-	/**
-	 * Creates offset setting form.
-	 *
-	 * @param int $maxOffset Maximal offset.
-	 *
-	 * @return Form
-	 */
-	public function createForm( int $maxOffset ): Form {
-		$form = $this->formFactory->create();
-		$form->setAction( $this->httpRequest->getUrl()->getRelativeUrl() );
-
-		$availableOffsets = [];
-		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
-			// translators: %s is offset.
-			$availableOffsets[ $i ] = ( 0 === $i ? __( 'dontSkipAnyField', 'packetery' ) : sprintf( __( 'skip%sFields', 'packetery' ), $i ) );
+		$orderIds  = get_transient( self::getOrderIdsTransientName() );
+		$orders    = $this->orderRepository->getOrdersByIds( $orderIds );
+		$packetIds = [];
+		foreach ( $orders as $order ) {
+			if ( null === $order->getPacketId() ) {
+				continue;
+			}
+			$packetIds[ $order->getNumber() ] = $order->getPacketId();
 		}
-		$form->addSelect(
-			'offset',
-			__( 'labelsOffset', 'packetery' ),
-			$availableOffsets
-		)->checkDefaultValue( false );
 
-		return $form;
+		if ( ! $packetIds ) {
+			return;
+		}
+
+		$shipmentResult = $this->requestShipment( $packetIds );
+		$shipmentBarcodeResult = $this->requestBarcodePng( $shipmentResult->getBarcode() );
+		delete_transient( self::getOrderIdsTransientName() );
+		if ( $shipmentResult->hasFault() ) {
+			$this->messageManager->flash_message( __( 'unexpectedErrorPleaseTryAgain', 'packetery' ), MessageManager::TYPE_ERROR );
+			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
+				exit;
+			}
+		}
+
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/order/collection-print.latte',
+			[
+//				'shipmentBarcode' => \PacketeryNette\Utils\Image::fromFile(PACKETERY_PLUGIN_DIR . '/public/packeta-symbol.png'),
+//				'orders'          => $orders,
+				'shipmentBarcode' => $shipmentBarcodeResult->getImage(),
+				'orders'          => $orders,
+			]
+		);
+		exit;
 	}
 
 	/**
@@ -208,10 +186,10 @@ class CollectionPrint {
 			__( 'orderCollectionPrintMenuSlugLabel', 'packetery' ),
 			__( 'orderCollectionPrintMenuSlugLabel', 'packetery' ),
 			'manage_options',
-			'packeta-order-collection-print',
+			self::PAGE_SLUG,
 			[
 				$this,
-				'render',
+				'print',
 			],
 			20
 		);
@@ -237,61 +215,14 @@ class CollectionPrint {
 	}
 
 	/**
-	 * Gets saved packet ids.
+	 * Request barcode image.
 	 *
-	 * @return string[]
+	 * @param string $barcode Barcode.
+	 *
+	 * @return Response\BarcodePng
 	 */
-	private function getPacketIdsFromTransient(): array {
-		$orderIds  = get_transient( self::getOrderIdsTransientName() );
-		$orders    = $this->orderRepository->getOrdersByIds( $orderIds );
-		$packetIds = [];
-		foreach ( $orders as $order ) {
-			if ( null === $order->getPacketId() ) {
-				continue;
-			}
-			$packetIds[ $order->getPostId() ] = $order->getPacketId();
-		}
-
-		return $packetIds;
+	private function requestBarcodePng( string $barcode ): Response\BarcodePng {
+		$request  = new Request\BarcodePng( $barcode );
+		return $this->soapApiClient->barcodePng( $request );
 	}
-
-	/**
-	 * Gets carrier packet numbers from API.
-	 *
-	 * @param string[] $packetIds List of packet ids.
-	 *
-	 * @return array[]
-	 */
-	private function getPacketIdsWithCourierNumbers( array $packetIds ): array {
-		$pairs = [];
-		foreach ( $packetIds as $orderId => $packetId ) {
-			$request  = new Request\PacketCourierNumber( $packetId );
-			$response = $this->soapApiClient->packetCourierNumber( $request );
-			if ( $response->hasFault() ) {
-				if ( $response->hasWrongPassword() ) {
-					$this->messageManager->flash_message( __( 'pleaseSetProperPassword', 'packetery' ), 'error' );
-
-					return [];
-				}
-
-				$record = new Log\Record();
-				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
-				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = 'Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná.';
-				$record->params = [
-					'packetId'     => $request->getPacketId(),
-					'errorMessage' => $response->getFaultString(),
-				];
-				$this->logger->add( $record );
-				continue;
-			}
-			$pairs[ $orderId ] = [
-				'packetId'      => $packetId,
-				'courierNumber' => $response->getNumber(),
-			];
-		}
-
-		return $pairs;
-	}
-
 }

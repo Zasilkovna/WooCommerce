@@ -1,0 +1,88 @@
+{varType string $shipmentBarcode}
+
+{*<div id="packetery-order-collection-print">*}
+{*    <img src="{$shipmentBarcode|dataStream:'image/png'|nocheck}" alt="Shipment barcode">*}
+{*    <div>printed content</div>*}
+{*</div>*}
+{*<script>*}
+{*	document.body.innerHTML = document.getElementById('packetery-order-collection-print').innerHTML;*}
+{*	window.print();*}
+{*</script>*}
+{*<style>*}
+{*	@media print {*}
+{*		body { background: white; color: black; margin: 0; }*}
+{*		/*#header { display: none !important; }*/*}
+{*		/*#adminmenumain { display: none !important; }*/*}
+{*		/*#wpadminbar { display: none !important; }*/*}
+{*		/*#content { display: block !important; }*/*}
+{*		/*#comments { display: none !important; }*/*}
+{*		/*#sidebar { display: none !important; }*/*}
+{*		/*#footer { display: none !important; }*/*}
+{*		/*#site-header { display: none !important; }*/*}
+{*		/*#site-footer { display: none !important; }*/*}
+{*		body { display: none; }*}
+{*		/*body { display: block !important; }*/*}
+{*		#wpcontent { display: block !important; }*}
+{*		#wpbody { display: block !important; }*}
+{*		#wpbody-content { display: block !important; }*}
+{*		#packetery-order-collection-print { display: block !important; }*}
+{*	}*}
+{*</style>*}
+
+<table style="width:100%;">
+    <thead>
+    <tr>
+        <td colspan="8">
+            <table width="100%"><tbody><tr>
+                    <td>
+                        <strong>Packets handover</strong><br>
+                        D 6485 6646<br>
+                        Packets: 2<br>
+                        Print: 01. 12. 2021<br>
+                    </td>
+                    <td align="center">
+                        <img src="{$shipmentBarcode|dataStream:'image/png'|nocheck}" alt="Shipment barcode">
+                    </td>
+                    <td>
+                        <strong>Sender</strong><br>
+                        Filip Jiskra<br>
+                        ee<br>
+                        431 59 eee        </td>
+                    <td>
+                        <strong>Recipient</strong><br>
+                        Zásilkovna s.r.o.<br>
+                        Lihovarská 1060/12<br>
+                        190 00 Praha        </td>
+                </tr></tbody></table>
+        </td>
+    </tr>
+    <tr>
+        <th>Order nr.</th>
+        <th>Barcode</th>
+        <th>Created</th>
+        <th>Name and surname</th>
+        <th>C.O.D.</th>
+        <th align="center">Pick-up point/Service</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody id="naj">
+    <tr class="odd" style="text-decoration: none">
+        <td>0041</td>
+        <td align="center" style="white-space: nowrap">4254802024</td>
+        <td align="center" style="white-space: nowrap">05. 11.</td>
+        <td align="center" style="white-space: nowrap">Dirk Hüskes</td>
+        <td align="right" style="white-space: nowrap"><strong>€0,00</strong></td>
+        <td align="center">13613, DE Doručení na adresu HD</td>
+        <td></td>
+    </tr>  <tr class="even" style="text-decoration: none">
+        <td>0305</td>
+        <td align="center" style="white-space: nowrap">3343006979</td>
+        <td align="center" style="white-space: nowrap">05. 11.</td>
+        <td align="center" style="white-space: nowrap">Miroslava Kaletová</td>
+        <td align="right" style="white-space: nowrap"><strong>0&nbsp;Kč</strong></td>
+        <td align="center">14085, Staré Město pod Landštejnem</td>
+        <td></td>
+    </tr>  <tr><td><div style="margin: 3px 0; height: 20px; border: 2px solid black; text-align: center; overflow: hidden; ">END</div></td></tr>
+    </tbody>
+</table>
