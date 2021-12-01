@@ -204,7 +204,7 @@ class Page {
 		$latteParams['exportLink']      = add_query_arg(
 			[
 				'page'   => 'packeta-options',
-				'action' => 'export-settings',
+				'action' => Exporter::ACTION_EXPORT_SETTINGS,
 			],
 			get_admin_url( null, 'admin.php' )
 		);

@@ -22,6 +22,7 @@ use PacketeryNette\Http;
 class Exporter {
 
 	public const OPTION_LAST_SETTINGS_EXPORT = 'packetery_last_settings_export';
+	public const ACTION_EXPORT_SETTINGS      = 'export-settings';
 
 	/**
 	 * Http request.
@@ -87,7 +88,7 @@ class Exporter {
 	public function outputExportTxt(): void {
 		if (
 			$this->httpRequest->getQuery( 'page' ) !== 'packeta-options' ||
-			$this->httpRequest->getQuery( 'action' ) !== 'export-settings'
+			$this->httpRequest->getQuery( 'action' ) !== self::ACTION_EXPORT_SETTINGS
 		) {
 			return;
 		}

@@ -26,6 +26,7 @@ use Packetery\Module\FormFactory;
 class OptionsPage {
 
 	public const FORM_FIELD_NAME = 'name';
+	public const SLUG            = 'packeta-country';
 
 	/**
 	 * PacketeryLatte_engine.
@@ -104,7 +105,7 @@ class OptionsPage {
 			__( 'Carrier settings', 'packetery' ),
 			__( 'Carrier settings', 'packetery' ),
 			'manage_options',
-			'packeta-country',
+			self::SLUG,
 			array(
 				$this,
 				'render',
@@ -215,7 +216,7 @@ class OptionsPage {
 		if ( wp_safe_redirect(
 			add_query_arg(
 				[
-					'page' => 'packeta-country',
+					'page' => self::SLUG,
 					'code' => $this->httpRequest->getQuery( 'code' ),
 				],
 				get_admin_url( null, 'admin.php' )
