@@ -12,7 +12,6 @@ namespace Packetery\Module\Options;
 use Packetery\Module\FormFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
-use PacketeryNette\Http;
 
 /**
  * Class Page
@@ -50,25 +49,16 @@ class Page {
 	private $formFactory;
 
 	/**
-	 * Http request.
-	 *
-	 * @var Http\Request
-	 */
-	private $httpRequest;
-
-	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine       $latte_engine PacketeryLatte_engine.
-	 * @param Provider     $optionsProvider Options provider.
-	 * @param FormFactory  $formFactory Form factory.
-	 * @param Http\Request $httpRequest Http request.
+	 * @param Engine      $latte_engine PacketeryLatte_engine.
+	 * @param Provider    $optionsProvider Options provider.
+	 * @param FormFactory $formFactory Form factory.
 	 */
-	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, Http\Request $httpRequest ) {
+	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory ) {
 		$this->latte_engine    = $latte_engine;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
-		$this->httpRequest     = $httpRequest;
 	}
 
 	/**
@@ -211,7 +201,13 @@ class Page {
 
 		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
 		$latteParams['senderLink']      = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/senders' ] ) );
-		$latteParams['exportLink']      = $this->httpRequest->getUrl()->withQueryParameter( 'action', 'export-settings' )->getRelativeUrl();
+		$latteParams['exportLink']      = add_query_arg(
+			[
+				'page'   => 'packeta-options',
+				'action' => Exporter::ACTION_EXPORT_SETTINGS,
+			],
+			get_admin_url( null, 'admin.php' )
+		);
 
 		$lastExport       = null;
 		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );

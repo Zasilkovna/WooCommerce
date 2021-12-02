@@ -26,6 +26,7 @@ use Packetery\Module\FormFactory;
 class OptionsPage {
 
 	public const FORM_FIELD_NAME = 'name';
+	public const SLUG            = 'packeta-country';
 
 	/**
 	 * PacketeryLatte_engine.
@@ -104,7 +105,7 @@ class OptionsPage {
 			__( 'Carrier settings', 'packetery' ),
 			__( 'Carrier settings', 'packetery' ),
 			'manage_options',
-			'packeta-country',
+			self::SLUG,
 			array(
 				$this,
 				'render',
@@ -124,7 +125,6 @@ class OptionsPage {
 		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
 
 		$form = $this->formFactory->create( $optionId );
-		$form->setAction( $this->httpRequest->getUrl()->getRelativeUrl() );
 
 		$form->addCheckbox(
 			'active',
@@ -213,7 +213,16 @@ class OptionsPage {
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
 		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ) );
 
-		if ( wp_safe_redirect( $this->httpRequest->getUrl()->getRelativeUrl(), 303 ) ) {
+		if ( wp_safe_redirect(
+			add_query_arg(
+				[
+					'page' => self::SLUG,
+					'code' => $this->httpRequest->getQuery( 'code' ),
+				],
+				get_admin_url( null, 'admin.php' )
+			),
+			303
+		) ) {
 			exit;
 		}
 	}
