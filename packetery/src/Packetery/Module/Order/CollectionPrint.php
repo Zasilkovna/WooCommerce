@@ -143,7 +143,7 @@ class CollectionPrint {
 
 		$shipmentBarcodeResult = $this->requestBarcodePng( $shipmentResult->getBarcode() );
 		delete_transient( self::getOrderIdsTransientName() );
-		if ( $shipmentResult->hasFault() ) {
+		if ( $shipmentBarcodeResult->hasFault() ) {
 			$this->messageManager->flash_message( __( 'unexpectedError', 'packetery' ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
