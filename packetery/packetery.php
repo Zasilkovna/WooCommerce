@@ -8,7 +8,7 @@
  *
  * Plugin Name: Packeta
  * Description: With the help of our official plugin, You can choose pickup points of Packeta and it's external carriers in all of Europe, or utilize address delivery for 25 countries in the European Union, straight from the cart in Your eshop. You can submit all of Your orders to Packeta with one click.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Author: Zásilkovna s.r.o.
  * Author URI: https://www.zasilkovna.cz/
  * Text Domain: packetery
