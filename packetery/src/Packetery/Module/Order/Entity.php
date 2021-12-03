@@ -259,13 +259,4 @@ class Entity {
 	public function getTotalPrice(): float {
 		return (float) $this->order->get_total( 'raw' );
 	}
-
-	/**
-	 * Gets formatted shipping recipient name.
-	 *
-	 * @return string
-	 */
-	public function getFormattedShippingFullname(): string {
-		return $this->order->get_formatted_shipping_full_name();
-	}
 }

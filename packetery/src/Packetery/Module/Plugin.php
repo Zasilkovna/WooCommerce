@@ -223,7 +223,8 @@ class Plugin {
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
 		EntityFactory\PickupPoint $pickupPointFactory,
-		Options\Exporter $exporter, Order\CollectionPrint $orderCollectionPrint
+		Options\Exporter $exporter,
+		Order\CollectionPrint $orderCollectionPrint
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
