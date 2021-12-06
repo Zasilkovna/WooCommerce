@@ -56,7 +56,7 @@
             <th>{__( 'Pick up point or carrier', 'packetery' )}</th>
         </tr>
         </thead>
-        <tbody id="naj">
+        <tbody class="collection-print-table-body">
         {foreach $packetIds as $orderNumber => $packetId}
             {varType Packetery\Core\Entity\Order $order}
             {var $order = $orders[$orderNumber]}

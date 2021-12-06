@@ -18,19 +18,19 @@
 	text-align: center;
 }
 
-#packetery-order-collection-print #naj tr {
+#packetery-order-collection-print .collection-print-table-body tr {
 	text-decoration: none;
 }
 
-#packetery-order-collection-print #naj td {
+#packetery-order-collection-print .collection-print-table-body td {
 	text-align: center;
 }
 
-#packetery-order-collection-print #naj td.cod-column {
+#packetery-order-collection-print .collection-print-table-body td.cod-column {
 	text-align: right;
 }
 
-#packetery-order-collection-print #naj td.order-number-column {
+#packetery-order-collection-print .collection-print-table-body td.order-number-column {
 	text-align: left;
 }
 
