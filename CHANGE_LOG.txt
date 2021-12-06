@@ -1,3 +1,5 @@
+2.2.1 - Fixed: order grid export did not set flags correctly
+
 2.2.0 - Added: inline order grid editation
       - Fixed: cart and order weight calculation
 

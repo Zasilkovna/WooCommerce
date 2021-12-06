@@ -48,10 +48,10 @@ class ExportPacketeryCsvAll extends \Magento\Backend\App\Action
 
         /** @var \Packetery\Checkout\Model\ResourceModel\Order\Collection $collection */
         $collection = $this->orderCollectionFactory->create();
-        $collection->addFieldToFilter('exported', ['eq' => 1]);
         $collection->setDataToAll(
             [
-                'exported_at' => $now->format('Y-m-d H:i:s')
+                'exported_at' => $now->format('Y-m-d H:i:s'),
+                'exported' => 1
             ]
         );
         $collection->save();
