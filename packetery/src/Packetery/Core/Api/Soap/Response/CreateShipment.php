@@ -107,6 +107,18 @@ class CreateShipment extends BaseResponse {
 	}
 
 	/**
+	 * Barcode text simplified.
+	 *
+	 * @return string
+	 */
+	public function getSimpleBarcodeText(): string {
+		$exploded = explode( ':', $this->barcodeText );
+		$first    = array_shift( $exploded );
+
+		return trim( (string) $first );
+	}
+
+	/**
 	 * Barcode text.
 	 *
 	 * @return string

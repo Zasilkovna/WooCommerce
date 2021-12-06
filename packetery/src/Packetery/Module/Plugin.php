@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
+use Packetery\Module\Address;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
@@ -21,7 +22,6 @@ use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use WC_Order;
-use Packetery\Module\Address;
 
 /**
  * Class Plugin
@@ -422,6 +422,20 @@ class Plugin {
 			[],
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) )
 		);
+	}
+
+	/**
+	 * Builds asset URL.
+	 *
+	 * @param string $asset Relative asset path without leading slash.
+	 *
+	 * @return string
+	 */
+	public static function buildAssetUrl( string $asset ): string {
+		$url      = plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . $asset;
+		$filename = PACKETERY_PLUGIN_DIR . '/' . $asset;
+
+		return add_query_arg( [ 'v' => md5( (string) filemtime( $filename ) ) ], $url );
 	}
 
 	/**

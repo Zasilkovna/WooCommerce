@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
@@ -62,26 +63,34 @@ class CollectionPrint {
 	private $orderRepository;
 
 	/**
+	 * @var \Packetery\Module\EntityFactory\Address
+	 */
+	private $addressFactory;
+
+	/**
 	 * LabelPrint constructor.
 	 *
-	 * @param Engine         $latteEngine     Latte Engine.
-	 * @param Http\Request   $httpRequest     Http Request.
-	 * @param Client         $soapApiClient   SOAP API Client.
-	 * @param MessageManager $messageManager  Message Manager.
-	 * @param Repository     $orderRepository Order repository.
+	 * @param Engine                $latteEngine     Latte Engine.
+	 * @param Http\Request          $httpRequest     Http Request.
+	 * @param Client                $soapApiClient   SOAP API Client.
+	 * @param MessageManager        $messageManager  Message Manager.
+	 * @param Repository            $orderRepository Order repository.
+	 * @param EntityFactory\Address $addressFactory  Address factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
-		Repository $orderRepository
+		Repository $orderRepository,
+		EntityFactory\Address $addressFactory
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
 		$this->soapApiClient   = $soapApiClient;
 		$this->messageManager  = $messageManager;
 		$this->orderRepository = $orderRepository;
+		$this->addressFactory  = $addressFactory;
 	}
 
 	/**
@@ -150,17 +159,20 @@ class CollectionPrint {
 			}
 		}
 
+		$storeAddress = $this->addressFactory->fromWcStoreOptions();
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/collection-print.latte',
 			[
-				'shipmentBarcodeText' => $shipmentResult->getBarcodeText(),
+				'storeAddress'        => $storeAddress,
+				'storeName'           => get_option( 'blogname', '' ),
+				'shipmentBarcodeText' => $shipmentResult->getSimpleBarcodeText(),
 				'shipmentBarcode'     => $shipmentBarcodeResult->getImageContent(),
 				'orders'              => $orders,
 				'packetIds'           => $packetIds,
 				'wpOrders'            => $wpOrders,
 				'orderCount'          => count( $packetIds ),
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
-				'stylesheet'          => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . 'public/order-collection-print.css',
+				'stylesheet'          => Plugin::buildAssetUrl( 'public/order-collection-print.css' ),
 			]
 		);
 		exit;

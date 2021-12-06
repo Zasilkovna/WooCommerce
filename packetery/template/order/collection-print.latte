@@ -3,6 +3,8 @@
 {varType Packetery\Core\Entity\Order[] $orders}
 {varType \WC_Order[] $wpOrders}
 {varType int[] $packetIds}
+{varType Packetery\Core\Entity\Address $storeAddress}
+{varType string $storeName}
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,10 +25,16 @@
                             <strong>{__( 'handoverPacketsHeading', 'packetery' )}</strong><br>
                             {$shipmentBarcodeText}<br>
                         {__( 'packetCount', 'packetery' )}: {$orderCount}<br>
-                        {__( 'printedAt', 'packetery' )}: {$printedAt|wpDateTime}<br>
+                        {__( 'printedAt', 'packetery' )}: {$printedAt|date:'d. m. Y'}<br>
                         </td>
                         <td class="packetery-shipment-barcode">
                             <img src="{$shipmentBarcode|dataStream:'image/png'|nocheck}" alt="Shipment barcode">
+                        </td>
+                        <td>
+                            <strong>{__( 'sender', 'packetery' )}</strong><br>
+                            {$storeName}<br>
+                            {$storeAddress->getStreet() ?? ''}<br>
+                            {$storeAddress->getZip() ?? ''} {$storeAddress->getCity() ?? ''}
                         </td>
                         <td>
                             <strong>{__( 'recipient', 'packetery' )}</strong><br>
@@ -53,11 +61,11 @@
             {varType Packetery\Core\Entity\Order $order}
             {var $order = $orders[$orderNumber]}
             <tr class="{if $iterator->odd}odd{else}even{/if}">
-                <td class="packetery-no-wrap">{$orderNumber}</td>
+                <td class="packetery-no-wrap order-number-column">{$orderNumber}</td>
                 <td class="packetery-no-wrap">{$packetId}</td>
-                <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_date_created()|wpDateTime}</td>
+                <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_date_created()|date:'d. m.'}</td>
                 <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_formatted_shipping_full_name()}</td>
-                <td class="packetery-no-wrap"><strong>{($order->getCod() ?? 0.0)|number:2} {$wpOrders[$orderNumber]->get_currency()}</strong></td>
+                <td class="packetery-no-wrap cod-column"><strong>{($order->getCod() ?? 0.0)|number:2} {$wpOrders[$orderNumber]->get_currency()}</strong></td>
 
                 {if $order->getPickupPoint()}
                     <td>{$order->getPickupPoint()->getId()}, {$order->getPickupPoint()->getName()}</td>

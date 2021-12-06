@@ -26,6 +26,14 @@
 	text-align: center;
 }
 
+#packetery-order-collection-print #naj td.cod-column {
+	text-align: right;
+}
+
+#packetery-order-collection-print #naj td.order-number-column {
+	text-align: left;
+}
+
 #packetery-order-collection-print .packetery-no-wrap {
 	white-space: nowrap;
 }
