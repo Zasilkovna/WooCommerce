@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-11-24T11:09:52+01:00\n"
-"PO-Revision-Date: 2021-11-24 11:13+0100\n"
+"POT-Creation-Date: 2021-12-03T11:30:28+01:00\n"
+"PO-Revision-Date: 2021-12-03 11:30+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -17,8 +17,8 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
 
 #. Plugin Name of the plugin
-#: src/Packetery/Module/Options/Page.php:80
-#: src/Packetery/Module/Options/Page.php:81
+#: src/Packetery/Module/Options/Page.php:70
+#: src/Packetery/Module/Options/Page.php:71
 #: src/Packetery/Module/Order/Metabox.php:96
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:14
@@ -74,8 +74,8 @@ msgstr "Neplatná odpověď API."
 msgid "Carriers were updated."
 msgstr "Dopravci byli aktualizováni."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:104
 #: src/Packetery/Module/Carrier/OptionsPage.php:105
+#: src/Packetery/Module/Carrier/OptionsPage.php:106
 msgid "Carrier settings"
 msgstr "Nastavení dopravců"
 
@@ -92,10 +92,10 @@ msgid "Free shipping limit"
 msgstr "Limit pro dopravu zdarma"
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:156
-#: src/Packetery/Module/Carrier/OptionsPage.php:364
-#: src/Packetery/Module/Carrier/OptionsPage.php:367
-#: src/Packetery/Module/Carrier/OptionsPage.php:381
-#: src/Packetery/Module/Carrier/OptionsPage.php:383
+#: src/Packetery/Module/Carrier/OptionsPage.php:373
+#: src/Packetery/Module/Carrier/OptionsPage.php:376
+#: src/Packetery/Module/Carrier/OptionsPage.php:390
+#: src/Packetery/Module/Carrier/OptionsPage.php:392
 msgid "Please enter a valid decimal number."
 msgstr "Zadejte prosím platné desetinné číslo."
 
@@ -111,19 +111,19 @@ msgstr "Pravidla přirážky se překrývají, opravte to prosím."
 msgid "settingsSaved"
 msgstr "Nastavení uloženo"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:362
+#: src/Packetery/Module/Carrier/OptionsPage.php:371
 msgid "Weight up to (kg)"
 msgstr "Hmotnost do (kg)"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:365
+#: src/Packetery/Module/Carrier/OptionsPage.php:374
 msgid "Price"
 msgstr "Cena"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:380
+#: src/Packetery/Module/Carrier/OptionsPage.php:389
 msgid "Order price up to"
 msgstr "Částka za objednávku do"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:382
+#: src/Packetery/Module/Carrier/OptionsPage.php:391
 msgid "Surcharge"
 msgstr "Přirážka"
 
@@ -188,51 +188,51 @@ msgstr "Úspěch"
 msgid "Logs"
 msgstr "Logy"
 
-#: src/Packetery/Module/Options/Page.php:90
-#: src/Packetery/Module/Options/Page.php:91 src/Packetery/Module/Plugin.php:495
+#: src/Packetery/Module/Options/Page.php:80
+#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:495
 msgid "Settings"
 msgstr "Nastavení"
 
-#: src/Packetery/Module/Options/Page.php:122
+#: src/Packetery/Module/Options/Page.php:112
 msgid "API password"
 msgstr "API heslo"
 
-#: src/Packetery/Module/Options/Page.php:124
+#: src/Packetery/Module/Options/Page.php:114
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr "API heslo musí být 32 znaků dlouhé a musí obsahovat validní znaky!"
 
-#: src/Packetery/Module/Options/Page.php:125
+#: src/Packetery/Module/Options/Page.php:115
 msgid "Sender"
 msgstr "Odesílatel"
 
-#: src/Packetery/Module/Options/Page.php:132
+#: src/Packetery/Module/Options/Page.php:122
 msgid "Packeta Label Format"
 msgstr "Formát štítku Zásilkovny"
 
-#: src/Packetery/Module/Options/Page.php:138
+#: src/Packetery/Module/Options/Page.php:128
 msgid "Carrier Label Format"
 msgstr "Formát štítku dopravce"
 
-#: src/Packetery/Module/Options/Page.php:140
+#: src/Packetery/Module/Options/Page.php:130
 #: src/Packetery/Module/Options/Provider.php:143
 msgid "labelNameA6onA4"
 msgstr "1/4 A4, tisk na A4, 4ks/stránka"
 
-#: src/Packetery/Module/Options/Page.php:141
+#: src/Packetery/Module/Options/Page.php:131
 #: src/Packetery/Module/Options/Provider.php:148
 msgid "labelNameA6onA6"
 msgstr "1/4 A4, přímý tisk, 1ks/stránka"
 
-#: src/Packetery/Module/Options/Page.php:152
+#: src/Packetery/Module/Options/Page.php:142
 msgid "Payment method that represents cash on delivery"
 msgstr "Platební metoda, která reprezentuje dobírku."
 
-#: src/Packetery/Module/Options/Page.php:168
+#: src/Packetery/Module/Options/Page.php:158
 msgid "Main Settings"
 msgstr "Hlavní nastavení"
 
-#: src/Packetery/Module/Options/Page.php:209
+#: src/Packetery/Module/Options/Page.php:199
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -297,26 +297,26 @@ msgid "youSelectedOrdersThatWereNotSubmitted"
 msgstr "Vybrali jste objednávky, které ještě nebyly podány."
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:223
+#: src/Packetery/Module/Order/LabelPrint.php:222
 msgid "dontSkipAnyField"
 msgstr "nevynechávat žádná pole"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:223
+#: src/Packetery/Module/Order/LabelPrint.php:222
 msgid "skip%sFields"
 msgstr "vynechat %s polí na první stránce"
 
-#: src/Packetery/Module/Order/LabelPrint.php:227
+#: src/Packetery/Module/Order/LabelPrint.php:226
 msgid "labelsOffset"
 msgstr "Vynechat polí"
 
+#: src/Packetery/Module/Order/LabelPrint.php:239
 #: src/Packetery/Module/Order/LabelPrint.php:240
-#: src/Packetery/Module/Order/LabelPrint.php:241
 #: temp/cache/view/template-order-label-print.latte--63d5284f15.php:49
 msgid "printLabels"
 msgstr "Vytisknout štítky"
 
-#: src/Packetery/Module/Order/LabelPrint.php:395
+#: src/Packetery/Module/Order/LabelPrint.php:394
 msgid "pleaseSetProperPassword"
 msgstr "Nastavte prosím platné API heslo."
 

@@ -204,7 +204,7 @@ class Checkout {
 	 */
 	public static function add_pickup_point_fields( array $fields ): array {
 		foreach ( self::$pickup_point_attrs as $attr ) {
-			$fields['shipping'][ $attr['name'] ] = [
+			$fields['billing'][ $attr['name'] ] = [
 				'type'              => 'text',
 				'required'          => false,
 				// For older WooCommerce. See woocommerce_form_field function.
