@@ -50,6 +50,13 @@
                 </item>
             </argument>
         </exportButton>
+        <paging name="listing_paging">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="selectProvider" xsi:type="string">packetery_checkout_order_listing.packetery_checkout_order_listing.spinner_columns.ids</item>
+                </item>
+            </argument>
+        </paging>
     </listingToolbar>
     <columns name="spinner_columns">
         <settings>
@@ -256,6 +263,5 @@
             <argument name="viewUrl" xsi:type="string">packetery/order/detail</argument>
         </actionsColumn>
     </columns>
-    <paging name="listing_paging"/>
 </listing>
 
