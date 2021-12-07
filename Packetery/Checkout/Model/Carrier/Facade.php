@@ -52,8 +52,32 @@ class Facade
      * @return \Packetery\Checkout\Model\HybridCarrier
      */
     public function createHybridCarrier(string $carrierCode, ?int $carrierId, string $method, string $country): HybridCarrier {
-        $carrier = $this->getMagentoCarrier($carrierCode);
-        $dynamicCarrier = $this->getDynamicCarrier($carrier, $carrierId);
+        $cache = [];
+        return $this->createHybridCarrierCached($cache, $carrierCode, $carrierId, $method, $country);
+    }
+
+    /**
+     * @param array $cache
+     * @param string $carrierCode
+     * @param int|null $carrierId
+     * @param string $method
+     * @param string $country
+     * @return \Packetery\Checkout\Model\HybridCarrier
+     */
+    public function createHybridCarrierCached(array &$cache, string $carrierCode, ?int $carrierId, string $method, string $country): HybridCarrier {
+        $cache['carriers'] = $cache['carriers'] ?? [];
+        $cache['dynamicCarriers'] = $cache['dynamicCarriers'] ?? [];
+
+        if (!array_key_exists($carrierCode, $cache['carriers'])) {
+            $cache['carriers'][$carrierCode] = $this->getMagentoCarrier($carrierCode);
+        }
+        $carrier = $cache['carriers'][$carrierCode];
+
+        $dynamicCarrierCode = $carrierCode . '_' . ( $carrierId ?? '' );
+        if (!array_key_exists($dynamicCarrierCode, $cache['dynamicCarriers'])) {
+            $cache['dynamicCarriers'][$dynamicCarrierCode] = $this->getDynamicCarrier($carrier, $carrierId);
+        }
+        $dynamicCarrier = $cache['dynamicCarriers'][$dynamicCarrierCode];
 
         if ($dynamicCarrier !== null) {
             return HybridCarrier::fromAbstractDynamic($carrier, $dynamicCarrier, $method, $country);
@@ -128,19 +152,47 @@ class Facade
      */
     public static function getAllImplementedBranchIds(): array {
         $branchIds = [];
-        $dirs = glob(__DIR__ . '/Imp/*', GLOB_ONLYDIR);
+        $classNames = self::getAllBrainClasses();
+
+        foreach ($classNames as $className) {
+            $branchIds[] = $className::getImplementedBranchIds();
+        }
+
+        return array_merge([], ...$branchIds);
+    }
+
+    /**
+     * @return array<class-string<\Packetery\Checkout\Model\Carrier\AbstractBrain>>
+     */
+    public static function getAllBrainClasses(): array {
+        $classNames = [];
+        $dirs = glob(__DIR__ . '/Imp/*', GLOB_ONLYDIR|GLOB_NOSORT);
+
         foreach ($dirs as $dir) {
             if ($dir === '.' || $dir === '..') {
                 continue;
             }
 
             $name = basename($dir);
-            /** @var \Packetery\Checkout\Model\Carrier\AbstractBrain $className */
-            $className = '\\Packetery\\Checkout\\Model\\Carrier\\Imp\\' . $name . '\\Brain';
-            $branchIds = array_merge($branchIds, $className::getImplementedBranchIds());
+            $classNames[] = '\\Packetery\\Checkout\\Model\\Carrier\\Imp\\' . $name . '\\Brain';
         }
 
-        return $branchIds;
+        return $classNames;
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getAllCarrierCodes(): array {
+        $carrierCodes = [];
+        /** @var \Packetery\Checkout\Model\Carrier\AbstractBrain[] $classNames */
+        $classNames = self::getAllBrainClasses();
+
+        foreach ($classNames as $className) {
+            $carrierCodes[] = $className::getCarrierCodeStatic();
+        }
+
+        return $carrierCodes;
     }
 
     /**

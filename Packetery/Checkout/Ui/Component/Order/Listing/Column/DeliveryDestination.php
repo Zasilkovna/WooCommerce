@@ -16,17 +16,16 @@ class DeliveryDestination extends Column
     /** @var \Packetery\Checkout\Model\Config\Source\MethodSelect */
     private $methodSelect;
 
-    /** @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory */
-    private $orderCollectionFactory;
-
     /** @var \Packetery\Checkout\Model\Carrier\Facade */
     private $carrierFacade;
 
     /**
-     * Country constructor.
+     * DeliveryDestination constructor.
      *
      * @param \Magento\Framework\View\Element\UiComponent\ContextInterface $context
      * @param \Magento\Framework\View\Element\UiComponentFactory $uiComponentFactory
+     * @param \Packetery\Checkout\Model\Config\Source\MethodSelect $methodSelect
+     * @param \Packetery\Checkout\Model\Carrier\Facade $carrierFacade
      * @param array $components
      * @param array $data
      */
@@ -34,14 +33,12 @@ class DeliveryDestination extends Column
         ContextInterface $context,
         UiComponentFactory $uiComponentFactory,
         \Packetery\Checkout\Model\Config\Source\MethodSelect $methodSelect,
-        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Packetery\Checkout\Model\Carrier\Facade $carrierFacade,
         array $components = [],
         array $data = []
     ) {
         parent::__construct($context, $uiComponentFactory, $components, $data);
         $this->methodSelect = $methodSelect;
-        $this->orderCollectionFactory = $orderCollectionFactory;
         $this->carrierFacade = $carrierFacade;
     }
 
@@ -50,17 +47,15 @@ class DeliveryDestination extends Column
      * @return array
      */
     public function prepareDataSource(array $dataSource): array {
+        $cache = [];
+
         if (isset($dataSource['data']['items'])) {
             foreach ($dataSource['data']['items'] as &$item) {
-                $orderNumber = $item['order_number'];
-                $collection = $this->orderCollectionFactory->create();
-                /** @var \Magento\Sales\Model\Order $item */
-                $order = $collection->getItemByColumnValue('increment_id', $orderNumber);
-                $shippingMethod = $order->getShippingMethod(true);
-                $shippingAddress = $order->getShippingAddress();
-                $carrierCode = $shippingMethod->getData('carrier_code');
-                $methodCode = MethodCode::fromString($shippingMethod->getData('method'));
-                $carrier = $this->carrierFacade->createHybridCarrier($carrierCode, $methodCode->getDynamicCarrierId(), $methodCode->getMethod(), $shippingAddress->getCountryId());
+                $shippingRateCode = $item['shipping_rate_code'];
+                [$carrierCode, $methodCodeString] = explode('_', $shippingRateCode, 2);
+                $methodCode = MethodCode::fromString($methodCodeString);
+                // make sure you do not use any method requiring country
+                $carrier = $this->carrierFacade->createHybridCarrierCached($cache, $carrierCode, $methodCode->getDynamicCarrierId(), $methodCode->getMethod(), '');
 
                 $branchName = (string)$item['point_name'];
                 $branchId = $item['point_id'];

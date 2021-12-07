@@ -1,4 +1,5 @@
-2.2.1 - Fixed: order grid did not display paging controls on top of the grid and did not display row count
+2.2.1 - Fixed: slow order grid loading
+      - Fixed: order grid did not display paging controls on top of the grid and did not display row count
       - Fixed: order grid export did not set flags correctly
 
 2.2.0 - Added: inline order grid editation
