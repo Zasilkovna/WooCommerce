@@ -133,7 +133,11 @@ class CollectionPrint {
 		}
 
 		if ( ! $packetIds ) {
-			return;
+			delete_transient( self::getOrderIdsTransientName() );
+			$this->messageManager->flash_message( __( 'selectedOrdersHaveNoPacketId', 'packetery' ), 'info' );
+			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
+				exit;
+			}
 		}
 
 		$shipmentResult = $this->requestShipment( $packetIds );
@@ -200,7 +204,7 @@ class CollectionPrint {
 	 * Hides submenu item.
 	 */
 	public function hideFromMenus(): void {
-		Plugin::hideSubmenuItem( 'packeta-order-collection-print' );
+		Plugin::hideSubmenuItem( self::PAGE_SLUG );
 	}
 
 	/**
