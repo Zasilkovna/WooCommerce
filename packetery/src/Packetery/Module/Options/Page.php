@@ -166,11 +166,8 @@ class Page {
 			[
 				'100' => '100',
 				'200' => '200',
-				'300' => '300',
-				'400' => '400',
-				'500' => '500',
 			]
-		)->setPrompt( '--' )->checkDefaultValue( false );
+		)->setPrompt( __( 'defaultValue', 'packetery' ) )->checkDefaultValue( false );
 
 		$container->addText(
 			'order_grid_per_page_priority',

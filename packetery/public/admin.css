@@ -83,6 +83,22 @@
     max-width: none;
 }
 
+#packetery-options-page .fieldset {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 30px;
+}
+
+#packetery-options-page .fieldset h2 {
+    position: absolute;
+    top: 0;
+    line-height: 1;
+    margin: -9px 0 0;
+    background: #f0f0f1;
+    padding: 0 3px;
+}
+
 .packetery-help-block {
     font-style: italic;
     color: #959595;
