@@ -97,6 +97,16 @@ class Page {
 			),
 			1
 		);
+
+		if ( null !== $this->optionsProvider->getOrderGridPerPage() ) {
+			add_filter(
+				'edit_shop_order_per_page',
+				function () {
+					return $this->optionsProvider->getOrderGridPerPage();
+				},
+				$this->optionsProvider->getOrderGridPerPagePriority()
+			);
+		}
 	}
 
 	/**
@@ -150,6 +160,27 @@ class Page {
 			$enabledGateways
 		)->setPrompt( '--' )->checkDefaultValue( false );
 
+		$container->addSelect(
+			'order_grid_per_page',
+			__( 'orderGridPerPageLabel', 'packetery' ),
+			[
+				'100' => '100',
+				'200' => '200',
+				'300' => '300',
+				'400' => '400',
+				'500' => '500',
+			]
+		)->setPrompt( '--' )->checkDefaultValue( false );
+
+		$container->addText(
+			'order_grid_per_page_priority',
+			__( 'orderGridPerPagePriorityLabel', 'packetery' )
+		)->setRequired( true )
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 )
+			->addRule( Form::MAX, null, 999999 )
+			->setDefaultValue( $this->optionsProvider->getOrderGridPerPagePriority() );
+
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );
 		}
@@ -183,6 +214,28 @@ class Page {
 
 				add_settings_error( $control->getCaption(), esc_attr( $control->getName() ), $control->getError() );
 				$options[ $control->getName() ] = '';
+			}
+		}
+
+		$perPage         = $form[ self::FORM_FIELDS_CONTAINER ]['order_grid_per_page'];
+		$perPagePriority = $form[ self::FORM_FIELDS_CONTAINER ]['order_grid_per_page_priority'];
+
+		if ( false === $perPage->hasErrors() && $perPage->getValue() ) {
+			$perPageValue         = (int) $perPage->getValue();
+			$perPagePriorityValue = (int) $perPagePriority->getValue();
+
+			add_filter(
+				'edit_shop_order_per_page',
+				function () use ( $perPageValue ) {
+					return $perPageValue;
+				},
+				$perPagePriorityValue
+			);
+			$filterPerPage = apply_filters( 'edit_shop_order_per_page', $perPageValue );
+			$filterPerPage = apply_filters( 'edit_posts_per_page', $filterPerPage, 'shop_order' );
+
+			if ( $filterPerPage !== $perPageValue ) {
+				add_settings_error( 'order_grid_per_page', 'order_grid_per_page', __( 'orderGridPerPageWasNotUsedError', 'packetery' ) );
 			}
 		}
 

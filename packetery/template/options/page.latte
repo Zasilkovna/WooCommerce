@@ -63,6 +63,32 @@
                     <select n:name=packetery-cod_payment_method></select>
                 </td>
             </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-order_grid_per_page />
+                </th>
+                <td>
+                    <select n:name=packetery-order_grid_per_page></select>
+                    <div class="packetery-help-block">
+                        <p>
+                            {__( 'orderGridPerPageDescription', 'packetery' )}
+                        </p>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label n:name=packetery-order_grid_per_page_priority />
+                </th>
+                <td>
+                    <input n:name=packetery-order_grid_per_page_priority />
+                    <div class="packetery-help-block">
+                        <p>
+                            {__( 'orderGridPerPagePriorityDescription', 'packetery' )}
+                        </p>
+                    </div>
+                </td>
+            </tr>
         </table>
         <p class="submit">
             <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
