@@ -63,6 +63,8 @@ class CollectionPrint {
 	private $orderRepository;
 
 	/**
+	 * Address factory.
+	 *
 	 * @var \Packetery\Module\EntityFactory\Address
 	 */
 	private $addressFactory;
