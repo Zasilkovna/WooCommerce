@@ -84,19 +84,15 @@
 }
 
 #packetery-options-page .fieldset {
-    position: relative;
     border: 1px solid #ddd;
     padding: 10px;
     margin-top: 30px;
 }
 
-#packetery-options-page .fieldset h2 {
-    position: absolute;
-    top: 0;
-    line-height: 1;
-    margin: -9px 0 0;
-    background: #f0f0f1;
-    padding: 0 3px;
+#packetery-options-page .fieldset legend {
+    font-weight: 600;
+    color: #1d2327;
+    font-size: 1.3em;
 }
 
 .packetery-help-block {
