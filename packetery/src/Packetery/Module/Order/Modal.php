@@ -87,8 +87,8 @@ class Modal {
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
 		$form->addText( Order\Entity::META_WEIGHT, __( 'Weight', 'packetery' ) )
-			 ->setRequired( false )
-			 ->addRule( Form::FLOAT );
+			->setRequired( false )
+			->addRule( Form::FLOAT );
 
 		$form->addSubmit( 'submit', __( 'Save', 'packetery' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packetery' ) );
