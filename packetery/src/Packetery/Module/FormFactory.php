@@ -23,8 +23,13 @@ class FormFactory {
 	 * Plugin constructor.
 	 */
 	public function __construct() {
-		Validator::$messages[ Form::FLOAT ]  = __( 'pleaseEnterValidNumber', 'packetery' );
-		Validator::$messages[ Form::FILLED ] = __( 'This field is required!', 'packetery' );
+		// translators: keep %d placeholder intact.
+		Validator::$messages[ Form::MIN ] = __( 'pleaseEnterValueGreaterThanOrEqualTo%d', 'packetery' );
+		// translators: keep %d placeholder intact.
+		Validator::$messages[ Form::MAX ]     = __( 'pleaseEnterValueLessThanOrEqualTo%d', 'packetery' );
+		Validator::$messages[ Form::INTEGER ] = __( 'pleaseEnterValidNumber', 'packetery' );
+		Validator::$messages[ Form::FLOAT ]   = __( 'pleaseEnterValidNumber', 'packetery' );
+		Validator::$messages[ Form::FILLED ]  = __( 'This field is required!', 'packetery' );
 	}
 
 	/**

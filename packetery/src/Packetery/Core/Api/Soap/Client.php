@@ -62,6 +62,66 @@ class Client {
 	}
 
 	/**
+	 * Create shipment.
+	 *
+	 * @param Request\CreateShipment $request Request.
+	 *
+	 * @return Response\CreateShipment
+	 */
+	public function createShipment( Request\CreateShipment $request ): Response\CreateShipment {
+		$response = new Response\CreateShipment();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$packet     = $soapClient->createShipment( $this->apiPassword, $request->getPacketIds(), $request->getCustomBarcode() );
+			$response->setId( $packet->id );
+			$response->setChecksum( $packet->checksum );
+			$response->setBarcode( $packet->barcode );
+			$response->setBarcodeText( $packet->barcodeText );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+
+			if ( isset( $exception->detail ) && isset( $exception->detail->PacketIdsFault ) ) {
+				$invalidPacketIds         = (array) $exception->detail->PacketIdsFault->ids->packetId;
+				$invalidPacketIdsFiltered = [];
+
+				foreach ( $invalidPacketIds as $invalidPacketId ) {
+					if ( empty( $invalidPacketId ) ) {
+						continue;
+					}
+
+					$invalidPacketIdsFiltered[] = $invalidPacketId;
+				}
+
+				$response->setInvalidPacketIds( $invalidPacketIdsFiltered );
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Barcode PNG.
+	 *
+	 * @param Request\BarcodePng $request Request.
+	 *
+	 * @return Response\BarcodePng
+	 */
+	public function barcodePng( Request\BarcodePng $request ): Response\BarcodePng {
+		$response = new Response\BarcodePng();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$data       = $soapClient->barcodePng( $this->apiPassword, $request->getBarcode() );
+			$response->setImageContent( $data );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Asks for packeta labels.
 	 *
 	 * @param Request\PacketsLabelsPdf $request Label request.
