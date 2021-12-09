@@ -88,6 +88,19 @@
     max-width: none;
 }
 
+#packetery-options-page .fieldset {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 30px;
+}
+
+#packetery-options-page .fieldset legend {
+    font-weight: 600;
+    color: #1d2327;
+    font-size: 1.3em;
+    padding: 0 0.5em;
+}
+
 .packetery-help-block {
     font-style: italic;
     color: #959595;

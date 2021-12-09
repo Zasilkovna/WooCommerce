@@ -56,7 +56,7 @@ class Repository {
 			$wcOrder = wc_get_order( $post );
 			$order   = $this->orderEntityFactory->create( $wcOrder );
 			if ( $wcOrder && $order ) {
-				$orderEntities[] = $order;
+				$orderEntities[ $order->getNumber() ] = $order;
 			}
 		}
 

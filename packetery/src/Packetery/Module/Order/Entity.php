@@ -259,5 +259,4 @@ class Entity {
 	public function getTotalPrice(): float {
 		return (float) $this->order->get_total( 'raw' );
 	}
-
 }

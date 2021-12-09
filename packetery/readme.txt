@@ -76,6 +76,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Added: Possibility to print the same labels again in one printing session.
 * Added: Order editation modal in order grid. User is now able to edit order weight in order grid.
 * Added: List of active carriers added to carrier settings section.
+* Added: order collection printing
+* Added: ability to change number of orders per page
 
 = 1.0.7 =
 * Fixed: the label print page displays a message to the user if no suitable orders are selected
