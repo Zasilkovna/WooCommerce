@@ -135,7 +135,7 @@ class CountryListingPage {
 			$countriesFinal[] = [
 				'code' => $country,
 				'name' => $wcCountries[ strtoupper( $country ) ],
-				'url'  => add_query_arg(
+				'url'            => add_query_arg(
 					[
 						'page' => OptionsPage::SLUG,
 						'code' => $country,
