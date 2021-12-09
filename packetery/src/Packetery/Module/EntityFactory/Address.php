@@ -36,4 +36,19 @@ class Address {
 
 		return $address;
 	}
+
+	/**
+	 * Return WC store default address.
+	 *
+	 * @return Entity\Address
+	 */
+	public function fromWcStoreOptions(): Entity\Address {
+		$address = new Entity\Address(
+			get_option( 'woocommerce_store_address', null ),
+			get_option( 'woocommerce_store_city', null ),
+			get_option( 'woocommerce_store_postcode', null )
+		);
+
+		return $address;
+	}
 }
