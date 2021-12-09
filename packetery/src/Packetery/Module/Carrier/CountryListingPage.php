@@ -119,7 +119,7 @@ class CountryListingPage {
 			$countriesFinal[] = [
 				'code'           => $country,
 				'name'           => \Locale::getDisplayRegion( '-' . $country, get_locale() ),
-				'url'  => add_query_arg(
+				'url'            => add_query_arg(
 					[
 						'page' => OptionsPage::SLUG,
 						'code' => $country,
