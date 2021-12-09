@@ -1,0 +1,91 @@
+{varType string $shipmentBarcode}
+{varType string $shipmentBarcodeText}
+{varType Packetery\Core\Entity\Order[] $orders}
+{varType \WC_Order[] $wpOrders}
+{varType int[] $packetIds}
+{varType Packetery\Core\Entity\Address $storeAddress}
+{varType string $storeName}
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="{$stylesheet}">
+</head>
+<body>
+<div id="packetery-order-collection-print">
+    <table class="packetery-order-collection-print-table">
+        <thead>
+        <tr>
+            <td colspan="8">
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <strong>{__( 'handoverPacketsHeading', 'packetery' )}</strong><br>
+                            {$shipmentBarcodeText}<br>
+                        {__( 'packetCount', 'packetery' )}: {$orderCount}<br>
+                        {__( 'printedAt', 'packetery' )}: {$printedAt|date:'d. m. Y'}<br>
+                        </td>
+                        <td class="packetery-shipment-barcode">
+                            <img src="{$shipmentBarcode|dataStream:'image/png'|nocheck}" alt="Shipment barcode">
+                        </td>
+                        <td>
+                            <strong>{__( 'sender', 'packetery' )}</strong><br>
+                            {$storeName}<br>
+                            {$storeAddress->getStreet() ?? ''}<br>
+                            {$storeAddress->getZip() ?? ''} {$storeAddress->getCity() ?? ''}
+                        </td>
+                        <td>
+                            <strong>{__( 'recipient', 'packetery' )}</strong><br>
+                            Zásilkovna s.r.o.<br>
+                            Lihovarská 1060/12<br>
+                            190 00 Praha
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <th>{__( 'orderNumber', 'packetery' )}</th>
+            <th>{__( 'barcode', 'packetery' )}</th>
+            <th>{__( 'created', 'packetery' )}</th>
+            <th>{__( 'nameAndSurname', 'packetery' )}</th>
+            <th>{__( 'COD', 'packetery' )}</th>
+            <th>{__( 'Pick up point or carrier', 'packetery' )}</th>
+        </tr>
+        </thead>
+        <tbody class="collection-print-table-body">
+        {foreach $packetIds as $orderNumber => $packetId}
+            {varType Packetery\Core\Entity\Order $order}
+            {var $order = $orders[$orderNumber]}
+            <tr class="{if $iterator->odd}odd{else}even{/if}">
+                <td class="packetery-no-wrap order-number-column">{$orderNumber}</td>
+                <td class="packetery-no-wrap">{$packetId}</td>
+                <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_date_created()|date:'d. m.'}</td>
+                <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_formatted_shipping_full_name()}</td>
+                <td class="packetery-no-wrap cod-column"><strong>{($order->getCod() ?? 0.0)|number:2} {$wpOrders[$orderNumber]->get_currency()}</strong></td>
+
+                {if $order->getPickupPoint()}
+                    <td>{$order->getPickupPoint()->getId()}, {$order->getPickupPoint()->getName()}</td>
+                {elseif $order->getCarrier()}
+                    <td>{$order->getCarrier()->getId()}, {$order->getCarrier()->getName()}</td>
+                {/if}
+            </tr>
+        {/foreach}
+        <tr>
+            <td>
+                <div class="packetery-end">
+                    {__( 'end', 'packetery' )}
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script>
+    window.print();
+</script>
+</body>
+</html>
