@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
+use Packetery\Module\Address;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
@@ -22,7 +23,6 @@ use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use WC_Order;
-use Packetery\Module\Address;
 
 /**
  * Class Plugin
@@ -112,6 +112,13 @@ class Plugin {
 	private $labelPrint;
 
 	/**
+	 * Order collection printing.
+	 *
+	 * @var Order\CollectionPrint
+	 */
+	private $orderCollectionPrint;
+
+	/**
 	 * Order grid extender.
 	 *
 	 * @var Order\GridExtender
@@ -177,25 +184,26 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox             $order_metabox      Order metabox.
-	 * @param MessageManager            $message_manager    Message manager.
-	 * @param Options\Page              $options_page       Options page.
+	 * @param Order\Metabox             $order_metabox        Order metabox.
+	 * @param MessageManager            $message_manager      Message manager.
+	 * @param Options\Page              $options_page         Options page.
 	 * @param Repository         $carrierRepository Carrier repository.
-	 * @param Downloader                $carrier_downloader Carrier downloader object.
-	 * @param Checkout                  $checkout           Checkout class.
-	 * @param Engine                    $latte_engine       PacketeryLatte engine.
-	 * @param OptionsPage               $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions         $orderBulkActions   Order BulkActions.
-	 * @param Order\LabelPrint          $labelPrint         Label printing.
-	 * @param Order\GridExtender        $gridExtender       Order grid extender.
-	 * @param Product\DataTab           $productTab         Product tab.
-	 * @param Log\Page                  $logPage            Log page.
-	 * @param ILogger                   $logger             Log manager.
-	 * @param Address\Repository        $addressRepository  Address repository.
-	 * @param Order\Controller          $orderController    Order controller.
-	 * @param Order\Modal               $orderModal         Order modal.
-	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
-	 * @param Options\Exporter          $exporter           Options exporter.
+	 * @param Downloader                $carrier_downloader   Carrier downloader object.
+	 * @param Checkout                  $checkout             Checkout class.
+	 * @param Engine                    $latte_engine         PacketeryLatte engine.
+	 * @param OptionsPage               $carrierOptionsPage   Carrier options page.
+	 * @param Order\BulkActions         $orderBulkActions     Order BulkActions.
+	 * @param Order\LabelPrint          $labelPrint           Label printing.
+	 * @param Order\GridExtender        $gridExtender         Order grid extender.
+	 * @param Product\DataTab           $productTab           Product tab.
+	 * @param Log\Page                  $logPage              Log page.
+	 * @param ILogger                   $logger               Log manager.
+	 * @param Address\Repository        $addressRepository    Address repository.
+	 * @param Order\Controller          $orderController      Order controller.
+	 * @param Order\Modal               $orderModal           Order modal.
+	 * @param EntityFactory\PickupPoint $pickupPointFactory   PickupPoint factory.
+	 * @param Options\Exporter          $exporter             Options exporter.
+	 * @param Order\CollectionPrint     $orderCollectionPrint Order collection print.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -216,29 +224,31 @@ class Plugin {
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
 		EntityFactory\PickupPoint $pickupPointFactory,
-		Options\Exporter $exporter
+		Options\Exporter $exporter,
+		Order\CollectionPrint $orderCollectionPrint
 	) {
-		$this->options_page       = $options_page;
-		$this->latte_engine       = $latte_engine;
+		$this->options_page         = $options_page;
+		$this->latte_engine         = $latte_engine;
 		$this->carrierRepository  = $carrierRepository;
-		$this->carrier_downloader = $carrier_downloader;
-		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
-		$this->order_metabox      = $order_metabox;
-		$this->message_manager    = $message_manager;
-		$this->options_page       = $options_page;
-		$this->checkout           = $checkout;
-		$this->carrierOptionsPage = $carrierOptionsPage;
-		$this->orderBulkActions   = $orderBulkActions;
-		$this->labelPrint         = $labelPrint;
-		$this->gridExtender       = $gridExtender;
-		$this->productTab         = $productTab;
-		$this->logPage            = $logPage;
-		$this->logger             = $logger;
-		$this->addressRepository  = $addressRepository;
-		$this->orderController    = $orderController;
-		$this->orderModal         = $orderModal;
-		$this->pickupPointFactory = $pickupPointFactory;
-		$this->exporter           = $exporter;
+		$this->carrier_downloader   = $carrier_downloader;
+		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packetery.php';
+		$this->order_metabox        = $order_metabox;
+		$this->message_manager      = $message_manager;
+		$this->options_page         = $options_page;
+		$this->checkout             = $checkout;
+		$this->carrierOptionsPage   = $carrierOptionsPage;
+		$this->orderBulkActions     = $orderBulkActions;
+		$this->labelPrint           = $labelPrint;
+		$this->gridExtender         = $gridExtender;
+		$this->productTab           = $productTab;
+		$this->logPage              = $logPage;
+		$this->logger               = $logger;
+		$this->addressRepository    = $addressRepository;
+		$this->orderController      = $orderController;
+		$this->orderModal           = $orderModal;
+		$this->pickupPointFactory   = $pickupPointFactory;
+		$this->exporter             = $exporter;
+		$this->orderCollectionPrint = $orderCollectionPrint;
 	}
 
 	/**
@@ -286,6 +296,7 @@ class Plugin {
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
+		add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
 		$this->orderModal->register();
 		$this->order_metabox->register();
 
@@ -321,6 +332,7 @@ class Plugin {
 		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ] );
 
 		add_action( 'admin_init', [ $this->labelPrint, 'outputLabelsPdf' ] );
+		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
 	}
@@ -414,6 +426,20 @@ class Plugin {
 	}
 
 	/**
+	 * Builds asset URL.
+	 *
+	 * @param string $asset Relative asset path without leading slash.
+	 *
+	 * @return string
+	 */
+	public static function buildAssetUrl( string $asset ): string {
+		$url      = plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . $asset;
+		$filename = PACKETERY_PLUGIN_DIR . '/' . $asset;
+
+		return add_query_arg( [ 'v' => md5( (string) filemtime( $filename ) ) ], $url );
+	}
+
+	/**
 	 * Enqueues javascript files and stylesheets for checkout.
 	 */
 	public function enqueueFrontAssets(): void {
@@ -440,6 +466,7 @@ class Plugin {
 		$this->options_page->register();
 		$this->carrierOptionsPage->register();
 		$this->labelPrint->register();
+		$this->orderCollectionPrint->register();
 		$this->logPage->register();
 	}
 
@@ -581,6 +608,22 @@ class Plugin {
 		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 
 		return $methods;
+	}
+
+	/**
+	 * Hides submenu item. Must not be called too early.
+	 *
+	 * @param string $itemSlug Item slug.
+	 */
+	public static function hideSubmenuItem( string $itemSlug ): void {
+		global $submenu;
+		if ( isset( $submenu['packeta-options'] ) ) {
+			foreach ( $submenu['packeta-options'] as $key => $menu ) {
+				if ( $itemSlug === $menu[2] ) {
+					unset( $submenu['packeta-options'][ $key ] );
+				}
+			}
+		}
 	}
 
 	/**

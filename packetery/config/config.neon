@@ -51,3 +51,4 @@ services:
 	- Packetery\Module\Order\ControllerRouter
 	- Packetery\Module\Order\Modal
 	- Packetery\Module\Options\Exporter
+	- Packetery\Module\Order\CollectionPrint
