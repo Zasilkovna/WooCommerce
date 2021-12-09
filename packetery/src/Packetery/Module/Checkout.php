@@ -195,7 +195,7 @@ class Checkout {
 	/**
 	 * Gets widget carriers param.
 	 *
-	 * @param bool   $isPickupPoints Is context pickup point related?
+	 * @param bool   $isPickupPoints Is context pickup point related.
 	 * @param string $carrierId      Carrier id.
 	 *
 	 * @return string|null
