@@ -51,18 +51,18 @@ class GridExtender {
 	private $httpRequest;
 
 	/**
-	 * Controller.
-	 *
-	 * @var Controller
-	 */
-	private $orderController;
-
-	/**
 	 * Order entity factory.
 	 *
 	 * @var EntityFactory\Order
 	 */
 	private $entityFactory;
+
+	/**
+	 * Controller router.
+	 *
+	 * @var ControllerRouter
+	 */
+	private $orderControllerRouter;
 
 	/**
 	 * GridExtender constructor.
@@ -71,23 +71,22 @@ class GridExtender {
 	 * @param Repository          $carrierRepository Carrier repository.
 	 * @param Engine              $latteEngine       Latte Engine.
 	 * @param Request             $httpRequest       Http Request.
-	 * @param Controller          $orderController   Order controller.
-	 * @param EntityFactory\Order $entityFactory Order factory.
+	 * @param EntityFactory\Order $entityFactory     Order factory.
+	 * @param ControllerRouter    $orderControllerRouter
 	 */
 	public function __construct(
 		Helper $helper,
 		Repository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
-		Controller $orderController,
-		EntityFactory\Order $entityFactory
+		EntityFactory\Order $entityFactory, ControllerRouter $orderControllerRouter
 	) {
 		$this->helper            = $helper;
 		$this->carrierRepository = $carrierRepository;
 		$this->latteEngine       = $latteEngine;
 		$this->httpRequest       = $httpRequest;
-		$this->orderController   = $orderController;
 		$this->entityFactory     = $entityFactory;
+		$this->orderControllerRouter = $orderControllerRouter;
 	}
 
 	/**
@@ -271,9 +270,16 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
+				$packetSubmitUrl = add_query_arg(
+					[
+						'orderId' => $order->getNumber(),
+						'_wpnonce' => wp_create_nonce( 'wp_rest' )
+					],
+					$this->orderControllerRouter->getRouteUrl(Controller::PATH_SUBMIT_TO_API)
+				);
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
-					[ 'order' => $order ]
+					[ 'order' => $order, 'packetSubmitUrl' => $packetSubmitUrl ]
 				);
 				break;
 		}
