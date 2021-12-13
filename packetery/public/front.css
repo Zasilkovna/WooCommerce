@@ -8,3 +8,11 @@
 	width: 45px;
 	margin-right: 5px;
 }
+
+#packetery-widget-button-wrapper .packeta-widget-info-error {
+	color: red;
+}
+
+#packetery-widget-button-wrapper .packeta-widget-info-success {
+	color: green;
+}

@@ -250,11 +250,13 @@ class Checkout {
 					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
 					'appIdentity'       => Plugin::getAppIdentity(),
 					'packeteryApiKey'   => $this->options_provider->get_api_key(),
-					'translations'      => [
+					'translations' => [
 						'choosePickupPoint'             => __( 'choosePickupPoint', 'packetery' ),
 						'chooseAddress'                 => __( 'checkShippingAddress', 'packetery' ),
 						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
 						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
+						'selectedShippingAddress'       => __( 'selectedShippingAddress', 'packetery' ),
+						'addressIsValidated'            => __( 'addressIsValidated', 'packetery' ),
 					],
 				],
 			]
