@@ -1,5 +1,6 @@
 {varType \Packetery\Core\Entity\Order $order}
 
+{if !$order->getPacketId()}
 <a data-packetery-order-inline-edit class="button"
    data-order-data="{= json_encode(
 	   [
@@ -8,3 +9,10 @@
 	   ]
    )}"
 >&#9998;</a>
+<a data-packetery-order-inline-submit class="button"
+   data-order-data="{= json_encode(
+       [
+           'packetSubmitUrl' => $packetSubmitUrl
+       ]
+   )}" title="{__( 'send', 'packetery' )}" href="#">&#128389;</a>
+{/if}
