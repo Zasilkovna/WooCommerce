@@ -252,7 +252,7 @@ class Checkout {
 					'packeteryApiKey'   => $this->options_provider->get_api_key(),
 					'translations'      => [
 						'choosePickupPoint'             => __( 'choosePickupPoint', 'packetery' ),
-						'chooseAddress'                 => __( 'chooseAddress', 'packetery' ),
+						'chooseAddress'                 => __( 'checkShippingAddress', 'packetery' ),
 						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
 						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
 					],
