@@ -33,6 +33,9 @@ class Address {
 			get_post_meta( $addressId, 'postCode', true )
 		);
 		$address->setHouseNumber( get_post_meta( $addressId, 'houseNumber', true ) );
+		$address->setCounty( get_post_meta( $addressId, 'county', true ) );
+		$address->setLongitude( get_post_meta( $addressId, 'longitude', true ) );
+		$address->setLatitude( get_post_meta( $addressId, 'latitude', true ) );
 
 		return $address;
 	}

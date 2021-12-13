@@ -175,6 +175,13 @@ class Plugin {
 	private $pickupPointFactory;
 
 	/**
+	 * Order factory.
+	 *
+	 * @var EntityFactory\Order
+	 */
+	private $orderFactory;
+
+	/**
 	 * Options exporter.
 	 *
 	 * @var Options\Exporter
@@ -204,6 +211,7 @@ class Plugin {
 	 * @param EntityFactory\PickupPoint $pickupPointFactory   PickupPoint factory.
 	 * @param Options\Exporter          $exporter             Options exporter.
 	 * @param Order\CollectionPrint     $orderCollectionPrint Order collection print.
+	 * @param EntityFactory\Order       $orderFactory         Order factory.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -225,7 +233,8 @@ class Plugin {
 		Order\Modal $orderModal,
 		EntityFactory\PickupPoint $pickupPointFactory,
 		Options\Exporter $exporter,
-		Order\CollectionPrint $orderCollectionPrint
+		Order\CollectionPrint $orderCollectionPrint,
+		EntityFactory\Order $orderFactory
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -249,6 +258,7 @@ class Plugin {
 		$this->pickupPointFactory   = $pickupPointFactory;
 		$this->exporter             = $exporter;
 		$this->orderCollectionPrint = $orderCollectionPrint;
+		$this->orderFactory         = $orderFactory;
 	}
 
 	/**
@@ -343,14 +353,28 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
-		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
-		if ( null === $pickupPoint ) {
+		$orderEntity = $this->orderFactory->create( $order );
+		if ( null === $orderEntity ) {
 			return;
 		}
 
+		$pickupPoint = $orderEntity->getPickupPoint();
+		$validatedAddress = $this->addressRepository->getValidatedByOrderId( (int)$orderEntity->getNumber() );
+		if ( null === $pickupPoint && null === $validatedAddress ) {
+			return;
+		}
+
+		$carrierId     = $orderEntity->getCarrierId();
+		$optionId      = Checkout::CARRIER_PREFIX . $carrierId;
+		$carrierOption = get_option( $optionId );
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
-			[ 'pickupPoint' => $pickupPoint ]
+			[
+				'pickupPoint'              => $pickupPoint,
+				'validatedAddress'         => $validatedAddress,
+				'carrierAddressValidation' => $carrierOption && isset( $carrierOption['address_validation'] ) ? $carrierOption['address_validation'] : 'none', // TODO: finish me
+			]
 		);
 	}
 
