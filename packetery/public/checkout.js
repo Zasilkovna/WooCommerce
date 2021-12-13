@@ -186,6 +186,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			var carrierRateId = getShippingRateId();
 			if ( hasHomeDelivery( carrierRateId ) ) {
 				widgetOptions.layout = 'hd';
+				widgetOptions.appIdentity = settings.appIdentity;
 
 				var destinationAddress = getDestinationAddress();
 				widgetOptions.street = destinationAddress.street;
