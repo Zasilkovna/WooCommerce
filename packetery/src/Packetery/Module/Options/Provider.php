@@ -119,34 +119,6 @@ class Provider {
 	}
 
 	/**
-	 * Gets number of orders per page in WC order grid. Used by add_filter().
-	 *
-	 * @return int|null Per page.
-	 */
-	public function getOrderGridPerPage(): ?int {
-		$value = $this->get( 'order_grid_per_page' );
-		if ( is_numeric( $value ) ) {
-			return (int) $value;
-		}
-
-		return null;
-	}
-
-	/**
-	 * Gets priority for add_filter() callback related to order_grid_per_page.
-	 *
-	 * @return int Per page priority.
-	 */
-	public function getOrderGridPerPagePriority(): int {
-		$value = $this->get( 'order_grid_per_page_priority' );
-		if ( is_numeric( $value ) ) {
-			return (int) $value;
-		}
-
-		return 10;
-	}
-
-	/**
 	 * Which payment rate id COD?
 	 *
 	 * @return string|null Content.
