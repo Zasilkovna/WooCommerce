@@ -19,6 +19,32 @@ var packeteryLoadCheckout = function( $, settings ) {
 			return $( '#shipping_method input[type="hidden"]' ).val();
 		};
 
+		var resetWidgetInfoClasses = function() {
+			$widgetDiv.find( '.packeta-widget-info' ).removeClass('packeta-widget-info-error').removeClass('packeta-widget-info-success');
+		};
+
+		var resetWidgetInfo = function() {
+			resetWidgetInfoClasses();
+			$widgetDiv.find( '.packeta-widget-info' ).html('');
+			$widgetDiv.find( '.packeta-widget-selected-address' ).html('');
+		};
+
+		var showAddressFromHiddenFields = function(carrierRateId) {
+			if (getRateAttrValue( carrierRateId, 'packetery_address_street', false )) {
+				$widgetDiv.find( '.packeta-widget-selected-address' ).html(
+					getRateAttrValue( carrierRateId, 'packetery_address_street', '' )
+					+ ' ' +
+					getRateAttrValue( carrierRateId, 'packetery_address_houseNumber', '' )
+					+ ', ' +
+					getRateAttrValue( carrierRateId, 'packetery_address_city', '' )
+					+ ', ' +
+					getRateAttrValue( carrierRateId, 'packetery_address_postCode', '' )
+				);
+				resetWidgetInfoClasses();
+				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-success').html(settings.translations.addressIsValidated);
+			}
+		};
+
 		var loadInfoForCarrierRate = function( carrierRateId, attrs ) {
 			for ( var attributeKey in attrs ) {
 				if ( !attrs.hasOwnProperty( attributeKey ) ) {
@@ -91,6 +117,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			$widgetDiv.hide();
 			resetInfo( settings.pickupPointAttrs ); // clear active hidden field values
 			resetInfo( settings.homeDeliveryAttrs );
+			resetWidgetInfo();
 
 			if ( !hasCarrierConfig( carrierRateId ) ) {
 				return;
@@ -112,7 +139,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( _hasHomeDelivery ) {
 				loadInfoForCarrierRate( carrierRateId, settings.homeDeliveryAttrs );
-				$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) );
+				showAddressFromHiddenFields( carrierRateId );
 				$widgetDiv.find( 'button' ).html( settings.translations.chooseAddress );
 				$widgetDiv.show();
 			}
@@ -142,6 +169,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			if ( destinationAddress.country !== settings.country ) {
 				clearInfo( settings.pickupPointAttrs );
 				clearInfo( settings.homeDeliveryAttrs );
+				resetWidgetInfo();
 				settings.country = destinationAddress.country;
 			}
 
@@ -195,8 +223,12 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.carrierId = settings.carrierConfig[ carrierRateId ][ 'id' ];
 
 				PacketaHD.Widget.pick( settings.packeteryApiKey, function( result ) {
+					resetWidgetInfo();
+					showAddressFromHiddenFields( carrierRateId );
+
 					if ( !result ) {
-						$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressValidationIsOutOfOrder );
+						resetWidgetInfoClasses();
+						$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html( settings.translations.addressValidationIsOutOfOrder );
 						return;
 					}
 
@@ -207,7 +239,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 					var selectedAddress = result.address;
 
 					if ( selectedAddress.country !== widgetOptions.country ) {
-						$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.invalidAddressCountrySelected );
+						resetWidgetInfoClasses();
+						$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html( settings.translations.invalidAddressCountrySelected );
 						return;
 					}
 
@@ -215,7 +248,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '1' );
 					fillHiddenFields( carrierRateId, settings.homeDeliveryAttrs, selectedAddress );
-					$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) );
+					showAddressFromHiddenFields( carrierRateId );
 				}, widgetOptions );
 			}
 
@@ -228,6 +261,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					if ( pickupPoint == null ) {
 						return;
 					}
+					resetWidgetInfo();
 
 					fillHiddenFields( carrierRateId, settings.pickupPointAttrs, pickupPoint );
 					$widgetDiv.find( '.packeta-widget-info' ).html( pickupPoint.name );
