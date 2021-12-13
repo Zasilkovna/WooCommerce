@@ -3,7 +3,22 @@
 	$( function() {
 		var $lastModalButtonClicked;
 
-		$( 'body' ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
+		var $body = $( 'body' );
+		$body.on( 'click', '[data-packetery-order-inline-submit]', function( e ) {
+			var $target = $( e.target );
+			var orderData = $target.data( 'order-data' );
+
+			$.ajax( {
+				type: 'POST',
+				dataType: 'json',
+				url: orderData.packetSubmitUrl,
+				data: {}
+			} ).always( function() {
+				window.location.reload();
+			} );
+		} );
+
+		$body.on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
 			var $target = $( e.target );
 			$lastModalButtonClicked = $target;
 
