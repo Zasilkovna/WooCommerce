@@ -24,6 +24,7 @@ use WP_REST_Server;
 class Controller extends WP_REST_Controller {
 
 	public const PATH_SAVE_MODAL = '/save';
+	public const PATH_SUBMIT_TO_API = '/submit-to-api';
 
 	/**
 	 * Order modal.
@@ -39,17 +40,22 @@ class Controller extends WP_REST_Controller {
 	 */
 	private $router;
 
+	/** @var PacketSubmitter */
+	private $packetSubmitter;
+
 	/**
 	 * Controller constructor.
 	 *
 	 * @param Modal            $orderModal       Modal.
 	 * @param ControllerRouter $controllerRouter Router.
+	 * @param PacketSubmitter  $packetSubmitter
 	 */
-	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter ) {
+	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter, PacketSubmitter $packetSubmitter ) {
 		$this->orderModal = $orderModal;
 		$this->router     = $controllerRouter;
 		$this->namespace  = $controllerRouter->getNamespace();
 		$this->rest_base  = $controllerRouter->getRestBase();
+		$this->packetSubmitter = $packetSubmitter;
 	}
 
 	/**
@@ -70,6 +76,37 @@ class Controller extends WP_REST_Controller {
 				],
 			]
 		);
+		$this->router->registerRoute(
+			self::PATH_SUBMIT_TO_API,
+			[
+				[
+					'methods'             => WP_REST_Server::ALLMETHODS,
+					'callback'            => [ $this, 'submitToApi' ],
+					'permission_callback' => function () {
+						return current_user_can( 'edit_posts' );
+					},
+				],
+			]
+		);
+	}
+
+	/**
+	 * Submit packet to API.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function submitToApi( $request ) {
+		$data       = [];
+		$parameters = $request->get_query_params();
+		$orderId    = $parameters['orderId'];
+		$order      = wc_get_order( $orderId );
+
+		$resultData = [];
+		$this->packetSubmitter->submitPacket( $order, $resultData );
+
+		return new WP_REST_Response( $data, 200 );
 	}
 
 	/**
