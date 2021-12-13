@@ -1,7 +1,9 @@
 {varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
+{varType \Packetery\Core\Entity\Address $validatedAddress}
 
 <div class="clear"></div>
 <div>
+	{if $pickupPoint}
 	<h3>
 		{__( 'Packeta', 'packetery' )} - {__( 'pickup point detail', 'packetery' )}
 	</h3>
@@ -11,5 +13,19 @@
 	{if $pickupPoint->getUrl()}
 		<p><a class="button" target="_blank"
 			  href="{$pickupPoint->getUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a></p>
+	{/if}
+	{/if}
+
+	{if $validatedAddress}
+	<h3>
+		{__( 'Packeta', 'packetery' )} - {__( 'validated address', 'packetery' )}
+	</h3>
+
+    <p><strong>{__( 'street', 'packetery' )}</strong>: {$validatedAddress->getStreet()}</p>
+    <p><strong>{__( 'houseNumber', 'packetery' )}</strong>: {$validatedAddress->getHouseNumber()}</p>
+    <p><strong>{__( 'city', 'packetery' )}</strong>: {$validatedAddress->getCity()}</p>
+    <p><strong>{__( 'zip', 'packetery' )}</strong>: {$validatedAddress->getZip()}</p>
+    <p><strong>{__( 'county', 'packetery' )}</strong>: {$validatedAddress->getCounty()}</p>
+    <p><strong>{__( 'gps', 'packetery' )}</strong>: {$validatedAddress->getLatitude()}, {$validatedAddress->getLongitude()}</p>
 	{/if}
 </div>
