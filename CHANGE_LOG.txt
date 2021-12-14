@@ -1,3 +1,5 @@
+2.2.2 - Added: email template variables
+
 2.2.1 - Fixed: slow order grid loading
       - Fixed: order grid did not display paging controls on top of the grid and did not display row count
       - Fixed: order grid export did not set flags correctly

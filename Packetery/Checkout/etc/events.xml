@@ -6,4 +6,7 @@
 	<event name="admin_sales_order_address_update">
 		<observer instance="Packetery\Checkout\Observer\Sales\AddressPlaceAfter" name="packetery_checkout_observer_sales_addressplaceafter_admin_sales_order_address_update"/>
 	</event>
+	<event name="email_order_set_template_vars_before">
+		<observer instance="Packetery\Checkout\Observer\Sales\EmailOrderTemplateVarsBefore" name="packetery_checkout_email_order_set_template_vars_before"/>
+	</event>
 </config>

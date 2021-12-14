@@ -75,6 +75,15 @@ Price rules are created as unavailable, without set maximum weight.
 - possibility of bulk weight adjustment in the shipment list
 - export shipments to a CSV file that can be imported in [client section](https://client.packeta.com/)
 - possibility to change the pickup point for an existing order in the administration
+- email template variables
+
+#### Email template variables
+
+<code>
+{{if packetery_is_pickup_point}} Pickup point: {{var packetery_point_id}} {{var packetery_point_name}} {{/if}}
+
+{{if packetery_is_address_delivery}} Carrier name: {{var packetery_carrier_name}} {{/if}}
+</code>
 
 #### Restrictions:
 
@@ -156,6 +165,15 @@ Cenová pravidla jsou vytvořena jako nedostupná, bez nastavené maximální hm
 - možnost hromadné úpravy hmotnosti v seznamu zásilek
 - export zásilek do csv souboru, který lze importovat v [klientské sekci](https://client.packeta.com/)
 - možnost změny výdejního místa u existující objednávky v administraci
+- proměnné pro emailové šablony
+
+#### Proměnné pro emailové šablony
+
+<code>
+{{if packetery_is_pickup_point}} Pickup point: {{var packetery_point_id}} {{var packetery_point_name}} {{/if}}
+
+{{if packetery_is_address_delivery}} Carrier name: {{var packetery_carrier_name}} {{/if}}
+</code>
 
 #### Omezení:
 

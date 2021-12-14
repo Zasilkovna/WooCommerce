@@ -25,4 +25,18 @@ class Order extends \Magento\Framework\Model\AbstractModel implements \Magento\F
 
         return $values;
     }
+
+    /**
+     * @return int
+     */
+    public function getPointId(): int {
+        return (int)$this->getData('point_id');
+    }
+
+    /**
+     * @return string
+     */
+    public function getPointName(): string {
+        return (string)$this->getData('point_name');
+    }
 }
