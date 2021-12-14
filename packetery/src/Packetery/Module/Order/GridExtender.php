@@ -270,16 +270,10 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$packetSubmitUrl = add_query_arg(
-					[
-						'orderId' => $order->getNumber(),
-						'_wpnonce' => wp_create_nonce( 'wp_rest' )
-					],
-					$this->orderControllerRouter->getRouteUrl(Controller::PATH_SUBMIT_TO_API)
-				);
+				$packetSubmitUrl = add_query_arg( [], $this->orderControllerRouter->getRouteUrl(Controller::PATH_SUBMIT_TO_API) );
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
-					[ 'order' => $order, 'packetSubmitUrl' => $packetSubmitUrl ]
+					[ 'order' => $order, 'packetSubmitUrl' => $packetSubmitUrl, 'restNonce' => wp_create_nonce( 'wp_rest' ) ]
 				);
 				break;
 		}
