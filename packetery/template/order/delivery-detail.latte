@@ -1,5 +1,6 @@
 {varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
-{varType \Packetery\Core\Entity\Address $validatedAddress}
+{varType \Packetery\Core\Entity\Address $validatedDeliveryAddress}
+{varType string $carrierAddressValidation}
 
 <div class="clear"></div>
 <div>
@@ -16,16 +17,22 @@
 	{/if}
 	{/if}
 
-	{if $validatedAddress}
+	{if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
+		<p><strong>{__( 'addressWasNotValidated', 'packetery' )}</strong></p>
+	{/if}
+
+	{if $validatedDeliveryAddress}
 	<h3>
 		{__( 'Packeta', 'packetery' )} - {__( 'validated address', 'packetery' )}
 	</h3>
 
-    <p><strong>{__( 'street', 'packetery' )}</strong>: {$validatedAddress->getStreet()}</p>
-    <p><strong>{__( 'houseNumber', 'packetery' )}</strong>: {$validatedAddress->getHouseNumber()}</p>
-    <p><strong>{__( 'city', 'packetery' )}</strong>: {$validatedAddress->getCity()}</p>
-    <p><strong>{__( 'zip', 'packetery' )}</strong>: {$validatedAddress->getZip()}</p>
-    <p><strong>{__( 'county', 'packetery' )}</strong>: {$validatedAddress->getCounty()}</p>
-    <p><strong>{__( 'gps', 'packetery' )}</strong>: {$validatedAddress->getLatitude()}, {$validatedAddress->getLongitude()}</p>
+	<p>
+		<strong>{__( 'street', 'packetery' )}</strong>: {$validatedDeliveryAddress->getStreet()}<br>
+		<strong>{__( 'houseNumber', 'packetery' )}</strong>: {$validatedDeliveryAddress->getHouseNumber()}<br>
+		<strong>{__( 'city', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCity()}<br>
+		<strong>{__( 'zip', 'packetery' )}</strong>: {$validatedDeliveryAddress->getZip()}<br>
+		<strong>{__( 'county', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCounty()}<br>
+		<strong>{__( 'gps', 'packetery' )}</strong>: {$validatedDeliveryAddress->getLatitude()}, {$validatedDeliveryAddress->getLongitude()}<br>
+	</p>
 	{/if}
 </div>
