@@ -177,25 +177,12 @@ class Entity {
 	}
 
 	/**
-	 * Gets weight.
+	 * Gets weight specified by user.
 	 *
 	 * @return float|null
 	 */
-	public function getWeight(): ?float {
-		$metaWeight = $this->getMetaAsNullableFloat( self::META_WEIGHT );
-		if ( $metaWeight ) {
-			return $metaWeight;
-		}
-
-		$weight = 0;
-		foreach ( $this->order->get_items() as $item ) {
-			$quantity      = $item->get_quantity();
-			$product       = $item->get_product();
-			$productWeight = (float) $product->get_weight();
-			$weight       += ( $productWeight * $quantity );
-		}
-
-		return wc_get_weight( $weight, 'kg' );
+	public function getUserSpecifiedWeight(): ?float {
+		return $this->getMetaAsNullableFloat( self::META_WEIGHT );
 	}
 
 	/**
