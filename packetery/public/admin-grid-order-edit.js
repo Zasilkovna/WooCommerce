@@ -12,9 +12,16 @@
 				type: 'POST',
 				dataType: 'json',
 				url: orderData.packetSubmitUrl,
-				data: {}
-			} ).always( function() {
-				window.location.reload();
+				beforeSend: function ( xhr ) {
+					xhr.setRequestHeader( 'X-WP-Nonce', $target.data( 'rest-nonce' ) );
+				},
+				data: {
+					orderId: orderData.id
+				}
+			} ).always( function( response ) {
+				if ( response && response.redirectTo ) {
+					window.location.href = response.redirectTo;
+				}
 			} );
 		} );
 
