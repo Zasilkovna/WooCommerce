@@ -358,22 +358,15 @@ class Plugin {
 			return;
 		}
 
-		$pickupPoint = $orderEntity->getPickupPoint();
-		$validatedAddress = $this->addressRepository->getValidatedByOrderId( (int)$orderEntity->getNumber() );
-		if ( null === $pickupPoint && null === $validatedAddress ) {
-			return;
-		}
-
-		$carrierId     = $orderEntity->getCarrierId();
-		$optionId      = Checkout::CARRIER_PREFIX . $carrierId;
-		$carrierOption = get_option( $optionId );
+		$carrierId      = $orderEntity->getCarrierId();
+		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
 			[
-				'pickupPoint'              => $pickupPoint,
-				'validatedAddress'         => $validatedAddress,
-				'carrierAddressValidation' => $carrierOption && isset( $carrierOption['address_validation'] ) ? $carrierOption['address_validation'] : 'none', // TODO: finish me
+				'pickupPoint'              => $orderEntity->getPickupPoint(),
+				'validatedDeliveryAddress' => $this->addressRepository->getValidatedByOrderId( (int) $orderEntity->getNumber() ),
+				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
 			]
 		);
 	}
