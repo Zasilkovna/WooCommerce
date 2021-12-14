@@ -398,14 +398,20 @@ class Plugin {
 			return;
 		}
 
-		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $email->object );
-		if ( null === $pickupPoint ) {
+		$packeteryOrder = $this->orderFactory->create( $email->object );
+		if ( null === $packeteryOrder ) {
 			return;
 		}
 
+		$pickupPoint              = $packeteryOrder->getPickupPoint();
+		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( (int) $packeteryOrder->getNumber() );
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
-			[ 'pickupPoint' => $pickupPoint ]
+			[
+				'pickupPoint'              => $pickupPoint,
+				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+			]
 		);
 	}
 
