@@ -31,6 +31,7 @@
 
 			setTimeout(function() {
 				Nette.init();
+				$('[data-packetery-modal] [name="packetery_weight"]').focus().select();
 			}, 200);
 
 		} ).on( 'submit', '#order-modal-edit-form', function( e ) {
