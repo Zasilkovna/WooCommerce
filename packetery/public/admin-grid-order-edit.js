@@ -18,7 +18,14 @@
 			} );
 		} );
 
-		$body.on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
+		$body.on( 'wc_backbone_modal_loaded', function( e ) {
+			var $target = $( e.target );
+			var packeteryModal = $target.find( '[data-packetery-modal]' );
+			if ( packeteryModal.length > 0 ) {
+				packeteryModal.find( '[name="packetery_weight"]' ).focus().select();
+				Nette.init();
+			}
+		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
 			var $target = $( e.target );
 			$lastModalButtonClicked = $target;
 
@@ -28,11 +35,6 @@
 					"order": $target.data( 'order-data' )
 				}
 			} );
-
-			setTimeout(function() {
-				Nette.init();
-				$('[data-packetery-modal] [name="packetery_weight"]').focus().select();
-			}, 200);
 
 		} ).on( 'submit', '#order-modal-edit-form', function( e ) {
 			var $target = $( e.target );
@@ -72,6 +74,7 @@
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
 				orderData.packetery_weight = response.data.packetery_weight;
 				$lastModalButtonClicked.data( 'order-data', orderData );
+				$( '[data-packetery-modal] .modal-close:first' ).trigger( 'click' );
 			} ).always( function() {
 				$target.removeClass( 'disabled' );
 				$packeteryModal.find( '.spinner' ).removeClass( 'is-active' );
