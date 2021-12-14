@@ -91,12 +91,17 @@ class Order {
 			return null;
 		}
 
+		$orderWeight = $moduleOrder->getUserSpecifiedWeight();
+		if ( null === $orderWeight ) {
+			$orderWeight = $this->calculateOrderWeight( $order );
+		}
+
 		$orderEntity = new Entity\Order(
 			$orderId,
 			$contactInfo['first_name'],
 			$contactInfo['last_name'],
 			$moduleOrder->getTotalPrice(),
-			$moduleOrder->getWeight(),
+			$orderWeight,
 			$this->optionsProvider->get_sender(),
 			$moduleOrder->getCarrierId()
 		);
@@ -141,6 +146,28 @@ class Order {
 		}
 
 		return $orderEntity;
+	}
+
+	/**
+	 * Calculates order weight ignoring user specified weight.
+	 *
+	 * @return float
+	 */
+	private function calculateOrderWeight( WC_Order $order ): float {
+		$weight = 0;
+		foreach ( $order->get_items() as $item ) {
+			$quantity      = $item->get_quantity();
+			$product       = $item->get_product();
+			$productWeight = (float) $product->get_weight();
+			$weight        += ( $productWeight * $quantity );
+		}
+
+		if ( $weight > 0 ) {
+			// TODO: Add packaging weight for empty order?
+			$weight += $this->optionsProvider->getPackagingWeight();
+		}
+
+		return wc_get_weight( $weight, 'kg' );
 	}
 
 	/**

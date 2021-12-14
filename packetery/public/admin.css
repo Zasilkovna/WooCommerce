@@ -83,7 +83,7 @@
     padding-right: 1em;
 }
 
-#packetery-options-page input[type=text], #packetery-options-page select {
+#packetery-options-page input[type=text], #packetery-options-page input[type=number], #packetery-options-page select {
     width: 500px;
     max-width: none;
 }
