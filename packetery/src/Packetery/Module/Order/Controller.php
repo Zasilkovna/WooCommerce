@@ -99,12 +99,17 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function submitToApi( $request ) {
 		$data       = [];
-		$parameters = $request->get_query_params();
+		$parameters = $request->get_body_params();
 		$orderId    = $parameters['orderId'];
 		$order      = wc_get_order( $orderId );
 
-		$resultData = [];
-		$this->packetSubmitter->submitPacket( $order, $resultData );
+		$resultsCounter = [
+			'success' => 0,
+			'ignored' => 0,
+			'errors'  => 0,
+		];
+		$this->packetSubmitter->submitPacket( $order, $resultsCounter );
+		$data['redirectTo'] = add_query_arg( [ 'post_type' => 'shop_order', 'submit_to_api' => '1', ] + $resultsCounter, admin_url( 'edit.php' ) );
 
 		return new WP_REST_Response( $data, 200 );
 	}

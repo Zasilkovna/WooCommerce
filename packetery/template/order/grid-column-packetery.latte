@@ -12,7 +12,12 @@
 <a data-packetery-order-inline-submit class="button"
    data-order-data="{= json_encode(
        [
-           'packetSubmitUrl' => $packetSubmitUrl
+           'id' => $order->getNumber(),
+           'packetSubmitUrl' => $packetSubmitUrl,
        ]
-   )}" title="{__( 'send', 'packetery' )}" href="#">&#128389;</a>
+   )}"
+   data-rest-nonce="{$restNonce}"
+   title="{__( 'send', 'packetery' )}"
+   href="#"
+>&#128389;</a>
 {/if}
