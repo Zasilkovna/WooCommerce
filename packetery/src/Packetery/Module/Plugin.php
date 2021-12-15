@@ -57,7 +57,7 @@ class Plugin {
 	 *
 	 * @var Repository
 	 */
-	private $carrier_repository;
+	private $carrierRepository;
 
 	/**
 	 * Country options page.
@@ -149,7 +149,7 @@ class Plugin {
 	 * @param Order\Metabox      $order_metabox Order metabox.
 	 * @param MessageManager     $message_manager Message manager.
 	 * @param Options\Page       $options_page Options page.
-	 * @param Repository         $carrier_repository Carrier repository.
+	 * @param Repository         $carrierRepository Carrier repository.
 	 * @param Downloader         $carrier_downloader Carrier downloader object.
 	 * @param Checkout           $checkout Checkout class.
 	 * @param Engine             $latte_engine PacketeryLatte engine.
@@ -166,7 +166,7 @@ class Plugin {
 		Order\Metabox $order_metabox,
 		MessageManager $message_manager,
 		Options\Page $options_page,
-		Repository $carrier_repository,
+		Repository $carrierRepository,
 		Downloader $carrier_downloader,
 		Checkout $checkout,
 		Engine $latte_engine,
@@ -181,7 +181,7 @@ class Plugin {
 	) {
 		$this->options_page       = $options_page;
 		$this->latte_engine       = $latte_engine;
-		$this->carrier_repository = $carrier_repository;
+		$this->carrierRepository  = $carrierRepository;
 		$this->carrier_downloader = $carrier_downloader;
 		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
 		$this->order_metabox      = $order_metabox;
@@ -438,7 +438,12 @@ class Plugin {
 		}
 
 		$this->init();
-		$this->carrier_repository->create_table();
+
+		$createResult = $this->carrierRepository->createTable();
+		if ( false === $createResult ) {
+			$this->message_manager->flash_message( __( 'carrierTableNotCreated', 'packetery' ), 'error' );
+		}
+
 		$versionCheck = get_option( 'packetery_version' );
 		if ( false === $versionCheck ) {
 			update_option( 'packetery_version', self::VERSION );

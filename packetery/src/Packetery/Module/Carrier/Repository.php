@@ -58,10 +58,12 @@ class Repository {
 
 	/**
 	 * Create table to store carriers.
+	 *
+	 * @return bool
 	 */
-	public function create_table(): void {
+	public function createTable(): bool {
 		$wpdb = $this->get_wpdb();
-		$wpdb->query(
+		return $wpdb->query(
 			'CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_carrier . '` (
 				`id` int NOT NULL,
 				`name` varchar(255) NOT NULL,
