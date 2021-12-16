@@ -30,6 +30,7 @@ class LabelPrint {
 	public const ACTION_PACKETA_LABELS = 'print_packeta_labels';
 	public const ACTION_CARRIER_LABELS = 'print_carrier_labels';
 	public const LABEL_TYPE_PARAM      = 'label_type';
+	public const MENU_SLUG             = 'label-print';
 
 	/**
 	 * PacketeryLatte Engine.
@@ -155,7 +156,7 @@ class LabelPrint {
 				'form'          => $form,
 				'count'         => $count,
 				'backLink'      => get_transient( self::getBackLinkTransientName() ),
-				'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'label-print' ),
+				'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, self::MENU_SLUG ),
 			]
 		);
 	}
@@ -176,25 +177,34 @@ class LabelPrint {
 	 * Outputs pdf.
 	 */
 	public function outputLabelsPdf(): void {
-		if ( $this->httpRequest->getQuery( 'page' ) !== 'label-print' ) {
+		if ( $this->httpRequest->getQuery( 'page' ) !== self::MENU_SLUG ) {
 			return;
 		}
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'label-print' );
+			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
 
 			return;
 		}
 
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$packetIds       = $this->getPacketIdsFromTransient( $isCarrierLabels );
+		$idParam         = $this->httpRequest->getQuery( 'id' );
+		$packetIdParam   = $this->httpRequest->getQuery( 'packet_id' );
+		if ( $idParam !== null && $packetIdParam !== null ) {
+			$packetIds = [ $idParam => $packetIdParam ];
+		} else {
+			$packetIds = $this->getPacketIdsFromTransient( $isCarrierLabels );
+		}
 		if ( ! $packetIds ) {
 			return;
 		}
 
-		$maxOffset = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
-		$form      = $this->createForm( $maxOffset );
+		$maxOffset   = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
+		$form        = $this->createForm( $maxOffset );
+		$offsetParam = $this->httpRequest->getQuery( 'offset' );
 		if ( 0 === $maxOffset ) {
 			$offset = 0;
+		} elseif ($offsetParam !== null) {
+			$offset = (int) $offsetParam;
 		} elseif ( $form->isSubmitted() ) {
 			$data   = $form->getValues( 'array' );
 			$offset = $data['offset'];
@@ -260,7 +270,7 @@ class LabelPrint {
 			__( 'printLabels', 'packetery' ),
 			__( 'printLabels', 'packetery' ),
 			'manage_options',
-			'label-print',
+			self::MENU_SLUG,
 			array(
 				$this,
 				'render',
@@ -273,7 +283,7 @@ class LabelPrint {
 	 * Hides submenu item.
 	 */
 	public function hideFromMenus(): void {
-		Plugin::hideSubmenuItem( 'label-print' );
+		Plugin::hideSubmenuItem( self::MENU_SLUG );
 	}
 
 	/**

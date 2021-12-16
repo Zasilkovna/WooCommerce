@@ -96,7 +96,7 @@ class BulkActions {
 
 			return add_query_arg(
 				[
-					'page'                       => 'label-print',
+					'page'                       => LabelPrint::MENU_SLUG,
 					LabelPrint::LABEL_TYPE_PARAM => $action,
 				],
 				'admin.php'

@@ -1,23 +1,25 @@
 {varType \Packetery\Core\Entity\Order $order}
 
-{if !$order->getPacketId()}
-<a data-packetery-order-inline-edit class="button"
-   data-order-data="{= json_encode(
-	   [
-		   'id' => $order->getNumber(),
-		   'packetery_weight' => $order->getWeight(),
-	   ]
-   )}"
->&#9998;</a>
-<a data-packetery-order-inline-submit class="button"
-   data-order-data="{= json_encode(
+{if $order->getPacketId()}
+    <a class="button" href="{$printLink}">&#128438;</a>
+{else}
+    <a data-packetery-order-inline-edit class="button"
+       data-order-data="{= json_encode(
        [
-           'id' => $order->getNumber(),
-           'packetSubmitUrl' => $packetSubmitUrl,
+       'id' => $order->getNumber(),
+       'packetery_weight' => $order->getWeight(),
        ]
-   )}"
-   data-rest-nonce="{$restNonce}"
-   title="{__( 'send', 'packetery' )}"
-   href="#"
->&#128389;</a>
+       )}"
+    >&#9998;</a>
+    <a data-packetery-order-inline-submit class="button"
+       data-order-data="{= json_encode(
+       [
+       'id' => $order->getNumber(),
+       'packetSubmitUrl' => $packetSubmitUrl,
+       ]
+       )}"
+       data-rest-nonce="{$restNonce}"
+       title="{__( 'send', 'packetery' )}"
+       href="#"
+    >&#128389;</a>
 {/if}
