@@ -341,8 +341,15 @@ class Checkout {
 				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 			}
 
-			if ( 'required' === $addressValidation && '1' !== $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) {
-				wc_add_notice( __( 'widgetAddressIsNotChosen', 'packetery' ), 'error' );
+			if (
+				'required' === $addressValidation &&
+				(
+					! isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) ||
+					'1' !== $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]
+				)
+			) {
+				wc_add_notice( __( 'shippingAddressIsNotValidated', 'packetery' ), 'error' );
+
 				return;
 			}
 		}
@@ -400,12 +407,16 @@ class Checkout {
 				if ( false === $isWidgetResultField ) {
 					continue;
 				}
-
-				$value             = $post[ $attributeData['name'] ];
-				$address[ $field ] = $value;
+				if ( isset( $attributeData['name'] ) && isset( $post[ $attributeData['name'] ] ) ) {
+					$value             = $post[ $attributeData['name'] ];
+					$address[ $field ] = $value;
+				}
 			}
 
-			if ( '1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) {
+			if (
+				isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) &&
+				'1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]
+			) {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
@@ -482,9 +493,12 @@ class Checkout {
 	 */
 	public function getCartWeightKg() {
 		$weight = WC()->cart->cart_contents_weight;
-		$weight = wc_get_weight( $weight, 'kg' );
+		$weightKg = wc_get_weight( $weight, 'kg' );
+		if ( $weightKg ) {
+			$weightKg += $this->options_provider->getPackagingWeight();
+		}
 
-		return $weight;
+		return $weightKg;
 	}
 
 	/**

@@ -140,7 +140,7 @@ class Provider {
 	public function getPackagingWeight(): float {
 		$value = $this->get( 'packaging_weight' );
 		if ( is_numeric( $value ) ) {
-			return (float)$value;
+			return (float) $value;
 		}
 
 		return 0.0;

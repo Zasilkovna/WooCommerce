@@ -5,16 +5,16 @@
 <div class="clear"></div>
 <div>
 	{if $pickupPoint}
-	<h3>
-		{__( 'Packeta', 'packetery' )} - {__( 'pickup point detail', 'packetery' )}
-	</h3>
+		<h3>
+			{__( 'Packeta', 'packetery' )} - {__( 'pickup point detail', 'packetery' )}
+		</h3>
 
-    <p><strong>{__( 'Name', 'packetery' )}</strong>: {$pickupPoint->getName()}</p>
-    <p><strong>{__( 'Address', 'packetery' )}</strong>: {$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</p>
-	{if $pickupPoint->getUrl()}
-		<p><a class="button" target="_blank"
-			  href="{$pickupPoint->getUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a></p>
-	{/if}
+		<p><strong>{__( 'Name', 'packetery' )}</strong>: {$pickupPoint->getName()}</p>
+		<p><strong>{__( 'Address', 'packetery' )}</strong>: {$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</p>
+		{if $pickupPoint->getUrl()}
+			<p><a class="button" target="_blank"
+				  href="{$pickupPoint->getUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a></p>
+		{/if}
 	{/if}
 
 	{if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
@@ -22,17 +22,17 @@
 	{/if}
 
 	{if $validatedDeliveryAddress}
-	<h3>
-		{__( 'Packeta', 'packetery' )} - {__( 'validated address', 'packetery' )}
-	</h3>
+		<h3>
+			{__( 'Packeta', 'packetery' )} - {__( 'validatedAddress', 'packetery' )}
+		</h3>
 
-	<p>
-		<strong>{__( 'street', 'packetery' )}</strong>: {$validatedDeliveryAddress->getStreet()}<br>
-		<strong>{__( 'houseNumber', 'packetery' )}</strong>: {$validatedDeliveryAddress->getHouseNumber()}<br>
-		<strong>{__( 'city', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCity()}<br>
-		<strong>{__( 'zip', 'packetery' )}</strong>: {$validatedDeliveryAddress->getZip()}<br>
-		<strong>{__( 'county', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCounty()}<br>
-		<strong>{__( 'gps', 'packetery' )}</strong>: {$validatedDeliveryAddress->getLatitude()}, {$validatedDeliveryAddress->getLongitude()}<br>
-	</p>
+		<p>
+			<strong>{__( 'street', 'packetery' )}</strong>: {$validatedDeliveryAddress->getStreet()}<br>
+			<strong>{__( 'houseNumber', 'packetery' )}</strong>: {$validatedDeliveryAddress->getHouseNumber()}<br>
+			<strong>{__( 'city', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCity()}<br>
+			<strong>{__( 'zip', 'packetery' )}</strong>: {$validatedDeliveryAddress->getZip()}<br>
+			<strong>{__( 'county', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCounty()}<br>
+			<strong>{__( 'gps', 'packetery' )}</strong>: {$validatedDeliveryAddress->getLatitude()}, {$validatedDeliveryAddress->getLongitude()}<br>
+		</p>
 	{/if}
 </div>

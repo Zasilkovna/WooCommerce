@@ -377,14 +377,18 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $order ): void {
-		$pickupPoint = $this->pickupPointFactory->fromWcOrder( $order );
-		if ( null === $pickupPoint ) {
+		$pickupPoint              = $this->pickupPointFactory->fromWcOrder( $order );
+		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
+		if ( null === $pickupPoint && null === $validatedDeliveryAddress ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
-			[ 'pickupPoint' => $pickupPoint ]
+			[
+				'pickupPoint'              => $pickupPoint,
+				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+			]
 		);
 	}
 
