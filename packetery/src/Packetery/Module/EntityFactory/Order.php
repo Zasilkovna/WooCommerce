@@ -151,6 +151,8 @@ class Order {
 	/**
 	 * Calculates order weight ignoring user specified weight.
 	 *
+	 * @param WC_Order $order
+	 *
 	 * @return float
 	 */
 	private function calculateOrderWeight( WC_Order $order ): float {
@@ -162,12 +164,12 @@ class Order {
 			$weight        += ( $productWeight * $quantity );
 		}
 
-		if ( $weight > 0 ) {
-			// TODO: Add packaging weight for empty order?
-			$weight += $this->optionsProvider->getPackagingWeight();
+		$weightKg = wc_get_weight( $weight, 'kg' );
+		if ( $weightKg ) {
+			$weightKg += $this->optionsProvider->getPackagingWeight();
 		}
 
-		return wc_get_weight( $weight, 'kg' );
+		return $weightKg;
 	}
 
 	/**
