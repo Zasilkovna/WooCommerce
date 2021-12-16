@@ -304,9 +304,21 @@ class GridExtender {
 				break;
 			case 'packetery':
 				$packetSubmitUrl = add_query_arg( [], $this->orderControllerRouter->getRouteUrl(Controller::PATH_SUBMIT_TO_API) );
+				$printLink = add_query_arg( [
+					'page'                       => LabelPrint::MENU_SLUG,
+					LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
+					'id'                         => $order->getNumber(),
+					'packet_id'                  => $order->getPacketId(),
+					'offset'                     => 0,
+				], admin_url( 'admin.php' ) );
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
-					[ 'order' => $order, 'packetSubmitUrl' => $packetSubmitUrl, 'restNonce' => wp_create_nonce( 'wp_rest' ) ]
+					[
+						'order' => $order,
+						'packetSubmitUrl' => $packetSubmitUrl,
+						'restNonce' => wp_create_nonce( 'wp_rest' ),
+						'printLink' => $printLink,
+					]
 				);
 				break;
 		}
