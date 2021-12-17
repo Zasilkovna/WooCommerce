@@ -103,11 +103,15 @@ class Exporter {
 			);
 			unset( $globalSettings['api_key'] );
 		}
+		$globalSettings['woocommerce_allowed_countries'] = get_option( 'woocommerce_allowed_countries' );
+		$globalSettings['woocommerce_specific_allowed_countries'] = get_option( 'woocommerce_specific_allowed_countries' );
+		$globalSettings['woocommerce_ship_to_countries'] = get_option( 'woocommerce_ship_to_countries' );
+		$globalSettings['woocommerce_specific_ship_to_countries'] = get_option( 'woocommerce_specific_ship_to_countries' );
 
 		$activeTheme            = wp_get_theme();
 		$themeLatestVersion     = \WC_Admin_Status::get_latest_theme_version( $activeTheme );
 		$themeLatestVersionInfo = ( $themeLatestVersion !== $activeTheme->version ? ' (' . $themeLatestVersion . ' available)' : '' );
-		$latteParams            = [
+		$latteParams = [
 			'wpVersion'         => get_bloginfo( 'version' ),
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
@@ -117,7 +121,8 @@ class Exporter {
 			'packetaDebug'      => var_export( PACKETERY_DEBUG, true ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
-			'activeCarriers'    => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
+			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
+			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
 			'lastFiveDaysLogs'  => $this->formatVariable( $this->postLogger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ),
 			'generated'         => gmdate( 'Y-m-d H:i:s' ),
 		];
@@ -163,6 +168,15 @@ class Exporter {
 			// @codingStandardsIgnoreStart
 			$output .= var_export( $variable, true ) . PHP_EOL;
 			// @codingStandardsIgnoreEnd
+		} elseif ( $variable instanceof \stdClass ) {
+			$output .= PHP_EOL . $this->formatVariable( (array) $variable, $level );
+		} elseif ( $variable instanceof \WC_Shipping_Method ) {
+			$methodInfo = [
+				'id'           => $variable->id,
+				'method_title' => $variable->method_title,
+				'enabled'      => $variable->enabled,
+			];
+			$output     .= PHP_EOL . $this->formatVariable( $methodInfo, $level );
 		} elseif ( is_object( $variable ) ) {
 			$output .= gettype( $variable ) . ' ' . get_class( $variable ) . PHP_EOL;
 		} else {
@@ -171,5 +185,4 @@ class Exporter {
 
 		return $output;
 	}
-
 }

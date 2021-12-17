@@ -2,3 +2,4 @@
 /packetery/vendor
 /packetery/temp/*
 !/packetery/temp/.gitignore
+/packetery/log/
