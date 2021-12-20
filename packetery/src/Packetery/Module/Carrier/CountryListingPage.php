@@ -130,15 +130,10 @@ class CountryListingPage {
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			if ( class_exists( 'Locale' ) ) {
-				$countryName = \Locale::getDisplayRegion( '-' . $country, get_locale() );
-			} else {
-				$wcCountries = \WC()->countries->get_countries();
-				$countryName = $wcCountries[ strtoupper( $country ) ];
-			}
+			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
 				'code' => $country,
-				'name' => $countryName,
+				'name' => $wcCountries[ strtoupper( $country ) ],
 				'url'  => add_query_arg(
 					[
 						'page' => OptionsPage::SLUG,
