@@ -76,6 +76,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: Packeta logo CSS in cart made simple and compatible
 * Updated: Settings export extended to be even more helpful.
 * Added: if the creation of the carrier table fails, the user is informed
+* Fixed: using intl library only if present
 
 = 1.0.3 =
 * Fixed: use of pickup point method in cart with billing only setting enabled
