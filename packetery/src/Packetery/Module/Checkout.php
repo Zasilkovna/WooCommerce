@@ -196,10 +196,12 @@ class Checkout {
 	/**
 	 * Adds fields to checkout page to save the values later
 	 */
-	public static function addPickupPointFields() {
-		foreach ( self::$pickup_point_attrs as $attr ) {
-			echo '<input name="' . esc_html( $attr['name'] ) . '" id="' . esc_html( $attr['name'] ) . '" type="hidden">' . PHP_EOL;
-		}
+	public function addPickupPointFields(): void {
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
+			[ 'fields' => array_column( self::$pickup_point_attrs, 'name' ) ]
+		);
+
 		wp_nonce_field( self::NONCE_ACTION );
 	}
 
@@ -287,7 +289,7 @@ class Checkout {
 	public function register_hooks(): void {
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
 		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
-		add_action( 'woocommerce_after_order_notes', array( __CLASS__, 'addPickupPointFields' ) );
+		add_action( 'woocommerce_after_order_notes', array( $this, 'addPickupPointFields' ) );
 		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
