@@ -70,7 +70,6 @@ class Page {
 			Record::ACTION_LABEL_PRINT               => __( 'logAction_label-print', 'packetery' ),
 			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'logAction_carrier-list-update', 'packetery' ),
 			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'logAction_carrier-number-retrieving', 'packetery' ),
-			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'logAction_carrier-table-not-created', 'packetery' ),
 		];
 
 		$translatedStatuses = [
