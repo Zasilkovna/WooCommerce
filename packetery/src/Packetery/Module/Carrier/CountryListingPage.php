@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Module\Checkout;
+use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -49,6 +50,13 @@ class CountryListingPage {
 	private $httpRequest;
 
 	/**
+	 * Checkout.
+	 *
+	 * @var Checkout
+	 */
+	private $checkout;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine     $latteEngine PacketeryLatte engine.
@@ -56,11 +64,18 @@ class CountryListingPage {
 	 * @param Downloader $downloader Carrier downloader.
 	 * @param Request    $httpRequest Http request.
 	 */
-	public function __construct( Engine $latteEngine, Repository $carrierRepository, Downloader $downloader, Request $httpRequest ) {
+	public function __construct(
+		Engine $latteEngine,
+		Repository $carrierRepository,
+		Downloader $downloader,
+		Request $httpRequest,
+		Checkout $checkout
+	) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
 		$this->downloader        = $downloader;
 		$this->httpRequest       = $httpRequest;
+		$this->checkout          = $checkout;
 	}
 
 	/**
@@ -180,7 +195,7 @@ class CountryListingPage {
 	 * @return array
 	 */
 	public function getCarriersForOptionsExport(): array {
-		$activeCarriers = [];
+		$carriersWithSomeOptions = [];
 		$allCarriers    = $this->carrierRepository->getAllIncludingZpoints();
 		foreach ( $allCarriers as $carrier ) {
 			$optionId       = Checkout::CARRIER_PREFIX . $carrier['id'];
@@ -196,11 +211,25 @@ class CountryListingPage {
 				];
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
-				$activeCarriers[ $optionId ] = $carrierOptions;
+				$carrierOptions['count_of_orders'] = 0;
+				$carrierId = $this->checkout->getCarrierId( $optionId );
+				if ( $carrierId ) {
+					$orders = wc_get_orders(
+						[
+							Entity::META_CARRIER_ID => $carrierId,
+							'nopaging'              => true,
+						]
+					);
+					if ( $orders ) {
+						$carrierOptions['count_of_orders'] = count( $orders );
+					}
+				}
+
+				$carriersWithSomeOptions[ $optionId ] = $carrierOptions;
 			}
 		}
 
-		return $activeCarriers;
+		return $carriersWithSomeOptions;
 	}
 
 }

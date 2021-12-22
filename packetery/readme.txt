@@ -71,6 +71,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.0.4 =
+* Updated: Settings export extended to be even more helpful.
+
 = 1.0.3 =
 * Fixed: use of pickup point method in cart with billing only setting enabled
 
