@@ -17,11 +17,13 @@ namespace Packetery\Core\Log;
  */
 class Record {
 
+	// Do not forget to add translation.
 	public const ACTION_PACKET_SENDING            = 'packet-sending';
 	public const ACTION_LABEL_PRINT               = 'label-print';
 	public const ACTION_CARRIER_LIST_UPDATE       = 'carrier-list-update';
 	public const ACTION_CARRIER_LABEL_PRINT       = 'carrier-label-print';
 	public const ACTION_CARRIER_NUMBER_RETRIEVING = 'carrier-number-retrieving';
+	public const ACTION_CARRIER_TABLE_NOT_CREATED = 'carrier-table-not-created';
 
 	public const STATUS_SUCCESS = 'success';
 	public const STATUS_ERROR   = 'error';

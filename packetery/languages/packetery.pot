@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.0.3\n"
+"Project-Id-Version: Packeta 1.0.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2021-12-03T11:30:28+01:00\n"
+"POT-Creation-Date: 2021-12-22T10:45:57+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -23,6 +23,7 @@ msgstr ""
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:35
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:66
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:32
 #: temp/cache/view/template-log-page.latte--5aba213aff.php:15
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:17
@@ -117,23 +118,23 @@ msgstr ""
 msgid "Surcharge"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/Repository.php:256
+#: src/Packetery/Module/Carrier/Repository.php:258
 msgid "CZ Packeta pickup points"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/Repository.php:261
+#: src/Packetery/Module/Carrier/Repository.php:263
 msgid "SK Packeta pickup points"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/Repository.php:266
+#: src/Packetery/Module/Carrier/Repository.php:268
 msgid "HU Packeta pickup points"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/Repository.php:271
+#: src/Packetery/Module/Carrier/Repository.php:273
 msgid "RO Packeta pickup points"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:259
+#: src/Packetery/Module/Checkout.php:249
 msgid "Pick up point is not chosen."
 msgstr ""
 
@@ -167,11 +168,15 @@ msgstr ""
 msgid "logAction_carrier-number-retrieving"
 msgstr ""
 
-#: src/Packetery/Module/Log/Page.php:76
-msgid "statusError"
+#: src/Packetery/Module/Log/Page.php:73
+msgid "logAction_carrier-table-not-created"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:77
+msgid "statusError"
+msgstr ""
+
+#: src/Packetery/Module/Log/Page.php:78
 msgid "statusSuccess"
 msgstr ""
 
@@ -181,7 +186,7 @@ msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:80
 #: src/Packetery/Module/Options/Page.php:81
-#: src/Packetery/Module/Plugin.php:495
+#: src/Packetery/Module/Plugin.php:513
 msgid "Settings"
 msgstr ""
 
@@ -263,11 +268,11 @@ msgstr ""
 msgid "packetaOrdersToPrint"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:259
+#: src/Packetery/Module/Order/GridExtender.php:269
 msgid "Barcode"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:260
+#: src/Packetery/Module/Order/GridExtender.php:270
 msgid "Pick up point or carrier"
 msgstr ""
 
@@ -342,7 +347,15 @@ msgstr ""
 msgid "You are not allowed to edit posts!"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:494
+#: src/Packetery/Module/Plugin.php:448
+msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:453
+msgid "carrierTableNotCreated"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:512
 msgid "View Packeta settings"
 msgstr ""
 
@@ -443,7 +456,7 @@ msgstr ""
 msgid "No known carrier for this country."
 msgstr ""
 
-#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:31
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:36
 msgid "Choose pickup point"
 msgstr ""
 
