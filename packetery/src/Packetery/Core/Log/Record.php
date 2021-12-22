@@ -23,6 +23,7 @@ class Record {
 	public const ACTION_CARRIER_LIST_UPDATE       = 'carrier-list-update';
 	public const ACTION_CARRIER_LABEL_PRINT       = 'carrier-label-print';
 	public const ACTION_CARRIER_NUMBER_RETRIEVING = 'carrier-number-retrieving';
+	public const ACTION_CARRIER_TABLE_NOT_CREATED = 'carrier-table-not-created';
 
 	public const STATUS_SUCCESS = 'success';
 	public const STATUS_ERROR   = 'error';

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
+use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
@@ -444,9 +445,16 @@ class Plugin {
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInWcLog', 'packetery' ), 'error' );
-			$logger = wc_get_logger();
-			$logger->error( __( 'carrierTableNotCreated', 'packetery' ) . ' ' . $lastError );
+			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), 'error' );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'carrierTableNotCreated', 'packetery' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
 		}
 
 		$versionCheck = get_option( 'packetery_version' );
