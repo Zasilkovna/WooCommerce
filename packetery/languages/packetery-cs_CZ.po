@@ -2,19 +2,19 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.0.3\n"
+"Project-Id-Version: Packeta 1.0.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2021-12-03T11:30:28+01:00\n"
-"PO-Revision-Date: 2021-12-07 14:58+0100\n"
+"POT-Creation-Date: 2021-12-22T10:45:57+01:00\n"
+"PO-Revision-Date: 2021-12-22 10:48+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0\n"
-"X-Domain: packetery\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n>=2 && n<=4 ? 1 : 2);\n"
+"X-Generator: Poedit 3.0.1\n"
+"X-Domain: packetery\n"
 
 #. Plugin Name of the plugin
 #: src/Packetery/Module/Options/Page.php:70
@@ -25,6 +25,7 @@ msgstr ""
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:35
 #: temp/cache/view/template-carrier-countries.latte--f45389ba7d.php:66
 #: temp/cache/view/template-carrier-country.latte--5bc1b1497f.php:14
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:32
 #: temp/cache/view/template-log-page.latte--5aba213aff.php:15
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:14
 #: temp/cache/view/template-order-delivery-detail.latte--161f393d1a.php:17
@@ -127,23 +128,23 @@ msgstr "Částka za objednávku do"
 msgid "Surcharge"
 msgstr "Přirážka"
 
-#: src/Packetery/Module/Carrier/Repository.php:256
+#: src/Packetery/Module/Carrier/Repository.php:258
 msgid "CZ Packeta pickup points"
 msgstr "CZ Zásilkovna výdejní místa"
 
-#: src/Packetery/Module/Carrier/Repository.php:261
+#: src/Packetery/Module/Carrier/Repository.php:263
 msgid "SK Packeta pickup points"
 msgstr "SK Zásilkovna výdejní místa"
 
-#: src/Packetery/Module/Carrier/Repository.php:266
+#: src/Packetery/Module/Carrier/Repository.php:268
 msgid "HU Packeta pickup points"
 msgstr "HU Zásilkovna výdejní místa"
 
-#: src/Packetery/Module/Carrier/Repository.php:271
+#: src/Packetery/Module/Carrier/Repository.php:273
 msgid "RO Packeta pickup points"
 msgstr "RO Zásilkovna výdejní místa"
 
-#: src/Packetery/Module/Checkout.php:259
+#: src/Packetery/Module/Checkout.php:249
 msgid "Pick up point is not chosen."
 msgstr "Není vybráno výdejní místo."
 
@@ -176,11 +177,15 @@ msgstr "Aktualizace seznamu dopravců"
 msgid "logAction_carrier-number-retrieving"
 msgstr "Získání trasovacího čísla externího dopravce"
 
-#: src/Packetery/Module/Log/Page.php:76
+#: src/Packetery/Module/Log/Page.php:73
+msgid "logAction_carrier-table-not-created"
+msgstr "Tabulka dopravců nebyla vytvořena"
+
+#: src/Packetery/Module/Log/Page.php:77
 msgid "statusError"
 msgstr "Chyba"
 
-#: src/Packetery/Module/Log/Page.php:77
+#: src/Packetery/Module/Log/Page.php:78
 msgid "statusSuccess"
 msgstr "Úspěch"
 
@@ -189,7 +194,7 @@ msgid "Logs"
 msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:80
-#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:495
+#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:513
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -276,11 +281,11 @@ msgstr "Zásilkovna - zásilky k podání"
 msgid "packetaOrdersToPrint"
 msgstr "Zásilkovna - zásilky k tisku"
 
-#: src/Packetery/Module/Order/GridExtender.php:259
+#: src/Packetery/Module/Order/GridExtender.php:269
 msgid "Barcode"
 msgstr "Trasovací číslo"
 
-#: src/Packetery/Module/Order/GridExtender.php:260
+#: src/Packetery/Module/Order/GridExtender.php:270
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
 
@@ -355,7 +360,16 @@ msgstr "Relace vypršela! Zkuste to prosím znovu."
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
-#: src/Packetery/Module/Plugin.php:494
+#: src/Packetery/Module/Plugin.php:448
+msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
+msgstr ""
+"Tabulka dopravců nebyla vytvořena, více informací naleznete v logu pluginu"
+
+#: src/Packetery/Module/Plugin.php:453
+msgid "carrierTableNotCreated"
+msgstr "Tabulka dopravců nebyla vytvořena"
+
+#: src/Packetery/Module/Plugin.php:512
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
@@ -458,7 +472,7 @@ msgstr "Nastavení země"
 msgid "No known carrier for this country."
 msgstr "Pro tuto zemi neevidujeme žádného dopravce."
 
-#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:31
+#: temp/cache/view/template-checkout-widget_button.latte--2c17326baa.php:36
 msgid "Choose pickup point"
 msgstr "Výběr místa vyzvednutí"
 
