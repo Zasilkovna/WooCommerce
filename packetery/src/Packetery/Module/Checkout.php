@@ -195,24 +195,14 @@ class Checkout {
 
 	/**
 	 * Adds fields to checkout page to save the values later
-	 *
-	 * @link https://docs.woocommerce.com/document/tutorial-customising-checkout-fields-using-actions-and-filters/
-	 *
-	 * @param array $fields Fields before adding.
-	 *
-	 * @return array
 	 */
-	public static function add_pickup_point_fields( array $fields ): array {
-		foreach ( self::$pickup_point_attrs as $attr ) {
-			$fields['billing'][ $attr['name'] ] = [
-				'type'              => 'text',
-				'required'          => false,
-				// For older WooCommerce. See woocommerce_form_field function.
-				'custom_attributes' => [ 'style' => 'display: none;' ],
-			];
-		}
+	public function addPickupPointFields(): void {
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
+			[ 'fields' => array_column( self::$pickup_point_attrs, 'name' ) ]
+		);
 
-		return $fields;
+		wp_nonce_field( self::NONCE_ACTION );
 	}
 
 	/**
@@ -294,20 +284,12 @@ class Checkout {
 	}
 
 	/**
-	 * Renders nonce field
-	 */
-	public static function render_nonce_field() {
-		wp_nonce_field( self::NONCE_ACTION );
-	}
-
-	/**
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
 		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
-		add_filter( 'woocommerce_checkout_fields', array( __CLASS__, 'add_pickup_point_fields' ) );
-		add_action( 'woocommerce_after_order_notes', array( __CLASS__, 'render_nonce_field' ) );
+		add_action( 'woocommerce_after_order_notes', array( $this, 'addPickupPointFields' ) );
 		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );

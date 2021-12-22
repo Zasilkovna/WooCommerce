@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.8.1
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -72,6 +72,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.4 =
+* Fixed: inputs in the cart implemented so as not to affect the appearance
+* Fixed: Packeta logo CSS in cart made simple and compatible
 * Updated: Settings export extended to be even more helpful.
 
 = 1.0.3 =
