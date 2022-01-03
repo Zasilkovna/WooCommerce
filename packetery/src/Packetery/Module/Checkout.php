@@ -250,7 +250,7 @@ class Checkout {
 					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
 					'appIdentity'       => Plugin::getAppIdentity(),
 					'packeteryApiKey'   => $this->options_provider->get_api_key(),
-					'translations' => [
+					'translations'      => [
 						'choosePickupPoint'             => __( 'choosePickupPoint', 'packetery' ),
 						'chooseAddress'                 => __( 'checkShippingAddress', 'packetery' ),
 						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
@@ -493,7 +493,7 @@ class Checkout {
 	 * @return float|int
 	 */
 	public function getCartWeightKg() {
-		$weight = WC()->cart->cart_contents_weight;
+		$weight   = WC()->cart->cart_contents_weight;
 		$weightKg = wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
