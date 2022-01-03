@@ -60,14 +60,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 				);
 				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-success').html(settings.translations.addressIsValidated);
 			} else {
-				var destinationAddress = getDestinationAddress();
-				$widgetDiv.find( '.packeta-widget-selected-address' ).html([
-					destinationAddress.street,
-					destinationAddress.city,
-					destinationAddress.postCode
-				].filter( function( item ) {
-					return !!item;
-				} ).join( ', ' ));
 				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html(settings.translations.addressIsNotValidated);
 			}
 		};
