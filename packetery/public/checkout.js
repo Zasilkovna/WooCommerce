@@ -234,9 +234,17 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}
 		} );
 
-		$( document ).on( 'change', '#payment input[type="radio"]', function() {
-			$( 'body' ).trigger( 'update_checkout' );
-		} );
+		var currentPaymentMethod = $('#payment input[type="radio"]:checked').val();
+		$(document).on('change', '#payment input[type="radio"]:checked', function (e) {
+			var $target = $(e.target);
+			var targetPaymentMethod = $target.val();
+			if ( currentPaymentMethod === targetPaymentMethod ) {
+				return;
+			}
+
+			currentPaymentMethod = targetPaymentMethod;
+			jQuery('body').trigger('update_checkout');
+		});
 	};
 
 	var dependencies = [];
