@@ -23,7 +23,7 @@ use WP_REST_Server;
  */
 class Controller extends WP_REST_Controller {
 
-	public const PATH_SAVE_MODAL = '/save';
+	public const PATH_SAVE_MODAL    = '/save';
 	public const PATH_SUBMIT_TO_API = '/submit-to-api';
 
 	/**
@@ -40,7 +40,11 @@ class Controller extends WP_REST_Controller {
 	 */
 	private $router;
 
-	/** @var PacketSubmitter */
+	/**
+	 * Packet submitter.
+	 *
+	 * @var PacketSubmitter
+	 */
 	private $packetSubmitter;
 
 	/**
@@ -48,13 +52,13 @@ class Controller extends WP_REST_Controller {
 	 *
 	 * @param Modal            $orderModal       Modal.
 	 * @param ControllerRouter $controllerRouter Router.
-	 * @param PacketSubmitter  $packetSubmitter
+	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
 	 */
 	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter, PacketSubmitter $packetSubmitter ) {
-		$this->orderModal = $orderModal;
-		$this->router     = $controllerRouter;
-		$this->namespace  = $controllerRouter->getNamespace();
-		$this->rest_base  = $controllerRouter->getRestBase();
+		$this->orderModal      = $orderModal;
+		$this->router          = $controllerRouter;
+		$this->namespace       = $controllerRouter->getNamespace();
+		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
 	}
 
@@ -109,7 +113,13 @@ class Controller extends WP_REST_Controller {
 			'errors'  => 0,
 		];
 		$this->packetSubmitter->submitPacket( $order, $resultsCounter );
-		$data['redirectTo'] = add_query_arg( [ 'post_type' => 'shop_order', 'submit_to_api' => '1', ] + $resultsCounter, admin_url( 'edit.php' ) );
+		$data['redirectTo'] = add_query_arg(
+			[
+				'post_type'     => 'shop_order',
+				'submit_to_api' => '1',
+			] + $resultsCounter,
+			admin_url( 'edit.php' )
+		);
 
 		return new WP_REST_Response( $data, 200 );
 	}
