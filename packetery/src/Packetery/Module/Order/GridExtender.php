@@ -189,6 +189,8 @@ class GridExtender {
 		}
 
 		if ( ! empty( $get['packetery_to_submit'] ) ) {
+			/** @codingStandardsIgnoreStart */
+			// TODO: How to make sure it is fast?
 			$queryVars['meta_query'] = [
 				'relation' => 'AND',
 				[
@@ -201,9 +203,11 @@ class GridExtender {
 					'compare' => 'NOT EXISTS',
 				],
 			];
+			/** @codingStandardsIgnoreEnd */
 		}
 
 		if ( ! empty( $get['packetery_to_print'] ) ) {
+			/** @codingStandardsIgnoreStart */
 			$queryVars['meta_query'] = [
 				'relation' => 'AND',
 				[
@@ -215,9 +219,11 @@ class GridExtender {
 					'compare' => 'NOT EXISTS',
 				],
 			];
+			/** @codingStandardsIgnoreEnd */
 		}
 
 		if ( ! empty( $get['packetery_order_type'] ) ) {
+			/** @codingStandardsIgnoreStart */
 			$queryVars['meta_query'] = [
 				[
 					'key'     => Entity::META_CARRIER_ID,
@@ -225,6 +231,7 @@ class GridExtender {
 					'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
 				],
 			];
+			/** @codingStandardsIgnoreEnd */
 		}
 
 		return $queryVars;
