@@ -238,6 +238,7 @@ class GridExtender {
 				'key'     => Entity::META_IS_EXPORTED,
 				'compare' => 'NOT EXISTS',
 			];
+			/** @codingStandardsIgnoreEnd */
 		}
 
 		if ( ! empty( $get['packetery_to_print'] ) ) {
@@ -250,6 +251,7 @@ class GridExtender {
 				'key'     => Entity::META_IS_LABEL_PRINTED,
 				'compare' => 'NOT EXISTS',
 			];
+			/** @codingStandardsIgnoreEnd */
 		}
 
 		if ( ! empty( $get['packetery_order_type'] ) ) {
@@ -258,6 +260,7 @@ class GridExtender {
 				'value'   => Repository::INTERNAL_PICKUP_POINTS_ID,
 				'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
 			];
+			/** @codingStandardsIgnoreEnd */
 		}
 
 		return $queryVars;
