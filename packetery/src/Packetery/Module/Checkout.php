@@ -257,6 +257,7 @@ class Checkout {
 						'invalidAddressCountrySelected' => __( 'invalidAddressCountrySelected', 'packetery' ),
 						'selectedShippingAddress'       => __( 'selectedShippingAddress', 'packetery' ),
 						'addressIsValidated'            => __( 'addressIsValidated', 'packetery' ),
+						'addressIsNotValidated'         => __( 'addressIsNotValidated', 'packetery' ),
 					],
 				],
 			]

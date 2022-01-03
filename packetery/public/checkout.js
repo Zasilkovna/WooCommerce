@@ -3,6 +3,23 @@ var packeteryLoadCheckout = function( $, settings ) {
 		var $widgetDiv = $( '.packeta-widget' );
 		var rateAttrValues = {};
 
+		var getDestinationAddress = function() {
+			var extractDestination = function( section ) {
+				return {
+					street: $( '#' + section + '_address_1' ).val(),
+					city: $( '#' + section + '_city' ).val(),
+					country: $( '#' + section + '_country' ).val().toLowerCase(),
+					postCode: $( '#' + section + '_postcode' ).val()
+				};
+			};
+
+			if ( $( '#shipping_country:visible' ).length === 1 ) {
+				return extractDestination( 'shipping' );
+			} else {
+				return extractDestination( 'billing' );
+			}
+		};
+
 		var getRateAttrValue = function( carrierRateId, attribute, defaultValue ) {
 			if ( typeof rateAttrValues[ carrierRateId ] === 'undefined' || typeof rateAttrValues[ carrierRateId ][ attribute ] === 'undefined' ) {
 				return defaultValue;
@@ -29,8 +46,9 @@ var packeteryLoadCheckout = function( $, settings ) {
 			$widgetDiv.find( '.packeta-widget-selected-address' ).html('');
 		};
 
-		var showAddressFromHiddenFields = function(carrierRateId) {
-			if (getRateAttrValue( carrierRateId, 'packetery_address_street', false )) {
+		var showDeliveryAddress = function(carrierRateId) {
+			resetWidgetInfoClasses();
+			if (getRateAttrValue( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '0' ) === '1') {
 				$widgetDiv.find( '.packeta-widget-selected-address' ).html(
 					getRateAttrValue( carrierRateId, 'packetery_address_street', '' )
 					+ ' ' +
@@ -40,8 +58,17 @@ var packeteryLoadCheckout = function( $, settings ) {
 					+ ', ' +
 					getRateAttrValue( carrierRateId, 'packetery_address_postCode', '' )
 				);
-				resetWidgetInfoClasses();
 				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-success').html(settings.translations.addressIsValidated);
+			} else {
+				var destinationAddress = getDestinationAddress();
+				$widgetDiv.find( '.packeta-widget-selected-address' ).html([
+					destinationAddress.street,
+					destinationAddress.city,
+					destinationAddress.postCode
+				].filter( function( item ) {
+					return !!item;
+				} ).join( ', ' ));
+				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html(settings.translations.addressIsNotValidated);
 			}
 		};
 
@@ -139,30 +166,13 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( _hasHomeDelivery ) {
 				loadInfoForCarrierRate( carrierRateId, settings.homeDeliveryAttrs );
-				showAddressFromHiddenFields( carrierRateId );
+				showDeliveryAddress( carrierRateId );
 				$widgetDiv.find( 'button' ).html( settings.translations.chooseAddress );
 				$widgetDiv.show();
 			}
 		};
 
 		updateWidgetButtonVisibility( getShippingRateId() );
-
-		var getDestinationAddress = function() {
-			var extractDestination = function( section ) {
-				return {
-					street: $( '#' + section + '_address_1' ).val(),
-					city: $( '#' + section + '_city' ).val(),
-					country: $( '#' + section + '_country' ).val().toLowerCase(),
-					postCode: $( '#' + section + '_postcode' ).val()
-				};
-			};
-
-			if ( $( '#shipping_country:visible' ).length === 1 ) {
-				return extractDestination( 'shipping' );
-			} else {
-				return extractDestination( 'billing' );
-			}
-		};
 
 		$( document ).on( 'updated_checkout', function() {
 			var destinationAddress = getDestinationAddress();
@@ -224,7 +234,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 				PacketaHD.Widget.pick( settings.packeteryApiKey, function( result ) {
 					resetWidgetInfo();
-					showAddressFromHiddenFields( carrierRateId );
+					showDeliveryAddress( carrierRateId );
 
 					if ( !result ) {
 						resetWidgetInfoClasses();
@@ -248,7 +258,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '1' );
 					fillHiddenFields( carrierRateId, settings.homeDeliveryAttrs, selectedAddress );
-					showAddressFromHiddenFields( carrierRateId );
+					showDeliveryAddress( carrierRateId );
 				}, widgetOptions );
 			}
 
