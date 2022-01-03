@@ -180,11 +180,6 @@ class LabelPrint {
 		if ( $this->httpRequest->getQuery( 'page' ) !== self::MENU_SLUG ) {
 			return;
 		}
-		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
-
-			return;
-		}
 
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
 		$idParam         = $this->httpRequest->getQuery( 'id' );
@@ -192,6 +187,12 @@ class LabelPrint {
 		if ( $idParam !== null && $packetIdParam !== null ) {
 			$packetIds = [ $idParam => $packetIdParam ];
 		} else {
+			if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
+				$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
+
+				return;
+			}
+
 			$packetIds = $this->getPacketIdsFromTransient( $isCarrierLabels );
 		}
 		if ( ! $packetIds ) {
