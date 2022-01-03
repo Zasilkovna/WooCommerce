@@ -184,7 +184,7 @@ class LabelPrint {
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
 		$idParam         = $this->httpRequest->getQuery( 'id' );
 		$packetIdParam   = $this->httpRequest->getQuery( 'packet_id' );
-		if ( $idParam !== null && $packetIdParam !== null ) {
+		if ( null !== $idParam && null !== $packetIdParam ) {
 			$packetIds = [ $idParam => $packetIdParam ];
 		} else {
 			if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
@@ -208,7 +208,7 @@ class LabelPrint {
 		$offsetParam = $this->httpRequest->getQuery( 'offset' );
 		if ( 0 === $maxOffset ) {
 			$offset = 0;
-		} elseif ($offsetParam !== null) {
+		} elseif ( null !== $offsetParam ) {
 			$offset = (int) $offsetParam;
 		} elseif ( $form->isSubmitted() ) {
 			$data   = $form->getValues( 'array' );

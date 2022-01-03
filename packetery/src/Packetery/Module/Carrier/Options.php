@@ -1,6 +1,8 @@
 <?php
 /**
  * Options class.
+ *
+ * @package Packetery
  */
 
 declare( strict_types=1 );

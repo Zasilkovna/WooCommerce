@@ -151,7 +151,7 @@ class Order {
 	/**
 	 * Calculates order weight ignoring user specified weight.
 	 *
-	 * @param WC_Order $order
+	 * @param WC_Order $order Order.
 	 *
 	 * @return float
 	 */
@@ -161,7 +161,7 @@ class Order {
 			$quantity      = $item->get_quantity();
 			$product       = $item->get_product();
 			$productWeight = (float) $product->get_weight();
-			$weight        += ( $productWeight * $quantity );
+			$weight       += ( $productWeight * $quantity );
 		}
 
 		$weightKg = wc_get_weight( $weight, 'kg' );
