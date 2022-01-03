@@ -67,12 +67,12 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper              $helper            Helper.
-	 * @param Repository          $carrierRepository Carrier repository.
-	 * @param Engine              $latteEngine       Latte Engine.
-	 * @param Request             $httpRequest       Http Request.
-	 * @param EntityFactory\Order $entityFactory     Order factory.
-	 * @param ControllerRouter    $orderControllerRouter
+	 * @param Helper              $helper                Helper.
+	 * @param Repository          $carrierRepository     Carrier repository.
+	 * @param Engine              $latteEngine           Latte Engine.
+	 * @param Request             $httpRequest           Http Request.
+	 * @param EntityFactory\Order $entityFactory         Order factory.
+	 * @param ControllerRouter    $orderControllerRouter Order controller router.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -81,11 +81,11 @@ class GridExtender {
 		Request $httpRequest,
 		EntityFactory\Order $entityFactory, ControllerRouter $orderControllerRouter
 	) {
-		$this->helper            = $helper;
-		$this->carrierRepository = $carrierRepository;
-		$this->latteEngine       = $latteEngine;
-		$this->httpRequest       = $httpRequest;
-		$this->entityFactory     = $entityFactory;
+		$this->helper                = $helper;
+		$this->carrierRepository     = $carrierRepository;
+		$this->latteEngine           = $latteEngine;
+		$this->httpRequest           = $httpRequest;
+		$this->entityFactory         = $entityFactory;
 		$this->orderControllerRouter = $orderControllerRouter;
 	}
 
@@ -270,21 +270,24 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$packetSubmitUrl = add_query_arg( [], $this->orderControllerRouter->getRouteUrl(Controller::PATH_SUBMIT_TO_API) );
-				$printLink = add_query_arg( [
-					'page'                       => LabelPrint::MENU_SLUG,
-					LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
-					'id'                         => $order->getNumber(),
-					'packet_id'                  => $order->getPacketId(),
-					'offset'                     => 0,
-				], admin_url( 'admin.php' ) );
+				$packetSubmitUrl = add_query_arg( [], $this->orderControllerRouter->getRouteUrl( Controller::PATH_SUBMIT_TO_API ) );
+				$printLink       = add_query_arg(
+					[
+						'page'                       => LabelPrint::MENU_SLUG,
+						LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
+						'id'                         => $order->getNumber(),
+						'packet_id'                  => $order->getPacketId(),
+						'offset'                     => 0,
+					],
+					admin_url( 'admin.php' )
+				);
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order' => $order,
+						'order'           => $order,
 						'packetSubmitUrl' => $packetSubmitUrl,
-						'restNonce' => wp_create_nonce( 'wp_rest' ),
-						'printLink' => $printLink,
+						'restNonce'       => wp_create_nonce( 'wp_rest' ),
+						'printLink'       => $printLink,
 					]
 				);
 				break;

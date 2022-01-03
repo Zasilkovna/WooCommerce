@@ -141,9 +141,9 @@ class Page {
 		)->setPrompt( '--' )->checkDefaultValue( false );
 
 		$container->addText( 'packaging_weight', __( 'packagingWeight', 'packetery' ) . ' (kg)' )
-		            ->setRequired( true )
-				    ->addRule( Form::FLOAT )
-				    ->addRule( Form::MIN, null, 0 )
+					->setRequired( true )
+					->addRule( Form::FLOAT )
+					->addRule( Form::MIN, null, 0 )
 					->setDefaultValue( 0 );
 
 		if ( $this->optionsProvider->has_any() ) {
