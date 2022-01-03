@@ -224,7 +224,7 @@ class Repository {
 		$zpointCarriers  = $this->getZpointCarriers();
 		if ( ! empty( $zpointCarriers[ $country ] ) ) {
 			$zpointCarrierData            = $zpointCarriers[ $country ];
-			$zpointCarrierData['country'] = array_search( $zpointCarrierData, $zpointCarriers );
+			$zpointCarrierData['country'] = $country;
 			$zpointCarrier                = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrierData );
 			array_unshift( $countryCarriers, $zpointCarrier );
 		}
@@ -251,9 +251,7 @@ class Repository {
 	 */
 	public function set_others_as_deleted( array $carriers_in_feed ): void {
 		$wpdb = $this->get_wpdb();
-		$wpdb->query( 'UPDATE `' . $wpdb->packetery_carrier . '` SET `deleted` = 1 WHERE `id` NOT IN (' . implode( ',', $carriers_in_feed ) . ')' );
-		// TODO: find out how to do it properly, can't use IN ('1,2,3')
-		// $wpdb->query( $wpdb->prepare( 'UPDATE `' . $wpdb->packetery_carrier . '` SET `deleted` = 1 WHERE `id` NOT IN (%s)', implode( ',', $carriers_in_feed ) ) ); .
+		$wpdb->query( 'UPDATE `' . $wpdb->packetery_carrier . '` SET `deleted` = 1 WHERE `id` NOT IN (' . /** @codingStandardsIgnoreStart */ implode( ',', $carriers_in_feed ) /** @codingStandardsIgnoreEnd */ . ')' );
 	}
 
 	/**
