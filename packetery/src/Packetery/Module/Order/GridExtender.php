@@ -179,6 +179,7 @@ class GridExtender {
 	 */
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get[ Entity::META_CARRIER_ID ] ) ) {
+			/** @codingStandardsIgnoreStart */
 			$queryVars['meta_query'] = [
 				[
 					'key'     => Entity::META_CARRIER_ID,
@@ -186,6 +187,7 @@ class GridExtender {
 					'compare' => '=',
 				],
 			];
+			/** @codingStandardsIgnoreEnd */
 		}
 
 		if ( ! empty( $get['packetery_to_submit'] ) ) {

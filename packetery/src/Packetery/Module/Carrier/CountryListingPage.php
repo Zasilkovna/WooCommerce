@@ -59,10 +59,11 @@ class CountryListingPage {
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine     $latteEngine PacketeryLatte engine.
+	 * @param Engine     $latteEngine       PacketeryLatte engine.
 	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Downloader $downloader Carrier downloader.
-	 * @param Request    $httpRequest Http request.
+	 * @param Downloader $downloader        Carrier downloader.
+	 * @param Request    $httpRequest       Http request.
+	 * @param Checkout   $checkout          Checkout.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -133,8 +134,8 @@ class CountryListingPage {
 			$activeCarriers   = $this->getActiveCarriersNamesByCountry( $country );
 			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
-				'code' => $country,
-				'name' => $wcCountries[ strtoupper( $country ) ],
+				'code'           => $country,
+				'name'           => $wcCountries[ strtoupper( $country ) ],
 				'url'            => add_query_arg(
 					[
 						'page' => OptionsPage::SLUG,
@@ -199,7 +200,7 @@ class CountryListingPage {
 	 */
 	public function getCarriersForOptionsExport(): array {
 		$carriersWithSomeOptions = [];
-		$allCarriers    = $this->carrierRepository->getAllIncludingZpoints();
+		$allCarriers             = $this->carrierRepository->getAllIncludingZpoints();
 		foreach ( $allCarriers as $carrier ) {
 			$optionId       = Checkout::CARRIER_PREFIX . $carrier['id'];
 			$carrierOptions = get_option( $optionId );
@@ -215,7 +216,7 @@ class CountryListingPage {
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
 				$carrierOptions['count_of_orders'] = 0;
-				$carrierId = $this->checkout->getCarrierId( $optionId );
+				$carrierId                         = $this->checkout->getCarrierId( $optionId );
 				if ( $carrierId ) {
 					$orders = wc_get_orders(
 						[
