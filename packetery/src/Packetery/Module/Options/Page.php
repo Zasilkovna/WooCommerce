@@ -279,11 +279,18 @@ class Page {
 
 		$senderValidationLog = new Log\Record();
 		$senderValidationLog->action = Log\Record::ACTION_SENDER_VALIDATION;
-		$senderValidationLog->status = Log\Record::STATUS_ERROR;
-		$senderValidationLog->title  = __( 'senderValidationErrorLogTitle', 'packetery' );
-		$senderValidationLog->params = [
-			'errorMessage' => $senderValidationResponse->getFaultString(),
-		];
+
+		$senderValidationLog->status = Log\Record::STATUS_SUCCESS;
+		$senderValidationLog->title  = __( 'senderValidationSuccessLogTitle', 'packetery' );
+
+		if ($senderValidationResponse->hasFault()) {
+			$senderValidationLog->status = Log\Record::STATUS_ERROR;
+			$senderValidationLog->params = [
+				'errorMessage' => $senderValidationResponse->getFaultString(),
+			];
+			$senderValidationLog->title  = __( 'senderValidationErrorLogTitle', 'packetery' );
+		}
+
 		$this->logger->add( $senderValidationLog );
 
 		$senderExists = $senderValidationResponse->senderExists();
