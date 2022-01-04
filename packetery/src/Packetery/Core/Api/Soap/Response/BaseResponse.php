@@ -21,7 +21,7 @@ class BaseResponse {
 	 *
 	 * @var ?string
 	 */
-	private $fault;
+	protected $fault;
 
 	/**
 	 * Fault string.

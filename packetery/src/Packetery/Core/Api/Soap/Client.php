@@ -185,6 +185,27 @@ class Client {
 	}
 
 	/**
+	 * Requests for sender return routing strings.
+	 *
+	 * @param Request\SenderGetReturnRouting $request Request.
+	 *
+	 * @return Response\SenderGetReturnRouting
+	 */
+	public function senderGetReturnRouting( Request\SenderGetReturnRouting $request ): Response\SenderGetReturnRouting {
+		$response = new Response\SenderGetReturnRouting();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient->senderGetReturnRouting( $this->apiPassword, $request->getSenderLabel() );
+			// TODO: set return routing strings
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Gets human readable errors from SoapFault exception.
 	 *
 	 * @param SoapFault $exception Exception.
