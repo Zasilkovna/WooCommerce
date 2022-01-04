@@ -87,7 +87,7 @@ class Exporter {
 	 */
 	public function outputExportTxt(): void {
 		if (
-			$this->httpRequest->getQuery( 'page' ) !== 'packeta-options' ||
+			$this->httpRequest->getQuery( 'page' ) !== Page::SLUG ||
 			$this->httpRequest->getQuery( 'action' ) !== self::ACTION_EXPORT_SETTINGS
 		) {
 			return;

@@ -32,6 +32,8 @@ class Page {
 
 	public const ACTION_VALIDATE_SENDER      = 'validate-sender';
 
+	public const SLUG = 'packeta-options';
+
 	/**
 	 * PacketeryLatte_engine.
 	 *
@@ -111,17 +113,17 @@ class Page {
 			__( 'Packeta', 'packetery' ),
 			__( 'Packeta', 'packetery' ),
 			'manage_options',
-			'packeta-options',
+			self::SLUG,
 			'',
 			'dashicons-schedule',
 			55 // todo Move item to last position in menu.
 		);
 		add_submenu_page(
-			'packeta-options',
+			self::SLUG,
 			__( 'Settings', 'packetery' ),
 			__( 'Settings', 'packetery' ),
 			'manage_options',
-			'packeta-options',
+			self::SLUG,
 			array(
 				$this,
 				'render',
@@ -227,7 +229,7 @@ class Page {
 	 */
 	public function admin_init(): void {
 		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, array( $this, 'options_validate' ) );
-		add_settings_section( 'packetery_main', __( 'Main Settings', 'packetery' ), '', 'packeta-options' );
+		add_settings_section( 'packetery_main', __( 'Main Settings', 'packetery' ), '', self::SLUG );
 	}
 
 	/**
@@ -308,7 +310,7 @@ class Page {
 			$doRedirect = wp_safe_redirect(
 				add_query_arg(
 					[
-						'page'   => 'packeta-options',
+						'page'   => self::SLUG,
 					],
 					get_admin_url( null, 'admin.php' )
 				)
@@ -342,7 +344,7 @@ class Page {
 
 		$latteParams['exportLink'] = add_query_arg(
 			[
-				'page'   => 'packeta-options',
+				'page'   => self::SLUG,
 				'action' => Exporter::ACTION_EXPORT_SETTINGS,
 			],
 			get_admin_url( null, 'admin.php' )
@@ -351,7 +353,7 @@ class Page {
 		$latteParams['canValidateSender']    = (bool)$this->optionsProvider->get_sender();
 		$latteParams['senderValidationLink'] = add_query_arg(
 			[
-				'page'   => 'packeta-options',
+				'page'   => self::SLUG,
 				'action' => self::ACTION_VALIDATE_SENDER,
 			],
 			get_admin_url( null, 'admin.php' )

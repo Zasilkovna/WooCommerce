@@ -615,7 +615,7 @@ class Plugin {
 	 * @return array
 	 */
 	public function addPluginActionLinks( array $links ): array {
-		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=packeta-options' ) ) . '" aria-label="' .
+		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=' . Options\Page::SLUG ) ) . '" aria-label="' .
 					esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
 					esc_html__( 'Settings', 'packetery' ) . '</a>';
 
@@ -644,10 +644,10 @@ class Plugin {
 	 */
 	public static function hideSubmenuItem( string $itemSlug ): void {
 		global $submenu;
-		if ( isset( $submenu['packeta-options'] ) ) {
-			foreach ( $submenu['packeta-options'] as $key => $menu ) {
+		if ( isset( $submenu[Options\Page::SLUG] ) ) {
+			foreach ( $submenu[Options\Page::SLUG] as $key => $menu ) {
 				if ( $itemSlug === $menu[2] ) {
-					unset( $submenu['packeta-options'][ $key ] );
+					unset( $submenu[Options\Page::SLUG][ $key ] );
 				}
 			}
 		}
