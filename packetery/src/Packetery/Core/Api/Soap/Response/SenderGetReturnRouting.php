@@ -1,10 +1,18 @@
 <?php
+/**
+ * SenderGetReturnRouting
+ *
+ * @package Packetery
+ */
 
 declare( strict_types=1 );
 
 
 namespace Packetery\Core\Api\Soap\Response;
 
+/**
+ * SenderGetReturnRouting
+ */
 class SenderGetReturnRouting extends BaseResponse {
 
 	/**
@@ -13,7 +21,7 @@ class SenderGetReturnRouting extends BaseResponse {
 	 * @return bool|null
 	 */
 	public function senderExists(): ?bool {
-		if ( $this->fault === null ) {
+		if ( null === $this->fault ) {
 			return true;
 		}
 		if ( 'SenderNotExists' === $this->fault ) {
