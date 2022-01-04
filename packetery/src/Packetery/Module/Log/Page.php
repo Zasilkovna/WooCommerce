@@ -51,7 +51,7 @@ class Page {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			'packeta-options',
+			\Packetery\Module\Options\Page::SLUG,
 			__( 'logsPageTitle', 'packetery' ),
 			__( 'logsPageTitle', 'packetery' ),
 			'manage_options',
