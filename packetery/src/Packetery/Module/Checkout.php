@@ -270,18 +270,8 @@ class Checkout {
 	public function addPickupPointFields(): void {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
-			[ 'fields' => array_column( self::$pickup_point_attrs, 'name' ) ]
+			[ 'fields' => array_merge( array_column( self::$pickupPointAttrs, 'name' ), array_column( self::$homeDeliveryAttrs, 'name' ) ) ]
 		);
-
-		// TODO: fix me
-//		foreach ( self::$homeDeliveryAttrs as $attr ) {
-//			$fields['shipping'][ $attr['name'] ] = [
-//				'type'              => 'text',
-//				'required'          => false,
-//				'custom_attributes' => [ 'style' => 'display: none;' ],
-//			];
-//		}
-
 
 		wp_nonce_field( self::NONCE_ACTION );
 	}

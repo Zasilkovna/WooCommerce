@@ -130,8 +130,8 @@ class CountryListingPage {
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			$wcCountries      = \WC()->countries->get_countries();
 			$activeCarriers   = $this->getActiveCarriersNamesByCountry( $country );
+			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
 				'code' => $country,
 				'name' => $wcCountries[ strtoupper( $country ) ],
