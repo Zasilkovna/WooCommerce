@@ -103,15 +103,15 @@ class Exporter {
 			);
 			unset( $globalSettings['api_key'] );
 		}
-		$globalSettings['woocommerce_allowed_countries'] = get_option( 'woocommerce_allowed_countries' );
+		$globalSettings['woocommerce_allowed_countries']          = get_option( 'woocommerce_allowed_countries' );
 		$globalSettings['woocommerce_specific_allowed_countries'] = get_option( 'woocommerce_specific_allowed_countries' );
-		$globalSettings['woocommerce_ship_to_countries'] = get_option( 'woocommerce_ship_to_countries' );
+		$globalSettings['woocommerce_ship_to_countries']          = get_option( 'woocommerce_ship_to_countries' );
 		$globalSettings['woocommerce_specific_ship_to_countries'] = get_option( 'woocommerce_specific_ship_to_countries' );
 
 		$activeTheme            = wp_get_theme();
 		$themeLatestVersion     = \WC_Admin_Status::get_latest_theme_version( $activeTheme );
 		$themeLatestVersionInfo = ( $themeLatestVersion !== $activeTheme->version ? ' (' . $themeLatestVersion . ' available)' : '' );
-		$latteParams = [
+		$latteParams            = [
 			'wpVersion'         => get_bloginfo( 'version' ),
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
@@ -176,7 +176,7 @@ class Exporter {
 				'method_title' => $variable->method_title,
 				'enabled'      => $variable->enabled,
 			];
-			$output     .= PHP_EOL . $this->formatVariable( $methodInfo, $level );
+			$output    .= PHP_EOL . $this->formatVariable( $methodInfo, $level );
 		} elseif ( is_object( $variable ) ) {
 			$output .= gettype( $variable ) . ' ' . get_class( $variable ) . PHP_EOL;
 		} else {

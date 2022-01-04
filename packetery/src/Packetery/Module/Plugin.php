@@ -194,7 +194,7 @@ class Plugin {
 	 * @param Order\Metabox             $order_metabox        Order metabox.
 	 * @param MessageManager            $message_manager      Message manager.
 	 * @param Options\Page              $options_page         Options page.
-	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param Repository                $carrierRepository Carrier repository.
 	 * @param Downloader                $carrier_downloader   Carrier downloader object.
 	 * @param Checkout                  $checkout             Checkout class.
 	 * @param Engine                    $latte_engine         PacketeryLatte engine.
@@ -238,7 +238,7 @@ class Plugin {
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
-		$this->carrierRepository  = $carrierRepository;
+		$this->carrierRepository    = $carrierRepository;
 		$this->carrier_downloader   = $carrier_downloader;
 		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packetery.php';
 		$this->order_metabox        = $order_metabox;
@@ -644,10 +644,10 @@ class Plugin {
 	 */
 	public static function hideSubmenuItem( string $itemSlug ): void {
 		global $submenu;
-		if ( isset( $submenu[Options\Page::SLUG] ) ) {
-			foreach ( $submenu[Options\Page::SLUG] as $key => $menu ) {
+		if ( isset( $submenu[ Options\Page::SLUG ] ) ) {
+			foreach ( $submenu[ Options\Page::SLUG ] as $key => $menu ) {
 				if ( $itemSlug === $menu[2] ) {
-					unset( $submenu[Options\Page::SLUG][ $key ] );
+					unset( $submenu[ Options\Page::SLUG ][ $key ] );
 				}
 			}
 		}
