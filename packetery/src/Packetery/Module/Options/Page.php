@@ -9,7 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
+use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
+use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -26,6 +29,8 @@ class Page {
 
 	private const DEFAULT_VALUE_PACKETA_LABEL_FORMAT = 'A6 on A4';
 	private const DEFAULT_VALUE_CARRIER_LABEL_FORMAT = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+
+	public const ACTION_VALIDATE_SENDER      = 'validate-sender';
 
 	/**
 	 * PacketeryLatte_engine.
@@ -49,16 +54,52 @@ class Page {
 	private $formFactory;
 
 	/**
+	 * Packeta client.
+	 *
+	 * @var \Packetery\Core\Api\Soap\Client
+	 */
+	private $packetaClient;
+
+	/**
+	 * Logger
+	 *
+	 * @var Log\ILogger
+	 */
+	private $logger;
+
+	/**
+	 * Message manager.
+	 *
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
+	 * HTTP request.
+	 *
+	 * @var \PacketeryNette\Http\Request
+	 */
+	private $httpRequest;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine      $latte_engine PacketeryLatte_engine.
-	 * @param Provider    $optionsProvider Options provider.
-	 * @param FormFactory $formFactory Form factory.
+	 * @param Engine                          $latte_engine    PacketeryLatte_engine.
+	 * @param Provider                        $optionsProvider Options provider.
+	 * @param FormFactory                     $formFactory     Form factory.
+	 * @param \Packetery\Core\Api\Soap\Client $packetaClient   Packeta Client.
+	 * @param Log\ILogger                     $logger          Logger.
+	 * @param MessageManager                  $messageManager  Message manager.
+	 * @param \PacketeryNette\Http\Request    $httpRequest     HTTP request.
 	 */
-	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory ) {
+	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, \Packetery\Core\Api\Soap\Client $packetaClient, \Packetery\Core\Log\ILogger $logger, MessageManager $messageManager, \PacketeryNette\Http\Request $httpRequest ) {
 		$this->latte_engine    = $latte_engine;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
+		$this->packetaClient   = $packetaClient;
+		$this->logger          = $logger;
+		$this->messageManager  = $messageManager;
+		$this->httpRequest     = $httpRequest;
 	}
 
 	/**
@@ -87,6 +128,7 @@ class Page {
 			),
 			1
 		);
+		add_action( 'admin_init', [ $this, 'processActions' ] );
 	}
 
 	/**
@@ -217,7 +259,65 @@ class Page {
 			$options['api_key'] = '';
 		}
 
+		$this->validateSender($options['sender']);
+
 		return $options;
+	}
+
+	/**
+	 * Validates sender.
+	 *
+	 * @param string $senderLabel Sender lbel.
+	 *
+	 * @return void
+	 */
+	private function validateSender( string $senderLabel ): void {
+		$senderValidationRequest = new SenderGetReturnRouting( $senderLabel );
+		$senderValidationResponse = $this->packetaClient->senderGetReturnRouting( $senderValidationRequest );
+
+		$senderValidationLog = new Log\Record();
+		$senderValidationLog->action = Log\Record::ACTION_SENDER_VALIDATION;
+		$senderValidationLog->status = Log\Record::STATUS_ERROR;
+		$senderValidationLog->title  = __( 'senderValidationErrorLogTitle', 'packetery' );
+		$senderValidationLog->params = [
+			'errorMessage' => $senderValidationResponse->getFaultString(),
+		];
+		$this->logger->add( $senderValidationLog );
+
+		$senderExists = $senderValidationResponse->senderExists();
+
+		if ( false === $senderExists ) {
+			$this->messageManager->flash_message( __('specifiedSenderDoesNotExist'), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		}
+
+		if ( null === $senderExists ) {
+			$this->messageManager->flash_message( __('unableToCheckSpecifiedSender'), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		}
+	}
+
+	/**
+	 * Process actions.
+	 *
+	 * @return void
+	 */
+	public function processActions(): void {
+		$action = $this->httpRequest->getQuery('action');
+		if ( self::ACTION_VALIDATE_SENDER === $action ) {
+			$this->validateSender($this->optionsProvider->get_sender());
+
+			$doRedirect = wp_safe_redirect(
+				add_query_arg(
+					[
+						'page'   => 'packeta-options',
+					],
+					get_admin_url( null, 'admin.php' )
+				)
+			);
+
+			if ( $doRedirect ) {
+				exit;
+			}
+		}
 	}
 
 	/**
@@ -248,6 +348,15 @@ class Page {
 			get_admin_url( null, 'admin.php' )
 		);
 
+		$latteParams['canValidateSender']    = (bool)$this->optionsProvider->get_sender();
+		$latteParams['senderValidationLink'] = add_query_arg(
+			[
+				'page'   => 'packeta-options',
+				'action' => self::ACTION_VALIDATE_SENDER,
+			],
+			get_admin_url( null, 'admin.php' )
+		);
+
 		$lastExport       = null;
 		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );
 		if ( false !== $lastExportOption ) {
@@ -261,6 +370,7 @@ class Page {
 			$latteParams['lastExport'] = $lastExport;
 		}
 
+		$latteParams['messages'] = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}
 }
