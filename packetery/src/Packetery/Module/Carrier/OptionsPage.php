@@ -100,7 +100,7 @@ class OptionsPage {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			'packeta-options',
+			\Packetery\Module\Options\Page::SLUG,
 			__( 'Carrier settings', 'packetery' ),
 			__( 'Carrier settings', 'packetery' ),
 			'manage_options',

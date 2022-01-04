@@ -271,7 +271,7 @@ class LabelPrint {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			'packeta-options',
+			\Packetery\Module\Options\Page::SLUG,
 			__( 'printLabels', 'packetery' ),
 			__( 'printLabels', 'packetery' ),
 			'manage_options',
