@@ -30,7 +30,7 @@ class Page {
 	private const DEFAULT_VALUE_PACKETA_LABEL_FORMAT = 'A6 on A4';
 	private const DEFAULT_VALUE_CARRIER_LABEL_FORMAT = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 
-	public const ACTION_VALIDATE_SENDER      = 'validate-sender';
+	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
 	public const SLUG = 'packeta-options';
 
@@ -94,7 +94,7 @@ class Page {
 	 * @param MessageManager                  $messageManager  Message manager.
 	 * @param \PacketeryNette\Http\Request    $httpRequest     HTTP request.
 	 */
-	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, \Packetery\Core\Api\Soap\Client $packetaClient, \Packetery\Core\Log\ILogger $logger, MessageManager $messageManager, \PacketeryNette\Http\Request $httpRequest ) {
+	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, \Packetery\Core\Api\Soap\Client $packetaClient, Log\ILogger $logger, MessageManager $messageManager, \PacketeryNette\Http\Request $httpRequest ) {
 		$this->latte_engine    = $latte_engine;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
@@ -261,7 +261,7 @@ class Page {
 			$options['api_key'] = '';
 		}
 
-		$this->validateSender($options['sender']);
+		$this->validateSender( $options['sender'] );
 
 		return $options;
 	}
@@ -274,16 +274,16 @@ class Page {
 	 * @return void
 	 */
 	private function validateSender( string $senderLabel ): void {
-		$senderValidationRequest = new SenderGetReturnRouting( $senderLabel );
+		$senderValidationRequest  = new SenderGetReturnRouting( $senderLabel );
 		$senderValidationResponse = $this->packetaClient->senderGetReturnRouting( $senderValidationRequest );
 
-		$senderValidationLog = new Log\Record();
+		$senderValidationLog         = new Log\Record();
 		$senderValidationLog->action = Log\Record::ACTION_SENDER_VALIDATION;
 
 		$senderValidationLog->status = Log\Record::STATUS_SUCCESS;
 		$senderValidationLog->title  = __( 'senderValidationSuccessLogTitle', 'packetery' );
 
-		if ($senderValidationResponse->hasFault()) {
+		if ( $senderValidationResponse->hasFault() ) {
 			$senderValidationLog->status = Log\Record::STATUS_ERROR;
 			$senderValidationLog->params = [
 				'errorMessage' => $senderValidationResponse->getFaultString(),
@@ -296,11 +296,11 @@ class Page {
 		$senderExists = $senderValidationResponse->senderExists();
 
 		if ( false === $senderExists ) {
-			$this->messageManager->flash_message( __('specifiedSenderDoesNotExist'), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+			$this->messageManager->flash_message( __( 'specifiedSenderDoesNotExist', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		}
 
 		if ( null === $senderExists ) {
-			$this->messageManager->flash_message( __('unableToCheckSpecifiedSender'), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+			$this->messageManager->flash_message( __( 'unableToCheckSpecifiedSender', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		}
 	}
 
@@ -310,14 +310,14 @@ class Page {
 	 * @return void
 	 */
 	public function processActions(): void {
-		$action = $this->httpRequest->getQuery('action');
+		$action = $this->httpRequest->getQuery( 'action' );
 		if ( self::ACTION_VALIDATE_SENDER === $action ) {
-			$this->validateSender($this->optionsProvider->get_sender());
+			$this->validateSender( $this->optionsProvider->get_sender() );
 
 			$doRedirect = wp_safe_redirect(
 				add_query_arg(
 					[
-						'page'   => self::SLUG,
+						'page' => self::SLUG,
 					],
 					get_admin_url( null, 'admin.php' )
 				)
@@ -357,7 +357,7 @@ class Page {
 			get_admin_url( null, 'admin.php' )
 		);
 
-		$latteParams['canValidateSender']    = (bool)$this->optionsProvider->get_sender();
+		$latteParams['canValidateSender']    = (bool) $this->optionsProvider->get_sender();
 		$latteParams['senderValidationLink'] = add_query_arg(
 			[
 				'page'   => self::SLUG,
