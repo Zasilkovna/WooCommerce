@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.8.1
-Stable tag: 1.0.4
+Stable tag: 1.0.5
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -71,13 +71,15 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.0.5 =
+* Fixed: infinite checkout refresh
+
 = 1.0.4 =
 * Fixed: inputs in the cart implemented so as not to affect the appearance
 * Fixed: Packeta logo CSS in cart made simple and compatible
 * Updated: Settings export extended to be even more helpful.
 * Added: if the creation of the carrier table fails, the user is informed and error is logged
 * Removed: dependency on intl library
-* Fixed: infinite checkout refresh
 
 = 1.0.3 =
 * Fixed: use of pickup point method in cart with billing only setting enabled
