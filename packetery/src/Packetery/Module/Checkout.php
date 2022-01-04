@@ -270,18 +270,8 @@ class Checkout {
 	public function addPickupPointFields(): void {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
-			[ 'fields' => array_column( self::$pickup_point_attrs, 'name' ) ]
+			[ 'fields' => array_merge( array_column( self::$pickupPointAttrs, 'name' ), array_column( self::$homeDeliveryAttrs, 'name' ) ) ]
 		);
-
-		// TODO: fix me
-//		foreach ( self::$homeDeliveryAttrs as $attr ) {
-//			$fields['shipping'][ $attr['name'] ] = [
-//				'type'              => 'text',
-//				'required'          => false,
-//				'custom_attributes' => [ 'style' => 'display: none;' ],
-//			];
-//		}
-
 
 		wp_nonce_field( self::NONCE_ACTION );
 	}
@@ -430,7 +420,7 @@ class Checkout {
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
 		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
 		add_action( 'woocommerce_after_order_notes', array( $this, 'addPickupPointFields' ) );
-		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
+		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
