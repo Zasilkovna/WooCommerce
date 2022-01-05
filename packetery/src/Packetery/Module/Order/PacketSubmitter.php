@@ -96,7 +96,7 @@ class PacketSubmitter {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
+				$record->title  = __( 'packetSendingErrorLogTitle', 'packetery' );
 				$record->params = [
 					'orderId'      => $orderData['id'],
 					'errorMessage' => $e->getMessage(),
@@ -113,7 +113,7 @@ class PacketSubmitter {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = 'Akce “Vytvoření zásilky” skončilo chybou.'; // todo translate.
+				$record->title  = __( 'packetSendingErrorLogTitle', 'packetery' );
 				$record->params = [
 					'request'      => $createPacketRequest->getSubmittableData(),
 					'errorMessage' => $response->getErrorsAsString(),
@@ -129,7 +129,7 @@ class PacketSubmitter {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_SUCCESS;
-				$record->title  = 'Akce “Vytvoření zásilky” proběhla úspěšně.'; // todo translate.
+				$record->title  = __( 'packetSendingSuccessLogTitle', 'packetery' );
 				$record->params = [
 					'packetId' => $response->getId(),
 				];
