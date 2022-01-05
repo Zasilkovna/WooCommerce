@@ -271,9 +271,9 @@ class Page {
 	 *
 	 * @param string $senderLabel Sender lbel.
 	 *
-	 * @return void
+	 * @return bool|null
 	 */
-	private function validateSender( string $senderLabel ): void {
+	private function validateSender( string $senderLabel ): ?bool {
 		$senderValidationRequest  = new SenderGetReturnRouting( $senderLabel );
 		$senderValidationResponse = $this->packetaClient->senderGetReturnRouting( $senderValidationRequest );
 
@@ -302,6 +302,8 @@ class Page {
 		if ( null === $senderExists ) {
 			$this->messageManager->flash_message( __( 'unableToCheckSpecifiedSender', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		}
+
+		return $senderExists;
 	}
 
 	/**
@@ -312,7 +314,11 @@ class Page {
 	public function processActions(): void {
 		$action = $this->httpRequest->getQuery( 'action' );
 		if ( self::ACTION_VALIDATE_SENDER === $action ) {
-			$this->validateSender( $this->optionsProvider->get_sender() );
+			$result = $this->validateSender( $this->optionsProvider->get_sender() );
+
+			if ( true === $result ) {
+				$this->messageManager->flash_message( __( 'specifiedSenderIsOk', 'packetery' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+			}
 
 			$doRedirect = wp_safe_redirect(
 				add_query_arg(
