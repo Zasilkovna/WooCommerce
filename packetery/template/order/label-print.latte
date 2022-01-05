@@ -4,10 +4,13 @@
 		{$flashMessages|noescape}
 		<p>
 			{if $count === 1}
+				{php // translators: %s is count.}
 				{sprintf(__( 'willBePrinted1%sLabels', 'packetery' ), $count)}
 			{elseif $count < 5}
+				{php // translators: %s is count.}
 				{sprintf(__( 'willBePrinted2%sLabels', 'packetery' ), $count)}
 			{else}
+				{php // translators: %s is count.}
 				{sprintf(__( 'willBePrinted5%sLabels', 'packetery' ), $count)}
 			{/if}
 		</p>

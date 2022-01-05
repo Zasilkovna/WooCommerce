@@ -6,12 +6,14 @@
 {else}
 	{if $ignored}
 		<div class="updated" style="border-left-color: #72aee6;">
+			{php // translators: %s is count.}
 			<p>{sprintf( __( 'someShipments%sSkipped', 'packetery' ), $ignored )}</p>
 		</div>
 	{/if}
 
 	{if $errors}
 		<div class="updated" style="border-left-color: #d63638;">
+			{php // translators: %s is count.}
 			<p>{sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors )}</p>
 		</div>
 	{/if}
