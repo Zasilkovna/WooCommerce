@@ -193,6 +193,10 @@ class OptionsPage {
 			'order_price',
 			__( 'Surcharge rules are overlapping, fix it please.', 'packetery' )
 		);
+
+		if ($form->hasErrors()) {
+			add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
+		}
 	}
 
 	/**
