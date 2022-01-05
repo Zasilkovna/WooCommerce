@@ -72,7 +72,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.5 =
-* Fixed: infinite checkout refresh
+* Fixed: checkout refresh on payment method change happens only if value really changes
 
 = 1.0.4 =
 * Fixed: inputs in the cart implemented so as not to affect the appearance
