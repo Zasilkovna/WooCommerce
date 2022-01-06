@@ -9,14 +9,14 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Module\Checkout;
+use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Forms\Validator;
 use PacketeryNette\Http\Request;
-use Packetery\Module\Checkout;
-use Packetery\Module\FormFactory;
 
 /**
  * Class OptionsPage
@@ -142,6 +142,11 @@ class OptionsPage {
 				$this->addWeightLimit( $weightLimits, $index );
 			}
 		}
+
+		$form->addText( 'default_COD_surcharge', __( 'defaultCODSurchargeLabel', 'packetery' ) )
+			->setRequired( false )
+			->addRule( Form::FLOAT )
+			->addRule( Form::MIN, null, 0 );
 
 		$surchargeLimits = $form->addContainer( 'surcharge_limits' );
 		if ( empty( $carrierData['surcharge_limits'] ) ) {

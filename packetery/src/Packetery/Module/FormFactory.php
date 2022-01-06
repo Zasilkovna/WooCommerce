@@ -25,6 +25,7 @@ class FormFactory {
 	public function __construct() {
 		add_action( 'init', function () {
 			Validator::$messages[ Form::FILLED ] = __( 'thisFieldIsRequired', 'packetery' );
+			Validator::$messages[ Form::FLOAT ] = __( 'enterValidNumber', 'packetery' );
 		} );
 	}
 
