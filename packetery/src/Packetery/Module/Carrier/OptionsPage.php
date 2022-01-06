@@ -198,10 +198,6 @@ class OptionsPage {
 			'order_price',
 			__( 'Surcharge rules are overlapping, fix it please.', 'packetery' )
 		);
-
-		if ($form->hasErrors()) {
-			add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
-		}
 	}
 
 	/**
@@ -324,8 +320,10 @@ class OptionsPage {
 			foreach ( $options[ $limitsContainer ] as $key => $option ) {
 				$keys = array_keys( $option );
 				if ( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) {
+					add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
 					$form[ $limitsContainer ][ $key ][ $keys[1] ]->addError( Validator::$messages[ Form::FILLED ] );
 				} elseif ( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) ) {
+					add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
 					$form[ $limitsContainer ][ $key ][ $keys[0] ]->addError( Validator::$messages[ Form::FILLED ] );
 				}
 			}
