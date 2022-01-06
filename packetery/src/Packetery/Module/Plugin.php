@@ -29,7 +29,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION = '1.0.4';
+	public const VERSION = '1.0.5';
 	public const DOMAIN  = 'packetery';
 
 	/**
