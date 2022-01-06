@@ -200,7 +200,7 @@ class Page {
 		}
 
 		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
-		$latteParams['senderLink']      = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/senders' ] ) );
+		$latteParams['senderLink']      = 'https://client.packeta.com/senders';
 		$latteParams['exportLink']      = add_query_arg(
 			[
 				'page'   => 'packeta-options',

@@ -510,8 +510,7 @@ msgstr ""
 msgid "apiPasswordCanBeFoundAt%sUrl"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--7d4cc10bea.php:80
-msgid "senderCanBeFoundAt%sUrl"
+msgid "senderDescription"
 msgstr ""
 
 #: temp/cache/view/template-options-page.latte--7d4cc10bea.php:151
