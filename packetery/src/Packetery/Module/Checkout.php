@@ -409,7 +409,7 @@ class Checkout {
 				$surchargeApplied = false;
 				foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
 					if ( $cartPrice <= $weightLimit['order_price'] ) {
-						$cost += $weightLimit['surcharge'];
+						$cost            += $weightLimit['surcharge'];
 						$surchargeApplied = true;
 						break;
 					}
