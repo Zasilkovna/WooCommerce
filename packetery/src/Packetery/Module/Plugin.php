@@ -345,12 +345,13 @@ class Plugin {
 	 * @param string $name     Name of script.
 	 * @param string $file     Relative file path.
 	 * @param bool   $inFooter Tells where to include script.
+	 * @param array  $deps     Dependencies.
 	 */
-	private function enqueueScript( string $name, string $file, bool $inFooter ): void {
+	private function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
 		wp_enqueue_script(
 			$name,
 			plugin_dir_url( $this->main_file_path ) . $file,
-			[],
+			$deps,
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) ),
 			$inFooter
 		);
@@ -376,7 +377,7 @@ class Plugin {
 	 */
 	public function enqueueAdminAssets(): void {
 		$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
-		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false );
+		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 	}

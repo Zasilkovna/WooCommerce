@@ -96,9 +96,9 @@
         }
     }
 
-// Allow setting options before loading the script just by creating global LiveFormOptions object with options.
-    if (typeof window.LiveFormOptions !== 'undefined') {
-        LiveForm.setOptions(window.LiveFormOptions);
+// Allow setting options before loading the script just by creating global PacketeryLiveFormOptions object with options.
+    if (typeof window.PacketeryLiveFormOptions !== 'undefined') {
+        LiveForm.setOptions(window.PacketeryLiveFormOptions);
     }
 
     LiveForm.isSpecialKey = function (k) {
