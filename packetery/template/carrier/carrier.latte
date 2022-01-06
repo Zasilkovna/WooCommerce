@@ -40,13 +40,15 @@
 												<label n:name=weight />
 											</div>
 											<div class="packetery-input">
-												<input n:name=weight> <br>
+												<input n:name=weight data-lfv-message-id="{$container[$id][weight]->getHtmlId() . '_message'}">
+												<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][weight]->getHtmlId() . '_message'}">{inputError weight}</p>
 											</div>
 											<div class="packetery-label">
 												<label n:name=price />
 											</div>
 											<div class="packetery-input">
-												<input n:name=price><br>
+												<input n:name=price data-lfv-message-id="{$container[$id][price]->getHtmlId() . '_message'}">
+												<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
 											</div>
 										</div>
 										<button type="button"
@@ -78,15 +80,15 @@
 												<label n:name=order_price />
 											</div>
 											<div class="packetery-input">
-												<input n:name=order_price>
-												<p>{inputError order_price}</p>
+												<input n:name=order_price data-lfv-message-id="{$container[$id][order_price]->getHtmlId() . '_message'}">
+												<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][order_price]->getHtmlId() . '_message'}">{inputError order_price}</p>
 											</div>
 											<div class="packetery-label">
 												<label n:name=surcharge />
 											</div>
 											<div class="packetery-input">
-												<input n:name=surcharge>
-												<p>{inputError surcharge}</p>
+												<input n:name=surcharge data-lfv-message-id="{$container[$id][surcharge]->getHtmlId() . '_message'}">
+												<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][surcharge]->getHtmlId() . '_message'}">{inputError surcharge}</p>
 											</div>
 										</div>
 										<button type="button"

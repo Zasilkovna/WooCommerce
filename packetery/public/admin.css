@@ -24,6 +24,11 @@
     margin: 0;
 }
 
+.packetery-input-validation-message {
+    color: red;
+    font-weight: bold;
+}
+
 .packetery-carrier-options-page .js-delete.button {
     position: relative;
     top: 2px;
