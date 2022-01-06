@@ -72,6 +72,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.5 =
+* Fixed: cash on delivery payment method is always available for selection in Packeta plugin settings
 * Fixed: checkout refresh on payment method change happens only if value really changes
 
 = 1.0.4 =
