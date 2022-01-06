@@ -72,6 +72,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.5 =
+* Updated: carrier settings page errors highlighted
+* Added: default C.O.D. surcharge
 * Update: sender description
 * Fixed: cash on delivery payment method is always available for selection in Packeta plugin settings
 * Fixed: checkout refresh on payment method change happens only if value really changes
