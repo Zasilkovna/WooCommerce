@@ -23,7 +23,9 @@ class FormFactory {
 	 * Plugin constructor.
 	 */
 	public function __construct() {
-		Validator::$messages[ Form::FILLED ] = __( 'This field is required!', 'packetery' );
+		add_action( 'init', function () {
+			Validator::$messages[ Form::FILLED ] = __( 'thisFieldIsRequired', 'packetery' );
+		} );
 	}
 
 	/**
