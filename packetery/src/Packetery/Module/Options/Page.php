@@ -132,10 +132,10 @@ class Page {
 			]
 		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
-		$gateways        = WC()->payment_gateways->get_available_payment_gateways();
+		$gateways        = $this->getAvailablePaymentGateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
-			$enabledGateways[ $gateway->id ] = $gateway->title;
+			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();
 		}
 		$container->addSelect(
 			'cod_payment_method',
@@ -148,6 +148,31 @@ class Page {
 		}
 
 		return $form;
+	}
+
+	/**
+	 * Get available gateways.
+	 *
+	 * @return \WC_Payment_Gateway[]
+	 */
+	public function getAvailablePaymentGateways(): array {
+		$availableGateways = [];
+
+		foreach ( WC()->payment_gateways->payment_gateways as $gateway ) {
+			$availableGateways[ $gateway->id ] = $gateway;
+		}
+
+		return array_filter( (array) apply_filters( 'woocommerce_available_payment_gateways', $availableGateways ), [ $this, 'filterValidGatewayClass' ] );
+	}
+
+	/**
+	 * Callback for array filter. Returns true if gateway is of correct type.
+	 *
+	 * @param object $gateway Gateway to check.
+	 * @return bool
+	 */
+	protected function filterValidGatewayClass( $gateway ): bool {
+		return $gateway && is_a( $gateway, 'WC_Payment_Gateway' );
 	}
 
 	/**
