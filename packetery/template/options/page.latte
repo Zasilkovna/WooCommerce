@@ -34,7 +34,7 @@
                     <input n:name=packetery-sender>
                     <div class="packetery-help-block">
                         <p>
-                            {__( 'senderDescription', 'packetery' )|tt:['boldStart' => '<strong>', 'boldEnd' => '</strong>', 'csLinkStart' => $senderLink->startTag(), 'csLinkEnd' => $senderLink->endTag()]|noescape}
+                            {$senderDescription|noescape}
                         </p>
                     </div>
                 </td>
