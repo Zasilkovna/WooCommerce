@@ -36,24 +36,6 @@ class LatteEngineFactory {
 				return $value->format( wc_date_format() . ' ' . wc_time_format() );
 			}
 		);
-		$engine->addFilter( 'tt', [ self::class, 'ttFilter' ] );
 		return $engine;
-	}
-
-	/**
-	 * Transforms translated text with named placeholders.
-	 *
-	 * @param string $translatedText Translated text.
-	 * @param array  $variables      Values for placeholders.
-	 *
-	 * @return string
-	 */
-	public static function ttFilter( string $translatedText, array $variables ): string {
-		$newVariables = [];
-		foreach ( $variables as $variable => $varValue ) {
-			$newVariables[ '{$' . $variable . '}' ] = $varValue;
-		}
-
-		return strtr( $translatedText, $newVariables );
 	}
 }
