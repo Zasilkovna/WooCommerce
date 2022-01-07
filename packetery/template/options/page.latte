@@ -34,7 +34,7 @@
                     <input n:name=packetery-sender>
                     <div class="packetery-help-block">
                         <p>
-                            {sprintf( __( 'senderDescription', 'packetery' ), $senderLink )|noescape}
+                            {__( 'senderDescription', 'packetery' )|tt:['boldStart' => '<strong>', 'boldEnd' => '</strong>', 'csLinkStart' => $senderLink->startTag(), 'csLinkEnd' => $senderLink->endTag()]|noescape}
                         </p>
                     </div>
                 </td>

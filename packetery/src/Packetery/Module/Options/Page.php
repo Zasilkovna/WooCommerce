@@ -12,6 +12,7 @@ namespace Packetery\Module\Options;
 use Packetery\Module\FormFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
+use PacketeryNette\Utils\Html;
 
 /**
  * Class Page
@@ -200,7 +201,7 @@ class Page {
 		}
 
 		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
-		$latteParams['senderLink']      = 'https://client.packeta.com/senders';
+		$latteParams['senderLink']      = Html::el( 'a' )->target( '_blank' )->href( 'https://client.packeta.com/senders' );
 		$latteParams['exportLink']      = add_query_arg(
 			[
 				'page'   => 'packeta-options',
