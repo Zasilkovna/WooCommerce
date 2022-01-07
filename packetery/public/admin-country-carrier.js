@@ -24,6 +24,7 @@
             this.addOption = function (button, $wrappers) {
                 var wrapperClassName = $wrappers.first().attr('class'),
                     $wrapper = $(button).closest('.' + wrapperClassName),
+                    // $templateElement = $($wrapper.data('packetery-template')),
                     $template = getTemplateClone($wrapper);
 
                 updateIds($template, newId++);
@@ -68,7 +69,7 @@
 
             function getTemplateClone($wrapper) {
                 var $template = $wrapper.find('tr').first().clone();
-                $template.find('input').val('');
+                $template.find('input').val(''); // todo will not be needed
                 return $template;
             }
 
@@ -76,6 +77,10 @@
              * Update references to element names to make them unique; the value itself doesn't matter: [0] -> [new_234]
              */
             function updateIds($html, id) {
+
+                // todo rename container
+                // todo make sure weight rules work
+
                 $('input, select, label, span', $html).each(function (i, element) {
                     var $element = $(element);
 
@@ -93,7 +98,7 @@
                 }
 
                 // don't use data() because we want the raw values, not parsed json arrays/objects
-                var regExp = new RegExp('\\' + delimiters[0] + '(new_)?\\d+\\' + delimiters[1]);
+                var regExp = new RegExp('\\' + delimiters[0] + '(new_)?\\d+\\' + delimiters[1]); // todo replace  delimiters[0] + '0\\' + delimiters[1]
                 $element.attr(attrName, value.replace(regExp, delimiters[0] + prefix + id + delimiters[1]));
             }
 

@@ -134,6 +134,7 @@ class OptionsPage {
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packetery' ) )
 			->setRequired();
 
+//		$weightLimits = $form->addContainer( 'weight_limits_template' );
 		$weightLimits = $form->addContainer( 'weight_limits' );
 		if ( empty( $carrierData['weight_limits'] ) ) {
 			$this->addWeightLimit( $weightLimits, 0 );
@@ -148,6 +149,7 @@ class OptionsPage {
 			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 );
 
+//		$surchargeLimits = $form->addContainer( 'surcharge_limits_template' );
 		$surchargeLimits = $form->addContainer( 'surcharge_limits' );
 		if ( empty( $carrierData['surcharge_limits'] ) ) {
 			$this->addSurchargeLimit( $surchargeLimits, 0 );
