@@ -134,7 +134,6 @@ class OptionsPage {
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packetery' ) )
 			->setRequired();
 
-//		$weightLimits = $form->addContainer( 'weight_limits_template' );
 		$weightLimits = $form->addContainer( 'weight_limits' );
 		if ( empty( $carrierData['weight_limits'] ) ) {
 			$this->addWeightLimit( $weightLimits, 0 );
@@ -149,11 +148,8 @@ class OptionsPage {
 			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 );
 
-//		$surchargeLimits = $form->addContainer( 'surcharge_limits_template' );
 		$surchargeLimits = $form->addContainer( 'surcharge_limits' );
-		if ( empty( $carrierData['surcharge_limits'] ) ) {
-			$this->addSurchargeLimit( $surchargeLimits, 0 );
-		} else {
+		if ( ! empty( $carrierData['surcharge_limits'] ) ) {
 			foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
 				$this->addSurchargeLimit( $surchargeLimits, $index );
 			}
@@ -162,6 +158,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$form->addHidden( 'id' )->setRequired();
+		$form->addSubmit('save');
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
@@ -172,6 +169,27 @@ class OptionsPage {
 			$carrierOptions[ self::FORM_FIELD_NAME ] = $carrierData['name'];
 		}
 		$form->setDefaults( $carrierOptions );
+
+		return $form;
+	}
+
+	/**
+	 * Creates settings form.
+	 *
+	 * @param array $carrierData Carrier data.
+	 *
+	 * @return Form
+	 */
+	private function createFormTemplate( array $carrierData ): Form {
+		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
+
+		$form = $this->formFactory->create( $optionId . '_template' );
+
+		$weightLimitsTemplate = $form->addContainer( 'weight_limits' );
+		$this->addWeightLimit( $weightLimitsTemplate, 0 );
+
+		$surchargeLimitsTemplate = $form->addContainer( 'surcharge_limits' );
+		$this->addSurchargeLimit( $surchargeLimitsTemplate, 0 );
 
 		return $form;
 	}
@@ -249,6 +267,7 @@ class OptionsPage {
 					$carrierEntity = $this->carrierRepository->getById( (int) $carrierData['id'] );
 				}
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
+					$formTemplate = $this->createFormTemplate( $post );
 					$form = $this->createForm( $post );
 					if ( $form->isSubmitted() ) {
 						$form->fireEvents();
@@ -258,12 +277,15 @@ class OptionsPage {
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
+					$formTemplate = $this->createFormTemplate( $carrierData );
 					$form = $this->createForm( $carrierData );
 				}
+
 				$carriersData[] = [
-					'form'   => $form,
-					'data'   => $carrierData,
-					'entity' => $carrierEntity,
+					'form'         => $form,
+					'formTemplate' => $formTemplate,
+					'data'         => $carrierData,
+					'entity'       => $carrierEntity,
 				];
 			}
 
@@ -396,8 +418,10 @@ class OptionsPage {
 	private function addSurchargeLimit( Container $surchargeLimits, $index ): void {
 		$limit = $surchargeLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
+		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
+		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 	}
 
