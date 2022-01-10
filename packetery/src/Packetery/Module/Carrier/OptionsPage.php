@@ -312,17 +312,14 @@ class OptionsPage {
 	 * @return array
 	 */
 	private function mergeNewLimits( array $options, string $limitsContainer ): array {
-		$newOptions = array();
+		$newOptions = [];
 		if ( isset( $options[ $limitsContainer ] ) ) {
 			foreach ( $options[ $limitsContainer ] as $key => $option ) {
-				$keys = array_keys( $option );
-				if ( $option[ $keys[0] ] && $option[ $keys[1] ] ) {
-					if ( is_int( $key ) ) {
-						$newOptions[ $key ] = $option;
-					}
-					if ( 0 === strpos( (string) $key, 'new_' ) ) {
-						$newOptions[] = $option;
-					}
+				if ( is_int( $key ) ) {
+					$newOptions[ $key ] = $option;
+				}
+				if ( 0 === strpos( (string) $key, 'new_' ) ) {
+					$newOptions[] = $option;
 				}
 			}
 			$options[ $limitsContainer ] = $newOptions;
