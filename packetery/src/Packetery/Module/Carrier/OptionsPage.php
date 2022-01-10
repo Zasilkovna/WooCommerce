@@ -15,7 +15,6 @@ use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
-use PacketeryNette\Forms\Validator;
 use PacketeryNette\Http\Request;
 
 /**
