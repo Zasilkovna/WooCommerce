@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Packeta 1.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
 "POT-Creation-Date: 2022-01-10T13:29:27+01:00\n"
-"PO-Revision-Date: 2022-01-10 13:32+0100\n"
+"PO-Revision-Date: 2022-01-10 16:59+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -111,6 +111,10 @@ msgstr "RO Zásilkovna výdejní místa"
 
 msgid "Pick up point is not chosen."
 msgstr "Není vybráno výdejní místo."
+
+#. translators: keep %d placeholder intact.
+msgid "pleaseEnterValueGreaterThanOrEqualTo%d"
+msgstr "Zadejte hodnotu větší nebo rovnu hodnotě %d"
 
 msgid "thisFieldIsRequired"
 msgstr "Toto políčko je povinné"

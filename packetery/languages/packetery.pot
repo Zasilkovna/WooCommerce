@@ -102,6 +102,10 @@ msgstr ""
 msgid "Pick up point is not chosen."
 msgstr ""
 
+#. translators: keep %d placeholder intact.
+msgid "pleaseEnterValueGreaterThanOrEqualTo%d"
+msgstr ""
+
 msgid "thisFieldIsRequired"
 msgstr ""
 
