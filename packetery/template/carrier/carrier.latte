@@ -9,7 +9,7 @@
 	{elseif isset($carrier_data['form'])}
 
 	{define weightRules}
-		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-packetery-replication-item>
+		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-packetery-item>
 			<td>
 				<div class="packetery-rule">
 					<div class="packetery-label">
@@ -27,7 +27,7 @@
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
 					</div>
 				</div>
-				<button type="button" data-packetery-replication-delete class="button">{__( 'Delete weight rule', 'packetery' )}</button>
+				<button type="button" data-packetery-delete class="button">{__( 'Delete weight rule', 'packetery' )}</button>
 			</td>
 		</tr>
 	{/define}
@@ -39,7 +39,7 @@
 			</th>
 			<td class="js-weight-rules">
 				<table>
-					<tbody data-packetery-replication-item-container data-packetery-replication-min-items="1">
+					<tbody data-packetery-item-container data-packetery-min-items="1">
 					{var $container = $form['weight_limits']}
 					{foreach $container->getComponents() as $weightId => $tmp}
 						{include weightRules id => $weightId, container => $container}
@@ -47,13 +47,13 @@
 					</tbody>
 				</table>
 
-				<button type="button" data-packetery-replication-add class="button">{__( 'Add weight rule', 'packetery' )}</button>
+				<button type="button" data-packetery-add class="button">{__( 'Add weight rule', 'packetery' )}</button>
 			</td>
 		</tr>
 	{/define}
 
 	{define surchargeRules}
-		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-packetery-replication-item>
+		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-packetery-item>
 			<td>
 				<div class="packetery-rule">
 					<div class="packetery-label">
@@ -71,7 +71,7 @@
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][surcharge]->getHtmlId() . '_message'}">{inputError surcharge}</p>
 					</div>
 				</div>
-				<button type="button" data-packetery-replication-delete class="button">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
+				<button type="button" data-packetery-delete class="button">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
 			</td>
 		</tr>
 	{/define}
@@ -83,7 +83,7 @@
 			</th>
 			<td class="js-surcharge-rules">
 				<table>
-					<tbody data-packetery-replication-item-container data-packetery-replication-min-items="0">
+					<tbody data-packetery-item-container data-packetery-min-items="0">
 					{var $container = $form['surcharge_limits']}
 					{foreach $container->getComponents() as $surchargeId => $tmp}
 						{include surchargeRules id => $surchargeId, container => $container}
@@ -91,7 +91,7 @@
 					</tbody>
 				</table>
 
-				<button type="button" data-packetery-replication-add class="button">{__( 'Add COD surcharge rule', 'packetery' )}</button>
+				<button type="button" data-packetery-add class="button">{__( 'Add COD surcharge rule', 'packetery' )}</button>
 			</td>
 		</tr>
 	{/define}

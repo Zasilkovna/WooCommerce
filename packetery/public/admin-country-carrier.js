@@ -12,19 +12,19 @@
 
             this.registerListeners = function () {
                 $wrapper
-                    .on('click', '[data-packetery-replication-add]', function () {
+                    .on('click', '[data-packetery-add]', function () {
                         multiplier.addItem(this);
                     })
-                    .on('click', '[data-packetery-replication-delete]', function () {
+                    .on('click', '[data-packetery-delete]', function () {
                         multiplier.deleteItem(this);
                     })
                     .each(function () {
-                        multiplier.toggleDeleteButton($(this).find('[data-packetery-replication-item-container]'));
+                        multiplier.toggleDeleteButton($(this).find('[data-packetery-item-container]'));
                     });
             };
 
             this.addItem = function ( button ) {
-                var $container = $(button).closest(wrapperSelector).find('[data-packetery-replication-item-container]'),
+                var $container = $(button).closest(wrapperSelector).find('[data-packetery-item-container]'),
                     $template = getTemplateClone($container);
 
                 updateIds($template, newId++);
@@ -34,17 +34,17 @@
             };
 
             this.deleteItem = function ( button ) {
-                var $row = $(button).closest('[data-packetery-replication-item]'),
-                    $container = $row.closest('[data-packetery-replication-item-container]');
+                var $row = $(button).closest('[data-packetery-item]'),
+                    $container = $row.closest('[data-packetery-item-container]');
 
                 $row.remove();
                 this.toggleDeleteButton($container);
             };
 
             this.toggleDeleteButton = function ($container) {
-                var optionsCount = $container.find('[data-packetery-replication-item]').length,
-                    $buttons = $container.find('[data-packetery-replication-delete]'),
-                    minItems = parseInt($container.data('packetery-replication-min-items'));
+                var optionsCount = $container.find('[data-packetery-item]').length,
+                    $buttons = $container.find('[data-packetery-delete]'),
+                    minItems = parseInt($container.data('packetery-min-items'));
 
                 ( optionsCount > minItems ? $buttons.show() : $buttons.hide() );
             };
@@ -71,7 +71,7 @@
             function getTemplateClone(container) {
                 var formId = container.closest('form').attr('id');
                 var formTemplateId = formId + '_template';
-                return $('#' + formTemplateId).find(wrapperSelector).find('[data-packetery-replication-item]').first().clone(); // table tr is currently the replication item
+                return $('#' + formTemplateId).find(wrapperSelector).find('[data-packetery-item]').first().clone(); // table tr is currently the replication item
             }
 
             /**
