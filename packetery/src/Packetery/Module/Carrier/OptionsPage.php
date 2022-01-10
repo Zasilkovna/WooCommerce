@@ -379,9 +379,11 @@ class OptionsPage {
 		$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 	}
 
 	/**
@@ -397,9 +399,11 @@ class OptionsPage {
 		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 	}
 
 }
