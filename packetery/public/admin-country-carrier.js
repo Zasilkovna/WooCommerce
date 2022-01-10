@@ -29,6 +29,12 @@
 
                 updateIds($template, newId++);
                 $container.append($template);
+                $template.find('[data-nette-rules]').each(function() {
+                    this.removeAttribute('data-lfv-initialized');
+                    LiveForm.setupHandlers(this);
+                    Nette.validateControl(this);
+                });
+
                 $('input', $template).eq(0).focus();
                 this.toggleDeleteButton($container);
             };
