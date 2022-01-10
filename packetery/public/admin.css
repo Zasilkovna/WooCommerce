@@ -180,3 +180,7 @@ tbody .packetery-log-column-note {
 .packetery-log-table tr:hover td {
     background-color: #dedddd;
 }
+
+.packetery-hidden {
+    display: none;
+}

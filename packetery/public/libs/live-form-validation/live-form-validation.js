@@ -97,8 +97,8 @@
     }
 
 // Allow setting options before loading the script just by creating global PacketeryLiveFormOptions object with options.
-    if (typeof window.PacketeryLiveFormOptions !== 'undefined') {
-        LiveForm.setOptions(window.PacketeryLiveFormOptions);
+    if (typeof window.LiveFormOptions !== 'undefined') {
+        LiveForm.setOptions(window.LiveFormOptions);
     }
 
     LiveForm.isSpecialKey = function (k) {

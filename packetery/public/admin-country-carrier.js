@@ -44,7 +44,7 @@
             this.toggleDeleteButton = function ($container) {
                 var optionsCount = $container.find('[data-packetery-replication-item]').length,
                     $buttons = $container.find('[data-packetery-replication-delete]'),
-                    minItems = parseInt($container.attr('data-packetery-replication-min-items'));
+                    minItems = parseInt($container.data('packetery-replication-min-items'));
 
                 ( optionsCount > minItems ? $buttons.show() : $buttons.hide() );
             };

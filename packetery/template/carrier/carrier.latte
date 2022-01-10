@@ -41,7 +41,7 @@
 				<table>
 					<tbody data-packetery-replication-item-container data-packetery-replication-min-items="1">
 					{var $container = $form['weight_limits']}
-							{foreach $container->getComponents() as $weightId => $tmp}
+					{foreach $container->getComponents() as $weightId => $tmp}
 						{include weightRules id => $weightId, container => $container}
 					{/foreach}
 					</tbody>
@@ -85,7 +85,7 @@
 				<table>
 					<tbody data-packetery-replication-item-container data-packetery-replication-min-items="0">
 					{var $container = $form['surcharge_limits']}
-						{foreach $container->getComponents() as $surchargeId => $tmp}
+					{foreach $container->getComponents() as $surchargeId => $tmp}
 						{include surchargeRules id => $surchargeId, container => $container}
 					{/foreach}
 					</tbody>
@@ -97,7 +97,7 @@
 	{/define}
 
 	{var $form = $carrier_data['formTemplate']}
-		<form n:name=$form class="hidden">
+		<form n:name=$form class="packetery-hidden">
 			<table class="form-table" role="presentation">
 				{include weightRulesSection form => $form}
 				{include surchargeRulesSection form => $form}

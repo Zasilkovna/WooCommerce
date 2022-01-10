@@ -161,6 +161,9 @@ class OptionsPage {
 		$form->addSubmit('save');
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
+		$form->onError[] = static function () {
+			add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
+		};
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
 		$carrierOptions       = get_option( $optionId );
@@ -202,7 +205,6 @@ class OptionsPage {
 	public function validateOptions( Form $form ): void {
 		$options = $form->getValues( 'array' );
 
-		$this->validateLimits( $form, $options, 'weight_limits' );
 		$this->checkOverlapping(
 			$form,
 			$options,
@@ -210,7 +212,6 @@ class OptionsPage {
 			'weight',
 			__( 'Weight rules are overlapping, fix it please.', 'packetery' )
 		);
-		$this->validateLimits( $form, $options, 'surcharge_limits' );
 		$this->checkOverlapping(
 			$form,
 			$options,
@@ -327,31 +328,6 @@ class OptionsPage {
 		}
 
 		return $options;
-	}
-
-	/**
-	 * Validates limits.
-	 * TODO: JS validation.
-	 *
-	 * @param Form   $form Form.
-	 * @param array  $options Options to merge.
-	 * @param string $limitsContainer Container id.
-	 *
-	 * @return void
-	 */
-	private function validateLimits( Form $form, array $options, string $limitsContainer ): void {
-		if ( isset( $options[ $limitsContainer ] ) ) {
-			foreach ( $options[ $limitsContainer ] as $key => $option ) {
-				$keys = array_keys( $option );
-				if ( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) {
-					add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
-					$form[ $limitsContainer ][ $key ][ $keys[1] ]->addError( Validator::$messages[ Form::FILLED ] );
-				} elseif ( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) ) {
-					add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
-					$form[ $limitsContainer ][ $key ][ $keys[0] ]->addError( Validator::$messages[ Form::FILLED ] );
-				}
-			}
-		}
 	}
 
 	/**
