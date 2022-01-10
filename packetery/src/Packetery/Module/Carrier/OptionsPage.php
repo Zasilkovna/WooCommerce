@@ -161,9 +161,6 @@ class OptionsPage {
 		$form->addSubmit('save');
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
-		$form->onError[] = static function () {
-			add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
-		};
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
 		$carrierOptions       = get_option( $optionId );
@@ -203,6 +200,11 @@ class OptionsPage {
 	 * @param Form $form Form.
 	 */
 	public function validateOptions( Form $form ): void {
+		if ( $form->hasErrors() ) {
+			add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
+			return;
+		}
+
 		$options = $form->getValues( 'array' );
 
 		$this->checkOverlapping(
