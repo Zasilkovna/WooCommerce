@@ -10,6 +10,9 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use PacketeryLatte\Engine;
+use PacketeryLatte\MacroNode;
+use PacketeryLatte\Macros\MacroSet;
+use PacketeryLatte\PhpWriter;
 use PacketeryNette\Bridges\FormsPacketeryLatte\FormMacros;
 
 /**
@@ -36,6 +39,14 @@ class LatteEngineFactory {
 				return $value->format( wc_date_format() . ' ' . wc_time_format() );
 			}
 		);
+
+		$macroSet = new MacroSet($engine->getCompiler());
+		$macroSet->addMacro( 'phpComment', function ( MacroNode $node, PhpWriter $writer) {
+			$output = trim($node->args, "'");
+			return $writer->write('/* ' . $output . ' */');
+		} );
+
+		$engine->addMacro( 'packetery-macro-set', $macroSet );
 		return $engine;
 	}
 }

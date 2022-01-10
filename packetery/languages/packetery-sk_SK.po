@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-07T16:38:00+01:00\n"
-"PO-Revision-Date: 2022-01-07 16:39+0100\n"
+"POT-Creation-Date: 2022-01-10T10:23:31+01:00\n"
+"PO-Revision-Date: 2022-01-10 10:24+0100\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -547,7 +547,7 @@ msgstr "Nastavenia"
 msgid "general"
 msgstr "Obecné"
 
-#. translators: %s is URL. /* line 27 */; echo '                                ';
+#. translators: %s is URL.
 msgid "apiPasswordCanBeFoundAt%sUrl"
 msgstr "API heslo nájdete na adrese %s"
 
@@ -651,13 +651,13 @@ msgstr "názov výdajného miesta"
 msgid "shipmentsSubmittedSuccessfully"
 msgstr "Zásielky boli úspešne podané."
 
-#. translators: %s is count. /* line 9 */; echo '			<p>';
+#. translators: %s is count.
 msgid "someShipments%sSkipped"
 msgstr ""
 "Niektoré zásielky (celkom %s) sa nepodarilo podať (boli už podané alebo sa "
 "nejednalo o zásielky Packeta)."
 
-#. translators: %s is count. /* line 16 */; echo '			<p>';
+#. translators: %s is count.
 msgid "someShipments%sFailed"
 msgstr "Niektoré zásielky (celkom %s) sa nepodarilo ododslať do Packeta."
 
@@ -677,19 +677,19 @@ msgstr "Packeta"
 msgid "labelPrinting"
 msgstr "tlač štítkov"
 
-#. translators: %s is count. /* line 7 */; echo '				';
+#. translators: %s is count.
 #, fuzzy
 #| msgid "actionPrintLabels"
 msgid "willBePrinted1%sLabels"
 msgstr "Tlač štítkov"
 
-#. translators: %s is count. /* line 10 */; echo '				';
+#. translators: %s is count.
 #, fuzzy
 #| msgid "actionPrintLabels"
 msgid "willBePrinted2%sLabels"
 msgstr "Tlač štítkov"
 
-#. translators: %s is count. /* line 13 */; echo '				';
+#. translators: %s is count.
 #, fuzzy
 #| msgid "actionPrintLabels"
 msgid "willBePrinted5%sLabels"
