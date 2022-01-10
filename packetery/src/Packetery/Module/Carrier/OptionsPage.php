@@ -157,7 +157,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$form->addHidden( 'id' )->setRequired();
-		$form->addSubmit('save');
+		$form->addSubmit( 'save' );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
@@ -270,7 +270,7 @@ class OptionsPage {
 				}
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
 					$formTemplate = $this->createFormTemplate( $post );
-					$form = $this->createForm( $post );
+					$form         = $this->createForm( $post );
 					if ( $form->isSubmitted() ) {
 						$form->fireEvents();
 					}
@@ -280,7 +280,7 @@ class OptionsPage {
 						$carrierData += $options;
 					}
 					$formTemplate = $this->createFormTemplate( $carrierData );
-					$form = $this->createForm( $carrierData );
+					$form         = $this->createForm( $carrierData );
 				}
 
 				$carriersData[] = [
