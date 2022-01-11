@@ -179,7 +179,7 @@ class GridExtender {
 	 */
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get[ Entity::META_CARRIER_ID ] ) ) {
-			/** @codingStandardsIgnoreStart */
+			// @codingStandardsIgnoreStart
 			$queryVars['meta_query'] = [
 				[
 					'key'     => Entity::META_CARRIER_ID,
@@ -187,12 +187,11 @@ class GridExtender {
 					'compare' => '=',
 				],
 			];
-			/** @codingStandardsIgnoreEnd */
+			// @codingStandardsIgnoreEnd
 		}
 
 		if ( ! empty( $get['packetery_to_submit'] ) ) {
-			/** @codingStandardsIgnoreStart */
-			// TODO: How to make sure it is fast?
+			// @codingStandardsIgnoreStart
 			$queryVars['meta_query'] = [
 				'relation' => 'AND',
 				[
@@ -205,11 +204,11 @@ class GridExtender {
 					'compare' => 'NOT EXISTS',
 				],
 			];
-			/** @codingStandardsIgnoreEnd */
+			// @codingStandardsIgnoreEnd
 		}
 
 		if ( ! empty( $get['packetery_to_print'] ) ) {
-			/** @codingStandardsIgnoreStart */
+			// @codingStandardsIgnoreStart
 			$queryVars['meta_query'] = [
 				'relation' => 'AND',
 				[
@@ -221,11 +220,11 @@ class GridExtender {
 					'compare' => 'NOT EXISTS',
 				],
 			];
-			/** @codingStandardsIgnoreEnd */
+			// @codingStandardsIgnoreEnd
 		}
 
 		if ( ! empty( $get['packetery_order_type'] ) ) {
-			/** @codingStandardsIgnoreStart */
+			// @codingStandardsIgnoreStart
 			$queryVars['meta_query'] = [
 				[
 					'key'     => Entity::META_CARRIER_ID,
@@ -233,7 +232,7 @@ class GridExtender {
 					'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
 				],
 			];
-			/** @codingStandardsIgnoreEnd */
+			// @codingStandardsIgnoreEnd
 		}
 
 		return $queryVars;
