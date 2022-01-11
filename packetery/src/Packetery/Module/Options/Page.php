@@ -158,7 +158,6 @@ class Page {
 	public function getAvailablePaymentGateways(): array {
 		$availableGateways = [];
 
-		/** @var \WC_Payment_Gateway $gateway */
 		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
 			if ( 'yes' === $gateway->enabled ) {
 				$availableGateways[ $gateway->id ] = $gateway;
