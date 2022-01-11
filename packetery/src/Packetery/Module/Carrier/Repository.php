@@ -251,7 +251,15 @@ class Repository {
 	 */
 	public function set_others_as_deleted( array $carriers_in_feed ): void {
 		$wpdb = $this->get_wpdb();
-		$wpdb->query( 'UPDATE `' . $wpdb->packetery_carrier . '` SET `deleted` = 1 WHERE `id` NOT IN (' . /** @codingStandardsIgnoreStart */ implode( ',', $carriers_in_feed ) /** @codingStandardsIgnoreEnd */ . ')' );
+		$wpdb->query(
+			'UPDATE `' .
+			$wpdb->packetery_carrier .
+			'` SET `deleted` = 1 WHERE `id` NOT IN (' .
+	            // @codingStandardsIgnoreStart
+				implode( ',', $carriers_in_feed )
+	            // @codingStandardsIgnoreEnd
+			. ')'
+		);
 	}
 
 	/**
