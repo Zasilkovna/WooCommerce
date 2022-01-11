@@ -96,9 +96,9 @@ class MessageManager {
 	 * @param string $context  Message context.
 	 */
 	public function render( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
-		/** @codingStandardsIgnoreStart */
+		// @codingStandardsIgnoreStart
 		echo $this->renderToString( $renderer, $context );
-		/** @codingStandardsIgnoreEnd */
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
