@@ -116,9 +116,11 @@ class Exporter {
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
 			'phpVersion'        => PHP_VERSION,
-			'soap'              => (string) extension_loaded( 'soap' ),
-			'wpDebug'           => ( defined( 'WP_DEBUG' ) ? (string) WP_DEBUG : '' ),
-			'packetaDebug'      => ( defined( 'PACKETERY_DEBUG' ) ? (string) PACKETERY_DEBUG : '' ),
+			// @codingStandardsIgnoreStart
+			'soap'              => var_export( extension_loaded( 'soap' ), true ),
+			'wpDebug'           => var_export( WP_DEBUG, true ),
+			'packetaDebug'      => var_export( PACKETERY_DEBUG, true ),
+			// @codingStandardsIgnoreStart
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),

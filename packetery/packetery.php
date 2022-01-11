@@ -42,9 +42,9 @@ if ( php_sapi_name() === 'cli' ) {
 }
 
 if ( headers_sent() ) {
-	/** @codingStandardsIgnoreStart */
+	// @codingStandardsIgnoreStart
 	trigger_error( 'Packeta plugin is unable to bootstrap because HTTP headers are already sent. This issue is probably caused by another plugin.', E_USER_WARNING );
-	/** @codingStandardsIgnoreEnd */
+	// @codingStandardsIgnoreEnd
 	return;
 }
 
