@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
 "POT-Creation-Date: 2022-01-11T14:38:18+01:00\n"
-"PO-Revision-Date: 2022-01-11 14:42+0100\n"
+"PO-Revision-Date: 2022-01-11 17:32+0100\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -910,8 +910,71 @@ msgstr "Zásielky na prepravcov"
 msgid "packetaPickupPointPackets"
 msgstr "Zásilky na výdejné miesta Packeta"
 
+#: temp/cache/view/template-checkout-widget_button.latte--90235cda26.php:36
+msgid "Choose pickup point"
+msgstr "Výběr místa vyzvednutí"
+
 #~ msgid "Shipping Detail"
 #~ msgstr "Detail výdajného miesta"
 
 #~ msgid "senderCanBeFoundAt%sUrl"
 #~ msgstr "Označenie odosielateľa nájdete na adrese %s"
+
+#~ msgid "Todo description."
+#~ msgstr "Todo popis."
+
+#~ msgid "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
+#~ msgstr "105x148 mm (A6) štítek na stránce o velikosti 210x297 mm (A4)"
+
+#~ msgid ""
+#~ "105x148 mm (A6) label on a page of the same size (offset argument is "
+#~ "ignored for this format)"
+#~ msgstr ""
+#~ "štítek 105x148 mm (A6) na stránce stejné velikosti (argument posunu se u "
+#~ "tohoto formátu ignoruje)."
+
+#~ msgid "https://www.packeta.com/todo-plugin-page/"
+#~ msgstr "https://www.zasilkovna.cz/todo-plugin-page/"
+
+#~ msgid "Allow Label Emailing"
+#~ msgstr "Dovolit rozesílání stítků emailem"
+
+#~ msgid "View Packeta documentation"
+#~ msgstr "Zobrazit Packeta dokumentaci"
+
+#~ msgid "Documentation"
+#~ msgstr "Dokumentace"
+
+#~ msgid ""
+#~ "If checked, the generated labels will be emailed to the e-shop "
+#~ "administrator"
+#~ msgstr ""
+#~ "Pokud je zaškrtnuto, vygenerované štítky budou zaslány e-mailem správci e-"
+#~ "shopu."
+
+#~ msgid "Check age 18+"
+#~ msgstr "Ověření věku 18+"
+
+#~ msgid "105x148 mm (A6) label on a page of the same size"
+#~ msgstr "Štítek 105x148 mm (A6) na stránce stejné velikosti"
+
+#~ msgid "105x74 mm (A7) label on a page of the same size"
+#~ msgstr "štítek 105x74 mm (A7) na stránce stejné velikosti"
+
+#~ msgid "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
+#~ msgstr "105x74 mm (A7) štítek na stránce o velikosti 210x297 mm (A4)"
+
+#~ msgid "105x35 mm label on a page of size 210x297 mm (A4)"
+#~ msgstr "Štítek 105x35 mm na stránce o rozměrech 210x297 mm (A4)"
+
+#~ msgid "50x74 mm (A8) label on a page of the same size"
+#~ msgstr "štítek 50x74 mm (A8) na stránce stejné velikosti"
+
+#~ msgid "Carrier display name must have at least 2 characters!"
+#~ msgstr "Název dopravce musí mít alespoň dva znaky!"
+
+#~ msgid "Please fill in both values for each rule."
+#~ msgstr "Vyplňte prosím u každého pravidla obě hodnoty."
+
+#~ msgid "Packeta Information"
+#~ msgstr "Zásilkovní Informace"
