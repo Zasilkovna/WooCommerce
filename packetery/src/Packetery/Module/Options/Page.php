@@ -226,8 +226,8 @@ class Page {
 
 		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
 
-		/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 		$latteParams['senderDescription'] = sprintf(
+			/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 			esc_html__( 'senderDescription', 'packetery' ),
 			'<strong>',
 			'</strong>',
