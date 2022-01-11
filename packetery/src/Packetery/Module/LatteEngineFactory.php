@@ -45,6 +45,7 @@ class LatteEngineFactory {
 			'phpComment',
 			function ( MacroNode $node, PhpWriter $writer ) {
 				$output = trim( $node->args, "'" );
+				$output = preg_replace( '~/~', '|', $output );
 				return $writer->write( '/* ' . $output . ' */' );
 			}
 		);
