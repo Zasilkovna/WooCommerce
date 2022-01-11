@@ -40,11 +40,14 @@ class LatteEngineFactory {
 			}
 		);
 
-		$macroSet = new MacroSet($engine->getCompiler());
-		$macroSet->addMacro( 'phpComment', function ( MacroNode $node, PhpWriter $writer) {
-			$output = trim($node->args, "'");
-			return $writer->write('/* ' . $output . ' */');
-		} );
+		$macroSet = new MacroSet( $engine->getCompiler() );
+		$macroSet->addMacro(
+			'phpComment',
+			function ( MacroNode $node, PhpWriter $writer ) {
+				$output = trim( $node->args, "'" );
+				return $writer->write( '/* ' . $output . ' */' );
+			}
+		);
 
 		$engine->addMacro( 'packetery-macro-set', $macroSet );
 		return $engine;
