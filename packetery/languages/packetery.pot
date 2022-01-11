@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-01-07T11:45:49+01:00\n"
+"POT-Creation-Date: 2022-01-11T10:46:40+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -162,7 +162,7 @@ msgstr ""
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
-#. translators: 1: boldness start 2: boldness end 3: client section link start 4: client section link end
+#. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
 msgid "senderDescription"
 msgstr ""
 
