@@ -428,7 +428,7 @@ class LabelPrint {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = 'Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná.';
+				$record->title  = __( 'carrierNumberRetrievingErrorLogTitle', 'packetery' );
 				$record->params = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),

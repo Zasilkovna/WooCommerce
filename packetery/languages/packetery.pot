@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-01-11T14:38:18+01:00\n"
+"POT-Creation-Date: 2022-01-12T10:50:34+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -451,6 +451,10 @@ msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:419
 msgid "pleaseSetProperPassword"
+msgstr ""
+
+#: src/Packetery/Module/Order/LabelPrint.php:427
+msgid "carrierNumberRetrievingErrorLogTitle"
 msgstr ""
 
 #: src/Packetery/Module/Order/Metabox.php:141
