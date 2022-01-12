@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-11T14:38:18+01:00\n"
-"PO-Revision-Date: 2022-01-11 14:39+0100\n"
+"POT-Creation-Date: 2022-01-12T10:50:34+01:00\n"
+"PO-Revision-Date: 2022-01-12 10:54+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -468,6 +468,10 @@ msgstr "Validace odesílatele skončila chybou"
 #: src/Packetery/Module/Order/LabelPrint.php:419
 msgid "pleaseSetProperPassword"
 msgstr "Nastavte prosím platné API heslo."
+
+#: src/Packetery/Module/Order/LabelPrint.php:427
+msgid "carrierNumberRetrievingErrorLogTitle"
+msgstr "Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná."
 
 #: src/Packetery/Module/Order/Metabox.php:141
 msgid "Weight (kg)"
