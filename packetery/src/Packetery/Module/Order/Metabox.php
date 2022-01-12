@@ -105,8 +105,13 @@ class Metabox {
 	 *  Registers related hooks.
 	 */
 	public function register(): void {
-		$this->order_form = new Form();
-		$this->add_fields();
+		add_action(
+			'admin_init',
+			function () {
+				$this->order_form = new Form();
+				$this->add_fields();
+			}
+		);
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 		add_action( 'save_post', array( $this, 'save_fields' ) );
 	}
