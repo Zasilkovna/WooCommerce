@@ -158,8 +158,10 @@ class Page {
 	public function getAvailablePaymentGateways(): array {
 		$availableGateways = [];
 
-		foreach ( WC()->payment_gateways->payment_gateways as $gateway ) {
-			$availableGateways[ $gateway->id ] = $gateway;
+		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
+			if ( 'yes' === $gateway->enabled ) {
+				$availableGateways[ $gateway->id ] = $gateway;
+			}
 		}
 
 		return array_filter( (array) apply_filters( 'woocommerce_available_payment_gateways', $availableGateways ), [ $this, 'filterValidGatewayClass' ] );
