@@ -75,6 +75,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Updated: carrier settings page errors highlighted
 * Added: default C.O.D. surcharge
 * Fixed: only available payment methods are available for selection in plugin settings
+* Added: COD surcharge was separated from shipping cost and its shown in order fees
 
 = 1.0.5 =
 * Update: sender description

@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-13T10:33:16+01:00\n"
-"PO-Revision-Date: 2022-01-13 10:34+0100\n"
+"POT-Creation-Date: 2022-01-13T14:19:01+01:00\n"
+"PO-Revision-Date: 2022-01-13 14:19+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -156,6 +156,10 @@ msgstr "RO Packeta pickup points"
 msgid "Pick up point is not chosen."
 msgstr "Pick up point is not chosen."
 
+#: src/Packetery/Module/Checkout.php:372
+msgid "codSurcharge"
+msgstr "COD surcharge"
+
 #. translators: keep %d placeholder intact.
 #: src/Packetery/Module/FormFactory.php:30
 msgid "pleaseEnterValueGreaterThanOrEqualTo%d"
@@ -252,11 +256,11 @@ msgstr "105x148 mm (A6) label on a page of the same size"
 msgid "Payment method that represents cash on delivery"
 msgstr "Payment method that represents cash on delivery"
 
-#: src/Packetery/Module/Options/Page.php:183
+#: src/Packetery/Module/Options/Page.php:185
 msgid "Main Settings"
 msgstr "Main Settings"
 
-#: src/Packetery/Module/Options/Page.php:224
+#: src/Packetery/Module/Options/Page.php:226
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -265,7 +269,7 @@ msgstr ""
 "your web hosting administrator."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:231
+#: src/Packetery/Module/Options/Page.php:233
 msgid "senderDescription"
 msgstr ""
 "Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s "
