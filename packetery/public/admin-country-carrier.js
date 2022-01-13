@@ -6,52 +6,60 @@
             return;
         }
 
-        var Multiplier = function () {
-            this.registerListeners = function (wrapperSelector) {
-                var $wrappers = $(wrapperSelector);
-                $wrappers
-                    .on('click', '.js-add', function () {
-                        multiplier.addOption(this, $wrappers); // todo use wrapperSelector instead
+        var Multiplier = function (wrapperSelector) {
+            var $wrapper = $(wrapperSelector),
+                multiplier = this;
+
+            this.registerListeners = function () {
+                $wrapper
+                    .on('click', '[data-replication-add]', function () {
+                        multiplier.addItem(this);
                     })
-                    .on('click', '.js-delete', function () {
-                        multiplier.deleteOption(this);
+                    .on('click', '[data-replication-delete]', function () {
+                        multiplier.deleteItem(this);
                     })
                     .each(function () {
-                        multiplier.toggleDeleteButton($(this));
+                        multiplier.toggleDeleteButton($(this).find('[data-replication-item-container]'));
                     });
             };
 
-            this.addOption = function (button, $wrappers) {
-                var wrapperClassName = $wrappers.first().attr('class'),
-                    $wrapper = $(button).closest('.' + wrapperClassName),
-                    $template = getTemplateClone($wrapper);
+            this.addItem = function ( button ) {
+                var $container = $(button).closest(wrapperSelector).find('[data-replication-item-container]'),
+                    $template = getTemplateClone($container);
 
                 updateIds($template, newId++);
-                $wrapper.find('table').append($template);
+                $container.append($template);
+                $template.find('[data-nette-rules]').each(function() {
+                    this.removeAttribute('data-lfv-initialized');
+                    LiveForm.setupHandlers(this);
+                    Nette.validateControl(this);
+                });
+
                 $('input', $template).eq(0).focus();
-                this.toggleDeleteButton($wrapper);
+                this.toggleDeleteButton($container);
             };
 
-            this.deleteOption = function (button) {
-                var $row = $(button).closest('tr'),
-                    $table = $row.closest('table');
+            this.deleteItem = function ( button ) {
+                var $row = $(button).closest('[data-replication-item]'),
+                    $container = $row.closest('[data-replication-item-container]');
 
                 $row.remove();
-                this.toggleDeleteButton($table);
+                this.toggleDeleteButton($container);
             };
 
-            this.toggleDeleteButton = function ($wrapper) {
-                var optionsCount = $wrapper.find('tr').length,
-                    $buttons = $wrapper.find('button.js-delete');
+            this.toggleDeleteButton = function ($container) {
+                var optionsCount = $container.find('[data-replication-item]').length,
+                    $buttons = $container.find('[data-replication-delete]'),
+                    minItems = parseInt($container.data('replication-min-items'));
 
-                (optionsCount > 1) ? $buttons.show() : $buttons.hide();
+                ( optionsCount > minItems ? $buttons.show() : $buttons.hide() );
             };
 
             /**
              * Find the highest counter in the rendered form (invalid form gets re-rendered with its submitted new_* form items)
              */
             function findMaxNewId() {
-                var $newInputs = $('[name*=' + prefix + ']'),
+                var $newInputs = $(wrapperSelector + ' [name*=' + prefix + ']'),
                     maxNewId = 1;
 
                 $newInputs.each(function () {
@@ -66,17 +74,17 @@
             var prefix = 'new_',
                 newId = findMaxNewId();
 
-            function getTemplateClone($wrapper) {
-                var $template = $wrapper.find('tr').first().clone();
-                $template.find('input').val('');
-                return $template;
+            function getTemplateClone(container) {
+                var formId = container.closest('form').attr('id');
+                var formTemplateId = formId + '_template';
+                return $('#' + formTemplateId).find(wrapperSelector).find('[data-replication-item]').first().clone(); // table tr is currently the replication item
             }
 
             /**
              * Update references to element names to make them unique; the value itself doesn't matter: [0] -> [new_234]
              */
             function updateIds($html, id) {
-                $('input, select, label, span', $html).each(function (i, element) {
+                $('input, select, label, .packetery-input-validation-message', $html).each(function (i, element) {
                     var $element = $(element);
 
                     updateId($element, 'name', id, ['[', ']']);
@@ -93,16 +101,15 @@
                 }
 
                 // don't use data() because we want the raw values, not parsed json arrays/objects
-                var regExp = new RegExp('\\' + delimiters[0] + '(new_)?\\d+\\' + delimiters[1]);
+                var regExp = new RegExp('\\' + delimiters[0] + '0\\' + delimiters[1]);
                 $element.attr(attrName, value.replace(regExp, delimiters[0] + prefix + id + delimiters[1]));
             }
 
+            this.registerListeners();
         };
 
-        var multiplier = new Multiplier();
-
-        multiplier.registerListeners('.js-weight-rules');
-        multiplier.registerListeners('.js-surcharge-rules');
+        new Multiplier('.js-weight-rules');
+        new Multiplier('.js-surcharge-rules');
     });
 
 })(jQuery);

@@ -9,14 +9,13 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Module\Checkout;
+use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
-use PacketeryNette\Forms\Validator;
 use PacketeryNette\Http\Request;
-use Packetery\Module\Checkout;
-use Packetery\Module\FormFactory;
 
 /**
  * Class OptionsPage
@@ -143,10 +142,13 @@ class OptionsPage {
 			}
 		}
 
+		$form->addText( 'default_COD_surcharge', __( 'defaultCODSurchargeLabel', 'packetery' ) )
+			->setRequired( false )
+			->addRule( Form::FLOAT )
+			->addRule( Form::MIN, null, 0 );
+
 		$surchargeLimits = $form->addContainer( 'surcharge_limits' );
-		if ( empty( $carrierData['surcharge_limits'] ) ) {
-			$this->addSurchargeLimit( $surchargeLimits, 0 );
-		} else {
+		if ( ! empty( $carrierData['surcharge_limits'] ) ) {
 			foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
 				$this->addSurchargeLimit( $surchargeLimits, $index );
 			}
@@ -155,6 +157,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$form->addHidden( 'id' )->setRequired();
+		$form->addSubmit( 'save' );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
@@ -170,14 +173,39 @@ class OptionsPage {
 	}
 
 	/**
+	 * Creates settings form.
+	 *
+	 * @param array $carrierData Carrier data.
+	 *
+	 * @return Form
+	 */
+	private function createFormTemplate( array $carrierData ): Form {
+		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
+
+		$form = $this->formFactory->create( $optionId . '_template' );
+
+		$weightLimitsTemplate = $form->addContainer( 'weight_limits' );
+		$this->addWeightLimit( $weightLimitsTemplate, 0 );
+
+		$surchargeLimitsTemplate = $form->addContainer( 'surcharge_limits' );
+		$this->addSurchargeLimit( $surchargeLimitsTemplate, 0 );
+
+		return $form;
+	}
+
+	/**
 	 * Validates options.
 	 *
 	 * @param Form $form Form.
 	 */
 	public function validateOptions( Form $form ): void {
+		if ( $form->hasErrors() ) {
+			add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
+			return;
+		}
+
 		$options = $form->getValues( 'array' );
 
-		$this->validateLimits( $form, $options, 'weight_limits' );
 		$this->checkOverlapping(
 			$form,
 			$options,
@@ -185,7 +213,6 @@ class OptionsPage {
 			'weight',
 			__( 'Weight rules are overlapping, fix it please.', 'packetery' )
 		);
-		$this->validateLimits( $form, $options, 'surcharge_limits' );
 		$this->checkOverlapping(
 			$form,
 			$options,
@@ -242,7 +269,8 @@ class OptionsPage {
 					$carrierEntity = $this->carrierRepository->getById( (int) $carrierData['id'] );
 				}
 				if ( ! empty( $post ) && $post['id'] === $carrierData['id'] ) {
-					$form = $this->createForm( $post );
+					$formTemplate = $this->createFormTemplate( $post );
+					$form         = $this->createForm( $post );
 					if ( $form->isSubmitted() ) {
 						$form->fireEvents();
 					}
@@ -251,12 +279,15 @@ class OptionsPage {
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
-					$form = $this->createForm( $carrierData );
+					$formTemplate = $this->createFormTemplate( $carrierData );
+					$form         = $this->createForm( $carrierData );
 				}
+
 				$carriersData[] = [
-					'form'   => $form,
-					'data'   => $carrierData,
-					'entity' => $carrierEntity,
+					'form'         => $form,
+					'formTemplate' => $formTemplate,
+					'data'         => $carrierData,
+					'entity'       => $carrierEntity,
 				];
 			}
 
@@ -281,46 +312,20 @@ class OptionsPage {
 	 * @return array
 	 */
 	private function mergeNewLimits( array $options, string $limitsContainer ): array {
-		$newOptions = array();
+		$newOptions = [];
 		if ( isset( $options[ $limitsContainer ] ) ) {
 			foreach ( $options[ $limitsContainer ] as $key => $option ) {
-				$keys = array_keys( $option );
-				if ( $option[ $keys[0] ] && $option[ $keys[1] ] ) {
-					if ( is_int( $key ) ) {
-						$newOptions[ $key ] = $option;
-					}
-					if ( 0 === strpos( (string) $key, 'new_' ) ) {
-						$newOptions[] = $option;
-					}
+				if ( is_int( $key ) ) {
+					$newOptions[ $key ] = $option;
+				}
+				if ( 0 === strpos( (string) $key, 'new_' ) ) {
+					$newOptions[] = $option;
 				}
 			}
 			$options[ $limitsContainer ] = $newOptions;
 		}
 
 		return $options;
-	}
-
-	/**
-	 * Validates limits.
-	 * TODO: JS validation.
-	 *
-	 * @param Form   $form Form.
-	 * @param array  $options Options to merge.
-	 * @param string $limitsContainer Container id.
-	 *
-	 * @return void
-	 */
-	private function validateLimits( Form $form, array $options, string $limitsContainer ): void {
-		if ( isset( $options[ $limitsContainer ] ) ) {
-			foreach ( $options[ $limitsContainer ] as $key => $option ) {
-				$keys = array_keys( $option );
-				if ( ! empty( $option[ $keys[0] ] ) && empty( $option[ $keys[1] ] ) ) {
-					$form[ $limitsContainer ][ $key ][ $keys[1] ]->addError( Validator::$messages[ Form::FILLED ] );
-				} elseif ( empty( $option[ $keys[0] ] ) && ! empty( $option[ $keys[1] ] ) ) {
-					$form[ $limitsContainer ][ $key ][ $keys[0] ]->addError( Validator::$messages[ Form::FILLED ] );
-				}
-			}
-		}
 	}
 
 	/**
@@ -371,9 +376,11 @@ class OptionsPage {
 		$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 	}
 
 	/**
@@ -387,9 +394,13 @@ class OptionsPage {
 	private function addSurchargeLimit( Container $surchargeLimits, $index ): void {
 		$limit = $surchargeLimits->addContainer( (string) $index );
 		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
+		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
+		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::MIN, null, 0 );
 	}
 
 }

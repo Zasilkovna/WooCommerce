@@ -96,7 +96,7 @@
         }
     }
 
-// Allow setting options before loading the script just by creating global LiveFormOptions object with options.
+// Allow setting options before loading the script just by creating global PacketeryLiveFormOptions object with options.
     if (typeof window.LiveFormOptions !== 'undefined') {
         LiveForm.setOptions(window.LiveFormOptions);
     }

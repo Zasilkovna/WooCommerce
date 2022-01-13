@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.8.1
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -71,6 +71,10 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.0.6 =
+* Updated: carrier settings page errors highlighted
+* Added: default C.O.D. surcharge
+
 = 1.0.5 =
 * Update: sender description
 * Fixed: cash on delivery payment method is always available for selection in Packeta plugin settings

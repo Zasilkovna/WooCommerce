@@ -7,6 +7,103 @@
 			<p>{__( 'cannotUseThisCarrierBecauseRequiresCustomsDeclaration', 'packetery' )}</p>
 		</div>
 	{elseif isset($carrier_data['form'])}
+
+	{define weightRules}
+		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
+			<td>
+				<div class="packetery-rule">
+					<div class="packetery-label">
+						<label n:name=weight />
+					</div>
+					<div class="packetery-input">
+						<input n:name=weight data-lfv-message-id="{$container[$id][weight]->getHtmlId() . '_message'}">
+						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][weight]->getHtmlId() . '_message'}">{inputError weight}</p>
+					</div>
+					<div class="packetery-label">
+						<label n:name=price />
+					</div>
+					<div class="packetery-input">
+						<input n:name=price data-lfv-message-id="{$container[$id][price]->getHtmlId() . '_message'}">
+						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
+					</div>
+				</div>
+				<button type="button" data-replication-delete class="button">{__( 'Delete weight rule', 'packetery' )}</button>
+			</td>
+		</tr>
+	{/define}
+
+	{define weightRulesSection}
+		<tr>
+			<th scope="row">
+				<label>{__( 'Weight rules', 'packetery' )}</label>
+			</th>
+			<td class="js-weight-rules">
+				<table>
+					<tbody data-replication-item-container data-replication-min-items="1">
+					{var $container = $form['weight_limits']}
+					{foreach $container->getComponents() as $weightId => $tmp}
+						{include weightRules id => $weightId, container => $container}
+					{/foreach}
+					</tbody>
+				</table>
+
+				<button type="button" data-replication-add class="button">{__( 'Add weight rule', 'packetery' )}</button>
+			</td>
+		</tr>
+	{/define}
+
+	{define surchargeRules}
+		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
+			<td>
+				<div class="packetery-rule">
+					<div class="packetery-label">
+						<label n:name=order_price />
+					</div>
+					<div class="packetery-input">
+						<input n:name=order_price data-lfv-message-id="{$container[$id][order_price]->getHtmlId() . '_message'}">
+						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][order_price]->getHtmlId() . '_message'}">{inputError order_price}</p>
+					</div>
+					<div class="packetery-label">
+						<label n:name=surcharge />
+					</div>
+					<div class="packetery-input">
+						<input n:name=surcharge data-lfv-message-id="{$container[$id][surcharge]->getHtmlId() . '_message'}">
+						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][surcharge]->getHtmlId() . '_message'}">{inputError surcharge}</p>
+					</div>
+				</div>
+				<button type="button" data-replication-delete class="button">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
+			</td>
+		</tr>
+	{/define}
+
+	{define surchargeRulesSection}
+		<tr>
+			<th scope="row">
+				<label>{__( 'COD surcharge rules', 'packetery' )}</label>
+			</th>
+			<td class="js-surcharge-rules">
+				<table>
+					<tbody data-replication-item-container data-replication-min-items="0">
+					{var $container = $form['surcharge_limits']}
+					{foreach $container->getComponents() as $surchargeId => $tmp}
+						{include surchargeRules id => $surchargeId, container => $container}
+					{/foreach}
+					</tbody>
+				</table>
+
+				<button type="button" data-replication-add class="button">{__( 'Add COD surcharge rule', 'packetery' )}</button>
+			</td>
+		</tr>
+	{/define}
+
+	{var $form = $carrier_data['formTemplate']}
+		<form n:name=$form class="packetery-hidden">
+			<table class="form-table" role="presentation">
+				{include weightRulesSection form => $form}
+				{include surchargeRulesSection form => $form}
+			</table>
+		</form>
+
 	{var $form = $carrier_data['form']}
 		<form n:name=$form>
 			<table class="form-table" role="presentation">
@@ -26,84 +123,16 @@
 						<input n:name=name class="packetery-carrier-name">
 					</td>
 				</tr>
+				{include weightRulesSection form => $form}
 				<tr>
 					<th scope="row">
-						<label>{__( 'Weight rules', 'packetery' )}</label>
+						<label n:name=default_COD_surcharge />
 					</th>
-					<td class="js-weight-rules">
-						<table>
-							{define weightRules}
-								<tr n:class="$class ?? ''" n:formContainer="$container[$id]">
-									<td>
-										<div class="packetery-rule">
-											<div class="packetery-label">
-												<label n:name=weight />
-											</div>
-											<div class="packetery-input">
-												<input n:name=weight> <br>
-											</div>
-											<div class="packetery-label">
-												<label n:name=price />
-											</div>
-											<div class="packetery-input">
-												<input n:name=price><br>
-											</div>
-										</div>
-										<button type="button"
-												class="js-delete button">{__( 'Delete weight rule', 'packetery' )}</button>
-									</td>
-								</tr>
-							{/define}
-
-						{var $container = $form['weight_limits']}
-						{foreach $container->getComponents() as $weightId => $tmp}
-								{include weightRules id => $weightId, container => $container}
-							{/foreach}
-						</table>
-
-						<button type="button" class="js-add button">{__( 'Add weight rule', 'packetery' )}</button>
+					<td>
+						<input n:name=default_COD_surcharge />
 					</td>
 				</tr>
-				<tr>
-					<th scope="row">
-						<label>{__( 'COD surcharge rules', 'packetery' )}</label>
-					</th>
-					<td class="js-surcharge-rules">
-						<table>
-							{define surchargeRules}
-								<tr n:class="$class ?? ''" n:formContainer="$container[$id]">
-									<td>
-										<div class="packetery-rule">
-											<div class="packetery-label">
-												<label n:name=order_price />
-											</div>
-											<div class="packetery-input">
-												<input n:name=order_price>
-												<p>{inputError order_price}</p>
-											</div>
-											<div class="packetery-label">
-												<label n:name=surcharge />
-											</div>
-											<div class="packetery-input">
-												<input n:name=surcharge>
-												<p>{inputError surcharge}</p>
-											</div>
-										</div>
-										<button type="button"
-												class="js-delete button">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
-									</td>
-								</tr>
-							{/define}
-
-						{var $container = $form['surcharge_limits']}
-						{foreach $container->getComponents() as $surchargeId => $tmp}
-								{include surchargeRules id => $surchargeId, container => $container}
-							{/foreach}
-						</table>
-
-						<button type="button" class="js-add button">{__( 'Add COD surcharge rule', 'packetery' )}</button>
-					</td>
-				</tr>
+				{include surchargeRulesSection form => $form}
 				<tr>
 					<th scope="row">
 						<label n:name=free_shipping_limit />
@@ -118,7 +147,7 @@
 			</table>
 
 			<p class="submit">
-				<input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}"
+				<input n:name=save type="submit" id="submit" value="{__( 'Save Changes' )}"
 					   class="button button-primary">
 			</p>
 

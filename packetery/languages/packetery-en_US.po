@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.0.5\n"
+"Project-Id-Version: Packeta 1.0.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-11T11:03:17+01:00\n"
-"PO-Revision-Date: 2022-01-11 11:08+0100\n"
+"POT-Creation-Date: 2022-01-13T10:33:16+01:00\n"
+"PO-Revision-Date: 2022-01-13 10:34+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -75,56 +75,64 @@ msgstr "Invalid API response."
 msgid "Carriers were updated."
 msgstr "Carriers were updated."
 
+#: src/Packetery/Module/Carrier/OptionsPage.php:104
 #: src/Packetery/Module/Carrier/OptionsPage.php:105
-#: src/Packetery/Module/Carrier/OptionsPage.php:106
 msgid "Carrier settings"
 msgstr "Carrier settings"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:131
+#: src/Packetery/Module/Carrier/OptionsPage.php:130
 msgid "Active carrier"
 msgstr "Active carrier"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:134
+#: src/Packetery/Module/Carrier/OptionsPage.php:133
 msgid "Display name"
 msgstr "Display name"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:155
+#: src/Packetery/Module/Carrier/OptionsPage.php:145
+msgid "defaultCODSurchargeLabel"
+msgstr "Default COD surcharge"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:157
 msgid "Free shipping limit"
 msgstr "Free shipping limit"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:156
-#: src/Packetery/Module/Carrier/OptionsPage.php:373
-#: src/Packetery/Module/Carrier/OptionsPage.php:376
-#: src/Packetery/Module/Carrier/OptionsPage.php:390
-#: src/Packetery/Module/Carrier/OptionsPage.php:392
+#: src/Packetery/Module/Carrier/OptionsPage.php:158
+#: src/Packetery/Module/Carrier/OptionsPage.php:378
+#: src/Packetery/Module/Carrier/OptionsPage.php:382
+#: src/Packetery/Module/Carrier/OptionsPage.php:398
+#: src/Packetery/Module/Carrier/OptionsPage.php:402
 msgid "Please enter a valid decimal number."
 msgstr "Please enter a valid decimal number."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:186
+#: src/Packetery/Module/Carrier/OptionsPage.php:203
+msgid "someCarrierDataAreInvalid"
+msgstr "Some carrier data are invalid"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:214
 msgid "Weight rules are overlapping, fix it please."
 msgstr "Weight rules are overlapping, fix it please."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:194
+#: src/Packetery/Module/Carrier/OptionsPage.php:221
 msgid "Surcharge rules are overlapping, fix it please."
 msgstr "Surcharge rules are overlapping, fix it please."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:214
+#: src/Packetery/Module/Carrier/OptionsPage.php:241
 msgid "settingsSaved"
 msgstr "Settings saved"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:371
+#: src/Packetery/Module/Carrier/OptionsPage.php:376
 msgid "Weight up to (kg)"
 msgstr "Weight up to (kg)"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:374
+#: src/Packetery/Module/Carrier/OptionsPage.php:380
 msgid "Price"
 msgstr "Price"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:389
+#: src/Packetery/Module/Carrier/OptionsPage.php:396
 msgid "Order price up to"
 msgstr "Order price up to"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:391
+#: src/Packetery/Module/Carrier/OptionsPage.php:400
 msgid "Surcharge"
 msgstr "Surcharge"
 
@@ -148,9 +156,19 @@ msgstr "RO Packeta pickup points"
 msgid "Pick up point is not chosen."
 msgstr "Pick up point is not chosen."
 
-#: src/Packetery/Module/FormFactory.php:26
-msgid "This field is required!"
-msgstr "This field is required!"
+#. translators: keep %d placeholder intact.
+#: src/Packetery/Module/FormFactory.php:30
+msgid "pleaseEnterValueGreaterThanOrEqualTo%d"
+msgstr "Please enter value greater than or equal to %d"
+
+#. translators: keep %d placeholder intact.
+#: src/Packetery/Module/FormFactory.php:31
+msgid "thisFieldIsRequired"
+msgstr "This field is required"
+
+#: src/Packetery/Module/FormFactory.php:32
+msgid "enterValidNumber"
+msgstr "Enter valid number"
 
 #: src/Packetery/Module/Log/Page.php:55 src/Packetery/Module/Log/Page.php:56
 #: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:17
@@ -194,7 +212,7 @@ msgid "Logs"
 msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:80
-#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:513
+#: src/Packetery/Module/Options/Page.php:81 src/Packetery/Module/Plugin.php:515
 msgid "Settings"
 msgstr "Settings"
 
@@ -368,16 +386,16 @@ msgstr "Session has expired! Please try again."
 msgid "You are not allowed to edit posts!"
 msgstr "You are not allowed to edit posts!"
 
-#: src/Packetery/Module/Plugin.php:448
+#: src/Packetery/Module/Plugin.php:450
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Carrier table was not created, you can find more information in Packeta log"
 
-#: src/Packetery/Module/Plugin.php:453
+#: src/Packetery/Module/Plugin.php:455
 msgid "carrierTableNotCreated"
 msgstr "Carrier table was not created"
 
-#: src/Packetery/Module/Plugin.php:512
+#: src/Packetery/Module/Plugin.php:514
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
 
@@ -398,33 +416,33 @@ msgstr "Description of Packeta shipping method"
 msgid "cannotUseThisCarrierBecauseRequiresCustomsDeclaration"
 msgstr "Cannot use this carrier because requires customs declaration"
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:72
-msgid "Weight rules"
-msgstr "Weight rules"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:89
-msgid "Add weight rule"
-msgstr "Add weight rule"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:96
-msgid "COD surcharge rules"
-msgstr "COD surcharge rules"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:113
-msgid "Add COD surcharge rule"
-msgstr "Add COD surcharge rule"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:133
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:126
 msgid "After exceeding this amount, shipping is free."
 msgstr "After exceeding this amount, shipping is free."
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:216
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:225
 msgid "Delete weight rule"
 msgstr "Delete weight rule"
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:275
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:244
+msgid "Weight rules"
+msgstr "Weight rules"
+
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:262
+msgid "Add weight rule"
+msgstr "Add weight rule"
+
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:326
 msgid "Delete COD surcharge rule"
 msgstr "Delete COD surcharge rule"
+
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:345
+msgid "COD surcharge rules"
+msgstr "COD surcharge rules"
+
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:363
+msgid "Add COD surcharge rule"
+msgstr "Add COD surcharge rule"
 
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:16
 msgid "Carriers"

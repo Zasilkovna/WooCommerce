@@ -406,11 +406,17 @@ class Checkout {
 				}
 			}
 			if ( $isCod && is_numeric( $cost ) ) {
+				$surchargeApplied = false;
 				foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
 					if ( $cartPrice <= $weightLimit['order_price'] ) {
-						$cost += $weightLimit['surcharge'];
+						$cost            += $weightLimit['surcharge'];
+						$surchargeApplied = true;
 						break;
 					}
+				}
+
+				if ( false === $surchargeApplied && is_numeric( $carrierOptions['default_COD_surcharge'] ) ) {
+					$cost += $carrierOptions['default_COD_surcharge'];
 				}
 			}
 		}
