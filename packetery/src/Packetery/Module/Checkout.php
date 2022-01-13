@@ -359,14 +359,14 @@ class Checkout {
 			return;
 		}
 
-		$chosenMethod  = $this->getChosenMethod();
-		$carrierOption = get_option( $chosenMethod );
+		$chosenMethod   = $this->getChosenMethod();
+		$carrierOptions = get_option( $chosenMethod );
 
-		if ( ! $carrierOption ) {
+		if ( ! $carrierOptions ) {
 			return;
 		}
 
-		$applicableSurcharge = $this->getCODSurcharge( $carrierOption, $this->getCartPrice() );
+		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions, $this->getCartPrice() );
 		if ( 0 >= $applicableSurcharge ) {
 			return;
 		}
@@ -381,7 +381,7 @@ class Checkout {
 	}
 
 	/**
-	 * Gets cart price.
+	 * Gets cart price. Value is casted to float because PHPDoc is not reliable.
 	 *
 	 * @return float
 	 */
