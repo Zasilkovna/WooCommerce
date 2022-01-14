@@ -347,22 +347,24 @@ class Checkout {
 	 * @return void
 	 */
 	public function calculateFees(): void {
-		$feesApi      = WC()->cart->fees_api();
-		$isCod        = false;
-		$codMethod    = $this->options_provider->getCodPaymentMethod();
-		$chosenMethod = WC()->session->get( 'chosen_payment_method' );
-		if ( null !== $codMethod && ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
+		$chosenShippingMethod = $this->getChosenMethod();
+		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
+			return;
+		}
+
+		$carrierOptions = get_option( $chosenShippingMethod );
+		if ( ! $carrierOptions ) {
+			return;
+		}
+
+		$isCod               = false;
+		$codPaymentMethod    = $this->options_provider->getCodPaymentMethod();
+		$chosenPaymentMethod = WC()->session->get( 'chosen_payment_method' );
+		if ( null !== $codPaymentMethod && ! empty( $chosenPaymentMethod ) && $chosenPaymentMethod === $codPaymentMethod ) {
 			$isCod = true;
 		}
 
 		if ( false === $isCod ) {
-			return;
-		}
-
-		$chosenMethod   = $this->getChosenMethod();
-		$carrierOptions = get_option( $chosenMethod );
-
-		if ( ! $carrierOptions ) {
 			return;
 		}
 
@@ -377,7 +379,7 @@ class Checkout {
 			'amount' => $applicableSurcharge,
 		];
 
-		$feesApi->add_fee( $fee );
+		WC()->cart->fees_api()->add_fee( $fee );
 	}
 
 	/**
