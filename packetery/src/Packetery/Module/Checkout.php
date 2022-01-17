@@ -293,6 +293,7 @@ class Checkout {
 		add_action( 'woocommerce_checkout_process', array( $this, 'validatePickupPointData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
+		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
 	}
 
 	/**
@@ -341,6 +342,56 @@ class Checkout {
 	}
 
 	/**
+	 * Calculates fees.
+	 *
+	 * @return void
+	 */
+	public function calculateFees(): void {
+		$chosenShippingMethod = $this->getChosenMethod();
+		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
+			return;
+		}
+
+		$carrierOptions = get_option( $chosenShippingMethod );
+		if ( ! $carrierOptions ) {
+			return;
+		}
+
+		$isCod               = false;
+		$codPaymentMethod    = $this->options_provider->getCodPaymentMethod();
+		$chosenPaymentMethod = WC()->session->get( 'chosen_payment_method' );
+		if ( null !== $codPaymentMethod && ! empty( $chosenPaymentMethod ) && $chosenPaymentMethod === $codPaymentMethod ) {
+			$isCod = true;
+		}
+
+		if ( false === $isCod ) {
+			return;
+		}
+
+		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions, $this->getCartPrice() );
+		if ( 0 >= $applicableSurcharge ) {
+			return;
+		}
+
+		$fee = [
+			'id'     => 'packetery-cod-surcharge',
+			'name'   => __( 'codSurcharge', 'packetery' ),
+			'amount' => $applicableSurcharge,
+		];
+
+		WC()->cart->fees_api()->add_fee( $fee );
+	}
+
+	/**
+	 * Gets cart price. Value is casted to float because PHPDoc is not reliable.
+	 *
+	 * @return float
+	 */
+	private function getCartPrice(): float {
+		return (float) WC()->cart->get_subtotal();
+	}
+
+	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @return array
@@ -354,21 +405,13 @@ class Checkout {
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice = (float) WC()->cart->get_subtotal();
-
+		$cartPrice  = $this->getCartPrice();
 		$cartWeight = $this->getCartWeightKg();
-
-		$isCod        = false;
-		$codMethod    = $this->options_provider->getCodPaymentMethod();
-		$chosenMethod = WC()->session->get( 'chosen_payment_method' );
-		if ( null !== $codMethod && ! empty( $chosenMethod ) && $chosenMethod === $codMethod ) {
-			$isCod = true;
-		}
 
 		$customRates = [];
 		foreach ( $carrierOptions as $optionId => $options ) {
 			if ( is_array( $options ) && true === $options['active'] ) {
-				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight, $isCod );
+				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 				if ( null !== $cost ) {
 					$customRates[ $optionId ] = [
 						'label'    => $options['name'],
@@ -390,11 +433,10 @@ class Checkout {
 	 * @param array     $carrierOptions Carrier options.
 	 * @param float     $cartPrice Price.
 	 * @param float|int $cartWeight Weight.
-	 * @param bool      $isCod COD.
 	 *
 	 * @return int|float|null
 	 */
-	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight, bool $isCod ) {
+	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight ) {
 		$cost = null;
 		if ( $carrierOptions['free_shipping_limit'] && $cartPrice >= $carrierOptions['free_shipping_limit'] ) {
 			$cost = 0;
@@ -405,23 +447,33 @@ class Checkout {
 					break;
 				}
 			}
-			if ( $isCod && is_numeric( $cost ) ) {
-				$surchargeApplied = false;
-				foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
-					if ( $cartPrice <= $weightLimit['order_price'] ) {
-						$cost            += $weightLimit['surcharge'];
-						$surchargeApplied = true;
-						break;
-					}
-				}
+		}
 
-				if ( false === $surchargeApplied && is_numeric( $carrierOptions['default_COD_surcharge'] ) ) {
-					$cost += $carrierOptions['default_COD_surcharge'];
+		return $cost;
+	}
+
+	/**
+	 * Gets applicable COD surcharge.
+	 *
+	 * @param array $carrierOptions Carrier options.
+	 * @param float $cartPrice      Cart price.
+	 *
+	 * @return float
+	 */
+	private function getCODSurcharge( array $carrierOptions, float $cartPrice ): float {
+		if ( isset( $carrierOptions['surcharge_limits'] ) ) {
+			foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
+				if ( $cartPrice <= $weightLimit['order_price'] ) {
+					return (float) $weightLimit['surcharge'];
 				}
 			}
 		}
 
-		return $cost;
+		if ( isset( $carrierOptions['default_COD_surcharge'] ) && is_numeric( $carrierOptions['default_COD_surcharge'] ) ) {
+			return (float) $carrierOptions['default_COD_surcharge'];
+		}
+
+		return 0.0;
 	}
 
 	/**

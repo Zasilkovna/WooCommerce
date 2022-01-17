@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-13T10:33:16+01:00\n"
-"PO-Revision-Date: 2022-01-13 10:33+0100\n"
+"POT-Creation-Date: 2022-01-13T14:19:01+01:00\n"
+"PO-Revision-Date: 2022-01-13 14:21+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -156,6 +156,10 @@ msgstr "RO Zásilkovna výdejní místa"
 msgid "Pick up point is not chosen."
 msgstr "Není vybráno výdejní místo."
 
+#: src/Packetery/Module/Checkout.php:372
+msgid "codSurcharge"
+msgstr "Přirážka za dobírku"
+
 #. translators: keep %d placeholder intact.
 #: src/Packetery/Module/FormFactory.php:30
 msgid "pleaseEnterValueGreaterThanOrEqualTo%d"
@@ -251,11 +255,11 @@ msgstr "1/4 A4, přímý tisk, 1ks/stránka"
 msgid "Payment method that represents cash on delivery"
 msgstr "Platební metoda, která reprezentuje dobírku."
 
-#: src/Packetery/Module/Options/Page.php:183
+#: src/Packetery/Module/Options/Page.php:185
 msgid "Main Settings"
 msgstr "Hlavní nastavení"
 
-#: src/Packetery/Module/Options/Page.php:224
+#: src/Packetery/Module/Options/Page.php:226
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -264,7 +268,7 @@ msgstr ""
 "Kontaktujte správce vašeho webhostingu."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:231
+#: src/Packetery/Module/Options/Page.php:233
 msgid "senderDescription"
 msgstr ""
 "Zde vyplňte %1$soznačení odesílatele%2$s - najdete jej v %3$sklientské sekci"
