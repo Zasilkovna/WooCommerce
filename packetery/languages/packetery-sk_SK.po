@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Packeta 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
 "POT-Creation-Date: 2022-01-12T10:50:34+01:00\n"
-"PO-Revision-Date: 2022-01-12 10:55+0100\n"
+"PO-Revision-Date: 2022-01-17 16:07+0100\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -340,8 +340,8 @@ msgstr ""
 #: src/Packetery/Module/Options/Page.php:349
 msgid "senderDescription"
 msgstr ""
-"Tu vyplňte %1$soznačenie odesielateľa%2$s - nájdete ho v %3$sklientskej "
-"sekcii%4$s - údaje o používateľovi -  pole 'označení používateľa'."
+"Tu vyplňte %1$soznačenie odisielateľa%2$s - nájdete ho v %3$sklientskej "
+"sekcii%4$s - údaje o používateľovi -  pole 'označenie používateľa'."
 
 #: src/Packetery/Module/Options/Provider.php:157
 msgid "labelNameA6onA4"
@@ -473,7 +473,7 @@ msgstr "Nastavte prosím platné API heslo."
 
 #: src/Packetery/Module/Order/LabelPrint.php:427
 msgid "carrierNumberRetrievingErrorLogTitle"
-msgstr "Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná."
+msgstr "Akcia “Získanie trasovacieho čísla externého dopravcu” bola neúspešná."
 
 #: src/Packetery/Module/Order/Metabox.php:141
 msgid "Weight (kg)"
@@ -516,11 +516,11 @@ msgstr "Váha"
 
 #: src/Packetery/Module/Order/Modal.php:93
 msgid "save"
-msgstr "Uložit"
+msgstr "Uložiť"
 
 #: src/Packetery/Module/Order/Modal.php:94
 msgid "cancel"
-msgstr "Zrušit"
+msgstr "Zrušiť"
 
 #: src/Packetery/Module/Order/PacketSubmitter.php:99
 #: src/Packetery/Module/Order/PacketSubmitter.php:116
@@ -608,7 +608,7 @@ msgstr "Dátum poslednej aktualizácie prepravcov"
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:51
 msgid "carrierListNeverDownloaded"
 msgstr ""
-"Ešte ste si nestiahli zoznam prepravcov, pokračujte kliknutím na tlačídlo "
+"Ešte ste si nestiahli zoznam prepravcov, pokračujte kliknutím na tlačidlo "
 "Vykonať aktualizáciu prepravcov"
 
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:60
@@ -912,7 +912,7 @@ msgstr "Zásielky na prepravcov"
 
 #: temp/cache/view/template-order-type-select.latte--7dab07c900.php:29
 msgid "packetaPickupPointPackets"
-msgstr "Zásilky na výdejné miesta Packeta"
+msgstr "Zásielky na výdajné miesta Packeta"
 
 #~ msgid "Choose pickup point"
 #~ msgstr "Výběr místa vyzvednutí"
