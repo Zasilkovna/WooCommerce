@@ -166,6 +166,18 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		updateWidgetButtonVisibility( getShippingRateId() );
 
+		var currentPaymentMethod = $('#payment input[type="radio"]:checked').val();
+		var checkPaymentChange = function() {
+			var targetPaymentMethod = $('#payment input[type="radio"]:checked').val();
+			if ( currentPaymentMethod === targetPaymentMethod ) {
+				return;
+			}
+
+			currentPaymentMethod = targetPaymentMethod;
+			jQuery('body').trigger('update_checkout');
+		};
+
+		$(document).on('change', '#payment input[type="radio"]', checkPaymentChange);
 		$( document ).on( 'updated_checkout', function() {
 			var destinationAddress = getDestinationAddress();
 			if ( destinationAddress.country !== settings.country ) {
@@ -176,6 +188,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}
 
 			updateWidgetButtonVisibility( getShippingRateId() );
+			checkPaymentChange(); // If Packeta shipping method with COD is selected, then switch to non-COD shipping method does not trigger payment method input change.
 		} );
 
 		$( document ).on( 'change', '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]', function() {
@@ -270,18 +283,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 				}, widgetOptions );
 			}
 		} );
-
-		var currentPaymentMethod = $('#payment input[type="radio"]:checked').val();
-		$(document).on('change', '#payment input[type="radio"]:checked', function (e) {
-			var $target = $(e.target);
-			var targetPaymentMethod = $target.val();
-			if ( currentPaymentMethod === targetPaymentMethod ) {
-				return;
-			}
-
-			currentPaymentMethod = targetPaymentMethod;
-			jQuery('body').trigger('update_checkout');
-		});
 	};
 
 	var dependencies = [];
