@@ -38,7 +38,11 @@ msgid "Packeta"
 msgstr ""
 
 #. Description of the plugin
-msgid "With the help of our official plugin, You can choose pickup points of Packeta and it's external carriers in all of Europe, or utilize address delivery for 25 countries in the European Union, straight from the cart in Your eshop. You can submit all of Your orders to Packeta with one click."
+msgid ""
+"With the help of our official plugin, You can choose pickup points of "
+"Packeta and it's external carriers in all of Europe, or utilize address "
+"delivery for 25 countries in the European Union, straight from the cart in "
+"Your eshop. You can submit all of Your orders to Packeta with one click."
 msgstr ""
 
 #. Author of the plugin
@@ -216,8 +220,7 @@ msgstr ""
 msgid "thisFieldIsRequired"
 msgstr ""
 
-#: src/Packetery/Module/Log/Page.php:55
-#: src/Packetery/Module/Log/Page.php:56
+#: src/Packetery/Module/Log/Page.php:55 src/Packetery/Module/Log/Page.php:56
 #: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:17
 msgid "logsPageTitle"
 msgstr ""
@@ -269,7 +272,8 @@ msgid "API password"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:158
-msgid "API password must be 32 characters long and must contain valid characters!"
+msgid ""
+"API password must be 32 characters long and must contain valid characters!"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:159
@@ -317,7 +321,9 @@ msgid "specifiedSenderIsOk"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:342
-msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
+msgid ""
+"This plugin requires an active SOAP library for proper operation. Contact "
+"your web hosting administrator."
 msgstr ""
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
@@ -884,4 +890,28 @@ msgstr ""
 
 #: temp/cache/view/template-order-type-select.latte--7dab07c900.php:29
 msgid "packetaPickupPointPackets"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:145
+msgid "defaultCODSurchargeLabel"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:203
+msgid "someCarrierDataAreInvalid"
+msgstr ""
+
+#: src/Packetery/Module/Checkout.php:372
+msgid "codSurcharge"
+msgstr ""
+
+#: src/Packetery/Module/FormFactory.php:32
+msgid "enterValidNumber"
+msgstr ""
+
+#: temp/cache/view/template-checkout-widget_button.latte--90235cda26.php:36
+msgid "Choose pickup point"
+msgstr ""
+
+#: temp/cache/view/template-email-footer.latte--a00c22aa3b.php:15
+msgid "Shipping Detail"
 msgstr ""
