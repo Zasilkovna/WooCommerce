@@ -913,6 +913,22 @@ msgstr "Carrier packets"
 msgid "packetaPickupPointPackets"
 msgstr "Packeta pickup points packets"
 
+#: src/Packetery/Module/Carrier/OptionsPage.php:145
+msgid "defaultCODSurchargeLabel"
+msgstr "Default COD surcharge"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:203
+msgid "someCarrierDataAreInvalid"
+msgstr "Some carrier data are invalid"
+
+#: src/Packetery/Module/Checkout.php:372
+msgid "codSurcharge"
+msgstr "COD surcharge"
+
+#: src/Packetery/Module/FormFactory.php:32
+msgid "enterValidNumber"
+msgstr "Enter valid number"
+
 #~ msgid "Choose pickup point"
 #~ msgstr "Choose pickup point"
 
