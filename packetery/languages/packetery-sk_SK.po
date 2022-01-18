@@ -916,19 +916,19 @@ msgstr "Zásielky na výdajné miesta Packeta"
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:145
 msgid "defaultCODSurchargeLabel"
-msgstr "Výchozí přirážka k dobírce"
+msgstr "Východzia prirážka k dobierke"
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:203
 msgid "someCarrierDataAreInvalid"
-msgstr "Některá data dopravce jsou nevalidní"
+msgstr "Niektoré dáta dopravcu nie sú validné"
 
 #: src/Packetery/Module/Checkout.php:372
 msgid "codSurcharge"
-msgstr "Přirážka za dobírku"
+msgstr "Prirážka za dobierku"
 
 #: src/Packetery/Module/FormFactory.php:32
 msgid "enterValidNumber"
-msgstr "Zadejte validní číslo"
+msgstr "Zadajte validné číslo"
 
 #~ msgid "Choose pickup point"
 #~ msgstr "Výběr místa vyzvednutí"
