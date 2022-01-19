@@ -166,6 +166,7 @@ class LabelPrint {
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
 		$packetIds       = $this->getPacketIdsFromTransient( $isCarrierLabels );
 		if ( ! $packetIds ) {
+			$this->messageManager->flash_message( __( 'noSuitableOrdersSelected', 'packetery' ), 'info' );
 			return;
 		}
 

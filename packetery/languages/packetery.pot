@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-01-13T14:19:01+01:00\n"
+"POT-Creation-Date: 2022-01-19T12:59:43+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -146,7 +146,7 @@ msgstr ""
 msgid "Pick up point is not chosen."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:372
+#: src/Packetery/Module/Checkout.php:378
 msgid "codSurcharge"
 msgstr ""
 
@@ -307,35 +307,39 @@ msgstr ""
 msgid "noOrdersSelected"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:191
-msgid "labelPrintFailedMoreInfoInLog"
+#: src/Packetery/Module/Order/LabelPrint.php:169
+msgid "noSuitableOrdersSelected"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:192
+msgid "labelPrintFailedMoreInfoInLog"
+msgstr ""
+
+#: src/Packetery/Module/Order/LabelPrint.php:193
 msgid "youSelectedOrdersThatWereNotSubmitted"
 msgstr ""
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:222
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "dontSkipAnyField"
 msgstr ""
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:222
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "skip%sFields"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:226
+#: src/Packetery/Module/Order/LabelPrint.php:227
 msgid "labelsOffset"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:239
 #: src/Packetery/Module/Order/LabelPrint.php:240
+#: src/Packetery/Module/Order/LabelPrint.php:241
 #: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:49
 msgid "printLabels"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:394
+#: src/Packetery/Module/Order/LabelPrint.php:395
 msgid "pleaseSetProperPassword"
 msgstr ""
 
