@@ -72,7 +72,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.0.7 =
-* Fixed: label print page shows user message if no suitable orders are selected
+* Fixed: the label print page displays a message to the user if no suitable orders are selected
 * Fixed: Some environments caused error due PHPDocs being removed by OPCache.
 
 = 1.0.6 =
