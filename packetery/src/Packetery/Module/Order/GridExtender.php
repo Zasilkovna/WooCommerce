@@ -275,6 +275,8 @@ class GridExtender {
 		if ( null === $order ) {
 			return;
 		}
+
+		$wcOrderEntity = new Entity( $wcOrder );
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -307,7 +309,7 @@ class GridExtender {
 				$printLink       = add_query_arg(
 					[
 						'page'                       => LabelPrint::MENU_SLUG,
-						LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
+						LabelPrint::LABEL_TYPE_PARAM => ( $order->isExternalCarrier() ? LabelPrint::ACTION_CARRIER_LABELS : LabelPrint::ACTION_PACKETA_LABELS ),
 						'id'                         => $order->getNumber(),
 						'packet_id'                  => $order->getPacketId(),
 						'offset'                     => 0,
@@ -317,10 +319,11 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'           => $order,
-						'packetSubmitUrl' => $packetSubmitUrl,
-						'restNonce'       => wp_create_nonce( 'wp_rest' ),
-						'printLink'       => $printLink,
+						'order'                       => $order,
+						'hasOrderUserSpecifiedWeight' => $wcOrderEntity->getUserSpecifiedWeight() !== null,
+						'packetSubmitUrl'             => $packetSubmitUrl,
+						'restNonce'                   => wp_create_nonce( 'wp_rest' ),
+						'printLink'                   => $printLink,
 					]
 				);
 				break;

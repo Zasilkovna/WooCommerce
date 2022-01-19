@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-12T10:50:34+01:00\n"
-"PO-Revision-Date: 2022-01-12 10:53+0100\n"
+"POT-Creation-Date: 2022-01-21T11:45:55+01:00\n"
+"PO-Revision-Date: 2022-01-21 11:46+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -19,8 +19,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
-#: src/Packetery/Module/Order/GridExtender.php:319
-#: src/Packetery/Module/Order/Metabox.php:125
+#: src/Packetery/Module/Order/GridExtender.php:322
+#: src/Packetery/Module/Order/Metabox.php:130
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:14
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:35
@@ -84,72 +84,86 @@ msgstr "Invalid API response."
 msgid "Carriers were updated."
 msgstr "Carriers were updated."
 
+#: src/Packetery/Module/Carrier/OptionsPage.php:104
 #: src/Packetery/Module/Carrier/OptionsPage.php:105
-#: src/Packetery/Module/Carrier/OptionsPage.php:106
 msgid "Carrier settings"
 msgstr "Carrier settings"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:131
+#: src/Packetery/Module/Carrier/OptionsPage.php:130
 msgid "Active carrier"
 msgstr "Active carrier"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:134
+#: src/Packetery/Module/Carrier/OptionsPage.php:133
 msgid "Display name"
 msgstr "Display name"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:155
+#: src/Packetery/Module/Carrier/OptionsPage.php:145
+msgid "defaultCODSurchargeLabel"
+msgstr "Default COD surcharge"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:157
 msgid "Free shipping limit"
 msgstr "Free shipping limit"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:156
-#: src/Packetery/Module/Carrier/OptionsPage.php:381
-#: src/Packetery/Module/Carrier/OptionsPage.php:384
-#: src/Packetery/Module/Carrier/OptionsPage.php:398
-#: src/Packetery/Module/Carrier/OptionsPage.php:400
+#: src/Packetery/Module/Carrier/OptionsPage.php:158
+#: src/Packetery/Module/Carrier/OptionsPage.php:387
+#: src/Packetery/Module/Carrier/OptionsPage.php:396
+#: src/Packetery/Module/Carrier/OptionsPage.php:412
+#: src/Packetery/Module/Carrier/OptionsPage.php:421
 msgid "Please enter a valid decimal number."
 msgstr "Please enter a valid decimal number."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:162
+#: src/Packetery/Module/Carrier/OptionsPage.php:165
 msgid "noAddressValidation"
 msgstr "No address validation"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:163
+#: src/Packetery/Module/Carrier/OptionsPage.php:166
 msgid "optionalAddressValidation"
 msgstr "Optional address validation"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:164
+#: src/Packetery/Module/Carrier/OptionsPage.php:167
 msgid "requiredAddressValidation"
 msgstr "Required address validation"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:166
+#: src/Packetery/Module/Carrier/OptionsPage.php:169
 msgid "addressValidation"
 msgstr "Address "
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:197
+#: src/Packetery/Module/Carrier/OptionsPage.php:214
+msgid "someCarrierDataAreInvalid"
+msgstr "Some carrier data are invalid"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:225
 msgid "Weight rules are overlapping, fix it please."
 msgstr "Weight rules are overlapping, fix it please."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:205
+#: src/Packetery/Module/Carrier/OptionsPage.php:232
 msgid "Surcharge rules are overlapping, fix it please."
 msgstr "Surcharge rules are overlapping, fix it please."
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:225
+#: src/Packetery/Module/Carrier/OptionsPage.php:252
 msgid "settingsSaved"
 msgstr "Settings saved"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:379
-msgid "Weight up to (kg)"
-msgstr "Weight up to (kg)"
+#: src/Packetery/Module/Carrier/OptionsPage.php:385
+msgid "Weight up to"
+msgstr "Weight up to"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:382
+#. translators: %d is the value.
+#: src/Packetery/Module/Carrier/OptionsPage.php:392
+#: src/Packetery/Module/Carrier/OptionsPage.php:417
+msgid "valueMustNotBe%d"
+msgstr "Value must not be %d"
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:394
 msgid "Price"
 msgstr "Price"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:397
+#: src/Packetery/Module/Carrier/OptionsPage.php:410
 msgid "Order price up to"
 msgstr "Order price up to"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:399
+#: src/Packetery/Module/Carrier/OptionsPage.php:419
 msgid "Surcharge"
 msgstr "Surcharge"
 
@@ -170,7 +184,7 @@ msgid "RO Packeta pickup points"
 msgstr "RO Packeta pickup points"
 
 #: src/Packetery/Module/Checkout.php:254
-#: src/Packetery/Module/Order/Metabox.php:157
+#: src/Packetery/Module/Order/Metabox.php:162
 msgid "choosePickupPoint"
 msgstr "Choose pickup point"
 
@@ -196,15 +210,27 @@ msgstr "Address is validated"
 
 #: src/Packetery/Module/Checkout.php:260
 msgid "addressIsNotValidated"
-msgstr "Address is not validated"
+msgstr "Delivery address has not been verified."
 
-#: src/Packetery/Module/Checkout.php:320
+#: src/Packetery/Module/Checkout.php:261
+msgid "addressIsNotValidatedAndRequiredByCarrier"
+msgstr ""
+"Delivery address has not been verified. Verification of delivery address is "
+"required by this carrier."
+
+#: src/Packetery/Module/Checkout.php:321
 msgid "Pick up point is not chosen."
 msgstr "Pick up point is not chosen."
 
-#: src/Packetery/Module/Checkout.php:342
+#: src/Packetery/Module/Checkout.php:343
 msgid "shippingAddressIsNotValidated"
-msgstr "Shipping address is not validated"
+msgstr ""
+"Delivery address has not been verified. Verification of delivery address is "
+"required by this carrier."
+
+#: src/Packetery/Module/Checkout.php:512
+msgid "codSurcharge"
+msgstr "COD surcharge"
 
 #. translators: keep %d placeholder intact.
 #: src/Packetery/Module/FormFactory.php:30
@@ -219,8 +245,8 @@ msgstr "Please enter value less than or equal to %d"
 #. translators: keep %d placeholder intact.
 #: src/Packetery/Module/FormFactory.php:33
 #: src/Packetery/Module/FormFactory.php:34
-msgid "pleaseEnterValidNumber"
-msgstr "Please enter a valid decimal number."
+msgid "enterValidNumber"
+msgstr "Enter valid number"
 
 #: src/Packetery/Module/FormFactory.php:35
 msgid "thisFieldIsRequired"
@@ -269,7 +295,7 @@ msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:619
+#: src/Packetery/Module/Plugin.php:620
 msgid "Settings"
 msgstr "Settings"
 
@@ -303,31 +329,31 @@ msgstr "Payment method that represents cash on delivery"
 msgid "packagingWeight"
 msgstr "Packaging weight"
 
-#: src/Packetery/Module/Options/Page.php:230
+#: src/Packetery/Module/Options/Page.php:232
 msgid "Main Settings"
 msgstr "Main Settings"
 
-#: src/Packetery/Module/Options/Page.php:282
+#: src/Packetery/Module/Options/Page.php:285
 msgid "senderValidationSuccessLogTitle"
 msgstr "Sender validation success"
 
-#: src/Packetery/Module/Options/Page.php:289
+#: src/Packetery/Module/Options/Page.php:292
 msgid "senderValidationErrorLogTitle"
 msgstr "Sender validation error"
 
-#: src/Packetery/Module/Options/Page.php:297
+#: src/Packetery/Module/Options/Page.php:300
 msgid "specifiedSenderDoesNotExist"
 msgstr "Specified sender does not exist"
 
-#: src/Packetery/Module/Options/Page.php:301
+#: src/Packetery/Module/Options/Page.php:304
 msgid "unableToCheckSpecifiedSender"
 msgstr "Unable to check specified sender"
 
-#: src/Packetery/Module/Options/Page.php:318
+#: src/Packetery/Module/Options/Page.php:321
 msgid "specifiedSenderIsOk"
 msgstr "Specified sender is OK"
 
-#: src/Packetery/Module/Options/Page.php:342
+#: src/Packetery/Module/Options/Page.php:345
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -336,7 +362,7 @@ msgstr ""
 "your web hosting administrator."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:349
+#: src/Packetery/Module/Options/Page.php:352
 msgid "senderDescription"
 msgstr ""
 "Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s "
@@ -383,7 +409,7 @@ msgid "actionPrintOrderCollection"
 msgstr "Print AWB"
 
 #: src/Packetery/Module/Order/CollectionPrint.php:116
-#: src/Packetery/Module/Order/LabelPrint.php:191
+#: src/Packetery/Module/Order/LabelPrint.php:193
 msgid "noOrdersSelected"
 msgstr "No orders were selected"
 
@@ -413,99 +439,99 @@ msgstr "Packeta orders to submit"
 msgid "packetaOrdersToPrint"
 msgstr "Packeta orders to print"
 
-#: src/Packetery/Module/Order/GridExtender.php:320
+#: src/Packetery/Module/Order/GridExtender.php:323
 msgid "Barcode"
 msgstr "Barcode"
 
-#: src/Packetery/Module/Order/GridExtender.php:321
+#: src/Packetery/Module/Order/GridExtender.php:324
 #: temp/cache/view/template-order-collection-print.latte--196227c595.php:99
 msgid "Pick up point or carrier"
 msgstr "Pick up point or carrier"
 
-#: src/Packetery/Module/Order/LabelPrint.php:223
+#: src/Packetery/Module/Order/LabelPrint.php:228
 msgid "labelPrintFailedMoreInfoInLog"
 msgstr "Label printing failed, you can find more information in Packeta log."
 
-#: src/Packetery/Module/Order/LabelPrint.php:224
+#: src/Packetery/Module/Order/LabelPrint.php:229
 msgid "youSelectedOrdersThatWereNotSubmitted"
 msgstr "You selected orders that were not submitted yet"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:254
+#: src/Packetery/Module/Order/LabelPrint.php:259
 msgid "dontSkipAnyField"
 msgstr "don't skip any field on a print sheet"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:254
+#: src/Packetery/Module/Order/LabelPrint.php:259
 msgid "skip%sFields"
 msgstr "skip %s fields on first sheet"
 
-#: src/Packetery/Module/Order/LabelPrint.php:258
+#: src/Packetery/Module/Order/LabelPrint.php:263
 msgid "labelsOffset"
 msgstr "Skip fields"
 
-#: src/Packetery/Module/Order/LabelPrint.php:271
-#: src/Packetery/Module/Order/LabelPrint.php:272
+#: src/Packetery/Module/Order/LabelPrint.php:276
+#: src/Packetery/Module/Order/LabelPrint.php:277
 #: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:75
 msgid "printLabels"
 msgstr "Print labels"
 
-#: src/Packetery/Module/Order/LabelPrint.php:310
+#: src/Packetery/Module/Order/LabelPrint.php:315
 msgid "labelPrintSuccessLogTitle"
 msgstr "Label print success"
 
-#: src/Packetery/Module/Order/LabelPrint.php:316
+#: src/Packetery/Module/Order/LabelPrint.php:321
 msgid "labelPrintErrorLogTitle"
 msgstr "Label print error"
 
-#: src/Packetery/Module/Order/LabelPrint.php:352
+#: src/Packetery/Module/Order/LabelPrint.php:357
 msgid "carrierLabelPrintSuccessLogTitle"
 msgstr "Carrier label print success"
 
-#: src/Packetery/Module/Order/LabelPrint.php:358
+#: src/Packetery/Module/Order/LabelPrint.php:363
 msgid "carrierLabelPrintErrorLogTitle"
 msgstr "Carrier label print error"
 
-#: src/Packetery/Module/Order/LabelPrint.php:419
+#: src/Packetery/Module/Order/LabelPrint.php:424
 msgid "pleaseSetProperPassword"
 msgstr "Please set proper API password."
 
-#: src/Packetery/Module/Order/LabelPrint.php:427
+#: src/Packetery/Module/Order/LabelPrint.php:432
 msgid "carrierNumberRetrievingErrorLogTitle"
 msgstr "Carrier number retrieving error"
 
-#: src/Packetery/Module/Order/Metabox.php:141
+#: src/Packetery/Module/Order/Metabox.php:146
 msgid "Weight (kg)"
 msgstr "Weight (kg)"
 
-#: src/Packetery/Module/Order/Metabox.php:143
-#: src/Packetery/Module/Order/Metabox.php:146
-#: src/Packetery/Module/Order/Metabox.php:149
-#: src/Packetery/Module/Order/Metabox.php:152
+#: src/Packetery/Module/Order/Metabox.php:148
+#: src/Packetery/Module/Order/Metabox.php:151
+#: src/Packetery/Module/Order/Metabox.php:154
+#: src/Packetery/Module/Order/Metabox.php:157
 msgid "Provide numeric value!"
 msgstr "Provide numeric value!"
 
-#: src/Packetery/Module/Order/Metabox.php:144
+#: src/Packetery/Module/Order/Metabox.php:149
 msgid "Width (mm)"
 msgstr "Width (mm)"
 
-#: src/Packetery/Module/Order/Metabox.php:147
+#: src/Packetery/Module/Order/Metabox.php:152
 msgid "Length (mm)"
 msgstr "Length (mm)"
 
-#: src/Packetery/Module/Order/Metabox.php:150
+#: src/Packetery/Module/Order/Metabox.php:155
 msgid "Height (mm)"
 msgstr "Height (mm)"
 
-#: src/Packetery/Module/Order/Metabox.php:240
+#: src/Packetery/Module/Order/Metabox.php:245
 msgid "Error happened in Packeta fields!"
 msgstr "Error happened in Packeta fields!"
 
-#: src/Packetery/Module/Order/Metabox.php:248
+#: src/Packetery/Module/Order/Metabox.php:253
 msgid "Session has expired! Please try again."
 msgstr "Session has expired! Please try again."
 
-#: src/Packetery/Module/Order/Metabox.php:254
+#: src/Packetery/Module/Order/Metabox.php:259
 msgid "You are not allowed to edit posts!"
 msgstr "You are not allowed to edit posts!"
 
@@ -530,16 +556,16 @@ msgstr "Packet sending error"
 msgid "packetSendingSuccessLogTitle"
 msgstr "Packet sending success"
 
-#: src/Packetery/Module/Plugin.php:554
+#: src/Packetery/Module/Plugin.php:555
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Carrier table was not created, you can find more information in Packeta log"
 
-#: src/Packetery/Module/Plugin.php:559
+#: src/Packetery/Module/Plugin.php:560
 msgid "carrierTableNotCreated"
 msgstr "Carrier table was not created"
 
-#: src/Packetery/Module/Plugin.php:618
+#: src/Packetery/Module/Plugin.php:619
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
 
@@ -560,37 +586,34 @@ msgstr "Description of Packeta shipping method"
 msgid "cannotUseThisCarrierBecauseRequiresCustomsDeclaration"
 msgstr "Cannot use this carrier because requires customs declaration"
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:74
-msgid "Weight rules"
-msgstr "Weight rules"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:91
-msgid "Add weight rule"
-msgstr "Add weight rule"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:98
-msgid "COD surcharge rules"
-msgstr "COD surcharge rules"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:115
-msgid "Add COD surcharge rule"
-msgstr "Add COD surcharge rule"
-
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:135
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:159
 msgid "After exceeding this amount, shipping is free."
 msgstr "After exceeding this amount, shipping is free."
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:160
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:184
 msgid "addressValidationDescription"
 msgstr "Customer address validation"
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:245
-msgid "Delete weight rule"
-msgstr "Delete weight rule"
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:293
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:404
+msgid "Delete"
+msgstr "Delete"
 
-#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:304
-msgid "Delete COD surcharge rule"
-msgstr "Delete COD surcharge rule"
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:313
+msgid "Weight rules"
+msgstr "Weight rules"
+
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:330
+msgid "Add weight rule"
+msgstr "Add weight rule"
+
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:424
+msgid "COD surcharge rules"
+msgstr "COD surcharge rules"
+
+#: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:441
+msgid "Add COD surcharge rule"
+msgstr "Add COD surcharge rule"
 
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:16
 msgid "Carriers"
@@ -866,11 +889,11 @@ msgstr "Some shipments (%s in total) failed to be submitted to Packeta."
 msgid "printLabel"
 msgstr "Print label"
 
-#: temp/cache/view/template-order-grid-column-packetery.latte--7a9af17224.php:32
-msgid "edit"
-msgstr "Edit"
+#: temp/cache/view/template-order-grid-column-packetery.latte--7a9af17224.php:40
+msgid "setPacketWeight"
+msgstr "Set packet weight"
 
-#: temp/cache/view/template-order-grid-column-packetery.latte--7a9af17224.php:48
+#: temp/cache/view/template-order-grid-column-packetery.latte--7a9af17224.php:57
 msgid "submitToPacketa"
 msgstr "Submit to packeta"
 
@@ -913,21 +936,11 @@ msgstr "Carrier packets"
 msgid "packetaPickupPointPackets"
 msgstr "Packeta pickup points packets"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:145
-msgid "defaultCODSurchargeLabel"
-msgstr "Default COD surcharge"
+#~ msgid "edit"
+#~ msgstr "Edit"
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:203
-msgid "someCarrierDataAreInvalid"
-msgstr "Some carrier data are invalid"
-
-#: src/Packetery/Module/Checkout.php:372
-msgid "codSurcharge"
-msgstr "COD surcharge"
-
-#: src/Packetery/Module/FormFactory.php:32
-msgid "enterValidNumber"
-msgstr "Enter valid number"
+#~ msgid "pleaseEnterValidNumber"
+#~ msgstr "Please enter a valid decimal number."
 
 #: src/Packetery/Module/Order/LabelPrint.php:169
 msgid "noSuitableOrdersSelected"
