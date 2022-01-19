@@ -87,21 +87,22 @@
                 $('input, select, label, .packetery-input-validation-message', $html).each(function (i, element) {
                     var $element = $(element);
 
-                    updateId($element, 'name', id, ['[', ']']);
-                    updateId($element, 'data-lfv-message-id', id, ['-', '-']);
-                    updateId($element, 'for', id, ['-', '-']);
-                    updateId($element, 'id', id, ['-', '-']);
+                    updateId($element, 'name', id, ['[', ']'], '');
+                    updateId($element, 'data-lfv-message-id', id, ['-', '-'], '');
+                    updateId($element, 'data-nette-rules', id, ['[', ']'], 'g');
+                    updateId($element, 'for', id, ['-', '-'], '');
+                    updateId($element, 'id', id, ['-', '-'], '');
                 });
             }
 
-            function updateId($element, attrName, id, delimiters) {
+            function updateId($element, attrName, id, delimiters, flags) {
                 var value = $element.attr(attrName);
                 if (!value) {
                     return;
                 }
 
                 // don't use data() because we want the raw values, not parsed json arrays/objects
-                var regExp = new RegExp('\\' + delimiters[0] + '0\\' + delimiters[1]);
+                var regExp = new RegExp('\\' + delimiters[0] + '0\\' + delimiters[1], flags);
                 $element.attr(attrName, value.replace(regExp, delimiters[0] + prefix + id + delimiters[1]));
             }
 

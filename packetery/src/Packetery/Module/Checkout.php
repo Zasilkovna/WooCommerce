@@ -258,6 +258,7 @@ class Checkout {
 						'selectedShippingAddress'       => __( 'selectedShippingAddress', 'packetery' ),
 						'addressIsValidated'            => __( 'addressIsValidated', 'packetery' ),
 						'addressIsNotValidated'         => __( 'addressIsNotValidated', 'packetery' ),
+						'addressIsNotValidatedAndRequiredByCarrier' => __( 'addressIsNotValidatedAndRequiredByCarrier', 'packetery' ),
 					],
 				],
 			]

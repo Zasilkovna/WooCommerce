@@ -60,7 +60,11 @@ var packeteryLoadCheckout = function( $, settings ) {
 				);
 				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-success').html(settings.translations.addressIsValidated);
 			} else {
-				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html(settings.translations.addressIsNotValidated);
+				if ( 'required' === getAddressValidation( carrierRateId ) ) {
+					$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html(settings.translations.addressIsNotValidatedAndRequiredByCarrier);
+				} else {
+					$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html(settings.translations.addressIsNotValidated);
+				}
 			}
 		};
 

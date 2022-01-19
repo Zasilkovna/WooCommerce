@@ -11,7 +11,6 @@
 .packetery-rule > * {
     display: table-cell;
     box-sizing: border-box;
-    width: 25%;
     overflow: hidden;
 }
 
@@ -29,6 +28,10 @@
     font-weight: bold;
 }
 
+.packetery-carrier-options-page input, .packetery-carrier-options-page select {
+    margin: 0;
+}
+
 .packetery-carrier-options-page .js-delete.button {
     position: relative;
     top: 2px;
@@ -36,16 +39,36 @@
 
 .packetery-carrier-options-page .packetery-label {
     font-weight: bold;
+    text-align: left;
 }
 
 .packetery-carrier-options-page .form-table td {
-    padding-top: 0;
     padding-left: 0;
-    padding-bottom: 30px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    vertical-align: middle;
+}
+
+.packetery-carrier-options-page .form-table [data-replication-item-container] td {
+    padding-left: 0;
+    padding-top: 0;
+    padding-bottom: 15px;
+    vertical-align: middle;
 }
 
 .packetery-carrier-options-page .form-table th {
-    padding: 0;
+    padding-top: 20px;
+    padding-bottom: 15px;
+    vertical-align: top;
+}
+
+.packetery-carrier-options-page .form-table th.replication-section-label-container {
+    padding-top: 22px;
+    vertical-align: top;
+}
+
+.packetery-carrier-options-page .form-table * {
+    border-spacing: 0;
 }
 
 .packetery-order-metabox-label-cell {
@@ -208,4 +231,12 @@ tbody .packetery-log-column-note {
 
 .packetery-hidden {
     display: none;
+}
+
+.packetery-input-with-unit input {
+    width: 87%;
+}
+
+.packetery .button.dashicons {
+    width: 35px;
 }

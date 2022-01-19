@@ -301,9 +301,10 @@ class OptionsPage {
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
 				[
-					'forms'         => $carriersData,
-					'country_iso'   => $countryIso,
-					'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+					'forms'          => $carriersData,
+					'country_iso'    => $countryIso,
+					'globalCurrency' => get_woocommerce_currency_symbol(),
+					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
 				]
 			);
 		} else {
@@ -381,10 +382,15 @@ class OptionsPage {
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
 		$limit = $weightLimits->addContainer( (string) $index );
-		$item  = $limit->addText( 'weight', __( 'Weight up to (kg)', 'packetery' ) );
+		$item  = $limit->addText( 'weight', __( 'Weight up to', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item->addRule( Form::MIN, null, 0 );
+		$item->addCondition( Form::MAX, 0 )
+			->addCondition( Form::MIN, 0 )
+			// translators: %d is the value.
+			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
+
 		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
@@ -405,6 +411,11 @@ class OptionsPage {
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item->addRule( Form::MIN, null, 0 );
+		$item->addCondition( Form::MAX, 0 )
+			->addCondition( Form::MIN, 0 )
+			// translators: %d is the value.
+			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
+
 		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
