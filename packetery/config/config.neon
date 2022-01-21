@@ -1,9 +1,6 @@
 parameters:
     latteTempFolder: %tempDir%/cache/view
 
-session:
-    autoStart: false
-
 http:
     headers:
         X-Powered-By: ''
