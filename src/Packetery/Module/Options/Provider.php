@@ -19,6 +19,7 @@ class Provider {
 	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT = 'A6 on A4';
 	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 	const MAX_STATUS_SYNCING_PACKETS_DEFAULT = 100;
+	const FORCE_PACKET_CANCEL_DEFAULT        = true;
 
 	/**
 	 *  Options data.
@@ -185,6 +186,20 @@ class Provider {
 	 */
 	public function replaceShippingAddressWithPickupPointAddress(): bool {
 		return (bool) $this->get( 'replace_shipping_address_with_pickup_point_address' );
+	}
+
+	/**
+	 * Force packet cancel.
+	 *
+	 * @return bool
+	 */
+	public function forcePacketCancel(): bool {
+		$value = $this->get( 'force_packet_cancel' );
+		if ( null !== $value ) {
+			return (bool) $value;
+		}
+
+		return self::FORCE_PACKET_CANCEL_DEFAULT;
 	}
 
 	/**

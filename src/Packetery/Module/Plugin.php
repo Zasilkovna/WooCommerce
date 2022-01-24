@@ -32,7 +32,8 @@ class Plugin {
 
 	public const VERSION               = '1.3.2';
 	public const DOMAIN                = 'packeta';
-	public const MIN_LISTENER_PRIORITY = -9998;
+	public const MIN_LISTENER_PRIORITY  = - 9998;
+	public const PARAM_PACKETERY_ACTION = 'packetery_action';
 
 	/**
 	 * Options page.
@@ -224,6 +225,13 @@ class Plugin {
 	private $optionsProvider;
 
 	/**
+	 * Packet canceller.
+	 *
+	 * @var Order\PacketCanceller
+	 */
+	private $packetCanceller;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox            $order_metabox        Order metabox.
@@ -252,6 +260,7 @@ class Plugin {
 	 * @param Log\Repository           $logRepository        Log repository.
 	 * @param Options\Provider         $optionsProvider      Options provider.
 	 * @param CronService              $cronService          Cron service.
+	 * @param Order\PacketCanceller    $packetCanceller      Packet canceller.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -279,7 +288,8 @@ class Plugin {
 		QueryProcessor $queryProcessor,
 		Log\Repository $logRepository,
 		Options\Provider $optionsProvider,
-		CronService $cronService
+		CronService $cronService,
+		Order\PacketCanceller $packetCanceller
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -308,6 +318,7 @@ class Plugin {
 		$this->logRepository        = $logRepository;
 		$this->optionsProvider      = $optionsProvider;
 		$this->cronService          = $cronService;
+		$this->packetCanceller      = $packetCanceller;
 	}
 
 	/**
@@ -364,6 +375,7 @@ class Plugin {
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
 		add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
+		add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
 		$this->orderModal->register();
 		$this->order_metabox->register();
 
@@ -393,6 +405,7 @@ class Plugin {
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
+		add_action( 'admin_init', [ $this->packetCanceller, 'processActions' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
@@ -573,6 +586,13 @@ class Plugin {
 	}
 
 	/**
+	 * Renders confirm modal template.
+	 */
+	public function renderConfirmModalTemplate(): void {
+		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte' );
+	}
+
+	/**
 	 * Enqueues admin JS file.
 	 *
 	 * @param string $name     Name of script.
@@ -656,10 +676,12 @@ class Plugin {
 		}
 
 		if ( $isOrderGridPage ) {
+			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery' ] );
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 		}
 
 		if ( $isOrderDetailPage ) {
+			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery' ] );
 			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
 		}
 	}

@@ -1,7 +1,13 @@
 {varType \Packetery\Core\Entity\Order $order}
 
 {if $order->getPacketId()}
-    <a class="button dashicons dashicons-media-default" title="{__( 'printLabel', 'packetery' )}" href="{$printLink}"></a>
+    <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
+    <a
+            class="button dashicons dashicons-download"
+            title="{__( 'Cancel packet', 'packetery' )}"
+            href="{$packetCancelLink}"
+            data-packetery-confirm="{__( 'Do you really want to cancel order submission to Packeta?', 'packetery' )}"
+    ></a>
 {else}
     <a data-packetery-order-inline-edit
        class="button dashicons {if $showWarningIcon }dashicons-warning{else}dashicons-edit{/if}"

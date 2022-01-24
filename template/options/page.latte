@@ -92,6 +92,19 @@
                         <select n:name=packetery-checkout_widget_button_location></select>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row">
+                        <label n:name=packetery-force_packet_cancel />
+                    </th>
+                    <td>
+                        <input n:name=packetery-force_packet_cancel>
+                        <div class="packetery-help-block">
+                            <p>
+                                {__( 'Force order submission cancellation if Packeta API does not allow packet to be cancelled due incorrect packet status? Packet is likely consigned in such case.', 'packetery' )}
+                            </p>
+                        </div>
+                    </td>
+                </tr>
             </table>
         </fieldset>
         <p class="submit">

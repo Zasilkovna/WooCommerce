@@ -5,4 +5,11 @@
     <li n:if="$showLogsLink">
         <a class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
     </li>
+    <li>
+        <a
+            class="button"
+            data-packetery-confirm="{__( 'Do you really want to cancel order submission to Packeta?', 'packetery' )}"
+            href="{$packetCancelLink}"
+        >{__( 'Cancel packet', 'packetery' )}</a>
+    </li>
 </ul>

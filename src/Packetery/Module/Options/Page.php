@@ -192,6 +192,10 @@ class Page {
 			]
 		);
 
+		$container->addCheckbox( 'force_packet_cancel', __( 'Packet cancel', 'packeta' ) )
+		          ->setRequired( false )
+		          ->setDefaultValue( Provider::FORCE_PACKET_CANCEL_DEFAULT );
+
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );
 		}
@@ -270,6 +274,7 @@ class Page {
 		}
 
 		$this->validateSender( $options['sender'] );
+		$options['force_packet_cancel'] = (int) $form[ self::FORM_FIELDS_CONTAINER ]['force_packet_cancel']->getValue();
 
 		return $options;
 	}

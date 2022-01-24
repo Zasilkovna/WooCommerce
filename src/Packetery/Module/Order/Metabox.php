@@ -220,9 +220,19 @@ class Metabox {
 		}
 
 		if ( $packetId ) {
+			$packetCancelLink = add_query_arg(
+				[
+					PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
+					PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_DETAIL,
+					Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
+				],
+				admin_url( 'admin.php' )
+			);
+
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				[
+					'packetCancelLink'    => $packetCancelLink,
 					'packet_id'           => $packetId,
 					'packet_tracking_url' => $this->helper->get_tracking_url( $packetId ),
 					'showLogsLink'        => $showLogsLink,
