@@ -320,7 +320,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                       => $order,
-						'hasOrderUserSpecifiedWeight' => $wcOrderEntity->getUserSpecifiedWeight() !== null,
+						'hasOrderUserSpecifiedWeight' => ( $wcOrderEntity->getUserSpecifiedWeight() !== null ),
 						'packetSubmitUrl'             => $packetSubmitUrl,
 						'restNonce'                   => wp_create_nonce( 'wp_rest' ),
 						'printLink'                   => $printLink,
