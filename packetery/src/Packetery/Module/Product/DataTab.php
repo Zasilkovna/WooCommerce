@@ -10,10 +10,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
+use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
-use PacketeryNette\Forms\FormFactory;
 
 /**
  * Class Tab
@@ -85,7 +85,7 @@ class DataTab {
 	 * @return Form
 	 */
 	private function createForm( Product\Entity $product ): Form {
-		$form = $this->formFactory->createForm();
+		$form = $this->formFactory->create();
 		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'ageVerification18PlusLabel', 'packetery' ) );
 
 		$form->setDefaults(

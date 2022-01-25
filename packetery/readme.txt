@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.8.1
-Stable tag: 1.0.6
+Stable tag: 1.0.7
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -71,6 +71,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.0.7 =
+* Fixed: Some environments caused error due PHPDocs being removed by OPCache.
+
 = 1.0.6 =
 * Updated: carrier settings page errors highlighted
 * Added: default C.O.D. surcharge

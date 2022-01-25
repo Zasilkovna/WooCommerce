@@ -116,7 +116,7 @@ class BulkActions {
 	 * Renders packets export result.
 	 */
 	public function renderPacketsExportResult(): void {
-		$get = $this->httpRequest->query;
+		$get = $this->httpRequest->getQuery();
 		if ( empty( $get['submit_to_api'] ) ) {
 			return;
 		}

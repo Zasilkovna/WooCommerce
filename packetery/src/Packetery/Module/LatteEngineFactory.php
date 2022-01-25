@@ -26,7 +26,7 @@ class LatteEngineFactory {
 	 *
 	 * @return Engine
 	 */
-	public function create( string $temp_dir ) {
+	public function create( string $temp_dir ): Engine {
 		$engine = new Engine();
 		$engine->setTempDirectory( $temp_dir );
 		FormMacros::install( $engine->getCompiler() );
