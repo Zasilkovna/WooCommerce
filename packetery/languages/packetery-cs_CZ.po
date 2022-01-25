@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-13T14:19:01+01:00\n"
-"PO-Revision-Date: 2022-01-13 14:21+0100\n"
+"POT-Creation-Date: 2022-01-19T12:59:43+01:00\n"
+"PO-Revision-Date: 2022-01-19 13:03+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -156,7 +156,7 @@ msgstr "RO Zásilkovna výdejní místa"
 msgid "Pick up point is not chosen."
 msgstr "Není vybráno výdejní místo."
 
-#: src/Packetery/Module/Checkout.php:372
+#: src/Packetery/Module/Checkout.php:378
 msgid "codSurcharge"
 msgstr "Přirážka za dobírku"
 
@@ -322,35 +322,39 @@ msgstr "Výdejní místo či přepravce"
 msgid "noOrdersSelected"
 msgstr "Nebyly vybrány žádné objednávky."
 
-#: src/Packetery/Module/Order/LabelPrint.php:191
+#: src/Packetery/Module/Order/LabelPrint.php:169
+msgid "noSuitableOrdersSelected"
+msgstr "Nebyly vybrány žádné vhodné objednávky"
+
+#: src/Packetery/Module/Order/LabelPrint.php:192
 msgid "labelPrintFailedMoreInfoInLog"
 msgstr "Tisk štítků se nezdařil. Bližší Informace najdete v Packeta logu."
 
-#: src/Packetery/Module/Order/LabelPrint.php:192
+#: src/Packetery/Module/Order/LabelPrint.php:193
 msgid "youSelectedOrdersThatWereNotSubmitted"
 msgstr "Vybrali jste objednávky, které ještě nebyly podány."
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:222
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "dontSkipAnyField"
 msgstr "nevynechávat žádná pole"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:222
+#: src/Packetery/Module/Order/LabelPrint.php:223
 msgid "skip%sFields"
 msgstr "vynechat %s polí na první stránce"
 
-#: src/Packetery/Module/Order/LabelPrint.php:226
+#: src/Packetery/Module/Order/LabelPrint.php:227
 msgid "labelsOffset"
 msgstr "Vynechat polí"
 
-#: src/Packetery/Module/Order/LabelPrint.php:239
 #: src/Packetery/Module/Order/LabelPrint.php:240
+#: src/Packetery/Module/Order/LabelPrint.php:241
 #: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:49
 msgid "printLabels"
 msgstr "Vytisknout štítky"
 
-#: src/Packetery/Module/Order/LabelPrint.php:394
+#: src/Packetery/Module/Order/LabelPrint.php:395
 msgid "pleaseSetProperPassword"
 msgstr "Nastavte prosím platné API heslo."
 
