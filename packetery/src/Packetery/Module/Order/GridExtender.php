@@ -86,10 +86,12 @@ class GridExtender {
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
-					'post_status'         => false,
+					'post_type'           => 'shop_order',
+					'filter_action'       => 'packetery_filter_link',
 					'packetery_to_submit' => '1',
 					'packetery_to_print'  => false,
-				]
+				],
+				admin_url( 'edit.php' )
 			),
 			'title'      => __( 'packetaOrdersToSubmit', 'packetery' ),
 			'orderCount' => count( $orders ),
@@ -106,10 +108,12 @@ class GridExtender {
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
-					'post_status'         => false,
+					'post_type'           => 'shop_order',
+					'filter_action'       => 'packetery_filter_link',
 					'packetery_to_submit' => false,
 					'packetery_to_print'  => '1',
-				]
+				],
+				admin_url( 'edit.php' )
 			),
 			'title'      => __( 'packetaOrdersToPrint', 'packetery' ),
 			'orderCount' => count( $orders ),
@@ -124,26 +128,67 @@ class GridExtender {
 	 * Adds select to order grid.
 	 */
 	public function renderOrderTypeSelect(): void {
+		$linkFilters = [];
+
+		if ( null !== $this->httpRequest->getQuery( 'packetery_to_submit' ) ) {
+			$linkFilters['packetery_to_submit'] = '1';
+		}
+
+		if ( null !== $this->httpRequest->getQuery( 'packetery_to_print' ) ) {
+			$linkFilters['packetery_to_print'] = '1';
+		}
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/type-select.latte',
 			[
 				'packeteryOrderType' => $this->httpRequest->getQuery( 'packetery_order_type' ),
+				'linkFilters'        => $linkFilters,
 			]
 		);
 	}
 
 	/**
-	 * Adds query vars to order list request.
+	 * Adds query vars to order grid search query.
+	 *
+	 * @param \WP_Query $query WP uery.
+	 *
+	 * @return void
+	 */
+	public function addQueryVarsToSearchQuery( \WP_Query $query ) {
+		global $pagenow;
+		$get = $this->httpRequest->getQuery();
+		$filterAction = ( $get['filter_action'] ?? null );
+		$queryPostType = ( $query->query['post_type'] ?? null );
+
+		if (
+			$query->is_admin &&
+			'shop_order' === $queryPostType &&
+			null !== $filterAction &&
+			'edit.php' === $pagenow &&
+			'shop_order' === $get['post_type'] &&
+			!isset( $query->query['packetery_to_submit'] ) &&
+			!isset( $query->query['packetery_to_print'] )
+		) {
+			$queryVars = $query->get( 'meta_query', [] );
+			$queryVars = $this->addQueryVars( $queryVars, $get );
+			$query->set( 'meta_query', $queryVars );
+		}
+	}
+
+	/**
+	 * Transforms custom query var. There are two custom variables: "packetery_to_submit" and "packetery_to_print".
 	 *
 	 * @param array $queryVars Query vars.
+	 * @param array $get       Input values.
 	 *
 	 * @return array
 	 */
-	public function addQueryVarsToRequest( array $queryVars ): array {
-		global $typenow;
-
-		if ( in_array( $typenow, wc_get_order_types( 'order-meta-boxes' ), true ) ) {
-			$queryVars = $this->addQueryVars( $queryVars, $this->httpRequest->getQuery() );
+	public function handleCustomQueryVar( array $queryVars, array $get ): array {
+		$metaQuery = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $get );
+		if ( $metaQuery ) {
+			// @codingStandardsIgnoreStart
+			$queryVars['meta_query'] = $metaQuery;
+			// @codingStandardsIgnoreEnd
 		}
 
 		return $queryVars;
@@ -159,7 +204,7 @@ class GridExtender {
 	 */
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get[ Entity::META_CARRIER_ID ] ) ) {
-			$queryVars['meta_query'] = [
+			$queryVars[] = [
 				[
 					'key'     => Entity::META_CARRIER_ID,
 					'value'   => $get[ Entity::META_CARRIER_ID ],
@@ -169,41 +214,35 @@ class GridExtender {
 		}
 
 		if ( ! empty( $get['packetery_to_submit'] ) ) {
-			$queryVars['meta_query'] = [
-				'relation' => 'AND',
-				[
-					'key'     => Entity::META_CARRIER_ID,
-					'value'   => '',
-					'compare' => '!=',
-				],
-				[
-					'key'     => Entity::META_IS_EXPORTED,
-					'compare' => 'NOT EXISTS',
-				],
+			$queryVars[] = [
+				'key'     => Entity::META_CARRIER_ID,
+				'value'   => '',
+				'compare' => '!=',
+			];
+
+			$queryVars[] = [
+				'key'     => Entity::META_IS_EXPORTED,
+				'compare' => 'NOT EXISTS',
 			];
 		}
 
 		if ( ! empty( $get['packetery_to_print'] ) ) {
-			$queryVars['meta_query'] = [
-				'relation' => 'AND',
-				[
-					'key'     => Entity::META_PACKET_ID,
-					'compare' => 'EXISTS',
-				],
-				[
-					'key'     => Entity::META_IS_LABEL_PRINTED,
-					'compare' => 'NOT EXISTS',
-				],
+			$queryVars[] = [
+				'key'     => Entity::META_PACKET_ID,
+				'compare' => 'EXISTS',
+			];
+
+			$queryVars[] = [
+				'key'     => Entity::META_IS_LABEL_PRINTED,
+				'compare' => 'NOT EXISTS',
 			];
 		}
 
 		if ( ! empty( $get['packetery_order_type'] ) ) {
-			$queryVars['meta_query'] = [
-				[
-					'key'     => Entity::META_CARRIER_ID,
-					'value'   => Repository::INTERNAL_PICKUP_POINTS_ID,
-					'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
-				],
+			$queryVars[] = [
+				'key'     => Entity::META_CARRIER_ID,
+				'value'   => Repository::INTERNAL_PICKUP_POINTS_ID,
+				'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
 			];
 		}
 
