@@ -167,6 +167,9 @@ class LabelPrint {
 		$packetIds       = $this->getPacketIdsFromTransient( $isCarrierLabels );
 		if ( ! $packetIds ) {
 			$this->messageManager->flash_message( __( 'noSuitableOrdersSelected', 'packetery' ), 'info' );
+			if ( wp_safe_redirect( add_query_arg( [ 'post_type' => 'shop_order' ], admin_url( 'edit.php' ) ) ) ) {
+				exit;
+			}
 			return;
 		}
 
