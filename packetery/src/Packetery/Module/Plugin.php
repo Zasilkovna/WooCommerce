@@ -243,7 +243,7 @@ class Plugin {
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->gridExtender, 'handleCustomQueryVar' ], 10, 2 );
-		add_action( 'pre_get_posts', [ $this->gridExtender, 'addQueryVarsToSearchQuery' ] );
+		add_action( 'request', [ $this->gridExtender, 'addQueryVarsToRequest' ], PHP_INT_MAX );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );

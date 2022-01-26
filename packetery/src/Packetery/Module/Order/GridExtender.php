@@ -148,31 +148,25 @@ class GridExtender {
 	}
 
 	/**
-	 * Adds query vars to order grid search query.
+	 * Adds query vars to request query vars.
 	 *
-	 * @param \WP_Query $query WP uery.
+	 * @param array $queryVars Query vars.
 	 *
-	 * @return void
+	 * @return array
 	 */
-	public function addQueryVarsToSearchQuery( \WP_Query $query ) {
-		global $pagenow;
-		$get = $this->httpRequest->getQuery();
-		$filterAction = ( $get['filter_action'] ?? null );
-		$queryPostType = ( $query->query['post_type'] ?? null );
+	public function addQueryVarsToRequest( array $queryVars ): array {
+		global $typenow;
 
-		if (
-			$query->is_admin &&
-			'shop_order' === $queryPostType &&
-			null !== $filterAction &&
-			'edit.php' === $pagenow &&
-			'shop_order' === $get['post_type'] &&
-			!isset( $query->query['packetery_to_submit'] ) &&
-			!isset( $query->query['packetery_to_print'] )
-		) {
-			$queryVars = $query->get( 'meta_query', [] );
-			$queryVars = $this->addQueryVars( $queryVars, $get );
-			$query->set( 'meta_query', $queryVars );
+		if ( in_array( $typenow, wc_get_order_types( 'order-meta-boxes' ), true ) ) {
+			$metaVars = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $this->httpRequest->getQuery() );
+			if ( $metaVars ) {
+				// @codingStandardsIgnoreStart
+				$queryVars['meta_query'] = $metaVars;
+				// @codingStandardsIgnoreEnd
+			}
 		}
+
+		return $queryVars;
 	}
 
 	/**
