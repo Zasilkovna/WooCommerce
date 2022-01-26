@@ -81,7 +81,12 @@
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
 				orderData.packetery_weight = response.data.packetery_weight;
 				$lastModalButtonClicked.data( 'order-data', orderData );
-				$lastModalButtonClicked.removeClass('dashicons-warning').removeClass('dashicons-edit').addClass('dashicons-edit');
+
+				if ( response.data.packetery_weight > 0 ) {
+					$lastModalButtonClicked.removeClass( 'dashicons-warning' ).removeClass( 'dashicons-edit' ).addClass( 'dashicons-edit' );
+				} else {
+					$lastModalButtonClicked.removeClass( 'dashicons-warning' ).removeClass( 'dashicons-edit' ).addClass( 'dashicons-warning' );
+				}
 				$( '[data-packetery-modal] .modal-close:first' ).trigger( 'click' );
 			} ).always( function() {
 				$target.removeClass( 'disabled' );
