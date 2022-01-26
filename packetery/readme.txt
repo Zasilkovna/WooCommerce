@@ -74,6 +74,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 = 1.0.7 =
 * Fixed: the label print page displays a message to the user if no suitable orders are selected
 * Fixed: Some environments caused error due PHPDocs being removed by OPCache.
+* Fixed: Order list filters can now be combined.
 
 = 1.0.6 =
 * Updated: carrier settings page errors highlighted
