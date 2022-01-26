@@ -53,8 +53,4 @@ class OrderStatus extends Column
 
         return $dataSource;
     }
-
-    protected function applySorting() {
-        // no DB select sorting
-    }
 }

@@ -89,7 +89,7 @@
                 </item>
             </argument>
         </selectionsColumn>
-        <column name="order_number_reference" class="Packetery\Checkout\Ui\Component\Order\Listing\Column\OrderReference">
+        <column name="order_number_reference">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
                     <item name="sortable" xsi:type="boolean">true</item>
@@ -100,11 +100,13 @@
                 </item>
             </argument>
         </column>
-        <column name="created_at" class="Packetery\Checkout\Ui\Component\Order\Listing\Column\CreatedDate">
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
-                    <item name="sortable" xsi:type="boolean">false</item>
-                    <item name="filter" xsi:type="string">date</item>
+                    <item name="sorting" xsi:type="string">desc</item>
+                    <item name="sortable" xsi:type="boolean">true</item>
+                    <item name="filter" xsi:type="string">dateRange</item>
+                    <item name="dataType" xsi:type="string">date</item>
                     <item name="label" xsi:type="string" translate="true">Purchase Date</item>
                 </item>
             </argument>
@@ -113,7 +115,7 @@
             <argument name="data" xsi:type="array">
                 <item name="options" xsi:type="object">Packetery\Checkout\Ui\Component\Order\Listing\Filter\OrderStatusSelect</item>
                 <item name="config" xsi:type="array">
-                    <item name="sortable" xsi:type="boolean">false</item>
+                    <item name="sortable" xsi:type="boolean">true</item>
                     <item name="filter" xsi:type="string">select</item>
                     <item name="dataType" xsi:type="string">select</item>
                     <item name="label" xsi:type="string" translate="true">Order status</item>

@@ -62,6 +62,11 @@ class Actions extends Column
                 $order = $this->orderFactory->create()->loadByIncrementId($orderNumber);
                 $shippingMethod = $order->getShippingMethod(true);
 
+                $item[$name]['orderDetail'] = [
+                    'href'  => $this->_urlBuilder->getUrl('sales/order/view', ['order_id' => $order->getId()]),
+                    'label' => __('Order detail')
+                ];
+
                 if ($shippingMethod && ($shippingMethod->getData('method') === Methods::PICKUP_POINT_DELIVERY || $shippingMethod->getData('method') === 'packetery')) {
                     $item[$name]['view'] = [
                         'href'  => $this->_urlBuilder->getUrl($this->_viewUrl, ['id' => $item['id']]),

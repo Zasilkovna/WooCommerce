@@ -1,4 +1,7 @@
 2.2.2 - Added: email template variables
+      - Added: order grid filtering and sorting by order creation
+      - Added: sorting by order status
+      - Updated: link to Magento order detail was moved to actions column
 
 2.2.1 - Fixed: slow order grid loading
       - Fixed: order grid did not display paging controls on top of the grid and did not display row count
