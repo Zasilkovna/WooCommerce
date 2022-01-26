@@ -276,7 +276,6 @@ class GridExtender {
 			return;
 		}
 
-		$wcOrderEntity = new Entity( $wcOrder );
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -319,11 +318,11 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'                       => $order,
-						'hasOrderUserSpecifiedWeight' => ( $wcOrderEntity->getUserSpecifiedWeight() !== null ),
-						'packetSubmitUrl'             => $packetSubmitUrl,
-						'restNonce'                   => wp_create_nonce( 'wp_rest' ),
-						'printLink'                   => $printLink,
+						'order'           => $order,
+						'hasOrderWeight'  => ( null !== $order->getWeight() && $order->getWeight() > 0 ),
+						'packetSubmitUrl' => $packetSubmitUrl,
+						'restNonce'       => wp_create_nonce( 'wp_rest' ),
+						'printLink'       => $printLink,
 					]
 				);
 				break;
