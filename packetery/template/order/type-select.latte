@@ -4,3 +4,6 @@
 	<option value="packeta"{if $packeteryOrderType === Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID}
 		selected="selected"{/if}>{__( 'packetaPickupPointPackets', 'packetery' )}</option>
 </select>
+{foreach $linkFilters as $name => $value}
+	<input type="hidden" name="{$name}" value="{$value}">
+{/foreach}
