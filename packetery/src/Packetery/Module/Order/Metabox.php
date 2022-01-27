@@ -235,7 +235,7 @@ class Metabox {
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			null === $this->request->getPost( 'packetery_order_metabox_nonce' ) ||
-			null === $order || false === $order->isPacketeryRelated()
+			null === $order
 		) {
 			return $post_id;
 		}
