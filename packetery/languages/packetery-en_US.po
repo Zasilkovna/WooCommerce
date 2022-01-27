@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-21T11:45:55+01:00\n"
-"PO-Revision-Date: 2022-01-21 11:46+0100\n"
+"POT-Creation-Date: 2022-01-27T14:04:00+01:00\n"
+"PO-Revision-Date: 2022-01-27 14:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -19,7 +19,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
-#: src/Packetery/Module/Order/GridExtender.php:322
+#: src/Packetery/Module/Order/GridExtender.php:346
 #: src/Packetery/Module/Order/Metabox.php:130
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:14
@@ -295,7 +295,7 @@ msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:620
+#: src/Packetery/Module/Plugin.php:621
 msgid "Settings"
 msgstr "Settings"
 
@@ -431,72 +431,76 @@ msgstr "Print AWB"
 msgid "Success"
 msgstr "Success"
 
-#: src/Packetery/Module/Order/GridExtender.php:114
+#: src/Packetery/Module/Order/GridExtender.php:116
 msgid "packetaOrdersToSubmit"
 msgstr "Packeta orders to submit"
 
-#: src/Packetery/Module/Order/GridExtender.php:134
+#: src/Packetery/Module/Order/GridExtender.php:138
 msgid "packetaOrdersToPrint"
 msgstr "Packeta orders to print"
 
-#: src/Packetery/Module/Order/GridExtender.php:323
+#: src/Packetery/Module/Order/GridExtender.php:347
 msgid "Barcode"
 msgstr "Barcode"
 
-#: src/Packetery/Module/Order/GridExtender.php:324
+#: src/Packetery/Module/Order/GridExtender.php:348
 #: temp/cache/view/template-order-collection-print.latte--196227c595.php:99
 msgid "Pick up point or carrier"
 msgstr "Pick up point or carrier"
 
-#: src/Packetery/Module/Order/LabelPrint.php:228
+#: src/Packetery/Module/Order/LabelPrint.php:201
+msgid "noSuitableOrdersSelected"
+msgstr "No suitable orders were selected"
+
+#: src/Packetery/Module/Order/LabelPrint.php:232
 msgid "labelPrintFailedMoreInfoInLog"
 msgstr "Label printing failed, you can find more information in Packeta log."
 
-#: src/Packetery/Module/Order/LabelPrint.php:229
+#: src/Packetery/Module/Order/LabelPrint.php:233
 msgid "youSelectedOrdersThatWereNotSubmitted"
 msgstr "You selected orders that were not submitted yet"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:259
+#: src/Packetery/Module/Order/LabelPrint.php:263
 msgid "dontSkipAnyField"
 msgstr "don't skip any field on a print sheet"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:259
+#: src/Packetery/Module/Order/LabelPrint.php:263
 msgid "skip%sFields"
 msgstr "skip %s fields on first sheet"
 
-#: src/Packetery/Module/Order/LabelPrint.php:263
+#: src/Packetery/Module/Order/LabelPrint.php:267
 msgid "labelsOffset"
 msgstr "Skip fields"
 
-#: src/Packetery/Module/Order/LabelPrint.php:276
-#: src/Packetery/Module/Order/LabelPrint.php:277
+#: src/Packetery/Module/Order/LabelPrint.php:280
+#: src/Packetery/Module/Order/LabelPrint.php:281
 #: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:75
 msgid "printLabels"
 msgstr "Print labels"
 
-#: src/Packetery/Module/Order/LabelPrint.php:315
+#: src/Packetery/Module/Order/LabelPrint.php:319
 msgid "labelPrintSuccessLogTitle"
 msgstr "Label print success"
 
-#: src/Packetery/Module/Order/LabelPrint.php:321
+#: src/Packetery/Module/Order/LabelPrint.php:325
 msgid "labelPrintErrorLogTitle"
 msgstr "Label print error"
 
-#: src/Packetery/Module/Order/LabelPrint.php:357
+#: src/Packetery/Module/Order/LabelPrint.php:361
 msgid "carrierLabelPrintSuccessLogTitle"
 msgstr "Carrier label print success"
 
-#: src/Packetery/Module/Order/LabelPrint.php:363
+#: src/Packetery/Module/Order/LabelPrint.php:367
 msgid "carrierLabelPrintErrorLogTitle"
 msgstr "Carrier label print error"
 
-#: src/Packetery/Module/Order/LabelPrint.php:424
+#: src/Packetery/Module/Order/LabelPrint.php:428
 msgid "pleaseSetProperPassword"
 msgstr "Please set proper API password."
 
-#: src/Packetery/Module/Order/LabelPrint.php:432
+#: src/Packetery/Module/Order/LabelPrint.php:436
 msgid "carrierNumberRetrievingErrorLogTitle"
 msgstr "Carrier number retrieving error"
 
@@ -556,16 +560,16 @@ msgstr "Packet sending error"
 msgid "packetSendingSuccessLogTitle"
 msgstr "Packet sending success"
 
-#: src/Packetery/Module/Plugin.php:555
+#: src/Packetery/Module/Plugin.php:556
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Carrier table was not created, you can find more information in Packeta log"
 
-#: src/Packetery/Module/Plugin.php:560
+#: src/Packetery/Module/Plugin.php:561
 msgid "carrierTableNotCreated"
 msgstr "Carrier table was not created"
 
-#: src/Packetery/Module/Plugin.php:619
+#: src/Packetery/Module/Plugin.php:620
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
 
