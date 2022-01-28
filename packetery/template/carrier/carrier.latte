@@ -14,7 +14,7 @@
 			<td>
 				<div class="packetery-rule">
 					<div class="packetery-label">
-						<label n:name=weight />:
+						<label n:name=weight />
 					</div>
 					<div class="packetery-input">
 						<div class="packetery-input-with-unit">
@@ -24,7 +24,7 @@
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][weight]->getHtmlId() . '_message'}">{inputError weight}</p>
 					</div>
 					<div class="packetery-label">
-						<label n:name=price />:
+						<label n:name=price />
 					</div>
 					<div class="packetery-input">
 						<div class="packetery-input-with-unit">
@@ -64,7 +64,7 @@
 			<td>
 				<div class="packetery-rule">
 					<div class="packetery-label">
-						<label n:name=order_price />:
+						<label n:name=order_price />
 					</div>
 					<div class="packetery-input">
 						<div class="packetery-input-with-unit">
@@ -74,7 +74,7 @@
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][order_price]->getHtmlId() . '_message'}">{inputError order_price}</p>
 					</div>
 					<div class="packetery-label">
-						<label n:name=surcharge />:
+						<label n:name=surcharge />
 					</div>
 					<div class="packetery-input">
 						<div class="packetery-input-with-unit">
@@ -122,7 +122,7 @@
 			<table class="form-table" role="presentation">
 				<tr>
 					<th scope="row">
-						<label n:name=active />:
+						<label n:name=active />
 					</th>
 					<td>
 						<input n:name=active>
@@ -130,7 +130,7 @@
 				</tr>
 				<tr>
 					<th scope="row">
-						<label n:name=name />:
+						<label n:name=name />
 					</th>
 					<td>
 						<input n:name=name class="packetery-carrier-name" data-lfv-message-id="{$form[name]->getHtmlId() . '_message'}">
@@ -140,7 +140,7 @@
 				{include weightRulesSection form => $form}
 				<tr>
 					<th scope="row">
-						<label n:name=default_COD_surcharge />:
+						<label n:name=default_COD_surcharge />
 					</th>
 					<td>
 						<div>
@@ -153,7 +153,7 @@
 				{include surchargeRulesSection form => $form}
 				<tr>
 					<th scope="row">
-						<label n:name=free_shipping_limit />:
+						<label n:name=free_shipping_limit />
 					</th>
 					<td>
 						<div>
@@ -169,7 +169,7 @@
 				{if isset($form['address_validation'])}
 				<tr>
 					<th scope="row">
-						<label n:name=address_validation />:
+						<label n:name=address_validation />
 					</th>
 					<td>
 						<select n:name=address_validation></select>
