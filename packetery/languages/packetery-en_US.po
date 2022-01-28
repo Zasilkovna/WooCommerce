@@ -929,6 +929,10 @@ msgstr "COD surcharge"
 msgid "enterValidNumber"
 msgstr "Enter valid number"
 
+#: src/Packetery/Module/Order/LabelPrint.php:169
+msgid "noSuitableOrdersSelected"
+msgstr "No suitable orders were selected"
+
 #~ msgid "Choose pickup point"
 #~ msgstr "Choose pickup point"
 

@@ -930,6 +930,10 @@ msgstr "Prirážka za dobierku"
 msgid "enterValidNumber"
 msgstr "Zadajte validné číslo"
 
+#: src/Packetery/Module/Order/LabelPrint.php:169
+msgid "noSuitableOrdersSelected"
+msgstr "Neboli vybrané žiadne vhodné objednávky"
+
 #~ msgid "Choose pickup point"
 #~ msgstr "Výběr místa vyzvednutí"
 
