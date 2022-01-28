@@ -31,8 +31,9 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION = '1.1.0';
-	public const DOMAIN  = 'packetery';
+	public const VERSION               = '1.1.0';
+	public const DOMAIN                = 'packetery';
+	public const MIN_LISTENER_PRIORITY = -9998;
 
 	/**
 	 * Options page.
@@ -279,7 +280,8 @@ class Plugin {
 			'admin_notices',
 			function () {
 				$this->message_manager->render( MessageManager::RENDERER_WORDPRESS );
-			}
+			},
+			self::MIN_LISTENER_PRIORITY
 		);
 		add_action( 'init', array( $this, 'init' ) );
 
@@ -339,7 +341,7 @@ class Plugin {
 			3
 		);
 		// Print packets export result.
-		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ] );
+		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ], self::MIN_LISTENER_PRIORITY );
 
 		add_action( 'admin_init', [ $this->labelPrint, 'outputLabelsPdf' ] );
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
