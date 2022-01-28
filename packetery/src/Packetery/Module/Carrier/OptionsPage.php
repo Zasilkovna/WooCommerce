@@ -127,10 +127,10 @@ class OptionsPage {
 
 		$form->addCheckbox(
 			'active',
-			__( 'Active carrier', 'packetery' )
+			__( 'Active carrier', 'packetery' ) . ':'
 		);
 
-		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packetery' ) )
+		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packetery' ) . ':' )
 			->setRequired();
 
 		$weightLimits = $form->addContainer( 'weight_limits' );
@@ -142,7 +142,7 @@ class OptionsPage {
 			}
 		}
 
-		$form->addText( 'default_COD_surcharge', __( 'defaultCODSurchargeLabel', 'packetery' ) )
+		$form->addText( 'default_COD_surcharge', __( 'defaultCODSurchargeLabel', 'packetery' ) . ':' )
 			->setRequired( false )
 			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 );
@@ -154,7 +154,7 @@ class OptionsPage {
 			}
 		}
 
-		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) );
+		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
@@ -166,7 +166,7 @@ class OptionsPage {
 				'optional' => __( 'optionalAddressValidation', 'packetery' ),
 				'required' => __( 'requiredAddressValidation', 'packetery' ),
 			];
-			$form->addSelect( 'address_validation', __( 'addressValidation', 'packetery' ), $addressValidationOptions )
+			$form->addSelect( 'address_validation', __( 'addressValidation', 'packetery' ) . ':', $addressValidationOptions )
 				->setDefaultValue( 'none' );
 		}
 
@@ -382,7 +382,7 @@ class OptionsPage {
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
 		$limit = $weightLimits->addContainer( (string) $index );
-		$item  = $limit->addText( 'weight', __( 'Weight up to', 'packetery' ) );
+		$item  = $limit->addText( 'weight', __( 'Weight up to', 'packetery' ) . ':' );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item->addRule( Form::MIN, null, 0 );
@@ -391,7 +391,7 @@ class OptionsPage {
 			// translators: %d is the value.
 			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
 
-		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) );
+		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) . ':' );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item->addRule( Form::MIN, null, 0 );
@@ -407,7 +407,7 @@ class OptionsPage {
 	 */
 	private function addSurchargeLimit( Container $surchargeLimits, $index ): void {
 		$limit = $surchargeLimits->addContainer( (string) $index );
-		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) );
+		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) . ':' );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item->addRule( Form::MIN, null, 0 );
@@ -416,7 +416,7 @@ class OptionsPage {
 			// translators: %d is the value.
 			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
 
-		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) );
+		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) . ':' );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item->addRule( Form::MIN, null, 0 );
