@@ -86,6 +86,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Added: SK translation.
 * Updated: Carrier settings interface.
 * Updated: Packetery buttons in order list.
+* Updated: Flash messages are always first in message stack.
 
 = 1.0.7 =
 * Fixed: the label print page displays a message to the user if no suitable orders are selected
