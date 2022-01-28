@@ -233,10 +233,46 @@ tbody .packetery-log-column-note {
     display: none;
 }
 
-.packetery-input-with-unit input {
-    width: 87%;
+.js-weight-rules .packetery-input-validation-message {
+    max-width: 260px;
+}
+
+.js-weight-rules .packetery-input-with-unit {
+    width: 260px;
+}
+
+.js-weight-rules .packetery-input-with-unit input {
+    width: 240px;
 }
 
 .packetery .button.dashicons {
     width: 35px;
+}
+
+.packetery-label {
+    padding-right: 5px;
+}
+
+.packetery-rule :nth-child(3) {
+    text-align: right;
+}
+
+.js-surcharge-rules .packetery-label {
+    width: 180px;
+}
+
+.js-surcharge-rules :nth-child(3) {
+    width: 80px;
+}
+
+.js-surcharge-rules .packetery-input-with-unit {
+    width: 220px;
+}
+
+.js-surcharge-rules .packetery-input-validation-message {
+    max-width: 220px;
+}
+
+.js-surcharge-rules .packetery-input-with-unit input {
+    width: 200px;
 }
