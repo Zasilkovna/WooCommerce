@@ -82,6 +82,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Added: Order editation modal in order grid. User is now able to edit order weight in order grid.
 * Added: List of active carriers added to carrier settings section.
 * Added: order collection printing
+* Updated: Flash messages are always first in message stack.
 
 = 1.0.6 =
 * Updated: carrier settings page errors highlighted
