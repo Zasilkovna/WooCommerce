@@ -1,8 +1,9 @@
 <div class="packetery-carrier-options-page">
-	<h2>{$carrier_data['data']['name']}</h2>
+	{varType Packetery\Core\Entity\Carrier $carrier}
+	{var $carrier = $carrier_data['carrier']}
+	<h2>{$carrier->getName()}</h2>
 
-	{varType Packetery\Entity\Carrier $carrier_data['entity']}
-	{if isset($carrier_data['entity']) && $carrier_data['entity']->requiresCustomsDeclarations()}
+	{if $carrier->requiresCustomsDeclarations()}
 		<div class="notice notice-info">
 			<p>{__( 'cannotUseThisCarrierBecauseRequiresCustomsDeclaration', 'packetery' )}</p>
 		</div>
@@ -16,31 +17,37 @@
 						<label n:name=weight />
 					</div>
 					<div class="packetery-input">
-						<input n:name=weight data-lfv-message-id="{$container[$id][weight]->getHtmlId() . '_message'}">
+						<div class="packetery-input-with-unit">
+							<input n:name=weight data-lfv-message-id="{$container[$id][weight]->getHtmlId() . '_message'}">
+							<span> kg</span>
+						</div>
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][weight]->getHtmlId() . '_message'}">{inputError weight}</p>
 					</div>
 					<div class="packetery-label">
 						<label n:name=price />
 					</div>
 					<div class="packetery-input">
-						<input n:name=price data-lfv-message-id="{$container[$id][price]->getHtmlId() . '_message'}">
+						<div class="packetery-input-with-unit">
+							<input n:name=price data-lfv-message-id="{$container[$id][price]->getHtmlId() . '_message'}">
+							<span> {$globalCurrency|noescape}</span>
+						</div>
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
 					</div>
 				</div>
-				<button type="button" data-replication-delete class="button">{__( 'Delete weight rule', 'packetery' )}</button>
+				<button type="button" data-replication-delete class="button">{__( 'Delete', 'packetery' )}</button>
 			</td>
 		</tr>
 	{/define}
 
 	{define weightRulesSection}
+		{var $container = $form['weight_limits']}
 		<tr>
 			<th scope="row">
-				<label>{__( 'Weight rules', 'packetery' )}</label>
+				<label>{__( 'Weight rules', 'packetery' )}:</label>
 			</th>
 			<td class="js-weight-rules">
 				<table>
 					<tbody data-replication-item-container data-replication-min-items="1">
-					{var $container = $form['weight_limits']}
 					{foreach $container->getComponents() as $weightId => $tmp}
 						{include weightRules id => $weightId, container => $container}
 					{/foreach}
@@ -60,31 +67,37 @@
 						<label n:name=order_price />
 					</div>
 					<div class="packetery-input">
-						<input n:name=order_price data-lfv-message-id="{$container[$id][order_price]->getHtmlId() . '_message'}">
+						<div class="packetery-input-with-unit">
+							<input n:name=order_price data-lfv-message-id="{$container[$id][order_price]->getHtmlId() . '_message'}">
+							<span> {$globalCurrency|noescape}</span>
+						</div>
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][order_price]->getHtmlId() . '_message'}">{inputError order_price}</p>
 					</div>
 					<div class="packetery-label">
 						<label n:name=surcharge />
 					</div>
 					<div class="packetery-input">
-						<input n:name=surcharge data-lfv-message-id="{$container[$id][surcharge]->getHtmlId() . '_message'}">
+						<div class="packetery-input-with-unit">
+							<input n:name=surcharge data-lfv-message-id="{$container[$id][surcharge]->getHtmlId() . '_message'}">
+							<span> {$globalCurrency|noescape}</span>
+						</div>
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][surcharge]->getHtmlId() . '_message'}">{inputError surcharge}</p>
 					</div>
 				</div>
-				<button type="button" data-replication-delete class="button">{__( 'Delete COD surcharge rule', 'packetery' )}</button>
+				<button type="button" data-replication-delete class="button">{__( 'Delete', 'packetery' )}</button>
 			</td>
 		</tr>
 	{/define}
 
 	{define surchargeRulesSection}
+		{var $container = $form['surcharge_limits']}
 		<tr>
 			<th scope="row">
-				<label>{__( 'COD surcharge rules', 'packetery' )}</label>
+				<label>{__( 'COD surcharge rules', 'packetery' )}:</label>
 			</th>
 			<td class="js-surcharge-rules">
 				<table>
 					<tbody data-replication-item-container data-replication-min-items="0">
-					{var $container = $form['surcharge_limits']}
 					{foreach $container->getComponents() as $surchargeId => $tmp}
 						{include surchargeRules id => $surchargeId, container => $container}
 					{/foreach}
@@ -120,7 +133,8 @@
 						<label n:name=name />
 					</th>
 					<td>
-						<input n:name=name class="packetery-carrier-name">
+						<input n:name=name class="packetery-carrier-name" data-lfv-message-id="{$form[name]->getHtmlId() . '_message'}">
+						<p class="packetery-input-validation-message help-block text-danger" id="{$form[name]->getHtmlId() . '_message'}">{inputError name}</p>
 					</td>
 				</tr>
 				{include weightRulesSection form => $form}
@@ -129,7 +143,11 @@
 						<label n:name=default_COD_surcharge />
 					</th>
 					<td>
-						<input n:name=default_COD_surcharge />
+						<div>
+							<input n:name=default_COD_surcharge data-lfv-message-id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">
+							<span> {$globalCurrency|noescape}</span>
+						</div>
+						<p class="packetery-input-validation-message help-block text-danger" id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">{inputError default_COD_surcharge}</p>
 					</td>
 				</tr>
 				{include surchargeRulesSection form => $form}
@@ -138,12 +156,29 @@
 						<label n:name=free_shipping_limit />
 					</th>
 					<td>
-						<input n:name=free_shipping_limit>
+						<div>
+							<input n:name=free_shipping_limit data-lfv-message-id="{$form[free_shipping_limit]->getHtmlId() . '_message'}">
+							<span> {$globalCurrency|noescape}</span>
+						</div>
+						<p class="packetery-input-validation-message help-block text-danger" id="{$form[free_shipping_limit]->getHtmlId() . '_message'}">{inputError free_shipping_limit}</p>
 						<p>
 							{__( 'After exceeding this amount, shipping is free.', 'packetery' )}
 						</p>
 					</td>
 				</tr>
+				{if isset($form['address_validation'])}
+				<tr>
+					<th scope="row">
+						<label n:name=address_validation />
+					</th>
+					<td>
+						<select n:name=address_validation></select>
+						<p>
+							{__( 'addressValidationDescription', 'packetery' )}
+						</p>
+					</td>
+				</tr>
+				{/if}
 			</table>
 
 			<p class="submit">

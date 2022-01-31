@@ -16,6 +16,7 @@ use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http;
@@ -26,9 +27,10 @@ use PacketeryNette\Http;
  * @package Packetery\Order
  */
 class LabelPrint {
-	const ACTION_PACKETA_LABELS = 'print_packeta_labels';
-	const ACTION_CARRIER_LABELS = 'print_carrier_labels';
-	const LABEL_TYPE_PARAM      = 'label_type';
+	public const ACTION_PACKETA_LABELS = 'print_packeta_labels';
+	public const ACTION_CARRIER_LABELS = 'print_carrier_labels';
+	public const LABEL_TYPE_PARAM      = 'label_type';
+	public const MENU_SLUG             = 'label-print';
 
 	/**
 	 * PacketeryLatte Engine.
@@ -124,7 +126,16 @@ class LabelPrint {
 	 * @return string
 	 */
 	public static function getOrderIdsTransientName(): string {
-		return 'packetery_label_print_order_ids_' . get_current_user_id();
+		return 'packetery_label_print_order_ids_' . wp_get_session_token();
+	}
+
+	/**
+	 * Generates id of transient to store back link.
+	 *
+	 * @return string
+	 */
+	public static function getBackLinkTransientName(): string {
+		return 'packetery_label_print_back_link_' . wp_get_session_token();
 	}
 
 	/**
@@ -132,9 +143,21 @@ class LabelPrint {
 	 */
 	public function render(): void {
 		$form = $this->createForm( $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() ) );
+
+		$count    = 0;
+		$orderIds = get_transient( self::getOrderIdsTransientName() );
+		if ( $orderIds ) {
+			$count = count( $orderIds );
+		}
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/label-print.latte',
-			[ 'form' => $form ]
+			[
+				'form'          => $form,
+				'count'         => $count,
+				'backLink'      => get_transient( self::getBackLinkTransientName() ),
+				'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, self::MENU_SLUG ),
+			]
 		);
 	}
 
@@ -154,17 +177,26 @@ class LabelPrint {
 	 * Outputs pdf.
 	 */
 	public function outputLabelsPdf(): void {
-		if ( $this->httpRequest->getQuery( 'page' ) !== 'label-print' ) {
-			return;
-		}
-		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), 'info' );
-
+		if ( $this->httpRequest->getQuery( 'page' ) !== self::MENU_SLUG ) {
 			return;
 		}
 
-		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$packetIds       = $this->getPacketIdsFromTransient( $isCarrierLabels );
+		$fallbackToPacketaLabel = false;
+		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
+		$idParam                = $this->httpRequest->getQuery( 'id' );
+		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
+		if ( null !== $idParam && null !== $packetIdParam ) {
+			$fallbackToPacketaLabel = true;
+			$packetIds              = [ $idParam => $packetIdParam ];
+		} else {
+			if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
+				$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
+
+				return;
+			}
+
+			$packetIds = $this->getPacketIdsFromTransient( $isCarrierLabels );
+		}
 		if ( ! $packetIds ) {
 			$this->messageManager->flash_message( __( 'noSuitableOrdersSelected', 'packetery' ), 'info' );
 			if ( wp_safe_redirect( add_query_arg( [ 'post_type' => 'shop_order' ], admin_url( 'edit.php' ) ) ) ) {
@@ -173,10 +205,13 @@ class LabelPrint {
 			return;
 		}
 
-		$maxOffset = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
-		$form      = $this->createForm( $maxOffset );
+		$maxOffset   = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
+		$form        = $this->createForm( $maxOffset );
+		$offsetParam = $this->httpRequest->getQuery( 'offset' );
 		if ( 0 === $maxOffset ) {
 			$offset = 0;
+		} elseif ( null !== $offsetParam ) {
+			$offset = (int) $offsetParam;
 		} elseif ( $form->isSubmitted() ) {
 			$data   = $form->getValues( 'array' );
 			$offset = $data['offset'];
@@ -186,15 +221,17 @@ class LabelPrint {
 
 		if ( $isCarrierLabels ) {
 			$response = $this->requestCarrierLabels( $offset, $packetIds );
+			if ( $fallbackToPacketaLabel && $response->hasFault() ) {
+				$response = $this->requestPacketaLabels( $offset, $packetIds );
+			}
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
-		delete_transient( self::getOrderIdsTransientName() );
 		if ( ! $response || $response->hasFault() ) {
 			$message = ( null !== $response && $response->hasFault() ) ?
 				__( 'labelPrintFailedMoreInfoInLog', 'packetery' ) :
 				__( 'youSelectedOrdersThatWereNotSubmitted', 'packetery' );
-			$this->messageManager->flash_message( $message, 'error' );
+			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -239,11 +276,11 @@ class LabelPrint {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			'packeta-options',
+			\Packetery\Module\Options\Page::SLUG,
 			__( 'printLabels', 'packetery' ),
 			__( 'printLabels', 'packetery' ),
 			'manage_options',
-			'label-print',
+			self::MENU_SLUG,
 			array(
 				$this,
 				'render',
@@ -256,14 +293,7 @@ class LabelPrint {
 	 * Hides submenu item.
 	 */
 	public function hideFromMenus(): void {
-		global $submenu;
-		if ( isset( $submenu['packeta-options'] ) ) {
-			foreach ( $submenu['packeta-options'] as $key => $menu ) {
-				if ( 'label-print' === $menu[2] ) {
-					unset( $submenu['packeta-options'][ $key ] );
-				}
-			}
-		}
+		Plugin::hideSubmenuItem( self::MENU_SLUG );
 	}
 
 	/**
@@ -286,13 +316,13 @@ class LabelPrint {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = 'Akce “Tisk štítků” proběhla úspěšně.'; // todo translate.
+			$record->title  = __( 'labelPrintSuccessLogTitle', 'packetery' );
 			$this->logger->add( $record );
 		} else {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = 'Akce “Tisk štítků” skončila chybou.'; // todo translate.
+			$record->title  = __( 'labelPrintErrorLogTitle', 'packetery' );
 			$record->params = [
 				'request'      => [
 					'packetIds' => implode( ',', $request->getPacketIds() ),
@@ -313,9 +343,9 @@ class LabelPrint {
 	 * @param int   $offset Offset value.
 	 * @param array $packetIds Packet ids.
 	 *
-	 * @return Response\PacketsCourierLabelsPdf|null
+	 * @return Response\PacketsCourierLabelsPdf
 	 */
-	private function requestCarrierLabels( int $offset, array $packetIds ): ?Response\PacketsCourierLabelsPdf {
+	private function requestCarrierLabels( int $offset, array $packetIds ): Response\PacketsCourierLabelsPdf {
 		$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
 		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
@@ -328,13 +358,13 @@ class LabelPrint {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = 'Akce “Tisk štítků externích dopravců” proběhla úspěšně.'; // todo translate.
+			$record->title  = __( 'carrierLabelPrintSuccessLogTitle', 'packetery' );
 			$this->logger->add( $record );
 		} else {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = 'Akce “Tisk štítků externích dopravců” skončila chybou.'; // todo translate.
+			$record->title  = __( 'carrierLabelPrintErrorLogTitle', 'packetery' );
 			$record->params = [
 				'request'      => [
 					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
@@ -374,7 +404,7 @@ class LabelPrint {
 				continue;
 			}
 			if ( ! $isCarrierLabels || $order->isExternalCarrier() ) {
-				$packetIds[ $order->getPostId() ] = $order->getPacketId();
+				$packetIds[ $order->getNumber() ] = $order->getPacketId();
 			}
 		}
 
@@ -395,15 +425,15 @@ class LabelPrint {
 			$response = $this->soapApiClient->packetCourierNumber( $request );
 			if ( $response->hasFault() ) {
 				if ( $response->hasWrongPassword() ) {
-					$this->messageManager->flash_message( __( 'pleaseSetProperPassword', 'packetery' ), 'error' );
+					$this->messageManager->flash_message( __( 'pleaseSetProperPassword', 'packetery' ), MessageManager::TYPE_ERROR );
 
 					return [];
 				}
 
-				$record = new Log\Record();
+				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = 'Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná.';
+				$record->title  = __( 'carrierNumberRetrievingErrorLogTitle', 'packetery' );
 				$record->params = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),

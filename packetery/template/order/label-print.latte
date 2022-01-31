@@ -1,6 +1,19 @@
 <div class="packetery-offset-wrapper">
 	<section>
 		<h1>{__( 'Packeta', 'packetery' )} - {__( 'labelPrinting', 'packetery' )}</h1>
+		{$flashMessages|noescape}
+		<p>
+			{if $count === 1}
+				{phpComment 'translators: %s is count.'}
+				{sprintf(__( 'willBePrinted1%sLabels', 'packetery' ), $count)}
+			{elseif $count < 5}
+				{phpComment 'translators: %s is count.'}
+				{sprintf(__( 'willBePrinted2%sLabels', 'packetery' ), $count)}
+			{else}
+				{phpComment 'translators: %s is count.'}
+				{sprintf(__( 'willBePrinted5%sLabels', 'packetery' ), $count)}
+			{/if}
+		</p>
 	</section>
 	<form n:name=$form class="packetery-offset">
 		<section>
@@ -16,6 +29,7 @@
 			</table>
 		</section>
 		<div class="packetery-actions">
+			<a href="{$backLink}">{__( 'back', 'packetery' )}</a>
 			<input type="submit" name="submit" id="submit" value="{__( 'printLabels', 'packetery' )}"
 				   class="packetery-button button button-primary">
 		</div>

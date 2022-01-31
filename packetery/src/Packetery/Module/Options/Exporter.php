@@ -87,7 +87,7 @@ class Exporter {
 	 */
 	public function outputExportTxt(): void {
 		if (
-			$this->httpRequest->getQuery( 'page' ) !== 'packeta-options' ||
+			$this->httpRequest->getQuery( 'page' ) !== Page::SLUG ||
 			$this->httpRequest->getQuery( 'action' ) !== self::ACTION_EXPORT_SETTINGS
 		) {
 			return;
@@ -103,22 +103,24 @@ class Exporter {
 			);
 			unset( $globalSettings['api_key'] );
 		}
-		$globalSettings['woocommerce_allowed_countries'] = get_option( 'woocommerce_allowed_countries' );
+		$globalSettings['woocommerce_allowed_countries']          = get_option( 'woocommerce_allowed_countries' );
 		$globalSettings['woocommerce_specific_allowed_countries'] = get_option( 'woocommerce_specific_allowed_countries' );
-		$globalSettings['woocommerce_ship_to_countries'] = get_option( 'woocommerce_ship_to_countries' );
+		$globalSettings['woocommerce_ship_to_countries']          = get_option( 'woocommerce_ship_to_countries' );
 		$globalSettings['woocommerce_specific_ship_to_countries'] = get_option( 'woocommerce_specific_ship_to_countries' );
 
 		$activeTheme            = wp_get_theme();
 		$themeLatestVersion     = \WC_Admin_Status::get_latest_theme_version( $activeTheme );
 		$themeLatestVersionInfo = ( $themeLatestVersion !== $activeTheme->version ? ' (' . $themeLatestVersion . ' available)' : '' );
-		$latteParams = [
+		$latteParams            = [
 			'wpVersion'         => get_bloginfo( 'version' ),
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
 			'phpVersion'        => PHP_VERSION,
+			// @codingStandardsIgnoreStart
 			'soap'              => var_export( extension_loaded( 'soap' ), true ),
 			'wpDebug'           => var_export( WP_DEBUG, true ),
 			'packetaDebug'      => var_export( PACKETERY_DEBUG, true ),
+			// @codingStandardsIgnoreStart
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
@@ -176,7 +178,7 @@ class Exporter {
 				'method_title' => $variable->method_title,
 				'enabled'      => $variable->enabled,
 			];
-			$output     .= PHP_EOL . $this->formatVariable( $methodInfo, $level );
+			$output    .= PHP_EOL . $this->formatVariable( $methodInfo, $level );
 		} elseif ( is_object( $variable ) ) {
 			$output .= gettype( $variable ) . ' ' . get_class( $variable ) . PHP_EOL;
 		} else {

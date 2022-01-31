@@ -9,6 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Entity;
+use Packetery\Module\EntityFactory;
+
 /**
  * Class Repository.
  *
@@ -17,11 +20,27 @@ namespace Packetery\Module\Order;
 class Repository {
 
 	/**
+	 * Order factory.
+	 *
+	 * @var EntityFactory\Order
+	 */
+	private $orderEntityFactory;
+
+	/**
+	 * Repository constructor.
+	 *
+	 * @param EntityFactory\Order $orderEntityFactory Order factory.
+	 */
+	public function __construct( EntityFactory\Order $orderEntityFactory ) {
+		$this->orderEntityFactory = $orderEntityFactory;
+	}
+
+	/**
 	 * Loads order entities by list of ids.
 	 *
 	 * @param array $orderIds Order ids.
 	 *
-	 * @return \Packetery\Module\Order\Entity[]
+	 * @return Entity\Order[]
 	 */
 	public function getOrdersByIds( array $orderIds ): array {
 		$orderEntities = [];
@@ -35,8 +54,9 @@ class Repository {
 		);
 		foreach ( $posts as $post ) {
 			$wcOrder = wc_get_order( $post );
-			if ( $wcOrder ) {
-				$orderEntities[] = new \Packetery\Module\Order\Entity( $wcOrder );
+			$order   = $this->orderEntityFactory->create( $wcOrder );
+			if ( $wcOrder && $order ) {
+				$orderEntities[ $order->getNumber() ] = $order;
 			}
 		}
 

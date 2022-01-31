@@ -45,6 +45,27 @@ class Address {
 	private $houseNumber;
 
 	/**
+	 * Longitude.
+	 *
+	 * @var string|null
+	 */
+	private $longitude;
+
+	/**
+	 * Latitude.
+	 *
+	 * @var string|null
+	 */
+	private $latitude;
+
+	/**
+	 * County.
+	 *
+	 * @var string|null
+	 */
+	private $county;
+
+	/**
 	 * Address constructor.
 	 *
 	 * @param string|null $street Street.
@@ -100,5 +121,65 @@ class Address {
 	 */
 	public function setHouseNumber( string $houseNumber ): void {
 		$this->houseNumber = $houseNumber;
+	}
+
+	/**
+	 * Gets longitude.
+	 *
+	 * @return string|null
+	 */
+	public function getLongitude(): ?string {
+		return $this->longitude;
+	}
+
+	/**
+	 * Sets longitude.
+	 *
+	 * @param string|null $longitude Longitude.
+	 *
+	 * @return void
+	 */
+	public function setLongitude( ?string $longitude ): void {
+		$this->longitude = $longitude;
+	}
+
+	/**
+	 * Gets latitude.
+	 *
+	 * @return string|null
+	 */
+	public function getLatitude(): ?string {
+		return $this->latitude;
+	}
+
+	/**
+	 * Sets latitude.
+	 *
+	 * @param string|null $latitude Latitude.
+	 *
+	 * @return void
+	 */
+	public function setLatitude( ?string $latitude ): void {
+		$this->latitude = $latitude;
+	}
+
+	/**
+	 * Gets county.
+	 *
+	 * @return string|null
+	 */
+	public function getCounty(): ?string {
+		return $this->county;
+	}
+
+	/**
+	 * Sets county.
+	 *
+	 * @param string|null $county County.
+	 *
+	 * @return void
+	 */
+	public function setCounty( ?string $county ): void {
+		$this->county = $county;
 	}
 }

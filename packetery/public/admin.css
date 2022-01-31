@@ -11,7 +11,6 @@
 .packetery-rule > * {
     display: table-cell;
     box-sizing: border-box;
-    width: 25%;
     overflow: hidden;
 }
 
@@ -29,6 +28,10 @@
     font-weight: bold;
 }
 
+.packetery-carrier-options-page input, .packetery-carrier-options-page select {
+    margin: 0;
+}
+
 .packetery-carrier-options-page .js-delete.button {
     position: relative;
     top: 2px;
@@ -36,16 +39,36 @@
 
 .packetery-carrier-options-page .packetery-label {
     font-weight: bold;
+    text-align: left;
 }
 
 .packetery-carrier-options-page .form-table td {
-    padding-top: 0;
     padding-left: 0;
-    padding-bottom: 30px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    vertical-align: middle;
+}
+
+.packetery-carrier-options-page .form-table [data-replication-item-container] td {
+    padding-left: 0;
+    padding-top: 0;
+    padding-bottom: 15px;
+    vertical-align: middle;
 }
 
 .packetery-carrier-options-page .form-table th {
-    padding: 0;
+    padding-top: 20px;
+    padding-bottom: 15px;
+    vertical-align: top;
+}
+
+.packetery-carrier-options-page .form-table th.replication-section-label-container {
+    padding-top: 22px;
+    vertical-align: top;
+}
+
+.packetery-carrier-options-page .form-table * {
+    border-spacing: 0;
 }
 
 .packetery-order-metabox-label-cell {
@@ -83,9 +106,22 @@
     padding-right: 1em;
 }
 
-#packetery-options-page input[type=text], #packetery-options-page select {
+#packetery-options-page input[type=text], #packetery-options-page input[type=number], #packetery-options-page select {
     width: 500px;
     max-width: none;
+}
+
+#packetery-options-page .fieldset {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-top: 30px;
+}
+
+#packetery-options-page .fieldset legend {
+    font-weight: 600;
+    color: #1d2327;
+    font-size: 1.3em;
+    padding: 0 0.5em;
 }
 
 .packetery-help-block {
@@ -95,7 +131,6 @@
 }
 
 .packetery-offset-wrapper {
-    text-align: center;
     max-width: 700px;
     margin: 40px auto;
 }
@@ -115,7 +150,6 @@
 }
 
 .packetery-offset-wrapper h1 {
-    text-align: left;
     font-weight: 400;
 }
 
@@ -181,6 +215,64 @@ tbody .packetery-log-column-note {
     background-color: #dedddd;
 }
 
+#packetery-widget-button-wrapper {
+    margin-top: 6px;
+}
+
+#packetery-widget-button-wrapper .packetery-widget-button-row {
+    display: flex;
+}
+
+#packetery-widget-button-wrapper .packetery-widget-button-row img {
+    width: 45px;
+    margin-right: 6px;
+    border-radius: 3px;
+}
+
 .packetery-hidden {
     display: none;
+}
+
+.js-weight-rules .packetery-input-validation-message {
+    max-width: 260px;
+}
+
+.js-weight-rules .packetery-input-with-unit {
+    width: 260px;
+}
+
+.js-weight-rules .packetery-input-with-unit input {
+    width: 240px;
+}
+
+.packetery .button.dashicons {
+    width: 35px;
+}
+
+.packetery-label {
+    padding-right: 5px;
+}
+
+.packetery-rule :nth-child(3) {
+    text-align: right;
+}
+
+.js-surcharge-rules .packetery-label {
+    width: 180px;
+}
+
+.js-surcharge-rules :nth-child(3) {
+    width: 80px;
+}
+
+.js-surcharge-rules .packetery-input-with-unit {
+    width: 220px;
+}
+
+.js-surcharge-rules .packetery-input-validation-message {
+    max-width: 220px;
+}
+
+.js-surcharge-rules .packetery-input-with-unit input {
+    width: 200px;
 }

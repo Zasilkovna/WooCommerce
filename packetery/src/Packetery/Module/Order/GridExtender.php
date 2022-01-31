@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\EntityFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -50,23 +51,42 @@ class GridExtender {
 	private $httpRequest;
 
 	/**
+	 * Order entity factory.
+	 *
+	 * @var EntityFactory\Order
+	 */
+	private $entityFactory;
+
+	/**
+	 * Controller router.
+	 *
+	 * @var ControllerRouter
+	 */
+	private $orderControllerRouter;
+
+	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper     $helper Helper.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Engine     $latteEngine Latte Engine.
-	 * @param Request    $httpRequest Http Request.
+	 * @param Helper              $helper                Helper.
+	 * @param Repository          $carrierRepository     Carrier repository.
+	 * @param Engine              $latteEngine           Latte Engine.
+	 * @param Request             $httpRequest           Http Request.
+	 * @param EntityFactory\Order $entityFactory         Order factory.
+	 * @param ControllerRouter    $orderControllerRouter Order controller router.
 	 */
 	public function __construct(
 		Helper $helper,
 		Repository $carrierRepository,
 		Engine $latteEngine,
-		Request $httpRequest
+		Request $httpRequest,
+		EntityFactory\Order $entityFactory, ControllerRouter $orderControllerRouter
 	) {
-		$this->helper            = $helper;
-		$this->carrierRepository = $carrierRepository;
-		$this->latteEngine       = $latteEngine;
-		$this->httpRequest       = $httpRequest;
+		$this->helper                = $helper;
+		$this->carrierRepository     = $carrierRepository;
+		$this->latteEngine           = $latteEngine;
+		$this->httpRequest           = $httpRequest;
+		$this->entityFactory         = $entityFactory;
+		$this->orderControllerRouter = $orderControllerRouter;
 	}
 
 	/**
@@ -250,37 +270,61 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-		$order  = wc_get_order( $post->ID );
-		$entity = new Entity( $order );
+		$wcOrder = wc_get_order( $post->ID );
+		$order   = $this->entityFactory->create( $wcOrder );
+		if ( null === $order ) {
+			return;
+		}
 
 		switch ( $column ) {
 			case 'packetery_destination':
-				$pointName = $entity->getPointName();
-				$pointId   = $entity->getPointId();
-
-				$country = strtolower( $order->get_shipping_country() );
-
-				if ( $entity->isHomeDelivery() ) {
-					$homeDeliveryCarrier = $this->carrierRepository->getById( (int) $entity->getCarrierId() );
-					if ( $homeDeliveryCarrier ) {
-						$homeDeliveryCarrierEntity = new Carrier\Entity( $homeDeliveryCarrier );
-						echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
+				$pickupPoint = $order->getPickupPoint();
+				if ( null !== $pickupPoint ) {
+					$pointName         = $pickupPoint->getName();
+					$pointId           = $pickupPoint->getId();
+					$country           = strtolower( $wcOrder->get_shipping_country() );
+					$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
+					if ( in_array( $country, $internalCountries, true ) ) {
+						echo esc_html( "$pointName ($pointId)" );
+					} else {
+						echo esc_html( $pointName );
 					}
 					break;
 				}
-
-				$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
-				if ( $pointName && $pointId && in_array( $country, $internalCountries, true ) ) {
-					echo esc_html( "$pointName ($pointId)" );
-				} elseif ( $pointName ) {
-					echo esc_html( $pointName );
+				$homeDeliveryCarrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
+				if ( $homeDeliveryCarrier ) {
+					$homeDeliveryCarrierEntity = new Carrier\Entity( $homeDeliveryCarrier );
+					echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
 				}
 				break;
 			case Entity::META_PACKET_ID:
-				$packetId = $entity->getPacketId();
+				$packetId = $order->getPacketId();
 				if ( $packetId ) {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
 				}
+				break;
+			case 'packetery':
+				$packetSubmitUrl = add_query_arg( [], $this->orderControllerRouter->getRouteUrl( Controller::PATH_SUBMIT_TO_API ) );
+				$printLink       = add_query_arg(
+					[
+						'page'                       => LabelPrint::MENU_SLUG,
+						LabelPrint::LABEL_TYPE_PARAM => ( $order->isExternalCarrier() ? LabelPrint::ACTION_CARRIER_LABELS : LabelPrint::ACTION_PACKETA_LABELS ),
+						'id'                         => $order->getNumber(),
+						'packet_id'                  => $order->getPacketId(),
+						'offset'                     => 0,
+					],
+					admin_url( 'admin.php' )
+				);
+				$this->latteEngine->render(
+					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
+					[
+						'order'           => $order,
+						'hasOrderWeight'  => ( null !== $order->getWeight() && $order->getWeight() > 0 ),
+						'packetSubmitUrl' => $packetSubmitUrl,
+						'restNonce'       => wp_create_nonce( 'wp_rest' ),
+						'printLink'       => $printLink,
+					]
+				);
 				break;
 		}
 	}
@@ -299,6 +343,7 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
+				$new_columns['packetery']              = __( 'Packeta', 'packetery' );
 				$new_columns[ Entity::META_PACKET_ID ] = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']  = __( 'Pick up point or carrier', 'packetery' );
 			}

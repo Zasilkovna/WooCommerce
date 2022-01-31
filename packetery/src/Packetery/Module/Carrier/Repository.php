@@ -168,7 +168,7 @@ class Repository {
 			return null;
 		}
 
-		return $this->carrierEntityFactory->create( $result );
+		return $this->carrierEntityFactory->fromDbResult( $result );
 	}
 
 	/**
@@ -176,12 +176,40 @@ class Repository {
 	 *
 	 * @param string $country ISO code.
 	 *
-	 * @return array|null
+	 * @return Entity\Carrier[]
 	 */
-	public function getByCountry( string $country ): ?array {
+	public function getByCountry( string $country ): array {
 		$wpdb = $this->get_wpdb();
 
-		return $wpdb->get_results( $wpdb->prepare( 'SELECT `id`, `name` FROM `' . $wpdb->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false', $country ), ARRAY_A );
+		$entities        = [];
+		$countryCarriers = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT
+					`id`,
+					`name`,
+					`is_pickup_points`,
+					`has_carrier_direct_label`,
+					`separate_house_number`,
+					`customs_declarations`,
+					`requires_email`,
+					`requires_phone`,
+					`requires_size`,
+					`disallows_cod`,
+					`country`,
+					`currency`,
+					`max_weight`,
+					`deleted`
+				FROM `' . $wpdb->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false',
+				$country
+			),
+			ARRAY_A
+		);
+
+		foreach ( $countryCarriers as $carrierData ) {
+			$entities[] = $this->carrierEntityFactory->fromDbResult( $carrierData );
+		}
+
+		return $entities;
 	}
 
 	/**
@@ -189,13 +217,16 @@ class Repository {
 	 *
 	 * @param string $country ISO code.
 	 *
-	 * @return array|null
+	 * @return Entity\Carrier[]
 	 */
-	public function getByCountryIncludingZpoints( string $country ): ?array {
+	public function getByCountryIncludingZpoints( string $country ): array {
 		$countryCarriers = $this->getByCountry( $country );
 		$zpointCarriers  = $this->getZpointCarriers();
 		if ( ! empty( $zpointCarriers[ $country ] ) ) {
-			array_unshift( $countryCarriers, $zpointCarriers[ $country ] );
+			$zpointCarrierData            = $zpointCarriers[ $country ];
+			$zpointCarrierData['country'] = $country;
+			$zpointCarrier                = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrierData );
+			array_unshift( $countryCarriers, $zpointCarrier );
 		}
 
 		return $countryCarriers;
@@ -220,9 +251,15 @@ class Repository {
 	 */
 	public function set_others_as_deleted( array $carriers_in_feed ): void {
 		$wpdb = $this->get_wpdb();
-		$wpdb->query( 'UPDATE `' . $wpdb->packetery_carrier . '` SET `deleted` = 1 WHERE `id` NOT IN (' . implode( ',', $carriers_in_feed ) . ')' );
-		// TODO: find out how to do it properly, can't use IN ('1,2,3')
-		// $wpdb->query( $wpdb->prepare( 'UPDATE `' . $wpdb->packetery_carrier . '` SET `deleted` = 1 WHERE `id` NOT IN (%s)', implode( ',', $carriers_in_feed ) ) ); .
+		$wpdb->query(
+			'UPDATE `' .
+			$wpdb->packetery_carrier .
+			'` SET `deleted` = 1 WHERE `id` NOT IN (' .
+	            // @codingStandardsIgnoreStart
+				implode( ',', $carriers_in_feed )
+	            // @codingStandardsIgnoreEnd
+			. ')'
+		);
 	}
 
 	/**
@@ -257,23 +294,57 @@ class Repository {
 				'id'               => 'zpointcz',
 				'name'             => __( 'CZ Packeta pickup points', 'packetery' ),
 				'is_pickup_points' => 1,
+				'currency'         => 'CZK',
 			],
 			'sk' => [
 				'id'               => 'zpointsk',
 				'name'             => __( 'SK Packeta pickup points', 'packetery' ),
 				'is_pickup_points' => 1,
+				'currency'         => 'EUR',
 			],
 			'hu' => [
 				'id'               => 'zpointhu',
 				'name'             => __( 'HU Packeta pickup points', 'packetery' ),
 				'is_pickup_points' => 1,
+				'currency'         => 'HUF',
 			],
 			'ro' => [
 				'id'               => 'zpointro',
 				'name'             => __( 'RO Packeta pickup points', 'packetery' ),
 				'is_pickup_points' => 1,
+				'currency'         => 'RON',
 			],
 		];
+	}
+
+	/**
+	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
+	 *
+	 * @param string $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public function isPickupPointCarrier( string $carrierId ): bool {
+		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+			return true;
+		}
+
+		return $this->hasPickupPoints( (int) $carrierId );
+	}
+
+	/**
+	 * Checks if carrier is home delivery carrier.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isHomeDeliveryCarrier( string $carrierId ): bool {
+		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+			return false;
+		}
+
+		return false === $this->hasPickupPoints( (int) $carrierId );
 	}
 
 }

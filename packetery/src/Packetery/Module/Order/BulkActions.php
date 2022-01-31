@@ -61,9 +61,10 @@ class BulkActions {
 	 * @return array
 	 */
 	public function addActions( array $actions ): array {
-		$actions['submit_to_api']                     = __( 'actionSubmitOrders', 'packetery' );
-		$actions[ LabelPrint::ACTION_PACKETA_LABELS ] = __( 'actionPrintLabels', 'packetery' );
-		$actions[ LabelPrint::ACTION_CARRIER_LABELS ] = __( 'actionPrintCarrierLabels', 'packetery' );
+		$actions['submit_to_api']                                  = __( 'actionSubmitOrders', 'packetery' );
+		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'actionPrintLabels', 'packetery' );
+		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'actionPrintCarrierLabels', 'packetery' );
+		$actions[ CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ] = __( 'actionPrintOrderCollection', 'packetery' );
 
 		return $actions;
 	}
@@ -78,12 +79,24 @@ class BulkActions {
 	 * @return string
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
-		if ( in_array( $action, [ LabelPrint::ACTION_PACKETA_LABELS, LabelPrint::ACTION_CARRIER_LABELS ], true ) ) {
-			set_transient( LabelPrint::getOrderIdsTransientName(), $postIds );
+		if ( CollectionPrint::ACTION_PRINT_ORDER_COLLECTION === $action ) {
+			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
 
 			return add_query_arg(
 				[
-					'page'                       => 'label-print',
+					'page' => CollectionPrint::PAGE_SLUG,
+				],
+				admin_url( 'admin.php' )
+			);
+		}
+
+		if ( in_array( $action, [ LabelPrint::ACTION_PACKETA_LABELS, LabelPrint::ACTION_CARRIER_LABELS ], true ) ) {
+			set_transient( LabelPrint::getOrderIdsTransientName(), $postIds, 60 * 60 );
+			set_transient( LabelPrint::getBackLinkTransientName(), $redirectTo, 60 * 60 );
+
+			return add_query_arg(
+				[
+					'page'                       => LabelPrint::MENU_SLUG,
 					LabelPrint::LABEL_TYPE_PARAM => $action,
 				],
 				'admin.php'

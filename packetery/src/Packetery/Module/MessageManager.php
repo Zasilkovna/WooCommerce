@@ -18,14 +18,21 @@ use PacketeryLatte\Engine;
  */
 class MessageManager {
 
-	public const TYPE_ERROR = 'error';
+	public const TYPE_ERROR   = 'error';
+	public const TYPE_SUCCESS = 'success';
+	public const TYPE_INFO    = 'info';
+
+	public const RENDERER_WORDPRESS = 'wordpress';
+	public const RENDERER_PACKETERY = 'packetery';
+
+	private const EXPIRATION = 120;
 
 	/**
 	 * PacketeryLatte engine.
 	 *
 	 * @var Engine
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Messages to be displayed.
@@ -37,14 +44,14 @@ class MessageManager {
 	/**
 	 * Message_Manager constructor.
 	 *
-	 * @param Engine $latte_engine PacketeryLatte engine.
+	 * @param Engine $latteEngine PacketeryLatte engine.
 	 */
-	public function __construct( Engine $latte_engine ) {
-		$this->latte_engine = $latte_engine;
+	public function __construct( Engine $latteEngine ) {
+		$this->latteEngine = $latteEngine;
 	}
 
 	/**
-	 * Inits manager.
+	 * Inits manager on plugin load.
 	 */
 	public function init(): void {
 		$messages = get_transient( $this->getTransientName() );
@@ -65,39 +72,64 @@ class MessageManager {
 	/**
 	 * Flashes messages to end user.
 	 *
-	 * @param string $message Text.
-	 * @param string $type Type of message.
+	 * @param string $message  Text.
+	 * @param string $type     Type of message.
+	 * @param string $renderer Renderer of message.
+	 * @param string $context  Message context.
 	 */
-	public function flash_message( string $message, string $type = 'success' ): void {
+	public function flash_message( string $message, string $type = self::TYPE_SUCCESS, string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
 		$message          = [
-			'type'    => $type,
-			'message' => $message,
+			'type'     => $type,
+			'message'  => $message,
+			'renderer' => $renderer,
+			'context'  => $context,
 		];
 		$this->messages[] = $message;
 
-		set_transient( $this->getTransientName(), $this->messages, 120 );
+		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );
 	}
 
 	/**
 	 * Renders messages.
+	 *
+	 * @param string $renderer Message renderer.
+	 * @param string $context  Message context.
 	 */
-	public function render(): void {
-		foreach ( $this->messages as $message ) {
-			$this->latte_engine->render(
+	public function render( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
+		// @codingStandardsIgnoreStart
+		echo $this->renderToString( $renderer, $context );
+		// @codingStandardsIgnoreEnd
+	}
+
+	/**
+	 * Renders messages.
+	 *
+	 * @param string $renderer Message renderer.
+	 * @param string $context  Message context.
+	 */
+	public function renderToString( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): string {
+		$output = '';
+
+		foreach ( $this->messages as $key => $message ) {
+			if ( $message['renderer'] !== $renderer ) {
+				continue;
+			}
+
+			if ( $message['context'] !== $context ) {
+				continue;
+			}
+
+			$output .= $this->latteEngine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/admin-notice.latte',
 				[
 					'message' => $message,
 				]
 			);
-		}
-		$this->clear();
-	}
 
-	/**
-	 * Delete messages.
-	 */
-	private function clear() {
-		$this->messages = [];
-		delete_transient( $this->getTransientName() );
+			unset( $this->messages[ $key ] );
+		}
+
+		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );
+		return $output;
 	}
 }

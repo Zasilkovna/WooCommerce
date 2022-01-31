@@ -133,6 +133,20 @@ class Provider {
 	}
 
 	/**
+	 * Order packaging weight.
+	 *
+	 * @return float
+	 */
+	public function getPackagingWeight(): float {
+		$value = $this->get( 'packaging_weight' );
+		if ( is_numeric( $value ) ) {
+			return (float) $value;
+		}
+
+		return 0.0;
+	}
+
+	/**
 	 * Provides available labels.
 	 *
 	 * @return array[]
@@ -186,5 +200,33 @@ class Provider {
 		$availableFormats = $this->getLabelFormats();
 
 		return $availableFormats[ $format ]['maxOffset'];
+	}
+
+	/**
+	 * Gets list of packeta labels for select creation.
+	 *
+	 * @return array
+	 */
+	public function getPacketaLabelFormats(): array {
+		$availableFormats = $this->getLabelFormats();
+
+		return array_filter( array_combine( array_keys( $availableFormats ), array_column( $availableFormats, 'name' ) ) );
+	}
+
+	/**
+	 * Gets list of carrier labels for select creation.
+	 *
+	 * @return array
+	 */
+	public function getCarrierLabelFormat(): array {
+		$availableFormats    = $this->getLabelFormats();
+		$carrierLabelFormats = [];
+		foreach ( $availableFormats as $format => $formatData ) {
+			if ( true === $formatData['directLabels'] ) {
+				$carrierLabelFormats[ $format ] = $formatData['name'];
+			}
+		}
+
+		return $carrierLabelFormats;
 	}
 }

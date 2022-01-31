@@ -1,0 +1,28 @@
+{varType \Packetery\Core\Entity\Order $order}
+
+{if $order->getPacketId()}
+    <a class="button dashicons dashicons-media-default" title="{__( 'printLabel', 'packetery' )}" href="{$printLink}"></a>
+{else}
+    <a data-packetery-order-inline-edit
+       class="button dashicons {if $hasOrderWeight}dashicons-edit{else}dashicons-warning{/if}"
+       data-order-data="{= json_encode(
+       [
+       'id' => $order->getNumber(),
+       'packetery_weight' => $order->getWeight(),
+       ]
+       )}"
+       title="{__( 'setPacketWeight', 'packetery' )}"
+    ></a>
+    <a data-packetery-order-inline-submit
+       class="button dashicons dashicons-upload"
+       data-order-data="{= json_encode(
+       [
+       'id' => $order->getNumber(),
+       'packetSubmitUrl' => $packetSubmitUrl,
+       ]
+       )}"
+       data-rest-nonce="{$restNonce}"
+       title="{__( 'submitToPacketa', 'packetery' )}"
+       href="#"
+    ></a>
+{/if}

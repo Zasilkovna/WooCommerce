@@ -10,10 +10,12 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
+use Packetery\Module\Address;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
@@ -29,8 +31,9 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION = '1.0.7';
-	public const DOMAIN  = 'packetery';
+	public const VERSION               = '1.1.0';
+	public const DOMAIN                = 'packetery';
+	public const MIN_LISTENER_PRIORITY = -9998;
 
 	/**
 	 * Options page.
@@ -110,6 +113,13 @@ class Plugin {
 	private $labelPrint;
 
 	/**
+	 * Order collection printing.
+	 *
+	 * @var Order\CollectionPrint
+	 */
+	private $orderCollectionPrint;
+
+	/**
 	 * Order grid extender.
 	 *
 	 * @var Order\GridExtender
@@ -138,6 +148,41 @@ class Plugin {
 	private $logger;
 
 	/**
+	 * Address repository.
+	 *
+	 * @var Address\Repository
+	 */
+	private $addressRepository;
+
+	/**
+	 * Order controller.
+	 *
+	 * @var Order\Controller
+	 */
+	private $orderController;
+
+	/**
+	 * Order modal.
+	 *
+	 * @var Order\Modal
+	 */
+	private $orderModal;
+
+	/**
+	 * PickupPoint factory.
+	 *
+	 * @var EntityFactory\PickupPoint
+	 */
+	private $pickupPointFactory;
+
+	/**
+	 * Order factory.
+	 *
+	 * @var EntityFactory\Order
+	 */
+	private $orderFactory;
+
+	/**
 	 * Options exporter.
 	 *
 	 * @var Options\Exporter
@@ -147,21 +192,27 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox      $order_metabox Order metabox.
-	 * @param MessageManager     $message_manager Message manager.
-	 * @param Options\Page       $options_page Options page.
-	 * @param Repository         $carrierRepository Carrier repository.
-	 * @param Downloader         $carrier_downloader Carrier downloader object.
-	 * @param Checkout           $checkout Checkout class.
-	 * @param Engine             $latte_engine PacketeryLatte engine.
-	 * @param OptionsPage        $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions  $orderBulkActions Order BulkActions.
-	 * @param Order\LabelPrint   $labelPrint Label printing.
-	 * @param Order\GridExtender $gridExtender Order grid extender.
-	 * @param Product\DataTab    $productTab Product tab.
-	 * @param Log\Page           $logPage Log page.
-	 * @param ILogger            $logger Log manager.
-	 * @param Options\Exporter   $exporter Options exporter.
+	 * @param Order\Metabox             $order_metabox        Order metabox.
+	 * @param MessageManager            $message_manager      Message manager.
+	 * @param Options\Page              $options_page         Options page.
+	 * @param Repository                $carrierRepository Carrier repository.
+	 * @param Downloader                $carrier_downloader   Carrier downloader object.
+	 * @param Checkout                  $checkout             Checkout class.
+	 * @param Engine                    $latte_engine         PacketeryLatte engine.
+	 * @param OptionsPage               $carrierOptionsPage   Carrier options page.
+	 * @param Order\BulkActions         $orderBulkActions     Order BulkActions.
+	 * @param Order\LabelPrint          $labelPrint           Label printing.
+	 * @param Order\GridExtender        $gridExtender         Order grid extender.
+	 * @param Product\DataTab           $productTab           Product tab.
+	 * @param Log\Page                  $logPage              Log page.
+	 * @param ILogger                   $logger               Log manager.
+	 * @param Address\Repository        $addressRepository    Address repository.
+	 * @param Order\Controller          $orderController      Order controller.
+	 * @param Order\Modal               $orderModal           Order modal.
+	 * @param EntityFactory\PickupPoint $pickupPointFactory   PickupPoint factory.
+	 * @param Options\Exporter          $exporter             Options exporter.
+	 * @param Order\CollectionPrint     $orderCollectionPrint Order collection print.
+	 * @param EntityFactory\Order       $orderFactory         Order factory.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -178,25 +229,37 @@ class Plugin {
 		Product\DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
-		Options\Exporter $exporter
+		Address\Repository $addressRepository,
+		Order\Controller $orderController,
+		Order\Modal $orderModal,
+		EntityFactory\PickupPoint $pickupPointFactory,
+		Options\Exporter $exporter,
+		Order\CollectionPrint $orderCollectionPrint,
+		EntityFactory\Order $orderFactory
 	) {
-		$this->options_page       = $options_page;
-		$this->latte_engine       = $latte_engine;
-		$this->carrierRepository  = $carrierRepository;
-		$this->carrier_downloader = $carrier_downloader;
-		$this->main_file_path     = PACKETERY_PLUGIN_DIR . '/packetery.php';
-		$this->order_metabox      = $order_metabox;
-		$this->message_manager    = $message_manager;
-		$this->options_page       = $options_page;
-		$this->checkout           = $checkout;
-		$this->carrierOptionsPage = $carrierOptionsPage;
-		$this->orderBulkActions   = $orderBulkActions;
-		$this->labelPrint         = $labelPrint;
-		$this->gridExtender       = $gridExtender;
-		$this->productTab         = $productTab;
-		$this->logPage            = $logPage;
-		$this->logger             = $logger;
-		$this->exporter           = $exporter;
+		$this->options_page         = $options_page;
+		$this->latte_engine         = $latte_engine;
+		$this->carrierRepository    = $carrierRepository;
+		$this->carrier_downloader   = $carrier_downloader;
+		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packetery.php';
+		$this->order_metabox        = $order_metabox;
+		$this->message_manager      = $message_manager;
+		$this->options_page         = $options_page;
+		$this->checkout             = $checkout;
+		$this->carrierOptionsPage   = $carrierOptionsPage;
+		$this->orderBulkActions     = $orderBulkActions;
+		$this->labelPrint           = $labelPrint;
+		$this->gridExtender         = $gridExtender;
+		$this->productTab           = $productTab;
+		$this->logPage              = $logPage;
+		$this->logger               = $logger;
+		$this->addressRepository    = $addressRepository;
+		$this->orderController      = $orderController;
+		$this->orderModal           = $orderModal;
+		$this->pickupPointFactory   = $pickupPointFactory;
+		$this->exporter             = $exporter;
+		$this->orderCollectionPrint = $orderCollectionPrint;
+		$this->orderFactory         = $orderFactory;
 	}
 
 	/**
@@ -206,21 +269,19 @@ class Plugin {
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
 		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
+		add_action( 'init', [ $this->addressRepository, 'register' ] );
+		add_action( 'rest_api_init', [ $this->orderController, 'registerRoutes' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
-		add_action(
-			'wp_enqueue_scripts',
-			function () {
-				$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-			}
-		);
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
 		Form::initialize();
 
 		add_action(
 			'admin_notices',
 			function () {
-				$this->message_manager->render();
-			}
+				$this->message_manager->render( MessageManager::RENDERER_WORDPRESS );
+			},
+			self::MIN_LISTENER_PRIORITY
 		);
 		add_action( 'init', array( $this, 'init' ) );
 
@@ -247,6 +308,8 @@ class Plugin {
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
+		add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
+		$this->orderModal->register();
 		$this->order_metabox->register();
 
 		$this->checkout->register_hooks();
@@ -278,9 +341,10 @@ class Plugin {
 			3
 		);
 		// Print packets export result.
-		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ] );
+		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ], self::MIN_LISTENER_PRIORITY );
 
 		add_action( 'admin_init', [ $this->labelPrint, 'outputLabelsPdf' ] );
+		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
 	}
@@ -291,15 +355,20 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
-		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		$orderEntity = $this->orderFactory->create( $order );
+		if ( null === $orderEntity ) {
 			return;
 		}
+
+		$carrierId      = $orderEntity->getCarrierId();
+		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
 			[
-				'order' => $orderEntity,
+				'pickupPoint'              => $orderEntity->getPickupPoint(),
+				'validatedDeliveryAddress' => $this->addressRepository->getValidatedByOrderId( (int) $orderEntity->getNumber() ),
+				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
 			]
 		);
 	}
@@ -310,14 +379,18 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $order ): void {
-		$orderEntity = new Order\Entity( $order );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		$pickupPoint              = $this->pickupPointFactory->fromWcOrder( $order );
+		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
+		if ( null === $pickupPoint && null === $validatedDeliveryAddress ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
-			[ 'order' => $orderEntity ]
+			[
+				'pickupPoint'              => $pickupPoint,
+				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+			]
 		);
 	}
 
@@ -331,12 +404,21 @@ class Plugin {
 			return;
 		}
 
-		$orderEntity = new Order\Entity( $email->object );
-		if ( false === $orderEntity->isPacketeryPickupPointRelated() ) {
+		$packeteryOrder = $this->orderFactory->create( $email->object );
+		if ( null === $packeteryOrder ) {
 			return;
 		}
 
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/email/footer.latte', [ 'order' => $orderEntity ] );
+		$pickupPoint              = $packeteryOrder->getPickupPoint();
+		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( (int) $packeteryOrder->getNumber() );
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
+			[
+				'pickupPoint'              => $pickupPoint,
+				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+			]
+		);
 	}
 
 	/**
@@ -345,7 +427,7 @@ class Plugin {
 	 * @param string $name     Name of script.
 	 * @param string $file     Relative file path.
 	 * @param bool   $inFooter Tells where to include script.
-	 * @param array  $deps     Dependencies.
+	 * @param array  $deps     Script dependencies.
 	 */
 	private function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
 		wp_enqueue_script(
@@ -373,13 +455,38 @@ class Plugin {
 	}
 
 	/**
+	 * Builds asset URL.
+	 *
+	 * @param string $asset Relative asset path without leading slash.
+	 *
+	 * @return string
+	 */
+	public static function buildAssetUrl( string $asset ): string {
+		$url      = plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . $asset;
+		$filename = PACKETERY_PLUGIN_DIR . '/' . $asset;
+
+		return add_query_arg( [ 'v' => md5( (string) filemtime( $filename ) ) ], $url );
+	}
+
+	/**
+	 * Enqueues javascript files and stylesheets for checkout.
+	 */
+	public function enqueueFrontAssets(): void {
+		$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
+		$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false );
+	}
+
+	/**
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
 		$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
 		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
 		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
+		wp_enqueue_style( 'dashicons' );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+		$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
 	}
 
 	/**
@@ -389,6 +496,7 @@ class Plugin {
 		$this->options_page->register();
 		$this->carrierOptionsPage->register();
 		$this->labelPrint->register();
+		$this->orderCollectionPrint->register();
 		$this->logPage->register();
 	}
 
@@ -510,7 +618,7 @@ class Plugin {
 	 * @return array
 	 */
 	public function addPluginActionLinks( array $links ): array {
-		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=packeta-options' ) ) . '" aria-label="' .
+		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=' . Options\Page::SLUG ) ) . '" aria-label="' .
 					esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
 					esc_html__( 'Settings', 'packetery' ) . '</a>';
 
@@ -532,4 +640,28 @@ class Plugin {
 		return $methods;
 	}
 
+	/**
+	 * Hides submenu item. Must not be called too early.
+	 *
+	 * @param string $itemSlug Item slug.
+	 */
+	public static function hideSubmenuItem( string $itemSlug ): void {
+		global $submenu;
+		if ( isset( $submenu[ Options\Page::SLUG ] ) ) {
+			foreach ( $submenu[ Options\Page::SLUG ] as $key => $menu ) {
+				if ( $itemSlug === $menu[2] ) {
+					unset( $submenu[ Options\Page::SLUG ][ $key ] );
+				}
+			}
+		}
+	}
+
+	/**
+	 * Gets software identity for Packeta APIs.
+	 *
+	 * @return string
+	 */
+	public static function getAppIdentity(): string {
+		return 'Woocommerce: ' . get_bloginfo( 'version' ) . ', WordPress: ' . WC_VERSION . ', plugin Packeta: ' . self::VERSION;
+	}
 }

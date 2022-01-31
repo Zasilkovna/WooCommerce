@@ -108,7 +108,7 @@ class PostLogger implements ILogger {
 				$record->action = get_post_meta( $log->ID, 'packetery_action', true );
 				$record->title  = $log->post_title;
 				$postContent    = str_replace( '&quot;', '\\', $log->post_content );
-				$record->params = @json_decode( $postContent, true, 512, ILogger::JSON_FLAGS );
+				$record->params = json_decode( $postContent, true, 512, ILogger::JSON_FLAGS );
 
 				return $record;
 			},
