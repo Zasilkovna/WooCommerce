@@ -181,11 +181,13 @@ class LabelPrint {
 			return;
 		}
 
-		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$idParam         = $this->httpRequest->getQuery( 'id' );
-		$packetIdParam   = $this->httpRequest->getQuery( 'packet_id' );
+		$fallbackToPacketaLabel = false;
+		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
+		$idParam                = $this->httpRequest->getQuery( 'id' );
+		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
 		if ( null !== $idParam && null !== $packetIdParam ) {
-			$packetIds = [ $idParam => $packetIdParam ];
+			$fallbackToPacketaLabel = true;
+			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
 			if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
 				$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
@@ -219,6 +221,9 @@ class LabelPrint {
 
 		if ( $isCarrierLabels ) {
 			$response = $this->requestCarrierLabels( $offset, $packetIds );
+			if ( $fallbackToPacketaLabel && $response->hasFault() ) {
+				$response = $this->requestPacketaLabels( $offset, $packetIds );
+			}
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
@@ -338,9 +343,9 @@ class LabelPrint {
 	 * @param int   $offset Offset value.
 	 * @param array $packetIds Packet ids.
 	 *
-	 * @return Response\PacketsCourierLabelsPdf|null
+	 * @return Response\PacketsCourierLabelsPdf
 	 */
-	private function requestCarrierLabels( int $offset, array $packetIds ): ?Response\PacketsCourierLabelsPdf {
+	private function requestCarrierLabels( int $offset, array $packetIds ): Response\PacketsCourierLabelsPdf {
 		$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
 		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );

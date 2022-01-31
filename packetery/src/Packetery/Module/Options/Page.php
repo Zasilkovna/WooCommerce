@@ -257,6 +257,7 @@ class Page {
 		if ( $api_password->hasErrors() === false ) {
 			$api_pass           = $api_password->getValue();
 			$options['api_key'] = substr( $api_pass, 0, 16 );
+			$this->packetaClient->setApiPassword( $api_pass );
 		} else {
 			$options['api_key'] = '';
 		}

@@ -2,7 +2,7 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
-Tested up to: 5.8.1
+Tested up to: 5.8.3
 Stable tag: 1.1.0
 Requires PHP: 7.2
 License: GPLv3
@@ -73,15 +73,19 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.1.0 =
 * Added: Information about the count of printed labels and "back" link added to label offset setting form.
-* Added: Possibility to print the same labels again in one printing session.
-* Added: Possibility to print single label from order grid.
-* Added: Possibility to submit single order to Packeta from order grid.
-* Added: admin pickup point picker
-* Added: packaging weight in plugin settings
-* Added: checkout address validation
-* Added: Order editation modal in order grid. User is now able to edit order weight in order grid.
+* Added: Possibility to print the same labels again in single session in label print page.
+* Added: Possibility to print single label from order list.
+* Added: Possibility to submit single order to Packeta from order list.
+* Added: Admin pickup point picker in order detail.
+* Added: Packaging weight in plugin settings.
+* Added: Checkout address validation.
+* Added: Possibility to edit order weight in order list.
 * Added: List of active carriers added to carrier settings section.
-* Added: order collection printing
+* Added: Order collection printing.
+* Added: Sender verification in plugin settings.
+* Added: SK translation.
+* Updated: Carrier settings interface.
+* Updated: Packetery buttons in order list.
 
 = 1.0.7 =
 * Fixed: the label print page displays a message to the user if no suitable orders are selected

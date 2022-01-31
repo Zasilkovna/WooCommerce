@@ -40,6 +40,17 @@ class Client {
 	}
 
 	/**
+	 * Sets API password.
+	 *
+	 * @param string $apiPassword API password.
+	 *
+	 * @return void
+	 */
+	public function setApiPassword( string $apiPassword ): void {
+		$this->apiPassword = $apiPassword;
+	}
+
+	/**
 	 * Submits packet data to Packeta API.
 	 *
 	 * @param Request\CreatePacket $request Packet attributes.

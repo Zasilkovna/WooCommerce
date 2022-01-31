@@ -59,8 +59,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 					getRateAttrValue( carrierRateId, 'packetery_address_postCode', '' )
 				);
 				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-success').html(settings.translations.addressIsValidated);
+			} else if ( 'required' === getAddressValidation( carrierRateId ) ) {
+				$widgetDiv.find( '.packeta-widget-info' ).addClass( 'packeta-widget-info-error' ).html( settings.translations.addressIsNotValidatedAndRequiredByCarrier );
 			} else {
-				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html(settings.translations.addressIsNotValidated);
+				$widgetDiv.find( '.packeta-widget-info' ).addClass( 'packeta-widget-info-error' ).html( settings.translations.addressIsNotValidated );
 			}
 		};
 
