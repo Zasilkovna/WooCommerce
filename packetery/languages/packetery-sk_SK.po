@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.1.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-02-01T14:08:23+01:00\n"
-"PO-Revision-Date: 2022-02-01 14:15+0100\n"
+"POT-Creation-Date: 2022-02-07T13:39:23+01:00\n"
+"PO-Revision-Date: 2022-02-08 11:43+0100\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -21,7 +21,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
-#: src/Packetery/Module/Order/GridExtender.php:346
+#: src/Packetery/Module/Order/GridExtender.php:351
 #: src/Packetery/Module/Order/Metabox.php:130
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:14
@@ -283,11 +283,15 @@ msgstr "Získať sledovacie číslo externého prepravcu"
 msgid "logAction_carrier-table-not-created"
 msgstr "Tlač štítkov prepravcov"
 
-#: src/Packetery/Module/Log/Page.php:77
+#: src/Packetery/Module/Log/Page.php:74
+msgid "logAction_packet-status-sync"
+msgstr "Synchronizácia stavu zásielky"
+
+#: src/Packetery/Module/Log/Page.php:78
 msgid "statusError"
 msgstr "Chyba"
 
-#: src/Packetery/Module/Log/Page.php:78
+#: src/Packetery/Module/Log/Page.php:79
 msgid "statusSuccess"
 msgstr "Hotovo"
 
@@ -297,7 +301,7 @@ msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:623
+#: src/Packetery/Module/Plugin.php:656
 msgid "Settings"
 msgstr "Nastavenia"
 
@@ -330,31 +334,35 @@ msgstr "Platobná metóda, ktorá reprezentuje dobierku"
 msgid "packagingWeight"
 msgstr "Hmotnosť balenia"
 
-#: src/Packetery/Module/Options/Page.php:232
+#: src/Packetery/Module/Options/Page.php:193
+msgid "maxStatusSyncingPackets"
+msgstr "Maximálne množstvo stavu synchronizujúcich zásielok"
+
+#: src/Packetery/Module/Options/Page.php:238
 msgid "Main Settings"
 msgstr "Hlavné nastavenia"
 
-#: src/Packetery/Module/Options/Page.php:285
+#: src/Packetery/Module/Options/Page.php:291
 msgid "senderValidationSuccessLogTitle"
 msgstr "Validácia odosielateľa prebehla úspešne"
 
-#: src/Packetery/Module/Options/Page.php:292
+#: src/Packetery/Module/Options/Page.php:298
 msgid "senderValidationErrorLogTitle"
 msgstr "Validácia odosielateľa skončila chybou"
 
-#: src/Packetery/Module/Options/Page.php:300
+#: src/Packetery/Module/Options/Page.php:306
 msgid "specifiedSenderDoesNotExist"
 msgstr "Zvolený odosielateľ neexistuje"
 
-#: src/Packetery/Module/Options/Page.php:304
+#: src/Packetery/Module/Options/Page.php:310
 msgid "unableToCheckSpecifiedSender"
 msgstr "Odosielateľa nebolo možné overiť"
 
-#: src/Packetery/Module/Options/Page.php:321
+#: src/Packetery/Module/Options/Page.php:327
 msgid "specifiedSenderIsOk"
 msgstr "Zvolený odosielateľ bol overený"
 
-#: src/Packetery/Module/Options/Page.php:345
+#: src/Packetery/Module/Options/Page.php:351
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -363,33 +371,33 @@ msgstr ""
 "Kontaktujte správcu vášho webhostingu."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:352
+#: src/Packetery/Module/Options/Page.php:358
 msgid "senderDescription"
 msgstr ""
 "Tu vyplňte %1$soznačenie odisielateľa%2$s - nájdete ho v %3$sklientskej "
 "sekcii%4$s - údaje o používateľovi -  pole 'označenie používateľa'."
 
-#: src/Packetery/Module/Options/Provider.php:157
+#: src/Packetery/Module/Options/Provider.php:173
 msgid "labelNameA6onA4"
 msgstr "1/4 A4, tlač na A4, 4ks/stránka"
 
-#: src/Packetery/Module/Options/Provider.php:162
+#: src/Packetery/Module/Options/Provider.php:178
 msgid "labelNameA6onA6"
-msgstr "1/4 A4, priamatlač, 1ks/stránka"
+msgstr "1/4 A4, priama tlač, 1ks/stránka"
 
-#: src/Packetery/Module/Options/Provider.php:167
+#: src/Packetery/Module/Options/Provider.php:183
 msgid "labelNameA7onA7"
 msgstr "1/8 A4, priama tlač, 1ks/stránka"
 
-#: src/Packetery/Module/Options/Provider.php:172
+#: src/Packetery/Module/Options/Provider.php:188
 msgid "labelNameA7onA4"
 msgstr "1/8 A4, tlač na A4, 8ks/stránka"
 
-#: src/Packetery/Module/Options/Provider.php:177
+#: src/Packetery/Module/Options/Provider.php:193
 msgid "labelName105x35onA4"
 msgstr "105x35mm, tlač na A4, 16ks/stránka"
 
-#: src/Packetery/Module/Options/Provider.php:182
+#: src/Packetery/Module/Options/Provider.php:198
 msgid "labelNameA8onA8"
 msgstr "1/16 A4, priama tlač, 1ks/stránka"
 
@@ -432,6 +440,54 @@ msgstr "Tlač zoznamu zásielok"
 msgid "Success"
 msgstr "Hotovo"
 
+#: src/Packetery/Module/Order/Entity.php:270
+msgid "packetStatusReceivedData"
+msgstr "Dáta prijaté"
+
+#: src/Packetery/Module/Order/Entity.php:272
+msgid "packetStatusArrived"
+msgstr "Podané"
+
+#: src/Packetery/Module/Order/Entity.php:274
+msgid "packetStatusPreparedForDeparture"
+msgstr "Pripravené k odchodu"
+
+#: src/Packetery/Module/Order/Entity.php:276
+msgid "packetStatusDeparted"
+msgstr "Na ceste"
+
+#: src/Packetery/Module/Order/Entity.php:278
+msgid "packetStatusReadyForPickup"
+msgstr "Pripravené k výdaju"
+
+#: src/Packetery/Module/Order/Entity.php:280
+msgid "packetStatusHandedToCarrier"
+msgstr "Predané dopravcovi"
+
+#: src/Packetery/Module/Order/Entity.php:282
+msgid "packetStatusDelivered"
+msgstr "Doručené"
+
+#: src/Packetery/Module/Order/Entity.php:284
+msgid "packetStatusPostedBack"
+msgstr "Zaslané späť"
+
+#: src/Packetery/Module/Order/Entity.php:286
+msgid "packetStatusReturned"
+msgstr "Vrátené"
+
+#: src/Packetery/Module/Order/Entity.php:288
+msgid "packetStatusCancelled"
+msgstr "Zrušené"
+
+#: src/Packetery/Module/Order/Entity.php:290
+msgid "packetStatusCollected"
+msgstr "Vyzdvihnuté vodičom"
+
+#: src/Packetery/Module/Order/Entity.php:292
+msgid "packetStatusUnknown"
+msgstr "Neznáme"
+
 #: src/Packetery/Module/Order/GridExtender.php:116
 msgid "packetaOrdersToSubmit"
 msgstr "Packeta - zásielky k odoslaniu"
@@ -440,11 +496,15 @@ msgstr "Packeta - zásielky k odoslaniu"
 msgid "packetaOrdersToPrint"
 msgstr "Packeta - zásielky k tlači"
 
-#: src/Packetery/Module/Order/GridExtender.php:347
+#: src/Packetery/Module/Order/GridExtender.php:350
+msgid "packetaPacketStatus"
+msgstr "Stav zásielky Packeta"
+
+#: src/Packetery/Module/Order/GridExtender.php:352
 msgid "Barcode"
 msgstr "Trasovacie číslo"
 
-#: src/Packetery/Module/Order/GridExtender.php:348
+#: src/Packetery/Module/Order/GridExtender.php:353
 #: temp/cache/view/template-order-collection-print.latte--196227c595.php:99
 msgid "Pick up point or carrier"
 msgstr "Výdajné miesto alebo prepravca"
@@ -561,16 +621,24 @@ msgstr "Akcia 'Vytvorenie zásielky' skončila chybou."
 msgid "packetSendingSuccessLogTitle"
 msgstr "Akcia 'Vytvorenie zásielky' prebehla úspešne."
 
-#: src/Packetery/Module/Plugin.php:558
+#: src/Packetery/Module/Order/PacketSynchronizer.php:109
+msgid "packetStatusSyncErrorLogTitle"
+msgstr "Akcia 'Synchronizácia stavu zásielky' skončila chybou."
+
+#: src/Packetery/Module/Order/PacketSynchronizer.php:128
+msgid "packetStatusSyncSuccessLogTitle"
+msgstr "Akcia 'Synchronizácia stavu zásielky' prebehla úspešne."
+
+#: src/Packetery/Module/Plugin.php:591
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabuľka dopravcov nebola vytvorená, viac informácii nájdete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:563
+#: src/Packetery/Module/Plugin.php:596
 msgid "carrierTableNotCreated"
 msgstr "Formát štítku prepravcu"
 
-#: src/Packetery/Module/Plugin.php:622
+#: src/Packetery/Module/Plugin.php:655
 msgid "View Packeta settings"
 msgstr "Zobraziť nastavenia Packeta"
 
@@ -762,36 +830,36 @@ msgstr "Obecné"
 msgid "apiPasswordCanBeFoundAt%sUrl"
 msgstr "API heslo nájdete na adrese %s"
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:173
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:189
 msgid "validateSender"
 msgstr "Odosielateľ"
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:183
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:199
 msgid "Support"
 msgstr "Podpora"
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:188
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:204
 msgid "optionsExportInfo1"
 msgstr ""
 "Kliknutím na tlačidlo vykonáte export nastavenia pluginu do súboru. Export "
 "neobsahuje žiadne citlivé informácie z vášho eshopu. Výsledný súbor zašlete "
 "na technickú podporu Packety (e-mail kontakt nájdete tu:"
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:192
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:208
 msgid "optionsExportInfo2"
 msgstr ""
 ") spoločne s popisom vášho problému. Pre lepšie pochopenie problému "
 "odporúčame pripojiť aj screeny, ktoré ich zachytávajú (ak je to možné)."
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:199
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:215
 msgid "exportPluginSettings"
 msgstr "Hlavné nastavenia"
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:205
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:221
 msgid "settingsExportDatetime"
 msgstr "Dátum a čas posledného exportu nastavení"
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:213
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:229
 msgid "settingsNotYetExported"
 msgstr "Export nastavení zatiaľ ešte nebol vykonaný."
 

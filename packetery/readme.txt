@@ -71,6 +71,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= x.x.x =
+* Added: Packeta packet status synchronization via WP cron
+
 = 1.1.2 =
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected
 

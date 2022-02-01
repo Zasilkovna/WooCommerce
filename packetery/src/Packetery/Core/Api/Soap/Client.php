@@ -73,6 +73,27 @@ class Client {
 	}
 
 	/**
+	 * Retrieves packet status.
+	 *
+	 * @param Request\PacketStatus $request Packet attributes.
+	 *
+	 * @return Response\PacketStatus
+	 */
+	public function packetStatus( Request\PacketStatus $request ): Response\PacketStatus {
+		$response = new Response\PacketStatus();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$result     = $soapClient->packetStatus( $this->apiPassword, $request->getPacketId() );
+			$response->setCodeText( $result->codeText );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Create shipment.
 	 *
 	 * @param Request\CreateShipment $request Request.

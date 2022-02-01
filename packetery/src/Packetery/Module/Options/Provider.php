@@ -16,6 +16,8 @@ namespace Packetery\Module\Options;
  */
 class Provider {
 
+	const MAX_STATUS_SYNCING_PACKETS_DEFAULT = 100;
+
 	/**
 	 *  Options data.
 	 *
@@ -144,6 +146,20 @@ class Provider {
 		}
 
 		return 0.0;
+	}
+
+	/**
+	 * Max syncing packets.
+	 *
+	 * @return int
+	 */
+	public function getMaxStatusSyncingPackets(): int {
+		$value = $this->get( 'max_status_syncing_packets' );
+		if ( is_numeric( $value ) ) {
+			return (int) $value;
+		}
+
+		return self::MAX_STATUS_SYNCING_PACKETS_DEFAULT;
 	}
 
 	/**

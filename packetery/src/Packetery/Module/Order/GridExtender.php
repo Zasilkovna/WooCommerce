@@ -276,6 +276,7 @@ class GridExtender {
 			return;
 		}
 
+		$wcOrderEntity = new Entity( $wcOrder );
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -326,6 +327,9 @@ class GridExtender {
 					]
 				);
 				break;
+			case 'packetery_packet_status':
+				echo esc_html( $wcOrderEntity->getPacketStatusTranslated() );
+				break;
 		}
 	}
 
@@ -343,9 +347,10 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
-				$new_columns['packetery']              = __( 'Packeta', 'packetery' );
-				$new_columns[ Entity::META_PACKET_ID ] = __( 'Barcode', 'packetery' );
-				$new_columns['packetery_destination']  = __( 'Pick up point or carrier', 'packetery' );
+				$new_columns['packetery_packet_status'] = __( 'packetaPacketStatus', 'packetery' );
+				$new_columns['packetery']               = __( 'Packeta', 'packetery' );
+				$new_columns[ Entity::META_PACKET_ID ]  = __( 'Barcode', 'packetery' );
+				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}
 

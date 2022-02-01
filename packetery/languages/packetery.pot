@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-02-01T14:08:23+01:00\n"
+"POT-Creation-Date: 2022-02-07T13:39:23+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Plugin Name of the plugin
 #: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
-#: src/Packetery/Module/Order/GridExtender.php:346
+#: src/Packetery/Module/Order/GridExtender.php:351
 #: src/Packetery/Module/Order/Metabox.php:130
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:14
@@ -268,11 +268,15 @@ msgstr ""
 msgid "logAction_carrier-table-not-created"
 msgstr ""
 
-#: src/Packetery/Module/Log/Page.php:77
-msgid "statusError"
+#: src/Packetery/Module/Log/Page.php:74
+msgid "logAction_packet-status-sync"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:78
+msgid "statusError"
+msgstr ""
+
+#: src/Packetery/Module/Log/Page.php:79
 msgid "statusSuccess"
 msgstr ""
 
@@ -282,7 +286,7 @@ msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:623
+#: src/Packetery/Module/Plugin.php:656
 msgid "Settings"
 msgstr ""
 
@@ -314,60 +318,64 @@ msgstr ""
 msgid "packagingWeight"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:232
+#: src/Packetery/Module/Options/Page.php:193
+msgid "maxStatusSyncingPackets"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:238
 msgid "Main Settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:285
+#: src/Packetery/Module/Options/Page.php:291
 msgid "senderValidationSuccessLogTitle"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:292
+#: src/Packetery/Module/Options/Page.php:298
 msgid "senderValidationErrorLogTitle"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:300
+#: src/Packetery/Module/Options/Page.php:306
 msgid "specifiedSenderDoesNotExist"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:304
+#: src/Packetery/Module/Options/Page.php:310
 msgid "unableToCheckSpecifiedSender"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:321
+#: src/Packetery/Module/Options/Page.php:327
 msgid "specifiedSenderIsOk"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:345
+#: src/Packetery/Module/Options/Page.php:351
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:352
+#: src/Packetery/Module/Options/Page.php:358
 msgid "senderDescription"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:157
+#: src/Packetery/Module/Options/Provider.php:173
 msgid "labelNameA6onA4"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:162
+#: src/Packetery/Module/Options/Provider.php:178
 msgid "labelNameA6onA6"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:167
+#: src/Packetery/Module/Options/Provider.php:183
 msgid "labelNameA7onA7"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:172
+#: src/Packetery/Module/Options/Provider.php:188
 msgid "labelNameA7onA4"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:177
+#: src/Packetery/Module/Options/Provider.php:193
 msgid "labelName105x35onA4"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:182
+#: src/Packetery/Module/Options/Provider.php:198
 msgid "labelNameA8onA8"
 msgstr ""
 
@@ -410,6 +418,54 @@ msgstr ""
 msgid "Success"
 msgstr ""
 
+#: src/Packetery/Module/Order/Entity.php:270
+msgid "packetStatusReceivedData"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:272
+msgid "packetStatusArrived"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:274
+msgid "packetStatusPreparedForDeparture"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:276
+msgid "packetStatusDeparted"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:278
+msgid "packetStatusReadyForPickup"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:280
+msgid "packetStatusHandedToCarrier"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:282
+msgid "packetStatusDelivered"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:284
+msgid "packetStatusPostedBack"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:286
+msgid "packetStatusReturned"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:288
+msgid "packetStatusCancelled"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:290
+msgid "packetStatusCollected"
+msgstr ""
+
+#: src/Packetery/Module/Order/Entity.php:292
+msgid "packetStatusUnknown"
+msgstr ""
+
 #: src/Packetery/Module/Order/GridExtender.php:116
 msgid "packetaOrdersToSubmit"
 msgstr ""
@@ -418,11 +474,15 @@ msgstr ""
 msgid "packetaOrdersToPrint"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:347
+#: src/Packetery/Module/Order/GridExtender.php:350
+msgid "packetaPacketStatus"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:352
 msgid "Barcode"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:348
+#: src/Packetery/Module/Order/GridExtender.php:353
 #: temp/cache/view/template-order-collection-print.latte--196227c595.php:99
 msgid "Pick up point or carrier"
 msgstr ""
@@ -539,15 +599,23 @@ msgstr ""
 msgid "packetSendingSuccessLogTitle"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:558
+#: src/Packetery/Module/Order/PacketSynchronizer.php:109
+msgid "packetStatusSyncErrorLogTitle"
+msgstr ""
+
+#: src/Packetery/Module/Order/PacketSynchronizer.php:128
+msgid "packetStatusSyncSuccessLogTitle"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:591
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:563
+#: src/Packetery/Module/Plugin.php:596
 msgid "carrierTableNotCreated"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:622
+#: src/Packetery/Module/Plugin.php:655
 msgid "View Packeta settings"
 msgstr ""
 
@@ -737,31 +805,31 @@ msgstr ""
 msgid "apiPasswordCanBeFoundAt%sUrl"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:173
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:189
 msgid "validateSender"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:183
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:199
 msgid "Support"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:188
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:204
 msgid "optionsExportInfo1"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:192
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:208
 msgid "optionsExportInfo2"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:199
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:215
 msgid "exportPluginSettings"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:205
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:221
 msgid "settingsExportDatetime"
 msgstr ""
 
-#: temp/cache/view/template-options-page.latte--19c711edd6.php:213
+#: temp/cache/view/template-options-page.latte--19c711edd6.php:229
 msgid "settingsNotYetExported"
 msgstr ""
 

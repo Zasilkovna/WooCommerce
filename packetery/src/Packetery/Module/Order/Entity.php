@@ -34,6 +34,7 @@ class Entity {
 	public const META_WIDTH            = 'packetery_width';
 	public const META_HEIGHT           = 'packetery_height';
 	public const META_CARRIER_NUMBER   = 'packetery_carrier_number';
+	public const META_PACKET_STATUS    = 'packetery_packet_status';
 
 	/**
 	 * Order.
@@ -245,5 +246,52 @@ class Entity {
 	 */
 	public function getTotalPrice(): float {
 		return (float) $this->order->get_total( 'raw' );
+	}
+
+	/**
+	 * Gets code text.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketStatus(): ?string {
+		return $this->getMetaAsNullableString( self::META_PACKET_STATUS );
+	}
+
+	/**
+	 * Gets code text translated.
+	 *
+	 * @return string
+	 */
+	public function getPacketStatusTranslated(): string {
+		$packetStatus = $this->getMetaAsNullableString( self::META_PACKET_STATUS );
+
+		switch ( $packetStatus ) {
+			case 'received data':
+				return __( 'packetStatusReceivedData', 'packetery' );
+			case 'arrived':
+				return __( 'packetStatusArrived', 'packetery' );
+			case 'prepared for departure':
+				return __( 'packetStatusPreparedForDeparture', 'packetery' );
+			case 'departed':
+				return __( 'packetStatusDeparted', 'packetery' );
+			case 'ready for pickup':
+				return __( 'packetStatusReadyForPickup', 'packetery' );
+			case 'handed to carrier':
+				return __( 'packetStatusHandedToCarrier', 'packetery' );
+			case 'delivered':
+				return __( 'packetStatusDelivered', 'packetery' );
+			case 'posted back':
+				return __( 'packetStatusPostedBack', 'packetery' );
+			case 'returned':
+				return __( 'packetStatusReturned', 'packetery' );
+			case 'cancelled':
+				return __( 'packetStatusCancelled', 'packetery' );
+			case 'collected':
+				return __( 'packetStatusCollected', 'packetery' );
+			case 'unknown':
+				return __( 'packetStatusUnknown', 'packetery' );
+		}
+
+		return (string) $packetStatus;
 	}
 }
