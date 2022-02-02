@@ -117,6 +117,13 @@ class CreatePacket {
 	private $cod;
 
 	/**
+	 * Order money values currency.
+	 *
+	 * @var string
+	 */
+	private $currency;
+
+	/**
 	 * Carrier pickup point.
 	 *
 	 * @var string
@@ -161,6 +168,7 @@ class CreatePacket {
 		// Optional attributes.
 		$this->adultContent = (int) $order->containsAdultContent();
 		$this->cod          = $order->getCod();
+		$this->currency     = $order->getCurrency();
 		$this->email        = $order->getEmail();
 		$this->note         = $order->getNote();
 		$this->phone        = $order->getPhone();

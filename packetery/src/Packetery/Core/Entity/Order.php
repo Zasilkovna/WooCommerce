@@ -143,6 +143,13 @@ class Order {
 	private $isExported;
 
 	/**
+	 * Packet currency.
+	 *
+	 * @var string
+	 */
+	private $currency;
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string|null $number Order id.
@@ -313,6 +320,26 @@ class Order {
 	 */
 	public function setCod( float $cod ): void {
 		$this->cod = $cod;
+	}
+
+	/**
+	 * Gets packet currency.
+	 *
+	 * @return string
+	 */
+	public function getCurrency(): string {
+		return $this->currency;
+	}
+
+	/**
+	 * Sets packet currency.
+	 *
+	 * @param string $currency Currency.
+	 *
+	 * @return void
+	 */
+	public function setCurrency( string $currency ): void {
+		$this->currency = $currency;
 	}
 
 	/**
