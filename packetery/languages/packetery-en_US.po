@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.0.5\n"
+"Project-Id-Version: Packeta 1.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-27T14:04:00+01:00\n"
-"PO-Revision-Date: 2022-01-27 14:04+0100\n"
+"POT-Creation-Date: 2022-02-01T14:08:23+01:00\n"
+"PO-Revision-Date: 2022-02-01 14:11+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -295,7 +295,7 @@ msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:621
+#: src/Packetery/Module/Plugin.php:623
 msgid "Settings"
 msgstr "Settings"
 
@@ -560,16 +560,16 @@ msgstr "Packet sending error"
 msgid "packetSendingSuccessLogTitle"
 msgstr "Packet sending success"
 
-#: src/Packetery/Module/Plugin.php:556
+#: src/Packetery/Module/Plugin.php:558
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Carrier table was not created, you can find more information in Packeta log"
 
-#: src/Packetery/Module/Plugin.php:561
+#: src/Packetery/Module/Plugin.php:563
 msgid "carrierTableNotCreated"
 msgstr "Carrier table was not created"
 
-#: src/Packetery/Module/Plugin.php:620
+#: src/Packetery/Module/Plugin.php:622
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
 
@@ -945,10 +945,6 @@ msgstr "Packeta pickup points packets"
 
 #~ msgid "pleaseEnterValidNumber"
 #~ msgstr "Please enter a valid decimal number."
-
-#: src/Packetery/Module/Order/LabelPrint.php:169
-msgid "noSuitableOrdersSelected"
-msgstr "No suitable orders were selected"
 
 #~ msgid "Choose pickup point"
 #~ msgstr "Choose pickup point"

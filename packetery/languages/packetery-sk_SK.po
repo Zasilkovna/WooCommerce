@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.0.0\n"
+"Project-Id-Version: Packeta 1.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-01-27T14:04:00+01:00\n"
-"PO-Revision-Date: 2022-01-27 14:05+0100\n"
+"POT-Creation-Date: 2022-02-01T14:08:23+01:00\n"
+"PO-Revision-Date: 2022-02-01 14:15+0100\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -297,7 +297,7 @@ msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:621
+#: src/Packetery/Module/Plugin.php:623
 msgid "Settings"
 msgstr "Nastavenia"
 
@@ -561,16 +561,16 @@ msgstr "Akcia 'Vytvorenie zásielky' skončila chybou."
 msgid "packetSendingSuccessLogTitle"
 msgstr "Akcia 'Vytvorenie zásielky' prebehla úspešne."
 
-#: src/Packetery/Module/Plugin.php:556
+#: src/Packetery/Module/Plugin.php:558
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabuľka dopravcov nebola vytvorená, viac informácii nájdete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:561
+#: src/Packetery/Module/Plugin.php:563
 msgid "carrierTableNotCreated"
 msgstr "Formát štítku prepravcu"
 
-#: src/Packetery/Module/Plugin.php:620
+#: src/Packetery/Module/Plugin.php:622
 msgid "View Packeta settings"
 msgstr "Zobraziť nastavenia Packeta"
 
@@ -946,10 +946,6 @@ msgstr "Zásielky na výdajné miesta Packeta"
 
 #~ msgid "pleaseEnterValidNumber"
 #~ msgstr "Zadajte prosím platné desatinné číslo."
-
-#: src/Packetery/Module/Order/LabelPrint.php:169
-msgid "noSuitableOrdersSelected"
-msgstr "Neboli vybrané žiadne vhodné objednávky"
 
 #~ msgid "Choose pickup point"
 #~ msgstr "Výběr místa vyzvednutí"

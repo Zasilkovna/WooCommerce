@@ -572,15 +572,20 @@ class Checkout {
 	 */
 	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight ) {
 		$cost = null;
+
+		foreach ( $carrierOptions['weight_limits'] as $weightLimit ) {
+			if ( $cartWeight <= $weightLimit['weight'] ) {
+				$cost = $weightLimit['price'];
+				break;
+			}
+		}
+
+		if ( null === $cost ) {
+			return null;
+		}
+
 		if ( $carrierOptions['free_shipping_limit'] && $cartPrice >= $carrierOptions['free_shipping_limit'] ) {
 			$cost = 0;
-		} else {
-			foreach ( $carrierOptions['weight_limits'] as $weightLimit ) {
-				if ( $cartWeight <= $weightLimit['weight'] ) {
-					$cost = $weightLimit['price'];
-					break;
-				}
-			}
 		}
 
 		return $cost;
