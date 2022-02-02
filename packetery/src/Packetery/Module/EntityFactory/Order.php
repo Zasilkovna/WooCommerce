@@ -145,6 +145,8 @@ class Order {
 			$orderEntity->setCarrier( $carrier );
 		}
 
+		$orderEntity->setCurrency( $order->get_currency() );
+
 		return $orderEntity;
 	}
 
