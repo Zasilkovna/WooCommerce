@@ -621,9 +621,11 @@ class Checkout {
 	 * @return string
 	 */
 	private function getChosenMethod(): string {
-		$chosenMethods = wc_get_chosen_shipping_method_ids();
-		if ( ! empty( $chosenMethods[0] ) ) {
-			return $chosenMethods[0];
+		$chosenShippingRates = WC()->cart->calculate_shipping();
+		$chosenShippingRate  = ( $chosenShippingRates[0] ?? null );
+
+		if ( $chosenShippingRate instanceof \WC_Shipping_Rate ) {
+			return $chosenShippingRate->get_id();
 		}
 
 		return '';
