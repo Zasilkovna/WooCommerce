@@ -34,6 +34,19 @@ class Save extends Action implements HttpPostActionInterface
     }
 
     /**
+     * @param string $key
+     * @param mixed $default
+     * @return mixed
+     */
+    private function getDataItem(array $data, string $key, $default) {
+        if (!array_key_exists($key, $data)) {
+            return $default;
+        }
+
+        return ($data[$key] ?: $default);
+    }
+
+    /**
      * @return Redirect
      */
     public function execute(): Redirect
@@ -44,18 +57,38 @@ class Save extends Action implements HttpPostActionInterface
 
         $postData = $this->getRequest()->getPostValue()['general'];
         $id = $postData['id'];
-        $carrierPickupPoint = ($postData['carrier_pickup_point'] ?? null);
+        $misc = $postData['misc'];
 
         $collection = $this->orderCollectionFactory->create();
         $collection->addFilter('id', $id);
-        $collection->setDataToAll(
-            [
-                'point_id' => $postData['point_id'],
-                'point_name' => $postData['point_name'],
-                'is_carrier' => (bool)$postData['is_carrier'],
-                'carrier_pickup_point' => ($carrierPickupPoint ?: null),
-            ]
-        );
+
+        if ($misc['isAnyAddressDelivery'] === '1') {
+            $collection->setDataToAll(
+                [
+                    'address_validated' => $postData['address_validated'],
+                    'recipient_street' => $this->getDataItem($postData, 'recipient_street', null),
+                    'recipient_house_number' => $this->getDataItem($postData, 'recipient_house_number', null),
+                    'recipient_country_id' => $this->getDataItem($postData, 'recipient_country_id', null),
+                    'recipient_county' => $this->getDataItem($postData, 'recipient_county', null),
+                    'recipient_city' => $this->getDataItem($postData, 'recipient_city', null),
+                    'recipient_zip' => $this->getDataItem($postData, 'recipient_zip', null),
+                    'recipient_longitude' => $this->getDataItem($postData, 'recipient_longitude', null),
+                    'recipient_latitude' => $this->getDataItem($postData, 'recipient_latitude', null),
+                ]
+            );
+        }
+
+        if ($misc['isPickupPointDelivery'] === '1') {
+            $collection->setDataToAll(
+                [
+                    'point_id' => $postData['point_id'],
+                    'point_name' => $postData['point_name'],
+                    'is_carrier' => (bool)$postData['is_carrier'],
+                    'carrier_pickup_point' => $this->getDataItem($postData, 'carrier_pickup_point', null),
+                ]
+            );
+        }
+
         $collection->save();
 
         $this->messageManager->addSuccessMessage(

@@ -104,6 +104,15 @@ class InstallSchema implements InstallSchemaInterface
         "delayed_delivery" => [
             "type" => Table::TYPE_DATE
         ],
+        "address_validated" => [
+            "type" => Table::TYPE_BOOLEAN,
+            'attr' => [
+                'nullable' => false,
+                'default' => 0,
+                'comment' => 'Is recipient address validated?',
+                'after' => 'delayed_delivery'
+            ]
+        ],
         "recipient_street" => [
             "type" => Table::TYPE_TEXT,
             'size'    => '128'
@@ -119,6 +128,28 @@ class InstallSchema implements InstallSchemaInterface
         "recipient_zip" => [
             "type" => Table::TYPE_TEXT,
             'size'    => '32'
+        ],
+        "recipient_country_id" => [
+            "type" => Table::TYPE_TEXT,
+            'size'    => '2'
+        ],
+        "recipient_county" => [
+            "type" => Table::TYPE_TEXT,
+            'size'    => '128'
+        ],
+        "recipient_longitude" => [
+            "type" => Table::TYPE_DECIMAL,
+            "attr" => [
+                'nullable' => true,
+                'length' => '11,8',
+            ]
+        ],
+        "recipient_latitude" => [
+            "type" => Table::TYPE_DECIMAL,
+            "attr" => [
+                'nullable' => true,
+                'length' => '10,8',
+            ]
         ],
         "carrier_point" => [
             "type" => Table::TYPE_TEXT,
@@ -247,6 +278,16 @@ class InstallSchema implements InstallSchemaInterface
                     'nullable' => false,
                     'after' => 'carrier_id',
                 ],
+            ],
+            'address_validation' => [
+                'type' => Table::TYPE_TEXT,
+                'attr' => [
+                    'default' => 'none',
+                    'nullable' => false,
+                    'length' => '10',
+                    'comment' => 'Address validation',
+                    'after' => 'carrier_id'
+                ]
             ],
         ]);
 

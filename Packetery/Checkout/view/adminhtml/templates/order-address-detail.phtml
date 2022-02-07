@@ -1,0 +1,63 @@
+<?php
+/** @var \Packetery\Checkout\Block\Adminhtml\Order\AddressDetail $block */
+/** @var \Packetery\Checkout\Model\Order $packeteryOrder */
+$packeteryOrder = $block->getData('order');
+$packeteryMagentoOrder = $block->getData('magentoOrder');
+$order = $block->getData('magentoOrder');
+$packeteryAddress = $packeteryOrder->getRecipientAddress();
+$shippingMethod = $packeteryMagentoOrder->getShippingMethod(true)->getData('method');
+$methodCode = \Packetery\Checkout\Model\Carrier\MethodCode::fromString($shippingMethod);
+?>
+
+<?php if (\Packetery\Checkout\Model\Carrier\Methods::isAnyAddressDelivery($methodCode->getMethod())) { ?>
+
+<section class="admin__page-section order-addresses">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Validated shipping address')); ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <div class="admin__page-section-item">
+            <?php if (!$packeteryOrder->isAddressValidated()) { ?>
+                <p><strong><?= $block->escapeHtml(__('Address was not validated')); ?></strong></p>
+            <?php } ?>
+
+            <?php if ($packeteryOrder->isAddressValidated()) { ?>
+                <p><strong><?= $block->escapeHtml(__('Order has following validated address:')); ?></strong></p><br>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Street')) ?></strong></td>
+                        <td><?= $block->escapeHtml($packeteryAddress->getStreet()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('House number')) ?></strong></td>
+                        <td><?= $block->escapeHtml($packeteryAddress->getHouseNumber()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('City')) ?></strong></td>
+                        <td><?= $block->escapeHtml($packeteryAddress->getCity()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Zip')) ?></strong></td>
+                        <td><?= $block->escapeHtml($packeteryAddress->getZip()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('County')) ?></strong></td>
+                        <td><?= $block->escapeHtml($packeteryAddress->getCounty()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Country Code')) ?></strong></td>
+                        <td><?= $block->escapeHtml($packeteryAddress->getCountryId()); ?></td>
+                    </tr>
+                    <tr>
+                        <td><a target="_blank" href="https://www.google.com/maps/search/?api=1&query=<?= $block->escapeHtml($packeteryAddress->getLatitude()); ?>,<?= $block->escapeHtml($packeteryAddress->getLongitude()); ?>"><?= $block->escapeHtml(__('GPS coordinates')); ?></a></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+
+<?php } ?>

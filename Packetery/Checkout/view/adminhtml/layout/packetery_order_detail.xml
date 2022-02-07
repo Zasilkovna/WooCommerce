@@ -2,10 +2,12 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
         <script src="https://widget.packeta.com/v6/www/js/library.js" src_type="url" />
+        <script src="https://widget-hd.packeta.com/www/js/library-hd.js" src_type="url" />
     </head>
 
     <body>
         <referenceContainer name="content">
+            <block template="Packetery_Checkout::order-address-detail.phtml" name="packetery_order_address_detail"/>
             <uiComponent name="packetery_order_detail_form"/>
         </referenceContainer>
     </body>

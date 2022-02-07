@@ -25,6 +25,9 @@ class Modifier implements ModifierInterface
     /** @var \Packetery\Checkout\Model\Carrier\Facade */
     private $carrierFacade;
 
+    /** @var \Packetery\Checkout\Model\AddressValidationSelect */
+    private $addressValidationSelect;
+
     /**
      * Modifier constructor.
      *
@@ -33,19 +36,22 @@ class Modifier implements ModifierInterface
      * @param \Packetery\Checkout\Model\Carrier\Imp\Packetery\Carrier $packeteryCarrier
      * @param \Packetery\Checkout\Model\Pricing\Service $pricingService
      * @param \Packetery\Checkout\Model\Carrier\Facade $carrierFacade
+     * @param \Packetery\Checkout\Model\AddressValidationSelect $addressValidationSelect
      */
     public function __construct(
         \Packetery\Checkout\Model\ResourceModel\Carrier\CollectionFactory $carrierCollectionFactory,
         \Magento\Framework\App\RequestInterface $request,
         \Packetery\Checkout\Model\Carrier\Imp\Packetery\Carrier $packeteryCarrier,
         \Packetery\Checkout\Model\Pricing\Service $pricingService,
-        \Packetery\Checkout\Model\Carrier\Facade $carrierFacade
+        \Packetery\Checkout\Model\Carrier\Facade $carrierFacade,
+        \Packetery\Checkout\Model\AddressValidationSelect $addressValidationSelect
     ) {
         $this->carrierCollectionFactory = $carrierCollectionFactory;
         $this->request = $request;
         $this->packeteryCarrier = $packeteryCarrier;
         $this->pricingService = $pricingService;
         $this->carrierFacade = $carrierFacade;
+        $this->addressValidationSelect = $addressValidationSelect;
     }
 
     /**
@@ -333,6 +339,25 @@ class Modifier implements ModifierInterface
                     ],
                 ],
             ],
+            'address_validation' => [
+                'arguments' => [
+                    'data' => [
+                        'config' => [
+                            'label' => __('Address validation'),
+                            'formElement' => 'select',
+                            'dataType' => 'text',
+                            'componentType' => 'field',
+                            'visible' => Methods::isAnyAddressDelivery($carrier->getMethod()),
+                            'required' => false,
+                            'validation' => [
+                                'required-entry' => false,
+                            ],
+                            'multiple' => false,
+                            'options' => $this->addressValidationSelect->toOptionArray()
+                        ],
+                    ],
+                ],
+            ],
             'weight_rules' => $this->getWeightRules($carrier),
         ];
     }
@@ -505,6 +530,7 @@ class Modifier implements ModifierInterface
                 $shippingMethod['enabled'] = ($resolvedPricingRule->getEnabled() ? '1' : '0');
                 $pricingRule['id'] = $resolvedPricingRule->getId();
                 $pricingRule['free_shipment'] = $resolvedPricingRule->getFreeShipment();
+                $pricingRule['address_validation'] = $resolvedPricingRule->getAddressValidation();
 
                 $weightRules = $this->pricingService->getWeightRulesByPricingRule($resolvedPricingRule);
                 $pricingRule['weight_rules']['weight_rules'] = [];

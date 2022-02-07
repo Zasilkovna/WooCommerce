@@ -1,0 +1,11 @@
+<div visible="element.isStoreConfigLoaded()">
+    <div class="packetery-picker">
+        <img class="packetery-picker-logo" data-bind="attr: { src: element.getPacketaSymbolUrl() }" alt="packeta-logo">
+        <button class="secondary" type="button" click="element.packetaHDButtonClick">
+            <span data-bind="text: element.buttonLabel"></span>
+        </button>
+    </div>
+    <br>
+    <div data-bind="text: element.pickedValidatedAddress"></div>
+    <div data-bind="text: element.errorValidationMessage"></div>
+</div>

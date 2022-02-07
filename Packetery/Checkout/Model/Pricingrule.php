@@ -81,6 +81,14 @@ class Pricingrule extends \Magento\Framework\Model\AbstractModel implements \Mag
     }
 
     /**
+     * @return string
+     */
+    public function getAddressValidation(): string
+    {
+        return (string)($this->getData('address_validation') ?: AddressValidationSelect::NONE);
+    }
+
+    /**
      * @return bool
      */
     public function getEnabled(): bool

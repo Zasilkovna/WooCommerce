@@ -1,0 +1,9 @@
+.packetery-picker {
+    display: inline-flex;
+}
+
+.packetery-picker-logo {
+    width: 40px;
+    display: inline-flex;
+    margin-right: 2px;
+}

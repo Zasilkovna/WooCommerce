@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Packetery\Checkout\Ui\Order;
 
 use Magento\Ui\DataProvider\AbstractDataProvider;
+use Packetery\Checkout\Model\Carrier\MethodCode;
+use Packetery\Checkout\Model\Carrier\Methods;
 
 class DataProvider extends AbstractDataProvider
 {
@@ -51,18 +53,14 @@ class DataProvider extends AbstractDataProvider
             $orderNumber = $result[$item->getId()]['general']['order_number'];
             $order = $this->orderFactory->create()->loadByIncrementId($orderNumber);
 
-            $shippingAddress = $order->getShippingAddress();
-            if ($shippingAddress) {
-                $result[$item->getId()]['general']['misc']['country_id'] = $shippingAddress->getCountryId();
-            } else {
-                $result[$item->getId()]['general']['misc']['country_id'] = null;
-            }
-
             $shippingMethod = $order->getShippingMethod(true);
             if ($shippingMethod) {
-                $result[$item->getId()]['general']['misc']['method'] = $shippingMethod->getData('method');
+                $methodCode = MethodCode::fromString($shippingMethod->getData('method'));
+                $result[$item->getId()]['general']['misc']['isPickupPointDelivery'] = (Methods::isPickupPointDelivery($methodCode->getMethod()) ? '1' : '0');
+                $result[$item->getId()]['general']['misc']['isAnyAddressDelivery'] = (Methods::isAnyAddressDelivery($methodCode->getMethod()) ? '1' : '0');
             } else {
-                $result[$item->getId()]['general']['misc']['method'] = null;
+                $result[$item->getId()]['general']['misc']['isPickupPointDelivery'] = '0';
+                $result[$item->getId()]['general']['misc']['isAnyAddressDelivery'] = '0';
             }
         }
 

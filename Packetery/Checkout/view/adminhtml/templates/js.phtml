@@ -6,5 +6,6 @@
     require([], function () {
         window.packetery = window.packetery || {};
         window.packetery.baseUrl = '<?= /** @noEscape */ $block->getBaseUrl(); ?>';
+        window.packetery.packetaSymbolUrl = '<?= /** @noEscape */ $block->getViewFileUrl('Packetery_Checkout::images/packeta-symbol.png'); ?>';
     });
 </script>

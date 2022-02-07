@@ -58,7 +58,7 @@
         <argument name="data" xsi:type="array">
             <item name="config" xsi:type="array">
                 <item name="collapsible" xsi:type="boolean">false</item>
-                <item name="label" xsi:type="string" translate="true">General</item>
+                <item name="label" xsi:type="string" translate="true">Order edit</item>
                 <item name="additionalClasses" xsi:type="string">packetery-order-detail-form</item>
             </item>
         </argument>
@@ -104,7 +104,7 @@
             </argument>
             <settings>
                 <validation>
-                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="required-entry" xsi:type="boolean">false</rule>
                 </validation>
             </settings>
         </field>
@@ -122,7 +122,7 @@
             </argument>
             <settings>
                 <validation>
-                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="required-entry" xsi:type="boolean">false</rule>
                 </validation>
             </settings>
         </field>
@@ -154,6 +154,133 @@
                 </item>
             </argument>
         </field>
+        <field name="address_validated">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Is address validated?</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">address_validated</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_street">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Street</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_street</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_house_number">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">House number</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_house_number</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_city">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">City</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_city</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_zip">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Zip</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_zip</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_country_id">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Country Code</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_country_id</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_county">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">County</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_county</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_longitude">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Longitude</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_longitude</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="recipient_latitude">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="label" xsi:type="string" translate="true">Latitude</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="disabled" xsi:type="boolean">true</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="dataScope" xsi:type="string">recipient_latitude</item>
+                    <item name="additionalClasses" xsi:type="string">hidden</item>
+                </item>
+            </argument>
+        </field>
+        <field name="address_picker_field">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="elementTmpl" xsi:type="string">Packetery_Checkout/form/element/address-pick-button</item>
+                    <item name="elementId" xsi:type="string">address_picker_field</item>
+                    <item name="component" xsi:type="string">Packetery_Checkout/js/view/picker</item>
+                </item>
+            </argument>
+        </field>
         <fieldset name="misc">
             <argument name="data" xsi:type="array">
                 <item name="config" xsi:type="array">
@@ -163,36 +290,72 @@
                     <item name="additionalClasses" xsi:type="string">hidden</item>
                 </item>
             </argument>
-            <field name="country_id">
+            <field name="isPickupPointDelivery">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="dataType" xsi:type="string">text</item>
-                        <item name="label" xsi:type="string" translate="true">Country</item>
+                        <item name="label" xsi:type="string" translate="true">Is pickup point delivery?</item>
                         <item name="visible" xsi:type="boolean">true</item>
                         <item name="formElement" xsi:type="string">input</item>
-                        <item name="dataScope" xsi:type="string">country_id</item>
+                        <item name="dataScope" xsi:type="string">isPickupPointDelivery</item>
                     </item>
                 </argument>
                 <settings>
                     <validation>
                         <rule name="required-entry" xsi:type="boolean">true</rule>
                     </validation>
+                    <switcherConfig>
+                        <rules>
+                            <rule name="0">
+                                <value>1</value>
+                                <actions>
+                                    <action name="0">
+                                        <target>packetery_order_detail_form.areas.general.general.address_picker_field</target>
+                                        <callback>hide</callback>
+                                    </action>
+                                </actions>
+                            </rule>
+                        </rules>
+                        <enabled>true</enabled>
+                    </switcherConfig>
                 </settings>
             </field>
-            <field name="method">
+            <field name="isAnyAddressDelivery">
                 <argument name="data" xsi:type="array">
                     <item name="config" xsi:type="array">
                         <item name="dataType" xsi:type="string">text</item>
-                        <item name="label" xsi:type="string" translate="true">Method</item>
+                        <item name="label" xsi:type="string" translate="true">Is any address delivery?</item>
                         <item name="visible" xsi:type="boolean">true</item>
                         <item name="formElement" xsi:type="string">input</item>
-                        <item name="dataScope" xsi:type="string">method</item>
+                        <item name="dataScope" xsi:type="string">isAnyAddressDelivery</item>
                     </item>
                 </argument>
                 <settings>
                     <validation>
                         <rule name="required-entry" xsi:type="boolean">true</rule>
                     </validation>
+                    <switcherConfig>
+                        <rules>
+                            <rule name="0">
+                                <value>1</value>
+                                <actions>
+                                    <action name="0">
+                                        <target>packetery_order_detail_form.areas.general.general.point_name</target>
+                                        <callback>hide</callback>
+                                    </action>
+                                    <action name="1">
+                                        <target>packetery_order_detail_form.areas.general.general.carrier_pickup_point</target>
+                                        <callback>hide</callback>
+                                    </action>
+                                    <action name="2">
+                                        <target>packetery_order_detail_form.areas.general.general.point_picker_field</target>
+                                        <callback>hide</callback>
+                                    </action>
+                                </actions>
+                            </rule>
+                        </rules>
+                        <enabled>true</enabled>
+                    </switcherConfig>
                 </settings>
             </field>
         </fieldset>

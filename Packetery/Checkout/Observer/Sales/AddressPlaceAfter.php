@@ -4,12 +4,6 @@ namespace Packetery\Checkout\Observer\Sales;
 
 class AddressPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
-    /** @var \Magento\Framework\App\Config */
-    private $scopeConfig;
-
-    /** @var \Magento\Store\Model\StoreManagerInterface */
-    private $storeManager;
-
     /** @var \Magento\Sales\Api\OrderRepositoryInterface */
     protected $orderRepository;
 
@@ -17,13 +11,9 @@ class AddressPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     private $orderCollectionFactory;
 
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Sales\Api\OrderRepositoryInterface $orderRepository,
         \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
     ) {
-        $this->scopeConfig = $scopeConfig;
-        $this->storeManager = $storeManager;
         $this->orderRepository = $orderRepository;
         $this->orderCollectionFactory = $orderCollectionFactory;
     }
@@ -42,33 +32,24 @@ class AddressPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $orderId = $observer->getData('order_id');
         $order = $this->orderRepository->get($orderId);
         $orderNumber = $order->getIncrementId();
-        $address = $order->getShippingAddress();
-
-        $streetMatches = [];
-        $match = preg_match('/^(.*[^0-9]+) (([1-9][0-9]*)\/)?([1-9][0-9]*[a-cA-C]?)$/', $order->getShippingAddress()->getStreet()[0], $streetMatches);
-
-        // street and house number
-        if (!$match) {
-            $houseNumber = null;
-            $street = $order->getShippingAddress()->getStreet()[0];
-        } elseif (!isset($streetMatches[4])) {
-            $houseNumber = null;
-            $street = $streetMatches[1];
-        } else {
-            $houseNumber = (!empty($streetMatches[3])) ? $streetMatches[3] . "/" . $streetMatches[4] : $streetMatches[4];
-            $street = $streetMatches[1];
-        }
+        $shippingAddress = $order->getShippingAddress();
+        $packeteryAddress = \Packetery\Checkout\Model\Address::fromShippingAddress($shippingAddress);
 
         $data = [
-            'recipient_phone' => $address->getData('telephone'),
-            'recipient_street' => $street,
-            'recipient_house_number' => $houseNumber,
-            'recipient_city' => $address->getData('city'),
-            'recipient_zip' => $address->getData('postcode'),
-            'recipient_firstname' => $address->getData('firstname'),
-            'recipient_lastname' => $address->getData('lastname'),
-            'recipient_company' => $address->getData('company'),
-            'recipient_email' => $address->getData('email'),
+            'address_validated' => false,
+            'recipient_street' => $packeteryAddress->getStreet(),
+            'recipient_house_number' => $packeteryAddress->getHouseNumber(),
+            'recipient_city' => $packeteryAddress->getCity(),
+            'recipient_zip' => $packeteryAddress->getZip(),
+            'recipient_county' => $packeteryAddress->getCounty(),
+            'recipient_country_id' => $packeteryAddress->getCountryId(),
+            'recipient_longitude' => $packeteryAddress->getLongitude(),
+            'recipient_latitude' => $packeteryAddress->getLatitude(),
+            'recipient_firstname' => $shippingAddress->getData('firstname'),
+            'recipient_lastname' => $shippingAddress->getData('lastname'),
+            'recipient_company' => $shippingAddress->getData('company'),
+            'recipient_email' => $shippingAddress->getData('email'),
+            'recipient_phone' => $shippingAddress->getData('telephone'),
         ];
 
         $orderCollection = $this->orderCollectionFactory->create();

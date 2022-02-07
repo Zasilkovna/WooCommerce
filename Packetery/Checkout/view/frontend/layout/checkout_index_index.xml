@@ -5,6 +5,7 @@
         <css src="Packetery_Checkout::css/widget.css" />
 		<!-- Add external resources -->
 		<script src="https://widget.packeta.com/v6/www/js/library.js" src_type="url" />
+		<script src="https://widget-hd.packeta.com/www/js/library-hd.js" src_type="url" />
 	</head>
 
 	<body>

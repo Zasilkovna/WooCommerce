@@ -5,7 +5,8 @@ define([
     'ko',
     'mage/translate',
     'mage/storage',
-    'mage/url'
+    'mage/url',
+    'jquery',
 ], function(
     _,
     uiRegistry,
@@ -13,7 +14,8 @@ define([
     ko,
     $t,
     storage,
-    frontUrlBuilder
+    frontUrlBuilder,
+    jQuery
 ) {
     'use strict';
 
@@ -21,6 +23,7 @@ define([
 
     var config = {};
     var loadConfig = function(onSuccess) {
+        jQuery('body').trigger('processStart');
         var configUrl = frontUrlBuilder.build('packetery/config/storeconfig');
         storage.get(configUrl).done(
             function(response) {
@@ -35,15 +38,55 @@ define([
             function() {
                 console.error('Endpoint for packeta config failed');
             }
-        );
+        ).always(function() {
+            jQuery('body').trigger('processStop');
+        });
     };
 
     var mixin = {
         isStoreConfigLoaded: ko.observable(false),
+        errorValidationMessage: ko.observable(''),
+        pickedValidatedAddress: ko.observable(''),
+        buttonLabel: ko.observable($t('Check delivery address')),
+
+        isPickupPointDelivery: function() {
+            return uiRegistry.get('inputName = general[misc][isPickupPointDelivery]').value() === '1';
+        },
+
+        isAnyAddressDelivery: function() {
+            return uiRegistry.get('inputName = general[misc][isAnyAddressDelivery]').value() === '1';
+        },
+
+        getPacketaSymbolUrl: function() {
+            return window.packetery.packetaSymbolUrl;
+        },
+
+        initialize: function() {
+
+            var fieldset = uiRegistry.get('index = general');
+            uiRegistry.get('inputName = general[address_validated]', function(item) {
+                if (item.value() === '1') {
+                    mixin.buttonLabel($t('Change delivery address'));
+                }
+                if (item.value() === '0') {
+                    mixin.buttonLabel($t('Check delivery address'));
+                }
+            });
+
+            if (mixin.isPickupPointDelivery()) {
+                fieldset.label = $t('Pickup point selection');
+            }
+
+            if (mixin.isAnyAddressDelivery()) {
+                fieldset.label = $t('Shipping address validation');
+            }
+
+            return this._super();
+        },
 
         packetaButtonClick: function() {
             var packetaApiKey = config.apiKey;
-            var countryId = uiRegistry.get('inputName = general[misc][country_id]').value();
+            var countryId = uiRegistry.get('inputName = general[recipient_country_id]').value();
 
             var options = {
                 webUrl: config.packetaOptions.webUrl,
@@ -69,6 +112,75 @@ define([
             };
 
             Packeta.Widget.pick(packetaApiKey, pickupPointSelected, options);
+        },
+
+        packetaHDButtonClick: function() {
+            var getDestinationAddress = function() {
+                return {
+                    country: uiRegistry.get('inputName = general[recipient_country_id]').value().toLocaleLowerCase(),
+                    street: uiRegistry.get('inputName = general[recipient_street]').value(),
+                    houseNumber: uiRegistry.get('inputName = general[recipient_house_number]').value(),
+                    city: uiRegistry.get('inputName = general[recipient_city]').value(),
+                    postcode: uiRegistry.get('inputName = general[recipient_zip]').value()
+                };
+            };
+
+            var packetaApiKey = config.apiKey;
+            var destinationAddress = getDestinationAddress();
+            var countryId = uiRegistry.get('inputName = general[recipient_country_id]').value();
+            var pointId = uiRegistry.get('inputName = general[point_id]').value();
+
+            var options = {
+                country: destinationAddress.country,
+                language: config.packetaOptions.language,
+                layout: 'hd',
+                street: destinationAddress.street,
+                city: destinationAddress.city,
+                postcode: destinationAddress.postcode,
+                carrierId: pointId,
+            };
+
+            if (destinationAddress.houseNumber) {
+                options.houseNumber = destinationAddress.houseNumber;
+            }
+
+            var addressSelected = function(result) {
+                mixin.errorValidationMessage('');
+
+                if (!result) {
+                    mixin.errorValidationMessage($t("Address validation is out of order"));
+                    return;
+                }
+
+                if (!result.address) {
+                    return; // widget closed
+                }
+
+                var address = result.address;
+
+                if (address.country !== countryId.toLocaleLowerCase()) {
+                    mixin.errorValidationMessage($t("Please select address from specified country"));
+                    return;
+                }
+
+                uiRegistry.get('inputName = general[address_validated]').value('1');
+                uiRegistry.get('inputName = general[recipient_street]').value(address.street || null);
+                uiRegistry.get('inputName = general[recipient_house_number]').value(address.houseNumber || null);
+                uiRegistry.get('inputName = general[recipient_city]').value(address.city || null);
+                uiRegistry.get('inputName = general[recipient_zip]').value(address.postcode || null);
+                uiRegistry.get('inputName = general[recipient_county]').value(address.county || null);
+                uiRegistry.get('inputName = general[recipient_country_id]').value(countryId);
+                uiRegistry.get('inputName = general[recipient_longitude]').value(address.longitude || null);
+                uiRegistry.get('inputName = general[recipient_latitude]').value(address.latitude || null);
+
+                mixin.pickedValidatedAddress(
+                    [ address.street, address.houseNumber, address.city ].filter(function(value) {
+                        return !!value;
+                    }).join(' ')
+                );
+            };
+
+            PacketaHD.Widget.pick(packetaApiKey, addressSelected, options);
         }
     };
 

@@ -4,6 +4,8 @@ namespace Packetery\Checkout\Observer\Sales;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Exception\InputException;
+use Packetery\Checkout\Model\Address;
+use Packetery\Checkout\Model\AddressValidationSelect;
 use Packetery\Checkout\Model\Carrier\AbstractBrain;
 use Packetery\Checkout\Model\Carrier\MethodCode;
 use Packetery\Checkout\Model\Carrier\Methods;
@@ -28,6 +30,12 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /** @var \Packetery\Checkout\Model\Weight\Calculator */
     private $weightCalculator;
 
+    /** @var \Packetery\Checkout\Model\Pricing\Service */
+    private $pricingService;
+
+    /** @var \Magento\Sales\Model\Order\AddressRepository */
+    private $orderAddressRepository;
+
     /**
      * OrderPlaceAfter constructor.
      *
@@ -37,6 +45,8 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
      * @param \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory
      * @param \Magento\Shipping\Model\CarrierFactory $carrierFactory
      * @param \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
+     * @param \Packetery\Checkout\Model\Pricing\Service $pricingService
+     * @param \Magento\Sales\Model\Order\AddressRepository $orderAddressRepository
      */
     public function __construct(
         CheckoutSession $checkoutSession,
@@ -44,7 +54,9 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         \Packetery\Checkout\Model\Carrier\Imp\Packetery\Carrier $packetery,
         \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory $orderCollectionFactory,
         \Magento\Shipping\Model\CarrierFactory $carrierFactory,
-        \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
+        \Packetery\Checkout\Model\Weight\Calculator $weightCalculator,
+        \Packetery\Checkout\Model\Pricing\Service $pricingService,
+        \Magento\Sales\Model\Order\AddressRepository $orderAddressRepository
     ) {
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
@@ -52,6 +64,8 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $this->orderCollectionFactory = $orderCollectionFactory;
         $this->carrierFactory = $carrierFactory;
         $this->weightCalculator = $weightCalculator;
+        $this->pricingService = $pricingService;
+        $this->orderAddressRepository = $orderAddressRepository;
     }
 
     /**
@@ -72,21 +86,6 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             return;
         }
 
-        // GET DATA
-        $streetMatches = [];
-        $match = preg_match('/^(.*[^0-9]+) (([1-9][0-9]*)\/)?([1-9][0-9]*[a-cA-C]?)$/', $order->getShippingAddress()->getStreet()[0], $streetMatches);
-
-        if (!$match) {
-            $houseNumber = null;
-            $street = $order->getShippingAddress()->getStreet()[0];
-        } elseif (!isset($streetMatches[4])) {
-            $houseNumber = null;
-            $street = $streetMatches[1];
-        } else {
-            $houseNumber = (!empty($streetMatches[3])) ? $streetMatches[3] . "/" . $streetMatches[4] : $streetMatches[4];
-            $street = $streetMatches[1];
-        }
-
         $weight = $this->weightCalculator->getOrderWeight($order);
 
         $postData = json_decode(file_get_contents("php://input"));
@@ -94,7 +93,10 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $pointName = NULL;
         $point = NULL;
         $isCarrier = false;
+        $addressValidated = false;
         $carrierPickupPoint = null;
+        $magentoShippingAddress = $order->getShippingAddress();
+        $destinationAddress = Address::fromShippingAddress($magentoShippingAddress);
 
         if ($postData)
         {
@@ -109,11 +111,32 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
                 $isCarrier = (bool)$point->carrierId;
                 $carrierPickupPoint = ($point->carrierPickupPointId ?: null);
             } else {
+                $relatedPricingRule = $this->pricingService->resolvePricingRule(
+                    $deliveryMethod->getMethod(),
+                    $destinationAddress->getCountryId(), // shipping address countryId === validated widget country
+                    $shippingMethod['carrier_code'],
+                    $deliveryMethod->getDynamicCarrierId()
+                );
+
+                if ($relatedPricingRule === null) {
+                    throw new InputException(__('Pricing rule was not found. Please choose delivery method.'));
+                }
+
+                $validatedAddress = $postData->packetery->validatedAddress;
+                if (!$validatedAddress && $relatedPricingRule->getAddressValidation() === AddressValidationSelect::REQUIRED) {
+                    throw new InputException(__('Please select address via Packeta widget'));
+                }
+
+                if ($validatedAddress) {
+                    $destinationAddress = Address::fromValidatedAddress($validatedAddress);
+                    $addressValidated = true;
+                }
+
                 /** @var \Packetery\Checkout\Model\Carrier\AbstractCarrier $carrier */
                 $carrier = $this->carrierFactory->create($shippingMethod['carrier_code']);
                 $pointId = $carrier->getPacketeryBrain()->resolvePointId(
                     $deliveryMethod->getMethod(),
-                    $order->getShippingAddress()->getCountryId(),
+                    $destinationAddress->getCountryId(),
                     $carrier->getPacketeryBrain()->getDynamicCarrierById($deliveryMethod->getDynamicCarrierId())
                 );
 
@@ -140,11 +163,11 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
         $data = [
             'order_number' => $order->getIncrementId(),
-            'recipient_firstname' => $order->getShippingAddress()->getFirstname(),
-            'recipient_lastname' => $order->getShippingAddress()->getLastname(),
-            'recipient_company' => $order->getShippingAddress()->getCompany(),
-            'recipient_email' => $order->getShippingAddress()->getEmail(),
-            'recipient_phone' => $order->getShippingAddress()->getTelephone(),
+            'recipient_firstname' => $magentoShippingAddress->getFirstname(),
+            'recipient_lastname' => $magentoShippingAddress->getLastname(),
+            'recipient_company' => $magentoShippingAddress->getCompany(),
+            'recipient_email' => $magentoShippingAddress->getEmail(),
+            'recipient_phone' => $magentoShippingAddress->getTelephone(),
             'cod' => ($this->isCod($paymentMethod) ? $order->getGrandTotal() : 0),
             'currency' => $order->getOrderCurrencyCode(),
             'value' => $order->getGrandTotal(),
@@ -154,15 +177,30 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             'is_carrier' => $isCarrier,
             'carrier_pickup_point' => $carrierPickupPoint,
             'sender_label' => $this->getLabel(),
-            'recipient_street' => $street,
-            'recipient_house_number' => $houseNumber,
-            'recipient_city' => $order->getShippingAddress()->getCity(),
-            'recipient_zip' => $order->getShippingAddress()->getPostcode(),
+            'address_validated' => $addressValidated,
+            'recipient_street' => $destinationAddress->getStreet(),
+            'recipient_house_number' => $destinationAddress->getHouseNumber(),
+            'recipient_city' => $destinationAddress->getCity(),
+            'recipient_zip' => $destinationAddress->getZip(),
+            'recipient_country_id' => $destinationAddress->getCountryId(),
+            'recipient_county' => $destinationAddress->getCounty(),
+            'recipient_longitude' => $destinationAddress->getLongitude(),
+            'recipient_latitude' => $destinationAddress->getLatitude(),
             'exported' => 0,
         ];
 
         $this->saveData($data);
 
+        if ($addressValidated) {
+            $magentoShippingAddress->setCity($destinationAddress->getCity());
+            $magentoShippingAddress->setStreet([$destinationAddress->getStreet(), $destinationAddress->getHouseNumber()]);
+            $magentoShippingAddress->setCountryId($destinationAddress->getCountryId());
+            $magentoShippingAddress->setPostcode($destinationAddress->getZip());
+            $magentoShippingAddress->setRegion($destinationAddress->getCounty());
+            $magentoShippingAddress->setRegionCode(null);
+            $magentoShippingAddress->setRegionId(null);
+            $this->orderAddressRepository->save($magentoShippingAddress);
+        }
     }
 
     private function getRealOrderPacketery($order)
