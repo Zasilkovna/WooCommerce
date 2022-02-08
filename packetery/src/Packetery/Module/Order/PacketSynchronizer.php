@@ -96,8 +96,8 @@ class PacketSynchronizer {
 		$results = wc_get_orders( $args );
 
 		foreach ( $results as $wcOrder ) {
-			$wcOrderEntity = new Entity( $wcOrder );
-			$packetId      = $wcOrderEntity->getPacketId();
+			$moduleOrder = new Entity( $wcOrder );
+			$packetId    = $moduleOrder->getPacketId();
 
 			$request  = new Api\Soap\Request\PacketStatus( (int) $packetId );
 			$response = $this->apiSoapClient->packetStatus( $request );
@@ -121,7 +121,7 @@ class PacketSynchronizer {
 				continue;
 			}
 
-			if ( $response->getCodeText() === $wcOrderEntity->getPacketStatus() ) {
+			if ( $response->getCodeText() === $moduleOrder->getPacketStatus() ) {
 				continue;
 			}
 

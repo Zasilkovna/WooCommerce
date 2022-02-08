@@ -276,19 +276,6 @@ class Plugin {
 	 * Method to register hooks
 	 */
 	public function run(): void {
-		add_filter(
-			'woocommerce_order_data_store_cpt_get_orders_query',
-			function ( array $query ) {
-				if ( ! empty( $query['packetery_meta_query'] ) ) {
-					// @codingStandardsIgnoreStart
-					$query['meta_query'] = $query['packetery_meta_query'];
-					// @codingStandardsIgnoreEnd
-				}
-
-				return $query;
-			}
-		);
-
 		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
 		add_action( 'init', [ $this->logger, 'register' ], 5 );
 		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
@@ -348,12 +335,7 @@ class Plugin {
 			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
 		}
 
-		add_action(
-			'packetery_cron_packet_status_sync_hook',
-			function () {
-				$this->packetSynchronizer->syncStatuses();
-			}
-		);
+		add_action( 'packetery_cron_packet_status_sync_hook', [ $this->packetSynchronizer, 'syncStatuses' ] );
 		if ( ! wp_next_scheduled( 'packetery_cron_packet_status_sync_hook' ) ) {
 			wp_schedule_event( ( new \DateTime( '03:00:00', wp_timezone() ) )->getTimestamp(), 'daily', 'packetery_cron_packet_status_sync_hook' );
 		}
@@ -380,6 +362,24 @@ class Plugin {
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
+		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
+	}
+
+	/**
+	 * Filter queries.
+	 *
+	 * @param array $query Query.
+	 *
+	 * @return array
+	 */
+	public function transformGetOrdersQuery( array $query ): array {
+		if ( ! empty( $query['packetery_meta_query'] ) ) {
+			// @codingStandardsIgnoreStart
+			$query['meta_query'] = $query['packetery_meta_query'];
+			// @codingStandardsIgnoreEnd
+		}
+
+		return $query;
 	}
 
 	/**

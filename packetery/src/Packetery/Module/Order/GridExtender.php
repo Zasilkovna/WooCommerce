@@ -276,7 +276,7 @@ class GridExtender {
 			return;
 		}
 
-		$wcOrderEntity = new Entity( $wcOrder );
+		$moduleOrder = new Entity( $wcOrder );
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -328,7 +328,7 @@ class GridExtender {
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $wcOrderEntity->getPacketStatusTranslated() );
+				echo esc_html( $moduleOrder->getPacketStatusTranslated() );
 				break;
 		}
 	}
