@@ -31,7 +31,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION               = '1.1.1';
+	public const VERSION               = '1.1.2';
 	public const DOMAIN                = 'packetery';
 	public const MIN_LISTENER_PRIORITY = -9998;
 
