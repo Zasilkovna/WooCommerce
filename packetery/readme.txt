@@ -73,6 +73,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.1.2 =
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected
+* Added: primary key for carrier table
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free
