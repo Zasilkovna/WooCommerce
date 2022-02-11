@@ -24,6 +24,15 @@
         </argument>
     </dataSource>
     <listingToolbar name="listing_top">
+        <bookmark name="bookmarks">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="storageConfig" xsi:type="array">
+                        <item name="namespace" xsi:type="string">packetery_checkout_order_listing</item>
+                    </item>
+                </item>
+            </argument>
+        </bookmark>
         <columnsControls name="columns_controls"/>
         <filters name="listing_filters"/>
         <exportButton name="export_button" class="Packetery\Checkout\Ui\Component\ExportButton">

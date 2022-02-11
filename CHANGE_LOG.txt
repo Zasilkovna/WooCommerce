@@ -3,6 +3,7 @@
       - Updated: Magento order address change results in overriding validated address of Packeta order to address without house number
       - Added: ability to change shipping address in Packeta order detail in administration
       - Added: visualization of validated address in Packeta order detail
+      - Fixed: order list column selection reset button now shows all columns on click
 
 2.2.2 - Added: email template variables
       - Added: order grid filtering and sorting by order creation
