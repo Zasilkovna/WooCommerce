@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Module\Plugin;
@@ -76,6 +77,13 @@ class Metabox {
 	private $optionsProvider;
 
 	/**
+	 * Form factory.
+	 *
+	 * @var FormFactory
+	 */
+	private $formFactory;
+
+	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine              $latte_engine    PacketeryLatte engine.
@@ -84,6 +92,7 @@ class Metabox {
 	 * @param Request             $request         Http request.
 	 * @param EntityFactory\Order $orderFactory    Order factory.
 	 * @param Options\Provider    $optionsProvider Options provider.
+	 * @param FormFactory         $formFactory     Form factory.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -91,7 +100,8 @@ class Metabox {
 		Helper $helper,
 		Request $request,
 		EntityFactory\Order $orderFactory,
-		Options\Provider $optionsProvider
+		Options\Provider $optionsProvider,
+		FormFactory $formFactory
 	) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
@@ -99,6 +109,7 @@ class Metabox {
 		$this->request         = $request;
 		$this->orderFactory    = $orderFactory;
 		$this->optionsProvider = $optionsProvider;
+		$this->formFactory     = $formFactory;
 	}
 
 	/**
@@ -108,7 +119,7 @@ class Metabox {
 		add_action(
 			'admin_init',
 			function () {
-				$this->order_form = new Form();
+				$this->order_form = $this->formFactory->create();
 				$this->add_fields();
 			}
 		);

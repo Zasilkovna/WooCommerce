@@ -284,7 +284,6 @@ class Plugin {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
-		Form::initialize();
 
 		add_action(
 			'admin_notices',
