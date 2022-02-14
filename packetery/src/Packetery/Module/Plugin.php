@@ -253,7 +253,6 @@ class Plugin {
 		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packetery.php';
 		$this->order_metabox        = $order_metabox;
 		$this->message_manager      = $message_manager;
-		$this->options_page         = $options_page;
 		$this->checkout             = $checkout;
 		$this->carrierOptionsPage   = $carrierOptionsPage;
 		$this->orderBulkActions     = $orderBulkActions;
