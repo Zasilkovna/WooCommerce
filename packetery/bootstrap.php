@@ -19,9 +19,7 @@ $configurator->addConfig( __DIR__ . '/config/config.neon' );
 $configurator->setTempDirectory( __DIR__ . '/temp' );
 $configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->register();
 
-$configurator->defaultExtensions = [
-	'http'    => $configurator->defaultExtensions['http'],
-];
+$configurator->defaultExtensions = [];
 
 $container = $configurator->createContainer();
 CompatibilityBridge::setContainer( $container );

@@ -190,6 +190,12 @@ class Page {
 					->addRule( Form::MIN, null, 0 )
 					->setDefaultValue( 0 );
 
+		$container->addText( 'max_status_syncing_packets', __( 'maxStatusSyncingPackets', 'packetery' ) )
+			->setRequired( true )
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 )
+			->setDefaultValue( Provider::MAX_STATUS_SYNCING_PACKETS_DEFAULT );
+
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );
 		}

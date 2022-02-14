@@ -25,6 +25,7 @@ class Record {
 	public const ACTION_CARRIER_NUMBER_RETRIEVING = 'carrier-number-retrieving';
 	public const ACTION_CARRIER_TABLE_NOT_CREATED = 'carrier-table-not-created';
 	public const ACTION_SENDER_VALIDATION         = 'sender-validation';
+	public const ACTION_PACKET_STATUS_SYNC        = 'packet-status-sync';
 
 	public const STATUS_SUCCESS = 'success';
 	public const STATUS_ERROR   = 'error';

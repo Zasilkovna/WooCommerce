@@ -190,12 +190,19 @@ class Plugin {
 	private $exporter;
 
 	/**
+	 * Packet synchronizer.
+	 *
+	 * @var Order\PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox             $order_metabox        Order metabox.
 	 * @param MessageManager            $message_manager      Message manager.
 	 * @param Options\Page              $options_page         Options page.
-	 * @param Repository                $carrierRepository Carrier repository.
+	 * @param Repository                $carrierRepository    Carrier repository.
 	 * @param Downloader                $carrier_downloader   Carrier downloader object.
 	 * @param Checkout                  $checkout             Checkout class.
 	 * @param Engine                    $latte_engine         PacketeryLatte engine.
@@ -213,6 +220,7 @@ class Plugin {
 	 * @param Options\Exporter          $exporter             Options exporter.
 	 * @param Order\CollectionPrint     $orderCollectionPrint Order collection print.
 	 * @param EntityFactory\Order       $orderFactory         Order factory.
+	 * @param Order\PacketSynchronizer  $packetSynchronizer   Packet synchronizer.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -235,7 +243,8 @@ class Plugin {
 		EntityFactory\PickupPoint $pickupPointFactory,
 		Options\Exporter $exporter,
 		Order\CollectionPrint $orderCollectionPrint,
-		EntityFactory\Order $orderFactory
+		EntityFactory\Order $orderFactory,
+		Order\PacketSynchronizer $packetSynchronizer
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -260,6 +269,7 @@ class Plugin {
 		$this->exporter             = $exporter;
 		$this->orderCollectionPrint = $orderCollectionPrint;
 		$this->orderFactory         = $orderFactory;
+		$this->packetSynchronizer   = $packetSynchronizer;
 	}
 
 	/**
@@ -274,7 +284,6 @@ class Plugin {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
-		Form::initialize();
 
 		add_action(
 			'admin_notices',
@@ -325,6 +334,11 @@ class Plugin {
 			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
 		}
 
+		add_action( 'packetery_cron_packet_status_sync_hook', [ $this->packetSynchronizer, 'syncStatuses' ] );
+		if ( ! wp_next_scheduled( 'packetery_cron_packet_status_sync_hook' ) ) {
+			wp_schedule_event( ( new \DateTime( '03:00:00', wp_timezone() ) )->getTimestamp(), 'daily', 'packetery_cron_packet_status_sync_hook' );
+		}
+
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
 
@@ -347,6 +361,24 @@ class Plugin {
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
+		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
+	}
+
+	/**
+	 * Filter queries.
+	 *
+	 * @param array $query Query.
+	 *
+	 * @return array
+	 */
+	public function transformGetOrdersQuery( array $query ): array {
+		if ( ! empty( $query['packetery_meta_query'] ) ) {
+			// @codingStandardsIgnoreStart
+			$query['meta_query'] = $query['packetery_meta_query'];
+			// @codingStandardsIgnoreEnd
+		}
+
+		return $query;
 	}
 
 	/**

@@ -1,12 +1,6 @@
 parameters:
     latteTempFolder: %tempDir%/cache/view
 
-http:
-    headers:
-        X-Powered-By: ''
-        Content-Type: ''
-    frames: true
-
 services:
 	- Packetery\Module\Address\Repository
 	- Packetery\Module\EntityFactory\Address
@@ -49,3 +43,6 @@ services:
 	- Packetery\Module\Order\Modal
 	- Packetery\Module\Options\Exporter
 	- Packetery\Module\Order\CollectionPrint
+	- Packetery\Module\Order\PacketSynchronizer
+	requestFactory: PacketeryNette\Http\RequestFactory
+	- @requestFactory::fromGlobals()
