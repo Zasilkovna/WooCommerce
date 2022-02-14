@@ -112,6 +112,8 @@ class PacketSynchronizer {
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),
 				];
+
+				// TODO: If a user changes API key then orders created with old API key will flood synchronizer queue and logs.
 				$this->logger->add( $record );
 
 				if ( $response->hasWrongPassword() ) {
