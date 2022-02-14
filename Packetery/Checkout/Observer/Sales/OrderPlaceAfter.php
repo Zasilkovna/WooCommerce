@@ -4,6 +4,7 @@ namespace Packetery\Checkout\Observer\Sales;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Exception\InputException;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Packetery\Checkout\Model\Address;
 use Packetery\Checkout\Model\AddressValidationSelect;
 use Packetery\Checkout\Model\Carrier\AbstractBrain;
@@ -36,6 +37,9 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
     /** @var \Magento\Sales\Model\Order\AddressRepository */
     private $orderAddressRepository;
 
+    /** @var PriceCurrencyInterface */
+    private $priceCurrency;
+
     /**
      * OrderPlaceAfter constructor.
      *
@@ -47,6 +51,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
      * @param \Packetery\Checkout\Model\Weight\Calculator $weightCalculator
      * @param \Packetery\Checkout\Model\Pricing\Service $pricingService
      * @param \Magento\Sales\Model\Order\AddressRepository $orderAddressRepository
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      */
     public function __construct(
         CheckoutSession $checkoutSession,
@@ -56,7 +61,8 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         \Magento\Shipping\Model\CarrierFactory $carrierFactory,
         \Packetery\Checkout\Model\Weight\Calculator $weightCalculator,
         \Packetery\Checkout\Model\Pricing\Service $pricingService,
-        \Magento\Sales\Model\Order\AddressRepository $orderAddressRepository
+        \Magento\Sales\Model\Order\AddressRepository $orderAddressRepository,
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
     ) {
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
@@ -66,6 +72,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $this->weightCalculator = $weightCalculator;
         $this->pricingService = $pricingService;
         $this->orderAddressRepository = $orderAddressRepository;
+        $this->priceCurrency = $priceCurrency;
     }
 
     /**
@@ -97,12 +104,29 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $carrierPickupPoint = null;
         $magentoShippingAddress = $order->getShippingAddress();
         $destinationAddress = Address::fromShippingAddress($magentoShippingAddress);
+        $paymentMethod = $order->getPayment()->getMethod();
+        $isCOD = $this->isCod($paymentMethod);
 
         if ($postData)
         {
             // new order from frontend
             $shippingMethod = $order->getShippingMethod(true);
             $deliveryMethod = MethodCode::fromString($shippingMethod['method']);
+            $relatedPricingRule = $this->pricingService->resolvePricingRule(
+                $deliveryMethod->getMethod(),
+                $destinationAddress->getCountryId(),
+                $shippingMethod['carrier_code'],
+                $deliveryMethod->getDynamicCarrierId()
+            );
+
+            if ($relatedPricingRule === null) {
+                throw new InputException(__('Pricing rule was not found. Please choose delivery method.'));
+            }
+
+            if ($isCOD && \Packetery\Checkout\Model\Payment\MethodList::exceedsValueMaxLimit($order->getGrandTotal(), $relatedPricingRule->getMaxCOD())) {
+                throw new InputException(__('Selected payment method is not allowed because grand total exceeds limit %1.', $this->priceCurrency->format($relatedPricingRule->getMaxCOD(), false)));
+            }
+
             if ($deliveryMethod->getMethod() === Methods::PICKUP_POINT_DELIVERY) {
                 // pickup point delivery
                 $point = $postData->packetery->point;
@@ -111,17 +135,6 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
                 $isCarrier = (bool)$point->carrierId;
                 $carrierPickupPoint = ($point->carrierPickupPointId ?: null);
             } else {
-                $relatedPricingRule = $this->pricingService->resolvePricingRule(
-                    $deliveryMethod->getMethod(),
-                    $destinationAddress->getCountryId(), // shipping address countryId === validated widget country
-                    $shippingMethod['carrier_code'],
-                    $deliveryMethod->getDynamicCarrierId()
-                );
-
-                if ($relatedPricingRule === null) {
-                    throw new InputException(__('Pricing rule was not found. Please choose delivery method.'));
-                }
-
                 $validatedAddress = $postData->packetery->validatedAddress;
                 if (!$validatedAddress && $relatedPricingRule->getAddressValidation() === AddressValidationSelect::REQUIRED) {
                     throw new InputException(__('Please select address via Packeta widget'));
@@ -159,8 +172,6 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             throw new InputException(__('You must select pick-up point'));
         }
 
-		$paymentMethod = $order->getPayment()->getMethod();
-
         $data = [
             'order_number' => $order->getIncrementId(),
             'recipient_firstname' => $magentoShippingAddress->getFirstname(),
@@ -168,7 +179,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
             'recipient_company' => $magentoShippingAddress->getCompany(),
             'recipient_email' => $magentoShippingAddress->getEmail(),
             'recipient_phone' => $magentoShippingAddress->getTelephone(),
-            'cod' => ($this->isCod($paymentMethod) ? $order->getGrandTotal() : 0),
+            'cod' => ($isCOD ? $order->getGrandTotal() : 0),
             'currency' => $order->getOrderCurrencyCode(),
             'value' => $order->getGrandTotal(),
             'weight' => $weight,

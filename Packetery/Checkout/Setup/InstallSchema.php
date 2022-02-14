@@ -289,6 +289,15 @@ class InstallSchema implements InstallSchemaInterface
                     'after' => 'carrier_id'
                 ]
             ],
+            'max_cod' => [
+                "type" => Table::TYPE_DECIMAL,
+                'attr' => [
+                    'nullable' => true,
+                    'after' => 'address_validation',
+                    'length' => '20,4',
+                    'comment' => 'minimal value to hide COD payment methods'
+                ],
+            ],
         ]);
 
         $table->setComment('Packetery pricing rules. Relates to packetery_weight_rules.');

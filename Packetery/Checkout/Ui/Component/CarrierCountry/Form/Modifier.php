@@ -358,6 +358,25 @@ class Modifier implements ModifierInterface
                     ],
                 ],
             ],
+            'max_cod' => [
+                'arguments' => [
+                    'data' => [
+                        'config' => [
+                            'label' => __('Max COD'),
+                            'formElement' => 'input',
+                            'dataType' => 'text',
+                            'componentType' => 'field',
+                            'visible' => true,
+                            'required' => false,
+                            'validation' => [
+                                'required-entry' => false,
+                                'validate-number' => true,
+                                'validate-greater-than-zero' => true,
+                            ],
+                        ],
+                    ],
+                ],
+            ],
             'weight_rules' => $this->getWeightRules($carrier),
         ];
     }
@@ -531,6 +550,7 @@ class Modifier implements ModifierInterface
                 $pricingRule['id'] = $resolvedPricingRule->getId();
                 $pricingRule['free_shipment'] = $resolvedPricingRule->getFreeShipment();
                 $pricingRule['address_validation'] = $resolvedPricingRule->getAddressValidation();
+                $pricingRule['max_cod'] = $resolvedPricingRule->getMaxCOD();
 
                 $weightRules = $this->pricingService->getWeightRulesByPricingRule($resolvedPricingRule);
                 $pricingRule['weight_rules']['weight_rules'] = [];

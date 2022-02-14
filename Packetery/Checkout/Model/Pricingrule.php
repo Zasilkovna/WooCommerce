@@ -89,6 +89,19 @@ class Pricingrule extends \Magento\Framework\Model\AbstractModel implements \Mag
     }
 
     /**
+     * @return float|null
+     */
+    public function getMaxCOD(): ?float
+    {
+        $value = $this->getData('max_cod');
+        if (is_numeric($value)) {
+            return (float)$value;
+        }
+
+        return null;
+    }
+
+    /**
      * @return bool
      */
     public function getEnabled(): bool

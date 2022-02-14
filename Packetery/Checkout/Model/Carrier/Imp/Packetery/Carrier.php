@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Packetery\Checkout\Model\Carrier\Imp\Packetery;
 
+use Packetery\Checkout\Model\Carrier\Config\AbstractConfig;
+
 class Carrier extends \Packetery\Checkout\Model\Carrier\AbstractCarrier
 {
     /** @var bool  */
@@ -34,5 +36,12 @@ class Carrier extends \Packetery\Checkout\Model\Carrier\AbstractCarrier
      */
     public function getPacketeryBrain(): \Packetery\Checkout\Model\Carrier\AbstractBrain {
         return $this->packeteryBrain;
+    }
+
+    /**
+     * @return \Packetery\Checkout\Model\Carrier\Imp\Packetery\Config
+     */
+    public function getPacketeryConfig(): AbstractConfig {
+        return $this->packeteryConfig;
     }
 }

@@ -126,3 +126,5 @@
 "Latitude","Zeměpisná šířka"
 "Is address validated?","Je adresa validní?"
 "Order detail","Detail objednávky"
+"Selected payment method is not allowed because grand total exceeds limit %1.","Zvolená platební metoda není povolena, protože překračuje maximální hodnotu objednávky %1."
+"Max COD","Maximální výše dobírky"

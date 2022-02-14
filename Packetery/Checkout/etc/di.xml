@@ -39,4 +39,8 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Payment\Model\MethodList">
+        <plugin name="packetery_restrict_payment_methods" type="Packetery\Checkout\Model\Payment\MethodList" sortOrder="99"/>
+    </type>
 </config>

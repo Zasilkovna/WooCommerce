@@ -82,6 +82,10 @@ class MultiSave extends Action implements HttpPostActionInterface
                 $pricingRule['free_shipment'] = null; // empty string is casted to 0
             }
 
+            if (empty($pricingRule['max_cod']) && !is_numeric($pricingRule['max_cod'])) {
+                $pricingRule['max_cod'] = null;
+            }
+
             $hybridCarrier = $this->carrierFacade->createHybridCarrier($carrierCode, $carrierId, $method, $country);
             $carrierPublicName = $hybridCarrier->getFieldsetTitle();
 

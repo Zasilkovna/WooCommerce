@@ -28,12 +28,24 @@ class ShippingRateCode
     }
 
     /**
-     * @param string $carrierCode
-     * @param string $methodCode
+     * @param string $code Carrier code or rate code.
+     * @return bool
+     */
+    public static function isPacketery(string $code): bool {
+        return strpos($code, AbstractBrain::PREFIX) !== false;
+    }
+
+    /**
+     * @param string $rateCode
      * @return static
      */
-    public static function fromStrings(string $carrierCode, string $methodCode): self {
-        return new self($carrierCode, MethodCode::fromString($methodCode));
+    public static function fromString(string $rateCode): self {
+        if (!self::isPacketery($rateCode)) {
+            throw new \Exception('Unsupported carrier code. Only packetery carrier codes are supported.');
+        }
+
+        $parts = explode('_', $rateCode, 2);
+        return new self($parts[0], MethodCode::fromString($parts[1]));
     }
 
     /**
