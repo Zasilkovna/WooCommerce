@@ -79,7 +79,7 @@ class Repository {
 				`currency` varchar(255) NOT NULL,
 				`max_weight` float NOT NULL,
 				`deleted` boolean NOT NULL,
-				UNIQUE (`id`)
+				PRIMARY KEY (`id`)
 			) ' . $wpdb->get_charset_collate()
 		);
 	}
