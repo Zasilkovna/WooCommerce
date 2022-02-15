@@ -108,6 +108,8 @@ class Page {
 	 * Registers WP callbacks.
 	 */
 	public function register(): void {
+		$iconUrl = 'data:image/png;base64,';
+
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		add_menu_page(
 			__( 'Packeta', 'packetery' ),
@@ -115,7 +117,7 @@ class Page {
 			'manage_options',
 			self::SLUG,
 			'',
-			'dashicons-schedule',
+			$iconUrl,
 			55 // todo Move item to last position in menu.
 		);
 		add_submenu_page(
