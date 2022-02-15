@@ -178,12 +178,6 @@ class Checkout {
 	 * Renders widget button and information about chosen pickup point
 	 */
 	public function renderWidgetButton(): void {
-		$country = $this->getCustomerCountry();
-		if ( ! $country ) {
-			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/checkout/country-error.latte' ); // TODO: Figure out reason. Under what circumstances customer country is empty.
-			return;
-		}
-
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
