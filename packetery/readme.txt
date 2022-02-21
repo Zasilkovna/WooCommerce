@@ -73,6 +73,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = x.x.x =
 * Added: Packeta packet status synchronization via WP cron
+* Fixed: widget button now shows even if no country was selected on checkout page load
 
 = 1.1.2 =
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected
