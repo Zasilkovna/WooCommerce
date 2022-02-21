@@ -144,8 +144,9 @@ class LabelPrint {
 	public function render(): void {
 		$form = $this->createForm( $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() ) );
 
-		$count    = 0;
-		$orderIds = get_transient( self::getOrderIdsTransientName() );
+		$count           = 0;
+		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
+		$orderIds        = $this->getPacketIdsFromTransient( $isCarrierLabels );
 		if ( $orderIds ) {
 			$count = count( $orderIds );
 		}
