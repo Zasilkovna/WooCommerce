@@ -77,7 +77,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Added: primary key for carrier table
 * Fixed: label print page now shows the correct number of labels that will be printed
 * Fixed: widget button now shows even if no country was selected on checkout page load
-* Fixed: asset dependencies are now specified
+* Fixed: packetery-checkout and packetery-admin-country-carrier asset dependencies are now specified
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free
