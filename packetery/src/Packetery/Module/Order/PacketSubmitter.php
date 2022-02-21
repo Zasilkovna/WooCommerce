@@ -82,7 +82,13 @@ class PacketSubmitter {
 	 * @param array    $resultsCounter Array with results.
 	 */
 	public function submitPacket( WC_Order $order, array &$resultsCounter ): void {
-		$commonEntity    = $this->orderFactory->create( $order );
+		$commonEntity = $this->orderFactory->create( $order );
+		if ( null === $commonEntity ) {
+			$resultsCounter['ignored'] ++;
+
+			return;
+		}
+
 		$orderData       = $order->get_data();
 		$shippingMethods = $order->get_shipping_methods();
 		$shippingMethod  = reset( $shippingMethods );
