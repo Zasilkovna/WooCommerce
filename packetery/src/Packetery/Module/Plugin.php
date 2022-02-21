@@ -504,7 +504,7 @@ class Plugin {
 	 */
 	public function enqueueFrontAssets(): void {
 		$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-		$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false );
+		$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false, [ 'jquery' ] );
 	}
 
 	/**
@@ -513,7 +513,7 @@ class Plugin {
 	public function enqueueAdminAssets(): void {
 		$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
 		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
-		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true );
+		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery' ] );
 		wp_enqueue_style( 'dashicons' );
 		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );

@@ -71,6 +71,8 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= x.x.x =
+* Fixed: asset dependencies are now specified
 
 = 1.1.2 =
 * Added: Packeta packet status synchronization via WP cron
