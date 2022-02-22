@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Module\EntityFactory;
 use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
@@ -48,18 +49,27 @@ class Controller extends WP_REST_Controller {
 	private $packetSubmitter;
 
 	/**
+	 * Order factory.
+	 *
+	 * @var EntityFactory\Order
+	 */
+	private $orderFactory;
+
+	/**
 	 * Controller constructor.
 	 *
-	 * @param Modal            $orderModal       Modal.
-	 * @param ControllerRouter $controllerRouter Router.
-	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
+	 * @param Modal               $orderModal       Modal.
+	 * @param ControllerRouter    $controllerRouter Router.
+	 * @param PacketSubmitter     $packetSubmitter  Packet submitter.
+	 * @param EntityFactory\Order $orderFactory     Order factory.
 	 */
-	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter, PacketSubmitter $packetSubmitter ) {
+	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter, PacketSubmitter $packetSubmitter, EntityFactory\Order $orderFactory ) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
 		$this->namespace       = $controllerRouter->getNamespace();
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
+		$this->orderFactory    = $orderFactory;
 	}
 
 	/**
@@ -149,7 +159,11 @@ class Controller extends WP_REST_Controller {
 		}
 
 		$values = $form->getValues( 'array' );
-		update_post_meta( $orderId, Order\Entity::META_WEIGHT, $values[ Order\Entity::META_WEIGHT ] );
+		if ( ! is_numeric( $values[ Order\Entity::META_WEIGHT ] ) ) {
+			$values[ Order\Entity::META_WEIGHT ] = $this->orderFactory->calculateOrderWeight( wc_get_order( $orderId ) );
+		}
+
+		update_post_meta( $orderId, Order\Entity::META_WEIGHT, number_format( $values[ Order\Entity::META_WEIGHT ], 3, '.', '' ) );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data']    = [

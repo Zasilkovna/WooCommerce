@@ -80,6 +80,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: javascript dependencies added where missing
 * Fixed: non-Packeta order submit to Packeta API no longer creates PHP error
 * Fixed: label printing now accepts trashed orders
+* Fixed: Packeta order modal now dynamically calculates weight if no weight is provided
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free

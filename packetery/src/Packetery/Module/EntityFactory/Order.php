@@ -157,7 +157,7 @@ class Order {
 	 *
 	 * @return float
 	 */
-	private function calculateOrderWeight( WC_Order $order ): float {
+	public function calculateOrderWeight( WC_Order $order ): float {
 		$weight = 0;
 		foreach ( $order->get_items() as $item ) {
 			$quantity      = $item->get_quantity();
