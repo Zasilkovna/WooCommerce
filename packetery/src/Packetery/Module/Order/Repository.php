@@ -48,7 +48,7 @@ class Repository {
 			[
 				'post_type'   => 'shop_order',
 				'post__in'    => $orderIds,
-				'post_status' => 'any',
+				'post_status' => [ 'any', 'trash' ],
 				'nopaging'    => true,
 			]
 		);

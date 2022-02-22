@@ -79,6 +79,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: widget button now shows even if no country was selected on checkout page load
 * Fixed: javascript dependencies added where missing
 * Fixed: non-Packeta order submit to Packeta API no longer creates PHP error
+* Fixed: label printing now allows trashed orders
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free
