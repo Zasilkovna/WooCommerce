@@ -71,13 +71,13 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
-
 = 1.1.2 =
 * Added: Packeta packet status synchronization via WP cron
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected
 * Added: primary key for carrier table
 * Fixed: label print page now shows the correct number of labels that will be printed
 * Fixed: widget button now shows even if no country was selected on checkout page load
+* Fixed: non-Packeta order submit to Packeta API no longer creates PHP error
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free
