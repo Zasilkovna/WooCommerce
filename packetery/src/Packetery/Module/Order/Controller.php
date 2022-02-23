@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Module\EntityFactory;
 use Packetery\Module\Order;
+use Packetery\Module\Plugin;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -163,7 +164,7 @@ class Controller extends WP_REST_Controller {
 			$values[ Order\Entity::META_WEIGHT ] = $this->orderFactory->calculateOrderWeight( wc_get_order( $orderId ) );
 		}
 
-		update_post_meta( $orderId, Order\Entity::META_WEIGHT, number_format( $values[ Order\Entity::META_WEIGHT ], 3, '.', '' ) );
+		update_post_meta( $orderId, Order\Entity::META_WEIGHT, Plugin::simplifyWeight( $values[ Order\Entity::META_WEIGHT ] ) );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data']    = [

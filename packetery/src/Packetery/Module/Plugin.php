@@ -695,4 +695,31 @@ class Plugin {
 	public static function getAppIdentity(): string {
 		return 'Woocommerce: ' . get_bloginfo( 'version' ) . ', WordPress: ' . WC_VERSION . ', plugin Packeta: ' . self::VERSION;
 	}
+
+	/**
+	 * Simplifies float value to have max decimal places.
+	 *
+	 * @param float|null $value            Value.
+	 * @param int        $maxDecimalPlaces Max decimal places.
+	 *
+	 * @return float|null
+	 */
+	public static function simplifyFloat( ?float $value, int $maxDecimalPlaces ): ?float {
+		if ( null === $value ) {
+			return null;
+		}
+
+		return (float) number_format( $value, $maxDecimalPlaces, '.', '' );
+	}
+
+	/**
+	 * Simplifies weight.
+	 *
+	 * @param float|null $weight Weight.
+	 *
+	 * @return float|null
+	 */
+	public static function simplifyWeight( ?float $weight ): ?float {
+		return self::simplifyFloat( $weight, 3 );
+	}
 }
