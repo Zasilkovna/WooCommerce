@@ -163,6 +163,15 @@ class Provider {
 	}
 
 	/**
+	 * Transform shipping address to contain pickup point address?
+	 *
+	 * @return bool
+	 */
+	public function replaceShippingAddressWithPickupPointAddress(): bool {
+		return (bool) $this->get( 'replace_shipping_address_with_pickup_point_address' );
+	}
+
+	/**
 	 * Provides available labels.
 	 *
 	 * @return array[]

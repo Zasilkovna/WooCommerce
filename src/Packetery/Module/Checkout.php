@@ -356,6 +356,8 @@ class Checkout {
 	 * Saves pickup point and other Packeta information to order.
 	 *
 	 * @param int $orderId Order id.
+	 *
+	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function updateOrderMeta( int $orderId ): void {
 		$chosenMethod = $this->getChosenMethod();
@@ -373,6 +375,8 @@ class Checkout {
 		}
 
 		if ( $this->isPickupPointOrder() ) {
+			$wcOrder = wc_get_order( $orderId );
+
 			foreach ( self::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
 				if ( ! isset( $post[ $attrName ] ) ) {
@@ -390,7 +394,22 @@ class Checkout {
 				if ( $saveMeta ) {
 					$propsToSave[ $attrName ] = $attrValue;
 				}
+
+				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
+					if ( Entity::META_POINT_STREET === $attrName ) {
+						$wcOrder->set_shipping_address_1( $attrValue );
+						$wcOrder->set_shipping_address_2( '' );
+					}
+					if ( Entity::META_POINT_CITY === $attrName ) {
+						$wcOrder->set_shipping_city( $attrValue );
+					}
+					if ( Entity::META_POINT_ZIP === $attrName ) {
+						$wcOrder->set_shipping_postcode( $attrValue );
+					}
+				}
 			}
+
+			$wcOrder->save();
 		}
 
 		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );

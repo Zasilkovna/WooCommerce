@@ -248,6 +248,7 @@ class Metabox {
 	 * @param mixed $orderId Order id.
 	 *
 	 * @return mixed Order id.
+	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function save_fields( $orderId ) {
 		$order = $this->orderRepository->getById( $orderId );
@@ -288,6 +289,7 @@ class Metabox {
 		];
 
 		if ( $values[ Checkout::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
+			$wcOrder = wc_get_order( $post_id );
 			foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
@@ -296,7 +298,21 @@ class Metabox {
 				}
 
 				$propsToSave[ $pickupPointAttr['name'] ] = $value;
+
+				if ( $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
+					if ( Entity::META_POINT_STREET === $pickupPointAttr['name'] ) {
+						$wcOrder->set_shipping_address_1( $value );
+						$wcOrder->set_shipping_address_2( '' );
+					}
+					if ( Entity::META_POINT_CITY === $pickupPointAttr['name'] ) {
+						$wcOrder->set_shipping_city( $value );
+					}
+					if ( Entity::META_POINT_ZIP === $pickupPointAttr['name'] ) {
+						$wcOrder->set_shipping_postcode( $value );
+					}
+				}
 			}
+			$wcOrder->save();
 		}
 
 		$orderSize = $order->getSize();

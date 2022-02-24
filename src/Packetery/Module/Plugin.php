@@ -209,6 +209,13 @@ class Plugin {
 	private $logRepository;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox            $order_metabox        Order metabox.
@@ -235,6 +242,7 @@ class Plugin {
 	 * @param Upgrade                  $upgrade              Plugin upgrade.
 	 * @param QueryProcessor           $queryProcessor       QueryProcessor.
 	 * @param Log\Repository           $logRepository        Log repository.
+	 * @param Options\Provider          $optionsProvider      Options provider.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -260,7 +268,8 @@ class Plugin {
 		Order\Repository $orderRepository,
 		Upgrade $upgrade,
 		QueryProcessor $queryProcessor,
-		Log\Repository $logRepository
+		Log\Repository $logRepository,
+		Options\Provider $optionsProvider
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -287,6 +296,7 @@ class Plugin {
 		$this->upgrade              = $upgrade;
 		$this->queryProcessor       = $queryProcessor;
 		$this->logRepository        = $logRepository;
+		$this->optionsProvider      = $optionsProvider;
 	}
 
 	/**
@@ -484,6 +494,7 @@ class Plugin {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
 			[
+				'replaceShippingAddressWithPickupPointAddress' => $this->optionsProvider->replaceShippingAddressWithPickupPointAddress(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
 			]
@@ -511,6 +522,7 @@ class Plugin {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
 			[
+				'replaceShippingAddressWithPickupPointAddress' => $this->optionsProvider->replaceShippingAddressWithPickupPointAddress(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
 			]
