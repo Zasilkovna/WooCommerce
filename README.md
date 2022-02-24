@@ -143,6 +143,8 @@ Cenová pravidla jsou vytvořena jako nedostupná, bez nastavené maximální hm
 
 ### Konfigurace a návod k použití
 
+[Uživatelská dokumentace](https://github.com/Zasilkovna/magento2/wiki/U%C5%BEivatelsk%C3%A1-dokumentace)
+
 ### Informace o modulu
 
 #### Podporované jazyky:
