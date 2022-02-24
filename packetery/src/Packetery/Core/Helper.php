@@ -19,6 +19,33 @@ class Helper {
 	public const TRACKING_URL = 'https://tracking.packeta.com/?id=%s';
 
 	/**
+	 * Simplifies weight.
+	 *
+	 * @param float|null $weight Weight.
+	 *
+	 * @return float|null
+	 */
+	public static function simplifyWeight( ?float $weight ): ?float {
+		return self::simplifyFloat( $weight, 3 );
+	}
+
+	/**
+	 * Simplifies float value to have max decimal places.
+	 *
+	 * @param float|null $value            Value.
+	 * @param int        $maxDecimalPlaces Max decimal places.
+	 *
+	 * @return float|null
+	 */
+	public static function simplifyFloat( ?float $value, int $maxDecimalPlaces ): ?float {
+		if ( null === $value ) {
+			return null;
+		}
+
+		return (float) number_format( $value, $maxDecimalPlaces, '.', '' );
+	}
+
+	/**
 	 * Returns tracking URL.
 	 *
 	 * @param string $packet_id Packet ID.
