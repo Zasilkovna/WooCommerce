@@ -17,6 +17,7 @@ use Packetery\Module\EntityFactory;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order as ModuleOrder;
 use Packetery\Module\Address as ModuleAddress;
+use Packetery\Core\Helper;
 use WC_Order;
 
 /**
@@ -101,7 +102,7 @@ class Order {
 			$contactInfo['first_name'],
 			$contactInfo['last_name'],
 			$moduleOrder->getTotalPrice(),
-			$orderWeight,
+			Helper::simplifyWeight( $orderWeight ),
 			$this->optionsProvider->get_sender(),
 			$moduleOrder->getCarrierId()
 		);
@@ -157,7 +158,7 @@ class Order {
 	 *
 	 * @return float
 	 */
-	private function calculateOrderWeight( WC_Order $order ): float {
+	public function calculateOrderWeight( WC_Order $order ): float {
 		$weight = 0;
 		foreach ( $order->get_items() as $item ) {
 			$quantity      = $item->get_quantity();

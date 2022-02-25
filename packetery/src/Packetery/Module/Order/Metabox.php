@@ -272,7 +272,7 @@ class Metabox {
 			return $post_id;
 		}
 
-		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? number_format( $values[ Entity::META_WEIGHT ], 4, '.', '' ) : '' ) );
+		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? Helper::simplifyWeight( $values[ Entity::META_WEIGHT ] ) : '' ) );
 		update_post_meta( $post_id, Entity::META_WIDTH, ( is_numeric( $values[ Entity::META_WIDTH ] ) ? number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : '' ) );
 		update_post_meta( $post_id, Entity::META_LENGTH, ( is_numeric( $values[ Entity::META_LENGTH ] ) ? number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : '' ) );
 		update_post_meta( $post_id, Entity::META_HEIGHT, ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : '' ) );
