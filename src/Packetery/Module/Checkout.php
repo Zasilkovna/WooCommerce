@@ -375,7 +375,7 @@ class Checkout {
 		}
 
 		if ( $this->isPickupPointOrder() ) {
-			$wcOrder = wc_get_order( $orderId );
+			$moduleOrder = new Entity( wc_get_order( $orderId ) );
 
 			foreach ( self::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
@@ -396,20 +396,11 @@ class Checkout {
 				}
 
 				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
-					if ( Entity::META_POINT_STREET === $attrName ) {
-						$wcOrder->set_shipping_address_1( $attrValue );
-						$wcOrder->set_shipping_address_2( '' );
-					}
-					if ( Entity::META_POINT_CITY === $attrName ) {
-						$wcOrder->set_shipping_city( $attrValue );
-					}
-					if ( Entity::META_POINT_ZIP === $attrName ) {
-						$wcOrder->set_shipping_postcode( $attrValue );
-					}
+					$moduleOrder->updateShippingAddressAttribute( $attrName, $attrValue );
 				}
 			}
 
-			$wcOrder->save();
+			$moduleOrder->save();
 		}
 
 		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
