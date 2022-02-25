@@ -5,6 +5,7 @@
       - Added: visualization of validated address in Packeta order detail
       - Fixed: order list column selection reset button now shows all columns on click
       - Added: max COD limit for each pricing rule
+      - Added: SK translations
 
 2.2.2 - Added: email template variables
       - Added: order grid filtering and sorting by order creation
