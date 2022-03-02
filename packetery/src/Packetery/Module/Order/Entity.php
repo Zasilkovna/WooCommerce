@@ -44,12 +44,29 @@ class Entity {
 	private $order;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderRepository;
+
+	/**
+	 * Packetery data.
+	 *
+	 * @var array|null
+	 */
+	private $packeteryData;
+
+	/**
 	 * Entity constructor.
 	 *
-	 * @param WC_Order $order Order.
+	 * @param WC_Order     $order           Order.
+	 * @param DbRepository $orderRepository Order repository.
 	 */
-	public function __construct( WC_Order $order ) {
-		$this->order = $order;
+	public function __construct( WC_Order $order, DbRepository $orderRepository ) {
+		$this->order           = $order;
+		$this->orderRepository = $orderRepository;
+		$this->packeteryData   = $this->orderRepository->getById( $this->order->get_id() );
 	}
 
 	/**
@@ -60,7 +77,10 @@ class Entity {
 	 * @return string|null
 	 */
 	private function getMetaAsNullableString( string $key ): ?string {
-		$value = $this->order->get_meta( $key, true );
+		if ( null === $this->packeteryData ) {
+			return null;
+		}
+		$value = $this->packeteryData[ $this->orderRepository->removePrefix( $key ) ];
 
 		return ( ( null !== $value && '' !== $value ) ? (string) $value : null );
 	}
@@ -73,7 +93,10 @@ class Entity {
 	 * @return float|null
 	 */
 	private function getMetaAsNullableFloat( string $key ): ?float {
-		$value = $this->order->get_meta( $key, true );
+		if ( null === $this->packeteryData ) {
+			return null;
+		}
+		$value = $this->packeteryData[ $this->orderRepository->removePrefix( $key ) ];
 
 		return ( ( null !== $value && '' !== $value ) ? (float) $value : null );
 	}

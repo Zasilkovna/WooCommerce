@@ -57,20 +57,35 @@ class Controller extends WP_REST_Controller {
 	private $orderFactory;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param Modal               $orderModal       Modal.
 	 * @param ControllerRouter    $controllerRouter Router.
 	 * @param PacketSubmitter     $packetSubmitter  Packet submitter.
 	 * @param EntityFactory\Order $orderFactory     Order factory.
+	 * @param Order\DbRepository  $orderRepository  Order repository.
 	 */
-	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter, PacketSubmitter $packetSubmitter, EntityFactory\Order $orderFactory ) {
+	public function __construct(
+		Modal $orderModal,
+		ControllerRouter $controllerRouter,
+		PacketSubmitter $packetSubmitter,
+		EntityFactory\Order $orderFactory,
+		Order\DbRepository $orderRepository
+	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
 		$this->namespace       = $controllerRouter->getNamespace();
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
 		$this->orderFactory    = $orderFactory;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -146,7 +161,7 @@ class Controller extends WP_REST_Controller {
 		$data            = [];
 		$parameters      = $request->get_body_params();
 		$packeteryWeight = $parameters['packeteryWeight'];
-		$orderId         = $parameters['orderId'];
+		$orderId         = (int) $parameters['orderId'];
 
 		$form = $this->orderModal->createForm();
 		$form->setValues(
@@ -164,7 +179,7 @@ class Controller extends WP_REST_Controller {
 			$values[ Order\Entity::META_WEIGHT ] = $this->orderFactory->calculateOrderWeight( wc_get_order( $orderId ) );
 		}
 
-		update_post_meta( $orderId, Order\Entity::META_WEIGHT, Helper::simplifyWeight( $values[ Order\Entity::META_WEIGHT ] ) );
+		$this->orderRepository->update( [ Order\Entity::META_WEIGHT => Helper::simplifyWeight( $values[ Order\Entity::META_WEIGHT ] ) ], $orderId );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data']    = [

@@ -84,6 +84,13 @@ class Metabox {
 	private $formFactory;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine              $latte_engine    PacketeryLatte engine.
@@ -93,6 +100,7 @@ class Metabox {
 	 * @param EntityFactory\Order $orderFactory    Order factory.
 	 * @param Options\Provider    $optionsProvider Options provider.
 	 * @param FormFactory         $formFactory     Form factory.
+	 * @param DbRepository        $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -101,7 +109,8 @@ class Metabox {
 		Request $request,
 		EntityFactory\Order $orderFactory,
 		Options\Provider $optionsProvider,
-		FormFactory $formFactory
+		FormFactory $formFactory,
+		DbRepository $orderRepository
 	) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
@@ -110,6 +119,7 @@ class Metabox {
 		$this->orderFactory    = $orderFactory;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -237,25 +247,25 @@ class Metabox {
 	/**
 	 * Saves added packetery form fields to order metas.
 	 *
-	 * @param mixed $post_id Order id.
+	 * @param mixed $orderId Order id.
 	 *
 	 * @return mixed Order id.
 	 */
-	public function save_fields( $post_id ) {
-		$order = $this->orderFactory->fromPostId( $post_id );
+	public function save_fields( $orderId ) {
+		$order = $this->orderFactory->fromPostId( $orderId );
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			null === $this->request->getPost( 'packetery_order_metabox_nonce' ) ||
 			null === $order
 		) {
-			return $post_id;
+			return $orderId;
 		}
 
 		if ( false === $this->order_form->isValid() ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
 			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packetery' ), MessageManager::TYPE_ERROR );
 
-			return $post_id;
+			return $orderId;
 		}
 
 		$values = $this->order_form->getValues( 'array' );
@@ -263,19 +273,21 @@ class Metabox {
 		if ( ! wp_verify_nonce( $values['packetery_order_metabox_nonce'] ) ) {
 			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packetery' ), MessageManager::TYPE_ERROR );
 
-			return $post_id;
+			return $orderId;
 		}
 
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		if ( ! current_user_can( 'edit_post', $orderId ) ) {
 			$this->message_manager->flash_message( __( 'You are not allowed to edit posts!', 'packetery' ), MessageManager::TYPE_ERROR );
 
-			return $post_id;
+			return $orderId;
 		}
 
-		update_post_meta( $post_id, Entity::META_WEIGHT, ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? Helper::simplifyWeight( $values[ Entity::META_WEIGHT ] ) : '' ) );
-		update_post_meta( $post_id, Entity::META_WIDTH, ( is_numeric( $values[ Entity::META_WIDTH ] ) ? number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_LENGTH, ( is_numeric( $values[ Entity::META_LENGTH ] ) ? number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : '' ) );
-		update_post_meta( $post_id, Entity::META_HEIGHT, ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : '' ) );
+		$propsToSave = [
+			Entity::META_WEIGHT => ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? Helper::simplifyWeight( $values[ Entity::META_WEIGHT ] ) : '' ),
+			Entity::META_WIDTH  => ( is_numeric( $values[ Entity::META_WIDTH ] ) ? number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : '' ),
+			Entity::META_LENGTH => ( is_numeric( $values[ Entity::META_LENGTH ] ) ? number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : '' ),
+			Entity::META_HEIGHT => ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : '' ),
+		];
 
 		if ( $values[ Entity::META_POINT_ID ] && $order->isPickupPointDelivery() ) {
 			foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
@@ -285,10 +297,14 @@ class Metabox {
 					$value = ( ! empty( $values[ Entity::META_CARRIER_ID ] ) ? $values[ Entity::META_CARRIER_ID ] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 				}
 
-				update_post_meta( $post_id, $pickupPointAttr['name'], $value );
+				$propsToSave[ $pickupPointAttr['name'] ] = $value;
 			}
 		}
 
-		return $post_id;
+		if ( $propsToSave ) {
+			$this->orderRepository->update( $propsToSave, $orderId );
+		}
+
+		return $orderId;
 	}
 }

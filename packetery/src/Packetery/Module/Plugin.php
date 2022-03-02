@@ -204,6 +204,20 @@ class Plugin {
 	private $request;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Order\DbRepository
+	 */
+	private $orderRepository;
+
+	/**
+	 * Plugin upgrade.
+	 *
+	 * @var Upgrade
+	 */
+	private $upgrade;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox             $order_metabox        Order metabox.
@@ -229,6 +243,8 @@ class Plugin {
 	 * @param EntityFactory\Order       $orderFactory         Order factory.
 	 * @param Order\PacketSynchronizer  $packetSynchronizer   Packet synchronizer.
 	 * @param Request                   $request              HTTP request.
+	 * @param Order\DbRepository        $orderRepository      Order repository.
+	 * @param Upgrade                   $upgrade              Plugin upgrade.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -253,7 +269,9 @@ class Plugin {
 		Order\CollectionPrint $orderCollectionPrint,
 		EntityFactory\Order $orderFactory,
 		Order\PacketSynchronizer $packetSynchronizer,
-		Request $request
+		Request $request,
+		Order\DbRepository $orderRepository,
+		Upgrade $upgrade
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -279,6 +297,8 @@ class Plugin {
 		$this->orderFactory         = $orderFactory;
 		$this->packetSynchronizer   = $packetSynchronizer;
 		$this->request              = $request;
+		$this->orderRepository      = $orderRepository;
+		$this->upgrade              = $upgrade;
 	}
 
 	/**
@@ -319,10 +339,13 @@ class Plugin {
 
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
-		add_filter( 'request', [ $this->gridExtender, 'addQueryVarsToRequest' ], PHP_INT_MAX );
+		add_filter( 'posts_clauses', [ $this->orderRepository, 'postClausesFilter' ], 10, 2 );
+
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );
-		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->gridExtender, 'handleCustomQueryVar' ], 10, 2 );
+
+		add_action( 'plugins_loaded', [ $this->upgrade, 'check' ] );
+		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->upgrade, 'handleCustomQueryVar' ], 10, 2 );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
@@ -629,6 +652,21 @@ class Plugin {
 			$this->logger->add( $record );
 		}
 
+		$createResult = $this->orderRepository->createTable();
+		if ( false === $createResult ) {
+			$lastError = $wpdb->last_error;
+			$this->message_manager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), 'error' );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'orderTableNotCreated', 'packetery' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
+		}
+
 		$versionCheck = get_option( 'packetery_version' );
 		if ( false === $versionCheck ) {
 			update_option( 'packetery_version', self::VERSION );
@@ -654,6 +692,9 @@ class Plugin {
 
 		$carrierRepository = $container->getByType( Carrier\Repository::class );
 		$carrierRepository->drop();
+
+		$orderRepository = $container->getByType( Order\DbRepository::class );
+		$orderRepository->drop();
 
 		$logEntries = get_posts(
 			[

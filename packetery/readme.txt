@@ -83,6 +83,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: Packeta order modal now dynamically calculates weight if no weight is provided
 * Updated: only 3 decimal places are accepted for order weight
 * Updated: JavaScript and CSS files are now loading conditionally
+* Updated: Packeta order meta data moved from posts to custom table
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free

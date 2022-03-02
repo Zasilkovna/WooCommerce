@@ -46,3 +46,5 @@ services:
 	- Packetery\Module\Order\PacketSynchronizer
 	requestFactory: PacketeryNette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
+	- Packetery\Module\Upgrade
+	- Packetery\Module\Order\DbRepository

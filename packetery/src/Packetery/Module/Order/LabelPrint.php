@@ -89,6 +89,13 @@ class LabelPrint {
 	private $logger;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderDbRepository;
+
+	/**
 	 * LabelPrint constructor.
 	 *
 	 * @param Engine         $latteEngine     Latte Engine.
@@ -99,6 +106,7 @@ class LabelPrint {
 	 * @param MessageManager $messageManager  Message Manager.
 	 * @param Repository     $orderRepository Order repository.
 	 * @param Log\ILogger    $logger          Logger.
+	 * @param DbRepository   $orderDbRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -108,16 +116,18 @@ class LabelPrint {
 		Client $soapApiClient,
 		MessageManager $messageManager,
 		Repository $orderRepository,
-		Log\ILogger $logger
+		Log\ILogger $logger,
+		DbRepository $orderDbRepository
 	) {
-		$this->latteEngine     = $latteEngine;
-		$this->optionsProvider = $optionsProvider;
-		$this->formFactory     = $formFactory;
-		$this->httpRequest     = $httpRequest;
-		$this->soapApiClient   = $soapApiClient;
-		$this->messageManager  = $messageManager;
-		$this->orderRepository = $orderRepository;
-		$this->logger          = $logger;
+		$this->latteEngine       = $latteEngine;
+		$this->optionsProvider   = $optionsProvider;
+		$this->formFactory       = $formFactory;
+		$this->httpRequest       = $httpRequest;
+		$this->soapApiClient     = $soapApiClient;
+		$this->messageManager    = $messageManager;
+		$this->orderRepository   = $orderRepository;
+		$this->logger            = $logger;
+		$this->orderDbRepository = $orderDbRepository;
 	}
 
 	/**
@@ -311,7 +321,7 @@ class LabelPrint {
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
-				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
+				$this->orderDbRepository->update( [ Entity::META_IS_LABEL_PRINTED => true ], $orderId );
 			}
 
 			$record         = new Log\Record();
@@ -352,8 +362,13 @@ class LabelPrint {
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
-				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
-				update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
+				$this->orderDbRepository->update(
+					[
+						Entity::META_IS_LABEL_PRINTED => true,
+						Entity::META_CARRIER_NUMBER   => $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'],
+					],
+					$orderId
+				);
 			}
 
 			$record         = new Log\Record();

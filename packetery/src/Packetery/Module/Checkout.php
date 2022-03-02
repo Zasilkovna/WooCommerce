@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use Packetery\Module\Carrier\Repository;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
@@ -115,7 +114,7 @@ class Checkout {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository Carrier repository.
+	 * @var Carrier\Repository Carrier repository.
 	 */
 	private $carrierRepository;
 
@@ -134,20 +133,36 @@ class Checkout {
 	private $addressRepository;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Order\DbRepository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine             $latte_engine      PacketeryLatte engine.
 	 * @param Provider           $options_provider  Options provider.
-	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 * @param Request            $httpRequest       Http request.
 	 * @param Address\Repository $addressRepository Address repository.
+	 * @param Order\DbRepository $orderRepository   Order repository.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository ) {
+	public function __construct(
+		Engine $latte_engine,
+		Provider $options_provider,
+		Carrier\Repository $carrierRepository,
+		Request $httpRequest,
+		Address\Repository $addressRepository,
+		Order\DbRepository $orderRepository
+	) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
 		$this->addressRepository = $addressRepository;
+		$this->orderRepository   = $orderRepository;
 	}
 
 	/**
@@ -196,7 +211,7 @@ class Checkout {
 	 */
 	public static function getWidgetCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
 		if ( $isPickupPoints ) {
-			return ( is_numeric( $carrierId ) ? $carrierId : Repository::INTERNAL_PICKUP_POINTS_ID );
+			return ( is_numeric( $carrierId ) ? $carrierId : Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 		}
 
 		return null;
@@ -354,10 +369,11 @@ class Checkout {
 
 		$post = $this->httpRequest->getPost();
 
+		$propsToSave = [ 'id' => $orderId ];
 		// Save carrier id for home delivery (we got no id from widget).
 		$carrierId = $this->getCarrierId( $chosenMethod );
 		if ( empty( $post[ Entity::META_CARRIER_ID ] ) && $carrierId ) {
-			update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
+			$propsToSave[ Entity::META_CARRIER_ID ] = $carrierId;
 		}
 
 		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
@@ -380,10 +396,11 @@ class Checkout {
 					$saveMeta = false;
 				}
 				if ( $saveMeta ) {
-					update_post_meta( $orderId, $attrName, $attrValue );
+					$propsToSave[ $attrName ] = $attrValue;
 				}
 			}
 		}
+		$this->orderRepository->insert( $propsToSave );
 
 		if ( $this->isHomeDeliveryOrder() ) {
 			$address = [];
@@ -639,7 +656,7 @@ class Checkout {
 
 		$carrierId = str_replace( self::CARRIER_PREFIX, '', $chosenMethod );
 		if ( strpos( $carrierId, 'zpoint' ) === 0 ) {
-			return Repository::INTERNAL_PICKUP_POINTS_ID;
+			return Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
 		}
 
 		return $carrierId;

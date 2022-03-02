@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
-use Packetery\Module\Carrier\Repository;
 use Packetery\Module\EntityFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -32,7 +31,7 @@ class GridExtender {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository
+	 * @var Carrier\Repository
 	 */
 	private $carrierRepository;
 
@@ -65,21 +64,31 @@ class GridExtender {
 	private $orderControllerRouter;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderRepository;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param Helper              $helper                Helper.
-	 * @param Repository          $carrierRepository     Carrier repository.
+	 * @param Carrier\Repository  $carrierRepository     Carrier repository.
 	 * @param Engine              $latteEngine           Latte Engine.
 	 * @param Request             $httpRequest           Http Request.
 	 * @param EntityFactory\Order $entityFactory         Order factory.
 	 * @param ControllerRouter    $orderControllerRouter Order controller router.
+	 * @param DbRepository        $orderRepository       Order repository.
 	 */
 	public function __construct(
 		Helper $helper,
-		Repository $carrierRepository,
+		Carrier\Repository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
-		EntityFactory\Order $entityFactory, ControllerRouter $orderControllerRouter
+		EntityFactory\Order $entityFactory,
+		ControllerRouter $orderControllerRouter,
+		DbRepository $orderRepository
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;
@@ -87,6 +96,7 @@ class GridExtender {
 		$this->httpRequest           = $httpRequest;
 		$this->entityFactory         = $entityFactory;
 		$this->orderControllerRouter = $orderControllerRouter;
+		$this->orderRepository       = $orderRepository;
 	}
 
 	/**
@@ -168,102 +178,6 @@ class GridExtender {
 	}
 
 	/**
-	 * Adds query vars to request query vars.
-	 *
-	 * @param array $queryVars Query vars.
-	 *
-	 * @return array
-	 */
-	public function addQueryVarsToRequest( array $queryVars ): array {
-		global $typenow;
-
-		if ( in_array( $typenow, wc_get_order_types( 'order-meta-boxes' ), true ) ) {
-			$metaVars = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $this->httpRequest->getQuery() );
-			if ( $metaVars ) {
-				// @codingStandardsIgnoreStart
-				$queryVars['meta_query'] = $metaVars;
-				// @codingStandardsIgnoreEnd
-			}
-		}
-
-		return $queryVars;
-	}
-
-	/**
-	 * Transforms custom query var. There are two custom variables: "packetery_to_submit" and "packetery_to_print".
-	 *
-	 * @param array $queryVars Query vars.
-	 * @param array $get       Input values.
-	 *
-	 * @return array
-	 */
-	public function handleCustomQueryVar( array $queryVars, array $get ): array {
-		$metaQuery = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $get );
-		if ( $metaQuery ) {
-			// @codingStandardsIgnoreStart
-			$queryVars['meta_query'] = $metaQuery;
-			// @codingStandardsIgnoreEnd
-		}
-
-		return $queryVars;
-	}
-
-	/**
-	 * Adds query vars to fetch order list.
-	 *
-	 * @param array $queryVars Query vars.
-	 * @param array $get Get parameters.
-	 *
-	 * @return array
-	 */
-	public function addQueryVars( array $queryVars, array $get ): array {
-		if ( ! empty( $get[ Entity::META_CARRIER_ID ] ) ) {
-			$queryVars[] = [
-				[
-					'key'     => Entity::META_CARRIER_ID,
-					'value'   => $get[ Entity::META_CARRIER_ID ],
-					'compare' => '=',
-				],
-			];
-		}
-
-		if ( ! empty( $get['packetery_to_submit'] ) ) {
-			$queryVars[] = [
-				'key'     => Entity::META_CARRIER_ID,
-				'value'   => '',
-				'compare' => '!=',
-			];
-
-			$queryVars[] = [
-				'key'     => Entity::META_IS_EXPORTED,
-				'compare' => 'NOT EXISTS',
-			];
-		}
-
-		if ( ! empty( $get['packetery_to_print'] ) ) {
-			$queryVars[] = [
-				'key'     => Entity::META_PACKET_ID,
-				'compare' => 'EXISTS',
-			];
-
-			$queryVars[] = [
-				'key'     => Entity::META_IS_LABEL_PRINTED,
-				'compare' => 'NOT EXISTS',
-			];
-		}
-
-		if ( ! empty( $get['packetery_order_type'] ) ) {
-			$queryVars[] = [
-				'key'     => Entity::META_CARRIER_ID,
-				'value'   => Repository::INTERNAL_PICKUP_POINTS_ID,
-				'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
-			];
-		}
-
-		return $queryVars;
-	}
-
-	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
@@ -276,7 +190,7 @@ class GridExtender {
 			return;
 		}
 
-		$moduleOrder = new Entity( $wcOrder );
+		$moduleOrder = new Entity( $wcOrder, $this->orderRepository );
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();

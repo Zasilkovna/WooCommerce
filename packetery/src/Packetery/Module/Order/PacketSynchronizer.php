@@ -43,16 +43,30 @@ class PacketSynchronizer {
 	private $logger;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Api\Soap\Client  $apiSoapClient   API soap client.
 	 * @param Log\ILogger      $logger          Logger.
 	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param DbRepository     $orderRepository Order repository.
 	 */
-	public function __construct( Api\Soap\Client $apiSoapClient, Log\ILogger $logger, Options\Provider $optionsProvider ) {
+	public function __construct(
+		Api\Soap\Client $apiSoapClient,
+		Log\ILogger $logger,
+		Options\Provider $optionsProvider,
+		DbRepository $orderRepository
+	) {
 		$this->apiSoapClient   = $apiSoapClient;
 		$this->logger          = $logger;
 		$this->optionsProvider = $optionsProvider;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -96,7 +110,7 @@ class PacketSynchronizer {
 		$results = wc_get_orders( $args );
 
 		foreach ( $results as $wcOrder ) {
-			$moduleOrder = new Entity( $wcOrder );
+			$moduleOrder = new Entity( $wcOrder, $this->orderRepository );
 			$packetId    = $moduleOrder->getPacketId();
 
 			$request  = new Api\Soap\Request\PacketStatus( (int) $packetId );
@@ -125,7 +139,7 @@ class PacketSynchronizer {
 				continue;
 			}
 
-			update_post_meta( $wcOrder->get_id(), Entity::META_PACKET_STATUS, $response->getCodeText() );
+			$this->orderRepository->update( [ Entity::META_PACKET_STATUS => $response->getCodeText() ], $wcOrder->get_id() );
 		}
 	}
 }

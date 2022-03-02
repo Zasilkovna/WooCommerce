@@ -48,7 +48,7 @@ class Repository {
 	}
 
 	/**
-	 * Gets wpdb object from global variable and sets custom tablename.
+	 * Gets wpdb object from global variable with custom tables names set.
 	 *
 	 * @return \wpdb
 	 */

@@ -12,7 +12,7 @@ namespace Packetery\Module\EntityFactory;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
 use Packetery\Core\Entity\Size;
-use Packetery\Module\Carrier\Repository;
+use Packetery\Module\Carrier;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order as ModuleOrder;
@@ -37,7 +37,7 @@ class Order {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository Carrier repository.
+	 * @var Carrier\Repository Carrier repository.
 	 */
 	private $carrierRepository;
 
@@ -56,23 +56,33 @@ class Order {
 	private $pickupPointFactory;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var ModuleOrder\DbRepository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Order constructor.
 	 *
-	 * @param Provider                  $optionsProvider   Options Provider.
-	 * @param Repository                $carrierRepository Carrier repository.
-	 * @param ModuleAddress\Repository  $addressRepository Address repository.
+	 * @param Provider                  $optionsProvider    Options Provider.
+	 * @param Carrier\Repository        $carrierRepository  Carrier repository.
+	 * @param ModuleAddress\Repository  $addressRepository  Address repository.
 	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
+	 * @param ModuleOrder\DbRepository  $orderRepository    Order repository.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
-		Repository $carrierRepository,
+		Carrier\Repository $carrierRepository,
 		ModuleAddress\Repository $addressRepository,
-		EntityFactory\PickupPoint $pickupPointFactory
+		EntityFactory\PickupPoint $pickupPointFactory,
+		ModuleOrder\DbRepository $orderRepository
 	) {
 		$this->optionsProvider    = $optionsProvider;
 		$this->carrierRepository  = $carrierRepository;
 		$this->addressRepository  = $addressRepository;
 		$this->pickupPointFactory = $pickupPointFactory;
+		$this->orderRepository    = $orderRepository;
 	}
 
 	/**
@@ -86,7 +96,7 @@ class Order {
 		$orderData   = $order->get_data();
 		$orderId     = (string) $orderData['id'];
 		$contactInfo = ( $order->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
-		$moduleOrder = new ModuleOrder\Entity( $order );
+		$moduleOrder = new ModuleOrder\Entity( $order, $this->orderRepository );
 
 		if ( null === $moduleOrder->getCarrierId() ) {
 			return null;

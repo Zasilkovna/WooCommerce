@@ -11,6 +11,7 @@ namespace Packetery\Module\EntityFactory;
 
 use Packetery\Core\Entity;
 use Packetery\Module\Order;
+use Packetery\Module\Order\DbRepository;
 use WC_Order;
 
 /**
@@ -19,6 +20,22 @@ use WC_Order;
  * @package Packetery\Module\EntityFactory
  */
 class PickupPoint {
+
+	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderRepository;
+
+	/**
+	 * PickupPoint constructor.
+	 *
+	 * @param DbRepository $orderRepository Order repository.
+	 */
+	public function __construct( DbRepository $orderRepository ) {
+		$this->orderRepository = $orderRepository;
+	}
 
 	/**
 	 * Creates PickupPoint entity.
@@ -46,7 +63,7 @@ class PickupPoint {
 	 * @return Entity\PickupPoint|null
 	 */
 	public function fromWcOrder( WC_Order $wcOrder ): ?Entity\PickupPoint {
-		$moduleOrder = new Order\Entity( $wcOrder );
+		$moduleOrder = new Order\Entity( $wcOrder, $this->orderRepository );
 		if ( $moduleOrder->getPointId() === null ) {
 			return null;
 		}

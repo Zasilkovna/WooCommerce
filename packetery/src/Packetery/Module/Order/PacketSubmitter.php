@@ -56,23 +56,33 @@ class PacketSubmitter {
 	private $logger;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var DbRepository
+	 */
+	private $orderRepository;
+
+	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client              $soapApiClient  SOAP API Client.
-	 * @param EntityFactory\Order $orderFactory   Order entity factory.
-	 * @param Validator\Order     $orderValidator Order validator.
-	 * @param Log\ILogger         $logger         Logger.
+	 * @param Client              $soapApiClient   SOAP API Client.
+	 * @param EntityFactory\Order $orderFactory    Order entity factory.
+	 * @param Validator\Order     $orderValidator  Order validator.
+	 * @param Log\ILogger         $logger          Logger.
+	 * @param DbRepository        $orderRepository Order repository.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		EntityFactory\Order $orderFactory,
 		Validator\Order $orderValidator,
-		Log\ILogger $logger
+		Log\ILogger $logger,
+		DbRepository $orderRepository
 	) {
-		$this->soapApiClient  = $soapApiClient;
-		$this->orderFactory   = $orderFactory;
-		$this->orderValidator = $orderValidator;
-		$this->logger         = $logger;
+		$this->soapApiClient   = $soapApiClient;
+		$this->orderFactory    = $orderFactory;
+		$this->orderValidator  = $orderValidator;
+		$this->logger          = $logger;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -128,8 +138,14 @@ class PacketSubmitter {
 
 				$resultsCounter['errors'] ++;
 			} else {
-				update_post_meta( $orderData['id'], ModuleOrder\Entity::META_IS_EXPORTED, '1' );
-				update_post_meta( $orderData['id'], ModuleOrder\Entity::META_PACKET_ID, $response->getId() );
+				$this->orderRepository->update(
+					[
+						ModuleOrder\Entity::META_IS_EXPORTED => true,
+						ModuleOrder\Entity::META_PACKET_ID => $response->getId(),
+					],
+					$orderData['id']
+				);
+
 				$resultsCounter['success'] ++;
 
 				$record         = new Log\Record();

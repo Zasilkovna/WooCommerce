@@ -24,6 +24,7 @@ class Record {
 	public const ACTION_CARRIER_LABEL_PRINT       = 'carrier-label-print';
 	public const ACTION_CARRIER_NUMBER_RETRIEVING = 'carrier-number-retrieving';
 	public const ACTION_CARRIER_TABLE_NOT_CREATED = 'carrier-table-not-created';
+	public const ACTION_ORDER_TABLE_NOT_CREATED   = 'order-table-not-created';
 	public const ACTION_SENDER_VALIDATION         = 'sender-validation';
 	public const ACTION_PACKET_STATUS_SYNC        = 'packet-status-sync';
 
