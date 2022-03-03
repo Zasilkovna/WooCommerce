@@ -21,6 +21,8 @@ use PacketeryLatte\Engine;
  */
 class Page {
 
+	public const SLUG = 'packeta-logs';
+
 	/**
 	 * Engine.
 	 *
@@ -55,7 +57,7 @@ class Page {
 			__( 'logsPageTitle', 'packetery' ),
 			__( 'logsPageTitle', 'packetery' ),
 			'manage_options',
-			'packeta-logs',
+			self::SLUG,
 			[ $this, 'render' ]
 		);
 	}

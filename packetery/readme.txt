@@ -82,6 +82,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: label printing now accepts trashed orders
 * Fixed: Packeta order modal now dynamically calculates weight if no weight is provided
 * Updated: only 3 decimal places are accepted for order weight
+* Updated: JavaScript and CSS files are now loading conditionally
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free

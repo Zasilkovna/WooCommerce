@@ -21,7 +21,7 @@ use Packetery\Module\Options;
 use Packetery\Module\Order;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Form;
+use PacketeryNette\Http\Request;
 use WC_Order;
 
 /**
@@ -197,6 +197,13 @@ class Plugin {
 	private $packetSynchronizer;
 
 	/**
+	 * Request.
+	 *
+	 * @var Request
+	 */
+	private $request;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox             $order_metabox        Order metabox.
@@ -221,6 +228,7 @@ class Plugin {
 	 * @param Order\CollectionPrint     $orderCollectionPrint Order collection print.
 	 * @param EntityFactory\Order       $orderFactory         Order factory.
 	 * @param Order\PacketSynchronizer  $packetSynchronizer   Packet synchronizer.
+	 * @param Request                   $request              HTTP request.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -244,7 +252,8 @@ class Plugin {
 		Options\Exporter $exporter,
 		Order\CollectionPrint $orderCollectionPrint,
 		EntityFactory\Order $orderFactory,
-		Order\PacketSynchronizer $packetSynchronizer
+		Order\PacketSynchronizer $packetSynchronizer,
+		Request $request
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -269,6 +278,7 @@ class Plugin {
 		$this->orderCollectionPrint = $orderCollectionPrint;
 		$this->orderFactory         = $orderFactory;
 		$this->packetSynchronizer   = $packetSynchronizer;
+		$this->request              = $request;
 	}
 
 	/**
@@ -503,21 +513,42 @@ class Plugin {
 	 * Enqueues javascript files and stylesheets for checkout.
 	 */
 	public function enqueueFrontAssets(): void {
-		$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-		$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false, [ 'jquery' ] );
+		if ( is_checkout() ) {
+			$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
+			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false, [ 'jquery' ] );
+		}
 	}
 
 	/**
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
-		$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
-		$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
-		$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery' ] );
-		wp_enqueue_style( 'dashicons' );
-		$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
-		$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
-		$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
+		global $pagenow, $typenow;
+
+		$page              = $this->request->getQuery( 'page' );
+		$isOrderGridPage   = 'edit.php' === $pagenow && 'shop_order' === $typenow;
+		$isOrderDetailPage = 'post.php' === $pagenow && 'shop_order' === $typenow;
+
+		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
+			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
+			$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
+		}
+
+		if ( Carrier\OptionsPage::SLUG === $page ) {
+			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery' ] );
+		}
+
+		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
+			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+		}
+
+		if ( $isOrderGridPage ) {
+			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+		}
+
+		if ( $isOrderDetailPage ) {
+			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
+		}
 	}
 
 	/**
