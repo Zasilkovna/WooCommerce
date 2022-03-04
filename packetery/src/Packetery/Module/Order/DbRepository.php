@@ -125,7 +125,7 @@ class DbRepository {
 
 		return $wpdb->query(
 			'CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_order . '` (
-				`id` int NOT NULL,
+				`id` bigint(20) unsigned NOT NULL,
 				`carrier_id` varchar(255) NOT NULL,
 				`is_exported` boolean NOT NULL,
 				`packet_id` varchar(255) NULL,

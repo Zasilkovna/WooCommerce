@@ -344,7 +344,7 @@ class Plugin {
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );
 
-		add_action( 'plugins_loaded', [ $this->upgrade, 'check' ] );
+		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->upgrade, 'handleCustomQueryVar' ], 10, 2 );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
@@ -640,7 +640,7 @@ class Plugin {
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), 'error' );
+			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
@@ -655,7 +655,7 @@ class Plugin {
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), 'error' );
+			$this->message_manager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
@@ -667,10 +667,7 @@ class Plugin {
 			$this->logger->add( $record );
 		}
 
-		$versionCheck = get_option( 'packetery_version' );
-		if ( false === $versionCheck ) {
-			update_option( 'packetery_version', self::VERSION );
-		}
+		$this->upgrade->check();
 	}
 
 	/**

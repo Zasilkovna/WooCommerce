@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Core\Log\ILogger;
+use Packetery\Core\Log\Record;
 use Packetery\Module\Order\DbRepository;
 use Packetery\Module\Order\Entity;
 
@@ -25,12 +27,34 @@ class Upgrade {
 	private $orderRepository;
 
 	/**
+	 * Message manager.
+	 *
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
+	 * Logger.
+	 *
+	 * @var ILogger
+	 */
+	private $logger;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param DbRepository $orderRepository Order repository.
+	 * @param DbRepository   $orderRepository Order repository.
+	 * @param MessageManager $messageManager  Message manager.
+	 * @param ILogger        $logger          Logger.
 	 */
-	public function __construct( DbRepository $orderRepository ) {
+	public function __construct(
+		DbRepository $orderRepository,
+		MessageManager $messageManager,
+		ILogger $logger
+	) {
 		$this->orderRepository = $orderRepository;
+		$this->messageManager = $messageManager;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -40,19 +64,20 @@ class Upgrade {
 	 * @return void
 	 */
 	public function check(): void {
-		$oldVersion = get_option( 'packetery_plugin_version' );
-		if ( Plugin::VERSION !== $oldVersion ) {
-			// Update the version if no upgrade is run.
-			$result = true;
+		$oldVersion = get_option( 'packetery_version' );
+		if ( Plugin::VERSION === $oldVersion ) {
+			return;
+		}
+		// Update the version if no upgrade is run.
+		$result = true;
 
-			// First version which is saved. We will add version_compare later.
-			if ( ! $oldVersion ) {
-				$result = $this->upgrade_1_1_2();
-			}
+		// If no previous version detected, no upgrade will be run.
+		if ( $oldVersion && version_compare( $oldVersion, '1.1.2', '<' ) ) {
+			$result = $this->upgrade_1_1_2();
+		}
 
-			if ( $result ) {
-				update_option( 'packetery_plugin_version', Plugin::VERSION );
-			}
+		if ( $result ) {
+			update_option( 'packetery_version', Plugin::VERSION );
 		}
 	}
 
@@ -62,6 +87,24 @@ class Upgrade {
 	 * @return bool
 	 */
 	private function upgrade_1_1_2(): bool {
+		global $wpdb;
+
+		$createResult = $this->orderRepository->createTable();
+		if ( false === $createResult ) {
+			$lastError = $wpdb->last_error;
+			$this->messageManager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'orderTableNotCreated', 'packetery' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
+		}
+
+		// Did not work when called from plugins_loaded hook.
 		$orders = wc_get_orders(
 			[
 				'packetery_all' => '1',
