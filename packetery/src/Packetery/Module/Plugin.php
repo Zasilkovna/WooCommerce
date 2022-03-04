@@ -206,7 +206,7 @@ class Plugin {
 	/**
 	 * Order repository.
 	 *
-	 * @var Order\DbRepository
+	 * @var Order\Repository
 	 */
 	private $orderRepository;
 
@@ -243,7 +243,7 @@ class Plugin {
 	 * @param EntityFactory\Order       $orderFactory         Order factory.
 	 * @param Order\PacketSynchronizer  $packetSynchronizer   Packet synchronizer.
 	 * @param Request                   $request              HTTP request.
-	 * @param Order\DbRepository        $orderRepository      Order repository.
+	 * @param Order\Repository          $orderRepository      Order repository.
 	 * @param Upgrade                   $upgrade              Plugin upgrade.
 	 */
 	public function __construct(
@@ -270,7 +270,7 @@ class Plugin {
 		EntityFactory\Order $orderFactory,
 		Order\PacketSynchronizer $packetSynchronizer,
 		Request $request,
-		Order\DbRepository $orderRepository,
+		Order\Repository $orderRepository,
 		Upgrade $upgrade
 	) {
 		$this->options_page         = $options_page;
@@ -690,7 +690,7 @@ class Plugin {
 		$carrierRepository = $container->getByType( Carrier\Repository::class );
 		$carrierRepository->drop();
 
-		$orderRepository = $container->getByType( Order\DbRepository::class );
+		$orderRepository = $container->getByType( Order\Repository::class );
 		$orderRepository->drop();
 
 		$logEntries = get_posts(

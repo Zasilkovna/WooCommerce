@@ -58,7 +58,7 @@ class PacketSubmitter {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
 	private $orderRepository;
 
@@ -69,14 +69,14 @@ class PacketSubmitter {
 	 * @param EntityFactory\Order $orderFactory    Order entity factory.
 	 * @param Validator\Order     $orderValidator  Order validator.
 	 * @param Log\ILogger         $logger          Logger.
-	 * @param DbRepository        $orderRepository Order repository.
+	 * @param Repository          $orderRepository Order repository.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		EntityFactory\Order $orderFactory,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
-		DbRepository $orderRepository
+		Repository $orderRepository
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->orderFactory    = $orderFactory;

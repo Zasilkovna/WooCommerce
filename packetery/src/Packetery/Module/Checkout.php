@@ -135,7 +135,7 @@ class Checkout {
 	/**
 	 * Order repository.
 	 *
-	 * @var Order\DbRepository
+	 * @var Order\Repository
 	 */
 	private $orderRepository;
 
@@ -147,7 +147,7 @@ class Checkout {
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 * @param Request            $httpRequest       Http request.
 	 * @param Address\Repository $addressRepository Address repository.
-	 * @param Order\DbRepository $orderRepository   Order repository.
+	 * @param Order\Repository   $orderRepository   Order repository.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -155,7 +155,7 @@ class Checkout {
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Address\Repository $addressRepository,
-		Order\DbRepository $orderRepository
+		Order\Repository $orderRepository
 	) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;

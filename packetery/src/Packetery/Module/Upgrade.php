@@ -11,7 +11,7 @@ namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Order\DbRepository;
+use Packetery\Module\Order\Repository;
 use Packetery\Module\Order\Entity;
 
 /**
@@ -22,7 +22,7 @@ class Upgrade {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
 	private $orderRepository;
 
@@ -43,18 +43,18 @@ class Upgrade {
 	/**
 	 * Constructor.
 	 *
-	 * @param DbRepository   $orderRepository Order repository.
+	 * @param Repository     $orderRepository Order repository.
 	 * @param MessageManager $messageManager  Message manager.
 	 * @param ILogger        $logger          Logger.
 	 */
 	public function __construct(
-		DbRepository $orderRepository,
+		Repository $orderRepository,
 		MessageManager $messageManager,
 		ILogger $logger
 	) {
 		$this->orderRepository = $orderRepository;
-		$this->messageManager = $messageManager;
-		$this->logger = $logger;
+		$this->messageManager  = $messageManager;
+		$this->logger          = $logger;
 	}
 
 	/**

@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Log;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
@@ -75,11 +76,11 @@ class LabelPrint {
 	private $messageManager;
 
 	/**
-	 * Order repository.
+	 * Order factory.
 	 *
-	 * @var Repository
+	 * @var EntityFactory\Order
 	 */
-	private $orderRepository;
+	private $orderFactory;
 
 	/**
 	 * Logger.
@@ -91,22 +92,22 @@ class LabelPrint {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
-	private $orderDbRepository;
+	private $orderRepository;
 
 	/**
 	 * LabelPrint constructor.
 	 *
-	 * @param Engine         $latteEngine     Latte Engine.
-	 * @param Provider       $optionsProvider Options provider.
-	 * @param FormFactory    $formFactory     Form factory.
-	 * @param Http\Request   $httpRequest     Http Request.
-	 * @param Client         $soapApiClient   SOAP API Client.
-	 * @param MessageManager $messageManager  Message Manager.
-	 * @param Repository     $orderRepository Order repository.
-	 * @param Log\ILogger    $logger          Logger.
-	 * @param DbRepository   $orderDbRepository Order repository.
+	 * @param Engine              $latteEngine     Latte Engine.
+	 * @param Provider            $optionsProvider Options provider.
+	 * @param FormFactory         $formFactory     Form factory.
+	 * @param Http\Request        $httpRequest     Http Request.
+	 * @param Client              $soapApiClient   SOAP API Client.
+	 * @param MessageManager      $messageManager  Message Manager.
+	 * @param EntityFactory\Order $orderFactory    Order factory.
+	 * @param Log\ILogger         $logger          Logger.
+	 * @param Repository          $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -115,19 +116,19 @@ class LabelPrint {
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
-		Repository $orderRepository,
+		EntityFactory\Order $orderFactory,
 		Log\ILogger $logger,
-		DbRepository $orderDbRepository
+		Repository $orderRepository
 	) {
-		$this->latteEngine       = $latteEngine;
-		$this->optionsProvider   = $optionsProvider;
-		$this->formFactory       = $formFactory;
-		$this->httpRequest       = $httpRequest;
-		$this->soapApiClient     = $soapApiClient;
-		$this->messageManager    = $messageManager;
-		$this->orderRepository   = $orderRepository;
-		$this->logger            = $logger;
-		$this->orderDbRepository = $orderDbRepository;
+		$this->latteEngine     = $latteEngine;
+		$this->optionsProvider = $optionsProvider;
+		$this->formFactory     = $formFactory;
+		$this->httpRequest     = $httpRequest;
+		$this->soapApiClient   = $soapApiClient;
+		$this->messageManager  = $messageManager;
+		$this->logger          = $logger;
+		$this->orderRepository = $orderRepository;
+		$this->orderFactory    = $orderFactory;
 	}
 
 	/**
@@ -321,7 +322,7 @@ class LabelPrint {
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
-				$this->orderDbRepository->update( [ Entity::META_IS_LABEL_PRINTED => true ], $orderId );
+				$this->orderRepository->update( [ Entity::META_IS_LABEL_PRINTED => true ], $orderId );
 			}
 
 			$record         = new Log\Record();
@@ -362,7 +363,7 @@ class LabelPrint {
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
-				$this->orderDbRepository->update(
+				$this->orderRepository->update(
 					[
 						Entity::META_IS_LABEL_PRINTED => true,
 						Entity::META_CARRIER_NUMBER   => $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'],
@@ -413,7 +414,7 @@ class LabelPrint {
 	 */
 	private function getPacketIdsFromTransient( bool $isCarrierLabels ): array {
 		$orderIds  = get_transient( self::getOrderIdsTransientName() );
-		$orders    = $this->orderRepository->getOrdersByIds( $orderIds );
+		$orders    = $this->orderFactory->getByIds( $orderIds );
 		$packetIds = [];
 		foreach ( $orders as $order ) {
 			if ( null === $order->getPacketId() ) {

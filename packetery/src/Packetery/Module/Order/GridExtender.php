@@ -66,7 +66,7 @@ class GridExtender {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
 	private $orderRepository;
 
@@ -79,7 +79,7 @@ class GridExtender {
 	 * @param Request             $httpRequest           Http Request.
 	 * @param EntityFactory\Order $entityFactory         Order factory.
 	 * @param ControllerRouter    $orderControllerRouter Order controller router.
-	 * @param DbRepository        $orderRepository       Order repository.
+	 * @param Repository          $orderRepository       Order repository.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -88,7 +88,7 @@ class GridExtender {
 		Request $httpRequest,
 		EntityFactory\Order $entityFactory,
 		ControllerRouter $orderControllerRouter,
-		DbRepository $orderRepository
+		Repository $orderRepository
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;

@@ -59,7 +59,7 @@ class Controller extends WP_REST_Controller {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
 	private $orderRepository;
 
@@ -70,14 +70,14 @@ class Controller extends WP_REST_Controller {
 	 * @param ControllerRouter    $controllerRouter Router.
 	 * @param PacketSubmitter     $packetSubmitter  Packet submitter.
 	 * @param EntityFactory\Order $orderFactory     Order factory.
-	 * @param Order\DbRepository  $orderRepository  Order repository.
+	 * @param Order\Repository    $orderRepository  Order repository.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
 		PacketSubmitter $packetSubmitter,
 		EntityFactory\Order $orderFactory,
-		Order\DbRepository $orderRepository
+		Order\Repository $orderRepository
 	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;

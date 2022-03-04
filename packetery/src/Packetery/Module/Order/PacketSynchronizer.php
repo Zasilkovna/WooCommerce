@@ -45,7 +45,7 @@ class PacketSynchronizer {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
 	private $orderRepository;
 
@@ -55,13 +55,13 @@ class PacketSynchronizer {
 	 * @param Api\Soap\Client  $apiSoapClient   API soap client.
 	 * @param Log\ILogger      $logger          Logger.
 	 * @param Options\Provider $optionsProvider Options provider.
-	 * @param DbRepository     $orderRepository Order repository.
+	 * @param Repository       $orderRepository Order repository.
 	 */
 	public function __construct(
 		Api\Soap\Client $apiSoapClient,
 		Log\ILogger $logger,
 		Options\Provider $optionsProvider,
-		DbRepository $orderRepository
+		Repository $orderRepository
 	) {
 		$this->apiSoapClient   = $apiSoapClient;
 		$this->logger          = $logger;

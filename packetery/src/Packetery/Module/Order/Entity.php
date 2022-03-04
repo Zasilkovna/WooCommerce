@@ -46,7 +46,7 @@ class Entity {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
 	private $orderRepository;
 
@@ -60,10 +60,10 @@ class Entity {
 	/**
 	 * Entity constructor.
 	 *
-	 * @param WC_Order     $order           Order.
-	 * @param DbRepository $orderRepository Order repository.
+	 * @param WC_Order   $order           Order.
+	 * @param Repository $orderRepository Order repository.
 	 */
-	public function __construct( WC_Order $order, DbRepository $orderRepository ) {
+	public function __construct( WC_Order $order, Repository $orderRepository ) {
 		$this->order           = $order;
 		$this->orderRepository = $orderRepository;
 		$this->packeteryData   = $this->orderRepository->getById( $this->order->get_id() );

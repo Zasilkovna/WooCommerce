@@ -58,7 +58,7 @@ class Order {
 	/**
 	 * Order repository.
 	 *
-	 * @var ModuleOrder\DbRepository
+	 * @var ModuleOrder\Repository
 	 */
 	private $orderRepository;
 
@@ -69,14 +69,14 @@ class Order {
 	 * @param Carrier\Repository        $carrierRepository  Carrier repository.
 	 * @param ModuleAddress\Repository  $addressRepository  Address repository.
 	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
-	 * @param ModuleOrder\DbRepository  $orderRepository    Order repository.
+	 * @param ModuleOrder\Repository    $orderRepository    Order repository.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
 		Carrier\Repository $carrierRepository,
 		ModuleAddress\Repository $addressRepository,
 		EntityFactory\PickupPoint $pickupPointFactory,
-		ModuleOrder\DbRepository $orderRepository
+		ModuleOrder\Repository $orderRepository
 	) {
 		$this->optionsProvider    = $optionsProvider;
 		$this->carrierRepository  = $carrierRepository;
@@ -159,6 +159,34 @@ class Order {
 		$orderEntity->setCurrency( $order->get_currency() );
 
 		return $orderEntity;
+	}
+
+	/**
+	 * Loads order entities by list of ids.
+	 *
+	 * @param array $orderIds Order ids.
+	 *
+	 * @return Entity\Order[]
+	 */
+	public function getByIds( array $orderIds ): array {
+		$orderEntities = [];
+		$posts         = get_posts(
+			[
+				'post_type'   => 'shop_order',
+				'post__in'    => $orderIds,
+				'post_status' => [ 'any', 'trash' ],
+				'nopaging'    => true,
+			]
+		);
+		foreach ( $posts as $post ) {
+			$wcOrder = wc_get_order( $post );
+			$order   = $this->create( $wcOrder );
+			if ( $wcOrder && $order ) {
+				$orderEntities[ $order->getNumber() ] = $order;
+			}
+		}
+
+		return $orderEntities;
 	}
 
 	/**

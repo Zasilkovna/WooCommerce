@@ -86,7 +86,7 @@ class Metabox {
 	/**
 	 * Order repository.
 	 *
-	 * @var DbRepository
+	 * @var Repository
 	 */
 	private $orderRepository;
 
@@ -100,7 +100,7 @@ class Metabox {
 	 * @param EntityFactory\Order $orderFactory    Order factory.
 	 * @param Options\Provider    $optionsProvider Options provider.
 	 * @param FormFactory         $formFactory     Form factory.
-	 * @param DbRepository        $orderRepository Order repository.
+	 * @param Repository          $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -110,7 +110,7 @@ class Metabox {
 		EntityFactory\Order $orderFactory,
 		Options\Provider $optionsProvider,
 		FormFactory $formFactory,
-		DbRepository $orderRepository
+		Repository $orderRepository
 	) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
