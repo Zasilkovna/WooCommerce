@@ -17,6 +17,7 @@ namespace Packetery\Core;
  */
 class Helper {
 	public const TRACKING_URL = 'https://tracking.packeta.com/?id=%s';
+	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 
 	/**
 	 * Simplifies weight.
@@ -56,4 +57,13 @@ class Helper {
 		return sprintf( self::TRACKING_URL, rawurlencode( $packet_id ) );
 	}
 
+	/**
+	 * Creates UTC DateTime.
+	 *
+	 * @return \DateTimeImmutable
+	 * @throws \Exception
+	 */
+	public static function now(): \DateTimeImmutable {
+		return new \DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+	}
 }

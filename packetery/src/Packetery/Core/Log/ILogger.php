@@ -36,7 +36,7 @@ interface ILogger {
 	 *
 	 * @param array $sorting Sorting.
 	 *
-	 * @return array
+	 * @return iterable
 	 */
-	public function getRecords( array $sorting = [] ): array;
+	public function getRecords( array $sorting = [] ): iterable;
 }

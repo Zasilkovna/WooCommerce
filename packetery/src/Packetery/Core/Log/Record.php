@@ -32,6 +32,13 @@ class Record {
 	public const STATUS_ERROR   = 'error';
 
 	/**
+	 * Id.
+	 *
+	 * @var int|null
+	 */
+	public $id;
+
+	/**
 	 * Action.
 	 *
 	 * @var string

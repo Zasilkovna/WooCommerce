@@ -74,6 +74,7 @@ class Page {
 			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'logAction_carrier-number-retrieving', 'packetery' ),
 			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'logAction_carrier-table-not-created', 'packetery' ),
 			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'logAction_order-table-not-created', 'packetery' ),
+			Record::ACTION_SENDER_VALIDATION         => __( 'logAction_sender-validation', 'packetery' ),
 			Record::ACTION_PACKET_STATUS_SYNC        => __( 'logAction_packet-status-sync', 'packetery' ),
 		];
 

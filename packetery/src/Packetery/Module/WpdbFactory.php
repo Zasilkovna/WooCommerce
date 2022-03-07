@@ -25,6 +25,7 @@ class WpdbFactory {
 		global $wpdb;
 		$wpdb->packetery_carrier = $wpdb->prefix . 'packetery_carrier';
 		$wpdb->packetery_order   = $wpdb->prefix . 'packetery_order';
+		$wpdb->packetery_log     = $wpdb->prefix . 'packetery_log';
 
 		return $wpdb;
 	}

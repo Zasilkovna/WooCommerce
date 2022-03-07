@@ -57,20 +57,30 @@ class Upgrade {
 	private $logger;
 
 	/**
+	 * Log repository.
+	 *
+	 * @var Log\Repository
+	 */
+	private $logRepository;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Order\Repository $orderRepository Order repository.
 	 * @param MessageManager   $messageManager  Message manager.
 	 * @param ILogger          $logger          Logger.
+	 * @param Log\Repository   $logRepository   Log repository.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
 		MessageManager $messageManager,
-		ILogger $logger
+		ILogger $logger,
+		Log\Repository $logRepository
 	) {
 		$this->orderRepository = $orderRepository;
 		$this->messageManager  = $messageManager;
 		$this->logger          = $logger;
+		$this->logRepository = $logRepository;
 	}
 
 	/**
@@ -87,6 +97,7 @@ class Upgrade {
 
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
+			$this->logRepository->createTable();
 			$this->migrateWpOrderMetadata();
 		}
 

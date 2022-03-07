@@ -73,6 +73,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.2.0 =
 * Updated: Packeta order meta data moved from posts to custom table
+* Updated: logger uses custom database table
 
 = 1.1.2 =
 * Added: Packeta packet status synchronization via WP cron
