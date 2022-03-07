@@ -11,8 +11,6 @@ namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Order\Repository;
-use Packetery\Module\Order\Entity;
 
 /**
  * Class Upgrade.
@@ -22,7 +20,7 @@ class Upgrade {
 	/**
 	 * Order repository.
 	 *
-	 * @var Repository
+	 * @var Order\Repository
 	 */
 	private $orderRepository;
 
@@ -43,12 +41,12 @@ class Upgrade {
 	/**
 	 * Constructor.
 	 *
-	 * @param Repository     $orderRepository Order repository.
-	 * @param MessageManager $messageManager  Message manager.
-	 * @param ILogger        $logger          Logger.
+	 * @param Order\Repository $orderRepository Order repository.
+	 * @param MessageManager   $messageManager  Message manager.
+	 * @param ILogger          $logger          Logger.
 	 */
 	public function __construct(
-		Repository $orderRepository,
+		Order\Repository $orderRepository,
 		MessageManager $messageManager,
 		ILogger $logger
 	) {
@@ -113,22 +111,22 @@ class Upgrade {
 		);
 
 		$possibleKeys = [
-			Entity::META_CARRIER_ID,
-			Entity::META_IS_EXPORTED,
-			Entity::META_PACKET_ID,
-			Entity::META_IS_LABEL_PRINTED,
-			Entity::META_POINT_ID,
-			Entity::META_POINT_NAME,
-			Entity::META_POINT_URL,
-			Entity::META_POINT_STREET,
-			Entity::META_POINT_ZIP,
-			Entity::META_POINT_CITY,
-			Entity::META_WEIGHT,
-			Entity::META_LENGTH,
-			Entity::META_WIDTH,
-			Entity::META_HEIGHT,
-			Entity::META_CARRIER_NUMBER,
-			Entity::META_PACKET_STATUS,
+			Order\Entity::META_CARRIER_ID,
+			Order\Entity::META_IS_EXPORTED,
+			Order\Entity::META_PACKET_ID,
+			Order\Entity::META_IS_LABEL_PRINTED,
+			Order\Entity::META_POINT_ID,
+			Order\Entity::META_POINT_NAME,
+			Order\Entity::META_POINT_URL,
+			Order\Entity::META_POINT_STREET,
+			Order\Entity::META_POINT_ZIP,
+			Order\Entity::META_POINT_CITY,
+			Order\Entity::META_WEIGHT,
+			Order\Entity::META_LENGTH,
+			Order\Entity::META_WIDTH,
+			Order\Entity::META_HEIGHT,
+			Order\Entity::META_CARRIER_NUMBER,
+			Order\Entity::META_PACKET_STATUS,
 		];
 
 		foreach ( $orders as $order ) {
@@ -177,7 +175,7 @@ class Upgrade {
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get['packetery_all'] ) ) {
 			$queryVars[] = [
-				'key'     => Entity::META_CARRIER_ID,
+				'key'     => Order\Entity::META_CARRIER_ID,
 				'compare' => 'EXISTS',
 			];
 		}

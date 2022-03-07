@@ -11,7 +11,6 @@ namespace Packetery\Module\EntityFactory;
 
 use Packetery\Core\Entity;
 use Packetery\Module\Order;
-use Packetery\Module\Order\Repository;
 use WC_Order;
 
 /**
@@ -24,16 +23,16 @@ class PickupPoint {
 	/**
 	 * Order repository.
 	 *
-	 * @var Repository
+	 * @var Order\Repository
 	 */
 	private $orderRepository;
 
 	/**
 	 * PickupPoint constructor.
 	 *
-	 * @param Repository $orderRepository Order repository.
+	 * @param Order\Repository $orderRepository Order repository.
 	 */
-	public function __construct( Repository $orderRepository ) {
+	public function __construct( Order\Repository $orderRepository ) {
 		$this->orderRepository = $orderRepository;
 	}
 
