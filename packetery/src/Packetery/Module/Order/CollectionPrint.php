@@ -56,11 +56,11 @@ class CollectionPrint {
 	private $messageManager;
 
 	/**
-	 * Order Factory.
+	 * Order repository.
 	 *
-	 * @var EntityFactory\Order
+	 * @var Repository
 	 */
-	private $orderFactory;
+	private $orderRepository;
 
 	/**
 	 * Address factory.
@@ -76,23 +76,23 @@ class CollectionPrint {
 	 * @param Http\Request          $httpRequest     Http Request.
 	 * @param Client                $soapApiClient   SOAP API Client.
 	 * @param MessageManager        $messageManager  Message Manager.
-	 * @param EntityFactory\Order   $orderFactory    Order Factory.
 	 * @param EntityFactory\Address $addressFactory  Address factory.
+	 * @param Repository            $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
-		EntityFactory\Order $orderFactory,
-		EntityFactory\Address $addressFactory
+		EntityFactory\Address $addressFactory,
+		Repository $orderRepository
 	) {
-		$this->latteEngine    = $latteEngine;
-		$this->httpRequest    = $httpRequest;
-		$this->soapApiClient  = $soapApiClient;
-		$this->messageManager = $messageManager;
-		$this->orderFactory   = $orderFactory;
-		$this->addressFactory = $addressFactory;
+		$this->latteEngine     = $latteEngine;
+		$this->httpRequest     = $httpRequest;
+		$this->soapApiClient   = $soapApiClient;
+		$this->messageManager  = $messageManager;
+		$this->addressFactory  = $addressFactory;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -120,7 +120,7 @@ class CollectionPrint {
 		}
 
 		$orderIds  = get_transient( self::getOrderIdsTransientName() );
-		$orders    = $this->orderFactory->getByIds( $orderIds );
+		$orders    = $this->orderRepository->getByIds( $orderIds );
 		$packetIds = [];
 		$wpOrders  = [];
 

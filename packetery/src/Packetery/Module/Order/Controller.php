@@ -50,13 +50,6 @@ class Controller extends WP_REST_Controller {
 	private $packetSubmitter;
 
 	/**
-	 * Order factory.
-	 *
-	 * @var EntityFactory\Order
-	 */
-	private $orderFactory;
-
-	/**
 	 * Order repository.
 	 *
 	 * @var Repository
@@ -66,17 +59,15 @@ class Controller extends WP_REST_Controller {
 	/**
 	 * Controller constructor.
 	 *
-	 * @param Modal               $orderModal       Modal.
-	 * @param ControllerRouter    $controllerRouter Router.
-	 * @param PacketSubmitter     $packetSubmitter  Packet submitter.
-	 * @param EntityFactory\Order $orderFactory     Order factory.
-	 * @param Order\Repository    $orderRepository  Order repository.
+	 * @param Modal            $orderModal       Modal.
+	 * @param ControllerRouter $controllerRouter Router.
+	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
+	 * @param Order\Repository $orderRepository  Order repository.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
 		PacketSubmitter $packetSubmitter,
-		EntityFactory\Order $orderFactory,
 		Order\Repository $orderRepository
 	) {
 		$this->orderModal      = $orderModal;
@@ -84,7 +75,6 @@ class Controller extends WP_REST_Controller {
 		$this->namespace       = $controllerRouter->getNamespace();
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
-		$this->orderFactory    = $orderFactory;
 		$this->orderRepository = $orderRepository;
 	}
 
@@ -176,10 +166,12 @@ class Controller extends WP_REST_Controller {
 
 		$values = $form->getValues( 'array' );
 		if ( ! is_numeric( $values[ Order\Entity::META_WEIGHT ] ) ) {
-			$values[ Order\Entity::META_WEIGHT ] = $this->orderFactory->calculateOrderWeight( wc_get_order( $orderId ) );
+			$values[ Order\Entity::META_WEIGHT ] = $this->orderRepository->calculateOrderWeight( wc_get_order( $orderId ) );
 		}
 
-		$this->orderRepository->update( [ Order\Entity::META_WEIGHT => Helper::simplifyWeight( $values[ Order\Entity::META_WEIGHT ] ) ], $orderId );
+		$order = $this->orderRepository->getById( $orderId );
+		$order->setWeight( Helper::simplifyWeight( $values[ Order\Entity::META_WEIGHT ] ) );
+		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data']    = [

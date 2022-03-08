@@ -33,7 +33,6 @@ services:
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\Order
-	- Packetery\Module\EntityFactory\PickupPoint
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order

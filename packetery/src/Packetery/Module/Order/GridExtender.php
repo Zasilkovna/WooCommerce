@@ -185,12 +185,11 @@ class GridExtender {
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
 		$wcOrder = wc_get_order( $post->ID );
-		$order   = $this->entityFactory->create( $wcOrder );
+		$order   = $this->orderRepository->getByWcOrder( $wcOrder );
 		if ( null === $order ) {
 			return;
 		}
 
-		$moduleOrder = new Entity( $wcOrder, $this->orderRepository );
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -242,7 +241,7 @@ class GridExtender {
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $moduleOrder->getPacketStatusTranslated() );
+				echo esc_html( $this->orderRepository->getPacketStatusTranslated( $order->getPacketStatus() ) );
 				break;
 		}
 	}

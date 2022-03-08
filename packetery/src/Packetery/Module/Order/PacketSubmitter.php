@@ -35,13 +35,6 @@ class PacketSubmitter {
 	private $soapApiClient;
 
 	/**
-	 * Order entity factory.
-	 *
-	 * @var EntityFactory\Order
-	 */
-	private $orderFactory;
-
-	/**
 	 * Order validator.
 	 *
 	 * @var Validator\Order
@@ -65,21 +58,18 @@ class PacketSubmitter {
 	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client              $soapApiClient   SOAP API Client.
-	 * @param EntityFactory\Order $orderFactory    Order entity factory.
-	 * @param Validator\Order     $orderValidator  Order validator.
-	 * @param Log\ILogger         $logger          Logger.
-	 * @param Repository          $orderRepository Order repository.
+	 * @param Client          $soapApiClient   SOAP API Client.
+	 * @param Validator\Order $orderValidator  Order validator.
+	 * @param Log\ILogger     $logger          Logger.
+	 * @param Repository      $orderRepository Order repository.
 	 */
 	public function __construct(
 		Client $soapApiClient,
-		EntityFactory\Order $orderFactory,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
 		Repository $orderRepository
 	) {
 		$this->soapApiClient   = $soapApiClient;
-		$this->orderFactory    = $orderFactory;
 		$this->orderValidator  = $orderValidator;
 		$this->logger          = $logger;
 		$this->orderRepository = $orderRepository;
@@ -92,7 +82,7 @@ class PacketSubmitter {
 	 * @param array    $resultsCounter Array with results.
 	 */
 	public function submitPacket( WC_Order $order, array &$resultsCounter ): void {
-		$commonEntity = $this->orderFactory->create( $order );
+		$commonEntity = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
 			$resultsCounter['ignored'] ++;
 
@@ -138,13 +128,9 @@ class PacketSubmitter {
 
 				$resultsCounter['errors'] ++;
 			} else {
-				$this->orderRepository->update(
-					[
-						ModuleOrder\Entity::META_IS_EXPORTED => true,
-						ModuleOrder\Entity::META_PACKET_ID => $response->getId(),
-					],
-					$orderData['id']
-				);
+				$commonEntity->setIsExported( true );
+				$commonEntity->setPacketId( (string) $response->getId() );
+				$this->orderRepository->save( $commonEntity );
 
 				$resultsCounter['success'] ++;
 

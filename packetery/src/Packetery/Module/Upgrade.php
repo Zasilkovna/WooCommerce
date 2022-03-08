@@ -9,8 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Order\Entity;
 
 /**
  * Class Upgrade.
@@ -66,25 +68,21 @@ class Upgrade {
 		if ( Plugin::VERSION === $oldVersion ) {
 			return;
 		}
-		// Update the version if no upgrade is run.
-		$result = true;
 
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion && version_compare( $oldVersion, '1.1.2', '<' ) ) {
-			$result = $this->upgrade_1_1_2();
+			$this->upgrade_1_1_2();
 		}
 
-		if ( $result ) {
-			update_option( 'packetery_version', Plugin::VERSION );
-		}
+		update_option( 'packetery_version', Plugin::VERSION );
 	}
 
 	/**
 	 * Upgrade to version 1.1.2.
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	private function upgrade_1_1_2(): bool {
+	private function upgrade_1_1_2(): void {
 		global $wpdb;
 
 		$createResult = $this->orderRepository->createTable();
@@ -110,39 +108,95 @@ class Upgrade {
 			]
 		);
 
-		$possibleKeys = [
-			Order\Entity::META_CARRIER_ID,
-			Order\Entity::META_IS_EXPORTED,
-			Order\Entity::META_PACKET_ID,
-			Order\Entity::META_IS_LABEL_PRINTED,
-			Order\Entity::META_POINT_ID,
-			Order\Entity::META_POINT_NAME,
-			Order\Entity::META_POINT_URL,
-			Order\Entity::META_POINT_STREET,
-			Order\Entity::META_POINT_ZIP,
-			Order\Entity::META_POINT_CITY,
-			Order\Entity::META_WEIGHT,
-			Order\Entity::META_LENGTH,
-			Order\Entity::META_WIDTH,
-			Order\Entity::META_HEIGHT,
-			Order\Entity::META_CARRIER_NUMBER,
-			Order\Entity::META_PACKET_STATUS,
-		];
-
 		foreach ( $orders as $order ) {
-			$propsToSave = [ 'id' => $order->get_id() ];
-			foreach ( $possibleKeys as $key ) {
-				$value = $order->get_meta( $key );
-				if ( '' !== (string) $value ) {
-					$propsToSave[ $key ] = $value;
-					$order->delete_meta_data( $key );
-				}
+			$orderEntity = new Core\Entity\Order(
+				(string) $order->get_id(),
+				null,
+				null,
+				null,
+				$this->getMetaAsNullableFloat( $order, Entity::META_WEIGHT ),
+				null,
+				$this->getMetaAsNullableString( $order, Entity::META_CARRIER_ID )
+			);
+
+			$order->delete_meta_data( Entity::META_WEIGHT );
+			$order->delete_meta_data( Entity::META_CARRIER_ID );
+
+			$orderEntity->setPacketStatus( $this->getMetaAsNullableString( $order, Entity::META_PACKET_STATUS ) );
+			$order->delete_meta_data( Entity::META_PACKET_STATUS );
+
+			$orderEntity->setIsExported( (bool) $this->getMetaAsNullableString( $order, Entity::META_IS_EXPORTED ) );
+			$order->delete_meta_data( Entity::META_IS_EXPORTED );
+
+			$orderEntity->setIsLabelPrinted( (bool) $this->getMetaAsNullableString( $order, Entity::META_IS_LABEL_PRINTED ) );
+			$order->delete_meta_data( Entity::META_IS_LABEL_PRINTED );
+
+			$orderEntity->setCarrierNumber( $this->getMetaAsNullableString( $order, Entity::META_CARRIER_NUMBER ) );
+			$order->delete_meta_data( Entity::META_CARRIER_NUMBER );
+
+			$orderEntity->setPacketId( $this->getMetaAsNullableString( $order, Entity::META_PACKET_ID ) );
+			$order->delete_meta_data( Entity::META_PACKET_ID );
+
+			$orderEntity->setSize(
+				new Core\Entity\Size(
+					$this->getMetaAsNullableString( $order, Entity::META_LENGTH ),
+					$this->getMetaAsNullableString( $order, Entity::META_WIDTH ),
+					$this->getMetaAsNullableString( $order, Entity::META_HEIGHT )
+				)
+			);
+			$order->delete_meta_data( Entity::META_LENGTH );
+			$order->delete_meta_data( Entity::META_WIDTH );
+			$order->delete_meta_data( Entity::META_HEIGHT );
+
+			if ( null !== $this->getMetaAsNullableString( $order, Entity::META_POINT_ID ) ) {
+				$orderEntity->setPickupPoint(
+					new Core\Entity\PickupPoint(
+						$this->getMetaAsNullableString( $order, Entity::META_POINT_ID ),
+						$this->getMetaAsNullableString( $order, Entity::META_POINT_NAME ),
+						$this->getMetaAsNullableString( $order, Entity::META_POINT_CITY ),
+						$this->getMetaAsNullableString( $order, Entity::META_POINT_ZIP ),
+						$this->getMetaAsNullableString( $order, Entity::META_POINT_STREET ),
+						$this->getMetaAsNullableString( $order, Entity::META_POINT_URL )
+					)
+				);
 			}
-			$this->orderRepository->insert( $propsToSave );
+			$order->delete_meta_data( Entity::META_POINT_ID );
+			$order->delete_meta_data( Entity::META_POINT_NAME );
+			$order->delete_meta_data( Entity::META_POINT_CITY );
+			$order->delete_meta_data( Entity::META_POINT_ZIP );
+			$order->delete_meta_data( Entity::META_POINT_STREET );
+			$order->delete_meta_data( Entity::META_POINT_URL );
+
+			$this->orderRepository->save( $orderEntity );
 			$order->save_meta_data();
 		}
+	}
 
-		return true;
+
+	/**
+	 * Gets meta property of order as string.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param string    $key   Meta order key.
+	 *
+	 * @return string|null
+	 */
+	private function getMetaAsNullableString( \WC_Order $order, string $key ): ?string {
+		$value = $order->get_meta( $key, true );
+		return ( ( null !== $value && '' !== $value ) ? (string) $value : null );
+	}
+
+	/**
+	 * Gets meta property of order as float.
+	 *
+	 * @param \WC_Order $order Order.
+	 * @param string    $key   Meta order key.
+	 *
+	 * @return float|null
+	 */
+	private function getMetaAsNullableFloat( \WC_Order $order, string $key ): ?float {
+		$value = $order->get_meta( $key, true );
+		return ( ( null !== $value && '' !== $value ) ? (float) $value : null );
 	}
 
 	/**
@@ -175,8 +229,13 @@ class Upgrade {
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get['packetery_all'] ) ) {
 			$queryVars[] = [
-				'key'     => Order\Entity::META_CARRIER_ID,
+				'key'     => Entity::META_CARRIER_ID,
 				'compare' => 'EXISTS',
+			];
+			$queryVars[] = [
+				'key'     => Entity::META_CARRIER_ID,
+				'value'   => '',
+				'compare' => '!=',
 			];
 		}
 

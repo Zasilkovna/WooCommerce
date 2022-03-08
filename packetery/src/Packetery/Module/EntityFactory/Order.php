@@ -11,11 +11,8 @@ namespace Packetery\Module\EntityFactory;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
-use Packetery\Core\Entity\Size;
 use Packetery\Module\Carrier;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\Options\Provider;
-use Packetery\Module\Order as ModuleOrder;
 use Packetery\Module\Address as ModuleAddress;
 use Packetery\Core\Helper;
 use WC_Order;
@@ -49,81 +46,58 @@ class Order {
 	private $addressRepository;
 
 	/**
-	 * PickupPoint factory.
-	 *
-	 * @var PickupPoint
-	 */
-	private $pickupPointFactory;
-
-	/**
-	 * Order repository.
-	 *
-	 * @var ModuleOrder\Repository
-	 */
-	private $orderRepository;
-
-	/**
 	 * Order constructor.
 	 *
-	 * @param Provider                  $optionsProvider    Options Provider.
-	 * @param Carrier\Repository        $carrierRepository  Carrier repository.
-	 * @param ModuleAddress\Repository  $addressRepository  Address repository.
-	 * @param EntityFactory\PickupPoint $pickupPointFactory PickupPoint factory.
-	 * @param ModuleOrder\Repository    $orderRepository    Order repository.
+	 * @param Provider                 $optionsProvider    Options Provider.
+	 * @param Carrier\Repository       $carrierRepository  Carrier repository.
+	 * @param ModuleAddress\Repository $addressRepository  Address repository.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
 		Carrier\Repository $carrierRepository,
-		ModuleAddress\Repository $addressRepository,
-		EntityFactory\PickupPoint $pickupPointFactory,
-		ModuleOrder\Repository $orderRepository
+		ModuleAddress\Repository $addressRepository
 	) {
-		$this->optionsProvider    = $optionsProvider;
-		$this->carrierRepository  = $carrierRepository;
-		$this->addressRepository  = $addressRepository;
-		$this->pickupPointFactory = $pickupPointFactory;
-		$this->orderRepository    = $orderRepository;
+		$this->optionsProvider   = $optionsProvider;
+		$this->carrierRepository = $carrierRepository;
+		$this->addressRepository = $addressRepository;
 	}
 
 	/**
 	 * Creates common order entity from WC_Order.
 	 *
-	 * @param WC_Order $order WC_Order.
+	 * @param WC_Order     $order        WC_Order.
+	 * @param Entity\Order $partialOrder Partial order.
 	 *
 	 * @return Entity\Order|null
 	 */
-	public function create( WC_Order $order ): ?Entity\Order {
+	public function create( WC_Order $order, Entity\Order $partialOrder ): ?Entity\Order {
 		$orderData   = $order->get_data();
 		$orderId     = (string) $orderData['id'];
 		$contactInfo = ( $order->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
-		$moduleOrder = new ModuleOrder\Entity( $order, $this->orderRepository );
 
-		if ( null === $moduleOrder->getCarrierId() ) {
+		if ( null === $partialOrder->getCarrierId() ) {
 			return null;
-		}
-
-		$orderWeight = $moduleOrder->getUserSpecifiedWeight();
-		if ( null === $orderWeight ) {
-			$orderWeight = $this->calculateOrderWeight( $order );
 		}
 
 		$orderEntity = new Entity\Order(
 			$orderId,
 			$contactInfo['first_name'],
 			$contactInfo['last_name'],
-			$moduleOrder->getTotalPrice(),
-			Helper::simplifyWeight( $orderWeight ),
+			$partialOrder->getValue(),
+			Helper::simplifyWeight( $partialOrder->getWeight() ),
 			$this->optionsProvider->get_sender(),
-			$moduleOrder->getCarrierId()
+			$partialOrder->getCarrierId()
 		);
 
-		$orderEntity->setPacketId( $moduleOrder->getPacketId() );
-		$orderEntity->setIsExported( $moduleOrder->isExported() );
-		$orderEntity->setAdultContent( $moduleOrder->containsAdultContent() );
+		$orderEntity->setPacketStatus( $partialOrder->getPacketStatus() );
+		$orderEntity->setPacketId( $partialOrder->getPacketId() );
+		$orderEntity->setIsExported( $partialOrder->isExported() );
+		$orderEntity->setIsLabelPrinted( $partialOrder->isLabelPrinted() );
+		$orderEntity->setCarrierNumber( $partialOrder->getCarrierNumber() );
+		$orderEntity->setAdultContent( $partialOrder->containsAdultContent() );
 
-		if ( $moduleOrder->getPointId() ) {
-			$pickupPoint = $this->pickupPointFactory->create( $moduleOrder );
-			$orderEntity->setPickupPoint( $pickupPoint );
+		if ( $partialOrder->getPickupPoint() ) {
+			$orderEntity->setPickupPoint( $partialOrder->getPickupPoint() );
 		}
 
 		$address = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
@@ -146,10 +120,9 @@ class Order {
 		$orderEntity->setEmail( $orderData['billing']['email'] );
 		$codMethod = $this->optionsProvider->getCodPaymentMethod();
 		if ( $orderData['payment_method'] === $codMethod ) {
-			$orderEntity->setCod( $moduleOrder->getTotalPrice() );
+			$orderEntity->setCod( $partialOrder->getValue() );
 		}
-		$size = new Size( $moduleOrder->getLength(), $moduleOrder->getWidth(), $moduleOrder->getHeight() );
-		$orderEntity->setSize( $size );
+		$orderEntity->setSize( $partialOrder->getSize() );
 
 		if ( $orderEntity->isExternalCarrier() ) {
 			$carrier = $this->carrierRepository->getById( (int) $orderEntity->getCarrierId() );
@@ -160,85 +133,4 @@ class Order {
 
 		return $orderEntity;
 	}
-
-	/**
-	 * Loads order entities by list of ids.
-	 *
-	 * @param array $orderIds Order ids.
-	 *
-	 * @return Entity\Order[]
-	 */
-	public function getByIds( array $orderIds ): array {
-		$orderEntities = [];
-		$posts         = get_posts(
-			[
-				'post_type'   => 'shop_order',
-				'post__in'    => $orderIds,
-				'post_status' => [ 'any', 'trash' ],
-				'nopaging'    => true,
-			]
-		);
-		foreach ( $posts as $post ) {
-			$wcOrder = wc_get_order( $post );
-			$order   = $this->create( $wcOrder );
-			if ( $wcOrder && $order ) {
-				$orderEntities[ $order->getNumber() ] = $order;
-			}
-		}
-
-		return $orderEntities;
-	}
-
-	/**
-	 * Calculates order weight ignoring user specified weight.
-	 *
-	 * @param WC_Order $order Order.
-	 *
-	 * @return float
-	 */
-	public function calculateOrderWeight( WC_Order $order ): float {
-		$weight = 0;
-		foreach ( $order->get_items() as $item ) {
-			$quantity      = $item->get_quantity();
-			$product       = $item->get_product();
-			$productWeight = (float) $product->get_weight();
-			$weight       += ( $productWeight * $quantity );
-		}
-
-		$weightKg = wc_get_weight( $weight, 'kg' );
-		if ( $weightKg ) {
-			$weightKg += $this->optionsProvider->getPackagingWeight();
-		}
-
-		return $weightKg;
-	}
-
-	/**
-	 * Creates entity from global variables.
-	 *
-	 * @return Entity\Order|null
-	 */
-	public function fromGlobals(): ?Entity\Order {
-		global $post;
-
-		return $this->fromPostId( $post->ID );
-	}
-
-	/**
-	 * Creates entity from post id.
-	 *
-	 * @param int|string $postId Post id.
-	 *
-	 * @return Entity\Order|null
-	 */
-	public function fromPostId( $postId ): ?Entity\Order {
-		$order = wc_get_order( $postId );
-
-		if ( ! $order instanceof WC_Order ) {
-			return null;
-		}
-
-		return $this->create( $order );
-	}
-
 }

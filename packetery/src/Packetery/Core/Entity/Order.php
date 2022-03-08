@@ -129,6 +129,13 @@ class Order {
 	private $packetId;
 
 	/**
+	 * Packet ID
+	 *
+	 * @var string|null
+	 */
+	private $packetStatus;
+
+	/**
 	 * Carrier id.
 	 *
 	 * @var string|null
@@ -143,11 +150,25 @@ class Order {
 	private $isExported;
 
 	/**
+	 * Tells if is packet submitted.
+	 *
+	 * @var bool|null
+	 */
+	private $isLabelPrinted;
+
+	/**
 	 * Packet currency.
 	 *
 	 * @var string
 	 */
 	private $currency;
+
+	/**
+	 * Carrier number..
+	 *
+	 * @var string|null
+	 */
+	private $carrierNumber;
 
 	/**
 	 * Order entity constructor.
@@ -379,12 +400,56 @@ class Order {
 	}
 
 	/**
+	 * Sets packet status.
+	 *
+	 * @param string|null $packetStatus Packet status.
+	 *
+	 * @return void
+	 */
+	public function setPacketStatus( ?string $packetStatus ): void {
+		$this->packetStatus = $packetStatus;
+	}
+
+	/**
 	 * Sets is exported flag.
 	 *
 	 * @param bool $isExported Packet id.
 	 */
 	public function setIsExported( bool $isExported ): void {
 		$this->isExported = $isExported;
+	}
+
+	/**
+	 * Sets flag of label print.
+	 *
+	 * @param bool|null $isLabelPrinted Is label printed.
+	 *
+	 * @return void
+	 */
+	public function setIsLabelPrinted( ?bool $isLabelPrinted ): void {
+		$this->isLabelPrinted = $isLabelPrinted;
+	}
+
+	/**
+	 * Sets carrier number.
+	 *
+	 * @param string|null $carrierNumber Carrier number.
+	 *
+	 * @return void
+	 */
+	public function setCarrierNumber( ?string $carrierNumber ): void {
+		$this->carrierNumber = $carrierNumber;
+	}
+
+	/**
+	 * Sets weight.
+	 *
+	 * @param float|null $weight Weight.
+	 *
+	 * @return void
+	 */
+	public function setWeight( ?float $weight ): void {
+		$this->weight = $weight;
 	}
 
 	/**
@@ -430,6 +495,15 @@ class Order {
 	 */
 	public function getPacketId(): ?string {
 		return $this->packetId;
+	}
+
+	/**
+	 * Packet status.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketStatus(): ?string {
+		return $this->packetStatus;
 	}
 
 	/**
@@ -586,5 +660,23 @@ class Order {
 	 */
 	public function getPhone(): ?string {
 		return $this->phone;
+	}
+
+	/**
+	 * Is label printed?
+	 *
+	 * @return bool|null
+	 */
+	public function isLabelPrinted(): ?bool {
+		return $this->isLabelPrinted;
+	}
+
+	/**
+	 * Carrier number.
+	 *
+	 * @return string|null
+	 */
+	public function getCarrierNumber(): ?string {
+		return $this->carrierNumber;
 	}
 }

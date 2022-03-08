@@ -169,20 +169,6 @@ class Plugin {
 	private $orderModal;
 
 	/**
-	 * PickupPoint factory.
-	 *
-	 * @var EntityFactory\PickupPoint
-	 */
-	private $pickupPointFactory;
-
-	/**
-	 * Order factory.
-	 *
-	 * @var EntityFactory\Order
-	 */
-	private $orderFactory;
-
-	/**
 	 * Options exporter.
 	 *
 	 * @var Options\Exporter
@@ -220,31 +206,29 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox             $order_metabox        Order metabox.
-	 * @param MessageManager            $message_manager      Message manager.
-	 * @param Options\Page              $options_page         Options page.
-	 * @param Repository                $carrierRepository    Carrier repository.
-	 * @param Downloader                $carrier_downloader   Carrier downloader object.
-	 * @param Checkout                  $checkout             Checkout class.
-	 * @param Engine                    $latte_engine         PacketeryLatte engine.
-	 * @param OptionsPage               $carrierOptionsPage   Carrier options page.
-	 * @param Order\BulkActions         $orderBulkActions     Order BulkActions.
-	 * @param Order\LabelPrint          $labelPrint           Label printing.
-	 * @param Order\GridExtender        $gridExtender         Order grid extender.
-	 * @param Product\DataTab           $productTab           Product tab.
-	 * @param Log\Page                  $logPage              Log page.
-	 * @param ILogger                   $logger               Log manager.
-	 * @param Address\Repository        $addressRepository    Address repository.
-	 * @param Order\Controller          $orderController      Order controller.
-	 * @param Order\Modal               $orderModal           Order modal.
-	 * @param EntityFactory\PickupPoint $pickupPointFactory   PickupPoint factory.
-	 * @param Options\Exporter          $exporter             Options exporter.
-	 * @param Order\CollectionPrint     $orderCollectionPrint Order collection print.
-	 * @param EntityFactory\Order       $orderFactory         Order factory.
-	 * @param Order\PacketSynchronizer  $packetSynchronizer   Packet synchronizer.
-	 * @param Request                   $request              HTTP request.
-	 * @param Order\Repository          $orderRepository      Order repository.
-	 * @param Upgrade                   $upgrade              Plugin upgrade.
+	 * @param Order\Metabox            $order_metabox        Order metabox.
+	 * @param MessageManager           $message_manager      Message manager.
+	 * @param Options\Page             $options_page         Options page.
+	 * @param Repository               $carrierRepository    Carrier repository.
+	 * @param Downloader               $carrier_downloader   Carrier downloader object.
+	 * @param Checkout                 $checkout             Checkout class.
+	 * @param Engine                   $latte_engine         PacketeryLatte engine.
+	 * @param OptionsPage              $carrierOptionsPage   Carrier options page.
+	 * @param Order\BulkActions        $orderBulkActions     Order BulkActions.
+	 * @param Order\LabelPrint         $labelPrint           Label printing.
+	 * @param Order\GridExtender       $gridExtender         Order grid extender.
+	 * @param Product\DataTab          $productTab           Product tab.
+	 * @param Log\Page                 $logPage              Log page.
+	 * @param ILogger                  $logger               Log manager.
+	 * @param Address\Repository       $addressRepository    Address repository.
+	 * @param Order\Controller         $orderController      Order controller.
+	 * @param Order\Modal              $orderModal           Order modal.
+	 * @param Options\Exporter         $exporter             Options exporter.
+	 * @param Order\CollectionPrint    $orderCollectionPrint Order collection print.
+	 * @param Order\PacketSynchronizer $packetSynchronizer   Packet synchronizer.
+	 * @param Request                  $request              HTTP request.
+	 * @param Order\Repository         $orderRepository      Order repository.
+	 * @param Upgrade                  $upgrade              Plugin upgrade.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -264,10 +248,8 @@ class Plugin {
 		Address\Repository $addressRepository,
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
-		EntityFactory\PickupPoint $pickupPointFactory,
 		Options\Exporter $exporter,
 		Order\CollectionPrint $orderCollectionPrint,
-		EntityFactory\Order $orderFactory,
 		Order\PacketSynchronizer $packetSynchronizer,
 		Request $request,
 		Order\Repository $orderRepository,
@@ -291,10 +273,8 @@ class Plugin {
 		$this->addressRepository    = $addressRepository;
 		$this->orderController      = $orderController;
 		$this->orderModal           = $orderModal;
-		$this->pickupPointFactory   = $pickupPointFactory;
 		$this->exporter             = $exporter;
 		$this->orderCollectionPrint = $orderCollectionPrint;
-		$this->orderFactory         = $orderFactory;
 		$this->packetSynchronizer   = $packetSynchronizer;
 		$this->request              = $request;
 		$this->orderRepository      = $orderRepository;
@@ -419,7 +399,7 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
-		$orderEntity = $this->orderFactory->create( $order );
+		$orderEntity = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $orderEntity ) {
 			return;
 		}
@@ -440,11 +420,16 @@ class Plugin {
 	/**
 	 * Renders delivery detail for packetery orders, on "thank you" page and in frontend detail.
 	 *
-	 * @param WC_Order $order WordPress order.
+	 * @param WC_Order $wcOrder WordPress order.
 	 */
-	public function renderOrderDetail( WC_Order $order ): void {
-		$pickupPoint              = $this->pickupPointFactory->fromWcOrder( $order );
-		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
+	public function renderOrderDetail( WC_Order $wcOrder ): void {
+		$order = $this->orderRepository->getById( $wcOrder->get_id() );
+		if ( null === $order ) {
+			return;
+		}
+
+		$pickupPoint              = $order->getPickupPoint();
+		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( $wcOrder->get_id() );
 		if ( null === $pickupPoint && null === $validatedDeliveryAddress ) {
 			return;
 		}
@@ -468,7 +453,7 @@ class Plugin {
 			return;
 		}
 
-		$packeteryOrder = $this->orderFactory->create( $email->object );
+		$packeteryOrder = $this->orderRepository->getByWcOrder( $email->object );
 		if ( null === $packeteryOrder ) {
 			return;
 		}

@@ -63,13 +63,6 @@ class Metabox {
 	private $request;
 
 	/**
-	 * Order factory.
-	 *
-	 * @var EntityFactory\Order
-	 */
-	private $orderFactory;
-
-	/**
 	 * Options provider.
 	 *
 	 * @var Options\Provider
@@ -93,21 +86,19 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine              $latte_engine    PacketeryLatte engine.
-	 * @param MessageManager      $message_manager Message manager.
-	 * @param Helper              $helper          Helper.
-	 * @param Request             $request         Http request.
-	 * @param EntityFactory\Order $orderFactory    Order factory.
-	 * @param Options\Provider    $optionsProvider Options provider.
-	 * @param FormFactory         $formFactory     Form factory.
-	 * @param Repository          $orderRepository Order repository.
+	 * @param Engine           $latte_engine    PacketeryLatte engine.
+	 * @param MessageManager   $message_manager Message manager.
+	 * @param Helper           $helper          Helper.
+	 * @param Request          $request         Http request.
+	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param FormFactory      $formFactory     Form factory.
+	 * @param Repository       $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latte_engine,
 		MessageManager $message_manager,
 		Helper $helper,
 		Request $request,
-		EntityFactory\Order $orderFactory,
 		Options\Provider $optionsProvider,
 		FormFactory $formFactory,
 		Repository $orderRepository
@@ -116,7 +107,6 @@ class Metabox {
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
 		$this->request         = $request;
-		$this->orderFactory    = $orderFactory;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
 		$this->orderRepository = $orderRepository;
@@ -141,7 +131,9 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		$order = $this->orderFactory->fromGlobals();
+		global $post;
+
+		$order = $this->orderRepository->getById( (int) $post->ID );
 		if ( null === $order ) {
 			return;
 		}
@@ -187,7 +179,9 @@ class Metabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		$order = $this->orderFactory->fromGlobals();
+		global $post;
+
+		$order = $this->orderRepository->getById( (int) $post->ID );
 		if ( null === $order ) {
 			return;
 		}
@@ -252,7 +246,7 @@ class Metabox {
 	 * @return mixed Order id.
 	 */
 	public function save_fields( $orderId ) {
-		$order = $this->orderFactory->fromPostId( $orderId );
+		$order = $this->orderRepository->getById( $orderId );
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			null === $this->request->getPost( 'packetery_order_metabox_nonce' ) ||
@@ -283,10 +277,10 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			Entity::META_WEIGHT => ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? Helper::simplifyWeight( $values[ Entity::META_WEIGHT ] ) : '' ),
-			Entity::META_WIDTH  => ( is_numeric( $values[ Entity::META_WIDTH ] ) ? number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : '' ),
-			Entity::META_LENGTH => ( is_numeric( $values[ Entity::META_LENGTH ] ) ? number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : '' ),
-			Entity::META_HEIGHT => ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : '' ),
+			Entity::META_WEIGHT => ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? Helper::simplifyWeight( $values[ Entity::META_WEIGHT ] ) : null ),
+			Entity::META_WIDTH  => ( is_numeric( $values[ Entity::META_WIDTH ] ) ? number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : null ),
+			Entity::META_LENGTH => ( is_numeric( $values[ Entity::META_LENGTH ] ) ? number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : null ),
+			Entity::META_HEIGHT => ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : null ),
 		];
 
 		if ( $values[ Entity::META_POINT_ID ] && $order->isPickupPointDelivery() ) {
