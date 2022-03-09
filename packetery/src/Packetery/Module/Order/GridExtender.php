@@ -200,7 +200,7 @@ class GridExtender {
 					echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
 				}
 				break;
-			case Entity::META_PACKET_ID:
+			case 'packetery_packet_id':
 				$packetId = $order->getPacketId();
 				if ( $packetId ) {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
@@ -251,7 +251,7 @@ class GridExtender {
 			if ( 'order_total' === $column_name ) {
 				$new_columns['packetery_packet_status'] = __( 'packetaPacketStatus', 'packetery' );
 				$new_columns['packetery']               = __( 'Packeta', 'packetery' );
-				$new_columns[ Entity::META_PACKET_ID ]  = __( 'Barcode', 'packetery' );
+				$new_columns['packetery_packet_id']  = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}

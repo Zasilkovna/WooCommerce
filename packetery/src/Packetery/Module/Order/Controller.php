@@ -9,9 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\EntityFactory;
-use Packetery\Module\Order;
 use Packetery\Core\Helper;
+use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -156,7 +155,7 @@ class Controller extends WP_REST_Controller {
 		$form = $this->orderModal->createForm();
 		$form->setValues(
 			[
-				Order\Entity::META_WEIGHT => $packeteryWeight,
+				'packetery_weight' => $packeteryWeight,
 			]
 		);
 
@@ -165,17 +164,17 @@ class Controller extends WP_REST_Controller {
 		}
 
 		$values = $form->getValues( 'array' );
-		if ( ! is_numeric( $values[ Order\Entity::META_WEIGHT ] ) ) {
-			$values[ Order\Entity::META_WEIGHT ] = $this->orderRepository->calculateOrderWeight( wc_get_order( $orderId ) );
+		if ( ! is_numeric( $values['packetery_weight'] ) ) {
+			$values['packetery_weight'] = $this->orderRepository->calculateOrderWeight( wc_get_order( $orderId ) );
 		}
 
 		$order = $this->orderRepository->getById( $orderId );
-		$order->setWeight( Helper::simplifyWeight( $values[ Order\Entity::META_WEIGHT ] ) );
+		$order->setWeight( Helper::simplifyWeight( $values['packetery_weight'] ) );
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data']    = [
-			Order\Entity::META_WEIGHT => $values[ Order\Entity::META_WEIGHT ],
+			'packetery_weight' => $values['packetery_weight'],
 		];
 
 		return new WP_REST_Response( $data, 200 );

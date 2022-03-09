@@ -11,7 +11,6 @@ namespace Packetery\Module;
 
 use Packetery\Core;
 use Packetery\Module\Options\Provider;
-use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -32,31 +31,31 @@ class Checkout {
 	 */
 	public static $pickupPointAttrs = array(
 		'id'        => array(
-			'name'     => Entity::META_POINT_ID,
+			'name'     => 'packetery_point_id',
 			'required' => true,
 		),
 		'name'      => array(
-			'name'     => Entity::META_POINT_NAME,
+			'name'     => 'packetery_point_name',
 			'required' => true,
 		),
 		'city'      => array(
-			'name'     => Entity::META_POINT_CITY,
+			'name'     => 'packetery_point_city',
 			'required' => true,
 		),
 		'zip'       => array(
-			'name'     => Entity::META_POINT_ZIP,
+			'name'     => 'packetery_point_zip',
 			'required' => true,
 		),
 		'street'    => array(
-			'name'     => Entity::META_POINT_STREET,
+			'name'     => 'packetery_point_street',
 			'required' => true,
 		),
 		'carrierId' => array(
-			'name'     => Entity::META_CARRIER_ID,
+			'name'     => 'packetery_carrier_id',
 			'required' => false,
 		),
 		'url'       => array(
-			'name'     => Entity::META_POINT_URL,
+			'name'     => 'packetery_point_url',
 			'required' => true,
 		),
 	);
@@ -373,8 +372,8 @@ class Checkout {
 		$propsToSave = [ 'id' => $orderId ];
 		// Save carrier id for home delivery (we got no id from widget).
 		$carrierId = $this->getCarrierId( $chosenMethod );
-		if ( empty( $post[ Entity::META_CARRIER_ID ] ) && $carrierId ) {
-			$propsToSave[ Entity::META_CARRIER_ID ] = $carrierId;
+		if ( empty( $post['packetery_carrier_id'] ) && $carrierId ) {
+			$propsToSave['packetery_carrier_id'] = $carrierId;
 		}
 
 		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
@@ -391,8 +390,8 @@ class Checkout {
 
 				$saveMeta = true;
 				if (
-					( Entity::META_CARRIER_ID === $attrName && ! $attrValue ) ||
-					( Entity::META_POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
+					( 'packetery_carrier_id' === $attrName && ! $attrValue ) ||
+					( 'packetery_point_url' === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
 				) {
 					$saveMeta = false;
 				}
@@ -447,25 +446,25 @@ class Checkout {
 
 		foreach ( $propsToSave as $attrName => $attrValue ) {
 			switch ($attrName) {
-				case Entity::META_CARRIER_ID:
+				case 'packetery_carrier_id':
 					$orderEntity->setCarrierId($attrValue);
 					break;
-				case Entity::META_POINT_ID:
+				case 'packetery_point_id':
 					$orderEntityPickupPoint->setId($attrValue);
 					break;
-				case Entity::META_POINT_NAME:
+				case 'packetery_point_name':
 					$orderEntityPickupPoint->setName($attrValue);
 					break;
-				case Entity::META_POINT_URL:
+				case 'packetery_point_url':
 					$orderEntityPickupPoint->setUrl($attrValue);
 					break;
-				case Entity::META_POINT_STREET:
+				case 'packetery_point_street':
 					$orderEntityPickupPoint->setStreet($attrValue);
 					break;
-				case Entity::META_POINT_ZIP:
+				case 'packetery_point_zip':
 					$orderEntityPickupPoint->setZip($attrValue);
 					break;
-				case Entity::META_POINT_CITY:
+				case 'packetery_point_city':
 					$orderEntityPickupPoint->setCity($attrValue);
 					break;
 			}

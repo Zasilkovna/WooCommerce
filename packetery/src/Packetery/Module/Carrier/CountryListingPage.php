@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Module\Checkout;
-use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -220,8 +219,8 @@ class CountryListingPage {
 				if ( $carrierId ) {
 					$orders = wc_get_orders(
 						[
-							Entity::META_CARRIER_ID => $carrierId,
-							'nopaging'              => true,
+							'packetery_carrier_id' => $carrierId,
+							'nopaging'             => true,
 						]
 					);
 					if ( $orders ) {

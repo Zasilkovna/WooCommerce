@@ -11,7 +11,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\FormFactory;
-use Packetery\Module\Order;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -86,7 +85,7 @@ class Modal {
 	 */
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
-		$form->addText( Order\Entity::META_WEIGHT, __( 'weight', 'packetery' ) . ' (kg)' )
+		$form->addText( 'packetery_weight', __( 'weight', 'packetery' ) . ' (kg)' )
 			->setRequired( false )
 			->addRule( Form::FLOAT );
 
@@ -95,7 +94,7 @@ class Modal {
 
 		$form->setDefaults(
 			[
-				Order\Entity::META_WEIGHT => '{{ data.order.packetery_weight }}',
+				'packetery_weight' => '{{ data.order.packetery_weight }}',
 			]
 		);
 

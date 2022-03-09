@@ -87,8 +87,8 @@ class Repository {
 		) {
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdb->packetery_order . '` ON `' . $this->wpdb->packetery_order . '`.`id` = `' . $this->wpdb->posts . '`.`id`';
 
-			if ( $this->getParamValue( $queryObject, Entity::META_CARRIER_ID ) ) {
-				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $this->getParamValue( $queryObject, Entity::META_CARRIER_ID ) ) . '"';
+			if ( $this->getParamValue( $queryObject, 'packetery_carrier_id' ) ) {
+				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $this->getParamValue( $queryObject, 'packetery_carrier_id' ) ) . '"';
 			}
 			if ( $this->getParamValue( $queryObject, 'packetery_to_submit' ) ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` IS NOT NULL ';

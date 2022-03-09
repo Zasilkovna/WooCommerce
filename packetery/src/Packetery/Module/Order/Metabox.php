@@ -156,16 +156,16 @@ class Metabox {
 	 */
 	public function add_fields(): void {
 		$this->order_form->addHidden( 'packetery_order_metabox_nonce' );
-		$this->order_form->addText( Entity::META_WEIGHT, __( 'Weight (kg)', 'packetery' ) )
+		$this->order_form->addText( 'packetery_weight', __( 'Weight (kg)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( Entity::META_WIDTH, __( 'Width (mm)', 'packetery' ) )
+		$this->order_form->addText( 'packetery_width', __( 'Width (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( Entity::META_LENGTH, __( 'Length (mm)', 'packetery' ) )
+		$this->order_form->addText( 'packetery_length', __( 'Length (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( Entity::META_HEIGHT, __( 'Height (mm)', 'packetery' ) )
+		$this->order_form->addText( 'packetery_height', __( 'Height (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
 
@@ -202,10 +202,10 @@ class Metabox {
 		$this->order_form->setDefaults(
 			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				Entity::META_WEIGHT             => $order->getWeight(),
-				Entity::META_WIDTH              => $order->getWidth(),
-				Entity::META_LENGTH             => $order->getLength(),
-				Entity::META_HEIGHT             => $order->getHeight(),
+				'packetery_weight'              => $order->getWeight(),
+				'packetery_width'               => $order->getWidth(),
+				'packetery_length'              => $order->getLength(),
+				'packetery_height'              => $order->getHeight(),
 			]
 		);
 
@@ -277,18 +277,18 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			Entity::META_WEIGHT => ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? Helper::simplifyWeight( $values[ Entity::META_WEIGHT ] ) : null ),
-			Entity::META_WIDTH  => ( is_numeric( $values[ Entity::META_WIDTH ] ) ? (float) number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : null ),
-			Entity::META_LENGTH => ( is_numeric( $values[ Entity::META_LENGTH ] ) ? (float) number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : null ),
-			Entity::META_HEIGHT => ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? (float) number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : null ),
+			'packetery_weight' => ( is_numeric( $values['packetery_weight'] ) ? Helper::simplifyWeight( $values['packetery_weight'] ) : null ),
+			'packetery_width'  => ( is_numeric( $values['packetery_width'] ) ? (float) number_format( $values['packetery_width'], 0, '.', '' ) : null ),
+			'packetery_length' => ( is_numeric( $values['packetery_length'] ) ? (float) number_format( $values['packetery_length'], 0, '.', '' ) : null ),
+			'packetery_height' => ( is_numeric( $values['packetery_height'] ) ? (float) number_format( $values['packetery_height'], 0, '.', '' ) : null ),
 		];
 
-		if ( $values[ Entity::META_POINT_ID ] && $order->isPickupPointDelivery() ) {
+		if ( $values['packetery_point_id'] && $order->isPickupPointDelivery() ) {
 			foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
-				if ( Entity::META_CARRIER_ID === $pickupPointAttr['name'] ) {
-					$value = ( ! empty( $values[ Entity::META_CARRIER_ID ] ) ? $values[ Entity::META_CARRIER_ID ] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+				if ( 'packetery_carrier_id' === $pickupPointAttr['name'] ) {
+					$value = ( ! empty( $values['packetery_carrier_id'] ) ? $values['packetery_carrier_id'] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 				}
 
 				$propsToSave[ $pickupPointAttr['name'] ] = $value;
@@ -303,16 +303,16 @@ class Metabox {
 
 			foreach ( $propsToSave as $attrName => $attrValue ) {
 				switch ($attrName) {
-					case Entity::META_WEIGHT:
+					case 'packetery_weight':
 						$order->setWeight($attrValue);
 						break;
-					case Entity::META_WIDTH:
+					case 'packetery_width':
 						$orderSize->setWidth($attrValue);
 						break;
-					case Entity::META_LENGTH:
+					case 'packetery_length':
 						$orderSize->setLength($attrValue);
 						break;
-					case Entity::META_HEIGHT:
+					case 'packetery_height':
 						$orderSize->setHeight($attrValue);
 						break;
 				}
