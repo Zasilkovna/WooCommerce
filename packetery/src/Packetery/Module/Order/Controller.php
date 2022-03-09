@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
+use Packetery\Module\Calculator;
 use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
@@ -56,18 +57,27 @@ class Controller extends WP_REST_Controller {
 	private $orderRepository;
 
 	/**
+	 * Calculator.
+	 *
+	 * @var Calculator
+	 */
+	private $calculator;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param Modal            $orderModal       Modal.
 	 * @param ControllerRouter $controllerRouter Router.
 	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
 	 * @param Order\Repository $orderRepository  Order repository.
+	 * @param Calculator       $calculator       Calculator.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
 		PacketSubmitter $packetSubmitter,
-		Order\Repository $orderRepository
+		Order\Repository $orderRepository,
+		Calculator $calculator
 	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
@@ -75,6 +85,7 @@ class Controller extends WP_REST_Controller {
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
 		$this->orderRepository = $orderRepository;
+		$this->calculator      = $calculator;
 	}
 
 	/**
@@ -165,7 +176,7 @@ class Controller extends WP_REST_Controller {
 
 		$values = $form->getValues( 'array' );
 		if ( ! is_numeric( $values['packetery_weight'] ) ) {
-			$values['packetery_weight'] = $this->orderRepository->calculateOrderWeight( wc_get_order( $orderId ) );
+			$values['packetery_weight'] = $this->calculator->calculateOrderWeight( wc_get_order( $orderId ) );
 		}
 
 		$order = $this->orderRepository->getById( $orderId );

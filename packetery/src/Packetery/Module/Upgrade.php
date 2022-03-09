@@ -18,6 +18,23 @@ use Packetery\Core\Log\Record;
  */
 class Upgrade {
 
+	const META_LENGTH           = 'packetery_length';
+	const META_WIDTH            = 'packetery_width';
+	const META_HEIGHT           = 'packetery_height';
+	const META_PACKET_STATUS    = 'packetery_packet_status';
+	const META_WEIGHT           = 'packetery_weight';
+	const META_CARRIER_ID       = 'packetery_carrier_id';
+	const META_IS_EXPORTED      = 'packetery_is_exported';
+	const META_IS_LABEL_PRINTED = 'packetery_is_label_printed';
+	const META_CARRIER_NUMBER   = 'packetery_carrier_number';
+	const META_PACKET_ID        = 'packetery_packet_id';
+	const META_POINT_ID         = 'packetery_point_id';
+	const META_POINT_NAME       = 'packetery_point_name';
+	const META_POINT_CITY       = 'packetery_point_city';
+	const META_POINT_ZIP        = 'packetery_point_zip';
+	const META_POINT_STREET     = 'packetery_point_street';
+	const META_POINT_URL        = 'packetery_point_url';
+
 	/**
 	 * Order repository.
 	 *
@@ -113,58 +130,58 @@ class Upgrade {
 				null,
 				null,
 				null,
-				$this->getMetaAsNullableFloat( $order, 'packetery_weight' ),
+				$this->getMetaAsNullableFloat( $order, self::META_WEIGHT ),
 				null,
-				$this->getMetaAsNullableString( $order, 'packetery_carrier_id' )
+				$this->getMetaAsNullableString( $order, self::META_CARRIER_ID )
 			);
 
-			$order->delete_meta_data( 'packetery_weight' );
-			$order->delete_meta_data( 'packetery_carrier_id' );
+			$order->delete_meta_data( self::META_WEIGHT );
+			$order->delete_meta_data( self::META_CARRIER_ID );
 
-			$orderEntity->setPacketStatus( $this->getMetaAsNullableString( $order, 'packetery_packet_status' ) );
-			$order->delete_meta_data( 'packetery_packet_status' );
+			$orderEntity->setPacketStatus( $this->getMetaAsNullableString( $order, self::META_PACKET_STATUS ) );
+			$order->delete_meta_data( self::META_PACKET_STATUS );
 
-			$orderEntity->setIsExported( (bool) $this->getMetaAsNullableString( $order, 'packetery_is_exported' ) );
-			$order->delete_meta_data( 'packetery_is_exported' );
+			$orderEntity->setIsExported( (bool) $this->getMetaAsNullableString( $order, self::META_IS_EXPORTED ) );
+			$order->delete_meta_data( self::META_IS_EXPORTED );
 
-			$orderEntity->setIsLabelPrinted( (bool) $this->getMetaAsNullableString( $order, 'packetery_is_label_printed' ) );
-			$order->delete_meta_data( 'packetery_is_label_printed' );
+			$orderEntity->setIsLabelPrinted( (bool) $this->getMetaAsNullableString( $order, self::META_IS_LABEL_PRINTED ) );
+			$order->delete_meta_data( self::META_IS_LABEL_PRINTED );
 
-			$orderEntity->setCarrierNumber( $this->getMetaAsNullableString( $order, 'packetery_carrier_number' ) );
-			$order->delete_meta_data( 'packetery_carrier_number' );
+			$orderEntity->setCarrierNumber( $this->getMetaAsNullableString( $order, self::META_CARRIER_NUMBER ) );
+			$order->delete_meta_data( self::META_CARRIER_NUMBER );
 
-			$orderEntity->setPacketId( $this->getMetaAsNullableString( $order, 'packetery_packet_id' ) );
-			$order->delete_meta_data( 'packetery_packet_id' );
+			$orderEntity->setPacketId( $this->getMetaAsNullableString( $order, self::META_PACKET_ID ) );
+			$order->delete_meta_data( self::META_PACKET_ID );
 
 			$orderEntity->setSize(
 				new Core\Entity\Size(
-					$this->getMetaAsNullableString( $order, 'packetery_length' ),
-					$this->getMetaAsNullableString( $order, 'packetery_width' ),
-					$this->getMetaAsNullableString( $order, 'packetery_height' )
+					$this->getMetaAsNullableString( $order, self::META_LENGTH ),
+					$this->getMetaAsNullableString( $order, self::META_WIDTH ),
+					$this->getMetaAsNullableString( $order, self::META_HEIGHT )
 				)
 			);
-			$order->delete_meta_data( 'packetery_length' );
-			$order->delete_meta_data( 'packetery_width' );
-			$order->delete_meta_data( 'packetery_height' );
+			$order->delete_meta_data( self::META_LENGTH );
+			$order->delete_meta_data( self::META_WIDTH );
+			$order->delete_meta_data( self::META_HEIGHT );
 
-			if ( null !== $this->getMetaAsNullableString( $order, 'packetery_point_id' ) ) {
+			if ( null !== $this->getMetaAsNullableString( $order, self::META_POINT_ID ) ) {
 				$orderEntity->setPickupPoint(
 					new Core\Entity\PickupPoint(
-						$this->getMetaAsNullableString( $order, 'packetery_point_id' ),
-						$this->getMetaAsNullableString( $order, 'packetery_point_name' ),
-						$this->getMetaAsNullableString( $order, 'packetery_point_city' ),
-						$this->getMetaAsNullableString( $order, 'packetery_point_zip' ),
-						$this->getMetaAsNullableString( $order, 'packetery_point_street' ),
-						$this->getMetaAsNullableString( $order, 'packetery_point_url' )
+						$this->getMetaAsNullableString( $order, self::META_POINT_ID ),
+						$this->getMetaAsNullableString( $order, self::META_POINT_NAME ),
+						$this->getMetaAsNullableString( $order, self::META_POINT_CITY ),
+						$this->getMetaAsNullableString( $order, self::META_POINT_ZIP ),
+						$this->getMetaAsNullableString( $order, self::META_POINT_STREET ),
+						$this->getMetaAsNullableString( $order, self::META_POINT_URL )
 					)
 				);
 			}
-			$order->delete_meta_data( 'packetery_point_id' );
-			$order->delete_meta_data( 'packetery_point_name' );
-			$order->delete_meta_data( 'packetery_point_city' );
-			$order->delete_meta_data( 'packetery_point_zip' );
-			$order->delete_meta_data( 'packetery_point_street' );
-			$order->delete_meta_data( 'packetery_point_url' );
+			$order->delete_meta_data( self::META_POINT_ID );
+			$order->delete_meta_data( self::META_POINT_NAME );
+			$order->delete_meta_data( self::META_POINT_CITY );
+			$order->delete_meta_data( self::META_POINT_ZIP );
+			$order->delete_meta_data( self::META_POINT_STREET );
+			$order->delete_meta_data( self::META_POINT_URL );
 
 			$this->orderRepository->save( $orderEntity );
 			$order->save_meta_data();
@@ -228,11 +245,11 @@ class Upgrade {
 	public function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get['packetery_all'] ) ) {
 			$queryVars[] = [
-				'key'     => 'packetery_carrier_id',
+				'key'     => self::META_CARRIER_ID,
 				'compare' => 'EXISTS',
 			];
 			$queryVars[] = [
-				'key'     => 'packetery_carrier_id',
+				'key'     => self::META_CARRIER_ID,
 				'value'   => '',
 				'compare' => '!=',
 			];

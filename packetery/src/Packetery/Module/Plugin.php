@@ -204,6 +204,13 @@ class Plugin {
 	private $upgrade;
 
 	/**
+	 * QueryProcessor.
+	 *
+	 * @var QueryProcessor
+	 */
+	private $queryProcessor;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox            $order_metabox        Order metabox.
@@ -229,6 +236,7 @@ class Plugin {
 	 * @param Request                  $request              HTTP request.
 	 * @param Order\Repository         $orderRepository      Order repository.
 	 * @param Upgrade                  $upgrade              Plugin upgrade.
+	 * @param QueryProcessor           $queryProcessor       QueryProcessor.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -253,7 +261,8 @@ class Plugin {
 		Order\PacketSynchronizer $packetSynchronizer,
 		Request $request,
 		Order\Repository $orderRepository,
-		Upgrade $upgrade
+		Upgrade $upgrade,
+		QueryProcessor $queryProcessor
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -279,6 +288,7 @@ class Plugin {
 		$this->request              = $request;
 		$this->orderRepository      = $orderRepository;
 		$this->upgrade              = $upgrade;
+		$this->queryProcessor       = $queryProcessor;
 	}
 
 	/**
@@ -319,7 +329,7 @@ class Plugin {
 
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
-		add_filter( 'posts_clauses', [ $this->orderRepository, 'postClausesFilter' ], 10, 2 );
+		$this->queryProcessor->register();
 
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );

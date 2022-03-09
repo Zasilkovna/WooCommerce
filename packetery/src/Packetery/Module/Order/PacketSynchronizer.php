@@ -75,7 +75,7 @@ class PacketSynchronizer {
 	 * @return void
 	 */
 	public function syncStatuses(): void {
-		$results = $this->orderRepository->findStatusSyncingPackets( $this->optionsProvider->getMaxStatusSyncingPackets() );
+		$results = $this->orderRepository->findStatusSyncingOrders( $this->optionsProvider->getMaxStatusSyncingPackets() );
 
 		foreach ( $results as $order ) {
 			$packetId = $order->getPacketId();

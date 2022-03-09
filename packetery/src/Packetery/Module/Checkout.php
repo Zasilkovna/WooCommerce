@@ -24,6 +24,14 @@ class Checkout {
 	public const CARRIER_PREFIX = 'packetery_carrier_';
 	private const NONCE_ACTION  = 'packetery_checkout';
 
+	const ATTR_POINT_ID     = 'packetery_point_id';
+	const ATTR_POINT_NAME   = 'packetery_point_name';
+	const ATTR_POINT_CITY   = 'packetery_point_city';
+	const ATTR_POINT_ZIP    = 'packetery_point_zip';
+	const ATTR_POINT_STREET = 'packetery_point_street';
+	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
+	const ATTR_POINT_URL    = 'packetery_point_url';
+
 	/**
 	 * Pickup point attributes configuration.
 	 *
@@ -31,31 +39,31 @@ class Checkout {
 	 */
 	public static $pickupPointAttrs = array(
 		'id'        => array(
-			'name'     => 'packetery_point_id',
+			'name'     => self::ATTR_POINT_ID,
 			'required' => true,
 		),
 		'name'      => array(
-			'name'     => 'packetery_point_name',
+			'name'     => self::ATTR_POINT_NAME,
 			'required' => true,
 		),
 		'city'      => array(
-			'name'     => 'packetery_point_city',
+			'name'     => self::ATTR_POINT_CITY,
 			'required' => true,
 		),
 		'zip'       => array(
-			'name'     => 'packetery_point_zip',
+			'name'     => self::ATTR_POINT_ZIP,
 			'required' => true,
 		),
 		'street'    => array(
-			'name'     => 'packetery_point_street',
+			'name'     => self::ATTR_POINT_STREET,
 			'required' => true,
 		),
 		'carrierId' => array(
-			'name'     => 'packetery_carrier_id',
+			'name'     => self::ATTR_CARRIER_ID,
 			'required' => false,
 		),
 		'url'       => array(
-			'name'     => 'packetery_point_url',
+			'name'     => self::ATTR_POINT_URL,
 			'required' => true,
 		),
 	);
@@ -372,8 +380,8 @@ class Checkout {
 		$propsToSave = [ 'id' => $orderId ];
 		// Save carrier id for home delivery (we got no id from widget).
 		$carrierId = $this->getCarrierId( $chosenMethod );
-		if ( empty( $post['packetery_carrier_id'] ) && $carrierId ) {
-			$propsToSave['packetery_carrier_id'] = $carrierId;
+		if ( empty( $post[ self::ATTR_CARRIER_ID ] ) && $carrierId ) {
+			$propsToSave[ self::ATTR_CARRIER_ID ] = $carrierId;
 		}
 
 		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
@@ -390,8 +398,8 @@ class Checkout {
 
 				$saveMeta = true;
 				if (
-					( 'packetery_carrier_id' === $attrName && ! $attrValue ) ||
-					( 'packetery_point_url' === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
+					( self::ATTR_CARRIER_ID === $attrName && ! $attrValue ) ||
+					( self::ATTR_POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
 				) {
 					$saveMeta = false;
 				}
@@ -433,8 +441,8 @@ class Checkout {
 	/**
 	 * Updates order entity from props to save-
 	 *
-	 * @param string $orderId Order ID.
-	 * @param array  $propsToSave Props to save.
+	 * @param Core\Entity\Order $orderEntity Order entity.
+	 * @param array             $propsToSave Props to save.
 	 *
 	 * @return void
 	 */
@@ -445,27 +453,27 @@ class Checkout {
 		}
 
 		foreach ( $propsToSave as $attrName => $attrValue ) {
-			switch ($attrName) {
-				case 'packetery_carrier_id':
-					$orderEntity->setCarrierId($attrValue);
+			switch ( $attrName ) {
+				case self::ATTR_CARRIER_ID:
+					$orderEntity->setCarrierId( $attrValue );
 					break;
-				case 'packetery_point_id':
-					$orderEntityPickupPoint->setId($attrValue);
+				case self::ATTR_POINT_ID:
+					$orderEntityPickupPoint->setId( $attrValue );
 					break;
-				case 'packetery_point_name':
-					$orderEntityPickupPoint->setName($attrValue);
+				case self::ATTR_POINT_NAME:
+					$orderEntityPickupPoint->setName( $attrValue );
 					break;
-				case 'packetery_point_url':
-					$orderEntityPickupPoint->setUrl($attrValue);
+				case self::ATTR_POINT_URL:
+					$orderEntityPickupPoint->setUrl( $attrValue );
 					break;
-				case 'packetery_point_street':
-					$orderEntityPickupPoint->setStreet($attrValue);
+				case self::ATTR_POINT_STREET:
+					$orderEntityPickupPoint->setStreet( $attrValue );
 					break;
-				case 'packetery_point_zip':
-					$orderEntityPickupPoint->setZip($attrValue);
+				case self::ATTR_POINT_ZIP:
+					$orderEntityPickupPoint->setZip( $attrValue );
 					break;
-				case 'packetery_point_city':
-					$orderEntityPickupPoint->setCity($attrValue);
+				case self::ATTR_POINT_CITY:
+					$orderEntityPickupPoint->setCity( $attrValue );
 					break;
 			}
 		}

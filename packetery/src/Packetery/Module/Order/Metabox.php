@@ -27,6 +27,11 @@ use PacketeryNette\Http\Request;
  */
 class Metabox {
 
+	const FIELD_WEIGHT = 'packetery_weight';
+	const FIELD_WIDTH  = 'packetery_width';
+	const FIELD_LENGTH = 'packetery_length';
+	const FIELD_HEIGHT = 'packetery_height';
+
 	/**
 	 * PacketeryLatte engine.
 	 *
@@ -156,16 +161,16 @@ class Metabox {
 	 */
 	public function add_fields(): void {
 		$this->order_form->addHidden( 'packetery_order_metabox_nonce' );
-		$this->order_form->addText( 'packetery_weight', __( 'Weight (kg)', 'packetery' ) )
+		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( 'packetery_width', __( 'Width (mm)', 'packetery' ) )
+		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( 'packetery_length', __( 'Length (mm)', 'packetery' ) )
+		$this->order_form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
-		$this->order_form->addText( 'packetery_height', __( 'Height (mm)', 'packetery' ) )
+		$this->order_form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packetery' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
 
@@ -202,10 +207,10 @@ class Metabox {
 		$this->order_form->setDefaults(
 			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				'packetery_weight'              => $order->getWeight(),
-				'packetery_width'               => $order->getWidth(),
-				'packetery_length'              => $order->getLength(),
-				'packetery_height'              => $order->getHeight(),
+				self::FIELD_WEIGHT              => $order->getWeight(),
+				self::FIELD_WIDTH               => $order->getWidth(),
+				self::FIELD_LENGTH              => $order->getLength(),
+				self::FIELD_HEIGHT              => $order->getHeight(),
 			]
 		);
 
@@ -277,18 +282,18 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			'packetery_weight' => ( is_numeric( $values['packetery_weight'] ) ? Helper::simplifyWeight( $values['packetery_weight'] ) : null ),
-			'packetery_width'  => ( is_numeric( $values['packetery_width'] ) ? (float) number_format( $values['packetery_width'], 0, '.', '' ) : null ),
-			'packetery_length' => ( is_numeric( $values['packetery_length'] ) ? (float) number_format( $values['packetery_length'], 0, '.', '' ) : null ),
-			'packetery_height' => ( is_numeric( $values['packetery_height'] ) ? (float) number_format( $values['packetery_height'], 0, '.', '' ) : null ),
+			self::FIELD_WEIGHT => ( is_numeric( $values[ self::FIELD_WEIGHT ] ) ? Helper::simplifyWeight( $values[ self::FIELD_WEIGHT ] ) : null ),
+			self::FIELD_WIDTH  => ( is_numeric( $values[ self::FIELD_WIDTH ] ) ? (float) number_format( $values[ self::FIELD_WIDTH ], 0, '.', '' ) : null ),
+			self::FIELD_LENGTH => ( is_numeric( $values[ self::FIELD_LENGTH ] ) ? (float) number_format( $values[ self::FIELD_LENGTH ], 0, '.', '' ) : null ),
+			self::FIELD_HEIGHT => ( is_numeric( $values[ self::FIELD_HEIGHT ] ) ? (float) number_format( $values[ self::FIELD_HEIGHT ], 0, '.', '' ) : null ),
 		];
 
-		if ( $values['packetery_point_id'] && $order->isPickupPointDelivery() ) {
+		if ( $values[ Checkout::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
 			foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
-				if ( 'packetery_carrier_id' === $pickupPointAttr['name'] ) {
-					$value = ( ! empty( $values['packetery_carrier_id'] ) ? $values['packetery_carrier_id'] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+				if ( Checkout::ATTR_CARRIER_ID === $pickupPointAttr['name'] ) {
+					$value = ( ! empty( $values[ Checkout::ATTR_CARRIER_ID ] ) ? $values[ Checkout::ATTR_CARRIER_ID ] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 				}
 
 				$propsToSave[ $pickupPointAttr['name'] ] = $value;
@@ -302,18 +307,18 @@ class Metabox {
 			}
 
 			foreach ( $propsToSave as $attrName => $attrValue ) {
-				switch ($attrName) {
-					case 'packetery_weight':
-						$order->setWeight($attrValue);
+				switch ( $attrName ) {
+					case self::FIELD_WEIGHT:
+						$order->setWeight( $attrValue );
 						break;
-					case 'packetery_width':
-						$orderSize->setWidth($attrValue);
+					case self::FIELD_WIDTH:
+						$orderSize->setWidth( $attrValue );
 						break;
-					case 'packetery_length':
-						$orderSize->setLength($attrValue);
+					case self::FIELD_LENGTH:
+						$orderSize->setLength( $attrValue );
 						break;
-					case 'packetery_height':
-						$orderSize->setHeight($attrValue);
+					case self::FIELD_HEIGHT:
+						$orderSize->setHeight( $attrValue );
 						break;
 				}
 			}

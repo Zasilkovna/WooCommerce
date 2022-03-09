@@ -12,11 +12,10 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
+use Packetery\Module\Calculator;
 use Packetery\Module\Carrier;
-use Packetery\Module\Options;
 use Packetery\Module\Product;
 use Packetery\Module\ShippingMethod;
-use PacketeryNette\Http;
 
 /**
  * Class Repository.
@@ -33,13 +32,6 @@ class Repository {
 	private $wpdb;
 
 	/**
-	 * Nette Request.
-	 *
-	 * @var Http\Request
-	 */
-	private $httpRequest;
-
-	/**
 	 * Order factory.
 	 *
 	 * @var Builder
@@ -47,25 +39,23 @@ class Repository {
 	private $builder;
 
 	/**
-	 * Options provider.
+	 * Calculator.
 	 *
-	 * @var Options\Provider
+	 * @var Calculator
 	 */
-	private $optionsProvider;
+	private $calculator;
 
 	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb            $wpdb            Wpdb.
-	 * @param Http\Request     $httpRequest     Nette Request.
-	 * @param Builder          $orderFactory    Order factory.
-	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param \wpdb      $wpdb         Wpdb.
+	 * @param Builder    $orderFactory Order factory.
+	 * @param Calculator $calculator   Calculator.
 	 */
-	public function __construct( \wpdb $wpdb, Http\Request $httpRequest, Builder $orderFactory, Options\Provider $optionsProvider ) {
-		$this->wpdb            = $wpdb;
-		$this->httpRequest     = $httpRequest;
+	public function __construct( \wpdb $wpdb, Builder $orderFactory, Calculator $calculator ) {
+		$this->wpdb       = $wpdb;
 		$this->builder    = $orderFactory;
-		$this->optionsProvider = $optionsProvider;
+		$this->calculator = $calculator;
 	}
 
 	/**
@@ -73,33 +63,35 @@ class Repository {
 	 *
 	 * @link https://wordpress.stackexchange.com/questions/50305/how-to-extend-wp-query-to-include-custom-table-in-query
 	 *
-	 * @param array     $clauses Clauses.
+	 * @param array     $clauses     Clauses.
 	 * @param \WP_Query $queryObject WP_Query.
+	 * @param array     $paramValues Param values.
 	 *
 	 * @return array
 	 */
-	public function postClausesFilter( array $clauses, \WP_Query $queryObject ): array {
+	public function processPostClauses( array $clauses, \WP_Query $queryObject, array $paramValues ): array {
 		if ( isset( $queryObject->query['post_type'] ) &&
 			(
 				'shop_order' === $queryObject->query['post_type'] ||
 				( is_array( $queryObject->query['post_type'] ) && in_array( 'shop_order', $queryObject->query['post_type'], true ) )
 			)
 		) {
+			// TODO: Introduce variable.
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdb->packetery_order . '` ON `' . $this->wpdb->packetery_order . '`.`id` = `' . $this->wpdb->posts . '`.`id`';
 
-			if ( $this->getParamValue( $queryObject, 'packetery_carrier_id' ) ) {
-				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $this->getParamValue( $queryObject, 'packetery_carrier_id' ) ) . '"';
+			if ( $paramValues['packetery_carrier_id'] ) {
+				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $paramValues['packetery_carrier_id'] ) . '"';
 			}
-			if ( $this->getParamValue( $queryObject, 'packetery_to_submit' ) ) {
+			if ( $paramValues['packetery_to_submit'] ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` IS NOT NULL ';
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`is_exported` = false ';
 			}
-			if ( $this->getParamValue( $queryObject, 'packetery_to_print' ) ) {
+			if ( $paramValues['packetery_to_print'] ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`packet_id` IS NOT NULL ';
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`is_label_printed` = false ';
 			}
-			if ( $this->getParamValue( $queryObject, 'packetery_order_type' ) ) {
-				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $this->getParamValue( $queryObject, 'packetery_order_type' ) ) {
+			if ( $paramValues['packetery_order_type'] ) {
+				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
 					$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
 				} else {
 					$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` != "' . $this->wpdb->_real_escape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
@@ -111,41 +103,12 @@ class Repository {
 	}
 
 	/**
-	 * Gets parameter value from GET data or WP_Query.
-	 *
-	 * @param \WP_Query $queryObject WP_Query.
-	 * @param string    $key Key.
-	 *
-	 * @return mixed|null
-	 */
-	private function getParamValue( \WP_Query $queryObject, $key ) {
-		$get = $this->httpRequest->getQuery();
-		if ( isset( $get[ $key ] ) && '' !== (string) $get[ $key ] ) {
-			return $get[ $key ];
-		}
-		if ( isset( $queryObject->query[ $key ] ) && '' !== (string) $queryObject->query[ $key ] ) {
-			return $queryObject->query[ $key ];
-		}
-
-		return null;
-	}
-
-	/**
-	 * Gets wpdb object from global variable with custom tablename set.
-	 *
-	 * @return \wpdb
-	 */
-	private function get_wpdb(): \wpdb {
-		return $this->wpdb;
-	}
-
-	/**
 	 * Create table to store orders.
 	 *
 	 * @return bool
 	 */
 	public function createTable(): bool {
-		$wpdb = $this->get_wpdb();
+		$wpdb = $this->wpdb;
 
 		return $wpdb->query(
 			'CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_order . '` (
@@ -175,7 +138,7 @@ class Repository {
 	 * Drop table used to store orders.
 	 */
 	public function drop(): void {
-		$wpdb = $this->get_wpdb();
+		$wpdb = $this->wpdb;
 		$wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->packetery_order . '`' );
 	}
 
@@ -207,7 +170,7 @@ class Repository {
 			return null;
 		}
 
-		$wpdb = $this->get_wpdb();
+		$wpdb = $this->wpdb;
 
 		$result = $wpdb->get_row(
 			$wpdb->prepare(
@@ -238,14 +201,14 @@ class Repository {
 	private function createPartialOrder( \WC_Order $wcOrder, \stdClass $result ): Order {
 		$orderWeight = $this->parseFloat( $result->weight );
 		if ( null === $orderWeight ) {
-			$orderWeight = $this->calculateOrderWeight( $wcOrder );
+			$orderWeight = $this->calculator->calculateOrderWeight( $wcOrder );
 		}
 
 		$partialOrder = new Order(
 			$result->id,
 			null,
 			null,
-			$this->getTotalPrice( $wcOrder ),
+			null,
 			$orderWeight,
 			null,
 			$result->carrier_id
@@ -288,30 +251,6 @@ class Repository {
 		}
 
 		return (float) $value;
-	}
-
-	/**
-	 * Calculates order weight ignoring user specified weight.
-	 *
-	 * @param \WC_Order $order Order.
-	 *
-	 * @return float
-	 */
-	public function calculateOrderWeight( \WC_Order $order ): float {
-		$weight = 0;
-		foreach ( $order->get_items() as $item ) {
-			$quantity      = $item->get_quantity();
-			$product       = $item->get_product();
-			$productWeight = (float) $product->get_weight();
-			$weight       += ( $productWeight * $quantity );
-		}
-
-		$weightKg = wc_get_weight( $weight, 'kg' );
-		if ( $weightKg ) {
-			$weightKg += $this->optionsProvider->getPackagingWeight();
-		}
-
-		return $weightKg;
 	}
 
 	/**
@@ -396,7 +335,7 @@ class Repository {
 	 *
 	 * @return iterable|Order[]
 	 */
-	public function findStatusSyncingPackets( int $limit ): iterable {
+	public function findStatusSyncingOrders( int $limit ): iterable {
 		$wpdb = $this->wpdb;
 
 		$rows = $wpdb->get_results(
@@ -429,7 +368,7 @@ class Repository {
 	 *
 	 * @return bool
 	 */
-	public function containsAdultContent( \WC_Order $wcOrder ): bool {
+	private function containsAdultContent( \WC_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_items() as $item ) {
 			$itemData      = $item->get_data();
 			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
@@ -442,51 +381,32 @@ class Repository {
 	}
 
 	/**
-	 * Type cast of get_total result is needed, PHPDoc is wrong.
+	 * Counts order to be submitted.
 	 *
-	 * @param \WC_Order $wcOrder WC Order.
-	 *
-	 * @return float
+	 * @return int
 	 */
-	public function getTotalPrice( \WC_Order $wcOrder ): float {
-		return (float) $wcOrder->get_total( 'raw' );
+	public function countOrdersToSubmit(): int {
+		$wpdb = $this->wpdb;
+
+		return (int) $wpdb->get_var(
+			'SELECT COUNT(DISTINCT o.id) FROM `' . $wpdb->packetery_order . '` o 
+			JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			WHERE o.`carrier_id` IS NOT NULL AND o.`is_exported` = false'
+		);
 	}
 
 	/**
-	 * Gets code text translated.
+	 * Counts order to be printed.
 	 *
-	 * @param string|null $packetStatus Packet status.
-	 *
-	 * @return string|null
+	 * @return int
 	 */
-	public function getPacketStatusTranslated( ?string $packetStatus ): string {
-		switch ( $packetStatus ) {
-			case 'received data':
-				return __( 'packetStatusReceivedData', 'packetery' );
-			case 'arrived':
-				return __( 'packetStatusArrived', 'packetery' );
-			case 'prepared for departure':
-				return __( 'packetStatusPreparedForDeparture', 'packetery' );
-			case 'departed':
-				return __( 'packetStatusDeparted', 'packetery' );
-			case 'ready for pickup':
-				return __( 'packetStatusReadyForPickup', 'packetery' );
-			case 'handed to carrier':
-				return __( 'packetStatusHandedToCarrier', 'packetery' );
-			case 'delivered':
-				return __( 'packetStatusDelivered', 'packetery' );
-			case 'posted back':
-				return __( 'packetStatusPostedBack', 'packetery' );
-			case 'returned':
-				return __( 'packetStatusReturned', 'packetery' );
-			case 'cancelled':
-				return __( 'packetStatusCancelled', 'packetery' );
-			case 'collected':
-				return __( 'packetStatusCollected', 'packetery' );
-			case 'unknown':
-				return __( 'packetStatusUnknown', 'packetery' );
-		}
+	public function countOrdersToPrint(): int {
+		$wpdb = $this->wpdb;
 
-		return (string) $packetStatus;
+		return (int) $wpdb->get_var(
+			'SELECT COUNT(DISTINCT o.id) FROM `' . $wpdb->packetery_order . '` o 
+			JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			WHERE o.`packet_id` IS NOT NULL AND o.`is_label_printed` = false'
+		);
 	}
 }

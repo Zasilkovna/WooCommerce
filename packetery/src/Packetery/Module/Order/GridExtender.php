@@ -96,12 +96,6 @@ class GridExtender {
 	 * @return array
 	 */
 	public function addFilterLinks( array $var ): array {
-		$orders      = wc_get_orders(
-			[
-				'packetery_to_submit' => '1',
-				'nopaging'            => true,
-			]
-		);
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
@@ -113,17 +107,11 @@ class GridExtender {
 				admin_url( 'edit.php' )
 			),
 			'title'      => __( 'packetaOrdersToSubmit', 'packetery' ),
-			'orderCount' => count( $orders ),
+			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
-		$orders      = wc_get_orders(
-			[
-				'packetery_to_print' => '1',
-				'nopaging'           => true,
-			]
-		);
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
@@ -135,7 +123,7 @@ class GridExtender {
 				admin_url( 'edit.php' )
 			),
 			'title'      => __( 'packetaOrdersToPrint', 'packetery' ),
-			'orderCount' => count( $orders ),
+			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
@@ -230,9 +218,47 @@ class GridExtender {
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $this->orderRepository->getPacketStatusTranslated( $order->getPacketStatus() ) );
+				echo esc_html( $this->getPacketStatusTranslated( $order->getPacketStatus() ) );
 				break;
 		}
+	}
+
+	/**
+	 * Gets code text translated.
+	 *
+	 * @param string|null $packetStatus Packet status.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketStatusTranslated( ?string $packetStatus ): string {
+		switch ( $packetStatus ) {
+			case 'received data':
+				return __( 'packetStatusReceivedData', 'packetery' );
+			case 'arrived':
+				return __( 'packetStatusArrived', 'packetery' );
+			case 'prepared for departure':
+				return __( 'packetStatusPreparedForDeparture', 'packetery' );
+			case 'departed':
+				return __( 'packetStatusDeparted', 'packetery' );
+			case 'ready for pickup':
+				return __( 'packetStatusReadyForPickup', 'packetery' );
+			case 'handed to carrier':
+				return __( 'packetStatusHandedToCarrier', 'packetery' );
+			case 'delivered':
+				return __( 'packetStatusDelivered', 'packetery' );
+			case 'posted back':
+				return __( 'packetStatusPostedBack', 'packetery' );
+			case 'returned':
+				return __( 'packetStatusReturned', 'packetery' );
+			case 'cancelled':
+				return __( 'packetStatusCancelled', 'packetery' );
+			case 'collected':
+				return __( 'packetStatusCollected', 'packetery' );
+			case 'unknown':
+				return __( 'packetStatusUnknown', 'packetery' );
+		}
+
+		return (string) $packetStatus;
 	}
 
 	/**
@@ -251,7 +277,7 @@ class GridExtender {
 			if ( 'order_total' === $column_name ) {
 				$new_columns['packetery_packet_status'] = __( 'packetaPacketStatus', 'packetery' );
 				$new_columns['packetery']               = __( 'Packeta', 'packetery' );
-				$new_columns['packetery_packet_id']  = __( 'Barcode', 'packetery' );
+				$new_columns['packetery_packet_id']     = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}

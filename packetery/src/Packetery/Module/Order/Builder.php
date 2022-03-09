@@ -82,6 +82,7 @@ class Builder {
 		$partialOrder->setSurname( $contactInfo['last_name'] );
 		$partialOrder->setEshop( $this->optionsProvider->get_sender() );
 		$partialOrder->setWeight( Helper::simplifyWeight( $partialOrder->getWeight() ) );
+		$partialOrder->setValue( (float) $order->get_total( 'raw' ) );
 
 		$address = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
 		if ( null === $address ) {
