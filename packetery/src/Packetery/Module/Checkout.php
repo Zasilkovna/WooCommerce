@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Core;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
@@ -400,7 +401,12 @@ class Checkout {
 				}
 			}
 		}
-		$this->orderRepository->insert( $propsToSave );
+
+		if ( $propsToSave ) {
+			$orderEntity = Core\Entity\Order::fromRequired( (string) $orderId, $carrierId );
+			self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
+			$this->orderRepository->save( $orderEntity );
+		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
 			$address = [];
@@ -423,6 +429,49 @@ class Checkout {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
+	}
+
+	/**
+	 * Updates order entity from props to save-
+	 *
+	 * @param string $orderId Order ID.
+	 * @param array  $propsToSave Props to save.
+	 *
+	 * @return void
+	 */
+	public static function updateOrderEntityFromPropsToSave( Core\Entity\Order $orderEntity, array $propsToSave ): void {
+		$orderEntityPickupPoint = $orderEntity->getPickupPoint();
+		if ( null === $orderEntityPickupPoint ) {
+			$orderEntityPickupPoint = Core\Entity\PickupPoint::createEmpty();
+		}
+
+		foreach ( $propsToSave as $attrName => $attrValue ) {
+			switch ($attrName) {
+				case Entity::META_CARRIER_ID:
+					$orderEntity->setCarrierId($attrValue);
+					break;
+				case Entity::META_POINT_ID:
+					$orderEntityPickupPoint->setId($attrValue);
+					break;
+				case Entity::META_POINT_NAME:
+					$orderEntityPickupPoint->setName($attrValue);
+					break;
+				case Entity::META_POINT_URL:
+					$orderEntityPickupPoint->setUrl($attrValue);
+					break;
+				case Entity::META_POINT_STREET:
+					$orderEntityPickupPoint->setStreet($attrValue);
+					break;
+				case Entity::META_POINT_ZIP:
+					$orderEntityPickupPoint->setZip($attrValue);
+					break;
+				case Entity::META_POINT_CITY:
+					$orderEntityPickupPoint->setCity($attrValue);
+					break;
+			}
+		}
+
+		$orderEntity->setPickupPoint( $orderEntityPickupPoint );
 	}
 
 	/**

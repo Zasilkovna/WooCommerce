@@ -9,9 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
@@ -278,9 +278,9 @@ class Metabox {
 
 		$propsToSave = [
 			Entity::META_WEIGHT => ( is_numeric( $values[ Entity::META_WEIGHT ] ) ? Helper::simplifyWeight( $values[ Entity::META_WEIGHT ] ) : null ),
-			Entity::META_WIDTH  => ( is_numeric( $values[ Entity::META_WIDTH ] ) ? number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : null ),
-			Entity::META_LENGTH => ( is_numeric( $values[ Entity::META_LENGTH ] ) ? number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : null ),
-			Entity::META_HEIGHT => ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : null ),
+			Entity::META_WIDTH  => ( is_numeric( $values[ Entity::META_WIDTH ] ) ? (float) number_format( $values[ Entity::META_WIDTH ], 0, '.', '' ) : null ),
+			Entity::META_LENGTH => ( is_numeric( $values[ Entity::META_LENGTH ] ) ? (float) number_format( $values[ Entity::META_LENGTH ], 0, '.', '' ) : null ),
+			Entity::META_HEIGHT => ( is_numeric( $values[ Entity::META_HEIGHT ] ) ? (float) number_format( $values[ Entity::META_HEIGHT ], 0, '.', '' ) : null ),
 		];
 
 		if ( $values[ Entity::META_POINT_ID ] && $order->isPickupPointDelivery() ) {
@@ -296,7 +296,31 @@ class Metabox {
 		}
 
 		if ( $propsToSave ) {
-			$this->orderRepository->update( $propsToSave, $orderId );
+			$orderSize = $order->getSize();
+			if ( null === $orderSize ) {
+				$orderSize = Core\Entity\Size::createEmpty();
+			}
+
+			foreach ( $propsToSave as $attrName => $attrValue ) {
+				switch ($attrName) {
+					case Entity::META_WEIGHT:
+						$order->setWeight($attrValue);
+						break;
+					case Entity::META_WIDTH:
+						$orderSize->setWidth($attrValue);
+						break;
+					case Entity::META_LENGTH:
+						$orderSize->setLength($attrValue);
+						break;
+					case Entity::META_HEIGHT:
+						$orderSize->setHeight($attrValue);
+						break;
+				}
+			}
+
+			$order->setSize( $orderSize );
+			Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
+			$this->orderRepository->save( $order );
 		}
 
 		return $orderId;

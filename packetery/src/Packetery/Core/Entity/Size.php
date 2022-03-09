@@ -50,6 +50,15 @@ class Size {
 	}
 
 	/**
+	 * Creates empty size object.
+	 *
+	 * @return static
+	 */
+	public static function createEmpty(): self {
+		return new self( null, null, null );
+	}
+
+	/**
 	 * Gets length.
 	 *
 	 * @return float|null
@@ -74,5 +83,38 @@ class Size {
 	 */
 	public function getHeight(): ?float {
 		return $this->height;
+	}
+
+	/**
+	 * Sets length.
+	 *
+	 * @param float|null $length Length.
+	 *
+	 * @return void
+	 */
+	public function setLength( ?float $length ): void {
+		$this->length = $length;
+	}
+
+	/**
+	 * Sets width.
+	 *
+	 * @param float|null $width Width.
+	 *
+	 * @return void
+	 */
+	public function setWidth( ?float $width ): void {
+		$this->width = $width;
+	}
+
+	/**
+	 * Ses height.
+	 *
+	 * @param float|null $height Height.
+	 *
+	 * @return void
+	 */
+	public function setHeight( ?float $height ): void {
+		$this->height = $height;
 	}
 }

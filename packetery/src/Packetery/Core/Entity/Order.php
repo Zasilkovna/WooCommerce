@@ -200,6 +200,29 @@ class Order {
 	}
 
 	/**
+	 * Create instance with given ID.
+	 *
+	 * @param string $id ID.
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return static
+	 */
+	public static function fromRequired( string $id, string $carrierId ): self {
+		$entity = new \Packetery\Core\Entity\Order(
+			$id,
+			null,
+			null,
+			null,
+			null,
+			null,
+			$carrierId
+		);
+		$entity->setIsExported( false );
+		$entity->setIsLabelPrinted( false );
+		return $entity;
+	}
+
+	/**
 	 * Checks if is home delivery. In that case pointId is not set.
 	 *
 	 * @return bool
@@ -529,9 +552,9 @@ class Order {
 	/**
 	 * Tells if is packet submitted.
 	 *
-	 * @return bool
+	 * @return bool|null
 	 */
-	public function isExported(): bool {
+	public function isExported(): ?bool {
 		return $this->isExported;
 	}
 

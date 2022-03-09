@@ -172,31 +172,6 @@ class Repository {
 	}
 
 	/**
-	 * Insert order data into db.
-	 *
-	 * @param array $data Order data.
-	 *
-	 * @return void
-	 */
-	public function insert( array $data ): void {
-		$wpdb = $this->get_wpdb();
-		$data = $this->removePrefixes( $data );
-		$wpdb->insert( $wpdb->packetery_order, $data );
-	}
-
-	/**
-	 * Updates order data in db.
-	 *
-	 * @param array $data Order data.
-	 * @param int   $orderId Order id.
-	 */
-	public function update( array $data, int $orderId ): void {
-		$wpdb = $this->get_wpdb();
-		$data = $this->removePrefixes( $data );
-		$wpdb->update( $wpdb->packetery_order, $data, [ 'id' => $orderId ] );
-	}
-
-	/**
 	 * Drop table used to store orders.
 	 */
 	public function drop(): void {
@@ -349,14 +324,7 @@ class Repository {
 	private function orderToDbArray( Order $order ): array {
 		$point = $order->getPickupPoint();
 		if ( null === $point ) {
-			$point = new PickupPoint(
-				null,
-				null,
-				null,
-				null,
-				null,
-				null
-			);
+			$point = PickupPoint::createEmpty();
 		}
 
 		$data = [
@@ -452,38 +420,6 @@ class Repository {
 			$partial = $this->createPartialOrder( $wcOrder, $row );
 			yield $this->builder->finalize( $wcOrder, $partial );
 		}
-	}
-
-	/**
-	 * Removes packetery prefixes from data being saved to db.
-	 *
-	 * @param array $data Order data.
-	 *
-	 * @return array
-	 */
-	private function removePrefixes( array $data ): array {
-		$newData = [];
-		foreach ( $data as $key => $value ) {
-			$newData[ $this->removePrefix( $key ) ] = $value;
-		}
-
-		return $newData;
-	}
-
-	/**
-	 * Removes prefix if needed.
-	 *
-	 * @param string $string Key.
-	 *
-	 * @return string
-	 */
-	public function removePrefix( string $string ): string {
-		$prefix = 'packetery_';
-		if ( 0 === strpos( $string, $prefix ) ) {
-			return substr( $string, strlen( $prefix ) );
-		}
-
-		return $string;
 	}
 
 	/**
