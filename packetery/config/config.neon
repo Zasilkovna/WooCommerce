@@ -32,7 +32,7 @@ services:
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\EntityFactory\Carrier
-	- Packetery\Module\EntityFactory\Order
+	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order

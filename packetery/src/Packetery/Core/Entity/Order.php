@@ -317,6 +317,17 @@ class Order {
 	}
 
 	/**
+	 * Sets eshop.
+	 *
+	 * @param string|null $eshop Eshop.
+	 *
+	 * @return void
+	 */
+	public function setEshop( ?string $eshop ): void {
+		$this->eshop = $eshop;
+	}
+
+	/**
 	 * Sets phone.
 	 *
 	 * @param string $phone Phone.

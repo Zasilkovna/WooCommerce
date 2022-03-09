@@ -13,7 +13,6 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Module\Carrier;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\Options;
 use Packetery\Module\Product;
 use Packetery\Module\ShippingMethod;
@@ -43,9 +42,9 @@ class Repository {
 	/**
 	 * Order factory.
 	 *
-	 * @var EntityFactory\Order
+	 * @var Builder
 	 */
-	private $orderFactory;
+	private $builder;
 
 	/**
 	 * Options provider.
@@ -57,15 +56,15 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb               $wpdb            Wpdb.
-	 * @param Http\Request        $httpRequest     Nette Request.
-	 * @param EntityFactory\Order $orderFactory    Order factory.
-	 * @param Options\Provider    $optionsProvider Options provider.
+	 * @param \wpdb            $wpdb            Wpdb.
+	 * @param Http\Request     $httpRequest     Nette Request.
+	 * @param Builder          $orderFactory    Order factory.
+	 * @param Options\Provider $optionsProvider Options provider.
 	 */
-	public function __construct( \wpdb $wpdb, Http\Request $httpRequest, EntityFactory\Order $orderFactory, Options\Provider $optionsProvider ) {
+	public function __construct( \wpdb $wpdb, Http\Request $httpRequest, Builder $orderFactory, Options\Provider $optionsProvider ) {
 		$this->wpdb            = $wpdb;
 		$this->httpRequest     = $httpRequest;
-		$this->orderFactory    = $orderFactory;
+		$this->builder    = $orderFactory;
 		$this->optionsProvider = $optionsProvider;
 	}
 
@@ -250,7 +249,7 @@ class Repository {
 		}
 
 		$partialOrder = $this->createPartialOrder( $wcOrder, $result );
-		return $this->orderFactory->create( $wcOrder, $partialOrder );
+		return $this->builder->finalize( $wcOrder, $partialOrder );
 	}
 
 	/**
@@ -451,7 +450,7 @@ class Repository {
 			}
 
 			$partial = $this->createPartialOrder( $wcOrder, $row );
-			yield $this->orderFactory->create( $wcOrder, $partial );
+			yield $this->builder->finalize( $wcOrder, $partial );
 		}
 	}
 

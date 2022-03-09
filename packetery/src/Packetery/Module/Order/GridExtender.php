@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
-use Packetery\Module\EntityFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -50,13 +49,6 @@ class GridExtender {
 	private $httpRequest;
 
 	/**
-	 * Order entity factory.
-	 *
-	 * @var EntityFactory\Order
-	 */
-	private $entityFactory;
-
-	/**
 	 * Controller router.
 	 *
 	 * @var ControllerRouter
@@ -73,20 +65,18 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper              $helper                Helper.
-	 * @param Carrier\Repository  $carrierRepository     Carrier repository.
-	 * @param Engine              $latteEngine           Latte Engine.
-	 * @param Request             $httpRequest           Http Request.
-	 * @param EntityFactory\Order $entityFactory         Order factory.
-	 * @param ControllerRouter    $orderControllerRouter Order controller router.
-	 * @param Repository          $orderRepository       Order repository.
+	 * @param Helper             $helper                Helper.
+	 * @param Carrier\Repository $carrierRepository     Carrier repository.
+	 * @param Engine             $latteEngine           Latte Engine.
+	 * @param Request            $httpRequest           Http Request.
+	 * @param ControllerRouter   $orderControllerRouter Order controller router.
+	 * @param Repository         $orderRepository       Order repository.
 	 */
 	public function __construct(
 		Helper $helper,
 		Carrier\Repository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
-		EntityFactory\Order $entityFactory,
 		ControllerRouter $orderControllerRouter,
 		Repository $orderRepository
 	) {
@@ -94,7 +84,6 @@ class GridExtender {
 		$this->carrierRepository     = $carrierRepository;
 		$this->latteEngine           = $latteEngine;
 		$this->httpRequest           = $httpRequest;
-		$this->entityFactory         = $entityFactory;
 		$this->orderControllerRouter = $orderControllerRouter;
 		$this->orderRepository       = $orderRepository;
 	}
