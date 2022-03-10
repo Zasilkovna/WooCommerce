@@ -43,19 +43,10 @@ class Size {
 	 * @param float|null $width Width.
 	 * @param float|null $height Height.
 	 */
-	public function __construct( ?float $length, ?float $width, ?float $height ) {
+	public function __construct( ?float $length = null, ?float $width = null, ?float $height = null ) {
 		$this->length = $length;
 		$this->width  = $width;
 		$this->height = $height;
-	}
-
-	/**
-	 * Creates empty size object.
-	 *
-	 * @return static
-	 */
-	public static function createEmpty(): self {
-		return new self( null, null, null );
 	}
 
 	/**

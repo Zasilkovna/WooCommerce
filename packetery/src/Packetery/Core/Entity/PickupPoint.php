@@ -67,12 +67,12 @@ class PickupPoint {
 	 * @param string|null $url Point url.
 	 */
 	public function __construct(
-		?string $id,
-		?string $name,
-		?string $city,
-		?string $zip,
-		?string $street,
-		?string $url
+		?string $id = null,
+		?string $name = null,
+		?string $city = null,
+		?string $zip = null,
+		?string $street = null,
+		?string $url = null
 	) {
 		$this->id     = $id;
 		$this->name   = $name;
@@ -80,22 +80,6 @@ class PickupPoint {
 		$this->zip    = $zip;
 		$this->street = $street;
 		$this->url    = $url;
-	}
-
-	/**
-	 * Creates empty object.
-	 *
-	 * @return static
-	 */
-	public static function createEmpty(): self {
-		return new self(
-			null,
-			null,
-			null,
-			null,
-			null,
-			null
-		);
 	}
 
 	/**

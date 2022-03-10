@@ -410,7 +410,7 @@ class Checkout {
 		}
 
 		if ( $propsToSave ) {
-			$orderEntity = Core\Entity\Order::fromRequired( (string) $orderId, $carrierId );
+			$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
 			self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
 			$this->orderRepository->save( $orderEntity );
 		}
@@ -449,7 +449,7 @@ class Checkout {
 	public static function updateOrderEntityFromPropsToSave( Core\Entity\Order $orderEntity, array $propsToSave ): void {
 		$orderEntityPickupPoint = $orderEntity->getPickupPoint();
 		if ( null === $orderEntityPickupPoint ) {
-			$orderEntityPickupPoint = Core\Entity\PickupPoint::createEmpty();
+			$orderEntityPickupPoint = new Core\Entity\PickupPoint();
 		}
 
 		foreach ( $propsToSave as $attrName => $attrValue ) {

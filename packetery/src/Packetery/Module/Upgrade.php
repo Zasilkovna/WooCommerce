@@ -127,16 +127,12 @@ class Upgrade {
 		foreach ( $orders as $order ) {
 			$orderEntity = new Core\Entity\Order(
 				(string) $order->get_id(),
-				null,
-				null,
-				null,
-				$this->getMetaAsNullableFloat( $order, self::META_WEIGHT ),
-				null,
 				$this->getMetaAsNullableString( $order, self::META_CARRIER_ID )
 			);
-
-			$order->delete_meta_data( self::META_WEIGHT );
 			$order->delete_meta_data( self::META_CARRIER_ID );
+
+			$orderEntity->setWeight( Core\Helper::simplifyWeight( $this->getMetaAsNullableFloat( $order, self::META_WEIGHT ) ) );
+			$order->delete_meta_data( self::META_WEIGHT );
 
 			$orderEntity->setPacketStatus( $this->getMetaAsNullableString( $order, self::META_PACKET_STATUS ) );
 			$order->delete_meta_data( self::META_PACKET_STATUS );
@@ -242,7 +238,7 @@ class Upgrade {
 	 *
 	 * @return array
 	 */
-	public function addQueryVars( array $queryVars, array $get ): array {
+	private function addQueryVars( array $queryVars, array $get ): array {
 		if ( ! empty( $get['packetery_all'] ) ) {
 			$queryVars[] = [
 				'key'     => self::META_CARRIER_ID,

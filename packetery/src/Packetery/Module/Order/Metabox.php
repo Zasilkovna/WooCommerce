@@ -303,7 +303,7 @@ class Metabox {
 		if ( $propsToSave ) {
 			$orderSize = $order->getSize();
 			if ( null === $orderSize ) {
-				$orderSize = Core\Entity\Size::createEmpty();
+				$orderSize = new Core\Entity\Size();
 			}
 
 			foreach ( $propsToSave as $attrName => $attrValue ) {

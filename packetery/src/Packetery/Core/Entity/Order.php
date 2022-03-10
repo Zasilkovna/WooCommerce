@@ -19,7 +19,7 @@ class Order {
 	/**
 	 * Order id.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
 	private $number;
 
@@ -138,21 +138,21 @@ class Order {
 	/**
 	 * Carrier id.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
 	private $carrierId;
 
 	/**
 	 * Tells if is packet submitted.
 	 *
-	 * @var bool|null
+	 * @var bool
 	 */
 	private $isExported;
 
 	/**
 	 * Tells if is packet submitted.
 	 *
-	 * @var bool|null
+	 * @var bool
 	 */
 	private $isLabelPrinted;
 
@@ -173,53 +173,21 @@ class Order {
 	/**
 	 * Order entity constructor.
 	 *
-	 * @param string|null $number Order id.
-	 * @param string|null $name Customer name.
-	 * @param string|null $surname Customer surname.
-	 * @param float|null  $value Order value.
-	 * @param float|null  $weight Packet weight.
-	 * @param string|null $eshop Sender label.
-	 * @param string|null $carrierId Sender label.
+	 * @param string $number         Order id.
+	 * @param string $carrierId      Sender label.
+	 * @param bool   $isExported     Is exported.
+	 * @param bool   $isLabelPrinted Is label printed.
 	 */
 	public function __construct(
-		?string $number,
-		?string $name,
-		?string $surname,
-		?float $value,
-		?float $weight,
-		?string $eshop,
-		?string $carrierId
+		string $number,
+		string $carrierId,
+		bool $isExported = false,
+		bool $isLabelPrinted = false
 	) {
-		$this->number    = $number;
-		$this->name      = $name;
-		$this->surname   = $surname;
-		$this->value     = $value;
-		$this->weight    = $weight;
-		$this->eshop     = $eshop;
-		$this->carrierId = $carrierId;
-	}
-
-	/**
-	 * Create instance with given ID.
-	 *
-	 * @param string $id ID.
-	 * @param string $carrierId Carrier ID.
-	 *
-	 * @return static
-	 */
-	public static function fromRequired( string $id, string $carrierId ): self {
-		$entity = new \Packetery\Core\Entity\Order(
-			$id,
-			null,
-			null,
-			null,
-			null,
-			null,
-			$carrierId
-		);
-		$entity->setIsExported( false );
-		$entity->setIsLabelPrinted( false );
-		return $entity;
+		$this->number         = $number;
+		$this->carrierId      = $carrierId;
+		$this->isExported     = $isExported;
+		$this->isLabelPrinted = $isLabelPrinted;
 	}
 
 	/**
@@ -456,11 +424,11 @@ class Order {
 	/**
 	 * Sets flag of label print.
 	 *
-	 * @param bool|null $isLabelPrinted Is label printed.
+	 * @param bool $isLabelPrinted Is label printed.
 	 *
 	 * @return void
 	 */
-	public function setIsLabelPrinted( ?bool $isLabelPrinted ): void {
+	public function setIsLabelPrinted( bool $isLabelPrinted ): void {
 		$this->isLabelPrinted = $isLabelPrinted;
 	}
 
@@ -552,7 +520,7 @@ class Order {
 	/**
 	 * Tells if is packet submitted.
 	 *
-	 * @return bool|null
+	 * @return bool
 	 */
 	public function isExported(): ?bool {
 		return $this->isExported;
@@ -699,9 +667,9 @@ class Order {
 	/**
 	 * Is label printed?
 	 *
-	 * @return bool|null
+	 * @return bool
 	 */
-	public function isLabelPrinted(): ?bool {
+	public function isLabelPrinted(): bool {
 		return $this->isLabelPrinted;
 	}
 

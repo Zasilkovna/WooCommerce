@@ -206,14 +206,10 @@ class Repository {
 
 		$partialOrder = new Order(
 			$result->id,
-			null,
-			null,
-			null,
-			$orderWeight,
-			null,
 			$result->carrier_id
 		);
 
+		$partialOrder->setWeight( $orderWeight );
 		$partialOrder->setPacketId( $result->packet_id );
 		$partialOrder->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
 		$partialOrder->setIsExported( (bool) $result->is_exported );
@@ -263,7 +259,7 @@ class Repository {
 	private function orderToDbArray( Order $order ): array {
 		$point = $order->getPickupPoint();
 		if ( null === $point ) {
-			$point = PickupPoint::createEmpty();
+			$point = new PickupPoint();
 		}
 
 		$data = [
