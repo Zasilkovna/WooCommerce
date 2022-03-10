@@ -300,33 +300,31 @@ class Metabox {
 			}
 		}
 
-		if ( $propsToSave ) {
-			$orderSize = $order->getSize();
-			if ( null === $orderSize ) {
-				$orderSize = new Core\Entity\Size();
-			}
-
-			foreach ( $propsToSave as $attrName => $attrValue ) {
-				switch ( $attrName ) {
-					case self::FIELD_WEIGHT:
-						$order->setWeight( $attrValue );
-						break;
-					case self::FIELD_WIDTH:
-						$orderSize->setWidth( $attrValue );
-						break;
-					case self::FIELD_LENGTH:
-						$orderSize->setLength( $attrValue );
-						break;
-					case self::FIELD_HEIGHT:
-						$orderSize->setHeight( $attrValue );
-						break;
-				}
-			}
-
-			$order->setSize( $orderSize );
-			Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
-			$this->orderRepository->save( $order );
+		$orderSize = $order->getSize();
+		if ( null === $orderSize ) {
+			$orderSize = new Core\Entity\Size();
 		}
+
+		foreach ( $propsToSave as $attrName => $attrValue ) {
+			switch ( $attrName ) {
+				case self::FIELD_WEIGHT:
+					$order->setWeight( $attrValue );
+					break;
+				case self::FIELD_WIDTH:
+					$orderSize->setWidth( $attrValue );
+					break;
+				case self::FIELD_LENGTH:
+					$orderSize->setLength( $attrValue );
+					break;
+				case self::FIELD_HEIGHT:
+					$orderSize->setHeight( $attrValue );
+					break;
+			}
+		}
+
+		$order->setSize( $orderSize );
+		Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
+		$this->orderRepository->save( $order );
 
 		return $orderId;
 	}

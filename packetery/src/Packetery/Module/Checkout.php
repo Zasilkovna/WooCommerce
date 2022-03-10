@@ -377,15 +377,11 @@ class Checkout {
 
 		$post = $this->httpRequest->getPost();
 
-		$propsToSave = [ 'id' => $orderId ];
+		$propsToSave = [];
 		// Save carrier id for home delivery (we got no id from widget).
 		$carrierId = $this->getCarrierId( $chosenMethod );
 		if ( empty( $post[ self::ATTR_CARRIER_ID ] ) && $carrierId ) {
 			$propsToSave[ self::ATTR_CARRIER_ID ] = $carrierId;
-		}
-
-		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
-			wp_nonce_ays( '' );
 		}
 
 		if ( $this->isPickupPointOrder() ) {
@@ -409,12 +405,6 @@ class Checkout {
 			}
 		}
 
-		if ( $propsToSave ) {
-			$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
-			self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
-			$this->orderRepository->save( $orderEntity );
-		}
-
 		if ( $this->isHomeDeliveryOrder() ) {
 			$address = [];
 
@@ -436,6 +426,10 @@ class Checkout {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
+
+		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
+		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
+		$this->orderRepository->save( $orderEntity );
 	}
 
 	/**
