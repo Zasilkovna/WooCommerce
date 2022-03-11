@@ -86,19 +86,19 @@ class Upgrade {
 		}
 
 		// If no previous version detected, no upgrade will be run.
-		if ( $oldVersion && version_compare( $oldVersion, '1.1.2', '<' ) ) {
-			$this->upgrade_1_1_2();
+		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
+			$this->migrateWpOrderMetadata();
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );
 	}
 
 	/**
-	 * Upgrade to version 1.1.2.
+	 * Migrates WP order metadata.
 	 *
 	 * @return void
 	 */
-	private function upgrade_1_1_2(): void {
+	private function migrateWpOrderMetadata(): void {
 		global $wpdb;
 
 		$createResult = $this->orderRepository->createTable();
