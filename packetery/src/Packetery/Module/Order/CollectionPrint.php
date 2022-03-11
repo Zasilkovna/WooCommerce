@@ -76,23 +76,23 @@ class CollectionPrint {
 	 * @param Http\Request          $httpRequest     Http Request.
 	 * @param Client                $soapApiClient   SOAP API Client.
 	 * @param MessageManager        $messageManager  Message Manager.
-	 * @param Repository            $orderRepository Order repository.
 	 * @param EntityFactory\Address $addressFactory  Address factory.
+	 * @param Repository            $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
-		Repository $orderRepository,
-		EntityFactory\Address $addressFactory
+		EntityFactory\Address $addressFactory,
+		Repository $orderRepository
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
 		$this->soapApiClient   = $soapApiClient;
 		$this->messageManager  = $messageManager;
-		$this->orderRepository = $orderRepository;
 		$this->addressFactory  = $addressFactory;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -120,7 +120,7 @@ class CollectionPrint {
 		}
 
 		$orderIds  = get_transient( self::getOrderIdsTransientName() );
-		$orders    = $this->orderRepository->getOrdersByIds( $orderIds );
+		$orders    = $this->orderRepository->getByIds( $orderIds );
 		$packetIds = [];
 		$wpOrders  = [];
 

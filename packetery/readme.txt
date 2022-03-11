@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.8.3
-Stable tag: 1.1.2
+Stable tag: 1.2.0
 Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -71,6 +71,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.2.0 =
+* Updated: Packeta order meta data moved from posts to custom table
+
 = 1.1.2 =
 * Added: Packeta packet status synchronization via WP cron
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected

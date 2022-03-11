@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Log;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
@@ -75,18 +76,18 @@ class LabelPrint {
 	private $messageManager;
 
 	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	private $orderRepository;
-
-	/**
 	 * Logger.
 	 *
 	 * @var Log\ILogger
 	 */
 	private $logger;
+
+	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
 
 	/**
 	 * LabelPrint constructor.
@@ -97,8 +98,8 @@ class LabelPrint {
 	 * @param Http\Request   $httpRequest     Http Request.
 	 * @param Client         $soapApiClient   SOAP API Client.
 	 * @param MessageManager $messageManager  Message Manager.
-	 * @param Repository     $orderRepository Order repository.
 	 * @param Log\ILogger    $logger          Logger.
+	 * @param Repository     $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -107,8 +108,8 @@ class LabelPrint {
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
-		Repository $orderRepository,
-		Log\ILogger $logger
+		Log\ILogger $logger,
+		Repository $orderRepository
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
@@ -116,8 +117,8 @@ class LabelPrint {
 		$this->httpRequest     = $httpRequest;
 		$this->soapApiClient   = $soapApiClient;
 		$this->messageManager  = $messageManager;
-		$this->orderRepository = $orderRepository;
 		$this->logger          = $logger;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -311,7 +312,9 @@ class LabelPrint {
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
-				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
+				$order = $this->orderRepository->getById( $orderId );
+				$order->setIsLabelPrinted( true );
+				$this->orderRepository->save( $order );
 			}
 
 			$record         = new Log\Record();
@@ -352,8 +355,10 @@ class LabelPrint {
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
-				update_post_meta( $orderId, Entity::META_IS_LABEL_PRINTED, true );
-				update_post_meta( $orderId, Entity::META_CARRIER_NUMBER, $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
+				$order = $this->orderRepository->getById( $orderId );
+				$order->setIsLabelPrinted( true );
+				$order->setCarrierNumber( $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
+				$this->orderRepository->save( $order );
 			}
 
 			$record         = new Log\Record();
@@ -398,7 +403,7 @@ class LabelPrint {
 	 */
 	private function getPacketIdsFromTransient( bool $isCarrierLabels ): array {
 		$orderIds  = get_transient( self::getOrderIdsTransientName() );
-		$orders    = $this->orderRepository->getOrdersByIds( $orderIds );
+		$orders    = $this->orderRepository->getByIds( $orderIds );
 		$packetIds = [];
 		foreach ( $orders as $order ) {
 			if ( null === $order->getPacketId() ) {

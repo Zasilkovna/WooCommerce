@@ -9,9 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\EntityFactory;
-use Packetery\Module\Order;
 use Packetery\Core\Helper;
+use Packetery\Module\Calculator;
+use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -50,27 +50,42 @@ class Controller extends WP_REST_Controller {
 	private $packetSubmitter;
 
 	/**
-	 * Order factory.
+	 * Order repository.
 	 *
-	 * @var EntityFactory\Order
+	 * @var Repository
 	 */
-	private $orderFactory;
+	private $orderRepository;
+
+	/**
+	 * Calculator.
+	 *
+	 * @var Calculator
+	 */
+	private $calculator;
 
 	/**
 	 * Controller constructor.
 	 *
-	 * @param Modal               $orderModal       Modal.
-	 * @param ControllerRouter    $controllerRouter Router.
-	 * @param PacketSubmitter     $packetSubmitter  Packet submitter.
-	 * @param EntityFactory\Order $orderFactory     Order factory.
+	 * @param Modal            $orderModal       Modal.
+	 * @param ControllerRouter $controllerRouter Router.
+	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
+	 * @param Order\Repository $orderRepository  Order repository.
+	 * @param Calculator       $calculator       Calculator.
 	 */
-	public function __construct( Modal $orderModal, ControllerRouter $controllerRouter, PacketSubmitter $packetSubmitter, EntityFactory\Order $orderFactory ) {
+	public function __construct(
+		Modal $orderModal,
+		ControllerRouter $controllerRouter,
+		PacketSubmitter $packetSubmitter,
+		Order\Repository $orderRepository,
+		Calculator $calculator
+	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
 		$this->namespace       = $controllerRouter->getNamespace();
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
-		$this->orderFactory    = $orderFactory;
+		$this->orderRepository = $orderRepository;
+		$this->calculator      = $calculator;
 	}
 
 	/**
@@ -146,12 +161,12 @@ class Controller extends WP_REST_Controller {
 		$data            = [];
 		$parameters      = $request->get_body_params();
 		$packeteryWeight = $parameters['packeteryWeight'];
-		$orderId         = $parameters['orderId'];
+		$orderId         = (int) $parameters['orderId'];
 
 		$form = $this->orderModal->createForm();
 		$form->setValues(
 			[
-				Order\Entity::META_WEIGHT => $packeteryWeight,
+				'packetery_weight' => $packeteryWeight,
 			]
 		);
 
@@ -160,15 +175,17 @@ class Controller extends WP_REST_Controller {
 		}
 
 		$values = $form->getValues( 'array' );
-		if ( ! is_numeric( $values[ Order\Entity::META_WEIGHT ] ) ) {
-			$values[ Order\Entity::META_WEIGHT ] = $this->orderFactory->calculateOrderWeight( wc_get_order( $orderId ) );
+		if ( ! is_numeric( $values['packetery_weight'] ) ) {
+			$values['packetery_weight'] = $this->calculator->calculateOrderWeight( wc_get_order( $orderId ) );
 		}
 
-		update_post_meta( $orderId, Order\Entity::META_WEIGHT, Helper::simplifyWeight( $values[ Order\Entity::META_WEIGHT ] ) );
+		$order = $this->orderRepository->getById( $orderId );
+		$order->setWeight( Helper::simplifyWeight( $values['packetery_weight'] ) );
+		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data']    = [
-			Order\Entity::META_WEIGHT => $values[ Order\Entity::META_WEIGHT ],
+			'packetery_weight' => $values['packetery_weight'],
 		];
 
 		return new WP_REST_Response( $data, 200 );

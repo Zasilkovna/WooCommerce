@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.1.2\n"
+"Project-Id-Version: Packeta 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-02-07T13:39:23+01:00\n"
-"PO-Revision-Date: 2022-02-07 13:40+0100\n"
+"POT-Creation-Date: 2022-03-11T08:29:25+01:00\n"
+"PO-Revision-Date: 2022-03-11 08:32+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -19,8 +19,8 @@ msgstr ""
 #. Plugin Name of the plugin
 #: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
-#: src/Packetery/Module/Order/GridExtender.php:351
-#: src/Packetery/Module/Order/Metabox.php:130
+#: src/Packetery/Module/Order/GridExtender.php:279
+#: src/Packetery/Module/Order/Metabox.php:148
 #: src/Packetery/Module/Product/DataTab.php:72
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:14
 #: temp/cache/view/template-carrier-countries.latte--c3169dcb5b.php:35
@@ -183,113 +183,117 @@ msgstr "HU Zásilkovna výdejní místa"
 msgid "RO Packeta pickup points"
 msgstr "RO Zásilkovna výdejní místa"
 
-#: src/Packetery/Module/Checkout.php:254
-#: src/Packetery/Module/Order/Metabox.php:162
+#: src/Packetery/Module/Checkout.php:271
+#: src/Packetery/Module/Order/Metabox.php:180
 msgid "choosePickupPoint"
 msgstr "Vyberte místo vyzvednutí"
 
-#: src/Packetery/Module/Checkout.php:255
+#: src/Packetery/Module/Checkout.php:272
 msgid "checkShippingAddress"
 msgstr "Ověřit doručovací adresu"
 
-#: src/Packetery/Module/Checkout.php:256
+#: src/Packetery/Module/Checkout.php:273
 msgid "addressValidationIsOutOfOrder"
 msgstr "Validace adresy je nedostupná"
 
-#: src/Packetery/Module/Checkout.php:257
+#: src/Packetery/Module/Checkout.php:274
 msgid "invalidAddressCountrySelected"
 msgstr "Byla zvolena nevalidní země"
 
-#: src/Packetery/Module/Checkout.php:258
+#: src/Packetery/Module/Checkout.php:275
 msgid "selectedShippingAddress"
 msgstr "Zvolená doručovací adresa"
 
-#: src/Packetery/Module/Checkout.php:259
+#: src/Packetery/Module/Checkout.php:276
 msgid "addressIsValidated"
 msgstr "Adresa je validní"
 
-#: src/Packetery/Module/Checkout.php:260
+#: src/Packetery/Module/Checkout.php:277
 msgid "addressIsNotValidated"
 msgstr "Adresa doručení nebyla ověřena."
 
-#: src/Packetery/Module/Checkout.php:261
+#: src/Packetery/Module/Checkout.php:278
 msgid "addressIsNotValidatedAndRequiredByCarrier"
 msgstr ""
 "Adresa doručení nebyla ověřena. Ověření adresy doručení u tohoto dopravce je "
 "povinné."
 
-#: src/Packetery/Module/Checkout.php:321
+#: src/Packetery/Module/Checkout.php:338
 msgid "Pick up point is not chosen."
 msgstr "Není vybráno výdejní místo."
 
-#: src/Packetery/Module/Checkout.php:343
+#: src/Packetery/Module/Checkout.php:360
 msgid "shippingAddressIsNotValidated"
 msgstr ""
 "Adresa doručení nebyla ověřena. Ověření adresy doručení u tohoto dopravce je "
 "povinné."
 
-#: src/Packetery/Module/Checkout.php:512
+#: src/Packetery/Module/Checkout.php:573
 msgid "codSurcharge"
 msgstr "Přirážka za dobírku"
 
 #. translators: keep %d placeholder intact.
-#: src/Packetery/Module/FormFactory.php:30
+#: src/Packetery/Module/FormFactory.php:40
 msgid "pleaseEnterValueGreaterThanOrEqualTo%d"
 msgstr "Zadejte hodnotu větší nebo rovnu hodnotě %d"
 
 #. translators: keep %d placeholder intact.
-#: src/Packetery/Module/FormFactory.php:32
+#: src/Packetery/Module/FormFactory.php:42
 msgid "pleaseEnterValueLessThanOrEqualTo%d"
 msgstr "Zadejte hodnotu menší nebo rovnu hodnotě %d"
 
 #. translators: keep %d placeholder intact.
-#: src/Packetery/Module/FormFactory.php:33
-#: src/Packetery/Module/FormFactory.php:34
+#: src/Packetery/Module/FormFactory.php:43
+#: src/Packetery/Module/FormFactory.php:44
 msgid "enterValidNumber"
 msgstr "Zadejte validní číslo"
 
-#: src/Packetery/Module/FormFactory.php:35
+#: src/Packetery/Module/FormFactory.php:45
 msgid "thisFieldIsRequired"
 msgstr "Toto políčko je povinné"
 
-#: src/Packetery/Module/Log/Page.php:55 src/Packetery/Module/Log/Page.php:56
+#: src/Packetery/Module/Log/Page.php:57 src/Packetery/Module/Log/Page.php:58
 #: temp/cache/view/template-log-page.latte--4e0bbf0e55.php:17
 msgid "logsPageTitle"
 msgstr "Log"
 
-#: src/Packetery/Module/Log/Page.php:68
+#: src/Packetery/Module/Log/Page.php:70
 msgid "logAction_packet-sending"
 msgstr "Odeslání zásilky"
 
-#: src/Packetery/Module/Log/Page.php:69
+#: src/Packetery/Module/Log/Page.php:71
 msgid "logAction_carrier-label-print"
 msgstr "Tisk štítku dopravce"
 
-#: src/Packetery/Module/Log/Page.php:70
+#: src/Packetery/Module/Log/Page.php:72
 msgid "logAction_label-print"
 msgstr "Tisk štítku"
 
-#: src/Packetery/Module/Log/Page.php:71
+#: src/Packetery/Module/Log/Page.php:73
 msgid "logAction_carrier-list-update"
 msgstr "Aktualizace seznamu dopravců"
 
-#: src/Packetery/Module/Log/Page.php:72
+#: src/Packetery/Module/Log/Page.php:74
 msgid "logAction_carrier-number-retrieving"
 msgstr "Získání trasovacího čísla externího dopravce"
 
-#: src/Packetery/Module/Log/Page.php:73
+#: src/Packetery/Module/Log/Page.php:75
 msgid "logAction_carrier-table-not-created"
 msgstr "Tabulka dopravců nebyla vytvořena"
 
-#: src/Packetery/Module/Log/Page.php:74
+#: src/Packetery/Module/Log/Page.php:76
+msgid "logAction_order-table-not-created"
+msgstr "Tabulka objednávek nebyla vytvořena"
+
+#: src/Packetery/Module/Log/Page.php:77
 msgid "logAction_packet-status-sync"
 msgstr "Synchronizace stavu zásilky"
 
-#: src/Packetery/Module/Log/Page.php:78
+#: src/Packetery/Module/Log/Page.php:81
 msgid "statusError"
 msgstr "Chyba"
 
-#: src/Packetery/Module/Log/Page.php:79
+#: src/Packetery/Module/Log/Page.php:82
 msgid "statusSuccess"
 msgstr "Úspěch"
 
@@ -299,7 +303,7 @@ msgstr "Logy"
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:656
+#: src/Packetery/Module/Plugin.php:718
 msgid "Settings"
 msgstr "Nastavení"
 
@@ -416,7 +420,7 @@ msgid "actionPrintOrderCollection"
 msgstr "Tisk seznamu zásilek"
 
 #: src/Packetery/Module/Order/CollectionPrint.php:116
-#: src/Packetery/Module/Order/LabelPrint.php:193
+#: src/Packetery/Module/Order/LabelPrint.php:195
 msgid "noOrdersSelected"
 msgstr "Nebyly vybrány žádné objednávky."
 
@@ -434,209 +438,214 @@ msgstr "Neočekávaná chyba"
 msgid "orderCollectionPrintMenuSlugLabel"
 msgstr "Tisk seznamu zásilek"
 
-#: src/Packetery/Module/Order/Controller.php:154
+#: src/Packetery/Module/Order/Controller.php:186
 msgid "Success"
 msgstr "Úspěch"
 
-#: src/Packetery/Module/Order/Entity.php:270
-msgid "packetStatusReceivedData"
-msgstr "Data přijata"
-
-#: src/Packetery/Module/Order/Entity.php:272
-msgid "packetStatusArrived"
-msgstr "Podáno"
-
-#: src/Packetery/Module/Order/Entity.php:274
-msgid "packetStatusPreparedForDeparture"
-msgstr "Připraveno k odjezdu"
-
-#: src/Packetery/Module/Order/Entity.php:276
-msgid "packetStatusDeparted"
-msgstr "Na cestě"
-
-#: src/Packetery/Module/Order/Entity.php:278
-msgid "packetStatusReadyForPickup"
-msgstr "Připraveno k výdeji"
-
-#: src/Packetery/Module/Order/Entity.php:280
-msgid "packetStatusHandedToCarrier"
-msgstr "Předáno dopravci"
-
-#: src/Packetery/Module/Order/Entity.php:282
-msgid "packetStatusDelivered"
-msgstr "Doručeno"
-
-#: src/Packetery/Module/Order/Entity.php:284
-msgid "packetStatusPostedBack"
-msgstr "Zasláno zpět"
-
-#: src/Packetery/Module/Order/Entity.php:286
-msgid "packetStatusReturned"
-msgstr "Vráceno"
-
-#: src/Packetery/Module/Order/Entity.php:288
-msgid "packetStatusCancelled"
-msgstr "Zrušeno"
-
-#: src/Packetery/Module/Order/Entity.php:290
-msgid "packetStatusCollected"
-msgstr "Vyzvednuto řidičem"
-
-#: src/Packetery/Module/Order/Entity.php:292
-msgid "packetStatusUnknown"
-msgstr "Neznámý"
-
-#: src/Packetery/Module/Order/GridExtender.php:116
+#: src/Packetery/Module/Order/GridExtender.php:109
 msgid "packetaOrdersToSubmit"
 msgstr "Zásilkovna - zásilky k podání"
 
-#: src/Packetery/Module/Order/GridExtender.php:138
+#: src/Packetery/Module/Order/GridExtender.php:125
 msgid "packetaOrdersToPrint"
 msgstr "Zásilkovna - zásilky k tisku"
 
-#: src/Packetery/Module/Order/GridExtender.php:350
+#: src/Packetery/Module/Order/GridExtender.php:236
+msgid "packetStatusReceivedData"
+msgstr "Data přijata"
+
+#: src/Packetery/Module/Order/GridExtender.php:238
+msgid "packetStatusArrived"
+msgstr "Podáno"
+
+#: src/Packetery/Module/Order/GridExtender.php:240
+msgid "packetStatusPreparedForDeparture"
+msgstr "Připraveno k odjezdu"
+
+#: src/Packetery/Module/Order/GridExtender.php:242
+msgid "packetStatusDeparted"
+msgstr "Na cestě"
+
+#: src/Packetery/Module/Order/GridExtender.php:244
+msgid "packetStatusReadyForPickup"
+msgstr "Připraveno k výdeji"
+
+#: src/Packetery/Module/Order/GridExtender.php:246
+msgid "packetStatusHandedToCarrier"
+msgstr "Předáno dopravci"
+
+#: src/Packetery/Module/Order/GridExtender.php:248
+msgid "packetStatusDelivered"
+msgstr "Doručeno"
+
+#: src/Packetery/Module/Order/GridExtender.php:250
+msgid "packetStatusPostedBack"
+msgstr "Zasláno zpět"
+
+#: src/Packetery/Module/Order/GridExtender.php:252
+msgid "packetStatusReturned"
+msgstr "Vráceno"
+
+#: src/Packetery/Module/Order/GridExtender.php:254
+msgid "packetStatusCancelled"
+msgstr "Zrušeno"
+
+#: src/Packetery/Module/Order/GridExtender.php:256
+msgid "packetStatusCollected"
+msgstr "Vyzvednuto řidičem"
+
+#: src/Packetery/Module/Order/GridExtender.php:258
+msgid "packetStatusUnknown"
+msgstr "Neznámý"
+
+#: src/Packetery/Module/Order/GridExtender.php:278
 msgid "packetaPacketStatus"
 msgstr "Stav zásilky Zásilkovna"
 
-#: src/Packetery/Module/Order/GridExtender.php:352
+#: src/Packetery/Module/Order/GridExtender.php:280
 msgid "Barcode"
 msgstr "Trasovací číslo"
 
-#: src/Packetery/Module/Order/GridExtender.php:353
+#: src/Packetery/Module/Order/GridExtender.php:281
 #: temp/cache/view/template-order-collection-print.latte--196227c595.php:99
 msgid "Pick up point or carrier"
 msgstr "Výdejní místo či přepravce"
 
-#: src/Packetery/Module/Order/LabelPrint.php:201
+#: src/Packetery/Module/Order/LabelPrint.php:203
 msgid "noSuitableOrdersSelected"
 msgstr "Nebyly vybrány žádné vhodné objednávky"
 
-#: src/Packetery/Module/Order/LabelPrint.php:232
+#: src/Packetery/Module/Order/LabelPrint.php:234
 msgid "labelPrintFailedMoreInfoInLog"
 msgstr "Tisk štítků se nezdařil. Bližší informace najdete v Packeta logu."
 
-#: src/Packetery/Module/Order/LabelPrint.php:233
+#: src/Packetery/Module/Order/LabelPrint.php:235
 msgid "youSelectedOrdersThatWereNotSubmitted"
 msgstr "Vybrali jste objednávky, které ještě nebyly podány."
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:263
+#: src/Packetery/Module/Order/LabelPrint.php:265
 msgid "dontSkipAnyField"
 msgstr "nevynechávat žádná pole"
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:263
+#: src/Packetery/Module/Order/LabelPrint.php:265
 msgid "skip%sFields"
 msgstr "vynechat %s polí na první stránce"
 
-#: src/Packetery/Module/Order/LabelPrint.php:267
+#: src/Packetery/Module/Order/LabelPrint.php:269
 msgid "labelsOffset"
 msgstr "Vynechat polí"
 
-#: src/Packetery/Module/Order/LabelPrint.php:280
-#: src/Packetery/Module/Order/LabelPrint.php:281
+#: src/Packetery/Module/Order/LabelPrint.php:282
+#: src/Packetery/Module/Order/LabelPrint.php:283
 #: temp/cache/view/template-order-label-print.latte--79fc6553a9.php:75
 msgid "printLabels"
 msgstr "Vytisknout štítky"
 
-#: src/Packetery/Module/Order/LabelPrint.php:319
+#: src/Packetery/Module/Order/LabelPrint.php:323
 msgid "labelPrintSuccessLogTitle"
 msgstr "Akce 'Vytvoření zásilky' proběhla úspěšně."
 
-#: src/Packetery/Module/Order/LabelPrint.php:325
+#: src/Packetery/Module/Order/LabelPrint.php:329
 msgid "labelPrintErrorLogTitle"
 msgstr "Akce 'Vytvoření zásilky' skončilo chybou."
 
-#: src/Packetery/Module/Order/LabelPrint.php:361
+#: src/Packetery/Module/Order/LabelPrint.php:367
 msgid "carrierLabelPrintSuccessLogTitle"
 msgstr "Validace odesílatele proběhla úspěšně"
 
-#: src/Packetery/Module/Order/LabelPrint.php:367
+#: src/Packetery/Module/Order/LabelPrint.php:373
 msgid "carrierLabelPrintErrorLogTitle"
 msgstr "Validace odesílatele skončila chybou"
 
-#: src/Packetery/Module/Order/LabelPrint.php:428
+#: src/Packetery/Module/Order/LabelPrint.php:434
 msgid "pleaseSetProperPassword"
 msgstr "Nastavte prosím platné API heslo."
 
-#: src/Packetery/Module/Order/LabelPrint.php:436
+#: src/Packetery/Module/Order/LabelPrint.php:442
 msgid "carrierNumberRetrievingErrorLogTitle"
 msgstr "Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná."
 
-#: src/Packetery/Module/Order/Metabox.php:146
+#: src/Packetery/Module/Order/Metabox.php:164
 msgid "Weight (kg)"
 msgstr "Hmotnost (kg)"
 
-#: src/Packetery/Module/Order/Metabox.php:148
-#: src/Packetery/Module/Order/Metabox.php:151
-#: src/Packetery/Module/Order/Metabox.php:154
-#: src/Packetery/Module/Order/Metabox.php:157
+#: src/Packetery/Module/Order/Metabox.php:166
+#: src/Packetery/Module/Order/Metabox.php:169
+#: src/Packetery/Module/Order/Metabox.php:172
+#: src/Packetery/Module/Order/Metabox.php:175
 msgid "Provide numeric value!"
 msgstr "Zadejte číslo!"
 
-#: src/Packetery/Module/Order/Metabox.php:149
+#: src/Packetery/Module/Order/Metabox.php:167
 msgid "Width (mm)"
 msgstr "Šířka (mm)"
 
-#: src/Packetery/Module/Order/Metabox.php:152
+#: src/Packetery/Module/Order/Metabox.php:170
 msgid "Length (mm)"
 msgstr "Délka (mm)"
 
-#: src/Packetery/Module/Order/Metabox.php:155
+#: src/Packetery/Module/Order/Metabox.php:173
 msgid "Height (mm)"
 msgstr "Výška (mm)"
 
-#: src/Packetery/Module/Order/Metabox.php:245
+#: src/Packetery/Module/Order/Metabox.php:265
 msgid "Error happened in Packeta fields!"
 msgstr "Nastala chyba v polích Zásilkovny!"
 
-#: src/Packetery/Module/Order/Metabox.php:253
+#: src/Packetery/Module/Order/Metabox.php:273
 msgid "Session has expired! Please try again."
 msgstr "Relace vypršela! Zkuste to prosím znovu."
 
-#: src/Packetery/Module/Order/Metabox.php:259
+#: src/Packetery/Module/Order/Metabox.php:279
 msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
-#: src/Packetery/Module/Order/Modal.php:89
+#: src/Packetery/Module/Order/Modal.php:88
 msgid "weight"
 msgstr "Hmotnost"
 
-#: src/Packetery/Module/Order/Modal.php:93
+#: src/Packetery/Module/Order/Modal.php:92
 msgid "save"
 msgstr "Uložit"
 
-#: src/Packetery/Module/Order/Modal.php:94
+#: src/Packetery/Module/Order/Modal.php:93
 msgid "cancel"
 msgstr "Zrušit"
 
-#: src/Packetery/Module/Order/PacketSubmitter.php:99
-#: src/Packetery/Module/Order/PacketSubmitter.php:116
+#: src/Packetery/Module/Order/PacketSubmitter.php:105
+#: src/Packetery/Module/Order/PacketSubmitter.php:122
 msgid "packetSendingErrorLogTitle"
 msgstr "Akce 'Vytvoření zásilky' skončilo chybou."
 
-#: src/Packetery/Module/Order/PacketSubmitter.php:132
+#: src/Packetery/Module/Order/PacketSubmitter.php:140
 msgid "packetSendingSuccessLogTitle"
 msgstr "Akce 'Vytvoření zásilky' proběhla úspěšně."
 
-#: src/Packetery/Module/Order/PacketSynchronizer.php:109
+#: src/Packetery/Module/Order/PacketSynchronizer.php:90
 msgid "packetStatusSyncErrorLogTitle"
 msgstr "Akce 'Synchronizace stavu zásilky' skončila chybou."
 
-#: src/Packetery/Module/Order/PacketSynchronizer.php:128
-msgid "packetStatusSyncSuccessLogTitle"
-msgstr "Akce 'Synchronizace stavu zásilky' proběhla úspěšně."
-
-#: src/Packetery/Module/Plugin.php:591
+#: src/Packetery/Module/Plugin.php:638
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabulka dopravců nebyla vytvořena, více informací naleznete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:596
+#: src/Packetery/Module/Plugin.php:643
 msgid "carrierTableNotCreated"
 msgstr "Tabulka dopravců nebyla vytvořena"
 
-#: src/Packetery/Module/Plugin.php:655
+#: src/Packetery/Module/Plugin.php:653 src/Packetery/Module/Upgrade.php:107
+msgid "orderTableNotCreatedMoreInformationInPacketaLog"
+msgstr ""
+"Tabulka objednávek nebyla vytvořena, více informací naleznete v logu pluginu"
+
+#: src/Packetery/Module/Plugin.php:658 src/Packetery/Module/Upgrade.php:112
+msgid "orderTableNotCreated"
+msgstr "Tabulka objednávek nebyla vytvořena"
+
+#: src/Packetery/Module/Plugin.php:717
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
 
@@ -1006,6 +1015,9 @@ msgstr "Zásilky na dopravce"
 #: temp/cache/view/template-order-type-select.latte--7dab07c900.php:29
 msgid "packetaPickupPointPackets"
 msgstr "Zásilky na výdejní místa Zásilkovny"
+
+#~ msgid "packetStatusSyncSuccessLogTitle"
+#~ msgstr "Akce 'Synchronizace stavu zásilky' proběhla úspěšně."
 
 #~ msgid "edit"
 #~ msgstr "Upravit"

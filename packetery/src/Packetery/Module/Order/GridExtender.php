@@ -11,8 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
-use Packetery\Module\Carrier\Repository;
-use Packetery\Module\EntityFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -32,7 +30,7 @@ class GridExtender {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository
+	 * @var Carrier\Repository
 	 */
 	private $carrierRepository;
 
@@ -51,13 +49,6 @@ class GridExtender {
 	private $httpRequest;
 
 	/**
-	 * Order entity factory.
-	 *
-	 * @var EntityFactory\Order
-	 */
-	private $entityFactory;
-
-	/**
 	 * Controller router.
 	 *
 	 * @var ControllerRouter
@@ -65,28 +56,36 @@ class GridExtender {
 	private $orderControllerRouter;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
+
+	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper              $helper                Helper.
-	 * @param Repository          $carrierRepository     Carrier repository.
-	 * @param Engine              $latteEngine           Latte Engine.
-	 * @param Request             $httpRequest           Http Request.
-	 * @param EntityFactory\Order $entityFactory         Order factory.
-	 * @param ControllerRouter    $orderControllerRouter Order controller router.
+	 * @param Helper             $helper                Helper.
+	 * @param Carrier\Repository $carrierRepository     Carrier repository.
+	 * @param Engine             $latteEngine           Latte Engine.
+	 * @param Request            $httpRequest           Http Request.
+	 * @param ControllerRouter   $orderControllerRouter Order controller router.
+	 * @param Repository         $orderRepository       Order repository.
 	 */
 	public function __construct(
 		Helper $helper,
-		Repository $carrierRepository,
+		Carrier\Repository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
-		EntityFactory\Order $entityFactory, ControllerRouter $orderControllerRouter
+		ControllerRouter $orderControllerRouter,
+		Repository $orderRepository
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;
 		$this->latteEngine           = $latteEngine;
 		$this->httpRequest           = $httpRequest;
-		$this->entityFactory         = $entityFactory;
 		$this->orderControllerRouter = $orderControllerRouter;
+		$this->orderRepository       = $orderRepository;
 	}
 
 	/**
@@ -97,12 +96,6 @@ class GridExtender {
 	 * @return array
 	 */
 	public function addFilterLinks( array $var ): array {
-		$orders      = wc_get_orders(
-			[
-				'packetery_to_submit' => '1',
-				'nopaging'            => true,
-			]
-		);
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
@@ -114,17 +107,11 @@ class GridExtender {
 				admin_url( 'edit.php' )
 			),
 			'title'      => __( 'packetaOrdersToSubmit', 'packetery' ),
-			'orderCount' => count( $orders ),
+			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
-		$orders      = wc_get_orders(
-			[
-				'packetery_to_print' => '1',
-				'nopaging'           => true,
-			]
-		);
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
@@ -136,7 +123,7 @@ class GridExtender {
 				admin_url( 'edit.php' )
 			),
 			'title'      => __( 'packetaOrdersToPrint', 'packetery' ),
-			'orderCount' => count( $orders ),
+			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
@@ -168,102 +155,6 @@ class GridExtender {
 	}
 
 	/**
-	 * Adds query vars to request query vars.
-	 *
-	 * @param array $queryVars Query vars.
-	 *
-	 * @return array
-	 */
-	public function addQueryVarsToRequest( array $queryVars ): array {
-		global $typenow;
-
-		if ( in_array( $typenow, wc_get_order_types( 'order-meta-boxes' ), true ) ) {
-			$metaVars = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $this->httpRequest->getQuery() );
-			if ( $metaVars ) {
-				// @codingStandardsIgnoreStart
-				$queryVars['meta_query'] = $metaVars;
-				// @codingStandardsIgnoreEnd
-			}
-		}
-
-		return $queryVars;
-	}
-
-	/**
-	 * Transforms custom query var. There are two custom variables: "packetery_to_submit" and "packetery_to_print".
-	 *
-	 * @param array $queryVars Query vars.
-	 * @param array $get       Input values.
-	 *
-	 * @return array
-	 */
-	public function handleCustomQueryVar( array $queryVars, array $get ): array {
-		$metaQuery = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $get );
-		if ( $metaQuery ) {
-			// @codingStandardsIgnoreStart
-			$queryVars['meta_query'] = $metaQuery;
-			// @codingStandardsIgnoreEnd
-		}
-
-		return $queryVars;
-	}
-
-	/**
-	 * Adds query vars to fetch order list.
-	 *
-	 * @param array $queryVars Query vars.
-	 * @param array $get Get parameters.
-	 *
-	 * @return array
-	 */
-	public function addQueryVars( array $queryVars, array $get ): array {
-		if ( ! empty( $get[ Entity::META_CARRIER_ID ] ) ) {
-			$queryVars[] = [
-				[
-					'key'     => Entity::META_CARRIER_ID,
-					'value'   => $get[ Entity::META_CARRIER_ID ],
-					'compare' => '=',
-				],
-			];
-		}
-
-		if ( ! empty( $get['packetery_to_submit'] ) ) {
-			$queryVars[] = [
-				'key'     => Entity::META_CARRIER_ID,
-				'value'   => '',
-				'compare' => '!=',
-			];
-
-			$queryVars[] = [
-				'key'     => Entity::META_IS_EXPORTED,
-				'compare' => 'NOT EXISTS',
-			];
-		}
-
-		if ( ! empty( $get['packetery_to_print'] ) ) {
-			$queryVars[] = [
-				'key'     => Entity::META_PACKET_ID,
-				'compare' => 'EXISTS',
-			];
-
-			$queryVars[] = [
-				'key'     => Entity::META_IS_LABEL_PRINTED,
-				'compare' => 'NOT EXISTS',
-			];
-		}
-
-		if ( ! empty( $get['packetery_order_type'] ) ) {
-			$queryVars[] = [
-				'key'     => Entity::META_CARRIER_ID,
-				'value'   => Repository::INTERNAL_PICKUP_POINTS_ID,
-				'compare' => ( Repository::INTERNAL_PICKUP_POINTS_ID === $get['packetery_order_type'] ? '=' : '!=' ),
-			];
-		}
-
-		return $queryVars;
-	}
-
-	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
@@ -271,12 +162,11 @@ class GridExtender {
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
 		$wcOrder = wc_get_order( $post->ID );
-		$order   = $this->entityFactory->create( $wcOrder );
+		$order   = $this->orderRepository->getByWcOrder( $wcOrder );
 		if ( null === $order ) {
 			return;
 		}
 
-		$moduleOrder = new Entity( $wcOrder );
 		switch ( $column ) {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -298,7 +188,7 @@ class GridExtender {
 					echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
 				}
 				break;
-			case Entity::META_PACKET_ID:
+			case 'packetery_packet_id':
 				$packetId = $order->getPacketId();
 				if ( $packetId ) {
 					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
@@ -328,9 +218,47 @@ class GridExtender {
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $moduleOrder->getPacketStatusTranslated() );
+				echo esc_html( $this->getPacketStatusTranslated( $order->getPacketStatus() ) );
 				break;
 		}
+	}
+
+	/**
+	 * Gets code text translated.
+	 *
+	 * @param string|null $packetStatus Packet status.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketStatusTranslated( ?string $packetStatus ): string {
+		switch ( $packetStatus ) {
+			case 'received data':
+				return __( 'packetStatusReceivedData', 'packetery' );
+			case 'arrived':
+				return __( 'packetStatusArrived', 'packetery' );
+			case 'prepared for departure':
+				return __( 'packetStatusPreparedForDeparture', 'packetery' );
+			case 'departed':
+				return __( 'packetStatusDeparted', 'packetery' );
+			case 'ready for pickup':
+				return __( 'packetStatusReadyForPickup', 'packetery' );
+			case 'handed to carrier':
+				return __( 'packetStatusHandedToCarrier', 'packetery' );
+			case 'delivered':
+				return __( 'packetStatusDelivered', 'packetery' );
+			case 'posted back':
+				return __( 'packetStatusPostedBack', 'packetery' );
+			case 'returned':
+				return __( 'packetStatusReturned', 'packetery' );
+			case 'cancelled':
+				return __( 'packetStatusCancelled', 'packetery' );
+			case 'collected':
+				return __( 'packetStatusCollected', 'packetery' );
+			case 'unknown':
+				return __( 'packetStatusUnknown', 'packetery' );
+		}
+
+		return (string) $packetStatus;
 	}
 
 	/**
@@ -349,7 +277,7 @@ class GridExtender {
 			if ( 'order_total' === $column_name ) {
 				$new_columns['packetery_packet_status'] = __( 'packetaPacketStatus', 'packetery' );
 				$new_columns['packetery']               = __( 'Packeta', 'packetery' );
-				$new_columns[ Entity::META_PACKET_ID ]  = __( 'Barcode', 'packetery' );
+				$new_columns['packetery_packet_id']     = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}

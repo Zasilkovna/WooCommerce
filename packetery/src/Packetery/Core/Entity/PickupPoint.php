@@ -67,12 +67,12 @@ class PickupPoint {
 	 * @param string|null $url Point url.
 	 */
 	public function __construct(
-		?string $id,
-		?string $name,
-		?string $city,
-		?string $zip,
-		?string $street,
-		?string $url
+		?string $id = null,
+		?string $name = null,
+		?string $city = null,
+		?string $zip = null,
+		?string $street = null,
+		?string $url = null
 	) {
 		$this->id     = $id;
 		$this->name   = $name;
@@ -136,4 +136,69 @@ class PickupPoint {
 		return $this->city;
 	}
 
+	/**
+	 * Sets id.
+	 *
+	 * @param string|null $id Id.
+	 *
+	 * @return void
+	 */
+	public function setId( ?string $id ): void {
+		$this->id = $id;
+	}
+
+	/**
+	 * Sets name.
+	 *
+	 * @param string|null $name Name.
+	 *
+	 * @return void
+	 */
+	public function setName( ?string $name ): void {
+		$this->name = $name;
+	}
+
+	/**
+	 * Sets URL.
+	 *
+	 * @param string|null $url URL.
+	 *
+	 * @return void
+	 */
+	public function setUrl( ?string $url ): void {
+		$this->url = $url;
+	}
+
+	/**
+	 * Sets street.
+	 *
+	 * @param string|null $street Street.
+	 *
+	 * @return void
+	 */
+	public function setStreet( ?string $street ): void {
+		$this->street = $street;
+	}
+
+	/**
+	 * Sets ZIP.
+	 *
+	 * @param string|null $zip ZIP.
+	 *
+	 * @return void
+	 */
+	public function setZip( ?string $zip ): void {
+		$this->zip = $zip;
+	}
+
+	/**
+	 * Sets city.
+	 *
+	 * @param string|null $city City.
+	 *
+	 * @return void
+	 */
+	public function setCity( ?string $city ): void {
+		$this->city = $city;
+	}
 }

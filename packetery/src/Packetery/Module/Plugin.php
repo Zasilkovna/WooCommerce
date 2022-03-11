@@ -31,7 +31,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION               = '1.1.2';
+	public const VERSION               = '1.2.0';
 	public const DOMAIN                = 'packetery';
 	public const MIN_LISTENER_PRIORITY = -9998;
 
@@ -169,20 +169,6 @@ class Plugin {
 	private $orderModal;
 
 	/**
-	 * PickupPoint factory.
-	 *
-	 * @var EntityFactory\PickupPoint
-	 */
-	private $pickupPointFactory;
-
-	/**
-	 * Order factory.
-	 *
-	 * @var EntityFactory\Order
-	 */
-	private $orderFactory;
-
-	/**
 	 * Options exporter.
 	 *
 	 * @var Options\Exporter
@@ -204,31 +190,53 @@ class Plugin {
 	private $request;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Order\Repository
+	 */
+	private $orderRepository;
+
+	/**
+	 * Plugin upgrade.
+	 *
+	 * @var Upgrade
+	 */
+	private $upgrade;
+
+	/**
+	 * QueryProcessor.
+	 *
+	 * @var QueryProcessor
+	 */
+	private $queryProcessor;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox             $order_metabox        Order metabox.
-	 * @param MessageManager            $message_manager      Message manager.
-	 * @param Options\Page              $options_page         Options page.
-	 * @param Repository                $carrierRepository    Carrier repository.
-	 * @param Downloader                $carrier_downloader   Carrier downloader object.
-	 * @param Checkout                  $checkout             Checkout class.
-	 * @param Engine                    $latte_engine         PacketeryLatte engine.
-	 * @param OptionsPage               $carrierOptionsPage   Carrier options page.
-	 * @param Order\BulkActions         $orderBulkActions     Order BulkActions.
-	 * @param Order\LabelPrint          $labelPrint           Label printing.
-	 * @param Order\GridExtender        $gridExtender         Order grid extender.
-	 * @param Product\DataTab           $productTab           Product tab.
-	 * @param Log\Page                  $logPage              Log page.
-	 * @param ILogger                   $logger               Log manager.
-	 * @param Address\Repository        $addressRepository    Address repository.
-	 * @param Order\Controller          $orderController      Order controller.
-	 * @param Order\Modal               $orderModal           Order modal.
-	 * @param EntityFactory\PickupPoint $pickupPointFactory   PickupPoint factory.
-	 * @param Options\Exporter          $exporter             Options exporter.
-	 * @param Order\CollectionPrint     $orderCollectionPrint Order collection print.
-	 * @param EntityFactory\Order       $orderFactory         Order factory.
-	 * @param Order\PacketSynchronizer  $packetSynchronizer   Packet synchronizer.
-	 * @param Request                   $request              HTTP request.
+	 * @param Order\Metabox            $order_metabox        Order metabox.
+	 * @param MessageManager           $message_manager      Message manager.
+	 * @param Options\Page             $options_page         Options page.
+	 * @param Repository               $carrierRepository    Carrier repository.
+	 * @param Downloader               $carrier_downloader   Carrier downloader object.
+	 * @param Checkout                 $checkout             Checkout class.
+	 * @param Engine                   $latte_engine         PacketeryLatte engine.
+	 * @param OptionsPage              $carrierOptionsPage   Carrier options page.
+	 * @param Order\BulkActions        $orderBulkActions     Order BulkActions.
+	 * @param Order\LabelPrint         $labelPrint           Label printing.
+	 * @param Order\GridExtender       $gridExtender         Order grid extender.
+	 * @param Product\DataTab          $productTab           Product tab.
+	 * @param Log\Page                 $logPage              Log page.
+	 * @param ILogger                  $logger               Log manager.
+	 * @param Address\Repository       $addressRepository    Address repository.
+	 * @param Order\Controller         $orderController      Order controller.
+	 * @param Order\Modal              $orderModal           Order modal.
+	 * @param Options\Exporter         $exporter             Options exporter.
+	 * @param Order\CollectionPrint    $orderCollectionPrint Order collection print.
+	 * @param Order\PacketSynchronizer $packetSynchronizer   Packet synchronizer.
+	 * @param Request                  $request              HTTP request.
+	 * @param Order\Repository         $orderRepository      Order repository.
+	 * @param Upgrade                  $upgrade              Plugin upgrade.
+	 * @param QueryProcessor           $queryProcessor       QueryProcessor.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -248,12 +256,13 @@ class Plugin {
 		Address\Repository $addressRepository,
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
-		EntityFactory\PickupPoint $pickupPointFactory,
 		Options\Exporter $exporter,
 		Order\CollectionPrint $orderCollectionPrint,
-		EntityFactory\Order $orderFactory,
 		Order\PacketSynchronizer $packetSynchronizer,
-		Request $request
+		Request $request,
+		Order\Repository $orderRepository,
+		Upgrade $upgrade,
+		QueryProcessor $queryProcessor
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -273,12 +282,13 @@ class Plugin {
 		$this->addressRepository    = $addressRepository;
 		$this->orderController      = $orderController;
 		$this->orderModal           = $orderModal;
-		$this->pickupPointFactory   = $pickupPointFactory;
 		$this->exporter             = $exporter;
 		$this->orderCollectionPrint = $orderCollectionPrint;
-		$this->orderFactory         = $orderFactory;
 		$this->packetSynchronizer   = $packetSynchronizer;
 		$this->request              = $request;
+		$this->orderRepository      = $orderRepository;
+		$this->upgrade              = $upgrade;
+		$this->queryProcessor       = $queryProcessor;
 	}
 
 	/**
@@ -319,10 +329,13 @@ class Plugin {
 
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
-		add_filter( 'request', [ $this->gridExtender, 'addQueryVarsToRequest' ], PHP_INT_MAX );
+		$this->queryProcessor->register();
+
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );
-		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->gridExtender, 'handleCustomQueryVar' ], 10, 2 );
+
+		add_action( 'init', [ $this->upgrade, 'check' ] );
+		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->upgrade, 'handleCustomQueryVar' ], 10, 2 );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
@@ -396,7 +409,7 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
-		$orderEntity = $this->orderFactory->create( $order );
+		$orderEntity = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $orderEntity ) {
 			return;
 		}
@@ -417,11 +430,16 @@ class Plugin {
 	/**
 	 * Renders delivery detail for packetery orders, on "thank you" page and in frontend detail.
 	 *
-	 * @param WC_Order $order WordPress order.
+	 * @param WC_Order $wcOrder WordPress order.
 	 */
-	public function renderOrderDetail( WC_Order $order ): void {
-		$pickupPoint              = $this->pickupPointFactory->fromWcOrder( $order );
-		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
+	public function renderOrderDetail( WC_Order $wcOrder ): void {
+		$order = $this->orderRepository->getById( $wcOrder->get_id() );
+		if ( null === $order ) {
+			return;
+		}
+
+		$pickupPoint              = $order->getPickupPoint();
+		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( $wcOrder->get_id() );
 		if ( null === $pickupPoint && null === $validatedDeliveryAddress ) {
 			return;
 		}
@@ -445,7 +463,7 @@ class Plugin {
 			return;
 		}
 
-		$packeteryOrder = $this->orderFactory->create( $email->object );
+		$packeteryOrder = $this->orderRepository->getByWcOrder( $email->object );
 		if ( null === $packeteryOrder ) {
 			return;
 		}
@@ -617,7 +635,7 @@ class Plugin {
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), 'error' );
+			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
@@ -629,10 +647,22 @@ class Plugin {
 			$this->logger->add( $record );
 		}
 
-		$versionCheck = get_option( 'packetery_version' );
-		if ( false === $versionCheck ) {
-			update_option( 'packetery_version', self::VERSION );
+		$createResult = $this->orderRepository->createTable();
+		if ( false === $createResult ) {
+			$lastError = $wpdb->last_error;
+			$this->message_manager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'orderTableNotCreated', 'packetery' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
 		}
+
+		$this->upgrade->check();
 	}
 
 	/**
@@ -654,6 +684,9 @@ class Plugin {
 
 		$carrierRepository = $container->getByType( Carrier\Repository::class );
 		$carrierRepository->drop();
+
+		$orderRepository = $container->getByType( Order\Repository::class );
+		$orderRepository->drop();
 
 		$logEntries = get_posts(
 			[

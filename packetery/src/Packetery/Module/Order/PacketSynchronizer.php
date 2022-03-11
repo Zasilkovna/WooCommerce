@@ -43,16 +43,30 @@ class PacketSynchronizer {
 	private $logger;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Api\Soap\Client  $apiSoapClient   API soap client.
 	 * @param Log\ILogger      $logger          Logger.
 	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param Repository       $orderRepository Order repository.
 	 */
-	public function __construct( Api\Soap\Client $apiSoapClient, Log\ILogger $logger, Options\Provider $optionsProvider ) {
+	public function __construct(
+		Api\Soap\Client $apiSoapClient,
+		Log\ILogger $logger,
+		Options\Provider $optionsProvider,
+		Repository $orderRepository
+	) {
 		$this->apiSoapClient   = $apiSoapClient;
 		$this->logger          = $logger;
 		$this->optionsProvider = $optionsProvider;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -61,43 +75,10 @@ class PacketSynchronizer {
 	 * @return void
 	 */
 	public function syncStatuses(): void {
-		$args = [
-			'limit'                => $this->optionsProvider->getMaxStatusSyncingPackets(),
-			'paginate'             => false,
-			'order'                => 'ASC',
-			'orderby'              => 'date',
-			'return'               => 'objects',
-			'packetery_meta_query' => [
-				'relation' => 'AND',
-				[
-					'key'     => Entity::META_PACKET_ID,
-					'compare' => 'EXISTS',
-				],
-				[
-					'key'     => Entity::META_PACKET_ID,
-					'value'   => '',
-					'compare' => '!=',
-				],
-				[
-					'relation' => 'OR',
-					[
-						'key'     => Entity::META_PACKET_STATUS,
-						'compare' => 'NOT EXISTS',
-					],
-					[
-						'key'     => Entity::META_PACKET_STATUS,
-						'value'   => [ 'delivered', 'returned', 'cancelled' ],
-						'compare' => 'NOT IN',
-					],
-				],
-			],
-		];
+		$results = $this->orderRepository->findStatusSyncingOrders( $this->optionsProvider->getMaxStatusSyncingPackets() );
 
-		$results = wc_get_orders( $args );
-
-		foreach ( $results as $wcOrder ) {
-			$moduleOrder = new Entity( $wcOrder );
-			$packetId    = $moduleOrder->getPacketId();
+		foreach ( $results as $order ) {
+			$packetId = $order->getPacketId();
 
 			$request  = new Api\Soap\Request\PacketStatus( (int) $packetId );
 			$response = $this->apiSoapClient->packetStatus( $request );
@@ -108,7 +89,7 @@ class PacketSynchronizer {
 				$record->status = Log\Record::STATUS_ERROR;
 				$record->title  = __( 'packetStatusSyncErrorLogTitle', 'packetery' );
 				$record->params = [
-					'orderId'      => $wcOrder->get_id(),
+					'orderId'      => $order->getNumber(),
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),
 				];
@@ -121,11 +102,12 @@ class PacketSynchronizer {
 				continue;
 			}
 
-			if ( $response->getCodeText() === $moduleOrder->getPacketStatus() ) {
+			if ( $response->getCodeText() === $order->getPacketStatus() ) {
 				continue;
 			}
 
-			update_post_meta( $wcOrder->get_id(), Entity::META_PACKET_STATUS, $response->getCodeText() );
+			$order->setPacketStatus( $response->getCodeText() );
+			$this->orderRepository->save( $order );
 		}
 	}
 }

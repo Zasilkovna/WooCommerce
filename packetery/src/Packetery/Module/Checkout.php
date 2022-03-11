@@ -9,9 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use Packetery\Module\Carrier\Repository;
+use Packetery\Core;
 use Packetery\Module\Options\Provider;
-use Packetery\Module\Order\Entity;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -25,6 +24,14 @@ class Checkout {
 	public const CARRIER_PREFIX = 'packetery_carrier_';
 	private const NONCE_ACTION  = 'packetery_checkout';
 
+	const ATTR_POINT_ID     = 'packetery_point_id';
+	const ATTR_POINT_NAME   = 'packetery_point_name';
+	const ATTR_POINT_CITY   = 'packetery_point_city';
+	const ATTR_POINT_ZIP    = 'packetery_point_zip';
+	const ATTR_POINT_STREET = 'packetery_point_street';
+	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
+	const ATTR_POINT_URL    = 'packetery_point_url';
+
 	/**
 	 * Pickup point attributes configuration.
 	 *
@@ -32,31 +39,31 @@ class Checkout {
 	 */
 	public static $pickupPointAttrs = array(
 		'id'        => array(
-			'name'     => Entity::META_POINT_ID,
+			'name'     => self::ATTR_POINT_ID,
 			'required' => true,
 		),
 		'name'      => array(
-			'name'     => Entity::META_POINT_NAME,
+			'name'     => self::ATTR_POINT_NAME,
 			'required' => true,
 		),
 		'city'      => array(
-			'name'     => Entity::META_POINT_CITY,
+			'name'     => self::ATTR_POINT_CITY,
 			'required' => true,
 		),
 		'zip'       => array(
-			'name'     => Entity::META_POINT_ZIP,
+			'name'     => self::ATTR_POINT_ZIP,
 			'required' => true,
 		),
 		'street'    => array(
-			'name'     => Entity::META_POINT_STREET,
+			'name'     => self::ATTR_POINT_STREET,
 			'required' => true,
 		),
 		'carrierId' => array(
-			'name'     => Entity::META_CARRIER_ID,
+			'name'     => self::ATTR_CARRIER_ID,
 			'required' => false,
 		),
 		'url'       => array(
-			'name'     => Entity::META_POINT_URL,
+			'name'     => self::ATTR_POINT_URL,
 			'required' => true,
 		),
 	);
@@ -115,7 +122,7 @@ class Checkout {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository Carrier repository.
+	 * @var Carrier\Repository Carrier repository.
 	 */
 	private $carrierRepository;
 
@@ -134,20 +141,36 @@ class Checkout {
 	private $addressRepository;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Order\Repository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine             $latte_engine      PacketeryLatte engine.
 	 * @param Provider           $options_provider  Options provider.
-	 * @param Repository         $carrierRepository Carrier repository.
+	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 * @param Request            $httpRequest       Http request.
 	 * @param Address\Repository $addressRepository Address repository.
+	 * @param Order\Repository   $orderRepository   Order repository.
 	 */
-	public function __construct( Engine $latte_engine, Provider $options_provider, Repository $carrierRepository, Request $httpRequest, Address\Repository $addressRepository ) {
+	public function __construct(
+		Engine $latte_engine,
+		Provider $options_provider,
+		Carrier\Repository $carrierRepository,
+		Request $httpRequest,
+		Address\Repository $addressRepository,
+		Order\Repository $orderRepository
+	) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
 		$this->addressRepository = $addressRepository;
+		$this->orderRepository   = $orderRepository;
 	}
 
 	/**
@@ -196,7 +219,7 @@ class Checkout {
 	 */
 	public static function getWidgetCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
 		if ( $isPickupPoints ) {
-			return ( is_numeric( $carrierId ) ? $carrierId : Repository::INTERNAL_PICKUP_POINTS_ID );
+			return ( is_numeric( $carrierId ) ? $carrierId : Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 		}
 
 		return null;
@@ -354,14 +377,11 @@ class Checkout {
 
 		$post = $this->httpRequest->getPost();
 
+		$propsToSave = [];
 		// Save carrier id for home delivery (we got no id from widget).
 		$carrierId = $this->getCarrierId( $chosenMethod );
-		if ( empty( $post[ Entity::META_CARRIER_ID ] ) && $carrierId ) {
-			update_post_meta( $orderId, Entity::META_CARRIER_ID, $carrierId );
-		}
-
-		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
-			wp_nonce_ays( '' );
+		if ( empty( $post[ self::ATTR_CARRIER_ID ] ) && $carrierId ) {
+			$propsToSave[ self::ATTR_CARRIER_ID ] = $carrierId;
 		}
 
 		if ( $this->isPickupPointOrder() ) {
@@ -374,13 +394,13 @@ class Checkout {
 
 				$saveMeta = true;
 				if (
-					( Entity::META_CARRIER_ID === $attrName && ! $attrValue ) ||
-					( Entity::META_POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
+					( self::ATTR_CARRIER_ID === $attrName && ! $attrValue ) ||
+					( self::ATTR_POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
 				) {
 					$saveMeta = false;
 				}
 				if ( $saveMeta ) {
-					update_post_meta( $orderId, $attrName, $attrValue );
+					$propsToSave[ $attrName ] = $attrValue;
 				}
 			}
 		}
@@ -406,6 +426,53 @@ class Checkout {
 				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
 			}
 		}
+
+		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
+		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
+		$this->orderRepository->save( $orderEntity );
+	}
+
+	/**
+	 * Updates order entity from props to save-
+	 *
+	 * @param Core\Entity\Order $orderEntity Order entity.
+	 * @param array             $propsToSave Props to save.
+	 *
+	 * @return void
+	 */
+	public static function updateOrderEntityFromPropsToSave( Core\Entity\Order $orderEntity, array $propsToSave ): void {
+		$orderEntityPickupPoint = $orderEntity->getPickupPoint();
+		if ( null === $orderEntityPickupPoint ) {
+			$orderEntityPickupPoint = new Core\Entity\PickupPoint();
+		}
+
+		foreach ( $propsToSave as $attrName => $attrValue ) {
+			switch ( $attrName ) {
+				case self::ATTR_CARRIER_ID:
+					$orderEntity->setCarrierId( $attrValue );
+					break;
+				case self::ATTR_POINT_ID:
+					$orderEntityPickupPoint->setId( $attrValue );
+					break;
+				case self::ATTR_POINT_NAME:
+					$orderEntityPickupPoint->setName( $attrValue );
+					break;
+				case self::ATTR_POINT_URL:
+					$orderEntityPickupPoint->setUrl( $attrValue );
+					break;
+				case self::ATTR_POINT_STREET:
+					$orderEntityPickupPoint->setStreet( $attrValue );
+					break;
+				case self::ATTR_POINT_ZIP:
+					$orderEntityPickupPoint->setZip( $attrValue );
+					break;
+				case self::ATTR_POINT_CITY:
+					$orderEntityPickupPoint->setCity( $attrValue );
+					break;
+			}
+		}
+
+		$orderEntity->setPickupPoint( $orderEntityPickupPoint );
 	}
 
 	/**
@@ -639,7 +706,7 @@ class Checkout {
 
 		$carrierId = str_replace( self::CARRIER_PREFIX, '', $chosenMethod );
 		if ( strpos( $carrierId, 'zpoint' ) === 0 ) {
-			return Repository::INTERNAL_PICKUP_POINTS_ID;
+			return Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
 		}
 
 		return $carrierId;

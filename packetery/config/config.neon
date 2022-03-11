@@ -32,8 +32,7 @@ services:
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\EntityFactory\Carrier
-	- Packetery\Module\EntityFactory\Order
-	- Packetery\Module\EntityFactory\PickupPoint
+	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order
@@ -46,3 +45,6 @@ services:
 	- Packetery\Module\Order\PacketSynchronizer
 	requestFactory: PacketeryNette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
+	- Packetery\Module\Upgrade
+	- Packetery\Module\QueryProcessor
+	- Packetery\Module\Calculator

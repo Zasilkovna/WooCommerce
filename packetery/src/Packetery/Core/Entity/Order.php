@@ -19,7 +19,7 @@ class Order {
 	/**
 	 * Order id.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
 	private $number;
 
@@ -129,18 +129,32 @@ class Order {
 	private $packetId;
 
 	/**
-	 * Carrier id.
+	 * Packet ID
 	 *
 	 * @var string|null
+	 */
+	private $packetStatus;
+
+	/**
+	 * Carrier id.
+	 *
+	 * @var string
 	 */
 	private $carrierId;
 
 	/**
 	 * Tells if is packet submitted.
 	 *
-	 * @var bool|null
+	 * @var bool
 	 */
 	private $isExported;
+
+	/**
+	 * Tells if is packet submitted.
+	 *
+	 * @var bool
+	 */
+	private $isLabelPrinted;
 
 	/**
 	 * Packet currency.
@@ -150,32 +164,30 @@ class Order {
 	private $currency;
 
 	/**
+	 * Carrier number..
+	 *
+	 * @var string|null
+	 */
+	private $carrierNumber;
+
+	/**
 	 * Order entity constructor.
 	 *
-	 * @param string|null $number Order id.
-	 * @param string|null $name Customer name.
-	 * @param string|null $surname Customer surname.
-	 * @param float|null  $value Order value.
-	 * @param float|null  $weight Packet weight.
-	 * @param string|null $eshop Sender label.
-	 * @param string|null $carrierId Sender label.
+	 * @param string $number         Order id.
+	 * @param string $carrierId      Sender label.
+	 * @param bool   $isExported     Is exported.
+	 * @param bool   $isLabelPrinted Is label printed.
 	 */
 	public function __construct(
-		?string $number,
-		?string $name,
-		?string $surname,
-		?float $value,
-		?float $weight,
-		?string $eshop,
-		?string $carrierId
+		string $number,
+		string $carrierId,
+		bool $isExported = false,
+		bool $isLabelPrinted = false
 	) {
-		$this->number    = $number;
-		$this->name      = $name;
-		$this->surname   = $surname;
-		$this->value     = $value;
-		$this->weight    = $weight;
-		$this->eshop     = $eshop;
-		$this->carrierId = $carrierId;
+		$this->number         = $number;
+		$this->carrierId      = $carrierId;
+		$this->isExported     = $isExported;
+		$this->isLabelPrinted = $isLabelPrinted;
 	}
 
 	/**
@@ -296,6 +308,17 @@ class Order {
 	}
 
 	/**
+	 * Sets eshop.
+	 *
+	 * @param string|null $eshop Eshop.
+	 *
+	 * @return void
+	 */
+	public function setEshop( ?string $eshop ): void {
+		$this->eshop = $eshop;
+	}
+
+	/**
 	 * Sets phone.
 	 *
 	 * @param string $phone Phone.
@@ -379,12 +402,56 @@ class Order {
 	}
 
 	/**
+	 * Sets packet status.
+	 *
+	 * @param string|null $packetStatus Packet status.
+	 *
+	 * @return void
+	 */
+	public function setPacketStatus( ?string $packetStatus ): void {
+		$this->packetStatus = $packetStatus;
+	}
+
+	/**
 	 * Sets is exported flag.
 	 *
 	 * @param bool $isExported Packet id.
 	 */
 	public function setIsExported( bool $isExported ): void {
 		$this->isExported = $isExported;
+	}
+
+	/**
+	 * Sets flag of label print.
+	 *
+	 * @param bool $isLabelPrinted Is label printed.
+	 *
+	 * @return void
+	 */
+	public function setIsLabelPrinted( bool $isLabelPrinted ): void {
+		$this->isLabelPrinted = $isLabelPrinted;
+	}
+
+	/**
+	 * Sets carrier number.
+	 *
+	 * @param string|null $carrierNumber Carrier number.
+	 *
+	 * @return void
+	 */
+	public function setCarrierNumber( ?string $carrierNumber ): void {
+		$this->carrierNumber = $carrierNumber;
+	}
+
+	/**
+	 * Sets weight.
+	 *
+	 * @param float|null $weight Weight.
+	 *
+	 * @return void
+	 */
+	public function setWeight( ?float $weight ): void {
+		$this->weight = $weight;
 	}
 
 	/**
@@ -433,6 +500,15 @@ class Order {
 	}
 
 	/**
+	 * Packet status.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketStatus(): ?string {
+		return $this->packetStatus;
+	}
+
+	/**
 	 * Gets carrier id.
 	 *
 	 * @return string
@@ -446,7 +522,7 @@ class Order {
 	 *
 	 * @return bool
 	 */
-	public function isExported(): bool {
+	public function isExported(): ?bool {
 		return $this->isExported;
 	}
 
@@ -586,5 +662,23 @@ class Order {
 	 */
 	public function getPhone(): ?string {
 		return $this->phone;
+	}
+
+	/**
+	 * Is label printed?
+	 *
+	 * @return bool
+	 */
+	public function isLabelPrinted(): bool {
+		return $this->isLabelPrinted;
+	}
+
+	/**
+	 * Carrier number.
+	 *
+	 * @return string|null
+	 */
+	public function getCarrierNumber(): ?string {
+		return $this->carrierNumber;
 	}
 }
