@@ -98,6 +98,19 @@ class Upgrade {
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
 			$this->logRepository->createTable();
+			$logEntries = get_posts(
+				[
+					'post_type'   => 'packetery_log',
+					'post_status' => 'any',
+					'nopaging'    => true,
+					'fields'      => 'ids',
+				]
+			);
+			foreach ( $logEntries as $logEntryId ) {
+				wp_delete_post( $logEntryId, true );
+			}
+
+			unregister_post_type( 'packetery_log' );
 			$this->migrateWpOrderMetadata();
 		}
 

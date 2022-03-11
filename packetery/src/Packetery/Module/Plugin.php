@@ -701,20 +701,6 @@ class Plugin {
 
 		$orderRepository = $container->getByType( Order\Repository::class );
 		$orderRepository->drop();
-
-		$logEntries = get_posts(
-			[
-				'post_type'   => 'packetery_log',
-				'post_status' => 'any',
-				'nopaging'    => true,
-				'fields'      => 'ids',
-			]
-		);
-		foreach ( $logEntries as $logEntryId ) {
-			wp_delete_post( $logEntryId, true );
-		}
-
-		unregister_post_type( 'packetery_log' );
 	}
 
 	/**
