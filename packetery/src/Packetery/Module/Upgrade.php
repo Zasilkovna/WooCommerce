@@ -151,9 +151,9 @@ class Upgrade {
 
 			$orderEntity->setSize(
 				new Core\Entity\Size(
-					$this->getMetaAsNullableString( $order, self::META_LENGTH ),
-					$this->getMetaAsNullableString( $order, self::META_WIDTH ),
-					$this->getMetaAsNullableString( $order, self::META_HEIGHT )
+					$this->getMetaAsNullableFloat( $order, self::META_LENGTH ),
+					$this->getMetaAsNullableFloat( $order, self::META_WIDTH ),
+					$this->getMetaAsNullableFloat( $order, self::META_HEIGHT )
 				)
 			);
 			$order->delete_meta_data( self::META_LENGTH );
