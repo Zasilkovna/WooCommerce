@@ -841,7 +841,7 @@ msgstr "API heslo nájdete na adrese %s"
 
 #: temp/cache/view/template-options-page.latte--19c711edd6.php:189
 msgid "validateSender"
-msgstr "Odosielateľ"
+msgstr "Overiť odosielateľa"
 
 #: temp/cache/view/template-options-page.latte--19c711edd6.php:199
 msgid "Support"
@@ -914,7 +914,7 @@ msgstr "Dobierka"
 
 #: temp/cache/view/template-order-collection-print.latte--196227c595.php:160
 msgid "end"
-msgstr "Odosielateľ"
+msgstr "KONIEC"
 
 #: temp/cache/view/template-order-delivery-detail.latte--296d1c9ef5.php:21
 msgid "pickup point detail"
