@@ -285,7 +285,7 @@ msgstr "Tabulka prepravcov nebyla vytvořena"
 
 #: src/Packetery/Module/Log/Page.php:76
 msgid "logAction_order-table-not-created"
-msgstr "Tabulka objednávok nebyla vytvořena"
+msgstr "Tabuľka objednávok nebola vytvorená"
 
 #: src/Packetery/Module/Log/Page.php:77
 msgid "logAction_packet-status-sync"
