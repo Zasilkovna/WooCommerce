@@ -1,4 +1,9 @@
 <?php
+/**
+ * Class DbLogger
+ *
+ * @package Packetery\Module\Log
+ */
 
 declare( strict_types=1 );
 
@@ -8,6 +13,11 @@ namespace Packetery\Module\Log;
 use Packetery\Core\Helper;
 use Packetery\Core\Log\Record;
 
+/**
+ * Class DbLogger
+ *
+ * @package Packetery\Module\Log
+ */
 class DbLogger implements \Packetery\Core\Log\ILogger {
 
 	/**
@@ -18,7 +28,9 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	private $logRepository;
 
 	/**
-	 * @param Repository $logRepository
+	 * Constructor.
+	 *
+	 * @param Repository $logRepository Log repository.
 	 */
 	public function __construct( Repository $logRepository ) {
 		$this->logRepository = $logRepository;
@@ -38,9 +50,8 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 * @param Record $record Record.
 	 *
 	 * @return void
-	 * @throws \Exception
 	 */
-	public function add( \Packetery\Core\Log\Record $record ): void {
+	public function add( Record $record ): void {
 		if ( null === $record->date ) {
 			$record->date = Helper::now();
 		}
@@ -77,7 +88,6 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 * @return array
 	 */
 	public function getForPeriodAsArray( array $dateQuery ): iterable {
-
 		$arguments = [
 			'orderby'    => [ 'date' => 'ASC' ],
 			'date_query' => $dateQuery,

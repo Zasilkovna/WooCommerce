@@ -2,7 +2,7 @@
 /**
  * Class Page
  *
- * @package Packetery\Log
+ * @package Packetery\Module\Log
  */
 
 declare( strict_types=1 );
@@ -17,7 +17,7 @@ use PacketeryLatte\Engine;
 /**
  * Class Page
  *
- * @package Packetery\Log
+ * @package Packetery\Module\Log
  */
 class Page {
 

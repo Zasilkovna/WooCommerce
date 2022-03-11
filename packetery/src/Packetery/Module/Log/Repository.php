@@ -1,4 +1,9 @@
 <?php
+/**
+ * Class Page
+ *
+ * @package Packetery\Module\Log
+ */
 
 declare( strict_types=1 );
 
@@ -9,17 +14,24 @@ use Packetery\Core\Helper;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 
+/**
+ * Class Repository
+ *
+ * @package Packetery\Module\Log
+ */
 class Repository {
 
 	/**
 	 * WPDB.
 	 *
-	 * @var \wpdb;
+	 * @var \wpdb
 	 */
 	private $wpdb;
 
 	/**
-	 * @param \wpdb $wpdb
+	 * Constructor.
+	 *
+	 * @param \wpdb $wpdb WPDB.
 	 */
 	public function __construct( \wpdb $wpdb ) {
 		$this->wpdb = $wpdb;
@@ -33,13 +45,18 @@ class Repository {
 	 * @return iterable|Record[]
 	 */
 	public function find( array $arguments ): iterable {
-		$orderBy        = $arguments['orderby'] ?? [];
-		$limit          = $arguments['limit'] ?? null;
-		$dateQuery      = $arguments['date_query'] ?? [];
+		$wpdb      = $this->wpdb;
+		$orderBy   = $arguments['orderby'] ?? [];
+		$limit     = $arguments['limit'] ?? null;
+		$dateQuery = $arguments['date_query'] ?? [];
 
 		$orderByTransformed = [];
 		foreach ( $orderBy as $orderByKey => $orderByValue ) {
-			$orderByTransformed[] = $orderByKey . ' ' . $orderByValue;
+			if ( ! in_array( $orderByValue, [ 'ASC', 'DESC' ], true ) ) {
+				$orderByValue = 'ASC';
+			}
+
+			$orderByTransformed[] = '`' . $orderByKey . '` ' . $orderByValue;
 		}
 
 		$orderByClause = '';
@@ -55,7 +72,7 @@ class Repository {
 		$where = [];
 		foreach ( $dateQuery as $dateQueryItem ) {
 			if ( isset( $dateQueryItem['after'] ) ) {
-				$where[] = $this->wpdb->prepare('`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
+				$where[] = $wpdb->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
 			}
 		}
 
@@ -64,7 +81,8 @@ class Repository {
 			$whereClause = ' WHERE ' . implode( ' AND ', $where );
 		}
 
-		$result = $this->wpdb->get_results( "SELECT * FROM " . $this->wpdb->packetery_log . $whereClause . $orderByClause . $limitClause );
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$result = $wpdb->get_results( 'SELECT * FROM ' . $wpdb->packetery_log . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
 			return $this->remapToRecord( $result );
 		}
@@ -85,7 +103,7 @@ class Repository {
 			$record->id     = $log->id;
 			$record->status = $log->status;
 			$record->date   = \DateTimeImmutable::createFromFormat( Helper::MYSQL_DATETIME_FORMAT, $log->date, new \DateTimeZone( 'UTC' ) )
-			                                    ->setTimezone( wp_timezone() );
+												->setTimezone( wp_timezone() );
 			$record->action = $log->action;
 			$record->title  = $log->title;
 
@@ -106,8 +124,10 @@ class Repository {
 	 * @return void
 	 */
 	public function createTable(): void {
-		$this->wpdb->query( "
-			CREATE TABLE IF NOT EXISTS `" . $this->wpdb->packetery_log . "` (
+		$wpdb = $this->wpdb;
+		$wpdb->query(
+			'
+			CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_log . "` (
 				`id` INT(11) NOT NULL AUTO_INCREMENT,
 				`title` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
 				`params` TEXT NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
@@ -118,7 +138,8 @@ class Repository {
 			)
 			COLLATE='utf8_general_ci'
 			ENGINE=InnoDB
-		" );
+		"
+		);
 	}
 
 	/**
@@ -127,7 +148,8 @@ class Repository {
 	 * @return void
 	 */
 	public function drop(): void {
-		$this->wpdb->query( 'DROP TABLE IF EXISTS `' . $this->wpdb->packetery_log . '`' );
+		$wpdb = $this->wpdb;
+		$wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->packetery_log . '`' );
 	}
 
 	/**
@@ -138,15 +160,17 @@ class Repository {
 	 * @return void
 	 */
 	public function save( Record $record ): void {
-		$date = null;
-		if ( $record->date ) {
-			$date = $record->date->setTimezone(  new \DateTimeZone( 'UTC' ) )->format( Helper::MYSQL_DATETIME_FORMAT );
+		$date = $record->date;
+		if ( null === $date ) {
+			$date = Helper::now();
 		}
 
-		$params = '';
+		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( Helper::MYSQL_DATETIME_FORMAT );
+
+		$paramsString = '';
 		if ( $record->params ) {
-			$params = wp_json_encode( $record->params, ILogger::JSON_FLAGS );
-			$params = str_replace( '\\', '&quot;', $params );
+			$paramsString = wp_json_encode( $record->params, ILogger::JSON_FLAGS );
+			$paramsString = str_replace( '\\', '&quot;', $paramsString );
 		}
 
 		$data = [
@@ -154,8 +178,8 @@ class Repository {
 			'title'  => ( $record->title ?? '' ),
 			'status' => ( $record->status ?? '' ),
 			'action' => ( $record->action ?? '' ),
-			'params' => $params,
-			'date'   => $date,
+			'params' => $paramsString,
+			'date'   => $dateString,
 		];
 
 		$this->wpdb->_insert_replace_helper( $this->wpdb->packetery_log, $data, null, 'REPLACE' );

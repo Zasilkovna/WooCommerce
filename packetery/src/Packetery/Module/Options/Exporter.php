@@ -144,7 +144,7 @@ class Exporter {
 	/**
 	 * Remaps log records.
 	 *
-	 * @param iterable $logs
+	 * @param iterable $logs Logs.
 	 *
 	 * @return array
 	 */

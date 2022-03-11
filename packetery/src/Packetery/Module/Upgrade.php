@@ -80,7 +80,7 @@ class Upgrade {
 		$this->orderRepository = $orderRepository;
 		$this->messageManager  = $messageManager;
 		$this->logger          = $logger;
-		$this->logRepository = $logRepository;
+		$this->logRepository   = $logRepository;
 	}
 
 	/**
