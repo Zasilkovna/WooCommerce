@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packetery\n"
-"POT-Creation-Date: 2022-03-11T08:29:25+01:00\n"
-"PO-Revision-Date: 2022-03-11 08:35+0100\n"
+"POT-Creation-Date: 2022-03-11T14:41:36+01:00\n"
+"PO-Revision-Date: 2022-03-11 15:26+0100\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -288,24 +288,24 @@ msgid "logAction_order-table-not-created"
 msgstr "Tabuľka objednávok nebola vytvorená"
 
 #: src/Packetery/Module/Log/Page.php:77
+msgid "logAction_sender-validation"
+msgstr "Overenie odosielateľa"
+
+#: src/Packetery/Module/Log/Page.php:78
 msgid "logAction_packet-status-sync"
 msgstr "Synchronizácia stavu zásielky"
 
-#: src/Packetery/Module/Log/Page.php:81
+#: src/Packetery/Module/Log/Page.php:82
 msgid "statusError"
 msgstr "Chyba"
 
-#: src/Packetery/Module/Log/Page.php:82
+#: src/Packetery/Module/Log/Page.php:83
 msgid "statusSuccess"
 msgstr "Hotovo"
 
-#: src/Packetery/Module/Log/PostLogger.php:37
-msgid "Logs"
-msgstr "Logy"
-
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:718
+#: src/Packetery/Module/Plugin.php:732
 msgid "Settings"
 msgstr "Nastavenia"
 
@@ -629,25 +629,25 @@ msgstr "Akcia 'Vytvorenie zásielky' prebehla úspešne."
 msgid "packetStatusSyncErrorLogTitle"
 msgstr "Akcia 'Synchronizácia stavu zásielky' skončila chybou."
 
-#: src/Packetery/Module/Plugin.php:638
+#: src/Packetery/Module/Plugin.php:649
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabuľka dopravcov nebola vytvorená, viac informácii nájdete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:643
+#: src/Packetery/Module/Plugin.php:654
 msgid "carrierTableNotCreated"
 msgstr "Formát štítku prepravcu"
 
-#: src/Packetery/Module/Plugin.php:653 src/Packetery/Module/Upgrade.php:107
+#: src/Packetery/Module/Plugin.php:664 src/Packetery/Module/Upgrade.php:107
 msgid "orderTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabuľka objednávok nebola vytvorená, viac informácii nájdete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:658 src/Packetery/Module/Upgrade.php:112
+#: src/Packetery/Module/Plugin.php:669 src/Packetery/Module/Upgrade.php:112
 msgid "orderTableNotCreated"
 msgstr "Tabuľka objednávok nebola vytvorená"
 
-#: src/Packetery/Module/Plugin.php:717
+#: src/Packetery/Module/Plugin.php:731
 msgid "View Packeta settings"
 msgstr "Zobraziť nastavenia Packeta"
 
@@ -841,7 +841,7 @@ msgstr "API heslo nájdete na adrese %s"
 
 #: temp/cache/view/template-options-page.latte--19c711edd6.php:189
 msgid "validateSender"
-msgstr "Odosielateľ"
+msgstr "Overiť odosielateľa"
 
 #: temp/cache/view/template-options-page.latte--19c711edd6.php:199
 msgid "Support"
@@ -914,7 +914,7 @@ msgstr "Dobierka"
 
 #: temp/cache/view/template-order-collection-print.latte--196227c595.php:160
 msgid "end"
-msgstr "Odosielateľ"
+msgstr "KONIEC"
 
 #: temp/cache/view/template-order-delivery-detail.latte--296d1c9ef5.php:21
 msgid "pickup point detail"
@@ -1017,6 +1017,9 @@ msgstr "Zásielky na prepravcov"
 #: temp/cache/view/template-order-type-select.latte--7dab07c900.php:29
 msgid "packetaPickupPointPackets"
 msgstr "Zásielky na výdajné miesta Packeta"
+
+#~ msgid "Logs"
+#~ msgstr "Logy"
 
 #~ msgid "packetStatusSyncSuccessLogTitle"
 #~ msgstr "Akcia 'Synchronizácia stavu zásielky' prebehla úspešne."

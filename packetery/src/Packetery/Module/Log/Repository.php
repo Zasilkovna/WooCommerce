@@ -1,0 +1,187 @@
+<?php
+/**
+ * Class Page
+ *
+ * @package Packetery\Module\Log
+ */
+
+declare( strict_types=1 );
+
+
+namespace Packetery\Module\Log;
+
+use Packetery\Core\Helper;
+use Packetery\Core\Log\ILogger;
+use Packetery\Core\Log\Record;
+
+/**
+ * Class Repository
+ *
+ * @package Packetery\Module\Log
+ */
+class Repository {
+
+	/**
+	 * WPDB.
+	 *
+	 * @var \wpdb
+	 */
+	private $wpdb;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param \wpdb $wpdb WPDB.
+	 */
+	public function __construct( \wpdb $wpdb ) {
+		$this->wpdb = $wpdb;
+	}
+
+	/**
+	 * Finds logs.
+	 *
+	 * @param array $arguments Search arguments.
+	 *
+	 * @return iterable|Record[]
+	 */
+	public function find( array $arguments ): iterable {
+		$wpdb      = $this->wpdb;
+		$orderBy   = $arguments['orderby'] ?? [];
+		$limit     = $arguments['limit'] ?? null;
+		$dateQuery = $arguments['date_query'] ?? [];
+
+		$orderByTransformed = [];
+		foreach ( $orderBy as $orderByKey => $orderByValue ) {
+			if ( ! in_array( $orderByValue, [ 'ASC', 'DESC' ], true ) ) {
+				$orderByValue = 'ASC';
+			}
+
+			$orderByTransformed[] = '`' . $orderByKey . '` ' . $orderByValue;
+		}
+
+		$orderByClause = '';
+		if ( $orderByTransformed ) {
+			$orderByClause = ' ORDER BY ' . implode( ', ', $orderByTransformed );
+		}
+
+		$limitClause = '';
+		if ( is_numeric( $limit ) ) {
+			$limitClause = ' LIMIT ' . $limit;
+		}
+
+		$where = [];
+		foreach ( $dateQuery as $dateQueryItem ) {
+			if ( isset( $dateQueryItem['after'] ) ) {
+				$where[] = $wpdb->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
+			}
+		}
+
+		$whereClause = '';
+		if ( $where ) {
+			$whereClause = ' WHERE ' . implode( ' AND ', $where );
+		}
+
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$result = $wpdb->get_results( 'SELECT * FROM ' . $wpdb->packetery_log . $whereClause . $orderByClause . $limitClause );
+		if ( is_iterable( $result ) ) {
+			return $this->remapToRecord( $result );
+		}
+
+		return [];
+	}
+
+	/**
+	 * Remaps logs.
+	 *
+	 * @param iterable $logs Logs.
+	 *
+	 * @return \Generator|Record[]
+	 */
+	public function remapToRecord( iterable $logs ): \Generator {
+		foreach ( $logs as $log ) {
+			$record         = new Record();
+			$record->id     = $log->id;
+			$record->status = $log->status;
+			$record->date   = \DateTimeImmutable::createFromFormat( Helper::MYSQL_DATETIME_FORMAT, $log->date, new \DateTimeZone( 'UTC' ) )
+												->setTimezone( wp_timezone() );
+			$record->action = $log->action;
+			$record->title  = $log->title;
+
+			if ( $log->params ) {
+				$params         = str_replace( '&quot;', '\\', $log->params );
+				$record->params = json_decode( $params, true, 512, ILogger::JSON_FLAGS );
+			} else {
+				$record->params = [];
+			}
+
+			yield $record;
+		}
+	}
+
+	/**
+	 * Creates log table.
+	 *
+	 * @return void
+	 */
+	public function createTable(): void {
+		$wpdb = $this->wpdb;
+		$wpdb->query(
+			'
+			CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_log . "` (
+				`id` INT(11) NOT NULL AUTO_INCREMENT,
+				`title` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
+				`params` TEXT NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
+				`status` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
+				`action` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
+				`date` DATETIME NOT NULL,
+				PRIMARY KEY (`id`) USING BTREE
+			)
+			COLLATE='utf8_general_ci'
+			ENGINE=InnoDB
+		"
+		);
+	}
+
+	/**
+	 * Drops log table.
+	 *
+	 * @return void
+	 */
+	public function drop(): void {
+		$wpdb = $this->wpdb;
+		$wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->packetery_log . '`' );
+	}
+
+	/**
+	 * Save.
+	 *
+	 * @param Record $record Record.
+	 *
+	 * @return void
+	 */
+	public function save( Record $record ): void {
+		$date = $record->date;
+		if ( null === $date ) {
+			$date = Helper::now();
+		}
+
+		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( Helper::MYSQL_DATETIME_FORMAT );
+
+		$paramsString = '';
+		if ( $record->params ) {
+			$paramsString = wp_json_encode( $record->params, ILogger::JSON_FLAGS );
+			$paramsString = str_replace( '\\', '&quot;', $paramsString );
+		}
+
+		$data = [
+			'id'     => $record->id,
+			'title'  => ( $record->title ?? '' ),
+			'status' => ( $record->status ?? '' ),
+			'action' => ( $record->action ?? '' ),
+			'params' => $paramsString,
+			'date'   => $dateString,
+		];
+
+		$this->wpdb->_insert_replace_helper( $this->wpdb->packetery_log, $data, null, 'REPLACE' );
+	}
+}

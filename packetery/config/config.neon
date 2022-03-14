@@ -4,7 +4,8 @@ parameters:
 services:
 	- Packetery\Module\Address\Repository
 	- Packetery\Module\EntityFactory\Address
-	- Packetery\Module\Log\PostLogger
+	- Packetery\Module\Log\Repository
+	- Packetery\Module\Log\DbLogger
 	- Packetery\Module\Log\Page
 	- Packetery\Module\Product\DataTab
 	- Packetery\Core\Helper

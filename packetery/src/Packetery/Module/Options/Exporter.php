@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Core\Log\ILogger;
 use Packetery\Module\Carrier\CountryListingPage;
-use Packetery\Module\Log\PostLogger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http;
 
@@ -53,33 +53,33 @@ class Exporter {
 	private $optionsProvider;
 
 	/**
-	 * Post logger.
+	 * Logger.
 	 *
-	 * @var PostLogger
+	 * @var ILogger
 	 */
-	private $postLogger;
+	private $logger;
 
 	/**
 	 * Exporter constructor.
 	 *
-	 * @param Http\Request       $httpRequest Http request.
-	 * @param Engine             $latteEngine Latte engine.
+	 * @param Http\Request       $httpRequest        Http request.
+	 * @param Engine             $latteEngine        Latte engine.
 	 * @param CountryListingPage $countryListingPage Country listing page.
-	 * @param Provider           $optionsProvider Options provider.
-	 * @param PostLogger         $postLogger Post logger.
+	 * @param Provider           $optionsProvider    Options provider.
+	 * @param ILogger            $logger             Logger.
 	 */
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
 		Provider $optionsProvider,
-		PostLogger $postLogger
+		ILogger $logger
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
 		$this->countryListingPage = $countryListingPage;
 		$this->optionsProvider    = $optionsProvider;
-		$this->postLogger         = $postLogger;
+		$this->logger             = $logger;
 	}
 
 	/**
@@ -125,7 +125,7 @@ class Exporter {
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
 			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
-			'lastFiveDaysLogs'  => $this->formatVariable( $this->postLogger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ),
+			'lastFiveDaysLogs'  => $this->formatVariable( $this->remapLogRecords( $this->logger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ) ),
 			'generated'         => gmdate( 'Y-m-d H:i:s' ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
@@ -139,6 +139,29 @@ class Exporter {
 		echo $txtContents;
 		// @codingStandardsIgnoreEnd
 		exit;
+	}
+
+	/**
+	 * Remaps log records.
+	 *
+	 * @param iterable $logs Logs.
+	 *
+	 * @return array
+	 */
+	private function remapLogRecords( iterable $logs ): array {
+		$result = [];
+
+		foreach ( $logs as $log ) {
+			$result[] = [
+				'date'   => $log->date->format( wc_date_format() . ' ' . wc_time_format() ),
+				'action' => $log->action,
+				'status' => $log->status,
+				'title'  => $log->title,
+				'params' => $log->params,
+			];
+		}
+
+		return $result;
 	}
 
 	/**

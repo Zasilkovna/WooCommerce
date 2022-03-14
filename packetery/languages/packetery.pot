@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2022-03-11T08:29:25+01:00\n"
+"POT-Creation-Date: 2022-03-11T14:41:36+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packetery\n"
@@ -273,24 +273,24 @@ msgid "logAction_order-table-not-created"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:77
+msgid "logAction_sender-validation"
+msgstr ""
+
+#: src/Packetery/Module/Log/Page.php:78
 msgid "logAction_packet-status-sync"
 msgstr ""
 
-#: src/Packetery/Module/Log/Page.php:81
+#: src/Packetery/Module/Log/Page.php:82
 msgid "statusError"
 msgstr ""
 
-#: src/Packetery/Module/Log/Page.php:82
+#: src/Packetery/Module/Log/Page.php:83
 msgid "statusSuccess"
-msgstr ""
-
-#: src/Packetery/Module/Log/PostLogger.php:37
-msgid "Logs"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:718
+#: src/Packetery/Module/Plugin.php:732
 msgid "Settings"
 msgstr ""
 
@@ -607,25 +607,25 @@ msgstr ""
 msgid "packetStatusSyncErrorLogTitle"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:638
+#: src/Packetery/Module/Plugin.php:649
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:643
+#: src/Packetery/Module/Plugin.php:654
 msgid "carrierTableNotCreated"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:653
+#: src/Packetery/Module/Plugin.php:664
 #: src/Packetery/Module/Upgrade.php:107
 msgid "orderTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:658
+#: src/Packetery/Module/Plugin.php:669
 #: src/Packetery/Module/Upgrade.php:112
 msgid "orderTableNotCreated"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:717
+#: src/Packetery/Module/Plugin.php:731
 msgid "View Packeta settings"
 msgstr ""
 

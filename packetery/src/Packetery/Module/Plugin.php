@@ -211,6 +211,13 @@ class Plugin {
 	private $queryProcessor;
 
 	/**
+	 * Log repository.
+	 *
+	 * @var Log\Repository
+	 */
+	private $logRepository;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox            $order_metabox        Order metabox.
@@ -237,6 +244,7 @@ class Plugin {
 	 * @param Order\Repository         $orderRepository      Order repository.
 	 * @param Upgrade                  $upgrade              Plugin upgrade.
 	 * @param QueryProcessor           $queryProcessor       QueryProcessor.
+	 * @param Log\Repository           $logRepository        Log repository.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -262,7 +270,8 @@ class Plugin {
 		Request $request,
 		Order\Repository $orderRepository,
 		Upgrade $upgrade,
-		QueryProcessor $queryProcessor
+		QueryProcessor $queryProcessor,
+		Log\Repository $logRepository
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -289,15 +298,17 @@ class Plugin {
 		$this->orderRepository      = $orderRepository;
 		$this->upgrade              = $upgrade;
 		$this->queryProcessor       = $queryProcessor;
+		$this->logRepository        = $logRepository;
 	}
 
 	/**
 	 * Method to register hooks
 	 */
 	public function run(): void {
-		add_action( 'init', array( $this, 'loadTranslation' ), 1 );
-		add_action( 'init', [ $this->logger, 'register' ], 5 );
-		add_action( 'init', [ $this->message_manager, 'init' ], 9 );
+		add_action( 'init', [ $this->upgrade, 'check' ] );
+		add_action( 'init', [ $this, 'loadTranslation' ] );
+		add_action( 'init', [ $this->logger, 'register' ] );
+		add_action( 'init', [ $this->message_manager, 'init' ] );
 		add_action( 'init', [ $this->addressRepository, 'register' ] );
 		add_action( 'rest_api_init', [ $this->orderController, 'registerRoutes' ] );
 
@@ -334,7 +345,6 @@ class Plugin {
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );
 
-		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->upgrade, 'handleCustomQueryVar' ], 10, 2 );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
@@ -626,6 +636,7 @@ class Plugin {
 	public function activate(): void {
 		global $wpdb;
 
+		$this->logRepository->createTable();
 		if ( false === PACKETERY_DEBUG ) {
 			$this->options_page->setDefaultValues();
 		}
@@ -682,25 +693,14 @@ class Plugin {
 			delete_option( $option->option_name );
 		}
 
+		$logRepository = $container->getByType( Log\Repository::class );
+		$logRepository->drop();
+
 		$carrierRepository = $container->getByType( Carrier\Repository::class );
 		$carrierRepository->drop();
 
 		$orderRepository = $container->getByType( Order\Repository::class );
 		$orderRepository->drop();
-
-		$logEntries = get_posts(
-			[
-				'post_type'   => Log\PostLogger::POST_TYPE,
-				'post_status' => 'any',
-				'nopaging'    => true,
-				'fields'      => 'ids',
-			]
-		);
-		foreach ( $logEntries as $logEntryId ) {
-			wp_delete_post( $logEntryId, true );
-		}
-
-		unregister_post_type( Log\PostLogger::POST_TYPE );
 	}
 
 	/**
