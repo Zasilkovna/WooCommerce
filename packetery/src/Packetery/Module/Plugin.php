@@ -10,12 +10,10 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
-use Packetery\Module\Address;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
@@ -148,13 +146,6 @@ class Plugin {
 	private $logger;
 
 	/**
-	 * Address repository.
-	 *
-	 * @var Address\Repository
-	 */
-	private $addressRepository;
-
-	/**
 	 * Order controller.
 	 *
 	 * @var Order\Controller
@@ -234,7 +225,6 @@ class Plugin {
 	 * @param Product\DataTab          $productTab           Product tab.
 	 * @param Log\Page                 $logPage              Log page.
 	 * @param ILogger                  $logger               Log manager.
-	 * @param Address\Repository       $addressRepository    Address repository.
 	 * @param Order\Controller         $orderController      Order controller.
 	 * @param Order\Modal              $orderModal           Order modal.
 	 * @param Options\Exporter         $exporter             Options exporter.
@@ -261,7 +251,6 @@ class Plugin {
 		Product\DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
-		Address\Repository $addressRepository,
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
 		Options\Exporter $exporter,
@@ -288,7 +277,6 @@ class Plugin {
 		$this->productTab           = $productTab;
 		$this->logPage              = $logPage;
 		$this->logger               = $logger;
-		$this->addressRepository    = $addressRepository;
 		$this->orderController      = $orderController;
 		$this->orderModal           = $orderModal;
 		$this->exporter             = $exporter;
@@ -309,7 +297,6 @@ class Plugin {
 		add_action( 'init', [ $this, 'loadTranslation' ] );
 		add_action( 'init', [ $this->logger, 'register' ] );
 		add_action( 'init', [ $this->message_manager, 'init' ] );
-		add_action( 'init', [ $this->addressRepository, 'register' ] );
 		add_action( 'rest_api_init', [ $this->orderController, 'registerRoutes' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
@@ -431,7 +418,7 @@ class Plugin {
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
 			[
 				'pickupPoint'              => $orderEntity->getPickupPoint(),
-				'validatedDeliveryAddress' => $this->addressRepository->getValidatedByOrderId( (int) $orderEntity->getNumber() ),
+				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
 				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
 			]
 		);
@@ -449,7 +436,7 @@ class Plugin {
 		}
 
 		$pickupPoint              = $order->getPickupPoint();
-		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( $wcOrder->get_id() );
+		$validatedDeliveryAddress = $order->getValidatedDeliveryAddress();
 		if ( null === $pickupPoint && null === $validatedDeliveryAddress ) {
 			return;
 		}
@@ -479,7 +466,7 @@ class Plugin {
 		}
 
 		$pickupPoint              = $packeteryOrder->getPickupPoint();
-		$validatedDeliveryAddress = $this->addressRepository->getValidatedByOrderId( (int) $packeteryOrder->getNumber() );
+		$validatedDeliveryAddress = $packeteryOrder->getValidatedDeliveryAddress();
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',

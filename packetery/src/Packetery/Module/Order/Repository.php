@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
+use Packetery\Core\Entity\Address;
 use Packetery\Module\Calculator;
 use Packetery\Module\Carrier;
 use Packetery\Module\Product;
@@ -123,6 +124,8 @@ class Repository {
 				`point_street` varchar(255) NULL,
 				`point_zip` varchar(255) NULL,
 				`point_city` varchar(255) NULL,
+				`address_validated` boolean NOT NULL,
+				`delivery_address` TEXT NULL,
 				`weight` float NULL,
 				`length` float NULL,
 				`width` float NULL,
@@ -217,6 +220,22 @@ class Repository {
 		$partialOrder->setCarrierNumber( $result->carrier_number );
 		$partialOrder->setPacketStatus( $result->packet_status );
 		$partialOrder->setAdultContent( $this->containsAdultContent( $wcOrder ) );
+		$partialOrder->setAddressValidated( (bool) $result->address_validated );
+
+		if ( $result->delivery_address ) {
+			$deliveryAddressDecoded = json_decode( $result->delivery_address );
+			$deliveryAddress        = new Address(
+				$deliveryAddressDecoded->street,
+				$deliveryAddressDecoded->city,
+				$deliveryAddressDecoded->zip
+			);
+			$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
+			$deliveryAddress->setLongitude( $deliveryAddressDecoded->longitude );
+			$deliveryAddress->setLatitude( $deliveryAddressDecoded->latitude );
+			$deliveryAddress->setCounty( $deliveryAddressDecoded->county );
+
+			$partialOrder->setDeliveryAddress( $deliveryAddress );
+		}
 
 		if ( null !== $result->point_id ) {
 			$pickUpPoint = new PickupPoint(
@@ -262,24 +281,31 @@ class Repository {
 			$point = new PickupPoint();
 		}
 
+		$deliveryAddress = null;
+		if ( $order->getDeliveryAddress() ) {
+			$deliveryAddress = wp_json_encode( $order->getDeliveryAddress()->export(), JSON_UNESCAPED_UNICODE );
+		}
+
 		$data = [
-			'id'               => (int) $order->getNumber(),
-			'carrier_id'       => $order->getCarrierId(),
-			'is_exported'      => (int) $order->isExported(),
-			'packet_id'        => $order->getPacketId(),
-			'packet_status'    => $order->getPacketStatus(),
-			'is_label_printed' => (int) $order->isLabelPrinted(),
-			'carrier_number'   => $order->getCarrierNumber(),
-			'weight'           => $order->getWeight(),
-			'point_id'         => $point->getId(),
-			'point_name'       => $point->getName(),
-			'point_url'        => $point->getUrl(),
-			'point_street'     => $point->getStreet(),
-			'point_zip'        => $point->getZip(),
-			'point_city'       => $point->getCity(),
-			'length'           => $order->getLength(),
-			'width'            => $order->getWidth(),
-			'height'           => $order->getHeight(),
+			'id'                => (int) $order->getNumber(),
+			'carrier_id'        => $order->getCarrierId(),
+			'is_exported'       => (int) $order->isExported(),
+			'packet_id'         => $order->getPacketId(),
+			'packet_status'     => $order->getPacketStatus(),
+			'is_label_printed'  => (int) $order->isLabelPrinted(),
+			'carrier_number'    => $order->getCarrierNumber(),
+			'weight'            => $order->getWeight(),
+			'point_id'          => $point->getId(),
+			'point_name'        => $point->getName(),
+			'point_url'         => $point->getUrl(),
+			'point_street'      => $point->getStreet(),
+			'point_zip'         => $point->getZip(),
+			'point_city'        => $point->getCity(),
+			'address_validated' => (int) $order->isAddressValidated(),
+			'delivery_address'  => $deliveryAddress,
+			'length'            => $order->getLength(),
+			'width'             => $order->getWidth(),
+			'height'            => $order->getHeight(),
 		];
 
 		return $data;

@@ -12,7 +12,6 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
 use Packetery\Core\Helper;
-use Packetery\Module\Address as ModuleAddress;
 use Packetery\Module\Carrier;
 use Packetery\Module\Options\Provider;
 use WC_Order;
@@ -39,27 +38,17 @@ class Builder {
 	private $carrierRepository;
 
 	/**
-	 * Address repository.
-	 *
-	 * @var ModuleAddress\Repository
-	 */
-	private $addressRepository;
-
-	/**
 	 * Order constructor.
 	 *
-	 * @param Provider                 $optionsProvider    Options Provider.
-	 * @param Carrier\Repository       $carrierRepository  Carrier repository.
-	 * @param ModuleAddress\Repository $addressRepository  Address repository.
+	 * @param Provider           $optionsProvider    Options Provider.
+	 * @param Carrier\Repository $carrierRepository  Carrier repository.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
-		Carrier\Repository $carrierRepository,
-		ModuleAddress\Repository $addressRepository
+		Carrier\Repository $carrierRepository
 	) {
 		$this->optionsProvider   = $optionsProvider;
 		$this->carrierRepository = $carrierRepository;
-		$this->addressRepository = $addressRepository;
 	}
 
 	/**
@@ -84,8 +73,9 @@ class Builder {
 		$partialOrder->setWeight( Helper::simplifyWeight( $partialOrder->getWeight() ) );
 		$partialOrder->setValue( (float) $order->get_total( 'raw' ) );
 
-		$address = $this->addressRepository->getValidatedByOrderId( $order->get_id() );
+		$address = $partialOrder->getDeliveryAddress();
 		if ( null === $address ) {
+			$partialOrder->setAddressValidated( false );
 			$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		}
 

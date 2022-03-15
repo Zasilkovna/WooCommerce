@@ -18,6 +18,8 @@ use Packetery\Core\Log\Record;
  */
 class Upgrade {
 
+	const POST_TYPE_VALIDATED_ADDRESS = 'packetery_address';
+
 	const META_LENGTH           = 'packetery_length';
 	const META_WIDTH            = 'packetery_width';
 	const META_HEIGHT           = 'packetery_height';
@@ -112,6 +114,19 @@ class Upgrade {
 
 			unregister_post_type( 'packetery_log' );
 			$this->migrateWpOrderMetadata();
+			$addressEntries = get_posts(
+				[
+					'post_type'   => self::POST_TYPE_VALIDATED_ADDRESS,
+					'post_status' => 'any',
+					'nopaging'    => true,
+					'fields'      => 'ids',
+				]
+			);
+			foreach ( $addressEntries as $addressEntryId ) {
+				wp_delete_post( $addressEntryId, true );
+			}
+
+			unregister_post_type( self::POST_TYPE_VALIDATED_ADDRESS );
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );
@@ -203,11 +218,64 @@ class Upgrade {
 			$order->delete_meta_data( self::META_POINT_STREET );
 			$order->delete_meta_data( self::META_POINT_URL );
 
+			$validatedAddressId = $this->getValidatedAddressIdByOrderId( (int) $order->get_id() );
+			if ( $validatedAddressId ) {
+				$validatedAddress = $this->createAddressFromPostId( $validatedAddressId );
+				$orderEntity->setAddressValidated( true );
+				$orderEntity->setDeliveryAddress( $validatedAddress );
+			}
+
 			$this->orderRepository->save( $orderEntity );
 			$order->save_meta_data();
 		}
 	}
 
+	/**
+	 * Creates active widget address using woocommerce order id.
+	 *
+	 * @param int $addressId Address ID.
+	 *
+	 * @return Core\Entity\Address|null
+	 */
+	public function createAddressFromPostId( int $addressId ): ?Core\Entity\Address {
+		$address = new Core\Entity\Address(
+			get_post_meta( $addressId, 'street', true ),
+			get_post_meta( $addressId, 'city', true ),
+			get_post_meta( $addressId, 'postCode', true )
+		);
+		$address->setHouseNumber( get_post_meta( $addressId, 'houseNumber', true ) );
+		$address->setCounty( get_post_meta( $addressId, 'county', true ) );
+		$address->setLongitude( get_post_meta( $addressId, 'longitude', true ) );
+		$address->setLatitude( get_post_meta( $addressId, 'latitude', true ) );
+
+		return $address;
+	}
+
+	/**
+	 * Gets active address.
+	 *
+	 * @param int $orderId Order ID.
+	 *
+	 * @return int|null
+	 */
+	public function getValidatedAddressIdByOrderId( int $orderId ): ?int {
+		$postIds = get_posts(
+			[
+				'post_type'   => self::POST_TYPE_VALIDATED_ADDRESS,
+				'post_status' => 'any',
+				'nopaging'    => true,
+				'numberposts' => 1,
+				'fields'      => 'ids',
+				'post_parent' => $orderId,
+			]
+		);
+
+		if ( empty( $postIds ) ) {
+			return null;
+		}
+
+		return (int) array_shift( $postIds );
+	}
 
 	/**
 	 * Gets meta property of order as string.

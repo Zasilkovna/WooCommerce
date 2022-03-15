@@ -182,4 +182,13 @@ class Address {
 	public function setCounty( ?string $county ): void {
 		$this->county = $county;
 	}
+
+	/**
+	 * Export.
+	 *
+	 * @return array
+	 */
+	public function export(): array {
+		return get_object_vars( $this );
+	}
 }
