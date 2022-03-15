@@ -15,8 +15,6 @@ use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
-use Packetery\Module\EntityFactory;
-use Packetery\Module\Order as ModuleOrder;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 

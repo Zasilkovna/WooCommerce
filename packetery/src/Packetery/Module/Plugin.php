@@ -15,7 +15,6 @@ use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\Repository;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
