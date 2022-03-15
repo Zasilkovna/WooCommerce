@@ -74,10 +74,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 = 1.2.0 =
 * Updated: Packeta order meta data moved from posts to custom table
 * Updated: logger uses custom database table
-* Updated: Packeta packet status synchronization via WP cron is disabled
 
 = 1.1.2 =
-* Added: Packeta packet status synchronization via WP cron
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected
 * Added: primary key for carrier table
 * Fixed: label print page now shows the correct number of labels that will be printed
