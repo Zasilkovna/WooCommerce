@@ -217,9 +217,7 @@ class GridExtender {
 					]
 				);
 				break;
-			case 'packetery_packet_status':
-				echo esc_html( $this->getPacketStatusTranslated( $order->getPacketStatus() ) );
-				break;
+				// TODO: Packet status sync.
 		}
 	}
 

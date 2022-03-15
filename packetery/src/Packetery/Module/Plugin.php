@@ -366,10 +366,7 @@ class Plugin {
 			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
 		}
 
-		add_action( 'packetery_cron_packet_status_sync_hook', [ $this->packetSynchronizer, 'syncStatuses' ] );
-		if ( ! wp_next_scheduled( 'packetery_cron_packet_status_sync_hook' ) ) {
-			wp_schedule_event( ( new \DateTime( '03:00:00', wp_timezone() ) )->getTimestamp(), 'daily', 'packetery_cron_packet_status_sync_hook' );
-		}
+		// TODO: Packet status sync.
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
