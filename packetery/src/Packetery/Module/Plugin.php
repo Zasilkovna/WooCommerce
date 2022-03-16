@@ -366,6 +366,7 @@ class Plugin {
 		}
 
 		// TODO: Packet status sync.
+		wp_clear_scheduled_hook( 'packetery_cron_packet_status_sync_hook' );
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
