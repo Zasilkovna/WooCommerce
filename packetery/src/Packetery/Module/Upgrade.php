@@ -113,6 +113,7 @@ class Upgrade {
 			}
 
 			unregister_post_type( 'packetery_log' );
+
 			$this->migrateWpOrderMetadata();
 			$addressEntries = get_posts(
 				[

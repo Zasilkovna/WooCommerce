@@ -374,8 +374,6 @@ class Checkout {
 			$propsToSave[ self::ATTR_CARRIER_ID ] = $carrierId;
 		}
 
-		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
-
 		if ( $this->isPickupPointOrder() ) {
 			foreach ( self::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
@@ -397,20 +395,8 @@ class Checkout {
 			}
 		}
 
+		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
 		if ( $this->isHomeDeliveryOrder() ) {
-			$address = [];
-
-			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
-				$isWidgetResultField = ( $attributeData['isWidgetResultField'] ?? true );
-				if ( false === $isWidgetResultField ) {
-					continue;
-				}
-				if ( isset( $attributeData['name'] ) && isset( $post[ $attributeData['name'] ] ) ) {
-					$value             = $post[ $attributeData['name'] ];
-					$address[ $field ] = $value;
-				}
-			}
-
 			if (
 				isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) &&
 				'1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]

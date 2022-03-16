@@ -283,7 +283,7 @@ class Repository {
 
 		$deliveryAddress = null;
 		if ( $order->getDeliveryAddress() ) {
-			$deliveryAddress = wp_json_encode( $order->getDeliveryAddress()->export(), JSON_UNESCAPED_UNICODE );
+			$deliveryAddress = wp_json_encode( $order->getDeliveryAddress()->export() );
 		}
 
 		$data = [
