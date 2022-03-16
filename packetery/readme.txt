@@ -74,8 +74,6 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 = 1.2.0 =
 * Updated: Packeta order meta data moved from posts to custom table
 * Updated: logger uses custom database table
-
-= 1.1.2 =
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected
 * Added: primary key for carrier table
 * Fixed: label print page now shows the correct number of labels that will be printed
