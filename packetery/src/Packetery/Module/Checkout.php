@@ -134,13 +134,6 @@ class Checkout {
 	private $httpRequest;
 
 	/**
-	 * Address repository.
-	 *
-	 * @var Address\Repository
-	 */
-	private $addressRepository;
-
-	/**
 	 * Order repository.
 	 *
 	 * @var Order\Repository
@@ -154,7 +147,6 @@ class Checkout {
 	 * @param Provider           $options_provider  Options provider.
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 * @param Request            $httpRequest       Http request.
-	 * @param Address\Repository $addressRepository Address repository.
 	 * @param Order\Repository   $orderRepository   Order repository.
 	 */
 	public function __construct(
@@ -162,14 +154,12 @@ class Checkout {
 		Provider $options_provider,
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
-		Address\Repository $addressRepository,
 		Order\Repository $orderRepository
 	) {
 		$this->latte_engine      = $latte_engine;
 		$this->options_provider  = $options_provider;
 		$this->carrierRepository = $carrierRepository;
 		$this->httpRequest       = $httpRequest;
-		$this->addressRepository = $addressRepository;
 		$this->orderRepository   = $orderRepository;
 	}
 
@@ -405,29 +395,27 @@ class Checkout {
 			}
 		}
 
+		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
 		if ( $this->isHomeDeliveryOrder() ) {
-			$address = [];
-
-			foreach ( self::$homeDeliveryAttrs as $field => $attributeData ) {
-				$isWidgetResultField = ( $attributeData['isWidgetResultField'] ?? true );
-				if ( false === $isWidgetResultField ) {
-					continue;
-				}
-				if ( isset( $attributeData['name'] ) && isset( $post[ $attributeData['name'] ] ) ) {
-					$value             = $post[ $attributeData['name'] ];
-					$address[ $field ] = $value;
-				}
-			}
-
 			if (
 				isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) &&
 				'1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]
 			) {
-				$this->addressRepository->save( $orderId, $address ); // TODO: Think about address modifications by users.
+				$validatedAddress = new Core\Entity\Address(
+					$post[ self::$homeDeliveryAttrs['street']['name'] ],
+					$post[ self::$homeDeliveryAttrs['city']['name'] ],
+					$post[ self::$homeDeliveryAttrs['postCode']['name'] ]
+				);
+				$validatedAddress->setCounty( $post[ self::$homeDeliveryAttrs['county']['name'] ] );
+				$validatedAddress->setHouseNumber( $post[ self::$homeDeliveryAttrs['houseNumber']['name'] ] );
+				$validatedAddress->setLatitude( $post[ self::$homeDeliveryAttrs['latitude']['name'] ] );
+				$validatedAddress->setLongitude( $post[ self::$homeDeliveryAttrs['longitude']['name'] ] );
+
+				$orderEntity->setDeliveryAddress( $validatedAddress );
+				$orderEntity->setAddressValidated( true );
 			}
 		}
 
-		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
 		$this->orderRepository->save( $orderEntity );
 	}

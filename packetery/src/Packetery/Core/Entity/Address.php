@@ -19,28 +19,28 @@ class Address {
 	/**
 	 * Customer street for address delivery.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $street;
 
 	/**
 	 * Customer city for address delivery.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $city;
 
 	/**
 	 * Customer zip for address delivery.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $zip;
 
 	/**
 	 * Customer house number.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $houseNumber;
 
@@ -117,9 +117,9 @@ class Address {
 	/**
 	 * Sets house number.
 	 *
-	 * @param string $houseNumber House number.
+	 * @param string|null $houseNumber House number.
 	 */
-	public function setHouseNumber( string $houseNumber ): void {
+	public function setHouseNumber( ?string $houseNumber ): void {
 		$this->houseNumber = $houseNumber;
 	}
 
@@ -181,5 +181,14 @@ class Address {
 	 */
 	public function setCounty( ?string $county ): void {
 		$this->county = $county;
+	}
+
+	/**
+	 * Export.
+	 *
+	 * @return array
+	 */
+	public function export(): array {
+		return get_object_vars( $this );
 	}
 }

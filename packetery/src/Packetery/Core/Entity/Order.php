@@ -171,6 +171,13 @@ class Order {
 	private $carrierNumber;
 
 	/**
+	 * Address validated.
+	 *
+	 * @var bool
+	 */
+	private $addressValidated;
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string $number         Order id.
@@ -184,10 +191,31 @@ class Order {
 		bool $isExported = false,
 		bool $isLabelPrinted = false
 	) {
-		$this->number         = $number;
-		$this->carrierId      = $carrierId;
-		$this->isExported     = $isExported;
-		$this->isLabelPrinted = $isLabelPrinted;
+		$this->number           = $number;
+		$this->carrierId        = $carrierId;
+		$this->isExported       = $isExported;
+		$this->isLabelPrinted   = $isLabelPrinted;
+		$this->addressValidated = false;
+	}
+
+	/**
+	 * Is address validated?
+	 *
+	 * @return bool
+	 */
+	public function isAddressValidated(): bool {
+		return $this->addressValidated;
+	}
+
+	/**
+	 * Sets address validation flag.
+	 *
+	 * @param bool $addressValidated Address validated.
+	 *
+	 * @return void
+	 */
+	public function setAddressValidated( bool $addressValidated ): void {
+		$this->addressValidated = $addressValidated;
 	}
 
 	/**
@@ -479,6 +507,15 @@ class Order {
 	 */
 	public function getDeliveryAddress(): ?Address {
 		return $this->address;
+	}
+
+	/**
+	 * Gets validated delivery address object.
+	 *
+	 * @return Address|null
+	 */
+	public function getValidatedDeliveryAddress(): ?Address {
+		return ( $this->addressValidated ? $this->address : null );
 	}
 
 	/**

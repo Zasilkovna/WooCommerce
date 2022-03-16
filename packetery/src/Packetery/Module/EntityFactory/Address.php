@@ -20,27 +20,6 @@ use Packetery\Core\Entity;
 class Address {
 
 	/**
-	 * Creates active widget address using woocommerce order id.
-	 *
-	 * @param int $addressId Address ID.
-	 *
-	 * @return Entity\Address|null
-	 */
-	public function fromPostId( int $addressId ): ?Entity\Address {
-		$address = new Entity\Address(
-			get_post_meta( $addressId, 'street', true ),
-			get_post_meta( $addressId, 'city', true ),
-			get_post_meta( $addressId, 'postCode', true )
-		);
-		$address->setHouseNumber( get_post_meta( $addressId, 'houseNumber', true ) );
-		$address->setCounty( get_post_meta( $addressId, 'county', true ) );
-		$address->setLongitude( get_post_meta( $addressId, 'longitude', true ) );
-		$address->setLatitude( get_post_meta( $addressId, 'latitude', true ) );
-
-		return $address;
-	}
-
-	/**
 	 * Return WC store default address.
 	 *
 	 * @return Entity\Address
