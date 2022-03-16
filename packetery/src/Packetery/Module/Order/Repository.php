@@ -230,10 +230,7 @@ class Repository {
 				$deliveryAddressDecoded->zip
 			);
 
-			if ( $deliveryAddressDecoded->houseNumber ) {
-				$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
-			}
-
+			$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
 			$deliveryAddress->setLongitude( $deliveryAddressDecoded->longitude );
 			$deliveryAddress->setLatitude( $deliveryAddressDecoded->latitude );
 			$deliveryAddress->setCounty( $deliveryAddressDecoded->county );
