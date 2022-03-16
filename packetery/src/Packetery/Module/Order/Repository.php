@@ -229,7 +229,11 @@ class Repository {
 				$deliveryAddressDecoded->city,
 				$deliveryAddressDecoded->zip
 			);
-			$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
+
+			if ( $deliveryAddressDecoded->houseNumber ) {
+				$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
+			}
+
 			$deliveryAddress->setLongitude( $deliveryAddressDecoded->longitude );
 			$deliveryAddress->setLatitude( $deliveryAddressDecoded->latitude );
 			$deliveryAddress->setCounty( $deliveryAddressDecoded->county );
@@ -282,7 +286,7 @@ class Repository {
 		}
 
 		$deliveryAddress = null;
-		if ( $order->getDeliveryAddress() ) {
+		if ( $order->isAddressValidated() && $order->getDeliveryAddress() ) {
 			$deliveryAddress = wp_json_encode( $order->getDeliveryAddress()->export() );
 		}
 
