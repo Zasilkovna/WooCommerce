@@ -43,7 +43,8 @@ class FormFactory {
 				Validator::$messages[ Form::INTEGER ] = __( 'enterValidNumber', 'packetery' );
 				Validator::$messages[ Form::FLOAT ]   = __( 'enterValidNumber', 'packetery' );
 				Validator::$messages[ Form::FILLED ]  = __( 'thisFieldIsRequired', 'packetery' );
-			}
+			},
+			11
 		);
 		$this->request = $request;
 	}

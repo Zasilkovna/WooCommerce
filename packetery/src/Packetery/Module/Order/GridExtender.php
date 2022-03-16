@@ -217,9 +217,7 @@ class GridExtender {
 					]
 				);
 				break;
-			case 'packetery_packet_status':
-				echo esc_html( $this->getPacketStatusTranslated( $order->getPacketStatus() ) );
-				break;
+				// TODO: Packet status sync.
 		}
 	}
 
@@ -275,7 +273,7 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
-				$new_columns['packetery_packet_status'] = __( 'packetaPacketStatus', 'packetery' );
+				// TODO: Packet status sync.
 				$new_columns['packetery']               = __( 'Packeta', 'packetery' );
 				$new_columns['packetery_packet_id']     = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packetery' );
