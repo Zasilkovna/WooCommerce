@@ -84,7 +84,7 @@ class Record {
 			array_filter(
 				[
 					$this->title,
-					( $this->params ? 'Data: ' . wp_json_encode( $this->params, ILogger::JSON_FLAGS ) : '' ),
+					( $this->params ? 'Data: ' . wp_json_encode( $this->params, JSON_UNESCAPED_UNICODE ) : '' ),
 				]
 			)
 		);

@@ -11,7 +11,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Log;
 
 use Packetery\Core\Helper;
-use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 
 /**
@@ -108,8 +107,7 @@ class Repository {
 			$record->title  = $log->title;
 
 			if ( $log->params ) {
-				$params         = str_replace( '&quot;', '\\', $log->params );
-				$record->params = json_decode( $params, true, 512, ILogger::JSON_FLAGS );
+				$record->params = json_decode( $log->params, true );
 			} else {
 				$record->params = [];
 			}
@@ -169,8 +167,7 @@ class Repository {
 
 		$paramsString = '';
 		if ( $record->params ) {
-			$paramsString = wp_json_encode( $record->params, ILogger::JSON_FLAGS );
-			$paramsString = str_replace( '\\', '&quot;', $paramsString );
+			$paramsString = wp_json_encode( $record->params );
 		}
 
 		$data = [
