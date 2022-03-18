@@ -274,9 +274,9 @@ class GridExtender {
 
 			if ( 'order_total' === $column_name ) {
 				// TODO: Packet status sync.
-				$new_columns['packetery']               = __( 'Packeta', 'packetery' );
-				$new_columns['packetery_packet_id']     = __( 'Barcode', 'packetery' );
-				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packetery' );
+				$new_columns['packetery']             = __( 'Packeta', 'packetery' );
+				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packetery' );
+				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packetery' );
 			}
 		}
 
