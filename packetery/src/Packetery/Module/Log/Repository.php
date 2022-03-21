@@ -11,7 +11,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Log;
 
 use Packetery\Core\Helper;
-use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 
 /**
@@ -108,14 +107,35 @@ class Repository {
 			$record->title  = $log->title;
 
 			if ( $log->params ) {
-				$params         = str_replace( '&quot;', '\\', $log->params );
-				$record->params = json_decode( $params, true, 512, ILogger::JSON_FLAGS );
+				$record->params = json_decode( $log->params, true );
 			} else {
 				$record->params = [];
 			}
 
+			$record->note = $this->getNote( $record->title, $record->params );
+
 			yield $record;
 		}
+	}
+
+	/**
+	 * Gets note.
+	 *
+	 * @param string $title Title.
+	 * @param array  $params Params.
+	 *
+	 * @return string
+	 */
+	private function getNote( string $title, array $params ): string {
+		return implode(
+			' ',
+			array_filter(
+				[
+					$title,
+					( $params ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
+				]
+			)
+		);
 	}
 
 	/**
@@ -169,8 +189,7 @@ class Repository {
 
 		$paramsString = '';
 		if ( $record->params ) {
-			$paramsString = wp_json_encode( $record->params, ILogger::JSON_FLAGS );
-			$paramsString = str_replace( '\\', '&quot;', $paramsString );
+			$paramsString = wp_json_encode( $record->params );
 		}
 
 		$data = [

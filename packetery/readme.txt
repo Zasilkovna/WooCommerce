@@ -82,6 +82,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: non-Packeta order submit to Packeta API no longer creates PHP error
 * Fixed: label printing now accepts trashed orders
 * Fixed: Packeta order modal now dynamically calculates weight if no weight is provided
+* Fixed: Packeta logger now supports emote characters
 * Updated: only 3 decimal places are accepted for order weight
 * Updated: JavaScript and CSS files are now loading conditionally
 

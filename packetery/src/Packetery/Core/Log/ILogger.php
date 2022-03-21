@@ -17,8 +17,6 @@ namespace Packetery\Core\Log;
  */
 interface ILogger {
 
-	public const JSON_FLAGS = JSON_UNESCAPED_UNICODE;
-
 	/**
 	 * Registers log driver.
 	 */
