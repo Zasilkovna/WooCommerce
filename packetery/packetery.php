@@ -26,14 +26,7 @@
 use Packetery\Module\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	return; // Exit if accessed directly.
-}
-
-/**
- * Check if WooCommerce is active
- */
-if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
-	return;
+	exit; // Exit if accessed directly.
 }
 
 if ( php_sapi_name() === 'cli' ) {

@@ -293,8 +293,15 @@ class Plugin {
 	 * Method to register hooks
 	 */
 	public function run(): void {
-		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_action( 'init', [ $this, 'loadTranslation' ] );
+
+		if ( ! self::isWooCommercePluginActive() ) {
+			add_action( 'admin_notices', [ $this, 'echoInactiveWooCommerceNotice' ] );
+
+			return;
+		}
+
+		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_action( 'init', [ $this->logger, 'register' ] );
 		add_action( 'init', [ $this->message_manager, 'init' ] );
 		add_action( 'rest_api_init', [ $this->orderController, 'registerRoutes' ] );
@@ -379,6 +386,36 @@ class Plugin {
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
+	}
+
+	/**
+	 * Print inactive WooCommerce notice.
+	 *
+	 * @return void
+	 */
+	public function echoInactiveWooCommerceNotice(): void {
+		if ( self::isWooCommercePluginActive() ) {
+			return;
+		}
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/admin-notice.latte',
+			[
+				'message' => [
+					'type'    => 'error',
+					'message' => __( 'packetaPluginRequiresWooCommerce', 'packetery' ),
+				],
+			]
+		);
+	}
+
+	/**
+	 * Is WC plugin active.
+	 *
+	 * @return bool
+	 */
+	private static function isWooCommercePluginActive(): bool {
+		return in_array( 'woocommerce/woocommerce.php', (array) get_option( 'active_plugins', [] ), true );
 	}
 
 	/**
