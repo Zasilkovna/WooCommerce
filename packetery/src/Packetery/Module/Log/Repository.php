@@ -112,8 +112,30 @@ class Repository {
 				$record->params = [];
 			}
 
+			$record->note = $this->getNote( $record->title, $record->params );
+
 			yield $record;
 		}
+	}
+
+	/**
+	 * Gets note.
+	 *
+	 * @param string $title Title.
+	 * @param array  $params Params.
+	 *
+	 * @return string
+	 */
+	private function getNote( string $title, array $params ): string {
+		return implode(
+			' ',
+			array_filter(
+				[
+					$title,
+					( $params ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
+				]
+			)
+		);
 	}
 
 	/**
