@@ -85,6 +85,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: Packeta logger now supports emote characters
 * Updated: only 3 decimal places are accepted for order weight
 * Updated: JavaScript and CSS files are now loading conditionally
+* Fixed: deactivating WooCommerce plugin while having Packeta plugin activated no longer crashes entire site
 
 = 1.1.1 =
 * Fixed: overweight orders now never have shipping for free

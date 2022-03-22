@@ -23,18 +23,10 @@
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-// Exit if accessed directly.
 use Packetery\Module\Plugin;
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
-
-/**
- * Check if WooCommerce is active
- */
-if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ), true ) ) {
-	exit;
+	exit; // Exit if accessed directly.
 }
 
 if ( php_sapi_name() === 'cli' ) {
