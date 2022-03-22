@@ -72,6 +72,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.2.0 =
+* Updated: Packeta shipping method name updated and description removed
 * Updated: Packeta order meta data moved from posts to custom table
 * Updated: logger uses custom database table
 * Fixed: Packeta checkout validators now trigger only if Packeta shipping is selected
