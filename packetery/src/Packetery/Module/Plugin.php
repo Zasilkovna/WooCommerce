@@ -395,6 +395,9 @@ class Plugin {
 	 */
 	public function echoInactiveWooCommerceNotice(): void {
 		if ( self::isWooCommercePluginActive() ) {
+			// When Packeta plugin is active and WooCommerce plugin is inactive.
+			// If user decides to activate WooCommerce plugin then invalid notice will not be rendered.
+			// Packeta plugin probably bootstraps twice in such case.
 			return;
 		}
 
