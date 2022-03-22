@@ -30,13 +30,12 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 */
 	public function __construct( int $instance_id = 0 ) {
 		parent::__construct();
-		$this->id                 = self::PACKETERY_METHOD_ID;
-		$this->instance_id        = absint( $instance_id );
-		$this->method_title       = __( 'Packeta Shipping Method', 'packetery' );
-		$this->title              = __( 'Packeta Shipping Method', 'packetery' );
-		$this->method_description = __( 'Description of Packeta shipping method', 'packetery' );
-		$this->enabled            = 'yes'; // This can be added as an setting but for this example its forced enabled.
-		$this->supports           = array(
+		$this->id           = self::PACKETERY_METHOD_ID;
+		$this->instance_id  = absint( $instance_id );
+		$this->method_title = __( 'Packeta Shipping Method', 'packetery' );
+		$this->title        = __( 'Packeta Shipping Method', 'packetery' );
+		$this->enabled      = 'yes'; // This can be added as an setting but for this example its forced enabled.
+		$this->supports     = array(
 			'shipping-zones',
 		);
 		$this->init();

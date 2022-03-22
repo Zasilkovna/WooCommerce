@@ -656,11 +656,7 @@ msgstr "Ověření věku 18+"
 #: src/Packetery/Module/ShippingMethod.php:35
 #: src/Packetery/Module/ShippingMethod.php:36
 msgid "Packeta Shipping Method"
-msgstr "Metoda přepravy Packeta"
-
-#: src/Packetery/Module/ShippingMethod.php:37
-msgid "Description of Packeta shipping method"
-msgstr "Popis způsobu přepravy Packeta"
+msgstr "Packeta"
 
 #: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:27
 msgid "cannotUseThisCarrierBecauseRequiresCustomsDeclaration"

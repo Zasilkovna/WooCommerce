@@ -638,10 +638,6 @@ msgstr ""
 msgid "Packeta Shipping Method"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:37
-msgid "Description of Packeta shipping method"
-msgstr ""
-
 #: temp/cache/view/template-carrier-carrier.latte--4de73df525.php:27
 msgid "cannotUseThisCarrierBecauseRequiresCustomsDeclaration"
 msgstr ""
