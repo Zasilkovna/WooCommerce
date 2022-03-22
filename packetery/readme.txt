@@ -8,13 +8,13 @@ Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-With the help of our official plugin, You can choose pickup points of Packeta and its external carriers in all of Europe, or utilize address delivery to 25 countries in the European Union, straight from the cart in Your e-shop. You can also submit all your orders to Packeta with just one click.
+With the help of our official plugin, you can choose pickup points of Packeta and its external carriers in all of Europe, or utilize address delivery to 25 countries in the European Union, straight from the cart in your e-shop. You can also submit all your orders to Packeta with just one click.
 
 == Description ==
 
 = Plugin functions: =
 
-* the ability to choose a pickup place in Your cart using our widget v6
+* the ability to choose a pickup place in your cart using our widget v6
 * the ability to change the destination pickup point of an existing order
 * the option to allow checkout address validation using our widget HD
 * delivery to Packeta pickup places (Czech Republic, Slovakian Republic, Hungary, and Romania)
@@ -36,7 +36,7 @@ With the help of our official plugin, You can choose pickup points of Packeta an
 
 == Installation ==
 
-* You can install the plugin either in Your WordPress administration: Plugins->Plugin installation->Upload plugin or upload the "packetery" file into the /wp-content/plugins/ 
+* You can install the plugin either in your WordPress administration: Plugins->Plugin installation->Upload plugin or upload the "packetery" file into the /wp-content/plugins/ 
 * Activate the plugin in the WordPress menu "Plugins"
 * Set up the plugin according to our user documentation
 
@@ -52,7 +52,7 @@ In order to be able to use modern development procedures and continue to expand 
 
 = I'm missing a feature I would like to see, what should I do? =
 
-We are constantly working on adding new features. You can find a list of features we are currently working on in the "You can look forward to" chapter. If there is a feature You would like to see added, that is missing in our list, then please contact us at technicka.podpora@zasilkovna.cz
+We are constantly working on adding new features. You can find a list of features we are currently working on in the "You can look forward to" chapter. If there is a feature you would like to see added, that is missing in our list, then please contact us at technicka.podpora@zasilkovna.cz
 
 = I have found a mistake in the plugin or need help with the installation or set up of the plugin. =
 
