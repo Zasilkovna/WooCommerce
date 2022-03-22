@@ -38,7 +38,7 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 
 == Installation ==
 
-* You can install the plugin either in your WordPress administration: Plugins->Plugin installation->Upload plugin or upload the "packetery" file into the /wp-content/plugins/ 
+* You can install the plugin either in your WordPress administration: Plugins->Plugin installation->Upload plugin or upload the "packetery" folder into the /wp-content/plugins/ 
 * Activate the plugin in the WordPress menu "Plugins"
 * Set up the plugin according to our user documentation
 
