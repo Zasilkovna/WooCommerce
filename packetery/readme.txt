@@ -8,9 +8,9 @@ Requires PHP: 7.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-With the help of our official plugin, you can choose pickup points of Packeta and its external carriers in all of Europe, or utilize address delivery to 25 countries in the European Union, straight from the cart in your e-shop. You can also submit all your orders to Packeta with just one click.
-
 == Description ==
+
+With the help of our official plugin, you can choose pickup points of Packeta and its external carriers in all of Europe, or utilize address delivery to 25 countries in the European Union, straight from the cart in your e-shop. You can also submit all your orders to Packeta with just one click.
 
 = Plugin functions: =
 
