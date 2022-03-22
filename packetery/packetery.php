@@ -16,7 +16,7 @@
  * Requires at least: 5.3
  * Requires PHP: 7.2
  *
- * WP Tested up to: 5.9.2
+ * Tested up to: 5.9.2
  * WC requires at least: 4.5
  * WC tested up to: 6.3.1
  *
