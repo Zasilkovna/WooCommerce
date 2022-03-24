@@ -1,0 +1,20 @@
+
+name: Update at WordPress.org
+on:
+  push:
+    branches: [ main ]
+jobs:
+  update:
+    name: New version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2 # https://github.com/actions/checkout/releases/tag/v2
+      - name: WordPress plugin sourcecode update
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable # https://github.com/10up/action-wordpress-plugin-deploy
+        with:
+          generate-zip: false
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
