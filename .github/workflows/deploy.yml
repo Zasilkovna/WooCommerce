@@ -18,12 +18,14 @@ jobs:
         env:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: packeta
+          BUILD_DIR: packetery
       - name: Upload release asset
         uses: actions/upload-release-asset@v1 # https://github.com/actions/upload-release-asset/releases/tag/v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ steps.deploy.outputs.zip-path }}
-          asset_name: ${{ github.event.repository.name }}.zip
+          asset_path: ${{ github.workspace }}/woocommerce-plugin-packeta-${{ github.event.release.tag_name }}.zip
+          asset_name: woocommerce-plugin-packeta-${{ github.event.release.tag_name }}.zip
           asset_content_type: application/zip

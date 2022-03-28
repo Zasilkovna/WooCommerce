@@ -28,3 +28,7 @@
 - label printing, including direct labels
 - age verification for 18+, which can be setz up for every product. The order will then require the customer to verify his age during the parcel pickup
 - printing of the list of parcels
+
+## Credits
+
+* 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) Github Action
