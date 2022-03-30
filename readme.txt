@@ -63,6 +63,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.2.2 =
 * Fixed: Plugin main file directory retrieval
+* Fixed: Removed tracy examples with errors to pass wordpress.org sniffer
 
 = 1.2.1 =
 * Updated: First version to be released at wordpress.org
