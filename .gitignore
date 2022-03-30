@@ -1,5 +1,5 @@
 /.idea/
-/packetery/vendor
-/packetery/temp/*
-!/packetery/temp/.gitignore
-/packetery/log/
+/vendor
+/temp/*
+!/temp/.gitignore
+/log/

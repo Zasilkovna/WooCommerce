@@ -19,7 +19,6 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: packeta
-          BUILD_DIR: packetery
       - name: Upload release asset
         uses: actions/upload-release-asset@v1 # https://github.com/actions/upload-release-asset/releases/tag/v1
         env:
