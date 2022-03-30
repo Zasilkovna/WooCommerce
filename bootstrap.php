@@ -1,4 +1,9 @@
 <?php
+/**
+ * Packeta bootstrap.
+ *
+ * @package Packeta
+ */
 
 use Packetery\Module\CompatibilityBridge;
 use PacketeryNette\Bootstrap\Configurator;

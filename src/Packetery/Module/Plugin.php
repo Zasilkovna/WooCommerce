@@ -29,7 +29,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION               = '1.2.1';
+	public const VERSION               = '1.2.2';
 	public const DOMAIN                = 'packetery';
 	public const MIN_LISTENER_PRIORITY = -9998;
 
@@ -266,7 +266,7 @@ class Plugin {
 		$this->latte_engine         = $latte_engine;
 		$this->carrierRepository    = $carrierRepository;
 		$this->carrier_downloader   = $carrier_downloader;
-		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packetery.php';
+		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packeta.php';
 		$this->order_metabox        = $order_metabox;
 		$this->message_manager      = $message_manager;
 		$this->checkout             = $checkout;
@@ -556,7 +556,7 @@ class Plugin {
 	 * @return string
 	 */
 	public static function buildAssetUrl( string $asset ): string {
-		$url      = plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packetery.php' ) . $asset;
+		$url      = plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . $asset;
 		$filename = PACKETERY_PLUGIN_DIR . '/' . $asset;
 
 		return add_query_arg( [ 'v' => md5( (string) filemtime( $filename ) ) ], $url );

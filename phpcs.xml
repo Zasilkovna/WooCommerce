@@ -4,7 +4,9 @@
 
     <file>cli</file>
     <file>src</file>
-    <file>packetery.php</file>
+    <file>bootstrap.php</file>
+    <file>bootstrap-cli.php</file>
+    <file>packeta.php</file>
 
     <!-- Configs -->
     <config name="minimum_supported_wp_version" value="5.0" />
