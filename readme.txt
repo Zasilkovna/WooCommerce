@@ -61,6 +61,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.2.3 =
+* Added: Link to documentation to show on "Installed plugins" page
+
 = 1.2.2 =
 * Fixed: Plugin main file directory retrieval updated due to renaming packetery.php to packeta.php
 * Fixed: Removed tracy examples with errors to pass wordpress.org sniffer
