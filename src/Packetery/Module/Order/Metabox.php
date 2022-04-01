@@ -224,7 +224,7 @@ class Metabox {
 		$wpOrder        = wc_get_order( $order->getNumber() );
 		$widgetSettings = [
 			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
-			'country'          => mb_strtolower( $wpOrder->get_shipping_country() ),
+			'country'          => ( false === $wpOrder ? '' : mb_strtolower( $wpOrder->get_shipping_country() ) ),
 			'language'         => substr( get_locale(), 0, 2 ),
 			'appIdentity'      => Plugin::getAppIdentity(),
 			'weight'           => $order->getWeight(),

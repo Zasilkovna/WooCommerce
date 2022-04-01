@@ -166,7 +166,10 @@ class GridExtender {
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
 		$wcOrder = wc_get_order( $post->ID );
-		$order   = $this->orderRepository->getByWcOrder( $wcOrder );
+		if ( false === $wcOrder ) {
+			return;
+		}
+		$order = $this->orderRepository->getByWcOrder( $wcOrder );
 		if ( null === $order ) {
 			return;
 		}

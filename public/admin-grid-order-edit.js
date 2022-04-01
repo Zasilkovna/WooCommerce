@@ -19,8 +19,12 @@
 					orderId: orderData.id
 				}
 			} ).always( function( response ) {
-				if ( response && response.redirectTo ) {
-					window.location.href = response.redirectTo;
+				if (response) {
+					if (response.redirectTo) {
+						window.location.href = response.redirectTo;
+					} else if (response.responseJSON && response.responseJSON.message) {
+						$('<div class="updated" style="border-left-color: #d63638;"><p>' + response.responseJSON.message + '</p></div>').insertBefore('ul.subsubsub');
+					}
 				}
 			} );
 		} );

@@ -343,9 +343,12 @@ class Repository {
 		);
 		foreach ( $posts as $post ) {
 			$wcOrder = wc_get_order( $post );
-			$order   = $this->getByWcOrder( $wcOrder );
-			if ( $wcOrder && $order ) {
-				$orderEntities[ $order->getNumber() ] = $order;
+			// In case WC_Order does not exist, result set is limited to existing records.
+			if ( $wcOrder ) {
+				$order = $this->getByWcOrder( $wcOrder );
+				if ( $order ) {
+					$orderEntities[ $order->getNumber() ] = $order;
+				}
 			}
 		}
 
@@ -376,7 +379,7 @@ class Repository {
 
 		foreach ( $rows as $row ) {
 			$wcOrder = wc_get_order( $row->id );
-			if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			if ( false === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
 
