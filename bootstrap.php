@@ -22,7 +22,7 @@ if ( PACKETERY_DEBUG ) {
 
 $configurator->addConfig( __DIR__ . '/config/config.neon' );
 $configurator->setTempDirectory( __DIR__ . '/temp' );
-$configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->register();
+$configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->setAutoRefresh(false)->register();
 
 $configurator->defaultExtensions = [];
 
