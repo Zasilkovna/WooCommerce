@@ -193,7 +193,7 @@ class Page {
 
 		// TODO: Packet status sync.
 
-		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'replaceShippingAddressWithPickupPointAddress', 'packetery' ) )
+		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packetery' ) )
 			->setRequired( false );
 
 		if ( $this->optionsProvider->has_any() ) {

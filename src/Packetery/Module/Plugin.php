@@ -242,7 +242,7 @@ class Plugin {
 	 * @param Upgrade                  $upgrade              Plugin upgrade.
 	 * @param QueryProcessor           $queryProcessor       QueryProcessor.
 	 * @param Log\Repository           $logRepository        Log repository.
-	 * @param Options\Provider          $optionsProvider      Options provider.
+	 * @param Options\Provider         $optionsProvider      Options provider.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,

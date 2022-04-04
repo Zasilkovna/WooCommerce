@@ -289,7 +289,7 @@ class Metabox {
 		];
 
 		if ( $values[ Checkout::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
-			$wcOrder = wc_get_order( $post_id );
+			$wcOrder = wc_get_order( $orderId );
 			foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
@@ -300,16 +300,7 @@ class Metabox {
 				$propsToSave[ $pickupPointAttr['name'] ] = $value;
 
 				if ( $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
-					if ( Entity::META_POINT_STREET === $pickupPointAttr['name'] ) {
-						$wcOrder->set_shipping_address_1( $value );
-						$wcOrder->set_shipping_address_2( '' );
-					}
-					if ( Entity::META_POINT_CITY === $pickupPointAttr['name'] ) {
-						$wcOrder->set_shipping_city( $value );
-					}
-					if ( Entity::META_POINT_ZIP === $pickupPointAttr['name'] ) {
-						$wcOrder->set_shipping_postcode( $value );
-					}
+					Checkout::updateShippingAddressProperty( $wcOrder, $pickupPointAttr['name'], (string) $value );
 				}
 			}
 			$wcOrder->save();

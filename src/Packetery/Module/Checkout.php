@@ -29,6 +29,7 @@ class Checkout {
 	const ATTR_POINT_CITY   = 'packetery_point_city';
 	const ATTR_POINT_ZIP    = 'packetery_point_zip';
 	const ATTR_POINT_STREET = 'packetery_point_street';
+	const ATTR_POINT_PLACE  = 'packetery_point_place';
 	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
 	const ATTR_POINT_URL    = 'packetery_point_url';
 
@@ -57,6 +58,10 @@ class Checkout {
 		'street'    => array(
 			'name'     => self::ATTR_POINT_STREET,
 			'required' => true,
+		),
+		'place'     => array(
+			'name'     => self::ATTR_POINT_PLACE,
+			'required' => false,
 		),
 		'carrierId' => array(
 			'name'     => self::ATTR_CARRIER_ID,
@@ -376,7 +381,6 @@ class Checkout {
 
 		if ( $this->isPickupPointOrder() ) {
 			$wcOrder = wc_get_order( $orderId );
-
 			foreach ( self::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
 				if ( ! isset( $post[ $attrName ] ) ) {
@@ -396,19 +400,9 @@ class Checkout {
 				}
 
 				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
-					if ( Entity::META_POINT_STREET === $attrName ) {
-						$wcOrder->set_shipping_address_1( $attrValue );
-						$wcOrder->set_shipping_address_2( '' );
-					}
-					if ( Entity::META_POINT_CITY === $attrName ) {
-						$wcOrder->set_shipping_city( $attrValue );
-					}
-					if ( Entity::META_POINT_ZIP === $attrName ) {
-						$wcOrder->set_shipping_postcode( $attrValue );
-					}
+					self::updateShippingAddressProperty( $wcOrder, $attrName, (string) $attrValue );
 				}
 			}
-
 			$wcOrder->save();
 		}
 
@@ -726,5 +720,31 @@ class Checkout {
 	 */
 	private function isPacketeryOrder( string $chosenMethod ): bool {
 		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) === 0 );
+	}
+
+	/**
+	 * Update order shipping.
+	 *
+	 * @param \WC_Order $wcOrder       WC Order.
+	 * @param string    $attributeName Attribute name.
+	 * @param string    $value         Value.
+	 *
+	 * @return void
+	 * @throws \WC_Data_Exception When shipping input is invalid.
+	 */
+	public static function updateShippingAddressProperty( \WC_Order $wcOrder, string $attributeName, string $value ): void {
+		if ( self::ATTR_POINT_STREET === $attributeName ) {
+			$wcOrder->set_shipping_address_1( $value );
+			$wcOrder->set_shipping_address_2( '' );
+		}
+		if ( self::ATTR_POINT_PLACE === $attributeName ) {
+			$wcOrder->set_shipping_company( $value );
+		}
+		if ( self::ATTR_POINT_CITY === $attributeName ) {
+			$wcOrder->set_shipping_city( $value );
+		}
+		if ( self::ATTR_POINT_ZIP === $attributeName ) {
+			$wcOrder->set_shipping_postcode( $value );
+		}
 	}
 }
