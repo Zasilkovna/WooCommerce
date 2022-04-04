@@ -579,7 +579,7 @@ class Plugin {
 		global $pagenow, $typenow;
 
 		$page              = $this->request->getQuery( 'page' );
-		$isOrderGridPage   = 'edit.php' === $pagenow && 'shop_order' === $typenow;
+		$isOrderGridPage   = $this->gridExtender->isOrderGridPage( $pagenow, $typenow );
 		$isOrderDetailPage = 'post.php' === $pagenow && 'shop_order' === $typenow;
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
