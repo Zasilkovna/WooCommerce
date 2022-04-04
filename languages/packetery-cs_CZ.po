@@ -2,7 +2,7 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.2.3\n"
+"Project-Id-Version: Packeta 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "POT-Creation-Date: 2022-03-30T14:06:53+02:00\n"
 "PO-Revision-Date: 2022-03-30 14:07+0200\n"
