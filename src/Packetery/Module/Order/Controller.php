@@ -139,9 +139,10 @@ class Controller extends WP_REST_Controller {
 			'errors'  => 0,
 		];
 		if ( false === $order ) {
-			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packetery' ), 400 );
+			$resultsCounter['errors'] = 1;
+		} else {
+			$this->packetSubmitter->submitPacket( $order, $resultsCounter );
 		}
-		$this->packetSubmitter->submitPacket( $order, $resultsCounter );
 		$data['redirectTo'] = add_query_arg(
 			[
 				'post_type'     => 'shop_order',

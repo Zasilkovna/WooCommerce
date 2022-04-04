@@ -19,12 +19,8 @@
 					orderId: orderData.id
 				}
 			} ).always( function( response ) {
-				if (response) {
-					if (response.redirectTo) {
-						window.location.href = response.redirectTo;
-					} else if (response.responseJSON && response.responseJSON.message) {
-						window.location.href = window.location.origin + window.location.pathname + '?post_type=shop_order&submit_to_api=1&errors=1';
-					}
+				if ( response && response.redirectTo ) {
+					window.location.href = response.redirectTo;
 				}
 			} );
 		} );
