@@ -23,7 +23,7 @@
 					if (response.redirectTo) {
 						window.location.href = response.redirectTo;
 					} else if (response.responseJSON && response.responseJSON.message) {
-						$('<div class="updated" style="border-left-color: #d63638;"><p>' + response.responseJSON.message + '</p></div>').insertBefore('ul.subsubsub');
+						window.location.href = window.location.origin + window.location.pathname + '?post_type=shop_order&submit_to_api=1&errors=1';
 					}
 				}
 			} );
