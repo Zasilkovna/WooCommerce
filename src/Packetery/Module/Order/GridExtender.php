@@ -135,6 +135,13 @@ class GridExtender {
 	 * Adds select to order grid.
 	 */
 	public function renderOrderTypeSelect(): void {
+		global $pagenow, $typenow;
+
+		$isOrderGridPage = ( 'edit.php' === $pagenow && 'shop_order' === $typenow );
+		if ( ! $isOrderGridPage ) {
+			return;
+		}
+
 		$linkFilters = [];
 
 		if ( null !== $this->httpRequest->getQuery( 'packetery_to_submit' ) ) {
