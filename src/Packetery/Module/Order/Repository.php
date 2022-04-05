@@ -222,6 +222,7 @@ class Repository {
 		$partialOrder->setPacketStatus( $result->packet_status );
 		$partialOrder->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		$partialOrder->setAddressValidated( (bool) $result->address_validated );
+		$partialOrder->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
 
 		if ( $result->delivery_address ) {
 			$deliveryAddressDecoded = json_decode( $result->delivery_address );

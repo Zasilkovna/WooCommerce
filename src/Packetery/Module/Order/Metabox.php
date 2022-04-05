@@ -221,10 +221,9 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
-		$wpOrder        = wc_get_order( $order->getNumber() );
 		$widgetSettings = [
 			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
-			'country'          => ( false === $wpOrder ? '' : mb_strtolower( $wpOrder->get_shipping_country() ) ),
+			'country'          => ( $order->getShippingCountry() ? $order->getShippingCountry() : '' ),
 			'language'         => substr( get_locale(), 0, 2 ),
 			'appIdentity'      => Plugin::getAppIdentity(),
 			'weight'           => $order->getWeight(),

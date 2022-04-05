@@ -178,6 +178,13 @@ class Order {
 	private $addressValidated;
 
 	/**
+	 * ISO 3166-1 alpha-2 code, lowercase.
+	 *
+	 * @var string|null
+	 */
+	private $shippingCountry;
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string $number         Order id.
@@ -483,6 +490,17 @@ class Order {
 	}
 
 	/**
+	 * Sets shipping country.
+	 *
+	 * @param string $shippingCountry ISO 3166-1 alpha-2 code, lowercase.
+	 *
+	 * @return void
+	 */
+	public function setShippingCountry( $shippingCountry ): void {
+		$this->shippingCountry = $shippingCountry;
+	}
+
+	/**
 	 * Gets carrier object.
 	 *
 	 * @return Carrier|null
@@ -718,4 +736,14 @@ class Order {
 	public function getCarrierNumber(): ?string {
 		return $this->carrierNumber;
 	}
+
+	/**
+	 * Gets shipping country.
+	 *
+	 * @return string|null
+	 */
+	public function getShippingCountry(): ?string {
+		return $this->shippingCountry;
+	}
+
 }
