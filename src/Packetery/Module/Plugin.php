@@ -653,6 +653,7 @@ class Plugin {
 				'addPluginActionLinks',
 			]
 		);
+		add_filter( 'plugin_row_meta', [ $this, 'addPluginRowMeta' ], 10, 2 );
 	}
 
 	/**
@@ -743,6 +744,27 @@ class Plugin {
 					esc_html__( 'Settings', 'packetery' ) . '</a>';
 
 		array_unshift( $links, $settingsLink );
+
+		return $links;
+	}
+
+	/**
+	 * Show row meta on the plugin screen.
+	 *
+	 * @link https://developer.wordpress.org/reference/hooks/plugin_row_meta/
+	 *
+	 * @param array $links Plugin Row Meta.
+	 * @param string $pluginFileName Plugin Base file.
+	 *
+	 * @return array
+	 */
+	public function addPluginRowMeta( array $links, string $pluginFileName ): array {
+		if ( ! strpos( $pluginFileName, basename( $this->main_file_path ) ) ) {
+			return $links;
+		}
+		$links[] = '<a href="' . esc_url( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .
+		           esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
+		           esc_html__( 'Documentation', 'packetery' ) . '</a>';
 
 		return $links;
 	}
