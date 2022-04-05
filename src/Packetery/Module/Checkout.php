@@ -29,7 +29,7 @@ class Checkout {
 	const ATTR_POINT_CITY   = 'packetery_point_city';
 	const ATTR_POINT_ZIP    = 'packetery_point_zip';
 	const ATTR_POINT_STREET = 'packetery_point_street';
-	const ATTR_POINT_PLACE  = 'packetery_point_place';
+	const ATTR_POINT_PLACE  = 'packetery_point_place'; // Bussines name of pickup point.
 	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
 	const ATTR_POINT_URL    = 'packetery_point_url';
 
