@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.9.2
-Stable tag: 1.2.2
+Stable tag: 1.2.3
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.3.1
@@ -61,6 +61,11 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.2.3 =
+* Added: Packeta admin menu icon
+* Added: Link to documentation to show on "Installed plugins" page
+* Fixed: Packeta plugin no longer throws error during upgrade with DEBUG_MODE enabled
+
 = 1.2.2 =
 * Fixed: Plugin main file directory retrieval updated due to renaming packetery.php to packeta.php
 * Fixed: Removed tracy examples with errors to pass wordpress.org sniffer

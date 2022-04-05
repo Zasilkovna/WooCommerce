@@ -29,7 +29,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION               = '1.2.2';
+	public const VERSION               = '1.2.3';
 	public const DOMAIN                = 'packetery';
 	public const MIN_LISTENER_PRIORITY = -9998;
 
@@ -753,7 +753,7 @@ class Plugin {
 	 *
 	 * @link https://developer.wordpress.org/reference/hooks/plugin_row_meta/
 	 *
-	 * @param array $links Plugin Row Meta.
+	 * @param array  $links Plugin Row Meta.
 	 * @param string $pluginFileName Plugin Base file.
 	 *
 	 * @return array
@@ -763,8 +763,8 @@ class Plugin {
 			return $links;
 		}
 		$links[] = '<a href="' . esc_url( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .
-		           esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
-		           esc_html__( 'Documentation', 'packetery' ) . '</a>';
+		esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
+		esc_html__( 'Documentation', 'packetery' ) . '</a>';
 
 		return $links;
 	}
