@@ -135,9 +135,10 @@ class BulkActions {
 		}
 
 		$latteParams = [
-			'success' => (int) ( $get['success'] ?? 0 ),
-			'ignored' => (int) ( $get['ignored'] ?? 0 ),
-			'errors'  => (int) ( $get['errors'] ?? 0 ),
+			'success'      => (int) ( $get['success'] ?? 0 ),
+			'ignored'      => (int) ( $get['ignored'] ?? 0 ),
+			'errors'       => (int) ( $get['errors'] ?? 0 ),
+			'errorMessage' => (string) ( $get['error_message'] ?? '' ),
 		];
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/export-result.latte', $latteParams );
 	}

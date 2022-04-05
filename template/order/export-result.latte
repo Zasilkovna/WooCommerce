@@ -1,18 +1,23 @@
-{* TODO: without updated class, nothing was visible, therefore inline style were used to override green border *}
+{if $errorMessage}
+	<div class="notice notice-error is-dismissible">
+		<p>{$errorMessage}</p>
+	</div>
+{/if}
+
 {if !$ignored && !$errors && $success}
-	<div class="updated">
+	<div class="notice notice-success is-dismissible">
 		<p>{__('shipmentsSubmittedSuccessfully', 'packetery')}</p>
 	</div>
 {else}
 	{if $ignored}
-		<div class="updated" style="border-left-color: #72aee6;">
+		<div class="notice notice-info is-dismissible">
 			{phpComment 'translators: %s is count.'}
 			<p>{sprintf( __( 'someShipments%sSkipped', 'packetery' ), $ignored )}</p>
 		</div>
 	{/if}
 
 	{if $errors}
-		<div class="updated" style="border-left-color: #d63638;">
+		<div class="notice notice-error is-dismissible">
 			{phpComment 'translators: %s is count.'}
 			<p>{sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors )}</p>
 		</div>

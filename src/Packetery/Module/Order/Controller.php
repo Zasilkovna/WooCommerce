@@ -134,12 +134,14 @@ class Controller extends WP_REST_Controller {
 		$wcOrder    = wc_get_order( $orderId );
 
 		$resultsCounter = [
-			'success' => 0,
-			'ignored' => 0,
-			'errors'  => 0,
+			'success'       => 0,
+			'ignored'       => 0,
+			'errors'        => 0,
+			'error_message' => '',
 		];
 		if ( false === $wcOrder ) {
-			$resultsCounter['errors'] = 1;
+			// translators: %s is order id.
+			$resultsCounter['error_message'] = sprintf( __( 'Order %s does not exist.', 'packetery' ), $orderId );
 		} else {
 			$this->packetSubmitter->submitPacket( $wcOrder, $resultsCounter );
 		}
