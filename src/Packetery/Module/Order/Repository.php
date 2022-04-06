@@ -345,11 +345,12 @@ class Repository {
 		foreach ( $posts as $post ) {
 			$wcOrder = wc_get_order( $post );
 			// In case WC_Order does not exist, result set is limited to existing records.
-			if ( $wcOrder ) {
-				$order = $this->getByWcOrder( $wcOrder );
-				if ( $order ) {
-					$orderEntities[ $order->getNumber() ] = $order;
-				}
+			if ( ! $wcOrder ) {
+				continue;
+			}
+			$order = $this->getByWcOrder( $wcOrder );
+			if ( $order ) {
+				$orderEntities[ $order->getNumber() ] = $order;
 			}
 		}
 
