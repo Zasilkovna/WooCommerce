@@ -1,25 +1,17 @@
-{if $errorMessage}
-	<div class="notice notice-error is-dismissible">
-		<p>{$errorMessage}</p>
-	</div>
-{/if}
-
 {if !$ignored && !$errors && $success}
 	<div class="notice notice-success is-dismissible">
-		<p>{__('shipmentsSubmittedSuccessfully', 'packetery')}</p>
+		<p>{$success}</p>
 	</div>
 {else}
 	{if $ignored}
 		<div class="notice notice-info is-dismissible">
-			{phpComment 'translators: %s is count.'}
-			<p>{sprintf( __( 'someShipments%sSkipped', 'packetery' ), $ignored )}</p>
+			<p>{$ignored}</p>
 		</div>
 	{/if}
 
 	{if $errors}
 		<div class="notice notice-error is-dismissible">
-			{phpComment 'translators: %s is count.'}
-			<p>{sprintf( __( 'someShipments%sFailed', 'packetery' ), $errors )}</p>
+			<p>{$errors}</p>
 		</div>
 	{/if}
 {/if}
