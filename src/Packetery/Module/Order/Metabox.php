@@ -289,7 +289,7 @@ class Metabox {
 		];
 
 		if ( $values[ Checkout::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
-			$wcOrder = wc_get_order( $orderId );
+			$wcOrder = wc_get_order( $orderId ); // Can not be false due condition at the beginning of method.
 			foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
