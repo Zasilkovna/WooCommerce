@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 5.9.2
-Stable tag: 1.2.4
+Stable tag: 1.2.5
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.3.1
@@ -61,6 +61,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.2.5 =
+* Fixed: Packeta plugin is now compatible with Plugins making javascripts load asynchronously in checkout
+
 = 1.2.4 =
 * Updated: new HD widget library URL
 
