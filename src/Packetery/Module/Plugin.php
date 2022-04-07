@@ -568,7 +568,7 @@ class Plugin {
 	public function enqueueFrontAssets(): void {
 		if ( is_checkout() ) {
 			$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', false, [ 'jquery' ] );
+			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
 		}
 	}
 
