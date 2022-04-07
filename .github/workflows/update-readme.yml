@@ -3,14 +3,20 @@ on:
   push:
     branches: [ main ]
 jobs:
-  trunk:
-    name: Push to trunk
+  push:
+    name: Push to wordpress.org
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@main
       - name: WordPress.org plugin asset/readme update
-        uses: 10up/action-wordpress-plugin-asset-update@stable # https://github.com/10up/action-wordpress-plugin-asset-update
         env:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SLUG: packeta
+        shell: bash
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x "${GITHUB_WORKSPACE}/.github/update-readme-and-assets.sh"
+          
+          # run script
+          "${GITHUB_WORKSPACE}/.github/update-readme-and-assets.sh"
