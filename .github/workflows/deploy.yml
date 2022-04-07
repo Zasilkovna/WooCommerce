@@ -26,5 +26,5 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ${{ github.workspace }}/packeta.zip
-          asset_name: woocommerce-plugin-packeta-${{ github.event.release.tag_name }}.zip
+          asset_name: packeta.zip
           asset_content_type: application/zip
