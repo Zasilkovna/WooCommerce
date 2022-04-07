@@ -301,3 +301,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 		packeteryCheckout( settings );
 	} );
 };
+
+if ( typeof packeteryCheckoutSettings !== 'undefined' ) {
+	packeteryLoadCheckout( jQuery, packeteryCheckoutSettings );
+}
