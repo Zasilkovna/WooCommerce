@@ -435,6 +435,21 @@ class Repository {
 	}
 
 	/**
+	 * Deletes all custom table records linked to permanently deleted orders.
+	 *
+	 * @return void
+	 */
+	public function deleteOrphans(): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->query(
+			'DELETE `' . $wpdb->packetery_order . '` FROM `' . $wpdb->packetery_order . '`
+			LEFT JOIN `' . $wpdb->posts . '` ON `' . $wpdb->posts . '`.`ID` = `' . $wpdb->packetery_order . '`.`id`
+			WHERE `' . $wpdb->posts . '`.`ID` IS NULL'
+		);
+	}
+
+	/**
 	 * Deletes data from custom table.
 	 *
 	 * @param int $orderId Order id.
