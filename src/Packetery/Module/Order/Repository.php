@@ -17,6 +17,7 @@ use Packetery\Module\Calculator;
 use Packetery\Module\Carrier;
 use Packetery\Module\Product;
 use Packetery\Module\ShippingMethod;
+use WP_Post;
 
 /**
  * Class Repository.
@@ -432,4 +433,32 @@ class Repository {
 			WHERE o.`packet_id` IS NOT NULL AND o.`is_label_printed` = false'
 		);
 	}
+
+	/**
+	 * Deletes data from custom table.
+	 *
+	 * @param int $orderId Order id.
+	 *
+	 * @return void
+	 */
+	private function delete( int $orderId ): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->delete( $wpdb->packetery_order, [ 'id' => $orderId ], '%d' );
+	}
+
+	/**
+	 * Fires after post deletion.
+	 *
+	 * @param int     $postId Post id.
+	 * @param WP_Post $post Post object.
+	 *
+	 * @return void
+	 */
+	public function deletedPostHook( int $postId, WP_Post $post ): void {
+		if ( 'shop_order' === $post->post_type ) {
+			$this->delete( $postId );
+		}
+	}
+
 }
