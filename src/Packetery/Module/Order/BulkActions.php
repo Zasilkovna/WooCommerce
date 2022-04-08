@@ -134,17 +134,20 @@ class BulkActions {
 			return;
 		}
 
+		$success = null;
 		if ( is_numeric( $get['success'] ) && $get['success'] > 0 ) {
 			$success = __( 'shipmentsSubmittedSuccessfully', 'packetery' );
 		}
+		$ignored = null;
 		if ( is_numeric( $get['ignored'] ) && $get['ignored'] > 0 ) {
 			// translators: %s is count.
 			$ignored = sprintf( __( 'someShipments%sSkipped', 'packetery' ), $get['ignored'] );
 		}
+		$errors = null;
 		if ( is_numeric( $get['errors'] ) && $get['errors'] > 0 ) {
 			// translators: %s is count.
 			$errors = sprintf( __( 'someShipments%sFailed', 'packetery' ), $get['errors'] );
-		} else {
+		} elseif ( isset( $get['errors'] ) ) {
 			$errors = $get['errors'];
 		}
 
