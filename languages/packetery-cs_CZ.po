@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
-"POT-Creation-Date: 2022-03-30T14:06:53+02:00\n"
-"PO-Revision-Date: 2022-03-30 14:07+0200\n"
+"POT-Creation-Date: 2022-04-11 12:16+0200\n"
+"PO-Revision-Date: 2022-04-11 12:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -17,8 +17,8 @@ msgstr ""
 "X-Domain: packetery\n"
 
 #. Plugin Name of the plugin
-#: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
+#: src/Packetery/Module/Options/Page.php:115
 #: src/Packetery/Module/Order/GridExtender.php:277
 #: src/Packetery/Module/Order/Metabox.php:148
 #: src/Packetery/Module/Product/DataTab.php:72
@@ -305,66 +305,66 @@ msgstr "Chyba"
 msgid "statusSuccess"
 msgstr "Úspěch"
 
-#: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:743
+#: src/Packetery/Module/Options/Page.php:125
+#: src/Packetery/Module/Plugin.php:744
 msgid "Settings"
 msgstr "Nastavení"
 
-#: src/Packetery/Module/Options/Page.php:156
+#: src/Packetery/Module/Options/Page.php:157
 msgid "API password"
 msgstr "API heslo"
 
-#: src/Packetery/Module/Options/Page.php:158
+#: src/Packetery/Module/Options/Page.php:159
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr "API heslo musí být 32 znaků dlouhé a musí obsahovat validní znaky!"
 
-#: src/Packetery/Module/Options/Page.php:159
+#: src/Packetery/Module/Options/Page.php:160
 msgid "Sender"
 msgstr "Odesílatel"
 
-#: src/Packetery/Module/Options/Page.php:165
+#: src/Packetery/Module/Options/Page.php:166
 msgid "Packeta Label Format"
 msgstr "Formát štítku Zásilkovny"
 
-#: src/Packetery/Module/Options/Page.php:172
+#: src/Packetery/Module/Options/Page.php:173
 msgid "Carrier Label Format"
 msgstr "Formát štítku dopravce"
 
-#: src/Packetery/Module/Options/Page.php:183
+#: src/Packetery/Module/Options/Page.php:184
 msgid "Payment method that represents cash on delivery"
 msgstr "Platební metoda, která reprezentuje dobírku."
 
-#: src/Packetery/Module/Options/Page.php:187
+#: src/Packetery/Module/Options/Page.php:188
 msgid "packagingWeight"
 msgstr "Hmotnost balení"
 
-#: src/Packetery/Module/Options/Page.php:234
+#: src/Packetery/Module/Options/Page.php:235
 msgid "Main Settings"
 msgstr "Hlavní nastavení"
 
-#: src/Packetery/Module/Options/Page.php:287
+#: src/Packetery/Module/Options/Page.php:288
 msgid "senderValidationSuccessLogTitle"
 msgstr "Validace odesílatele proběhla úspěšně"
 
-#: src/Packetery/Module/Options/Page.php:294
+#: src/Packetery/Module/Options/Page.php:295
 msgid "senderValidationErrorLogTitle"
 msgstr "Validace odesílatele skončila chybou"
 
-#: src/Packetery/Module/Options/Page.php:302
+#: src/Packetery/Module/Options/Page.php:303
 msgid "specifiedSenderDoesNotExist"
 msgstr "Zvolený odesílatel neexistuje"
 
-#: src/Packetery/Module/Options/Page.php:306
+#: src/Packetery/Module/Options/Page.php:307
 msgid "unableToCheckSpecifiedSender"
 msgstr "Odesílatele nebylo možno ověřit"
 
-#: src/Packetery/Module/Options/Page.php:323
+#: src/Packetery/Module/Options/Page.php:324
 msgid "specifiedSenderIsOk"
 msgstr "Zvolený odesílatel byl ověřen"
 
-#: src/Packetery/Module/Options/Page.php:347
+#: src/Packetery/Module/Options/Page.php:348
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -373,7 +373,7 @@ msgstr ""
 "Kontaktujte správce vašeho webhostingu."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:354
+#: src/Packetery/Module/Options/Page.php:355
 msgid "senderDescription"
 msgstr ""
 "Zde vyplňte %1$soznačení odesílatele%2$s - najdete jej v %3$sklientské sekci"
@@ -629,27 +629,35 @@ msgstr ""
 "Plugin Zásilkovny vyžaduje WooCommerce. Nejprve jej prosím nainstalujte a "
 "aktivujte."
 
-#: src/Packetery/Module/Plugin.php:674
+#: src/Packetery/Module/Plugin.php:675
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabulka dopravců nebyla vytvořena, více informací naleznete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:679
+#: src/Packetery/Module/Plugin.php:680
 msgid "carrierTableNotCreated"
 msgstr "Tabulka dopravců nebyla vytvořena"
 
-#: src/Packetery/Module/Plugin.php:689 src/Packetery/Module/Upgrade.php:147
+#: src/Packetery/Module/Plugin.php:690 src/Packetery/Module/Upgrade.php:147
 msgid "orderTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabulka objednávek nebyla vytvořena, více informací naleznete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:694 src/Packetery/Module/Upgrade.php:152
+#: src/Packetery/Module/Plugin.php:695 src/Packetery/Module/Upgrade.php:152
 msgid "orderTableNotCreated"
 msgstr "Tabulka objednávek nebyla vytvořena"
 
-#: src/Packetery/Module/Plugin.php:742
+#: src/Packetery/Module/Plugin.php:743
 msgid "View Packeta settings"
 msgstr "Zobrazit Packeta nastavení"
+
+#: src/Packetery/Module/Plugin.php:766
+msgid "View Packeta documentation"
+msgstr "Zobrazit Packeta dokumentaci"
+
+#: src/Packetery/Module/Plugin.php:767
+msgid "Documentation"
+msgstr "Dokumentace"
 
 #: src/Packetery/Module/Product/DataTab.php:89
 msgid "ageVerification18PlusLabel"
@@ -987,7 +995,7 @@ msgstr "Vytiskne se %s štítek"
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:31
 msgid "willBePrinted2%sLabels"
-msgstr "Vytiskne se %s štítky"
+msgstr "Vytisknou se %s štítky"
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:36
@@ -1062,12 +1070,6 @@ msgstr "Zásilky na výdejní místa Zásilkovny"
 
 #~ msgid "Allow Label Emailing"
 #~ msgstr "Dovolit rozesílání stítků emailem"
-
-#~ msgid "View Packeta documentation"
-#~ msgstr "Zobrazit Packeta dokumentaci"
-
-#~ msgid "Documentation"
-#~ msgstr "Dokumentace"
 
 #~ msgid ""
 #~ "If checked, the generated labels will be emailed to the e-shop "
