@@ -494,7 +494,7 @@ class Plugin {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
 			[
-				'replaceShippingAddressWithPickupPointAddress' => $this->optionsProvider->replaceShippingAddressWithPickupPointAddress(),
+				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
 			]
@@ -522,11 +522,20 @@ class Plugin {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
 			[
-				'replaceShippingAddressWithPickupPointAddress' => $this->optionsProvider->replaceShippingAddressWithPickupPointAddress(),
+				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
 			]
 		);
+	}
+
+	/**
+	 * Tells if pickup point info should be displayed.
+	 *
+	 * @return bool
+	 */
+	public function shouldDisplayPickupPointInfo(): bool {
+		return ! $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() || wc_ship_to_billing_address_only();
 	}
 
 	/**
