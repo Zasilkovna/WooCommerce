@@ -676,12 +676,12 @@ class Plugin {
 		}
 
 		if ( $isOrderGridPage ) {
-			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery' ] );
+			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery', 'backbone' ] );
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 		}
 
 		if ( $isOrderDetailPage ) {
-			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery' ] );
+			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery', 'backbone' ] );
 			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
 		}
 	}

@@ -1,0 +1,18 @@
+<script type="text/template" id="tmpl-wc-packetery-confirm-modal">
+    <div class="wc-backbone-modal" data-packetery-confirm-modal>
+        <div class="wc-backbone-modal-content">
+            <section class="wc-backbone-modal-main" role="main">
+                <article>
+                    <p>{{ data.text }}</p>
+                </article>
+                <footer>
+                    <div class="inner">
+                        <a class="button button-sencondary button-large modal-close modal-close-link">{__( 'No', 'packetery' )}</a>
+                        <a data-packetery-confirm-yes class="button button-primary button-large">{__( 'Yes', 'packetery' )}</a>
+                    </div>
+                </footer>
+            </section>
+        </div>
+    </div>
+    <div class="wc-backbone-modal-backdrop modal-close"></div>
+</script>
