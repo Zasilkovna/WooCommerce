@@ -2,6 +2,7 @@ parameters:
     latteTempFolder: %tempDir%/cache/view
 
 services:
+	- Packetery\Module\Translator
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
 	- Packetery\Module\Log\Purger
