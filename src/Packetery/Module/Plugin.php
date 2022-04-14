@@ -232,6 +232,13 @@ class Plugin {
 	private $packetCanceller;
 
 	/**
+	 * Context resolver.
+	 *
+	 * @var ContextResolver
+	 */
+	private $contextResolver;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox            $order_metabox        Order metabox.
@@ -261,6 +268,7 @@ class Plugin {
 	 * @param Options\Provider         $optionsProvider      Options provider.
 	 * @param CronService              $cronService          Cron service.
 	 * @param Order\PacketCanceller    $packetCanceller      Packet canceller.
+	 * @param ContextResolver          $contextResolver      Context resolver.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -289,7 +297,8 @@ class Plugin {
 		Log\Repository $logRepository,
 		Options\Provider $optionsProvider,
 		CronService $cronService,
-		Order\PacketCanceller $packetCanceller
+		Order\PacketCanceller $packetCanceller,
+		ContextResolver $contextResolver
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -319,6 +328,7 @@ class Plugin {
 		$this->optionsProvider      = $optionsProvider;
 		$this->cronService          = $cronService;
 		$this->packetCanceller      = $packetCanceller;
+		$this->contextResolver      = $contextResolver;
 	}
 
 	/**
@@ -589,7 +599,9 @@ class Plugin {
 	 * Renders confirm modal template.
 	 */
 	public function renderConfirmModalTemplate(): void {
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte' );
+		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
+			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte' );
+		}
 	}
 
 	/**
@@ -676,13 +688,15 @@ class Plugin {
 		}
 
 		if ( $isOrderGridPage ) {
-			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery', 'backbone' ] );
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 		}
 
 		if ( $isOrderDetailPage ) {
-			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery', 'backbone' ] );
 			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
+		}
+
+		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
+			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery', 'backbone' ] );
 		}
 	}
 
