@@ -312,6 +312,9 @@ class LabelPrint {
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
 				$order = $this->orderRepository->getById( $orderId );
+				if ( null === $order ) { // Collection was already limited, so we do not need to log this.
+					continue;
+				}
 				$order->setIsLabelPrinted( true );
 				$this->orderRepository->save( $order );
 			}
@@ -355,6 +358,9 @@ class LabelPrint {
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
 				$order = $this->orderRepository->getById( $orderId );
+				if ( null === $order ) { // Collection was already limited, so we do not need to log this.
+					continue;
+				}
 				$order->setIsLabelPrinted( true );
 				$order->setCarrierNumber( $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
 				$this->orderRepository->save( $order );

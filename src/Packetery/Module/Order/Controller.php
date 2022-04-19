@@ -131,14 +131,19 @@ class Controller extends WP_REST_Controller {
 		$data       = [];
 		$parameters = $request->get_body_params();
 		$orderId    = $parameters['orderId'];
-		$order      = wc_get_order( $orderId );
+		$wcOrder    = wc_get_order( $orderId );
 
 		$resultsCounter = [
 			'success' => 0,
 			'ignored' => 0,
 			'errors'  => 0,
 		];
-		$this->packetSubmitter->submitPacket( $order, $resultsCounter );
+		if ( false === $wcOrder ) {
+			// translators: %s is order id.
+			$resultsCounter['errors'] = sprintf( __( 'Order %s does not exist.', 'packetery' ), $orderId );
+		} else {
+			$this->packetSubmitter->submitPacket( $wcOrder, $resultsCounter );
+		}
 		$data['redirectTo'] = add_query_arg(
 			[
 				'post_type'     => 'shop_order',
@@ -174,12 +179,16 @@ class Controller extends WP_REST_Controller {
 			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
-		$values = $form->getValues( 'array' );
-		if ( ! is_numeric( $values['packetery_weight'] ) ) {
-			$values['packetery_weight'] = $this->calculator->calculateOrderWeight( wc_get_order( $orderId ) );
+		$order = $this->orderRepository->getById( $orderId );
+		if ( null === $order ) {
+			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packetery' ), 400 );
 		}
 
-		$order = $this->orderRepository->getById( $orderId );
+		$values = $form->getValues( 'array' );
+		if ( ! is_numeric( $values['packetery_weight'] ) ) {
+			$values['packetery_weight'] = $order->getWeight();
+		}
+
 		$order->setWeight( Helper::simplifyWeight( $values['packetery_weight'] ) );
 		$this->orderRepository->save( $order );
 

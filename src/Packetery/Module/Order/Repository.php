@@ -222,6 +222,7 @@ class Repository {
 		$partialOrder->setPacketStatus( $result->packet_status );
 		$partialOrder->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		$partialOrder->setAddressValidated( (bool) $result->address_validated );
+		$partialOrder->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
 
 		if ( $result->delivery_address ) {
 			$deliveryAddressDecoded = json_decode( $result->delivery_address );
@@ -343,8 +344,12 @@ class Repository {
 		);
 		foreach ( $posts as $post ) {
 			$wcOrder = wc_get_order( $post );
-			$order   = $this->getByWcOrder( $wcOrder );
-			if ( $wcOrder && $order ) {
+			// In case WC_Order does not exist, result set is limited to existing records.
+			if ( ! $wcOrder ) {
+				continue;
+			}
+			$order = $this->getByWcOrder( $wcOrder );
+			if ( $order ) {
 				$orderEntities[ $order->getNumber() ] = $order;
 			}
 		}
@@ -376,7 +381,7 @@ class Repository {
 
 		foreach ( $rows as $row ) {
 			$wcOrder = wc_get_order( $row->id );
-			if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			if ( false === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
 

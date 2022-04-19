@@ -165,8 +165,8 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-		$wcOrder = wc_get_order( $post->ID );
-		$order   = $this->orderRepository->getByWcOrder( $wcOrder );
+
+		$order = $this->orderRepository->getById( $post->ID );
 		if ( null === $order ) {
 			return;
 		}
@@ -177,7 +177,7 @@ class GridExtender {
 				if ( null !== $pickupPoint ) {
 					$pointName         = $pickupPoint->getName();
 					$pointId           = $pickupPoint->getId();
-					$country           = strtolower( $wcOrder->get_shipping_country() );
+					$country           = $order->getShippingCountry();
 					$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
 					if ( in_array( $country, $internalCountries, true ) ) {
 						echo esc_html( "$pointName ($pointId)" );

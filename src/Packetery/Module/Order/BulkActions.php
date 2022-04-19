@@ -134,10 +134,27 @@ class BulkActions {
 			return;
 		}
 
+		$success = null;
+		if ( is_numeric( $get['success'] ) && $get['success'] > 0 ) {
+			$success = __( 'shipmentsSubmittedSuccessfully', 'packetery' );
+		}
+		$ignored = null;
+		if ( is_numeric( $get['ignored'] ) && $get['ignored'] > 0 ) {
+			// translators: %s is count.
+			$ignored = sprintf( __( 'someShipments%sSkipped', 'packetery' ), $get['ignored'] );
+		}
+		$errors = null;
+		if ( is_numeric( $get['errors'] ) && $get['errors'] > 0 ) {
+			// translators: %s is count.
+			$errors = sprintf( __( 'someShipments%sFailed', 'packetery' ), $get['errors'] );
+		} elseif ( isset( $get['errors'] ) ) {
+			$errors = $get['errors'];
+		}
+
 		$latteParams = [
-			'success' => (int) ( $get['success'] ?? 0 ),
-			'ignored' => (int) ( $get['ignored'] ?? 0 ),
-			'errors'  => (int) ( $get['errors'] ?? 0 ),
+			'success' => $success,
+			'ignored' => $ignored,
+			'errors'  => $errors,
 		];
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/export-result.latte', $latteParams );
 	}
