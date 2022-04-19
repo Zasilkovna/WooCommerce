@@ -50,7 +50,7 @@ Yes. All functions of our plugin are completely free. No need to purchase any pr
 
 = What are the minimum required versions of WordPress and PHP? =
 
-In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 5.3+ and PHP 7.2 - 7.4. The plugin does not currently support PHP 8
+In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 5.3+ and PHP 7.2 - 8.0.
 
 = I'm missing a feature I would like to see, what should I do? =
 
