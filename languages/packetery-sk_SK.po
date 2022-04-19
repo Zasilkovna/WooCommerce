@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
-"POT-Creation-Date: 2022-03-30T14:06:53+02:00\n"
-"PO-Revision-Date: 2022-03-30 14:07+0200\n"
+"POT-Creation-Date: 2022-04-11 12:16+0200\n"
+"PO-Revision-Date: 2022-04-11 12:17+0200\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -19,8 +19,8 @@ msgstr ""
 "X-Loco-Version: 2.5.5; wp-5.8.1\n"
 
 #. Plugin Name of the plugin
-#: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
+#: src/Packetery/Module/Options/Page.php:115
 #: src/Packetery/Module/Order/GridExtender.php:277
 #: src/Packetery/Module/Order/Metabox.php:148
 #: src/Packetery/Module/Product/DataTab.php:72
@@ -307,66 +307,66 @@ msgstr "Chyba"
 msgid "statusSuccess"
 msgstr "Hotovo"
 
-#: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:743
+#: src/Packetery/Module/Options/Page.php:125
+#: src/Packetery/Module/Plugin.php:744
 msgid "Settings"
 msgstr "Nastavenia"
 
-#: src/Packetery/Module/Options/Page.php:156
+#: src/Packetery/Module/Options/Page.php:157
 msgid "API password"
 msgstr "API heslo"
 
-#: src/Packetery/Module/Options/Page.php:158
+#: src/Packetery/Module/Options/Page.php:159
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr "API heslo musí mať 32 validných znakov!"
 
-#: src/Packetery/Module/Options/Page.php:159
+#: src/Packetery/Module/Options/Page.php:160
 msgid "Sender"
 msgstr "Odosielateľ"
 
-#: src/Packetery/Module/Options/Page.php:165
+#: src/Packetery/Module/Options/Page.php:166
 msgid "Packeta Label Format"
 msgstr "Formát štítku Packeta"
 
-#: src/Packetery/Module/Options/Page.php:172
+#: src/Packetery/Module/Options/Page.php:173
 msgid "Carrier Label Format"
 msgstr "Formát štítku prepravcu"
 
-#: src/Packetery/Module/Options/Page.php:183
+#: src/Packetery/Module/Options/Page.php:184
 msgid "Payment method that represents cash on delivery"
 msgstr "Platobná metóda, ktorá reprezentuje dobierku"
 
-#: src/Packetery/Module/Options/Page.php:187
+#: src/Packetery/Module/Options/Page.php:188
 msgid "packagingWeight"
 msgstr "Hmotnosť balenia"
 
-#: src/Packetery/Module/Options/Page.php:234
+#: src/Packetery/Module/Options/Page.php:235
 msgid "Main Settings"
 msgstr "Hlavné nastavenia"
 
-#: src/Packetery/Module/Options/Page.php:287
+#: src/Packetery/Module/Options/Page.php:288
 msgid "senderValidationSuccessLogTitle"
 msgstr "Validácia odosielateľa prebehla úspešne"
 
-#: src/Packetery/Module/Options/Page.php:294
+#: src/Packetery/Module/Options/Page.php:295
 msgid "senderValidationErrorLogTitle"
 msgstr "Validácia odosielateľa skončila chybou"
 
-#: src/Packetery/Module/Options/Page.php:302
+#: src/Packetery/Module/Options/Page.php:303
 msgid "specifiedSenderDoesNotExist"
 msgstr "Zvolený odosielateľ neexistuje"
 
-#: src/Packetery/Module/Options/Page.php:306
+#: src/Packetery/Module/Options/Page.php:307
 msgid "unableToCheckSpecifiedSender"
 msgstr "Odosielateľa nebolo možné overiť"
 
-#: src/Packetery/Module/Options/Page.php:323
+#: src/Packetery/Module/Options/Page.php:324
 msgid "specifiedSenderIsOk"
 msgstr "Zvolený odosielateľ bol overený"
 
-#: src/Packetery/Module/Options/Page.php:347
+#: src/Packetery/Module/Options/Page.php:348
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -375,7 +375,7 @@ msgstr ""
 "Kontaktujte správcu vášho webhostingu."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:354
+#: src/Packetery/Module/Options/Page.php:355
 msgid "senderDescription"
 msgstr ""
 "Tu vyplňte %1$soznačenie odisielateľa%2$s - nájdete ho v %3$sklientskej "
@@ -630,27 +630,35 @@ msgid "packetaPluginRequiresWooCommerce"
 msgstr ""
 "Plugin Packety vyžaduje WooCommerce. Najprv ho nainštalujte a aktivujte."
 
-#: src/Packetery/Module/Plugin.php:674
+#: src/Packetery/Module/Plugin.php:675
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabuľka dopravcov nebola vytvorená, viac informácii nájdete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:679
+#: src/Packetery/Module/Plugin.php:680
 msgid "carrierTableNotCreated"
 msgstr "Formát štítku prepravcu"
 
-#: src/Packetery/Module/Plugin.php:689 src/Packetery/Module/Upgrade.php:147
+#: src/Packetery/Module/Plugin.php:690 src/Packetery/Module/Upgrade.php:147
 msgid "orderTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Tabuľka objednávok nebola vytvorená, viac informácii nájdete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:694 src/Packetery/Module/Upgrade.php:152
+#: src/Packetery/Module/Plugin.php:695 src/Packetery/Module/Upgrade.php:152
 msgid "orderTableNotCreated"
 msgstr "Tabuľka objednávok nebola vytvorená"
 
-#: src/Packetery/Module/Plugin.php:742
+#: src/Packetery/Module/Plugin.php:743
 msgid "View Packeta settings"
 msgstr "Zobraziť nastavenia Packeta"
+
+#: src/Packetery/Module/Plugin.php:766
+msgid "View Packeta documentation"
+msgstr "Zobrazit Packeta dokumentaci"
+
+#: src/Packetery/Module/Plugin.php:767
+msgid "Documentation"
+msgstr "Dokumentace"
 
 #: src/Packetery/Module/Product/DataTab.php:89
 msgid "ageVerification18PlusLabel"
@@ -983,17 +991,17 @@ msgstr "tlač štítkov"
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:26
 msgid "willBePrinted1%sLabels"
-msgstr "Tlač štítkov"
+msgstr "Vytlačí sa %s štítok"
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:31
 msgid "willBePrinted2%sLabels"
-msgstr "Tlač štítkov"
+msgstr "Vytlačia sa %s štítky"
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:36
 msgid "willBePrinted5%sLabels"
-msgstr "Tlač štítkov"
+msgstr "Vytlačí sa %s štítkov"
 
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:72
 msgid "back"
@@ -1063,12 +1071,6 @@ msgstr "Zásielky na výdajné miesta Packeta"
 
 #~ msgid "Allow Label Emailing"
 #~ msgstr "Dovolit rozesílání stítků emailem"
-
-#~ msgid "View Packeta documentation"
-#~ msgstr "Zobrazit Packeta dokumentaci"
-
-#~ msgid "Documentation"
-#~ msgstr "Dokumentace"
 
 #~ msgid ""
 #~ "If checked, the generated labels will be emailed to the e-shop "

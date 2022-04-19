@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.2.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
-"POT-Creation-Date: 2022-03-30T14:06:53+02:00\n"
-"PO-Revision-Date: 2022-03-30 14:07+0200\n"
+"POT-Creation-Date: 2022-04-11 12:16+0200\n"
+"PO-Revision-Date: 2022-04-11 12:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -17,8 +17,8 @@ msgstr ""
 "X-Domain: packetery\n"
 
 #. Plugin Name of the plugin
-#: src/Packetery/Module/Options/Page.php:113
 #: src/Packetery/Module/Options/Page.php:114
+#: src/Packetery/Module/Options/Page.php:115
 #: src/Packetery/Module/Order/GridExtender.php:277
 #: src/Packetery/Module/Order/Metabox.php:148
 #: src/Packetery/Module/Product/DataTab.php:72
@@ -305,67 +305,67 @@ msgstr "Error"
 msgid "statusSuccess"
 msgstr "Success"
 
-#: src/Packetery/Module/Options/Page.php:123
 #: src/Packetery/Module/Options/Page.php:124
-#: src/Packetery/Module/Plugin.php:743
+#: src/Packetery/Module/Options/Page.php:125
+#: src/Packetery/Module/Plugin.php:744
 msgid "Settings"
 msgstr "Settings"
 
-#: src/Packetery/Module/Options/Page.php:156
+#: src/Packetery/Module/Options/Page.php:157
 msgid "API password"
 msgstr "API password"
 
-#: src/Packetery/Module/Options/Page.php:158
+#: src/Packetery/Module/Options/Page.php:159
 msgid ""
 "API password must be 32 characters long and must contain valid characters!"
 msgstr ""
 "API password must be 32 characters long and must contain valid characters!"
 
-#: src/Packetery/Module/Options/Page.php:159
+#: src/Packetery/Module/Options/Page.php:160
 msgid "Sender"
 msgstr "Sender"
 
-#: src/Packetery/Module/Options/Page.php:165
+#: src/Packetery/Module/Options/Page.php:166
 msgid "Packeta Label Format"
 msgstr "Packeta Label Format"
 
-#: src/Packetery/Module/Options/Page.php:172
+#: src/Packetery/Module/Options/Page.php:173
 msgid "Carrier Label Format"
 msgstr "Carrier Label Format"
 
-#: src/Packetery/Module/Options/Page.php:183
+#: src/Packetery/Module/Options/Page.php:184
 msgid "Payment method that represents cash on delivery"
 msgstr "Payment method that represents cash on delivery"
 
-#: src/Packetery/Module/Options/Page.php:187
+#: src/Packetery/Module/Options/Page.php:188
 msgid "packagingWeight"
 msgstr "Packaging weight"
 
-#: src/Packetery/Module/Options/Page.php:234
+#: src/Packetery/Module/Options/Page.php:235
 msgid "Main Settings"
 msgstr "Main Settings"
 
-#: src/Packetery/Module/Options/Page.php:287
+#: src/Packetery/Module/Options/Page.php:288
 msgid "senderValidationSuccessLogTitle"
 msgstr "Sender validation success"
 
-#: src/Packetery/Module/Options/Page.php:294
+#: src/Packetery/Module/Options/Page.php:295
 msgid "senderValidationErrorLogTitle"
 msgstr "Sender validation error"
 
-#: src/Packetery/Module/Options/Page.php:302
+#: src/Packetery/Module/Options/Page.php:303
 msgid "specifiedSenderDoesNotExist"
 msgstr "Specified sender does not exist"
 
-#: src/Packetery/Module/Options/Page.php:306
+#: src/Packetery/Module/Options/Page.php:307
 msgid "unableToCheckSpecifiedSender"
 msgstr "Unable to check specified sender"
 
-#: src/Packetery/Module/Options/Page.php:323
+#: src/Packetery/Module/Options/Page.php:324
 msgid "specifiedSenderIsOk"
 msgstr "Specified sender is OK"
 
-#: src/Packetery/Module/Options/Page.php:347
+#: src/Packetery/Module/Options/Page.php:348
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -374,7 +374,7 @@ msgstr ""
 "your web hosting administrator."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:354
+#: src/Packetery/Module/Options/Page.php:355
 msgid "senderDescription"
 msgstr ""
 "Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s "
@@ -629,27 +629,35 @@ msgid "packetaPluginRequiresWooCommerce"
 msgstr ""
 "Packeta plugin requires WooCommerce. Please install and activate it first."
 
-#: src/Packetery/Module/Plugin.php:674
+#: src/Packetery/Module/Plugin.php:675
 msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Carrier table was not created, you can find more information in Packeta log"
 
-#: src/Packetery/Module/Plugin.php:679
+#: src/Packetery/Module/Plugin.php:680
 msgid "carrierTableNotCreated"
 msgstr "Carrier table was not created"
 
-#: src/Packetery/Module/Plugin.php:689 src/Packetery/Module/Upgrade.php:147
+#: src/Packetery/Module/Plugin.php:690 src/Packetery/Module/Upgrade.php:147
 msgid "orderTableNotCreatedMoreInformationInPacketaLog"
 msgstr ""
 "Order table was not created, you can find more information in Packeta log"
 
-#: src/Packetery/Module/Plugin.php:694 src/Packetery/Module/Upgrade.php:152
+#: src/Packetery/Module/Plugin.php:695 src/Packetery/Module/Upgrade.php:152
 msgid "orderTableNotCreated"
 msgstr "Order table was not created"
 
-#: src/Packetery/Module/Plugin.php:742
+#: src/Packetery/Module/Plugin.php:743
 msgid "View Packeta settings"
 msgstr "View Packeta settings"
+
+#: src/Packetery/Module/Plugin.php:766
+msgid "View Packeta documentation"
+msgstr "View Packeta documentation"
+
+#: src/Packetery/Module/Plugin.php:767
+msgid "Documentation"
+msgstr "Documentation"
 
 #: src/Packetery/Module/Product/DataTab.php:89
 msgid "ageVerification18PlusLabel"
@@ -1062,12 +1070,6 @@ msgstr "Packeta pickup points packets"
 
 #~ msgid "Allow Label Emailing"
 #~ msgstr "Allow Label Emailing"
-
-#~ msgid "View Packeta documentation"
-#~ msgstr "View Packeta documentation"
-
-#~ msgid "Documentation"
-#~ msgstr "Documentation"
 
 #~ msgid ""
 #~ "If checked, the generated labels will be emailed to the e-shop "
