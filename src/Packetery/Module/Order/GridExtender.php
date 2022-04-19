@@ -135,6 +135,10 @@ class GridExtender {
 	 * Adds select to order grid.
 	 */
 	public function renderOrderTypeSelect(): void {
+		if ( ! $this->isOrderGridPage() ) {
+			return;
+		}
+
 		$linkFilters = [];
 
 		if ( null !== $this->httpRequest->getQuery( 'packetery_to_submit' ) ) {
@@ -281,5 +285,16 @@ class GridExtender {
 		}
 
 		return $new_columns;
+	}
+
+	/**
+	 * Checks if current admin page is order grid using WP globals.
+	 *
+	 * @return bool
+	 */
+	public function isOrderGridPage(): bool {
+		global $pagenow, $typenow;
+
+		return ( 'edit.php' === $pagenow && 'shop_order' === $typenow );
 	}
 }
