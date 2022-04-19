@@ -667,11 +667,9 @@ class Plugin {
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
-		global $pagenow, $typenow;
-
 		$page              = $this->request->getQuery( 'page' );
-		$isOrderGridPage   = $this->gridExtender->isOrderGridPage();
-		$isOrderDetailPage = 'post.php' === $pagenow && 'shop_order' === $typenow;
+		$isOrderGridPage   = $this->contextResolver->isOrderGridPage();
+		$isOrderDetailPage = $this->contextResolver->isOrderDetailPage();
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
