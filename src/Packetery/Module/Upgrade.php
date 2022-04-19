@@ -130,6 +130,10 @@ class Upgrade {
 			unregister_post_type( self::POST_TYPE_VALIDATED_ADDRESS );
 		}
 
+		if ( $oldVersion && version_compare( $oldVersion, '1.2.6', '<' ) ) {
+			$this->orderRepository->deleteOrphans();
+		}
+
 		update_option( 'packetery_version', Plugin::VERSION );
 	}
 

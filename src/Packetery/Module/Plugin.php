@@ -386,6 +386,8 @@ class Plugin {
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
+
+		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
 	}
 
 	/**
