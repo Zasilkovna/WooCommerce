@@ -2,6 +2,11 @@ name: Plugin asset/readme update
 on:
   push:
     branches: [ main ]
+    # https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#example-including-paths
+    paths:
+      - './readme.txt'
+      - '.wordpress-org/*'
+
 jobs:
   trunk:
     name: Push to trunk
