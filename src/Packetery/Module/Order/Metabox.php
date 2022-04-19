@@ -252,9 +252,9 @@ class Metabox {
 	public function save_fields( $orderId ) {
 		$order = $this->orderRepository->getById( $orderId );
 		if (
+			null === $order ||
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
-			null === $this->request->getPost( 'packetery_order_metabox_nonce' ) ||
-			null === $order
+			null === $this->request->getPost( 'packetery_order_metabox_nonce' )
 		) {
 			return $orderId;
 		}

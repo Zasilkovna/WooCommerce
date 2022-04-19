@@ -50,6 +50,7 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 * @param Record $record Record.
 	 *
 	 * @return void
+	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function add( Record $record ): void {
 		if ( null === $record->date ) {
@@ -65,6 +66,7 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 * @param array $sorting Sorting config.
 	 *
 	 * @return iterable|Record[]
+	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getRecords( array $sorting = [] ): iterable {
 		$arguments = [
@@ -86,6 +88,7 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 * @param array $dateQuery Date_query compatible array.
 	 *
 	 * @return array
+	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getForPeriodAsArray( array $dateQuery ): iterable {
 		$arguments = [

@@ -93,7 +93,7 @@ class PacketSubmitter {
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && null !== $commonEntity && ! $commonEntity->isExported() ) {
+		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $commonEntity->isExported() ) {
 			try {
 				$createPacketRequest = $this->preparePacketRequest( $commonEntity );
 			} catch ( InvalidRequestException $e ) {

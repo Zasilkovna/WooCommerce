@@ -76,7 +76,7 @@ class Checkout {
 	private static $homeDeliveryAttrs = [
 		'isValidated' => [
 			'name'                => 'packetery_address_isValidated', // Name of checkout hidden form field. Must be unique in entire form.
-			'isWidgetResultField' => false, // Is attribute included in widget result address? By default it is.
+			'isWidgetResultField' => false, // Is attribute included in widget result address? By default, it is.
 		],
 		'houseNumber' => [ // post type address field called 'houseNumber'.
 			'name' => 'packetery_address_houseNumber',
@@ -89,7 +89,7 @@ class Checkout {
 		],
 		'postCode'    => [
 			'name'              => 'packetery_address_postCode',
-			'widgetResultField' => 'postcode', // Widget returns address object containing specified field. By default it is the array key 'postCode', but in this case it is 'postcode'.
+			'widgetResultField' => 'postcode', // Widget returns address object containing specified field. By default, it is the array key 'postCode', but in this case it is 'postcode'.
 		],
 		'county'      => [
 			'name' => 'packetery_address_county',
@@ -348,8 +348,6 @@ class Checkout {
 				)
 			) {
 				wc_add_notice( __( 'shippingAddressIsNotValidated', 'packetery' ), 'error' );
-
-				return;
 			}
 		}
 	}
@@ -396,11 +394,11 @@ class Checkout {
 		}
 
 		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
-		if ( $this->isHomeDeliveryOrder() ) {
-			if (
-				isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) &&
-				'1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]
-			) {
+		if (
+			isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) &&
+			'1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] &&
+			$this->isHomeDeliveryOrder()
+		) {
 				$validatedAddress = new Core\Entity\Address(
 					$post[ self::$homeDeliveryAttrs['street']['name'] ],
 					$post[ self::$homeDeliveryAttrs['city']['name'] ],
@@ -413,7 +411,6 @@ class Checkout {
 
 				$orderEntity->setDeliveryAddress( $validatedAddress );
 				$orderEntity->setAddressValidated( true );
-			}
 		}
 
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
@@ -566,7 +563,7 @@ class Checkout {
 	}
 
 	/**
-	 * Gets cart price. Value is casted to float because PHPDoc is not reliable.
+	 * Gets cart price. Value is cast to float because PHPDoc is not reliable.
 	 *
 	 * @return float
 	 */

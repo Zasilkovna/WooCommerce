@@ -113,7 +113,7 @@ class Client {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
 
-			if ( isset( $exception->detail ) && isset( $exception->detail->PacketIdsFault ) ) {
+			if ( isset( $exception->detail, $exception->detail->PacketIdsFault ) ) {
 				$invalidPacketIds         = (array) $exception->detail->PacketIdsFault->ids->packetId;
 				$invalidPacketIdsFiltered = [];
 
@@ -238,7 +238,7 @@ class Client {
 	}
 
 	/**
-	 * Gets human readable errors from SoapFault exception.
+	 * Gets human-readable errors from SoapFault exception.
 	 *
 	 * @param SoapFault $exception Exception.
 	 *

@@ -61,6 +61,7 @@ class Helper {
 	 * Creates UTC DateTime.
 	 *
 	 * @return \DateTimeImmutable
+	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public static function now(): \DateTimeImmutable {
 		return new \DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );

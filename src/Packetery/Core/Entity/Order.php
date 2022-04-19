@@ -244,7 +244,7 @@ class Order {
 	}
 
 	/**
-	 * Checks if uses external carrier.
+	 * Checks if order uses external carrier.
 	 *
 	 * @return bool
 	 */

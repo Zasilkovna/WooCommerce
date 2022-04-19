@@ -225,7 +225,7 @@ class Repository {
 		$partialOrder->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
 
 		if ( $result->delivery_address ) {
-			$deliveryAddressDecoded = json_decode( $result->delivery_address );
+			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
 			$deliveryAddress        = new Address(
 				$deliveryAddressDecoded->street,
 				$deliveryAddressDecoded->city,
