@@ -53,56 +53,56 @@ class Builder {
 	/**
 	 * Creates common order entity from WC_Order.
 	 *
-	 * @param WC_Order     $order        WC_Order.
-	 * @param Entity\Order $partialOrder Partial order.
+	 * @param WC_Order     $wcOrder WC_Order.
+	 * @param Entity\Order $order   Partial order.
 	 *
 	 * @return Entity\Order|null
 	 */
-	public function finalize( WC_Order $order, Entity\Order $partialOrder ): ?Entity\Order {
-		$orderData   = $order->get_data();
-		$contactInfo = ( $order->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
+	public function finalize( WC_Order $wcOrder, Entity\Order $order ): ?Entity\Order {
+		$orderData   = $wcOrder->get_data();
+		$contactInfo = ( $wcOrder->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
 
-		if ( null === $partialOrder->getCarrierId() ) {
+		if ( null === $order->getCarrierId() ) {
 			return null;
 		}
 
-		$partialOrder->setName( $contactInfo['first_name'] );
-		$partialOrder->setSurname( $contactInfo['last_name'] );
-		$partialOrder->setEshop( $this->optionsProvider->get_sender() );
-		$partialOrder->setValue( (float) $order->get_total( 'raw' ) );
+		$order->setName( $contactInfo['first_name'] );
+		$order->setSurname( $contactInfo['last_name'] );
+		$order->setEshop( $this->optionsProvider->get_sender() );
+		$order->setValue( (float) $wcOrder->get_total( 'raw' ) );
 
-		$address = $partialOrder->getDeliveryAddress();
+		$address = $order->getDeliveryAddress();
 		if ( null === $address ) {
-			$partialOrder->setAddressValidated( false );
+			$order->setAddressValidated( false );
 			$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		}
 
-		$partialOrder->setDeliveryAddress( $address );
+		$order->setDeliveryAddress( $address );
 
 		// Shipping address phone is optional.
-		$partialOrder->setPhone( $orderData['billing']['phone'] );
+		$order->setPhone( $orderData['billing']['phone'] );
 		if ( ! empty( $contactInfo['phone'] ) ) {
-			$partialOrder->setPhone( $contactInfo['phone'] );
+			$order->setPhone( $contactInfo['phone'] );
 		}
 		// Additional address information.
 		if ( ! empty( $contactInfo['address_2'] ) ) {
-			$partialOrder->setNote( $contactInfo['address_2'] );
+			$order->setNote( $contactInfo['address_2'] );
 		}
 
-		$partialOrder->setEmail( $orderData['billing']['email'] );
+		$order->setEmail( $orderData['billing']['email'] );
 		$codMethod = $this->optionsProvider->getCodPaymentMethod();
 		if ( $orderData['payment_method'] === $codMethod ) {
-			$partialOrder->setCod( $partialOrder->getValue() );
+			$order->setCod( $order->getValue() );
 		}
-		$partialOrder->setSize( $partialOrder->getSize() );
+		$order->setSize( $order->getSize() );
 
-		if ( $partialOrder->isExternalCarrier() ) {
-			$carrier = $this->carrierRepository->getById( (int) $partialOrder->getCarrierId() );
-			$partialOrder->setCarrier( $carrier );
+		if ( $order->isExternalCarrier() ) {
+			$carrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
+			$order->setCarrier( $carrier );
 		}
 
-		$partialOrder->setCurrency( $order->get_currency() );
+		$order->setCurrency( $wcOrder->get_currency() );
 
-		return $partialOrder;
+		return $order;
 	}
 }
