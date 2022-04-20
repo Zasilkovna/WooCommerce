@@ -70,7 +70,7 @@ class Builder {
 	 *
 	 * @return Entity\Order
 	 */
-	public function finalize( WC_Order $wcOrder, Entity\Order $order ): ?Entity\Order {
+	public function finalize( WC_Order $wcOrder, Entity\Order $order ): Entity\Order {
 		$calculatedWeight = $this->calculator->calculateOrderWeight( $wcOrder );
 		if ( null === $order->getWeight() ) {
 			$order->setWeight( $calculatedWeight );
@@ -125,11 +125,11 @@ class Builder {
 	/**
 	 * Finds out if adult content is present.
 	 *
-	 * @param \WC_Order $wcOrder WC Order.
+	 * @param WC_Order $wcOrder WC Order.
 	 *
 	 * @return bool
 	 */
-	private function containsAdultContent( \WC_Order $wcOrder ): bool {
+	private function containsAdultContent( WC_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_items() as $item ) {
 			$itemData      = $item->get_data();
 			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
