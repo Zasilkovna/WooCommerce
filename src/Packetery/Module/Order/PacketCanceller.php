@@ -169,7 +169,20 @@ class PacketCanceller {
 	 */
 	public function cancelPacket( Entity\Order $order ): void {
 		if ( null === $order->getPacketId() ) {
-			$this->messageManager->flash_message( __( 'Packet not submitted', 'packetery' ), MessageManager::TYPE_ERROR );
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_PACKET_CANCEL;
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = __( 'Packet cancel error', 'packetery' );
+			$record->params = [
+				'orderId'      => $order->getNumber(),
+				'packetId'     => $order->getPacketId(),
+				'referer'      => (string) $this->request->getReferer(),
+				'errorMessage' => 'Packet could not be cancelled',
+			];
+
+			$this->logger->add( $record );
+
+			$this->messageManager->flash_message( __( 'Packet could not be cancelled', 'packetery' ), MessageManager::TYPE_ERROR );
 			return;
 		}
 
