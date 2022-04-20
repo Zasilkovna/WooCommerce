@@ -481,20 +481,4 @@ class Repository {
 		}
 	}
 
-	/**
-	 * Used to replace manually set weight.
-	 *
-	 * @param int $orderId Post id.
-	 *
-	 * @return float|null Computed weight of order.
-	 */
-	public function getOriginalWeight( int $orderId ): ?float {
-		$wcOrder = wc_get_order( $orderId );
-		if ( ! $wcOrder instanceof \WC_Order ) {
-			return null;
-		}
-
-		return $this->calculator->calculateOrderWeight( $wcOrder );
-	}
-
 }
