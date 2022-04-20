@@ -68,7 +68,7 @@ class Builder {
 	 * @param WC_Order     $wcOrder WC_Order.
 	 * @param Entity\Order $order   Partial order.
 	 *
-	 * @return Entity\Order|null
+	 * @return Entity\Order
 	 */
 	public function finalize( WC_Order $wcOrder, Entity\Order $order ): ?Entity\Order {
 		$calculatedWeight = $this->calculator->calculateOrderWeight( $wcOrder );
@@ -81,10 +81,6 @@ class Builder {
 
 		$orderData   = $wcOrder->get_data();
 		$contactInfo = ( $wcOrder->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
-
-		if ( null === $order->getCarrierId() ) {
-			return null;
-		}
 
 		$order->setName( $contactInfo['first_name'] );
 		$order->setSurname( $contactInfo['last_name'] );
