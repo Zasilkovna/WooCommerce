@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Helper;
 use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
@@ -178,7 +177,7 @@ class Controller extends WP_REST_Controller {
 			$values['packetery_weight'] = $order->getCalculatedWeight();
 		}
 
-		$order->setWeight( Helper::simplifyWeight( $values['packetery_weight'] ) );
+		$order->setWeight( $values['packetery_weight'] );
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packetery' );

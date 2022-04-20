@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
-use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\Options\Provider;
 use WC_Order;
@@ -70,7 +69,6 @@ class Builder {
 		$partialOrder->setName( $contactInfo['first_name'] );
 		$partialOrder->setSurname( $contactInfo['last_name'] );
 		$partialOrder->setEshop( $this->optionsProvider->get_sender() );
-		$partialOrder->setWeight( Helper::simplifyWeight( $partialOrder->getWeight() ) );
 		$partialOrder->setValue( (float) $order->get_total( 'raw' ) );
 
 		$address = $partialOrder->getDeliveryAddress();

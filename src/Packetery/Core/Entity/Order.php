@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Entity;
 
+use Packetery\Core\Helper;
+
 /**
  * Class Order
  *
@@ -493,7 +495,7 @@ class Order {
 	 * @return void
 	 */
 	public function setWeight( ?float $weight ): void {
-		$this->weight = $weight;
+		$this->weight = Helper::simplifyWeight( $weight );
 	}
 
 	/**
@@ -504,7 +506,7 @@ class Order {
 	 * @return void
 	 */
 	public function setCalculatedWeight( ?float $weight ): void {
-		$this->calculatedWeight = $weight;
+		$this->calculatedWeight = Helper::simplifyWeight( $weight );
 	}
 
 	/**
