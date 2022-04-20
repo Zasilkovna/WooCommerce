@@ -113,6 +113,18 @@ class PacketCanceller {
 		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
 		$order      = $this->orderRepository->getById( $this->getOrderId() );
 		if ( null === $order ) {
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_PACKET_CANCEL;
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = __( 'Packet cancel error', 'packetery' );
+			$record->params = [
+				'orderId'      => $this->getOrderId(),
+				'referer'      => (string) $this->request->getReferer(),
+				'errorMessage' => 'Order not found',
+			];
+
+			$this->logger->add( $record );
+
 			$this->messageManager->flash_message( __( 'Order not found', 'packetery' ), MessageManager::TYPE_ERROR );
 			$this->redirectTo( $redirectTo, $order );
 			return;
@@ -125,12 +137,12 @@ class PacketCanceller {
 	/**
 	 * Redirects.
 	 *
-	 * @param string       $redirectTo Redirect to.
-	 * @param Entity\Order $order      Order.
+	 * @param string            $redirectTo Redirect to.
+	 * @param Entity\Order|null $order      Order.
 	 *
 	 * @return void
 	 */
-	private function redirectTo( string $redirectTo, Entity\Order $order ): void {
+	private function redirectTo( string $redirectTo, ?Entity\Order $order ): void {
 		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
 			$packetCancelLink = add_query_arg(
 				[
