@@ -175,7 +175,7 @@ class Controller extends WP_REST_Controller {
 
 		$values = $form->getValues( 'array' );
 		if ( ! is_numeric( $values['packetery_weight'] ) ) {
-			$values['packetery_weight'] = $order->getWeight();
+			$values['packetery_weight'] = $this->orderRepository->getOriginalWeight( $orderId );
 		}
 
 		$order->setWeight( Helper::simplifyWeight( $values['packetery_weight'] ) );
