@@ -11,8 +11,10 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
+use Packetery\Module\Calculator;
 use Packetery\Module\Carrier;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\Product;
 use WC_Order;
 
 /**
@@ -37,17 +39,27 @@ class Builder {
 	private $carrierRepository;
 
 	/**
+	 * Weight calculator.
+	 *
+	 * @var Calculator
+	 */
+	private $calculator;
+
+	/**
 	 * Order constructor.
 	 *
-	 * @param Provider           $optionsProvider    Options Provider.
-	 * @param Carrier\Repository $carrierRepository  Carrier repository.
+	 * @param Provider           $optionsProvider Options Provider.
+	 * @param Carrier\Repository $carrierRepository Carrier repository.
+	 * @param Calculator         $calculator Weight calculator.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
-		Carrier\Repository $carrierRepository
+		Carrier\Repository $carrierRepository,
+		Calculator $calculator
 	) {
 		$this->optionsProvider   = $optionsProvider;
 		$this->carrierRepository = $carrierRepository;
+		$this->calculator        = $calculator;
 	}
 
 	/**
@@ -59,6 +71,14 @@ class Builder {
 	 * @return Entity\Order|null
 	 */
 	public function finalize( WC_Order $wcOrder, Entity\Order $order ): ?Entity\Order {
+		$calculatedWeight = $this->calculator->calculateOrderWeight( $wcOrder );
+		if ( null === $order->getWeight() ) {
+			$order->setWeight( $calculatedWeight );
+		}
+		$order->setCalculatedWeight( $calculatedWeight );
+		$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
+		$order->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
+
 		$orderData   = $wcOrder->get_data();
 		$contactInfo = ( $wcOrder->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
 
@@ -105,4 +125,24 @@ class Builder {
 
 		return $order;
 	}
+
+	/**
+	 * Finds out if adult content is present.
+	 *
+	 * @param \WC_Order $wcOrder WC Order.
+	 *
+	 * @return bool
+	 */
+	private function containsAdultContent( \WC_Order $wcOrder ): bool {
+		foreach ( $wcOrder->get_items() as $item ) {
+			$itemData      = $item->get_data();
+			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
+			if ( $productEntity->isAgeVerification18PlusRequired() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }
