@@ -399,18 +399,18 @@ class Checkout {
 			'1' === $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] &&
 			$this->isHomeDeliveryOrder()
 		) {
-				$validatedAddress = new Core\Entity\Address(
-					$post[ self::$homeDeliveryAttrs['street']['name'] ],
-					$post[ self::$homeDeliveryAttrs['city']['name'] ],
-					$post[ self::$homeDeliveryAttrs['postCode']['name'] ]
-				);
-				$validatedAddress->setCounty( $post[ self::$homeDeliveryAttrs['county']['name'] ] );
-				$validatedAddress->setHouseNumber( $post[ self::$homeDeliveryAttrs['houseNumber']['name'] ] );
-				$validatedAddress->setLatitude( $post[ self::$homeDeliveryAttrs['latitude']['name'] ] );
-				$validatedAddress->setLongitude( $post[ self::$homeDeliveryAttrs['longitude']['name'] ] );
+			$validatedAddress = new Core\Entity\Address(
+				$post[ self::$homeDeliveryAttrs['street']['name'] ],
+				$post[ self::$homeDeliveryAttrs['city']['name'] ],
+				$post[ self::$homeDeliveryAttrs['postCode']['name'] ]
+			);
+			$validatedAddress->setCounty( $post[ self::$homeDeliveryAttrs['county']['name'] ] );
+			$validatedAddress->setHouseNumber( $post[ self::$homeDeliveryAttrs['houseNumber']['name'] ] );
+			$validatedAddress->setLatitude( $post[ self::$homeDeliveryAttrs['latitude']['name'] ] );
+			$validatedAddress->setLongitude( $post[ self::$homeDeliveryAttrs['longitude']['name'] ] );
 
-				$orderEntity->setDeliveryAddress( $validatedAddress );
-				$orderEntity->setAddressValidated( true );
+			$orderEntity->setDeliveryAddress( $validatedAddress );
+			$orderEntity->setAddressValidated( true );
 		}
 
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
