@@ -94,11 +94,18 @@ class Order {
 	private $size;
 
 	/**
-	 * Package weight.
+	 * Package weight, set or calculated.
 	 *
 	 * @var float|null
 	 */
 	private $weight;
+
+	/**
+	 * Calculated package weight.
+	 *
+	 * @var float|null
+	 */
+	private $calculatedWeight;
 
 	/**
 	 * Cash on delivery value.
@@ -490,6 +497,17 @@ class Order {
 	}
 
 	/**
+	 * Sets calculated weight.
+	 *
+	 * @param float|null $weight Weight.
+	 *
+	 * @return void
+	 */
+	public function setCalculatedWeight( ?float $weight ): void {
+		$this->calculatedWeight = $weight;
+	}
+
+	/**
 	 * Sets shipping country.
 	 *
 	 * @param string $shippingCountry ISO 3166-1 alpha-2 code, lowercase.
@@ -588,6 +606,15 @@ class Order {
 	 */
 	public function getWeight(): ?float {
 		return $this->weight;
+	}
+
+	/**
+	 * Gets calculated weight.
+	 *
+	 * @return float|null
+	 */
+	public function getCalculatedWeight(): ?float {
+		return $this->calculatedWeight;
 	}
 
 	/**

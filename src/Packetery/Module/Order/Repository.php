@@ -203,9 +203,10 @@ class Repository {
 	 * @return Order
 	 */
 	private function createPartialOrder( \WC_Order $wcOrder, \stdClass $result ): Order {
-		$orderWeight = $this->parseFloat( $result->weight );
+		$orderWeight      = $this->parseFloat( $result->weight );
+		$calculatedWeight = $this->calculator->calculateOrderWeight( $wcOrder );
 		if ( null === $orderWeight ) {
-			$orderWeight = $this->calculator->calculateOrderWeight( $wcOrder );
+			$orderWeight = $calculatedWeight;
 		}
 
 		$partialOrder = new Order(
@@ -214,6 +215,7 @@ class Repository {
 		);
 
 		$partialOrder->setWeight( $orderWeight );
+		$partialOrder->setCalculatedWeight( $calculatedWeight );
 		$partialOrder->setPacketId( $result->packet_id );
 		$partialOrder->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
 		$partialOrder->setIsExported( (bool) $result->is_exported );
