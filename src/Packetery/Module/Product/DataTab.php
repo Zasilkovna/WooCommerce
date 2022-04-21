@@ -10,6 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
+use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
@@ -39,14 +40,23 @@ class DataTab {
 	private $latteEngine;
 
 	/**
+	 * Checkout.
+	 *
+	 * @var Checkout
+	 */
+	private $checkout;
+
+	/**
 	 * Tab constructor.
 	 *
 	 * @param FormFactory $formFactory Factory engine.
 	 * @param Engine      $latteEngine Latte engine.
+	 * @param Checkout    $checkout    Checkout.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine ) {
+	public function __construct( FormFactory $formFactory, Engine $latteEngine, Checkout $checkout ) {
 		$this->formFactory = $formFactory;
 		$this->latteEngine = $latteEngine;
+		$this->checkout    = $checkout;
 	}
 
 	/**
@@ -88,8 +98,17 @@ class DataTab {
 		$form = $this->formFactory->create();
 		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'Age verification 18+', 'packeta' ) );
 
+		$shippingRatesContainer = $form->addContainer( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
+		$shippingRates          = $this->checkout->getAllShippingRates();
+		foreach ( $shippingRates as $shippingRate ) {
+			$shippingRatesContainer->addCheckbox( $shippingRate['id'], $shippingRate['label'] );
+		}
+
 		$form->setDefaults(
-			[ Product\Entity::META_AGE_VERIFICATION_18_PLUS => $product->isAgeVerification18PlusRequired() ]
+			[
+				Product\Entity::META_AGE_VERIFICATION_18_PLUS  => $product->isAgeVerification18PlusRequired(),
+				Product\Entity::META_DISALLOWED_SHIPPING_RATES => $product->getDisallowedShippingRateChoices(),
+			]
 		);
 
 		return $form;
@@ -138,6 +157,10 @@ class DataTab {
 		foreach ( $values as $attr => $value ) {
 			if ( is_bool( $value ) ) {
 				$value = $value ? '1' : '0';
+			}
+
+			if ( Product\Entity::META_DISALLOWED_SHIPPING_RATES === $attr ) {
+				$value = array_filter( $value );
 			}
 
 			update_post_meta( $productId, $attr, $value );
