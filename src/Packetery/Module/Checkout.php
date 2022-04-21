@@ -705,26 +705,47 @@ class Checkout {
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice  = $this->getCartPrice();
-		$cartWeight = $this->getCartWeightKg();
+		$cartPrice                 = $this->getCartPrice();
+		$cartWeight                = $this->getCartWeightKg();
+		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
 
 		$customRates = [];
 		foreach ( $carrierOptions as $optionId => $options ) {
-			if ( is_array( $options ) && true === $options['active'] ) {
+			if ( ! is_array( $options ) ) {
+				continue;
+			}
+
+			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
+				continue;
+			}
+
+			if ( true === $options['active'] ) {
 				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 				if ( null !== $cost ) {
-					$customRates[ $optionId ] = [
-						'label'    => $options['name'],
-						'id'       => $optionId,
-						'cost'     => $cost,
-						'taxes'    => '',
-						'calc_tax' => 'per_order',
-					];
+					$customRates[ $optionId ] = $this->createShippingRate( $options['name'], $optionId, (float) $cost );
 				}
 			}
 		}
 
 		return $customRates;
+	}
+
+	/**
+	 * Gets all possible shipping rates without calculated costs.
+	 *
+	 * @return iterable
+	 */
+	public function getAllShippingRates(): iterable {
+		$countries = $this->carrierRepository->getCountries();
+		foreach ( $countries as $country ) {
+			$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $country );
+			foreach ( $availableCarriers as $carrier ) {
+				$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
+				if ( $carrierOptions->isActive() ) {
+					yield $this->createShippingRate( $carrierOptions->getName(), $carrierOptions->getOptionId(), null );
+				}
+			}
+		}
 	}
 
 	/**
@@ -863,30 +884,65 @@ class Checkout {
 		return $value;
 	}
 
+    /**
+     * Update order shipping.
+     *
+     * @param \WC_Order $wcOrder       WC Order.
+     * @param string    $attributeName Attribute name.
+     * @param string    $value         Value.
+     *
+     * @return void
+     * @throws \WC_Data_Exception When shipping input is invalid.
+     */
+    public static function updateShippingAddressProperty( \WC_Order $wcOrder, string $attributeName, string $value ): void {
+        if ( self::ATTR_POINT_STREET === $attributeName ) {
+            $wcOrder->set_shipping_address_1( $value );
+            $wcOrder->set_shipping_address_2( '' );
+        }
+        if ( self::ATTR_POINT_PLACE === $attributeName ) {
+            $wcOrder->set_shipping_company( $value );
+        }
+        if ( self::ATTR_POINT_CITY === $attributeName ) {
+            $wcOrder->set_shipping_city( $value );
+        }
+        if ( self::ATTR_POINT_ZIP === $attributeName ) {
+            $wcOrder->set_shipping_postcode( $value );
+        }
+    }
+
 	/**
-	 * Update order shipping.
+	 * Create shipping rate.
 	 *
-	 * @param \WC_Order $wcOrder       WC Order.
-	 * @param string    $attributeName Attribute name.
-	 * @param string    $value         Value.
+	 * @param string     $name     Name.
+	 * @param string     $optionId Option ID.
+	 * @param float|null $cost     Cost.
 	 *
-	 * @return void
-	 * @throws \WC_Data_Exception When shipping input is invalid.
+	 * @return array
 	 */
-	public static function updateShippingAddressProperty( \WC_Order $wcOrder, string $attributeName, string $value ): void {
-		if ( self::ATTR_POINT_STREET === $attributeName ) {
-			$wcOrder->set_shipping_address_1( $value );
-			$wcOrder->set_shipping_address_2( '' );
+	public function createShippingRate( string $name, string $optionId, ?float $cost ): array {
+		return [
+			'label'    => $name,
+			'id'       => $optionId,
+			'cost'     => $cost,
+			'taxes'    => '',
+			'calc_tax' => 'per_order',
+		];
+	}
+
+	/**
+	 * Gets disallowed shipping rate ids.
+	 *
+	 * @return array
+	 */
+	private function getDisallowedShippingRateIds(): array {
+		$cartProducts              = WC()->cart->get_cart();
+		$disallowedShippingRateIds = [];
+		foreach ( $cartProducts as $cartProduct ) {
+			$productEntity             = Product\Entity::fromPostId( $cartProduct['product_id'] );
+			$disallowedShippingRateIds = array_merge( $disallowedShippingRateIds, $productEntity->getDisallowedShippingRateIds() );
 		}
-		if ( self::ATTR_POINT_PLACE === $attributeName ) {
-			$wcOrder->set_shipping_company( $value );
-		}
-		if ( self::ATTR_POINT_CITY === $attributeName ) {
-			$wcOrder->set_shipping_city( $value );
-		}
-		if ( self::ATTR_POINT_ZIP === $attributeName ) {
-			$wcOrder->set_shipping_postcode( $value );
-		}
+
+		return $disallowedShippingRateIds;
 	}
 
 	/**
