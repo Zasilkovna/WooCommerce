@@ -192,7 +192,7 @@ class Page {
 			]
 		);
 
-		$container->addCheckbox( 'force_packet_cancel', __( 'Packet cancel', 'packeta' ) )
+		$container->addCheckbox( 'force_packet_cancel', __( 'Force order cancellation', 'packeta' ) )
 		          ->setRequired( false )
 		          ->setDefaultValue( Provider::FORCE_PACKET_CANCEL_DEFAULT );
 
