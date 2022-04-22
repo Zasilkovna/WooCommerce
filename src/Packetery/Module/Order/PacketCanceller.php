@@ -236,7 +236,13 @@ class PacketCanceller {
 			$order->setPacketId( null );
 			$this->orderRepository->save( $order );
 
-			$this->messageManager->flash_message( __( 'Packet cancelled', 'packetery' ), MessageManager::TYPE_SUCCESS );
+			if ( $result->hasFault() ) {
+				$this->messageManager->flash_message( __( 'Packet could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packetery' ), MessageManager::TYPE_SUCCESS );
+			}
+
+			if ( ! $result->hasFault() ) {
+				$this->messageManager->flash_message( __( 'Packet has been successfully canceled both in the order list and the Packeta system.', 'packetery' ), MessageManager::TYPE_SUCCESS );
+			}
 		}
 
 		if ( ! $this->shouldRevertSubmission( $result ) ) {
