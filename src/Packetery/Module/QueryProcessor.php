@@ -84,7 +84,7 @@ class QueryProcessor {
 	 *
 	 * @return mixed|null
 	 */
-	private function getParamValue( \WP_Query $queryObject, $key ) {
+	private function getParamValue( \WP_Query $queryObject, string $key ) {
 		$get = $this->httpRequest->getQuery();
 		if ( isset( $get[ $key ] ) && '' !== (string) $get[ $key ] ) {
 			return $get[ $key ];

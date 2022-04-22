@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-if ( php_sapi_name() === 'cli' ) {
+if ( PHP_SAPI === 'cli' ) {
 	return;
 }
 

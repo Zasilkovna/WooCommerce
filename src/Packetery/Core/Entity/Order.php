@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Entity;
 
+use Packetery\Core\Helper;
+
 /**
  * Class Order
  *
@@ -94,11 +96,18 @@ class Order {
 	private $size;
 
 	/**
-	 * Package weight.
+	 * Package weight, set or calculated.
 	 *
 	 * @var float|null
 	 */
 	private $weight;
+
+	/**
+	 * Calculated package weight.
+	 *
+	 * @var float|null
+	 */
+	private $calculatedWeight;
 
 	/**
 	 * Cash on delivery value.
@@ -244,7 +253,7 @@ class Order {
 	}
 
 	/**
-	 * Checks if uses external carrier.
+	 * Checks if order uses external carrier.
 	 *
 	 * @return bool
 	 */
@@ -486,7 +495,18 @@ class Order {
 	 * @return void
 	 */
 	public function setWeight( ?float $weight ): void {
-		$this->weight = $weight;
+		$this->weight = Helper::simplifyWeight( $weight );
+	}
+
+	/**
+	 * Sets calculated weight.
+	 *
+	 * @param float|null $weight Weight.
+	 *
+	 * @return void
+	 */
+	public function setCalculatedWeight( ?float $weight ): void {
+		$this->calculatedWeight = Helper::simplifyWeight( $weight );
 	}
 
 	/**
@@ -588,6 +608,15 @@ class Order {
 	 */
 	public function getWeight(): ?float {
 		return $this->weight;
+	}
+
+	/**
+	 * Gets calculated weight.
+	 *
+	 * @return float|null
+	 */
+	public function getCalculatedWeight(): ?float {
+		return $this->calculatedWeight;
 	}
 
 	/**

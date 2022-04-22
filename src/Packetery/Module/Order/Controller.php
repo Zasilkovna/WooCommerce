@@ -9,8 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Helper;
-use Packetery\Module\Calculator;
 use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
@@ -57,27 +55,18 @@ class Controller extends WP_REST_Controller {
 	private $orderRepository;
 
 	/**
-	 * Calculator.
-	 *
-	 * @var Calculator
-	 */
-	private $calculator;
-
-	/**
 	 * Controller constructor.
 	 *
 	 * @param Modal            $orderModal       Modal.
 	 * @param ControllerRouter $controllerRouter Router.
 	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
 	 * @param Order\Repository $orderRepository  Order repository.
-	 * @param Calculator       $calculator       Calculator.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
 		PacketSubmitter $packetSubmitter,
-		Order\Repository $orderRepository,
-		Calculator $calculator
+		Order\Repository $orderRepository
 	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
@@ -85,7 +74,6 @@ class Controller extends WP_REST_Controller {
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
 		$this->orderRepository = $orderRepository;
-		$this->calculator      = $calculator;
 	}
 
 	/**
@@ -125,9 +113,9 @@ class Controller extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
-	 * @return WP_REST_Response|WP_Error
+	 * @return WP_REST_Response
 	 */
-	public function submitToApi( $request ) {
+	public function submitToApi( WP_REST_Request $request ) {
 		$data       = [];
 		$parameters = $request->get_body_params();
 		$orderId    = $parameters['orderId'];
@@ -162,7 +150,7 @@ class Controller extends WP_REST_Controller {
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
-	public function saveModal( $request ) {
+	public function saveModal( WP_REST_Request $request ) {
 		$data            = [];
 		$parameters      = $request->get_body_params();
 		$packeteryWeight = $parameters['packeteryWeight'];
@@ -186,10 +174,10 @@ class Controller extends WP_REST_Controller {
 
 		$values = $form->getValues( 'array' );
 		if ( ! is_numeric( $values['packetery_weight'] ) ) {
-			$values['packetery_weight'] = $order->getWeight();
+			$values['packetery_weight'] = $order->getCalculatedWeight();
 		}
 
-		$order->setWeight( Helper::simplifyWeight( $values['packetery_weight'] ) );
+		$order->setWeight( $values['packetery_weight'] );
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packetery' );

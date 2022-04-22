@@ -223,8 +223,8 @@ class Page {
 	 * @param object $gateway Gateway to check.
 	 * @return bool
 	 */
-	protected function filterValidGatewayClass( $gateway ): bool {
-		return $gateway && is_a( $gateway, 'WC_Payment_Gateway' );
+	protected function filterValidGatewayClass( object $gateway ): bool {
+		return ( $gateway instanceof \WC_Payment_Gateway );
 	}
 
 	/**
@@ -242,7 +242,7 @@ class Page {
 	 *
 	 * @return array
 	 */
-	public function options_validate( $options ): array {
+	public function options_validate( array $options ): array {
 		$form = $this->create_form();
 		$form[ self::FORM_FIELDS_CONTAINER ]->setValues( $options );
 		if ( $form->isValid() === false ) {

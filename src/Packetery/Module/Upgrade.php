@@ -175,7 +175,7 @@ class Upgrade {
 			);
 			$order->delete_meta_data( self::META_CARRIER_ID );
 
-			$orderEntity->setWeight( Core\Helper::simplifyWeight( $this->getMetaAsNullableFloat( $order, self::META_WEIGHT ) ) );
+			$orderEntity->setWeight( $this->getMetaAsNullableFloat( $order, self::META_WEIGHT ) );
 			$order->delete_meta_data( self::META_WEIGHT );
 
 			$orderEntity->setPacketStatus( $this->getMetaAsNullableString( $order, self::META_PACKET_STATUS ) );

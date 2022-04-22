@@ -120,7 +120,7 @@ class Exporter {
 			'soap'              => var_export( extension_loaded( 'soap' ), true ),
 			'wpDebug'           => var_export( WP_DEBUG, true ),
 			'packetaDebug'      => var_export( PACKETERY_DEBUG, true ),
-			// @codingStandardsIgnoreStart
+			// @codingStandardsIgnoreEnd
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
@@ -173,7 +173,7 @@ class Exporter {
 	 *
 	 * @return string
 	 */
-	private function formatVariable( $variable, int $level = 0, $addSeparator = false ): string {
+	private function formatVariable( $variable, int $level = 0, bool $addSeparator = false ): string {
 		$output = '';
 		if ( is_array( $variable ) ) {
 			foreach ( $variable as $key => $value ) {

@@ -13,9 +13,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
-use Packetery\Module\Calculator;
 use Packetery\Module\Carrier;
-use Packetery\Module\Product;
 use Packetery\Module\ShippingMethod;
 use WP_Post;
 
@@ -41,23 +39,14 @@ class Repository {
 	private $builder;
 
 	/**
-	 * Calculator.
-	 *
-	 * @var Calculator
-	 */
-	private $calculator;
-
-	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb      $wpdb         Wpdb.
-	 * @param Builder    $orderFactory Order factory.
-	 * @param Calculator $calculator   Calculator.
+	 * @param \wpdb   $wpdb         Wpdb.
+	 * @param Builder $orderFactory Order factory.
 	 */
-	public function __construct( \wpdb $wpdb, Builder $orderFactory, Calculator $calculator ) {
-		$this->wpdb       = $wpdb;
-		$this->builder    = $orderFactory;
-		$this->calculator = $calculator;
+	public function __construct( \wpdb $wpdb, Builder $orderFactory ) {
+		$this->wpdb    = $wpdb;
+		$this->builder = $orderFactory;
 	}
 
 	/**
@@ -190,42 +179,37 @@ class Repository {
 			return null;
 		}
 
-		$partialOrder = $this->createPartialOrder( $wcOrder, $result );
+		$partialOrder = $this->createPartialOrder( $result );
 		return $this->builder->finalize( $wcOrder, $partialOrder );
 	}
 
 	/**
 	 * Creates partial order.
 	 *
-	 * @param \WC_Order $wcOrder WC Order.
 	 * @param \stdClass $result DB result.
 	 *
 	 * @return Order
 	 */
-	private function createPartialOrder( \WC_Order $wcOrder, \stdClass $result ): Order {
-		$orderWeight = $this->parseFloat( $result->weight );
-		if ( null === $orderWeight ) {
-			$orderWeight = $this->calculator->calculateOrderWeight( $wcOrder );
-		}
-
+	private function createPartialOrder( \stdClass $result ): Order {
 		$partialOrder = new Order(
 			$result->id,
 			$result->carrier_id
 		);
 
-		$partialOrder->setWeight( $orderWeight );
+		$orderWeight = $this->parseFloat( $result->weight );
+		if ( null !== $orderWeight ) {
+			$partialOrder->setWeight( $orderWeight );
+		}
 		$partialOrder->setPacketId( $result->packet_id );
 		$partialOrder->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
 		$partialOrder->setIsExported( (bool) $result->is_exported );
 		$partialOrder->setIsLabelPrinted( (bool) $result->is_label_printed );
 		$partialOrder->setCarrierNumber( $result->carrier_number );
 		$partialOrder->setPacketStatus( $result->packet_status );
-		$partialOrder->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		$partialOrder->setAddressValidated( (bool) $result->address_validated );
-		$partialOrder->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
 
 		if ( $result->delivery_address ) {
-			$deliveryAddressDecoded = json_decode( $result->delivery_address );
+			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
 			$deliveryAddress        = new Address(
 				$deliveryAddressDecoded->street,
 				$deliveryAddressDecoded->city,
@@ -385,28 +369,9 @@ class Repository {
 				continue;
 			}
 
-			$partial = $this->createPartialOrder( $wcOrder, $row );
+			$partial = $this->createPartialOrder( $row );
 			yield $this->builder->finalize( $wcOrder, $partial );
 		}
-	}
-
-	/**
-	 * Finds out if adult content is present.
-	 *
-	 * @param \WC_Order $wcOrder WC Order.
-	 *
-	 * @return bool
-	 */
-	private function containsAdultContent( \WC_Order $wcOrder ): bool {
-		foreach ( $wcOrder->get_items() as $item ) {
-			$itemData      = $item->get_data();
-			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
-			if ( $productEntity->isAgeVerification18PlusRequired() ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**

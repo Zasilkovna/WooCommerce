@@ -309,6 +309,8 @@ class LabelPrint {
 		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
+		$record         = new Log\Record();
+		$record->action = Log\Record::ACTION_LABEL_PRINT;
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIds ) as $orderId ) {
 				$order = $this->orderRepository->getById( $orderId );
@@ -319,14 +321,9 @@ class LabelPrint {
 				$this->orderRepository->save( $order );
 			}
 
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_SUCCESS;
 			$record->title  = __( 'labelPrintSuccessLogTitle', 'packetery' );
-			$this->logger->add( $record );
 		} else {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'labelPrintErrorLogTitle', 'packetery' );
 			$record->params = [
@@ -337,8 +334,8 @@ class LabelPrint {
 				],
 				'errorMessage' => $response->getFaultString(),
 			];
-			$this->logger->add( $record );
 		}
+		$this->logger->add( $record );
 
 		return $response;
 	}
@@ -355,6 +352,8 @@ class LabelPrint {
 		$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
 		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
+		$record                      = new Log\Record();
+		$record->action              = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 		if ( ! $response->hasFault() ) {
 			foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
 				$order = $this->orderRepository->getById( $orderId );
@@ -366,14 +365,9 @@ class LabelPrint {
 				$this->orderRepository->save( $order );
 			}
 
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_SUCCESS;
 			$record->title  = __( 'carrierLabelPrintSuccessLogTitle', 'packetery' );
-			$this->logger->add( $record );
 		} else {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'carrierLabelPrintErrorLogTitle', 'packetery' );
 			$record->params = [
@@ -384,8 +378,8 @@ class LabelPrint {
 				],
 				'errorMessage' => $response->getFaultString(),
 			];
-			$this->logger->add( $record );
 		}
+		$this->logger->add( $record );
 
 		return $response;
 	}

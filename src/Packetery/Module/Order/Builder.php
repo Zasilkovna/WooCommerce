@@ -11,9 +11,10 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
-use Packetery\Core\Helper;
+use Packetery\Module\Calculator;
 use Packetery\Module\Carrier;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\Product;
 use WC_Order;
 
 /**
@@ -38,73 +39,106 @@ class Builder {
 	private $carrierRepository;
 
 	/**
+	 * Weight calculator.
+	 *
+	 * @var Calculator
+	 */
+	private $calculator;
+
+	/**
 	 * Order constructor.
 	 *
-	 * @param Provider           $optionsProvider    Options Provider.
-	 * @param Carrier\Repository $carrierRepository  Carrier repository.
+	 * @param Provider           $optionsProvider Options Provider.
+	 * @param Carrier\Repository $carrierRepository Carrier repository.
+	 * @param Calculator         $calculator Weight calculator.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
-		Carrier\Repository $carrierRepository
+		Carrier\Repository $carrierRepository,
+		Calculator $calculator
 	) {
 		$this->optionsProvider   = $optionsProvider;
 		$this->carrierRepository = $carrierRepository;
+		$this->calculator        = $calculator;
 	}
 
 	/**
 	 * Creates common order entity from WC_Order.
 	 *
-	 * @param WC_Order     $order        WC_Order.
-	 * @param Entity\Order $partialOrder Partial order.
+	 * @param WC_Order     $wcOrder WC_Order.
+	 * @param Entity\Order $order   Partial order.
 	 *
-	 * @return Entity\Order|null
+	 * @return Entity\Order
 	 */
-	public function finalize( WC_Order $order, Entity\Order $partialOrder ): ?Entity\Order {
-		$orderData   = $order->get_data();
-		$contactInfo = ( $order->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
-
-		if ( null === $partialOrder->getCarrierId() ) {
-			return null;
+	public function finalize( WC_Order $wcOrder, Entity\Order $order ): Entity\Order {
+		$calculatedWeight = $this->calculator->calculateOrderWeight( $wcOrder );
+		if ( null === $order->getWeight() ) {
+			$order->setWeight( $calculatedWeight );
 		}
+		$order->setCalculatedWeight( $calculatedWeight );
+		$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
+		$order->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
 
-		$partialOrder->setName( $contactInfo['first_name'] );
-		$partialOrder->setSurname( $contactInfo['last_name'] );
-		$partialOrder->setEshop( $this->optionsProvider->get_sender() );
-		$partialOrder->setWeight( Helper::simplifyWeight( $partialOrder->getWeight() ) );
-		$partialOrder->setValue( (float) $order->get_total( 'raw' ) );
+		$orderData   = $wcOrder->get_data();
+		$contactInfo = ( $wcOrder->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
 
-		$address = $partialOrder->getDeliveryAddress();
+		$order->setName( $contactInfo['first_name'] );
+		$order->setSurname( $contactInfo['last_name'] );
+		$order->setEshop( $this->optionsProvider->get_sender() );
+		$order->setValue( (float) $wcOrder->get_total( 'raw' ) );
+
+		$address = $order->getDeliveryAddress();
 		if ( null === $address ) {
-			$partialOrder->setAddressValidated( false );
+			$order->setAddressValidated( false );
 			$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		}
 
-		$partialOrder->setDeliveryAddress( $address );
+		$order->setDeliveryAddress( $address );
 
 		// Shipping address phone is optional.
-		$partialOrder->setPhone( $orderData['billing']['phone'] );
+		$order->setPhone( $orderData['billing']['phone'] );
 		if ( ! empty( $contactInfo['phone'] ) ) {
-			$partialOrder->setPhone( $contactInfo['phone'] );
+			$order->setPhone( $contactInfo['phone'] );
 		}
 		// Additional address information.
 		if ( ! empty( $contactInfo['address_2'] ) ) {
-			$partialOrder->setNote( $contactInfo['address_2'] );
+			$order->setNote( $contactInfo['address_2'] );
 		}
 
-		$partialOrder->setEmail( $orderData['billing']['email'] );
+		$order->setEmail( $orderData['billing']['email'] );
 		$codMethod = $this->optionsProvider->getCodPaymentMethod();
 		if ( $orderData['payment_method'] === $codMethod ) {
-			$partialOrder->setCod( $partialOrder->getValue() );
+			$order->setCod( $order->getValue() );
 		}
-		$partialOrder->setSize( $partialOrder->getSize() );
+		$order->setSize( $order->getSize() );
 
-		if ( $partialOrder->isExternalCarrier() ) {
-			$carrier = $this->carrierRepository->getById( (int) $partialOrder->getCarrierId() );
-			$partialOrder->setCarrier( $carrier );
+		if ( $order->isExternalCarrier() ) {
+			$carrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
+			$order->setCarrier( $carrier );
 		}
 
-		$partialOrder->setCurrency( $order->get_currency() );
+		$order->setCurrency( $wcOrder->get_currency() );
 
-		return $partialOrder;
+		return $order;
 	}
+
+	/**
+	 * Finds out if adult content is present.
+	 *
+	 * @param WC_Order $wcOrder WC Order.
+	 *
+	 * @return bool
+	 */
+	private function containsAdultContent( WC_Order $wcOrder ): bool {
+		foreach ( $wcOrder->get_items() as $item ) {
+			$itemData      = $item->get_data();
+			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
+			if ( $productEntity->isAgeVerification18PlusRequired() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 }

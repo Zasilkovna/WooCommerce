@@ -152,15 +152,11 @@ class CountryListingPage {
 				if ( 'cz' === $a['code'] ) {
 					return - 1;
 				}
-				if ( 'sk' === $a['code'] ) {
-					if ( 'cz' === $b['code'] ) {
-						return 1;
-					}
-
-					return - 1;
-				}
 				if ( 'cz' === $b['code'] ) {
 					return 1;
+				}
+				if ( 'sk' === $a['code'] ) {
+					return - 1;
 				}
 				if ( 'sk' === $b['code'] ) {
 					return 1;

@@ -42,6 +42,7 @@ class Repository {
 	 * @param array $arguments Search arguments.
 	 *
 	 * @return iterable|Record[]
+	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function find( array $arguments ): iterable {
 		$wpdb      = $this->wpdb;
@@ -178,6 +179,7 @@ class Repository {
 	 * @param Record $record Record.
 	 *
 	 * @return void
+	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function save( Record $record ): void {
 		$date = $record->date;
