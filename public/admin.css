@@ -276,3 +276,13 @@ tbody .packetery-log-column-note {
 .js-surcharge-rules .packetery-input-with-unit input {
     width: 200px;
 }
+
+.button.dashicons.packetery-dashicons-button-fix {
+    font-size: 13px;
+    height: auto;
+    width: auto;
+}
+
+.button.dashicons.packetery-dashicons-button-fix .packetery-dashicons-button-fix-text {
+    font-family: 'Muli', sans-serif;
+}
