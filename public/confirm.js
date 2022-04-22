@@ -10,10 +10,12 @@
 		}
 
 		$confirmTarget = $( e.target );
+		var $dataTarget = $confirmTarget.closest( '[data-packetery-confirm]' );
 		$confirmTarget.WCBackboneModal( {
 			template: 'wc-packetery-confirm-modal',
 			variable: {
-				'text': $confirmTarget.data( 'packetery-confirm' )
+				'heading': $dataTarget.data( 'packetery-confirm-heading' ),
+				'text': $dataTarget.data( 'packetery-confirm' )
 			}
 		} );
 
