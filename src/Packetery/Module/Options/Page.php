@@ -398,7 +398,8 @@ class Page {
 			$latteParams['lastExport'] = $lastExport;
 		}
 
-		$latteParams['messages']     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		$latteParams['forcePacketCancelDescription'] = __( 'Force order submission cancellation if Packeta API does not allow packet to be cancelled due incorrect packet status? Packet is likely consigned in such case.', 'packetery' );
+		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations'] = [
 			'packeta'                      => __( 'Packeta', 'packeta' ),
 			'options'                      => __( 'Options', 'packeta' ),

@@ -600,7 +600,13 @@ class Plugin {
 	 */
 	public function renderConfirmModalTemplate(): void {
 		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
-			$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte' );
+			$this->latte_engine->render(
+				PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte',
+				[
+					'no'  => __( 'No', 'packetery' ),
+					'yes' => __( 'Yes', 'packetery' ),
+				]
+			);
 		}
 	}
 

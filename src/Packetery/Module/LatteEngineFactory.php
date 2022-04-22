@@ -23,22 +23,6 @@ use PacketeryNette\Bridges\FormsPacketeryLatte\FormMacros;
 class LatteEngineFactory {
 
 	/**
-	 * Translator.
-	 *
-	 * @var Translator
-	 */
-	private $translator;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param Translator $translator Translator.
-	 */
-	public function __construct( Translator $translator ) {
-		$this->translator = $translator;
-	}
-
-	/**
 	 * Creates latte engine factory
 	 *
 	 * @param string $temp_dir Temporary folder.
@@ -47,7 +31,6 @@ class LatteEngineFactory {
 	 */
 	public function create( string $temp_dir ): Engine {
 		$engine = new Engine();
-		$engine->addFilter( 'translate', [ $this->translator, 'translate' ] );
 		$engine->setTempDirectory( $temp_dir );
 		FormMacros::install( $engine->getCompiler() );
 		$engine->addFilter(

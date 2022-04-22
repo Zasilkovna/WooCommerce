@@ -3,7 +3,6 @@ parameters:
 
 services:
 	- Packetery\Module\ContextResolver
-	- Packetery\Module\Translator
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
 	- Packetery\Module\Log\Purger

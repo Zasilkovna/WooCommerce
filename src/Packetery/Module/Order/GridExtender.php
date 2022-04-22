@@ -277,16 +277,18 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'            => $order,
+						'order'              => $order,
 						'showWarningIcon' => $this->modal->showWarningIcon( $order ),
-						'packetSubmitUrl'  => $packetSubmitUrl,
-						'packetCancelLink' => $packetCancelLink,
-						'restNonce'        => wp_create_nonce( 'wp_rest' ),
-						'printLink'        => $printLink,
+						'packetSubmitUrl'    => $packetSubmitUrl,
+						'packetCancelLink'   => $packetCancelLink,
+						'restNonce'          => wp_create_nonce( 'wp_rest' ),
+						'printLink'          => $printLink,
 						'translations'    => [
 							'printLabel'              => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo' => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'         => __( 'Submit to packeta', 'packeta' ),
+							'reallyCancelPacket' => __( 'Do you really want to cancel order submission to Packeta?', 'packetery' ),
+							'cancelPacket'       => __( 'Cancel packet', 'packetery' ),
 						],
 					]
 				);
