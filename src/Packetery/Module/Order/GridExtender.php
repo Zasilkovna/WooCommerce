@@ -278,7 +278,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                     => $order,
-						'showWarningIcon' => $this->modal->showWarningIcon( $order ),
+						'showWarningIcon'           => $this->modal->showWarningIcon( $order ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,
 						'restNonce'                 => wp_create_nonce( 'wp_rest' ),
@@ -287,8 +287,10 @@ class GridExtender {
 							'printLabel'              => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo' => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'         => __( 'Submit to packeta', 'packeta' ),
-							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'woocommerce' ), $order->getNumber() ),
-							'reallyCancelPacket'        => __( 'Do you really want to cancel order submission to Packeta?', 'packetery' ),
+							// translators: %s: Order number.
+							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getNumber() ),
+							// translators: %s: Packet number.
+							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 							'cancelPacket'              => __( 'Cancel packet', 'packetery' ),
 						],
 					]

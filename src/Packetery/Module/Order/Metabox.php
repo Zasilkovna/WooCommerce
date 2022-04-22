@@ -239,8 +239,10 @@ class Metabox {
 					'translations'        => [
 						'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
 						'showLogs'             => __( 'Show logs', 'packeta' ),
-						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'woocommerce' ), $order->getNumber() ),
-						'reallyCancelPacket'        => __( 'Do you really want to cancel order submission to Packeta?', 'packetery' ),
+						// translators: %s: Order number.
+						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getNumber() ),
+						// translators: %s: Packet number.
+						'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
 						'cancelPacket'              => __( 'Cancel packet', 'packetery' ),
 					],
 				]
