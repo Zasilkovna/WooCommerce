@@ -73,6 +73,26 @@ class Client {
 	}
 
 	/**
+	 * Submits packet data to Packeta API.
+	 *
+	 * @param Request\CancelPacket $request Packet attributes.
+	 *
+	 * @return Response\CancelPacket
+	 */
+	public function cancelPacket( Request\CancelPacket $request ): Response\CancelPacket {
+		$response = new Response\CancelPacket();
+		try {
+			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient->cancelPacket( $this->apiPassword, $request->getPacketId() );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Retrieves packet status.
 	 *
 	 * @param Request\PacketStatus $request Packet attributes.
