@@ -122,7 +122,10 @@ class DataTab {
 	public function render(): void {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product/data-tab-panel.latte',
-			[ 'form' => $this->createForm( Product\Entity::fromGlobals() ) ]
+			[
+				'form'                           => $this->createForm( Product\Entity::fromGlobals() ),
+				'disallowedShippingRatesHeading' => __( 'Check Packeta shipping rates disallowed for this product.', 'packetery' ),
+			]
 		);
 	}
 

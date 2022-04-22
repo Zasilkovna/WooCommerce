@@ -5,7 +5,7 @@
         <input n:name=packetery_age_verification_18_plus />
     </p>
     <hr>
-    <p><strong>{__( 'Check Packeta shipping rates disallowed for this product.', 'packetery' )}</strong></p>
+    <p><strong>{$disallowedShippingRatesHeading}</strong></p>
     {foreach $form[Packetery\Module\Product\Entity::META_DISALLOWED_SHIPPING_RATES]->getControls() as $control}
     <p class="form-field">
         <label n:name=$control />
