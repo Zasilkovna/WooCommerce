@@ -196,7 +196,11 @@ class Page {
 					->addRule( Form::MIN, null, 0 )
 					->setDefaultValue( 0 );
 
-		// TODO: Packet status sync.
+		$container->addText( 'max_status_syncing_packets', __( 'Max status syncing packets', 'packetery' ) )
+			->setRequired( true )
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 )
+			->setDefaultValue( Provider::MAX_STATUS_SYNCING_PACKETS_DEFAULT );
 
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packetery' ) )
 			->setRequired( false );
