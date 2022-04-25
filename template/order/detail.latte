@@ -1,8 +1,9 @@
 {varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
+{varType bool $displayPickupPointInfo}
 
 <section class="packetery-order-detail">
 
-	{if $pickupPoint}
+	{if $pickupPoint && $displayPickupPointInfo}
 		<h2 class="woocommerce-order-details__title">{__( 'Packeta', 'packetery' )} - {__( 'selectedPickupPoint', 'packetery' )}</h2>
 
 		<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">

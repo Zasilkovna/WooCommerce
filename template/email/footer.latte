@@ -1,7 +1,8 @@
 {varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
 {varType \Packetery\Core\Entity\Address $validatedDeliveryAddress}
+{varType bool $displayPickupPointInfo}
 
-{if $pickupPoint}
+{if $pickupPoint && $displayPickupPointInfo}
 <h2>
     {__( 'Packeta', 'packetery' )} - {__( 'pickupPointDetail', 'packetery' )}
 </h2>

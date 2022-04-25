@@ -29,6 +29,7 @@ class Checkout {
 	const ATTR_POINT_CITY   = 'packetery_point_city';
 	const ATTR_POINT_ZIP    = 'packetery_point_zip';
 	const ATTR_POINT_STREET = 'packetery_point_street';
+	const ATTR_POINT_PLACE  = 'packetery_point_place'; // Business name of pickup point.
 	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
 	const ATTR_POINT_URL    = 'packetery_point_url';
 
@@ -57,6 +58,10 @@ class Checkout {
 		'street'    => array(
 			'name'     => self::ATTR_POINT_STREET,
 			'required' => true,
+		),
+		'place'     => array(
+			'name'     => self::ATTR_POINT_PLACE,
+			'required' => false,
 		),
 		'carrierId' => array(
 			'name'     => self::ATTR_CARRIER_ID,
@@ -356,6 +361,8 @@ class Checkout {
 	 * Saves pickup point and other Packeta information to order.
 	 *
 	 * @param int $orderId Order id.
+	 *
+	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function updateOrderMeta( int $orderId ): void {
 		$chosenMethod = $this->getChosenMethod();
@@ -373,6 +380,11 @@ class Checkout {
 		}
 
 		if ( $this->isPickupPointOrder() ) {
+			$wcOrder = wc_get_order( $orderId );
+			if ( ! $wcOrder instanceof \WC_Order ) {
+				return;
+			}
+
 			foreach ( self::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
 				if ( ! isset( $post[ $attrName ] ) ) {
@@ -390,7 +402,12 @@ class Checkout {
 				if ( $saveMeta ) {
 					$propsToSave[ $attrName ] = $attrValue;
 				}
+
+				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
+					self::updateShippingAddressProperty( $wcOrder, $attrName, (string) $attrValue );
+				}
 			}
+			$wcOrder->save();
 		}
 
 		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
@@ -707,5 +724,31 @@ class Checkout {
 	 */
 	private function isPacketeryOrder( string $chosenMethod ): bool {
 		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) === 0 );
+	}
+
+	/**
+	 * Update order shipping.
+	 *
+	 * @param \WC_Order $wcOrder       WC Order.
+	 * @param string    $attributeName Attribute name.
+	 * @param string    $value         Value.
+	 *
+	 * @return void
+	 * @throws \WC_Data_Exception When shipping input is invalid.
+	 */
+	public static function updateShippingAddressProperty( \WC_Order $wcOrder, string $attributeName, string $value ): void {
+		if ( self::ATTR_POINT_STREET === $attributeName ) {
+			$wcOrder->set_shipping_address_1( $value );
+			$wcOrder->set_shipping_address_2( '' );
+		}
+		if ( self::ATTR_POINT_PLACE === $attributeName ) {
+			$wcOrder->set_shipping_company( $value );
+		}
+		if ( self::ATTR_POINT_CITY === $attributeName ) {
+			$wcOrder->set_shipping_city( $value );
+		}
+		if ( self::ATTR_POINT_ZIP === $attributeName ) {
+			$wcOrder->set_shipping_postcode( $value );
+		}
 	}
 }
