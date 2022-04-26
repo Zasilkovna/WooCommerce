@@ -254,15 +254,17 @@ class Checkout {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
 			[
 				'settings' => [
-					'language'          => substr( get_locale(), 0, 2 ),
-					'country'           => $this->getCustomerCountry(),
-					'weight'            => $this->getCartWeightKg(),
-					'carrierConfig'     => $carrierConfig,
-					'pickupPointAttrs'  => self::$pickupPointAttrs,
-					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
-					'appIdentity'       => Plugin::getAppIdentity(),
-					'packeteryApiKey'   => $this->options_provider->get_api_key(),
-					'translations'      => [
+					'language'                  => substr( get_locale(), 0, 2 ),
+					'country'                   => $this->getCustomerCountry(),
+					'weight'                    => $this->getCartWeightKg(),
+					'carrierConfig'             => $carrierConfig,
+					// TODO: Settings are not updated on AJAX checkout update. Needs rework due to possible checkout solutions allowing cart update.
+					'isAgeVerificationRequired' => $this->isAgeVerificationRequired(),
+					'pickupPointAttrs'          => self::$pickupPointAttrs,
+					'homeDeliveryAttrs'         => self::$homeDeliveryAttrs,
+					'appIdentity'               => Plugin::getAppIdentity(),
+					'packeteryApiKey'           => $this->options_provider->get_api_key(),
+					'translations'              => [
 						'choosePickupPoint'             => __( 'choosePickupPoint', 'packetery' ),
 						'chooseAddress'                 => __( 'checkShippingAddress', 'packetery' ),
 						'addressValidationIsOutOfOrder' => __( 'addressValidationIsOutOfOrder', 'packetery' ),
@@ -597,7 +599,12 @@ class Checkout {
 		$customerCountry   = $this->getCustomerCountry();
 		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
 		$carrierOptions    = [];
+
 		foreach ( $availableCarriers as $carrier ) {
+			if ( $this->isAgeVerificationRequired() && false === $carrier->supportsAgeVerification() ) {
+				continue;
+			}
+
 			$optionId                    = self::CARRIER_PREFIX . $carrier->getId();
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
@@ -750,5 +757,23 @@ class Checkout {
 		if ( self::ATTR_POINT_ZIP === $attributeName ) {
 			$wcOrder->set_shipping_postcode( $value );
 		}
+	}
+
+	/**
+	 * Tells if age verification is required by products in cart.
+	 *
+	 * @return bool
+	 */
+	private function isAgeVerificationRequired(): bool {
+		$products = WC()->cart->get_cart();
+
+		foreach ( $products as $product ) {
+			$productEntity = Product\Entity::fromPostId( $product['product_id'] );
+			if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

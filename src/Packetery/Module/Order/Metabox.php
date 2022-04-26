@@ -222,13 +222,14 @@ class Metabox {
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
 		$widgetSettings = [
-			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
-			'country'          => ( $order->getShippingCountry() ? $order->getShippingCountry() : '' ),
-			'language'         => substr( get_locale(), 0, 2 ),
-			'appIdentity'      => Plugin::getAppIdentity(),
-			'weight'           => $order->getWeight(),
-			'carriers'         => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
-			'pickupPointAttrs' => Checkout::$pickupPointAttrs,
+			'packeteryApiKey'           => $this->optionsProvider->get_api_key(),
+			'country'                   => ( $order->getShippingCountry() ? $order->getShippingCountry() : '' ),
+			'language'                  => substr( get_locale(), 0, 2 ),
+			'isAgeVerificationRequired' => $order->containsAdultContent(),
+			'appIdentity'               => Plugin::getAppIdentity(),
+			'weight'                    => $order->getWeight(),
+			'carriers'                  => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
+			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
 		];
 
 		$this->latte_engine->render(

@@ -1,7 +1,10 @@
 <div class="packetery-carrier-options-page">
-	{varType Packetery\Core\Entity\Carrier $carrier}
 	{var $carrier = $carrier_data['carrier']}
+	{varType Packetery\Core\Entity\Carrier $carrier}
 	<h2>{$carrier->getName()}</h2>
+	{if $carrier->supportsAgeVerification()}
+		{$ageVerificationSupportedNotification}
+	{/if}
 
 	{if $carrier->requiresCustomsDeclarations()}
 		<div class="notice notice-info">

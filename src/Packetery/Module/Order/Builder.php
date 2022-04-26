@@ -133,7 +133,7 @@ class Builder {
 		foreach ( $wcOrder->get_items() as $item ) {
 			$itemData      = $item->get_data();
 			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
-			if ( $productEntity->isAgeVerification18PlusRequired() ) {
+			if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
 				return true;
 			}
 		}

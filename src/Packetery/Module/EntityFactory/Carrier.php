@@ -68,7 +68,7 @@ class Carrier {
 			$zpointCarrierData['currency'],
 			10,
 			false,
-			true
+			$zpointCarrierData['supports_age_verification']
 		);
 	}
 }
