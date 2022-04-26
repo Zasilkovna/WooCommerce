@@ -935,14 +935,20 @@ class Checkout {
 	 * @return array
 	 */
 	private function getDisallowedShippingRateIds(): array {
-		$cartProducts              = WC()->cart->get_cart();
-		$disallowedShippingRateIds = [];
+		$cartProducts = WC()->cart->get_cart();
+
+		$arraysToMerge = [];
 		foreach ( $cartProducts as $cartProduct ) {
-			$productEntity             = Product\Entity::fromPostId( $cartProduct['product_id'] );
-			$disallowedShippingRateIds = array_merge( $disallowedShippingRateIds, $productEntity->getDisallowedShippingRateIds() );
+			$productEntity = Product\Entity::fromPostId( $cartProduct['product_id'] );
+
+			if ( false === $productEntity->isPhysical() ) {
+				continue;
+			}
+
+			$arraysToMerge[] = $productEntity->getDisallowedShippingRateIds();
 		}
 
-		return $disallowedShippingRateIds;
+		return array_unique( array_merge( [], ...$arraysToMerge ) );
 	}
 
 	/**
