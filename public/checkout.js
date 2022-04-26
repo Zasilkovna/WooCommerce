@@ -298,6 +298,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.weight = settings.weight;
 				widgetOptions.carriers = settings.carrierConfig[ carrierRateId ].carriers;
 
+				if ( settings.isAgeVerificationRequired ) {
+					widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+				}
+
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint == null ) {
 						return;

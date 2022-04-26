@@ -303,10 +303,10 @@ class OptionsPage {
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
 				[
-					'forms'          => $carriersData,
-					'country_iso'    => $countryIso,
-					'globalCurrency' => get_woocommerce_currency_symbol(),
-					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+					'forms'                                => $carriersData,
+					'country_iso'                          => $countryIso,
+					'globalCurrency'                       => get_woocommerce_currency_symbol(),
+					'flashMessages'                        => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
 					'translations'   => [
 						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
 						'delete'                       => __( 'Delete', 'packeta' ),
@@ -320,6 +320,7 @@ class OptionsPage {
 						'packeta'                      => __( 'Packeta', 'packeta' ),
 						'countryOptions'               => __( 'Country options', 'packeta' ),
 						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
+						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
 					],
 				]
 			);

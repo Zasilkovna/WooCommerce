@@ -13,6 +13,10 @@ var packeteryLoadPickupPointPicker = function( $, settings ) {
 				carriers: settings.carriers
 			};
 
+			if ( settings.isAgeVerificationRequired ) {
+				widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+			}
+
 			Packeta.Widget.pick( settings.packeteryApiKey, function( point ) {
 				if ( point == null ) {
 					return;

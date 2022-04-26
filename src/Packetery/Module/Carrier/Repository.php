@@ -291,28 +291,32 @@ class Repository {
 	public function getZpointCarriers(): array {
 		return [
 			'cz' => [
-				'id'               => 'zpointcz',
+				'id'                        => 'zpointcz',
 				'name'             => __( 'CZ Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'CZK',
+				'is_pickup_points'          => 1,
+				'currency'                  => 'CZK',
+				'supports_age_verification' => true,
 			],
 			'sk' => [
-				'id'               => 'zpointsk',
+				'id'                        => 'zpointsk',
 				'name'             => __( 'SK Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'EUR',
+				'is_pickup_points'          => 1,
+				'currency'                  => 'EUR',
+				'supports_age_verification' => true,
 			],
 			'hu' => [
-				'id'               => 'zpointhu',
+				'id'                        => 'zpointhu',
 				'name'             => __( 'HU Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'HUF',
+				'is_pickup_points'          => 1,
+				'currency'                  => 'HUF',
+				'supports_age_verification' => true,
 			],
 			'ro' => [
-				'id'               => 'zpointro',
+				'id'                        => 'zpointro',
 				'name'             => __( 'RO Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'RON',
+				'is_pickup_points'          => 1,
+				'currency'                  => 'RON',
+				'supports_age_verification' => true,
 			],
 		];
 	}
