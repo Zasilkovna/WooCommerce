@@ -121,7 +121,7 @@ class Carrier {
 	 *
 	 * @var bool
 	 */
-	private $supportsAgeVerification;
+	private $ageVerification;
 
 	/**
 	 * Carrier constructor.
@@ -140,7 +140,7 @@ class Carrier {
 	 * @param string $currency                    Carrier currency.
 	 * @param float  $maxWeight                   Carrier maxWeight.
 	 * @param bool   $isDeleted                   Carrier isDeleted.
-	 * @param bool   $supportsAgeVerification     Carrier supports age verification.
+	 * @param bool   $ageVerification             Carrier supports age verification.
 	 */
 	public function __construct(
 		string $id,
@@ -157,7 +157,7 @@ class Carrier {
 		string $currency,
 		float $maxWeight,
 		bool $isDeleted,
-		bool $supportsAgeVerification
+		bool $ageVerification
 	) {
 		$this->id                          = $id;
 		$this->name                        = $name;
@@ -173,7 +173,7 @@ class Carrier {
 		$this->currency                    = $currency;
 		$this->maxWeight                   = $maxWeight;
 		$this->isDeleted                   = $isDeleted;
-		$this->supportsAgeVerification     = $supportsAgeVerification;
+		$this->ageVerification             = $ageVerification;
 	}
 
 	/**
@@ -317,6 +317,6 @@ class Carrier {
 	 * @return bool
 	 */
 	public function supportsAgeVerification(): bool {
-		return $this->supportsAgeVerification;
+		return $this->ageVerification;
 	}
 }
