@@ -40,7 +40,8 @@ class Carrier {
 			$dbResult['country'],
 			$dbResult['currency'],
 			(float) $dbResult['max_weight'],
-			(bool) $dbResult['deleted']
+			(bool) $dbResult['deleted'],
+			false
 		);
 	}
 
@@ -66,7 +67,8 @@ class Carrier {
 			$zpointCarrierData['country'],
 			$zpointCarrierData['currency'],
 			10,
-			false
+			false,
+			true
 		);
 	}
 }
