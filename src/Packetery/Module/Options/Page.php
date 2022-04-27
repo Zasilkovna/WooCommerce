@@ -34,6 +34,11 @@ class Page {
 
 	public const SLUG = 'packeta-options';
 
+	public const TAB_GENERAL = 'general';
+	public const TAB_SUPPORT = 'support';
+
+	public const PARAM_TAB = 'tab';
+
 	/**
 	 * PacketeryLatte_engine.
 	 *
@@ -377,6 +382,20 @@ class Page {
 				'action' => self::ACTION_VALIDATE_SENDER,
 			],
 			get_admin_url( null, 'admin.php' )
+		);
+		$latteParams['activeTab']            = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
+		$latteParams['generalTabLink']       = add_query_arg(
+			[
+				'page' => self::SLUG,
+			],
+			admin_url( 'admin.php' )
+		);
+		$latteParams['supportTabLink']       = add_query_arg(
+			[
+				'page'          => self::SLUG,
+				self::PARAM_TAB => self::TAB_SUPPORT,
+			],
+			admin_url( 'admin.php' )
 		);
 
 		$lastExport       = null;

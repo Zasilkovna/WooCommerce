@@ -1,0 +1,82 @@
+{php settings_errors()}
+
+<form n:name=$form>
+    {php settings_fields('packetery')}
+
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-api_password />
+            </th>
+            <td>
+                <input n:name=packetery-api_password>
+                <div class="packetery-help-block">
+                    <p>
+                        {phpComment 'translators: %s is URL.'}
+                        {sprintf( __( 'apiPasswordCanBeFoundAt%sUrl', 'packetery' ), $apiPasswordLink )|noescape}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-sender />
+            </th>
+            <td>
+                <input n:name=packetery-sender>
+                <div class="packetery-help-block">
+                    <p>
+                        {$senderDescription|noescape}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-packeta_label_format />
+            </th>
+            <td>
+                <select n:name=packetery-packeta_label_format></select>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-carrier_label_format />
+            </th>
+            <td>
+                <select n:name=packetery-carrier_label_format></select>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-cod_payment_method />
+            </th>
+            <td>
+                <select n:name=packetery-cod_payment_method></select>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-packaging_weight />
+            </th>
+            <td>
+                <input type="number" step="0.001" n:name=packetery-packaging_weight>
+            </td>
+        </tr>
+        {* TODO: Packet status sync. *}
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-replace_shipping_address_with_pickup_point_address />
+            </th>
+            <td>
+                <input n:name=packetery-replace_shipping_address_with_pickup_point_address>
+            </td>
+        </tr>
+    </table>
+    <p class="submit">
+        <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
+        {if $canValidateSender}
+            <a href="{$senderValidationLink}" class="button">{__( 'validateSender', 'packetery' )}</a>
+        {/if}
+    </p>
+</form>
