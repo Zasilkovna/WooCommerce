@@ -1,112 +1,28 @@
 <div id="packetery-options-page">
     <h1>{__( 'Packeta', 'packetery' )} - {__( 'Options', 'packetery' )}</h1>
 
-	{if isset($error)}
-		<div class="notice notice-error">
-			<p><strong>{$error}</strong></p>
-		</div>
-	{/if}
+    <nav class="nav-tab-wrapper">
+        <a
+            href="{$generalTabLink}"
+            class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_GENERAL} nav-tab-active{/if}"
+        >
+            {__( 'general', 'packetery' )}
+        </a>
+        <a
+            href="{$supportTabLink}"
+            class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
+        >
+            {__( 'Support', 'packetery' )}
+        </a>
+    </nav>
 
-    {php settings_errors()}
-
-    <form n:name=$form>
-        {$messages|noescape}
-        {php settings_fields('packetery')}
-
-        <fieldset class="fieldset">
-            <legend>{__( 'general', 'packetery' )}</legend>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row">
-                        <label n:name=packetery-api_password />
-                    </th>
-                    <td>
-                        <input n:name=packetery-api_password>
-                        <div class="packetery-help-block">
-                            <p>
-                                {phpComment 'translators: %s is URL.'}
-                                {sprintf( __( 'apiPasswordCanBeFoundAt%sUrl', 'packetery' ), $apiPasswordLink )|noescape}
-                            </p>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <label n:name=packetery-sender />
-                    </th>
-                    <td>
-                        <input n:name=packetery-sender>
-                        <div class="packetery-help-block">
-                            <p>
-                            {$senderDescription|noescape}
-                            </p>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <label n:name=packetery-packeta_label_format />
-                    </th>
-                    <td>
-                        <select n:name=packetery-packeta_label_format></select>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <label n:name=packetery-carrier_label_format />
-                    </th>
-                    <td>
-                        <select n:name=packetery-carrier_label_format></select>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <label n:name=packetery-cod_payment_method />
-                    </th>
-                    <td>
-                        <select n:name=packetery-cod_payment_method></select>
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">
-                        <label n:name=packetery-packaging_weight />
-                    </th>
-                    <td>
-                        <input type="number" step="0.001" n:name=packetery-packaging_weight>
-                    </td>
-                </tr>
-                {* TODO: Packet status sync. *}
-                <tr>
-                    <th scope="row">
-                        <label n:name=packetery-replace_shipping_address_with_pickup_point_address />
-                    </th>
-                    <td>
-                        <input n:name=packetery-replace_shipping_address_with_pickup_point_address>
-                    </td>
-                </tr>
-            </table>
-        </fieldset>
-        <p class="submit">
-            <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
-            {if $canValidateSender}
-            <a href="{$senderValidationLink}" class="button">{__( 'validateSender', 'packetery' )}</a>
-            {/if}
-        </p>
-    </form>
-
-    <h2>{__( 'Support', 'packetery' )}</h2>
-
-    <p>
-        {__( 'optionsExportInfo1', 'packetery' )}
-        <a href="https://client.packeta.com/support/">https://client.packeta.com/support/</a>
-        {__( 'optionsExportInfo2', 'packetery' )}
-    </p>
-
-    <p><a href="{$exportLink}" class="button">{__( 'exportPluginSettings', 'packetery' )}</a></p>
-
-    {if isset($lastExport)}
-        <p>{__( 'settingsExportDatetime', 'packetery' )}: {$lastExport}</p>
-    {else}
-        <p>{__( 'settingsNotYetExported', 'packetery' )}</p>
+    {if isset($error)}
+        <div class="notice notice-error">
+            <p><strong>{$error}</strong></p>
+        </div>
     {/if}
+
+    {$messages|noescape}
+
+    {include 'page-tabs/' . $activeTab . '.latte'}
 </div>
