@@ -1,0 +1,13 @@
+<p>
+    {$translations['optionsExportInfo1']}
+    <a href="https://client.packeta.com/support/">https://client.packeta.com/support/</a>
+    {$translations['optionsExportInfo2']}
+</p>
+
+<p><a href="{$exportLink}" class="button">{$translations['exportPluginSettings']}</a></p>
+
+{if isset($lastExport)}
+    <p>{$translations['settingsExportDatetime']}: {$lastExport}</p>
+{else}
+    <p>{$translations['settingsNotYetExported']}</p>
+{/if}

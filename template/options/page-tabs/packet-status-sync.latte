@@ -1,0 +1,53 @@
+<form n:name=$form>
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row">
+                <label n:name=max_status_syncing_packets />
+            </th>
+            <td>
+                <input n:name=max_status_syncing_packets>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=max_days_of_packet_status_syncing />
+            </th>
+            <td>
+                <input n:name=max_days_of_packet_status_syncing>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                {$translations['statusSyncingOrderStatusesLabel']}
+            </th>
+            <td>
+                {foreach $form[ 'status_syncing_order_statuses' ]->getControls() as $control}
+                <input n:name=$control>
+                <label n:name=$control />
+                <br>
+                {/foreach}
+                <div class="packetery-help-block">
+                    <p>{$translations['statusSyncingOrderStatusesDescription']}</p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                {$translations['statusSyncingPacketStatusesLabel']}
+            </th>
+            <td>
+                {foreach $form[ 'status_syncing_packet_statuses' ]->getControls() as $control}
+                <input n:name=$control>
+                <label n:name=$control />
+                <br>
+                {/foreach}
+                <div class="packetery-help-block">
+                    <p>{$translations['statusSyncingPacketStatusesDescription']}</p>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <p class="submit">
+        <input type="submit" n:name=save class="button button-primary">
+    </p>
+</form>

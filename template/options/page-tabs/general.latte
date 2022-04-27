@@ -1,0 +1,107 @@
+{php settings_errors()}
+
+<form n:name=$form>
+    {php settings_fields('packetery')}
+
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-api_password />
+            </th>
+            <td>
+                <input n:name=packetery-api_password>
+                <div class="packetery-help-block">
+                    <p>
+                        {phpComment 'translators: %s is URL.'}
+                        {sprintf( $translations['apiPasswordCanBeFoundAt%sUrl'], $apiPasswordLink )|noescape}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-sender />
+            </th>
+            <td>
+                <input n:name=packetery-sender>
+                <div class="packetery-help-block">
+                    <p>
+                        {$translations['senderDescription']|noescape}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-packeta_label_format />
+            </th>
+            <td>
+                <select n:name=packetery-packeta_label_format></select>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-carrier_label_format />
+            </th>
+            <td>
+                <select n:name=packetery-carrier_label_format></select>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-cod_payment_method />
+            </th>
+            <td>
+                <select n:name=packetery-cod_payment_method></select>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-packaging_weight />
+            </th>
+            <td>
+                <input type="number" step="0.001" n:name=packetery-packaging_weight>
+                <div class="packetery-help-block">
+                    <p>
+                        {$translations['packagingWeightDescription']}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-replace_shipping_address_with_pickup_point_address />
+            </th>
+            <td>
+                <input n:name=packetery-replace_shipping_address_with_pickup_point_address>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-checkout_widget_button_location />
+            </th>
+            <td>
+                <select n:name=packetery-checkout_widget_button_location></select>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-force_packet_cancel />
+            </th>
+            <td>
+                <input n:name=packetery-force_packet_cancel>
+                <div class="packetery-help-block">
+                    <p>
+                        {$forcePacketCancelDescription}
+                    </p>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <p class="submit">
+        <input type="submit" name="submit" id="submit" value="{$translations['saveChanges']}" class="button button-primary">
+        {if $canValidateSender}
+            <a href="{$senderValidationLink}" class="button">{$translations['validateSender']}</a>
+        {/if}
+    </p>
+</form>

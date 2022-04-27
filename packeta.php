@@ -34,5 +34,38 @@ if ( PHP_SAPI === 'cli' ) {
 	return;
 }
 
+define( 'PACKETERY_MIN_PHP_VERSION', '7.2' );
+
+/**
+ * Renders PHP version notice.
+ *
+ * @return void
+ */
+function packetery_render_insufficient_php_version_notice() {
+	// translators: %s: Min PHP version.
+	$message = sprintf( __( 'Insufficient PHP version. At least version %s is required by Packeta plugin.', 'packeta' ), PACKETERY_MIN_PHP_VERSION );
+	echo '<div class="notice notice-error is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+}
+
+/**
+ * Deactivates plugin.
+ *
+ * @return void
+ */
+function packetery_deactivate_plugin() {
+	if ( ! function_exists( 'deactivate_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	deactivate_plugins( array( __FILE__ ), true );
+}
+
+if ( version_compare( PHP_VERSION, PACKETERY_MIN_PHP_VERSION, '<' ) ) {
+	add_action( 'admin_notices', 'packetery_render_insufficient_php_version_notice' );
+	add_action( 'init', 'packetery_deactivate_plugin' );
+
+	return;
+}
+
 $container = require __DIR__ . '/bootstrap.php';
 $container->getByType( Plugin::class )->run();

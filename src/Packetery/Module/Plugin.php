@@ -10,10 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
-use Packetery\Core\Log\Record;
-use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\OptionsPage;
-use Packetery\Module\Carrier\Repository;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
@@ -57,13 +54,6 @@ class Plugin {
 	 * @var DashboardWidget
 	 */
 	private $dashboardWidget;
-
-	/**
-	 * Carrier repository.
-	 *
-	 * @var Repository
-	 */
-	private $carrierRepository;
 
 	/**
 	 * Country options page.
@@ -150,13 +140,6 @@ class Plugin {
 	private $logger;
 
 	/**
-	 * Log purger.
-	 *
-	 * @var Log\Purger
-	 */
-	private $logPurger;
-
-	/**
 	 * Cron service.
 	 *
 	 * @var CronService
@@ -183,13 +166,6 @@ class Plugin {
 	 * @var Options\Exporter
 	 */
 	private $exporter;
-
-	/**
-	 * Packet synchronizer.
-	 *
-	 * @var Order\PacketSynchronizer
-	 */
-	private $packetSynchronizer;
 
 	/**
 	 * Request.
@@ -220,13 +196,6 @@ class Plugin {
 	private $queryProcessor;
 
 	/**
-	 * Log repository.
-	 *
-	 * @var Log\Repository
-	 */
-	private $logRepository;
-
-	/**
 	 * Options provider.
 	 *
 	 * @var Options\Provider
@@ -250,41 +219,36 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox            $order_metabox        Order metabox.
-	 * @param MessageManager           $message_manager      Message manager.
-	 * @param Options\Page             $options_page         Options page.
-	 * @param Repository               $carrierRepository    Carrier repository.
-	 * @param Checkout                 $checkout             Checkout class.
-	 * @param Engine                   $latte_engine         PacketeryLatte engine.
-	 * @param OptionsPage              $carrierOptionsPage   Carrier options page.
-	 * @param Order\BulkActions        $orderBulkActions     Order BulkActions.
-	 * @param Order\LabelPrint         $labelPrint           Label printing.
-	 * @param Order\GridExtender       $gridExtender         Order grid extender.
-	 * @param Product\DataTab          $productTab           Product tab.
-	 * @param Log\Page                 $logPage              Log page.
-	 * @param ILogger                  $logger               Log manager.
-	 * @param Log\Purger               $logPurger            Log purger.
-	 * @param Order\Controller         $orderController      Order controller.
-	 * @param Order\Modal              $orderModal           Order modal.
-	 * @param Options\Exporter         $exporter             Options exporter.
-	 * @param Order\CollectionPrint    $orderCollectionPrint Order collection print.
-	 * @param Order\PacketSynchronizer $packetSynchronizer   Packet synchronizer.
-	 * @param Request                  $request              HTTP request.
-	 * @param Order\Repository         $orderRepository      Order repository.
-	 * @param Upgrade                  $upgrade              Plugin upgrade.
-	 * @param QueryProcessor           $queryProcessor       QueryProcessor.
-	 * @param Log\Repository           $logRepository        Log repository.
-	 * @param Options\Provider         $optionsProvider      Options provider.
-	 * @param CronService              $cronService          Cron service.
-	 * @param Order\PacketCanceller    $packetCanceller      Packet canceller.
-	 * @param ContextResolver          $contextResolver      Context resolver.
-	 * @param DashboardWidget          $dashboardWidget      Dashboard widget.
+	 * @param Order\Metabox         $order_metabox        Order metabox.
+	 * @param MessageManager        $message_manager      Message manager.
+	 * @param Options\Page          $options_page         Options page.
+	 * @param Checkout              $checkout             Checkout class.
+	 * @param Engine                $latte_engine         PacketeryLatte engine.
+	 * @param OptionsPage           $carrierOptionsPage   Carrier options page.
+	 * @param Order\BulkActions     $orderBulkActions     Order BulkActions.
+	 * @param Order\LabelPrint      $labelPrint           Label printing.
+	 * @param Order\GridExtender    $gridExtender         Order grid extender.
+	 * @param Product\DataTab       $productTab           Product tab.
+	 * @param Log\Page              $logPage              Log page.
+	 * @param ILogger               $logger               Log manager.
+	 * @param Order\Controller      $orderController      Order controller.
+	 * @param Order\Modal           $orderModal           Order modal.
+	 * @param Options\Exporter      $exporter             Options exporter.
+	 * @param Order\CollectionPrint $orderCollectionPrint Order collection print.
+	 * @param Request               $request              HTTP request.
+	 * @param Order\Repository      $orderRepository      Order repository.
+	 * @param Upgrade               $upgrade              Plugin upgrade.
+	 * @param QueryProcessor        $queryProcessor       QueryProcessor.
+	 * @param Options\Provider      $optionsProvider      Options provider.
+	 * @param CronService           $cronService          Cron service.
+	 * @param Order\PacketCanceller $packetCanceller      Packet canceller.
+	 * @param ContextResolver       $contextResolver      Context resolver.
+	 * @param DashboardWidget       $dashboardWidget      Dashboard widget.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
 		MessageManager $message_manager,
 		Options\Page $options_page,
-		Repository $carrierRepository,
 		Checkout $checkout,
 		Engine $latte_engine,
 		OptionsPage $carrierOptionsPage,
@@ -294,17 +258,14 @@ class Plugin {
 		Product\DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
-		Log\Purger $logPurger,
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
 		Options\Exporter $exporter,
 		Order\CollectionPrint $orderCollectionPrint,
-		Order\PacketSynchronizer $packetSynchronizer,
 		Request $request,
 		Order\Repository $orderRepository,
 		Upgrade $upgrade,
 		QueryProcessor $queryProcessor,
-		Log\Repository $logRepository,
 		Options\Provider $optionsProvider,
 		CronService $cronService,
 		Order\PacketCanceller $packetCanceller,
@@ -313,7 +274,6 @@ class Plugin {
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
-		$this->carrierRepository    = $carrierRepository;
 		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packeta.php';
 		$this->order_metabox        = $order_metabox;
 		$this->message_manager      = $message_manager;
@@ -325,17 +285,14 @@ class Plugin {
 		$this->productTab           = $productTab;
 		$this->logPage              = $logPage;
 		$this->logger               = $logger;
-		$this->logPurger            = $logPurger;
 		$this->orderController      = $orderController;
 		$this->orderModal           = $orderModal;
 		$this->exporter             = $exporter;
 		$this->orderCollectionPrint = $orderCollectionPrint;
-		$this->packetSynchronizer   = $packetSynchronizer;
 		$this->request              = $request;
 		$this->orderRepository      = $orderRepository;
 		$this->upgrade              = $upgrade;
 		$this->queryProcessor       = $queryProcessor;
-		$this->logRepository        = $logRepository;
 		$this->optionsProvider      = $optionsProvider;
 		$this->cronService          = $cronService;
 		$this->packetCanceller      = $packetCanceller;
