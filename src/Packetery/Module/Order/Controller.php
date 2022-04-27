@@ -182,7 +182,7 @@ class Controller extends WP_REST_Controller {
 
 		$data['message'] = __( 'Success', 'packetery' );
 		$data['data']    = [
-			'packetery_weight' => $values['packetery_weight'],
+			'packetery_weight' => $order->getWeight(),
 		];
 
 		return new WP_REST_Response( $data, 200 );
