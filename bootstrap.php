@@ -16,7 +16,7 @@ require_once __DIR__ . '/packetery_vendor/autoload.php';
 $configurator = new Configurator();
 $configurator->setDebugMode( PACKETERY_DEBUG );
 
-if ( PACKETERY_DEBUG ) {
+if ( PACKETERY_DEBUG && false === wp_doing_cron() ) {
 	$configurator->enableDebugger( PACKETERY_PLUGIN_DIR . '/log' );
 }
 
