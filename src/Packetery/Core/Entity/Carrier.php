@@ -117,6 +117,13 @@ class Carrier {
 	private $isDeleted;
 
 	/**
+	 * Carrier allows age verification.
+	 *
+	 * @var bool
+	 */
+	private $supportsAgeVerification;
+
+	/**
 	 * Carrier constructor.
 	 *
 	 * @param string $id Carrier id.
@@ -125,14 +132,15 @@ class Carrier {
 	 * @param bool   $hasDirectLabel Carrier hasDirectLabel.
 	 * @param bool   $requiresSeparateHouseNumber Carrier requiresSeparateHouseNumber.
 	 * @param bool   $requiresCustomsDeclarations Carrier requiresCustomsDeclarations.
-	 * @param bool   $requiresEmail Carrier requiresEmail.
-	 * @param bool   $requiresPhone Carrier requiresPhone.
-	 * @param bool   $requiresSize Carrier requiresSize.
-	 * @param bool   $supportsCod Carrier supportsCod.
-	 * @param string $country Carrier country.
-	 * @param string $currency Carrier currency.
-	 * @param float  $maxWeight Carrier maxWeight.
-	 * @param bool   $isDeleted Carrier isDeleted.
+	 * @param bool   $requiresEmail               Carrier requiresEmail.
+	 * @param bool   $requiresPhone               Carrier requiresPhone.
+	 * @param bool   $requiresSize                Carrier requiresSize.
+	 * @param bool   $supportsCod                 Carrier supportsCod.
+	 * @param string $country                     Carrier country.
+	 * @param string $currency                    Carrier currency.
+	 * @param float  $maxWeight                   Carrier maxWeight.
+	 * @param bool   $isDeleted                   Carrier isDeleted.
+	 * @param bool   $supportsAgeVerification     Carrier supports age verification.
 	 */
 	public function __construct(
 		string $id,
@@ -148,7 +156,8 @@ class Carrier {
 		string $country,
 		string $currency,
 		float $maxWeight,
-		bool $isDeleted
+		bool $isDeleted,
+		bool $supportsAgeVerification
 	) {
 		$this->id                          = $id;
 		$this->name                        = $name;
@@ -164,6 +173,7 @@ class Carrier {
 		$this->currency                    = $currency;
 		$this->maxWeight                   = $maxWeight;
 		$this->isDeleted                   = $isDeleted;
+		$this->supportsAgeVerification     = $supportsAgeVerification;
 	}
 
 	/**
@@ -301,4 +311,12 @@ class Carrier {
 		return $this->isDeleted;
 	}
 
+	/**
+	 * Tells if allows age verification.
+	 *
+	 * @return bool
+	 */
+	public function supportsAgeVerification(): bool {
+		return $this->supportsAgeVerification;
+	}
 }
