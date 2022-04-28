@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
@@ -386,6 +387,17 @@ class OptionsPage {
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
 		$item->addRule( Form::MIN, null, 0 );
+		$item->addCondition( Form::MAX, 0 )
+			->addCondition( Form::MIN, 0 )
+			// translators: %d is the value.
+			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
+
+		$item->addFilter(
+			function ( float $value ) {
+				return Helper::simplifyWeight( $value );
+			}
+		);
+
 		$item->addCondition( Form::MAX, 0 )
 			->addCondition( Form::MIN, 0 )
 			// translators: %d is the value.
