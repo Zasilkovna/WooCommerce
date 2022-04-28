@@ -884,31 +884,31 @@ class Checkout {
 		return $value;
 	}
 
-    /**
-     * Update order shipping.
-     *
-     * @param \WC_Order $wcOrder       WC Order.
-     * @param string    $attributeName Attribute name.
-     * @param string    $value         Value.
-     *
-     * @return void
-     * @throws \WC_Data_Exception When shipping input is invalid.
-     */
-    public static function updateShippingAddressProperty( \WC_Order $wcOrder, string $attributeName, string $value ): void {
-        if ( self::ATTR_POINT_STREET === $attributeName ) {
-            $wcOrder->set_shipping_address_1( $value );
-            $wcOrder->set_shipping_address_2( '' );
-        }
-        if ( self::ATTR_POINT_PLACE === $attributeName ) {
-            $wcOrder->set_shipping_company( $value );
-        }
-        if ( self::ATTR_POINT_CITY === $attributeName ) {
-            $wcOrder->set_shipping_city( $value );
-        }
-        if ( self::ATTR_POINT_ZIP === $attributeName ) {
-            $wcOrder->set_shipping_postcode( $value );
-        }
-    }
+	/**
+	 * Update order shipping.
+	 *
+	 * @param \WC_Order $wcOrder       WC Order.
+	 * @param string    $attributeName Attribute name.
+	 * @param string    $value         Value.
+	 *
+	 * @return void
+	 * @throws \WC_Data_Exception When shipping input is invalid.
+	 */
+	public static function updateShippingAddressProperty( \WC_Order $wcOrder, string $attributeName, string $value ): void {
+		if ( self::ATTR_POINT_STREET === $attributeName ) {
+			$wcOrder->set_shipping_address_1( $value );
+			$wcOrder->set_shipping_address_2( '' );
+		}
+		if ( self::ATTR_POINT_PLACE === $attributeName ) {
+			$wcOrder->set_shipping_company( $value );
+		}
+		if ( self::ATTR_POINT_CITY === $attributeName ) {
+			$wcOrder->set_shipping_city( $value );
+		}
+		if ( self::ATTR_POINT_ZIP === $attributeName ) {
+			$wcOrder->set_shipping_postcode( $value );
+		}
+	}
 
 	/**
 	 * Create shipping rate.
