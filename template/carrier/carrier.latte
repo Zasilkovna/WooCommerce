@@ -2,15 +2,18 @@
 	{var $carrier = $carrier_data['carrier']}
 	{varType Packetery\Core\Entity\Carrier $carrier}
 	<h2>{$carrier->getName()}</h2>
-	{if $carrier->supportsAgeVerification()}
-		{$ageVerificationSupportedNotification}
-	{/if}
 
 	{if $carrier->requiresCustomsDeclarations()}
 		<div class="notice notice-info">
 			<p>{__( 'cannotUseThisCarrierBecauseRequiresCustomsDeclaration', 'packetery' )}</p>
 		</div>
 	{elseif isset($carrier_data['form'])}
+
+	{if $carrier->supportsAgeVerification()}
+		<div class="notice notice-info">
+			<p>{$ageVerificationSupportedNotification}</p>
+		</div>
+	{/if}
 
 	{define weightRules}
 		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
