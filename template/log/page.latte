@@ -13,7 +13,9 @@
             </tr>
         </thead>
         <tbody>
+            {var $rowsEmpty = true}
             {foreach $rows as $row}
+            {var $rowsEmpty = false}
             <tr n:class="'log-' . $row->status">
                 <td class="packetery-log-column packetery-log-column-status">
                     {$translatedStatuses[$row->status] ?? $row->status}
@@ -29,7 +31,7 @@
                 </td>
             </tr>
             {/foreach}
-            <tr n:if="!(array)$rows">
+            <tr n:if="$rowsEmpty">
                 <td colspan="4">
                     {__( 'logListIsEmpty', 'packetery' )}
                 </td>
