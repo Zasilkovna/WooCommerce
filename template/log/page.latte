@@ -29,7 +29,7 @@
                 </td>
             </tr>
             {/foreach}
-            <tr n:if="empty($rows)">
+            <tr n:if="!(array)$rows">
                 <td colspan="4">
                     {__( 'logListIsEmpty', 'packetery' )}
                 </td>
