@@ -12,6 +12,7 @@ namespace Packetery\Module\Carrier;
 use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
+use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
@@ -386,22 +387,16 @@ class OptionsPage {
 		$item  = $limit->addText( 'weight', __( 'Weight up to', 'packetery' ) . ':' );
 		$item->setRequired();
 		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
-		$item->addRule( Form::MIN, null, 0 );
-		$item->addCondition( Form::MAX, 0 )
-			->addCondition( Form::MIN, 0 )
-			// translators: %d is the value.
-			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
+		// translators: %d is numeric threshold.
+		$item->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packetery' ), 0.0 );
 
 		$item->addFilter(
 			function ( float $value ) {
 				return Helper::simplifyWeight( $value );
 			}
 		);
-
-		$item->addCondition( Form::MAX, 0 )
-			->addCondition( Form::MIN, 0 )
-			// translators: %d is the value.
-			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
+		// translators: %d is numeric threshold.
+		$item->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packetery' ), 0.0 );
 
 		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) . ':' );
 		$item->setRequired();
