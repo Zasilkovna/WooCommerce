@@ -36,6 +36,14 @@
                 </tr>
             {/foreach}
 
+            {if $maxRowsExceeded}
+                <tr>
+                    <td colspan="4">
+                        {$translations['moreRowsNotice']}
+                    </td>
+                </tr>
+            {/if}
+
         </tbody>
     </table>
 </div>

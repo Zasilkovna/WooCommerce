@@ -136,6 +136,7 @@ class Controller extends WP_REST_Controller {
 			'success' => 0,
 			'ignored' => 0,
 			'errors'  => 0,
+			'logs'    => 0,
 		];
 		if ( false === $wcOrder ) {
 			// translators: %s is order id.
@@ -145,8 +146,9 @@ class Controller extends WP_REST_Controller {
 		}
 		$data['redirectTo'] = add_query_arg(
 			[
-				'post_type'     => 'shop_order',
-				'submit_to_api' => '1',
+				'post_type'          => 'shop_order',
+				'packetery_order_id' => $orderId,
+				'submit_to_api'      => '1',
 			] + $resultsCounter,
 			admin_url( 'edit.php' )
 		);

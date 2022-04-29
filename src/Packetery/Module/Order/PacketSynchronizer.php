@@ -84,15 +84,16 @@ class PacketSynchronizer {
 			$response = $this->apiSoapClient->packetStatus( $request );
 
 			if ( $response->hasFault() ) {
-				$record         = new Log\Record();
-				$record->action = Log\Record::ACTION_PACKET_STATUS_SYNC;
-				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Packet status could not be synchronized.', 'packeta' );
-				$record->params = [
+				$record          = new Log\Record();
+				$record->action  = Log\Record::ACTION_PACKET_STATUS_SYNC;
+				$record->status  = Log\Record::STATUS_ERROR;
+				$record->title   = __( 'Packet status could not be synchronized.', 'packeta' );
+				$record->params  = [
 					'orderId'      => $order->getNumber(),
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),
 				];
+				$record->orderId = $order->getNumber();
 				$this->logger->add( $record );
 
 				if ( $response->hasWrongPassword() ) {

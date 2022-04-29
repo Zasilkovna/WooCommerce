@@ -1,17 +1,17 @@
 {if !$ignored && !$errors && $success}
 	<div class="notice notice-success is-dismissible">
-		<p>{$success}</p>
+		<p>{$success|noescape}</p>
 	</div>
 {else}
 	{if $ignored}
 		<div class="notice notice-info is-dismissible">
-			<p>{$ignored}</p>
+			<p>{$ignored|noescape}</p>
 		</div>
 	{/if}
 
 	{if $errors}
 		<div class="notice notice-error is-dismissible">
-			<p>{$errors}</p>
+			<p>{$errors|noescape}</p>
 		</div>
 	{/if}
 {/if}

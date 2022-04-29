@@ -1,3 +1,7 @@
 <div class="notice notice-{$message['type']} is-dismissible">
-    <p>{$message['message']}</p>
+    {if $message['isHtml'] ?? false}
+        <p>{$message['message']|noescape}</p>
+    {else}
+        <p>{$message['message']}</p>
+    {/if}
 </div>
