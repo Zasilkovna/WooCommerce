@@ -384,19 +384,8 @@ class Page {
 			get_admin_url( null, 'admin.php' )
 		);
 		$latteParams['activeTab']            = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
-		$latteParams['generalTabLink']       = add_query_arg(
-			[
-				'page' => self::SLUG,
-			],
-			admin_url( 'admin.php' )
-		);
-		$latteParams['supportTabLink']       = add_query_arg(
-			[
-				'page'          => self::SLUG,
-				self::PARAM_TAB => self::TAB_SUPPORT,
-			],
-			admin_url( 'admin.php' )
-		);
+		$latteParams['generalTabLink']       = $this->createLink();
+		$latteParams['supportTabLink']       = $this->createLink( self::TAB_SUPPORT );
 
 		$lastExport       = null;
 		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );
@@ -413,5 +402,26 @@ class Page {
 
 		$latteParams['messages'] = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
+	}
+
+	/**
+	 * Creates tab link.
+	 *
+	 * @param string|null $tab Tab ID.
+	 * @return string
+	 */
+	private function createLink( ?string $tab = null ): string {
+		$params = [
+			'page' => self::SLUG,
+		];
+
+		if ( null !== $tab ) {
+			$params[ self::PARAM_TAB ] = $tab;
+		}
+
+		return add_query_arg(
+			$params,
+			get_admin_url( null, 'admin.php' )
+		);
 	}
 }
