@@ -14,26 +14,28 @@
         </thead>
         <tbody>
             {foreach $rows as $row}
-            <tr n:class="'log-' . $row->status">
-                <td class="packetery-log-column packetery-log-column-status">
-                    {$translatedStatuses[$row->status] ?? $row->status}
-                </td>
-                <td class="packetery-log-column packetery-log-column-date">
-                    {$row->date|wpDateTime}
-                </td>
-                <td class="packetery-log-column packetery-log-column-action">
-                    {$translatedActions[$row->action] ?? $row->action}
-                </td>
-                <td class="packetery-log-column packetery-log-column-note">
-                    {$row->note}
-                </td>
-            </tr>
+                <tr n:class="'log-' . $row->status">
+                    <td class="packetery-log-column packetery-log-column-status">
+                        {$translatedStatuses[$row->status] ?? $row->status}
+                    </td>
+                    <td class="packetery-log-column packetery-log-column-date">
+                        {$row->date|wpDateTime}
+                    </td>
+                    <td class="packetery-log-column packetery-log-column-action">
+                        {$translatedActions[$row->action] ?? $row->action}
+                    </td>
+                    <td class="packetery-log-column packetery-log-column-note">
+                        {$row->note}
+                    </td>
+                </tr>
+            {else}
+                <tr>
+                    <td colspan="4">
+                        {__( 'logListIsEmpty', 'packetery' )}
+                    </td>
+                </tr>
             {/foreach}
-            <tr n:if="empty($rows)">
-                <td colspan="4">
-                    {__( 'logListIsEmpty', 'packetery' )}
-                </td>
-            </tr>
+
         </tbody>
     </table>
 </div>
