@@ -184,12 +184,12 @@ class Provider {
 				'maxOffset'    => 3,
 			],
 			'A6 on A6'       => [
-				'name'         => __( '1/4 A4, direct printing, 1pc/page', 'packetery' ),
+				'name'         => __( '1/4 A4, direct print, 1pc/page', 'packetery' ),
 				'directLabels' => true,
 				'maxOffset'    => 0,
 			],
 			'A7 on A7'       => [
-				'name'         => __( '1/8 A4, direct printing, 1pc/page', 'packetery' ),
+				'name'         => __( '1/8 A4, direct print, 1pc/page', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 0,
 			],
@@ -204,7 +204,7 @@ class Provider {
 				'maxOffset'    => 15,
 			],
 			'A8 on A8'       => [
-				'name'         => __( '1/16 A4, direct printing, 1pc/page', 'packetery' ),
+				'name'         => __( '1/16 A4, direct print, 1pc/page', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 0,
 			],
