@@ -608,6 +608,7 @@ class Plugin {
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
 			$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
+			$this->enqueueScript( 'live-form-validation-extension', 'public/live-form-validation-extension.js', false, [ 'live-form-validation' ] );
 		}
 
 		if ( Carrier\OptionsPage::SLUG === $page ) {
