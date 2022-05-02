@@ -380,30 +380,6 @@ msgstr ""
 "Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s "
 "- user information - field 'Indication'."
 
-#: src/Packetery/Module/Options/Provider.php:173
-msgid "labelNameA6onA4"
-msgstr "105x148 mm (A6) label on a page of size 210x297 mm (A4)"
-
-#: src/Packetery/Module/Options/Provider.php:178
-msgid "labelNameA6onA6"
-msgstr "105x148 mm (A6) label on a page of the same size"
-
-#: src/Packetery/Module/Options/Provider.php:183
-msgid "labelNameA7onA7"
-msgstr "105x74 mm (A7) label on a page of the same size"
-
-#: src/Packetery/Module/Options/Provider.php:188
-msgid "labelNameA7onA4"
-msgstr "105x74 mm (A7) label on a page of size 210x297 mm (A4)"
-
-#: src/Packetery/Module/Options/Provider.php:193
-msgid "labelName105x35onA4"
-msgstr "105x35 mm label on a page of size 210x297 mm (A4)"
-
-#: src/Packetery/Module/Options/Provider.php:198
-msgid "labelNameA8onA8"
-msgstr "50x74 mm (A8) label on a page of the same size"
-
 #: src/Packetery/Module/Order/BulkActions.php:64
 msgid "actionSubmitOrders"
 msgstr "Submit orders to Packeta"

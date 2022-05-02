@@ -381,30 +381,6 @@ msgstr ""
 "Tu vyplňte %1$soznačenie odisielateľa%2$s - nájdete ho v %3$sklientskej "
 "sekcii%4$s - údaje o používateľovi -  pole 'označenie používateľa'."
 
-#: src/Packetery/Module/Options/Provider.php:173
-msgid "labelNameA6onA4"
-msgstr "1/4 A4, tlač na A4, 4ks/stránka"
-
-#: src/Packetery/Module/Options/Provider.php:178
-msgid "labelNameA6onA6"
-msgstr "1/4 A4, priama tlač, 1ks/stránka"
-
-#: src/Packetery/Module/Options/Provider.php:183
-msgid "labelNameA7onA7"
-msgstr "1/8 A4, priama tlač, 1ks/stránka"
-
-#: src/Packetery/Module/Options/Provider.php:188
-msgid "labelNameA7onA4"
-msgstr "1/8 A4, tlač na A4, 8ks/stránka"
-
-#: src/Packetery/Module/Options/Provider.php:193
-msgid "labelName105x35onA4"
-msgstr "105x35mm, tlač na A4, 16ks/stránka"
-
-#: src/Packetery/Module/Options/Provider.php:198
-msgid "labelNameA8onA8"
-msgstr "1/16 A4, priama tlač, 1ks/stránka"
-
 #: src/Packetery/Module/Order/BulkActions.php:64
 msgid "actionSubmitOrders"
 msgstr "Podať zásielky do Packeta"

@@ -179,32 +179,32 @@ class Provider {
 	public function getLabelFormats(): array {
 		return [
 			'A6 on A4'       => [
-				'name'         => __( 'labelNameA6onA4', 'packetery' ),
+				'name'         => __( '1/4 A4, print on A4, 4pcs/page', 'packetery' ),
 				'directLabels' => true,
 				'maxOffset'    => 3,
 			],
 			'A6 on A6'       => [
-				'name'         => __( 'labelNameA6onA6', 'packetery' ),
+				'name'         => __( '1/4 A4, direct print, 1pc/page', 'packetery' ),
 				'directLabels' => true,
 				'maxOffset'    => 0,
 			],
 			'A7 on A7'       => [
-				'name'         => __( 'labelNameA7onA7', 'packetery' ),
+				'name'         => __( '1/8 A4, direct print, 1pc/page', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 0,
 			],
 			'A7 on A4'       => [
-				'name'         => __( 'labelNameA7onA4', 'packetery' ),
+				'name'         => __( '1/8 A4, print on A4, 8pcs/page', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 7,
 			],
 			'105x35mm on A4' => [
-				'name'         => __( 'labelName105x35onA4', 'packetery' ),
+				'name'         => __( '105x35mm, print on A4, 16 pcs/page', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 15,
 			],
 			'A8 on A8'       => [
-				'name'         => __( 'labelNameA8onA8', 'packetery' ),
+				'name'         => __( '1/16 A4, direct print, 1pc/page', 'packetery' ),
 				'directLabels' => false,
 				'maxOffset'    => 0,
 			],

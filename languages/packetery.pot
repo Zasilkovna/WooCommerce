@@ -351,30 +351,6 @@ msgstr ""
 msgid "senderDescription"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:173
-msgid "labelNameA6onA4"
-msgstr ""
-
-#: src/Packetery/Module/Options/Provider.php:178
-msgid "labelNameA6onA6"
-msgstr ""
-
-#: src/Packetery/Module/Options/Provider.php:183
-msgid "labelNameA7onA7"
-msgstr ""
-
-#: src/Packetery/Module/Options/Provider.php:188
-msgid "labelNameA7onA4"
-msgstr ""
-
-#: src/Packetery/Module/Options/Provider.php:193
-msgid "labelName105x35onA4"
-msgstr ""
-
-#: src/Packetery/Module/Options/Provider.php:198
-msgid "labelNameA8onA8"
-msgstr ""
-
 #: src/Packetery/Module/Order/BulkActions.php:64
 msgid "actionSubmitOrders"
 msgstr ""
