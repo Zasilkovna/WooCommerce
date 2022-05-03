@@ -45,10 +45,13 @@ class Calculator {
 	public function calculateOrderWeight( \WC_Order $order ): float {
 		$weight = 0;
 		foreach ( $order->get_items() as $item ) {
-			$quantity      = $item->get_quantity();
-			$product       = $item->get_product();
-			$productWeight = (float) $product->get_weight();
-			$weight       += ( $productWeight * $quantity );
+			$quantity = $item->get_quantity();
+			$product  = $item->get_product();
+
+			if ( is_object( $product ) && method_exists( $product, 'get_weight' ) ) {
+				$productWeight = (float) $product->get_weight();
+				$weight       += ( $productWeight * $quantity );
+			}
 		}
 
 		$weightKg = \wc_get_weight( $weight, 'kg' );
