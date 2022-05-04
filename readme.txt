@@ -61,6 +61,20 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.2.6 =
+* Added: New plugin setting that enables replacing shipping address with pickup point address
+* Updated: Label options naming in Packeta plugin options page
+* Updated: Show notification when log page doesn’t contain any logs
+* Updated: Minor code issues resolved
+* Fixed: Actions run on deleted order now give proper error messages
+* Fixed: Slovak and czech translations related to label printing
+* Fixed: Plugin now ignores empty order item product when calculating order weight
+* Fixed: The display of filter links has been limited to the order overview page
+* Fixed: Delete order from custom table after deleting woocommerce order
+* Fixed: Delete all custom table records linked to permanently deleted orders
+* Fixed: Carrier weight rule duplicate validation
+* Fixed: Order modal weight field validation
+
 = 1.2.5 =
 * Fixed: Packeta plugin is now compatible with Plugins making javascripts load asynchronously in checkout
 
