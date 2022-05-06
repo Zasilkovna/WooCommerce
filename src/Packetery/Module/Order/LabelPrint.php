@@ -317,33 +317,35 @@ class LabelPrint {
 		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
-		$record         = new Log\Record();
-		$record->action = Log\Record::ACTION_LABEL_PRINT;
-		if ( ! $response->hasFault() ) {
-			foreach ( array_keys( $packetIds ) as $orderId ) {
-				$order = $this->orderRepository->getById( $orderId );
-				if ( null === $order ) { // Collection was already limited, so we do not need to log this.
-					continue;
-				}
-				$order->setIsLabelPrinted( true );
-				$this->orderRepository->save( $order );
-			}
 
-			$record->status = Log\Record::STATUS_SUCCESS;
+		foreach ( array_keys( $packetIds ) as $orderId ) {
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_LABEL_PRINT;
+
+			if ( ! $response->hasFault() ) {
+				$order = $this->orderRepository->getById( $orderId );
+				if ( null !== $order ) {
+					$order->setIsLabelPrinted( true );
+					$this->orderRepository->save( $order );
+				}
+
+				$record->status = Log\Record::STATUS_SUCCESS;
 			$record->title  = __( 'Label has been printed successfully.', 'packeta' );
 		} else {
-			$record->status = Log\Record::STATUS_ERROR;
+				$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Label could not be printed.', 'packeta' );
-			$record->params = [
-				'request'      => [
-					'packetIds' => implode( ',', $request->getPacketIds() ),
-					'format'    => $request->getFormat(),
-					'offset'    => $request->getOffset(),
-				],
-				'errorMessage' => $response->getFaultString(),
-			];
+				$record->params = [
+					'request'      => [
+						'packetIds' => implode( ',', $request->getPacketIds() ),
+						'format'    => $request->getFormat(),
+						'offset'    => $request->getOffset(),
+					],
+					'errorMessage' => $response->getFaultString(),
+				];
+			}
+
+			$this->logger->add( $record );
 		}
-		$this->logger->add( $record );
 
 		return $response;
 	}
@@ -360,34 +362,36 @@ class LabelPrint {
 		$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
 		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
-		$record                      = new Log\Record();
-		$record->action              = Log\Record::ACTION_CARRIER_LABEL_PRINT;
-		if ( ! $response->hasFault() ) {
-			foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
-				$order = $this->orderRepository->getById( $orderId );
-				if ( null === $order ) { // Collection was already limited, so we do not need to log this.
-					continue;
-				}
-				$order->setIsLabelPrinted( true );
-				$order->setCarrierNumber( $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
-				$this->orderRepository->save( $order );
-			}
 
-			$record->status = Log\Record::STATUS_SUCCESS;
+		foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
+
+			if ( ! $response->hasFault() ) {
+				$order = $this->orderRepository->getById( $orderId );
+				if ( null !== $order ) {
+					$order->setIsLabelPrinted( true );
+					$order->setCarrierNumber( $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
+					$this->orderRepository->save( $order );
+				}
+
+				$record->status = Log\Record::STATUS_SUCCESS;
 			$record->title  = __( 'Carrier label has been printed successfully.', 'packeta' );
 		} else {
-			$record->status = Log\Record::STATUS_ERROR;
+				$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Carrier label could not be printed.', 'packeta' );
-			$record->params = [
-				'request'      => [
-					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
-					'format'                      => $request->getFormat(),
-					'offset'                      => $request->getOffset(),
-				],
-				'errorMessage' => $response->getFaultString(),
-			];
+				$record->params = [
+					'request'      => [
+						'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
+						'format'                      => $request->getFormat(),
+						'offset'                      => $request->getOffset(),
+					],
+					'errorMessage' => $response->getFaultString(),
+				];
+			}
+
+			$this->logger->add( $record );
 		}
-		$this->logger->add( $record );
 
 		return $response;
 	}
