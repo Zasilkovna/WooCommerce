@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03f69a3d7b90fd55c259bdb0a0cb08c0",
+    "content-hash": "18389649027ab3a4a600ea43f2bf33c1",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -1793,16 +1793,16 @@
         },
         {
             "name": "woocommerce/woocommerce-sniffs",
-            "version": "0.1.1",
+            "version": "0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/woocommerce/woocommerce-sniffs.git",
-                "reference": "eb604d751b61c42f31ff1aa24113c7c0de438553"
+                "reference": "4576d54595614d689bc4436acff8baaece3c5bb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/woocommerce/woocommerce-sniffs/zipball/eb604d751b61c42f31ff1aa24113c7c0de438553",
-                "reference": "eb604d751b61c42f31ff1aa24113c7c0de438553",
+                "url": "https://api.github.com/repos/woocommerce/woocommerce-sniffs/zipball/4576d54595614d689bc4436acff8baaece3c5bb0",
+                "reference": "4576d54595614d689bc4436acff8baaece3c5bb0",
                 "shasum": ""
             },
             "require": {
@@ -1831,9 +1831,9 @@
             ],
             "support": {
                 "issues": "https://github.com/woocommerce/woocommerce-sniffs/issues",
-                "source": "https://github.com/woocommerce/woocommerce-sniffs/tree/0.1.1"
+                "source": "https://github.com/woocommerce/woocommerce-sniffs/tree/0.1.3"
             },
-            "time": "2021-07-29T17:25:16+00:00"
+            "time": "2022-02-17T15:34:51+00:00"
         },
         {
             "name": "wp-coding-standards/wpcs",
