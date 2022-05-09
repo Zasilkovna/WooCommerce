@@ -24,6 +24,8 @@
  * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
 
+use Packetery\Module\Plugin;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -66,4 +68,4 @@ if ( version_compare( PHP_VERSION, PACKETERY_MIN_PHP_VERSION, '<' ) ) {
 }
 
 $container = require __DIR__ . '/bootstrap.php';
-$container->getByType( '\\Packetery\\Module\\Plugin' )->run();
+$container->getByType( Plugin::class )->run();
