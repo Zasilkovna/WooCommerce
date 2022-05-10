@@ -7,9 +7,9 @@ use Magento\Framework\Exception\InputException;
 use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Packetery\Checkout\Model\Address;
 use Packetery\Checkout\Model\AddressValidationSelect;
-use Packetery\Checkout\Model\Carrier\AbstractBrain;
-use Packetery\Checkout\Model\Carrier\MethodCode;
 use Packetery\Checkout\Model\Carrier\Methods;
+use Packetery\Checkout\Model\Carrier\ShippingRateCode;
+use Packetery\Checkout\Model\Payment\MethodList;
 
 class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 {
@@ -24,6 +24,9 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
 
     /** @var \Packetery\Checkout\Model\ResourceModel\Order\CollectionFactory */
     private $orderCollectionFactory;
+
+    /** @var \Magento\Sales\Model\ResourceModel\Order\CollectionFactory */
+    private $magentoOrderCollectionFactory;
 
     /** @var \Magento\Shipping\Model\CarrierFactory */
     private $carrierFactory;
@@ -52,6 +55,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
      * @param \Packetery\Checkout\Model\Pricing\Service $pricingService
      * @param \Magento\Sales\Model\Order\AddressRepository $orderAddressRepository
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $magentoOrderCollectionFactory
      */
     public function __construct(
         CheckoutSession $checkoutSession,
@@ -62,7 +66,8 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         \Packetery\Checkout\Model\Weight\Calculator $weightCalculator,
         \Packetery\Checkout\Model\Pricing\Service $pricingService,
         \Magento\Sales\Model\Order\AddressRepository $orderAddressRepository,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
+        \Magento\Sales\Model\ResourceModel\Order\CollectionFactory $magentoOrderCollectionFactory
     ) {
         $this->storeManager = $storeManager;
         $this->checkoutSession = $checkoutSession;
@@ -73,6 +78,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $this->pricingService = $pricingService;
         $this->orderAddressRepository = $orderAddressRepository;
         $this->priceCurrency = $priceCurrency;
+        $this->magentoOrderCollectionFactory = $magentoOrderCollectionFactory;
     }
 
     /**
@@ -88,8 +94,7 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $order = $observer->getEvent()->getOrder();
 
         // IF PACKETERY SHIPPING IS NOT SELECTED, RETURN
-        if (strpos($order->getShippingMethod(), AbstractBrain::PREFIX) === false)
-        {
+        if (ShippingRateCode::isPacketery($order->getShippingMethod()) === false) {
             return;
         }
 
@@ -106,26 +111,27 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         $destinationAddress = Address::fromShippingAddress($magentoShippingAddress);
         $paymentMethod = $order->getPayment()->getMethod();
         $isCOD = $this->isCod($paymentMethod);
+        $shippingRate = ShippingRateCode::fromString($order->getShippingMethod());
+        $deliveryMethod = $shippingRate->getMethodCode();
+
+        $relatedPricingRule = $this->pricingService->resolvePricingRule(
+            $deliveryMethod->getMethod(),
+            $destinationAddress->getCountryId(),
+            $shippingRate->getCarrierCode(),
+            $deliveryMethod->getDynamicCarrierId()
+        );
+
+        if ($relatedPricingRule === null) {
+            throw new InputException(__('Pricing rule was not found. Please choose delivery method.'));
+        }
+
+        if ($isCOD && MethodList::exceedsValueMaxLimit($order->getGrandTotal(), $relatedPricingRule->getMaxCOD())) {
+            throw new InputException(__('Selected payment method is not allowed because the grand total exceeds the max COD (%1) set up for this carrier.', $this->priceCurrency->format($relatedPricingRule->getMaxCOD(), false)));
+        }
 
         if ($postData)
         {
             // new order from frontend
-            $shippingMethod = $order->getShippingMethod(true);
-            $deliveryMethod = MethodCode::fromString($shippingMethod['method']);
-            $relatedPricingRule = $this->pricingService->resolvePricingRule(
-                $deliveryMethod->getMethod(),
-                $destinationAddress->getCountryId(),
-                $shippingMethod['carrier_code'],
-                $deliveryMethod->getDynamicCarrierId()
-            );
-
-            if ($relatedPricingRule === null) {
-                throw new InputException(__('Pricing rule was not found. Please choose delivery method.'));
-            }
-
-            if ($isCOD && \Packetery\Checkout\Model\Payment\MethodList::exceedsValueMaxLimit($order->getGrandTotal(), $relatedPricingRule->getMaxCOD())) {
-                throw new InputException(__('Selected payment method is not allowed because grand total exceeds limit %1.', $this->priceCurrency->format($relatedPricingRule->getMaxCOD(), false)));
-            }
 
             if ($deliveryMethod->getMethod() === Methods::PICKUP_POINT_DELIVERY) {
                 // pickup point delivery
@@ -145,26 +151,32 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
                     $addressValidated = true;
                 }
 
-                /** @var \Packetery\Checkout\Model\Carrier\AbstractCarrier $carrier */
-                $carrier = $this->carrierFactory->create($shippingMethod['carrier_code']);
-                $pointId = $carrier->getPacketeryBrain()->resolvePointId(
-                    $deliveryMethod->getMethod(),
-                    $destinationAddress->getCountryId(),
-                    $carrier->getPacketeryBrain()->getDynamicCarrierById($deliveryMethod->getDynamicCarrierId())
-                );
-
+                $pointId = $this->resolvePointId($shippingRate, $destinationAddress);
                 $pointName = '';
             }
         }
         else
         {
             // creating order from admin
-            $packetery = $this->getRealOrderPacketery($order);
-            if (!empty($packetery)) {
-                $pointId = $packetery['point_id'];
-                $pointName = $packetery['point_name'];
-                $isCarrier = (bool)$packetery['is_carrier'];
-                $carrierPickupPoint = $packetery['carrier_pickup_point'];
+
+            $packeteryOrderData = $this->getOriginalPacketeryOrderData($order);
+            if (!empty($packeteryOrderData)) {
+                $pointId = $packeteryOrderData['point_id'];
+                $pointName = $packeteryOrderData['point_name'];
+                $isCarrier = (bool)$packeteryOrderData['is_carrier'];
+                $carrierPickupPoint = $packeteryOrderData['carrier_pickup_point'];
+            }
+
+            if (empty($packeteryOrderData) && $deliveryMethod->getMethod() === Methods::PICKUP_POINT_DELIVERY) {
+                $pointId = -1;
+                $pointName = '';
+                $isCarrier = false;
+                $carrierPickupPoint = null;
+            }
+
+            if(empty($packeteryOrderData) && $deliveryMethod->getMethod() !== Methods::PICKUP_POINT_DELIVERY) {
+                $pointId = $this->resolvePointId($shippingRate, $destinationAddress);
+                $pointName = '';
             }
         }
 
@@ -214,11 +226,32 @@ class OrderPlaceAfter implements \Magento\Framework\Event\ObserverInterface
         }
     }
 
-    private function getRealOrderPacketery($order)
-    {
+    private function resolvePointId(ShippingRateCode $shippingRate, Address $destinationAddress) {
+        $deliveryMethod = $shippingRate->getMethodCode();
+
+        /** @var \Packetery\Checkout\Model\Carrier\AbstractCarrier $carrier */
+        $carrier = $this->carrierFactory->create($shippingRate->getCarrierCode());
+        return $carrier->getPacketeryBrain()->resolvePointId(
+            $deliveryMethod->getMethod(),
+            $destinationAddress->getCountryId(),
+            $carrier->getPacketeryBrain()->getDynamicCarrierById($deliveryMethod->getDynamicCarrierId())
+        );
+    }
+
+    private function getOriginalPacketeryOrderData(\Magento\Sales\Model\Order $order) {
         $orderIdOriginal = self::getRealOrderId($order->getIncrementId());
         if (!is_numeric($orderIdOriginal))
         {
+            return null;
+        }
+
+        $magentoOrderCollection = $this->magentoOrderCollectionFactory->create();
+        $magentoOrderCollection->addFilter('increment_id', $orderIdOriginal);
+        $magentoOrderCollection->load();
+        /** @var \Magento\Sales\Model\Order $magentoOrder */
+        $magentoOrder = $magentoOrderCollection->fetchItem();
+
+        if (!$magentoOrder || $order->getShippingMethod() !== $magentoOrder->getShippingMethod()) {
             return null;
         }
 

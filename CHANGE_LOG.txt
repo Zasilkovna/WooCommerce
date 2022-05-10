@@ -7,6 +7,7 @@
       - Added: max COD limit for each pricing rule
       - Added: SK translations
       - Updated: Widget HD library URL
+      - Added: ability to create order with partial Packeta shipping in administration
 
 2.2.2 - Added: email template variables
       - Added: order grid filtering and sorting by order creation

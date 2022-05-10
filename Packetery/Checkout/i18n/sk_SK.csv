@@ -126,5 +126,5 @@
 "Latitude","Zemepisná šírka"
 "Is address validated?","Je adresa validná?"
 "Order detail","Detail objednávky"
-"Selected payment method is not allowed because grand total exceeds limit %1.","Zvolená platebná metóda nieje povolená, pretože prekračuje maximálnu hodnotu objednávky %1."
+"Selected payment method is not allowed because the grand total exceeds the max COD (%1) set up for this carrier.","Zvolená platobná metóda nie je povolená, pretože prekračuje maximálnu povolenú hodnotu dobierky (%1) nastavenú pre tohto dopravcu."
 "Max COD","Maximálna výška dobierky"

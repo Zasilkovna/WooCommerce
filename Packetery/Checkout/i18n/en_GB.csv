@@ -126,5 +126,5 @@
 "Latitude","Latitude"
 "Is address validated?","Is address validated?"
 "Order detail","Order detail"
-"Selected payment method is not allowed because grand total exceeds limit %1.","Selected payment method is not allowed because grand total exceeds limit %1."
+"Selected payment method is not allowed because the grand total exceeds the max COD (%1) set up for this carrier.","Selected payment method is not allowed because the grand total exceeds the max COD (%1) set up for this carrier."
 "Max COD","Max COD"
