@@ -224,9 +224,11 @@ class Checkout {
 	}
 
 	/**
-	 * Renders main checkout script
+	 * Creates settings for checkout script.
+	 *
+	 * @return array
 	 */
-	public function render_after_checkout_form(): void {
+	public function createSettings(): array {
 		$carrierConfig = [];
 		$carriers      = $this->carrierRepository->getAllIncludingZpoints();
 
@@ -253,31 +255,26 @@ class Checkout {
 			}
 		}
 
-		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
-			[
-				'settings' => [
-					'language'          => substr( get_locale(), 0, 2 ),
-					'country'           => $this->getCustomerCountry(),
-					'weight'            => $this->getCartWeightKg(),
-					'carrierConfig'     => $carrierConfig,
-					'pickupPointAttrs'  => self::$pickupPointAttrs,
-					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
-					'appIdentity'       => Plugin::getAppIdentity(),
-					'packeteryApiKey'   => $this->options_provider->get_api_key(),
-					'translations'      => [
-						'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
-						'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
-						'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
-						'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
-						'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
-						'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
-						'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
-						'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
-					],
-				],
-			]
-		);
+		return [
+			'language'          => substr( get_locale(), 0, 2 ),
+			'country'           => $this->getCustomerCountry(),
+			'weight'            => $this->getCartWeightKg(),
+			'carrierConfig'     => $carrierConfig,
+			'pickupPointAttrs'  => self::$pickupPointAttrs,
+			'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
+			'appIdentity'       => Plugin::getAppIdentity(),
+			'packeteryApiKey'   => $this->options_provider->get_api_key(),
+			'translations'      => [
+				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
+				'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
+				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
+				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
+				'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
+				'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
+				'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
+				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
+			],
+		];
 	}
 
 	/**
@@ -485,7 +482,6 @@ class Checkout {
 	 */
 	public function register_hooks(): void {
 		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
-		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
 		add_action( 'woocommerce_after_order_notes', array( $this, 'addPickupPointFields' ) );
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );

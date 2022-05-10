@@ -302,6 +302,4 @@ var packeteryLoadCheckout = function( $, settings ) {
 	} );
 };
 
-if ( typeof packeteryCheckoutSettings !== 'undefined' ) {
-	packeteryLoadCheckout( jQuery, packeteryCheckoutSettings );
-}
+packeteryLoadCheckout( jQuery, packeteryCheckoutSettings );
