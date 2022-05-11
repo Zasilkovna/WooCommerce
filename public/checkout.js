@@ -1,7 +1,17 @@
 var packeteryLoadCheckout = function( $, settings ) {
 	var packeteryCheckout = function( settings ) {
-		var $widgetDiv = $( '.packeta-widget' );
 		var rateAttrValues = {};
+
+		var getPacketaWidget = function() {
+			var $widgetDiv = $( '#shipping_method input[type="radio"]:checked' ).parent().find( '.packeta-widget' );
+			if ( $widgetDiv.length > 0 ) {
+				return $widgetDiv;
+			}
+
+			return $( '.packeta-widget' );
+		};
+
+		var $widgetDiv = getPacketaWidget();
 
 		var getDestinationAddress = function() {
 			var extractDestination = function( section ) {
@@ -135,7 +145,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 		};
 
 		var updateWidgetButtonVisibility = function( carrierRateId ) {
-			$widgetDiv.hide();
+			$widgetDiv = getPacketaWidget();
+			$( '.packeta-widget' ).addClass( 'packetery-hidden' );
+			var $widgetButtonRow = $( '.packetery-widget-button-table-row' );
+			$widgetButtonRow.addClass( 'packetery-hidden' );
 			resetInfo( settings.pickupPointAttrs ); // clear active hidden field values
 			resetInfo( settings.homeDeliveryAttrs );
 			resetWidgetInfo();
@@ -151,7 +164,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 				loadInfoForCarrierRate( carrierRateId, settings.pickupPointAttrs );
 				$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_point_name', '' ) );
 				$widgetDiv.find( 'button' ).html( settings.translations.choosePickupPoint );
-				$widgetDiv.show();
+				$widgetButtonRow.removeClass( 'packetery-hidden' );
+				$widgetDiv.removeClass( 'packetery-hidden' );
 			}
 
 			if ( _hasHomeDelivery && 'none' === getAddressValidation( carrierRateId ) ) {
@@ -162,7 +176,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 				loadInfoForCarrierRate( carrierRateId, settings.homeDeliveryAttrs );
 				showDeliveryAddress( carrierRateId );
 				$widgetDiv.find( 'button' ).html( settings.translations.chooseAddress );
-				$widgetDiv.show();
+				$widgetButtonRow.removeClass( 'packetery-hidden' );
+				$widgetDiv.removeClass( 'packetery-hidden' );
 			}
 		};
 
@@ -181,6 +196,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		$(document).on('change', '#payment input[type="radio"]', checkPaymentChange);
 		$( document ).on( 'updated_checkout', function() {
+			$widgetDiv = getPacketaWidget();
 			var destinationAddress = getDestinationAddress();
 			if ( destinationAddress.country !== settings.country ) {
 				clearInfo( settings.pickupPointAttrs );
@@ -195,6 +211,14 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		$( document ).on( 'change', '#shipping_method input[type="radio"], #shipping_method input[type="hidden"]', function() {
 			updateWidgetButtonVisibility( this.value );
+		} );
+
+		$( document ).on( 'ajaxStop', function() {
+			updateWidgetButtonVisibility( getShippingRateId() );
+
+			setTimeout( function() {
+				updateWidgetButtonVisibility( getShippingRateId() );
+			}, 1000 );
 		} );
 
 		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
@@ -220,7 +244,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}
 		};
 
-		$( '.packeta-widget-button' ).click( function( e ) {
+		$( document ).on( 'click', '.packeta-widget-button', function( e ) {
 			e.preventDefault();
 
 			var widgetOptions = {
