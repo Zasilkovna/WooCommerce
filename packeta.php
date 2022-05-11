@@ -11,7 +11,7 @@
  * Version: 1.2.6
  * Author: Zásilkovna s.r.o.
  * Author URI: https://www.zasilkovna.cz/
- * Text Domain: packetery
+ * Text Domain: packeta
  * Domain Path: /languages
  * Requires at least: 5.3
  * Requires PHP: 7.2
