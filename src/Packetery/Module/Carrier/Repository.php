@@ -292,25 +292,25 @@ class Repository {
 		return [
 			'cz' => [
 				'id'               => 'zpointcz',
-				'name'             => __( 'CZ Packeta pickup points', 'packetery' ),
+				'name'             => __( 'CZ Packeta pickup points', PACKETERY_LANG_DOMAIN ),
 				'is_pickup_points' => 1,
 				'currency'         => 'CZK',
 			],
 			'sk' => [
 				'id'               => 'zpointsk',
-				'name'             => __( 'SK Packeta pickup points', 'packetery' ),
+				'name'             => __( 'SK Packeta pickup points', PACKETERY_LANG_DOMAIN ),
 				'is_pickup_points' => 1,
 				'currency'         => 'EUR',
 			],
 			'hu' => [
 				'id'               => 'zpointhu',
-				'name'             => __( 'HU Packeta pickup points', 'packetery' ),
+				'name'             => __( 'HU Packeta pickup points', PACKETERY_LANG_DOMAIN ),
 				'is_pickup_points' => 1,
 				'currency'         => 'HUF',
 			],
 			'ro' => [
 				'id'               => 'zpointro',
-				'name'             => __( 'RO Packeta pickup points', 'packetery' ),
+				'name'             => __( 'RO Packeta pickup points', PACKETERY_LANG_DOMAIN ),
 				'is_pickup_points' => 1,
 				'currency'         => 'RON',
 			],

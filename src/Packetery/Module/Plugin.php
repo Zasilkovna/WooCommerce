@@ -30,7 +30,7 @@ use WC_Order;
 class Plugin {
 
 	public const VERSION               = '1.2.6';
-	public const DOMAIN                = 'packetery';
+	public const DOMAIN                = PACKETERY_LANG_DOMAIN;
 	public const MIN_LISTENER_PRIORITY = -9998;
 
 	/**
@@ -418,7 +418,7 @@ class Plugin {
 			[
 				'message' => [
 					'type'    => 'error',
-					'message' => __( 'packetaPluginRequiresWooCommerce', 'packetery' ),
+					'message' => __( 'Packeta plugin requires WooCommerce. Please install and activate it first.', PACKETERY_LANG_DOMAIN ),
 				],
 			]
 		);
@@ -701,12 +701,12 @@ class Plugin {
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Carrier table was not created, you can find more information in Packeta log', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'carrierTableNotCreated', 'packetery' );
+			$record->title  = __( 'Carrier table was not created', PACKETERY_LANG_DOMAIN );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -716,12 +716,12 @@ class Plugin {
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Order table was not created, you can find more information in Packeta log', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'orderTableNotCreated', 'packetery' );
+			$record->title  = __( 'Order table was not created', PACKETERY_LANG_DOMAIN );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -769,8 +769,8 @@ class Plugin {
 	 */
 	public function addPluginActionLinks( array $links ): array {
 		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=' . Options\Page::SLUG ) ) . '" aria-label="' .
-					esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
-					esc_html__( 'Settings', 'packetery' ) . '</a>';
+					esc_attr__( 'View Packeta settings', PACKETERY_LANG_DOMAIN ) . '">' .
+					esc_html__( 'Settings', PACKETERY_LANG_DOMAIN ) . '</a>';
 
 		array_unshift( $links, $settingsLink );
 
@@ -792,8 +792,8 @@ class Plugin {
 			return $links;
 		}
 		$links[] = '<a href="' . esc_url( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .
-		esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
-		esc_html__( 'Documentation', 'packetery' ) . '</a>';
+		esc_attr__( 'View Packeta documentation', PACKETERY_LANG_DOMAIN ) . '">' .
+		esc_html__( 'Documentation', PACKETERY_LANG_DOMAIN ) . '</a>';
 
 		return $links;
 	}

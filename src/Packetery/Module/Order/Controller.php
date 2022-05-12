@@ -128,7 +128,7 @@ class Controller extends WP_REST_Controller {
 		];
 		if ( false === $wcOrder ) {
 			// translators: %s is order id.
-			$resultsCounter['errors'] = sprintf( __( 'Order %s does not exist.', 'packetery' ), $orderId );
+			$resultsCounter['errors'] = sprintf( __( 'Order %s does not exist.', PACKETERY_LANG_DOMAIN ), $orderId );
 		} else {
 			$this->packetSubmitter->submitPacket( $wcOrder, $resultsCounter );
 		}
@@ -169,7 +169,7 @@ class Controller extends WP_REST_Controller {
 
 		$order = $this->orderRepository->getById( $orderId );
 		if ( null === $order ) {
-			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packetery' ), 400 );
+			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', PACKETERY_LANG_DOMAIN ), 400 );
 		}
 
 		$values = $form->getValues( 'array' );
@@ -180,7 +180,7 @@ class Controller extends WP_REST_Controller {
 		$order->setWeight( $values['packetery_weight'] );
 		$this->orderRepository->save( $order );
 
-		$data['message'] = __( 'Success', 'packetery' );
+		$data['message'] = __( 'Success', PACKETERY_LANG_DOMAIN );
 		$data['data']    = [
 			'packetery_weight' => $order->getWeight(),
 		];

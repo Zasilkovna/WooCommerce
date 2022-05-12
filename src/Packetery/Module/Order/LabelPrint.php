@@ -191,7 +191,7 @@ class LabelPrint {
 			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
 			if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-				$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
+				$this->messageManager->flash_message( __( 'No orders were selected', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
 
 				return;
 			}
@@ -199,7 +199,7 @@ class LabelPrint {
 			$packetIds = $this->getPacketIdsFromTransient( $isCarrierLabels );
 		}
 		if ( ! $packetIds ) {
-			$this->messageManager->flash_message( __( 'noSuitableOrdersSelected', 'packetery' ), 'info' );
+			$this->messageManager->flash_message( __( 'No suitable orders were selected', PACKETERY_LANG_DOMAIN ), 'info' );
 			if ( wp_safe_redirect( add_query_arg( [ 'post_type' => 'shop_order' ], admin_url( 'edit.php' ) ) ) ) {
 				exit;
 			}
@@ -230,8 +230,8 @@ class LabelPrint {
 		}
 		if ( ! $response || $response->hasFault() ) {
 			$message = ( null !== $response && $response->hasFault() ) ?
-				__( 'labelPrintFailedMoreInfoInLog', 'packetery' ) :
-				__( 'youSelectedOrdersThatWereNotSubmitted', 'packetery' );
+				__( 'Label printing failed, you can find more information in Packeta log.', PACKETERY_LANG_DOMAIN ) :
+				__( 'You selected orders that were not submitted yet', PACKETERY_LANG_DOMAIN );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
@@ -261,11 +261,11 @@ class LabelPrint {
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
 			// translators: %s is offset.
-			$availableOffsets[ $i ] = ( 0 === $i ? __( 'dontSkipAnyField', 'packetery' ) : sprintf( __( 'skip%sFields', 'packetery' ), $i ) );
+			$availableOffsets[ $i ] = ( 0 === $i ? __( "don't skip any field on a print sheet", PACKETERY_LANG_DOMAIN ) : sprintf( __( 'skip %s fields on first sheet', PACKETERY_LANG_DOMAIN ), $i ) );
 		}
 		$form->addSelect(
 			'offset',
-			__( 'labelsOffset', 'packetery' ),
+			__( 'Skip fields', PACKETERY_LANG_DOMAIN ),
 			$availableOffsets
 		)->checkDefaultValue( false );
 
@@ -278,8 +278,8 @@ class LabelPrint {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'printLabels', 'packetery' ),
-			__( 'printLabels', 'packetery' ),
+			__( 'Print labels', PACKETERY_LANG_DOMAIN ),
+			__( 'Print labels', PACKETERY_LANG_DOMAIN ),
 			'manage_options',
 			self::MENU_SLUG,
 			array(
@@ -322,10 +322,10 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'labelPrintSuccessLogTitle', 'packetery' );
+			$record->title  = __( 'Label print success', PACKETERY_LANG_DOMAIN );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'labelPrintErrorLogTitle', 'packetery' );
+			$record->title  = __( 'Label print error', PACKETERY_LANG_DOMAIN );
 			$record->params = [
 				'request'      => [
 					'packetIds' => implode( ',', $request->getPacketIds() ),
@@ -366,10 +366,10 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'carrierLabelPrintSuccessLogTitle', 'packetery' );
+			$record->title  = __( 'Carrier label print success', PACKETERY_LANG_DOMAIN );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'carrierLabelPrintErrorLogTitle', 'packetery' );
+			$record->title  = __( 'Carrier label print error', PACKETERY_LANG_DOMAIN );
 			$record->params = [
 				'request'      => [
 					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
@@ -430,7 +430,7 @@ class LabelPrint {
 			$response = $this->soapApiClient->packetCourierNumber( $request );
 			if ( $response->hasFault() ) {
 				if ( $response->hasWrongPassword() ) {
-					$this->messageManager->flash_message( __( 'pleaseSetProperPassword', 'packetery' ), MessageManager::TYPE_ERROR );
+					$this->messageManager->flash_message( __( 'Please set proper API password.', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
 
 					return [];
 				}
@@ -438,7 +438,7 @@ class LabelPrint {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'carrierNumberRetrievingErrorLogTitle', 'packetery' );
+				$record->title  = __( 'Carrier number retrieving error', PACKETERY_LANG_DOMAIN );
 				$record->params = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),

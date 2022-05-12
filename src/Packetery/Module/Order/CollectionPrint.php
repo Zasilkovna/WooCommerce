@@ -113,7 +113,7 @@ class CollectionPrint {
 		}
 
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), 'info' );
+			$this->messageManager->flash_message( __( 'No orders were selected', PACKETERY_LANG_DOMAIN ), 'info' );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -136,7 +136,7 @@ class CollectionPrint {
 
 		if ( ! $packetIds ) {
 			delete_transient( self::getOrderIdsTransientName() );
-			$this->messageManager->flash_message( __( 'selectedOrdersHaveNoPacketId', 'packetery' ), 'info' );
+			$this->messageManager->flash_message( __( 'Selected orders have no packet id', PACKETERY_LANG_DOMAIN ), 'info' );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -150,7 +150,7 @@ class CollectionPrint {
 
 		if ( $shipmentResult->hasFault() ) {
 			delete_transient( self::getOrderIdsTransientName() );
-			$this->messageManager->flash_message( __( 'unexpectedError', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Unexpected error', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -159,7 +159,7 @@ class CollectionPrint {
 		$shipmentBarcodeResult = $this->requestBarcodePng( $shipmentResult->getBarcode() );
 		delete_transient( self::getOrderIdsTransientName() );
 		if ( $shipmentBarcodeResult->hasFault() ) {
-			$this->messageManager->flash_message( __( 'unexpectedError', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Unexpected error', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -190,8 +190,8 @@ class CollectionPrint {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'orderCollectionPrintMenuSlugLabel', 'packetery' ),
-			__( 'orderCollectionPrintMenuSlugLabel', 'packetery' ),
+			__( 'Print AWB', 'packetery' ),
+			__( 'Print AWB', 'packetery' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			[

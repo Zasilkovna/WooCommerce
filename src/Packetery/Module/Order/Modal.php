@@ -85,12 +85,12 @@ class Modal {
 	 */
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
-		$form->addText( 'packetery_weight', __( 'weight', 'packetery' ) . ' (kg)' )
+		$form->addText( 'packetery_weight', __( 'Weight', PACKETERY_LANG_DOMAIN ) . ' (kg)' )
 			->setRequired( false )
 			->addRule( Form::FLOAT );
 
-		$form->addSubmit( 'submit', __( 'save', 'packetery' ) );
-		$form->addButton( 'cancel', __( 'cancel', 'packetery' ) );
+		$form->addSubmit( 'submit', __( 'Save', PACKETERY_LANG_DOMAIN ) );
+		$form->addButton( 'cancel', __( 'Cancel', PACKETERY_LANG_DOMAIN ) );
 
 		$form->setDefaults(
 			[

@@ -54,8 +54,8 @@ class Page {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'logsPageTitle', 'packetery' ),
-			__( 'logsPageTitle', 'packetery' ),
+			__( 'Log', PACKETERY_LANG_DOMAIN ),
+			__( 'Log', PACKETERY_LANG_DOMAIN ),
 			'manage_options',
 			self::SLUG,
 			[ $this, 'render' ]
@@ -67,20 +67,20 @@ class Page {
 	 */
 	public function render(): void {
 		$translatedActions = [
-			Record::ACTION_PACKET_SENDING            => __( 'logAction_packet-sending', 'packetery' ),
-			Record::ACTION_CARRIER_LABEL_PRINT       => __( 'logAction_carrier-label-print', 'packetery' ),
-			Record::ACTION_LABEL_PRINT               => __( 'logAction_label-print', 'packetery' ),
-			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'logAction_carrier-list-update', 'packetery' ),
-			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'logAction_carrier-number-retrieving', 'packetery' ),
-			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'logAction_carrier-table-not-created', 'packetery' ),
-			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'logAction_order-table-not-created', 'packetery' ),
-			Record::ACTION_SENDER_VALIDATION         => __( 'logAction_sender-validation', 'packetery' ),
-			Record::ACTION_PACKET_STATUS_SYNC        => __( 'logAction_packet-status-sync', 'packetery' ),
+			Record::ACTION_PACKET_SENDING            => __( 'Packet sending', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_CARRIER_LABEL_PRINT       => __( 'Carrier label print', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_LABEL_PRINT               => __( 'Label print', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'Carrier list update', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'Getting external carrier tracking number', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'Carrier table was not created', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'Order table was not created', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_SENDER_VALIDATION         => __( 'Sender validation', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_PACKET_STATUS_SYNC        => __( 'Packet status synchronization', PACKETERY_LANG_DOMAIN ),
 		];
 
 		$translatedStatuses = [
-			Record::STATUS_ERROR   => __( 'statusError', 'packetery' ),
-			Record::STATUS_SUCCESS => __( 'statusSuccess', 'packetery' ),
+			Record::STATUS_ERROR   => __( 'Error', PACKETERY_LANG_DOMAIN ),
+			Record::STATUS_SUCCESS => __( 'Success', PACKETERY_LANG_DOMAIN ),
 		];
 
 		$rows = $this->logger->getRecords( [ 'date' => 'DESC' ] );

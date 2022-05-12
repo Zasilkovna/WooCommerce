@@ -69,7 +69,7 @@ class Downloader {
 			return [
 				strtr(
 				// translators: keep %failReason placeholder intact.
-					__( 'Carrier download failed: %failReason Please try again later.', 'packetery' ),
+					__( 'Carrier download failed: %failReason Please try again later.', PACKETERY_LANG_DOMAIN ),
 					array( '%failReason' => $e->getMessage() )
 				),
 				'error',
@@ -79,8 +79,8 @@ class Downloader {
 			return [
 				strtr(
 				// translators: keep %failReason placeholder intact.
-					__( 'Carrier download failed: %failReason Please try again later.', 'packetery' ),
-					array( '%failReason' => __( 'Failed to get the list.', 'packetery' ) )
+					__( 'Carrier download failed: %failReason Please try again later.', PACKETERY_LANG_DOMAIN ),
+					array( '%failReason' => __( 'Failed to get the list.', PACKETERY_LANG_DOMAIN ) )
 				),
 				'error',
 			];
@@ -90,8 +90,8 @@ class Downloader {
 			return [
 				strtr(
 				// translators: keep %failReason placeholder intact.
-					__( 'Carrier download failed: %failReason Please try again later.', 'packetery' ),
-					array( '%failReason' => __( 'Invalid API response.', 'packetery' ) )
+					__( 'Carrier download failed: %failReason Please try again later.', PACKETERY_LANG_DOMAIN ),
+					array( '%failReason' => __( 'Invalid API response.', PACKETERY_LANG_DOMAIN ) )
 				),
 				'error',
 			];
@@ -100,7 +100,7 @@ class Downloader {
 		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( DATE_ATOM ) );
 
 		return [
-			__( 'Carriers were updated.', 'packetery' ),
+			__( 'Carriers were updated.', PACKETERY_LANG_DOMAIN ),
 			'success',
 		];
 	}

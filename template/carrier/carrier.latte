@@ -5,7 +5,7 @@
 
 	{if $carrier->requiresCustomsDeclarations()}
 		<div class="notice notice-info">
-			<p>{__( 'cannotUseThisCarrierBecauseRequiresCustomsDeclaration', 'packetery' )}</p>
+			<p>{$translations['cannotUseThisCarrierBecauseRequiresCustomsDeclaration']}</p>
 		</div>
 	{elseif isset($carrier_data['form'])}
 
@@ -34,7 +34,7 @@
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
 					</div>
 				</div>
-				<button type="button" data-replication-delete class="button">{__( 'Delete', 'packetery' )}</button>
+				<button type="button" data-replication-delete class="button">{$translations['delete']}</button>
 			</td>
 		</tr>
 	{/define}
@@ -43,7 +43,7 @@
 		{var $container = $form['weight_limits']}
 		<tr>
 			<th scope="row">
-				<label>{__( 'Weight rules', 'packetery' )}:</label>
+				<label>{$translation['weightRules']}:</label>
 			</th>
 			<td class="js-weight-rules">
 				<table>
@@ -54,7 +54,7 @@
 					</tbody>
 				</table>
 
-				<button type="button" data-replication-add class="button">{__( 'Add weight rule', 'packetery' )}</button>
+				<button type="button" data-replication-add class="button">{$translations['addWeightRule']}</button>
 			</td>
 		</tr>
 	{/define}
@@ -84,7 +84,7 @@
 						<p class="packetery-input-validation-message help-block text-danger" id="{$container[$id][surcharge]->getHtmlId() . '_message'}">{inputError surcharge}</p>
 					</div>
 				</div>
-				<button type="button" data-replication-delete class="button">{__( 'Delete', 'packetery' )}</button>
+				<button type="button" data-replication-delete class="button">{$translations['delete']}</button>
 			</td>
 		</tr>
 	{/define}
@@ -93,7 +93,7 @@
 		{var $container = $form['surcharge_limits']}
 		<tr>
 			<th scope="row">
-				<label>{__( 'COD surcharge rules', 'packetery' )}:</label>
+				<label>{$translations['codSurchargeRules']}:</label>
 			</th>
 			<td class="js-surcharge-rules">
 				<table>
@@ -104,7 +104,7 @@
 					</tbody>
 				</table>
 
-				<button type="button" data-replication-add class="button">{__( 'Add COD surcharge rule', 'packetery' )}</button>
+				<button type="button" data-replication-add class="button">{$translations['addCodSurchargeRule']}</button>
 			</td>
 		</tr>
 	{/define}
@@ -162,7 +162,7 @@
 						</div>
 						<p class="packetery-input-validation-message help-block text-danger" id="{$form[free_shipping_limit]->getHtmlId() . '_message'}">{inputError free_shipping_limit}</p>
 						<p>
-							{__( 'After exceeding this amount, shipping is free.', 'packetery' )}
+							{$translations['afterExceedingThisAmountShippingIsFree']}
 						</p>
 					</td>
 				</tr>
@@ -174,7 +174,7 @@
 					<td>
 						<select n:name=address_validation></select>
 						<p>
-							{__( 'addressValidationDescription', 'packetery' )}
+							{$translations['addressValidationDescription']}
 						</p>
 					</td>
 				</tr>
@@ -182,7 +182,7 @@
 			</table>
 
 			<p class="submit">
-				<input n:name=save type="submit" id="submit" value="{__( 'Save Changes' )}"
+				<input n:name=save type="submit" id="submit" value="{$translations['saveChanges']}"
 					   class="button button-primary">
 			</p>
 

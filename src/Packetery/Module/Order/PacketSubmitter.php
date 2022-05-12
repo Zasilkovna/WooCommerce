@@ -100,7 +100,7 @@ class PacketSubmitter {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'packetSendingErrorLogTitle', 'packetery' );
+				$record->title  = __( 'Packet sending error', PACKETERY_LANG_DOMAIN );
 				$record->params = [
 					'orderId'      => $orderData['id'],
 					'errorMessage' => $e->getMessage(),
@@ -117,7 +117,7 @@ class PacketSubmitter {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'packetSendingErrorLogTitle', 'packetery' );
+				$record->title  = __( 'Packet sending error', PACKETERY_LANG_DOMAIN );
 				$record->params = [
 					'request'      => $createPacketRequest->getSubmittableData(),
 					'errorMessage' => $response->getErrorsAsString(),
@@ -135,7 +135,7 @@ class PacketSubmitter {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_SUCCESS;
-				$record->title  = __( 'packetSendingSuccessLogTitle', 'packetery' );
+				$record->title  = __( 'Packet sending success', PACKETERY_LANG_DOMAIN );
 				$record->params = [
 					'packetId' => $response->getId(),
 				];

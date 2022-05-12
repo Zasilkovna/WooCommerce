@@ -61,10 +61,10 @@ class BulkActions {
 	 * @return array
 	 */
 	public function addActions( array $actions ): array {
-		$actions['submit_to_api']                                  = __( 'actionSubmitOrders', 'packetery' );
-		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'actionPrintLabels', 'packetery' );
-		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'actionPrintCarrierLabels', 'packetery' );
-		$actions[ CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ] = __( 'actionPrintOrderCollection', 'packetery' );
+		$actions['submit_to_api']                                  = __( 'Submit orders to Packeta', PACKETERY_LANG_DOMAIN );
+		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'Print labels', PACKETERY_LANG_DOMAIN );
+		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'Print carrier labels', PACKETERY_LANG_DOMAIN );
+		$actions[ CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ] = __( 'Print AWB', PACKETERY_LANG_DOMAIN );
 
 		return $actions;
 	}
@@ -136,17 +136,20 @@ class BulkActions {
 
 		$success = null;
 		if ( is_numeric( $get['success'] ) && $get['success'] > 0 ) {
-			$success = __( 'shipmentsSubmittedSuccessfully', 'packetery' );
+			$success = __( 'Shipments were submitted successfully.', PACKETERY_LANG_DOMAIN );
 		}
 		$ignored = null;
 		if ( is_numeric( $get['ignored'] ) && $get['ignored'] > 0 ) {
 			// translators: %s is count.
-			$ignored = sprintf( __( 'someShipments%sSkipped', 'packetery' ), $get['ignored'] );
+			$ignored = sprintf(
+				__( 'Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders).', PACKETERY_LANG_DOMAIN ),
+				$get['ignored']
+			);
 		}
 		$errors = null;
 		if ( is_numeric( $get['errors'] ) && $get['errors'] > 0 ) {
 			// translators: %s is count.
-			$errors = sprintf( __( 'someShipments%sFailed', 'packetery' ), $get['errors'] );
+			$errors = sprintf( __( 'Some shipments (%s in total) failed to be submitted to Packeta.', PACKETERY_LANG_DOMAIN ), $get['errors'] );
 		} elseif ( isset( $get['errors'] ) ) {
 			$errors = $get['errors'];
 		}
