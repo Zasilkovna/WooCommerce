@@ -63,6 +63,13 @@ class GridExtender {
 	private $orderRepository;
 
 	/**
+	 * Packet synchronizer.
+	 *
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param Helper             $helper                Helper.
@@ -71,6 +78,7 @@ class GridExtender {
 	 * @param Request            $httpRequest           Http Request.
 	 * @param ControllerRouter   $orderControllerRouter Order controller router.
 	 * @param Repository         $orderRepository       Order repository.
+	 * @param PacketSynchronizer $packetSynchronizer    Packet synchronizer.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -78,7 +86,8 @@ class GridExtender {
 		Engine $latteEngine,
 		Request $httpRequest,
 		ControllerRouter $orderControllerRouter,
-		Repository $orderRepository
+		Repository $orderRepository,
+		PacketSynchronizer $packetSynchronizer
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;
@@ -86,6 +95,7 @@ class GridExtender {
 		$this->httpRequest           = $httpRequest;
 		$this->orderControllerRouter = $orderControllerRouter;
 		$this->orderRepository       = $orderRepository;
+		$this->packetSynchronizer    = $packetSynchronizer;
 	}
 
 	/**
@@ -222,47 +232,9 @@ class GridExtender {
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $this->getPacketStatusTranslated( $order->getPacketStatus() ) );
+				echo esc_html( $this->packetSynchronizer->getPacketStatusTranslated( $order->getPacketStatus() ) );
 				break;
 		}
-	}
-
-	/**
-	 * Gets code text translated.
-	 *
-	 * @param string|null $packetStatus Packet status.
-	 *
-	 * @return string|null
-	 */
-	public function getPacketStatusTranslated( ?string $packetStatus ): string {
-		switch ( $packetStatus ) {
-			case 'received data':
-				return __( 'packetStatusReceivedData', 'packetery' );
-			case 'arrived':
-				return __( 'packetStatusArrived', 'packetery' );
-			case 'prepared for departure':
-				return __( 'packetStatusPreparedForDeparture', 'packetery' );
-			case 'departed':
-				return __( 'packetStatusDeparted', 'packetery' );
-			case 'ready for pickup':
-				return __( 'packetStatusReadyForPickup', 'packetery' );
-			case 'handed to carrier':
-				return __( 'packetStatusHandedToCarrier', 'packetery' );
-			case 'delivered':
-				return __( 'packetStatusDelivered', 'packetery' );
-			case 'posted back':
-				return __( 'packetStatusPostedBack', 'packetery' );
-			case 'returned':
-				return __( 'packetStatusReturned', 'packetery' );
-			case 'cancelled':
-				return __( 'packetStatusCancelled', 'packetery' );
-			case 'collected':
-				return __( 'packetStatusCollected', 'packetery' );
-			case 'unknown':
-				return __( 'packetStatusUnknown', 'packetery' );
-		}
-
-		return (string) $packetStatus;
 	}
 
 	/**
@@ -279,7 +251,7 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
-				$new_columns['packetery_packet_status'] = __( 'Packeta packet status', 'packetery' );
+				$new_columns['packetery_packet_status'] = __( 'Packeta packet status', 'packeta' );
 				$new_columns['packetery']               = __( 'Packeta', 'packetery' );
 				$new_columns['packetery_packet_id']     = __( 'Barcode', 'packetery' );
 				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packetery' );

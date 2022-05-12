@@ -16,7 +16,11 @@ namespace Packetery\Module\Options;
  */
 class Provider {
 
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT = 100;
+	const OPTION_NAME_PACKETERY      = 'packetery';
+	const OPTION_NAME_PACKETERY_SYNC = 'packetery_sync';
+
+	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
+	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 
 	/**
 	 *  Options data.
@@ -26,33 +30,63 @@ class Provider {
 	private $data;
 
 	/**
+	 * Sync data.
+	 *
+	 * @var array
+	 */
+	private $syncData;
+
+	/**
 	 * Provider constructor.
 	 */
 	public function __construct() {
-		$data = get_option( 'packetery' );
+		$data = get_option( self::OPTION_NAME_PACKETERY );
 		if ( ! $data ) {
 			$data = array();
 		}
 
-		$this->data = $data;
+		$syncData = get_option( self::OPTION_NAME_PACKETERY_SYNC );
+		if ( ! $syncData ) {
+			$syncData = [];
+		}
+
+		$this->data     = $data;
+		$this->syncData = $syncData;
 	}
 
 	/**
 	 * Casts data to array.
+	 *
+	 * @param string $optionName Option name of settings.
 	 *
 	 * @return array Data.
 	 */
-	public function data_to_array(): array {
-		return $this->data;
+	public function data_to_array( ?string $optionName = null ): array {
+		if ( self::OPTION_NAME_PACKETERY === $optionName ) {
+			return $this->data;
+		}
+
+		if ( self::OPTION_NAME_PACKETERY_SYNC === $optionName ) {
+			return $this->syncData;
+		}
+
+		if ( null === $optionName ) {
+			return [
+				self::OPTION_NAME_PACKETERY      => $this->data,
+				self::OPTION_NAME_PACKETERY_SYNC => $this->syncData,
+			];
+		}
 	}
 
 	/**
-	 * Casts data to array.
+	 * Tells if provider has any data,
+	 *
+	 * @param string $optionName Option name of settings.
 	 *
 	 * @return bool Has any data.
 	 */
-	public function has_any(): bool {
-		return ! empty( $this->data );
+	public function has_any( string $optionName ): bool {
+		return ! empty( $this->data_to_array( $optionName ) );
 	}
 
 	/**
@@ -154,12 +188,54 @@ class Provider {
 	 * @return int
 	 */
 	public function getMaxStatusSyncingPackets(): int {
-		$value = $this->get( 'max_status_syncing_packets' );
+		$value = ( $this->syncData['max_status_syncing_packets'] ?? null );
 		if ( is_numeric( $value ) ) {
 			return (int) $value;
 		}
 
 		return self::MAX_STATUS_SYNCING_PACKETS_DEFAULT;
+	}
+
+	/**
+	 * Max days of packet status syncing.
+	 *
+	 * @return int
+	 */
+	public function getMaxDaysOfPacketStatusSyncing(): int {
+		$value = ( $this->syncData['max_days_of_packet_status_syncing'] ?? null );
+		if ( is_numeric( $value ) ) {
+			return (int) $value;
+		}
+
+		return self::MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT;
+	}
+
+	/**
+	 * Status syncing order statuses.
+	 *
+	 * @return array
+	 */
+	public function getStatusSyncingOrderStatuses(): array {
+		$value = ( $this->syncData['status_syncing_order_statuses'] ?? null );
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		return [];
+	}
+
+	/**
+	 * Status syncing packet statuses.
+	 *
+	 * @return array
+	 */
+	public function getStatusSyncingPacketStatuses(): array {
+		$value = ( $this->syncData['status_syncing_packet_statuses'] ?? null );
+		if ( is_array( $value ) ) {
+			return $value;
+		}
+
+		return [];
 	}
 
 	/**

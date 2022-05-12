@@ -334,6 +334,7 @@ class Plugin {
 		register_deactivation_hook(
 			$this->main_file_path,
 			static function () {
+				wp_clear_scheduled_hook( 'packetery_cron_packet_status_sync_hook' );
 			}
 		);
 
@@ -372,7 +373,7 @@ class Plugin {
 
 		add_action( 'packetery_cron_packet_status_sync_hook', [ $this->packetSynchronizer, 'syncStatuses' ] );
 		if ( ! wp_next_scheduled( 'packetery_cron_packet_status_sync_hook' ) ) {
-			wp_schedule_event( ( new \DateTime( '03:00:00', wp_timezone() ) )->getTimestamp(), 'daily', 'packetery_cron_packet_status_sync_hook' );
+			wp_schedule_event( ( new \DateTime( 'next day 03:00:00', wp_timezone() ) )->getTimestamp(), 'daily', 'packetery_cron_packet_status_sync_hook' );
 		}
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );

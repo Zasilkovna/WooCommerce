@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Order\PacketSynchronizer;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -34,8 +35,9 @@ class Page {
 
 	public const SLUG = 'packeta-options';
 
-	public const TAB_GENERAL = 'general';
-	public const TAB_SUPPORT = 'support';
+	public const TAB_GENERAL            = 'general';
+	public const TAB_SUPPORT            = 'support';
+	public const TAB_PACKET_STATUS_SYNC = 'packet-status-sync';
 
 	public const PARAM_TAB = 'tab';
 
@@ -89,24 +91,33 @@ class Page {
 	private $httpRequest;
 
 	/**
+	 * Packet synchronizer.
+	 *
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine                          $latte_engine    PacketeryLatte_engine.
-	 * @param Provider                        $optionsProvider Options provider.
-	 * @param FormFactory                     $formFactory     Form factory.
-	 * @param \Packetery\Core\Api\Soap\Client $packetaClient   Packeta Client.
-	 * @param Log\ILogger                     $logger          Logger.
-	 * @param MessageManager                  $messageManager  Message manager.
-	 * @param \PacketeryNette\Http\Request    $httpRequest     HTTP request.
+	 * @param Engine                          $latte_engine       PacketeryLatte_engine.
+	 * @param Provider                        $optionsProvider    Options provider.
+	 * @param FormFactory                     $formFactory        Form factory.
+	 * @param \Packetery\Core\Api\Soap\Client $packetaClient      Packeta Client.
+	 * @param Log\ILogger                     $logger             Logger.
+	 * @param MessageManager                  $messageManager     Message manager.
+	 * @param \PacketeryNette\Http\Request    $httpRequest        HTTP request.
+	 * @param PacketSynchronizer              $packetSynchronizer Packet synchronizer.
 	 */
-	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, \Packetery\Core\Api\Soap\Client $packetaClient, Log\ILogger $logger, MessageManager $messageManager, \PacketeryNette\Http\Request $httpRequest ) {
-		$this->latte_engine    = $latte_engine;
-		$this->optionsProvider = $optionsProvider;
-		$this->formFactory     = $formFactory;
-		$this->packetaClient   = $packetaClient;
-		$this->logger          = $logger;
-		$this->messageManager  = $messageManager;
-		$this->httpRequest     = $httpRequest;
+	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, \Packetery\Core\Api\Soap\Client $packetaClient, Log\ILogger $logger, MessageManager $messageManager, \PacketeryNette\Http\Request $httpRequest, PacketSynchronizer $packetSynchronizer ) {
+		$this->latte_engine       = $latte_engine;
+		$this->optionsProvider    = $optionsProvider;
+		$this->formFactory        = $formFactory;
+		$this->packetaClient      = $packetaClient;
+		$this->logger             = $logger;
+		$this->messageManager     = $messageManager;
+		$this->httpRequest        = $httpRequest;
+		$this->packetSynchronizer = $packetSynchronizer;
 	}
 
 	/**
@@ -147,6 +158,150 @@ class Page {
 		$value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 		$value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] = self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT;
 		update_option( self::FORM_FIELDS_CONTAINER, $value );
+	}
+
+	/**
+	 * Get chosen keys by hashed choice data.
+	 *
+	 * @param array $choiceData Choice data.
+	 * @param array $chosenHashedFormOrderStatuses Picked items.
+	 *
+	 * @return array
+	 */
+	private function getChosenKeys( array $choiceData, array $chosenHashedFormOrderStatuses ): array {
+		$statuses = [];
+		foreach ( $chosenHashedFormOrderStatuses as $hash => $chosen ) {
+			if ( $chosen ) {
+				$statuses[] = $choiceData[ $hash ]['key'];
+			}
+		}
+
+		return $statuses;
+	}
+
+	/**
+	 * Gets all packet statuses.
+	 *
+	 * @return array
+	 */
+	public function getPacketStatusesChoiceData(): array {
+		$statuses = $this->packetSynchronizer->getPacketStatuses();
+
+		$result = [];
+
+		foreach ( $statuses as $status ) {
+			$result[ md5( $status ) ] = [
+				'key'   => $status,
+				'label' => $this->packetSynchronizer->getPacketStatusTranslated( $status ),
+			];
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Gets order statuses for form.
+	 *
+	 * @return array
+	 */
+	public function getOrderStatusesChoiceData(): array {
+		$orderStatuses            = wc_get_order_statuses();
+		$orderStatusesTransformed = [];
+
+		foreach ( $orderStatuses as $orderStatusKey => $orderStatusLabel ) {
+			$orderStatusesTransformed[ md5( $orderStatusKey ) ] = [
+				'key'   => $orderStatusKey,
+				'label' => $orderStatusLabel,
+			];
+		}
+
+		return $orderStatusesTransformed;
+	}
+
+	/**
+	 * Creates settings form.
+	 *
+	 * @return Form
+	 */
+	private function createPacketStatusSyncForm(): Form {
+		$form     = $this->formFactory->create( 'packetery_packet_status_sync_form' );
+		$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_SYNC );
+
+		$form->addText( 'max_status_syncing_packets', __( 'Max packet status syncing packets', 'packeta' ) )
+				->setRequired( false )
+				->addRule( Form::INTEGER )
+				->addRule( Form::MIN, null, 0 )
+				->setDefaultValue( Provider::MAX_STATUS_SYNCING_PACKETS_DEFAULT );
+
+		$form->addText( 'max_days_of_packet_status_syncing', __( 'Max days of packet status syncing', 'packeta' ) )
+				->setRequired( false )
+				->addRule( Form::INTEGER )
+				->addRule( Form::MIN, null, 0 )
+				->setDefaultValue( Provider::MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT );
+
+		$orderStatusesTransformed = $this->getOrderStatusesChoiceData();
+		$orderStatusesContainer   = $form->addContainer( 'status_syncing_order_statuses' );
+
+		foreach ( $orderStatusesTransformed as $orderStatusKeyHash => $orderStatusData ) {
+			$item = $orderStatusesContainer->addCheckbox( $orderStatusKeyHash, $orderStatusData['label'] );
+			if ( isset( $defaults['status_syncing_order_statuses'] ) && in_array( $orderStatusData['key'], $defaults['status_syncing_order_statuses'], true ) ) {
+				$item->setDefaultValue( true );
+			}
+		}
+		unset( $defaults['status_syncing_order_statuses'] );
+
+		$packetStatuses          = $this->getPacketStatusesChoiceData();
+		$packetStatusesContainer = $form->addContainer( 'status_syncing_packet_statuses' );
+
+		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
+			$item = $packetStatusesContainer->addCheckbox( $packetStatusHash, $packetStatusData['label'] );
+			if ( isset( $defaults['status_syncing_packet_statuses'] ) && in_array( $packetStatusData['key'], $defaults['status_syncing_packet_statuses'], true ) ) {
+				$item->setDefaultValue( true );
+			}
+		}
+		unset( $defaults['status_syncing_packet_statuses'] );
+
+		$form->setDefaults( $defaults );
+
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
+
+		$form->onSuccess[] = [ $this, 'onPacketStatusSyncFormSuccess' ];
+
+		return $form;
+	}
+
+	/**
+	 * On packet status sync form success.
+	 *
+	 * @param Form  $form Form.
+	 * @param array $values Values.
+	 *
+	 * @return void
+	 */
+	public function onPacketStatusSyncFormSuccess( Form $form, array $values ): void {
+
+		$values['status_syncing_order_statuses']  = $this->getChosenKeys(
+			$this->getOrderStatusesChoiceData(),
+			$values['status_syncing_order_statuses']
+		);
+		$values['status_syncing_packet_statuses'] = $this->getChosenKeys(
+			$this->getPacketStatusesChoiceData(),
+			$values['status_syncing_packet_statuses']
+		);
+
+		if ( '' === $values['max_status_syncing_packets'] ) {
+			unset( $values['max_status_syncing_packets'] );
+		}
+
+		if ( '' === $values['max_days_of_packet_status_syncing'] ) {
+			unset( $values['max_days_of_packet_status_syncing'] );
+		}
+
+		update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $values );
+
+		if ( wp_safe_redirect( $this->createLink( self::TAB_PACKET_STATUS_SYNC ) ) ) {
+			exit;
+		}
 	}
 
 	/**
@@ -196,17 +351,11 @@ class Page {
 					->addRule( Form::MIN, null, 0 )
 					->setDefaultValue( 0 );
 
-		$container->addText( 'max_status_syncing_packets', __( 'Max status syncing packets', 'packetery' ) )
-			->setRequired( true )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
-			->setDefaultValue( Provider::MAX_STATUS_SYNCING_PACKETS_DEFAULT );
-
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packetery' ) )
 			->setRequired( false );
 
-		if ( $this->optionsProvider->has_any() ) {
-			$container->setDefaults( $this->optionsProvider->data_to_array() );
+		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
+			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
 		}
 
 		return $form;
@@ -354,13 +503,26 @@ class Page {
 				exit;
 			}
 		}
+
+		$packetStatusSyncForm = $this->createPacketStatusSyncForm();
+		if ( $packetStatusSyncForm['save']->isSubmittedBy() ) {
+			$packetStatusSyncForm->fireEvents();
+		}
 	}
 
 	/**
 	 *  Renders page.
 	 */
 	public function render(): void {
-		$latteParams = [ 'form' => $this->create_form() ];
+		$activeTab = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
+
+		$latteParams = [];
+		if ( self::TAB_PACKET_STATUS_SYNC === $activeTab ) {
+			$latteParams = [ 'form' => $this->createPacketStatusSyncForm() ];
+		} elseif ( self::TAB_GENERAL === $activeTab ) {
+			$latteParams = [ 'form' => $this->create_form() ];
+		}
+
 		if ( ! extension_loaded( 'soap' ) ) {
 			$latteParams['error'] = __( 'This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator.', 'packetery' );
 		}
@@ -376,13 +538,27 @@ class Page {
 			'</a>'
 		);
 
-		$latteParams['exportLink'] = add_query_arg(
+		$latteParams['exportLink']              = add_query_arg(
 			[
 				'page'   => self::SLUG,
 				'action' => Exporter::ACTION_EXPORT_SETTINGS,
 			],
 			get_admin_url( null, 'admin.php' )
 		);
+		$latteParams['activeTab']               = $activeTab;
+		$latteParams['generalTabLink']          = $this->createLink();
+		$latteParams['supportTabLink']          = $this->createLink( self::TAB_SUPPORT );
+		$latteParams['packetStatusSyncTabLink'] = $this->createLink( self::TAB_PACKET_STATUS_SYNC );
+
+		$translations                                    = [];
+		$translations['packetStatusSyncTabLinkLabel']    = __( 'Automatic packet status loading', 'packeta' );
+		$translations['statusSyncingOrderStatusesLabel'] = __( 'Packet status syncing order statuses', 'packeta' );
+		$translations['statusSyncingOrderStatusesDescription'] = __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' );
+
+		$translations['statusSyncingPacketStatusesLabel']       = __( 'Packet status syncing packet statuses', 'packeta' );
+		$translations['statusSyncingPacketStatusesDescription'] = __( 'If an order has a shipment with one of these selected statuses, the shipment status will be tracked.', 'packeta' );
+
+		$latteParams['translations'] = $translations;
 
 		$latteParams['canValidateSender']    = (bool) $this->optionsProvider->get_sender();
 		$latteParams['senderValidationLink'] = add_query_arg(

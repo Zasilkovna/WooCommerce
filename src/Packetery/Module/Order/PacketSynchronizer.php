@@ -75,7 +75,12 @@ class PacketSynchronizer {
 	 * @return void
 	 */
 	public function syncStatuses(): void {
-		$results = $this->orderRepository->findStatusSyncingOrders( $this->optionsProvider->getMaxStatusSyncingPackets() );
+		$results = $this->orderRepository->findStatusSyncingOrders(
+			$this->optionsProvider->getStatusSyncingPacketStatuses(),
+			$this->optionsProvider->getStatusSyncingOrderStatuses(),
+			$this->optionsProvider->getMaxDaysOfPacketStatusSyncing(),
+			$this->optionsProvider->getMaxStatusSyncingPackets()
+		);
 
 		foreach ( $results as $order ) {
 			$packetId = $order->getPacketId();
@@ -109,5 +114,65 @@ class PacketSynchronizer {
 			$order->setPacketStatus( $response->getCodeText() );
 			$this->orderRepository->save( $order );
 		}
+	}
+
+	/**
+	 * Gets code text translated.
+	 *
+	 * @param string|null $packetStatus Packet status.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketStatusTranslated( ?string $packetStatus ): string {
+		switch ( $packetStatus ) {
+			case 'received data':
+				return __( 'packetStatusReceivedData', 'packetery' );
+			case 'arrived':
+				return __( 'packetStatusArrived', 'packetery' );
+			case 'prepared for departure':
+				return __( 'packetStatusPreparedForDeparture', 'packetery' );
+			case 'departed':
+				return __( 'packetStatusDeparted', 'packetery' );
+			case 'ready for pickup':
+				return __( 'packetStatusReadyForPickup', 'packetery' );
+			case 'handed to carrier':
+				return __( 'packetStatusHandedToCarrier', 'packetery' );
+			case 'delivered':
+				return __( 'packetStatusDelivered', 'packetery' );
+			case 'posted back':
+				return __( 'packetStatusPostedBack', 'packetery' );
+			case 'returned':
+				return __( 'packetStatusReturned', 'packetery' );
+			case 'cancelled':
+				return __( 'packetStatusCancelled', 'packetery' );
+			case 'collected':
+				return __( 'packetStatusCollected', 'packetery' );
+			case 'unknown':
+				return __( 'packetStatusUnknown', 'packetery' );
+		}
+
+		return (string) $packetStatus;
+	}
+
+	/**
+	 * Gets packet statuses.
+	 *
+	 * @return string[]
+	 */
+	public function getPacketStatuses(): array {
+		return [
+			'received data',
+			'arrived',
+			'prepared for departure',
+			'departed',
+			'ready for pickup',
+			'handed to carrier',
+			'delivered',
+			'posted back',
+			'returned',
+			'cancelled',
+			'collected',
+			'unknown',
+		];
 	}
 }
