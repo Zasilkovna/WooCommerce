@@ -37,6 +37,13 @@ class Checkout {
 	const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
 
 	/**
+	 * Tells if hidden fields should be rendered at default place.
+	 *
+	 * @var bool
+	 */
+	private $shouldRenderHiddenFieldsAtDefaultPlace = true;
+
+	/**
 	 * Pickup point attributes configuration.
 	 *
 	 * @var array[]
@@ -205,7 +212,9 @@ class Checkout {
 			return;
 		}
 
-		$this->renderHiddenInputFields();
+		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace ) {
+			$this->renderHiddenInputFields();
+		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
@@ -233,7 +242,7 @@ class Checkout {
 		static $hiddenInputsRendered = false;
 		static $hiddenFieldsRenderedFor = null;
 
-		if ( ! $hiddenInputsRendered || $shippingRate->get_id() === $hiddenFieldsRenderedFor ) {
+		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace && ( ! $hiddenInputsRendered || $shippingRate->get_id() === $hiddenFieldsRenderedFor ) ) {
 			$this->renderHiddenInputFields();
 			$hiddenInputsRendered = true;
 			$hiddenFieldsRenderedFor = $shippingRate->get_id();
@@ -526,6 +535,13 @@ class Checkout {
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
+		$activeTheme = strtolower( wp_get_theme()->get_stylesheet() );
+
+		if ( in_array( $activeTheme, [ 'divi', 'divi_child' ] ) ) {
+			add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
+			$this->shouldRenderHiddenFieldsAtDefaultPlace = false;
+		}
+
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
