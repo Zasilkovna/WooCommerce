@@ -22,22 +22,22 @@
                     <tbody>
                     <tr>
                         <td>
-                            <strong>{$translations['handoverPacketsHeading']}</strong><br>
+                            <strong>{__( 'handoverPacketsHeading', 'packetery' )}</strong><br>
                             {$shipmentBarcodeText}<br>
-                        {$translations['packetCount']}: {$orderCount}<br>
-                        {$translations['printedAt']}: {$printedAt|date:'d. m. Y'}<br>
+                        {__( 'packetCount', 'packetery' )}: {$orderCount}<br>
+                        {__( 'printedAt', 'packetery' )}: {$printedAt|date:'d. m. Y'}<br>
                         </td>
                         <td class="packetery-shipment-barcode">
                             <img src="{$shipmentBarcode|dataStream:'image/png'|nocheck}" alt="Shipment barcode">
                         </td>
                         <td>
-                            <strong>{$translations['sender']}</strong><br>
+                            <strong>{__( 'sender', 'packetery' )}</strong><br>
                             {$storeName}<br>
                             {$storeAddress->getStreet() ?? ''}<br>
                             {$storeAddress->getZip() ?? ''} {$storeAddress->getCity() ?? ''}
                         </td>
                         <td>
-                            <strong>{$translations['recipient']}</strong><br>
+                            <strong>{__( 'recipient', 'packetery' )}</strong><br>
                             Zásilkovna s.r.o.<br>
                             Lihovarská 1060/12<br>
                             190 00 Praha
@@ -48,12 +48,12 @@
             </td>
         </tr>
         <tr>
-            <th>{$translations['orderNumber']}</th>
-            <th>{$translations['barcode']}</th>
-            <th>{$translations['created']}</th>
-            <th>{$translations['nameAndSurname']}</th>
-            <th>{$translations['cod']}</th>
-            <th>{$translations['pickUpPointOrCarrier']}</th>
+            <th>{__( 'orderNumber', 'packetery' )}</th>
+            <th>{__( 'barcode', 'packetery' )}</th>
+            <th>{__( 'created', 'packetery' )}</th>
+            <th>{__( 'nameAndSurname', 'packetery' )}</th>
+            <th>{__( 'COD', 'packetery' )}</th>
+            <th>{__( 'Pick up point or carrier', 'packetery' )}</th>
         </tr>
         </thead>
         <tbody class="collection-print-table-body">
@@ -77,7 +77,7 @@
         <tr>
             <td>
                 <div class="packetery-end">
-                    {$translations['end']}
+                    {__( 'end', 'packetery' )}
                 </div>
             </td>
         </tr>

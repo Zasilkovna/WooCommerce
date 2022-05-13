@@ -4,9 +4,9 @@
         <div class="wc-backbone-modal-content">
             <section class="wc-backbone-modal-main" role="main">
                 <header class="wc-backbone-modal-header">
-                    <h1>{php esc_html_e( sprintf( $translations['order#%s'], '{{ data.order.id }}' ) )}</h1>
+                    <h1>{php esc_html_e( sprintf( __( 'Order #%s', 'woocommerce' ), '{{ data.order.id }}' ) )}</h1>
                     <div class="modal-close modal-close-link dashicons dashicons-no-alt">
-                        <span class="screen-reader-text">{$translations['closeModalPanel']}</span>
+                        <span class="screen-reader-text">{__( 'Close modal panel', 'woocommerce' )}</span>
                     </div>
                 </header>
                 <div class="notice is-dismissible hidden">

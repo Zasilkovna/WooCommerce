@@ -1,5 +1,5 @@
 <div class="packetery-options-page">
-	<h1>{$translations['packeta']} - {$translations['carriers']}</h1>
+	<h1>{__( 'Packeta', 'packetery' )} - {__( 'Carriers', 'packetery' )}</h1>
 
 	{if isset($carriersUpdate['result'])}
 		<div class="notice notice-{$carriersUpdate['resultClass']} is-dismissible">
@@ -10,41 +10,41 @@
 	{/if}
 
 	<div class="card">
-		<h2>{$translations['packeta']} - {$translations['carriersUpdate']}</h2>
+		<h2>{__( 'Packeta', 'packetery' )} - {__( 'carriersUpdate', 'packetery' )}</h2>
 
 		<p>
 			{if isset($carriersUpdate['lastUpdate'])}
-				{$translations['lastCarrierUpdateDatetime']}: {$carriersUpdate['lastUpdate']}
+				{__('lastCarrierUpdateDatetime', 'packetery')}: {$carriersUpdate['lastUpdate']}
 			{else}
-				{$translations['carrierListNeverDownloaded']}
+				{__('carrierListNeverDownloaded', 'packetery')}
 			{/if}
 		</p>
 
 		<p>
-			<a href="{$carriersUpdate['link']}" class="button button-primary">{$translations['runCarrierUpdate']}</a>
+			<a href="{$carriersUpdate['link']}" class="button button-primary">{__('runCarrierUpdate', 'packetery')}</a>
 		</p>
 	</div>
 
-	<h2>{$translations['packeta']} - {$translations['countries']}</h2>
+	<h2>{__( 'Packeta', 'packetery' )} - {__( 'Countries', 'packetery' )}</h2>
 
 	{if $countries}
 		<table>
 			<tr>
-				<th>{$translations['countryName']}</th>
-				<th>{$translations['countryCode']}</th>
-				<th>{$translations['activeCarrier']}</th>
-				<th>{$translations['action']}</th>
+				<th>{__( 'Country name', 'packetery' )}</th>
+				<th>{__( 'Country code', 'packetery' )}</th>
+				<th>{__( 'activeCarrier', 'packetery' )}</th>
+				<th>{__( 'Action', 'packetery' )}</th>
 			</tr>
 			{foreach $countries as $country}
 				<tr>
 					<td>{$country['name']}</td>
 					<td>{$country['code']|upper}</td>
 					<td>{implode(', ', $country['activeCarriers'])}</td>
-					<td><a class="button" href="{$country['url']}">{$translations['setUp']}</a></td>
+					<td><a class="button" href="{$country['url']}">{__( 'Set up', 'packetery' )}</a></td>
 				</tr>
 			{/foreach}
 		</table>
 	{else}
-		{$translations['noActiveCountries']}
+		{__( 'No active countries.', 'packetery' )}
 	{/if}
 </div>

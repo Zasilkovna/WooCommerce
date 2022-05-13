@@ -1,5 +1,5 @@
 <div id="packetery-options-page">
-    <h1>{$translations['packeta']} - {$translations['options']}</h1>
+    <h1>{__( 'Packeta', 'packetery' )} - {__( 'Options', 'packetery' )}</h1>
 
 	{if isset($error)}
 		<div class="notice notice-error">
@@ -14,7 +14,7 @@
         {php settings_fields('packetery')}
 
         <fieldset class="fieldset">
-            <legend>{$translations['general']}</legend>
+            <legend>{__( 'general', 'packetery' )}</legend>
             <table class="form-table" role="presentation">
                 <tr>
                     <th scope="row">
@@ -25,7 +25,7 @@
                         <div class="packetery-help-block">
                             <p>
                                 {phpComment 'translators: %s is URL.'}
-                                {sprintf( $translations['apiPasswordCanBeFoundAt%sUrl'], $apiPasswordLink )|noescape}
+                                {sprintf( __( 'apiPasswordCanBeFoundAt%sUrl', 'packetery' ), $apiPasswordLink )|noescape}
                             </p>
                         </div>
                     </td>
@@ -87,26 +87,26 @@
             </table>
         </fieldset>
         <p class="submit">
-            <input type="submit" name="submit" id="submit" value="{$translations['saveChanges']}" class="button button-primary">
+            <input type="submit" name="submit" id="submit" value="{__( 'Save Changes' )}" class="button button-primary">
             {if $canValidateSender}
-            <a href="{$senderValidationLink}" class="button">{$translations['validateSender']}</a>
+            <a href="{$senderValidationLink}" class="button">{__( 'validateSender', 'packetery' )}</a>
             {/if}
         </p>
     </form>
 
-    <h2>{$translations['support']}</h2>
+    <h2>{__( 'Support', 'packetery' )}</h2>
 
     <p>
-        {$translations['optionsExportInfo1']}
+        {__( 'optionsExportInfo1', 'packetery' )}
         <a href="https://client.packeta.com/support/">https://client.packeta.com/support/</a>
-        {$translations['optionsExportInfo2']}
+        {__( 'optionsExportInfo2', 'packetery' )}
     </p>
 
-    <p><a href="{$exportLink}" class="button">{$translations['exportPluginSettings']}</a></p>
+    <p><a href="{$exportLink}" class="button">{__( 'exportPluginSettings', 'packetery' )}</a></p>
 
     {if isset($lastExport)}
-        <p>{$translations['settingsExportDatetime']}: {$lastExport}</p>
+        <p>{__( 'settingsExportDatetime', 'packetery' )}: {$lastExport}</p>
     {else}
-        <p>{$translations['settingsNotYetExported']}</p>
+        <p>{__( 'settingsNotYetExported', 'packetery' )}</p>
     {/if}
 </div>

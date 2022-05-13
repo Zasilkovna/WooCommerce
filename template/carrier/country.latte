@@ -1,5 +1,5 @@
 <div class="packetery-options-page">
-	<h1>{$translations['packeta']} - {$translations['countryOptions']}: {$country_iso|upper}</h1>
+	<h1>{__( 'Packeta', 'packetery' )} - {__( 'Country options', 'packetery' )}: {$country_iso|upper}</h1>
 	{$flashMessages|noescape}
 	{php settings_errors()}
 
@@ -8,6 +8,6 @@
 			{include 'carrier.latte', carrier_data: $carrier_data}
 		{/foreach}
 	{else}
-		{$translations['noKnownCarrierForThisCountry']}
+		{__( 'No known carrier for this country.', 'packetery' )}
 	{/if}
 </div>

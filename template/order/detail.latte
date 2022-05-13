@@ -4,23 +4,23 @@
 <section class="packetery-order-detail">
 
 	{if $pickupPoint && $displayPickupPointInfo}
-		<h2 class="woocommerce-order-details__title">{$translations['packeta']} - {$translations['selectedPickupPoint']}</h2>
+		<h2 class="woocommerce-order-details__title">{__( 'Packeta', 'packetery' )} - {__( 'selectedPickupPoint', 'packetery' )}</h2>
 
 		<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
 			<tbody>
 			<tr>
-				<th scope="row">{$translations['pickupPointName']}</th>
+				<th scope="row">{__( 'pickupPointName', 'packetery' )}</th>
 				<td>
 					{$pickupPoint->getName()}
 					{if $pickupPoint->getUrl()}
 						<br>
 						<a class="button" target="_blank"
-						   href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetail']}</a>
+						   href="{$pickupPoint->getUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a>
 					{/if}
 				</td>
 			</tr>
 			<tr>
-				<th scope="row">{$translations['address']}</th>
+				<th scope="row">{__( 'Address', 'packetery' )}</th>
 				<td>
 					{$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}
 				</td>
@@ -30,12 +30,12 @@
 	{/if}
 
     {if $validatedDeliveryAddress}
-		<h2 class="woocommerce-order-details__title">{$translations['packeta']} - {$translations['validatedAddress']}</h2>
+		<h2 class="woocommerce-order-details__title">{__( 'Packeta', 'packetery' )} - {__( 'validatedAddress', 'packetery' )}</h2>
 
 		<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
 			<tbody>
 			<tr>
-				<th scope="row">{$translations['address']}</th>
+				<th scope="row">{__( 'Address', 'packetery' )}</th>
 				<td>
 					{$validatedDeliveryAddress->getStreet()} {$validatedDeliveryAddress->getHouseNumber()},
 					{$validatedDeliveryAddress->getZip()} {$validatedDeliveryAddress->getCity()}
