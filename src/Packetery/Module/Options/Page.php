@@ -398,6 +398,30 @@ class Page {
 		}
 
 		$latteParams['messages'] = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		$latteParams['translations'] = [
+			'packeta'                      => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
+			'options'                      => __( 'Options', PACKETERY_LANG_DOMAIN ),
+			'general'                      => __( 'General', PACKETERY_LANG_DOMAIN ),
+			'apiPasswordCanBeFoundAt%sUrl' => __( 'API password can be found at %s', PACKETERY_LANG_DOMAIN ),
+			'saveChanges'                  => __( 'Save Changes', PACKETERY_LANG_DOMAIN ),
+			'validateSender'               => __( 'Validate sender', PACKETERY_LANG_DOMAIN ),
+			'support'                      => __( 'Support', PACKETERY_LANG_DOMAIN ),
+			'optionsExportInfo1'           => __(
+				'By clicking the button, you will export the settings of your plugin into a '
+				. 'separate file. The export does not contain any sensitive information about '
+				. 'your e-shop. Please send the resulting file to the technical support of '
+				. 'Packeta (you can find the e-mail address here:',
+				PACKETERY_LANG_DOMAIN ),
+			'optionsExportInfo2'           => __(
+				') along with the description of your problem. For a better understanding of '
+				. 'your problem, we recommend adding screenshots, which show the problem (if '
+				. 'possible).',
+				PACKETERY_LANG_DOMAIN ),
+			'exportPluginSettings'         => __( 'Export the plugin settings', PACKETERY_LANG_DOMAIN ),
+			'settingsExportDatetime'       => __( 'Date and time of the last export of settings', PACKETERY_LANG_DOMAIN ),
+			'settingsNotYetExported'       => __( 'The settings have not been exported yet.', PACKETERY_LANG_DOMAIN ),
+		];
+
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}
 }

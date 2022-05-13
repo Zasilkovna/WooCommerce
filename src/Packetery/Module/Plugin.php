@@ -470,6 +470,21 @@ class Plugin {
 				'pickupPoint'              => $orderEntity->getPickupPoint(),
 				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
 				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
+				'translations' => [
+					'packeta'                => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
+					'pickupPointDetail'      => __( 'pickup point detail', PACKETERY_LANG_DOMAIN ),
+					'name'                   => __( 'Name', PACKETERY_LANG_DOMAIN ),
+					'address'                => __( 'Address', PACKETERY_LANG_DOMAIN ),
+					'pickupPointDetailCaps'  => __( 'Pickup Point Detail', PACKETERY_LANG_DOMAIN ),
+					'addressWasNotValidated' => __( 'Address was not validated', PACKETERY_LANG_DOMAIN ),
+					'validatedAddress'       => __( 'Validated address', PACKETERY_LANG_DOMAIN ),
+					'street'                 => __( 'Street', PACKETERY_LANG_DOMAIN ),
+					'houseNumber'            => __( 'House number', PACKETERY_LANG_DOMAIN ),
+					'city'                   => __( 'City', PACKETERY_LANG_DOMAIN ),
+					'zip'                    => __( 'Zip', PACKETERY_LANG_DOMAIN ),
+					'county'                 => __( 'County', PACKETERY_LANG_DOMAIN ),
+					'gps'                    => __( 'GPS', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 	}
@@ -497,6 +512,14 @@ class Plugin {
 				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+				'translations' => [
+					'packeta'             => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
+					'selectedPickupPoint' => __( 'Selected pickup point', PACKETERY_LANG_DOMAIN ),
+					'pickupPointName'     => __( 'Pickup point name', PACKETERY_LANG_DOMAIN ),
+					'pickupPointDetail'   => __( 'Pickup Point Detail', PACKETERY_LANG_DOMAIN ),
+					'validatedAddress'    => __( 'Validated address', PACKETERY_LANG_DOMAIN ),
+					'address'             => __( 'Address', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 	}
@@ -525,6 +548,19 @@ class Plugin {
 				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+				'translations' => [
+					'packeta'                  => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
+					'pickupPointDetail'        => __( 'Pickup Point Detail', PACKETERY_LANG_DOMAIN ),
+					'pickupPointName'          => __( 'Pickup Point Name', PACKETERY_LANG_DOMAIN ),
+					'link'                     => __( 'Link', PACKETERY_LANG_DOMAIN ),
+					'pointAddress'             => __( 'Point Address', PACKETERY_LANG_DOMAIN ),
+					'validatedDeliveryAddress' => __( 'validated delivery address', PACKETERY_LANG_DOMAIN ),
+					'street'                   => __( 'street', PACKETERY_LANG_DOMAIN ),
+					'houseNumber'              => __( 'House number', PACKETERY_LANG_DOMAIN ),
+					'city'                     => __( 'city', PACKETERY_LANG_DOMAIN ),
+					'zip'                      => __( 'zip', PACKETERY_LANG_DOMAIN ),
+					'county'                   => __( 'county', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 	}

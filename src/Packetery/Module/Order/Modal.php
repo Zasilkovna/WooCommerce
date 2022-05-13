@@ -74,6 +74,10 @@ class Modal {
 				'nonce'        => $nonce,
 				'orderSaveUrl' => $orderSaveUrl,
 				'form'         => $this->createForm(),
+				'translations' => [
+					'order#%s'        => __( 'Order #%s', PACKETERY_LANG_DOMAIN ),
+					'closeModalPanel' => __( 'Close modal panel', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 	}

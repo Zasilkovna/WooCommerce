@@ -154,6 +154,11 @@ class GridExtender {
 			[
 				'packeteryOrderType' => $this->httpRequest->getQuery( 'packetery_order_type' ),
 				'linkFilters'        => $linkFilters,
+				'translations' => [
+					'packetaMethodType'         => __( 'Packeta shipping method', PACKETERY_LANG_DOMAIN ),
+					'carrierPackets'            => __( 'Carrier packets', PACKETERY_LANG_DOMAIN ),
+					'packetaPickupPointPackets' => __( 'Packeta pickup points packets', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 	}
@@ -218,6 +223,11 @@ class GridExtender {
 						'packetSubmitUrl' => $packetSubmitUrl,
 						'restNonce'       => wp_create_nonce( 'wp_rest' ),
 						'printLink'       => $printLink,
+						'translations' => [
+							'printLabel'      => __( 'Print label', PACKETERY_LANG_DOMAIN ),
+							'setPacketWeight' => __( 'Set packet weight', PACKETERY_LANG_DOMAIN ),
+							'submitToPacketa' => __( 'Submit to packeta', PACKETERY_LANG_DOMAIN ),
+						],
 					]
 				);
 				break;

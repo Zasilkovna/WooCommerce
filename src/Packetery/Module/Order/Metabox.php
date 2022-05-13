@@ -198,6 +198,9 @@ class Metabox {
 				[
 					'packet_id'           => $packetId,
 					'packet_tracking_url' => $this->helper->get_tracking_url( $packetId ),
+					'translations'        => [
+						'packetTrackingOnline' => __( 'Packet tracking online', PACKETERY_LANG_DOMAIN ),
+					],
 				]
 			);
 

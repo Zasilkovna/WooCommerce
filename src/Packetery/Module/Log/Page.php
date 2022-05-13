@@ -91,6 +91,15 @@ class Page {
 				'rows'               => $rows,
 				'translatedActions'  => $translatedActions,
 				'translatedStatuses' => $translatedStatuses,
+				'translations' => [
+					'packeta'        => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
+					'logsPageTitle'  => __( 'Log', PACKETERY_LANG_DOMAIN ),
+					'status'         => __( 'Status', PACKETERY_LANG_DOMAIN ),
+					'dateAndTime'    => __( 'Date and time', PACKETERY_LANG_DOMAIN ),
+					'action'         => __( 'Action', PACKETERY_LANG_DOMAIN ),
+					'note'           => __( 'Note', PACKETERY_LANG_DOMAIN ),
+					'logListIsEmpty' => __( 'Log list is empty', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 	}

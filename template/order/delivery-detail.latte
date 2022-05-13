@@ -6,33 +6,33 @@
 <div>
 	{if $pickupPoint}
 		<h3>
-			{__( 'Packeta', 'packetery' )} - {__( 'pickup point detail', 'packetery' )}
+			{$translations['packeta']} - {$translations['pickupPointDetail']}
 		</h3>
 
-		<p><strong>{__( 'Name', 'packetery' )}</strong>: {$pickupPoint->getName()}</p>
-		<p><strong>{__( 'Address', 'packetery' )}</strong>: {$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</p>
+		<p><strong>{$translations['name']}</strong>: {$pickupPoint->getName()}</p>
+		<p><strong>{$translations['address']}</strong>: {$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</p>
 		{if $pickupPoint->getUrl()}
 			<p><a class="button" target="_blank"
-				  href="{$pickupPoint->getUrl()}">{__( 'Pickup Point Detail', 'packetery' )}</a></p>
+				  href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetailCaps']}</a></p>
 		{/if}
 	{/if}
 
 	{if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
-		<p><strong>{__( 'addressWasNotValidated', 'packetery' )}</strong></p>
+		<p><strong>{$translations['addressWasNotValidated']}</strong></p>
 	{/if}
 
 	{if $validatedDeliveryAddress}
 		<h3>
-			{__( 'Packeta', 'packetery' )} - {__( 'validatedAddress', 'packetery' )}
+			{$translations['packeta']} - {$translations['validatedAddress']}
 		</h3>
 
 		<p>
-			<strong>{__( 'street', 'packetery' )}</strong>: {$validatedDeliveryAddress->getStreet()}<br>
-			<strong>{__( 'houseNumber', 'packetery' )}</strong>: {$validatedDeliveryAddress->getHouseNumber()}<br>
-			<strong>{__( 'city', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCity()}<br>
-			<strong>{__( 'zip', 'packetery' )}</strong>: {$validatedDeliveryAddress->getZip()}<br>
-			<strong>{__( 'county', 'packetery' )}</strong>: {$validatedDeliveryAddress->getCounty()}<br>
-			<strong>{__( 'gps', 'packetery' )}</strong>: {$validatedDeliveryAddress->getLatitude()}, {$validatedDeliveryAddress->getLongitude()}<br>
+			<strong>{$translations['street']}</strong>: {$validatedDeliveryAddress->getStreet()}<br>
+			<strong>{$translations['houseNumber']}</strong>: {$validatedDeliveryAddress->getHouseNumber()}<br>
+			<strong>{$translations['city']}</strong>: {$validatedDeliveryAddress->getCity()}<br>
+			<strong>{$translations['zip']}</strong>: {$validatedDeliveryAddress->getZip()}<br>
+			<strong>{$translations['county']}</strong>: {$validatedDeliveryAddress->getCounty()}<br>
+			<strong>{$translations['gps']}</strong>: {$validatedDeliveryAddress->getLatitude()}, {$validatedDeliveryAddress->getLongitude()}<br>
 		</p>
 	{/if}
 </div>

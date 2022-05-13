@@ -158,6 +158,15 @@ class LabelPrint {
 				'count'         => $count,
 				'backLink'      => get_transient( self::getBackLinkTransientName() ),
 				'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, self::MENU_SLUG ),
+				'translations' => [
+					'packeta'                => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
+					'labelPrinting'          => __( 'Print labels', PACKETERY_LANG_DOMAIN ),
+					'willBePrinted1%sLabels' => __( 'There will be %s label printed', PACKETERY_LANG_DOMAIN ),
+					'willBePrinted2%sLabels' => __( 'There will be %s label printed', PACKETERY_LANG_DOMAIN ),
+					'willBePrinted5%sLabels' => __( 'There will be %s label printed', PACKETERY_LANG_DOMAIN ),
+					'back'                   => __( 'back', PACKETERY_LANG_DOMAIN ),
+					'printLabels'            => __( 'Print labels', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 	}

@@ -179,6 +179,20 @@ class CollectionPrint {
 				'orderCount'          => count( $packetIds ),
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
 				'stylesheet'          => Plugin::buildAssetUrl( 'public/order-collection-print.css' ),
+				'translations' => [
+					'handoverPacketsHeading' => __( 'Handover packets', PACKETERY_LANG_DOMAIN ),
+					'packetCount'            => __( 'Packet count', PACKETERY_LANG_DOMAIN ),
+					'printedAt'              => __( 'Printed at', PACKETERY_LANG_DOMAIN ),
+					'sender'                 => __( 'Sender', PACKETERY_LANG_DOMAIN ),
+					'recipient'              => __( 'Recipient', PACKETERY_LANG_DOMAIN ),
+					'orderNumber'            => __( 'Order number', PACKETERY_LANG_DOMAIN ),
+					'barcode'                => __( 'Barcode', PACKETERY_LANG_DOMAIN ),
+					'created'                => __( 'Created', PACKETERY_LANG_DOMAIN ),
+					'nameAndSurname'         => __( 'Name and surname', PACKETERY_LANG_DOMAIN ),
+					'cod'                    => __( 'C.O.D.', PACKETERY_LANG_DOMAIN ),
+					'pickUpPointOrCarrier'   => __( 'Pick up point or carrier', PACKETERY_LANG_DOMAIN ),
+					'end'                    => __( 'END', PACKETERY_LANG_DOMAIN ),
+				],
 			]
 		);
 		exit;
