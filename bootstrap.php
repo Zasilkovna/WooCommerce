@@ -10,7 +10,6 @@ use PacketeryNette\Bootstrap\Configurator;
 
 defined( 'PACKETERY_PLUGIN_DIR' ) || define( 'PACKETERY_PLUGIN_DIR', __DIR__ );
 defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
-defined( 'PACKETERY_LANG_DOMAIN' ) || define( 'PACKETERY_LANG_DOMAIN', 'packeta' );
 
 require_once __DIR__ . '/packetery_vendor/autoload.php';
 

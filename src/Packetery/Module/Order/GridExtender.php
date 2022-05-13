@@ -106,7 +106,7 @@ class GridExtender {
 				],
 				admin_url( 'edit.php' )
 			),
-			'title'      => __( 'Packeta orders to submit', PACKETERY_LANG_DOMAIN ),
+			'title'      => __( 'Packeta orders to submit', 'packeta' ),
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
@@ -122,7 +122,7 @@ class GridExtender {
 				],
 				admin_url( 'edit.php' )
 			),
-			'title'      => __( 'Packeta orders to print', PACKETERY_LANG_DOMAIN ),
+			'title'      => __( 'Packeta orders to print', 'packeta' ),
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
@@ -155,9 +155,9 @@ class GridExtender {
 				'packeteryOrderType' => $this->httpRequest->getQuery( 'packetery_order_type' ),
 				'linkFilters'        => $linkFilters,
 				'translations' => [
-					'packetaMethodType'         => __( 'Packeta shipping method', PACKETERY_LANG_DOMAIN ),
-					'carrierPackets'            => __( 'Carrier packets', PACKETERY_LANG_DOMAIN ),
-					'packetaPickupPointPackets' => __( 'Packeta pickup points packets', PACKETERY_LANG_DOMAIN ),
+					'packetaMethodType'         => __( 'Packeta shipping method', 'packeta' ),
+					'carrierPackets'            => __( 'Carrier packets', 'packeta' ),
+					'packetaPickupPointPackets' => __( 'Packeta pickup points packets', 'packeta' ),
 				],
 			]
 		);
@@ -224,9 +224,9 @@ class GridExtender {
 						'restNonce'       => wp_create_nonce( 'wp_rest' ),
 						'printLink'       => $printLink,
 						'translations' => [
-							'printLabel'      => __( 'Print label', PACKETERY_LANG_DOMAIN ),
-							'setPacketWeight' => __( 'Set packet weight', PACKETERY_LANG_DOMAIN ),
-							'submitToPacketa' => __( 'Submit to packeta', PACKETERY_LANG_DOMAIN ),
+							'printLabel'      => __( 'Print label', 'packeta' ),
+							'setPacketWeight' => __( 'Set packet weight', 'packeta' ),
+							'submitToPacketa' => __( 'Submit to packeta', 'packeta' ),
 						],
 					]
 				);
@@ -245,29 +245,29 @@ class GridExtender {
 	public function getPacketStatusTranslated( ?string $packetStatus ): string {
 		switch ( $packetStatus ) {
 			case 'received data':
-				return __( 'Data received', PACKETERY_LANG_DOMAIN );
+				return __( 'Data received', 'packeta' );
 			case 'arrived':
-				return __( 'Arrived', PACKETERY_LANG_DOMAIN );
+				return __( 'Arrived', 'packeta' );
 			case 'prepared for departure':
-				return __( 'Prepared for departure', PACKETERY_LANG_DOMAIN );
+				return __( 'Prepared for departure', 'packeta' );
 			case 'departed':
-				return __( 'Departed', PACKETERY_LANG_DOMAIN );
+				return __( 'Departed', 'packeta' );
 			case 'ready for pickup':
-				return __( 'Ready for pickup', PACKETERY_LANG_DOMAIN );
+				return __( 'Ready for pickup', 'packeta' );
 			case 'handed to carrier':
-				return __( 'Handed to carrier', PACKETERY_LANG_DOMAIN );
+				return __( 'Handed to carrier', 'packeta' );
 			case 'delivered':
-				return __( 'Delivered', PACKETERY_LANG_DOMAIN );
+				return __( 'Delivered', 'packeta' );
 			case 'posted back':
-				return __( 'Posted back', PACKETERY_LANG_DOMAIN );
+				return __( 'Posted back', 'packeta' );
 			case 'returned':
-				return __( 'Returned', PACKETERY_LANG_DOMAIN );
+				return __( 'Returned', 'packeta' );
 			case 'cancelled':
-				return __( 'Cancelled', PACKETERY_LANG_DOMAIN );
+				return __( 'Cancelled', 'packeta' );
 			case 'collected':
-				return __( 'Collected', PACKETERY_LANG_DOMAIN );
+				return __( 'Collected', 'packeta' );
 			case 'unknown':
-				return __( 'Unknown', PACKETERY_LANG_DOMAIN );
+				return __( 'Unknown', 'packeta' );
 		}
 
 		return (string) $packetStatus;
@@ -288,9 +288,9 @@ class GridExtender {
 
 			if ( 'order_total' === $column_name ) {
 				// TODO: Packet status sync.
-				$new_columns['packetery']             = __( 'Packeta', PACKETERY_LANG_DOMAIN );
-				$new_columns['packetery_packet_id']   = __( 'Barcode', PACKETERY_LANG_DOMAIN );
-				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', PACKETERY_LANG_DOMAIN );
+				$new_columns['packetery']             = __( 'Packeta', 'packeta' );
+				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packeta' );
+				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packeta' );
 			}
 		}
 

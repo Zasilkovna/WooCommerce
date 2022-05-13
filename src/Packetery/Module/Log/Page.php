@@ -54,8 +54,8 @@ class Page {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'Log', PACKETERY_LANG_DOMAIN ),
-			__( 'Log', PACKETERY_LANG_DOMAIN ),
+			__( 'Log', 'packeta' ),
+			__( 'Log', 'packeta' ),
 			'manage_options',
 			self::SLUG,
 			[ $this, 'render' ]
@@ -67,20 +67,20 @@ class Page {
 	 */
 	public function render(): void {
 		$translatedActions = [
-			Record::ACTION_PACKET_SENDING            => __( 'Packet sending', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_CARRIER_LABEL_PRINT       => __( 'Carrier label print', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_LABEL_PRINT               => __( 'Label print', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'Carrier list update', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'Getting external carrier tracking number', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'Carrier table was not created', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'Order table was not created', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_SENDER_VALIDATION         => __( 'Sender validation', PACKETERY_LANG_DOMAIN ),
-			Record::ACTION_PACKET_STATUS_SYNC        => __( 'Packet status synchronization', PACKETERY_LANG_DOMAIN ),
+			Record::ACTION_PACKET_SENDING            => __( 'Packet sending', 'packeta' ),
+			Record::ACTION_CARRIER_LABEL_PRINT       => __( 'Carrier label print', 'packeta' ),
+			Record::ACTION_LABEL_PRINT               => __( 'Label print', 'packeta' ),
+			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'Carrier list update', 'packeta' ),
+			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'Getting external carrier tracking number', 'packeta' ),
+			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'Carrier table was not created', 'packeta' ),
+			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'Order table was not created', 'packeta' ),
+			Record::ACTION_SENDER_VALIDATION         => __( 'Sender validation', 'packeta' ),
+			Record::ACTION_PACKET_STATUS_SYNC        => __( 'Packet status synchronization', 'packeta' ),
 		];
 
 		$translatedStatuses = [
-			Record::STATUS_ERROR   => __( 'Error', PACKETERY_LANG_DOMAIN ),
-			Record::STATUS_SUCCESS => __( 'Success', PACKETERY_LANG_DOMAIN ),
+			Record::STATUS_ERROR   => __( 'Error', 'packeta' ),
+			Record::STATUS_SUCCESS => __( 'Success', 'packeta' ),
 		];
 
 		$rows = $this->logger->getRecords( [ 'date' => 'DESC' ] );
@@ -92,13 +92,13 @@ class Page {
 				'translatedActions'  => $translatedActions,
 				'translatedStatuses' => $translatedStatuses,
 				'translations' => [
-					'packeta'        => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
-					'logsPageTitle'  => __( 'Log', PACKETERY_LANG_DOMAIN ),
-					'status'         => __( 'Status', PACKETERY_LANG_DOMAIN ),
-					'dateAndTime'    => __( 'Date and time', PACKETERY_LANG_DOMAIN ),
-					'action'         => __( 'Action', PACKETERY_LANG_DOMAIN ),
-					'note'           => __( 'Note', PACKETERY_LANG_DOMAIN ),
-					'logListIsEmpty' => __( 'Log list is empty', PACKETERY_LANG_DOMAIN ),
+					'packeta'        => __( 'Packeta', 'packeta' ),
+					'logsPageTitle'  => __( 'Log', 'packeta' ),
+					'status'         => __( 'Status', 'packeta' ),
+					'dateAndTime'    => __( 'Date and time', 'packeta' ),
+					'action'         => __( 'Action', 'packeta' ),
+					'note'           => __( 'Note', 'packeta' ),
+					'logListIsEmpty' => __( 'Log list is empty', 'packeta' ),
 				],
 			]
 		);

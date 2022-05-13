@@ -111,8 +111,8 @@ class Page {
 		add_action( 'admin_init', array( $this, 'admin_init' ) );
 		$icon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMzcgNDAiIHN0eWxlPSJmaWxsOiNhN2FhYWQiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiAjYTdhYWFkO30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE5LjQsMTYuMWwtMC45LDAuNGwtMC45LTAuNGwtMTMtNi41bDYuMi0yLjRsMTMuNCw2LjVMMTkuNCwxNi4xeiBNMzIuNSw5LjZsLTQuNywyLjNsLTEzLjUtNmw0LjItMS42CglMMzIuNSw5LjZ6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xOSwwbDE3LjIsNi42bC0yLjQsMS45bC0xNS4yLTZMMy4yLDguNkwwLjgsNi42TDE4LDBMMTksMEwxOSwweiBNMzQuMSw5LjFsMi44LTEuMWwtMi4xLDE3LjZsLTAuNCwwLjgKCUwxOS40LDQwbC0wLjUtMy4xbDEzLjQtMTJMMzQuMSw5LjF6IE0yLjUsMjYuNWwtMC40LTAuOEwwLDguMWwyLjgsMS4xbDEuOSwxNS43bDEzLjQsMTJMMTcuNiw0MEwyLjUsMjYuNXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTI4LjIsMTIuNGw0LjMtMi43bC0xLjcsMTQuMkwxOC42LDM1bDAuNi0xN2w1LjQtMy4zTDI0LjMsMjNsMy4zLTIuM0wyOC4yLDEyLjR6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNy43LDE3LjlsMC42LDE3bC0xMi4yLTExTDQuNCw5LjhMMTcuNywxNy45eiIvPgo8L3N2Zz4K';
 		add_menu_page(
-			__( 'Packeta', PACKETERY_LANG_DOMAIN ),
-			__( 'Packeta', PACKETERY_LANG_DOMAIN ),
+			__( 'Packeta', 'packeta' ),
+			__( 'Packeta', 'packeta' ),
 			'manage_options',
 			self::SLUG,
 			'',
@@ -121,8 +121,8 @@ class Page {
 		);
 		add_submenu_page(
 			self::SLUG,
-			__( 'Settings', PACKETERY_LANG_DOMAIN ),
-			__( 'Settings', PACKETERY_LANG_DOMAIN ),
+			__( 'Settings', 'packeta' ),
+			__( 'Settings', 'packeta' ),
 			'manage_options',
 			self::SLUG,
 			array(
@@ -154,23 +154,23 @@ class Page {
 		$form->setAction( 'options.php' );
 
 		$container = $form->addContainer( self::FORM_FIELDS_CONTAINER );
-		$container->addText( 'api_password', __( 'API password', PACKETERY_LANG_DOMAIN ) )
+		$container->addText( 'api_password', __( 'API password', 'packeta' ) )
 					->setRequired()
-					->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', PACKETERY_LANG_DOMAIN ), '[a-z\d]{32}' );
-		$container->addText( 'sender', __( 'Sender', PACKETERY_LANG_DOMAIN ) )
+					->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', 'packeta' ), '[a-z\d]{32}' );
+		$container->addText( 'sender', __( 'Sender', 'packeta' ) )
 					->setRequired();
 
 		$packetaLabelFormats = $this->optionsProvider->getPacketaLabelFormats();
 		$container->addSelect(
 			self::FORM_FIELD_PACKETA_LABEL_FORMAT,
-			__( 'Packeta Label Format', PACKETERY_LANG_DOMAIN ),
+			__( 'Packeta Label Format', 'packeta' ),
 			$packetaLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT );
 
 		$carrierLabelFormats = $this->optionsProvider->getCarrierLabelFormat();
 		$container->addSelect(
 			self::FORM_FIELD_CARRIER_LABEL_FORMAT,
-			__( 'Carrier Label Format', PACKETERY_LANG_DOMAIN ),
+			__( 'Carrier Label Format', 'packeta' ),
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
@@ -181,11 +181,11 @@ class Page {
 		}
 		$container->addSelect(
 			'cod_payment_method',
-			__( 'Payment method that represents cash on delivery', PACKETERY_LANG_DOMAIN ),
+			__( 'Payment method that represents cash on delivery', 'packeta' ),
 			$enabledGateways
 		)->setPrompt( '--' )->checkDefaultValue( false );
 
-		$container->addText( 'packaging_weight', __( 'Packaging weight', PACKETERY_LANG_DOMAIN ) . ' (kg)' )
+		$container->addText( 'packaging_weight', __( 'Packaging weight', 'packeta' ) . ' (kg)' )
 					->setRequired( true )
 					->addRule( Form::FLOAT )
 					->addRule( Form::MIN, null, 0 )
@@ -193,7 +193,7 @@ class Page {
 
 		// TODO: Packet status sync.
 
-		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', PACKETERY_LANG_DOMAIN ) )
+		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packeta' ) )
 			->setRequired( false );
 
 		if ( $this->optionsProvider->has_any() ) {
@@ -240,7 +240,7 @@ class Page {
 	 */
 	public function admin_init(): void {
 		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, array( $this, 'options_validate' ) );
-		add_settings_section( 'packetery_main', __( 'Main Settings', PACKETERY_LANG_DOMAIN ), '', self::SLUG );
+		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), '', self::SLUG );
 	}
 
 	/**
@@ -293,14 +293,14 @@ class Page {
 		$senderValidationLog->action = Log\Record::ACTION_SENDER_VALIDATION;
 
 		$senderValidationLog->status = Log\Record::STATUS_SUCCESS;
-		$senderValidationLog->title  = __( 'Sender validation success', PACKETERY_LANG_DOMAIN );
+		$senderValidationLog->title  = __( 'Sender validation success', 'packeta' );
 
 		if ( $senderValidationResponse->hasFault() ) {
 			$senderValidationLog->status = Log\Record::STATUS_ERROR;
 			$senderValidationLog->params = [
 				'errorMessage' => $senderValidationResponse->getFaultString(),
 			];
-			$senderValidationLog->title  = __( 'Sender validation error', PACKETERY_LANG_DOMAIN );
+			$senderValidationLog->title  = __( 'Sender validation error', 'packeta' );
 		}
 
 		$this->logger->add( $senderValidationLog );
@@ -308,11 +308,11 @@ class Page {
 		$senderExists = $senderValidationResponse->senderExists();
 
 		if ( false === $senderExists ) {
-			$this->messageManager->flash_message( __( 'Specified sender does not exist', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+			$this->messageManager->flash_message( __( 'Specified sender does not exist', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		}
 
 		if ( null === $senderExists ) {
-			$this->messageManager->flash_message( __( 'Unable to check specified sender', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+			$this->messageManager->flash_message( __( 'Unable to check specified sender', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		}
 
 		return $senderExists;
@@ -329,7 +329,7 @@ class Page {
 			$result = $this->validateSender( $this->optionsProvider->get_sender() );
 
 			if ( true === $result ) {
-				$this->messageManager->flash_message( __( 'Specified sender is OK', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+				$this->messageManager->flash_message( __( 'Specified sender is OK', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 			}
 
 			$doRedirect = wp_safe_redirect(
@@ -353,14 +353,14 @@ class Page {
 	public function render(): void {
 		$latteParams = [ 'form' => $this->create_form() ];
 		if ( ! extension_loaded( 'soap' ) ) {
-			$latteParams['error'] = __( 'This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator.', PACKETERY_LANG_DOMAIN );
+			$latteParams['error'] = __( 'This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator.', 'packeta' );
 		}
 
 		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
 
 		$latteParams['senderDescription'] = sprintf(
 			/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
-			esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', PACKETERY_LANG_DOMAIN ),
+			esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
 			'<strong>',
 			'</strong>',
 			'<a href="https://client.packeta.com/senders" target="_blank">',
@@ -399,27 +399,27 @@ class Page {
 
 		$latteParams['messages'] = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations'] = [
-			'packeta'                      => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
-			'options'                      => __( 'Options', PACKETERY_LANG_DOMAIN ),
-			'general'                      => __( 'General', PACKETERY_LANG_DOMAIN ),
-			'apiPasswordCanBeFoundAt%sUrl' => __( 'API password can be found at %s', PACKETERY_LANG_DOMAIN ),
-			'saveChanges'                  => __( 'Save Changes', PACKETERY_LANG_DOMAIN ),
-			'validateSender'               => __( 'Validate sender', PACKETERY_LANG_DOMAIN ),
-			'support'                      => __( 'Support', PACKETERY_LANG_DOMAIN ),
+			'packeta'                      => __( 'Packeta', 'packeta' ),
+			'options'                      => __( 'Options', 'packeta' ),
+			'general'                      => __( 'General', 'packeta' ),
+			'apiPasswordCanBeFoundAt%sUrl' => __( 'API password can be found at %s', 'packeta' ),
+			'saveChanges'                  => __( 'Save Changes', 'packeta' ),
+			'validateSender'               => __( 'Validate sender', 'packeta' ),
+			'support'                      => __( 'Support', 'packeta' ),
 			'optionsExportInfo1'           => __(
 				'By clicking the button, you will export the settings of your plugin into a '
 				. 'separate file. The export does not contain any sensitive information about '
 				. 'your e-shop. Please send the resulting file to the technical support of '
 				. 'Packeta (you can find the e-mail address here:',
-				PACKETERY_LANG_DOMAIN ),
+				'packeta' ),
 			'optionsExportInfo2'           => __(
 				') along with the description of your problem. For a better understanding of '
 				. 'your problem, we recommend adding screenshots, which show the problem (if '
 				. 'possible).',
-				PACKETERY_LANG_DOMAIN ),
-			'exportPluginSettings'         => __( 'Export the plugin settings', PACKETERY_LANG_DOMAIN ),
-			'settingsExportDatetime'       => __( 'Date and time of the last export of settings', PACKETERY_LANG_DOMAIN ),
-			'settingsNotYetExported'       => __( 'The settings have not been exported yet.', PACKETERY_LANG_DOMAIN ),
+				'packeta' ),
+			'exportPluginSettings'         => __( 'Export the plugin settings', 'packeta' ),
+			'settingsExportDatetime'       => __( 'Date and time of the last export of settings', 'packeta' ),
+			'settingsNotYetExported'       => __( 'The settings have not been exported yet.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

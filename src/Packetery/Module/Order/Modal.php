@@ -75,8 +75,8 @@ class Modal {
 				'orderSaveUrl' => $orderSaveUrl,
 				'form'         => $this->createForm(),
 				'translations' => [
-					'order#%s'        => __( 'Order #%s', PACKETERY_LANG_DOMAIN ),
-					'closeModalPanel' => __( 'Close modal panel', PACKETERY_LANG_DOMAIN ),
+					'order#%s'        => __( 'Order #%s', 'packeta' ),
+					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
 				],
 			]
 		);
@@ -89,12 +89,12 @@ class Modal {
 	 */
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
-		$form->addText( 'packetery_weight', __( 'Weight', PACKETERY_LANG_DOMAIN ) . ' (kg)' )
+		$form->addText( 'packetery_weight', __( 'Weight', 'packeta' ) . ' (kg)' )
 			->setRequired( false )
 			->addRule( Form::FLOAT );
 
-		$form->addSubmit( 'submit', __( 'Save', PACKETERY_LANG_DOMAIN ) );
-		$form->addButton( 'cancel', __( 'Cancel', PACKETERY_LANG_DOMAIN ) );
+		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
+		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );
 
 		$form->setDefaults(
 			[

@@ -30,7 +30,7 @@ use WC_Order;
 class Plugin {
 
 	public const VERSION               = '1.2.6';
-	public const DOMAIN                = PACKETERY_LANG_DOMAIN;
+	public const DOMAIN                = 'packeta';
 	public const MIN_LISTENER_PRIORITY = -9998;
 
 	/**
@@ -418,7 +418,7 @@ class Plugin {
 			[
 				'message' => [
 					'type'    => 'error',
-					'message' => __( 'Packeta plugin requires WooCommerce. Please install and activate it first.', PACKETERY_LANG_DOMAIN ),
+					'message' => __( 'Packeta plugin requires WooCommerce. Please install and activate it first.', 'packeta' ),
 				],
 			]
 		);
@@ -471,19 +471,19 @@ class Plugin {
 				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
 				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
 				'translations' => [
-					'packeta'                => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
-					'pickupPointDetail'      => __( 'pickup point detail', PACKETERY_LANG_DOMAIN ),
-					'name'                   => __( 'Name', PACKETERY_LANG_DOMAIN ),
-					'address'                => __( 'Address', PACKETERY_LANG_DOMAIN ),
-					'pickupPointDetailCaps'  => __( 'Pickup Point Detail', PACKETERY_LANG_DOMAIN ),
-					'addressWasNotValidated' => __( 'Address was not validated', PACKETERY_LANG_DOMAIN ),
-					'validatedAddress'       => __( 'Validated address', PACKETERY_LANG_DOMAIN ),
-					'street'                 => __( 'Street', PACKETERY_LANG_DOMAIN ),
-					'houseNumber'            => __( 'House number', PACKETERY_LANG_DOMAIN ),
-					'city'                   => __( 'City', PACKETERY_LANG_DOMAIN ),
-					'zip'                    => __( 'Zip', PACKETERY_LANG_DOMAIN ),
-					'county'                 => __( 'County', PACKETERY_LANG_DOMAIN ),
-					'gps'                    => __( 'GPS', PACKETERY_LANG_DOMAIN ),
+					'packeta'                => __( 'Packeta', 'packeta' ),
+					'pickupPointDetail'      => __( 'pickup point detail', 'packeta' ),
+					'name'                   => __( 'Name', 'packeta' ),
+					'address'                => __( 'Address', 'packeta' ),
+					'pickupPointDetailCaps'  => __( 'Pickup Point Detail', 'packeta' ),
+					'addressWasNotValidated' => __( 'Address was not validated', 'packeta' ),
+					'validatedAddress'       => __( 'Validated address', 'packeta' ),
+					'street'                 => __( 'Street', 'packeta' ),
+					'houseNumber'            => __( 'House number', 'packeta' ),
+					'city'                   => __( 'City', 'packeta' ),
+					'zip'                    => __( 'Zip', 'packeta' ),
+					'county'                 => __( 'County', 'packeta' ),
+					'gps'                    => __( 'GPS', 'packeta' ),
 				],
 			]
 		);
@@ -513,12 +513,12 @@ class Plugin {
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
 				'translations' => [
-					'packeta'             => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
-					'selectedPickupPoint' => __( 'Selected pickup point', PACKETERY_LANG_DOMAIN ),
-					'pickupPointName'     => __( 'Pickup point name', PACKETERY_LANG_DOMAIN ),
-					'pickupPointDetail'   => __( 'Pickup Point Detail', PACKETERY_LANG_DOMAIN ),
-					'validatedAddress'    => __( 'Validated address', PACKETERY_LANG_DOMAIN ),
-					'address'             => __( 'Address', PACKETERY_LANG_DOMAIN ),
+					'packeta'             => __( 'Packeta', 'packeta' ),
+					'selectedPickupPoint' => __( 'Selected pickup point', 'packeta' ),
+					'pickupPointName'     => __( 'Pickup point name', 'packeta' ),
+					'pickupPointDetail'   => __( 'Pickup Point Detail', 'packeta' ),
+					'validatedAddress'    => __( 'Validated address', 'packeta' ),
+					'address'             => __( 'Address', 'packeta' ),
 				],
 			]
 		);
@@ -549,17 +549,17 @@ class Plugin {
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
 				'translations' => [
-					'packeta'                  => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
-					'pickupPointDetail'        => __( 'Pickup Point Detail', PACKETERY_LANG_DOMAIN ),
-					'pickupPointName'          => __( 'Pickup Point Name', PACKETERY_LANG_DOMAIN ),
-					'link'                     => __( 'Link', PACKETERY_LANG_DOMAIN ),
-					'pointAddress'             => __( 'Point Address', PACKETERY_LANG_DOMAIN ),
-					'validatedDeliveryAddress' => __( 'validated delivery address', PACKETERY_LANG_DOMAIN ),
-					'street'                   => __( 'street', PACKETERY_LANG_DOMAIN ),
-					'houseNumber'              => __( 'House number', PACKETERY_LANG_DOMAIN ),
-					'city'                     => __( 'city', PACKETERY_LANG_DOMAIN ),
-					'zip'                      => __( 'zip', PACKETERY_LANG_DOMAIN ),
-					'county'                   => __( 'county', PACKETERY_LANG_DOMAIN ),
+					'packeta'                  => __( 'Packeta', 'packeta' ),
+					'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
+					'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
+					'link'                     => __( 'Link', 'packeta' ),
+					'pointAddress'             => __( 'Point Address', 'packeta' ),
+					'validatedDeliveryAddress' => __( 'validated delivery address', 'packeta' ),
+					'street'                   => __( 'street', 'packeta' ),
+					'houseNumber'              => __( 'House number', 'packeta' ),
+					'city'                     => __( 'city', 'packeta' ),
+					'zip'                      => __( 'zip', 'packeta' ),
+					'county'                   => __( 'county', 'packeta' ),
 				],
 			]
 		);
@@ -737,12 +737,12 @@ class Plugin {
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'Carrier table was not created, you can find more information in Packeta log', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Carrier table was not created, you can find more information in Packeta log', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Carrier table was not created', PACKETERY_LANG_DOMAIN );
+			$record->title  = __( 'Carrier table was not created', 'packeta' );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -752,12 +752,12 @@ class Plugin {
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'Order table was not created, you can find more information in Packeta log', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Order table was not created, you can find more information in Packeta log', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Order table was not created', PACKETERY_LANG_DOMAIN );
+			$record->title  = __( 'Order table was not created', 'packeta' );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -805,8 +805,8 @@ class Plugin {
 	 */
 	public function addPluginActionLinks( array $links ): array {
 		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=' . Options\Page::SLUG ) ) . '" aria-label="' .
-					esc_attr__( 'View Packeta settings', PACKETERY_LANG_DOMAIN ) . '">' .
-					esc_html__( 'Settings', PACKETERY_LANG_DOMAIN ) . '</a>';
+					esc_attr__( 'View Packeta settings', 'packeta' ) . '">' .
+					esc_html__( 'Settings', 'packeta' ) . '</a>';
 
 		array_unshift( $links, $settingsLink );
 
@@ -828,8 +828,8 @@ class Plugin {
 			return $links;
 		}
 		$links[] = '<a href="' . esc_url( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .
-		esc_attr__( 'View Packeta documentation', PACKETERY_LANG_DOMAIN ) . '">' .
-		esc_html__( 'Documentation', PACKETERY_LANG_DOMAIN ) . '</a>';
+		esc_attr__( 'View Packeta documentation', 'packeta' ) . '">' .
+		esc_html__( 'Documentation', 'packeta' ) . '</a>';
 
 		return $links;
 	}

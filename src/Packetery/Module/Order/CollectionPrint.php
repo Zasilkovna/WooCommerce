@@ -113,7 +113,7 @@ class CollectionPrint {
 		}
 
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'No orders were selected', PACKETERY_LANG_DOMAIN ), 'info' );
+			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), 'info' );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -136,7 +136,7 @@ class CollectionPrint {
 
 		if ( ! $packetIds ) {
 			delete_transient( self::getOrderIdsTransientName() );
-			$this->messageManager->flash_message( __( 'Selected orders have no packet id', PACKETERY_LANG_DOMAIN ), 'info' );
+			$this->messageManager->flash_message( __( 'Selected orders have no packet id', 'packeta' ), 'info' );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -150,7 +150,7 @@ class CollectionPrint {
 
 		if ( $shipmentResult->hasFault() ) {
 			delete_transient( self::getOrderIdsTransientName() );
-			$this->messageManager->flash_message( __( 'Unexpected error', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Unexpected error', 'packeta' ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -159,7 +159,7 @@ class CollectionPrint {
 		$shipmentBarcodeResult = $this->requestBarcodePng( $shipmentResult->getBarcode() );
 		delete_transient( self::getOrderIdsTransientName() );
 		if ( $shipmentBarcodeResult->hasFault() ) {
-			$this->messageManager->flash_message( __( 'Unexpected error', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Unexpected error', 'packeta' ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -180,18 +180,18 @@ class CollectionPrint {
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
 				'stylesheet'          => Plugin::buildAssetUrl( 'public/order-collection-print.css' ),
 				'translations' => [
-					'handoverPacketsHeading' => __( 'Handover packets', PACKETERY_LANG_DOMAIN ),
-					'packetCount'            => __( 'Packet count', PACKETERY_LANG_DOMAIN ),
-					'printedAt'              => __( 'Printed at', PACKETERY_LANG_DOMAIN ),
-					'sender'                 => __( 'Sender', PACKETERY_LANG_DOMAIN ),
-					'recipient'              => __( 'Recipient', PACKETERY_LANG_DOMAIN ),
-					'orderNumber'            => __( 'Order number', PACKETERY_LANG_DOMAIN ),
-					'barcode'                => __( 'Barcode', PACKETERY_LANG_DOMAIN ),
-					'created'                => __( 'Created', PACKETERY_LANG_DOMAIN ),
-					'nameAndSurname'         => __( 'Name and surname', PACKETERY_LANG_DOMAIN ),
-					'cod'                    => __( 'C.O.D.', PACKETERY_LANG_DOMAIN ),
-					'pickUpPointOrCarrier'   => __( 'Pick up point or carrier', PACKETERY_LANG_DOMAIN ),
-					'end'                    => __( 'END', PACKETERY_LANG_DOMAIN ),
+					'handoverPacketsHeading' => __( 'Handover packets', 'packeta' ),
+					'packetCount'            => __( 'Packet count', 'packeta' ),
+					'printedAt'              => __( 'Printed at', 'packeta' ),
+					'sender'                 => __( 'Sender', 'packeta' ),
+					'recipient'              => __( 'Recipient', 'packeta' ),
+					'orderNumber'            => __( 'Order number', 'packeta' ),
+					'barcode'                => __( 'Barcode', 'packeta' ),
+					'created'                => __( 'Created', 'packeta' ),
+					'nameAndSurname'         => __( 'Name and surname', 'packeta' ),
+					'cod'                    => __( 'C.O.D.', 'packeta' ),
+					'pickUpPointOrCarrier'   => __( 'Pick up point or carrier', 'packeta' ),
+					'end'                    => __( 'END', 'packeta' ),
 				],
 			]
 		);

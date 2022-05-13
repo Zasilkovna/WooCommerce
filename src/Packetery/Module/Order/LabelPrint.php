@@ -159,13 +159,13 @@ class LabelPrint {
 				'backLink'      => get_transient( self::getBackLinkTransientName() ),
 				'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, self::MENU_SLUG ),
 				'translations' => [
-					'packeta'                => __( 'Packeta', PACKETERY_LANG_DOMAIN ),
-					'labelPrinting'          => __( 'Print labels', PACKETERY_LANG_DOMAIN ),
-					'willBePrinted1%sLabels' => __( 'There will be %s label printed', PACKETERY_LANG_DOMAIN ),
-					'willBePrinted2%sLabels' => __( 'There will be %s label printed', PACKETERY_LANG_DOMAIN ),
-					'willBePrinted5%sLabels' => __( 'There will be %s label printed', PACKETERY_LANG_DOMAIN ),
-					'back'                   => __( 'back', PACKETERY_LANG_DOMAIN ),
-					'printLabels'            => __( 'Print labels', PACKETERY_LANG_DOMAIN ),
+					'packeta'                => __( 'Packeta', 'packeta' ),
+					'labelPrinting'          => __( 'Print labels', 'packeta' ),
+					'willBePrinted1%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					'willBePrinted2%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					'willBePrinted5%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					'back'                   => __( 'back', 'packeta' ),
+					'printLabels'            => __( 'Print labels', 'packeta' ),
 				],
 			]
 		);
@@ -200,7 +200,7 @@ class LabelPrint {
 			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
 			if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-				$this->messageManager->flash_message( __( 'No orders were selected', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
+				$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
 
 				return;
 			}
@@ -208,7 +208,7 @@ class LabelPrint {
 			$packetIds = $this->getPacketIdsFromTransient( $isCarrierLabels );
 		}
 		if ( ! $packetIds ) {
-			$this->messageManager->flash_message( __( 'No suitable orders were selected', PACKETERY_LANG_DOMAIN ), 'info' );
+			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
 			if ( wp_safe_redirect( add_query_arg( [ 'post_type' => 'shop_order' ], admin_url( 'edit.php' ) ) ) ) {
 				exit;
 			}
@@ -239,8 +239,8 @@ class LabelPrint {
 		}
 		if ( ! $response || $response->hasFault() ) {
 			$message = ( null !== $response && $response->hasFault() ) ?
-				__( 'Label printing failed, you can find more information in Packeta log.', PACKETERY_LANG_DOMAIN ) :
-				__( 'You selected orders that were not submitted yet', PACKETERY_LANG_DOMAIN );
+				__( 'Label printing failed, you can find more information in Packeta log.', 'packeta' ) :
+				__( 'You selected orders that were not submitted yet', 'packeta' );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
@@ -270,11 +270,11 @@ class LabelPrint {
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
 			// translators: %s is offset.
-			$availableOffsets[ $i ] = ( 0 === $i ? __( "don't skip any field on a print sheet", PACKETERY_LANG_DOMAIN ) : sprintf( __( 'skip %s fields on first sheet', PACKETERY_LANG_DOMAIN ), $i ) );
+			$availableOffsets[ $i ] = ( 0 === $i ? __( "don't skip any field on a print sheet", 'packeta' ) : sprintf( __( 'skip %s fields on first sheet', 'packeta' ), $i ) );
 		}
 		$form->addSelect(
 			'offset',
-			__( 'Skip fields', PACKETERY_LANG_DOMAIN ),
+			__( 'Skip fields', 'packeta' ),
 			$availableOffsets
 		)->checkDefaultValue( false );
 
@@ -287,8 +287,8 @@ class LabelPrint {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'Print labels', PACKETERY_LANG_DOMAIN ),
-			__( 'Print labels', PACKETERY_LANG_DOMAIN ),
+			__( 'Print labels', 'packeta' ),
+			__( 'Print labels', 'packeta' ),
 			'manage_options',
 			self::MENU_SLUG,
 			array(
@@ -331,10 +331,10 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Label print success', PACKETERY_LANG_DOMAIN );
+			$record->title  = __( 'Label print success', 'packeta' );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Label print error', PACKETERY_LANG_DOMAIN );
+			$record->title  = __( 'Label print error', 'packeta' );
 			$record->params = [
 				'request'      => [
 					'packetIds' => implode( ',', $request->getPacketIds() ),
@@ -375,10 +375,10 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Carrier label print success', PACKETERY_LANG_DOMAIN );
+			$record->title  = __( 'Carrier label print success', 'packeta' );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Carrier label print error', PACKETERY_LANG_DOMAIN );
+			$record->title  = __( 'Carrier label print error', 'packeta' );
 			$record->params = [
 				'request'      => [
 					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
@@ -439,7 +439,7 @@ class LabelPrint {
 			$response = $this->soapApiClient->packetCourierNumber( $request );
 			if ( $response->hasFault() ) {
 				if ( $response->hasWrongPassword() ) {
-					$this->messageManager->flash_message( __( 'Please set proper API password.', PACKETERY_LANG_DOMAIN ), MessageManager::TYPE_ERROR );
+					$this->messageManager->flash_message( __( 'Please set proper API password.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 					return [];
 				}
@@ -447,7 +447,7 @@ class LabelPrint {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Carrier number retrieving error', PACKETERY_LANG_DOMAIN );
+				$record->title  = __( 'Carrier number retrieving error', 'packeta' );
 				$record->params = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),

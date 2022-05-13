@@ -201,7 +201,7 @@ class Checkout {
 			[
 				'logo' => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'translations' => [
-					'packeta' => __('Packeta', PACKETERY_LANG_DOMAIN),
+					'packeta' => __('Packeta', 'packeta'),
 				]
 			]
 		);
@@ -266,14 +266,14 @@ class Checkout {
 					'appIdentity'       => Plugin::getAppIdentity(),
 					'packeteryApiKey'   => $this->options_provider->get_api_key(),
 					'translations'      => [
-						'choosePickupPoint'                         => __( 'Choose pickup point', PACKETERY_LANG_DOMAIN ),
-						'chooseAddress'                             => __( 'Check shipping address', PACKETERY_LANG_DOMAIN ),
-						'addressValidationIsOutOfOrder'             => __( 'Address validation is out of order', PACKETERY_LANG_DOMAIN ),
-						'invalidAddressCountrySelected'             => __( 'Invalid address country selected', PACKETERY_LANG_DOMAIN ),
-						'selectedShippingAddress'                   => __( 'Selected shipping address', PACKETERY_LANG_DOMAIN ),
-						'addressIsValidated'                        => __( 'Address is validated', PACKETERY_LANG_DOMAIN ),
-						'addressIsNotValidated'                     => __( 'Delivery address has not been verified.', PACKETERY_LANG_DOMAIN ),
-						'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', PACKETERY_LANG_DOMAIN ),
+						'choosePickupPoint'                         => __( 'Choose pickup point', 'packeta' ),
+						'chooseAddress'                             => __( 'Check shipping address', 'packeta' ),
+						'addressValidationIsOutOfOrder'             => __( 'Address validation is out of order', 'packeta' ),
+						'invalidAddressCountrySelected'             => __( 'Invalid address country selected', 'packeta' ),
+						'selectedShippingAddress'                   => __( 'Selected shipping address', 'packeta' ),
+						'addressIsValidated'                        => __( 'Address is validated', 'packeta' ),
+						'addressIsNotValidated'                     => __( 'Delivery address has not been verified.', 'packeta' ),
+						'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 					],
 				],
 			]
@@ -333,7 +333,7 @@ class Checkout {
 				$error = true;
 			}
 			if ( $error ) {
-				wc_add_notice( __( 'Pick up point is not chosen.', PACKETERY_LANG_DOMAIN ), 'error' );
+				wc_add_notice( __( 'Pick up point is not chosen.', 'packeta' ), 'error' );
 			}
 		}
 
@@ -355,7 +355,7 @@ class Checkout {
 					'1' !== $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]
 				)
 			) {
-				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', PACKETERY_LANG_DOMAIN ), 'error' );
+				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 			}
 		}
 	}
@@ -575,7 +575,7 @@ class Checkout {
 
 		$fee = [
 			'id'     => 'packetery-cod-surcharge',
-			'name'   => __( 'COD surcharge', PACKETERY_LANG_DOMAIN ),
+			'name'   => __( 'COD surcharge', 'packeta' ),
 			'amount' => $applicableSurcharge,
 		];
 
