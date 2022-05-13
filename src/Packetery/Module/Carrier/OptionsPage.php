@@ -103,8 +103,8 @@ class OptionsPage {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'Carrier settings', 'packetery' ),
-			__( 'Carrier settings', 'packetery' ),
+			__( 'Carrier settings', 'packeta' ),
+			__( 'Carrier settings', 'packeta' ),
 			'manage_options',
 			self::SLUG,
 			array(
@@ -129,10 +129,10 @@ class OptionsPage {
 
 		$form->addCheckbox(
 			'active',
-			__( 'Active carrier', 'packetery' ) . ':'
+			__( 'Active carrier', 'packeta' ) . ':'
 		);
 
-		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packetery' ) . ':' )
+		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
 
 		$weightLimits = $form->addContainer( 'weight_limits' );
@@ -144,7 +144,7 @@ class OptionsPage {
 			}
 		}
 
-		$form->addText( 'default_COD_surcharge', __( 'defaultCODSurchargeLabel', 'packetery' ) . ':' )
+		$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )
 			->setRequired( false )
 			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 );
@@ -156,19 +156,19 @@ class OptionsPage {
 			}
 		}
 
-		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packetery' ) . ':' );
-		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
+		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
 		$carrier = $this->carrierRepository->getById( (int) $carrierData['id'] );
 		if ( $carrier && false === $carrier->hasPickupPoints() ) {
 			$addressValidationOptions = [
-				'none'     => __( 'noAddressValidation', 'packetery' ),
-				'optional' => __( 'optionalAddressValidation', 'packetery' ),
-				'required' => __( 'requiredAddressValidation', 'packetery' ),
+				'none'     => __( 'No address validation', 'packeta' ),
+				'optional' => __( 'Optional address validation', 'packeta' ),
+				'required' => __( 'Required address validation', 'packeta' ),
 			];
-			$form->addSelect( 'address_validation', __( 'addressValidation', 'packetery' ) . ':', $addressValidationOptions )
+			$form->addSelect( 'address_validation', __( 'Address ', 'packeta' ) . ':', $addressValidationOptions )
 				->setDefaultValue( 'none' );
 		}
 
@@ -213,7 +213,7 @@ class OptionsPage {
 	 */
 	public function validateOptions( Form $form ): void {
 		if ( $form->hasErrors() ) {
-			add_settings_error( '', '', esc_attr( __( 'someCarrierDataAreInvalid', 'packetery' ) ) );
+			add_settings_error( '', '', esc_attr( __( 'Some carrier data are invalid', 'packeta' ) ) );
 			return;
 		}
 
@@ -224,14 +224,14 @@ class OptionsPage {
 			$options,
 			'weight_limits',
 			'weight',
-			__( 'Weight rules are overlapping, fix it please.', 'packetery' )
+			__( 'Weight rules are overlapping, fix it please.', 'packeta' )
 		);
 		$this->checkOverlapping(
 			$form,
 			$options,
 			'surcharge_limits',
 			'order_price',
-			__( 'Surcharge rules are overlapping, fix it please.', 'packetery' )
+			__( 'Surcharge rules are overlapping, fix it please.', 'packeta' )
 		);
 	}
 
@@ -251,7 +251,7 @@ class OptionsPage {
 		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
-		$this->messageManager->flash_message( __( 'settingsSaved', 'packetery' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
+		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(
 			add_query_arg(
@@ -307,6 +307,20 @@ class OptionsPage {
 					'country_iso'    => $countryIso,
 					'globalCurrency' => get_woocommerce_currency_symbol(),
 					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+					'translations'   => [
+						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'Cannot use this carrier because requires customs declaration', 'packeta' ),
+						'delete'                       => __( 'Delete', 'packeta' ),
+						'weightRules'                  => __( 'Weight rules', 'packeta' ),
+						'addWeightRule'                => __( 'Add weight rule', 'packeta' ),
+						'codSurchargeRules'            => __( 'COD surcharge rules', 'packeta' ),
+						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
+						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
+						'addressValidationDescription' => __( 'Customer address validation', 'packeta' ),
+						'saveChanges'                  => __( 'Save changes', 'packeta' ),
+						'packeta'                      => __( 'Packeta', 'packeta' ),
+						'countryOptions'               => __( 'Country options', 'packeta' ),
+						'noKnownCarrierForThisCountry' => __( 'No known carrier for this country.', 'packeta' ),
+					],
 				]
 			);
 		} else {
@@ -384,11 +398,11 @@ class OptionsPage {
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
 		$limit = $weightLimits->addContainer( (string) $index );
-		$item  = $limit->addText( 'weight', __( 'Weight up to', 'packetery' ) . ':' );
+		$item  = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
 		$item->setRequired();
-		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 		// translators: %d is numeric threshold.
-		$item->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packetery' ), 0.0 );
+		$item->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
 		$item->addFilter(
 			function ( float $value ) {
@@ -396,11 +410,11 @@ class OptionsPage {
 			}
 		);
 		// translators: %d is numeric threshold.
-		$item->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packetery' ), 0.0 );
+		$item->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
-		$item = $limit->addText( 'price', __( 'Price', 'packetery' ) . ':' );
+		$item = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
 		$item->setRequired();
-		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 		$item->addRule( Form::MIN, null, 0 );
 	}
 
@@ -414,18 +428,18 @@ class OptionsPage {
 	 */
 	private function addSurchargeLimit( Container $surchargeLimits, $index ): void {
 		$limit = $surchargeLimits->addContainer( (string) $index );
-		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packetery' ) . ':' );
+		$item  = $limit->addText( 'order_price', __( 'Order price up to', 'packeta' ) . ':' );
 		$item->setRequired();
-		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 		$item->addRule( Form::MIN, null, 0 );
 		$item->addCondition( Form::MAX, 0 )
 			->addCondition( Form::MIN, 0 )
 			// translators: %d is the value.
-			->addRule( Form::BLANK, __( 'valueMustNotBe%d', 'packetery' ), 0 );
+			->addRule( Form::BLANK, __( 'Value must not be %d', 'packeta' ), 0 );
 
-		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packetery' ) . ':' );
+		$item = $limit->addText( 'surcharge', __( 'Surcharge', 'packeta' ) . ':' );
 		$item->setRequired();
-		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packetery' ) );
+		$item->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 		$item->addRule( Form::MIN, null, 0 );
 	}
 

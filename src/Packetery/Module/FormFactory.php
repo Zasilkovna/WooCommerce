@@ -37,12 +37,12 @@ class FormFactory {
 			'init',
 			function () {
 				// translators: keep %d placeholder intact.
-				Validator::$messages[ Form::MIN ] = __( 'pleaseEnterValueGreaterThanOrEqualTo%d', 'packetery' );
+				Validator::$messages[ Form::MIN ] = __( 'Please enter value greater than or equal to %d', 'packeta' );
 				// translators: keep %d placeholder intact.
-				Validator::$messages[ Form::MAX ]     = __( 'pleaseEnterValueLessThanOrEqualTo%d', 'packetery' );
-				Validator::$messages[ Form::INTEGER ] = __( 'enterValidNumber', 'packetery' );
-				Validator::$messages[ Form::FLOAT ]   = __( 'enterValidNumber', 'packetery' );
-				Validator::$messages[ Form::FILLED ]  = __( 'thisFieldIsRequired', 'packetery' );
+				Validator::$messages[ Form::MAX ]     = __( 'Please enter value less than or equal to %d', 'packeta' );
+				Validator::$messages[ Form::INTEGER ] = __( 'Enter valid number', 'packeta' );
+				Validator::$messages[ Form::FLOAT ]   = __( 'Enter valid number', 'packeta' );
+				Validator::$messages[ Form::FILLED ]  = __( 'This field is required', 'packeta' );
 			},
 			11
 		);

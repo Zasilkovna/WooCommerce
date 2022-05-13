@@ -106,7 +106,7 @@ class GridExtender {
 				],
 				admin_url( 'edit.php' )
 			),
-			'title'      => __( 'packetaOrdersToSubmit', 'packetery' ),
+			'title'      => __( 'Packeta orders to submit', 'packeta' ),
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
@@ -122,7 +122,7 @@ class GridExtender {
 				],
 				admin_url( 'edit.php' )
 			),
-			'title'      => __( 'packetaOrdersToPrint', 'packetery' ),
+			'title'      => __( 'Packeta orders to print', 'packeta' ),
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
@@ -154,6 +154,11 @@ class GridExtender {
 			[
 				'packeteryOrderType' => $this->httpRequest->getQuery( 'packetery_order_type' ),
 				'linkFilters'        => $linkFilters,
+				'translations'       => [
+					'packetaMethodType'         => __( 'Packeta shipping method', 'packeta' ),
+					'carrierPackets'            => __( 'Carrier packets', 'packeta' ),
+					'packetaPickupPointPackets' => __( 'Packeta pickup points packets', 'packeta' ),
+				],
 			]
 		);
 	}
@@ -218,6 +223,11 @@ class GridExtender {
 						'packetSubmitUrl' => $packetSubmitUrl,
 						'restNonce'       => wp_create_nonce( 'wp_rest' ),
 						'printLink'       => $printLink,
+						'translations'    => [
+							'printLabel'      => __( 'Print label', 'packeta' ),
+							'setPacketWeight' => __( 'Set packet weight', 'packeta' ),
+							'submitToPacketa' => __( 'Submit to packeta', 'packeta' ),
+						],
 					]
 				);
 				break;
@@ -235,29 +245,29 @@ class GridExtender {
 	public function getPacketStatusTranslated( ?string $packetStatus ): string {
 		switch ( $packetStatus ) {
 			case 'received data':
-				return __( 'packetStatusReceivedData', 'packetery' );
+				return __( 'Data received', 'packeta' );
 			case 'arrived':
-				return __( 'packetStatusArrived', 'packetery' );
+				return __( 'Arrived', 'packeta' );
 			case 'prepared for departure':
-				return __( 'packetStatusPreparedForDeparture', 'packetery' );
+				return __( 'Prepared for departure', 'packeta' );
 			case 'departed':
-				return __( 'packetStatusDeparted', 'packetery' );
+				return __( 'Departed', 'packeta' );
 			case 'ready for pickup':
-				return __( 'packetStatusReadyForPickup', 'packetery' );
+				return __( 'Ready for pickup', 'packeta' );
 			case 'handed to carrier':
-				return __( 'packetStatusHandedToCarrier', 'packetery' );
+				return __( 'Handed to carrier', 'packeta' );
 			case 'delivered':
-				return __( 'packetStatusDelivered', 'packetery' );
+				return __( 'Delivered', 'packeta' );
 			case 'posted back':
-				return __( 'packetStatusPostedBack', 'packetery' );
+				return __( 'Posted back', 'packeta' );
 			case 'returned':
-				return __( 'packetStatusReturned', 'packetery' );
+				return __( 'Returned', 'packeta' );
 			case 'cancelled':
-				return __( 'packetStatusCancelled', 'packetery' );
+				return __( 'Cancelled', 'packeta' );
 			case 'collected':
-				return __( 'packetStatusCollected', 'packetery' );
+				return __( 'Collected', 'packeta' );
 			case 'unknown':
-				return __( 'packetStatusUnknown', 'packetery' );
+				return __( 'Unknown', 'packeta' );
 		}
 
 		return (string) $packetStatus;
@@ -278,9 +288,9 @@ class GridExtender {
 
 			if ( 'order_total' === $column_name ) {
 				// TODO: Packet status sync.
-				$new_columns['packetery']             = __( 'Packeta', 'packetery' );
-				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packetery' );
-				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packetery' );
+				$new_columns['packetery']             = __( 'Packeta', 'packeta' );
+				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packeta' );
+				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packeta' );
 			}
 		}
 

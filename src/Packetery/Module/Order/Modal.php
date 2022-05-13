@@ -74,6 +74,11 @@ class Modal {
 				'nonce'        => $nonce,
 				'orderSaveUrl' => $orderSaveUrl,
 				'form'         => $this->createForm(),
+				'translations' => [
+					// translators: %s represents order number.
+					'order#%s'        => __( 'Order #%s', 'packeta' ),
+					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
+				],
 			]
 		);
 	}
@@ -85,12 +90,12 @@ class Modal {
 	 */
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
-		$form->addText( 'packetery_weight', __( 'weight', 'packetery' ) . ' (kg)' )
+		$form->addText( 'packetery_weight', __( 'Weight', 'packeta' ) . ' (kg)' )
 			->setRequired( false )
 			->addRule( Form::FLOAT );
 
-		$form->addSubmit( 'submit', __( 'save', 'packetery' ) );
-		$form->addButton( 'cancel', __( 'cancel', 'packetery' ) );
+		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
+		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );
 
 		$form->setDefaults(
 			[

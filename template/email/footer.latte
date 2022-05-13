@@ -4,22 +4,22 @@
 
 {if $pickupPoint && $displayPickupPointInfo}
 <h2>
-    {__( 'Packeta', 'packetery' )} - {__( 'pickupPointDetail', 'packetery' )}
+    {$translations['packeta']} - {$translations['pickupPointDetail']}
 </h2>
 
 <table class="td" style="border-spacing: 0; border: 0; vertical-align: middle; width: 100%;">
     <tr>
-        <th class="td">{__( 'Pickup Point Name', 'packetery' )}</th>
+        <th class="td">{$translations['pickupPointName']}</th>
         <td class="td">{$pickupPoint->getName()}</td>
     </tr>
 	{if $pickupPoint->getUrl()}
 		<tr>
-			<th class="td">{__( 'Pickup Point Detail', 'packetery' )}</th>
-			<td class="td"><a href="{$pickupPoint->getUrl()}">{__( 'Link', 'packetery' )}</a></td>
+			<th class="td">{$translations['pickupPointDetail']}</th>
+			<td class="td"><a href="{$pickupPoint->getUrl()}">{$translations['link']}</a></td>
 		</tr>
 	{/if}
     <tr>
-        <th class="td">{__( 'Point Address', 'packetery' )}</th>
+        <th class="td">{$translations['pointAddress']}</th>
         <td class="td">{$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</td>
     </tr>
 </table>
@@ -27,29 +27,29 @@
 
 {if $validatedDeliveryAddress}
 <h2>
-    {__( 'Packeta', 'packetery' )} - {__( 'validated delivery address', 'packetery' )}
+    {$translations['packeta']} - {$translations['validatedDeliveryAddress']}
 </h2>
 
 <table class="td" style="border-spacing: 0; border: 0; vertical-align: middle; width: 100%;">
     <tr>
-        <th class="td">{__( 'street', 'packetery' )}</th>
+        <th class="td">{$translations['street']}</th>
         <td class="td">{$validatedDeliveryAddress->getStreet()}</td>
     </tr>
     <tr>
-        <th class="td">{__( 'houseNumber', 'packetery' )}</th>
+        <th class="td">{$translations['houseNumber']}</th>
         <td class="td">{$validatedDeliveryAddress->getHouseNumber()}</td>
     </tr>
     <tr>
-        <th class="td">{__( 'city', 'packetery' )}</th>
+        <th class="td">{$translations['city']}</th>
         <td class="td">{$validatedDeliveryAddress->getCity()}</td>
     </tr>
     <tr>
-        <th class="td">{__( 'zip', 'packetery' )}</th>
+        <th class="td">{$translations['zip']}</th>
         <td class="td">{$validatedDeliveryAddress->getZip()}</td>
     </tr>
     {if $validatedDeliveryAddress->getCounty()}
     <tr>
-        <th class="td">{__( 'county', 'packetery' )}</th>
+        <th class="td">{$translations['county']}</th>
         <td class="td">{$validatedDeliveryAddress->getCounty()}</td>
     </tr>
     {/if}
