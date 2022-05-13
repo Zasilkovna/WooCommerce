@@ -75,7 +75,7 @@ class Modal {
 				'orderSaveUrl' => $orderSaveUrl,
 				'form'         => $this->createForm(),
 				'translations' => [
-					// translators: %s represents order number
+					// translators: %s represents order number.
 					'order#%s'        => __( 'Order #%s', 'packeta' ),
 					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
 				],

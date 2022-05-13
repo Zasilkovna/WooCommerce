@@ -309,18 +309,18 @@ class OptionsPage {
 					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
 					'translations'   => [
 						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'Cannot use this carrier because requires customs declaration', 'packeta' ),
-						'delete'                                 => __( 'Delete', 'packeta' ),
-						'weightRules'                            => __( 'Weight rules', 'packeta' ),
-						'addWeightRule'                          => __( 'Add weight rule', 'packeta' ),
-						'codSurchargeRules'                      => __( 'COD surcharge rules', 'packeta' ),
-						'addCodSurchargeRule'                    => __( 'Add COD surcharge rule', 'packeta' ),
+						'delete'                       => __( 'Delete', 'packeta' ),
+						'weightRules'                  => __( 'Weight rules', 'packeta' ),
+						'addWeightRule'                => __( 'Add weight rule', 'packeta' ),
+						'codSurchargeRules'            => __( 'COD surcharge rules', 'packeta' ),
+						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
 						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
-						'addressValidationDescription'           => __( 'Customer address validation', 'packeta' ),
-						'saveChanges'                            => __( 'Save changes', 'packeta' ),
-						'packeta'                                => __( 'Packeta', 'packeta' ),
-						'countryOptions'                         => __( 'Country options', 'packeta' ),
-						'noKnownCarrierForThisCountry'           => __( 'No known carrier for this country.', 'packeta' ),
-					]
+						'addressValidationDescription' => __( 'Customer address validation', 'packeta' ),
+						'saveChanges'                  => __( 'Save changes', 'packeta' ),
+						'packeta'                      => __( 'Packeta', 'packeta' ),
+						'countryOptions'               => __( 'Country options', 'packeta' ),
+						'noKnownCarrierForThisCountry' => __( 'No known carrier for this country.', 'packeta' ),
+					],
 				]
 			);
 		} else {

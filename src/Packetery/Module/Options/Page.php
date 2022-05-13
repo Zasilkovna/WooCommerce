@@ -402,7 +402,7 @@ class Page {
 			'packeta'                      => __( 'Packeta', 'packeta' ),
 			'options'                      => __( 'Options', 'packeta' ),
 			'general'                      => __( 'General', 'packeta' ),
-			// translators: %s represents URL, keep intact
+			// translators: %s represents URL, keep intact.
 			'apiPasswordCanBeFoundAt%sUrl' => __( 'API password can be found at %s', 'packeta' ),
 			'saveChanges'                  => __( 'Save Changes', 'packeta' ),
 			'validateSender'               => __( 'Validate sender', 'packeta' ),
