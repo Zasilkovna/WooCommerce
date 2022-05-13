@@ -87,7 +87,7 @@ class PacketSynchronizer {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_PACKET_STATUS_SYNC;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'packetStatusSyncErrorLogTitle', 'packetery' );
+				$record->title  = __( 'Packet status sync error', 'packeta' );
 				$record->params = [
 					'orderId'      => $order->getNumber(),
 					'packetId'     => $request->getPacketId(),

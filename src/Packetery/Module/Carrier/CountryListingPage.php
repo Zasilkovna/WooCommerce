@@ -113,6 +113,21 @@ class CountryListingPage {
 			[
 				'carriersUpdate' => $carriersUpdateParams,
 				'countries'      => $countries,
+				'translations'   => [
+					'packeta'                    => __( 'Packeta', 'packeta' ),
+					'carriers'                   => __( 'Carriers', 'packeta' ),
+					'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
+					'countries'                  => __( 'Countries', 'packeta' ),
+					'activeCarrier'              => __( 'Active carrier', 'packeta' ),
+					'action'                     => __( 'Action', 'packeta' ),
+					'countryName'                => __( 'Country name', 'packeta' ),
+					'countryCode'                => __( 'Country code', 'packeta' ),
+					'setUp'                      => __( 'Set up', 'packeta' ),
+					'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
+					'lastCarrierUpdateDatetime'  => __( 'Date of last update of carriers', 'packeta' ),
+					'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded', 'packeta' ),
+					'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
+				],
 			]
 		);
 	}

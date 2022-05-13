@@ -69,7 +69,7 @@ class DataTab {
 	 */
 	public function registerTab( array $tabs ): array {
 		$tabs[ self::NAME ] = [
-			'label'  => __( 'Packeta', 'packetery' ),
+			'label'  => __( 'Packeta', 'packeta' ),
 			'target' => self::NAME,
 			'class'  => [ 'hide_if_virtual', 'hide_if_downloadable' ],
 		];
@@ -86,7 +86,7 @@ class DataTab {
 	 */
 	private function createForm( Product\Entity $product ): Form {
 		$form = $this->formFactory->create();
-		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'ageVerification18PlusLabel', 'packetery' ) );
+		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'Age verification 18+', 'packeta' ) );
 
 		$form->setDefaults(
 			[ Product\Entity::META_AGE_VERIFICATION_18_PLUS => $product->isAgeVerification18PlusRequired() ]
