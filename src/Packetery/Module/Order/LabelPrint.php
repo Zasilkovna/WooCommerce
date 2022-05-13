@@ -332,7 +332,7 @@ class LabelPrint {
 				$record->status = Log\Record::STATUS_SUCCESS;
 			$record->title  = __( 'Label has been printed successfully.', 'packeta' );
 		} else {
-				$record->status = Log\Record::STATUS_ERROR;
+			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Label could not be printed.', 'packeta' );
 				$record->params = [
 					'request'      => [
@@ -376,10 +376,10 @@ class LabelPrint {
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Carrier label has been printed successfully.', 'packeta' );
+				$record->title  = __( 'Carrier label has been printed successfully.', 'packeta' );
 		} else {
 				$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Carrier label could not be printed.', 'packeta' );
+				$record->title  = __( 'Carrier label could not be printed.', 'packeta' );
 				$record->params = [
 					'request'      => [
 						'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
