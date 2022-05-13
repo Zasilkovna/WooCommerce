@@ -179,7 +179,7 @@ class CollectionPrint {
 				'orderCount'          => count( $packetIds ),
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
 				'stylesheet'          => Plugin::buildAssetUrl( 'public/order-collection-print.css' ),
-				'translations' => [
+				'translations'        => [
 					'handoverPacketsHeading' => __( 'Handover packets', 'packeta' ),
 					'packetCount'            => __( 'Packet count', 'packeta' ),
 					'printedAt'              => __( 'Printed at', 'packeta' ),
@@ -204,8 +204,8 @@ class CollectionPrint {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'Print AWB', 'packetery' ),
-			__( 'Print AWB', 'packetery' ),
+			__( 'Print AWB', 'packeta' ),
+			__( 'Print AWB', 'packeta' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			[

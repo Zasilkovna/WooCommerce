@@ -140,8 +140,8 @@ class BulkActions {
 		}
 		$ignored = null;
 		if ( is_numeric( $get['ignored'] ) && $get['ignored'] > 0 ) {
-			// translators: %s is count.
 			$ignored = sprintf(
+			// translators: %s is count.
 				__( 'Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders).', 'packeta' ),
 				$get['ignored']
 			);

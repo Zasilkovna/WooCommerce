@@ -199,10 +199,10 @@ class Checkout {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
-				'logo' => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'logo'         => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'translations' => [
-					'packeta' => __('Packeta', 'packeta'),
-				]
+					'packeta' => __( 'Packeta', 'packeta' ),
+				],
 			]
 		);
 	}
@@ -266,13 +266,13 @@ class Checkout {
 					'appIdentity'       => Plugin::getAppIdentity(),
 					'packeteryApiKey'   => $this->options_provider->get_api_key(),
 					'translations'      => [
-						'choosePickupPoint'                         => __( 'Choose pickup point', 'packeta' ),
-						'chooseAddress'                             => __( 'Check shipping address', 'packeta' ),
-						'addressValidationIsOutOfOrder'             => __( 'Address validation is out of order', 'packeta' ),
-						'invalidAddressCountrySelected'             => __( 'Invalid address country selected', 'packeta' ),
-						'selectedShippingAddress'                   => __( 'Selected shipping address', 'packeta' ),
-						'addressIsValidated'                        => __( 'Address is validated', 'packeta' ),
-						'addressIsNotValidated'                     => __( 'Delivery address has not been verified.', 'packeta' ),
+						'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
+						'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
+						'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
+						'invalidAddressCountrySelected' => __( 'Invalid address country selected', 'packeta' ),
+						'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
+						'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
+						'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
 						'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 					],
 				],

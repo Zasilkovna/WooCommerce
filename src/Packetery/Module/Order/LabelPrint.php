@@ -158,11 +158,14 @@ class LabelPrint {
 				'count'         => $count,
 				'backLink'      => get_transient( self::getBackLinkTransientName() ),
 				'flashMessages' => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, self::MENU_SLUG ),
-				'translations' => [
+				'translations'  => [
 					'packeta'                => __( 'Packeta', 'packeta' ),
 					'labelPrinting'          => __( 'Print labels', 'packeta' ),
+					// translators: %s is count.
 					'willBePrinted1%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					// translators: %s is count.
 					'willBePrinted2%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					// translators: %s is count.
 					'willBePrinted5%sLabels' => __( 'There will be %s label printed', 'packeta' ),
 					'back'                   => __( 'back', 'packeta' ),
 					'printLabels'            => __( 'Print labels', 'packeta' ),

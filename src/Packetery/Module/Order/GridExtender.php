@@ -154,7 +154,7 @@ class GridExtender {
 			[
 				'packeteryOrderType' => $this->httpRequest->getQuery( 'packetery_order_type' ),
 				'linkFilters'        => $linkFilters,
-				'translations' => [
+				'translations'       => [
 					'packetaMethodType'         => __( 'Packeta shipping method', 'packeta' ),
 					'carrierPackets'            => __( 'Carrier packets', 'packeta' ),
 					'packetaPickupPointPackets' => __( 'Packeta pickup points packets', 'packeta' ),
@@ -223,7 +223,7 @@ class GridExtender {
 						'packetSubmitUrl' => $packetSubmitUrl,
 						'restNonce'       => wp_create_nonce( 'wp_rest' ),
 						'printLink'       => $printLink,
-						'translations' => [
+						'translations'    => [
 							'printLabel'      => __( 'Print label', 'packeta' ),
 							'setPacketWeight' => __( 'Set packet weight', 'packeta' ),
 							'submitToPacketa' => __( 'Submit to packeta', 'packeta' ),

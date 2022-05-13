@@ -397,26 +397,24 @@ class Page {
 			$latteParams['lastExport'] = $lastExport;
 		}
 
-		$latteParams['messages'] = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		$latteParams['messages']     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations'] = [
 			'packeta'                      => __( 'Packeta', 'packeta' ),
 			'options'                      => __( 'Options', 'packeta' ),
 			'general'                      => __( 'General', 'packeta' ),
+			// translators: %s represents URL, keep intact
 			'apiPasswordCanBeFoundAt%sUrl' => __( 'API password can be found at %s', 'packeta' ),
 			'saveChanges'                  => __( 'Save Changes', 'packeta' ),
 			'validateSender'               => __( 'Validate sender', 'packeta' ),
 			'support'                      => __( 'Support', 'packeta' ),
 			'optionsExportInfo1'           => __(
-				'By clicking the button, you will export the settings of your plugin into a '
-				. 'separate file. The export does not contain any sensitive information about '
-				. 'your e-shop. Please send the resulting file to the technical support of '
-				. 'Packeta (you can find the e-mail address here:',
-				'packeta' ),
+				'By clicking the button, you will export the settings of your plugin into a separate file. The export does not contain any sensitive information about your e-shop. Please send the resulting file to the technical support of Packeta (you can find the e-mail address here:',
+				'packeta'
+			),
 			'optionsExportInfo2'           => __(
-				') along with the description of your problem. For a better understanding of '
-				. 'your problem, we recommend adding screenshots, which show the problem (if '
-				. 'possible).',
-				'packeta' ),
+				') along with the description of your problem. For a better understanding of your problem, we recommend adding screenshots, which show the problem (if possible).',
+				'packeta'
+			),
 			'exportPluginSettings'         => __( 'Export the plugin settings', 'packeta' ),
 			'settingsExportDatetime'       => __( 'Date and time of the last export of settings', 'packeta' ),
 			'settingsNotYetExported'       => __( 'The settings have not been exported yet.', 'packeta' ),

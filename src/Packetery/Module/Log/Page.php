@@ -91,7 +91,7 @@ class Page {
 				'rows'               => $rows,
 				'translatedActions'  => $translatedActions,
 				'translatedStatuses' => $translatedStatuses,
-				'translations' => [
+				'translations'       => [
 					'packeta'        => __( 'Packeta', 'packeta' ),
 					'logsPageTitle'  => __( 'Log', 'packeta' ),
 					'status'         => __( 'Status', 'packeta' ),
