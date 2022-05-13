@@ -21,20 +21,6 @@
 	margin-bottom: 0;
 }
 
-.woocommerce #order_review table .packetery-widget-button-table-row {
-	padding: 0 !important;
-}
-
-.woocommerce #order_review table .packetery-widget-button-table-row th {
-	text-align: right;
-	vertical-align: top;
-}
-
-.woocommerce #order_review table .packetery-widget-button-table-row th img {
-	width: 64px;
-	margin-right: 5px;
-}
-
 .woocommerce #order_review table .packetery-widget-button-table-row td {
 	vertical-align: top;
 }

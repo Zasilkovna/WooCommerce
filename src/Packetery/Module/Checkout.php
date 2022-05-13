@@ -239,19 +239,18 @@ class Checkout {
 			return;
 		}
 
-		static $hiddenInputsRendered = false;
+		static $hiddenInputsRendered    = false;
 		static $hiddenFieldsRenderedFor = null;
 
 		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace && ( ! $hiddenInputsRendered || $shippingRate->get_id() === $hiddenFieldsRenderedFor ) ) {
 			$this->renderHiddenInputFields();
-			$hiddenInputsRendered = true;
+			$hiddenInputsRendered    = true;
 			$hiddenFieldsRenderedFor = $shippingRate->get_id();
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
-				'showLogo'     => true,
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
 				'logo'         => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
 				'translations' => [
@@ -537,7 +536,7 @@ class Checkout {
 	public function register_hooks(): void {
 		$activeTheme = strtolower( wp_get_theme()->get_stylesheet() );
 
-		if ( in_array( $activeTheme, [ 'divi', 'divi_child' ] ) ) {
+		if ( in_array( $activeTheme, [ 'divi', 'divi_child' ], true ) ) {
 			add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 			$this->shouldRenderHiddenFieldsAtDefaultPlace = false;
 		}
