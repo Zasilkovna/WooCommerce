@@ -145,7 +145,7 @@ class Metabox {
 
 		add_meta_box(
 			'packetery_metabox',
-			__( 'Packeta', 'packeta' ),
+			__( 'Packeta', 'packetery' ),
 			array(
 				$this,
 				'render_metabox',
@@ -161,23 +161,23 @@ class Metabox {
 	 */
 	public function add_fields(): void {
 		$this->order_form->addHidden( 'packetery_order_metabox_nonce' );
-		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
+		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packetery' ) )
 							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
+		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packetery' ) )
 							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$this->order_form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
+		$this->order_form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packetery' ) )
 							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$this->order_form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
+		$this->order_form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packetery' ) )
 							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packetery' ) );
 
 		foreach ( Checkout::$pickupPointAttrs as $attrs ) {
 			$this->order_form->addHidden( $attrs['name'] );
 		}
-		$this->order_form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
+		$this->order_form->addButton( 'packetery_pick_pickup_point', __( 'choosePickupPoint', 'packetery' ) );
 	}
 
 	/**
@@ -198,9 +198,6 @@ class Metabox {
 				[
 					'packet_id'           => $packetId,
 					'packet_tracking_url' => $this->helper->get_tracking_url( $packetId ),
-					'translations'        => [
-						'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
-					],
 				]
 			);
 
@@ -265,7 +262,7 @@ class Metabox {
 
 		if ( false === $this->order_form->isValid() ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
-			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			return $orderId;
 		}
@@ -273,13 +270,13 @@ class Metabox {
 		$values = $this->order_form->getValues( 'array' );
 
 		if ( ! wp_verify_nonce( $values['packetery_order_metabox_nonce'] ) ) {
-			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			return $orderId;
 		}
 
 		if ( ! current_user_can( 'edit_post', $orderId ) ) {
-			$this->message_manager->flash_message( __( 'You are not allowed to edit posts!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'You are not allowed to edit posts!', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			return $orderId;
 		}

@@ -27,7 +27,7 @@
 
     <rule ref="WordPress.WP.I18n">
         <properties>
-            <property name="text_domain" type="array" value="packeta" />
+            <property name="text_domain" type="array" value="packetery" />
         </properties>
     </rule>
 

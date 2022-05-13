@@ -113,7 +113,7 @@ class CollectionPrint {
 		}
 
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), 'info' );
+			$this->messageManager->flash_message( __( 'noOrdersSelected', 'packetery' ), 'info' );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -136,7 +136,7 @@ class CollectionPrint {
 
 		if ( ! $packetIds ) {
 			delete_transient( self::getOrderIdsTransientName() );
-			$this->messageManager->flash_message( __( 'Selected orders have no packet id', 'packeta' ), 'info' );
+			$this->messageManager->flash_message( __( 'selectedOrdersHaveNoPacketId', 'packetery' ), 'info' );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -150,7 +150,7 @@ class CollectionPrint {
 
 		if ( $shipmentResult->hasFault() ) {
 			delete_transient( self::getOrderIdsTransientName() );
-			$this->messageManager->flash_message( __( 'Unexpected error', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'unexpectedError', 'packetery' ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -159,7 +159,7 @@ class CollectionPrint {
 		$shipmentBarcodeResult = $this->requestBarcodePng( $shipmentResult->getBarcode() );
 		delete_transient( self::getOrderIdsTransientName() );
 		if ( $shipmentBarcodeResult->hasFault() ) {
-			$this->messageManager->flash_message( __( 'Unexpected error', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'unexpectedError', 'packetery' ), MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
@@ -179,20 +179,6 @@ class CollectionPrint {
 				'orderCount'          => count( $packetIds ),
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
 				'stylesheet'          => Plugin::buildAssetUrl( 'public/order-collection-print.css' ),
-				'translations'        => [
-					'handoverPacketsHeading' => __( 'Handover packets', 'packeta' ),
-					'packetCount'            => __( 'Packet count', 'packeta' ),
-					'printedAt'              => __( 'Printed at', 'packeta' ),
-					'sender'                 => __( 'Sender', 'packeta' ),
-					'recipient'              => __( 'Recipient', 'packeta' ),
-					'orderNumber'            => __( 'Order number', 'packeta' ),
-					'barcode'                => __( 'Barcode', 'packeta' ),
-					'created'                => __( 'Created', 'packeta' ),
-					'nameAndSurname'         => __( 'Name and surname', 'packeta' ),
-					'cod'                    => __( 'C.O.D.', 'packeta' ),
-					'pickUpPointOrCarrier'   => __( 'Pick up point or carrier', 'packeta' ),
-					'end'                    => __( 'END', 'packeta' ),
-				],
 			]
 		);
 		exit;
@@ -204,8 +190,8 @@ class CollectionPrint {
 	public function register(): void {
 		add_submenu_page(
 			\Packetery\Module\Options\Page::SLUG,
-			__( 'Print AWB', 'packeta' ),
-			__( 'Print AWB', 'packeta' ),
+			__( 'orderCollectionPrintMenuSlugLabel', 'packetery' ),
+			__( 'orderCollectionPrintMenuSlugLabel', 'packetery' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			[

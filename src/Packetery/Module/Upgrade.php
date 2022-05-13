@@ -148,12 +148,12 @@ class Upgrade {
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->messageManager->flash_message( __( 'Order table was not created, you can find more information in Packeta log', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Order table was not created', 'packeta' );
+			$record->title  = __( 'orderTableNotCreated', 'packetery' );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
