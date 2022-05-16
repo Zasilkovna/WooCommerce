@@ -317,7 +317,7 @@ class Checkout {
 					'weight'                    => $this->getCartWeightKg(),
 					'carrierConfig'             => $carrierConfig,
 					// TODO: Settings are not updated on AJAX checkout update. Needs rework due to possible checkout solutions allowing cart update.
-					'isAgeVerificationRequired' => $this->isAgeVerificationRequired(),
+					'isAgeVerificationRequired' => $this->isAgeVerification18PlusRequired(),
 					'pickupPointAttrs'          => self::$pickupPointAttrs,
 					'homeDeliveryAttrs'         => self::$homeDeliveryAttrs,
 					'appIdentity'               => Plugin::getAppIdentity(),
@@ -630,9 +630,17 @@ class Checkout {
 			return;
 		}
 
-		$carrierOptions = get_option( $chosenShippingMethod );
-		if ( ! $carrierOptions ) {
-			return;
+		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
+		$chosenCarrier  = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenShippingMethod ) );
+
+		if ( $chosenCarrier->supportsAgeVerification() && null !== $carrierOptions->getAgeVerificationFee() && $this->isAgeVerification18PlusRequired() ) {
+			WC()->cart->fees_api()->add_fee(
+				[
+					'id'     => 'packetery-age-verification-fee',
+					'name'   => __( 'Age verification fee', 'packetery' ),
+					'amount' => $carrierOptions->getAgeVerificationFee(),
+				]
+			);
 		}
 
 		$isCod               = false;
@@ -646,7 +654,7 @@ class Checkout {
 			return;
 		}
 
-		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions, $this->getCartPrice() );
+		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions->toArray(), $this->getCartPrice() );
 
 		// WooCommerce currency-switcher.com compatibility.
 		$applicableSurcharge = $this->applyFilterWoocsExchangeValue( $applicableSurcharge );
@@ -684,7 +692,7 @@ class Checkout {
 		$carrierOptions    = [];
 
 		foreach ( $availableCarriers as $carrier ) {
-			if ( $this->isAgeVerificationRequired() && false === $carrier->supportsAgeVerification() ) {
+			if ( $this->isAgeVerification18PlusRequired() && false === $carrier->supportsAgeVerification() ) {
 				continue;
 			}
 
@@ -793,18 +801,32 @@ class Checkout {
 	 * @return string|null
 	 */
 	public function getCarrierId( string $chosenMethod ): ?string {
+		$branchServiceId = $this->getExtendedBranchServiceId( $chosenMethod );
+		if ( null === $branchServiceId ) {
+			return null;
+		}
+
+		if ( strpos( $branchServiceId, 'zpoint' ) === 0 ) {
+			return Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
+		}
+
+		return $branchServiceId;
+	}
+
+	/**
+	 * Gets feed ID or artificially created ID for internal purposes.
+	 *
+	 * @param string $chosenMethod Chosen method.
+	 *
+	 * @return string|null
+	 */
+	public function getExtendedBranchServiceId( string $chosenMethod ): ?string {
 		if ( ! $this->isPacketeryOrder( $chosenMethod ) ) {
 			return null;
 		}
 
-		$carrierId = str_replace( self::CARRIER_PREFIX, '', $chosenMethod );
-		if ( strpos( $carrierId, 'zpoint' ) === 0 ) {
-			return Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
-		}
-
-		return $carrierId;
+		return str_replace( self::CARRIER_PREFIX, '', $chosenMethod );
 	}
-
 
 	/**
 	 * Checks if chosen shipping method is one of packetery.
@@ -867,7 +889,7 @@ class Checkout {
 	 *
 	 * @return bool
 	 */
-	private function isAgeVerificationRequired(): bool {
+	private function isAgeVerification18PlusRequired(): bool {
 		$products = WC()->cart->get_cart();
 
 		foreach ( $products as $product ) {

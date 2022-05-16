@@ -185,6 +185,20 @@
 					</td>
 				</tr>
 				{/if}
+				{if isset($form['age_verification_fee'])}
+				<tr>
+					<th scope="row">
+						<label n:name=age_verification_fee />
+					</th>
+					<td>
+						<div>
+							<input n:name=age_verification_fee data-lfv-message-id="{$form[age_verification_fee]->getHtmlId() . '_message'}">
+							<span> {$globalCurrency|noescape}</span>
+						</div>
+						<p class="packetery-input-validation-message help-block text-danger" id="{$form[age_verification_fee]->getHtmlId() . '_message'}">{inputError age_verification_fee}</p>
+					</td>
+				</tr>
+				{/if}
 			</table>
 
 			<p class="submit">

@@ -34,7 +34,23 @@ class Options {
 	}
 
 	/**
-	 * Carrier ID.
+	 * Creates instance by option ID.
+	 *
+	 * @param string $optionId Option ID.
+	 *
+	 * @return static
+	 */
+	public static function createByOptionId( string $optionId ): self {
+		$options = get_option( $optionId );
+		if ( empty( $options ) ) {
+			$options = [];
+		}
+
+		return new self( $options );
+	}
+
+	/**
+	 * Creates instance by carrier ID.
 	 *
 	 * @param string $carrierId Carrier ID.
 	 *
@@ -42,12 +58,30 @@ class Options {
 	 */
 	public static function createByCarrierId( string $carrierId ): self {
 		$optionId = Checkout::CARRIER_PREFIX . $carrierId;
-		$options  = get_option( $optionId );
-		if ( empty( $options ) ) {
-			$options = [];
+		return self::createByOptionId( $optionId );
+	}
+
+	/**
+	 * Returns all options as assoc array.
+	 *
+	 * @return array
+	 */
+	public function toArray(): array {
+		return $this->options;
+	}
+
+	/**
+	 * Age verification fee.
+	 *
+	 * @return float|null
+	 */
+	public function getAgeVerificationFee(): ?float {
+		$value = $this->options['age_verification_fee'] ?? null;
+		if ( is_numeric( $value ) ) {
+			return (float) $value;
 		}
 
-		return new self( $options );
+		return null;
 	}
 
 	/**

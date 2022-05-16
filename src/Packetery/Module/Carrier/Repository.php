@@ -172,6 +172,29 @@ class Repository {
 	}
 
 	/**
+	 * Gets feed carrier or packeta carrier by id.
+	 *
+	 * @param string $extendedBranchServiceId Extended branch service id.
+	 *
+	 * @return Entity\Carrier|null
+	 */
+	public function getAnyById( string $extendedBranchServiceId ): ?Entity\Carrier {
+		$zpointCarriers = $this->getZpointCarriers();
+
+		foreach ( $zpointCarriers as $zpointCountry => $zpointCarrier ) {
+			if ( $zpointCarrier['id'] === $extendedBranchServiceId ) {
+				return $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier + [ 'country' => $zpointCountry ] );
+			}
+		}
+
+		if ( ! is_numeric( $extendedBranchServiceId ) ) {
+			return null;
+		}
+
+		return $this->getById( (int) $extendedBranchServiceId );
+	}
+
+	/**
 	 * Gets all active carriers for a country.
 	 *
 	 * @param string $country ISO code.
