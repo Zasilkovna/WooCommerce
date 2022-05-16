@@ -567,7 +567,7 @@ class Checkout {
 
 		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions, $this->getCartPrice() );
 
-		// WooCommerce currency-switcher.com compatibility
+		// WooCommerce currency-switcher.com compatibility.
 		$applicableSurcharge = $this->applyFilterWoocsExchangeValue( $applicableSurcharge );
 
 		if ( 0 >= $applicableSurcharge ) {
@@ -655,7 +655,7 @@ class Checkout {
 			$cost = 0;
 		}
 
-		//WooCommerce currency-switcher.com compatibility
+		//WooCommerce currency-switcher.com compatibility.
 		return $this->applyFilterWoocsExchangeValue( (float)$cost );
 	}
 
@@ -732,8 +732,8 @@ class Checkout {
 	}
 
     /**
-     * WooCommerce currency-switcher.com compatibility
-     * @param float $value
+     * WooCommerce currency-switcher.com compatibility - filter woocs_exchange_value applied
+     * @param float $value Value of the surcharge or transport price.
      * @return float
      */
     private function applyFilterWoocsExchangeValue( float $value): float {
