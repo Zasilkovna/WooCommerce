@@ -566,6 +566,10 @@ class Checkout {
 		}
 
 		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions, $this->getCartPrice() );
+
+		// WooCommerce currency-switcher.com compatibility
+		$applicableSurcharge = $this->applyFilterWoocsExchangeValue( $applicableSurcharge );
+
 		if ( 0 >= $applicableSurcharge ) {
 			return;
 		}
@@ -651,7 +655,8 @@ class Checkout {
 			$cost = 0;
 		}
 
-		return $cost;
+		//WooCommerce currency-switcher.com compatibility
+		return $this->applyFilterWoocsExchangeValue( (float)$cost );
 	}
 
 	/**
@@ -725,6 +730,19 @@ class Checkout {
 	private function isPacketeryOrder( string $chosenMethod ): bool {
 		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) === 0 );
 	}
+
+    /**
+     * WooCommerce currency-switcher.com compatibility
+     * @param float $value
+     * @return float
+     */
+    private function applyFilterWoocsExchangeValue( float $value): float {
+        if ( 0 < $value ) {
+            $value = (float)apply_filters( 'woocs_exchange_value', $value );
+        }
+
+        return $value;
+    }
 
 	/**
 	 * Update order shipping.
