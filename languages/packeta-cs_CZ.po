@@ -226,12 +226,6 @@ msgstr ""
 msgid "Pick up point is not chosen."
 msgstr "Není vybráno výdejní místo."
 
-#: src/Packetery/Module/Checkout.php:350
-msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
-msgstr ""
-"Adresa doručení nebyla ověřena. Ověření adresy doručení u tohoto dopravce je "
-"povinné."
-
 #: src/Packetery/Module/Checkout.php:561
 msgid "COD surcharge"
 msgstr "Přirážka za dobírku"
@@ -411,15 +405,6 @@ msgstr "Zvolené objednávky nebyly odeslány do Zásilkovny"
 msgid "Unexpected error"
 msgstr "Neočekávaná chyba"
 
-#: src/Packetery/Module/Order/CollectionPrint.php:193
-#: src/Packetery/Module/Order/CollectionPrint.php:194
-msgid "Print AWB"
-msgstr "Tisk seznamu zásilek"
-
-#: src/Packetery/Module/Order/Controller.php:186
-msgid "Success"
-msgstr "Úspěch"
-
 #: src/Packetery/Module/Order/GridExtender.php:109
 msgid "Packeta orders to submit"
 msgstr "Zásilkovna - zásilky k podání"
@@ -510,12 +495,6 @@ msgstr "vynechat %s polí na první stránce"
 #: src/Packetery/Module/Order/LabelPrint.php:268
 msgid "labelsOffset"
 msgstr "Vynechat polí"
-
-#: src/Packetery/Module/Order/LabelPrint.php:281
-#: src/Packetery/Module/Order/LabelPrint.php:282
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:75
-msgid "Print labels"
-msgstr "Vytisknout štítky"
 
 #: src/Packetery/Module/Order/LabelPrint.php:322
 msgid "Label print success"
@@ -616,19 +595,11 @@ msgid ""
 msgstr ""
 "Tabulka dopravců nebyla vytvořena, více informací naleznete v logu pluginu"
 
-#: src/Packetery/Module/Plugin.php:680
-msgid "Carrier table was not created"
-msgstr "Tabulka dopravců nebyla vytvořena"
-
 #: src/Packetery/Module/Plugin.php:690 src/Packetery/Module/Upgrade.php:147
 msgid ""
 "Order table was not created, you can find more information in Packeta log"
 msgstr ""
 "Tabulka objednávek nebyla vytvořena, více informací naleznete v logu pluginu"
-
-#: src/Packetery/Module/Plugin.php:695 src/Packetery/Module/Upgrade.php:152
-msgid "Order table was not created"
-msgstr "Tabulka objednávek nebyla vytvořena"
 
 #: src/Packetery/Module/Plugin.php:743
 msgid "View Packeta settings"
@@ -750,12 +721,6 @@ msgstr "Detail výdejního místa"
 msgid "Pickup Point Name"
 msgstr "Název výdejního místa"
 
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:35
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:45
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:39
-msgid "Pickup Point Detail"
-msgstr "Detail výdejního místa"
-
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:40
 msgid "Link"
 msgstr "Odkaz"
@@ -800,10 +765,6 @@ msgstr "Stav"
 #: temp/cache/view/template-log-page.latte--29176314a4.php:27
 msgid "Date and time"
 msgstr "Datum a čas"
-
-#: temp/cache/view/template-log-page.latte--29176314a4.php:30
-msgid "Action"
-msgstr "Akce"
 
 #: temp/cache/view/template-log-page.latte--29176314a4.php:33
 msgid "Note"
@@ -878,10 +839,6 @@ msgstr "Počet zásilek"
 msgid "Printed at"
 msgstr "Vytištěno"
 
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:55
-msgid "Sender"
-msgstr "Odesílatel"
-
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:71
 msgid "Recipient"
 msgstr "Příjemce"
@@ -889,10 +846,6 @@ msgstr "Příjemce"
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:84
 msgid "Order number"
 msgstr "Číslo objednávky"
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:87
-msgid "Barcode"
-msgstr "Trasovací číslo"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:90
 msgid "Created"
@@ -974,24 +927,10 @@ msgstr "Nastavit hmotnost zásilky"
 msgid "Submit to packeta"
 msgstr "Odeslat do Zásilkovny"
 
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:17
-msgid "Print labels"
-msgstr "tisk štítků"
-
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:26
-msgid "There will be %s label printed1"
-msgstr "Vytiskne se %s štítek"
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:31
-msgid "There will be %s label printed2"
-msgstr "Vytisknou se %s štítky"
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:36
-msgid "There will be %s label printed5"
-msgstr "Vytiskne se %s štítků"
+msgid "Number of labels to print: %s"
+msgstr "Počet štítků k tisku: %s"
 
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:72
 msgid "Back"
@@ -1033,9 +972,6 @@ msgstr "Zásilky na výdejní místa Zásilkovny"
 
 #~ msgid "pleaseEnterValidNumber"
 #~ msgstr "Zadejte prosím platné číslo."
-
-#~ msgid "Choose pickup point"
-#~ msgstr "Výběr místa vyzvednutí"
 
 #~ msgid "Shipping Detail"
 #~ msgstr "Detail výdejního místa"

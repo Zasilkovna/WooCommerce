@@ -3,16 +3,7 @@
 		<h1>{$translations['packeta']} - {$translations['labelPrinting']}</h1>
 		{$flashMessages|noescape}
 		<p>
-			{if $count === 1}
-				{phpComment 'translators: %s is count.'}
-				{sprintf( $translations['willBePrinted1%sLabels'], $count)}
-			{elseif $count < 5}
-				{phpComment 'translators: %s is count.'}
-				{sprintf( $translations['willBePrinted2%sLabels'], $count)}
-			{else}
-				{phpComment 'translators: %s is count.'}
-				{sprintf( $translations['willBePrinted5%sLabels'], $count)}
-			{/if}
+			{sprintf( $translations['numberOfLabelsToPrint'], $count)}
 		</p>
 	</section>
 	<form n:name=$form class="packetery-offset">

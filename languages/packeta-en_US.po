@@ -412,15 +412,6 @@ msgstr "Selected orders have no packet id"
 msgid "Unexpected error"
 msgstr "Unexpected error"
 
-#: src/Packetery/Module/Order/CollectionPrint.php:193
-#: src/Packetery/Module/Order/CollectionPrint.php:194
-msgid "Print AWB"
-msgstr "Print AWB"
-
-#: src/Packetery/Module/Order/Controller.php:186
-msgid "Success"
-msgstr "Success"
-
 #: src/Packetery/Module/Order/GridExtender.php:109
 msgid "Packeta orders to submit"
 msgstr "Packeta orders to submit"
@@ -511,12 +502,6 @@ msgstr "skip %s fields on first sheet"
 #: src/Packetery/Module/Order/LabelPrint.php:268
 msgid "Skip fields"
 msgstr "Skip fields"
-
-#: src/Packetery/Module/Order/LabelPrint.php:281
-#: src/Packetery/Module/Order/LabelPrint.php:282
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:75
-msgid "Print labels"
-msgstr "Print labels"
 
 #: src/Packetery/Module/Order/LabelPrint.php:322
 msgid "Label print success"
@@ -616,19 +601,11 @@ msgid ""
 msgstr ""
 "Carrier table was not created, you can find more information in Packeta log"
 
-#: src/Packetery/Module/Plugin.php:680
-msgid "Carrier table was not created"
-msgstr "Carrier table was not created"
-
 #: src/Packetery/Module/Plugin.php:690 src/Packetery/Module/Upgrade.php:147
 msgid ""
 "Order table was not created, you can find more information in Packeta log"
 msgstr ""
 "Order table was not created, you can find more information in Packeta log"
-
-#: src/Packetery/Module/Plugin.php:695 src/Packetery/Module/Upgrade.php:152
-msgid "Order table was not created"
-msgstr "Order table was not created"
 
 #: src/Packetery/Module/Plugin.php:743
 msgid "View Packeta settings"
@@ -748,12 +725,6 @@ msgstr "Pickup Point Detail"
 msgid "Pickup Point Name"
 msgstr "Pickup Point Name"
 
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:35
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:45
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:39
-msgid "Pickup Point Detail"
-msgstr "Pickup Point Detail"
-
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:40
 msgid "Link"
 msgstr "Link"
@@ -798,10 +769,6 @@ msgstr "Status"
 #: temp/cache/view/template-log-page.latte--29176314a4.php:27
 msgid "Date and time"
 msgstr "Date and time"
-
-#: temp/cache/view/template-log-page.latte--29176314a4.php:30
-msgid "Action"
-msgstr "Action"
 
 #: temp/cache/view/template-log-page.latte--29176314a4.php:33
 msgid "Note"
@@ -878,10 +845,6 @@ msgstr "Packet count"
 msgid "Printed at"
 msgstr "Printed at"
 
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:55
-msgid "Sender"
-msgstr "Sender"
-
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:71
 msgid "Recipient"
 msgstr "Recipient"
@@ -889,10 +852,6 @@ msgstr "Recipient"
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:84
 msgid "Order number"
 msgstr "Order number"
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:87
-msgid "Barcode"
-msgstr "Barcode"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:90
 msgid "Created"
@@ -974,24 +933,10 @@ msgstr "Set packet weight"
 msgid "Submit to packeta"
 msgstr "Submit to packeta"
 
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:17
-msgid "Print labels"
-msgstr "Print labels"
-
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:26
-msgid "There will be %s label printed1"
-msgstr "There will be %s label printed"
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:31
-msgid "There will be %s label printed2"
-msgstr "There will be %s labels printed"
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:36
-msgid "There will be %s label printed5"
-msgstr "There will be %s labels printed"
+msgid "Number of labels to print: %s"
+msgstr "Number of labels to print: %s"
 
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:72
 msgid "Back"
@@ -1033,9 +978,6 @@ msgstr "Packeta pickup points packets"
 
 #~ msgid "pleaseEnterValidNumber"
 #~ msgstr "Please enter a valid decimal number."
-
-#~ msgid "Choose pickup point"
-#~ msgstr "Choose pickup point"
 
 #~ msgid "Shipping Detail"
 #~ msgstr "Shipping Detail"

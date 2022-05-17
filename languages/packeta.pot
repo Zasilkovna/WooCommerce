@@ -939,17 +939,7 @@ msgstr ""
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:26
-msgid "There will be %s label printed1"
-msgstr ""
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:31
-msgid "There will be %s label printed2"
-msgstr ""
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:36
-msgid "There will be %s label printed5"
+msgid "Number of labels to print: %s"
 msgstr ""
 
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:72
