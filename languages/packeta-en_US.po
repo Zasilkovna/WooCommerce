@@ -149,6 +149,9 @@ msgstr "Surcharge rules are overlapping, fix it please."
 msgid "settingsSaved"
 msgstr "Settings saved"
 
+msgid "Save changes"
+msgstr "Save changes"
+
 #: src/Packetery/Module/Carrier/OptionsPage.php:385
 msgid "Weight up to"
 msgstr "Weight up to"

@@ -404,7 +404,7 @@ class Page {
 			'general'                      => __( 'General', 'packeta' ),
 			// translators: %s represents URL, keep intact.
 			'apiPasswordCanBeFoundAt%sUrl' => __( 'API password can be found at %s', 'packeta' ),
-			'saveChanges'                  => __( 'Save Changes', 'packeta' ),
+			'saveChanges'                  => __( 'Save changes', 'packeta' ),
 			'validateSender'               => __( 'Validate sender', 'packeta' ),
 			'support'                      => __( 'Support', 'packeta' ),
 			'optionsExportInfo1'           => __(

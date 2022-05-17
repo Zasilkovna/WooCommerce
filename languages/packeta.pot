@@ -132,6 +132,9 @@ msgstr ""
 msgid "Settings saved"
 msgstr ""
 
+msgid "Save changes"
+msgstr ""
+
 #: src/Packetery/Module/Carrier/OptionsPage.php:385
 msgid "Weight up to"
 msgstr ""

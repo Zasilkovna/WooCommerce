@@ -149,6 +149,9 @@ msgstr "Pravidla přirážky se překrývají, opravte to prosím."
 msgid "Settings saved"
 msgstr "Nastavení uloženo"
 
+msgid "Save changes"
+msgstr "Uložit změny"
+
 #: src/Packetery/Module/Carrier/OptionsPage.php:385
 msgid "Weight up to"
 msgstr "Hmotnost do"
