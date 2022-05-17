@@ -956,6 +956,10 @@ msgstr "Zásielky na prepravcov"
 msgid "Packeta pickup points packets"
 msgstr "Zásielky na výdajné miesta Packeta"
 
+#. translators: %s represents order number.
+msgid "Order #%s"
+msgstr "Objednávka #%s"
+
 #~ msgid "Addresses"
 #~ msgstr "Adresa"
 

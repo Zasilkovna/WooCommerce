@@ -961,6 +961,10 @@ msgstr "Carrier packets"
 msgid "Packeta pickup points packets"
 msgstr "Packeta pickup points packets"
 
+#. translators: %s represents order number.
+msgid "Order #%s"
+msgstr "Order #%s"
+
 #~ msgid "Addresses"
 #~ msgstr "Addresses"
 

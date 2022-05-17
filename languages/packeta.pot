@@ -964,3 +964,7 @@ msgstr ""
 #: temp/cache/view/template-order-type-select.latte--58bb4b596e.php:29
 msgid "Packeta pickup points packets"
 msgstr ""
+
+#. translators: %s represents order number.
+msgid "Order #%s"
+msgstr ""
