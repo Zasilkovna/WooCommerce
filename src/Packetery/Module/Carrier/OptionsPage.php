@@ -168,7 +168,7 @@ class OptionsPage {
 				'optional' => __( 'Optional address validation', 'packeta' ),
 				'required' => __( 'Required address validation', 'packeta' ),
 			];
-			$form->addSelect( 'address_validation', __( 'Address ', 'packeta' ) . ':', $addressValidationOptions )
+			$form->addSelect( 'address_validation', __( 'Address validation', 'packeta' ) . ':', $addressValidationOptions )
 				->setDefaultValue( 'none' );
 		}
 
