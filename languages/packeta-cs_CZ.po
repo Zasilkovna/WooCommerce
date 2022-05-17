@@ -518,27 +518,27 @@ msgid "Print labels"
 msgstr "Vytisknout štítky"
 
 #: src/Packetery/Module/Order/LabelPrint.php:322
-msgid "labelPrintSuccessLogTitle"
+msgid "Label print success"
 msgstr "Akce 'Vytvoření zásilky' proběhla úspěšně."
 
 #: src/Packetery/Module/Order/LabelPrint.php:328
-msgid "labelPrintErrorLogTitle"
+msgid "Label print error"
 msgstr "Akce 'Vytvoření zásilky' skončilo chybou."
 
 #: src/Packetery/Module/Order/LabelPrint.php:366
-msgid "carrierLabelPrintSuccessLogTitle"
+msgid "Carrier label print success"
 msgstr "Validace odesílatele proběhla úspěšně"
 
 #: src/Packetery/Module/Order/LabelPrint.php:372
-msgid "carrierLabelPrintErrorLogTitle"
+msgid "Carrier label print error"
 msgstr "Validace odesílatele skončila chybou"
 
 #: src/Packetery/Module/Order/LabelPrint.php:433
-msgid "pleaseSetProperPassword"
+msgid "Please set proper API password."
 msgstr "Nastavte prosím platné API heslo."
 
 #: src/Packetery/Module/Order/LabelPrint.php:441
-msgid "carrierNumberRetrievingErrorLogTitle"
+msgid "Carrier number retrieving error"
 msgstr "Akce “Získání trasovacího čísla externího dopravce” byla neúspěšná."
 
 #: src/Packetery/Module/Order/Metabox.php:164
@@ -577,52 +577,57 @@ msgid "You are not allowed to edit posts!"
 msgstr "Nejste oprávněni upravovat příspěvky!"
 
 #: src/Packetery/Module/Order/Modal.php:88
-msgid "weight"
+msgid "Weight"
 msgstr "Hmotnost"
 
 #: src/Packetery/Module/Order/Modal.php:92
-msgid "save"
+msgid "Save"
 msgstr "Uložit"
 
 #: src/Packetery/Module/Order/Modal.php:93
-msgid "cancel"
+msgid "Cancel"
 msgstr "Zrušit"
+
+msgid "Close modal panel"
+msgstr "Zavřít modální panel"
 
 #: src/Packetery/Module/Order/PacketSubmitter.php:103
 #: src/Packetery/Module/Order/PacketSubmitter.php:120
-msgid "packetSendingErrorLogTitle"
+msgid "Packet sending error"
 msgstr "Akce 'Vytvoření zásilky' skončilo chybou."
 
 #: src/Packetery/Module/Order/PacketSubmitter.php:138
-msgid "packetSendingSuccessLogTitle"
+msgid "Packet sending success"
 msgstr "Akce 'Vytvoření zásilky' proběhla úspěšně."
 
 #: src/Packetery/Module/Order/PacketSynchronizer.php:90
-msgid "packetStatusSyncErrorLogTitle"
+msgid "Packet status sync error"
 msgstr "Akce 'Synchronizace stavu zásilky' skončila chybou."
 
 #: src/Packetery/Module/Plugin.php:409
-msgid "packetaPluginRequiresWooCommerce"
+msgid "Packeta plugin requires WooCommerce. Please install and activate it first."
 msgstr ""
 "Plugin Zásilkovny vyžaduje WooCommerce. Nejprve jej prosím nainstalujte a "
 "aktivujte."
 
 #: src/Packetery/Module/Plugin.php:675
-msgid "carrierTableNotCreatedMoreInformationInPacketaLog"
+msgid ""
+"Carrier table was not created, you can find more information in Packeta log"
 msgstr ""
 "Tabulka dopravců nebyla vytvořena, více informací naleznete v logu pluginu"
 
 #: src/Packetery/Module/Plugin.php:680
-msgid "carrierTableNotCreated"
+msgid "Carrier table was not created"
 msgstr "Tabulka dopravců nebyla vytvořena"
 
 #: src/Packetery/Module/Plugin.php:690 src/Packetery/Module/Upgrade.php:147
-msgid "orderTableNotCreatedMoreInformationInPacketaLog"
+msgid ""
+"Order table was not created, you can find more information in Packeta log"
 msgstr ""
 "Tabulka objednávek nebyla vytvořena, více informací naleznete v logu pluginu"
 
 #: src/Packetery/Module/Plugin.php:695 src/Packetery/Module/Upgrade.php:152
-msgid "orderTableNotCreated"
+msgid "Order table was not created"
 msgstr "Tabulka objednávek nebyla vytvořena"
 
 #: src/Packetery/Module/Plugin.php:743
@@ -638,7 +643,7 @@ msgid "Documentation"
 msgstr "Dokumentace"
 
 #: src/Packetery/Module/Product/DataTab.php:89
-msgid "ageVerification18PlusLabel"
+msgid "Age verification 18+"
 msgstr "Ověření věku 18+"
 
 #: src/Packetery/Module/ShippingMethod.php:35
@@ -647,7 +652,7 @@ msgid "Packeta Shipping Method"
 msgstr "Packeta"
 
 #: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:27
-msgid "cannotUseThisCarrierBecauseRequiresCustomsDeclaration"
+msgid "Cannot use this carrier because requires customs declaration"
 msgstr "Tohoto dopravce nelze použít, protože vyžaduje zadání celní deklarace"
 
 #: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:159
@@ -655,7 +660,7 @@ msgid "After exceeding this amount, shipping is free."
 msgstr "Po překročení této částky je dopravné zdarma."
 
 #: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:184
-msgid "addressValidationDescription"
+msgid "Customer address validation"
 msgstr "Validace doručovacích adres zákazníků"
 
 #: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:293
@@ -684,21 +689,21 @@ msgid "Carriers"
 msgstr "Dopravci"
 
 #: temp/cache/view/template-carrier-countries.latte--7b27041338.php:37
-msgid "carriersUpdate"
+msgid "Carriers update"
 msgstr "Aktualizace dopravců"
 
 #: temp/cache/view/template-carrier-countries.latte--7b27041338.php:44
-msgid "lastCarrierUpdateDatetime"
+msgid "Date of last update of carriers"
 msgstr "Datum poslední aktualizace dopravců"
 
 #: temp/cache/view/template-carrier-countries.latte--7b27041338.php:51
-msgid "carrierListNeverDownloaded"
+msgid "Carrier list was not yet downloaded"
 msgstr ""
 "Seznam dopravců zatím nebyl stažen, pokračujte kliknutím na tlačítko Provést "
 "aktualizaci dopravců"
 
 #: temp/cache/view/template-carrier-countries.latte--7b27041338.php:60
-msgid "runCarrierUpdate"
+msgid "Run update of carriers"
 msgstr "Provést aktualizaci dopravců"
 
 #: temp/cache/view/template-carrier-countries.latte--7b27041338.php:68
@@ -738,7 +743,7 @@ msgid "No known carrier for this country."
 msgstr "Pro tuto zemi neevidujeme žádného dopravce."
 
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:18
-msgid "pickupPointDetail"
+msgid "Pickup Point Detail"
 msgstr "Detail výdejního místa"
 
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:25
@@ -765,47 +770,47 @@ msgstr "Zvalidovaná doručovací adresa"
 
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:73
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:69
-msgid "street"
+msgid "Street"
 msgstr "Ulice"
 
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:81
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:74
-msgid "houseNumber"
+msgid "House number"
 msgstr "Číslo popisné"
 
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:89
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:79
-msgid "city"
+msgid "City"
 msgstr "Město"
 
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:97
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:84
-msgid "zip"
+msgid "Zip"
 msgstr "PSČ"
 
 #: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:107
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:89
-msgid "county"
+msgid "County"
 msgstr "Region"
 
 #: temp/cache/view/template-log-page.latte--29176314a4.php:24
-msgid "status"
+msgid "Status"
 msgstr "Stav"
 
 #: temp/cache/view/template-log-page.latte--29176314a4.php:27
-msgid "dateAndTime"
+msgid "Date and time"
 msgstr "Datum a čas"
 
 #: temp/cache/view/template-log-page.latte--29176314a4.php:30
-msgid "action"
+msgid "Action"
 msgstr "Akce"
 
 #: temp/cache/view/template-log-page.latte--29176314a4.php:33
-msgid "note"
+msgid "Note"
 msgstr "Poznámka"
 
 #: temp/cache/view/template-log-page.latte--29176314a4.php:72
-msgid "logListIsEmpty"
+msgid "Log list is empty"
 msgstr "Seznam logů je prázdný"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:16
@@ -813,16 +818,16 @@ msgid "Options"
 msgstr "Nastavení"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:42
-msgid "general"
+msgid "General"
 msgstr "Obecné"
 
 #. translators: %s is URL.
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:63
-msgid "apiPasswordCanBeFoundAt%sUrl"
+msgid "API password can be found at %s"
 msgstr "API heslo můžete nalézt na adrese %s"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:173
-msgid "validateSender"
+msgid "Validate sender"
 msgstr "Ověřit odesílatele"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:183
@@ -830,72 +835,79 @@ msgid "Support"
 msgstr "Podpora"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:188
-msgid "optionsExportInfo1"
+msgid ""
+"By clicking the button, you will export the settings of your plugin into a "
+"separate file. The export does not contain any sensitive information about "
+"your e-shop. Please send the resulting file to the technical support of "
+"Packeta (you can find the e-mail address here:"
 msgstr ""
 "Kliknutím na tlačítko provedete export nastavení pluginu do souboru. Export "
 "neobsahuje žádné citlivé informace z vašeho eshopu. Výsledný soubor zašlete "
 "na technickou podporu Zásilkovny (e-mail kontakt najdete zde:"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:192
-msgid "optionsExportInfo2"
+msgid ""
+") along with the description of your problem. For a better understanding of "
+"your problem, we recommend adding screenshots, which show the problem (if "
+"possible)."
 msgstr ""
 ") společně s popisem vašeho problému. Pro lepší pochopení problému "
 "doporučujeme připojit i screeny, které jej zachycují (pokud je to možné)."
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:199
-msgid "exportPluginSettings"
+msgid "Export the plugin settings"
 msgstr "Export nastavení pluginu"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:205
-msgid "settingsExportDatetime"
+msgid "Date and time of the last export of settings"
 msgstr "Datum a čas posledního exportu nastavení"
 
 #: temp/cache/view/template-options-page.latte--136cfc565e.php:213
-msgid "settingsNotYetExported"
+msgid "The settings have not been exported yet."
 msgstr "Export nastavení zatím ještě nebyl proveden."
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:32
-msgid "handoverPacketsHeading"
+msgid "Handover packets"
 msgstr "Předání zásilek"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:38
-msgid "packetCount"
+msgid "Packet count"
 msgstr "Počet zásilek"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:43
-msgid "printedAt"
+msgid "Printed at"
 msgstr "Vytištěno"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:55
-msgid "sender"
+msgid "Sender"
 msgstr "Odesílatel"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:71
-msgid "recipient"
+msgid "Recipient"
 msgstr "Příjemce"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:84
-msgid "orderNumber"
+msgid "Order number"
 msgstr "Číslo objednávky"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:87
-msgid "barcode"
+msgid "Barcode"
 msgstr "Trasovací číslo"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:90
-msgid "created"
+msgid "Created"
 msgstr "Vytvořeno"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:93
-msgid "nameAndSurname"
+msgid "Name and surname"
 msgstr "Jméno a příjmení"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:96
-msgid "COD"
+msgid "C.O.D."
 msgstr "Dobírka"
 
 #: temp/cache/view/template-order-collection-print.latte--e244434f63.php:160
-msgid "end"
+msgid "END"
 msgstr "KONEC"
 
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:21
@@ -913,91 +925,92 @@ msgid "Address"
 msgstr "Adresa"
 
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:53
-msgid "addressWasNotValidated"
+msgid "Address was not validated"
 msgstr "Adresa nebyla ověřena"
 
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:63
 #: temp/cache/view/template-order-detail.latte--b118ce80b9.php:68
-msgid "validatedAddress"
+msgid "Validated address"
 msgstr "Ověřená adresa"
 
 #: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:94
-msgid "gps"
+msgid "GPS"
 msgstr "GPS"
 
 #: temp/cache/view/template-order-detail.latte--b118ce80b9.php:20
-msgid "selectedPickupPoint"
+msgid "Selected pickup point"
 msgstr "Vybrané výdejní místo"
 
 #: temp/cache/view/template-order-detail.latte--b118ce80b9.php:27
-msgid "pickupPointName"
+msgid "Pickup point name"
 msgstr "Název výdejního místa"
 
 #: temp/cache/view/template-order-export-result.latte--beb593acb6.php:15
-msgid "shipmentsSubmittedSuccessfully"
+msgid "Shipments were submitted successfully."
 msgstr "Zásilky byly úspěšně podány."
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-export-result.latte--beb593acb6.php:25
-msgid "someShipments%sSkipped"
+msgid "Some shipments (%s in total) were not submitted (these were submitted "
+"already or are not Packeta orders)."
 msgstr ""
 "Některé zásilky (celkem %s) nebyly podány (byly již podány nebo nebo nejde o "
 "zásilky do Zásilkovny)."
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-export-result.latte--beb593acb6.php:35
-msgid "someShipments%sFailed"
+msgid "Some shipments (%s in total) failed to be submitted to Packeta."
 msgstr "Některé zásilky (celkem %s) se nepodařilo odeslat do Zásilkovny."
 
 #: temp/cache/view/template-order-grid-column-packetery.latte--19c36435ff.php:15
-msgid "printLabel"
+msgid "Print label"
 msgstr "Vytisknout štítky"
 
 #: temp/cache/view/template-order-grid-column-packetery.latte--19c36435ff.php:40
-msgid "setPacketWeight"
+msgid "Set packet weight"
 msgstr "Nastavit hmotnost zásilky"
 
 #: temp/cache/view/template-order-grid-column-packetery.latte--19c36435ff.php:57
-msgid "submitToPacketa"
+msgid "Submit to packeta"
 msgstr "Odeslat do Zásilkovny"
 
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:17
-msgid "labelPrinting"
+msgid "Print labels"
 msgstr "tisk štítků"
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:26
-msgid "willBePrinted1%sLabels"
+msgid "There will be %s label printed1"
 msgstr "Vytiskne se %s štítek"
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:31
-msgid "willBePrinted2%sLabels"
+msgid "There will be %s label printed2"
 msgstr "Vytisknou se %s štítky"
 
 #. translators: %s is count.
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:36
-msgid "willBePrinted5%sLabels"
+msgid "There will be %s label printed5"
 msgstr "Vytiskne se %s štítků"
 
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:72
-msgid "back"
+msgid "Back"
 msgstr "Zpět"
 
 #: temp/cache/view/template-order-metabox-overview.latte--ba7d488331.php:15
-msgid "packetTrackingOnline"
+msgid "Packet tracking online"
 msgstr "Sledování zásilky online"
 
 #: temp/cache/view/template-order-type-select.latte--58bb4b596e.php:14
-msgid "packetaMethodType"
+msgid "Packeta shipping method"
 msgstr "Přepravní metoda Zásilkovny"
 
 #: temp/cache/view/template-order-type-select.latte--58bb4b596e.php:21
-msgid "carrierPackets"
+msgid "Carrier packets"
 msgstr "Zásilky na dopravce"
 
 #: temp/cache/view/template-order-type-select.latte--58bb4b596e.php:29
-msgid "packetaPickupPointPackets"
+msgid "Packeta pickup points packets"
 msgstr "Zásilky na výdejní místa Zásilkovny"
 
 #~ msgid "Addresses"

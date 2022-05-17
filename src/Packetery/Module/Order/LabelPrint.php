@@ -162,11 +162,11 @@ class LabelPrint {
 					'packeta'                => __( 'Packeta', 'packeta' ),
 					'labelPrinting'          => __( 'Print labels', 'packeta' ),
 					// translators: %s is count.
-					'willBePrinted1%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					'willBePrinted1%sLabels' => __( 'There will be %s label printed1', 'packeta' ),
 					// translators: %s is count.
-					'willBePrinted2%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					'willBePrinted2%sLabels' => __( 'There will be %s label printed2', 'packeta' ),
 					// translators: %s is count.
-					'willBePrinted5%sLabels' => __( 'There will be %s label printed', 'packeta' ),
+					'willBePrinted5%sLabels' => __( 'There will be %s label printed5', 'packeta' ),
 					'back'                   => __( 'back', 'packeta' ),
 					'printLabels'            => __( 'Print labels', 'packeta' ),
 				],
