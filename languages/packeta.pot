@@ -85,7 +85,7 @@ msgid "Display name"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:145
-msgid "defaultCODSurchargeLabel"
+msgid "Default COD surcharge"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:157
@@ -101,23 +101,23 @@ msgid "Please enter a valid decimal number."
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:165
-msgid "noAddressValidation"
+msgid "No address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:166
-msgid "optionalAddressValidation"
+msgid "Optional address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:167
-msgid "requiredAddressValidation"
+msgid "Required address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:169
-msgid "addressValidation"
+msgid "Address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:214
-msgid "someCarrierDataAreInvalid"
+msgid "Some carrier data are invalid"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:225
@@ -129,7 +129,7 @@ msgid "Surcharge rules are overlapping, fix it please."
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:252
-msgid "settingsSaved"
+msgid "Settings saved"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:385
@@ -139,7 +139,7 @@ msgstr ""
 #. translators: %d is the value.
 #: src/Packetery/Module/Carrier/OptionsPage.php:392
 #: src/Packetery/Module/Carrier/OptionsPage.php:417
-msgid "valueMustNotBe%d"
+msgid "Value must not be %d"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:394
@@ -172,11 +172,11 @@ msgstr ""
 
 #: src/Packetery/Module/Checkout.php:261
 #: src/Packetery/Module/Order/Metabox.php:180
-msgid "choosePickupPoint"
+msgid "Choose pickup point"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:262
-msgid "checkShippingAddress"
+msgid "Check shipping address"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:263
@@ -188,19 +188,19 @@ msgid "invalidAddressCountrySelected"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:265
-msgid "selectedShippingAddress"
+msgid "Selected shipping address"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:266
-msgid "addressIsValidated"
+msgid "Address is validated"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:267
-msgid "addressIsNotValidated"
+msgid "Delivery address has not been verified."
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:268
-msgid "addressIsNotValidatedAndRequiredByCarrier"
+msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:328
@@ -208,80 +208,80 @@ msgid "Pick up point is not chosen."
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:350
-msgid "shippingAddressIsNotValidated"
+msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:561
-msgid "codSurcharge"
+msgid "COD surcharge"
 msgstr ""
 
 #. translators: keep %d placeholder intact.
 #: src/Packetery/Module/FormFactory.php:40
-msgid "pleaseEnterValueGreaterThanOrEqualTo%d"
+msgid "Please enter value greater than or equal to %d"
 msgstr ""
 
 #. translators: keep %d placeholder intact.
 #: src/Packetery/Module/FormFactory.php:42
-msgid "pleaseEnterValueLessThanOrEqualTo%d"
+msgid "Please enter value less than or equal to %d"
 msgstr ""
 
 #. translators: keep %d placeholder intact.
 #: src/Packetery/Module/FormFactory.php:43
 #: src/Packetery/Module/FormFactory.php:44
-msgid "enterValidNumber"
+msgid "Enter valid number"
 msgstr ""
 
 #: src/Packetery/Module/FormFactory.php:45
-msgid "thisFieldIsRequired"
+msgid "This field is required"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:57 src/Packetery/Module/Log/Page.php:58
 #: temp/cache/view/template-log-page.latte--29176314a4.php:17
-msgid "logsPageTitle"
+msgid "Log"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:70
-msgid "logAction_packet-sending"
+msgid "Packet sending"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:71
-msgid "logAction_carrier-label-print"
+msgid "Carrier label print"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:72
-msgid "logAction_label-print"
+msgid "Label print"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:73
-msgid "logAction_carrier-list-update"
+msgid "Carrier list update"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:74
-msgid "logAction_carrier-number-retrieving"
+msgid "Getting external carrier tracking number"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:75
-msgid "logAction_carrier-table-not-created"
+msgid "Carrier table was not created"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:76
-msgid "logAction_order-table-not-created"
+msgid "Order table was not created"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:77
-msgid "logAction_sender-validation"
+msgid "Sender validation"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:78
-msgid "logAction_packet-status-sync"
+msgid "Packet status synchronization"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:82
-msgid "statusError"
+msgid "Error"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:83
-msgid "statusSuccess"
+msgid "Success"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:124
@@ -315,7 +315,7 @@ msgid "Payment method that represents cash on delivery"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:188
-msgid "packagingWeight"
+msgid "Packaging weight"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:235
@@ -323,23 +323,23 @@ msgid "Main Settings"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:288
-msgid "senderValidationSuccessLogTitle"
+msgid "Sender validation success"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:295
-msgid "senderValidationErrorLogTitle"
+msgid "Sender validation error"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:303
-msgid "specifiedSenderDoesNotExist"
+msgid "Specified sender does not exist"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:307
-msgid "unableToCheckSpecifiedSender"
+msgid "Unable to check specified sender"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:324
-msgid "specifiedSenderIsOk"
+msgid "Specified sender is OK"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:348
@@ -348,42 +348,44 @@ msgstr ""
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
 #: src/Packetery/Module/Options/Page.php:355
-msgid "senderDescription"
+msgid ""
+"Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s "
+"- user information - field 'Indication'."
 msgstr ""
 
 #: src/Packetery/Module/Order/BulkActions.php:64
-msgid "actionSubmitOrders"
+msgid "Submit orders to Packeta"
 msgstr ""
 
 #: src/Packetery/Module/Order/BulkActions.php:65
-msgid "actionPrintLabels"
+msgid "Print labels"
 msgstr ""
 
 #: src/Packetery/Module/Order/BulkActions.php:66
-msgid "actionPrintCarrierLabels"
+msgid "Print carrier labels"
 msgstr ""
 
 #: src/Packetery/Module/Order/BulkActions.php:67
-msgid "actionPrintOrderCollection"
+msgid "Print AWB"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:116
 #: src/Packetery/Module/Order/LabelPrint.php:194
-msgid "noOrdersSelected"
+msgid "No orders were selected"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:139
-msgid "selectedOrdersHaveNoPacketId"
+msgid "Selected orders have no packet id"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:153
 #: src/Packetery/Module/Order/CollectionPrint.php:162
-msgid "unexpectedError"
+msgid "Unexpected error"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:193
 #: src/Packetery/Module/Order/CollectionPrint.php:194
-msgid "orderCollectionPrintMenuSlugLabel"
+msgid "Print AWB"
 msgstr ""
 
 #: src/Packetery/Module/Order/Controller.php:186
@@ -391,59 +393,59 @@ msgid "Success"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:109
-msgid "packetaOrdersToSubmit"
+msgid "Packeta orders to submit"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:125
-msgid "packetaOrdersToPrint"
+msgid "Packeta orders to print"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:234
-msgid "packetStatusReceivedData"
+msgid "Data received"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:236
-msgid "packetStatusArrived"
+msgid "Arrived"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:238
-msgid "packetStatusPreparedForDeparture"
+msgid "Prepared for departure"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:240
-msgid "packetStatusDeparted"
+msgid "Departed"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:242
-msgid "packetStatusReadyForPickup"
+msgid "Ready for pickup"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:244
-msgid "packetStatusHandedToCarrier"
+msgid "Handed to carrier"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:246
-msgid "packetStatusDelivered"
+msgid "Delivered"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:248
-msgid "packetStatusPostedBack"
+msgid "Posted back"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:250
-msgid "packetStatusReturned"
+msgid "Returned"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:252
-msgid "packetStatusCancelled"
+msgid "Cancelled"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:254
-msgid "packetStatusCollected"
+msgid "Collected"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:256
-msgid "packetStatusUnknown"
+msgid "Unknown"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:278
@@ -456,35 +458,35 @@ msgid "Pick up point or carrier"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:202
-msgid "noSuitableOrdersSelected"
+msgid "No suitable orders were selected"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:233
-msgid "labelPrintFailedMoreInfoInLog"
+msgid "Label printing failed, you can find more information in Packeta log."
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:234
-msgid "youSelectedOrdersThatWereNotSubmitted"
+msgid "You selected orders that were not submitted yet"
 msgstr ""
 
 #. translators: %s is offset.
 #: src/Packetery/Module/Order/LabelPrint.php:264
-msgid "dontSkipAnyField"
+msgid "don't skip any field on a print sheet"
 msgstr ""
 
 #. translators: %s is offset.
 #: src/Packetery/Module/Order/LabelPrint.php:264
-msgid "skip%sFields"
+msgid "skip %s fields on first sheet"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:268
-msgid "labelsOffset"
+msgid "Skip fields"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:281
 #: src/Packetery/Module/Order/LabelPrint.php:282
 #: temp/cache/view/template-order-label-print.latte--53dd20f350.php:75
-msgid "printLabels"
+msgid "Print labels"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:322
