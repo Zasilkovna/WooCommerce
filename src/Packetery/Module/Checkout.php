@@ -655,8 +655,8 @@ class Checkout {
 			$cost = 0;
 		}
 
-		//WooCommerce currency-switcher.com compatibility.
-		return $this->applyFilterWoocsExchangeValue( (float)$cost );
+		// WooCommerce currency-switcher.com compatibility.
+		return $this->applyFilterWoocsExchangeValue( (float) $cost );
 	}
 
 	/**
@@ -731,18 +731,24 @@ class Checkout {
 		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) === 0 );
 	}
 
-    /**
-     * WooCommerce currency-switcher.com compatibility - filter woocs_exchange_value applied
-     * @param float $value Value of the surcharge or transport price.
-     * @return float
-     */
-    private function applyFilterWoocsExchangeValue( float $value): float {
-        if ( 0 < $value ) {
-            $value = (float)apply_filters( 'woocs_exchange_value', $value );
-        }
+	/**
+	 * WooCommerce currency-switcher.com compatibility.
+	 *
+	 * @param float $value Value of the surcharge or transport price.
+	 * @return float
+	 */
+	private function applyFilterWoocsExchangeValue( float $value ): float {
+		if ( 0 < $value ) {
+			/**
+			 * Applies woocs_exchange_value filters.
+			 *
+			 * @since 1.2.7
+			 */
+			$value = (float) apply_filters( 'woocs_exchange_value', $value );
+		}
 
-        return $value;
-    }
+		return $value;
+	}
 
 	/**
 	 * Update order shipping.
