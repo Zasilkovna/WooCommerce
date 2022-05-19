@@ -238,7 +238,7 @@ class LabelPrint {
 		}
 		if ( ! $response || $response->hasFault() ) {
 			$message = ( null !== $response && $response->hasFault() ) ?
-				__( 'Label printing failed, you can find more information in Packeta log.', 'packeta' ) :
+				__( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' ) :
 				__( 'You selected orders that were not submitted yet', 'packeta' );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
@@ -330,10 +330,10 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Label print success', 'packeta' );
+			$record->title  = __( 'Label has been printed successfully', 'packeta' );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Label print error', 'packeta' );
+			$record->title  = __( 'Label could not be printed.', 'packeta' );
 			$record->params = [
 				'request'      => [
 					'packetIds' => implode( ',', $request->getPacketIds() ),
@@ -374,10 +374,10 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Carrier label print success', 'packeta' );
+			$record->title  = __( 'Carrier label print has been printed successfully', 'packeta' );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Carrier label print error', 'packeta' );
+			$record->title  = __( 'Carrier label could not be printed', 'packeta' );
 			$record->params = [
 				'request'      => [
 					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
@@ -438,7 +438,7 @@ class LabelPrint {
 			$response = $this->soapApiClient->packetCourierNumber( $request );
 			if ( $response->hasFault() ) {
 				if ( $response->hasWrongPassword() ) {
-					$this->messageManager->flash_message( __( 'Please set proper API password.', 'packeta' ), MessageManager::TYPE_ERROR );
+					$this->messageManager->flash_message( __( 'Please set a proper API password.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 					return [];
 				}
@@ -446,7 +446,7 @@ class LabelPrint {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Carrier number retrieving error', 'packeta' );
+				$record->title  = __( 'Carrier number could not be retrieved', 'packeta' );
 				$record->params = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),

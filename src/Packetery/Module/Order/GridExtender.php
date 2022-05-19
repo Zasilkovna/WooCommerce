@@ -247,7 +247,7 @@ class GridExtender {
 			case 'received data':
 				return __( 'Data received', 'packeta' );
 			case 'arrived':
-				return __( 'Arrived', 'packeta' );
+				return __( 'Submitted', 'packeta' );
 			case 'prepared for departure':
 				return __( 'Prepared for departure', 'packeta' );
 			case 'departed':

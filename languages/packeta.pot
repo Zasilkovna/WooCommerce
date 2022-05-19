@@ -1,40 +1,34 @@
 # Copyright (C) 2022 Zásilkovna s.r.o.
 # This file is distributed under the GNU General Public License v3.0.
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.2.6\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
-"POT-Creation-Date: 2022-04-11 12:16+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Project-Id-Version: Packeta 1.2.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/WooCommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0.1\n"
-"X-Domain: packetery\n"
+"POT-Creation-Date: 2022-05-19T06:25:15+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.6.0\n"
+"X-Domain: packeta\n"
 
 #. Plugin Name of the plugin
+#: src/Packetery/Module/Carrier/CountryListingPage.php:117
+#: src/Packetery/Module/Carrier/OptionsPage.php:320
+#: src/Packetery/Module/Checkout.php:204
+#: src/Packetery/Module/Log/Page.php:95
 #: src/Packetery/Module/Options/Page.php:114
 #: src/Packetery/Module/Options/Page.php:115
-#: src/Packetery/Module/Order/GridExtender.php:277
+#: src/Packetery/Module/Options/Page.php:402
+#: src/Packetery/Module/Order/GridExtender.php:291
+#: src/Packetery/Module/Order/LabelPrint.php:162
 #: src/Packetery/Module/Order/Metabox.php:148
+#: src/Packetery/Module/Plugin.php:474
+#: src/Packetery/Module/Plugin.php:516
+#: src/Packetery/Module/Plugin.php:552
 #: src/Packetery/Module/Product/DataTab.php:72
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:14
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:35
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:66
-#: temp/cache/view/template-carrier-country.latte--0f4a927ea0.php:14
-#: temp/cache/view/template-checkout-widget-button.latte--9717adbcda.php:18
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:16
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:64
-#: temp/cache/view/template-log-page.latte--29176314a4.php:15
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:14
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:19
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:61
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:18
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:66
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:15
 msgid "Packeta"
 msgstr ""
 
@@ -48,6 +42,56 @@ msgstr ""
 
 #. Author URI of the plugin
 msgid "https://www.zasilkovna.cz/"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:118
+msgid "Carriers"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:119
+msgid "Carriers update"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:120
+msgid "Countries"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:121
+#: src/Packetery/Module/Carrier/OptionsPage.php:132
+msgid "Active carrier"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:122
+#: src/Packetery/Module/Log/Page.php:99
+msgid "Action"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:123
+msgid "Country name"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:124
+msgid "Country code"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:125
+msgid "Set up"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:126
+msgid "No active countries."
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:127
+msgid "Date of last update of carriers"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:128
+msgid "Carrier list was not yet downloaded"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/CountryListingPage.php:129
+msgid "Run update of carriers"
 msgstr ""
 
 #. translators: keep %failReason placeholder intact.
@@ -71,89 +115,133 @@ msgstr ""
 msgid "Carriers were updated."
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:104
-#: src/Packetery/Module/Carrier/OptionsPage.php:105
+#: src/Packetery/Module/Carrier/OptionsPage.php:106
+#: src/Packetery/Module/Carrier/OptionsPage.php:107
 msgid "Carrier settings"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:130
-msgid "Active carrier"
-msgstr ""
-
-#: src/Packetery/Module/Carrier/OptionsPage.php:133
+#: src/Packetery/Module/Carrier/OptionsPage.php:135
 msgid "Display name"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:145
+#: src/Packetery/Module/Carrier/OptionsPage.php:147
 msgid "Default COD surcharge"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:157
+#: src/Packetery/Module/Carrier/OptionsPage.php:159
 msgid "Free shipping limit"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:158
-#: src/Packetery/Module/Carrier/OptionsPage.php:387
-#: src/Packetery/Module/Carrier/OptionsPage.php:396
-#: src/Packetery/Module/Carrier/OptionsPage.php:412
-#: src/Packetery/Module/Carrier/OptionsPage.php:421
+#: src/Packetery/Module/Carrier/OptionsPage.php:160
+#: src/Packetery/Module/Carrier/OptionsPage.php:403
+#: src/Packetery/Module/Carrier/OptionsPage.php:417
+#: src/Packetery/Module/Carrier/OptionsPage.php:433
+#: src/Packetery/Module/Carrier/OptionsPage.php:442
 msgid "Please enter a valid decimal number."
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:165
+#: src/Packetery/Module/Carrier/OptionsPage.php:167
 msgid "No address validation"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:166
+#: src/Packetery/Module/Carrier/OptionsPage.php:168
 msgid "Optional address validation"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:167
+#: src/Packetery/Module/Carrier/OptionsPage.php:169
 msgid "Required address validation"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:169
+#: src/Packetery/Module/Carrier/OptionsPage.php:171
 msgid "Address validation"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:214
+#: src/Packetery/Module/Carrier/OptionsPage.php:216
 msgid "Some carrier data are invalid"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:225
+#: src/Packetery/Module/Carrier/OptionsPage.php:227
 msgid "Weight rules are overlapping, fix it please."
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:232
+#: src/Packetery/Module/Carrier/OptionsPage.php:234
 msgid "Surcharge rules are overlapping, fix it please."
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:252
+#: src/Packetery/Module/Carrier/OptionsPage.php:254
 msgid "Settings saved"
 msgstr ""
 
+#: src/Packetery/Module/Carrier/OptionsPage.php:311
+msgid "Cannot use this carrier because requires customs declaration"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:312
+msgid "Delete"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:313
+msgid "Weight rules"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:314
+msgid "Add weight rule"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:315
+msgid "COD surcharge rules"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:316
+msgid "Add COD surcharge rule"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:317
+msgid "After exceeding this amount, shipping is free."
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:318
+msgid "Customer address validation"
+msgstr ""
+
+#. translators: %s represents URL, keep intact.
+#: src/Packetery/Module/Carrier/OptionsPage.php:319
+#: src/Packetery/Module/Options/Page.php:407
 msgid "Save changes"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:385
+#: src/Packetery/Module/Carrier/OptionsPage.php:321
+msgid "Country options"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:322
+msgid "No known carrier for this country."
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:401
 msgid "Weight up to"
 msgstr ""
 
-#. translators: %d is the value.
-#: src/Packetery/Module/Carrier/OptionsPage.php:392
-#: src/Packetery/Module/Carrier/OptionsPage.php:417
-msgid "Value must not be %d"
+#. translators: %d is numeric threshold.
+#: src/Packetery/Module/Carrier/OptionsPage.php:405
+#: src/Packetery/Module/Carrier/OptionsPage.php:413
+msgid "Enter number greater than %d"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:394
+#: src/Packetery/Module/Carrier/OptionsPage.php:415
 msgid "Price"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:410
+#: src/Packetery/Module/Carrier/OptionsPage.php:431
 msgid "Order price up to"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/OptionsPage.php:419
+#. translators: %d is the value.
+#: src/Packetery/Module/Carrier/OptionsPage.php:438
+msgid "Value must not be %d"
+msgstr ""
+
+#: src/Packetery/Module/Carrier/OptionsPage.php:440
 msgid "Surcharge"
 msgstr ""
 
@@ -173,48 +261,45 @@ msgstr ""
 msgid "RO Packeta pickup points"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:261
+#: src/Packetery/Module/Checkout.php:269
 #: src/Packetery/Module/Order/Metabox.php:180
 msgid "Choose pickup point"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:262
+#: src/Packetery/Module/Checkout.php:270
 msgid "Check shipping address"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:263
-msgid "addressValidationIsOutOfOrder"
+#: src/Packetery/Module/Checkout.php:271
+msgid "Address validation is out of order"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:264
-msgid "invalidAddressCountrySelected"
+#: src/Packetery/Module/Checkout.php:272
+msgid "Invalid address country selected"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:265
+#: src/Packetery/Module/Checkout.php:273
 msgid "Selected shipping address"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:266
+#: src/Packetery/Module/Checkout.php:274
 msgid "Address is validated"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:267
+#: src/Packetery/Module/Checkout.php:275
 msgid "Delivery address has not been verified."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:268
+#: src/Packetery/Module/Checkout.php:276
+#: src/Packetery/Module/Checkout.php:358
 msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:328
+#: src/Packetery/Module/Checkout.php:336
 msgid "Pick up point is not chosen."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:350
-msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
-msgstr ""
-
-#: src/Packetery/Module/Checkout.php:561
+#: src/Packetery/Module/Checkout.php:578
 msgid "COD surcharge"
 msgstr ""
 
@@ -238,8 +323,9 @@ msgstr ""
 msgid "This field is required"
 msgstr ""
 
-#: src/Packetery/Module/Log/Page.php:57 src/Packetery/Module/Log/Page.php:58
-#: temp/cache/view/template-log-page.latte--29176314a4.php:17
+#: src/Packetery/Module/Log/Page.php:57
+#: src/Packetery/Module/Log/Page.php:58
+#: src/Packetery/Module/Log/Page.php:96
 msgid "Log"
 msgstr ""
 
@@ -264,10 +350,13 @@ msgid "Getting external carrier tracking number"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:75
+#: src/Packetery/Module/Plugin.php:745
 msgid "Carrier table was not created"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:76
+#: src/Packetery/Module/Plugin.php:760
+#: src/Packetery/Module/Upgrade.php:156
 msgid "Order table was not created"
 msgstr ""
 
@@ -284,12 +373,29 @@ msgid "Error"
 msgstr ""
 
 #: src/Packetery/Module/Log/Page.php:83
+#: src/Packetery/Module/Order/Controller.php:183
 msgid "Success"
+msgstr ""
+
+#: src/Packetery/Module/Log/Page.php:97
+msgid "Status"
+msgstr ""
+
+#: src/Packetery/Module/Log/Page.php:98
+msgid "Date and time"
+msgstr ""
+
+#: src/Packetery/Module/Log/Page.php:100
+msgid "Note"
+msgstr ""
+
+#: src/Packetery/Module/Log/Page.php:101
+msgid "Log list is empty"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:124
 #: src/Packetery/Module/Options/Page.php:125
-#: src/Packetery/Module/Plugin.php:744
+#: src/Packetery/Module/Plugin.php:809
 msgid "Settings"
 msgstr ""
 
@@ -302,6 +408,7 @@ msgid "API password must be 32 characters long and must contain valid characters
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:160
+#: src/Packetery/Module/Order/CollectionPrint.php:186
 msgid "Sender"
 msgstr ""
 
@@ -321,39 +428,106 @@ msgstr ""
 msgid "Packaging weight"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:235
+#: src/Packetery/Module/Options/Page.php:196
+msgid "Replace shipping address with pickup point address"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:243
 msgid "Main Settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:288
-msgid "Sender validation success"
-msgstr ""
-
-#: src/Packetery/Module/Options/Page.php:295
-msgid "Sender validation error"
+#: src/Packetery/Module/Options/Page.php:296
+msgid "Sender validation was successful"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:303
+msgid "Sender could not be validated"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:311
 msgid "Specified sender does not exist"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:307
+#: src/Packetery/Module/Options/Page.php:315
 msgid "Unable to check specified sender"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:324
+#: src/Packetery/Module/Options/Page.php:332
 msgid "Specified sender is OK"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:348
+#: src/Packetery/Module/Options/Page.php:356
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:355
-msgid ""
-"Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s "
-"- user information - field 'Indication'."
+#: src/Packetery/Module/Options/Page.php:363
+msgid "Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field 'Indication'."
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:403
+msgid "Options"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:404
+msgid "General"
+msgstr ""
+
+#. translators: %s represents URL, keep intact.
+#: src/Packetery/Module/Options/Page.php:406
+msgid "API password can be found at %s"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:408
+msgid "Validate sender"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:409
+msgid "Support"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:410
+msgid "By clicking the button, you will export the settings of your plugin into a separate file. The export does not contain any sensitive information about your e-shop. Please send the resulting file to the technical support of Packeta (you can find the e-mail address here:"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:414
+msgid ") along with the description of your problem. For a better understanding of your problem, we recommend adding screenshots, which show the problem (if possible)."
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:418
+msgid "Export the plugin settings"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:419
+msgid "Date and time of the last export of settings"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:420
+msgid "The settings have not been exported yet."
+msgstr ""
+
+#: src/Packetery/Module/Options/Provider.php:182
+msgid "1/4 A4, print on A4, 4pcs/page"
+msgstr ""
+
+#: src/Packetery/Module/Options/Provider.php:187
+msgid "1/4 A4, direct print, 1pc/page"
+msgstr ""
+
+#: src/Packetery/Module/Options/Provider.php:192
+msgid "1/8 A4, direct print, 1pc/page"
+msgstr ""
+
+#: src/Packetery/Module/Options/Provider.php:197
+msgid "1/8 A4, print on A4, 8pcs/page"
+msgstr ""
+
+#: src/Packetery/Module/Options/Provider.php:202
+msgid "105x35mm, print on A4, 16 pcs/page"
+msgstr ""
+
+#: src/Packetery/Module/Options/Provider.php:207
+msgid "1/16 A4, direct print, 1pc/page"
 msgstr ""
 
 #: src/Packetery/Module/Order/BulkActions.php:64
@@ -361,6 +535,10 @@ msgid "Submit orders to Packeta"
 msgstr ""
 
 #: src/Packetery/Module/Order/BulkActions.php:65
+#: src/Packetery/Module/Order/LabelPrint.php:163
+#: src/Packetery/Module/Order/LabelPrint.php:167
+#: src/Packetery/Module/Order/LabelPrint.php:289
+#: src/Packetery/Module/Order/LabelPrint.php:290
 msgid "Print labels"
 msgstr ""
 
@@ -369,16 +547,32 @@ msgid "Print carrier labels"
 msgstr ""
 
 #: src/Packetery/Module/Order/BulkActions.php:67
+#: src/Packetery/Module/Order/CollectionPrint.php:207
+#: src/Packetery/Module/Order/CollectionPrint.php:208
 msgid "Print AWB"
 msgstr ""
 
+#: src/Packetery/Module/Order/BulkActions.php:139
+msgid "Shipments were submitted successfully."
+msgstr ""
+
+#. translators: %s is count.
+#: src/Packetery/Module/Order/BulkActions.php:145
+msgid "Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders)."
+msgstr ""
+
+#. translators: %s is count.
+#: src/Packetery/Module/Order/BulkActions.php:152
+msgid "Some shipments (%s in total) failed to be submitted to Packeta."
+msgstr ""
+
 #: src/Packetery/Module/Order/CollectionPrint.php:116
-#: src/Packetery/Module/Order/LabelPrint.php:194
+#: src/Packetery/Module/Order/LabelPrint.php:202
 msgid "No orders were selected"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:139
-msgid "Selected orders have no packet id"
+msgid "Selected orders were not yet submitted to Packeta"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:153
@@ -386,13 +580,59 @@ msgstr ""
 msgid "Unexpected error"
 msgstr ""
 
-#: src/Packetery/Module/Order/CollectionPrint.php:193
-#: src/Packetery/Module/Order/CollectionPrint.php:194
-msgid "Print AWB"
+#: src/Packetery/Module/Order/CollectionPrint.php:183
+msgid "Handover packets"
 msgstr ""
 
-#: src/Packetery/Module/Order/Controller.php:186
-msgid "Success"
+#: src/Packetery/Module/Order/CollectionPrint.php:184
+msgid "Packet count"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:185
+msgid "Printed at"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:187
+msgid "Recipient"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:188
+msgid "Order number"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:189
+#: src/Packetery/Module/Order/GridExtender.php:292
+msgid "Barcode"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:190
+msgid "Created"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:191
+msgid "Name and surname"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:192
+msgid "C.O.D."
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:193
+#: src/Packetery/Module/Order/GridExtender.php:293
+msgid "Pick up point or carrier"
+msgstr ""
+
+#: src/Packetery/Module/Order/CollectionPrint.php:194
+msgid "END"
+msgstr ""
+
+#. translators: %s is order id.
+#: src/Packetery/Module/Order/Controller.php:131
+msgid "Order %s does not exist."
+msgstr ""
+
+#: src/Packetery/Module/Order/Controller.php:172
+msgid "Order could not be loaded."
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:109
@@ -403,117 +643,136 @@ msgstr ""
 msgid "Packeta orders to print"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:234
-msgid "Data received"
+#: src/Packetery/Module/Order/GridExtender.php:158
+msgid "Packeta shipping method"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:236
-msgid "Arrived"
+#: src/Packetery/Module/Order/GridExtender.php:159
+msgid "Carrier packets"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:238
-msgid "Prepared for departure"
+#: src/Packetery/Module/Order/GridExtender.php:160
+msgid "Packeta pickup points packets"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:240
-msgid "Departed"
+#: src/Packetery/Module/Order/GridExtender.php:227
+msgid "Print label"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:242
-msgid "Ready for pickup"
+#: src/Packetery/Module/Order/GridExtender.php:228
+msgid "Set packet weight"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:244
-msgid "Handed to carrier"
-msgstr ""
-
-#: src/Packetery/Module/Order/GridExtender.php:246
-msgid "Delivered"
+#: src/Packetery/Module/Order/GridExtender.php:229
+msgid "Submit to packeta"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:248
-msgid "Posted back"
+msgid "Data received"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:250
-msgid "Returned"
+msgid "Submitted"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:252
-msgid "Cancelled"
+msgid "Prepared for departure"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:254
-msgid "Collected"
+msgid "Departed"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:256
+msgid "Ready for pickup"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:258
+msgid "Handed to carrier"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:260
+msgid "Delivered"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:262
+msgid "Posted back"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:264
+msgid "Returned"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:266
+msgid "Cancelled"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:268
+msgid "Collected"
+msgstr ""
+
+#: src/Packetery/Module/Order/GridExtender.php:270
 msgid "Unknown"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:278
-msgid "Barcode"
+#. translators: %s is count.
+#: src/Packetery/Module/Order/LabelPrint.php:165
+msgid "Number of labels to print: %s"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:279
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:99
-msgid "Pick up point or carrier"
+#. translators: %s is count.
+#: src/Packetery/Module/Order/LabelPrint.php:166
+msgid "back"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:202
+#: src/Packetery/Module/Order/LabelPrint.php:210
 msgid "No suitable orders were selected"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:233
-msgid "Label printing failed, you can find more information in Packeta log."
+#: src/Packetery/Module/Order/LabelPrint.php:241
+msgid "Label printing failed, you can find more information in the Packeta log."
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:234
+#: src/Packetery/Module/Order/LabelPrint.php:242
 msgid "You selected orders that were not submitted yet"
 msgstr ""
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:264
+#: src/Packetery/Module/Order/LabelPrint.php:272
 msgid "don't skip any field on a print sheet"
 msgstr ""
 
 #. translators: %s is offset.
-#: src/Packetery/Module/Order/LabelPrint.php:264
+#: src/Packetery/Module/Order/LabelPrint.php:272
 msgid "skip %s fields on first sheet"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:268
+#: src/Packetery/Module/Order/LabelPrint.php:276
 msgid "Skip fields"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:281
-#: src/Packetery/Module/Order/LabelPrint.php:282
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:75
-msgid "Print labels"
+#: src/Packetery/Module/Order/LabelPrint.php:333
+msgid "Label has been printed successfully"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:322
-msgid "Label print success"
+#: src/Packetery/Module/Order/LabelPrint.php:336
+msgid "Label could not be printed."
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:328
-msgid "Label print error"
+#: src/Packetery/Module/Order/LabelPrint.php:377
+msgid "Carrier label print has been printed successfully"
 msgstr ""
 
-#: src/Packetery/Module/Order/LabelPrint.php:366
-msgid "Carrier label print success"
-msgstr ""
-
-#: src/Packetery/Module/Order/LabelPrint.php:372
-msgid "Carrier label print error"
-msgstr ""
-
-#: src/Packetery/Module/Order/LabelPrint.php:433
-msgid "Please set proper API password."
+#: src/Packetery/Module/Order/LabelPrint.php:380
+msgid "Carrier label could not be printed"
 msgstr ""
 
 #: src/Packetery/Module/Order/LabelPrint.php:441
-msgid "Carrier number retrieving error"
+msgid "Please set a proper API password."
+msgstr ""
+
+#: src/Packetery/Module/Order/LabelPrint.php:449
+msgid "Carrier number could not be retrieved"
 msgstr ""
 
 #: src/Packetery/Module/Order/Metabox.php:164
@@ -539,77 +798,172 @@ msgstr ""
 msgid "Height (mm)"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:265
+#: src/Packetery/Module/Order/Metabox.php:202
+msgid "Packet tracking online"
+msgstr ""
+
+#: src/Packetery/Module/Order/Metabox.php:268
 msgid "Error happened in Packeta fields!"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:273
+#: src/Packetery/Module/Order/Metabox.php:276
 msgid "Session has expired! Please try again."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:279
+#: src/Packetery/Module/Order/Metabox.php:282
 msgid "You are not allowed to edit posts!"
 msgstr ""
 
-#: src/Packetery/Module/Order/Modal.php:88
-msgid "Weight"
+#. translators: %s represents order number.
+#: src/Packetery/Module/Order/Modal.php:79
+msgid "Order #%s"
 msgstr ""
 
-#: src/Packetery/Module/Order/Modal.php:92
-msgid "Save"
+#. translators: %s represents order number.
+#: src/Packetery/Module/Order/Modal.php:80
+msgid "Close modal panel"
 msgstr ""
 
 #: src/Packetery/Module/Order/Modal.php:93
+msgid "Weight"
+msgstr ""
+
+#: src/Packetery/Module/Order/Modal.php:97
+msgid "Save"
+msgstr ""
+
+#: src/Packetery/Module/Order/Modal.php:98
 msgid "Cancel"
 msgstr ""
 
-msgid "Close modal panel"
-msgstr ""
 #: src/Packetery/Module/Order/PacketSubmitter.php:103
 #: src/Packetery/Module/Order/PacketSubmitter.php:120
-msgid "Packet sending error"
+msgid "Packet could not be created"
 msgstr ""
 
 #: src/Packetery/Module/Order/PacketSubmitter.php:138
-msgid "Packet sending success"
+msgid "Packet was sucessfully created"
 msgstr ""
 
 #: src/Packetery/Module/Order/PacketSynchronizer.php:90
-msgid "Packet status sync error"
+msgid "Packet status could not be synchronized"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:409
+#: src/Packetery/Module/Plugin.php:421
 msgid "Packeta plugin requires WooCommerce. Please install and activate it first."
 msgstr ""
-"Packeta plugin requires WooCommerce. Please install and activate it first."
 
-#: src/Packetery/Module/Plugin.php:675
-msgid ""
-"Carrier table was not created, you can find more information in Packeta log"
+#: src/Packetery/Module/Plugin.php:475
+msgid "pickup point detail"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:680
-msgid "Carrier table was not created"
+#: src/Packetery/Module/Plugin.php:476
+msgid "Name"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:690 src/Packetery/Module/Upgrade.php:147
-msgid ""
-"Order table was not created, you can find more information in Packeta log"
+#: src/Packetery/Module/Plugin.php:477
+#: src/Packetery/Module/Plugin.php:521
+msgid "Address"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:695 src/Packetery/Module/Upgrade.php:152
-msgid "Order table was not created"
+#: src/Packetery/Module/Plugin.php:478
+#: src/Packetery/Module/Plugin.php:519
+#: src/Packetery/Module/Plugin.php:553
+msgid "Pickup Point Detail"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:743
+#: src/Packetery/Module/Plugin.php:479
+msgid "Address was not validated"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:480
+#: src/Packetery/Module/Plugin.php:520
+msgid "Validated address"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:481
+msgid "Street"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:482
+#: src/Packetery/Module/Plugin.php:559
+msgid "House number"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:483
+msgid "City"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:484
+msgid "Zip"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:485
+msgid "County"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:486
+msgid "GPS"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:517
+msgid "Selected pickup point"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:518
+msgid "Pickup point name"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:554
+msgid "Pickup Point Name"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:555
+msgid "Link"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:556
+msgid "Point Address"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:557
+msgid "validated delivery address"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:558
+msgid "street"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:560
+msgid "city"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:561
+msgid "zip"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:562
+msgid "county"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:740
+msgid "Carrier table was not created, you can find more information in Packeta log"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:755
+#: src/Packetery/Module/Upgrade.php:151
+msgid "Order table was not created, you can find more information in Packeta log"
+msgstr ""
+
+#: src/Packetery/Module/Plugin.php:808
 msgid "View Packeta settings"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:766
+#: src/Packetery/Module/Plugin.php:831
 msgid "View Packeta documentation"
 msgstr ""
 
-#: src/Packetery/Module/Plugin.php:767
+#: src/Packetery/Module/Plugin.php:832
 msgid "Documentation"
 msgstr ""
 
@@ -620,351 +974,4 @@ msgstr ""
 #: src/Packetery/Module/ShippingMethod.php:35
 #: src/Packetery/Module/ShippingMethod.php:36
 msgid "Packeta Shipping Method"
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:27
-msgid "Cannot use this carrier because requires customs declaration"
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:159
-msgid "After exceeding this amount, shipping is free."
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:184
-msgid "Customer address validation"
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:293
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:404
-msgid "Delete"
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:313
-msgid "Weight rules"
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:330
-msgid "Add weight rule"
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:424
-msgid "COD surcharge rules"
-msgstr ""
-
-#: temp/cache/view/template-carrier-carrier.latte--90a103b699.php:441
-msgid "Add COD surcharge rule"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:16
-msgid "Carriers"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:37
-msgid "carriersUpdate"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:44
-msgid "Date of last update of carriers"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:51
-msgid "Carrier list was not yet downloaded"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:60
-msgid "Run update of carriers"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:68
-msgid "Countries"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:76
-msgid "Country name"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:79
-msgid "Country code"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:82
-msgid "activeCarrier"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:85
-msgid "Action"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:104
-msgid "Set up"
-msgstr ""
-
-#: temp/cache/view/template-carrier-countries.latte--7b27041338.php:115
-msgid "No active countries."
-msgstr ""
-
-#: temp/cache/view/template-carrier-country.latte--0f4a927ea0.php:16
-msgid "Country options"
-msgstr ""
-
-#: temp/cache/view/template-carrier-country.latte--0f4a927ea0.php:34
-msgid "No known carrier for this country."
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:18
-msgid "Pickup Point Detail"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:25
-msgid "Pickup Point Name"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:35
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:45
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:39
-msgid "Pickup Point Detail"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:40
-msgid "Link"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:47
-msgid "Point Address"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:66
-msgid "validated delivery address"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:73
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:69
-msgid "Street"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:81
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:74
-msgid "House number"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:89
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:79
-msgid "City"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:97
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:84
-msgid "Zip"
-msgstr ""
-
-#: temp/cache/view/template-email-footer.latte--9cac7b9c85.php:107
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:89
-msgid "County"
-msgstr ""
-
-#: temp/cache/view/template-log-page.latte--29176314a4.php:24
-msgid "Status"
-msgstr ""
-
-#: temp/cache/view/template-log-page.latte--29176314a4.php:27
-msgid "Date and time"
-msgstr ""
-
-#: temp/cache/view/template-log-page.latte--29176314a4.php:30
-msgid "Action"
-msgstr ""
-
-#: temp/cache/view/template-log-page.latte--29176314a4.php:33
-msgid "Note"
-msgstr ""
-
-#: temp/cache/view/template-log-page.latte--29176314a4.php:72
-msgid "Log list is empty"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:16
-msgid "Options"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:42
-msgid "General"
-msgstr ""
-
-#. translators: %s is URL.
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:63
-msgid "API password can be found at %s"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:173
-msgid "Validate sender"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:183
-msgid "Support"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:188
-msgid ""
-"By clicking the button, you will export the settings of your plugin into a "
-"separate file. The export does not contain any sensitive information about "
-"your e-shop. Please send the resulting file to the technical support of "
-"Packeta (you can find the e-mail address here:"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:192
-msgid ""
-") along with the description of your problem. For a better understanding of "
-"your problem, we recommend adding screenshots, which show the problem (if "
-"possible)."
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:199
-msgid "Export the plugin settings"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:205
-msgid "Date and time of the last export of settings"
-msgstr ""
-
-#: temp/cache/view/template-options-page.latte--136cfc565e.php:213
-msgid "The settings have not been exported yet."
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:32
-msgid "Handover packets"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:38
-msgid "Packet count"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:43
-msgid "Printed at"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:55
-msgid "Sender"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:71
-msgid "Recipient"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:84
-msgid "Order number"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:87
-msgid "Barcode"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:90
-msgid "Created"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:93
-msgid "Name and surname"
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:96
-msgid "C.O.D."
-msgstr ""
-
-#: temp/cache/view/template-order-collection-print.latte--e244434f63.php:160
-msgid "END"
-msgstr ""
-
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:21
-msgid "pickup point detail"
-msgstr ""
-
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:26
-msgid "Name"
-msgstr ""
-
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:31
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:47
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:75
-msgid "Address"
-msgstr ""
-
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:53
-msgid "Address was not validated"
-msgstr ""
-
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:63
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:68
-msgid "Validated address"
-msgstr ""
-
-#: temp/cache/view/template-order-delivery-detail.latte--b16f7fd6bf.php:94
-msgid "GPS"
-msgstr ""
-
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:20
-msgid "Selected pickup point"
-msgstr ""
-
-#: temp/cache/view/template-order-detail.latte--b118ce80b9.php:27
-msgid "Pickup point name"
-msgstr ""
-
-#: temp/cache/view/template-order-export-result.latte--beb593acb6.php:15
-msgid "Shipments were submitted successfully."
-msgstr ""
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-export-result.latte--beb593acb6.php:25
-msgid "Some shipments (%s in total) were not submitted (these were submitted "
-"already or are not Packeta orders)."
-msgstr ""
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-export-result.latte--beb593acb6.php:35
-msgid "Some shipments (%s in total) failed to be submitted to Packeta."
-msgstr ""
-
-#: temp/cache/view/template-order-grid-column-packetery.latte--19c36435ff.php:15
-msgid "Print label"
-msgstr ""
-
-#: temp/cache/view/template-order-grid-column-packetery.latte--19c36435ff.php:40
-msgid "Set packet weight"
-msgstr ""
-
-#: temp/cache/view/template-order-grid-column-packetery.latte--19c36435ff.php:57
-msgid "Submit to packeta"
-msgstr ""
-
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:17
-msgid "Print labels"
-msgstr ""
-
-#. translators: %s is count.
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:26
-msgid "Number of labels to print: %s"
-msgstr ""
-
-#: temp/cache/view/template-order-label-print.latte--53dd20f350.php:72
-msgid "Back"
-msgstr ""
-
-#: temp/cache/view/template-order-metabox-overview.latte--ba7d488331.php:15
-msgid "Packet tracking online"
-msgstr ""
-
-#: temp/cache/view/template-order-type-select.latte--58bb4b596e.php:14
-msgid "Packeta shipping method"
-msgstr ""
-
-#: temp/cache/view/template-order-type-select.latte--58bb4b596e.php:21
-msgid "Carrier packets"
-msgstr ""
-
-#: temp/cache/view/template-order-type-select.latte--58bb4b596e.php:29
-msgid "Packeta pickup points packets"
-msgstr ""
-
-#. translators: %s represents order number.
-msgid "Order #%s"
 msgstr ""

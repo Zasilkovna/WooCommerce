@@ -293,14 +293,14 @@ class Page {
 		$senderValidationLog->action = Log\Record::ACTION_SENDER_VALIDATION;
 
 		$senderValidationLog->status = Log\Record::STATUS_SUCCESS;
-		$senderValidationLog->title  = __( 'Sender validation success', 'packeta' );
+		$senderValidationLog->title  = __( 'Sender validation was successful', 'packeta' );
 
 		if ( $senderValidationResponse->hasFault() ) {
 			$senderValidationLog->status = Log\Record::STATUS_ERROR;
 			$senderValidationLog->params = [
 				'errorMessage' => $senderValidationResponse->getFaultString(),
 			];
-			$senderValidationLog->title  = __( 'Sender validation error', 'packeta' );
+			$senderValidationLog->title  = __( 'Sender could not be validated', 'packeta' );
 		}
 
 		$this->logger->add( $senderValidationLog );
