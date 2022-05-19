@@ -318,7 +318,7 @@ class LabelPrint {
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 
-		foreach ( array_keys( $packetIds ) as $orderId ) {
+		foreach ( $packetIds as $orderId => $packetId ) {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_LABEL_PRINT;
 
@@ -336,9 +336,9 @@ class LabelPrint {
 			$record->title  = __( 'Label could not be printed.', 'packeta' );
 				$record->params = [
 					'request'      => [
-						'packetIds' => implode( ',', $request->getPacketIds() ),
-						'format'    => $request->getFormat(),
-						'offset'    => $request->getOffset(),
+						'packetId' => $packetId,
+						'format'   => $request->getFormat(),
+						'offset'   => $request->getOffset(),
 					],
 					'errorMessage' => $response->getFaultString(),
 				];
@@ -363,7 +363,7 @@ class LabelPrint {
 		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 
-		foreach ( array_keys( $packetIdsWithCourierNumbers ) as $orderId ) {
+		foreach ( $packetIdsWithCourierNumbers as $orderId => $pairItem ) {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 
@@ -371,7 +371,7 @@ class LabelPrint {
 				$order = $this->orderRepository->getById( $orderId );
 				if ( null !== $order ) {
 					$order->setIsLabelPrinted( true );
-					$order->setCarrierNumber( $packetIdsWithCourierNumbers[ $orderId ]['courierNumber'] );
+					$order->setCarrierNumber( $pairItem['courierNumber'] );
 					$this->orderRepository->save( $order );
 				}
 
@@ -382,9 +382,10 @@ class LabelPrint {
 				$record->title  = __( 'Carrier label could not be printed.', 'packeta' );
 				$record->params = [
 					'request'      => [
-						'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
-						'format'                      => $request->getFormat(),
-						'offset'                      => $request->getOffset(),
+						'packetId'      => $pairItem['packetId'],
+						'courierNumber' => $pairItem['courierNumber'],
+						'format'        => $request->getFormat(),
+						'offset'        => $request->getOffset(),
 					],
 					'errorMessage' => $response->getFaultString(),
 				];
