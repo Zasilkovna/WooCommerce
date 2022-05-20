@@ -335,12 +335,14 @@ class LabelPrint {
 			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Label could not be printed.', 'packeta' );
 				$record->params = [
-					'request'      => [
-						'packetId' => $packetId,
-						'format'   => $request->getFormat(),
-						'offset'   => $request->getOffset(),
+					'packetId'          => $packetId,
+					'isPacketIdInvalid' => $response->hasInvalidPacketId( (string) $packetId ),
+					'request'           => [
+						'packetIds' => $request->getPacketIds(),
+						'format'    => $request->getFormat(),
+						'offset'    => $request->getOffset(),
 					],
-					'errorMessage' => $response->getFaultString(),
+					'errorMessage'      => $response->getFaultString(),
 				];
 			}
 
@@ -381,13 +383,16 @@ class LabelPrint {
 				$record->status = Log\Record::STATUS_ERROR;
 				$record->title  = __( 'Carrier label could not be printed.', 'packeta' );
 				$record->params = [
-					'request'      => [
-						'packetId'      => $pairItem['packetId'],
-						'courierNumber' => $pairItem['courierNumber'],
-						'format'        => $request->getFormat(),
-						'offset'        => $request->getOffset(),
+					'packetId'               => $pairItem['packetId'],
+					'courierNumber'          => $pairItem['courierNumber'],
+					'isPacketIdInvalid'      => $response->hasInvalidPacketId( (string) $pairItem['packetId'] ),
+					'isCourierNumberInvalid' => $response->hasInvalidCourierNumber( (string) $pairItem['courierNumber'] ),
+					'request'                => [
+						'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
+						'format'                      => $request->getFormat(),
+						'offset'                      => $request->getOffset(),
 					],
-					'errorMessage' => $response->getFaultString(),
+					'errorMessage'           => $response->getFaultString(),
 				];
 			}
 
