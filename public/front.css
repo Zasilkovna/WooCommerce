@@ -46,6 +46,11 @@
 	margin: 0;
 }
 
+.woocommerce [packetery-renderer="table-row"] .packeta-widget-button img {
+	width: 45px;
+	height: 45px;
+}
+
 .woocommerce [packetery-renderer="after-rate"] .packeta-widget-button button {
 	width: 150px;
 }
