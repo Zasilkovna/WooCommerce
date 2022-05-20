@@ -204,7 +204,7 @@ class Page {
 	 *
 	 * @return array
 	 */
-	public function getOrderStatusesChoiceData(): array {
+	public static function getOrderStatusesChoiceData(): array {
 		$orderStatuses            = wc_get_order_statuses();
 		$orderStatusesTransformed = [];
 
@@ -239,7 +239,7 @@ class Page {
 				->addRule( Form::MIN, null, 0 )
 				->setDefaultValue( Provider::MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT );
 
-		$orderStatusesTransformed = $this->getOrderStatusesChoiceData();
+		$orderStatusesTransformed = self::getOrderStatusesChoiceData();
 		$orderStatusesContainer   = $form->addContainer( 'status_syncing_order_statuses' );
 
 		foreach ( $orderStatusesTransformed as $orderStatusKeyHash => $orderStatusData ) {
@@ -281,7 +281,7 @@ class Page {
 	public function onPacketStatusSyncFormSuccess( Form $form, array $values ): void {
 
 		$values['status_syncing_order_statuses']  = $this->getChosenKeys(
-			$this->getOrderStatusesChoiceData(),
+			self::getOrderStatusesChoiceData(),
 			$values['status_syncing_order_statuses']
 		);
 		$values['status_syncing_packet_statuses'] = $this->getChosenKeys(

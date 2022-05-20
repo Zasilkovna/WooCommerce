@@ -77,7 +77,7 @@ class PacketSynchronizer {
 	public function syncStatuses(): void {
 		$results = $this->orderRepository->findStatusSyncingOrders(
 			$this->optionsProvider->getStatusSyncingPacketStatuses(),
-			$this->optionsProvider->getStatusSyncingOrderStatuses(),
+			$this->optionsProvider->getExistingStatusSyncingOrderStatuses(),
 			$this->optionsProvider->getMaxDaysOfPacketStatusSyncing(),
 			$this->optionsProvider->getMaxStatusSyncingPackets()
 		);

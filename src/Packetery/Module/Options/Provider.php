@@ -225,6 +225,18 @@ class Provider {
 	}
 
 	/**
+	 * Status syncing order statuses.
+	 *
+	 * @return array
+	 */
+	public function getExistingStatusSyncingOrderStatuses(): array {
+		$statuses = $this->getStatusSyncingOrderStatuses();
+		$choices  = array_column( Page::getOrderStatusesChoiceData(), 'key' );
+
+		return array_intersect( $statuses, $choices );
+	}
+
+	/**
 	 * Status syncing packet statuses.
 	 *
 	 * @return array
