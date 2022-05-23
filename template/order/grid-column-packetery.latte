@@ -1,14 +1,17 @@
 {varType \Packetery\Core\Entity\Order $order}
 
 {if $order->getPacketId()}
-    <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
+    <a class="button dashicons dashicons-media-default" title="{__( 'printLabel', 'packetery' )}" href="{$printLink}"></a>
 {else}
     <a data-packetery-order-inline-edit
-       class="button dashicons {if $hasOrderWeight}dashicons-edit{else}dashicons-warning{/if}"
+       class="button dashicons {if $showWarningIcon }dashicons-warning{else}dashicons-edit{/if}"
        data-order-data="{= json_encode(
        [
        'id' => $order->getNumber(),
        'packetery_weight' => $order->getWeight(),
+       'packetery_length' => $order->getLength(),
+       'packetery_width' => $order->getWidth(),
+       'packetery_height' => $order->getHeight(),
        ]
        )}"
        title="{$translations['setPacketWeight']}"

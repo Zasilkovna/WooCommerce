@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core;
+use Packetery\Core\Entity\Order;
 use Packetery\Module\FormFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -43,16 +45,25 @@ class Modal {
 	private $orderControllerRouter;
 
 	/**
+	 * Order validator.
+	 *
+	 * @var Core\Validator\Order
+	 */
+	private $orderValidator;
+
+	/**
 	 * Modal constructor.
 	 *
-	 * @param Engine           $latteEngine     Latte engine.
-	 * @param FormFactory      $formFactory     Form factory.
-	 * @param ControllerRouter $orderController Order controller.
+	 * @param Engine               $latteEngine Latte engine.
+	 * @param FormFactory          $formFactory Form factory.
+	 * @param ControllerRouter     $orderController Order controller.
+	 * @param Core\Validator\Order $orderValidator Order validator.
 	 */
-	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController ) {
+	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController, Core\Validator\Order $orderValidator ) {
 		$this->latteEngine           = $latteEngine;
 		$this->formFactory           = $formFactory;
 		$this->orderControllerRouter = $orderController;
+		$this->orderValidator        = $orderValidator;
 	}
 
 	/**
@@ -93,6 +104,15 @@ class Modal {
 		$form->addText( 'packetery_weight', __( 'Weight', 'packeta' ) . ' (kg)' )
 			->setRequired( false )
 			->addRule( Form::FLOAT );
+		$form->addText( 'packetery_width', __( 'Width (mm)', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$form->addText( 'packetery_length', __( 'Length (mm)', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$form->addText( 'packetery_height', __( 'Height (mm)', 'packeta' ) )
+			->setRequired( false )
+			->addRule( Form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );
@@ -100,9 +120,26 @@ class Modal {
 		$form->setDefaults(
 			[
 				'packetery_weight' => '{{ data.order.packetery_weight }}',
+				'packetery_length' => '{{ data.order.packetery_length }}',
+				'packetery_width'  => '{{ data.order.packetery_width }}',
+				'packetery_height' => '{{ data.order.packetery_height }}',
 			]
 		);
 
 		return $form;
+	}
+
+	/**
+	 * Returns true if size is invalid or weight not filled.
+	 *
+	 * @param Order $order Order entity.
+	 *
+	 * @return bool
+	 */
+	public function showWarningIcon( Order $order ): bool {
+		$isSizeValid    = $this->orderValidator->validateSize( $order );
+		$isWeightFilled = ( null !== $order->getWeight() && $order->getWeight() > 0 );
+
+		return ! ( $isSizeValid && $isWeightFilled );
 	}
 }

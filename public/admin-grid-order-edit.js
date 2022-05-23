@@ -60,6 +60,9 @@
 			var nonce = $target.data( 'nonce' );
 			var $packeteryModal = $target.closest( '[data-packetery-modal]' );
 			var packeteryWeight = $packeteryModal.find( '[name="packetery_weight"]' ).val();
+			var packeteryLength = $packeteryModal.find( '[name="packetery_length"]' ).val();
+			var packeteryWidth  = $packeteryModal.find( '[name="packetery_width"]' ).val();
+			var packeteryHeight = $packeteryModal.find( '[name="packetery_height"]' ).val();
 
 			var flashMessage = function( type, message ) {
 				$packeteryModal.find( '.notice' ).removeClass( 'notice-success' ).removeClass( 'notice-error' ).addClass( 'notice-' + type ).removeClass( 'hidden' ).find( 'p' ).text( message );
@@ -76,7 +79,10 @@
 				},
 				data: {
 					orderId: orderId,
-					packeteryWeight: packeteryWeight
+					packeteryWeight: packeteryWeight,
+					packeteryLength : packeteryLength,
+					packeteryWidth: packeteryWidth ,
+					packeteryHeight : packeteryHeight,
 				}
 			} ).fail( function( response ) {
 				var message = (response.responseJSON && response.responseJSON.message) || 'Error';
@@ -84,16 +90,23 @@
 			} ).done( function( response ) {
 				flashMessage( 'success', response.message );
 				$packeteryModal.find( '[name="packetery_weight"]' ).val( response.data.packetery_weight );
+				$packeteryModal.find( '[name="packetery_length"]' ).val( response.data.packetery_length );
+				$packeteryModal.find( '[name="packetery_width"]' ).val( response.data.packetery_width );
+				$packeteryModal.find( '[name="packetery_height"]' ).val( response.data.packetery_height );
+
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
 				orderData.packetery_weight = response.data.packetery_weight;
+				orderData.packetery_length = response.data.packetery_length;
+				orderData.packetery_width = response.data.packetery_width;
+				orderData.packetery_height = response.data.packetery_height;
 				$lastModalButtonClicked.data( 'order-data', orderData );
 
 				replaceFragmentsWith( response.data.fragments );
 
-				if ( response.data.packetery_weight > 0 ) {
-					$lastModalButtonClicked.removeClass( 'dashicons-warning' ).removeClass( 'dashicons-edit' ).addClass( 'dashicons-edit' );
-				} else {
+				if ( response.data.showWarningIcon === true ) {
 					$lastModalButtonClicked.removeClass( 'dashicons-warning' ).removeClass( 'dashicons-edit' ).addClass( 'dashicons-warning' );
+				} else {
+					$lastModalButtonClicked.removeClass( 'dashicons-warning' ).removeClass( 'dashicons-edit' ).addClass( 'dashicons-edit' );
 				}
 				$( '[data-packetery-modal] .modal-close:first' ).trigger( 'click' );
 			} ).always( function() {

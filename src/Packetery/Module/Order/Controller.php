@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Entity\Size;
 use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
@@ -164,12 +165,18 @@ class Controller extends WP_REST_Controller {
 		$data            = [];
 		$parameters      = $request->get_body_params();
 		$packeteryWeight = $parameters['packeteryWeight'];
+		$packeteryWidth  = $parameters['packeteryWidth'];
+		$packeteryLength = $parameters['packeteryLength'];
+		$packeteryHeight = $parameters['packeteryHeight'];
 		$orderId         = (int) $parameters['orderId'];
 
 		$form = $this->orderModal->createForm();
 		$form->setValues(
 			[
 				'packetery_weight' => $packeteryWeight,
+				'packetery_width'  => $packeteryWidth,
+				'packetery_length' => $packeteryLength,
+				'packetery_height' => $packeteryHeight,
 			]
 		);
 
@@ -179,15 +186,27 @@ class Controller extends WP_REST_Controller {
 
 		$order = $this->orderRepository->getById( $orderId );
 		if ( null === $order ) {
-			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
+			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packetery' ), 400 );
 		}
 
 		$values = $form->getValues( 'array' );
 		if ( ! is_numeric( $values['packetery_weight'] ) ) {
 			$values['packetery_weight'] = $order->getCalculatedWeight();
 		}
+		foreach ( [ 'packetery_length', 'packetery_width', 'packetery_height' ] as $sizeKey ) {
+			if ( ! is_numeric( $values[ $sizeKey ] ) ) {
+				$values[ $sizeKey ] = null;
+			}
+		}
 
 		$order->setWeight( $values['packetery_weight'] );
+		$size = new Size(
+			$values['packetery_length'],
+			$values['packetery_width'],
+			$values['packetery_height']
+		);
+
+		$order->setSize( $size );
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -196,6 +215,10 @@ class Controller extends WP_REST_Controller {
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			'packetery_weight' => $order->getWeight(),
+			'packetery_length' => $order->getLength(),
+			'packetery_width'  => $order->getWidth(),
+			'packetery_height' => $order->getHeight(),
+			'showWarningIcon'  => $this->orderModal->showWarningIcon( $order ),
 		];
 
 		return new WP_REST_Response( $data, 200 );
