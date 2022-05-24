@@ -18,6 +18,7 @@ $configurator->setDebugMode( PACKETERY_DEBUG );
 
 if ( PACKETERY_DEBUG ) {
 	$configurator->enableDebugger( PACKETERY_PLUGIN_DIR . '/log' );
+	\PacketeryTracy\Debugger::$strictMode = false;
 }
 
 $configurator->addConfig( __DIR__ . '/config/config.neon' );
