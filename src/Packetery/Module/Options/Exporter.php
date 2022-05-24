@@ -127,6 +127,13 @@ class Exporter {
 			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
 			'lastFiveDaysLogs'  => $this->formatVariable( $this->remapLogRecords( $this->logger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ) ),
 			'generated'         => gmdate( 'Y-m-d H:i:s' ),
+			/**
+			 * Filter all_plugins filters the full array of plugins.
+			 *
+			 * @since 3.0.0
+			 */
+			'plugins'           => $this->getFormatedPlugins( apply_filters( 'all_plugins', get_plugins() ), (array) get_option( 'active_plugins', [] ) ),
+			'muPlugins'         => $this->getFormatedPlugins( get_mu_plugins(), array_keys( get_mu_plugins() ) ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
@@ -139,6 +146,50 @@ class Exporter {
 		echo $txtContents;
 		// @codingStandardsIgnoreEnd
 		exit;
+	}
+
+	/**
+	 * Format plugins.
+	 *
+	 * @param array $plugins Plugins.
+	 * @param array $activePlugins Active plugins.
+	 *
+	 * @return string
+	 */
+	private function getFormatedPlugins( array $plugins, array $activePlugins ): string {
+		$result = [];
+
+		foreach ( $plugins as $relativePath => $plugin ) {
+			$item = [
+				// phpcs:ignore: WordPress.PHP.DevelopmentFunctions.error_log_var_export
+				'Active'               => var_export( in_array( $relativePath, $activePlugins, true ), true ),
+				'Name'                 => $plugin['Name'] ?? '',
+				'PluginURI'            => $plugin['PluginURI'] ?? '',
+				'Version'              => $plugin['Version'] ?? '',
+				'WC tested up to'      => $plugin['WC tested up to'] ?? '',
+				'WC requires at least' => $plugin['WC requires at least'] ?? '',
+				'AuthorName'           => $plugin['AuthorName'] ?? '',
+				'RequiresPHP'          => $plugin['RequiresPHP'] ?? '',
+			];
+
+			$result[] = $item;
+		}
+
+		usort(
+			$result,
+			function ( array $pluginA, array $pluginB ): int {
+				$nameA = $pluginA['Name'];
+				$nameB = $pluginB['Name'];
+
+				if ( $nameA === $nameB ) {
+					return 0;
+				}
+
+				return strcasecmp( $nameA, $nameB );
+			}
+		);
+
+		return $this->formatVariable( $result );
 	}
 
 	/**
