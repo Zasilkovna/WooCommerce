@@ -643,11 +643,6 @@ class Plugin {
 	 * Gets current locale.
 	 */
 	private function getLocale(): string {
-		/**
-		 * Applies plugin_locale filters.
-		 *
-		 * @since 1.0.0
-		 */
 		return apply_filters(
 			'plugin_locale',
 			( is_admin() ? get_user_locale() : get_locale() ),
