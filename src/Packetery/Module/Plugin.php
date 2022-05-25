@@ -553,7 +553,7 @@ class Plugin {
 					'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
 					'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
 					'link'                     => __( 'Link', 'packeta' ),
-					'pickupPointAddress'             => __( 'Pickup Point Address', 'packeta' ),
+					'pickupPointAddress'       => __( 'Pickup Point Address', 'packeta' ),
 					'validatedDeliveryAddress' => __( 'validated delivery address', 'packeta' ),
 					'street'                   => __( 'Street', 'packeta' ),
 					'houseNumber'              => __( 'House number', 'packeta' ),

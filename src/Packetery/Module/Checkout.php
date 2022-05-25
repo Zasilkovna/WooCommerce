@@ -219,8 +219,11 @@ class Checkout {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
-				'renderer' => self::BUTTON_RENDERER_TABLE_ROW,
-				'logo'     => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
+				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
+				'logo'         => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
+				'translations' => [
+					'packeta' => __( 'Packeta', 'packeta' ),
+				],
 			]
 		);
 	}
@@ -551,7 +554,7 @@ class Checkout {
 				/**
 				 * Tells if widget button table row should be used.
 				 *
-				 * @since 1.2.7
+				 * @since 1.3.0
 				 */
 				if ( apply_filters( 'packetery_use_widget_button_table_row', false ) ) {
 					add_action( 'woocommerce_review_order_after_shipping', [ $this, 'renderWidgetButtonTableRow' ] );
