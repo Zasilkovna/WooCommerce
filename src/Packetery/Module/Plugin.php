@@ -472,7 +472,7 @@ class Plugin {
 				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
 				'translations'             => [
 					'packeta'                => __( 'Packeta', 'packeta' ),
-					'pickupPointDetail'      => __( 'pickup point detail', 'packeta' ),
+					'pickupPointDetail'      => __( 'Pickup Point Detail', 'packeta' ),
 					'name'                   => __( 'Name', 'packeta' ),
 					'address'                => __( 'Address', 'packeta' ),
 					'pickupPointDetailCaps'  => __( 'Pickup Point Detail', 'packeta' ),
@@ -515,7 +515,7 @@ class Plugin {
 				'translations'             => [
 					'packeta'             => __( 'Packeta', 'packeta' ),
 					'selectedPickupPoint' => __( 'Selected pickup point', 'packeta' ),
-					'pickupPointName'     => __( 'Pickup point name', 'packeta' ),
+					'pickupPointName'     => __( 'Pickup Point Name', 'packeta' ),
 					'pickupPointDetail'   => __( 'Pickup Point Detail', 'packeta' ),
 					'validatedAddress'    => __( 'Validated address', 'packeta' ),
 					'address'             => __( 'Address', 'packeta' ),
@@ -553,13 +553,13 @@ class Plugin {
 					'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
 					'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
 					'link'                     => __( 'Link', 'packeta' ),
-					'pointAddress'             => __( 'Point Address', 'packeta' ),
+					'pickupPointAddress'             => __( 'Pickup Point Address', 'packeta' ),
 					'validatedDeliveryAddress' => __( 'validated delivery address', 'packeta' ),
-					'street'                   => __( 'street', 'packeta' ),
+					'street'                   => __( 'Street', 'packeta' ),
 					'houseNumber'              => __( 'House number', 'packeta' ),
-					'city'                     => __( 'city', 'packeta' ),
-					'zip'                      => __( 'zip', 'packeta' ),
-					'county'                   => __( 'county', 'packeta' ),
+					'city'                     => __( 'City', 'packeta' ),
+					'zip'                      => __( 'Zip', 'packeta' ),
+					'county'                   => __( 'County', 'packeta' ),
 				],
 			]
 		);
@@ -737,12 +737,12 @@ class Plugin {
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'Carrier table was not created, you can find more information in Packeta log', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Carrier table was not created', 'packeta' );
+			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -752,12 +752,12 @@ class Plugin {
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'Order table was not created, you can find more information in Packeta log', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Order table was not created', 'packeta' );
+			$record->title  = __( 'Database order table was not created.', 'packeta' );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -805,7 +805,7 @@ class Plugin {
 	 */
 	public function addPluginActionLinks( array $links ): array {
 		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=' . Options\Page::SLUG ) ) . '" aria-label="' .
-					esc_attr__( 'View Packeta settings', 'packeta' ) . '">' .
+					esc_attr__( 'View the plugin documentation', 'packeta' ) . '">' .
 					esc_html__( 'Settings', 'packeta' ) . '</a>';
 
 		array_unshift( $links, $settingsLink );

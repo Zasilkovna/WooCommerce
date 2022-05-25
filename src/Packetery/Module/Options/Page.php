@@ -329,7 +329,7 @@ class Page {
 			$result = $this->validateSender( $this->optionsProvider->get_sender() );
 
 			if ( true === $result ) {
-				$this->messageManager->flash_message( __( 'Specified sender is OK', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+				$this->messageManager->flash_message( __( 'Specified sender has been validated.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 			}
 
 			$doRedirect = wp_safe_redirect(

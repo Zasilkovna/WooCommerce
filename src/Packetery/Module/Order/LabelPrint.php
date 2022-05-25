@@ -163,7 +163,7 @@ class LabelPrint {
 					'labelPrinting'         => __( 'Print labels', 'packeta' ),
 					// translators: %s is count.
 					'numberOfLabelsToPrint' => __( 'Number of labels to print: %s', 'packeta' ),
-					'back'                  => __( 'back', 'packeta' ),
+					'back'                  => __( 'Back', 'packeta' ),
 					'printLabels'           => __( 'Print labels', 'packeta' ),
 				],
 			]
@@ -330,7 +330,7 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Label has been printed successfully', 'packeta' );
+			$record->title  = __( 'Label has been printed successfully.', 'packeta' );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Label could not be printed.', 'packeta' );
@@ -374,10 +374,10 @@ class LabelPrint {
 			}
 
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Carrier label print has been printed successfully', 'packeta' );
+			$record->title  = __( 'Carrier label has been printed successfully.', 'packeta' );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Carrier label could not be printed', 'packeta' );
+			$record->title  = __( 'Carrier label could not be printed.', 'packeta' );
 			$record->params = [
 				'request'      => [
 					'packetIdsWithCourierNumbers' => $request->getPacketIdsWithCourierNumbers(),
@@ -446,7 +446,7 @@ class LabelPrint {
 				$record         = new Log\Record();
 				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Carrier number could not be retrieved', 'packeta' );
+				$record->title  = __( 'Carrier number could not be retrieved.', 'packeta' );
 				$record->params = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),

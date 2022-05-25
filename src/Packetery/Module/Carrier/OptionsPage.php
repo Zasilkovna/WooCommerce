@@ -213,7 +213,7 @@ class OptionsPage {
 	 */
 	public function validateOptions( Form $form ): void {
 		if ( $form->hasErrors() ) {
-			add_settings_error( '', '', esc_attr( __( 'Some carrier data are invalid', 'packeta' ) ) );
+			add_settings_error( '', '', esc_attr( __( 'Some carrier data is invalid', 'packeta' ) ) );
 			return;
 		}
 
@@ -224,14 +224,14 @@ class OptionsPage {
 			$options,
 			'weight_limits',
 			'weight',
-			__( 'Weight rules are overlapping, fix it please.', 'packeta' )
+			__( 'Weight rules are overlapping, please fix them.', 'packeta' )
 		);
 		$this->checkOverlapping(
 			$form,
 			$options,
 			'surcharge_limits',
 			'order_price',
-			__( 'Surcharge rules are overlapping, fix it please.', 'packeta' )
+			__( 'Surcharge rules are overlapping, please fix them.', 'packeta' )
 		);
 	}
 
@@ -308,18 +308,18 @@ class OptionsPage {
 					'globalCurrency' => get_woocommerce_currency_symbol(),
 					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
 					'translations'   => [
-						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'Cannot use this carrier because requires customs declaration', 'packeta' ),
+						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
 						'delete'                       => __( 'Delete', 'packeta' ),
 						'weightRules'                  => __( 'Weight rules', 'packeta' ),
 						'addWeightRule'                => __( 'Add weight rule', 'packeta' ),
 						'codSurchargeRules'            => __( 'COD surcharge rules', 'packeta' ),
 						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
 						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
-						'addressValidationDescription' => __( 'Customer address validation', 'packeta' ),
+						'addressValidationDescription' => __( 'Customer address validation.', 'packeta' ),
 						'saveChanges'                  => __( 'Save changes', 'packeta' ),
 						'packeta'                      => __( 'Packeta', 'packeta' ),
 						'countryOptions'               => __( 'Country options', 'packeta' ),
-						'noKnownCarrierForThisCountry' => __( 'No known carrier for this country.', 'packeta' ),
+						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
 					],
 				]
 			);

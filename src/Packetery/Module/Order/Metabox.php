@@ -265,7 +265,7 @@ class Metabox {
 
 		if ( false === $this->order_form->isValid() ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
-			$this->message_manager->flash_message( __( 'Error happened in Packeta fields!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return $orderId;
 		}
@@ -279,7 +279,7 @@ class Metabox {
 		}
 
 		if ( ! current_user_can( 'edit_post', $orderId ) ) {
-			$this->message_manager->flash_message( __( 'You are not allowed to edit posts!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return $orderId;
 		}

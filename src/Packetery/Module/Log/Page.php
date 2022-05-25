@@ -72,8 +72,8 @@ class Page {
 			Record::ACTION_LABEL_PRINT               => __( 'Label print', 'packeta' ),
 			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'Carrier list update', 'packeta' ),
 			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'Getting external carrier tracking number', 'packeta' ),
-			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'Carrier table was not created', 'packeta' ),
-			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'Order table was not created', 'packeta' ),
+			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'Database carrier table was not created.', 'packeta' ),
+			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'Database order table was not created.', 'packeta' ),
 			Record::ACTION_SENDER_VALIDATION         => __( 'Sender validation', 'packeta' ),
 			Record::ACTION_PACKET_STATUS_SYNC        => __( 'Packet status synchronization', 'packeta' ),
 		];
@@ -98,7 +98,7 @@ class Page {
 					'dateAndTime'    => __( 'Date and time', 'packeta' ),
 					'action'         => __( 'Action', 'packeta' ),
 					'note'           => __( 'Note', 'packeta' ),
-					'logListIsEmpty' => __( 'Log list is empty', 'packeta' ),
+					'logListIsEmpty' => __( 'API log is empty.', 'packeta' ),
 				],
 			]
 		);

@@ -136,7 +136,7 @@ class CollectionPrint {
 
 		if ( ! $packetIds ) {
 			delete_transient( self::getOrderIdsTransientName() );
-			$this->messageManager->flash_message( __( 'Selected orders were not yet submitted to Packeta', 'packeta' ), 'info' );
+			$this->messageManager->flash_message( __( 'Selected orders were not yet submitted to Packeta.', 'packeta' ), 'info' );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}

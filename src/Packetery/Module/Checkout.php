@@ -269,7 +269,7 @@ class Checkout {
 						'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
 						'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
 						'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
-						'invalidAddressCountrySelected' => __( 'Invalid address country selected', 'packeta' ),
+						'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
 						'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
 						'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
 						'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
