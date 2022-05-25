@@ -1,15 +1,15 @@
 {varType Packetery\Core\Log\Record[] $rows}
 
 <div id="packetery-log-page">
-    <h1>{__( 'Packeta', 'packetery' )} - {__( 'logsPageTitle', 'packetery' )}</h1>
+    <h1>{$translations['packeta']} - {$translations['logsPageTitle']}</h1>
 
     <table class="packetery-log-table">
         <thead>
             <tr>
-                <th class="packetery-log-column packetery-log-column-status">{__( 'status', 'packetery' )}</th>
-                <th class="packetery-log-column packetery-log-column-date">{__( 'dateAndTime', 'packetery' )}</th>
-                <th class="packetery-log-column packetery-log-column-action">{__( 'action', 'packetery' )}</th>
-                <th class="packetery-log-column packetery-log-column-note">{__( 'note', 'packetery' )}</th>
+                <th class="packetery-log-column packetery-log-column-status">{$translations['status']}</th>
+                <th class="packetery-log-column packetery-log-column-date">{$translations['dateAndTime']}</th>
+                <th class="packetery-log-column packetery-log-column-action">{$translations['action']}</th>
+                <th class="packetery-log-column packetery-log-column-note">{$translations['note']}</th>
             </tr>
         </thead>
         <tbody>
@@ -31,7 +31,7 @@
             {else}
                 <tr>
                     <td colspan="4">
-                        {__( 'logListIsEmpty', 'packetery' )}
+                        {$translations['logListIsEmpty']}
                     </td>
                 </tr>
             {/foreach}

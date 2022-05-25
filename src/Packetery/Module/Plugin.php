@@ -30,7 +30,7 @@ use WC_Order;
 class Plugin {
 
 	public const VERSION               = '1.2.6';
-	public const DOMAIN                = 'packetery';
+	public const DOMAIN                = 'packeta';
 	public const MIN_LISTENER_PRIORITY = -9998;
 
 	/**
@@ -418,7 +418,7 @@ class Plugin {
 			[
 				'message' => [
 					'type'    => 'error',
-					'message' => __( 'packetaPluginRequiresWooCommerce', 'packetery' ),
+					'message' => __( 'Packeta plugin requires WooCommerce. Please install and activate it first.', 'packeta' ),
 				],
 			]
 		);
@@ -470,6 +470,21 @@ class Plugin {
 				'pickupPoint'              => $orderEntity->getPickupPoint(),
 				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
 				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
+				'translations'             => [
+					'packeta'                => __( 'Packeta', 'packeta' ),
+					'pickupPointDetail'      => __( 'Pickup Point Detail', 'packeta' ),
+					'name'                   => __( 'Name', 'packeta' ),
+					'address'                => __( 'Address', 'packeta' ),
+					'pickupPointDetailCaps'  => __( 'Pickup Point Detail', 'packeta' ),
+					'addressWasNotValidated' => __( 'Address was not validated', 'packeta' ),
+					'validatedAddress'       => __( 'Validated address', 'packeta' ),
+					'street'                 => __( 'Street', 'packeta' ),
+					'houseNumber'            => __( 'House number', 'packeta' ),
+					'city'                   => __( 'City', 'packeta' ),
+					'zip'                    => __( 'Zip', 'packeta' ),
+					'county'                 => __( 'County', 'packeta' ),
+					'gps'                    => __( 'GPS', 'packeta' ),
+				],
 			]
 		);
 	}
@@ -497,6 +512,14 @@ class Plugin {
 				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+				'translations'             => [
+					'packeta'             => __( 'Packeta', 'packeta' ),
+					'selectedPickupPoint' => __( 'Selected pickup point', 'packeta' ),
+					'pickupPointName'     => __( 'Pickup Point Name', 'packeta' ),
+					'pickupPointDetail'   => __( 'Pickup Point Detail', 'packeta' ),
+					'validatedAddress'    => __( 'Validated address', 'packeta' ),
+					'address'             => __( 'Address', 'packeta' ),
+				],
 			]
 		);
 	}
@@ -525,6 +548,19 @@ class Plugin {
 				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+				'translations'             => [
+					'packeta'                  => __( 'Packeta', 'packeta' ),
+					'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
+					'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
+					'link'                     => __( 'Link', 'packeta' ),
+					'pickupPointAddress'             => __( 'Pickup Point Address', 'packeta' ),
+					'validatedDeliveryAddress' => __( 'validated delivery address', 'packeta' ),
+					'street'                   => __( 'Street', 'packeta' ),
+					'houseNumber'              => __( 'House number', 'packeta' ),
+					'city'                     => __( 'City', 'packeta' ),
+					'zip'                      => __( 'Zip', 'packeta' ),
+					'county'                   => __( 'County', 'packeta' ),
+				],
 			]
 		);
 	}
@@ -701,12 +737,12 @@ class Plugin {
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'carrierTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'carrierTableNotCreated', 'packetery' );
+			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -716,12 +752,12 @@ class Plugin {
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
 			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'orderTableNotCreatedMoreInformationInPacketaLog', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->message_manager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
 			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'orderTableNotCreated', 'packetery' );
+			$record->title  = __( 'Database order table was not created.', 'packeta' );
 			$record->params = [
 				'errorMessage' => $lastError,
 			];
@@ -769,8 +805,8 @@ class Plugin {
 	 */
 	public function addPluginActionLinks( array $links ): array {
 		$settingsLink = '<a href="' . esc_url( admin_url( 'admin.php?page=' . Options\Page::SLUG ) ) . '" aria-label="' .
-					esc_attr__( 'View Packeta settings', 'packetery' ) . '">' .
-					esc_html__( 'Settings', 'packetery' ) . '</a>';
+					esc_attr__( 'View the plugin documentation', 'packeta' ) . '">' .
+					esc_html__( 'Settings', 'packeta' ) . '</a>';
 
 		array_unshift( $links, $settingsLink );
 
@@ -792,8 +828,8 @@ class Plugin {
 			return $links;
 		}
 		$links[] = '<a href="' . esc_url( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .
-		esc_attr__( 'View Packeta documentation', 'packetery' ) . '">' .
-		esc_html__( 'Documentation', 'packetery' ) . '</a>';
+		esc_attr__( 'View Packeta documentation', 'packeta' ) . '">' .
+		esc_html__( 'Documentation', 'packeta' ) . '</a>';
 
 		return $links;
 	}
