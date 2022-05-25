@@ -137,6 +137,7 @@ class PacketSubmitter {
 				$record->status = Log\Record::STATUS_SUCCESS;
 				$record->title  = __( 'Packet was sucessfully created.', 'packeta' );
 				$record->params = [
+					'request'  => $createPacketRequest->getSubmittableData(),
 					'packetId' => $response->getId(),
 				];
 				$this->logger->add( $record );
