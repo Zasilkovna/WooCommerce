@@ -237,13 +237,13 @@ class Metabox {
 					'packet_tracking_url' => $this->helper->get_tracking_url( $packetId ),
 					'showLogsLink'        => $showLogsLink,
 					'translations'        => [
-						'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
+						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
 						'showLogs'             => __( 'Show logs', 'packeta' ),
 						// translators: %s: Order number.
 						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getNumber() ),
 						// translators: %s: Packet number.
 						'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
-						'cancelPacket'              => __( 'Cancel packet', 'packetery' ),
+						'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
 					],
 				]
 			);

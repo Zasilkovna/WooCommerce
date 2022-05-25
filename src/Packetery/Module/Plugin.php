@@ -30,8 +30,8 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION               = '1.3.2';
-	public const DOMAIN                = 'packeta';
+	public const VERSION                = '1.3.2';
+	public const DOMAIN                 = 'packeta';
 	public const MIN_LISTENER_PRIORITY  = - 9998;
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';
 
@@ -603,9 +603,11 @@ class Plugin {
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte',
 				[
-					'closeModalPanel' => __( 'Close modal panel', 'packetery' ),
-					'no'              => __( 'No', 'packetery' ),
-					'yes'             => __( 'Yes', 'packetery' ),
+					'translations' => [
+						'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
+						'no'              => __( 'No', 'packeta' ),
+						'yes'             => __( 'Yes', 'packeta' ),
+					],
 				]
 			);
 		}

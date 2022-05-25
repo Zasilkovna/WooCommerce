@@ -116,7 +116,7 @@ class PacketCanceller {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Packet cancel error', 'packetery' );
+			$record->title  = __( 'Packet cancel error', 'packeta' );
 			$record->params = [
 				'orderId'      => $this->getOrderId(),
 				'referer'      => (string) $this->request->getReferer(),
@@ -125,7 +125,7 @@ class PacketCanceller {
 
 			$this->logger->add( $record );
 
-			$this->messageManager->flash_message( __( 'Order not found', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Order not found', 'packeta' ), MessageManager::TYPE_ERROR );
 			$this->redirectTo( $redirectTo, $order );
 			return;
 		}
@@ -184,7 +184,7 @@ class PacketCanceller {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Packet cancel error', 'packetery' );
+			$record->title  = __( 'Packet cancel error', 'packeta' );
 			$record->params = [
 				'orderId'      => $order->getNumber(),
 				'packetId'     => $order->getPacketId(),
@@ -194,7 +194,7 @@ class PacketCanceller {
 
 			$this->logger->add( $record );
 
-			$this->messageManager->flash_message( __( 'Packet could not be cancelled', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Packet could not be cancelled', 'packeta' ), MessageManager::TYPE_ERROR );
 			return;
 		}
 
@@ -205,7 +205,7 @@ class PacketCanceller {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Packet cancel success', 'packetery' );
+			$record->title  = __( 'Packet cancel success', 'packeta' );
 			$record->params = [
 				'orderId'  => $order->getNumber(),
 				'packetId' => $order->getPacketId(),
@@ -218,7 +218,7 @@ class PacketCanceller {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Packet cancel error', 'packetery' );
+			$record->title  = __( 'Packet cancel error', 'packeta' );
 			$record->params = [
 				'orderId'      => $order->getNumber(),
 				'packetId'     => $order->getPacketId(),
@@ -237,16 +237,16 @@ class PacketCanceller {
 			$this->orderRepository->save( $order );
 
 			if ( $result->hasFault() ) {
-				$this->messageManager->flash_message( __( 'Packet could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packetery' ), MessageManager::TYPE_SUCCESS );
+				$this->messageManager->flash_message( __( 'Packet could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packeta' ), MessageManager::TYPE_SUCCESS );
 			}
 
 			if ( ! $result->hasFault() ) {
-				$this->messageManager->flash_message( __( 'Packet has been successfully canceled both in the order list and the Packeta system.', 'packetery' ), MessageManager::TYPE_SUCCESS );
+				$this->messageManager->flash_message( __( 'Packet has been successfully canceled both in the order list and the Packeta system.', 'packeta' ), MessageManager::TYPE_SUCCESS );
 			}
 		}
 
 		if ( ! $this->shouldRevertSubmission( $result ) ) {
-			$this->messageManager->flash_message( __( 'Failed to cancel packet. See Packeta log for more details.', 'packetery' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Failed to cancel packet. See Packeta log for more details.', 'packeta' ), MessageManager::TYPE_ERROR );
 		}
 	}
 

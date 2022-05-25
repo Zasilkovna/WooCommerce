@@ -277,21 +277,21 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'                     => $order,
-						'showWarningIcon'           => $this->modal->showWarningIcon( $order ),
-						'packetSubmitUrl'           => $packetSubmitUrl,
-						'packetCancelLink'          => $packetCancelLink,
-						'restNonce'                 => wp_create_nonce( 'wp_rest' ),
-						'printLink'                 => $printLink,
-						'translations'    => [
-							'printLabel'              => __( 'Print label', 'packeta' ),
-							'setAdditionalPacketInfo' => __( 'Set additional packet information', 'packeta' ),
-							'submitToPacketa'         => __( 'Submit to packeta', 'packeta' ),
+						'order'            => $order,
+						'showWarningIcon'  => $this->modal->showWarningIcon( $order ),
+						'packetSubmitUrl'  => $packetSubmitUrl,
+						'packetCancelLink' => $packetCancelLink,
+						'restNonce'        => wp_create_nonce( 'wp_rest' ),
+						'printLink'        => $printLink,
+						'translations'     => [
+							'printLabel'                => __( 'Print label', 'packeta' ),
+							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
+							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
 							// translators: %s: Order number.
 							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getNumber() ),
 							// translators: %s: Packet number.
 							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
-							'cancelPacket'              => __( 'Cancel packet', 'packetery' ),
+							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
 						],
 					]
 				);
