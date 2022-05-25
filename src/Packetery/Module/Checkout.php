@@ -33,6 +33,16 @@ class Checkout {
 	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
 	const ATTR_POINT_URL    = 'packetery_point_url';
 
+	const BUTTON_RENDERER_TABLE_ROW  = 'table-row';
+	const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
+
+	/**
+	 * Tells if hidden fields should be rendered at default place.
+	 *
+	 * @var bool
+	 */
+	private $shouldRenderHiddenFieldsAtDefaultPlace = true;
+
 	/**
 	 * Pickup point attributes configuration.
 	 *
@@ -193,13 +203,59 @@ class Checkout {
 	}
 
 	/**
-	 * Renders widget button and information about chosen pickup point
+	 * Render widget button table row.
+	 *
+	 * @return void
 	 */
-	public function renderWidgetButton(): void {
+	public function renderWidgetButtonTableRow(): void {
+		if ( ! is_checkout() ) {
+			return;
+		}
+
+		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace ) {
+			$this->renderHiddenInputFields();
+		}
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
+			[
+				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
+				'logo'         => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
+				'translations' => [
+					'packeta' => __( 'Packeta', 'packeta' ),
+				],
+			]
+		);
+	}
+
+	/**
+	 * Renders widget button and information about chosen pickup point
+	 *
+	 * @param \WC_Shipping_Rate $shippingRate Shipping rate.
+	 */
+	public function renderWidgetButtonAfterShippingRate( \WC_Shipping_Rate $shippingRate ): void {
+		if ( ! is_checkout() ) {
+			return;
+		}
+
+		if ( ! $this->isPacketeryOrder( $shippingRate->get_id() ) ) {
+			return;
+		}
+
+		static $hiddenInputsRendered    = false;
+		static $hiddenFieldsRenderedFor = null;
+
+		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace && ( ! $hiddenInputsRendered || $shippingRate->get_id() === $hiddenFieldsRenderedFor ) ) {
+			$this->renderHiddenInputFields();
+			$hiddenInputsRendered    = true;
+			$hiddenFieldsRenderedFor = $shippingRate->get_id();
+		}
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
-				'logo'         => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
+				'logo'         => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
 				'translations' => [
 					'packeta' => __( 'Packeta', 'packeta' ),
 				],
@@ -224,9 +280,11 @@ class Checkout {
 	}
 
 	/**
-	 * Renders main checkout script
+	 * Creates settings for checkout script.
+	 *
+	 * @return array
 	 */
-	public function render_after_checkout_form(): void {
+	public function createSettings(): array {
 		$carrierConfig = [];
 		$carriers      = $this->carrierRepository->getAllIncludingZpoints();
 
@@ -253,37 +311,32 @@ class Checkout {
 			}
 		}
 
-		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/checkout/init.latte',
-			[
-				'settings' => [
-					'language'          => substr( get_locale(), 0, 2 ),
-					'country'           => $this->getCustomerCountry(),
-					'weight'            => $this->getCartWeightKg(),
-					'carrierConfig'     => $carrierConfig,
-					'pickupPointAttrs'  => self::$pickupPointAttrs,
-					'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
-					'appIdentity'       => Plugin::getAppIdentity(),
-					'packeteryApiKey'   => $this->options_provider->get_api_key(),
-					'translations'      => [
-						'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
-						'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
-						'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
-						'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
-						'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
-						'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
-						'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
-						'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
-					],
-				],
-			]
-		);
+		return [
+			'language'          => substr( get_locale(), 0, 2 ),
+			'country'           => $this->getCustomerCountry(),
+			'weight'            => $this->getCartWeightKg(),
+			'carrierConfig'     => $carrierConfig,
+			'pickupPointAttrs'  => self::$pickupPointAttrs,
+			'homeDeliveryAttrs' => self::$homeDeliveryAttrs,
+			'appIdentity'       => Plugin::getAppIdentity(),
+			'packeteryApiKey'   => $this->options_provider->get_api_key(),
+			'translations'      => [
+				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
+				'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
+				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
+				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
+				'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
+				'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
+				'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
+				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
+			],
+		];
 	}
 
 	/**
 	 * Adds fields to checkout page to save the values later
 	 */
-	public function addPickupPointFields(): void {
+	public function renderHiddenInputFields(): void {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
 			[ 'fields' => array_merge( array_column( self::$pickupPointAttrs, 'name' ), array_column( self::$homeDeliveryAttrs, 'name' ) ) ]
@@ -484,13 +537,33 @@ class Checkout {
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
-		add_action( 'woocommerce_review_order_before_payment', array( $this, 'renderWidgetButton' ) );
-		add_action( 'woocommerce_after_checkout_form', array( $this, 'render_after_checkout_form' ) );
-		add_action( 'woocommerce_after_order_notes', array( $this, 'addPickupPointFields' ) );
+		$activeTheme = strtolower( wp_get_theme()->get_stylesheet() );
+
+		if ( in_array( $activeTheme, [ 'divi', 'divi_child' ], true ) ) {
+			add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
+			$this->shouldRenderHiddenFieldsAtDefaultPlace = false;
+		}
+
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
+		add_action(
+			'init',
+			function () {
+				/**
+				 * Tells if widget button table row should be used.
+				 *
+				 * @since 1.3.0
+				 */
+				if ( apply_filters( 'packetery_use_widget_button_table_row', false ) ) {
+					add_action( 'woocommerce_review_order_after_shipping', [ $this, 'renderWidgetButtonTableRow' ] );
+					return;
+				}
+
+				add_action( 'woocommerce_after_shipping_rate', [ $this, 'renderWidgetButtonAfterShippingRate' ], 10, 1 );
+			}
+		);
 	}
 
 	/**
