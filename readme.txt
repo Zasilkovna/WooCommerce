@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
-Tested up to: 5.9.2
-Stable tag: 1.2.6
+Tested up to: 6.0
+Stable tag: 1.3.0
 Requires PHP: 7.2
 WC requires at least: 4.5
-WC tested up to: 6.3.1
+WC tested up to: 6.5.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -61,6 +61,12 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.3.0 =
+* Fixed: Some Elementor and some Divi checkouts are now supported
+* Fixed: Plugin translations
+* Added: currency-switcher.com compatibility
+* Added: API Log - added packetAttributes if the packet was successfully sent
+
 = 1.2.6 =
 * Added: New plugin setting that enables replacing shipping address with pickup point address
 * Updated: Label options naming in Packeta plugin options page
