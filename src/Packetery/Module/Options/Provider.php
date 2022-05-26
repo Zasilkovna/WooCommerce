@@ -135,6 +135,20 @@ class Provider {
 	}
 
 	/**
+	 * Returns the location of the widget button in the cart
+	 *
+	 * @return string|null
+	 */
+	public function getCheckoutWidgetButtonLocation(): ?string {
+		$value = $this->get( 'checkout_widget_button_location' );
+		if ( ! $value ) {
+			return null;
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Order packaging weight.
 	 *
 	 * @return float
