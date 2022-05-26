@@ -124,7 +124,7 @@ class DataTab {
 			PACKETERY_PLUGIN_DIR . '/template/product/data-tab-panel.latte',
 			[
 				'form'                           => $this->createForm( Product\Entity::fromGlobals() ),
-				'disallowedShippingRatesHeading' => __( 'Check Packeta shipping rates disallowed for this product.', 'packetery' ),
+				'disallowedShippingRatesHeading' => __( 'Check Packeta shipping rates disallowed for this product.', 'packeta' ),
 			]
 		);
 	}
