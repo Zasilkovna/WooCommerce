@@ -165,14 +165,20 @@ class GridExtender {
 	}
 
 	/**
-	 * Renders weight cell.
+	 * Gets weight cell content.
 	 *
 	 * @param Core\Entity\Order $order Order.
 	 *
 	 * @return string
 	 */
-	private function getWeightCellContent( Core\Entity\Order $order ): string {
-		return esc_html( $order->getWeight() ?? '' );
+	public function getWeightCellContent( Core\Entity\Order $order ): string {
+		return $this->latteEngine->renderToString(
+			PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte',
+			[
+				'order'           => $order,
+				'weightFormatted' => ( null !== $order->getWeight() ? number_format( $order->getWeight(), 3, wc_get_price_decimal_separator(), wc_get_price_thousand_separator() ) . ' kg' : '' ),
+			]
+		);
 	}
 
 	/**
@@ -190,6 +196,7 @@ class GridExtender {
 
 		switch ( $column ) {
 			case 'packetery_weight':
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo $this->getWeightCellContent( $order );
 				break;
 			case 'packetery_destination':
@@ -304,7 +311,7 @@ class GridExtender {
 			if ( 'order_total' === $column_name ) {
 				// TODO: Packet status sync.
 				$new_columns['packetery']             = __( 'Packeta', 'packeta' );
-				$new_columns['packetery_weight']      = __( 'Weight (kg)', 'packeta' );
+				$new_columns['packetery_weight']      = __( 'Weight', 'packeta' );
 				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packeta' );
 				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packeta' );
 			}
