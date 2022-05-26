@@ -173,7 +173,7 @@ class OptionsPage {
 		}
 
 		if ( $carrier->supportsAgeVerification() ) {
-			$form->addText( 'age_verification_fee', __( 'Age verification fee', 'packetery' ) . ':' )
+			$form->addText( 'age_verification_fee', __( 'Age verification fee', 'packeta' ) . ':' )
 				->setRequired( false )
 				->addRule( Form::FLOAT )
 				->addRule( Form::MIN, null, 0 );
@@ -310,10 +310,10 @@ class OptionsPage {
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
 				[
-					'forms'                                => $carriersData,
-					'country_iso'                          => $countryIso,
-					'globalCurrency'                       => get_woocommerce_currency_symbol(),
-					'flashMessages'                        => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+					'forms'          => $carriersData,
+					'country_iso'    => $countryIso,
+					'globalCurrency' => get_woocommerce_currency_symbol(),
+					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
 					'translations'   => [
 						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
 						'delete'                       => __( 'Delete', 'packeta' ),

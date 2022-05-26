@@ -312,17 +312,17 @@ class Checkout {
 		}
 
 		return [
-					'language'                  => substr( get_locale(), 0, 2 ),
-					'country'                   => $this->getCustomerCountry(),
-					'weight'                    => $this->getCartWeightKg(),
-					'carrierConfig'             => $carrierConfig,
-					// TODO: Settings are not updated on AJAX checkout update. Needs rework due to possible checkout solutions allowing cart update.
-					'isAgeVerificationRequired' => $this->isAgeVerification18PlusRequired(),
-					'pickupPointAttrs'          => self::$pickupPointAttrs,
-					'homeDeliveryAttrs'         => self::$homeDeliveryAttrs,
-					'appIdentity'               => Plugin::getAppIdentity(),
-					'packeteryApiKey'           => $this->options_provider->get_api_key(),
-					'translations'              => [
+			'language'                  => substr( get_locale(), 0, 2 ),
+			'country'                   => $this->getCustomerCountry(),
+			'weight'                    => $this->getCartWeightKg(),
+			'carrierConfig'             => $carrierConfig,
+			// TODO: Settings are not updated on AJAX checkout update. Needs rework due to possible checkout solutions allowing cart update.
+			'isAgeVerificationRequired' => $this->isAgeVerification18PlusRequired(),
+			'pickupPointAttrs'          => self::$pickupPointAttrs,
+			'homeDeliveryAttrs'         => self::$homeDeliveryAttrs,
+			'appIdentity'               => Plugin::getAppIdentity(),
+			'packeteryApiKey'           => $this->options_provider->get_api_key(),
+			'translations'              => [
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
 				'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
@@ -637,7 +637,7 @@ class Checkout {
 			WC()->cart->fees_api()->add_fee(
 				[
 					'id'     => 'packetery-age-verification-fee',
-					'name'   => __( 'Age verification fee', 'packetery' ),
+					'name'   => __( 'Age verification fee', 'packeta' ),
 					'amount' => $carrierOptions->getAgeVerificationFee(),
 				]
 			);
