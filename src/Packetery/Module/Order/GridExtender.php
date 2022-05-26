@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use PacketeryLatte\Engine;
@@ -164,6 +165,17 @@ class GridExtender {
 	}
 
 	/**
+	 * Renders weight cell.
+	 *
+	 * @param Core\Entity\Order $order Order.
+	 *
+	 * @return string
+	 */
+	private function getWeightCellContent( Core\Entity\Order $order ): string {
+		return esc_html( $order->getWeight() ?? '' );
+	}
+
+	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
@@ -177,6 +189,9 @@ class GridExtender {
 		}
 
 		switch ( $column ) {
+			case 'packetery_weight':
+				echo $this->getWeightCellContent( $order );
+				break;
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
 				if ( null !== $pickupPoint ) {
@@ -289,6 +304,7 @@ class GridExtender {
 			if ( 'order_total' === $column_name ) {
 				// TODO: Packet status sync.
 				$new_columns['packetery']             = __( 'Packeta', 'packeta' );
+				$new_columns['packetery_weight']      = __( 'Weight (kg)', 'packeta' );
 				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packeta' );
 				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packeta' );
 			}
