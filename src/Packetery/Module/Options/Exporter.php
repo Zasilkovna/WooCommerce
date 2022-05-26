@@ -132,8 +132,8 @@ class Exporter {
 			 *
 			 * @since 3.0.0
 			 */
-			'plugins'           => $this->getFormatedPlugins( apply_filters( 'all_plugins', get_plugins() ), (array) get_option( 'active_plugins', [] ) ),
-			'muPlugins'         => $this->getFormatedPlugins( get_mu_plugins(), array_keys( get_mu_plugins() ) ),
+			'plugins'           => $this->getFormattedPlugins( apply_filters( 'all_plugins', get_plugins() ), (array) get_option( 'active_plugins', [] ) ),
+			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins(), array_keys( get_mu_plugins() ) ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
@@ -156,7 +156,7 @@ class Exporter {
 	 *
 	 * @return string
 	 */
-	private function getFormatedPlugins( array $plugins, array $activePlugins ): string {
+	private function getFormattedPlugins( array $plugins, array $activePlugins ): string {
 		$result = [];
 
 		foreach ( $plugins as $relativePath => $plugin ) {
