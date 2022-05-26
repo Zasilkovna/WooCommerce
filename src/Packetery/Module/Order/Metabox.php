@@ -225,6 +225,7 @@ class Metabox {
 					PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
 					PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_DETAIL,
 					Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
+					Plugin::PARAM_NONCE                => wp_create_nonce( PacketCanceller::createNonceAction( PacketCanceller::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
 				],
 				admin_url( 'admin.php' )
 			);

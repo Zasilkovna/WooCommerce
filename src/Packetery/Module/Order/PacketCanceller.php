@@ -100,6 +100,18 @@ class PacketCanceller {
 	}
 
 	/**
+	 * Creates nonce action name.
+	 *
+	 * @param string $action      Action.
+	 * @param string $orderNumber Order number.
+	 *
+	 * @return string
+	 */
+	public static function createNonceAction( string $action, string $orderNumber ): string {
+		return $action . '_' . $orderNumber;
+	}
+
+	/**
 	 * Process actions.
 	 *
 	 * @return void
@@ -112,6 +124,13 @@ class PacketCanceller {
 
 		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
 		$order      = $this->orderRepository->getById( $this->getOrderId() );
+
+		if ( 1 !== wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( self::ACTION_CANCEL_PACKET, $order->getNumber() ) ) ) {
+			$this->messageManager->flash_message( __( 'Link has expired. Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->redirectTo( $redirectTo, $order );
+			return;
+		}
+
 		if ( null === $order ) {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_PACKET_CANCEL;

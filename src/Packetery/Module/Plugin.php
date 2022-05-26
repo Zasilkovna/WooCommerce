@@ -34,6 +34,7 @@ class Plugin {
 	public const DOMAIN                 = 'packeta';
 	public const MIN_LISTENER_PRIORITY  = - 9998;
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';
+	public const PARAM_NONCE            = '_wpnonce';
 
 	/**
 	 * Options page.
