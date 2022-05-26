@@ -177,15 +177,8 @@ class Exporter {
 
 		usort(
 			$result,
-			function ( array $pluginA, array $pluginB ): int {
-				$nameA = $pluginA['Name'];
-				$nameB = $pluginB['Name'];
-
-				if ( $nameA === $nameB ) {
-					return 0;
-				}
-
-				return strcasecmp( $nameA, $nameB );
+			static function ( array $pluginA, array $pluginB ): int {
+				return strcasecmp( $pluginA['Name'], $pluginB['Name'] );
 			}
 		);
 
