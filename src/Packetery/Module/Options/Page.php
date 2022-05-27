@@ -198,11 +198,10 @@ class Page {
 
 		$container->addSelect(
 			'checkout_widget_button_location',
-			__( 'Displaying the widget button', 'packeta' ),
+			__( 'Widget button location in checkout', 'packeta' ),
 			[
-				'after_shipping_rate'     => 'After shipping rate',
-				'after_transport_methods' => 'After the transport methods',
-
+				'after_shipping_rate'     => __( 'After shipping rate', 'packeta' ),
+				'after_transport_methods' => __( 'After transport methods', 'packeta' ),
 			]
 		);
 
