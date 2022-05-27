@@ -283,7 +283,7 @@ class PacketCanceller {
 
 		$revertSubmition = ! $result->hasFault();
 
-		if ( $result->hasCancelNotAllowedFault() && $this->optionsProvider->forcePacketCancel() ) {
+		if ( $result->hasCancelNotAllowedFault() && $this->optionsProvider->isPacketCancellationForced() ) {
 			$revertSubmition = true;
 		}
 

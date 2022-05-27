@@ -189,11 +189,11 @@ class Provider {
 	}
 
 	/**
-	 * Force packet cancel.
+	 * Tells if packet cancellation should be forced.
 	 *
 	 * @return bool
 	 */
-	public function forcePacketCancel(): bool {
+	public function isPacketCancellationForced(): bool {
 		$value = $this->get( 'force_packet_cancel' );
 		if ( null !== $value ) {
 			return (bool) $value;
