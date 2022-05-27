@@ -29,6 +29,17 @@
 	padding: 0;
 }
 
+.woocommerce #order_review table .packetery-widget-button-table-row .packeta-widget[packetery-renderer="table-row"] img {
+	display: none;
+}
+
+.woocommerce #order_review table .packetery-widget-button-table-row th img {
+	width: 45px;
+	height: 45px;
+	display: block;
+	margin-left: auto;
+}
+
 .woocommerce .form-row[packetery-renderer="after-rate"] {
 	display: inline-grid;
 }
@@ -65,6 +76,10 @@ body .woocommerce [packetery-renderer] div.packeta-widget-button.packetery-widge
 
 .shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row [packetery-renderer="table-row"] .packeta-widget-selected-address {
 	text-align: left;
+}
+
+.shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row img {
+	margin-right: 5px;
 }
 
 .shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row {
