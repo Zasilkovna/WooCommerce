@@ -556,12 +556,11 @@ class Checkout {
 				 *
 				 * @since 1.3.0
 				 */
-				if ( apply_filters( 'packetery_use_widget_button_table_row', false ) ) {
+				if ( $this->options_provider->getCheckoutWidgetButtonLocation() === 'after_transport_methods' ) {
 					add_action( 'woocommerce_review_order_after_shipping', [ $this, 'renderWidgetButtonTableRow' ] );
-					return;
+				} else {
+					add_action( 'woocommerce_after_shipping_rate', [ $this, 'renderWidgetButtonAfterShippingRate' ] );
 				}
-
-				add_action( 'woocommerce_after_shipping_rate', [ $this, 'renderWidgetButtonAfterShippingRate' ], 10, 1 );
 			}
 		);
 	}

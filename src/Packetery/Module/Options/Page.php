@@ -196,6 +196,15 @@ class Page {
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packeta' ) )
 			->setRequired( false );
 
+		$container->addSelect(
+			'checkout_widget_button_location',
+			__( 'Widget button location in checkout', 'packeta' ),
+			[
+				'after_shipping_rate'     => __( 'After shipping rate', 'packeta' ),
+				'after_transport_methods' => __( 'After transport methods', 'packeta' ),
+			]
+		);
+
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );
 		}
