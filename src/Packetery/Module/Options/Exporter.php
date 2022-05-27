@@ -116,11 +116,9 @@ class Exporter {
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
 			'phpVersion'        => PHP_VERSION,
-			// @codingStandardsIgnoreStart
-			'soap'              => var_export( extension_loaded( 'soap' ), true ),
-			'wpDebug'           => var_export( WP_DEBUG, true ),
-			'packetaDebug'      => var_export( PACKETERY_DEBUG, true ),
-			// @codingStandardsIgnoreEnd
+			'soap'              => wc_bool_to_string( extension_loaded( 'soap' ) ),
+			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
+			'packetaDebug'      => wc_bool_to_string( PACKETERY_DEBUG ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
@@ -161,26 +159,16 @@ class Exporter {
 
 		foreach ( $plugins as $relativePath => $plugin ) {
 			$item = [
-				// phpcs:ignore: WordPress.PHP.DevelopmentFunctions.error_log_var_export
-				'Active'               => var_export( in_array( $relativePath, $activePlugins, true ), true ),
-				'Name'                 => $plugin['Name'] ?? '',
-				'PluginURI'            => $plugin['PluginURI'] ?? '',
-				'Version'              => $plugin['Version'] ?? '',
-				'WC tested up to'      => $plugin['WC tested up to'] ?? '',
-				'WC requires at least' => $plugin['WC requires at least'] ?? '',
-				'AuthorName'           => $plugin['AuthorName'] ?? '',
-				'RequiresPHP'          => $plugin['RequiresPHP'] ?? '',
+				'Active' => wc_bool_to_string( in_array( $relativePath, $activePlugins, true ) ),
 			];
 
-			$result[] = $item;
-		}
-
-		usort(
-			$result,
-			static function ( array $pluginA, array $pluginB ): int {
-				return strcasecmp( $pluginA['Name'], $pluginB['Name'] );
+			$options = [ 'Name', 'PluginURI', 'Version', 'WC tested up to', 'WC requires at least', 'AuthorName', 'RequiresPHP' ];
+			foreach ( $options as $option ) {
+				$item[ $option ] = $plugin[ $option ] ?? '';
 			}
-		);
+
+			$result[] = array_filter( $item );
+		}
 
 		return $this->formatVariable( $result );
 	}
