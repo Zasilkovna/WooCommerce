@@ -48,13 +48,6 @@ class Plugin {
 	private $latte_engine;
 
 	/**
-	 * Carrier downloader object.
-	 *
-	 * @var Downloader
-	 */
-	private $carrier_downloader;
-
-	/**
 	 * Carrier repository.
 	 *
 	 * @var Repository
@@ -146,6 +139,20 @@ class Plugin {
 	private $logger;
 
 	/**
+	 * Log purger.
+	 *
+	 * @var Log\Purger
+	 */
+	private $logPurger;
+
+	/**
+	 * Cron service.
+	 *
+	 * @var CronService
+	 */
+	private $cronService;
+
+	/**
 	 * Order controller.
 	 *
 	 * @var Order\Controller
@@ -222,7 +229,6 @@ class Plugin {
 	 * @param MessageManager           $message_manager      Message manager.
 	 * @param Options\Page             $options_page         Options page.
 	 * @param Repository               $carrierRepository    Carrier repository.
-	 * @param Downloader               $carrier_downloader   Carrier downloader object.
 	 * @param Checkout                 $checkout             Checkout class.
 	 * @param Engine                   $latte_engine         PacketeryLatte engine.
 	 * @param OptionsPage              $carrierOptionsPage   Carrier options page.
@@ -232,6 +238,7 @@ class Plugin {
 	 * @param Product\DataTab          $productTab           Product tab.
 	 * @param Log\Page                 $logPage              Log page.
 	 * @param ILogger                  $logger               Log manager.
+	 * @param Log\Purger               $logPurger            Log purger.
 	 * @param Order\Controller         $orderController      Order controller.
 	 * @param Order\Modal              $orderModal           Order modal.
 	 * @param Options\Exporter         $exporter             Options exporter.
@@ -243,13 +250,13 @@ class Plugin {
 	 * @param QueryProcessor           $queryProcessor       QueryProcessor.
 	 * @param Log\Repository           $logRepository        Log repository.
 	 * @param Options\Provider         $optionsProvider      Options provider.
+	 * @param CronService              $cronService          Cron service.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
 		MessageManager $message_manager,
 		Options\Page $options_page,
 		Repository $carrierRepository,
-		Downloader $carrier_downloader,
 		Checkout $checkout,
 		Engine $latte_engine,
 		OptionsPage $carrierOptionsPage,
@@ -259,6 +266,7 @@ class Plugin {
 		Product\DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
+		Log\Purger $logPurger,
 		Order\Controller $orderController,
 		Order\Modal $orderModal,
 		Options\Exporter $exporter,
@@ -269,12 +277,12 @@ class Plugin {
 		Upgrade $upgrade,
 		QueryProcessor $queryProcessor,
 		Log\Repository $logRepository,
-		Options\Provider $optionsProvider
+		Options\Provider $optionsProvider,
+		CronService $cronService
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
 		$this->carrierRepository    = $carrierRepository;
-		$this->carrier_downloader   = $carrier_downloader;
 		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packeta.php';
 		$this->order_metabox        = $order_metabox;
 		$this->message_manager      = $message_manager;
@@ -286,6 +294,7 @@ class Plugin {
 		$this->productTab           = $productTab;
 		$this->logPage              = $logPage;
 		$this->logger               = $logger;
+		$this->logPurger            = $logPurger;
 		$this->orderController      = $orderController;
 		$this->orderModal           = $orderModal;
 		$this->exporter             = $exporter;
@@ -297,6 +306,7 @@ class Plugin {
 		$this->queryProcessor       = $queryProcessor;
 		$this->logRepository        = $logRepository;
 		$this->optionsProvider      = $optionsProvider;
+		$this->cronService          = $cronService;
 	}
 
 	/**
@@ -334,6 +344,7 @@ class Plugin {
 		register_deactivation_hook(
 			$this->main_file_path,
 			static function () {
+				CronService::deactivate();
 			}
 		);
 
@@ -359,19 +370,7 @@ class Plugin {
 
 		$this->checkout->register_hooks();
 		$this->productTab->register();
-
-		add_action(
-			'packetery_cron_carriers_hook',
-			function () {
-				$this->carrier_downloader->runAndRender();
-			}
-		);
-		if ( ! wp_next_scheduled( 'packetery_cron_carriers_hook' ) ) {
-			wp_schedule_event( time(), 'daily', 'packetery_cron_carriers_hook' );
-		}
-
-		// TODO: Packet status sync.
-		wp_clear_scheduled_hook( 'packetery_cron_packet_status_sync_hook' );
+		$this->cronService->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
