@@ -66,6 +66,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 * Fixed: Plugin translations
 * Added: currency-switcher.com compatibility
 * Added: API Log - added packetAttributes if the packet was successfully sent
+* Added: Possibility to choose widget button checkout location in plugin settings
+* Updated: Checkout widget button after transport methods styling updated
 
 = 1.2.6 =
 * Added: New plugin setting that enables replacing shipping address with pickup point address
