@@ -116,17 +116,22 @@ class Exporter {
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
 			'phpVersion'        => PHP_VERSION,
-			// @codingStandardsIgnoreStart
-			'soap'              => var_export( extension_loaded( 'soap' ), true ),
-			'wpDebug'           => var_export( WP_DEBUG, true ),
-			'packetaDebug'      => var_export( PACKETERY_DEBUG, true ),
-			// @codingStandardsIgnoreEnd
+			'soap'              => wc_bool_to_string( extension_loaded( 'soap' ) ),
+			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
+			'packetaDebug'      => wc_bool_to_string( PACKETERY_DEBUG ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
 			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
 			'lastFiveDaysLogs'  => $this->formatVariable( $this->remapLogRecords( $this->logger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ) ),
 			'generated'         => gmdate( 'Y-m-d H:i:s' ),
+			/**
+			 * Filter all_plugins filters the full array of plugins.
+			 *
+			 * @since 3.0.0
+			 */
+			'plugins'           => $this->getFormattedPlugins( apply_filters( 'all_plugins', get_plugins() ), (array) get_option( 'active_plugins', [] ) ),
+			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins(), array_keys( get_mu_plugins() ) ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
@@ -139,6 +144,33 @@ class Exporter {
 		echo $txtContents;
 		// @codingStandardsIgnoreEnd
 		exit;
+	}
+
+	/**
+	 * Format plugins.
+	 *
+	 * @param array $plugins Plugins.
+	 * @param array $activePlugins Active plugins.
+	 *
+	 * @return string
+	 */
+	private function getFormattedPlugins( array $plugins, array $activePlugins ): string {
+		$result = [];
+
+		foreach ( $plugins as $relativePath => $plugin ) {
+			$item = [
+				'Active' => wc_bool_to_string( in_array( $relativePath, $activePlugins, true ) ),
+			];
+
+			$options = [ 'Name', 'PluginURI', 'Version', 'WC tested up to', 'WC requires at least', 'AuthorName', 'RequiresPHP' ];
+			foreach ( $options as $option ) {
+				$item[ $option ] = $plugin[ $option ] ?? '';
+			}
+
+			$result[] = array_filter( $item );
+		}
+
+		return $this->formatVariable( $result );
 	}
 
 	/**
