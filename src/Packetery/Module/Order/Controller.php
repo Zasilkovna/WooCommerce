@@ -193,7 +193,7 @@ class Controller extends WP_REST_Controller {
 		$data['message'] = __( 'Success', 'packeta' );
 		$data['data']    = [
 			'fragments'        => [
-				'[data-packetery-order-id="' . $orderId . '"][data-packetery-order-grid-cell-weight]' => $this->gridExtender->getWeightCellContent( $order ),
+				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			'packetery_weight' => $order->getWeight(),
 		];

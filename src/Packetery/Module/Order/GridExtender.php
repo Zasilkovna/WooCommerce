@@ -14,6 +14,7 @@ use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use Packetery\Module;
 
 /**
  * Class GridExtender.
@@ -175,8 +176,8 @@ class GridExtender {
 		return $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte',
 			[
-				'order'           => $order,
-				'weightFormatted' => ( null !== $order->getWeight() ? number_format( $order->getWeight(), 3, wc_get_price_decimal_separator(), wc_get_price_thousand_separator() ) . ' kg' : '' ),
+				'orderNumber'     => $order->getNumber(),
+				'weightFormatted' => Module\Order\Helper::getFormattedWeight( $order->getWeight() ),
 			]
 		);
 	}
@@ -309,9 +310,9 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
+				$new_columns['packetery_weight'] = __( 'Weight', 'packeta' );
 				// TODO: Packet status sync.
 				$new_columns['packetery']             = __( 'Packeta', 'packeta' );
-				$new_columns['packetery_weight']      = __( 'Weight', 'packeta' );
 				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packeta' );
 				$new_columns['packetery_destination'] = __( 'Pick up point or carrier', 'packeta' );
 			}
