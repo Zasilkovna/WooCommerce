@@ -330,10 +330,10 @@ class LabelPrint {
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Label has been printed successfully.', 'packeta' );
-		} else {
-			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Label could not be printed.', 'packeta' );
+				$record->title  = __( 'Label has been printed successfully.', 'packeta' );
+			} else {
+				$record->status = Log\Record::STATUS_ERROR;
+				$record->title  = __( 'Label could not be printed.', 'packeta' );
 				$record->params = [
 					'packetId'          => $packetId,
 					'isPacketIdInvalid' => $response->hasInvalidPacketId( (string) $packetId ),
@@ -379,7 +379,7 @@ class LabelPrint {
 
 				$record->status = Log\Record::STATUS_SUCCESS;
 				$record->title  = __( 'Carrier label has been printed successfully.', 'packeta' );
-		} else {
+			} else {
 				$record->status = Log\Record::STATUS_ERROR;
 				$record->title  = __( 'Carrier label could not be printed.', 'packeta' );
 				$record->params = [
