@@ -66,23 +66,43 @@ class Upgrade {
 	private $logRepository;
 
 	/**
+	 * Carrier repository.
+	 *
+	 * @var Carrier\Repository
+	 */
+	private $carrierRepository;
+
+	/**
+	 * WPDB.
+	 *
+	 * @var \wpdb
+	 */
+	private $wpdb;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Order\Repository $orderRepository Order repository.
-	 * @param MessageManager   $messageManager  Message manager.
-	 * @param ILogger          $logger          Logger.
-	 * @param Log\Repository   $logRepository   Log repository.
+	 * @param Order\Repository   $orderRepository   Order repository.
+	 * @param MessageManager     $messageManager    Message manager.
+	 * @param ILogger            $logger            Logger.
+	 * @param Log\Repository     $logRepository     Log repository.
+	 * @param \wpdb              $wpdb              WPDB.
+	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
 		MessageManager $messageManager,
 		ILogger $logger,
-		Log\Repository $logRepository
+		Log\Repository $logRepository,
+		\wpdb $wpdb,
+		Carrier\Repository $carrierRepository
 	) {
-		$this->orderRepository = $orderRepository;
-		$this->messageManager  = $messageManager;
-		$this->logger          = $logger;
-		$this->logRepository   = $logRepository;
+		$this->orderRepository   = $orderRepository;
+		$this->messageManager    = $messageManager;
+		$this->logger            = $logger;
+		$this->logRepository     = $logRepository;
+		$this->wpdb              = $wpdb;
+		$this->carrierRepository = $carrierRepository;
 	}
 
 	/**
@@ -97,9 +117,39 @@ class Upgrade {
 			return;
 		}
 
+		$this->logRepository->createTable();
+		$createResult = $this->carrierRepository->createTable();
+		if ( false === $createResult ) {
+			$lastError = $this->wpdb->last_error;
+			$this->messageManager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
+		}
+
+		$createResult = $this->orderRepository->createTable();
+		if ( false === $createResult ) {
+			$lastError = $this->wpdb->last_error;
+			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'Database order table was not created.', 'packeta' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
+		}
+
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
-			$this->logRepository->createTable();
 			$logEntries = get_posts(
 				[
 					'post_type'   => 'packetery_log',

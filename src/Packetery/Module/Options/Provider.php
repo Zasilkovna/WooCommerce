@@ -16,6 +16,8 @@ namespace Packetery\Module\Options;
  */
 class Provider {
 
+	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT = 'A6 on A4';
+	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 	const MAX_STATUS_SYNCING_PACKETS_DEFAULT = 100;
 
 	/**
@@ -96,19 +98,19 @@ class Provider {
 	/**
 	 * Carrier label format.
 	 *
-	 * @return string|null Content.
+	 * @return string Content.
 	 */
-	public function get_carrier_label_format(): ?string {
-		return $this->get( 'carrier_label_format' );
+	public function get_carrier_label_format(): string {
+		return $this->get( 'carrier_label_format' ) ?? self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT;
 	}
 
 	/**
 	 * Packeta label format.
 	 *
-	 * @return string|null Content.
+	 * @return string Content.
 	 */
-	public function get_packeta_label_format(): ?string {
-		return $this->get( 'packeta_label_format' );
+	public function get_packeta_label_format(): string {
+		return $this->get( 'packeta_label_format' ) ?? self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 	}
 
 	/**

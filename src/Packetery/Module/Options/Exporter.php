@@ -11,6 +11,7 @@ namespace Packetery\Module\Options;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http;
 
@@ -130,8 +131,8 @@ class Exporter {
 			 *
 			 * @since 3.0.0
 			 */
-			'plugins'           => $this->getFormattedPlugins( apply_filters( 'all_plugins', get_plugins() ), (array) get_option( 'active_plugins', [] ) ),
-			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins(), array_keys( get_mu_plugins() ) ),
+			'plugins'           => $this->getFormattedPlugins( apply_filters( 'all_plugins', get_plugins() ) ),
+			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
@@ -150,16 +151,15 @@ class Exporter {
 	 * Format plugins.
 	 *
 	 * @param array $plugins Plugins.
-	 * @param array $activePlugins Active plugins.
 	 *
 	 * @return string
 	 */
-	private function getFormattedPlugins( array $plugins, array $activePlugins ): string {
+	private function getFormattedPlugins( array $plugins ): string {
 		$result = [];
 
 		foreach ( $plugins as $relativePath => $plugin ) {
 			$item = [
-				'Active' => wc_bool_to_string( in_array( $relativePath, $activePlugins, true ) ),
+				'Active' => wc_bool_to_string( Module\Helper::isPluginActive( $relativePath ) ),
 			];
 
 			$options = [ 'Name', 'PluginURI', 'Version', 'WC tested up to', 'WC requires at least', 'AuthorName', 'RequiresPHP' ];
