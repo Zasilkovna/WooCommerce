@@ -338,8 +338,6 @@ class Plugin {
 		);
 		add_action( 'init', array( $this, 'init' ) );
 
-		register_activation_hook( $this->main_file_path, array( $this, 'activate' ) );
-
 		// TODO: deactivation_hook.
 		register_deactivation_hook(
 			$this->main_file_path,
@@ -720,12 +718,6 @@ class Plugin {
 			]
 		);
 		add_filter( 'plugin_row_meta', [ $this, 'addPluginRowMeta' ], 10, 2 );
-	}
-
-	/**
-	 * Activates plugin.
-	 */
-	public function activate(): void {
 	}
 
 	/**
