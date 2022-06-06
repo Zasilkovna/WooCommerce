@@ -37,29 +37,18 @@ class Repository {
 	}
 
 	/**
-	 * Creates SQL query string.
+	 * Finds logs.
 	 *
-	 * @param array $arguments Arguments.
+	 * @param array $arguments Search arguments.
 	 *
-	 * @return string
+	 * @return iterable|Record[]
+	 * @throws \Exception From DateTimeImmutable.
 	 */
-	private function buildFindQuery( array $arguments ): string {
+	public function find( array $arguments ): iterable {
 		$wpdb      = $this->wpdb;
-		$select    = $arguments['select'] ?? [];
 		$orderBy   = $arguments['orderby'] ?? [];
 		$limit     = $arguments['limit'] ?? null;
 		$dateQuery = $arguments['date_query'] ?? [];
-
-		$selectSqlItems = [];
-		foreach ( $select as $column ) {
-			$selectSqlItems[] = '`' . $column . '`';
-		}
-
-		if ( $selectSqlItems ) {
-			$selectSql = implode( ',', $selectSqlItems );
-		} else {
-			$selectSql = '*';
-		}
 
 		$orderByTransformed = [];
 		foreach ( $orderBy as $orderByKey => $orderByValue ) {
@@ -85,9 +74,6 @@ class Repository {
 			if ( isset( $dateQueryItem['after'] ) ) {
 				$where[] = $wpdb->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
 			}
-			if ( isset( $dateQueryItem['before'] ) ) {
-				$where[] = $wpdb->prepare( '`date` < %s', Helper::now()->modify( $dateQueryItem['before'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
-			}
 		}
 
 		$whereClause = '';
@@ -95,23 +81,8 @@ class Repository {
 			$whereClause = ' WHERE ' . implode( ' AND ', $where );
 		}
 
-		return 'SELECT ' . $selectSql . ' FROM `' . $wpdb->packetery_log . '` ' . $whereClause . $orderByClause . $limitClause;
-	}
-
-	/**
-	 * Finds logs.
-	 *
-	 * @param array $arguments Search arguments.
-	 *
-	 * @return iterable|Record[]
-	 * @throws \Exception From DateTimeImmutable.
-	 */
-	public function find( array $arguments ): iterable {
-		$wpdb = $this->wpdb;
-		$sql  = $this->buildFindQuery( $arguments );
-
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$result = $wpdb->get_results( $sql );
+		$result = $wpdb->get_results( 'SELECT * FROM ' . $wpdb->packetery_log . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
 			return $this->remapToRecord( $result );
 		}
@@ -122,16 +93,16 @@ class Repository {
 	/**
 	 * Delete old records.
 	 *
-	 * @param array $arguments Arguments.
+	 * @param \DateTimeImmutable $dateTo Max date.
 	 *
 	 * @return void
 	 */
-	public function deleteMany( array $arguments ): void {
-		$wpdb = $this->wpdb;
-		$sql  = $this->buildFindQuery( [ 'select' => [ 'id' ] ] + $arguments );
+	public function deleteMany( \DateTimeImmutable $dateTo ): void {
+		$wpdb            = $this->wpdb;
+		$dateToFormatted = $dateTo->setTimezone( new \DateTimeZone( 'UTC' ) )->format( Helper::MYSQL_DATETIME_FORMAT );
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$wpdb->query( 'DELETE pl FROM `' . $wpdb->packetery_log . '` pl JOIN (' . $sql . ') s ON s.`id` = pl.`id`' );
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $wpdb->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
 	}
 
 	/**

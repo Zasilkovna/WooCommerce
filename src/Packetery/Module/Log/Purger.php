@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Log;
 
+use Packetery\Core\Helper;
+
 /**
  * Class Page
  *
@@ -50,14 +52,7 @@ class Purger {
 	 * @return void
 	 */
 	private function autoDelete( int $maxRecordAgeInDays ): void {
-		$this->logRepository->deleteMany(
-			[
-				'date_query' => [
-					[
-						'before' => '- ' . $maxRecordAgeInDays . ' days',
-					],
-				],
-			]
-		);
+		$dateTo = Helper::now()->modify( '- ' . $maxRecordAgeInDays . ' days' );
+		$this->logRepository->deleteMany( $dateTo );
 	}
 }
