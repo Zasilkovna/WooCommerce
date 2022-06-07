@@ -41,18 +41,6 @@ class Purger {
 	 * @return void
 	 */
 	public function autoDeleteHook(): void {
-		$this->autoDelete( 90 );
-	}
-
-	/**
-	 * Auto delete.
-	 *
-	 * @param int $maxRecordAgeInDays Max number of days that record can exist.
-	 *
-	 * @return void
-	 */
-	private function autoDelete( int $maxRecordAgeInDays ): void {
-		$dateTo = Helper::now()->modify( '- ' . $maxRecordAgeInDays . ' days' );
-		$this->logRepository->deleteMany( $dateTo );
+		$this->logRepository->deleteOld( 90 );
 	}
 }

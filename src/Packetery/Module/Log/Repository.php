@@ -93,15 +93,14 @@ class Repository {
 	/**
 	 * Delete old records.
 	 *
-	 * @param \DateTimeImmutable $dateTo Max date.
+	 * @param int $maxRecordAgeInDays Max number of days that record can exist.
 	 *
 	 * @return void
 	 */
-	public function deleteMany( \DateTimeImmutable $dateTo ): void {
+	public function deleteOld( int $maxRecordAgeInDays ): void {
 		$wpdb            = $this->wpdb;
-		$dateToFormatted = $dateTo->setTimezone( new \DateTimeZone( 'UTC' ) )->format( Helper::MYSQL_DATETIME_FORMAT );
+		$dateToFormatted = Helper::now()->modify( '- ' . $maxRecordAgeInDays . ' days' )->format( Helper::MYSQL_DATETIME_FORMAT );
 
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $wpdb->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
 	}
 
