@@ -103,10 +103,8 @@ class PacketsCourierLabelsPdf extends BaseResponse {
 	 * @return bool|null
 	 */
 	public function hasInvalidPacketId( string $packetId ): ?bool {
-		foreach ( $this->invalidPacketIds as $invalidPacketId ) {
-			if ( $packetId === (string) $invalidPacketId ) {
-				return true;
-			}
+		if ( in_array( $packetId, $this->invalidPacketIds, true ) ) {
+			return true;
 		}
 
 		return null;
@@ -119,40 +117,10 @@ class PacketsCourierLabelsPdf extends BaseResponse {
 	 * @return bool|null
 	 */
 	public function hasInvalidCourierNumber( string $courierNumber ): ?bool {
-		foreach ( $this->invalidCourierNumbers as $invalidCourierNumber ) {
-			if ( $courierNumber === (string) $invalidCourierNumber ) {
-				return true;
-			}
+		if ( in_array( $courierNumber, $this->invalidCourierNumbers, true ) ) {
+			return true;
 		}
 
 		return null;
 	}
-
-	/**
-	 * Tells if API returns NoPacketIdsFault fault.
-	 *
-	 * @return bool
-	 */
-	public function hasNoPacketIdsFault(): bool {
-		return 'NoPacketIdsFault' === $this->fault;
-	}
-
-	/**
-	 * Tells if API returns PacketIdFault fault.
-	 *
-	 * @return bool
-	 */
-	public function hasPacketIdFault(): bool {
-		return 'PacketIdFault' === $this->fault;
-	}
-
-	/**
-	 * Tells if API returns InvalidCourierNumber fault.
-	 *
-	 * @return bool
-	 */
-	public function hasInvalidCourierNumberFault(): bool {
-		return 'InvalidCourierNumber' === $this->fault;
-	}
-
 }

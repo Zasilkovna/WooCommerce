@@ -76,30 +76,10 @@ class PacketsLabelsPdf extends BaseResponse {
 	 * @return bool|null
 	 */
 	public function hasInvalidPacketId( string $packetId ): ?bool {
-		foreach ( $this->invalidPacketIds as $invalidPacketId ) {
-			if ( $packetId === (string) $invalidPacketId ) {
-				return true;
-			}
+		if ( in_array( $packetId, $this->invalidPacketIds, true ) ) {
+			return true;
 		}
 
 		return null;
-	}
-
-	/**
-	 * Tells if API returns NoPacketIdsFault fault.
-	 *
-	 * @return bool
-	 */
-	public function hasNoPacketIdsFault(): bool {
-		return 'NoPacketIdsFault' === $this->fault;
-	}
-
-	/**
-	 * Tells if API returns PacketIdsFault fault.
-	 *
-	 * @return bool
-	 */
-	public function hasPacketIdsFault(): bool {
-		return 'PacketIdsFault' === $this->fault;
 	}
 }
