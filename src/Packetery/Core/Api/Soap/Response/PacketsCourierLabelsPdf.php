@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Response;
 
+use Packetery\Core\Api\Soap\ResponseTrait;
+
 /**
  * Class PacketsCourierLabelsPdf.
  *
@@ -16,19 +18,14 @@ namespace Packetery\Core\Api\Soap\Response;
  */
 class PacketsCourierLabelsPdf extends BaseResponse {
 
+	use ResponseTrait\InvalidPacketIds;
+
 	/**
 	 * Pdf contents.
 	 *
 	 * @var string
 	 */
 	private $pdfContents;
-
-	/**
-	 * Invalid packet IDs
-	 *
-	 * @var array
-	 */
-	private $invalidPacketIds = [];
 
 	/**
 	 * Invalid courier numbers.
@@ -56,26 +53,6 @@ class PacketsCourierLabelsPdf extends BaseResponse {
 	}
 
 	/**
-	 * Sets invalid packet IDs.
-	 *
-	 * @param array $invalidPacketIds Invalid packet IDs.
-	 *
-	 * @return void
-	 */
-	public function setInvalidPacketIds( array $invalidPacketIds ): void {
-		$this->invalidPacketIds = $invalidPacketIds;
-	}
-
-	/**
-	 * Gets invalid packet IDs.
-	 *
-	 * @return array
-	 */
-	public function getInvalidPacketIds(): array {
-		return $this->invalidPacketIds;
-	}
-
-	/**
 	 * Sets invalid courier numbers.
 	 *
 	 * @param array $invalidCourierNumbers Invalid courier numbers.
@@ -95,20 +72,6 @@ class PacketsCourierLabelsPdf extends BaseResponse {
 		return $this->invalidCourierNumbers;
 	}
 
-	/**
-	 * Tells if response has invalid packet ID.
-	 *
-	 * @param string $packetId Packet ID.
-	 *
-	 * @return bool|null
-	 */
-	public function hasInvalidPacketId( string $packetId ): ?bool {
-		if ( in_array( $packetId, $this->invalidPacketIds, true ) ) {
-			return true;
-		}
-
-		return null;
-	}
 	/**
 	 * Tells if response has invalid courier number.
 	 *
