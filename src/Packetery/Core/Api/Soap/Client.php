@@ -189,6 +189,10 @@ class Client {
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
+
+			if ( $response->hasPacketIdsFault() ) {
+				$response->setInvalidPacketIds( (array) $exception->detail->PacketIdsFault->ids->packetId );
+			}
 		}
 
 		return $response;
@@ -210,6 +214,13 @@ class Client {
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
+
+			if ( $response->hasInvalidCourierNumberFault() && count( $request->getPacketIdsWithCourierNumbers() ) === 1 ) {
+				$response->setInvalidCourierNumbers( array_column( $request->getPacketIdsWithCourierNumbers(), 'courierNumber' ) );
+			}
+			if ( $response->hasPacketIdFault() && count( $request->getPacketIdsWithCourierNumbers() ) === 1 ) {
+				$response->setInvalidPacketIds( array_column( $request->getPacketIdsWithCourierNumbers(), 'packetId' ) );
+			}
 		}
 
 		return $response;

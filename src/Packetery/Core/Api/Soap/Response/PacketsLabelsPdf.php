@@ -9,12 +9,16 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Response;
 
+use Packetery\Core\Api\Soap\ResponseTrait;
+
 /**
  * Class PacketsLabelsPdf.
  *
  * @package Packetery\Api\Soap\Response
  */
 class PacketsLabelsPdf extends BaseResponse {
+
+	use ResponseTrait\InvalidPacketIds;
 
 	/**
 	 * Pdf contents.
@@ -40,5 +44,4 @@ class PacketsLabelsPdf extends BaseResponse {
 	public function getPdfContents(): string {
 		return $this->pdfContents;
 	}
-
 }
