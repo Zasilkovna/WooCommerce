@@ -40,6 +40,13 @@ class Record {
 	public $id;
 
 	/**
+	 * Order ID.
+	 *
+	 * @var mixed|null
+	 */
+	public $orderId;
+
+	/**
 	 * Action.
 	 *
 	 * @var string
