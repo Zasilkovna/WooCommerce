@@ -125,7 +125,7 @@ class CountryListingPage {
 					'setUp'                      => __( 'Set up', 'packeta' ),
 					'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
 					'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
-					'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded', 'packeta' ),
+					'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
 					'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
 				],
 			]

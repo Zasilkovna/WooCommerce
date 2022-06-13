@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.5.1
@@ -61,6 +61,12 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.3.1 =
+* Fixed: Order product loading for age verification service
+* Updated: For each order is a separate Packeta log
+* Added: Plugin options export extended with installed plugins
+* Added: Admin order grid weight column
+
 = 1.3.0 =
 * Fixed: Some Elementor and some Divi checkouts are now supported
 * Fixed: Plugin translations
