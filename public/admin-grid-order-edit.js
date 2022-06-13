@@ -3,6 +3,12 @@
 	$( function() {
 		var $lastModalButtonClicked;
 
+		var replaceFragmentsWith = function( fragments ) {
+			$.each( fragments, function ( key, value ) {
+				$( key ).replaceWith( value );
+			} );
+		}
+
 		var $body = $( 'body' );
 		$body.on( 'click', '[data-packetery-order-inline-submit]', function( e ) {
 			var $target = $( e.target );
@@ -81,6 +87,8 @@
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
 				orderData.packetery_weight = response.data.packetery_weight;
 				$lastModalButtonClicked.data( 'order-data', orderData );
+
+				replaceFragmentsWith( response.data.fragments );
 
 				if ( response.data.packetery_weight > 0 ) {
 					$lastModalButtonClicked.removeClass( 'dashicons-warning' ).removeClass( 'dashicons-edit' ).addClass( 'dashicons-edit' );

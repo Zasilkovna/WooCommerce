@@ -85,7 +85,7 @@ class Bar
 
 		if (Helpers::isAjax()) {
 			if ($useSession) {
-				$contentId = $_SERVER['HTTP_X_TRACY_AJAX'];
+				$contentId = $_SERVER['HTTP_X_PACKETERYTRACY_AJAX'];
 				$_SESSION['_tracy']['bar'][$contentId] = ['content' => $this->renderHtml('ajax', '-ajax:' . $contentId), 'time' => time()];
 			}
 

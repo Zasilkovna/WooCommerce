@@ -55,18 +55,27 @@ class Controller extends WP_REST_Controller {
 	private $orderRepository;
 
 	/**
+	 * Grid extender service.
+	 *
+	 * @var GridExtender
+	 */
+	private $gridExtender;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param Modal            $orderModal       Modal.
 	 * @param ControllerRouter $controllerRouter Router.
 	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
 	 * @param Order\Repository $orderRepository  Order repository.
+	 * @param GridExtender     $gridExtender     Grid extender.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
 		PacketSubmitter $packetSubmitter,
-		Order\Repository $orderRepository
+		Order\Repository $orderRepository,
+		GridExtender $gridExtender
 	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
@@ -74,6 +83,7 @@ class Controller extends WP_REST_Controller {
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->packetSubmitter = $packetSubmitter;
 		$this->orderRepository = $orderRepository;
+		$this->gridExtender    = $gridExtender;
 	}
 
 	/**
@@ -182,6 +192,9 @@ class Controller extends WP_REST_Controller {
 
 		$data['message'] = __( 'Success', 'packeta' );
 		$data['data']    = [
+			'fragments'        => [
+				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
+			],
 			'packetery_weight' => $order->getWeight(),
 		];
 

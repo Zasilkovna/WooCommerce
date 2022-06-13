@@ -9,10 +9,12 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use Packetery\Module;
 
 /**
  * Class GridExtender.
@@ -20,6 +22,9 @@ use PacketeryNette\Http\Request;
  * @package Packetery\Order
  */
 class GridExtender {
+
+	const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
+
 	/**
 	 * Generic Helper.
 	 *
@@ -164,6 +169,34 @@ class GridExtender {
 	}
 
 	/**
+	 * Gets weight cell content.
+	 *
+	 * @param Core\Entity\Order $order Order.
+	 *
+	 * @return string
+	 */
+	public function getWeightCellContent( Core\Entity\Order $order ): string {
+		return $this->latteEngine->renderToString(
+			self::TEMPLATE_GRID_COLUMN_WEIGHT,
+			$this->getWeightCellContentParams( $order )
+		);
+	}
+
+	/**
+	 * Gets weight cell content.
+	 *
+	 * @param Core\Entity\Order $order Order.
+	 *
+	 * @return array
+	 */
+	private function getWeightCellContentParams( Core\Entity\Order $order ): array {
+		return [
+			'orderNumber' => $order->getNumber(),
+			'weight'      => $order->getWeight(),
+		];
+	}
+
+	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
@@ -177,6 +210,12 @@ class GridExtender {
 		}
 
 		switch ( $column ) {
+			case 'packetery_weight':
+				$this->latteEngine->render(
+					self::TEMPLATE_GRID_COLUMN_WEIGHT,
+					$this->getWeightCellContentParams( $order )
+				);
+				break;
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
 				if ( null !== $pickupPoint ) {
@@ -287,6 +326,7 @@ class GridExtender {
 			$new_columns[ $column_name ] = $column_info;
 
 			if ( 'order_total' === $column_name ) {
+				$new_columns['packetery_weight'] = __( 'Weight', 'packeta' );
 				// TODO: Packet status sync.
 				$new_columns['packetery']             = __( 'Packeta', 'packeta' );
 				$new_columns['packetery_packet_id']   = __( 'Barcode', 'packeta' );
