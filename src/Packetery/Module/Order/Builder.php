@@ -131,10 +131,12 @@ class Builder {
 	 */
 	private function containsAdultContent( WC_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_items() as $item ) {
-			$itemData      = $item->get_data();
-			$productEntity = Product\Entity::fromPostId( $itemData['product_id'] );
-			if ( $productEntity->isAgeVerification18PlusRequired() ) {
-				return true;
+			$product = $item->get_product();
+			if ( $product ) {
+				$productEntity = new Product\Entity( $product );
+				if ( $productEntity->isAgeVerification18PlusRequired() ) {
+					return true;
+				}
 			}
 		}
 
