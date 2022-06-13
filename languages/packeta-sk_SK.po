@@ -2,10 +2,10 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.3.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/WooCommerce\n"
-"POT-Creation-Date: 2022-05-24T09:37:17+00:00\n"
-"PO-Revision-Date: 2022-05-24 19:37+0200\n"
+"Project-Id-Version: Packeta 1.3.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
+"POT-Creation-Date: 2022-06-13T14:21:59+00:00\n"
+"PO-Revision-Date: 2022-06-13 16:46+0200\n"
 "Last-Translator: Michal Vittek\n"
 "Language-Team: Slovenčina\n"
 "Language: sk_SK\n"
@@ -14,18 +14,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=( n == 1 ) ? 0 : ( n >= 2 && n <= 4 ) ? 1 : "
 "2;\n"
-"X-Generator: Poedit 3.0.1\n"
+"X-Generator: Poedit 3.1\n"
 "X-Domain: packeta\n"
 "X-Loco-Version: 2.5.5; wp-5.8.1\n"
 
 #. Plugin Name of the plugin
 #: src/Packetery/Module/Carrier/CountryListingPage.php:117
 #: src/Packetery/Module/Carrier/OptionsPage.php:320
-#: src/Packetery/Module/Checkout.php:204 src/Packetery/Module/Log/Page.php:95
+#: src/Packetery/Module/Checkout.php:225 src/Packetery/Module/Checkout.php:260
+#: src/Packetery/Module/Log/Page.php:95
 #: src/Packetery/Module/Options/Page.php:114
 #: src/Packetery/Module/Options/Page.php:115
-#: src/Packetery/Module/Options/Page.php:402
-#: src/Packetery/Module/Order/GridExtender.php:291
+#: src/Packetery/Module/Options/Page.php:411
+#: src/Packetery/Module/Order/GridExtender.php:331
 #: src/Packetery/Module/Order/LabelPrint.php:162
 #: src/Packetery/Module/Order/Metabox.php:148
 #: src/Packetery/Module/Plugin.php:474 src/Packetery/Module/Plugin.php:516
@@ -100,10 +101,10 @@ msgid "Date of the last update of carriers"
 msgstr "Dátum poslednej aktualizácie dopravcov"
 
 #: src/Packetery/Module/Carrier/CountryListingPage.php:128
-msgid "Carrier list was not yet downloaded"
+msgid ""
+"Carrier list was not yet downloaded. Continue by clicking the Run update of "
+"carriers button."
 msgstr ""
-"Ešte ste si nestiahli zoznam dopravcov, pokračujte kliknutím na tlačidlo "
-"Vykonať aktualizáciu dopravcov"
 
 #: src/Packetery/Module/Carrier/CountryListingPage.php:129
 msgid "Run update of carriers"
@@ -223,7 +224,7 @@ msgstr "Validácia doručovacích adries zákazníkov."
 
 #. translators: %s represents URL, keep intact.
 #: src/Packetery/Module/Carrier/OptionsPage.php:319
-#: src/Packetery/Module/Options/Page.php:407
+#: src/Packetery/Module/Options/Page.php:416
 msgid "Save changes"
 msgstr "Uložiť zmeny"
 
@@ -278,36 +279,36 @@ msgstr "HU Packeta výdajné miesta"
 msgid "RO Packeta pickup points"
 msgstr "RO Packeta výdajné miesta"
 
-#: src/Packetery/Module/Checkout.php:269
+#: src/Packetery/Module/Checkout.php:324
 #: src/Packetery/Module/Order/Metabox.php:180
 msgid "Choose pickup point"
 msgstr "Vyberte si výdajné miesto"
 
-#: src/Packetery/Module/Checkout.php:270
+#: src/Packetery/Module/Checkout.php:325
 msgid "Check shipping address"
 msgstr "Overiť doručovaciu adresu"
 
-#: src/Packetery/Module/Checkout.php:271
+#: src/Packetery/Module/Checkout.php:326
 msgid "Address validation is out of order"
 msgstr "Validácia adresy je nedostupná"
 
-#: src/Packetery/Module/Checkout.php:272
+#: src/Packetery/Module/Checkout.php:327
 msgid "The selected country does not correspond to the destination country."
 msgstr "Zvolená krajina nezodpovedá cieľovej krajine."
 
-#: src/Packetery/Module/Checkout.php:273
+#: src/Packetery/Module/Checkout.php:328
 msgid "Selected shipping address"
 msgstr "Zvolená doručovacia adresa"
 
-#: src/Packetery/Module/Checkout.php:274
+#: src/Packetery/Module/Checkout.php:329
 msgid "Address is validated"
 msgstr "Adresa je správna"
 
-#: src/Packetery/Module/Checkout.php:275
+#: src/Packetery/Module/Checkout.php:330
 msgid "Delivery address has not been verified."
 msgstr "Adresa doručenia nebola overená."
 
-#: src/Packetery/Module/Checkout.php:276 src/Packetery/Module/Checkout.php:358
+#: src/Packetery/Module/Checkout.php:331 src/Packetery/Module/Checkout.php:411
 msgid ""
 "Delivery address has not been verified. Verification of delivery address is "
 "required by this carrier."
@@ -315,11 +316,11 @@ msgstr ""
 "Adresa doručenia nebola overená. Overenie adresy doručenia u tohto dopravcu "
 "je povinné."
 
-#: src/Packetery/Module/Checkout.php:336
+#: src/Packetery/Module/Checkout.php:389
 msgid "Pick up point is not chosen."
 msgstr "Nebolo vybrané výdajné miesto."
 
-#: src/Packetery/Module/Checkout.php:578
+#: src/Packetery/Module/Checkout.php:654
 msgid "COD surcharge"
 msgstr "Príplatok za dobierku"
 
@@ -368,11 +369,11 @@ msgstr "Aktualizácia zoznamu dopravcov"
 msgid "Getting external carrier tracking number"
 msgstr "Získať sledovacie číslo externého dopravcu"
 
-#: src/Packetery/Module/Log/Page.php:75 src/Packetery/Module/Plugin.php:745
+#: src/Packetery/Module/Log/Page.php:75 src/Packetery/Module/Plugin.php:747
 msgid "Database carrier table was not created."
 msgstr "Tabuľka dopravcov nebola vytvorenéá."
 
-#: src/Packetery/Module/Log/Page.php:76 src/Packetery/Module/Plugin.php:760
+#: src/Packetery/Module/Log/Page.php:76 src/Packetery/Module/Plugin.php:762
 #: src/Packetery/Module/Upgrade.php:156
 msgid "Database order table was not created."
 msgstr "Tabuľka objednávok nebola vytvorená."
@@ -390,7 +391,7 @@ msgid "Error"
 msgstr "Chyba"
 
 #: src/Packetery/Module/Log/Page.php:83
-#: src/Packetery/Module/Order/Controller.php:183
+#: src/Packetery/Module/Order/Controller.php:193
 msgid "Success"
 msgstr "Hotovo"
 
@@ -412,7 +413,7 @@ msgstr "Zoznam logov je prázdny."
 
 #: src/Packetery/Module/Options/Page.php:124
 #: src/Packetery/Module/Options/Page.php:125
-#: src/Packetery/Module/Plugin.php:809
+#: src/Packetery/Module/Plugin.php:811
 msgid "Settings"
 msgstr "Nastavenia"
 
@@ -450,31 +451,45 @@ msgstr "Hmotnosť balenia"
 msgid "Replace shipping address with pickup point address"
 msgstr "Nahradiť adresu doručenia adresou výdajného miesta"
 
-#: src/Packetery/Module/Options/Page.php:243
+#: src/Packetery/Module/Options/Page.php:201
+msgid "Widget button location in checkout"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:203
+#, fuzzy
+#| msgid "Selected shipping address"
+msgid "After shipping rate"
+msgstr "Zvolená doručovacia adresa"
+
+#: src/Packetery/Module/Options/Page.php:204
+msgid "After transport methods"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:252
 msgid "Main Settings"
 msgstr "Hlavné nastavenia"
 
-#: src/Packetery/Module/Options/Page.php:296
+#: src/Packetery/Module/Options/Page.php:305
 msgid "Sender validation was successful"
 msgstr "Validácia odosielateľa prebehla úspešne"
 
-#: src/Packetery/Module/Options/Page.php:303
+#: src/Packetery/Module/Options/Page.php:312
 msgid "Sender could not be validated"
 msgstr "Validácia odosielateľa skončila chybou"
 
-#: src/Packetery/Module/Options/Page.php:311
+#: src/Packetery/Module/Options/Page.php:320
 msgid "Specified sender does not exist"
 msgstr "Zvolený odosielateľ neexistuje"
 
-#: src/Packetery/Module/Options/Page.php:315
+#: src/Packetery/Module/Options/Page.php:324
 msgid "Unable to check specified sender"
 msgstr "Odosielateľa nebolo možné overiť"
 
-#: src/Packetery/Module/Options/Page.php:332
+#: src/Packetery/Module/Options/Page.php:341
 msgid "Specified sender has been validated."
 msgstr "Zvolený odosielateľ bol overený."
 
-#: src/Packetery/Module/Options/Page.php:356
+#: src/Packetery/Module/Options/Page.php:365
 msgid ""
 "This plugin requires an active SOAP library for proper operation. Contact "
 "your web hosting administrator."
@@ -483,7 +498,7 @@ msgstr ""
 "Kontaktujte správcu vášho webhostingu."
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:363
+#: src/Packetery/Module/Options/Page.php:372
 msgid ""
 "Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s "
 "- user information - field 'Indication'."
@@ -491,28 +506,28 @@ msgstr ""
 "Tu vyplňte %1$soznačenie odosielateľa%2$s - nájdete ho v %3$sklientskej "
 "sekcii%4$s - údaje o používateľovi -  pole 'označenie používateľa'."
 
-#: src/Packetery/Module/Options/Page.php:403
+#: src/Packetery/Module/Options/Page.php:412
 msgid "Options"
 msgstr "Nastavenia"
 
-#: src/Packetery/Module/Options/Page.php:404
+#: src/Packetery/Module/Options/Page.php:413
 msgid "General"
 msgstr "Všeobecné"
 
 #. translators: %s represents URL, keep intact.
-#: src/Packetery/Module/Options/Page.php:406
+#: src/Packetery/Module/Options/Page.php:415
 msgid "API password can be found at %s"
 msgstr "API heslo nájdete na adrese %s"
 
-#: src/Packetery/Module/Options/Page.php:408
+#: src/Packetery/Module/Options/Page.php:417
 msgid "Validate sender"
 msgstr "Overiť odosielateľa"
 
-#: src/Packetery/Module/Options/Page.php:409
+#: src/Packetery/Module/Options/Page.php:418
 msgid "Support"
 msgstr "Podpora"
 
-#: src/Packetery/Module/Options/Page.php:410
+#: src/Packetery/Module/Options/Page.php:419
 msgid ""
 "By clicking the button, you will export the settings of your plugin into a "
 "separate file. The export does not contain any sensitive information about "
@@ -523,7 +538,7 @@ msgstr ""
 "neobsahuje žiadne citlivé informácie z vášho eshopu. Výsledný súbor zašlete "
 "na technickú podporu Packety (e-mailový kontakt nájdete tu:"
 
-#: src/Packetery/Module/Options/Page.php:414
+#: src/Packetery/Module/Options/Page.php:423
 msgid ""
 ") along with the description of your problem. For a better understanding of "
 "your problem, we recommend adding screenshots, which show the problem (if "
@@ -533,39 +548,39 @@ msgstr ""
 "odporúčame pripojiť aj snímky obrazovky, ktoré ich zachytávajú (ak je to "
 "možné)."
 
-#: src/Packetery/Module/Options/Page.php:418
+#: src/Packetery/Module/Options/Page.php:427
 msgid "Export the plugin settings"
 msgstr "Hlavné nastavenia"
 
-#: src/Packetery/Module/Options/Page.php:419
+#: src/Packetery/Module/Options/Page.php:428
 msgid "Date and time of the last export of settings"
 msgstr "Dátum a čas posledného exportu nastavení"
 
-#: src/Packetery/Module/Options/Page.php:420
+#: src/Packetery/Module/Options/Page.php:429
 msgid "The settings have not been exported yet."
 msgstr "Export nastavení zatiaľ nebol vykonaný."
 
-#: src/Packetery/Module/Options/Provider.php:182
+#: src/Packetery/Module/Options/Provider.php:196
 msgid "1/4 A4, print on A4, 4pcs/page"
 msgstr "1/4 A4. tlač na A4, 4ks/strana"
 
-#: src/Packetery/Module/Options/Provider.php:187
+#: src/Packetery/Module/Options/Provider.php:201
 msgid "1/4 A4, direct print, 1pc/page"
 msgstr "1/4 A4, priama tlač, 1ks/strana"
 
-#: src/Packetery/Module/Options/Provider.php:192
+#: src/Packetery/Module/Options/Provider.php:206
 msgid "1/8 A4, direct print, 1pc/page"
 msgstr "1/8 A4, priama tlač, 1ks/strana"
 
-#: src/Packetery/Module/Options/Provider.php:197
+#: src/Packetery/Module/Options/Provider.php:211
 msgid "1/8 A4, print on A4, 8pcs/page"
 msgstr "1/8 A4, tlač na A4, 8ks/strana"
 
-#: src/Packetery/Module/Options/Provider.php:202
+#: src/Packetery/Module/Options/Provider.php:216
 msgid "105x35mm, print on A4, 16 pcs/page"
 msgstr "105x35mm, tlač na A4, 16ks/strana"
 
-#: src/Packetery/Module/Options/Provider.php:207
+#: src/Packetery/Module/Options/Provider.php:221
 msgid "1/16 A4, direct print, 1pc/page"
 msgstr "1/16 A4, priama tlač, 1ks/strana"
 
@@ -645,7 +660,7 @@ msgid "Order number"
 msgstr "Číslo objednávky"
 
 #: src/Packetery/Module/Order/CollectionPrint.php:189
-#: src/Packetery/Module/Order/GridExtender.php:292
+#: src/Packetery/Module/Order/GridExtender.php:332
 msgid "Barcode"
 msgstr "Sledovacie číslo"
 
@@ -662,7 +677,7 @@ msgid "C.O.D."
 msgstr "Dobierka."
 
 #: src/Packetery/Module/Order/CollectionPrint.php:193
-#: src/Packetery/Module/Order/GridExtender.php:293
+#: src/Packetery/Module/Order/GridExtender.php:333
 msgid "Pick up point or carrier"
 msgstr "Výdajné miesto alebo dopravca"
 
@@ -671,93 +686,98 @@ msgid "END"
 msgstr "KONIEC"
 
 #. translators: %s is order id.
-#: src/Packetery/Module/Order/Controller.php:131
+#: src/Packetery/Module/Order/Controller.php:141
 msgid "Order %s does not exist."
 msgstr "Objednávka %s neexistuje."
 
-#: src/Packetery/Module/Order/Controller.php:172
+#: src/Packetery/Module/Order/Controller.php:182
 msgid "Order could not be loaded."
 msgstr "Tabuľka objednávok nebola vytvorená."
 
-#: src/Packetery/Module/Order/GridExtender.php:109
+#: src/Packetery/Module/Order/GridExtender.php:114
 msgid "Packeta orders to submit"
 msgstr "Objednávky Packety k odoslaniu"
 
-#: src/Packetery/Module/Order/GridExtender.php:125
+#: src/Packetery/Module/Order/GridExtender.php:130
 msgid "Packeta orders to print"
 msgstr "Objednávky Packety k tlači"
 
-#: src/Packetery/Module/Order/GridExtender.php:158
+#: src/Packetery/Module/Order/GridExtender.php:163
 msgid "Packeta shipping method"
 msgstr "Prepravná metóda Packeta"
 
-#: src/Packetery/Module/Order/GridExtender.php:159
+#: src/Packetery/Module/Order/GridExtender.php:164
 msgid "Carrier packets"
 msgstr "Zásielky dopravcov"
 
-#: src/Packetery/Module/Order/GridExtender.php:160
+#: src/Packetery/Module/Order/GridExtender.php:165
 msgid "Packeta pickup points packets"
 msgstr "Zásielky na výdajné miesta Packeta"
 
-#: src/Packetery/Module/Order/GridExtender.php:227
+#: src/Packetery/Module/Order/GridExtender.php:266
 msgid "Print label"
 msgstr "Tlač štítku"
 
-#: src/Packetery/Module/Order/GridExtender.php:228
+#: src/Packetery/Module/Order/GridExtender.php:267
 msgid "Set packet weight"
 msgstr "Nastaviť hmotnosť zásielky"
 
-#: src/Packetery/Module/Order/GridExtender.php:229
+#: src/Packetery/Module/Order/GridExtender.php:268
 msgid "Submit to packeta"
 msgstr "Odoslať do Packety"
 
-#: src/Packetery/Module/Order/GridExtender.php:248
+#: src/Packetery/Module/Order/GridExtender.php:287
 msgid "Data received"
 msgstr "Dáta prijaté"
 
-#: src/Packetery/Module/Order/GridExtender.php:250
+#: src/Packetery/Module/Order/GridExtender.php:289
 msgid "Submitted"
 msgstr "Podané"
 
-#: src/Packetery/Module/Order/GridExtender.php:252
+#: src/Packetery/Module/Order/GridExtender.php:291
 msgid "Prepared for departure"
 msgstr "Pripravené na odchod"
 
-#: src/Packetery/Module/Order/GridExtender.php:254
+#: src/Packetery/Module/Order/GridExtender.php:293
 msgid "Departed"
 msgstr "Na ceste"
 
-#: src/Packetery/Module/Order/GridExtender.php:256
+#: src/Packetery/Module/Order/GridExtender.php:295
 msgid "Ready for pickup"
 msgstr "Pripravené k vydaniu"
 
-#: src/Packetery/Module/Order/GridExtender.php:258
+#: src/Packetery/Module/Order/GridExtender.php:297
 msgid "Handed to carrier"
 msgstr "Odovzdané dopravcovi"
 
-#: src/Packetery/Module/Order/GridExtender.php:260
+#: src/Packetery/Module/Order/GridExtender.php:299
 msgid "Delivered"
 msgstr "Doručené"
 
-#: src/Packetery/Module/Order/GridExtender.php:262
+#: src/Packetery/Module/Order/GridExtender.php:301
 msgid "Posted back"
 msgstr "Zaslané späť"
 
-#: src/Packetery/Module/Order/GridExtender.php:264
+#: src/Packetery/Module/Order/GridExtender.php:303
 msgid "Returned"
 msgstr "Vrátené"
 
-#: src/Packetery/Module/Order/GridExtender.php:266
+#: src/Packetery/Module/Order/GridExtender.php:305
 msgid "Cancelled"
 msgstr "Zrušené"
 
-#: src/Packetery/Module/Order/GridExtender.php:268
+#: src/Packetery/Module/Order/GridExtender.php:307
 msgid "Collected"
 msgstr "Vyzdvihnuté vodičom"
 
-#: src/Packetery/Module/Order/GridExtender.php:270
+#: src/Packetery/Module/Order/GridExtender.php:309
 msgid "Unknown"
 msgstr "Neznáme"
+
+#: src/Packetery/Module/Order/GridExtender.php:329
+#: src/Packetery/Module/Order/Modal.php:93
+msgid "Weight"
+msgstr "Hmotnosť"
 
 #. translators: %s is count.
 #: src/Packetery/Module/Order/LabelPrint.php:165
@@ -804,19 +824,19 @@ msgstr "Štítok bol úspešne vytlačený."
 msgid "Label could not be printed."
 msgstr "Štítok nebol vytlačený."
 
-#: src/Packetery/Module/Order/LabelPrint.php:377
+#: src/Packetery/Module/Order/LabelPrint.php:381
 msgid "Carrier label has been printed successfully."
 msgstr "Štítok dopravcu bol úspešne vytlačený."
 
-#: src/Packetery/Module/Order/LabelPrint.php:380
+#: src/Packetery/Module/Order/LabelPrint.php:384
 msgid "Carrier label could not be printed."
 msgstr "Štítok dopravcu nebolo možné vytlačiť."
 
-#: src/Packetery/Module/Order/LabelPrint.php:441
+#: src/Packetery/Module/Order/LabelPrint.php:451
 msgid "Please set a proper API password."
 msgstr "Nastavte si prosím platné heslo API."
 
-#: src/Packetery/Module/Order/LabelPrint.php:449
+#: src/Packetery/Module/Order/LabelPrint.php:459
 msgid "Carrier number could not be retrieved."
 msgstr "Nepodarilo sa získať sledovacie číslo externého dopravcu."
 
@@ -868,10 +888,6 @@ msgstr "Objednávka #%s"
 #: src/Packetery/Module/Order/Modal.php:80
 msgid "Close modal panel"
 msgstr "Zatvoriť modálny panel"
-
-#: src/Packetery/Module/Order/Modal.php:93
-msgid "Weight"
-msgstr "Hmotnosť"
 
 #: src/Packetery/Module/Order/Modal.php:97
 msgid "Save"
@@ -965,35 +981,40 @@ msgstr "Adresa výdajného miesta"
 msgid "validated delivery address"
 msgstr "overená doručovacia adresa"
 
-#: src/Packetery/Module/Plugin.php:740
+#: src/Packetery/Module/Plugin.php:742
 msgid ""
 "Database carrier table was not created, you can find more information in "
 "Packeta log."
 msgstr ""
 "Tabuľka dopravcov nebola vytvorená, viac informácii nájdete v logu pluginu."
 
-#: src/Packetery/Module/Plugin.php:755 src/Packetery/Module/Upgrade.php:151
+#: src/Packetery/Module/Plugin.php:757 src/Packetery/Module/Upgrade.php:151
 msgid ""
 "Database order table was not created, you can find more information in "
 "Packeta log."
 msgstr ""
 "Tabuľka objednávok nebola vytvorená, viac informácii nájdete v logu pluginu."
 
-#: src/Packetery/Module/Plugin.php:808
+#: src/Packetery/Module/Plugin.php:810
 msgid "View the plugin documentation"
 msgstr "Zobraziť dokumentáciu pluginu"
 
-#: src/Packetery/Module/Plugin.php:831
+#: src/Packetery/Module/Plugin.php:833
 msgid "View Packeta documentation"
 msgstr "Zobraziť dokumentáciu Packety"
 
-#: src/Packetery/Module/Plugin.php:832
+#: src/Packetery/Module/Plugin.php:834
 msgid "Documentation"
 msgstr "Dokumentácia"
 
 #: src/Packetery/Module/Product/DataTab.php:89
 msgid "Age verification 18+"
 msgstr "Overenie veku 18+"
+
+#~ msgid "Carrier list was not yet downloaded"
+#~ msgstr ""
+#~ "Ešte ste si nestiahli zoznam dopravcov, pokračujte kliknutím na tlačidlo "
+#~ "Vykonať aktualizáciu dopravcov"
 
 #~ msgid "Invalid address country selected"
 #~ msgstr "Bola zvolená nesprávna krajina"
