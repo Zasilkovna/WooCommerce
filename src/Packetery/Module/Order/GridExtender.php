@@ -22,6 +22,9 @@ use Packetery\Module;
  * @package Packetery\Order
  */
 class GridExtender {
+
+	const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
+
 	/**
 	 * Generic Helper.
 	 *
@@ -174,12 +177,23 @@ class GridExtender {
 	 */
 	public function getWeightCellContent( Core\Entity\Order $order ): string {
 		return $this->latteEngine->renderToString(
-			PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte',
-			[
-				'orderNumber'     => $order->getNumber(),
-				'weightFormatted' => Module\Order\Helper::getFormattedWeight( $order->getWeight() ),
-			]
+			self::TEMPLATE_GRID_COLUMN_WEIGHT,
+			$this->getWeightCellContentParams( $order )
 		);
+	}
+
+	/**
+	 * Gets weight cell content.
+	 *
+	 * @param Core\Entity\Order $order Order.
+	 *
+	 * @return array
+	 */
+	private function getWeightCellContentParams( Core\Entity\Order $order ): array {
+		return [
+			'orderNumber' => $order->getNumber(),
+			'weight'      => $order->getWeight(),
+		];
 	}
 
 	/**
@@ -197,8 +211,10 @@ class GridExtender {
 
 		switch ( $column ) {
 			case 'packetery_weight':
-				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo $this->getWeightCellContent( $order );
+				$this->latteEngine->render(
+					self::TEMPLATE_GRID_COLUMN_WEIGHT,
+					$this->getWeightCellContentParams( $order )
+				);
 				break;
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
