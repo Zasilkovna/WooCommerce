@@ -83,29 +83,6 @@ class MessageManager {
 			'message'  => $message,
 			'renderer' => $renderer,
 			'context'  => $context,
-			'isHtml'   => false,
-		];
-
-		$this->addMessage( $message );
-	}
-
-	/**
-	 * Flash HTML message.
-	 *
-	 * @param string $message  Message.
-	 * @param string $type     Type.
-	 * @param string $renderer Renderer.
-	 * @param string $context  Context.
-	 *
-	 * @return void
-	 */
-	public function flashHtmlMessage( string $message, string $type = self::TYPE_SUCCESS, string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
-		$message = [
-			'type'     => $type,
-			'message'  => $message,
-			'renderer' => $renderer,
-			'context'  => $context,
-			'isHtml'   => true,
 		];
 
 		$this->addMessage( $message );

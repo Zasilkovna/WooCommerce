@@ -248,29 +248,10 @@ class LabelPrint {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
 		if ( ! $response || $response->hasFault() ) {
-
-			$orderId = null;
-			if ( count( $packetIds ) === 1 ) {
-				$orderIds = array_keys( $packetIds );
-				$orderId  = (int) array_pop( $orderIds );
-			}
-
-			if ( null !== $response && $response->hasFault() ) {
-				$message = sprintf(
-					// translators: 1: link start 2: link end.
-					esc_html__( 'Label print failed. %1$sShow logs%2$s', 'packeta' ),
-					'<a href="' . $this->logPage->createLogListLink( $orderId ) . '">',
-					'</a>'
-				);
-			} else {
-				$message = sprintf(
-					// translators: 1: link start 2: link end.
-					esc_html__( 'You selected orders that were not submitted. %1$sShow logs%2$s', 'packeta' ),
-					'<a href="' . $this->logPage->createLogListLink( $orderId ) . '">',
-					'</a>'
-				);
-			}
-			$this->messageManager->flashHtmlMessage( $message, MessageManager::TYPE_ERROR );
+			$message = ( null !== $response && $response->hasFault() ) ?
+				__( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' ) :
+				__( 'You selected orders that were not submitted yet', 'packeta' );
+			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
 				exit;
 			}
