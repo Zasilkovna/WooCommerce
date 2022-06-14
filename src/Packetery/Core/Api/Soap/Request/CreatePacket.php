@@ -158,7 +158,7 @@ class CreatePacket {
 	 */
 	public function __construct( Entity\Order $order ) {
 		// Required attributes.
-		$this->number    = $order->getNumber();
+		$this->number    = ( $order->getCustomNumber() ?? $order->getNumber() );
 		$this->name      = $order->getName();
 		$this->surname   = $order->getSurname();
 		$this->value     = $order->getValue();

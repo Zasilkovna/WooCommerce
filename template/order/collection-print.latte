@@ -61,7 +61,7 @@
             {varType Packetery\Core\Entity\Order $order}
             {var $order = $orders[$orderNumber]}
             <tr class="{if $iterator->odd}odd{else}even{/if}">
-                <td class="packetery-no-wrap order-number-column">{$orderNumber}</td>
+                <td class="packetery-no-wrap order-number-column">{$order->getCustomNumber()}</td>
                 <td class="packetery-no-wrap">{$packetId}</td>
                 <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_date_created()|date:'d. m.'}</td>
                 <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_formatted_shipping_full_name()}</td>

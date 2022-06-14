@@ -26,6 +26,13 @@ class Order {
 	private $number;
 
 	/**
+	 * Custom order number.
+	 *
+	 * @var string|null
+	 */
+	private $customNumber;
+
+	/**
 	 * Order carrier object.
 	 *
 	 * @var Carrier|null
@@ -212,6 +219,26 @@ class Order {
 		$this->isExported       = $isExported;
 		$this->isLabelPrinted   = $isLabelPrinted;
 		$this->addressValidated = false;
+	}
+
+	/**
+	 * Gets custom number.
+	 *
+	 * @return string|null
+	 */
+	public function getCustomNumber(): ?string {
+		return $this->customNumber;
+	}
+
+	/**
+	 * Sets custom number.
+	 *
+	 * @param string|null $customNumber Custom number.
+	 *
+	 * @return void
+	 */
+	public function setCustomNumber( ?string $customNumber ): void {
+		$this->customNumber = $customNumber;
 	}
 
 	/**

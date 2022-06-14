@@ -8,6 +8,7 @@
        data-order-data="{= json_encode(
        [
        'id' => $order->getNumber(),
+       'custom_number' => $order->getCustomNumber(),
        'packetery_weight' => $order->getWeight(),
        ]
        )}"
