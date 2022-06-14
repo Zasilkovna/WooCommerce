@@ -120,6 +120,9 @@ class Repository {
 				`length` float NULL,
 				`width` float NULL,
 				`height` float NULL,
+				`adult_content` boolean NULL,
+				`value` double NULL,
+				`cod` double NULL,
 				`carrier_number` varchar(255) NULL,
 				`packet_status` varchar(255) NULL,
 				PRIMARY KEY (`id`)
@@ -207,6 +210,9 @@ class Repository {
 		$partialOrder->setCarrierNumber( $result->carrier_number );
 		$partialOrder->setPacketStatus( $result->packet_status );
 		$partialOrder->setAddressValidated( (bool) $result->address_validated );
+		$partialOrder->setAdultContent( $this->parseBool( $result->adult_content ) );
+		$partialOrder->setValue( $this->parseFloat( $result->value ) );
+		$partialOrder->setCod( $this->parseFloat( $result->cod ) );
 
 		if ( $result->delivery_address ) {
 			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
@@ -256,6 +262,21 @@ class Repository {
 	}
 
 	/**
+	 * Parses string value as float.
+	 *
+	 * @param string|int|null $value Value.
+	 *
+	 * @return bool|null
+	 */
+	private function parseBool( $value ): ?bool {
+		if ( null === $value || '' === $value ) {
+			return null;
+		}
+
+		return (bool) $value;
+	}
+
+	/**
 	 * Transforms order to DB array.
 	 *
 	 * @param Order $order Order.
@@ -293,6 +314,9 @@ class Repository {
 			'length'            => $order->getLength(),
 			'width'             => $order->getWidth(),
 			'height'            => $order->getHeight(),
+			'adult_content'     => $order->containsAdultContent(),
+			'cod'               => $order->getCod(),
+			'value'             => $order->getValue(),
 		];
 
 		return $data;
@@ -417,6 +441,39 @@ class Repository {
 			LEFT JOIN `' . $wpdb->posts . '` ON `' . $wpdb->posts . '`.`ID` = `' . $wpdb->packetery_order . '`.`id`
 			WHERE `' . $wpdb->posts . '`.`ID` IS NULL'
 		);
+	}
+
+	/**
+	 * Adds adult content column.
+	 *
+	 * @return void
+	 */
+	public function addAdultContentColumn(): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `adult_content` boolean NULL DEFAULT NULL AFTER `height`' );
+	}
+
+	/**
+	 * Adds value column.
+	 *
+	 * @return void
+	 */
+	public function addValueColumn(): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `value` double NULL DEFAULT NULL AFTER `adult_content`' );
+	}
+
+	/**
+	 * Adds COD column.
+	 *
+	 * @return void
+	 */
+	public function addCodColumn(): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `cod` double NULL DEFAULT NULL AFTER `value`' );
 	}
 
 	/**

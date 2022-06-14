@@ -10,11 +10,21 @@
                 'packetery_length',
                 'packetery_width',
                 'packetery_height',
+                Packetery\Module\Order\Metabox::FIELD_ADULT_CONTENT,
+                Packetery\Module\Order\Metabox::FIELD_COD,
+                Packetery\Module\Order\Metabox::FIELD_VALUE,
             ] as $inputName}
                 <div class="packetery-table-row">
-                    <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                        <label n:name=$inputName />
-                    </div>
+                    {if in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_COD, Packetery\Module\Order\Metabox::FIELD_VALUE ] ) }
+                        <div class="packetery-table-cell packetery-order-metabox-label-cell">
+                            <label n:name=$inputName /> ({$orderCurrency|noescape})
+                        </div>
+                    {else}
+                        <div class="packetery-table-cell packetery-order-metabox-label-cell">
+                            <label n:name=$inputName />
+                        </div>
+                    {/if}
+
                     <div class="packetery-table-cell">
                         <input class="packetery-order-metabox-input" n:name=$inputName />
                     </div>
