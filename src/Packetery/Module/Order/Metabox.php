@@ -205,7 +205,7 @@ class Metabox {
 
 		$showLogsLink = null;
 		if ( $this->logPage->hasAnyRows( (int) $order->getNumber() ) ) {
-			$showLogsLink = $this->logPage->createLogListLink( (int) $order->getNumber() );
+			$showLogsLink = $this->logPage->createLogListUrl( (int) $order->getNumber() );
 		}
 
 		if ( $packetId ) {

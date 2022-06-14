@@ -166,7 +166,7 @@ class Page {
 	 *
 	 * @return string
 	 */
-	public function createLogListLink( ?int $orderId = null ): string {
+	public function createLogListUrl( ?int $orderId = null ): string {
 		$params = [
 			'page' => self::SLUG,
 		];

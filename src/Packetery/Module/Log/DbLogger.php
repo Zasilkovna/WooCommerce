@@ -97,7 +97,7 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 */
 	public function countRecords( $orderId ): int {
 		if ( is_numeric( $orderId ) ) {
-			return $this->logRepository->countByOrderId( $orderId );
+			return $this->logRepository->countByOrderId( (int) $orderId );
 		}
 
 		if ( null === $orderId ) {

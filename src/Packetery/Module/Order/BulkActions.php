@@ -162,7 +162,7 @@ class BulkActions {
 				$success = sprintf(
 					// translators: 1: link start 2: link end.
 					esc_html__( 'Shipments were submitted successfully. %1$sShow logs%2$s', 'packeta' ),
-					'<a href="' . $this->logPage->createLogListLink( $orderId ) . '">',
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
 					'</a>'
 				);
 			} else {
@@ -176,7 +176,7 @@ class BulkActions {
 					// translators: 1: total number of shipments 2: link start 3: link end.
 					esc_html__( 'Some shipments (%1$s in total) were not submitted (these were submitted already or are not Packeta orders). %2$sShow logs%3$s', 'packeta' ),
 					$get['ignored'],
-					'<a href="' . $this->logPage->createLogListLink( $orderId ) . '">',
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
 					'</a>'
 				);
 			} else {
@@ -194,7 +194,7 @@ class BulkActions {
 					// translators: 1: total number of shipments 2: link start 3: link end.
 					esc_html__( 'Some shipments (%1$s in total) failed to be submitted to Packeta. %2$sShow logs%3$s', 'packeta' ),
 					$get['errors'],
-					'<a href="' . $this->logPage->createLogListLink( $orderId ) . '">',
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
 					'</a>'
 				);
 			} else {
