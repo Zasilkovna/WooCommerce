@@ -99,7 +99,7 @@ class Repository {
 	 */
 	public function deleteOld( int $maxRecordAgeInDays ): void {
 		$wpdb            = $this->wpdb;
-		$dateToFormatted = Helper::now()->modify( '- ' . $maxRecordAgeInDays . ' days' )->format( Helper::MYSQL_DATETIME_FORMAT );
+		$dateToFormatted = Helper::now()->modify( sprintf( '- %d days', $maxRecordAgeInDays ) )->format( Helper::MYSQL_DATETIME_FORMAT );
 
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $wpdb->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
 	}
