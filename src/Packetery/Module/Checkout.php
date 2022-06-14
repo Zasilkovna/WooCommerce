@@ -349,6 +349,11 @@ class Checkout {
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
 	public function validateCheckoutData(): void {
+		$chosenMethod = $this->getChosenMethod();
+		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
+			return;
+		}
+
 		$post = $this->httpRequest->getPost();
 		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
 			wp_nonce_ays( '' );
@@ -391,7 +396,6 @@ class Checkout {
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
-			$chosenMethod  = $this->getChosenMethod();
 			$carrierId     = $this->getCarrierId( $chosenMethod );
 			$optionId      = self::CARRIER_PREFIX . $carrierId;
 			$carrierOption = get_option( $optionId );
