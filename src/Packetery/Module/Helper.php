@@ -32,6 +32,10 @@ class Helper {
 			}
 		}
 
+		if ( ! function_exists( 'get_mu_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
 		$muPlugins = get_mu_plugins();
 		if ( isset( $muPlugins[ $pluginRelativePath ] ) ) {
 			return true;
