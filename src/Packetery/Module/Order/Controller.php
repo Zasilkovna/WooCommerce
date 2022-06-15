@@ -186,7 +186,7 @@ class Controller extends WP_REST_Controller {
 
 		$order = $this->orderRepository->getById( $orderId );
 		if ( null === $order ) {
-			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packetery' ), 400 );
+			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
 		$values = $form->getValues( 'array' );

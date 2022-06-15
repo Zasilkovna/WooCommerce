@@ -274,7 +274,7 @@ class GridExtender {
 						'printLink'       => $printLink,
 						'translations'    => [
 							'printLabel'      => __( 'Print label', 'packeta' ),
-							'setPacketWeight' => __( 'Set packet weight', 'packeta' ),
+							'setAdditionalPacketInfo' => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa' => __( 'Submit to packeta', 'packeta' ),
 						],
 					]
