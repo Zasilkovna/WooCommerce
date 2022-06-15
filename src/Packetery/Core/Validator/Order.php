@@ -91,7 +91,7 @@ class Order {
 	 *
 	 * @return bool
 	 */
-	private function validateSize( Entity\Order $order ): bool {
+	public function validateSize( Entity\Order $order ): bool {
 		$carrier = $order->getCarrier();
 		if ( null === $carrier ) {
 			return true;
