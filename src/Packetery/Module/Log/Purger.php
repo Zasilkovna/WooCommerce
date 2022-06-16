@@ -41,6 +41,6 @@ class Purger {
 	 * @return void
 	 */
 	public function autoDeleteHook(): void {
-		$this->logRepository->deleteOld( 90 );
+		$this->logRepository->deleteOld( get_option( 'packetery_delete_old_before', '- 90 days' ) );
 	}
 }

@@ -93,13 +93,13 @@ class Repository {
 	/**
 	 * Delete old records.
 	 *
-	 * @param int $maxRecordAgeInDays Max number of days that record can exist.
+	 * @param string $before DateTime modifier.
 	 *
 	 * @return void
 	 */
-	public function deleteOld( int $maxRecordAgeInDays ): void {
+	public function deleteOld( string $before ): void {
 		$wpdb            = $this->wpdb;
-		$dateToFormatted = Helper::now()->modify( sprintf( '- %d days', $maxRecordAgeInDays ) )->format( Helper::MYSQL_DATETIME_FORMAT );
+		$dateToFormatted = Helper::now()->modify( $before )->format( Helper::MYSQL_DATETIME_FORMAT );
 
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $wpdb->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
 	}
