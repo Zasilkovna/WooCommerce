@@ -28,6 +28,7 @@ services:
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
+	- Packetery\Module\DashboardWidget
 	- Packetery\Module\Carrier\CountryListingPage
 	- Packetery\Module\Order\BulkActions
 	- Packetery\Module\Order\Repository

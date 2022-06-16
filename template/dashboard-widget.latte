@@ -1,0 +1,33 @@
+{if $activeCountries}
+    <p>
+        {$translations['activeCountriesNotice']}:
+        {foreach $activeCountries as $activeCountry}
+            <a href="{$activeCountry['url']}">{$activeCountry['name']}</a>{sep}, {/sep}
+        {/foreach}
+    </p>
+    <p>
+        {$translations['activeCountryCountNotice']}: {$activeCountriesCount}
+    </p>
+{else}
+    <p>
+        {$translations['noActiveCountry']|noescape}
+    </p>
+{/if}
+
+{if $isCodSettingNeeded}
+<p>
+    {$translations['noCodPaymentConfigured']|noescape}
+</p>
+{/if}
+
+{if false === $hasExternalCarrier}
+<p>
+    {$translations['noExternalCarrier']|noescape}
+</p>
+{/if}
+
+{if false === $hasPacketaShipping}
+<p>
+    {$translations['noPacketaShipping']|noescape}
+</p>
+{/if}

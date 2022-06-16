@@ -424,4 +424,20 @@ class Page {
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}
+
+	/**
+	 * Creates link to page.
+	 *
+	 * @return string
+	 */
+	public function createUrl(): string {
+		$params = [
+			'page' => self::SLUG,
+		];
+
+		return add_query_arg(
+			$params,
+			admin_url( 'admin.php' )
+		);
+	}
 }

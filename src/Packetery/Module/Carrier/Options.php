@@ -98,4 +98,40 @@ class Options {
 
 		return $none;
 	}
+
+	/**
+	 * Tells if carrier is active.
+	 *
+	 * @return bool
+	 */
+	public function isActive(): bool {
+		return $this->options['active'] ?? false;
+	}
+
+	/**
+	 * Gets default COD surcharge.
+	 *
+	 * @return float|null
+	 */
+	public function getDefaultCODSurcharge(): ?float {
+		$value = $this->options['default_COD_surcharge'] ?? null;
+		if ( is_numeric( $value ) ) {
+			return (float) $value;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Tells if any COD surcharge was configured.
+	 *
+	 * @return bool
+	 */
+	public function hasAnyCodSurchargeSetting(): bool {
+		if ( null !== $this->getDefaultCODSurcharge() ) {
+			return true;
+		}
+
+		return ! empty( $this->options['surcharge_limits'] );
+	}
 }

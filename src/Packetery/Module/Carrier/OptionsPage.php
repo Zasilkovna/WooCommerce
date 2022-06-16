@@ -451,4 +451,25 @@ class OptionsPage {
 		$item->addRule( Form::MIN, null, 0 );
 	}
 
+	/**
+	 * Creates link to page.
+	 *
+	 * @param string|null $countryCode Country code.
+	 *
+	 * @return string
+	 */
+	public function createUrl( ?string $countryCode = null ): string {
+		$params = [
+			'page' => self::SLUG,
+		];
+
+		if ( null !== $countryCode ) {
+			$params['code'] = $countryCode;
+		}
+
+		return add_query_arg(
+			$params,
+			admin_url( 'admin.php' )
+		);
+	}
 }
