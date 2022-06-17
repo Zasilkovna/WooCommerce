@@ -20,6 +20,7 @@ use Packetery\Module\Order;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use PacketeryNette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -464,6 +465,18 @@ class Plugin {
 	 */
 	private static function isWooCommercePluginActive(): bool {
 		return Helper::isPluginActive( 'woocommerce/woocommerce.php' );
+	}
+
+	/**
+	 * Creates HTML link parts in array.
+	 *
+	 * @param string $href Href.
+	 *
+	 * @return string[]
+	 */
+	public static function createLinkParts( string $href ): array {
+		$link = Html::el( 'a' )->href( $href );
+		return [ $link->startTag(), $link->endTag() ];
 	}
 
 	/**

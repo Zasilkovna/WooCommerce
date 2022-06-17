@@ -164,26 +164,22 @@ class DashboardWidget {
 					'noActiveCountry'          => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Now you do not send parcels to any country via Packeta. The settings can be made %1$shere%2$s.', 'packeta' ),
-						sprintf( '<a href="%s">', $this->carrierOptionsPage->createUrl() ),
-						'</a>'
+						...Plugin::createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
 					'noCodPaymentConfigured'   => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No COD payment configured. The settings can be made %1$shere%2$s.', 'packeta' ),
-						sprintf( '<a href="%s">', $this->optionsPage->createUrl() ),
-						'</a>'
+						...Plugin::createLinkParts( $this->optionsPage->createUrl() )
 					),
 					'noExternalCarrier'        => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No external carrier was found. Carriers can be downloaded %1$shere%2$s.', 'packeta' ),
-						sprintf( '<a href="%s">', $this->carrierOptionsPage->createUrl() ),
-						'</a>'
+						...Plugin::createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
 					'noPacketaShipping'        => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No Packeta shipping method was configured. Configure shipping zone with Packeta shipping method %1$shere%2$s.', 'packeta' ),
-						sprintf(
-							'<a href="%s">',
+						...Plugin::createLinkParts(
 							add_query_arg(
 								[
 									'page' => 'wc-settings',
@@ -191,8 +187,7 @@ class DashboardWidget {
 								],
 								get_admin_url( null, 'admin.php' )
 							)
-						),
-						'</a>'
+						)
 					),
 				],
 			]
