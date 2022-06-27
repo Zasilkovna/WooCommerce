@@ -68,6 +68,13 @@ class GridExtender {
 	private $orderRepository;
 
 	/**
+	 * Modal.
+	 *
+	 * @var Modal
+	 */
+	private $modal;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param Helper             $helper                Helper.
@@ -76,6 +83,7 @@ class GridExtender {
 	 * @param Request            $httpRequest           Http Request.
 	 * @param ControllerRouter   $orderControllerRouter Order controller router.
 	 * @param Repository         $orderRepository       Order repository.
+	 * @param Modal              $modal                 Modal dialog.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -83,7 +91,8 @@ class GridExtender {
 		Engine $latteEngine,
 		Request $httpRequest,
 		ControllerRouter $orderControllerRouter,
-		Repository $orderRepository
+		Repository $orderRepository,
+		Modal $modal
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;
@@ -91,6 +100,7 @@ class GridExtender {
 		$this->httpRequest           = $httpRequest;
 		$this->orderControllerRouter = $orderControllerRouter;
 		$this->orderRepository       = $orderRepository;
+		$this->modal                 = $modal;
 	}
 
 	/**
@@ -258,13 +268,13 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'           => $order,
-						'hasOrderWeight'  => ( null !== $order->getWeight() && $order->getWeight() > 0 ),
+						'showWarningIcon' => $this->modal->showWarningIcon( $order ),
 						'packetSubmitUrl' => $packetSubmitUrl,
 						'restNonce'       => wp_create_nonce( 'wp_rest' ),
 						'printLink'       => $printLink,
 						'translations'    => [
 							'printLabel'      => __( 'Print label', 'packeta' ),
-							'setPacketWeight' => __( 'Set packet weight', 'packeta' ),
+							'setAdditionalPacketInfo' => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa' => __( 'Submit to packeta', 'packeta' ),
 						],
 					]
