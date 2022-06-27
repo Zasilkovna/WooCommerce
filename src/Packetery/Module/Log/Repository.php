@@ -91,6 +91,20 @@ class Repository {
 	}
 
 	/**
+	 * Delete old records.
+	 *
+	 * @param string $before DateTime modifier.
+	 *
+	 * @return void
+	 */
+	public function deleteOld( string $before ): void {
+		$wpdb            = $this->wpdb;
+		$dateToFormatted = Helper::now()->modify( $before )->format( Helper::MYSQL_DATETIME_FORMAT );
+
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $wpdb->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
+	}
+
+	/**
 	 * Remaps logs.
 	 *
 	 * @param iterable $logs Logs.
