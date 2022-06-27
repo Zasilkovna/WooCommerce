@@ -161,8 +161,8 @@ class OptionsPage {
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
-		$carrier = $this->carrierRepository->getById( (int) $carrierData['id'] );
-		if ( $carrier && false === $carrier->hasPickupPoints() ) {
+		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
+		if ( false === $carrier->hasPickupPoints() ) {
 			$addressValidationOptions = [
 				'none'     => __( 'No address validation', 'packeta' ),
 				'optional' => __( 'Optional address validation', 'packeta' ),
@@ -170,6 +170,13 @@ class OptionsPage {
 			];
 			$form->addSelect( 'address_validation', __( 'Address validation', 'packeta' ) . ':', $addressValidationOptions )
 				->setDefaultValue( 'none' );
+		}
+
+		if ( $carrier->supportsAgeVerification() ) {
+			$form->addText( 'age_verification_fee', __( 'Age verification fee', 'packeta' ) . ':' )
+				->setRequired( false )
+				->addRule( Form::FLOAT )
+				->addRule( Form::MIN, null, 0 );
 		}
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
@@ -320,6 +327,7 @@ class OptionsPage {
 						'packeta'                      => __( 'Packeta', 'packeta' ),
 						'countryOptions'               => __( 'Country options', 'packeta' ),
 						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
+						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
 					],
 				]
 			);

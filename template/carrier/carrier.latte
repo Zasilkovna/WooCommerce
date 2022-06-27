@@ -1,6 +1,6 @@
 <div class="packetery-carrier-options-page">
-	{varType Packetery\Core\Entity\Carrier $carrier}
 	{var $carrier = $carrier_data['carrier']}
+	{varType Packetery\Core\Entity\Carrier $carrier}
 	<h2>{$carrier->getName()}</h2>
 
 	{if $carrier->requiresCustomsDeclarations()}
@@ -8,6 +8,12 @@
 			<p>{$translations['cannotUseThisCarrierBecauseRequiresCustomsDeclaration']}</p>
 		</div>
 	{elseif isset($carrier_data['form'])}
+
+	{if $carrier->supportsAgeVerification()}
+		<div class="notice notice-info">
+			<p>{$translations['ageVerificationSupportedNotification']}</p>
+		</div>
+	{/if}
 
 	{define weightRules}
 		<tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
@@ -176,6 +182,20 @@
 						<p>
 							{$translations['addressValidationDescription']}
 						</p>
+					</td>
+				</tr>
+				{/if}
+				{if isset($form['age_verification_fee'])}
+				<tr>
+					<th scope="row">
+						<label n:name=age_verification_fee />
+					</th>
+					<td>
+						<div>
+							<input n:name=age_verification_fee data-lfv-message-id="{$form[age_verification_fee]->getHtmlId() . '_message'}">
+							<span> {$globalCurrency|noescape}</span>
+						</div>
+						<p class="packetery-input-validation-message help-block text-danger" id="{$form[age_verification_fee]->getHtmlId() . '_message'}">{inputError age_verification_fee}</p>
 					</td>
 				</tr>
 				{/if}

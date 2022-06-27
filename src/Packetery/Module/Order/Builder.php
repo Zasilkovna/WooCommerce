@@ -134,7 +134,7 @@ class Builder {
 			$product = $item->get_product();
 			if ( $product ) {
 				$productEntity = new Product\Entity( $product );
-				if ( $productEntity->isAgeVerification18PlusRequired() ) {
+				if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
 					return true;
 				}
 			}

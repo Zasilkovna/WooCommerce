@@ -172,6 +172,29 @@ class Repository {
 	}
 
 	/**
+	 * Gets feed carrier or packeta carrier by id.
+	 *
+	 * @param string $extendedBranchServiceId Extended branch service id.
+	 *
+	 * @return Entity\Carrier|null
+	 */
+	public function getAnyById( string $extendedBranchServiceId ): ?Entity\Carrier {
+		$zpointCarriers = $this->getZpointCarriers();
+
+		foreach ( $zpointCarriers as $zpointCountry => $zpointCarrier ) {
+			if ( $zpointCarrier['id'] === $extendedBranchServiceId ) {
+				return $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier + [ 'country' => $zpointCountry ] );
+			}
+		}
+
+		if ( ! is_numeric( $extendedBranchServiceId ) ) {
+			return null;
+		}
+
+		return $this->getById( (int) $extendedBranchServiceId );
+	}
+
+	/**
 	 * Gets all active carriers for a country.
 	 *
 	 * @param string $country ISO code.
@@ -291,28 +314,32 @@ class Repository {
 	public function getZpointCarriers(): array {
 		return [
 			'cz' => [
-				'id'               => 'zpointcz',
-				'name'             => __( 'CZ Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'CZK',
+				'id'                        => 'zpointcz',
+				'name'                      => __( 'CZ Packeta pickup points', 'packeta' ),
+				'is_pickup_points'          => 1,
+				'currency'                  => 'CZK',
+				'supports_age_verification' => true,
 			],
 			'sk' => [
-				'id'               => 'zpointsk',
-				'name'             => __( 'SK Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'EUR',
+				'id'                        => 'zpointsk',
+				'name'                      => __( 'SK Packeta pickup points', 'packeta' ),
+				'is_pickup_points'          => 1,
+				'currency'                  => 'EUR',
+				'supports_age_verification' => true,
 			],
 			'hu' => [
-				'id'               => 'zpointhu',
-				'name'             => __( 'HU Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'HUF',
+				'id'                        => 'zpointhu',
+				'name'                      => __( 'HU Packeta pickup points', 'packeta' ),
+				'is_pickup_points'          => 1,
+				'currency'                  => 'HUF',
+				'supports_age_verification' => true,
 			],
 			'ro' => [
-				'id'               => 'zpointro',
-				'name'             => __( 'RO Packeta pickup points', 'packeta' ),
-				'is_pickup_points' => 1,
-				'currency'         => 'RON',
+				'id'                        => 'zpointro',
+				'name'                      => __( 'RO Packeta pickup points', 'packeta' ),
+				'is_pickup_points'          => 1,
+				'currency'                  => 'RON',
+				'supports_age_verification' => true,
 			],
 		];
 	}
