@@ -136,7 +136,7 @@ class Page {
 	 *
 	 * @return Form
 	 */
-	private function create_form(): Form {
+	public function create_form(): Form {
 		$form = $this->formFactory->create();
 		$form->setAction( 'options.php' );
 

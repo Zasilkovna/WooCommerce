@@ -154,13 +154,17 @@ class DashboardWidget {
 			PACKETERY_PLUGIN_DIR . '/template/dashboard-widget.latte',
 			[
 				'activeCountries'      => $activeCountries,
-				'activeCountriesCount' => count( $activeCountries ),
 				'isCodSettingNeeded'   => $isCodSettingNeeded,
+				'isOptionsFormValid'   => $this->optionsPage->create_form()->isValid(),
 				'hasExternalCarrier'   => $this->carrierRepository->hasAnyActiveFeedCarrier(),
 				'hasPacketaShipping'   => $this->isPacketaShippingMethodActive(),
 				'translations'         => [
-					'activeCountryCountNotice' => __( 'Active country count', 'packeta' ),
 					'activeCountriesNotice'    => __( 'You can now send goods to the following countries via Packeta', 'packeta' ),
+					'noGlobalSettings'         => sprintf(
+						// translators: 1: link start 2: link end.
+						esc_html__( 'Global plugin settings have not been made, you can make the settings %1$shere%2$s.', 'packeta' ),
+						...Plugin::createLinkParts( $this->optionsPage->createUrl() )
+					),
 					'noActiveCountry'          => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Now you do not send parcels to any country via Packeta. The settings can be made %1$shere%2$s.', 'packeta' ),
