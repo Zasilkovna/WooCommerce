@@ -94,6 +94,7 @@ class Builder {
 		}
 
 		$order->setDeliveryAddress( $address );
+		$order->setCustomNumber( $wcOrder->get_order_number() );
 
 		// Shipping address phone is optional.
 		$order->setPhone( $orderData['billing']['phone'] );
