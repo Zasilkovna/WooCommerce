@@ -273,9 +273,9 @@ class GridExtender {
 						'restNonce'       => wp_create_nonce( 'wp_rest' ),
 						'printLink'       => $printLink,
 						'translations'    => [
-							'printLabel'      => __( 'Print label', 'packeta' ),
+							'printLabel'              => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo' => __( 'Set additional packet information', 'packeta' ),
-							'submitToPacketa' => __( 'Submit to packeta', 'packeta' ),
+							'submitToPacketa'         => __( 'Submit to packeta', 'packeta' ),
 						],
 					]
 				);
