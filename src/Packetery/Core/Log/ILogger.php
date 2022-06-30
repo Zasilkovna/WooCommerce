@@ -38,7 +38,7 @@ interface ILogger {
 	 *
 	 * @return iterable
 	 */
-	public function getRecords( $orderId, array $sorting = [], int $limit ): iterable;
+	public function getRecords( $orderId, array $sorting = [], int $limit = 100 ): iterable;
 
 	/**
 	 * Counts records.

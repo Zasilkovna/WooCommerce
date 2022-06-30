@@ -70,7 +70,7 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 * @return iterable|Record[]
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function getRecords( $orderId, array $sorting = [], int $limit ): iterable {
+	public function getRecords( $orderId, array $sorting = [], int $limit = 100 ): iterable {
 		$arguments = [
 			'orderby' => $sorting,
 			'limit'   => $limit,
