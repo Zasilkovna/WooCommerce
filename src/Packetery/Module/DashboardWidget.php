@@ -153,34 +153,34 @@ class DashboardWidget {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/dashboard-widget.latte',
 			[
-				'activeCountries'      => $activeCountries,
-				'isCodSettingNeeded'   => $isCodSettingNeeded,
-				'isOptionsFormValid'   => $this->optionsPage->create_form()->isValid(),
-				'hasExternalCarrier'   => $this->carrierRepository->hasAnyActiveFeedCarrier(),
-				'hasPacketaShipping'   => $this->isPacketaShippingMethodActive(),
-				'translations'         => [
-					'activeCountriesNotice'    => __( 'You can now send goods to the following countries via Packeta', 'packeta' ),
-					'noGlobalSettings'         => sprintf(
+				'activeCountries'    => $activeCountries,
+				'isCodSettingNeeded' => $isCodSettingNeeded,
+				'isOptionsFormValid' => $this->optionsPage->create_form()->isValid(),
+				'hasExternalCarrier' => $this->carrierRepository->hasAnyActiveFeedCarrier(),
+				'hasPacketaShipping' => $this->isPacketaShippingMethodActive(),
+				'translations'       => [
+					'activeCountriesNotice'  => __( 'You have set up Packeta carriers for the following countries', 'packeta' ),
+					'noGlobalSettings'       => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Global plugin settings have not been made, you can make the settings %1$shere%2$s.', 'packeta' ),
 						...Plugin::createLinkParts( $this->optionsPage->createUrl() )
 					),
-					'noActiveCountry'          => sprintf(
+					'noActiveCountry'        => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Now you do not send parcels to any country via Packeta. The settings can be made %1$shere%2$s.', 'packeta' ),
 						...Plugin::createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
-					'noCodPaymentConfigured'   => sprintf(
+					'noCodPaymentConfigured' => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No COD payment configured. The settings can be made %1$shere%2$s.', 'packeta' ),
 						...Plugin::createLinkParts( $this->optionsPage->createUrl() )
 					),
-					'noExternalCarrier'        => sprintf(
+					'noExternalCarrier'      => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No external carrier was found. Carriers can be downloaded %1$shere%2$s.', 'packeta' ),
 						...Plugin::createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
-					'noPacketaShipping'        => sprintf(
+					'noPacketaShipping'      => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No Packeta shipping method was configured. Configure shipping zone with Packeta shipping method %1$shere%2$s.', 'packeta' ),
 						...Plugin::createLinkParts(
