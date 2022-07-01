@@ -20,6 +20,7 @@ use Packetery\Module\Plugin;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http;
+use Packetery\Module;
 
 /**
  * Class LabelPrint.
@@ -89,16 +90,24 @@ class LabelPrint {
 	private $orderRepository;
 
 	/**
+	 * Log page.
+	 *
+	 * @var Module\Log\Page
+	 */
+	private $logPage;
+
+	/**
 	 * LabelPrint constructor.
 	 *
-	 * @param Engine         $latteEngine     Latte Engine.
-	 * @param Provider       $optionsProvider Options provider.
-	 * @param FormFactory    $formFactory     Form factory.
-	 * @param Http\Request   $httpRequest     Http Request.
-	 * @param Client         $soapApiClient   SOAP API Client.
-	 * @param MessageManager $messageManager  Message Manager.
-	 * @param Log\ILogger    $logger          Logger.
-	 * @param Repository     $orderRepository Order repository.
+	 * @param Engine          $latteEngine     Latte Engine.
+	 * @param Provider        $optionsProvider Options provider.
+	 * @param FormFactory     $formFactory     Form factory.
+	 * @param Http\Request    $httpRequest     Http Request.
+	 * @param Client          $soapApiClient   SOAP API Client.
+	 * @param MessageManager  $messageManager  Message Manager.
+	 * @param Log\ILogger     $logger          Logger.
+	 * @param Repository      $orderRepository Order repository.
+	 * @param Module\Log\Page $logPage         Log page.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -108,7 +117,8 @@ class LabelPrint {
 		Client $soapApiClient,
 		MessageManager $messageManager,
 		Log\ILogger $logger,
-		Repository $orderRepository
+		Repository $orderRepository,
+		Module\Log\Page $logPage
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
@@ -118,6 +128,7 @@ class LabelPrint {
 		$this->messageManager  = $messageManager;
 		$this->logger          = $logger;
 		$this->orderRepository = $orderRepository;
+		$this->logPage         = $logPage;
 	}
 
 	/**
@@ -319,8 +330,9 @@ class LabelPrint {
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 
 		foreach ( $packetIds as $orderId => $packetId ) {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_LABEL_PRINT;
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_LABEL_PRINT;
+			$record->orderId = $orderId;
 
 			if ( ! $response->hasFault() ) {
 				$order = $this->orderRepository->getById( $orderId );
@@ -366,8 +378,9 @@ class LabelPrint {
 		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 
 		foreach ( $packetIdsWithCourierNumbers as $orderId => $pairItem ) {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_CARRIER_LABEL_PRINT;
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_CARRIER_LABEL_PRINT;
+			$record->orderId = $orderId;
 
 			if ( ! $response->hasFault() ) {
 				$order = $this->orderRepository->getById( $orderId );
@@ -453,14 +466,15 @@ class LabelPrint {
 					return [];
 				}
 
-				$record         = new Log\Record();
-				$record->action = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
-				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Carrier number could not be retrieved.', 'packeta' );
-				$record->params = [
+				$record          = new Log\Record();
+				$record->action  = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
+				$record->status  = Log\Record::STATUS_ERROR;
+				$record->title   = __( 'Carrier number could not be retrieved.', 'packeta' );
+				$record->params  = [
 					'packetId'     => $request->getPacketId(),
 					'errorMessage' => $response->getFaultString(),
 				];
+				$record->orderId = $orderId;
 				$this->logger->add( $record );
 				continue;
 			}

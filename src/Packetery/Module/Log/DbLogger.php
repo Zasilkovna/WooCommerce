@@ -63,16 +63,22 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	/**
 	 * Gets records.
 	 *
+	 * @param mixed $orderId Order ID.
 	 * @param array $sorting Sorting config.
+	 * @param int   $limit   Limit.
 	 *
 	 * @return iterable|Record[]
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function getRecords( array $sorting = [] ): iterable {
+	public function getRecords( $orderId, array $sorting = [], int $limit = 100 ): iterable {
 		$arguments = [
 			'orderby' => $sorting,
-			'limit'   => 100,
+			'limit'   => $limit,
 		];
+
+		if ( is_numeric( $orderId ) ) {
+			$arguments['order_id'] = $orderId;
+		}
 
 		$logs = $this->logRepository->find( $arguments );
 		if ( ! $logs ) {
@@ -80,6 +86,23 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 		}
 
 		return $logs;
+	}
+
+	/**
+	 * Counts records.
+	 *
+	 * @param int|null $orderId Order ID.
+	 *
+	 * @return int
+	 */
+	public function countRecords( $orderId ): int {
+		if ( is_numeric( $orderId ) ) {
+			return $this->logRepository->countByOrderId( (int) $orderId );
+		}
+
+		if ( null === $orderId ) {
+			return $this->logRepository->countAll();
+		}
 	}
 
 	/**

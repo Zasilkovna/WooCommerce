@@ -78,12 +78,24 @@ class MessageManager {
 	 * @param string $context  Message context.
 	 */
 	public function flash_message( string $message, string $type = self::TYPE_SUCCESS, string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
-		$message          = [
+		$message = [
 			'type'     => $type,
 			'message'  => $message,
 			'renderer' => $renderer,
 			'context'  => $context,
 		];
+
+		$this->addMessage( $message );
+	}
+
+	/**
+	 * Adds message.
+	 *
+	 * @param array $message Message.
+	 *
+	 * @return void
+	 */
+	private function addMessage( array $message ): void {
 		$this->messages[] = $message;
 
 		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );

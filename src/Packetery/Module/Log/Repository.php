@@ -37,6 +37,30 @@ class Repository {
 	}
 
 	/**
+	 * Counts records.
+	 *
+	 * @param int $orderId Order ID.
+	 *
+	 * @return int
+	 */
+	public function countByOrderId( int $orderId ): int {
+		$wpdb = $this->wpdb;
+
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . $wpdb->packetery_log . '` WHERE `order_id` = %d', $orderId ) );
+	}
+
+	/**
+	 * Counts records.
+	 *
+	 * @return int
+	 */
+	public function countAll(): int {
+		$wpdb = $this->wpdb;
+
+		return (int) $wpdb->get_var( 'SELECT COUNT(*) FROM `' . $wpdb->packetery_log . '`' );
+	}
+
+	/**
 	 * Finds logs.
 	 *
 	 * @param array $arguments Search arguments.
@@ -46,6 +70,7 @@ class Repository {
 	 */
 	public function find( array $arguments ): iterable {
 		$wpdb      = $this->wpdb;
+		$orderId   = $arguments['order_id'] ?? null;
 		$orderBy   = $arguments['orderby'] ?? [];
 		$limit     = $arguments['limit'] ?? null;
 		$dateQuery = $arguments['date_query'] ?? [];
@@ -74,6 +99,10 @@ class Repository {
 			if ( isset( $dateQueryItem['after'] ) ) {
 				$where[] = $wpdb->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
 			}
+		}
+
+		if ( is_numeric( $orderId ) ) {
+			$where[] = $wpdb->prepare( '`order_id` = %d', $orderId );
 		}
 
 		$whereClause = '';
@@ -164,6 +193,7 @@ class Repository {
 			'
 			CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_log . "` (
 				`id` INT(11) NOT NULL AUTO_INCREMENT,
+				`order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 				`title` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
 				`params` TEXT NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
 				`status` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
@@ -175,6 +205,16 @@ class Repository {
 			ENGINE=InnoDB
 		"
 		);
+	}
+
+	/**
+	 * Adds order id column.
+	 *
+	 * @return void
+	 */
+	public function addOrderIdColumn(): void {
+		$wpdb = $this->wpdb;
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_log . '` ADD COLUMN `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `id`' );
 	}
 
 	/**
@@ -208,13 +248,19 @@ class Repository {
 			$paramsString = wp_json_encode( $record->params );
 		}
 
+		$orderId = $record->orderId;
+		if ( is_numeric( $orderId ) ) {
+			$orderId = (int) $orderId;
+		}
+
 		$data = [
-			'id'     => $record->id,
-			'title'  => ( $record->title ?? '' ),
-			'status' => ( $record->status ?? '' ),
-			'action' => ( $record->action ?? '' ),
-			'params' => $paramsString,
-			'date'   => $dateString,
+			'id'       => $record->id,
+			'order_id' => $orderId,
+			'title'    => ( $record->title ?? '' ),
+			'status'   => ( $record->status ?? '' ),
+			'action'   => ( $record->action ?? '' ),
+			'params'   => $paramsString,
+			'date'     => $dateString,
 		];
 
 		$this->wpdb->_insert_replace_helper( $this->wpdb->packetery_log, $data, null, 'REPLACE' );

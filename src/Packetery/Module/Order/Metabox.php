@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Module\Plugin;
@@ -89,6 +90,13 @@ class Metabox {
 	private $orderRepository;
 
 	/**
+	 * Log page.
+	 *
+	 * @var Log\Page
+	 */
+	private $logPage;
+
+	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine           $latte_engine    PacketeryLatte engine.
@@ -98,6 +106,7 @@ class Metabox {
 	 * @param Options\Provider $optionsProvider Options provider.
 	 * @param FormFactory      $formFactory     Form factory.
 	 * @param Repository       $orderRepository Order repository.
+	 * @param Log\Page         $logPage         Log page.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -106,7 +115,8 @@ class Metabox {
 		Request $request,
 		Options\Provider $optionsProvider,
 		FormFactory $formFactory,
-		Repository $orderRepository
+		Repository $orderRepository,
+		Log\Page $logPage
 	) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
@@ -115,6 +125,7 @@ class Metabox {
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
 		$this->orderRepository = $orderRepository;
+		$this->logPage         = $logPage;
 	}
 
 	/**
@@ -192,14 +203,21 @@ class Metabox {
 		}
 		$packetId = $order->getPacketId();
 
+		$showLogsLink = null;
+		if ( $this->logPage->hasAnyRows( (int) $order->getNumber() ) ) {
+			$showLogsLink = $this->logPage->createLogListUrl( (int) $order->getNumber() );
+		}
+
 		if ( $packetId ) {
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				[
 					'packet_id'           => $packetId,
 					'packet_tracking_url' => $this->helper->get_tracking_url( $packetId ),
+					'showLogsLink'        => $showLogsLink,
 					'translations'        => [
 						'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
+						'showLogs'             => __( 'Show logs', 'packeta' ),
 					],
 				]
 			);
@@ -242,6 +260,10 @@ class Metabox {
 				'order'          => $order,
 				'widgetSettings' => $widgetSettings,
 				'logo'           => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'showLogsLink'   => $showLogsLink,
+				'translations'   => [
+					'showLogs' => __( 'Show logs', 'packeta' ),
+				],
 			]
 		);
 	}

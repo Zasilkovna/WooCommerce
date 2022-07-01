@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Module\Log;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use WC_Order;
@@ -41,16 +42,25 @@ class BulkActions {
 	private $packetSubmitter;
 
 	/**
+	 * Log page.
+	 *
+	 * @var Log\Page
+	 */
+	private $logPage;
+
+	/**
 	 * BulkActions constructor.
 	 *
-	 * @param Engine          $latteEngine Latte engine.
-	 * @param Request         $httpRequest HTTP request.
+	 * @param Engine          $latteEngine     Latte engine.
+	 * @param Request         $httpRequest     HTTP request.
 	 * @param PacketSubmitter $packetSubmitter Order API Client.
+	 * @param Log\Page        $logPage         Log page.
 	 */
-	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter ) {
+	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter, Log\Page $logPage ) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
 		$this->packetSubmitter = $packetSubmitter;
+		$this->logPage         = $logPage;
 	}
 
 	/**
@@ -108,6 +118,7 @@ class BulkActions {
 				'success' => 0,
 				'ignored' => 0,
 				'errors'  => 0,
+				'logs'    => 0,
 			];
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
@@ -118,6 +129,10 @@ class BulkActions {
 
 			$queryArgs                  = $resultsCounter;
 			$queryArgs['submit_to_api'] = true;
+
+			if ( count( $postIds ) === 1 ) {
+				$queryArgs['packetery_order_id'] = array_pop( $postIds );
+			}
 
 			return add_query_arg( $queryArgs, $redirectTo );
 		}
@@ -134,22 +149,61 @@ class BulkActions {
 			return;
 		}
 
+		$orderId = ( $get['packetery_order_id'] ?? null );
+		if ( is_numeric( $orderId ) ) {
+			$orderId = (int) $orderId;
+		} else {
+			$orderId = null;
+		}
+
 		$success = null;
 		if ( is_numeric( $get['success'] ) && $get['success'] > 0 ) {
-			$success = __( 'Shipments were submitted successfully.', 'packeta' );
+			if ( $get['logs'] > 0 ) {
+				$success = sprintf(
+					// translators: 1: link start 2: link end.
+					esc_html__( 'Shipments were submitted successfully. %1$sShow logs%2$s', 'packeta' ),
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
+					'</a>'
+				);
+			} else {
+				$success = esc_html__( 'Shipments were submitted successfully.', 'packeta' );
+			}
 		}
 		$ignored = null;
 		if ( is_numeric( $get['ignored'] ) && $get['ignored'] > 0 ) {
-			$ignored = sprintf(
-			// translators: %s is count.
-				__( 'Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders).', 'packeta' ),
-				$get['ignored']
-			);
+			if ( $get['logs'] > 0 ) {
+				$ignored = sprintf(
+					// translators: 1: total number of shipments 2: link start 3: link end.
+					esc_html__( 'Some shipments (%1$s in total) were not submitted (these were submitted already or are not Packeta orders). %2$sShow logs%3$s', 'packeta' ),
+					$get['ignored'],
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
+					'</a>'
+				);
+			} else {
+				$ignored = sprintf(
+					// translators: %s is count.
+					esc_html__( 'Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders).', 'packeta' ),
+					$get['ignored']
+				);
+			}
 		}
 		$errors = null;
 		if ( is_numeric( $get['errors'] ) && $get['errors'] > 0 ) {
-			// translators: %s is count.
-			$errors = sprintf( __( 'Some shipments (%s in total) failed to be submitted to Packeta.', 'packeta' ), $get['errors'] );
+			if ( $get['logs'] > 0 ) {
+				$errors = sprintf(
+					// translators: 1: total number of shipments 2: link start 3: link end.
+					esc_html__( 'Some shipments (%1$s in total) failed to be submitted to Packeta. %2$sShow logs%3$s', 'packeta' ),
+					$get['errors'],
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
+					'</a>'
+				);
+			} else {
+				$errors = sprintf(
+					// translators: %s is count.
+					esc_html__( 'Some shipments (%s in total) failed to be submitted to Packeta.', 'packeta' ),
+					$get['errors']
+				);
+			}
 		} elseif ( isset( $get['errors'] ) ) {
 			$errors = $get['errors'];
 		}

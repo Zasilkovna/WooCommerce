@@ -13,6 +13,7 @@ namespace Packetery\Module\Log;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use PacketeryLatte\Engine;
+use PacketeryNette\Http\Request;
 
 /**
  * Class Page
@@ -22,6 +23,10 @@ use PacketeryLatte\Engine;
 class Page {
 
 	public const SLUG = 'packeta-logs';
+
+	public const PARAM_ORDER_ID = 'order_id';
+
+	private const MAX_ROWS = 500;
 
 	/**
 	 * Engine.
@@ -38,14 +43,23 @@ class Page {
 	private $logger;
 
 	/**
+	 * HTTP request.
+	 *
+	 * @var Request
+	 */
+	private $request;
+
+	/**
 	 * Page constructor.
 	 *
 	 * @param Engine  $latteEngine Engine.
 	 * @param ILogger $manager     Manager.
+	 * @param Request $request     Request.
 	 */
-	public function __construct( Engine $latteEngine, ILogger $manager ) {
+	public function __construct( Engine $latteEngine, ILogger $manager, Request $request ) {
 		$this->latteEngine = $latteEngine;
 		$this->logger      = $manager;
+		$this->request     = $request;
 	}
 
 	/**
@@ -83,12 +97,15 @@ class Page {
 			Record::STATUS_SUCCESS => __( 'Success', 'packeta' ),
 		];
 
-		$rows = $this->logger->getRecords( [ 'date' => 'DESC' ] );
+		$orderId    = $this->getOrderId();
+		$rows       = $this->logger->getRecords( $orderId, [ 'date' => 'DESC' ], self::MAX_ROWS );
+		$totalCount = $this->countRows( $orderId );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/log/page.latte',
 			[
 				'rows'               => $rows,
+				'maxRowsExceeded'    => $totalCount > self::MAX_ROWS,
 				'translatedActions'  => $translatedActions,
 				'translatedStatuses' => $translatedStatuses,
 				'translations'       => [
@@ -99,8 +116,68 @@ class Page {
 					'action'         => __( 'Action', 'packeta' ),
 					'note'           => __( 'Note', 'packeta' ),
 					'logListIsEmpty' => __( 'API log is empty.', 'packeta' ),
+					// translators: 1: Total row count 2: Displayed row count.
+					'moreRowsNotice' => sprintf( __( 'Total row count: %1$d. Number of displayed rows: %2$d.', 'packeta' ), $totalCount, self::MAX_ROWS ),
 				],
 			]
+		);
+	}
+
+	/**
+	 * Returns order ID.
+	 *
+	 * @return int|null
+	 */
+	private function getOrderId(): ?int {
+		$orderId = $this->request->getQuery( self::PARAM_ORDER_ID );
+		if ( is_numeric( $orderId ) ) {
+			return (int) $orderId;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Tells if log page displays at least one row.
+	 *
+	 * @param int|null $orderId Order ID.
+	 *
+	 * @return bool
+	 */
+	public function hasAnyRows( ?int $orderId ): bool {
+		return $this->countRows( $orderId ) > 0;
+	}
+
+	/**
+	 * Counts rows.
+	 *
+	 * @param int|null $orderId Order ID.
+	 *
+	 * @return int
+	 */
+	private function countRows( ?int $orderId ): int {
+		return $this->logger->countRecords( $orderId );
+	}
+
+	/**
+	 * Creates link to log page.
+	 *
+	 * @param int|null $orderId Order ID.
+	 *
+	 * @return string
+	 */
+	public function createLogListUrl( ?int $orderId = null ): string {
+		$params = [
+			'page' => self::SLUG,
+		];
+
+		if ( null !== $orderId ) {
+			$params[ self::PARAM_ORDER_ID ] = $orderId;
+		}
+
+		return add_query_arg(
+			$params,
+			admin_url( 'admin.php' )
 		);
 	}
 }

@@ -2,4 +2,7 @@
     <li>
         {$translations['packetTrackingOnline']}: <a href="{$packet_tracking_url}" target="_blank">Z{$packet_id}</a>
     </li>
+    <li n:if="$showLogsLink">
+        <a class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
+    </li>
 </ul>

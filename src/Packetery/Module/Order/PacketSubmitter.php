@@ -97,16 +97,18 @@ class PacketSubmitter {
 			try {
 				$createPacketRequest = $this->preparePacketRequest( $commonEntity );
 			} catch ( InvalidRequestException $e ) {
-				$record         = new Log\Record();
-				$record->action = Log\Record::ACTION_PACKET_SENDING;
-				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Packet could not be created.', 'packeta' );
-				$record->params = [
+				$record          = new Log\Record();
+				$record->action  = Log\Record::ACTION_PACKET_SENDING;
+				$record->status  = Log\Record::STATUS_ERROR;
+				$record->title   = __( 'Packet could not be created.', 'packeta' );
+				$record->params  = [
 					'orderId'      => $orderData['id'],
 					'errorMessage' => $e->getMessage(),
 				];
+				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
+				$resultsCounter['logs'] ++;
 				$resultsCounter['errors'] ++;
 
 				return;
@@ -114,16 +116,18 @@ class PacketSubmitter {
 
 			$response = $this->soapApiClient->createPacket( $createPacketRequest );
 			if ( $response->hasFault() ) {
-				$record         = new Log\Record();
-				$record->action = Log\Record::ACTION_PACKET_SENDING;
-				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Packet could not be created.', 'packeta' );
-				$record->params = [
+				$record          = new Log\Record();
+				$record->action  = Log\Record::ACTION_PACKET_SENDING;
+				$record->status  = Log\Record::STATUS_ERROR;
+				$record->title   = __( 'Packet could not be created.', 'packeta' );
+				$record->params  = [
 					'request'      => $createPacketRequest->getSubmittableData(),
 					'errorMessage' => $response->getErrorsAsString(),
 				];
+				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
+				$resultsCounter['logs'] ++;
 				$resultsCounter['errors'] ++;
 			} else {
 				$commonEntity->setIsExported( true );
@@ -132,15 +136,18 @@ class PacketSubmitter {
 
 				$resultsCounter['success'] ++;
 
-				$record         = new Log\Record();
-				$record->action = Log\Record::ACTION_PACKET_SENDING;
-				$record->status = Log\Record::STATUS_SUCCESS;
-				$record->title  = __( 'Packet was sucessfully created.', 'packeta' );
-				$record->params = [
+				$record          = new Log\Record();
+				$record->action  = Log\Record::ACTION_PACKET_SENDING;
+				$record->status  = Log\Record::STATUS_SUCCESS;
+				$record->title   = __( 'Packet was sucessfully created.', 'packeta' );
+				$record->params  = [
 					'request'  => $createPacketRequest->getSubmittableData(),
 					'packetId' => $response->getId(),
 				];
+				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
+
+				$resultsCounter['logs'] ++;
 			}
 		} else {
 			$resultsCounter['ignored'] ++;
