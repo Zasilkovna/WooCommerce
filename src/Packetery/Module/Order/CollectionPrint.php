@@ -206,7 +206,7 @@ class CollectionPrint {
 			\Packetery\Module\Options\Page::SLUG,
 			__( 'Print AWB', 'packeta' ),
 			__( 'Print AWB', 'packeta' ),
-			'manage_options',
+			'view_woocommerce_reports',
 			self::PAGE_SLUG,
 			[
 				$this,

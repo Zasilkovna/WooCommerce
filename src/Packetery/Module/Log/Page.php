@@ -70,7 +70,7 @@ class Page {
 			\Packetery\Module\Options\Page::SLUG,
 			__( 'Log', 'packeta' ),
 			__( 'Log', 'packeta' ),
-			'manage_options',
+			'view_woocommerce_reports',
 			self::SLUG,
 			[ $this, 'render' ]
 		);

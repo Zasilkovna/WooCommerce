@@ -299,7 +299,7 @@ class LabelPrint {
 			\Packetery\Module\Options\Page::SLUG,
 			__( 'Print labels', 'packeta' ),
 			__( 'Print labels', 'packeta' ),
-			'manage_options',
+			'view_woocommerce_reports',
 			self::MENU_SLUG,
 			array(
 				$this,
