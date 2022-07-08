@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use PacketeryTracy\Debugger;
 
 /**
  * Class Checkout
@@ -632,13 +633,16 @@ class Checkout {
 
 		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
 		$chosenCarrier  = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenShippingMethod ) );
+		$maxTaxClass    = $this->getTaxClassWithMaxRate();
 
 		if ( $chosenCarrier->supportsAgeVerification() && null !== $carrierOptions->getAgeVerificationFee() && $this->isAgeVerification18PlusRequired() ) {
 			WC()->cart->fees_api()->add_fee(
 				[
-					'id'     => 'packetery-age-verification-fee',
-					'name'   => __( 'Age verification fee', 'packeta' ),
-					'amount' => $carrierOptions->getAgeVerificationFee(),
+					'id'        => 'packetery-age-verification-fee',
+					'name'      => __( 'Age verification fee', 'packeta' ),
+					'amount'    => $carrierOptions->getAgeVerificationFee(),
+					'taxable'   => ! ( false === $maxTaxClass ),
+					'tax_class' => $maxTaxClass,
 				]
 			);
 		}
@@ -664,9 +668,11 @@ class Checkout {
 		}
 
 		$fee = [
-			'id'     => 'packetery-cod-surcharge',
-			'name'   => __( 'COD surcharge', 'packeta' ),
-			'amount' => $applicableSurcharge,
+			'id'        => 'packetery-cod-surcharge',
+			'name'      => __( 'COD surcharge', 'packeta' ),
+			'amount'    => $applicableSurcharge,
+			'taxable'   => ! ( false === $maxTaxClass ),
+			'tax_class' => $maxTaxClass,
 		];
 
 		WC()->cart->fees_api()->add_fee( $fee );
@@ -900,5 +906,50 @@ class Checkout {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Returns tax_class with the highest tax_rate of cart products, false if no product is taxable.
+	 *
+	 * @return false|string
+	 */
+	private function getTaxClassWithMaxRate() {
+		$products   = WC()->cart->get_cart();
+		$taxClasses = [];
+
+		foreach ( $products as $cartProduct ) {
+			$product = WC()->product_factory->get_product( $cartProduct['product_id'] );
+			if ( $product->is_taxable() ) {
+				$taxClasses[] = $product->get_tax_class();
+			}
+		}
+
+		if ( empty( $taxClasses ) ) {
+			return false;
+		}
+
+		$taxClasses = array_unique( $taxClasses );
+		if ( 1 === count( $taxClasses ) ) {
+			return $taxClasses[0];
+		}
+
+		$taxRates = [];
+		$customer = WC()->cart->get_customer();
+		foreach ( $taxClasses as $taxClass ) {
+			$taxRates[ $taxClass ] = \WC_Tax::get_rates( $taxClass, $customer );
+		}
+
+		$maxRate        = 0;
+		$resultTaxClass = false;
+		foreach ( $taxRates as $taxClassName => $taxClassRates ) {
+			foreach ( $taxClassRates as $rateId => $rate ) {
+				if ( $rate['rate'] > $maxRate ) {
+					$maxRate        = $rate['rate'];
+					$resultTaxClass = $taxClassName;
+				}
+			}
+		}
+
+		return $resultTaxClass;
 	}
 }
