@@ -13,7 +13,6 @@ use Packetery\Core;
 use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
-use PacketeryTracy\Debugger;
 
 /**
  * Class Checkout
