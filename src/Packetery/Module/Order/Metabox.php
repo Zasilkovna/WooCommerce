@@ -239,9 +239,9 @@ class Metabox {
 					'showLogsLink'        => $showLogsLink,
 					'translations'        => [
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
-						'showLogs'             => __( 'Show logs', 'packeta' ),
+						'showLogs'                  => __( 'Show logs', 'packeta' ),
 						// translators: %s: Order number.
-						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getNumber() ),
+						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 						// translators: %s: Packet number.
 						'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
 						'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
