@@ -157,9 +157,13 @@ class LabelPrint {
 
 		$count           = 0;
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$orderIds        = $this->getPacketIdsFromTransient( $isCarrierLabels );
-		if ( $orderIds ) {
-			$count = count( $orderIds );
+
+		$orderIdsTransient = $this->getOrderIdsTransient();
+		if ( $orderIdsTransient ) {
+			$orderIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
+			$count    = count( $orderIds );
+		} else {
+			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
 		}
 
 		$this->latteEngine->render(
@@ -209,13 +213,12 @@ class LabelPrint {
 			$fallbackToPacketaLabel = true;
 			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
-			if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
-				$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
-
+			$orderIdsTransient = $this->getOrderIdsTransient();
+			if ( ! $orderIdsTransient ) {
 				return;
 			}
 
-			$packetIds = $this->getPacketIdsFromTransient( $isCarrierLabels );
+			$packetIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 		}
 		if ( ! $packetIds ) {
 			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
@@ -427,12 +430,12 @@ class LabelPrint {
 	/**
 	 * Gets saved packet ids.
 	 *
-	 * @param bool $isCarrierLabels Are carrier labels requested?.
+	 * @param array $orderIds Order IDs from transient.
+	 * @param bool  $isCarrierLabels Are carrier labels requested?.
 	 *
 	 * @return string[]
 	 */
-	private function getPacketIdsFromTransient( bool $isCarrierLabels ): array {
-		$orderIds  = get_transient( self::getOrderIdsTransientName() );
+	private function getPacketIdsFromTransient( array $orderIds, bool $isCarrierLabels ): array {
 		$orders    = $this->orderRepository->getByIds( $orderIds );
 		$packetIds = [];
 		foreach ( $orders as $order ) {
@@ -445,6 +448,20 @@ class LabelPrint {
 		}
 
 		return $packetIds;
+	}
+
+	/**
+	 * Gets order IDs transient.
+	 *
+	 * @return array|null
+	 */
+	private function getOrderIdsTransient(): ?array {
+		$orderIds = get_transient( self::getOrderIdsTransientName() );
+		if ( is_array( $orderIds ) ) {
+			return $orderIds;
+		}
+
+		return null;
 	}
 
 	/**
