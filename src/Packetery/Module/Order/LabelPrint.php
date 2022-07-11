@@ -187,8 +187,8 @@ class LabelPrint {
 	 * @return string
 	 */
 	private function getLabelFormat(): string {
-		$packetaLabelFormat = ( $this->optionsProvider->get_packeta_label_format() ?? '' );
-		$carrierLabelFormat = ( $this->optionsProvider->get_carrier_label_format() ?? '' );
+		$packetaLabelFormat = $this->optionsProvider->get_packeta_label_format();
+		$carrierLabelFormat = $this->optionsProvider->get_carrier_label_format();
 
 		return ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS ? $carrierLabelFormat : $packetaLabelFormat );
 	}

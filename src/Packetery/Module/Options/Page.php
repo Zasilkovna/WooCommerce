@@ -27,9 +27,6 @@ class Page {
 	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
 	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
 
-	private const DEFAULT_VALUE_PACKETA_LABEL_FORMAT = 'A6 on A4';
-	private const DEFAULT_VALUE_CARRIER_LABEL_FORMAT = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
 	public const SLUG = 'packeta-options';
@@ -135,16 +132,6 @@ class Page {
 	}
 
 	/**
-	 * Sets default values.
-	 */
-	public function setDefaultValues(): void {
-		$value = get_option( self::FORM_FIELDS_CONTAINER );
-		$value[ self::FORM_FIELD_PACKETA_LABEL_FORMAT ] = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-		$value[ self::FORM_FIELD_CARRIER_LABEL_FORMAT ] = self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT;
-		update_option( self::FORM_FIELDS_CONTAINER, $value );
-	}
-
-	/**
 	 * Creates settings form.
 	 *
 	 * @return Form
@@ -165,14 +152,14 @@ class Page {
 			self::FORM_FIELD_PACKETA_LABEL_FORMAT,
 			__( 'Packeta Label Format', 'packeta' ),
 			$packetaLabelFormats
-		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT );
+		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_PACKETA_LABEL_FORMAT );
 
 		$carrierLabelFormats = $this->optionsProvider->getCarrierLabelFormat();
 		$container->addSelect(
 			self::FORM_FIELD_CARRIER_LABEL_FORMAT,
 			__( 'Carrier Label Format', 'packeta' ),
 			$carrierLabelFormats
-		)->checkDefaultValue( false )->setDefaultValue( self::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
+		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
 		$gateways        = $this->getAvailablePaymentGateways();
 		$enabledGateways = [];

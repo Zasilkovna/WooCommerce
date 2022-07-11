@@ -338,8 +338,6 @@ class Plugin {
 		);
 		add_action( 'init', array( $this, 'init' ) );
 
-		register_activation_hook( $this->main_file_path, array( $this, 'activate' ) );
-
 		// TODO: deactivation_hook.
 		register_deactivation_hook(
 			$this->main_file_path,
@@ -429,7 +427,7 @@ class Plugin {
 	 * @return bool
 	 */
 	private static function isWooCommercePluginActive(): bool {
-		return in_array( 'woocommerce/woocommerce.php', (array) get_option( 'active_plugins', [] ), true );
+		return Helper::isPluginActive( 'woocommerce/woocommerce.php' );
 	}
 
 	/**
@@ -720,52 +718,6 @@ class Plugin {
 			]
 		);
 		add_filter( 'plugin_row_meta', [ $this, 'addPluginRowMeta' ], 10, 2 );
-	}
-
-	/**
-	 * Activates plugin.
-	 */
-	public function activate(): void {
-		global $wpdb;
-
-		$this->logRepository->createTable();
-		if ( false === PACKETERY_DEBUG ) {
-			$this->options_page->setDefaultValues();
-		}
-
-		$this->init();
-
-		$createResult = $this->carrierRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
-
-		$createResult = $this->orderRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $wpdb->last_error;
-			$this->message_manager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database order table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
-
-		$this->upgrade->check();
 	}
 
 	/**
