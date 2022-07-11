@@ -189,7 +189,6 @@ class Upgrade {
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.3.3', '<' ) ) {
-			// TODO: Change version on feature release.
 			$this->orderRepository->addAdultContentColumn();
 			$this->orderRepository->addValueColumn();
 			$this->orderRepository->addCodColumn();
