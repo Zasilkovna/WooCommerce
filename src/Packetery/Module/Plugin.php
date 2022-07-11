@@ -20,6 +20,7 @@ use Packetery\Module\Order;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use WC_Email;
 use WC_Order;
 
 /**
@@ -348,7 +349,7 @@ class Plugin {
 
 		register_uninstall_hook( $this->main_file_path, array( __CLASS__, 'uninstall' ) );
 
-		add_action( 'woocommerce_email_footer', array( $this, 'render_email_footer' ) );
+		add_action( 'woocommerce_email_footer', [ $this, 'renderEmailFooter' ] );
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
 
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
@@ -524,10 +525,10 @@ class Plugin {
 	/**
 	 *  Renders email footer.
 	 *
-	 * @param \WC_Email|null $email Email data.
+	 * @param mixed $email Email data.
 	 */
-	public function render_email_footer( ?\WC_Email $email ): void {
-		if ( null === $email || ! $email->object instanceof \WC_Order ) {
+	public function renderEmailFooter( $email ): void {
+		if ( ! $email instanceof WC_Email || ! $email->object instanceof WC_Order ) {
 			return;
 		}
 
