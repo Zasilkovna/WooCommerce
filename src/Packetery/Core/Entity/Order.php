@@ -401,18 +401,18 @@ class Order {
 	/**
 	 * Sets value.
 	 *
-	 * @param float $value Value.
+	 * @param float|null $value Value.
 	 */
-	public function setValue( float $value ): void {
+	public function setValue( ?float $value ): void {
 		$this->value = $value;
 	}
 
 	/**
 	 * Sets COD.
 	 *
-	 * @param float $cod COD.
+	 * @param float|null $cod COD.
 	 */
-	public function setCod( float $cod ): void {
+	public function setCod( ?float $cod ): void {
 		$this->cod = $cod;
 	}
 
@@ -448,9 +448,9 @@ class Order {
 	/**
 	 * Sets adult content presence flag.
 	 *
-	 * @param bool $adultContent Adult content presence flag.
+	 * @param bool|null $adultContent Adult content presence flag.
 	 */
-	public function setAdultContent( bool $adultContent ): void {
+	public function setAdultContent( ?bool $adultContent ): void {
 		$this->adultContent = $adultContent;
 	}
 

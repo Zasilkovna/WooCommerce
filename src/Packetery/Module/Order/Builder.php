@@ -76,7 +76,11 @@ class Builder {
 			$order->setWeight( $calculatedWeight );
 		}
 		$order->setCalculatedWeight( $calculatedWeight );
-		$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
+
+		if ( null === $order->containsAdultContent() ) {
+			$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
+		}
+
 		$order->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
 
 		$orderData   = $wcOrder->get_data();
@@ -85,7 +89,10 @@ class Builder {
 		$order->setName( $contactInfo['first_name'] );
 		$order->setSurname( $contactInfo['last_name'] );
 		$order->setEshop( $this->optionsProvider->get_sender() );
-		$order->setValue( (float) $wcOrder->get_total( 'raw' ) );
+
+		if ( null === $order->getValue() ) {
+			$order->setValue( (float) $wcOrder->get_total( 'raw' ) );
+		}
 
 		$address = $order->getDeliveryAddress();
 		if ( null === $address ) {
@@ -108,7 +115,7 @@ class Builder {
 
 		$order->setEmail( $orderData['billing']['email'] );
 		$codMethod = $this->optionsProvider->getCodPaymentMethod();
-		if ( $orderData['payment_method'] === $codMethod ) {
+		if ( null === $order->getCod() && $orderData['payment_method'] === $codMethod ) {
 			$order->setCod( $order->getValue() );
 		}
 		$order->setSize( $order->getSize() );

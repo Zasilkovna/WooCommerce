@@ -28,10 +28,13 @@ use PacketeryNette\Http\Request;
  */
 class Metabox {
 
-	const FIELD_WEIGHT = 'packetery_weight';
-	const FIELD_WIDTH  = 'packetery_width';
-	const FIELD_LENGTH = 'packetery_length';
-	const FIELD_HEIGHT = 'packetery_height';
+	const FIELD_WEIGHT        = 'packetery_weight';
+	const FIELD_WIDTH         = 'packetery_width';
+	const FIELD_LENGTH        = 'packetery_length';
+	const FIELD_HEIGHT        = 'packetery_height';
+	const FIELD_ADULT_CONTENT = 'packetery_adult_content';
+	const FIELD_COD           = 'packetery_COD';
+	const FIELD_VALUE         = 'packetery_value';
 
 	/**
 	 * PacketeryLatte engine.
@@ -184,6 +187,14 @@ class Metabox {
 		$this->order_form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$this->order_form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
+							->setRequired( false );
+		$this->order_form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT );
+		$this->order_form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT );
 
 		foreach ( Checkout::$pickupPointAttrs as $attrs ) {
 			$this->order_form->addHidden( $attrs['name'] );
@@ -232,6 +243,9 @@ class Metabox {
 				self::FIELD_WIDTH               => $order->getWidth(),
 				self::FIELD_LENGTH              => $order->getLength(),
 				self::FIELD_HEIGHT              => $order->getHeight(),
+				self::FIELD_ADULT_CONTENT       => $order->containsAdultContent(),
+				self::FIELD_COD                 => $order->getCod(),
+				self::FIELD_VALUE               => $order->getValue(),
 			]
 		);
 
@@ -258,6 +272,7 @@ class Metabox {
 			[
 				'form'           => $this->order_form,
 				'order'          => $order,
+				'orderCurrency'  => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'widgetSettings' => $widgetSettings,
 				'logo'           => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'   => $showLogsLink,
@@ -353,6 +368,10 @@ class Metabox {
 					break;
 			}
 		}
+
+		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
+		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
+		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
 
 		$order->setSize( $orderSize );
 		Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
