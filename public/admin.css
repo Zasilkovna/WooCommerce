@@ -276,3 +276,15 @@ tbody .packetery-log-column-note {
 .js-surcharge-rules .packetery-input-with-unit input {
     width: 200px;
 }
+
+#packetery-tab .packetery-shipping-rate label {
+    width: auto;
+    float: none;
+    margin: auto;
+}
+
+#packetery-tab .packetery-shipping-rate td {
+    vertical-align: top;
+    padding: 9px;
+    padding-top: 0;
+}

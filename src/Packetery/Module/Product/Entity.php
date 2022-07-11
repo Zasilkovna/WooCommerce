@@ -17,7 +17,8 @@ namespace Packetery\Module\Product;
  */
 class Entity {
 
-	public const META_AGE_VERIFICATION_18_PLUS = 'packetery_age_verification_18_plus';
+	public const META_AGE_VERIFICATION_18_PLUS  = 'packetery_age_verification_18_plus';
+	public const META_DISALLOWED_SHIPPING_RATES = 'packetery_disallowed_shipping_rates';
 
 	/**
 	 * Product.
@@ -75,6 +76,29 @@ class Entity {
 	 */
 	public function isAgeVerification18PlusRequired(): bool {
 		return $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
+	}
+
+	/**
+	 * Disallowed carrier choices.
+	 *
+	 * @return array
+	 */
+	public function getDisallowedShippingRateChoices(): array {
+		$choices = $this->product->get_meta( self::META_DISALLOWED_SHIPPING_RATES );
+		if ( ! $choices ) {
+			return [];
+		}
+
+		return $choices;
+	}
+
+	/**
+	 * Disallowed carrier ids.
+	 *
+	 * @return array
+	 */
+	public function getDisallowedShippingRateIds(): array {
+		return array_keys( $this->getDisallowedShippingRateChoices() );
 	}
 
 	/**
