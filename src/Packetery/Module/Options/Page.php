@@ -172,7 +172,7 @@ class Page {
 			$enabledGateways
 		)->setPrompt( '--' )->checkDefaultValue( false );
 
-		$container->addText( 'packaging_weight', __( 'Packaging weight', 'packeta' ) . ' (kg)' )
+		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
 					->setRequired( true )
 					->addRule( Form::FLOAT )
 					->addRule( Form::MIN, null, 0 )
@@ -354,15 +354,6 @@ class Page {
 
 		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
 
-		$latteParams['senderDescription'] = sprintf(
-			/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
-			esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
-			'<strong>',
-			'</strong>',
-			'<a href="https://client.packeta.com/senders" target="_blank">',
-			'</a>'
-		);
-
 		$latteParams['exportLink'] = add_query_arg(
 			[
 				'page'   => self::SLUG,
@@ -414,6 +405,15 @@ class Page {
 			'exportPluginSettings'         => __( 'Export the plugin settings', 'packeta' ),
 			'settingsExportDatetime'       => __( 'Date and time of the last export of settings', 'packeta' ),
 			'settingsNotYetExported'       => __( 'The settings have not been exported yet.', 'packeta' ),
+			'senderDescription'            => sprintf(
+				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
+				esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
+				'<strong>',
+				'</strong>',
+				'<a href="https://client.packeta.com/senders" target="_blank">',
+				'</a>'
+			),
+			'packagingWeightDescription'   => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
