@@ -181,7 +181,7 @@ class Page {
 		// TODO: Packet status sync.
 
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packeta' ) )
-			->setRequired( false );
+					->setRequired( false );
 
 		$container->addSelect(
 			'checkout_widget_button_location',
@@ -191,6 +191,10 @@ class Page {
 				'after_transport_methods' => __( 'After transport methods', 'packeta' ),
 			]
 		);
+
+		$container->addCheckbox( 'force_packet_cancel', __( 'Force order cancellation', 'packeta' ) )
+					->setRequired( false )
+					->setDefaultValue( Provider::FORCE_PACKET_CANCEL_DEFAULT );
 
 		if ( $this->optionsProvider->has_any() ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array() );
@@ -270,6 +274,7 @@ class Page {
 		}
 
 		$this->validateSender( $options['sender'] );
+		$options['force_packet_cancel'] = (int) $form[ self::FORM_FIELDS_CONTAINER ]['force_packet_cancel']->getValue();
 
 		return $options;
 	}
@@ -384,8 +389,9 @@ class Page {
 			$latteParams['lastExport'] = $lastExport;
 		}
 
-		$latteParams['messages']     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
-		$latteParams['translations'] = [
+		$latteParams['forcePacketCancelDescription'] = __( 'Cancel the order even if the cancellation in the Packeta system will be unsuccessful', 'packeta' );
+		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		$latteParams['translations']                 = [
 			'packeta'                      => __( 'Packeta', 'packeta' ),
 			'options'                      => __( 'Options', 'packeta' ),
 			'general'                      => __( 'General', 'packeta' ),

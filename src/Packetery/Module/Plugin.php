@@ -30,9 +30,11 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION               = '1.3.2';
-	public const DOMAIN                = 'packeta';
-	public const MIN_LISTENER_PRIORITY = -9998;
+	public const VERSION                = '1.3.2';
+	public const DOMAIN                 = 'packeta';
+	public const MIN_LISTENER_PRIORITY  = - 9998;
+	public const PARAM_PACKETERY_ACTION = 'packetery_action';
+	public const PARAM_NONCE            = '_wpnonce';
 
 	/**
 	 * Options page.
@@ -224,6 +226,20 @@ class Plugin {
 	private $optionsProvider;
 
 	/**
+	 * Packet canceller.
+	 *
+	 * @var Order\PacketCanceller
+	 */
+	private $packetCanceller;
+
+	/**
+	 * Context resolver.
+	 *
+	 * @var ContextResolver
+	 */
+	private $contextResolver;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox            $order_metabox        Order metabox.
@@ -252,6 +268,8 @@ class Plugin {
 	 * @param Log\Repository           $logRepository        Log repository.
 	 * @param Options\Provider         $optionsProvider      Options provider.
 	 * @param CronService              $cronService          Cron service.
+	 * @param Order\PacketCanceller    $packetCanceller      Packet canceller.
+	 * @param ContextResolver          $contextResolver      Context resolver.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -279,7 +297,9 @@ class Plugin {
 		QueryProcessor $queryProcessor,
 		Log\Repository $logRepository,
 		Options\Provider $optionsProvider,
-		CronService $cronService
+		CronService $cronService,
+		Order\PacketCanceller $packetCanceller,
+		ContextResolver $contextResolver
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -308,6 +328,8 @@ class Plugin {
 		$this->logRepository        = $logRepository;
 		$this->optionsProvider      = $optionsProvider;
 		$this->cronService          = $cronService;
+		$this->packetCanceller      = $packetCanceller;
+		$this->contextResolver      = $contextResolver;
 	}
 
 	/**
@@ -364,6 +386,7 @@ class Plugin {
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
 		add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
+		add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
 		$this->orderModal->register();
 		$this->order_metabox->register();
 
@@ -393,6 +416,7 @@ class Plugin {
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
+		add_action( 'admin_init', [ $this->packetCanceller, 'processActions' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
@@ -573,6 +597,24 @@ class Plugin {
 	}
 
 	/**
+	 * Renders confirm modal template.
+	 */
+	public function renderConfirmModalTemplate(): void {
+		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
+			$this->latte_engine->render(
+				PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte',
+				[
+					'translations' => [
+						'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
+						'no'              => __( 'No', 'packeta' ),
+						'yes'             => __( 'Yes', 'packeta' ),
+					],
+				]
+			);
+		}
+	}
+
+	/**
 	 * Enqueues admin JS file.
 	 *
 	 * @param string $name     Name of script.
@@ -635,11 +677,9 @@ class Plugin {
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
-		global $pagenow, $typenow;
-
 		$page              = $this->request->getQuery( 'page' );
-		$isOrderGridPage   = $this->gridExtender->isOrderGridPage();
-		$isOrderDetailPage = 'post.php' === $pagenow && 'shop_order' === $typenow;
+		$isOrderGridPage   = $this->contextResolver->isOrderGridPage();
+		$isOrderDetailPage = $this->contextResolver->isOrderDetailPage();
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
@@ -661,6 +701,10 @@ class Plugin {
 
 		if ( $isOrderDetailPage ) {
 			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
+		}
+
+		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
+			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery', 'backbone' ] );
 		}
 	}
 

@@ -5,4 +5,14 @@
     <li n:if="$showLogsLink">
         <a class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
     </li>
+    <li>
+        <a
+            class="button dashicons dashicons-trash packetery-dashicons-button-fix"
+            data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
+            data-packetery-confirm="{$translations['reallyCancelPacket']}"
+            href="{$packetCancelLink}"
+        >
+            <span class="packetery-dashicons-button-fix-text">{$translations['cancelPacket']}</span>
+        </a>
+    </li>
 </ul>

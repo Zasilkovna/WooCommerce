@@ -90,6 +90,7 @@ class Page {
 			Record::ACTION_ORDER_TABLE_NOT_CREATED   => __( 'Database order table was not created.', 'packeta' ),
 			Record::ACTION_SENDER_VALIDATION         => __( 'Sender validation', 'packeta' ),
 			Record::ACTION_PACKET_STATUS_SYNC        => __( 'Packet status synchronization', 'packeta' ),
+			Record::ACTION_PACKET_CANCEL             => __( 'Packet cancel', 'packeta' ),
 		];
 
 		$translatedStatuses = [

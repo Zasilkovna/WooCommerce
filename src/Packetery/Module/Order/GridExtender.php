@@ -15,6 +15,7 @@ use Packetery\Module\Carrier;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module;
+use Packetery\Module\Plugin;
 
 /**
  * Class GridExtender.
@@ -253,8 +254,8 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$packetSubmitUrl = add_query_arg( [], $this->orderControllerRouter->getRouteUrl( Controller::PATH_SUBMIT_TO_API ) );
-				$printLink       = add_query_arg(
+				$packetSubmitUrl  = add_query_arg( [], $this->orderControllerRouter->getRouteUrl( Controller::PATH_SUBMIT_TO_API ) );
+				$printLink        = add_query_arg(
 					[
 						'page'                       => LabelPrint::MENU_SLUG,
 						LabelPrint::LABEL_TYPE_PARAM => ( $order->isExternalCarrier() ? LabelPrint::ACTION_CARRIER_LABELS : LabelPrint::ACTION_PACKETA_LABELS ),
@@ -264,18 +265,34 @@ class GridExtender {
 					],
 					admin_url( 'admin.php' )
 				);
+				$packetCancelLink = add_query_arg(
+					[
+						PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
+						Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
+						PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_GRID,
+						Plugin::PARAM_NONCE                => wp_create_nonce( PacketCanceller::createNonceAction( PacketCanceller::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+					],
+					admin_url( 'admin.php' )
+				);
+
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'           => $order,
-						'showWarningIcon' => $this->modal->showWarningIcon( $order ),
-						'packetSubmitUrl' => $packetSubmitUrl,
-						'restNonce'       => wp_create_nonce( 'wp_rest' ),
-						'printLink'       => $printLink,
-						'translations'    => [
-							'printLabel'              => __( 'Print label', 'packeta' ),
-							'setAdditionalPacketInfo' => __( 'Set additional packet information', 'packeta' ),
-							'submitToPacketa'         => __( 'Submit to packeta', 'packeta' ),
+						'order'            => $order,
+						'showWarningIcon'  => $this->modal->showWarningIcon( $order ),
+						'packetSubmitUrl'  => $packetSubmitUrl,
+						'packetCancelLink' => $packetCancelLink,
+						'restNonce'        => wp_create_nonce( 'wp_rest' ),
+						'printLink'        => $printLink,
+						'translations'     => [
+							'printLabel'                => __( 'Print label', 'packeta' ),
+							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
+							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
+							// translators: %s: Order number.
+							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
+							// translators: %s: Packet number.
+							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
+							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
 						],
 					]
 				);
