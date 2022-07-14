@@ -17,6 +17,12 @@ use Packetery\Core\Entity;
  * @package Packetery\Api\Soap\Request
  */
 class CreatePacket {
+	/**
+	 * Order
+	 *
+	 * @var Entity\Order
+	 */
+	private $order;
 
 	/**
 	 * Order id.
@@ -157,6 +163,8 @@ class CreatePacket {
 	 * @param Entity\Order $order Order entity.
 	 */
 	public function __construct( Entity\Order $order ) {
+		$this->order = $order;
+
 		// Required attributes.
 		$this->number    = ( $order->getCustomNumber() ?? $order->getNumber() );
 		$this->name      = $order->getName();
@@ -209,7 +217,9 @@ class CreatePacket {
 	 * @return array
 	 */
 	public function getSubmittableData(): array {
-		return array_filter( get_object_vars( $this ) );
+		$data =  array_filter( get_object_vars( $this ) );
+
+		return apply_filters('packeta_create_packet_api_data', $data, $this->order, $this);
 	}
 
 }
