@@ -157,12 +157,12 @@ class PacketSubmitter {
 	/**
 	 * Prepares packet attributes.
 	 *
-	 * @param Entity\Order $commonEntity Order entity.
+	 * @param Entity\Order $order Order entity.
 	 *
 	 * @return CreatePacket
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
-	private function preparePacketRequest( Entity\Order $commonEntity ): CreatePacket {
+	private function preparePacketRequest( Entity\Order $order ): CreatePacket {
 		/*
 		TODO: extend validator to return specific errors.
 		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
@@ -170,7 +170,23 @@ class PacketSubmitter {
 		}
 		*/
 
-		return new CreatePacket( $commonEntity );
+		return new CreatePacket(
+			/**
+			 * Filters the input order for CreatePacket request.
+			 *
+			 * @since 1.3.3
+			 *
+			 * @param Entity\Order $order Packeta core order. DO NOT USE THIS STRICT TYPE IN YOUR METHOD SIGNATURE!
+			 */
+			apply_filters(
+				'packeta_create_packet',
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
+				unserialize(
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+					serialize( $order )
+				)
+			)
+		);
 	}
 
 }
