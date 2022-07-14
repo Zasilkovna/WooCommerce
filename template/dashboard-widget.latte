@@ -1,0 +1,38 @@
+{if false === $isOptionsFormValid}
+    <p>
+        <span class="dashicons dashicons-warning"></span> {$translations['noGlobalSettings']|noescape}
+    </p>
+{/if}
+
+{if $isOptionsFormValid && false === $hasPacketaShipping}
+    <p>
+        <span class="dashicons dashicons-warning"></span> {$translations['noPacketaShipping']|noescape}
+    </p>
+{/if}
+
+{if $isOptionsFormValid && false === $hasExternalCarrier}
+    <p>
+        <span class="dashicons dashicons-warning"></span> {$translations['noExternalCarrier']|noescape}
+    </p>
+{/if}
+
+{if $isOptionsFormValid && $isCodSettingNeeded}
+    <p>
+        <span class="dashicons dashicons-warning"></span> {$translations['noCodPaymentConfigured']|noescape}
+    </p>
+{/if}
+
+{if $isOptionsFormValid}
+    {if $activeCountries}
+        <p>
+            {$translations['activeCountriesNotice']}:
+            {foreach $activeCountries as $activeCountry}
+                <a href="{$activeCountry['url']}">{$activeCountry['name']}</a>{sep}, {/sep}
+            {/foreach}
+        </p>
+    {else}
+            <p>
+                <span class="dashicons dashicons-warning"></span> {$translations['noActiveCountry']|noescape}
+            </p>
+    {/if}
+{/if}

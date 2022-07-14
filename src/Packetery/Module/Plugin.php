@@ -20,6 +20,7 @@ use Packetery\Module\Order;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use PacketeryNette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -49,6 +50,13 @@ class Plugin {
 	 * @var Engine
 	 */
 	private $latte_engine;
+
+	/**
+	 * Dashboard widget.
+	 *
+	 * @var DashboardWidget
+	 */
+	private $dashboardWidget;
 
 	/**
 	 * Carrier repository.
@@ -270,6 +278,7 @@ class Plugin {
 	 * @param CronService              $cronService          Cron service.
 	 * @param Order\PacketCanceller    $packetCanceller      Packet canceller.
 	 * @param ContextResolver          $contextResolver      Context resolver.
+	 * @param DashboardWidget          $dashboardWidget      Dashboard widget.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -299,7 +308,8 @@ class Plugin {
 		Options\Provider $optionsProvider,
 		CronService $cronService,
 		Order\PacketCanceller $packetCanceller,
-		ContextResolver $contextResolver
+		ContextResolver $contextResolver,
+		DashboardWidget $dashboardWidget
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -330,6 +340,7 @@ class Plugin {
 		$this->cronService          = $cronService;
 		$this->packetCanceller      = $packetCanceller;
 		$this->contextResolver      = $contextResolver;
+		$this->dashboardWidget      = $dashboardWidget;
 	}
 
 	/**
@@ -420,6 +431,7 @@ class Plugin {
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
+		$this->dashboardWidget->register();
 	}
 
 	/**
@@ -453,6 +465,18 @@ class Plugin {
 	 */
 	private static function isWooCommercePluginActive(): bool {
 		return Helper::isPluginActive( 'woocommerce/woocommerce.php' );
+	}
+
+	/**
+	 * Creates HTML link parts in array.
+	 *
+	 * @param string $href Href.
+	 *
+	 * @return string[]
+	 */
+	public static function createLinkParts( string $href ): array {
+		$link = Html::el( 'a' )->href( $href );
+		return [ $link->startTag(), $link->endTag() ];
 	}
 
 	/**

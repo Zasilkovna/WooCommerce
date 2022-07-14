@@ -236,6 +236,42 @@ class Repository {
 	}
 
 	/**
+	 * Gets all active carriers.
+	 *
+	 * @return Entity\Carrier[]
+	 */
+	public function getActiveCarriers(): array {
+		$wpdb = $this->wpdb;
+
+		$entities        = [];
+		$countryCarriers = $wpdb->get_results(
+			'SELECT
+				`id`,
+				`name`,
+				`is_pickup_points`,
+				`has_carrier_direct_label`,
+				`separate_house_number`,
+				`customs_declarations`,
+				`requires_email`,
+				`requires_phone`,
+				`requires_size`,
+				`disallows_cod`,
+				`country`,
+				`currency`,
+				`max_weight`,
+				`deleted`
+			FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false',
+			ARRAY_A
+		);
+
+		foreach ( $countryCarriers as $carrierData ) {
+			$entities[ $carrierData['id'] ] = $this->carrierEntityFactory->fromDbResult( $carrierData );
+		}
+
+		return $entities;
+	}
+
+	/**
 	 * Gets all active carriers for a country including internal pickup point carriers.
 	 *
 	 * @param string $country ISO code.
@@ -253,6 +289,29 @@ class Repository {
 		}
 
 		return $countryCarriers;
+	}
+
+	/**
+	 * Get all carriers.
+	 *
+	 * @return Entity\Carrier[]
+	 */
+	public function getAllCarriersIncludingZpoints(): array {
+		$feedCarriers   = $this->getActiveCarriers();
+		$zpointCarriers = $this->getZpointCarrierCarriers();
+
+		return array_merge( $feedCarriers, $zpointCarriers );
+	}
+
+	/**
+	 * Tells if there is any active feed carrier.
+	 *
+	 * @return bool
+	 */
+	public function hasAnyActiveFeedCarrier(): bool {
+		$wpdb = $this->wpdb;
+
+		return (bool) $wpdb->get_var( 'SELECT 1 FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false LIMIT 1' );
 	}
 
 	/**
@@ -342,6 +401,22 @@ class Repository {
 				'supports_age_verification' => true,
 			],
 		];
+	}
+
+	/**
+	 * Gets zpoint carriers as object.
+	 *
+	 * @return Entity\Carrier[]
+	 */
+	public function getZpointCarrierCarriers(): array {
+		$carriers       = [];
+		$zpointCarriers = $this->getZpointCarriers();
+
+		foreach ( $zpointCarriers as $country => $zpointCarrier ) {
+			$carriers[ $zpointCarrier['id'] ] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier + [ 'country' => $country ] );
+		}
+
+		return $carriers;
 	}
 
 	/**
