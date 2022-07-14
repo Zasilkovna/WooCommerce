@@ -311,7 +311,7 @@ class Repository {
 	public function hasAnyActiveFeedCarrier(): bool {
 		$wpdb = $this->wpdb;
 
-		return (int) $wpdb->get_var( 'SELECT COUNT(*) FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false' ) > 0;
+		return (bool) $wpdb->get_var( 'SELECT 1 FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false LIMIT 1' );
 	}
 
 	/**
