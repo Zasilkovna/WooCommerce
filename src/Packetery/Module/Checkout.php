@@ -582,7 +582,7 @@ class Checkout {
 			if ( ! empty( $package['rates'] ) ) {
 				foreach ( $package['rates'] as $key => $rate ) {
 					if ( isset( $customRates[ $rate->get_id() ] ) ) {
-						$rate->set_cost( $customRates[ $rate->get_id() ]['cost'] );
+						$rate->set_cost( $this->applyFilterWoocsExchangeValue( $customRates[ $rate->get_id() ]['cost'] ) );
 						WC()->shipping->packages[ $i ]['rates'][ $key ] = $rate;
 					}
 				}
@@ -750,7 +750,7 @@ class Checkout {
 		}
 
 		// WooCommerce currency-switcher.com compatibility.
-		return $this->applyFilterWoocsExchangeValue( (float) $cost );
+		return (float) $cost;
 	}
 
 	/**
