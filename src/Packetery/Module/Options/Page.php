@@ -136,7 +136,7 @@ class Page {
 	 *
 	 * @return Form
 	 */
-	private function create_form(): Form {
+	public function create_form(): Form {
 		$form = $this->formFactory->create();
 		$form->setAction( 'options.php' );
 
@@ -423,5 +423,21 @@ class Page {
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
+	}
+
+	/**
+	 * Creates link to page.
+	 *
+	 * @return string
+	 */
+	public function createUrl(): string {
+		$params = [
+			'page' => self::SLUG,
+		];
+
+		return add_query_arg(
+			$params,
+			admin_url( 'admin.php' )
+		);
 	}
 }
