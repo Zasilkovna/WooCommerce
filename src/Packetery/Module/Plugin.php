@@ -715,7 +715,7 @@ class Plugin {
 			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery' ] );
 		}
 
-		$isProductDetailPage = 'post.php' === $pagenow && 'product' === $typenow;
+		$isProductDetailPage = $this->contextResolver->isProductDetailPage();
 
 		if ( $isOrderGridPage || $isOrderDetailPage || $isProductDetailPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
