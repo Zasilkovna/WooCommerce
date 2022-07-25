@@ -18,6 +18,13 @@ use Packetery\Module\Checkout;
 class Options {
 
 	/**
+	 * Option ID.
+	 *
+	 * @var string
+	 */
+	private $optionId;
+
+	/**
 	 * Options.
 	 *
 	 * @var array
@@ -27,10 +34,12 @@ class Options {
 	/**
 	 * Constructor.
 	 *
-	 * @param array $options Options.
+	 * @param string $optionId Option ID.
+	 * @param array  $options  Options.
 	 */
-	public function __construct( array $options ) {
-		$this->options = $options;
+	public function __construct( string $optionId, array $options ) {
+		$this->optionId = $optionId;
+		$this->options  = $options;
 	}
 
 	/**
@@ -46,7 +55,16 @@ class Options {
 			$options = [];
 		}
 
-		return new self( $options );
+		return new self( $optionId, $options );
+	}
+
+	/**
+	 * Option ID.
+	 *
+	 * @return string
+	 */
+	public function getOptionId(): string {
+		return $this->optionId;
 	}
 
 	/**
@@ -97,6 +115,15 @@ class Options {
 		}
 
 		return $none;
+	}
+
+	/**
+	 * Gets custom carrier name.
+	 *
+	 * @return string|null
+	 */
+	public function getName(): ?string {
+		return ( $this->options['name'] ?? null );
 	}
 
 	/**

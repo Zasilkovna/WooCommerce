@@ -4,5 +4,17 @@
         <label n:name=packetery_age_verification_18_plus />
         <input n:name=packetery_age_verification_18_plus />
     </p>
+    <hr>
+    <p><strong>{$translations['disallowedShippingRatesHeading']}</strong></p>
+    <div class="form-field">
+        <table>
+        {foreach $form[Packetery\Module\Product\Entity::META_DISALLOWED_SHIPPING_RATES]->getControls() as $control}
+            <tr class="packetery-shipping-rate">
+                <td><input n:name=$control /></td>
+                <td><label n:name=$control /></td>
+            </tr>
+        {/foreach}
+        </table>
+    </div>
 </div>
 {/formContext}

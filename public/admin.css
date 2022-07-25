@@ -286,3 +286,15 @@ tbody .packetery-log-column-note {
 .button.dashicons.packetery-dashicons-button-fix .packetery-dashicons-button-fix-text {
     font-family: 'Muli', sans-serif;
 }
+
+#packetery-tab .packetery-shipping-rate label {
+    width: auto;
+    float: none;
+    margin: auto;
+}
+
+#packetery-tab .packetery-shipping-rate td {
+    vertical-align: top;
+    padding: 9px;
+    padding-top: 0;
+}

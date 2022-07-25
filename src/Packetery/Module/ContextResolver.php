@@ -40,6 +40,17 @@ class ContextResolver {
 	}
 
 	/**
+	 * Tells if requesting user is at product detail page.
+	 *
+	 * @return bool
+	 */
+	public function isProductDetailPage(): bool {
+		global $pagenow, $typenow;
+
+		return 'post.php' === $pagenow && 'product' === $typenow;
+	}
+
+	/**
 	 * Tells if requesting user is at page using packetery confirm.
 	 *
 	 * @return bool
