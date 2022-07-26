@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.5.1
@@ -61,6 +61,24 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.3.3 =
+Fixed: Label print edge case error
+Fixed: Woocommerce Currency Switcher compatibility
+Added: Possibility to alter optional packet parameters before submission to Packeta API
+Added: Custom order number support
+Added: Filter for altering packet data
+Added: Compatibility with Back In Stock Notifier plugin
+Added: Age verification fee
+Added: Possibility to cancel order submission to Packeta
+Added: Shipping checkout rate per product limitation
+Added: Order - log relation and related user interface
+Added: Dimensions (length, width, height) to edit modal panel at order list
+Added: Multisite support
+Added: Packeta log auto-deletion via cron
+Added: Dashboard support widget
+Added: Tax to COD surcharge and Age verification fee
+Updated: Packaging weight plugin option re-labeled
+
 = 1.3.2 =
 * Fixed: Other shipping methods support
 
