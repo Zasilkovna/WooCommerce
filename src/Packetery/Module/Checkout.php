@@ -23,6 +23,7 @@ class Checkout {
 
 	public const CARRIER_PREFIX = 'packetery_carrier_';
 	private const NONCE_ACTION  = 'packetery_checkout';
+	private const NONCE_NAME    = '_wpnonce_packetery_checkout';
 
 	const ATTR_POINT_ID     = 'packetery_point_id';
 	const ATTR_POINT_NAME   = 'packetery_point_name';
@@ -344,7 +345,7 @@ class Checkout {
 			[ 'fields' => array_merge( array_column( self::$pickupPointAttrs, 'name' ), array_column( self::$homeDeliveryAttrs, 'name' ) ) ]
 		);
 
-		wp_nonce_field( self::NONCE_ACTION );
+		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
 	}
 
 	/**
@@ -357,7 +358,7 @@ class Checkout {
 		}
 
 		$post = $this->httpRequest->getPost();
-		if ( ! wp_verify_nonce( $post['_wpnonce'], self::NONCE_ACTION ) ) {
+		if ( ! wp_verify_nonce( $post[ self::NONCE_NAME ], self::NONCE_ACTION ) ) {
 			wp_nonce_ays( '' );
 		}
 
