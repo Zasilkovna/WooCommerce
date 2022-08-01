@@ -184,8 +184,8 @@ class Upgrade {
 			$this->orderRepository->deleteOrphans();
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.3.1', '<' ) ) {
-			$this->logRepository->addOrderIdColumn(); // TODO: Update version on feature release. It is expected for feature to be released in plugin version 1.3.1.
+		if ( $oldVersion && version_compare( $oldVersion, '1.3.3', '<' ) ) {
+			$this->logRepository->addOrderIdColumn();
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.3.3', '<' ) ) {
