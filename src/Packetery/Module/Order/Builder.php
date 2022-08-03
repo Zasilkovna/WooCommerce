@@ -118,6 +118,11 @@ class Builder {
 		if ( null === $order->getCod() && $orderData['payment_method'] === $codMethod ) {
 			$order->setCod( $order->getValue() );
 		}
+
+		if ( $orderData['payment_method'] !== $codMethod ) {
+			$order->setCod( null );
+		}
+
 		$order->setSize( $order->getSize() );
 
 		if ( $order->isExternalCarrier() ) {
