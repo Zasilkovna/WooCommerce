@@ -138,7 +138,6 @@ class PacketCanceller {
 			$record->orderId = null;
 			$record->title   = __( 'Packet cancel error', 'packeta' );
 			$record->params  = [
-				'orderId'      => $this->getOrderId(),
 				'referer'      => (string) $this->request->getReferer(),
 				'errorMessage' => 'Order not found',
 			];
