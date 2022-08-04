@@ -123,12 +123,10 @@ class PacketCanceller {
 		}
 
 		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
-		$order      = $this->orderRepository->getById( $this->getOrderId() );
-
-		if ( 1 !== wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( self::ACTION_CANCEL_PACKET, $order->getNumber() ) ) ) {
-			$this->messageManager->flash_message( __( 'Link has expired. Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
-			$this->redirectTo( $redirectTo, $order );
-			return;
+		$order      = null;
+		$orderId    = $this->getOrderId();
+		if ( null !== $orderId ) {
+			$order = $this->orderRepository->getById( $orderId );
 		}
 
 		if ( null === $order ) {
@@ -145,6 +143,12 @@ class PacketCanceller {
 			$this->logger->add( $record );
 
 			$this->messageManager->flash_message( __( 'Order not found', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->redirectTo( $redirectTo, $order );
+			return;
+		}
+
+		if ( 1 !== wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( self::ACTION_CANCEL_PACKET, $order->getNumber() ) ) ) {
+			$this->messageManager->flash_message( __( 'Link has expired. Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 			$this->redirectTo( $redirectTo, $order );
 			return;
 		}
@@ -175,7 +179,7 @@ class PacketCanceller {
 			}
 		}
 
-		if ( self::REDIRECT_TO_ORDER_DETAIL === $redirectTo ) {
+		if ( self::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $order ) {
 			$packetCancelLink = add_query_arg(
 				[
 					'post_type' => 'shop_order',
@@ -284,13 +288,13 @@ class PacketCanceller {
 			return false;
 		}
 
-		$revertSubmition = ! $result->hasFault();
+		$revertSubmission = ! $result->hasFault();
 
 		if ( $result->hasCancelNotAllowedFault() && $this->optionsProvider->isPacketCancellationForced() ) {
-			$revertSubmition = true;
+			$revertSubmission = true;
 		}
 
-		return $revertSubmition;
+		return $revertSubmission;
 	}
 
 	/**
