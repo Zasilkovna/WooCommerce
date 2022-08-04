@@ -132,12 +132,12 @@ class PacketCanceller {
 		}
 
 		if ( null === $order ) {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_PACKET_CANCEL;
-			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Packet cancel error', 'packeta' );
-			$record->params = [
-				'orderId'      => $this->getOrderId(),
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
+			$record->status  = Log\Record::STATUS_ERROR;
+			$record->orderId = null;
+			$record->title   = __( 'Packet cancel error', 'packeta' );
+			$record->params  = [
 				'referer'      => (string) $this->request->getReferer(),
 				'errorMessage' => 'Order not found',
 			];
@@ -200,11 +200,12 @@ class PacketCanceller {
 	 */
 	public function cancelPacket( Entity\Order $order ): void {
 		if ( null === $order->getPacketId() ) {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_PACKET_CANCEL;
-			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Packet cancel error', 'packeta' );
-			$record->params = [
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
+			$record->status  = Log\Record::STATUS_ERROR;
+			$record->orderId = $order->getNumber();
+			$record->title   = __( 'Packet cancel error', 'packeta' );
+			$record->params  = [
 				'orderId'      => $order->getNumber(),
 				'packetId'     => $order->getPacketId(),
 				'referer'      => (string) $this->request->getReferer(),
@@ -221,11 +222,12 @@ class PacketCanceller {
 		$result  = $this->soapApiClient->cancelPacket( $request );
 
 		if ( ! $result->hasFault() ) {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_PACKET_CANCEL;
-			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = __( 'Packet cancel success', 'packeta' );
-			$record->params = [
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
+			$record->status  = Log\Record::STATUS_SUCCESS;
+			$record->orderId = $order->getNumber();
+			$record->title   = __( 'Packet cancel success', 'packeta' );
+			$record->params  = [
 				'orderId'  => $order->getNumber(),
 				'packetId' => $order->getPacketId(),
 			];
@@ -234,11 +236,12 @@ class PacketCanceller {
 		}
 
 		if ( $result->hasFault() ) {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_PACKET_CANCEL;
-			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = __( 'Packet cancel error', 'packeta' );
-			$record->params = [
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
+			$record->status  = Log\Record::STATUS_ERROR;
+			$record->orderId = $order->getNumber();
+			$record->title   = __( 'Packet cancel error', 'packeta' );
+			$record->params  = [
 				'orderId'      => $order->getNumber(),
 				'packetId'     => $order->getPacketId(),
 				'errorMessage' => $result->getFaultString(),
@@ -295,7 +298,7 @@ class PacketCanceller {
 	 *
 	 * @return int|null
 	 */
-	public function getOrderId(): ?int {
+	private function getOrderId(): ?int {
 		$orderId = $this->request->getQuery( self::PARAM_ORDER_ID );
 		if ( is_numeric( $orderId ) ) {
 			return (int) $orderId;
