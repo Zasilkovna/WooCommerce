@@ -122,13 +122,9 @@ class PacketCanceller {
 			return;
 		}
 
-		$redirectTo   = $this->request->getQuery( self::PARAM_REDIRECT_TO );
-		$orderIdParam = $this->request->getQuery( self::PARAM_ORDER_ID );
-		$orderId      = null;
-		$order        = null;
-		if ( is_numeric( $orderIdParam ) ) {
-			$orderId = (int) $orderIdParam;
-		}
+		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
+		$order      = null;
+		$orderId    = $this->getOrderId();
 		if ( null !== $orderId ) {
 			$order = $this->orderRepository->getById( $orderId );
 		}
@@ -301,4 +297,17 @@ class PacketCanceller {
 		return $revertSubmission;
 	}
 
+	/**
+	 * Gets order ID.
+	 *
+	 * @return int|null
+	 */
+	private function getOrderId(): ?int {
+		$orderId = $this->request->getQuery( self::PARAM_ORDER_ID );
+		if ( is_numeric( $orderId ) ) {
+			return (int) $orderId;
+		}
+
+		return null;
+	}
 }
