@@ -133,6 +133,7 @@ class Exporter {
 			 */
 			'plugins'           => $this->getFormattedPlugins( apply_filters( 'all_plugins', get_plugins() ) ),
 			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
+			'currencySwitchers' => $this->formatVariable( Module\CurrencySwitcherFacade::$supportedCurrencySwitchers ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 

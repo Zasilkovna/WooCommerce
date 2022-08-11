@@ -80,6 +80,7 @@ Added: Dashboard support widget
 Added: Tax to COD surcharge and Age verification fee
 Added: Stockie theme support
 Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
+Added: Support for CURCY - Multi Currency for Woocommerce plugin
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =
