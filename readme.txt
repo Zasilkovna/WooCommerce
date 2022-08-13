@@ -77,6 +77,7 @@ Added: Multisite support
 Added: Packeta log auto-deletion via cron
 Added: Dashboard support widget
 Added: Tax to COD surcharge and Age verification fee
+Added: Stockie theme support
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =
