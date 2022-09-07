@@ -13,6 +13,13 @@ defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
 
 require_once __DIR__ . '/packetery_vendor/autoload.php';
 
+// TODO: ManageWP Worker plugin hack fix.
+// @codingStandardsIgnoreStart
+if ( isset( $_COOKIE['redirect_count'] ) && is_int( $_COOKIE['redirect_count'] ) ) {
+	$_COOKIE['redirect_count'] = (string) $_COOKIE['redirect_count'];
+}
+// @codingStandardsIgnoreEnd
+
 $configurator = new Configurator();
 $configurator->setDebugMode( PACKETERY_DEBUG );
 
