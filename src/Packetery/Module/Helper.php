@@ -43,4 +43,22 @@ class Helper {
 
 		return in_array( $pluginRelativePath, (array) get_option( 'active_plugins', [] ), true );
 	}
+
+	/**
+	 * Introduced as ManageWP Worker plugin hack fix.
+	 *
+	 * @return void
+	 */
+	public static function transformGlobalCookies(): void {
+		if ( empty( $_COOKIE ) ) {
+			return;
+		}
+		foreach ( $_COOKIE as $key => $value ) {
+			// @codingStandardsIgnoreStart
+			if ( is_int( $value ) ) {
+				$_COOKIE[ $key ] = (string) $value;
+			}
+			// @codingStandardsIgnoreEnd
+		}
+	}
 }

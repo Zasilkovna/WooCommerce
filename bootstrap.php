@@ -6,6 +6,7 @@
  */
 
 use Packetery\Module\CompatibilityBridge;
+use Packetery\Module\Helper;
 use PacketeryNette\Bootstrap\Configurator;
 
 defined( 'PACKETERY_PLUGIN_DIR' ) || define( 'PACKETERY_PLUGIN_DIR', __DIR__ );
@@ -13,12 +14,8 @@ defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
 
 require_once __DIR__ . '/packetery_vendor/autoload.php';
 
-// TODO: ManageWP Worker plugin hack fix.
-// @codingStandardsIgnoreStart
-if ( isset( $_COOKIE['redirect_count'] ) && is_int( $_COOKIE['redirect_count'] ) ) {
-	$_COOKIE['redirect_count'] = (string) $_COOKIE['redirect_count'];
-}
-// @codingStandardsIgnoreEnd
+require_once __DIR__ . '/src/Packetery/Module/Helper.php';
+Helper::transformGlobalCookies();
 
 $configurator = new Configurator();
 $configurator->setDebugMode( PACKETERY_DEBUG );
