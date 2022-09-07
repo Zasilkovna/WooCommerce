@@ -64,6 +64,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 = 1.3.3 =
 Fixed: Label print edge case error
 Fixed: Woocommerce Currency Switcher compatibility
+Fixed: ManageWP Worker plugin hack fix to be compatible with ManageWP service
 Added: Possibility to alter optional packet parameters before submission to Packeta API
 Added: Custom order number support
 Added: Filter for altering packet data
