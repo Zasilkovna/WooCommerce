@@ -42,7 +42,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 			var $selectedRadio = $( '#shipping_method input[type="radio"]:checked' );
 			if ( $selectedRadio.length ) {
 				var radioValue = $selectedRadio.val();
-				return radioValue.replace('packetery_shipping_method:','');
+				var radioValueArray = radioValue.split(":");
+				return radioValueArray[radioValueArray.length - 1];
 			}
 			return $( '#shipping_method input[type="hidden"]' ).val();
 		};
