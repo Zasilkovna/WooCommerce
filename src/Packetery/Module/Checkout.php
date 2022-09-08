@@ -706,7 +706,11 @@ class Checkout {
 			$carrierOptions[ $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice                 = $this->getCartPrice();
+		$cartTotalPrice    = $this->getCartPrice();
+		$cartContentPrice  = WC()->cart->get_cart_contents_total();
+		$areCouponsApplied = ( count( WC()->cart->get_applied_coupons() ) > 0 );
+		$cartPrice         = ( $areCouponsApplied && $cartTotalPrice > $cartContentPrice ) ? $cartContentPrice : $cartTotalPrice;
+
 		$cartWeight                = $this->getCartWeightKg();
 		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
 

@@ -79,6 +79,7 @@ Added: Packeta log auto-deletion via cron
 Added: Dashboard support widget
 Added: Tax to COD surcharge and Age verification fee
 Added: Stockie theme support
+Added: Calculation of exceeding the Free shipping limit without discount from coupons
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =
