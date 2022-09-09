@@ -41,7 +41,9 @@ var packeteryLoadCheckout = function( $, settings ) {
 		var getShippingRateId = function() {
 			var $selectedRadio = $( '#shipping_method input[type="radio"]:checked' );
 			if ( $selectedRadio.length ) {
-				return $selectedRadio.val();
+				var radioValue = $selectedRadio.val();
+				var radioValueArray = radioValue.split(":");
+				return radioValueArray[radioValueArray.length - 1];
 			}
 			return $( '#shipping_method input[type="hidden"]' ).val();
 		};

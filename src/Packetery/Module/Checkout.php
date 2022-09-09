@@ -711,8 +711,8 @@ class Checkout {
 				continue;
 			}
 
-			$optionId                    = self::CARRIER_PREFIX . $carrier->getId();
-			$carrierOptions[ $optionId ] = get_option( $optionId );
+			$optionId = self::CARRIER_PREFIX . $carrier->getId();
+			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
 		}
 
 		$cartTotalPrice    = $this->getCartPrice();
@@ -827,7 +827,7 @@ class Checkout {
 		$chosenShippingRate  = ( $chosenShippingRates[0] ?? null );
 
 		if ( $chosenShippingRate instanceof \WC_Shipping_Rate ) {
-			return $chosenShippingRate->get_id();
+			return $this->getShortenedRateId( $chosenShippingRate->get_id() );
 		}
 
 		return '';
@@ -876,7 +876,19 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isPacketeryOrder( string $chosenMethod ): bool {
+		$chosenMethod = $this->getShortenedRateId( $chosenMethod );
 		return ( strpos( $chosenMethod, self::CARRIER_PREFIX ) === 0 );
+	}
+
+	/**
+	 * Gets ShippingRate's ID of extended id.
+	 *
+	 * @param string $chosenMethod Chosen shipping method.
+	 *
+	 * @return string
+	 */
+	private function getShortenedRateId( string $chosenMethod ): string {
+		return str_replace( ShippingMethod::PACKETERY_METHOD_ID . ':', '', $chosenMethod );
 	}
 
 	/**
