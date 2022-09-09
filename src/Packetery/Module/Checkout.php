@@ -688,6 +688,15 @@ class Checkout {
 	}
 
 	/**
+	 * Gets cart content price. Value is cast to float because PHPDoc is not reliable.
+	 *
+	 * @return float
+	 */
+	private function getCartContentPrice(): float {
+		return (float) WC()->cart->get_cart_contents_total();
+	}
+
+	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @return array
@@ -707,7 +716,7 @@ class Checkout {
 		}
 
 		$cartTotalPrice    = $this->getCartPrice();
-		$cartContentPrice  = WC()->cart->get_cart_contents_total();
+		$cartContentPrice  = $this->getCartContentPrice();
 		$areCouponsApplied = ( count( WC()->cart->get_applied_coupons() ) > 0 );
 		$cartPrice         = ( $areCouponsApplied && $cartTotalPrice > $cartContentPrice ) ? $cartContentPrice : $cartTotalPrice;
 
