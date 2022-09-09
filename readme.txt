@@ -79,6 +79,7 @@ Added: Packeta log auto-deletion via cron
 Added: Dashboard support widget
 Added: Tax to COD surcharge and Age verification fee
 Added: Stockie theme support
+Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =
