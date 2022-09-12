@@ -80,6 +80,8 @@ Added: Dashboard support widget
 Added: Tax to COD surcharge and Age verification fee
 Added: Stockie theme support
 Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
+Added: Support for WCFM Marketplace plugin
+Added: Moved Packeta main menu item to last position in admin
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =
