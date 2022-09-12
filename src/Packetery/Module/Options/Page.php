@@ -114,7 +114,7 @@ class Page {
 			self::SLUG,
 			'',
 			$icon,
-			55 // todo Move item to last position in menu.
+			$this->getMaxIndexForPacketaItemMenuPosition()
 		);
 		add_submenu_page(
 			self::SLUG,
@@ -439,5 +439,21 @@ class Page {
 			$params,
 			admin_url( 'admin.php' )
 		);
+	}
+
+	/**
+	 * Returns maximal unreserved int for Packeta left menu position.
+	 *
+	 * @return int
+	 */
+	private function getMaxIndexForPacketaItemMenuPosition(): int {
+		global $menu;
+
+		$index = PHP_INT_MAX;
+		while ( isset( $menu[ $index ] ) ) {
+			$index --;
+		}
+
+		return $index;
 	}
 }
