@@ -53,3 +53,4 @@ services:
 	- Packetery\Module\Upgrade
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\Calculator
+	- Packetery\Module\CurrencySwitcherFacade
