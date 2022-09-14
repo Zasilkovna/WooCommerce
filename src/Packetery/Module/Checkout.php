@@ -711,6 +711,24 @@ class Checkout {
 	}
 
 	/**
+	 * Gets cart content tax. Value is cast to float because PHPDoc is not reliable.
+	 *
+	 * @return float
+	 */
+	private function getCartContentTax(): float {
+		return (float) WC()->cart->get_cart_contents_tax();
+	}
+
+	/**
+	 * Gets cart subtotal tax. Value is cast to float because PHPDoc is not reliable.
+	 *
+	 * @return float
+	 */
+	private function getCartTax(): float {
+		return (float) WC()->cart->get_subtotal_tax();
+	}
+
+	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @return array
@@ -729,10 +747,7 @@ class Checkout {
 			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
 		}
 
-		$cartTotalPrice    = $this->getCartPrice();
-		$cartContentPrice  = $this->getCartContentPrice();
-		$areCouponsApplied = ( count( WC()->cart->get_applied_coupons() ) > 0 );
-		$cartPrice         = ( $areCouponsApplied && $cartTotalPrice > $cartContentPrice ) ? $cartContentPrice : $cartTotalPrice;
+		$cartPrice = $this->getCartPriceIncludingVatAndCoupons();
 
 		$cartWeight                = $this->getCartWeightKg();
 		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
@@ -1038,4 +1053,16 @@ class Checkout {
 		return $resultTaxClass;
 	}
 
+	/**
+	 * Tells cart price with VAT and without Coupons.
+	 *
+	 * @return float
+	 */
+	private function getCartPriceIncludingVatAndCoupons():float {
+		$cartTotalPrice    = $this->getCartPrice() + $this->getCartTax();
+		$cartContentTotal  = $this->getCartContentPrice() + $this->getCartContentTax();
+		$areCouponsApplied = ( count( WC()->cart->get_applied_coupons() ) > 0 );
+
+		return $areCouponsApplied ? $cartContentTotal : $cartTotalPrice;
+	}
 }
