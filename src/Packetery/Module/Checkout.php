@@ -747,7 +747,7 @@ class Checkout {
 			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice = $this->getCartPriceIncludingVatAndCoupons();
+		$cartPrice = $this->getCartPriceIncludingVatWithoutCoupons();
 
 		$cartWeight                = $this->getCartWeightKg();
 		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
@@ -1058,7 +1058,7 @@ class Checkout {
 	 *
 	 * @return float
 	 */
-	private function getCartPriceIncludingVatAndCoupons():float {
+	private function getCartPriceIncludingVatWithoutCoupons():float {
 		$cartTotalPrice    = $this->getCartPrice() + $this->getCartTax();
 		$cartContentTotal  = $this->getCartContentPrice() + $this->getCartContentTax();
 		$areCouponsApplied = ( count( WC()->cart->get_applied_coupons() ) > 0 );
