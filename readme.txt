@@ -82,6 +82,7 @@ Added: Stockie theme support
 Added: Calculation of exceeding the Free shipping limit without discount from coupons
 Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
 Added: Support for CURCY - Multi Currency for Woocommerce plugin
+Added: Support for Currency Switcher for WooCommerce by WP Wham
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =
