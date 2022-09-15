@@ -22,16 +22,28 @@ class CurrencySwitcherFacade {
 	public static $supportedCurrencySwitchers = [
 		'WOOCS - WooCommerce Currency Switcher',
 		'CURCY - Multi Currency for WooCommerce',
+		'Currency Switcher for WooCommerce (by WP Wham)',
 	];
 
 	/**
 	 * Applies currency conversion if needed.
 	 *
 	 * @param float $price Price to convert.
+	 * @param bool  $useForCurrencySwitcherForWC Convert price when Currency Switcher for WC enabled.
 	 *
 	 * @return float
 	 */
-	public function getConvertedPrice( float $price ): float {
+	public function getConvertedPrice( float $price, bool $useForCurrencySwitcherForWC = true ): float {
+
+		if ( $this->isCurrencySwitcherForWCPluginEnabled() && $useForCurrencySwitcherForWC ) {
+			return alg_convert_price(
+				[
+					'price'        => $price,
+					'format_price' => false,
+				]
+			);
+		}
+
 		if ( $this->isCurcyPluginEnabled() ) {
 			return (float) wmc_get_price( $price );
 		}
@@ -66,6 +78,15 @@ class CurrencySwitcherFacade {
 	 */
 	private function isCurcyPluginEnabled(): bool {
 		return is_plugin_active( 'woo-multi-currency/woo-multi-currency.php' );
+	}
+
+	/**
+	 * Tells if Currency Switcher for WooCommerce (by WP Wham) is active.
+	 *
+	 * @return bool
+	 */
+	private function isCurrencySwitcherForWCPluginEnabled(): bool {
+		return is_plugin_active( 'currency-switcher-woocommerce/currency-switcher-woocommerce.php' );
 	}
 
 }
