@@ -720,15 +720,6 @@ class Checkout {
 	}
 
 	/**
-	 * Gets cart subtotal tax. Value is cast to float because PHPDoc is not reliable.
-	 *
-	 * @return float
-	 */
-	private function getCartTax(): float {
-		return (float) WC()->cart->get_subtotal_tax();
-	}
-
-	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @return array
@@ -1059,10 +1050,6 @@ class Checkout {
 	 * @return float
 	 */
 	private function getCartPriceIncludingVatWithoutCoupons():float {
-		$cartTotalPrice    = $this->getCartPrice() + $this->getCartTax();
-		$cartContentTotal  = $this->getCartContentPrice() + $this->getCartContentTax();
-		$areCouponsApplied = ( count( WC()->cart->get_applied_coupons() ) > 0 );
-
-		return $areCouponsApplied ? $cartContentTotal : $cartTotalPrice;
+		return $this->getCartContentPrice() + $this->getCartContentTax();
 	}
 }
