@@ -16,6 +16,7 @@ class CurrencySwitcherFacade {
 
 	/**
 	 * List of supported plugins for options export.
+	 * Use the name from the settings export, optionally extended with the publisher name
 	 *
 	 * @var string[]
 	 */
@@ -29,19 +30,21 @@ class CurrencySwitcherFacade {
 	 * Applies currency conversion if needed.
 	 *
 	 * @param float $price Price to convert.
-	 * @param bool  $useForCurrencySwitcherForWC Convert price when Currency Switcher for WC enabled.
+	 * @param bool  $useForWpWhamSwitcher Convert price when Currency Switcher for WC enabled.
 	 *
 	 * @return float
 	 */
-	public function getConvertedPrice( float $price, bool $useForCurrencySwitcherForWC = true ): float {
+	public function getConvertedPrice( float $price, bool $useForWpWhamSwitcher = true ): float {
 
-		if ( $this->isCurrencySwitcherForWCPluginEnabled() && $useForCurrencySwitcherForWC ) {
-			return alg_convert_price(
+		if ( $useForWpWhamSwitcher && $this->isWpWhamSwitcherEnabled() ) {
+			$convertedPrice = alg_convert_price(
 				[
 					'price'        => $price,
 					'format_price' => false,
 				]
 			);
+
+			return is_numeric( $convertedPrice ) ? (float) $convertedPrice : $price;
 		}
 
 		if ( $this->isCurcyPluginEnabled() ) {
@@ -85,7 +88,7 @@ class CurrencySwitcherFacade {
 	 *
 	 * @return bool
 	 */
-	private function isCurrencySwitcherForWCPluginEnabled(): bool {
+	private function isWpWhamSwitcherEnabled(): bool {
 		return is_plugin_active( 'currency-switcher-woocommerce/currency-switcher-woocommerce.php' );
 	}
 
