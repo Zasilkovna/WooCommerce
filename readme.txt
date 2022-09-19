@@ -80,7 +80,7 @@ Added: Dashboard support widget
 Added: Tax to COD surcharge and Age verification fee
 Added: Stockie theme support
 Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
-Added: Packeta button in main menu moved by default to the last position - is dependent on other installed plugins.
+Added: Packeta button in main menu moved by default to the last position. Final order can be affected by other installed plugins.
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =
