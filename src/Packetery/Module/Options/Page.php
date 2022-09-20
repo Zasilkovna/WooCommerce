@@ -113,8 +113,7 @@ class Page {
 			'manage_options',
 			self::SLUG,
 			'',
-			$icon,
-			55 // todo Move item to last position in menu.
+			$icon
 		);
 		add_submenu_page(
 			self::SLUG,
@@ -129,6 +128,27 @@ class Page {
 			1
 		);
 		add_action( 'admin_init', [ $this, 'processActions' ] );
+
+		add_filter( 'custom_menu_order', '__return_true' );
+		add_filter( 'menu_order', [ $this, 'customMenuOrder' ] );
+	}
+
+	/**
+	 * Returns menu_order with Packeta item in last position.
+	 *
+	 * @param array $menuOrder WP $menu_order.
+	 *
+	 * @return array
+	 */
+	public function customMenuOrder( array $menuOrder ): array {
+		$currentPosition = array_search( self::SLUG, $menuOrder, true );
+
+		if ( false !== $currentPosition ) {
+			unset( $menuOrder[ $currentPosition ] );
+			$menuOrder[] = self::SLUG;
+		}
+
+		return $menuOrder;
 	}
 
 	/**
