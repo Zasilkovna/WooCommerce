@@ -83,6 +83,7 @@ Added: Calculation of exceeding the Free shipping limit without discount from co
 Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
 Added: Packeta button in main menu moved by default to the last position. Final order can be affected by other installed plugins.
 Added: Support for CURCY - Multi Currency for Woocommerce plugin
+Added: Support for WooCommerce Price Based on Country (WCPBC) plugin
 Updated: Packaging weight plugin option re-labeled
 
 = 1.3.2 =

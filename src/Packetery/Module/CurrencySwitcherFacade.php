@@ -22,6 +22,7 @@ class CurrencySwitcherFacade {
 	public static $supportedCurrencySwitchers = [
 		'WOOCS - WooCommerce Currency Switcher',
 		'CURCY - Multi Currency for WooCommerce',
+		'WooCommerce Price Based on Country (WCPBC)',
 	];
 
 	/**
@@ -34,6 +35,11 @@ class CurrencySwitcherFacade {
 	public function getConvertedPrice( float $price ): float {
 		if ( $this->isCurcyPluginEnabled() ) {
 			return (float) wmc_get_price( $price );
+		}
+
+		$wcpbcPrice = $this->applyWcpbcExchangeRate( $price );
+		if ( null !== $wcpbcPrice ) {
+			return $wcpbcPrice;
 		}
 
 		return $this->applyFilterWoocsExchangeValue( $price );
@@ -66,6 +72,24 @@ class CurrencySwitcherFacade {
 	 */
 	private function isCurcyPluginEnabled(): bool {
 		return is_plugin_active( 'woo-multi-currency/woo-multi-currency.php' );
+	}
+
+	/**
+	 * Gets price converted by WCPBC plugin.
+	 *
+	 * @param float $price Input price.
+	 *
+	 * @return float|null
+	 */
+	private function applyWcpbcExchangeRate( float $price ) {
+		if ( function_exists( 'wcpbc_the_zone' ) ) {
+			$wcpbcZone = wcpbc_the_zone();
+			if ( false !== $wcpbcZone ) {
+				return (float) $wcpbcZone->get_exchange_rate_price( $price );
+			}
+		}
+
+		return null;
 	}
 
 }
