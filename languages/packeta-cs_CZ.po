@@ -682,7 +682,7 @@ msgstr "KONEC"
 #. translators: %s is order id.
 #: src/Packetery/Module/Order/Controller.php:141
 msgid "Order %s does not exist."
-msgstr "Zvolený odesílatel neexistuje."
+msgstr "Objednávka %s neexistuje."
 
 #: src/Packetery/Module/Order/Controller.php:182
 msgid "Order could not be loaded."
