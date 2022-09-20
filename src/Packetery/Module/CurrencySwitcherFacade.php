@@ -14,6 +14,7 @@ namespace Packetery\Module;
  */
 class CurrencySwitcherFacade {
 
+	public const CONTEXT_FEE = 'fee';
 	/**
 	 * List of supported plugins for options export.
 	 * Use the name from the settings export, optionally extended with the publisher name
@@ -29,14 +30,14 @@ class CurrencySwitcherFacade {
 	/**
 	 * Applies currency conversion if needed.
 	 *
-	 * @param float $price Price to convert.
-	 * @param bool  $useForWpWhamSwitcher Convert price when Currency Switcher for WC enabled.
+	 * @param float  $price Price to convert.
+	 * @param string $context Context where is method called.
 	 *
 	 * @return float
 	 */
-	public function getConvertedPrice( float $price, bool $useForWpWhamSwitcher = true ): float {
+	public function getConvertedPrice( float $price, string $context = '' ): float {
 
-		if ( $useForWpWhamSwitcher && $this->isWpWhamSwitcherEnabled() ) {
+		if ( self::CONTEXT_FEE !== $context && $this->isWpWhamSwitcherEnabled() ) {
 			$convertedPrice = alg_convert_price(
 				[
 					'price'        => $price,
