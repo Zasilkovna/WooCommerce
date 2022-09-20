@@ -37,7 +37,7 @@ class CurrencySwitcherFacade {
 	 */
 	public function getConvertedPrice( float $price, string $context = '' ): float {
 
-		if ( self::CONTEXT_FEE !== $context && $this->isWpWhamSwitcherEnabled() ) {
+		if ( self::CONTEXT_FEE !== $context && $this->isWpWhamSwitcherPluginEnabled() ) {
 			$convertedPrice = alg_convert_price(
 				[
 					'price'        => $price,
@@ -89,7 +89,7 @@ class CurrencySwitcherFacade {
 	 *
 	 * @return bool
 	 */
-	private function isWpWhamSwitcherEnabled(): bool {
+	private function isWpWhamSwitcherPluginEnabled(): bool {
 		return is_plugin_active( 'currency-switcher-woocommerce/currency-switcher-woocommerce.php' );
 	}
 
