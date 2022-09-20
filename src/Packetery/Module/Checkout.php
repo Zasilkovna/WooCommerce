@@ -157,26 +157,36 @@ class Checkout {
 	private $orderRepository;
 
 	/**
+	 * Currency switcher facade.
+	 *
+	 * @var CurrencySwitcherFacade
+	 */
+	private $currencySwitcherFacade;
+
+	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine             $latte_engine      PacketeryLatte engine.
-	 * @param Provider           $options_provider  Options provider.
-	 * @param Carrier\Repository $carrierRepository Carrier repository.
-	 * @param Request            $httpRequest       Http request.
-	 * @param Order\Repository   $orderRepository   Order repository.
+	 * @param Engine                 $latte_engine      PacketeryLatte engine.
+	 * @param Provider               $options_provider  Options provider.
+	 * @param Carrier\Repository     $carrierRepository Carrier repository.
+	 * @param Request                $httpRequest Http request.
+	 * @param Order\Repository       $orderRepository Order repository.
+	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
 	 */
 	public function __construct(
 		Engine $latte_engine,
 		Provider $options_provider,
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
-		Order\Repository $orderRepository
+		Order\Repository $orderRepository,
+		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
-		$this->latte_engine      = $latte_engine;
-		$this->options_provider  = $options_provider;
-		$this->carrierRepository = $carrierRepository;
-		$this->httpRequest       = $httpRequest;
-		$this->orderRepository   = $orderRepository;
+		$this->latte_engine           = $latte_engine;
+		$this->options_provider       = $options_provider;
+		$this->carrierRepository      = $carrierRepository;
+		$this->httpRequest            = $httpRequest;
+		$this->orderRepository        = $orderRepository;
+		$this->currencySwitcherFacade = $currencySwitcherFacade;
 	}
 
 	/**
@@ -574,6 +584,7 @@ class Checkout {
 
 	/**
 	 * Updates shipping rates cost based on cart properties.
+	 * To test, change the shipping price during the transition from the first to the second step of the cart.
 	 */
 	public function updateShippingRates(): void {
 		$customRates = $this->getShippingRates();
@@ -583,7 +594,7 @@ class Checkout {
 			if ( ! empty( $package['rates'] ) ) {
 				foreach ( $package['rates'] as $key => $rate ) {
 					if ( isset( $customRates[ $rate->get_id() ] ) ) {
-						$rate->set_cost( $this->applyFilterWoocsExchangeValue( $customRates[ $rate->get_id() ]['cost'] ) );
+						$rate->set_cost( $this->currencySwitcherFacade->getConvertedPrice( $customRates[ $rate->get_id() ]['cost'] ) );
 						WC()->shipping->packages[ $i ]['rates'][ $key ] = $rate;
 					}
 				}
@@ -635,12 +646,18 @@ class Checkout {
 		$chosenCarrier  = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->getTaxClassWithMaxRate();
 
-		if ( $chosenCarrier->supportsAgeVerification() && null !== $carrierOptions->getAgeVerificationFee() && $this->isAgeVerification18PlusRequired() ) {
+		if (
+			null !== $chosenCarrier &&
+			$chosenCarrier->supportsAgeVerification() &&
+			null !== $carrierOptions->getAgeVerificationFee() &&
+			$this->isAgeVerification18PlusRequired()
+		) {
+			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
 			WC()->cart->fees_api()->add_fee(
 				[
 					'id'        => 'packetery-age-verification-fee',
 					'name'      => __( 'Age verification fee', 'packeta' ),
-					'amount'    => $carrierOptions->getAgeVerificationFee(),
+					'amount'    => $feeAmount,
 					'taxable'   => ! ( false === $maxTaxClass ),
 					'tax_class' => $maxTaxClass,
 				]
@@ -659,10 +676,7 @@ class Checkout {
 		}
 
 		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions->toArray(), $this->getCartPrice() );
-
-		// WooCommerce currency-switcher.com compatibility.
-		$applicableSurcharge = $this->applyFilterWoocsExchangeValue( $applicableSurcharge );
-
+		$applicableSurcharge = $this->currencySwitcherFacade->getConvertedPrice( $applicableSurcharge );
 		if ( 0 >= $applicableSurcharge ) {
 			return;
 		}
@@ -688,6 +702,15 @@ class Checkout {
 	}
 
 	/**
+	 * Gets cart content price. Value is cast to float because PHPDoc is not reliable.
+	 *
+	 * @return float
+	 */
+	private function getCartContentPrice(): float {
+		return (float) WC()->cart->get_cart_contents_total();
+	}
+
+	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @return array
@@ -706,7 +729,11 @@ class Checkout {
 			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice                 = $this->getCartPrice();
+		$cartTotalPrice    = $this->getCartPrice();
+		$cartContentPrice  = $this->getCartContentPrice();
+		$areCouponsApplied = ( count( WC()->cart->get_applied_coupons() ) > 0 );
+		$cartPrice         = ( $areCouponsApplied && $cartTotalPrice > $cartContentPrice ) ? $cartContentPrice : $cartTotalPrice;
+
 		$cartWeight                = $this->getCartWeightKg();
 		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
 
@@ -756,7 +783,7 @@ class Checkout {
 	 * @param float     $cartPrice Price.
 	 * @param float|int $cartWeight Weight.
 	 *
-	 * @return int|float|null
+	 * @return ?float
 	 */
 	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight ) {
 		$cost = null;
@@ -772,8 +799,11 @@ class Checkout {
 			return null;
 		}
 
-		if ( $carrierOptions['free_shipping_limit'] && $cartPrice >= $carrierOptions['free_shipping_limit'] ) {
-			$cost = 0;
+		if ( $carrierOptions['free_shipping_limit'] ) {
+			$freeShippingLimit = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions['free_shipping_limit'] );
+			if ( $cartPrice >= $freeShippingLimit ) {
+				$cost = 0;
+			}
 		}
 
 		// WooCommerce currency-switcher.com compatibility.
@@ -876,25 +906,6 @@ class Checkout {
 	 */
 	private function getShortenedRateId( string $chosenMethod ): string {
 		return str_replace( ShippingMethod::PACKETERY_METHOD_ID . ':', '', $chosenMethod );
-	}
-
-	/**
-	 * WooCommerce currency-switcher.com compatibility.
-	 *
-	 * @param float $value Value of the surcharge or transport price.
-	 * @return float
-	 */
-	private function applyFilterWoocsExchangeValue( float $value ): float {
-		if ( 0 < $value ) {
-			/**
-			 * Applies woocs_exchange_value filters.
-			 *
-			 * @since 1.2.7
-			 */
-			$value = (float) apply_filters( 'woocs_exchange_value', $value );
-		}
-
-		return $value;
 	}
 
 	/**
@@ -1026,4 +1037,5 @@ class Checkout {
 
 		return $resultTaxClass;
 	}
+
 }
