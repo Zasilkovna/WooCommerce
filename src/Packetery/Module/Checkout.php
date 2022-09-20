@@ -652,7 +652,7 @@ class Checkout {
 			null !== $carrierOptions->getAgeVerificationFee() &&
 			$this->isAgeVerification18PlusRequired()
 		) {
-			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
+			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee(), CurrencySwitcherFacade::CONTEXT_FEE );
 			WC()->cart->fees_api()->add_fee(
 				[
 					'id'        => 'packetery-age-verification-fee',
@@ -676,7 +676,7 @@ class Checkout {
 		}
 
 		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions->toArray(), $this->getCartPrice() );
-		$applicableSurcharge = $this->currencySwitcherFacade->getConvertedPrice( $applicableSurcharge );
+		$applicableSurcharge = $this->currencySwitcherFacade->getConvertedPrice( $applicableSurcharge, CurrencySwitcherFacade::CONTEXT_FEE );
 		if ( 0 >= $applicableSurcharge ) {
 			return;
 		}
