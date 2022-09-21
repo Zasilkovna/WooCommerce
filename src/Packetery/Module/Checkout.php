@@ -702,24 +702,6 @@ class Checkout {
 	}
 
 	/**
-	 * Gets cart content price. Value is cast to float because PHPDoc is not reliable.
-	 *
-	 * @return float
-	 */
-	private function getCartContentPrice(): float {
-		return (float) WC()->cart->get_cart_contents_total();
-	}
-
-	/**
-	 * Gets cart content tax. Value is cast to float because PHPDoc is not reliable.
-	 *
-	 * @return float
-	 */
-	private function getCartContentTax(): float {
-		return (float) WC()->cart->get_cart_contents_tax();
-	}
-
-	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @return array
@@ -1050,6 +1032,6 @@ class Checkout {
 	 * @return float
 	 */
 	private function getCartPriceIncludingVatWithoutDiscounts():float {
-		return $this->getCartContentPrice() + $this->getCartContentTax();
+		return (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
 	}
 }
