@@ -3,7 +3,6 @@ parameters:
 
 services:
 	- Packetery\Module\ContextResolver
-	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
 	- Packetery\Module\Log\Purger
 	- Packetery\Module\Log\Repository
@@ -15,6 +14,9 @@ services:
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
 	- Packetery\Module\Plugin
+	- Packetery\Module\Order\PacketCanceller
+	- Packetery\Module\Order\PacketSynchronizer
+	- Packetery\Module\Order\PacketSubmitter
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	- Packetery\Module\Options\Page
@@ -35,7 +37,6 @@ services:
 	- Packetery\Module\Order\LabelPrint
 	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
-	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
@@ -47,7 +48,6 @@ services:
 	- Packetery\Module\Order\Modal
 	- Packetery\Module\Options\Exporter
 	- Packetery\Module\Order\CollectionPrint
-	- Packetery\Module\Order\PacketSynchronizer
 	requestFactory: PacketeryNette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
 	- Packetery\Module\Upgrade

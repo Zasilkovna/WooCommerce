@@ -10,14 +10,17 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
-use Packetery\Core\Api\Soap\Client;
+use Packetery\Core\Api\Soap;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Module\Carrier\Options;
+use Packetery\Module\MessageManager;
+use Packetery\Module\Plugin;
 use Packetery\Module\ShippingMethod;
+use PacketeryNette\Http\Request;
 use WC_Order;
 
 /**
@@ -25,14 +28,42 @@ use WC_Order;
  *
  * @package Packetery\Api
  */
-class PacketSubmitter {
+class PacketSubmitter extends PacketActionsBase {
 
 	/**
 	 * SOAP API Client.
 	 *
-	 * @var Client SOAP API Client.
+	 * @var Soap\Client SOAP API Client.
 	 */
-	private $soapApiClient;
+	protected $soapApiClient;
+
+	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	protected $orderRepository;
+
+	/**
+	 * ILogger.
+	 *
+	 * @var Log\ILogger
+	 */
+	protected $logger;
+
+	/**
+	 * Request.
+	 *
+	 * @var Request
+	 */
+	protected $request;
+
+	/**
+	 * Message manager.
+	 *
+	 * @var MessageManager
+	 */
+	protected $messageManager;
 
 	/**
 	 * Order validator.
@@ -42,37 +73,52 @@ class PacketSubmitter {
 	private $orderValidator;
 
 	/**
-	 * ILogger.
-	 *
-	 * @var Log\ILogger
-	 */
-	private $logger;
-
-	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	private $orderRepository;
-
-	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client          $soapApiClient   SOAP API Client.
-	 * @param Validator\Order $orderValidator  Order validator.
-	 * @param Log\ILogger     $logger          Logger.
+	 * @param Soap\Client     $soapApiClient   SOAP API Client.
 	 * @param Repository      $orderRepository Order repository.
+	 * @param Log\ILogger     $logger          Logger.
+	 * @param Request         $request         Request.
+	 * @param MessageManager  $messageManager  Message manager.
+	 * @param Validator\Order $orderValidator  Order validator.
 	 */
 	public function __construct(
-		Client $soapApiClient,
-		Validator\Order $orderValidator,
+		Soap\Client $soapApiClient,
+		Repository $orderRepository,
 		Log\ILogger $logger,
-		Repository $orderRepository
+		Request $request,
+		MessageManager $messageManager,
+		Validator\Order $orderValidator
 	) {
-		$this->soapApiClient   = $soapApiClient;
-		$this->orderValidator  = $orderValidator;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
+		$this->orderValidator = $orderValidator;
+		parent::__construct( $soapApiClient, $orderRepository, $logger, $request, $messageManager );
+	}
+
+	/**
+	 * Process action
+	 *
+	 * @return void
+	 */
+	public function processAction(): void {
+		$this->setAction( self::ACTION_SUBMIT_PACKET );
+		$this->setLogAction( Log\Record::ACTION_PACKET_CANCEL );
+		parent::processAction();
+		$resultsCounter = [
+			'success' => 0,
+			'ignored' => 0,
+			'errors'  => 0,
+			'logs'    => 0,
+		];
+		$this->submitPacket( new WC_Order( $this->orderId ), $resultsCounter );
+
+		if ( 1 === count( $resultsCounter['success'] ) ) {
+			$this->messageManager->flash_message( __( 'Packet was sucessfully created.', 'packeta' ) );
+		} elseif ( 1 === count( $resultsCounter['errors'] ) ) {
+			$this->messageManager->flash_message( __( 'Packet could not be created.', 'packeta' ), MessageManager::TYPE_ERROR );
+		}
+
+		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
+		$this->redirectTo( $redirectTo, $this->order );
 	}
 
 	/**
@@ -85,7 +131,6 @@ class PacketSubmitter {
 		$commonEntity = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
 			$resultsCounter['ignored'] ++;
-
 			return;
 		}
 

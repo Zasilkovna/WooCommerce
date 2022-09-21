@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
@@ -23,41 +22,42 @@ use PacketeryNette\Http\Request;
  *
  * @package Packetery\Api
  */
-class PacketCanceller {
-
-	public const ACTION_CANCEL_PACKET     = 'cancel_packet';
-	public const PARAM_ORDER_ID           = 'order_id';
-	public const PARAM_REDIRECT_TO        = 'packetery_redirect_to';
-	public const REDIRECT_TO_ORDER_GRID   = 'order-grid';
-	public const REDIRECT_TO_ORDER_DETAIL = 'order-detail';
+class PacketCanceller extends PacketActionsBase {
 
 	/**
 	 * SOAP API Client.
 	 *
 	 * @var Soap\Client SOAP API Client.
 	 */
-	private $soapApiClient;
+	protected $soapApiClient;
 
 	/**
 	 * Order repository.
 	 *
 	 * @var Repository
 	 */
-	private $orderRepository;
+	protected $orderRepository;
 
 	/**
 	 * ILogger.
 	 *
 	 * @var Log\ILogger
 	 */
-	private $logger;
+	protected $logger;
 
 	/**
 	 * Request.
 	 *
 	 * @var Request
 	 */
-	private $request;
+	protected $request;
+
+	/**
+	 * Message manager.
+	 *
+	 * @var MessageManager
+	 */
+	protected $messageManager;
 
 	/**
 	 * Options provider.
@@ -67,132 +67,40 @@ class PacketCanceller {
 	private $optionsProvider;
 
 	/**
-	 * Message manager.
-	 *
-	 * @var MessageManager
-	 */
-	private $messageManager;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Soap\Client      $soapApiClient   Soap client API.
-	 * @param Log\ILogger      $logger          Logger.
 	 * @param Repository       $orderRepository Order repository.
+	 * @param Log\ILogger      $logger          Logger.
 	 * @param Request          $request         Request.
-	 * @param Options\Provider $optionsProvider Options provider.
 	 * @param MessageManager   $messageManager  Message manager.
+	 * @param Options\Provider $optionsProvider Options provider.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
-		Log\ILogger $logger,
 		Repository $orderRepository,
+		Log\ILogger $logger,
 		Request $request,
-		Options\Provider $optionsProvider,
-		MessageManager $messageManager
+		MessageManager $messageManager,
+		Options\Provider $optionsProvider
 	) {
-		$this->soapApiClient   = $soapApiClient;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
-		$this->request         = $request;
+		parent::__construct( $soapApiClient, $orderRepository, $logger, $request, $messageManager );
 		$this->optionsProvider = $optionsProvider;
-		$this->messageManager  = $messageManager;
 	}
 
 	/**
-	 * Creates nonce action name.
-	 *
-	 * @param string $action      Action.
-	 * @param string $orderNumber Order number.
-	 *
-	 * @return string
-	 */
-	public static function createNonceAction( string $action, string $orderNumber ): string {
-		return $action . '_' . $orderNumber;
-	}
-
-	/**
-	 * Process actions.
+	 * Process action.
 	 *
 	 * @return void
 	 */
-	public function processActions(): void {
-		$action = $this->request->getQuery( Plugin::PARAM_PACKETERY_ACTION );
-		if ( self::ACTION_CANCEL_PACKET !== $action ) {
-			return;
-		}
+	public function processAction(): void {
+		$this->setAction( self::ACTION_CANCEL_PACKET );
+		$this->setLogAction( Log\Record::ACTION_PACKET_CANCEL );
+		parent::processAction();
 
+		$this->cancelPacket( $this->order );
 		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
-		$order      = null;
-		$orderId    = $this->getOrderId();
-		if ( null !== $orderId ) {
-			$order = $this->orderRepository->getById( $orderId );
-		}
-
-		if ( null === $order ) {
-			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
-			$record->status  = Log\Record::STATUS_ERROR;
-			$record->orderId = null;
-			$record->title   = __( 'Packet cancel error', 'packeta' );
-			$record->params  = [
-				'referer'      => (string) $this->request->getReferer(),
-				'errorMessage' => 'Order not found',
-			];
-
-			$this->logger->add( $record );
-
-			$this->messageManager->flash_message( __( 'Order not found', 'packeta' ), MessageManager::TYPE_ERROR );
-			$this->redirectTo( $redirectTo, $order );
-			return;
-		}
-
-		if ( 1 !== wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( self::ACTION_CANCEL_PACKET, $order->getNumber() ) ) ) {
-			$this->messageManager->flash_message( __( 'Link has expired. Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
-			$this->redirectTo( $redirectTo, $order );
-			return;
-		}
-
-		$this->cancelPacket( $order );
-		$this->redirectTo( $redirectTo, $order );
-	}
-
-	/**
-	 * Redirects.
-	 *
-	 * @param string            $redirectTo Redirect to.
-	 * @param Entity\Order|null $order      Order.
-	 *
-	 * @return void
-	 */
-	private function redirectTo( string $redirectTo, ?Entity\Order $order ): void {
-		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
-			$packetCancelLink = add_query_arg(
-				[
-					'post_type' => 'shop_order',
-				],
-				admin_url( 'edit.php' )
-			);
-
-			if ( wp_safe_redirect( $packetCancelLink ) ) {
-				exit;
-			}
-		}
-
-		if ( self::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $order ) {
-			$packetCancelLink = add_query_arg(
-				[
-					'post_type' => 'shop_order',
-					'post'      => $order->getNumber(),
-					'action'    => 'edit',
-				],
-				admin_url( 'post.php' )
-			);
-
-			if ( wp_safe_redirect( $packetCancelLink ) ) {
-				exit;
-			}
-		}
+		$this->redirectTo( $redirectTo, $this->order );
 	}
 
 	/**
@@ -295,19 +203,5 @@ class PacketCanceller {
 		}
 
 		return $revertSubmission;
-	}
-
-	/**
-	 * Gets order ID.
-	 *
-	 * @return int|null
-	 */
-	private function getOrderId(): ?int {
-		$orderId = $this->request->getQuery( self::PARAM_ORDER_ID );
-		if ( is_numeric( $orderId ) ) {
-			return (int) $orderId;
-		}
-
-		return null;
 	}
 }

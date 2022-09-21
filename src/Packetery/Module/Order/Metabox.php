@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core;
 use Packetery\Core\Helper;
+use Packetery\Core\Validator\Order;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
@@ -61,6 +62,13 @@ class Metabox {
 	/**
 	 * Order form.
 	 *
+	 * @var Order
+	 */
+	private $orderValidator;
+
+	/**
+	 * Order form.
+	 *
 	 * @var Form
 	 */
 	private $order_form;
@@ -106,25 +114,18 @@ class Metabox {
 	 * @param Engine           $latte_engine    PacketeryLatte engine.
 	 * @param MessageManager   $message_manager Message manager.
 	 * @param Helper           $helper          Helper.
+	 * @param Order            $orderValidator  Order validator.
 	 * @param Request          $request         Http request.
 	 * @param Options\Provider $optionsProvider Options provider.
 	 * @param FormFactory      $formFactory     Form factory.
 	 * @param Repository       $orderRepository Order repository.
 	 * @param Log\Page         $logPage         Log page.
 	 */
-	public function __construct(
-		Engine $latte_engine,
-		MessageManager $message_manager,
-		Helper $helper,
-		Request $request,
-		Options\Provider $optionsProvider,
-		FormFactory $formFactory,
-		Repository $orderRepository,
-		Log\Page $logPage
-	) {
+	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper, Order $orderValidator, Request $request, Options\Provider $optionsProvider, FormFactory $formFactory, Repository $orderRepository, Log\Page $logPage ) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
+		$this->orderValidator  = $orderValidator;
 		$this->request         = $request;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
@@ -177,26 +178,26 @@ class Metabox {
 	public function add_fields(): void {
 		$this->order_form->addHidden( 'packetery_order_metabox_nonce' );
 		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+						->setRequired( false )
+						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
 		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+						->setRequired( false )
+						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+						->setRequired( false )
+						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+						->setRequired( false )
+						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
-							->setRequired( false );
+						->setRequired( false );
 		$this->order_form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT );
+						->setRequired( false )
+						->addRule( $this->order_form::FLOAT );
 		$this->order_form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT );
+						->setRequired( false )
+						->addRule( $this->order_form::FLOAT );
 
 		foreach ( Checkout::$pickupPointAttrs as $attrs ) {
 			$this->order_form->addHidden( $attrs['name'] );
@@ -210,7 +211,8 @@ class Metabox {
 	public function render_metabox(): void {
 		global $post;
 
-		$order = $this->orderRepository->getById( (int) $post->ID );
+		$orderId = (int) $post->ID;
+		$order   = $this->orderRepository->getById( $orderId );
 		if ( null === $order ) {
 			return;
 		}
@@ -286,19 +288,33 @@ class Metabox {
 			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
 		];
 
+		$showSubmitPacketButton = (bool) $this->orderValidator->validate( $order );
+		$packetSubmitUrl        = add_query_arg(
+			[
+				PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
+				PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_DETAIL,
+				Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_SUBMIT_PACKET,
+				Plugin::PARAM_NONCE                => wp_create_nonce( PacketSubmitter::createNonceAction( PacketSubmitter::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
+			],
+			admin_url( 'admin.php' )
+		);
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form'                 => $this->order_form,
-				'order'                => $order,
-				'orderCurrency'        => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'widgetSettings'       => $widgetSettings,
-				'logo'                 => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
-				'showLogsLink'         => $showLogsLink,
+				'form'                   => $this->order_form,
+				'order'                  => $order,
+				'showSubmitPacketButton' => $showSubmitPacketButton,
+				'packetSubmitUrl'        => $packetSubmitUrl,
+				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
+				'widgetSettings'         => $widgetSettings,
+				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'showLogsLink'           => $showLogsLink,
 				'hasOrderManualWeight' => $order->hasManualWeight(),
-				'translations'         => [
+				'translations'           => [
 					'showLogs'       => __( 'Show logs', 'packeta' ),
-					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove the field content and save.', 'packeta' ),
+					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
+					'submitPacket'   => __( 'Submit to packeta', 'packeta' ),
 				],
 			]
 		);
@@ -314,11 +330,7 @@ class Metabox {
 	 */
 	public function save_fields( $orderId ) {
 		$order = $this->orderRepository->getById( $orderId );
-		if (
-			null === $order ||
-			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
-			null === $this->request->getPost( 'packetery_order_metabox_nonce' )
-		) {
+		if ( null === $order || ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || null === $this->request->getPost( 'packetery_order_metabox_nonce' ) ) {
 			return $orderId;
 		}
 
