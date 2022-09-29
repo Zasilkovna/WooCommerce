@@ -31,6 +31,23 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 - age verification for 18+, which can be setz up for every product. The order will then require the customer to verify his age during the parcel pickup
 - printing of the list of parcels
 
+#### Filters
+
+WP Filters are used to easily alter preselected system behaviors.
+
+To register filter edit wc-includes/functions.php and add your PHP code after all PHP file includes.
+
+##### Order status filtering
+
+To filter additional orders from Packeta order list when applying Packeta filter, use following sample code.
+
+```
+add_filter( 'packetery_posts_clauses_order_statuses_to_exclude', function (array $statuses): array {
+    $statuses[] = 'wc-cancelled';
+    return $statuses;
+} );
+```
+
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions
