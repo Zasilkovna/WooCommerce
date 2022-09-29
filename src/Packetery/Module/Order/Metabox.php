@@ -28,13 +28,14 @@ use PacketeryNette\Http\Request;
  */
 class Metabox {
 
-	const FIELD_WEIGHT        = 'packetery_weight';
-	const FIELD_WIDTH         = 'packetery_width';
-	const FIELD_LENGTH        = 'packetery_length';
-	const FIELD_HEIGHT        = 'packetery_height';
-	const FIELD_ADULT_CONTENT = 'packetery_adult_content';
-	const FIELD_COD           = 'packetery_COD';
-	const FIELD_VALUE         = 'packetery_value';
+	const FIELD_WEIGHT          = 'packetery_weight';
+	const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
+	const FIELD_WIDTH           = 'packetery_width';
+	const FIELD_LENGTH          = 'packetery_length';
+	const FIELD_HEIGHT          = 'packetery_height';
+	const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
+	const FIELD_COD             = 'packetery_COD';
+	const FIELD_VALUE           = 'packetery_value';
 
 	/**
 	 * PacketeryLatte engine.
@@ -178,6 +179,7 @@ class Metabox {
 		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$this->order_form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
 		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
@@ -256,6 +258,7 @@ class Metabox {
 			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
 				self::FIELD_WEIGHT              => $order->getWeight(),
+				self::FIELD_ORIGINAL_WEIGHT     => $order->getWeight(),
 				self::FIELD_WIDTH               => $order->getWidth(),
 				self::FIELD_LENGTH              => $order->getLength(),
 				self::FIELD_HEIGHT              => $order->getHeight(),
@@ -339,11 +342,21 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			self::FIELD_WEIGHT => ( is_numeric( $values[ self::FIELD_WEIGHT ] ) ? (float) $values[ self::FIELD_WEIGHT ] : null ),
 			self::FIELD_WIDTH  => ( is_numeric( $values[ self::FIELD_WIDTH ] ) ? (float) number_format( $values[ self::FIELD_WIDTH ], 0, '.', '' ) : null ),
 			self::FIELD_LENGTH => ( is_numeric( $values[ self::FIELD_LENGTH ] ) ? (float) number_format( $values[ self::FIELD_LENGTH ], 0, '.', '' ) : null ),
 			self::FIELD_HEIGHT => ( is_numeric( $values[ self::FIELD_HEIGHT ] ) ? (float) number_format( $values[ self::FIELD_HEIGHT ], 0, '.', '' ) : null ),
 		];
+
+		if (
+			is_numeric( $values[ self::FIELD_WEIGHT ] ) &&
+			(float) $values[ self::FIELD_WEIGHT ] !== (float) $values[ self::FIELD_ORIGINAL_WEIGHT ]
+		) {
+			$propsToSave[ self::FIELD_WEIGHT ] = (float) $values[ self::FIELD_WEIGHT ];
+		}
+
+		if ( ! is_numeric( $values[ self::FIELD_WEIGHT ] ) ) {
+			$propsToSave[ self::FIELD_WEIGHT ] = null;
+		}
 
 		if ( $values[ Checkout::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
 			$wcOrder = wc_get_order( $orderId ); // Can not be false due condition at the beginning of method.
