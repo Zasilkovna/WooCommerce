@@ -16,7 +16,8 @@
        [
        'id' => $order->getNumber(),
        'custom_number' => $order->getCustomNumber(),
-       'packetery_weight' => $order->getWeight(),
+       'packetery_weight' => $order->getFinalWeight(),
+       'packetery_original_weight' => $order->getFinalWeight(),
        'packetery_length' => $order->getLength(),
        'packetery_width' => $order->getWidth(),
        'packetery_height' => $order->getHeight(),

@@ -164,21 +164,23 @@ class Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response|WP_Error
 	 */
 	public function saveModal( WP_REST_Request $request ) {
-		$data            = [];
-		$parameters      = $request->get_body_params();
-		$packeteryWeight = $parameters['packeteryWeight'];
-		$packeteryWidth  = $parameters['packeteryWidth'];
-		$packeteryLength = $parameters['packeteryLength'];
-		$packeteryHeight = $parameters['packeteryHeight'];
-		$orderId         = (int) $parameters['orderId'];
+		$data                    = [];
+		$parameters              = $request->get_body_params();
+		$packeteryWeight         = $parameters['packeteryWeight'];
+		$packeteryOriginalWeight = $parameters['packeteryOriginalWeight'];
+		$packeteryWidth          = $parameters['packeteryWidth'];
+		$packeteryLength         = $parameters['packeteryLength'];
+		$packeteryHeight         = $parameters['packeteryHeight'];
+		$orderId                 = (int) $parameters['orderId'];
 
 		$form = $this->orderModal->createForm();
 		$form->setValues(
 			[
-				'packetery_weight' => $packeteryWeight,
-				'packetery_width'  => $packeteryWidth,
-				'packetery_length' => $packeteryLength,
-				'packetery_height' => $packeteryHeight,
+				'packetery_weight'          => $packeteryWeight,
+				'packetery_original_weight' => $packeteryOriginalWeight,
+				'packetery_width'           => $packeteryWidth,
+				'packetery_length'          => $packeteryLength,
+				'packetery_height'          => $packeteryHeight,
 			]
 		);
 
@@ -192,16 +194,23 @@ class Controller extends WP_REST_Controller {
 		}
 
 		$values = $form->getValues( 'array' );
-		if ( ! is_numeric( $values['packetery_weight'] ) ) {
-			$values['packetery_weight'] = $order->getCalculatedWeight();
+		if (
+			is_numeric( $values['packetery_weight'] ) &&
+			(float) $values['packetery_weight'] !== (float) $values['packetery_original_weight']
+		) {
+			$order->setWeight( (float) $values['packetery_weight'] );
 		}
+
+		if ( ! is_numeric( $values['packetery_weight'] ) ) {
+			$order->setWeight( null );
+		}
+
 		foreach ( [ 'packetery_length', 'packetery_width', 'packetery_height' ] as $sizeKey ) {
 			if ( ! is_numeric( $values[ $sizeKey ] ) ) {
 				$values[ $sizeKey ] = null;
 			}
 		}
 
-		$order->setWeight( $values['packetery_weight'] );
 		$size = new Size(
 			$values['packetery_length'],
 			$values['packetery_width'],
@@ -216,7 +225,7 @@ class Controller extends WP_REST_Controller {
 			'fragments'        => [
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
-			'packetery_weight' => $order->getWeight(),
+			'packetery_weight' => $order->getFinalWeight(),
 			'packetery_length' => $order->getLength(),
 			'packetery_width'  => $order->getWidth(),
 			'packetery_height' => $order->getHeight(),

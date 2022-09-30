@@ -638,6 +638,15 @@ class Order {
 	}
 
 	/**
+	 * Gets final weight.
+	 *
+	 * @return float|null
+	 */
+	public function getFinalWeight(): ?float {
+		return $this->weight ?? $this->calculatedWeight;
+	}
+
+	/**
 	 * Gets calculated weight.
 	 *
 	 * @return float|null

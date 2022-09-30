@@ -56,7 +56,7 @@ class Order {
 			$order->getName() &&
 			$order->getSurname() &&
 			$order->getValue() &&
-			$order->getWeight() &&
+			$order->getFinalWeight() &&
 			$order->getPickupPointOrCarrierId() &&
 			$order->getEshop() &&
 			$this->validateAddress( $order ) &&

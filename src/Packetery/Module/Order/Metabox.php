@@ -257,8 +257,8 @@ class Metabox {
 		$this->order_form->setDefaults(
 			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				self::FIELD_WEIGHT              => $order->getWeight(),
-				self::FIELD_ORIGINAL_WEIGHT     => $order->getWeight(),
+				self::FIELD_WEIGHT              => $order->getFinalWeight(),
+				self::FIELD_ORIGINAL_WEIGHT     => $order->getFinalWeight(),
 				self::FIELD_WIDTH               => $order->getWidth(),
 				self::FIELD_LENGTH              => $order->getLength(),
 				self::FIELD_HEIGHT              => $order->getHeight(),
@@ -281,7 +281,7 @@ class Metabox {
 			'language'                  => substr( get_locale(), 0, 2 ),
 			'isAgeVerificationRequired' => $order->containsAdultContent(),
 			'appIdentity'               => Plugin::getAppIdentity(),
-			'weight'                    => $order->getWeight(),
+			'weight'                    => $order->getFinalWeight(),
 			'carriers'                  => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
 			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
 		];

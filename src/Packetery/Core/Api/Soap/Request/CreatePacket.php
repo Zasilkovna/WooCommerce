@@ -162,7 +162,7 @@ class CreatePacket {
 		$this->name      = $order->getName();
 		$this->surname   = $order->getSurname();
 		$this->value     = $order->getValue();
-		$this->weight    = $order->getWeight();
+		$this->weight    = $order->getFinalWeight();
 		$this->addressId = $order->getPickupPointOrCarrierId();
 		$this->eshop     = $order->getEshop();
 		// Optional attributes.
