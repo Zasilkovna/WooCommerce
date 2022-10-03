@@ -103,6 +103,7 @@
 				orderData.packetery_length = response.data.packetery_length;
 				orderData.packetery_width = response.data.packetery_width;
 				orderData.packetery_height = response.data.packetery_height;
+				orderData.manualWeightIconExtraClass = response.data.hasOrderManualWeight === true ? '' : 'packetery-hidden ';
 				$lastModalButtonClicked.data( 'order-data', orderData );
 
 				replaceFragmentsWith( response.data.fragments );

@@ -89,6 +89,7 @@ class Modal {
 					// translators: %s represents order number.
 					'order#%s'        => __( 'Order #%s', 'packeta' ),
 					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
+					'weightIsManual'  => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
 				],
 			]
 		);

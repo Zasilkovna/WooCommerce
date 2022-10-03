@@ -20,6 +20,10 @@
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">
                             <label n:name=$inputName /> ({$orderCurrency|noescape})
                         </div>
+                    {elseif in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_WEIGHT ] ) }
+                        <div class="packetery-table-cell packetery-order-metabox-label-cell">
+                            <label n:name=$inputName />{if $hasOrderManualWeight}<span title="{$translations['weightIsManual']}" class="dashicons dashicons-lock"></span>{/if}
+                        </div>
                     {else}
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">
                             <label n:name=$inputName />

@@ -638,6 +638,15 @@ class Order {
 	}
 
 	/**
+	 * Tells if order has manual weight set.
+	 *
+	 * @return float|null
+	 */
+	public function hasManualWeight(): bool {
+		return null !== $this->weight;
+	}
+
+	/**
 	 * Gets final weight.
 	 *
 	 * @return float|null

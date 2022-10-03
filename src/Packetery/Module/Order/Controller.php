@@ -222,14 +222,15 @@ class Controller extends WP_REST_Controller {
 
 		$data['message'] = __( 'Success', 'packeta' );
 		$data['data']    = [
-			'fragments'        => [
+			'fragments'            => [
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
-			'packetery_weight' => $order->getFinalWeight(),
-			'packetery_length' => $order->getLength(),
-			'packetery_width'  => $order->getWidth(),
-			'packetery_height' => $order->getHeight(),
-			'showWarningIcon'  => $this->orderModal->showWarningIcon( $order ),
+			'packetery_weight'     => $order->getFinalWeight(),
+			'packetery_length'     => $order->getLength(),
+			'packetery_width'      => $order->getWidth(),
+			'packetery_height'     => $order->getHeight(),
+			'showWarningIcon'      => $this->orderModal->showWarningIcon( $order ),
+			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];
 
 		return new WP_REST_Response( $data, 200 );

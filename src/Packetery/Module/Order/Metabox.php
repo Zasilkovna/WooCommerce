@@ -289,14 +289,16 @@ class Metabox {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form'           => $this->order_form,
-				'order'          => $order,
-				'orderCurrency'  => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'widgetSettings' => $widgetSettings,
-				'logo'           => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
-				'showLogsLink'   => $showLogsLink,
-				'translations'   => [
-					'showLogs' => __( 'Show logs', 'packeta' ),
+				'form'                 => $this->order_form,
+				'order'                => $order,
+				'orderCurrency'        => get_woocommerce_currency_symbol( $order->getCurrency() ),
+				'widgetSettings'       => $widgetSettings,
+				'logo'                 => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'showLogsLink'         => $showLogsLink,
+				'hasOrderManualWeight' => $order->hasManualWeight(),
+				'translations'         => [
+					'showLogs'       => __( 'Show logs', 'packeta' ),
+					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
 				],
 			]
 		);

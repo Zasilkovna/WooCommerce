@@ -21,6 +21,7 @@
        'packetery_length' => $order->getLength(),
        'packetery_width' => $order->getWidth(),
        'packetery_height' => $order->getHeight(),
+       'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',
        ]
        )}"
        title="{$translations['setAdditionalPacketInfo']}"
