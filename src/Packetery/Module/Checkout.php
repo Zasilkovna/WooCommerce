@@ -720,7 +720,7 @@ class Checkout {
 			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
 		}
 
-		$cartPrice = $this->getCartPriceIncludingVatWithoutDiscounts();
+		$cartPrice = $this->getCartContentsTotalIncludingTax();
 
 		$cartWeight                = $this->getCartWeightKg();
 		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
@@ -1027,11 +1027,11 @@ class Checkout {
 	}
 
 	/**
-	 * Tells cart price with VAT and without Discounts.
+	 * Tells cart contents total price including tax and discounts.
 	 *
 	 * @return float
 	 */
-	private function getCartPriceIncludingVatWithoutDiscounts():float {
+	private function getCartContentsTotalIncludingTax():float {
 		return (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
 	}
 }
