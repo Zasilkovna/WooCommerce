@@ -156,63 +156,7 @@ class BulkActions {
 			$orderId = null;
 		}
 
-		$success = null;
-		if ( is_numeric( $get['success'] ) && $get['success'] > 0 ) {
-			if ( $get['logs'] > 0 ) {
-				$success = sprintf(
-					// translators: 1: link start 2: link end.
-					esc_html__( 'Shipments were submitted successfully. %1$sShow logs%2$s', 'packeta' ),
-					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
-					'</a>'
-				);
-			} else {
-				$success = esc_html__( 'Shipments were submitted successfully.', 'packeta' );
-			}
-		}
-		$ignored = null;
-		if ( is_numeric( $get['ignored'] ) && $get['ignored'] > 0 ) {
-			if ( $get['logs'] > 0 ) {
-				$ignored = sprintf(
-					// translators: 1: total number of shipments 2: link start 3: link end.
-					esc_html__( 'Some shipments (%1$s in total) were not submitted (these were submitted already or are not Packeta orders). %2$sShow logs%3$s', 'packeta' ),
-					$get['ignored'],
-					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
-					'</a>'
-				);
-			} else {
-				$ignored = sprintf(
-					// translators: %s is count.
-					esc_html__( 'Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders).', 'packeta' ),
-					$get['ignored']
-				);
-			}
-		}
-		$errors = null;
-		if ( is_numeric( $get['errors'] ) && $get['errors'] > 0 ) {
-			if ( $get['logs'] > 0 ) {
-				$errors = sprintf(
-					// translators: 1: total number of shipments 2: link start 3: link end.
-					esc_html__( 'Some shipments (%1$s in total) failed to be submitted to Packeta. %2$sShow logs%3$s', 'packeta' ),
-					$get['errors'],
-					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
-					'</a>'
-				);
-			} else {
-				$errors = sprintf(
-					// translators: %s is count.
-					esc_html__( 'Some shipments (%s in total) failed to be submitted to Packeta.', 'packeta' ),
-					$get['errors']
-				);
-			}
-		} elseif ( isset( $get['errors'] ) ) {
-			$errors = $get['errors'];
-		}
-
-		$latteParams = [
-			'success' => $success,
-			'ignored' => $ignored,
-			'errors'  => $errors,
-		];
+		$latteParams = $this->packetSubmitter->getTranslatedSubmissionMessages( $get, $orderId );
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/export-result.latte', $latteParams );
 	}
 }

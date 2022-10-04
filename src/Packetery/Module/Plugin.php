@@ -394,7 +394,7 @@ class Plugin {
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
-		add_action( 'admin_init', [ $this, 'handlePacketActions' ] );
+		add_action( 'admin_init', [ $this, 'handleActions' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
@@ -868,14 +868,14 @@ class Plugin {
 	 *
 	 * @return void
 	 */
-	public function handlePacketActions(): void {
+	public function handleActions(): void {
 		$action = $this->request->getQuery( self::PARAM_PACKETERY_ACTION );
 
-		if ( $this->packetSubmitter::ACTION_SUBMIT_PACKET === $action ) {
+		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET === $action ) {
 			$this->packetSubmitter->processAction();
 		}
 
-		if ( $this->packetCanceller::ACTION_CANCEL_PACKET === $action ) {
+		if ( Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET === $action ) {
 			$this->packetCanceller->processAction();
 		}
 	}

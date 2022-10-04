@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core;
 use Packetery\Core\Helper;
-use Packetery\Core\Validator\Order;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
@@ -62,13 +61,6 @@ class Metabox {
 	/**
 	 * Order form.
 	 *
-	 * @var Order
-	 */
-	private $orderValidator;
-
-	/**
-	 * Order form.
-	 *
 	 * @var Form
 	 */
 	private $order_form;
@@ -114,18 +106,25 @@ class Metabox {
 	 * @param Engine           $latte_engine    PacketeryLatte engine.
 	 * @param MessageManager   $message_manager Message manager.
 	 * @param Helper           $helper          Helper.
-	 * @param Order            $orderValidator  Order validator.
 	 * @param Request          $request         Http request.
 	 * @param Options\Provider $optionsProvider Options provider.
 	 * @param FormFactory      $formFactory     Form factory.
 	 * @param Repository       $orderRepository Order repository.
 	 * @param Log\Page         $logPage         Log page.
 	 */
-	public function __construct( Engine $latte_engine, MessageManager $message_manager, Helper $helper, Order $orderValidator, Request $request, Options\Provider $optionsProvider, FormFactory $formFactory, Repository $orderRepository, Log\Page $logPage ) {
+	public function __construct(
+		Engine $latte_engine,
+		MessageManager $message_manager,
+		Helper $helper,
+		Request $request,
+		Options\Provider $optionsProvider,
+		FormFactory $formFactory,
+		Repository $orderRepository,
+		Log\Page $logPage
+	) {
 		$this->latte_engine    = $latte_engine;
 		$this->message_manager = $message_manager;
 		$this->helper          = $helper;
-		$this->orderValidator  = $orderValidator;
 		$this->request         = $request;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
@@ -225,10 +224,10 @@ class Metabox {
 		if ( $packetId ) {
 			$packetCancelLink = add_query_arg(
 				[
-					PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
-					PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_DETAIL,
-					Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
-					Plugin::PARAM_NONCE                => wp_create_nonce( PacketCanceller::createNonceAction( PacketCanceller::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+					PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+					PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+					Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+					Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
 				],
 				admin_url( 'admin.php' )
 			);
@@ -287,13 +286,13 @@ class Metabox {
 			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
 		];
 
-		$showSubmitPacketButton = (bool) $this->orderValidator->validate( $order );
+		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
 		$packetSubmitUrl        = add_query_arg(
 			[
-				PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
-				PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_DETAIL,
-				Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_SUBMIT_PACKET,
-				Plugin::PARAM_NONCE                => wp_create_nonce( PacketSubmitter::createNonceAction( PacketSubmitter::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
+				PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+				PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+				Plugin::PARAM_PACKETERY_ACTION           => PacketActionsCommonLogic::ACTION_SUBMIT_PACKET,
+				Plugin::PARAM_NONCE                      => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
 			],
 			admin_url( 'admin.php' )
 		);
@@ -309,7 +308,7 @@ class Metabox {
 				'widgetSettings'         => $widgetSettings,
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,
-				'hasOrderManualWeight' => $order->hasManualWeight(),
+				'hasOrderManualWeight'   => $order->hasManualWeight(),
 				'translations'           => [
 					'showLogs'       => __( 'Show logs', 'packeta' ),
 					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),

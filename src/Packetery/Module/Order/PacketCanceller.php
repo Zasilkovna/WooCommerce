@@ -2,7 +2,7 @@
 /**
  * Class PacketCanceller
  *
- * @package Packetery\Api
+ * @package Packetery\Module\Order
  */
 
 declare( strict_types=1 );
@@ -14,50 +14,42 @@ use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
-use Packetery\Module\Plugin;
 use PacketeryNette\Http\Request;
 
 /**
  * Class PacketCanceller
  *
- * @package Packetery\Api
+ * @package Packetery\Module\Order
  */
-class PacketCanceller extends PacketActionsBase {
+class PacketCanceller {
 
 	/**
 	 * SOAP API Client.
 	 *
 	 * @var Soap\Client SOAP API Client.
 	 */
-	protected $soapApiClient;
+	private $soapApiClient;
 
 	/**
 	 * Order repository.
 	 *
 	 * @var Repository
 	 */
-	protected $orderRepository;
+	private $orderRepository;
 
 	/**
 	 * ILogger.
 	 *
 	 * @var Log\ILogger
 	 */
-	protected $logger;
+	private $logger;
 
 	/**
 	 * Request.
 	 *
 	 * @var Request
 	 */
-	protected $request;
-
-	/**
-	 * Message manager.
-	 *
-	 * @var MessageManager
-	 */
-	protected $messageManager;
+	private $request;
 
 	/**
 	 * Options provider.
@@ -67,25 +59,46 @@ class PacketCanceller extends PacketActionsBase {
 	private $optionsProvider;
 
 	/**
+	 * Message manager.
+	 *
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
+	 * Common logic.
+	 *
+	 * @var PacketActionsCommonLogic
+	 */
+	private $commonLogic;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Soap\Client      $soapApiClient   Soap client API.
-	 * @param Repository       $orderRepository Order repository.
-	 * @param Log\ILogger      $logger          Logger.
-	 * @param Request          $request         Request.
-	 * @param MessageManager   $messageManager  Message manager.
-	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param Soap\Client              $soapApiClient   Soap client API.
+	 * @param Log\ILogger              $logger          Logger.
+	 * @param Repository               $orderRepository Order repository.
+	 * @param Request                  $request         Request.
+	 * @param Options\Provider         $optionsProvider Options provider.
+	 * @param MessageManager           $messageManager  Message manager.
+	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
-		Repository $orderRepository,
 		Log\ILogger $logger,
+		Repository $orderRepository,
 		Request $request,
+		Options\Provider $optionsProvider,
 		MessageManager $messageManager,
-		Options\Provider $optionsProvider
+		PacketActionsCommonLogic $commonLogic
 	) {
-		parent::__construct( $soapApiClient, $orderRepository, $logger, $request, $messageManager );
+		$this->soapApiClient   = $soapApiClient;
+		$this->logger          = $logger;
+		$this->orderRepository = $orderRepository;
+		$this->request         = $request;
 		$this->optionsProvider = $optionsProvider;
+		$this->messageManager  = $messageManager;
+		$this->commonLogic     = $commonLogic;
 	}
 
 	/**
@@ -94,13 +107,31 @@ class PacketCanceller extends PacketActionsBase {
 	 * @return void
 	 */
 	public function processAction(): void {
-		$this->setAction( self::ACTION_CANCEL_PACKET );
-		$this->setLogAction( Log\Record::ACTION_PACKET_CANCEL );
-		parent::processAction();
+		$order = $this->commonLogic->getOrder();
 
-		$this->cancelPacket( $this->order );
-		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
-		$this->redirectTo( $redirectTo, $this->order );
+		if ( null === $order ) {
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
+			$record->status  = Log\Record::STATUS_ERROR;
+			$record->orderId = null;
+			$record->title   = __( 'Packet cancel error', 'packeta' );
+			$record->params  = [
+				'referer'      => (string) $this->request->getReferer(),
+				'errorMessage' => 'Order not found',
+			];
+
+			$this->logger->add( $record );
+
+			$this->messageManager->flash_message( __( 'Order not found', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->commonLogic->redirectTo( $redirectTo, $order );
+			return;
+		}
+
+		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order );
+
+		$this->cancelPacket( $order );
+		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 
 	/**

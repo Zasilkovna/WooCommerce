@@ -35,6 +35,7 @@ services:
 	- Packetery\Module\Order\LabelPrint
 	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
+	- Packetery\Module\Order\PacketActionsCommonLogic
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\Order\Builder
