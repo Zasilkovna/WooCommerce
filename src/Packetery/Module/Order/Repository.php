@@ -68,22 +68,22 @@ class Repository {
 		 * @param \WP_Query $queryObject WP Query.
 		 * @param array $paramValues Param values.
 		 */
-		$orderStatusesToExclude = apply_filters( 'packetery_posts_clauses_order_statuses_to_exclude', [], $queryObject, $paramValues );
+		$orderStatusesToExclude = apply_filters( 'packetery_orders_with_statuses_to_exclude_in_listing', [], $queryObject, $paramValues );
 		if ( ! $orderStatusesToExclude ) {
 			return;
 		}
 
-		$clauses['where'] .= ' AND `' . $this->wpdb->posts . '`.`post_status` NOT IN (' .
-							implode(
-								',',
-								array_map(
-									function ( string $orderStatus ) {
-										return '"' . $this->wpdb->_real_escape( $orderStatus ) . '"';
-									},
-									$orderStatusesToExclude
-								)
-							)
-							. ')';
+		$sqlStatusesToExclude = implode(
+			',',
+			array_map(
+				function ( string $orderStatus ): string {
+					return sprintf( '"%s"', $this->wpdb->_real_escape( $orderStatus ) );
+				},
+				$orderStatusesToExclude
+			)
+		);
+
+		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdb->posts, $sqlStatusesToExclude );
 	}
 
 	/**
