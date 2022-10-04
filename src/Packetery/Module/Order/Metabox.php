@@ -178,26 +178,26 @@ class Metabox {
 	public function add_fields(): void {
 		$this->order_form->addHidden( 'packetery_order_metabox_nonce' );
 		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
-						->setRequired( false )
-						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
 		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
-						->setRequired( false )
-						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
-						->setRequired( false )
-						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
-						->setRequired( false )
-						->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$this->order_form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
-						->setRequired( false );
+							->setRequired( false );
 		$this->order_form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
-						->setRequired( false )
-						->addRule( $this->order_form::FLOAT );
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT );
 		$this->order_form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
-						->setRequired( false )
-						->addRule( $this->order_form::FLOAT );
+							->setRequired( false )
+							->addRule( $this->order_form::FLOAT );
 
 		foreach ( Checkout::$pickupPointAttrs as $attrs ) {
 			$this->order_form->addHidden( $attrs['name'] );
@@ -211,8 +211,7 @@ class Metabox {
 	public function render_metabox(): void {
 		global $post;
 
-		$orderId = (int) $post->ID;
-		$order   = $this->orderRepository->getById( $orderId );
+		$order = $this->orderRepository->getById( (int) $post->ID );
 		if ( null === $order ) {
 			return;
 		}
@@ -330,7 +329,11 @@ class Metabox {
 	 */
 	public function save_fields( $orderId ) {
 		$order = $this->orderRepository->getById( $orderId );
-		if ( null === $order || ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || null === $this->request->getPost( 'packetery_order_metabox_nonce' ) ) {
+		if (
+			null === $order ||
+			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
+			null === $this->request->getPost( 'packetery_order_metabox_nonce' )
+		) {
 			return $orderId;
 		}
 

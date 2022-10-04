@@ -12,53 +12,21 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api;
 use Packetery\Core\Log;
-use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
-use PacketeryNette\Http\Request;
-use Packetery\Core\Api\Soap;
-
 
 /**
  * Class Synchronizer
  *
  * @package Packetery\Module\Order
  */
-class PacketSynchronizer extends PacketActionsBase {
+class PacketSynchronizer {
 
 	/**
-	 * SOAP API Client.
+	 * API soap client.
 	 *
-	 * @var Soap\Client SOAP API Client.
+	 * @var Api\Soap\Client
 	 */
-	protected $soapApiClient;
-
-	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	protected $orderRepository;
-
-	/**
-	 * ILogger.
-	 *
-	 * @var Log\ILogger
-	 */
-	protected $logger;
-
-	/**
-	 * Request.
-	 *
-	 * @var Request
-	 */
-	protected $request;
-
-	/**
-	 * Message manager.
-	 *
-	 * @var MessageManager
-	 */
-	protected $messageManager;
+	private $apiSoapClient;
 
 	/**
 	 * Options provider.
@@ -67,27 +35,38 @@ class PacketSynchronizer extends PacketActionsBase {
 	 */
 	private $optionsProvider;
 
+	/**
+	 * Logger.
+	 *
+	 * @var Log\ILogger
+	 */
+	private $logger;
 
 	/**
-	 * PacketSynchronizer constructor.
+	 * Order repository.
 	 *
-	 * @param Soap\Client      $soapApiClient   SOAP API Client.
-	 * @param Repository       $orderRepository Order repository.
+	 * @var Repository
+	 */
+	private $orderRepository;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param Api\Soap\Client  $apiSoapClient   API soap client.
 	 * @param Log\ILogger      $logger          Logger.
-	 * @param Request          $request         Request.
-	 * @param MessageManager   $messageManager  Message manager.
 	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param Repository       $orderRepository Order repository.
 	 */
 	public function __construct(
-		Soap\Client $soapApiClient,
-		Repository $orderRepository,
+		Api\Soap\Client $apiSoapClient,
 		Log\ILogger $logger,
-		Request $request,
-		MessageManager $messageManager,
-		Options\Provider $optionsProvider
+		Options\Provider $optionsProvider,
+		Repository $orderRepository
 	) {
-		parent::__construct( $soapApiClient, $orderRepository, $logger, $request, $messageManager );
+		$this->apiSoapClient   = $apiSoapClient;
+		$this->logger          = $logger;
 		$this->optionsProvider = $optionsProvider;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -107,7 +86,7 @@ class PacketSynchronizer extends PacketActionsBase {
 			$packetId = $order->getPacketId();
 
 			$request  = new Api\Soap\Request\PacketStatus( (int) $packetId );
-			$response = $this->soapApiClient->packetStatus( $request );
+			$response = $this->apiSoapClient->packetStatus( $request );
 
 			if ( $response->hasFault() ) {
 				$record          = new Log\Record();
