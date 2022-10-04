@@ -18,6 +18,9 @@ namespace Packetery\Core;
 class Helper {
 	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
 	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+	public const ROUND_UP              = 1;
+	public const ROUND_DOWN            = -1;
+	public const DONT_ROUND            = 0;
 
 	/**
 	 * Simplifies weight.
@@ -65,5 +68,78 @@ class Helper {
 	 */
 	public static function now(): \DateTimeImmutable {
 		return new \DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+	}
+
+	/**
+	 * Returns rounded amount.
+	 *
+	 * @param float $amount Amount.
+	 * @param int   $roundingType Type of rounding.
+	 * @param int   $precision Precision (number of digits after decimal point).
+	 *
+	 * @return float
+	 */
+	public static function customRound( float $amount, int $roundingType, int $precision ): float {
+		$amount *= 10 ** $precision;
+
+		if ( self::ROUND_DOWN === $roundingType ) {
+			return floor( $amount );
+		}
+
+		if ( self::ROUND_UP === $roundingType ) {
+			return ceil( $amount );
+		}
+
+		$amount /= ( 10 ** $precision );
+
+		return $amount;
+	}
+
+	/**
+	 * Returns rounded amount to multiple of 5.
+	 *
+	 * @param float $amount Amount.
+	 * @param int   $roundingType Type of rounding.
+	 *
+	 * @return float
+	 */
+	private static function roundToMultipleOfFive( float $amount, int $roundingType ): float {
+		$amountDivided    = $amount / 5;
+		$intAmountDivided = (int) $amountDivided;
+
+		if ( $amountDivided == $intAmountDivided ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			return $amount;
+		}
+
+		if ( self::ROUND_UP === $roundingType ) {
+			return 5 * ( $intAmountDivided + 1 );
+		}
+
+		if ( self::ROUND_DOWN === $roundingType ) {
+			return 5 * $intAmountDivided;
+		}
+
+		return $amount;
+	}
+
+	/**
+	 * Returns rounded amount according to currency and currency constraints of Packeta API
+	 *
+	 * @param float  $amount Amount.
+	 * @param int    $roundingType Type of rounding.
+	 * @param string $currencyCode Currency code.
+	 *
+	 * @return float
+	 */
+	public static function customRoundByCurrency( float $amount, int $roundingType, string $currencyCode ): float {
+		if ( 'CZK' === $currencyCode ) {
+			return self::customRound( $amount, $roundingType, 0 );
+		}
+
+		if ( 'HUF' === $currencyCode ) {
+			return self::roundToMultipleOfFive( $amount, $roundingType );
+		}
+
+		return self::customRound( $amount, $roundingType, 2 );
 	}
 }

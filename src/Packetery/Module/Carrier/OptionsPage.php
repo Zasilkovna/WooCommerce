@@ -179,6 +179,14 @@ class OptionsPage {
 				->addRule( Form::MIN, null, 0 );
 		}
 
+		$roundingOptions = [
+			Helper::DONT_ROUND => __( 'No rounding', 'packeta' ),
+			Helper::ROUND_DOWN => __( 'Always round down', 'packeta' ),
+			Helper::ROUND_UP   => __( 'Alaways round up', 'packeta' ),
+		];
+		$form->addSelect( 'rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
+			->setDefaultValue( Helper::DONT_ROUND );
+
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
@@ -323,6 +331,7 @@ class OptionsPage {
 						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
 						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
 						'addressValidationDescription' => __( 'Customer address validation.', 'packeta' ),
+						'roundingDescription'          => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
 						'saveChanges'                  => __( 'Save changes', 'packeta' ),
 						'packeta'                      => __( 'Packeta', 'packeta' ),
 						'countryOptions'               => __( 'Country options', 'packeta' ),
