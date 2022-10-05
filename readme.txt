@@ -80,7 +80,7 @@ Added: Dashboard support widget
 Added: Tax to COD surcharge and Age verification fee
 Added: Stockie theme support
 Added: Calculation of exceeding the Free shipping limit without discount from coupons
-Added: Free shipping limit calculation independent of tax or tax-free pricing settings
+Added: Free shipping limit is triggered by cart price including VAT
 Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
 Added: Support for CURCY - Multi Currency for Woocommerce plugin
 Updated: Packaging weight plugin option re-labeled
