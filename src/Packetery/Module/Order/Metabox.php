@@ -349,15 +349,10 @@ class Metabox {
 			self::FIELD_HEIGHT => ( is_numeric( $values[ self::FIELD_HEIGHT ] ) ? (float) number_format( $values[ self::FIELD_HEIGHT ], 0, '.', '' ) : null ),
 		];
 
-		if (
-			is_numeric( $values[ self::FIELD_WEIGHT ] ) &&
-			(float) $values[ self::FIELD_WEIGHT ] !== (float) $values[ self::FIELD_ORIGINAL_WEIGHT ]
-		) {
-			$propsToSave[ self::FIELD_WEIGHT ] = (float) $values[ self::FIELD_WEIGHT ];
-		}
-
 		if ( ! is_numeric( $values[ self::FIELD_WEIGHT ] ) ) {
 			$propsToSave[ self::FIELD_WEIGHT ] = null;
+		} elseif ( (float) $values[ self::FIELD_WEIGHT ] !== (float) $values[ self::FIELD_ORIGINAL_WEIGHT ] ) {
+			$propsToSave[ self::FIELD_WEIGHT ] = (float) $values[ self::FIELD_WEIGHT ];
 		}
 
 		if ( $values[ Checkout::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {

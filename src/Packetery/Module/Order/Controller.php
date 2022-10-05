@@ -194,15 +194,11 @@ class Controller extends WP_REST_Controller {
 		}
 
 		$values = $form->getValues( 'array' );
-		if (
-			is_numeric( $values['packetery_weight'] ) &&
-			(float) $values['packetery_weight'] !== (float) $values['packetery_original_weight']
-		) {
-			$order->setWeight( (float) $values['packetery_weight'] );
-		}
 
 		if ( ! is_numeric( $values['packetery_weight'] ) ) {
 			$order->setWeight( null );
+		} elseif ( (float) $values['packetery_weight'] !== (float) $values['packetery_original_weight'] ) {
+			$order->setWeight( (float) $values['packetery_weight'] );
 		}
 
 		foreach ( [ 'packetery_length', 'packetery_width', 'packetery_height' ] as $sizeKey ) {
