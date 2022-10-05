@@ -142,9 +142,9 @@ class Modal {
 	 * @return bool
 	 */
 	public function showWarningIcon( Order $order ): bool {
-		$isSizeValid    = $this->orderValidator->validateSize( $order );
-		$isWeightFilled = ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 );
+		$isSizeValid = $this->orderValidator->validateSize( $order );
+		$hasWeight   = ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 );
 
-		return ! ( $isSizeValid && $isWeightFilled );
+		return ! ( $isSizeValid && $hasWeight );
 	}
 }
