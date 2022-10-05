@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Core\Entity\Carrier;
+use Packetery\Core\Helper;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -26,6 +28,7 @@ class Provider {
 	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
 	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 	const FORCE_PACKET_CANCEL_DEFAULT               = true;
+	const CARRIER_PREFIX                     = 'carrier_';
 
 	/**
 	 *  Options data.
@@ -374,5 +377,22 @@ class Provider {
 		}
 
 		return $carrierLabelFormats;
+	}
+
+	/**
+	 * Gets rounding type of carrier from options.
+	 *
+	 * @param Carrier|null $carrier Carrier.
+	 *
+	 * @return int
+	 */
+	public function getCarrierRoundingType( ?Carrier $carrier ): int {
+
+		if ( null === $carrier ) {
+			return Helper::DONT_ROUND;
+		}
+		$carrierOptions = $this->get( self::CARRIER_PREFIX . $carrier->getId() );
+
+		return $carrierOptions['rounding'] ?? Helper::DONT_ROUND;
 	}
 }

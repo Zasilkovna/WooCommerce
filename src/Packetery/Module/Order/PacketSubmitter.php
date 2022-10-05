@@ -13,8 +13,10 @@ use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
+use Packetery\Core\Helper;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 
@@ -54,23 +56,33 @@ class PacketSubmitter {
 	private $orderRepository;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Client          $soapApiClient   SOAP API Client.
 	 * @param Validator\Order $orderValidator  Order validator.
 	 * @param Log\ILogger     $logger          Logger.
 	 * @param Repository      $orderRepository Order repository.
+	 * @param Provider        $optionsProvider Options provider.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
-		Repository $orderRepository
+		Repository $orderRepository,
+		Provider $optionsProvider
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->orderValidator  = $orderValidator;
 		$this->logger          = $logger;
 		$this->orderRepository = $orderRepository;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -169,6 +181,11 @@ class PacketSubmitter {
 			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
 		*/
+
+		if ( null !== $order->getCod() ) {
+			$roundingType = $this->optionsProvider->getCarrierRoundingType( $order->getCarrier() );
+			$order->setCod( Helper::customRoundByCurrency( $order->getCod(), $roundingType, $order->getCurrency() ) );
+		}
 
 		return new CreatePacket(
 			/**
