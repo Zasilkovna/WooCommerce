@@ -449,4 +449,20 @@ class Repository {
 		return false === $this->hasPickupPoints( (int) $carrierId );
 	}
 
+	/**
+	 * Tells zpoint carrier Id for given country.
+	 *
+	 * @param string $country Country ISO code.
+	 *
+	 * @return string|null
+	 */
+	public function getZpointCarrierIdByCountry( string $country ): ?string {
+		$zpointCarriers = $this->getZpointCarriers();
+
+		if ( isset( $zpointCarriers[ $country ] ) && isset( $zpointCarriers[ $country ]['id'] ) ) {
+			return $zpointCarriers[ $country ]['id'];
+		}
+
+		return null;
+	}
 }

@@ -29,6 +29,7 @@ class Provider {
 	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 	const FORCE_PACKET_CANCEL_DEFAULT               = true;
 	const CARRIER_PREFIX                     = 'carrier_';
+	const PACKETERY_PREFIX                   = 'packetery_';
 
 	/**
 	 *  Options data.
@@ -382,16 +383,16 @@ class Provider {
 	/**
 	 * Gets rounding type of carrier from options.
 	 *
-	 * @param Carrier|null $carrier Carrier.
+	 * @param string|null $carrierId
 	 *
 	 * @return int
 	 */
-	public function getCarrierRoundingType( ?Carrier $carrier ): int {
+	public function getCarrierRoundingType( ?string $carrierId ): int {
 
-		if ( null === $carrier ) {
+		if ( null === $carrierId ) {
 			return Helper::DONT_ROUND;
 		}
-		$carrierOptions = $this->get( self::CARRIER_PREFIX . $carrier->getId() );
+		$carrierOptions = get_option( self::PACKETERY_PREFIX . self::CARRIER_PREFIX . $carrierId );
 
 		return $carrierOptions['rounding'] ?? Helper::DONT_ROUND;
 	}

@@ -18,6 +18,7 @@ use Packetery\Core\Log;
 use Packetery\Core\Validator;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\ShippingMethod;
+use Packetery\Module\Carrier\Repository as CarrierRepository;
 use WC_Order;
 
 /**
@@ -63,26 +64,36 @@ class PacketSubmitter {
 	private $optionsProvider;
 
 	/**
+	 * Carrier repository
+	 *
+	 * @var CarrierRepository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client          $soapApiClient   SOAP API Client.
-	 * @param Validator\Order $orderValidator  Order validator.
-	 * @param Log\ILogger     $logger          Logger.
-	 * @param Repository      $orderRepository Order repository.
-	 * @param Provider        $optionsProvider Options provider.
+	 * @param Client            $soapApiClient   SOAP API Client.
+	 * @param Validator\Order   $orderValidator  Order validator.
+	 * @param Log\ILogger       $logger          Logger.
+	 * @param Repository        $orderRepository Order repository.
+	 * @param Provider          $optionsProvider Options provider.
+	 * @param CarrierRepository $carrierRepository Carrier repository.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
 		Repository $orderRepository,
-		Provider $optionsProvider
+		Provider $optionsProvider,
+		CarrierRepository $carrierRepository
 	) {
-		$this->soapApiClient   = $soapApiClient;
-		$this->orderValidator  = $orderValidator;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
-		$this->optionsProvider = $optionsProvider;
+		$this->soapApiClient     = $soapApiClient;
+		$this->orderValidator    = $orderValidator;
+		$this->logger            = $logger;
+		$this->orderRepository   = $orderRepository;
+		$this->optionsProvider   = $optionsProvider;
+		$this->carrierRepository = $carrierRepository;
 	}
 
 	/**
@@ -183,8 +194,17 @@ class PacketSubmitter {
 		*/
 
 		if ( null !== $order->getCod() ) {
-			$roundingType = $this->optionsProvider->getCarrierRoundingType( $order->getCarrier() );
+			$carrierId = $order->getCarrierId();
+			if ( CarrierRepository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+				$wcOrder = wc_get_order( $order->getNumber() );
+				if ( $wcOrder instanceof WC_Order ) {
+					$carrierId = $this->carrierRepository->getZpointCarrierIdByCountry( strtolower( $wcOrder->get_shipping_country() ) );
+				}
+			}
+
+			$roundingType = $this->optionsProvider->getCarrierRoundingType( $carrierId );
 			$order->setCod( Helper::customRoundByCurrency( $order->getCod(), $roundingType, $order->getCurrency() ) );
+
 		}
 
 		return new CreatePacket(
