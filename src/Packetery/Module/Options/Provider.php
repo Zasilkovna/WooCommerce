@@ -383,7 +383,7 @@ class Provider {
 	/**
 	 * Gets rounding type of carrier from options.
 	 *
-	 * @param string|null $carrierId
+	 * @param string|null $carrierId CarrierId.
 	 *
 	 * @return int
 	 */
