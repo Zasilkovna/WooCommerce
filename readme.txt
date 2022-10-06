@@ -85,6 +85,7 @@ Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
 Added: Packeta button in main menu moved by default to the last position. Final order can be affected by other installed plugins.
 Added: Support for CURCY - Multi Currency for Woocommerce plugin
 Updated: Packaging weight plugin option re-labeled
+Updated: removal of widget button container class "place-order", providing compatibility with WP Germanized plugin
 
 = 1.3.2 =
 * Fixed: Other shipping methods support
