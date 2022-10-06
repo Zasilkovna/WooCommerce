@@ -105,19 +105,13 @@ class Helper {
 	 * @return float
 	 */
 	private static function roundToMultipleOfFive( float $amount, int $roundingType ): float {
-		$amountDivided    = $amount / 5;
-		$intAmountDivided = (int) $amountDivided;
-
-		if ( $amountDivided == $intAmountDivided ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
-			return $amount;
-		}
 
 		if ( self::ROUND_UP === $roundingType ) {
-			return 5 * ( $intAmountDivided + 1 );
+			return 5 * ceil( $amount / 5 );
 		}
 
 		if ( self::ROUND_DOWN === $roundingType ) {
-			return 5 * $intAmountDivided;
+			return 5 * floor( $amount / 5 );
 		}
 
 		return $amount;
