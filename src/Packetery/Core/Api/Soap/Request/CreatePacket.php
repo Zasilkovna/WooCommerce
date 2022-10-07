@@ -212,4 +212,14 @@ class CreatePacket {
 		return array_filter( get_object_vars( $this ) );
 	}
 
+	/**
+	 * Setter for COD.
+	 *
+	 * @param float $cod Cash on delivery.
+	 *
+	 * @return void
+	 */
+	public function setCod( float $cod ): void {
+		$this->cod = $cod;
+	}
 }
