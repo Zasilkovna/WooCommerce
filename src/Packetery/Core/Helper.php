@@ -84,11 +84,11 @@ class Helper {
 		$amount *= 10 ** $precision;
 
 		if ( self::ROUND_DOWN === $roundingType ) {
-			return floor( $amount );
+			$amount = floor( (float) ( (string) $amount ) ); // conversion float to string to float should fix float precision problems.
 		}
 
 		if ( self::ROUND_UP === $roundingType ) {
-			return ceil( $amount );
+			$amount = ceil( (float) ( (string) $amount ) );
 		}
 
 		$amount /= ( 10 ** $precision );
