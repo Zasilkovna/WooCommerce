@@ -7,8 +7,9 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Core\Api\Soap\Request;
+namespace Packetery\Module\Order;
 
+use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\Options\Provider;

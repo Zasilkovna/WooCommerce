@@ -12,7 +12,6 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
-use Packetery\Core\Api\Soap\Request\CreatePacketFactory;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
