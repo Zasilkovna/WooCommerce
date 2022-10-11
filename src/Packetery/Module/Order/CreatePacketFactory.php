@@ -12,9 +12,8 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Carrier\Options;
 use Packetery\Module\Carrier\Repository;
-use WC_Order;
 
 /**
  * Class CreatePacketFactory
@@ -22,12 +21,6 @@ use WC_Order;
  * @package Packetery\Api
  */
 class CreatePacketFactory {
-	/**
-	 * Options provider.
-	 *
-	 * @var Provider
-	 */
-	private $optionsProvider;
 
 	/**
 	 * Carrier repository
@@ -39,11 +32,9 @@ class CreatePacketFactory {
 	/**
 	 * CreatePacketFactory constructor.
 	 *
-	 * @param Provider   $optionsProvider Options provider.
 	 * @param Repository $carrierRepository Carrier repository.
 	 */
-	public function __construct( Provider $optionsProvider, Repository $carrierRepository ) {
-		$this->optionsProvider   = $optionsProvider;
+	public function __construct( Repository $carrierRepository ) {
 		$this->carrierRepository = $carrierRepository;
 	}
 
@@ -58,16 +49,12 @@ class CreatePacketFactory {
 
 		$newCreatePacket = new CreatePacket( $order );
 
-		if ( null !== $order->getCod() ) {
-			$carrierId = $order->getCarrierId();
-			if ( Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
-				$wcOrder = wc_get_order( $order->getNumber() );
-				if ( $wcOrder instanceof WC_Order ) {
-					$carrierId = $this->carrierRepository->getZpointCarrierIdByCountry( strtolower( $wcOrder->get_shipping_country() ) );
-				}
-			}
+		if ( $order->hasCod() ) {
+			$carrierId = $order->isExternalCarrier()
+				? $order->getCarrierId()
+				: $this->carrierRepository->getZpointCarrierIdByCountry( $order->getShippingCountry() );
 
-			$roundingType = $this->optionsProvider->getCarrierRoundingType( $carrierId );
+			$roundingType = Options::createByCarrierId( $carrierId )->getCodRoundingType();
 			$roundedCod   = Helper::customRoundByCurrency( $order->getCod(), $roundingType, $order->getCurrency() );
 			$newCreatePacket->setCod( $roundedCod );
 		}

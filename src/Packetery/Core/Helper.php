@@ -16,12 +16,11 @@ namespace Packetery\Core;
  * @package Packetery
  */
 class Helper {
-	public const TRACKING_URL              = 'https://tracking.packeta.com/?id=%s';
-	public const MYSQL_DATETIME_FORMAT     = 'Y-m-d H:i:s';
-	public const ROUND_UP                  = 1;
-	public const ROUND_DOWN                = -1;
-	public const DONT_ROUND                = 0;
-	public const ZERO_PRECISION_CURRENCIES = [ 'CZK' ];
+	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
+	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+	public const ROUND_UP              = 1;
+	public const ROUND_DOWN            = -1;
+	public const DONT_ROUND            = 0;
 
 	/**
 	 * Simplifies weight.
@@ -127,7 +126,7 @@ class Helper {
 	 * @return float
 	 */
 	public static function customRoundByCurrency( float $amount, int $roundingType, string $currencyCode ): float {
-		if ( in_array( $currencyCode, self::ZERO_PRECISION_CURRENCIES, true ) ) {
+		if ( 'CZK' === $currencyCode ) {
 			return self::customRound( $amount, $roundingType, 0 );
 		}
 

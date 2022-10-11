@@ -459,7 +459,7 @@ class Repository {
 	public function getZpointCarrierIdByCountry( string $country ): ?string {
 		$zpointCarriers = $this->getZpointCarriers();
 
-		if ( isset( $zpointCarriers[ $country ] ) && isset( $zpointCarriers[ $country ]['id'] ) ) {
+		if ( isset( $zpointCarriers[ $country ] ) ) {
 			return $zpointCarriers[ $country ]['id'];
 		}
 

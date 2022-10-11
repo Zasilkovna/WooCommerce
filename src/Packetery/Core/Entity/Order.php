@@ -820,4 +820,12 @@ class Order {
 		return $this->shippingCountry;
 	}
 
+	/**
+	 * Tells if order has COD.
+	 *
+	 * @return bool
+	 */
+	public function hasCod(): bool {
+		return ( null !== $this->getCod() );
+	}
 }

@@ -184,7 +184,7 @@ class OptionsPage {
 			Helper::ROUND_DOWN => __( 'Always round down', 'packeta' ),
 			Helper::ROUND_UP   => __( 'Alaways round up', 'packeta' ),
 		];
-		$form->addSelect( 'rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
+		$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
 			->setDefaultValue( Helper::DONT_ROUND );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];

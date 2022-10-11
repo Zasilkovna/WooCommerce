@@ -10,6 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 
 /**
@@ -160,5 +161,14 @@ class Options {
 		}
 
 		return ! empty( $this->options['surcharge_limits'] );
+	}
+
+	/**
+	 * Tells COD rounding type.
+	 *
+	 * @return int
+	 */
+	public function getCodRoundingType(): int {
+		return $this->options['cod_rounding'] ?? Helper::DONT_ROUND;
 	}
 }
