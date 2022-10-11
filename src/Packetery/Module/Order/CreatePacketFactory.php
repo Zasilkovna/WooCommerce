@@ -50,11 +50,7 @@ class CreatePacketFactory {
 		$newCreatePacket = new CreatePacket( $order );
 
 		if ( $order->hasCod() ) {
-			$carrierId = $order->isExternalCarrier()
-				? $order->getCarrierId()
-				: $this->carrierRepository->getZpointCarrierIdByCountry( $order->getShippingCountry() );
-
-			$roundingType = Options::createByCarrierId( $carrierId )->getCodRoundingType();
+			$roundingType = Options::createByCarrierId( $order->getCarrierIdOrCode() )->getCodRoundingType();
 			$roundedCod   = Helper::customRoundByCurrency( $order->getCod(), $roundingType, $order->getCurrency() );
 			$newCreatePacket->setCod( $roundedCod );
 		}
