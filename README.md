@@ -48,6 +48,18 @@ add_filter( 'packetery_exclude_orders_with_status', function (array $statuses): 
 } );
 ```
 
+##### Packeta price filter
+
+To convert prices at correct moments the Packeta plugin uses WOOCS filter as only solution.
+To support other currency switchers please add price converting filter.
+For example, to support active CURCY - Multi Currency for WooCommerce plugin, paste following code to ```wp-includes/functions.php``` after all file includes.
+
+```
+add_filter( 'packetery_price', function ( float $price ): float {
+    return (float) wmc_get_price( $price );
+} );
+```
+
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions

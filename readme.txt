@@ -89,6 +89,7 @@ Added: Support for two more Divi templates: WPLama, Martin Svozil
 Updated: Packaging weight plugin option re-labeled
 Updated: removal of widget button container class "place-order", providing compatibility with WP Germanized plugin
 Added: Filter to exclude order statuses when filtering orders
+Added: Price conversion filter
 
 = 1.3.2 =
 * Fixed: Other shipping methods support

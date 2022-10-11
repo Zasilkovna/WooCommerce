@@ -587,18 +587,9 @@ class Checkout {
 	 * To test, change the shipping price during the transition from the first to the second step of the cart.
 	 */
 	public function updateShippingRates(): void {
-		$customRates = $this->getShippingRates();
-
 		$packages = WC()->shipping()->get_packages();
 		foreach ( $packages as $i => $package ) {
-			if ( ! empty( $package['rates'] ) ) {
-				foreach ( $package['rates'] as $key => $rate ) {
-					if ( isset( $customRates[ $rate->get_id() ] ) ) {
-						$rate->set_cost( $this->currencySwitcherFacade->getConvertedPrice( $customRates[ $rate->get_id() ]['cost'] ) );
-						WC()->shipping->packages[ $i ]['rates'][ $key ] = $rate;
-					}
-				}
-			}
+			WC()->session->set( 'shipping_for_package_' . $i, false );
 		}
 	}
 
