@@ -13,7 +13,6 @@ use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier\Options;
-use Packetery\Module\Carrier\Repository;
 
 /**
  * Class CreatePacketFactory
@@ -21,22 +20,6 @@ use Packetery\Module\Carrier\Repository;
  * @package Packetery\Api
  */
 class CreatePacketFactory {
-
-	/**
-	 * Carrier repository
-	 *
-	 * @var Repository
-	 */
-	private $carrierRepository;
-
-	/**
-	 * CreatePacketFactory constructor.
-	 *
-	 * @param Repository $carrierRepository Carrier repository.
-	 */
-	public function __construct( Repository $carrierRepository ) {
-		$this->carrierRepository = $carrierRepository;
-	}
 
 	/**
 	 * Creates new instance of CreatePacket from Order.
@@ -50,7 +33,7 @@ class CreatePacketFactory {
 		$newCreatePacket = new CreatePacket( $order );
 
 		if ( $order->hasCod() ) {
-			$roundingType = Options::createByCarrierId( $order->getCarrierIdOrCode() )->getCodRoundingType();
+			$roundingType = Options::createByCarrierId( $order->getCarrierCode() )->getCodRoundingType();
 			$roundedCod   = Helper::customRoundByCurrency( $order->getCod(), $roundingType, $order->getCurrency() );
 			$newCreatePacket->setCod( $roundedCod );
 		}
