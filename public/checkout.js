@@ -38,14 +38,18 @@ var packeteryLoadCheckout = function( $, settings ) {
 			return rateAttrValues[ carrierRateId ][ attribute ];
 		}
 
+		var shortifyShippingRateId = function( rateId ) {
+			var rateIdArray = rateId.split(":");
+			return rateIdArray[rateIdArray.length - 1];
+		};
+
 		var getShippingRateId = function() {
 			var $selectedRadio = $( '#shipping_method input[type="radio"]:checked' );
 			if ( $selectedRadio.length ) {
-				var radioValue = $selectedRadio.val();
-				var radioValueArray = radioValue.split(":");
-				return radioValueArray[radioValueArray.length - 1];
+				return shortifyShippingRateId( $selectedRadio.val() );
 			}
-			return $( '#shipping_method input[type="hidden"]' ).val();
+
+			return shortifyShippingRateId( $( '#shipping_method input[type="hidden"]' ).val() );
 		};
 
 		var resetWidgetInfoClasses = function() {
