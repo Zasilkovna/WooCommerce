@@ -13,8 +13,10 @@ use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
+use Packetery\Core\Helper;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
+use Packetery\Module\Carrier\Options;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 
@@ -54,33 +56,23 @@ class PacketSubmitter {
 	private $orderRepository;
 
 	/**
-	 * Factory for CreatePacket.
-	 *
-	 * @var CreatePacketFactory
-	 */
-	private $createPacketFactory;
-
-	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client              $soapApiClient   SOAP API Client.
-	 * @param Validator\Order     $orderValidator  Order validator.
-	 * @param Log\ILogger         $logger          Logger.
-	 * @param Repository          $orderRepository Order repository.
-	 * @param CreatePacketFactory $createPacketFactory CreatePacket factory.
+	 * @param Client          $soapApiClient   SOAP API Client.
+	 * @param Validator\Order $orderValidator  Order validator.
+	 * @param Log\ILogger     $logger          Logger.
+	 * @param Repository      $orderRepository Order repository.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
-		Repository $orderRepository,
-		CreatePacketFactory $createPacketFactory
+		Repository $orderRepository
 	) {
-		$this->soapApiClient       = $soapApiClient;
-		$this->orderValidator      = $orderValidator;
-		$this->logger              = $logger;
-		$this->orderRepository     = $orderRepository;
-		$this->createPacketFactory = $createPacketFactory;
+		$this->soapApiClient   = $soapApiClient;
+		$this->orderValidator  = $orderValidator;
+		$this->logger          = $logger;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -179,7 +171,15 @@ class PacketSubmitter {
 			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
 		*/
-		return $this->createPacketFactory->create(
+
+		$clonedOrder = clone($order);
+		if ( $clonedOrder->hasCod() ) {
+			$roundingType = Options::createByCarrierId( $clonedOrder->getCarrierCode() )->getCodRoundingType();
+			$roundedCod   = Helper::customRoundByCurrency( $clonedOrder->getCod(), $roundingType, $clonedOrder->getCurrency() );
+			$clonedOrder->setCod( $roundedCod );
+		}
+
+		return new CreatePacket(
 			/**
 			 * Filters the input order for CreatePacket request.
 			 *
@@ -192,7 +192,7 @@ class PacketSubmitter {
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				unserialize(
 					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-					serialize( $order )
+					serialize( $clonedOrder )
 				)
 			)
 		);

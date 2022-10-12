@@ -104,16 +104,17 @@ class Helper {
 	 * @return float
 	 */
 	private static function roundToMultipleOfFive( float $amount, int $roundingType ): float {
+		$amount /= 5;
 
 		if ( self::ROUND_UP === $roundingType ) {
-			return 5 * ceil( $amount / 5 );
+			$amount = ceil( (float) ( (string) $amount ) );
 		}
 
 		if ( self::ROUND_DOWN === $roundingType ) {
-			return 5 * floor( $amount / 5 );
+			$amount = floor( (float) ( (string) $amount ) );
 		}
 
-		return $amount;
+		return 5 * $amount;
 	}
 
 	/**
