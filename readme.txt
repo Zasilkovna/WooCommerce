@@ -84,6 +84,7 @@ Added: Free shipping limit is triggered by cart price including VAT
 Added: Support for payment plugins of 3rd parties e.g. TORET GoPay etc.
 Added: Packeta button in main menu moved by default to the last position. Final order can be affected by other installed plugins.
 Added: Support for CURCY - Multi Currency for Woocommerce plugin
+Added: Limited support for "Multivendor Marketplace Solution for WooCommerce - WC Marketplace" (WCMP) plugin
 Updated: Packaging weight plugin option re-labeled
 Updated: removal of widget button container class "place-order", providing compatibility with WP Germanized plugin
 
