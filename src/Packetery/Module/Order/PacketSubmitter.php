@@ -14,6 +14,7 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Rounder;
+use Packetery\Core\ValidationException;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\Carrier\Options;
@@ -201,13 +202,16 @@ class PacketSubmitter {
 	 * Submits packet data to Packeta API.
 	 *
 	 * @param WC_Order $order WC order.
-	 * @param array    $resultsCounter Array with results.
+	 *
+	 * @return PacketSubmissionResult
 	 */
-	public function submitPacket( WC_Order $order, array &$resultsCounter ): void {
-		$commonEntity = $this->orderRepository->getByWcOrder( $order );
+	public function submitPacket( WC_Order $order ): PacketSubmissionResult {
+		$submissionResult = new PacketSubmissionResult();
+		$commonEntity     = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
-			$resultsCounter['ignored'] ++;
-			return;
+			$submissionResult->increaseIgnoredCount();
+
+			return $submissionResult;
 		}
 
 		$orderData       = $order->get_data();
@@ -218,23 +222,23 @@ class PacketSubmitter {
 		$shippingMethodId   = $shippingMethodData['method_id'];
 		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $commonEntity->isExported() ) {
 			try {
-				$createPacketData = $this->preparePacketData( $commonEntity );
-			} catch ( InvalidRequestException $e ) {
+				$createPacketData = $this->preparePacketRequest( $commonEntity );
+			} catch ( ValidationException $e ) {
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
 				$record->status  = Log\Record::STATUS_ERROR;
 				$record->title   = __( 'Packet could not be created.', 'packeta' );
 				$record->params  = [
-					'orderId'      => $orderData['id'],
-					'errorMessage' => $e->getMessage(),
+					'orderId'          => $orderData['id'],
+					'validationErrors' => $e->getValidationErrors(),
 				];
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
-				$resultsCounter['logs'] ++;
-				$resultsCounter['errors'] ++;
+				$submissionResult->increaseLogsCount();
+				$submissionResult->increaseErrorsCount();
 
-				return;
+				return $submissionResult;
 			}
 
 			$response = $this->soapApiClient->createPacket( $createPacketData );
@@ -250,19 +254,19 @@ class PacketSubmitter {
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
-				$resultsCounter['logs'] ++;
-				$resultsCounter['errors'] ++;
+				$submissionResult->increaseLogsCount();
+				$submissionResult->increaseErrorsCount();
 			} else {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
 				$this->orderRepository->save( $commonEntity );
 
-				$resultsCounter['success'] ++;
+				$submissionResult->increaseSuccessCount();
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
 				$record->status  = Log\Record::STATUS_SUCCESS;
-				$record->title   = __( 'Packet was sucessfully created.', 'packeta' );
+				$record->title   = __( 'Packet was successfully created.', 'packeta' );
 				$record->params  = [
 					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
@@ -270,11 +274,13 @@ class PacketSubmitter {
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
-				$resultsCounter['logs'] ++;
+				$submissionResult->increaseLogsCount();
 			}
 		} else {
-			$resultsCounter['ignored'] ++;
+			$submissionResult->increaseIgnoredCount();
 		}
+
+		return $submissionResult;
 	}
 
 	/**
@@ -283,15 +289,13 @@ class PacketSubmitter {
 	 * @param Entity\Order $order Order entity.
 	 *
 	 * @return array
-	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
+	 * @throws ValidationException Input data are not valid for packet submission.
 	 */
-	private function preparePacketData( Entity\Order $order ): array {
-		/*
-		TODO: extend validator to return specific errors.
-		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
-			throw new InvalidRequestException( 'All required order attributes are not set.' );
+	private function preparePacketRequest( Entity\Order $order ): array {
+		$validationResult = $this->orderValidator->validateForSubmission( $order );
+		if ( $validationResult->hasError() ) {
+			throw new ValidationException( $validationResult );
 		}
-		*/
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
 		if ( ! empty( $createPacketData['cod'] ) ) {
@@ -374,4 +378,5 @@ class PacketSubmitter {
 
 		return $latteParams;
 	}
+
 }

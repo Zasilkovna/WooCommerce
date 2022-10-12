@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Validator;
 
 use Packetery\Core\Entity;
+use Packetery\Core\ValidationResult;
 
 /**
  * Class Order
@@ -48,20 +49,26 @@ class Order {
 	 *
 	 * @param Entity\Order $order Order entity.
 	 *
-	 * @return bool
+	 * @return ValidationResult
 	 */
-	public function validate( Entity\Order $order ): bool {
-		return (
-			$order->getNumber() &&
-			$order->getName() &&
-			$order->getSurname() &&
-			$order->getValue() &&
-			$order->getFinalWeight() > 0 &&
-			$order->getPickupPointOrCarrierId() &&
-			$order->getEshop() &&
-			$this->validateAddress( $order ) &&
-			$this->validateSize( $order )
-		);
+	public function validateForSubmission( Entity\Order $order ): ValidationResult {
+		$report = new ValidationResult();
+
+		if ( null !== $order->getPacketId() ) {
+			$report->addError( __( 'Already submitted', 'packeta' ) );
+			return $report;
+		}
+
+		if ( false === $this->validateFinalWeight( $order ) ) {
+			$report->addError( __( 'Valid weight is missing', 'packeta' ) );
+		}
+
+		$carrier = $order->getCarrier();
+		if ( null !== $carrier && $carrier->requiresSize() && false === $this->validateSize( $order ) ) {
+			$report->addError( __( 'Valid size is missing', 'packeta' ) );
+		}
+
+		return $report;
 	}
 
 	/**
@@ -82,6 +89,17 @@ class Order {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validate weight.
+	 *
+	 * @param Entity\Order $order Order.
+	 *
+	 * @return bool
+	 */
+	public function validateFinalWeight( Entity\Order $order ): bool {
+		return null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
 	}
 
 	/**

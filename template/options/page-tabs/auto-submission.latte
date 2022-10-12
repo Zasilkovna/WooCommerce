@@ -1,0 +1,30 @@
+<form n:name=$form>
+    <table class="form-table" role="presentation">
+        <tr>
+            <th scope="row">
+                <label n:name=allow />
+            </th>
+            <td>
+                <input n:name=allow>
+            </td>
+        </tr>
+        <tr>
+            <th colspan="2">
+                <legend>{$translations['packetAutoSubmissionMappingDescription']}</legend>
+            </th>
+        </tr>
+        {foreach $form[payment_method_events]->getComponents() as $paymentMethodEvents}
+            <tr>
+                <th scope="row">
+                    <label n:name=$paymentMethodEvents[event] />
+                </th>
+                <td>
+                    <select n:name=$paymentMethodEvents[event]></select>
+                </td>
+            </tr>
+        {/foreach}
+    </table>
+    <p class="submit">
+        <input type="submit" n:name=save class="button button-primary">
+    </p>
+</form>

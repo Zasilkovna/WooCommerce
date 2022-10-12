@@ -298,7 +298,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'              => $order,
-						'orderIsSubmittable' => $this->orderValidator->validate( $order ),
+						'orderIsSubmittable' => $this->orderValidator->validateForSubmission( $order ),
 						'packetSubmitUrl'    => $packetSubmitUrl,
 						'packetCancelLink'   => $packetCancelLink,
 						'printLink'          => $printLink,

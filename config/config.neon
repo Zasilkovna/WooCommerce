@@ -50,6 +50,7 @@ services:
 	- Packetery\Module\Options\Exporter
 	- Packetery\Module\Order\CollectionPrint
 	- Packetery\Module\Order\PacketSynchronizer
+	- Packetery\Module\Order\PacketAutoSubmitter
 	requestFactory: PacketeryNette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
 	- Packetery\Module\Upgrade

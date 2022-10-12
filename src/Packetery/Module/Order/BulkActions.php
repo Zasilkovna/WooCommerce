@@ -114,20 +114,16 @@ class BulkActions {
 		}
 
 		if ( 'submit_to_api' === $action ) {
-			$resultsCounter = [
-				'success' => 0,
-				'ignored' => 0,
-				'errors'  => 0,
-				'logs'    => 0,
-			];
+			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$this->packetSubmitter->submitPacket( $order, $resultsCounter );
+					$submissionResult = $this->packetSubmitter->submitPacket( $order );
+					$finalSubmissionResult->merge( $submissionResult );
 				}
 			}
 
-			$queryArgs                  = $resultsCounter;
+			$queryArgs                  = $finalSubmissionResult->getCounter();
 			$queryArgs['submit_to_api'] = true;
 
 			if ( count( $postIds ) === 1 ) {
