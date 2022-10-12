@@ -161,7 +161,7 @@ class Order {
 	/**
 	 * Internal carrier code.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $carrierCode;
 
@@ -837,22 +837,13 @@ class Order {
 	}
 
 	/**
-	 * Gets Carrier code.
-	 *
-	 * @return string
-	 */
-	public function getCarrierCode(): string {
-		return $this->carrierCode;
-	}
-
-	/**
 	 * Setter for carrierCode.
 	 *
-	 * @param string $carrierCode Carrier code.
+	 * @param string|null $carrierCode Carrier code.
 	 *
 	 * @return void
 	 */
-	public function setCarrierCode( string $carrierCode ): void {
+	public function setCarrierCode( ?string $carrierCode ): void {
 		$this->carrierCode = $carrierCode;
 	}
 
@@ -861,7 +852,7 @@ class Order {
 	 *
 	 * @return string
 	 */
-	public function getCarrierIdOrCode():string {
+	public function getCarrierCode():string {
 		if ( $this->isExternalCarrier() ) {
 			return $this->carrierId;
 		}
