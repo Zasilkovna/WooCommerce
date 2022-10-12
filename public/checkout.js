@@ -38,7 +38,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			return rateAttrValues[ carrierRateId ][ attribute ];
 		}
 
-		var shortifyShippingRateId = function( rateId ) {
+		var shortenShippingRateId = function( rateId ) {
 			var rateIdArray = rateId.split(":");
 			return rateIdArray[rateIdArray.length - 1];
 		};
@@ -46,10 +46,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 		var getShippingRateId = function() {
 			var $selectedRadio = $( '#shipping_method input[type="radio"]:checked' );
 			if ( $selectedRadio.length ) {
-				return shortifyShippingRateId( $selectedRadio.val() );
+				return shortenShippingRateId( $selectedRadio.val() );
 			}
 
-			return shortifyShippingRateId( $( '#shipping_method input[type="hidden"]' ).val() );
+			return shortenShippingRateId( $( '#shipping_method input[type="hidden"]' ).val() );
 		};
 
 		var resetWidgetInfoClasses = function() {
