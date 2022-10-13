@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Helper;
+use Packetery\Core\Rounder;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
@@ -180,12 +181,12 @@ class OptionsPage {
 		}
 
 		$roundingOptions = [
-			Helper::DONT_ROUND => __( 'No rounding', 'packeta' ),
-			Helper::ROUND_DOWN => __( 'Always round down', 'packeta' ),
-			Helper::ROUND_UP   => __( 'Alaways round up', 'packeta' ),
+			Rounder::DONT_ROUND => __( 'No rounding', 'packeta' ),
+			Rounder::ROUND_DOWN => __( 'Always round down', 'packeta' ),
+			Rounder::ROUND_UP   => __( 'Always round up', 'packeta' ),
 		];
 		$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
-			->setDefaultValue( Helper::DONT_ROUND );
+			->setDefaultValue( Rounder::DONT_ROUND );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];

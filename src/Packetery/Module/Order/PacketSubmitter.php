@@ -13,8 +13,8 @@ use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
-use Packetery\Core\Helper;
 use Packetery\Core\Log;
+use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\ShippingMethod;
@@ -175,7 +175,7 @@ class PacketSubmitter {
 		$clonedOrder = clone($order);
 		if ( $clonedOrder->hasCod() ) {
 			$roundingType = Options::createByCarrierId( $clonedOrder->getCarrierCode() )->getCodRoundingType();
-			$roundedCod   = Helper::customRoundByCurrency( $clonedOrder->getCod(), $roundingType, $clonedOrder->getCurrency() );
+			$roundedCod   = Rounder::roundByCurrency( $clonedOrder->getCod(), $clonedOrder->getCurrency(), $roundingType );
 			$clonedOrder->setCod( $roundedCod );
 		}
 

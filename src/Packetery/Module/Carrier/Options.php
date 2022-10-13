@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Core\Helper;
+use Packetery\Core\Rounder;
 use Packetery\Module\Checkout;
 
 /**
@@ -169,6 +169,6 @@ class Options {
 	 * @return int
 	 */
 	public function getCodRoundingType(): int {
-		return $this->options['cod_rounding'] ?? Helper::DONT_ROUND;
+		return $this->options['cod_rounding'] ?? Rounder::DONT_ROUND;
 	}
 }

@@ -36,7 +36,6 @@ services:
 	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
 	- Packetery\Module\Order\PacketSubmitter
-	- Packetery\Module\Order\CreatePacketFactory
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
