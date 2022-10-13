@@ -124,6 +124,7 @@ class Builder {
 		if ( $order->isExternalCarrier() ) {
 			$carrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
 			$order->setCarrier( $carrier );
+			$order->setCarrierCode( $order->getCarrierId() );
 		} else {
 			$order->setCarrierCode( $this->carrierRepository->getZpointCarrierIdByCountry( $order->getShippingCountry() ) );
 		}
