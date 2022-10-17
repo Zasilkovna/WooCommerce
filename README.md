@@ -42,7 +42,7 @@ To register filter edit wc-includes/functions.php and add your PHP code after al
 To filter additional orders from Packeta order list when applying Packeta filter, use following sample code.
 
 ```
-add_filter( 'packetery_orders_with_statuses_to_exclude_in_listing', function (array $statuses): array {
+add_filter( 'packetery_exclude_orders_with_status', function (array $statuses): array {
     $statuses[] = 'wc-cancelled';
     return $statuses;
 } );

@@ -68,7 +68,7 @@ class Repository {
 		 * @param \WP_Query $queryObject WP Query.
 		 * @param array $paramValues Param values.
 		 */
-		$orderStatusesToExclude = apply_filters( 'packetery_orders_with_statuses_to_exclude_in_listing', [], $queryObject, $paramValues );
+		$orderStatusesToExclude = apply_filters( 'packetery_exclude_orders_with_status', [], $queryObject, $paramValues );
 		if ( ! $orderStatusesToExclude ) {
 			return;
 		}
