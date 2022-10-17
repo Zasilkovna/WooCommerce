@@ -89,6 +89,7 @@ class Modal {
 					// translators: %s represents order number.
 					'order#%s'        => __( 'Order #%s', 'packeta' ),
 					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
+					'weightIsManual'  => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
 				],
 			]
 		);
@@ -102,6 +103,9 @@ class Modal {
 	public function createForm(): Form {
 		$form = $this->formFactory->create();
 		$form->addText( 'packetery_weight', __( 'Weight', 'packeta' ) . ' (kg)' )
+			->setRequired( false )
+			->addRule( Form::FLOAT );
+		$form->addHidden( 'packetery_original_weight' )
 			->setRequired( false )
 			->addRule( Form::FLOAT );
 		$form->addText( 'packetery_width', __( 'Width (mm)', 'packeta' ) )
@@ -119,10 +123,11 @@ class Modal {
 
 		$form->setDefaults(
 			[
-				'packetery_weight' => '{{ data.order.packetery_weight }}',
-				'packetery_length' => '{{ data.order.packetery_length }}',
-				'packetery_width'  => '{{ data.order.packetery_width }}',
-				'packetery_height' => '{{ data.order.packetery_height }}',
+				'packetery_weight'          => '{{ data.order.packetery_weight }}',
+				'packetery_original_weight' => '{{ data.order.packetery_original_weight }}',
+				'packetery_length'          => '{{ data.order.packetery_length }}',
+				'packetery_width'           => '{{ data.order.packetery_width }}',
+				'packetery_height'          => '{{ data.order.packetery_height }}',
 			]
 		);
 
@@ -137,9 +142,9 @@ class Modal {
 	 * @return bool
 	 */
 	public function showWarningIcon( Order $order ): bool {
-		$isSizeValid    = $this->orderValidator->validateSize( $order );
-		$isWeightFilled = ( null !== $order->getWeight() && $order->getWeight() > 0 );
+		$isSizeValid = $this->orderValidator->validateSize( $order );
+		$hasWeight   = ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 );
 
-		return ! ( $isSizeValid && $isWeightFilled );
+		return ! ( $isSizeValid && $hasWeight );
 	}
 }

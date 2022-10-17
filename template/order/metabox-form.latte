@@ -5,6 +5,7 @@
     <div data-packetery-order-metabox>
         <div class="packetery-table">
             <input n:name=packetery_order_metabox_nonce />
+            <input n:name=packetery_original_weight />
             {foreach [
                 'packetery_weight',
                 'packetery_length',
@@ -18,6 +19,10 @@
                     {if in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_COD, Packetery\Module\Order\Metabox::FIELD_VALUE ] ) }
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">
                             <label n:name=$inputName /> ({$orderCurrency|noescape})
+                        </div>
+                    {elseif in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_WEIGHT ] ) }
+                        <div class="packetery-table-cell packetery-order-metabox-label-cell">
+                            <label n:name=$inputName />{if $hasOrderManualWeight}<span title="{$translations['weightIsManual']}" class="dashicons dashicons-lock"></span>{/if}
                         </div>
                     {else}
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">

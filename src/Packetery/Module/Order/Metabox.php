@@ -28,13 +28,14 @@ use PacketeryNette\Http\Request;
  */
 class Metabox {
 
-	const FIELD_WEIGHT        = 'packetery_weight';
-	const FIELD_WIDTH         = 'packetery_width';
-	const FIELD_LENGTH        = 'packetery_length';
-	const FIELD_HEIGHT        = 'packetery_height';
-	const FIELD_ADULT_CONTENT = 'packetery_adult_content';
-	const FIELD_COD           = 'packetery_COD';
-	const FIELD_VALUE         = 'packetery_value';
+	const FIELD_WEIGHT          = 'packetery_weight';
+	const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
+	const FIELD_WIDTH           = 'packetery_width';
+	const FIELD_LENGTH          = 'packetery_length';
+	const FIELD_HEIGHT          = 'packetery_height';
+	const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
+	const FIELD_COD             = 'packetery_COD';
+	const FIELD_VALUE           = 'packetery_value';
 
 	/**
 	 * PacketeryLatte engine.
@@ -178,6 +179,7 @@ class Metabox {
 		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$this->order_form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
 		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
@@ -255,7 +257,8 @@ class Metabox {
 		$this->order_form->setDefaults(
 			[
 				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				self::FIELD_WEIGHT              => $order->getWeight(),
+				self::FIELD_WEIGHT              => $order->getFinalWeight(),
+				self::FIELD_ORIGINAL_WEIGHT     => $order->getFinalWeight(),
 				self::FIELD_WIDTH               => $order->getWidth(),
 				self::FIELD_LENGTH              => $order->getLength(),
 				self::FIELD_HEIGHT              => $order->getHeight(),
@@ -278,7 +281,7 @@ class Metabox {
 			'language'                  => substr( get_locale(), 0, 2 ),
 			'isAgeVerificationRequired' => $order->containsAdultContent(),
 			'appIdentity'               => Plugin::getAppIdentity(),
-			'weight'                    => $order->getWeight(),
+			'weight'                    => $order->getFinalWeight(),
 			'carriers'                  => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
 			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
 		];
@@ -286,14 +289,16 @@ class Metabox {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form'           => $this->order_form,
-				'order'          => $order,
-				'orderCurrency'  => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'widgetSettings' => $widgetSettings,
-				'logo'           => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
-				'showLogsLink'   => $showLogsLink,
-				'translations'   => [
-					'showLogs' => __( 'Show logs', 'packeta' ),
+				'form'                 => $this->order_form,
+				'order'                => $order,
+				'orderCurrency'        => get_woocommerce_currency_symbol( $order->getCurrency() ),
+				'widgetSettings'       => $widgetSettings,
+				'logo'                 => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'showLogsLink'         => $showLogsLink,
+				'hasOrderManualWeight' => $order->hasManualWeight(),
+				'translations'         => [
+					'showLogs'       => __( 'Show logs', 'packeta' ),
+					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
 				],
 			]
 		);
@@ -339,11 +344,16 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			self::FIELD_WEIGHT => ( is_numeric( $values[ self::FIELD_WEIGHT ] ) ? (float) $values[ self::FIELD_WEIGHT ] : null ),
 			self::FIELD_WIDTH  => ( is_numeric( $values[ self::FIELD_WIDTH ] ) ? (float) number_format( $values[ self::FIELD_WIDTH ], 0, '.', '' ) : null ),
 			self::FIELD_LENGTH => ( is_numeric( $values[ self::FIELD_LENGTH ] ) ? (float) number_format( $values[ self::FIELD_LENGTH ], 0, '.', '' ) : null ),
 			self::FIELD_HEIGHT => ( is_numeric( $values[ self::FIELD_HEIGHT ] ) ? (float) number_format( $values[ self::FIELD_HEIGHT ], 0, '.', '' ) : null ),
 		];
+
+		if ( ! is_numeric( $values[ self::FIELD_WEIGHT ] ) ) {
+			$propsToSave[ self::FIELD_WEIGHT ] = null;
+		} elseif ( (float) $values[ self::FIELD_WEIGHT ] !== (float) $values[ self::FIELD_ORIGINAL_WEIGHT ] ) {
+			$propsToSave[ self::FIELD_WEIGHT ] = (float) $values[ self::FIELD_WEIGHT ];
+		}
 
 		if ( $values[ Checkout::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
 			$wcOrder = wc_get_order( $orderId ); // Can not be false due condition at the beginning of method.

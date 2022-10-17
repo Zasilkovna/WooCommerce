@@ -71,11 +71,7 @@ class Builder {
 	 * @return Entity\Order
 	 */
 	public function finalize( WC_Order $wcOrder, Entity\Order $order ): Entity\Order {
-		$calculatedWeight = $this->calculator->calculateOrderWeight( $wcOrder );
-		if ( null === $order->getWeight() ) {
-			$order->setWeight( $calculatedWeight );
-		}
-		$order->setCalculatedWeight( $calculatedWeight );
+		$order->setCalculatedWeight( $this->calculator->calculateOrderWeight( $wcOrder ) );
 
 		if ( null === $order->containsAdultContent() ) {
 			$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );

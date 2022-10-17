@@ -203,7 +203,7 @@ class GridExtender {
 	private function getWeightCellContentParams( Core\Entity\Order $order ): array {
 		return [
 			'orderNumber' => $order->getNumber(),
-			'weight'      => $order->getWeight(),
+			'weight'      => $order->getFinalWeight(),
 		];
 	}
 
