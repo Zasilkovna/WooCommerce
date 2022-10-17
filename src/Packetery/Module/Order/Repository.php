@@ -50,6 +50,43 @@ class Repository {
 	}
 
 	/**
+	 * Applies custom order status filter.
+	 *
+	 * @param array     $clauses Query clauses.
+	 * @param \WP_Query $queryObject WP Query.
+	 * @param array     $paramValues Param values.
+	 *
+	 * @return void
+	 */
+	private function applyCustomFilters( array &$clauses, \WP_Query $queryObject, array $paramValues ): void {
+		/**
+		 * Filters order statuses to exclude in Packeta order list filtering.
+		 *
+		 * @since 1.3.3
+		 *
+		 * @param array $orderStatusesToExclude Order statuses to exclude.
+		 * @param \WP_Query $queryObject WP Query.
+		 * @param array $paramValues Param values.
+		 */
+		$orderStatusesToExclude = apply_filters( 'packetery_exclude_orders_with_status', [], $queryObject, $paramValues );
+		if ( ! $orderStatusesToExclude ) {
+			return;
+		}
+
+		$sqlStatusesToExclude = implode(
+			',',
+			array_map(
+				function ( string $orderStatus ): string {
+					return sprintf( '"%s"', $this->wpdb->_real_escape( $orderStatus ) );
+				},
+				$orderStatusesToExclude
+			)
+		);
+
+		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdb->posts, $sqlStatusesToExclude );
+	}
+
+	/**
 	 * Extends WP_Query to include custom table.
 	 *
 	 * @link https://wordpress.stackexchange.com/questions/50305/how-to-extend-wp-query-to-include-custom-table-in-query
@@ -72,14 +109,17 @@ class Repository {
 
 			if ( $paramValues['packetery_carrier_id'] ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $paramValues['packetery_carrier_id'] ) . '"';
+				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_to_submit'] ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` IS NOT NULL ';
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`is_exported` = false ';
+				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_to_print'] ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`packet_id` IS NOT NULL ';
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`is_label_printed` = false ';
+				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_order_type'] ) {
 				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
@@ -87,6 +127,7 @@ class Repository {
 				} else {
 					$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` != "' . $this->wpdb->_real_escape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
 				}
+				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 		}
 
