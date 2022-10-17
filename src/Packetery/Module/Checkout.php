@@ -829,7 +829,7 @@ class Checkout {
 	 */
 	private function getChosenMethod(): string {
 		$chosenShippingRates = WC()->cart->calculate_shipping();
-		$chosenShippingRate  = ( $chosenShippingRates[0] ?? null );
+		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
 		if ( $chosenShippingRate instanceof \WC_Shipping_Rate ) {
 			return $this->getShortenedRateId( $chosenShippingRate->get_id() );
