@@ -556,7 +556,7 @@ class Checkout {
 	public function register_hooks(): void {
 		$activeTheme = strtolower( wp_get_theme()->get_stylesheet() );
 
-		if ( in_array( $activeTheme, [ 'divi', 'divi_child' ], true ) ) {
+		if ( in_array( $activeTheme, [ 'divi', 'divi_child', 'divi-child-wplama', 'svozil-martin-divi-child' ], true ) ) {
 			add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 			$this->shouldRenderHiddenFieldsAtDefaultPlace = false;
 		}
