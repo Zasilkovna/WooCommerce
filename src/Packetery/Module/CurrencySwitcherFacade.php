@@ -21,7 +21,6 @@ class CurrencySwitcherFacade {
 	 */
 	public static $supportedCurrencySwitchers = [
 		'WOOCS - WooCommerce Currency Switcher',
-		'CURCY - Multi Currency for WooCommerce',
 	];
 
 	/**
@@ -32,11 +31,16 @@ class CurrencySwitcherFacade {
 	 * @return float
 	 */
 	public function getConvertedPrice( float $price ): float {
-		if ( $this->isCurcyPluginEnabled() ) {
-			return (float) wmc_get_price( $price );
+		if ( Helper::isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
+			return $this->applyFilterWoocsExchangeValue( $price );
 		}
 
-		return $this->applyFilterWoocsExchangeValue( $price );
+		/**
+		 * Applies packetery_price filters.
+		 *
+		 * @since 1.3.3
+		 */
+		return (float) apply_filters( 'packetery_price', $price );
 	}
 
 	/**
@@ -58,14 +62,4 @@ class CurrencySwitcherFacade {
 
 		return $value;
 	}
-
-	/**
-	 * Tells if CURCY (Multi Currency for Woocommerce) plugin is active. We intentionally do not check if it's enabled.
-	 *
-	 * @return bool
-	 */
-	private function isCurcyPluginEnabled(): bool {
-		return is_plugin_active( 'woo-multi-currency/woo-multi-currency.php' );
-	}
-
 }
