@@ -19,7 +19,6 @@ use Packetery\Core\Validator;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
-use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use WC_Order;
 use Packetery\Module;
@@ -81,13 +80,6 @@ class PacketSubmitter {
 	private $logPage;
 
 	/**
-	 * Latte engine.
-	 *
-	 * @var \PacketeryLatte\Engine
-	 */
-	private $latteEngine;
-
-	/**
 	 * Common logic.
 	 *
 	 * @var PacketActionsCommonLogic
@@ -104,7 +96,6 @@ class PacketSubmitter {
 	 * @param Request                  $request         Request.
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param Module\Log\Page          $logPage         Log page.
-	 * @param \PacketeryLatte\Engine   $latteEngine     Latte engine.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 */
 	public function __construct(
@@ -115,7 +106,6 @@ class PacketSubmitter {
 		Request $request,
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
-		Engine $latteEngine,
 		PacketActionsCommonLogic $commonLogic
 	) {
 		$this->soapApiClient   = $soapApiClient;
@@ -125,7 +115,6 @@ class PacketSubmitter {
 		$this->request         = $request;
 		$this->messageManager  = $messageManager;
 		$this->logPage         = $logPage;
-		$this->latteEngine     = $latteEngine;
 		$this->commonLogic     = $commonLogic;
 	}
 

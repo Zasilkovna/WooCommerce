@@ -107,7 +107,8 @@ class PacketCanceller {
 	 * @return void
 	 */
 	public function processAction(): void {
-		$order = $this->commonLogic->getOrder();
+		$order      = $this->commonLogic->getOrder();
+		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 
 		if ( null === $order ) {
 			$record          = new Log\Record();
@@ -130,7 +131,6 @@ class PacketCanceller {
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order );
 
 		$this->cancelPacket( $order );
-		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 

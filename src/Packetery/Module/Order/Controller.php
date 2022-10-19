@@ -41,13 +41,6 @@ class Controller extends WP_REST_Controller {
 	private $router;
 
 	/**
-	 * Packet submitter.
-	 *
-	 * @var PacketSubmitter
-	 */
-	private $packetSubmitter;
-
-	/**
 	 * Order repository.
 	 *
 	 * @var Repository
@@ -66,14 +59,12 @@ class Controller extends WP_REST_Controller {
 	 *
 	 * @param Modal            $orderModal       Modal.
 	 * @param ControllerRouter $controllerRouter Router.
-	 * @param PacketSubmitter  $packetSubmitter  Packet submitter.
 	 * @param Order\Repository $orderRepository  Order repository.
 	 * @param GridExtender     $gridExtender     Grid extender.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
-		PacketSubmitter $packetSubmitter,
 		Order\Repository $orderRepository,
 		GridExtender $gridExtender
 	) {
@@ -81,7 +72,6 @@ class Controller extends WP_REST_Controller {
 		$this->router          = $controllerRouter;
 		$this->namespace       = $controllerRouter->getNamespace();
 		$this->rest_base       = $controllerRouter->getRestBase();
-		$this->packetSubmitter = $packetSubmitter;
 		$this->orderRepository = $orderRepository;
 		$this->gridExtender    = $gridExtender;
 	}
