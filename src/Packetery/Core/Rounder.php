@@ -134,7 +134,7 @@ class Rounder {
 	}
 
 	/**
-	 * Returns rounded amount. Should solve float precision problems along the way.
+	 * Returns rounded amount.
 	 *
 	 * @param float $amount Amount to round.
 	 * @param int   $roundingType Type of rounding.
@@ -143,13 +143,30 @@ class Rounder {
 	 */
 	private static function roundFloat( float $amount, int $roundingType ): float {
 		if ( self::ROUND_DOWN === $roundingType ) {
-			return floor( (float) ( (string) $amount ) );
+			return floor( self::sanitizeFloat( $amount ) );
 		}
 		if ( self::ROUND_UP === $roundingType ) {
-			return ceil( (float) ( (string) $amount ) );
+			return ceil( self::sanitizeFloat( $amount ) );
 		}
 
 		return $amount;
+	}
+
+	/**
+	 * Solves float precision problems, for example that (1.15 * 100) !== (float) 115.
+	 * Works with locales not using decimal dot.
+	 *
+	 * @param float $number Number to sanitize.
+	 *
+	 * @return float
+	 */
+	private static function sanitizeFloat( float $number ): float {
+		$oldLocale = setlocale( LC_NUMERIC, 0 );
+		setlocale( LC_NUMERIC, 'C' );
+		$newNumber = (float) ( (string) $number );
+		setlocale( LC_NUMERIC, $oldLocale );
+
+		return $newNumber;
 	}
 
 }
