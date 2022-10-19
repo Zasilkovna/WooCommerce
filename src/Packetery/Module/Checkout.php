@@ -556,6 +556,7 @@ class Checkout {
 	public function register_hooks(): void {
 		$activeTheme = strtolower( wp_get_theme()->get_template() );
 		if ( 'divi' === $activeTheme ) {
+			// TODO: Check the possibility to use this placement always.
 			add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 			$this->shouldRenderHiddenFieldsAtDefaultPlace = false;
 		}
