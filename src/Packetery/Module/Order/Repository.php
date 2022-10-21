@@ -63,7 +63,7 @@ class Repository {
 		/**
 		 * Filters order statuses to exclude in Packeta order list filtering.
 		 *
-		 * @since 1.3.3
+		 * @since 1.4
 		 *
 		 * @param array $orderStatusesToExclude Order statuses to exclude.
 		 * @param \WP_Query $queryObject WP Query.

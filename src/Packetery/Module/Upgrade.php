@@ -184,11 +184,8 @@ class Upgrade {
 			$this->orderRepository->deleteOrphans();
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.3.3', '<' ) ) {
+		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) {
 			$this->logRepository->addOrderIdColumn();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.3.3', '<' ) ) {
 			$this->orderRepository->addAdultContentColumn();
 			$this->orderRepository->addValueColumn();
 			$this->orderRepository->addCodColumn();
