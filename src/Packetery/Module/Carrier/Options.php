@@ -137,6 +137,24 @@ class Options {
 	}
 
 	/**
+	 * Tells if carrier has coupon free shipping active.
+	 *
+	 * @return bool
+	 */
+	public function hasCouponFreeShippingActive(): bool {
+		return $this->options['coupon_free_shipping']['active'] ?? false;
+	}
+
+	/**
+	 * Tells if carrier has coupon free shipping for fees allowed.
+	 *
+	 * @return bool
+	 */
+	public function hasCouponFreeShippingForFeesAllowed(): bool {
+		return $this->hasCouponFreeShippingActive() && ( $this->options['coupon_free_shipping']['allow_for_fees'] ?? false );
+	}
+
+	/**
 	 * Gets default COD surcharge.
 	 *
 	 * @return float|null
