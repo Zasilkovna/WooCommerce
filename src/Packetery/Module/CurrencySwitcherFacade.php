@@ -38,7 +38,7 @@ class CurrencySwitcherFacade {
 		/**
 		 * Applies packetery_price filters.
 		 *
-		 * @since 1.3.3
+		 * @since 1.4
 		 */
 		return (float) apply_filters( 'packetery_price', $price );
 	}

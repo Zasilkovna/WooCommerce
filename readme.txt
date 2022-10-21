@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.3.3
+Stable tag: 1.4
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.5.1
@@ -61,11 +61,14 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
-= 1.3.3 =
+= 1.4 =
 Fixed: Performance optimization for loading the list of orders
 Fixed: Label print edge case error
 Fixed: Woocommerce Currency Switcher compatibility
 Fixed: ManageWP Worker plugin hack fix to be compatible with ManageWP service
+Updated: Support for Divi templates made more universal
+Updated: Packaging weight plugin option re-labeled
+Updated: removal of widget button container class "place-order", providing compatibility with WP Germanized plugin
 Added: Possibility to alter optional packet parameters before submission to Packeta API
 Added: Custom order number support
 Added: Filter for altering packet data
@@ -87,9 +90,6 @@ Added: Packeta button in main menu moved by default to the last position. Final 
 Added: Support for CURCY - Multi Currency for Woocommerce plugin
 Added: Limited support for "Multivendor Marketplace Solution for WooCommerce - WC Marketplace" (WCMP) plugin
 Added: Packet status synchronization
-Updated: Support for Divi templates made more universal
-Updated: Packaging weight plugin option re-labeled
-Updated: removal of widget button container class "place-order", providing compatibility with WP Germanized plugin
 Added: Filter to exclude order statuses when filtering orders
 Added: Price conversion filter
 

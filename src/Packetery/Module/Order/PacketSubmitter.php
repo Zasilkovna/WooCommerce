@@ -174,7 +174,7 @@ class PacketSubmitter {
 			/**
 			 * Filters the input order for CreatePacket request.
 			 *
-			 * @since 1.3.3
+			 * @since 1.4
 			 *
 			 * @param Entity\Order $order Packeta core order. DO NOT USE THIS STRICT TYPE IN YOUR METHOD SIGNATURE!
 			 */
