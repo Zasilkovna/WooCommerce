@@ -36,14 +36,23 @@ class CronService {
 	private $carrierDownloader;
 
 	/**
+	 * Packet synchronizer.
+	 *
+	 * @var Order\PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Log\Purger         $logPurger         Log purger.
-	 * @param Carrier\Downloader $carrierDownloader Carrier downloader.
+	 * @param Log\Purger               $logPurger Log purger.
+	 * @param Carrier\Downloader       $carrierDownloader Carrier downloader.
+	 * @param Order\PacketSynchronizer $packetSynchronizer Packet synchronizer.
 	 */
-	public function __construct( Log\Purger $logPurger, Carrier\Downloader $carrierDownloader ) {
-		$this->logPurger         = $logPurger;
-		$this->carrierDownloader = $carrierDownloader;
+	public function __construct( Log\Purger $logPurger, Carrier\Downloader $carrierDownloader, Order\PacketSynchronizer $packetSynchronizer ) {
+		$this->logPurger          = $logPurger;
+		$this->carrierDownloader  = $carrierDownloader;
+		$this->packetSynchronizer = $packetSynchronizer;
 	}
 
 	/**
@@ -62,16 +71,19 @@ class CronService {
 			wp_schedule_event( time(), 'daily', self::CRON_CARRIERS_HOOK );
 		}
 
-		// TODO: Packet status sync.
-		wp_clear_scheduled_hook( self::CRON_PACKET_STATUS_SYNC_HOOK );
+		add_action( self::CRON_PACKET_STATUS_SYNC_HOOK, [ $this->packetSynchronizer, 'syncStatuses' ] );
+		if ( ! wp_next_scheduled( self::CRON_PACKET_STATUS_SYNC_HOOK ) ) {
+			wp_schedule_event( ( new \DateTime( 'next day 03:00:00', wp_timezone() ) )->getTimestamp(), 'daily', self::CRON_PACKET_STATUS_SYNC_HOOK );
+		}
 	}
 
 	/**
-	 * Unregisters purger.
+	 * Unregisters purger and synchronizer.
 	 *
 	 * @return void
 	 */
 	public static function deactivate(): void {
 		wp_clear_scheduled_hook( self::CRON_LOG_AUTO_DELETION_HOOK );
+		wp_clear_scheduled_hook( self::CRON_PACKET_STATUS_SYNC_HOOK );
 	}
 }

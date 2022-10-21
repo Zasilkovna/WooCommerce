@@ -163,7 +163,7 @@ class DashboardWidget {
 					'noGlobalSettings'       => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Global plugin settings have not been made, you can make the settings %1$shere%2$s.', 'packeta' ),
-						...Plugin::createLinkParts( $this->optionsPage->createUrl() )
+						...Plugin::createLinkParts( $this->optionsPage->createLink() )
 					),
 					'noActiveCountry'        => sprintf(
 						// translators: 1: link start 2: link end.
@@ -173,7 +173,7 @@ class DashboardWidget {
 					'noCodPaymentConfigured' => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No COD payment configured. The settings can be made %1$shere%2$s.', 'packeta' ),
-						...Plugin::createLinkParts( $this->optionsPage->createUrl() )
+						...Plugin::createLinkParts( $this->optionsPage->createLink() )
 					),
 					'noExternalCarrier'      => sprintf(
 						// translators: 1: link start 2: link end.

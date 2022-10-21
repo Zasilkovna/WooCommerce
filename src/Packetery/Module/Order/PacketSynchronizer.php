@@ -75,7 +75,12 @@ class PacketSynchronizer {
 	 * @return void
 	 */
 	public function syncStatuses(): void {
-		$results = $this->orderRepository->findStatusSyncingOrders( $this->optionsProvider->getMaxStatusSyncingPackets() );
+		$results = $this->orderRepository->findStatusSyncingOrders(
+			$this->optionsProvider->getStatusSyncingPacketStatuses(),
+			$this->optionsProvider->getExistingStatusSyncingOrderStatuses(),
+			$this->optionsProvider->getMaxDaysOfPacketStatusSyncing(),
+			$this->optionsProvider->getMaxStatusSyncingPackets()
+		);
 
 		foreach ( $results as $order ) {
 			$packetId = $order->getPacketId();
@@ -110,5 +115,65 @@ class PacketSynchronizer {
 			$order->setPacketStatus( $response->getCodeText() );
 			$this->orderRepository->save( $order );
 		}
+	}
+
+	/**
+	 * Gets code text translated.
+	 *
+	 * @param string|null $packetStatus Packet status.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketStatusTranslated( ?string $packetStatus ): string {
+		switch ( $packetStatus ) {
+			case 'received data':
+				return __( 'Data received', 'packeta' );
+			case 'arrived':
+				return __( 'Submitted', 'packeta' );
+			case 'prepared for departure':
+				return __( 'Prepared for departure', 'packeta' );
+			case 'departed':
+				return __( 'Departed', 'packeta' );
+			case 'ready for pickup':
+				return __( 'Ready for pickup', 'packeta' );
+			case 'handed to carrier':
+				return __( 'Handed to carrier', 'packeta' );
+			case 'delivered':
+				return __( 'Delivered', 'packeta' );
+			case 'posted back':
+				return __( 'Posted back', 'packeta' );
+			case 'returned':
+				return __( 'Returned', 'packeta' );
+			case 'cancelled':
+				return __( 'Cancelled', 'packeta' );
+			case 'collected':
+				return __( 'Collected', 'packeta' );
+			case 'unknown':
+				return __( 'Unknown', 'packeta' );
+		}
+
+		return (string) $packetStatus;
+	}
+
+	/**
+	 * Gets packet statuses.
+	 *
+	 * @return string[]
+	 */
+	public function getPacketStatuses(): array {
+		return [
+			'received data',
+			'arrived',
+			'prepared for departure',
+			'departed',
+			'ready for pickup',
+			'handed to carrier',
+			'delivered',
+			'posted back',
+			'returned',
+			'cancelled',
+			'collected',
+			'unknown',
+		];
 	}
 }

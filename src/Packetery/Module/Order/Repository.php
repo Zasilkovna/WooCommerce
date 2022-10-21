@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Helper;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
@@ -407,26 +408,76 @@ class Repository {
 	}
 
 	/**
+	 * Quote array of strings.
+	 *
+	 * @param array $input Input.
+	 *
+	 * @return array
+	 */
+	private function quoteArrayOfStrings( array $input ): array {
+		return array_map(
+			function ( string $item ) {
+				$wpdb = $this->wpdb;
+				return $wpdb->prepare( '%s', $item );
+			},
+			$input
+		);
+	}
+
+	/**
 	 * Finds orders.
 	 *
-	 * @param int $limit Number of records.
+	 * @param array $allowedPacketStatuses Allowed packet statuses.
+	 * @param array $allowedOrderStatuses  Allowed order statuses.
+	 * @param int   $maxDays               Max number of days of single packet sync.
+	 * @param int   $limit                 Number of records.
 	 *
 	 * @return iterable|Order[]
 	 */
-	public function findStatusSyncingOrders( int $limit ): iterable {
-		$wpdb = $this->wpdb;
+	public function findStatusSyncingOrders( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
+		$wpdb      = $this->wpdb;
+		$dateLimit = Helper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
-		$rows = $wpdb->get_results(
-			$wpdb->prepare(
-				'
+		$andWhere = [];
+
+		$andWhere[] = 'o.`packet_id` IS NOT NULL';
+		$andWhere[] = $wpdb->prepare( 'wp_p.`post_date_gmt` >= %s', $dateLimit );
+
+		$orPacketStatus   = [];
+		$orPacketStatus[] = 'o.`packet_status` IS NULL';
+
+		if ( $allowedPacketStatuses ) {
+			$orPacketStatus[] = 'o.`packet_status` IN (' . implode( ',', $this->quoteArrayOfStrings( $allowedPacketStatuses ) ) . ')';
+		}
+
+		if ( $orPacketStatus ) {
+			$andWhere[] = '(' . implode( ' OR ', $orPacketStatus ) . ')';
+		}
+
+		if ( $allowedOrderStatuses ) {
+			$andWhere[] = 'wp_p.`post_status` IN (' . implode( ',', $this->quoteArrayOfStrings( $allowedOrderStatuses ) ) . ')';
+		} else {
+			$andWhere[] = '1 = 0';
+		}
+
+		$where = '';
+		if ( $andWhere ) {
+			$where = ' WHERE ' . implode( ' AND ', $andWhere );
+		}
+
+		// @codingStandardsIgnoreStart
+		$sql = $wpdb->prepare(
+			'
 			SELECT o.* FROM `' . $wpdb->packetery_order . '` o 
 			JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
-			WHERE ( o.`packet_status` IS NULL OR o.`packet_status` NOT IN ("delivered", "returned", "cancelled") ) AND o.`packet_id` IS NOT NULL
+			' . $where . '
 			ORDER BY wp_p.`post_date` 
 			LIMIT %d',
-				$limit
-			)
+			$limit
 		);
+
+		$rows = $wpdb->get_results( $sql );
+		// @codingStandardsIgnoreEnd
 
 		foreach ( $rows as $row ) {
 			$wcOrder = wc_get_order( $row->id );
