@@ -62,6 +62,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.3.3 =
+Fixed: Performance optimization for loading the list of orders
 Fixed: Label print edge case error
 Fixed: Woocommerce Currency Switcher compatibility
 Fixed: ManageWP Worker plugin hack fix to be compatible with ManageWP service
