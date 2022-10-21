@@ -26,6 +26,11 @@ class GridExtender {
 
 	const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
 
+    /**
+     * @var \Packetery\Core\Entity\Order
+     */
+    public static $orderCache;
+
 	/**
 	 * Generic Helper.
 	 *
@@ -215,10 +220,14 @@ class GridExtender {
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
 
-		$order = $this->orderRepository->getById( $post->ID );
-		if ( null === $order ) {
-			return;
-		}
+        if (!isset(self::$orderCache) || (int) self::$orderCache->getNumber() !== $post->ID) {
+            self::$orderCache = $this->orderRepository->getById( $post->ID );
+            if ( null === self::$orderCache ) {
+                return;
+            }
+        }
+
+        $order = self::$orderCache;
 
 		switch ( $column ) {
 			case 'packetery_weight':
