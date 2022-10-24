@@ -164,7 +164,7 @@ class OptionsPage {
 		$couponFreeShipping->addCheckbox( 'active', __( 'Apply free shipping coupon', 'packeta' ) );
 		$couponFreeShipping->addCheckbox( 'allow_for_fees', __( 'Apply free shipping coupon for fees', 'packeta' ) )
 							->addConditionOn( $form['coupon_free_shipping']['active'], Form::FILLED )
-							->toggle( $this->createCouponFreeShippingForFeesHtmlContainerId( $form ) );
+							->toggle( $this->createCouponFreeShippingForFeesContainerId( $form ) );
 
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
@@ -215,7 +215,7 @@ class OptionsPage {
 	 *
 	 * @return string
 	 */
-	private function createCouponFreeShippingForFeesHtmlContainerId( Form $form ): string {
+	private function createCouponFreeShippingForFeesContainerId( Form $form ): string {
 		return sprintf( '%s_apply_free_shipping_coupon_allow_for_fees', $form->getName() );
 	}
 
@@ -328,10 +328,10 @@ class OptionsPage {
 				}
 
 				$carriersData[] = [
-					'form'         => $form,
-					'formTemplate' => $formTemplate,
-					'carrier'      => $carrier,
-					'couponFreeShippingForFeesHtmlContainerId' => $this->createCouponFreeShippingForFeesHtmlContainerId( $form ),
+					'form'                                 => $form,
+					'formTemplate'                         => $formTemplate,
+					'carrier'                              => $carrier,
+					'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
 				];
 			}
 

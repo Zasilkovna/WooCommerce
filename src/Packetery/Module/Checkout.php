@@ -824,7 +824,7 @@ class Checkout {
 	 *
 	 * @return bool
 	 */
-	public function isFreeShippingCouponApplied(): bool {
+	private function isFreeShippingCouponApplied(): bool {
 		$coupons = WC()->cart->get_coupons();
 		foreach ( $coupons as $coupon ) {
 			if ( $coupon->get_free_shipping() ) {
