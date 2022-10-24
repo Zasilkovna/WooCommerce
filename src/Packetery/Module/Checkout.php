@@ -11,6 +11,7 @@ namespace Packetery\Module;
 
 use Packetery\Core;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
+use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
 use PacketeryLatte\Engine;
@@ -787,6 +788,13 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
+				if (
+					isset( $options['maximum_cod_value'] ) &&
+					$options['maximum_cod_value'] >= OptionsPage::MINIMAL_MAXIMUM_COD &&
+					( $cartPrice + $cost ) > $options['maximum_cod_value']
+				) {
+					continue;
+				}
 				$customRates[ $rateId ] = $this->createShippingRate( $options->getName(), $rateId, $cost );
 			}
 		}
