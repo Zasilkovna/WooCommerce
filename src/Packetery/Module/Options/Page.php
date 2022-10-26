@@ -234,13 +234,13 @@ class Page {
 		$form     = $this->formFactory->create( 'packetery_packet_status_sync_form' );
 		$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_SYNC );
 
-		$form->addText( 'max_status_syncing_packets', __( 'Max packet status syncing packets', 'packeta' ) )
+		$form->addText( 'max_status_syncing_packets', __( 'Number of orders synced during one Cron call', 'packeta' ) )
 				->setRequired( false )
 				->addRule( Form::INTEGER )
 				->addRule( Form::MIN, null, 0 )
 				->setDefaultValue( Provider::MAX_STATUS_SYNCING_PACKETS_DEFAULT );
 
-		$form->addText( 'max_days_of_packet_status_syncing', __( 'Max days of packet status syncing', 'packeta' ) )
+		$form->addText( 'max_days_of_packet_status_syncing', __( 'Number of days for which the order status is checked', 'packeta' ) )
 				->setRequired( false )
 				->addRule( Form::INTEGER )
 				->addRule( Form::MIN, null, 0 )
@@ -618,11 +618,12 @@ class Page {
 				'</a>'
 			),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
-			'packetStatusSyncTabLinkLabel'           => __( 'Automatic packet status loading', 'packeta' ),
-			'statusSyncingOrderStatusesLabel'        => __( 'Packet status syncing order statuses', 'packeta' ),
+			'packetStatusSyncTabLinkLabel'           => __( 'Settings for the automatic packet status retrieval', 'packeta' ),
+			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which Cron will check the packet status', 'packeta' ),
 			'statusSyncingOrderStatusesDescription'  => __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),
-			'statusSyncingPacketStatusesLabel'       => __( 'Packet status syncing packet statuses', 'packeta' ),
+			'statusSyncingPacketStatusesLabel'       => __( 'Packet statuses that are being checked', 'packeta' ),
 			'statusSyncingPacketStatusesDescription' => __( 'If an order has a shipment with one of these selected statuses, the shipment status will be tracked.', 'packeta' ),
+			'numberOfDaysToCheckDescription'         => __( 'Number of days after the creation of an order, during which the order status will be checked.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

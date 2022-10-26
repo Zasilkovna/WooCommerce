@@ -9,16 +9,16 @@
             {$translations['general']}
         </a>
         <a
-            href="{$supportTabLink}"
-            class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
-        >
-            {$translations['support']}
-        </a>
-        <a
             href="{$packetStatusSyncTabLink}"
             class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_PACKET_STATUS_SYNC} nav-tab-active{/if}"
         >
             {$translations['packetStatusSyncTabLinkLabel']}
+        </a>
+        <a
+                href="{$supportTabLink}"
+                class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
+        >
+            {$translations['support']}
         </a>
     </nav>
 

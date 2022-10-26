@@ -127,9 +127,9 @@ class PacketSynchronizer {
 	public function getPacketStatusTranslated( ?string $packetStatus ): string {
 		switch ( $packetStatus ) {
 			case 'received data':
-				return __( 'Data received', 'packeta' );
+				return __( 'Received data', 'packeta' );
 			case 'arrived':
-				return __( 'Submitted', 'packeta' );
+				return __( 'Arrived', 'packeta' );
 			case 'prepared for departure':
 				return __( 'Prepared for departure', 'packeta' );
 			case 'departed':

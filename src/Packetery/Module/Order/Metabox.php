@@ -298,7 +298,7 @@ class Metabox {
 				'hasOrderManualWeight' => $order->hasManualWeight(),
 				'translations'         => [
 					'showLogs'       => __( 'Show logs', 'packeta' ),
-					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
+					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove the field content and save.', 'packeta' ),
 				],
 			]
 		);
