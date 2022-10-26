@@ -156,24 +156,24 @@ class PacketSynchronizer {
 	}
 
 	/**
-	 * Gets packet statuses.
+	 * Gets packet statuses and default values.
 	 *
 	 * @return string[]
 	 */
-	public function getPacketStatuses(): array {
+	public static function getPacketStatuses(): array {
 		return [
-			'received data',
-			'arrived',
-			'prepared for departure',
-			'departed',
-			'ready for pickup',
-			'handed to carrier',
-			'delivered',
-			'posted back',
-			'returned',
-			'cancelled',
-			'collected',
-			'unknown',
+			'received data'          => true,
+			'arrived'                => true,
+			'prepared for departure' => true,
+			'departed'               => true,
+			'ready for pickup'       => true,
+			'handed to carrier'      => true,
+			'delivered'              => false,
+			'posted back'            => true,
+			'returned'               => false,
+			'cancelled'              => false,
+			'collected'              => true,
+			'unknown'                => false,
 		];
 	}
 }

@@ -192,14 +192,15 @@ class Page {
 	 * @return array
 	 */
 	public function getPacketStatusesChoiceData(): array {
-		$statuses = $this->packetSynchronizer->getPacketStatuses();
+		$statuses = PacketSynchronizer::getPacketStatuses();
 
 		$result = [];
 
-		foreach ( $statuses as $status ) {
+		foreach ( $statuses as $status => $defaultValue ) {
 			$result[ md5( $status ) ] = [
-				'key'   => $status,
-				'label' => $this->packetSynchronizer->getPacketStatusTranslated( $status ),
+				'key'     => $status,
+				'default' => $defaultValue,
+				'label'   => $this->packetSynchronizer->getPacketStatusTranslated( $status ),
 			];
 		}
 
@@ -232,7 +233,7 @@ class Page {
 	 */
 	private function createPacketStatusSyncForm(): Form {
 		$form     = $this->formFactory->create( 'packetery_packet_status_sync_form' );
-		$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_SYNC );
+		$settings = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_SYNC );
 
 		$form->addText( 'max_status_syncing_packets', __( 'Number of orders synced during one Cron call', 'packeta' ) )
 				->setRequired( false )
@@ -251,24 +252,26 @@ class Page {
 
 		foreach ( $orderStatusesTransformed as $orderStatusKeyHash => $orderStatusData ) {
 			$item = $orderStatusesContainer->addCheckbox( $orderStatusKeyHash, $orderStatusData['label'] );
-			if ( isset( $defaults['status_syncing_order_statuses'] ) && in_array( $orderStatusData['key'], $defaults['status_syncing_order_statuses'], true ) ) {
+			if ( isset( $settings['status_syncing_order_statuses'] ) && in_array( $orderStatusData['key'], $settings['status_syncing_order_statuses'], true ) ) {
 				$item->setDefaultValue( true );
 			}
 		}
-		unset( $defaults['status_syncing_order_statuses'] );
+		unset( $settings['status_syncing_order_statuses'] );
 
 		$packetStatuses          = $this->getPacketStatusesChoiceData();
 		$packetStatusesContainer = $form->addContainer( 'status_syncing_packet_statuses' );
 
 		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
 			$item = $packetStatusesContainer->addCheckbox( $packetStatusHash, $packetStatusData['label'] );
-			if ( isset( $defaults['status_syncing_packet_statuses'] ) && in_array( $packetStatusData['key'], $defaults['status_syncing_packet_statuses'], true ) ) {
+			if ( ! isset( $settings['status_syncing_packet_statuses'] ) ) {
+				$item->setDefaultValue( $packetStatusData['default'] );
+			} elseif ( in_array( $packetStatusData['key'], $settings['status_syncing_packet_statuses'], true ) ) {
 				$item->setDefaultValue( true );
 			}
 		}
-		unset( $defaults['status_syncing_packet_statuses'] );
+		unset( $settings['status_syncing_packet_statuses'] );
 
-		$form->setDefaults( $defaults );
+		$form->setDefaults( $settings );
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
@@ -618,7 +621,7 @@ class Page {
 				'</a>'
 			),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
-			'packetStatusSyncTabLinkLabel'           => __( 'Settings for the automatic packet status retrieval', 'packeta' ),
+			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
 			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which Cron will check the packet status', 'packeta' ),
 			'statusSyncingOrderStatusesDescription'  => __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),
 			'statusSyncingPacketStatusesLabel'       => __( 'Packet statuses that are being checked', 'packeta' ),
