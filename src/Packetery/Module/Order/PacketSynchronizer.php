@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api;
+use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\Options;
 
@@ -118,62 +119,36 @@ class PacketSynchronizer {
 	}
 
 	/**
-	 * Gets code text translated.
-	 *
-	 * @param string|null $packetStatus Packet status.
-	 *
-	 * @return string|null
-	 */
-	public function getPacketStatusTranslated( ?string $packetStatus ): string {
-		switch ( $packetStatus ) {
-			case 'received data':
-				return __( 'Awaiting consignment', 'packeta' );
-			case 'arrived':
-				return __( 'Accepted at depot', 'packeta' );
-			case 'prepared for departure':
-				return __( 'On the way', 'packeta' );
-			case 'departed':
-				return __( 'Departed from depot', 'packeta' );
-			case 'collected':
-				return __( 'Parcel has been collected', 'packeta' );
-			case 'ready for pickup':
-				return __( 'Ready for pick-up', 'packeta' );
-			case 'handed to carrier':
-				return __( 'Handed over to carrier company', 'packeta' );
-			case 'delivered':
-				return __( 'Delivered', 'packeta' );
-			case 'posted back':
-				return __( 'Return (on the way back)', 'packeta' );
-			case 'returned':
-				return __( 'Returned to sender', 'packeta' );
-			case 'cancelled':
-				return __( 'Cancelled', 'packeta' );
-			case 'unknown':
-				return __( 'Unknown parcel status', 'packeta' );
-		}
-
-		return (string) $packetStatus;
-	}
-
-	/**
 	 * Gets packet statuses and default values.
 	 *
-	 * @return string[]
+	 * @return PacketStatus[]
 	 */
 	public static function getPacketStatuses(): array {
 		return [
-			'received data'          => true,
-			'arrived'                => true,
-			'prepared for departure' => true,
-			'departed'               => true,
-			'ready for pickup'       => true,
-			'handed to carrier'      => true,
-			'delivered'              => false,
-			'posted back'            => true,
-			'returned'               => false,
-			'cancelled'              => false,
-			'collected'              => true,
-			'unknown'                => false,
+			'received data'          =>
+				new PacketStatus( 'received data', __( 'Awaiting consignment', 'packeta' ), true ),
+			'arrived'                =>
+				new PacketStatus( 'arrived', __( 'Accepted at depot', 'packeta' ), true ),
+			'prepared for departure' =>
+				new PacketStatus( 'prepared for departure', __( 'On the way', 'packeta' ), true ),
+			'departed'               =>
+				new PacketStatus( 'departed', __( 'Departed from depot', 'packeta' ), true ),
+			'ready for pickup'       =>
+				new PacketStatus( 'ready for pickup', __( 'Ready for pick-up', 'packeta' ), true ),
+			'handed to carrier'      =>
+				new PacketStatus( 'handed to carrier', __( 'Handed over to carrier company', 'packeta' ), true ),
+			'delivered'              =>
+				new PacketStatus( 'delivered', __( 'Delivered', 'packeta' ), false ),
+			'posted back'            =>
+				new PacketStatus( 'posted back', __( 'Return (on the way back)', 'packeta' ), true ),
+			'returned'               =>
+				new PacketStatus( 'returned', __( 'Returned to sender', 'packeta' ), false ),
+			'cancelled'              =>
+				new PacketStatus( 'cancelled', __( 'Cancelled', 'packeta' ), false ),
+			'collected'              =>
+				new PacketStatus( 'collected', __( 'Parcel has been collected', 'packeta' ), true ),
+			'unknown'                =>
+				new PacketStatus( 'unknown', __( 'Unknown parcel status', 'packeta' ), false ),
 		];
 	}
 }

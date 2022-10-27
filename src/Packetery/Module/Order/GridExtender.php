@@ -326,7 +326,11 @@ class GridExtender {
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $this->packetSynchronizer->getPacketStatusTranslated( $order->getPacketStatus() ) );
+				$statuses = PacketSynchronizer::getPacketStatuses();
+				if ( isset( $statuses[ $order->getPacketStatus() ] ) ) {
+					$statusEntity = $statuses[ $order->getPacketStatus() ];
+				}
+				echo esc_html( $statusEntity->translatedName ?? $order->getPacketStatus() );
 				break;
 		}
 	}

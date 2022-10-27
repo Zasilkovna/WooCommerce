@@ -196,11 +196,11 @@ class Page {
 
 		$result = [];
 
-		foreach ( $statuses as $status => $defaultValue ) {
+		foreach ( $statuses as $status => $statusEntity ) {
 			$result[ md5( $status ) ] = [
 				'key'     => $status,
-				'default' => $defaultValue,
-				'label'   => $this->packetSynchronizer->getPacketStatusTranslated( $status ),
+				'default' => $statusEntity->defaultSynchronization,
+				'label'   => $statusEntity->translatedName,
 			];
 		}
 
