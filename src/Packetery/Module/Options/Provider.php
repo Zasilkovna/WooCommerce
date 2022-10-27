@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Module\Order\PacketSynchronizer;
+
 /**
  * Class Provider
  *
@@ -264,7 +266,7 @@ class Provider {
 			return $value;
 		}
 
-		return [];
+		return array_keys( PacketSynchronizer::getPacketStatuses(), true, true );
 	}
 
 	/**
