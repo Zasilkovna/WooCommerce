@@ -14,6 +14,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
+use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
@@ -256,6 +257,16 @@ class Repository {
 		$partialOrder->setAdultContent( $this->parseBool( $result->adult_content ) );
 		$partialOrder->setValue( $this->parseFloat( $result->value ) );
 		$partialOrder->setCod( $this->parseFloat( $result->cod ) );
+		$partialOrder->setLastApiErrorMessage( $result->api_error_message );
+		$partialOrder->setLastApiErrorDate(
+			( null === $result->api_error_date )
+				? $result->api_error_date
+				: \DateTimeImmutable::createFromFormat(
+					Helper::MYSQL_DATETIME_FORMAT,
+					$result->api_error_date,
+					new \DateTimeZone( 'UTC' )
+				)->setTimezone( wp_timezone() )
+		);
 
 		if ( $result->delivery_address ) {
 			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
@@ -360,6 +371,8 @@ class Repository {
 			'adult_content'     => $order->containsAdultContent(),
 			'cod'               => $order->getCod(),
 			'value'             => $order->getValue(),
+			'api_error_message' => $order->getLastApiErrorMessage(),
+			'api_error_date'    => ( null === $order->getLastApiErrorDate() ) ? null : $order->getLastApiErrorDate()->format( Helper::MYSQL_DATETIME_FORMAT ),
 		];
 
 		return $data;
@@ -567,6 +580,28 @@ class Repository {
 		$wpdbAdapter = $this->wpdbAdapter;
 
 		$wpdbAdapter->query( 'ALTER TABLE `' . $wpdbAdapter->packetery_order . '` ADD COLUMN `cod` double NULL DEFAULT NULL AFTER `value`' );
+	}
+
+	/**
+	 * Adds api_error_message column.
+	 *
+	 * @return void
+	 */
+	public function addColumnApiErrorMessage(): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `api_error_message` text NULL DEFAULT NULL AFTER `cod`' );
+	}
+
+	/**
+	 * Adds api_error_message column.
+	 *
+	 * @return void
+	 */
+	public function addColumnApiErrorMessageDate(): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
 	}
 
 	/**

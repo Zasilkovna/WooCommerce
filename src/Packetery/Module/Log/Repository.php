@@ -143,13 +143,14 @@ class Repository {
 	 */
 	public function remapToRecord( iterable $logs ): \Generator {
 		foreach ( $logs as $log ) {
-			$record         = new Record();
-			$record->id     = $log->id;
-			$record->status = $log->status;
-			$record->date   = \DateTimeImmutable::createFromFormat( Helper::MYSQL_DATETIME_FORMAT, $log->date, new \DateTimeZone( 'UTC' ) )
+			$record          = new Record();
+			$record->id      = $log->id;
+			$record->orderId = $log->order_id;
+			$record->status  = $log->status;
+			$record->date    = \DateTimeImmutable::createFromFormat( Helper::MYSQL_DATETIME_FORMAT, $log->date, new \DateTimeZone( 'UTC' ) )
 												->setTimezone( wp_timezone() );
-			$record->action = $log->action;
-			$record->title  = $log->title;
+			$record->action  = $log->action;
+			$record->title   = $log->title;
 
 			if ( $log->params ) {
 				$record->params = json_decode( $log->params, true );
@@ -266,4 +267,20 @@ class Repository {
 
 		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
 	}
+
+	/**
+	 * Adds index for order_id column.
+	 *
+	 * @return void
+	 */
+	public function addIndexForOrderId(): void {
+		$wpdb = $this->wpdb;
+		$wpdb->query(
+			sprintf(
+				'ALTER TABLE `%s` ADD INDEX `order_id_idx` (`order_id`)',
+				$wpdb->packetery_log
+			)
+		);
+	}
+
 }

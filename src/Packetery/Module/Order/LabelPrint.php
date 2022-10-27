@@ -336,12 +336,12 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
+			$order           = $this->orderRepository->getById( $orderId );
 
 			if ( ! $response->hasFault() ) {
-				$order = $this->orderRepository->getById( $orderId );
 				if ( null !== $order ) {
 					$order->setIsLabelPrinted( true );
-					$this->orderRepository->save( $order );
+					$order->updateApiErrorMessage( null );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
@@ -359,9 +359,11 @@ class LabelPrint {
 					],
 					'errorMessage'      => $response->getFaultString(),
 				];
+				$order->updateApiErrorMessage( $response->getFaultString() );
 			}
 
 			$this->logger->add( $record );
+			$this->orderRepository->save( $order );
 		}
 
 		return $response;
@@ -384,13 +386,13 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->orderId = $orderId;
+			$order           = $this->orderRepository->getById( $orderId );
 
 			if ( ! $response->hasFault() ) {
-				$order = $this->orderRepository->getById( $orderId );
 				if ( null !== $order ) {
 					$order->setIsLabelPrinted( true );
 					$order->setCarrierNumber( $pairItem['courierNumber'] );
-					$this->orderRepository->save( $order );
+					$order->updateApiErrorMessage( null );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
@@ -410,9 +412,10 @@ class LabelPrint {
 					],
 					'errorMessage'           => $response->getFaultString(),
 				];
-			}
 
-			$this->logger->add( $record );
+				$order->updateApiErrorMessage( $response->getFaultString() );
+			}
+			$this->orderRepository->save( $order );
 		}
 
 		return $response;
@@ -493,6 +496,11 @@ class LabelPrint {
 				];
 				$record->orderId = $orderId;
 				$this->logger->add( $record );
+				$order = $this->orderRepository->getById( $orderId );
+				if ( null !== $order ) {
+					$order->updateApiErrorMessage( $response->getFaultString() );
+					$this->orderRepository->save( $order );
+				}
 				continue;
 			}
 			$pairs[ $orderId ] = [

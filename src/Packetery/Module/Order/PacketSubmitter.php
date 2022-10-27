@@ -248,11 +248,13 @@ class PacketSubmitter {
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
+				$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
+
 				$submissionResult->increaseErrorsCount();
 			} else {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
-				$this->orderRepository->save( $commonEntity );
+				$commonEntity->updateApiErrorMessage( null );
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -268,6 +270,7 @@ class PacketSubmitter {
 				$submissionResult->increaseSuccessCount();
 			}
 			$submissionResult->increaseLogsCount();
+			$this->orderRepository->save( $commonEntity );
 		} else {
 			$submissionResult->increaseIgnoredCount();
 		}

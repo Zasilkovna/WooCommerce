@@ -187,7 +187,7 @@ class Order {
 	private $currency;
 
 	/**
-	 * Carrier number..
+	 * Carrier number.
 	 *
 	 * @var string|null
 	 */
@@ -206,6 +206,20 @@ class Order {
 	 * @var string|null
 	 */
 	private $shippingCountry;
+
+	/**
+	 * Last message built from Packeta API response.
+	 *
+	 * @var string|null
+	 */
+	private $lastApiErrorMessage;
+
+	/**
+	 * Last API error date.
+	 *
+	 * @var \DateTimeImmutable|null
+	 */
+	private $lastApiErrorDate;
 
 	/**
 	 * Order entity constructor.
@@ -555,6 +569,25 @@ class Order {
 	}
 
 	/**
+	 * Sets API response message.
+	 *
+	 * @param string|null $lastApiErrorMessage API response message.
+	 *
+	 * @return void
+	 */
+	public function setLastApiErrorMessage( ?string $lastApiErrorMessage ): void {
+		$this->lastApiErrorMessage = $lastApiErrorMessage;
+	}
+
+	/**
+	 * Sets API error date.
+	 *
+	 * @param \DateTimeImmutable|null $lastApiErrorDate API error date.
+	 */
+	public function setLastApiErrorDate( ?\DateTimeImmutable $lastApiErrorDate ): void {
+		$this->lastApiErrorDate = $lastApiErrorDate;
+	}
+	/**
 	 * Gets carrier object.
 	 *
 	 * @return Carrier|null
@@ -855,4 +888,48 @@ class Order {
 	public function getCarrierCode():string {
 		return $this->carrierCode;
 	}
+	/**
+	 * Formatted API error message.
+	 *
+	 * @return string|null
+	 */
+	public function getLastApiErrorMessage(): ?string {
+		return $this->lastApiErrorMessage;
+	}
+
+	/**
+	 * Gets last API error message date.
+	 *
+	 * @return \DateTimeImmutable|null
+	 */
+	public function getLastApiErrorDate(): ?\DateTimeImmutable {
+		return $this->lastApiErrorDate;
+	}
+
+	/**
+	 * Tells if there is error from API.
+	 *
+	 * @return bool
+	 */
+	public function hasApiError(): bool {
+		return null !== $this->lastApiErrorMessage;
+	}
+
+	/**
+	 * Updates API error message and sets error message date accordingly.
+	 *
+	 * @param string|null             $errorMessage Error message.
+	 * @param \DateTimeImmutable|null $errorMessageDateTime Error message date.
+	 *
+	 * @return void
+	 */
+	public function updateApiErrorMessage( ?string $errorMessage, ?\DateTimeImmutable $errorMessageDateTime = null ): void {
+		$this->lastApiErrorMessage = $errorMessage;
+		if ( null === $errorMessage ) {
+			$this->lastApiErrorDate = null;
+		} else {
+			$this->lastApiErrorDate = $errorMessageDateTime ?? Helper::now();
+		}
+	}
+
 }

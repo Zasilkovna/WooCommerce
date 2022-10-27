@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
+use Packetery\Module\Log\Purger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module\Plugin;
@@ -221,7 +222,7 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-
+		// TODO: work with all POSTS from $GLOBALS.
 		if ( ! isset( self::$orderCache ) || (int) self::$orderCache->getNumber() !== $post->ID ) {
 			self::$orderCache = $this->orderRepository->getById( $post->ID );
 			if ( null === self::$orderCache ) {
@@ -302,7 +303,9 @@ class GridExtender {
 						'packetSubmitUrl'    => $packetSubmitUrl,
 						'packetCancelLink'   => $packetCancelLink,
 						'printLink'          => $printLink,
-						'translations'       => [
+						'showLogWarning'   => $order->hasApiError() && $this->isErrorMessageDateRecent( $order->getLastApiErrorDate() ),
+						'logErrorMessage'  => $order->getLastApiErrorMessage(),
+						'translations'     => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
@@ -311,6 +314,7 @@ class GridExtender {
 							// translators: %s: Packet number.
 							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
+							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
 						],
 					]
 				);
@@ -356,5 +360,22 @@ class GridExtender {
 		global $pagenow, $typenow;
 
 		return ( 'edit.php' === $pagenow && 'shop_order' === $typenow );
+	}
+
+	/**
+	 * Checks if errorMessageDate is new enough.
+	 *
+	 * @param \DateTimeImmutable $errorMessageDate Error message date.
+	 *
+	 * @return bool
+	 */
+	public function isErrorMessageDateRecent( \DateTimeImmutable $errorMessageDate ): bool {
+		static $logPurgerDatetimeModifierOption;
+
+		if ( null === $logPurgerDatetimeModifierOption ) {
+			$logPurgerDatetimeModifierOption = get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT );
+		}
+
+		return Helper::now()->modify( $logPurgerDatetimeModifierOption ) < $errorMessageDate;
 	}
 }

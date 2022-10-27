@@ -191,6 +191,12 @@ class Upgrade {
 			$this->orderRepository->addCodColumn();
 		}
 
+		if ( $oldVersion && version_compare( $oldVersion, '1.4.1', '<' ) ) {
+			$this->orderRepository->addColumnApiErrorMessage();
+			$this->orderRepository->addColumnApiErrorMessageDate();
+			$this->logRepository->addIndexForOrderId();
+		}
+
 		update_option( 'packetery_version', Plugin::VERSION );
 	}
 

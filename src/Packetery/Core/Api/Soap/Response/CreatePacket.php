@@ -94,12 +94,39 @@ class CreatePacket extends BaseResponse {
 	/**
 	 * Gets all errors as string.
 	 *
+	 * @param bool $prependFaultString Prepend fault string.
+	 *
 	 * @return string
 	 */
-	public function getErrorsAsString(): string {
+	public function getErrorsAsString( bool $prependFaultString = true ): string {
 		$allErrors = $this->validationErrors;
-		array_unshift( $allErrors, $this->getFaultString() );
+		if ( $prependFaultString ) {
+			array_unshift( $allErrors, $this->getFaultString() );
+		}
 
 		return implode( ', ', $allErrors );
 	}
+
+	/**
+	 * Returns error message, which is made of validation errors or fault string, otherwise null
+	 *
+	 * @return string|null
+	 */
+	public function getErrorMessage(): ?string {
+		if ( ! $this->hasFault() ) {
+			return null;
+		}
+
+		return $this->getErrorsAsString( ! $this->hasValidationErrors() );
+	}
+
+	/**
+	 * Tells if validationErrors is set and not empty.
+	 *
+	 * @return bool
+	 */
+	public function hasValidationErrors(): bool {
+		return (bool) $this->validationErrors;
+	}
+
 }
