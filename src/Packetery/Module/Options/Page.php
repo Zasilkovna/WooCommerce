@@ -235,7 +235,7 @@ class Page {
 		$form     = $this->formFactory->create( 'packetery_packet_status_sync_form' );
 		$settings = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_SYNC );
 
-		$form->addText( 'max_status_syncing_packets', __( 'Number of orders synced during one Cron call', 'packeta' ) )
+		$form->addText( 'max_status_syncing_packets', __( 'Number of orders synced during one cron call', 'packeta' ) )
 				->setRequired( false )
 				->addRule( Form::INTEGER )
 				->addRule( Form::MIN, null, 0 )
@@ -622,7 +622,7 @@ class Page {
 			),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
-			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which Cron will check the packet status', 'packeta' ),
+			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which cron will check the packet status', 'packeta' ),
 			'statusSyncingOrderStatusesDescription'  => __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),
 			'statusSyncingPacketStatusesLabel'       => __( 'Packet statuses that are being checked', 'packeta' ),
 			'statusSyncingPacketStatusesDescription' => __( 'If an order has a shipment with one of these selected statuses, the shipment status will be tracked.', 'packeta' ),

@@ -125,7 +125,7 @@ class DataTab {
 			[
 				'form'         => $this->createForm( Product\Entity::fromGlobals() ),
 				'translations' => [
-					'disallowedShippingRatesHeading' => __( 'Check Packeta shipping rates disallowed for this product.', 'packeta' ),
+					'disallowedShippingRatesHeading' => __( 'Packeta shipping methods disabled for this product.', 'packeta' ),
 				],
 			]
 		);
