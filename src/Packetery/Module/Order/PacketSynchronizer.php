@@ -127,29 +127,26 @@ class PacketSynchronizer {
 	public function getPacketStatusTranslated( ?string $packetStatus ): string {
 		switch ( $packetStatus ) {
 			case 'received data':
-				return __( 'Received data', 'packeta' );
+				return __( 'Awaiting consignment', 'packeta' );
 			case 'arrived':
-				return __( 'Arrived', 'packeta' );
 			case 'prepared for departure':
-				return __( 'Prepared for departure', 'packeta' );
 			case 'departed':
-				return __( 'Departed', 'packeta' );
+			case 'collected':
+				return __( 'On the way', 'packeta' );
 			case 'ready for pickup':
-				return __( 'Ready for pickup', 'packeta' );
+				return __( 'Ready for pick-up', 'packeta' );
 			case 'handed to carrier':
-				return __( 'Handed to carrier', 'packeta' );
+				return __( 'Handed over to carrier company', 'packeta' );
 			case 'delivered':
 				return __( 'Delivered', 'packeta' );
 			case 'posted back':
-				return __( 'Posted back', 'packeta' );
+				return __( 'Return (on the way back)', 'packeta' );
 			case 'returned':
-				return __( 'Returned', 'packeta' );
+				return __( 'Returned to sender', 'packeta' );
 			case 'cancelled':
 				return __( 'Cancelled', 'packeta' );
-			case 'collected':
-				return __( 'Collected', 'packeta' );
 			case 'unknown':
-				return __( 'Unknown', 'packeta' );
+				return __( 'Unknown parcel status', 'packeta' );
 		}
 
 		return (string) $packetStatus;
