@@ -268,7 +268,14 @@ class Provider {
 			return $value;
 		}
 
-		return array_keys( PacketSynchronizer::getPacketStatuses(), true, true );
+		return array_keys(
+			array_filter(
+				PacketSynchronizer::getPacketStatuses(),
+				function ( $packetStatus ) {
+					return true === $packetStatus->defaultSynchronization;
+				}
+			)
+		);
 	}
 
 	/**
