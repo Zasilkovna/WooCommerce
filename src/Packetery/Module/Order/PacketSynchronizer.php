@@ -129,8 +129,11 @@ class PacketSynchronizer {
 			case 'received data':
 				return __( 'Awaiting consignment', 'packeta' );
 			case 'arrived':
+				return __( 'Accepted at depot', 'packeta' );
 			case 'prepared for departure':
+				return __( 'On the way', 'packeta' );
 			case 'departed':
+				return __( 'Departed from depot', 'packeta' );
 			case 'collected':
 				return __( 'On the way', 'packeta' );
 			case 'ready for pickup':
