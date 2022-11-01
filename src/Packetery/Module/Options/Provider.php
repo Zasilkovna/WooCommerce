@@ -204,6 +204,20 @@ class Provider {
 	}
 
 	/**
+	 * Order default weight.
+	 *
+	 * @return int
+	 */
+	public function getDefaultWeight(): int {
+		$value = $this->get( 'default_weight' );
+		if ( is_numeric( $value ) ) {
+			return (int) $value;
+		}
+
+		return 0;
+	}
+
+	/**
 	 * Max syncing packets.
 	 *
 	 * @return int

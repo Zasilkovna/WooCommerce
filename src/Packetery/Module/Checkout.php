@@ -617,6 +617,8 @@ class Checkout {
 		$weightKg = wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
+		} else {
+			$weightKg = $this->options_provider->getDefaultWeight() ? $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() : 0;
 		}
 
 		return $weightKg;
