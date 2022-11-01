@@ -206,16 +206,19 @@ class OptionsPage {
 		$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
 			->setDefaultValue( Rounder::DONT_ROUND );
 
-		$form->addText( 'maximum_cod_value', __( 'Maximum COD value', 'packeta' ) . ':' )
-			->setRequired( false )
-			->addRule( Form::FLOAT )
-			->addFilter(
-				static function ( float $value ) {
-					return Helper::simplifyFloat( $value, 2 );
-				}
-			)
+		$maximumCod = $form->addText( 'maximum_cod_value', __( 'Maximum COD value', 'packeta' ) . ':' );
+		$maximumCod->setRequired( false )
+			->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) )
 			// translators: %d is numeric threshold.
 			->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+
+		$maximumCod->addFilter(
+			static function ( float $value ): float {
+				return Helper::simplifyFloat( $value, 2 );
+			}
+		);
+		// translators: %d is numeric threshold.
+		$maximumCod->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
