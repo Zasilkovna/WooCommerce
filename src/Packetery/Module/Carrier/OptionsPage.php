@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Helper;
+use Packetery\Core\Rounder;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
@@ -179,6 +180,14 @@ class OptionsPage {
 				->addRule( Form::MIN, null, 0 );
 		}
 
+		$roundingOptions = [
+			Rounder::DONT_ROUND => __( 'No rounding', 'packeta' ),
+			Rounder::ROUND_DOWN => __( 'Always round down', 'packeta' ),
+			Rounder::ROUND_UP   => __( 'Always round up', 'packeta' ),
+		];
+		$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
+			->setDefaultValue( Rounder::DONT_ROUND );
+
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
@@ -323,6 +332,7 @@ class OptionsPage {
 						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
 						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
 						'addressValidationDescription' => __( 'Customer address validation.', 'packeta' ),
+						'roundingDescription'          => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
 						'saveChanges'                  => __( 'Save changes', 'packeta' ),
 						'packeta'                      => __( 'Packeta', 'packeta' ),
 						'countryOptions'               => __( 'Country options', 'packeta' ),

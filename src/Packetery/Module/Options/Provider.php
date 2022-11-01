@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Core\Entity\Carrier;
+use Packetery\Core\Helper;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**

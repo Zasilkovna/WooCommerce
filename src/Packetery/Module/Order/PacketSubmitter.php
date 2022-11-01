@@ -13,8 +13,10 @@ use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
+use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
+use Packetery\Module\Carrier\Options;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 
@@ -181,6 +183,11 @@ class PacketSubmitter {
 		*/
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
+		if ( ! empty( $createPacketData['cod'] ) ) {
+			$roundingType            = Options::createByCarrierId( $order->getCarrierCode() )->getCodRoundingType();
+			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );
+			$createPacketData['cod'] = $roundedCod;
+		}
 
 		/**
 		 * Allows to update CreatePacket request data.
