@@ -54,9 +54,7 @@ class Calculator {
 			}
 		}
 
-		$weightKg = $this->getDynamicOrDefaultWeight( $weight );
-
-		return $weightKg;
+		return $this->getDynamicOrDefaultWeight( $weight );
 	}
 
 	/**
