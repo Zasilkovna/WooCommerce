@@ -9,8 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Request;
 
-use Packetery\Core\Entity;
-
 /**
  * Class CreatePacket.
  *
@@ -154,52 +152,42 @@ class CreatePacket {
 	/**
 	 * CreatePacket constructor.
 	 *
-	 * @param Entity\Order $order Order entity.
+	 * @param array $createPacketData CreatePacket Data.
 	 */
-	public function __construct( Entity\Order $order ) {
+	public function __construct( array $createPacketData ) {
 		// Required attributes.
-		$this->number    = ( $order->getCustomNumber() ?? $order->getNumber() );
-		$this->name      = $order->getName();
-		$this->surname   = $order->getSurname();
-		$this->value     = $order->getValue();
-		$this->weight    = $order->getFinalWeight();
-		$this->addressId = $order->getPickupPointOrCarrierId();
-		$this->eshop     = $order->getEshop();
+		$this->number    = $createPacketData['number'];
+		$this->name      = $createPacketData['name'];
+		$this->surname   = $createPacketData['surname'];
+		$this->value     = $createPacketData['value'];
+		$this->weight    = $createPacketData['weight'];
+		$this->addressId = $createPacketData['addressId'];
+		$this->eshop     = $createPacketData['eshop'];
 		// Optional attributes.
-		$this->adultContent = (int) $order->containsAdultContent();
-		$this->cod          = $order->getCod();
-		$this->currency     = $order->getCurrency();
-		$this->email        = $order->getEmail();
-		$this->note         = $order->getNote();
-		$this->phone        = $order->getPhone();
+		$this->adultContent = $createPacketData['adultContent'];
+		$this->cod          = $createPacketData['cod'];
+		$this->currency     = $createPacketData['currency'];
+		$this->email        = $createPacketData['email'];
+		$this->note         = $createPacketData['note'];
+		$this->phone        = $createPacketData['phone'];
 
-		$pickupPoint = $order->getPickupPoint();
-		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {
-			$this->carrierPickupPoint = $pickupPoint->getId();
+		if ( ! empty( $createPacketData['carrierPickupPoint'] ) ) {
+			$this->carrierPickupPoint = $createPacketData['carrierPickupPoint'];
 		}
-
-		if ( $order->isHomeDelivery() ) {
-			$address = $order->getDeliveryAddress();
-			if ( null !== $address ) {
-				$this->street = $address->getStreet();
-				$this->city   = $address->getCity();
-				$this->zip    = $address->getZip();
-				if ( $address->getHouseNumber() ) {
-					$this->houseNumber = $address->getHouseNumber();
-				}
-			}
+		if ( ! empty( $createPacketData['street'] ) ) {
+			$this->street = $createPacketData['street'];
 		}
-
-		$carrier = $order->getCarrier();
-		if ( null !== $carrier && $carrier->requiresSize() ) {
-			$size = $order->getSize();
-			if ( null !== $size ) {
-				$this->size = [
-					'length' => $size->getLength(),
-					'width'  => $size->getWidth(),
-					'height' => $size->getHeight(),
-				];
-			}
+		if ( ! empty( $createPacketData['city'] ) ) {
+			$this->city = $createPacketData['city'];
+		}
+		if ( ! empty( $createPacketData['zip'] ) ) {
+			$this->zip = $createPacketData['zip'];
+		}
+		if ( ! empty( $createPacketData['houseNumber'] ) ) {
+			$this->houseNumber = $createPacketData['houseNumber'];
+		}
+		if ( ! empty( $createPacketData['size'] ) ) {
+			$this->size = $createPacketData['size'];
 		}
 	}
 

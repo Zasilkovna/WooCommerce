@@ -15,6 +15,7 @@ use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
+use Packetery\Core\Api\Soap\RequestFactory\CreatePacketRequest;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 
@@ -54,23 +55,33 @@ class PacketSubmitter {
 	private $orderRepository;
 
 	/**
+	 * CreatePacketRequest factory.
+	 *
+	 * @var CreatePacketRequest
+	 */
+	private $createPacketRequestFactory;
+
+	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client          $soapApiClient   SOAP API Client.
-	 * @param Validator\Order $orderValidator  Order validator.
-	 * @param Log\ILogger     $logger          Logger.
-	 * @param Repository      $orderRepository Order repository.
+	 * @param Client              $soapApiClient   SOAP API Client.
+	 * @param Validator\Order     $orderValidator  Order validator.
+	 * @param Log\ILogger         $logger          Logger.
+	 * @param Repository          $orderRepository Order repository.
+	 * @param CreatePacketRequest $createPacketRequestFactory CreatePacketRequest factory.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
-		Repository $orderRepository
+		Repository $orderRepository,
+		CreatePacketRequest $createPacketRequestFactory
 	) {
-		$this->soapApiClient   = $soapApiClient;
-		$this->orderValidator  = $orderValidator;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
+		$this->soapApiClient              = $soapApiClient;
+		$this->orderValidator             = $orderValidator;
+		$this->logger                     = $logger;
+		$this->orderRepository            = $orderRepository;
+		$this->createPacketRequestFactory = $createPacketRequestFactory;
 	}
 
 	/**
@@ -165,28 +176,23 @@ class PacketSubmitter {
 	private function preparePacketRequest( Entity\Order $order ): CreatePacket {
 		/*
 		TODO: extend validator to return specific errors.
-		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
+		if ( ! $this->orderValidator->validate( $order ) ) {
 			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
 		*/
 
-		return new CreatePacket(
-			/**
-			 * Filters the input order for CreatePacket request.
-			 *
-			 * @since 1.4
-			 *
-			 * @param Entity\Order $order Packeta core order. DO NOT USE THIS STRICT TYPE IN YOUR METHOD SIGNATURE!
-			 */
-			apply_filters(
-				'packeta_create_packet',
-				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-				unserialize(
-					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-					serialize( $order )
-				)
-			)
-		);
+		$createPacketRequestData = $this->createPacketRequestFactory->preparePacketRequestdata( $order );
+
+		/**
+		 * Allows to update CreatePacket request data.
+		 *
+		 * @since 1.4
+		 *
+		 * @param array $createPacketRequestData CreatePacket request data.
+		 */
+		apply_filters( 'packeta_create_packet', $createPacketRequestData );
+
+		return new CreatePacket( $createPacketRequestData );
 	}
 
 }

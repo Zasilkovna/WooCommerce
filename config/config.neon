@@ -54,3 +54,4 @@ services:
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\Calculator
 	- Packetery\Module\CurrencySwitcherFacade
+	- Packetery\Core\Api\Soap\RequestFactory\CreatePacketRequest
