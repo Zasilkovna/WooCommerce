@@ -28,9 +28,8 @@ use PacketeryNette\Http\Request;
  */
 class OptionsPage {
 
-	public const FORM_FIELD_NAME     = 'name';
-	public const SLUG                = 'packeta-country';
-	public const MINIMAL_MAXIMUM_COD = 0.1;
+	public const FORM_FIELD_NAME = 'name';
+	public const SLUG            = 'packeta-country';
 
 	/**
 	 * PacketeryLatte_engine.
@@ -210,7 +209,13 @@ class OptionsPage {
 		$form->addText( 'maximum_cod_value', __( 'Maximum COD value', 'packeta' ) . ':' )
 			->setRequired( false )
 			->addRule( Form::FLOAT )
-			->addRule( Form::MIN, null, self::MINIMAL_MAXIMUM_COD );
+			->addFilter(
+				function ( float $value ) {
+					return Helper::simplifyFloat( $value, 2 );
+				}
+			)
+			// translators: %d is numeric threshold.
+			->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];

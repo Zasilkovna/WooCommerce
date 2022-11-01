@@ -790,7 +790,7 @@ class Checkout {
 			if ( null !== $cost ) {
 				if (
 					isset( $options['maximum_cod_value'] ) &&
-					$options['maximum_cod_value'] >= OptionsPage::MINIMAL_MAXIMUM_COD &&
+					$options['maximum_cod_value'] > 0 &&
 					( $cartPrice + $cost ) > $options['maximum_cod_value']
 				) {
 					continue;
