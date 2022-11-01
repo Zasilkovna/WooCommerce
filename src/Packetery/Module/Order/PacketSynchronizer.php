@@ -135,7 +135,7 @@ class PacketSynchronizer {
 			case 'departed':
 				return __( 'Departed from depot', 'packeta' );
 			case 'collected':
-				return __( 'On the way', 'packeta' );
+				return __( 'Parcel has been collected', 'packeta' );
 			case 'ready for pickup':
 				return __( 'Ready for pick-up', 'packeta' );
 			case 'handed to carrier':
