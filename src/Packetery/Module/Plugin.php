@@ -251,7 +251,7 @@ class Plugin {
 	 * @param Order\PacketCanceller $packetCanceller      Packet canceller.
 	 * @param ContextResolver       $contextResolver      Context resolver.
 	 * @param DashboardWidget       $dashboardWidget      Dashboard widget.
-	 * @param Order\PacketSubmitter    $packetSubmitter      Packet submitter.
+	 * @param Order\PacketSubmitter $packetSubmitter      Packet submitter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
