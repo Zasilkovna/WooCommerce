@@ -1,25 +1,25 @@
 <?php
 /**
- * Class CreatePacketRequest.
+ * Class CreatePacketMapper.
  *
- * @package Packetery\EntityFactory
+ * @package Packetery
  */
 
 declare( strict_types=1 );
 
-namespace Packetery\Core\Api\Soap\RequestFactory;
+namespace Packetery\Core\Api\Soap;
 
 use Packetery\Core\Entity;
 
 /**
- * Class CreatePacketRequest.
+ * Class CreatePacketMapper.
  *
- * @package Packetery\EntityFactory
+ * @package Packetery
  */
-class CreatePacketRequest {
+class CreatePacketMapper {
 
 	/**
-	 * CreatePacketRequest constructor.
+	 * CreatePacketMapper constructor.
 	 */
 	public function __construct() {
 
@@ -32,7 +32,7 @@ class CreatePacketRequest {
 	 *
 	 * @return array
 	 */
-	public function preparePacketRequestdata( Entity\Order $order ): array {
+	public function preparePacketRequestData( Entity\Order $order ): array {
 		$createPacketData = [
 			// Required attributes.
 			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),

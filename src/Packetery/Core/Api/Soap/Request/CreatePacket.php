@@ -82,30 +82,30 @@ class CreatePacket {
 	/**
 	 * Customer street for address delivery.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	private $street;
+	private $street = null;
 
 	/**
 	 * Customer houseNumber for address delivery.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	private $houseNumber;
+	private $houseNumber = null;
 
 	/**
 	 * Customer city for address delivery.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	private $city;
+	private $city = null;
 
 	/**
 	 * Customer zip for address delivery.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	private $zip;
+	private $zip = null;
 
 	/**
 	 * Cash on delivery value.
@@ -124,16 +124,16 @@ class CreatePacket {
 	/**
 	 * Carrier pickup point.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
-	private $carrierPickupPoint;
+	private $carrierPickupPoint = null;
 
 	/**
 	 * Package size.
 	 *
-	 * @var array
+	 * @var array|null
 	 */
-	private $size;
+	private $size = null;
 
 	/**
 	 * Packet note.
