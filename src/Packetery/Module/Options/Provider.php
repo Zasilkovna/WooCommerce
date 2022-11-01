@@ -206,15 +206,15 @@ class Provider {
 	/**
 	 * Order default weight.
 	 *
-	 * @return int
+	 * @return float
 	 */
-	public function getDefaultWeight(): int {
+	public function getDefaultWeight(): float {
 		$value = $this->get( 'default_weight' );
 		if ( is_numeric( $value ) ) {
-			return (int) $value;
+			return (float) $value;
 		}
 
-		return 0;
+		return 0.0;
 	}
 
 	/**

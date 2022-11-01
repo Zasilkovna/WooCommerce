@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use Packetery\Module\Calculator;
 
 /**
  * Class Checkout
@@ -164,6 +165,13 @@ class Checkout {
 	private $currencySwitcherFacade;
 
 	/**
+	 * Calculator.
+	 *
+	 * @var Calculator
+	 */
+	private $calculator;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                 $latte_engine      PacketeryLatte engine.
@@ -172,6 +180,7 @@ class Checkout {
 	 * @param Request                $httpRequest Http request.
 	 * @param Order\Repository       $orderRepository Order repository.
 	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
+	 * @param Calculator             $calculator Calculator.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -179,7 +188,8 @@ class Checkout {
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Order\Repository $orderRepository,
-		CurrencySwitcherFacade $currencySwitcherFacade
+		CurrencySwitcherFacade $currencySwitcherFacade,
+		Calculator $calculator
 	) {
 		$this->latte_engine           = $latte_engine;
 		$this->options_provider       = $options_provider;
@@ -187,6 +197,7 @@ class Checkout {
 		$this->httpRequest            = $httpRequest;
 		$this->orderRepository        = $orderRepository;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
+		$this->calculator             = $calculator;
 	}
 
 	/**
@@ -614,12 +625,7 @@ class Checkout {
 	 */
 	public function getCartWeightKg() {
 		$weight   = WC()->cart->cart_contents_weight;
-		$weightKg = wc_get_weight( $weight, 'kg' );
-		if ( $weightKg ) {
-			$weightKg += $this->options_provider->getPackagingWeight();
-		} else {
-			$weightKg = $this->options_provider->getDefaultWeight() ? $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() : 0;
-		}
+		$weightKg = $this->calculator->getDynamicOrDefaultWeight( $weight );
 
 		return $weightKg;
 	}
