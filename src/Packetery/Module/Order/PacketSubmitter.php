@@ -14,7 +14,9 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
+use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
+use Packetery\Module\Carrier\Options;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 
@@ -170,6 +172,13 @@ class PacketSubmitter {
 		}
 		*/
 
+		$clonedOrder = clone($order);
+		if ( $clonedOrder->hasCod() ) {
+			$roundingType = Options::createByCarrierId( $clonedOrder->getCarrierCode() )->getCodRoundingType();
+			$roundedCod   = Rounder::roundByCurrency( $clonedOrder->getCod(), $clonedOrder->getCurrency(), $roundingType );
+			$clonedOrder->setCod( $roundedCod );
+		}
+
 		return new CreatePacket(
 			/**
 			 * Filters the input order for CreatePacket request.
@@ -183,7 +192,7 @@ class PacketSubmitter {
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
 				unserialize(
 					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-					serialize( $order )
+					serialize( $clonedOrder )
 				)
 			)
 		);

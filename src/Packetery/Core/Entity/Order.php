@@ -159,6 +159,13 @@ class Order {
 	private $carrierId;
 
 	/**
+	 * Internal carrier code.
+	 *
+	 * @var string
+	 */
+	private $carrierCode;
+
+	/**
 	 * Tells if is packet submitted.
 	 *
 	 * @var bool
@@ -820,4 +827,32 @@ class Order {
 		return $this->shippingCountry;
 	}
 
+	/**
+	 * Tells if order has COD.
+	 *
+	 * @return bool
+	 */
+	public function hasCod(): bool {
+		return ( null !== $this->getCod() );
+	}
+
+	/**
+	 * Setter for carrierCode.
+	 *
+	 * @param string $carrierCode Carrier code.
+	 *
+	 * @return void
+	 */
+	public function setCarrierCode( string $carrierCode ): void {
+		$this->carrierCode = $carrierCode;
+	}
+
+	/**
+	 * Returns carrierId for external carriers or carrierCode.
+	 *
+	 * @return string
+	 */
+	public function getCarrierCode():string {
+		return $this->carrierCode;
+	}
 }
