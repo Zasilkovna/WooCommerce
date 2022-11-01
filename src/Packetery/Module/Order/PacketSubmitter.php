@@ -55,11 +55,11 @@ class PacketSubmitter {
 	private $orderRepository;
 
 	/**
-	 * CreatePacketMapper factory.
+	 * CreatePacketMapper.
 	 *
 	 * @var CreatePacketMapper
 	 */
-	private $createPacketRequestFactory;
+	private $createPacketMapper;
 
 	/**
 	 * OrderApi constructor.
@@ -68,20 +68,20 @@ class PacketSubmitter {
 	 * @param Validator\Order    $orderValidator  Order validator.
 	 * @param Log\ILogger        $logger          Logger.
 	 * @param Repository         $orderRepository Order repository.
-	 * @param CreatePacketMapper $createPacketRequestFactory CreatePacketMapper factory.
+	 * @param CreatePacketMapper $createPacketMapper CreatePacketMapper.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
 		Repository $orderRepository,
-		CreatePacketMapper $createPacketRequestFactory
+		CreatePacketMapper $createPacketMapper
 	) {
-		$this->soapApiClient              = $soapApiClient;
-		$this->orderValidator             = $orderValidator;
-		$this->logger                     = $logger;
-		$this->orderRepository            = $orderRepository;
-		$this->createPacketRequestFactory = $createPacketRequestFactory;
+		$this->soapApiClient      = $soapApiClient;
+		$this->orderValidator     = $orderValidator;
+		$this->logger             = $logger;
+		$this->orderRepository    = $orderRepository;
+		$this->createPacketMapper = $createPacketMapper;
 	}
 
 	/**
@@ -181,7 +181,7 @@ class PacketSubmitter {
 		}
 		*/
 
-		$createPacketRequestData = $this->createPacketRequestFactory->preparePacketRequestData( $order );
+		$createPacketRequestData = $this->createPacketMapper->fromOrderToArray( $order );
 
 		/**
 		 * Allows to update CreatePacket request data.
@@ -190,7 +190,7 @@ class PacketSubmitter {
 		 *
 		 * @param array $createPacketRequestData CreatePacket request data.
 		 */
-		apply_filters( 'packeta_create_packet', $createPacketRequestData );
+		$createPacketRequestData = apply_filters( 'packeta_create_packet', $createPacketRequestData );
 
 		return new CreatePacket( $createPacketRequestData );
 	}

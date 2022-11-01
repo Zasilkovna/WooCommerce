@@ -60,6 +60,17 @@ add_filter( 'packetery_price', function ( float $price ): float {
 } );
 ```
 
+##### Filter altering packet attributes
+
+For example, to set the weight of all packets to 1.5 kg, you can use the following code inserted into ```wp-includes/functions.php```.
+
+```
+add_filter( 'packeta_create_packet', function ( array $createPacketRequestData ): array {
+	$createPacketRequestData['weight'] = 1.5;
+	return $createPacketRequestData;
+} );
+```
+
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions
