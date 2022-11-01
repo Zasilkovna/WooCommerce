@@ -217,6 +217,13 @@ class Plugin {
 	private $contextResolver;
 
 	/**
+	 * Packet submitter
+	 *
+	 * @var Order\PacketSubmitter
+	 */
+	private $packetSubmitter;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox         $order_metabox        Order metabox.
@@ -244,6 +251,7 @@ class Plugin {
 	 * @param Order\PacketCanceller $packetCanceller      Packet canceller.
 	 * @param ContextResolver       $contextResolver      Context resolver.
 	 * @param DashboardWidget       $dashboardWidget      Dashboard widget.
+	 * @param Order\PacketSubmitter $packetSubmitter      Packet submitter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -270,7 +278,8 @@ class Plugin {
 		CronService $cronService,
 		Order\PacketCanceller $packetCanceller,
 		ContextResolver $contextResolver,
-		DashboardWidget $dashboardWidget
+		DashboardWidget $dashboardWidget,
+		Order\PacketSubmitter $packetSubmitter
 	) {
 		$this->options_page         = $options_page;
 		$this->latte_engine         = $latte_engine;
@@ -298,6 +307,7 @@ class Plugin {
 		$this->packetCanceller      = $packetCanceller;
 		$this->contextResolver      = $contextResolver;
 		$this->dashboardWidget      = $dashboardWidget;
+		$this->packetSubmitter      = $packetSubmitter;
 	}
 
 	/**
@@ -384,7 +394,7 @@ class Plugin {
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
-		add_action( 'admin_init', [ $this->packetCanceller, 'processActions' ] );
+		add_action( 'admin_init', [ $this, 'handleActions' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
@@ -851,5 +861,22 @@ class Plugin {
 	 */
 	public static function getAppIdentity(): string {
 		return 'Woocommerce: ' . get_bloginfo( 'version' ) . ', WordPress: ' . WC_VERSION . ', plugin Packeta: ' . self::VERSION;
+	}
+
+	/**
+	 * Check for action parameter and process wanted action.
+	 *
+	 * @return void
+	 */
+	public function handleActions(): void {
+		$action = $this->request->getQuery( self::PARAM_PACKETERY_ACTION );
+
+		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET === $action ) {
+			$this->packetSubmitter->processAction();
+		}
+
+		if ( Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET === $action ) {
+			$this->packetCanceller->processAction();
+		}
 	}
 }

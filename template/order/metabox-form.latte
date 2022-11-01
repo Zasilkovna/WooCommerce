@@ -57,6 +57,11 @@
 {/formContext}
 
 <ul>
+    <li n:if="$showSubmitPacketButton">
+        <a class="button dashicons dashicons-upload packetery-dashicons-button-fix" href="{$packetSubmitUrl}">
+            <span class="packetery-dashicons-button-fix-text">{$translations['submitPacket']}</span>
+        </a>
+    </li>
     <li n:if="$showLogsLink">
         <a class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
     </li>

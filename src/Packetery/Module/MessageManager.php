@@ -89,6 +89,17 @@ class MessageManager {
 	}
 
 	/**
+	 * Flash message.
+	 *
+	 * @param Message $message Message.
+	 *
+	 * @return void
+	 */
+	public function flashMessage( Message $message ): void {
+		$this->addMessage( $message->toArray() );
+	}
+
+	/**
 	 * Adds message.
 	 *
 	 * @param array $message Message.

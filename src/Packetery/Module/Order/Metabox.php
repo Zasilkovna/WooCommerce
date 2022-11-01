@@ -224,10 +224,10 @@ class Metabox {
 		if ( $packetId ) {
 			$packetCancelLink = add_query_arg(
 				[
-					PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
-					PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_DETAIL,
-					Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
-					Plugin::PARAM_NONCE                => wp_create_nonce( PacketCanceller::createNonceAction( PacketCanceller::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+					PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+					PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+					Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+					Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
 				],
 				admin_url( 'admin.php' )
 			);
@@ -286,19 +286,33 @@ class Metabox {
 			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
 		];
 
+		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
+		$packetSubmitUrl        = add_query_arg(
+			[
+				PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+				PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+				Plugin::PARAM_PACKETERY_ACTION           => PacketActionsCommonLogic::ACTION_SUBMIT_PACKET,
+				Plugin::PARAM_NONCE                      => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
+			],
+			admin_url( 'admin.php' )
+		);
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form'                 => $this->order_form,
-				'order'                => $order,
-				'orderCurrency'        => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'widgetSettings'       => $widgetSettings,
-				'logo'                 => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
-				'showLogsLink'         => $showLogsLink,
-				'hasOrderManualWeight' => $order->hasManualWeight(),
-				'translations'         => [
+				'form'                   => $this->order_form,
+				'order'                  => $order,
+				'showSubmitPacketButton' => $showSubmitPacketButton,
+				'packetSubmitUrl'        => $packetSubmitUrl,
+				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
+				'widgetSettings'         => $widgetSettings,
+				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'showLogsLink'           => $showLogsLink,
+				'hasOrderManualWeight'   => $order->hasManualWeight(),
+				'translations'           => [
 					'showLogs'       => __( 'Show logs', 'packeta' ),
-					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove the field content and save.', 'packeta' ),
+					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
+					'submitPacket'   => __( 'Submit to packeta', 'packeta' ),
 				],
 			]
 		);

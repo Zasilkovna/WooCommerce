@@ -2,11 +2,10 @@
 /**
  * Class PacketCanceller
  *
- * @package Packetery\Api
+ * @package Packetery\Module\Order
  */
 
 declare( strict_types=1 );
-
 
 namespace Packetery\Module\Order;
 
@@ -15,21 +14,14 @@ use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
-use Packetery\Module\Plugin;
 use PacketeryNette\Http\Request;
 
 /**
  * Class PacketCanceller
  *
- * @package Packetery\Api
+ * @package Packetery\Module\Order
  */
 class PacketCanceller {
-
-	public const ACTION_CANCEL_PACKET     = 'cancel_packet';
-	public const PARAM_ORDER_ID           = 'order_id';
-	public const PARAM_REDIRECT_TO        = 'packetery_redirect_to';
-	public const REDIRECT_TO_ORDER_GRID   = 'order-grid';
-	public const REDIRECT_TO_ORDER_DETAIL = 'order-detail';
 
 	/**
 	 * SOAP API Client.
@@ -74,14 +66,22 @@ class PacketCanceller {
 	private $messageManager;
 
 	/**
+	 * Common logic.
+	 *
+	 * @var PacketActionsCommonLogic
+	 */
+	private $commonLogic;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Soap\Client      $soapApiClient   Soap client API.
-	 * @param Log\ILogger      $logger          Logger.
-	 * @param Repository       $orderRepository Order repository.
-	 * @param Request          $request         Request.
-	 * @param Options\Provider $optionsProvider Options provider.
-	 * @param MessageManager   $messageManager  Message manager.
+	 * @param Soap\Client              $soapApiClient   Soap client API.
+	 * @param Log\ILogger              $logger          Logger.
+	 * @param Repository               $orderRepository Order repository.
+	 * @param Request                  $request         Request.
+	 * @param Options\Provider         $optionsProvider Options provider.
+	 * @param MessageManager           $messageManager  Message manager.
+	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -89,7 +89,8 @@ class PacketCanceller {
 		Repository $orderRepository,
 		Request $request,
 		Options\Provider $optionsProvider,
-		MessageManager $messageManager
+		MessageManager $messageManager,
+		PacketActionsCommonLogic $commonLogic
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -97,37 +98,17 @@ class PacketCanceller {
 		$this->request         = $request;
 		$this->optionsProvider = $optionsProvider;
 		$this->messageManager  = $messageManager;
+		$this->commonLogic     = $commonLogic;
 	}
 
 	/**
-	 * Creates nonce action name.
-	 *
-	 * @param string $action      Action.
-	 * @param string $orderNumber Order number.
-	 *
-	 * @return string
-	 */
-	public static function createNonceAction( string $action, string $orderNumber ): string {
-		return $action . '_' . $orderNumber;
-	}
-
-	/**
-	 * Process actions.
+	 * Process action.
 	 *
 	 * @return void
 	 */
-	public function processActions(): void {
-		$action = $this->request->getQuery( Plugin::PARAM_PACKETERY_ACTION );
-		if ( self::ACTION_CANCEL_PACKET !== $action ) {
-			return;
-		}
-
-		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
-		$order      = null;
-		$orderId    = $this->getOrderId();
-		if ( null !== $orderId ) {
-			$order = $this->orderRepository->getById( $orderId );
-		}
+	public function processAction(): void {
+		$order      = $this->commonLogic->getOrder();
+		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 
 		if ( null === $order ) {
 			$record          = new Log\Record();
@@ -143,56 +124,14 @@ class PacketCanceller {
 			$this->logger->add( $record );
 
 			$this->messageManager->flash_message( __( 'Order not found', 'packeta' ), MessageManager::TYPE_ERROR );
-			$this->redirectTo( $redirectTo, $order );
+			$this->commonLogic->redirectTo( $redirectTo, $order );
 			return;
 		}
 
-		if ( 1 !== wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( self::ACTION_CANCEL_PACKET, $order->getNumber() ) ) ) {
-			$this->messageManager->flash_message( __( 'Link has expired. Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
-			$this->redirectTo( $redirectTo, $order );
-			return;
-		}
+		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order );
 
 		$this->cancelPacket( $order );
-		$this->redirectTo( $redirectTo, $order );
-	}
-
-	/**
-	 * Redirects.
-	 *
-	 * @param string            $redirectTo Redirect to.
-	 * @param Entity\Order|null $order      Order.
-	 *
-	 * @return void
-	 */
-	private function redirectTo( string $redirectTo, ?Entity\Order $order ): void {
-		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
-			$packetCancelLink = add_query_arg(
-				[
-					'post_type' => 'shop_order',
-				],
-				admin_url( 'edit.php' )
-			);
-
-			if ( wp_safe_redirect( $packetCancelLink ) ) {
-				exit;
-			}
-		}
-
-		if ( self::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $order ) {
-			$packetCancelLink = add_query_arg(
-				[
-					'post_type' => 'shop_order',
-					'post'      => $order->getNumber(),
-					'action'    => 'edit',
-				],
-				admin_url( 'post.php' )
-			);
-
-			if ( wp_safe_redirect( $packetCancelLink ) ) {
-				exit;
-			}
-		}
+		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 
 	/**
@@ -295,19 +234,5 @@ class PacketCanceller {
 		}
 
 		return $revertSubmission;
-	}
-
-	/**
-	 * Gets order ID.
-	 *
-	 * @return int|null
-	 */
-	private function getOrderId(): ?int {
-		$orderId = $this->request->getQuery( self::PARAM_ORDER_ID );
-		if ( is_numeric( $orderId ) ) {
-			return (int) $orderId;
-		}
-
-		return null;
 	}
 }

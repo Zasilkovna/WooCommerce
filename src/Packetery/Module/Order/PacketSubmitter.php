@@ -2,7 +2,7 @@
 /**
  * Class PacketSubmitter
  *
- * @package Packetery\Api
+ * @package Packetery\Module\Order
  */
 
 declare( strict_types=1 );
@@ -10,27 +10,30 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
-use Packetery\Core\Api\Soap\Client;
+use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\Carrier\Options;
+use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
+use PacketeryNette\Http\Request;
 use WC_Order;
+use Packetery\Module;
 
 /**
  * Class PacketSubmitter
  *
- * @package Packetery\Api
+ * @package Packetery\Module\Order
  */
 class PacketSubmitter {
 
 	/**
 	 * SOAP API Client.
 	 *
-	 * @var Client SOAP API Client.
+	 * @var Soap\Client SOAP API Client.
 	 */
 	private $soapApiClient;
 
@@ -63,26 +66,135 @@ class PacketSubmitter {
 	private $createPacketMapper;
 
 	/**
+	 * Request.
+	 *
+	 * @var Request
+	 */
+	private $request;
+
+	/**
+	 * Message manager.
+	 *
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
+	 * Log page.
+	 *
+	 * @var Module\Log\Page
+	 */
+	private $logPage;
+
+	/**
+	 * Common logic.
+	 *
+	 * @var PacketActionsCommonLogic
+	 */
+	private $commonLogic;
+
+	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client             $soapApiClient   SOAP API Client.
-	 * @param Validator\Order    $orderValidator  Order validator.
-	 * @param Log\ILogger        $logger          Logger.
-	 * @param Repository         $orderRepository Order repository.
-	 * @param CreatePacketMapper $createPacketMapper CreatePacketMapper.
+	 * @param Soap\Client              $soapApiClient      SOAP API Client.
+	 * @param Validator\Order          $orderValidator     Order validator.
+	 * @param Log\ILogger              $logger             Logger.
+	 * @param Repository               $orderRepository    Order repository.
+	 * @param CreatePacketMapper       $createPacketMapper CreatePacketMapper.
+	 * @param Request                  $request            Request.
+	 * @param MessageManager           $messageManager     Message manager.
+	 * @param Module\Log\Page          $logPage            Log page.
+	 * @param PacketActionsCommonLogic $commonLogic        Common logic.
 	 */
 	public function __construct(
-		Client $soapApiClient,
+		Soap\Client $soapApiClient,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
 		Repository $orderRepository,
-		CreatePacketMapper $createPacketMapper
+		CreatePacketMapper $createPacketMapper,
+		Request $request,
+		MessageManager $messageManager,
+		Module\Log\Page $logPage,
+		PacketActionsCommonLogic $commonLogic
 	) {
 		$this->soapApiClient      = $soapApiClient;
 		$this->orderValidator     = $orderValidator;
 		$this->logger             = $logger;
 		$this->orderRepository    = $orderRepository;
 		$this->createPacketMapper = $createPacketMapper;
+		$this->request            = $request;
+		$this->messageManager     = $messageManager;
+		$this->logPage            = $logPage;
+		$this->commonLogic        = $commonLogic;
+	}
+
+	/**
+	 * Process action
+	 *
+	 * @return void
+	 */
+	public function processAction(): void {
+		$order      = $this->commonLogic->getOrder();
+		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+
+		if ( null === $order ) {
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_SENDING;
+			$record->status  = Log\Record::STATUS_ERROR;
+			$record->orderId = null;
+			$record->title   = __( 'Packet submission error', 'packeta' );
+			$record->params  = [
+				'referer'      => (string) $this->request->getReferer(),
+				'errorMessage' => 'Order not found',
+			];
+
+			$this->logger->add( $record );
+
+			$this->messageManager->flash_message( __( 'Order not found', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->commonLogic->redirectTo( $redirectTo, $order );
+
+			return;
+		}
+
+		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order );
+
+		$resultsCounter = [
+			'success' => 0,
+			'ignored' => 0,
+			'errors'  => 0,
+			'logs'    => 0,
+		];
+		$this->submitPacket( wc_get_order( (int) $order->getNumber() ), $resultsCounter );
+		$submissionResultMessages = $this->getTranslatedSubmissionMessages( $resultsCounter, (int) $order->getNumber() );
+
+		if ( $resultsCounter['success'] > 0 ) {
+			$this->messageManager->flashMessage(
+				Module\Message::create()
+					->setText( $submissionResultMessages['success'] )
+					->setEscape( false )
+			);
+		}
+
+		if ( $resultsCounter['ignored'] > 0 ) {
+			$this->messageManager->flashMessage(
+				Module\Message::create()
+					->setText( $submissionResultMessages['ignored'] )
+					->setEscape( false )
+					->setType( MessageManager::TYPE_INFO )
+			);
+		}
+
+		if ( $resultsCounter['errors'] > 0 ) {
+			$this->messageManager->flashMessage(
+				Module\Message::create()
+					->setText( $submissionResultMessages['errors'] )
+					->setEscape( false )
+					->setType( MessageManager::TYPE_ERROR )
+			);
+		}
+
+		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 
 	/**
@@ -95,7 +207,6 @@ class PacketSubmitter {
 		$commonEntity = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
 			$resultsCounter['ignored'] ++;
-
 			return;
 		}
 
@@ -199,4 +310,68 @@ class PacketSubmitter {
 		return apply_filters( 'packeta_create_packet', $createPacketData );
 	}
 
+	/**
+	 * Gets translated messages by submission result.
+	 *
+	 * @param array    $submissionResult Submission result.
+	 * @param int|null $orderId Order ID.
+	 *
+	 * @return array
+	 */
+	public function getTranslatedSubmissionMessages( array $submissionResult, ?int $orderId ): array {
+		$success = null;
+		if ( is_numeric( $submissionResult['success'] ) && $submissionResult['success'] > 0 ) {
+			if ( $submissionResult['logs'] > 0 ) {
+				$success = sprintf( // translators: 1: link start 2: link end.
+					esc_html__( 'Shipments were submitted successfully. %1$sShow logs%2$s', 'packeta' ),
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
+					'</a>'
+				);
+			} else {
+				$success = esc_html__( 'Shipments were submitted successfully.', 'packeta' );
+			}
+		}
+		$ignored = null;
+		if ( is_numeric( $submissionResult['ignored'] ) && $submissionResult['ignored'] > 0 ) {
+			if ( $submissionResult['logs'] > 0 ) {
+				$ignored = sprintf( // translators: 1: total number of shipments 2: link start 3: link end.
+					esc_html__( 'Some shipments (%1$s in total) were not submitted (these were submitted already or are not Packeta orders). %2$sShow logs%3$s', 'packeta' ),
+					$submissionResult['ignored'],
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
+					'</a>'
+				);
+			} else {
+				$ignored = sprintf( // translators: %s is count.
+					esc_html__( 'Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders).', 'packeta' ),
+					$submissionResult['ignored']
+				);
+			}
+		}
+		$errors = null;
+		if ( is_numeric( $submissionResult['errors'] ) && $submissionResult['errors'] > 0 ) {
+			if ( $submissionResult['logs'] > 0 ) {
+				$errors = sprintf( // translators: 1: total number of shipments 2: link start 3: link end.
+					esc_html__( 'Some shipments (%1$s in total) failed to be submitted to Packeta. %2$sShow logs%3$s', 'packeta' ),
+					$submissionResult['errors'],
+					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
+					'</a>'
+				);
+			} else {
+				$errors = sprintf( // translators: %s is count.
+					esc_html__( 'Some shipments (%s in total) failed to be submitted to Packeta.', 'packeta' ),
+					$submissionResult['errors']
+				);
+			}
+		} elseif ( isset( $submissionResult['errors'] ) ) {
+			$errors = esc_html( $submissionResult['errors'] );
+		}
+
+		$latteParams = [
+			'success' => $success,
+			'ignored' => $ignored,
+			'errors'  => $errors,
+		];
+
+		return $latteParams;
+	}
 }

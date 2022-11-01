@@ -275,7 +275,15 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$packetSubmitUrl  = add_query_arg( [], $this->orderControllerRouter->getRouteUrl( Controller::PATH_SUBMIT_TO_API ) );
+				$packetSubmitUrl  = add_query_arg(
+					[
+						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+						Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_SUBMIT_PACKET,
+						PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
+						Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
+					],
+					admin_url( 'admin.php' )
+				);
 				$printLink        = add_query_arg(
 					[
 						'page'                       => LabelPrint::MENU_SLUG,
@@ -288,10 +296,10 @@ class GridExtender {
 				);
 				$packetCancelLink = add_query_arg(
 					[
-						PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
-						Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
-						PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_GRID,
-						Plugin::PARAM_NONCE                => wp_create_nonce( PacketCanceller::createNonceAction( PacketCanceller::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+						Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+						PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
+						Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
 					],
 					admin_url( 'admin.php' )
 				);
@@ -303,7 +311,6 @@ class GridExtender {
 						'showWarningIcon'  => $this->modal->showWarningIcon( $order ),
 						'packetSubmitUrl'  => $packetSubmitUrl,
 						'packetCancelLink' => $packetCancelLink,
-						'restNonce'        => wp_create_nonce( 'wp_rest' ),
 						'printLink'        => $printLink,
 						'translations'     => [
 							'printLabel'                => __( 'Print label', 'packeta' ),

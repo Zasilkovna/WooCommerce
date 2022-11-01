@@ -26,16 +26,9 @@
        )}"
        title="{$translations['setAdditionalPacketInfo']}"
     ></a>
-    <a data-packetery-order-inline-submit
+    <a
        class="button dashicons dashicons-upload"
-       data-order-data="{= json_encode(
-       [
-       'id' => $order->getNumber(),
-       'packetSubmitUrl' => $packetSubmitUrl,
-       ]
-       )}"
-       data-rest-nonce="{$restNonce}"
        title="{$translations['submitToPacketa']}"
-       href="#"
+       href="{$packetSubmitUrl}"
     ></a>
 {/if}

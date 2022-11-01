@@ -9,29 +9,7 @@
 			} );
 		}
 
-		var $body = $( 'body' );
-		$body.on( 'click', '[data-packetery-order-inline-submit]', function( e ) {
-			var $target = $( e.target );
-			var orderData = $target.data( 'order-data' );
-
-			$.ajax( {
-				type: 'POST',
-				dataType: 'json',
-				url: orderData.packetSubmitUrl,
-				beforeSend: function ( xhr ) {
-					xhr.setRequestHeader( 'X-WP-Nonce', $target.data( 'rest-nonce' ) );
-				},
-				data: {
-					orderId: orderData.id
-				}
-			} ).always( function( response ) {
-				if ( response && response.redirectTo ) {
-					window.location.href = response.redirectTo;
-				}
-			} );
-		} );
-
-		$body.on( 'wc_backbone_modal_loaded', function( e ) {
+		$( 'body' ).on( 'wc_backbone_modal_loaded', function( e ) {
 			var $target = $( e.target );
 			var packeteryModal = $target.find( '[data-packetery-modal]' );
 			if ( packeteryModal.length > 0 ) {
