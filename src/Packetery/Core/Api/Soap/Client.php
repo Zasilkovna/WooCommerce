@@ -54,15 +54,15 @@ class Client {
 	 * Submits packet data to Packeta API.
 	 * We deliberately don't use Request\CreatePacket class to send data to the API, but we keep the class for possible later use.
 	 *
-	 * @param array $request Packet attributes.
+	 * @param array $requestData Packet attributes.
 	 *
 	 * @return Response\CreatePacket
 	 */
-	public function createPacket( array $request ): Response\CreatePacket {
+	public function createPacket( array $requestData ): Response\CreatePacket {
 		$response = new Response\CreatePacket();
 		try {
 			$soapClient = new SoapClient( self::WSDL_URL );
-			$packet     = $soapClient->createPacket( $this->apiPassword, $request );
+			$packet     = $soapClient->createPacket( $this->apiPassword, $requestData );
 			$response->setId( $packet->id );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );

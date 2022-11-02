@@ -105,7 +105,7 @@ class PacketSubmitter {
 		$shippingMethodId   = $shippingMethodData['method_id'];
 		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $commonEntity->isExported() ) {
 			try {
-				$createPacketRequest = $this->preparePacketRequest( $commonEntity );
+				$createPacketData = $this->preparePacketData( $commonEntity );
 			} catch ( InvalidRequestException $e ) {
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -124,14 +124,14 @@ class PacketSubmitter {
 				return;
 			}
 
-			$response = $this->soapApiClient->createPacket( $createPacketRequest );
+			$response = $this->soapApiClient->createPacket( $createPacketData );
 			if ( $response->hasFault() ) {
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
 				$record->status  = Log\Record::STATUS_ERROR;
 				$record->title   = __( 'Packet could not be created.', 'packeta' );
 				$record->params  = [
-					'request'      => $createPacketRequest,
+					'request'      => $createPacketData,
 					'errorMessage' => $response->getErrorsAsString(),
 				];
 				$record->orderId = $commonEntity->getNumber();
@@ -151,7 +151,7 @@ class PacketSubmitter {
 				$record->status  = Log\Record::STATUS_SUCCESS;
 				$record->title   = __( 'Packet was sucessfully created.', 'packeta' );
 				$record->params  = [
-					'request'  => $createPacketRequest,
+					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
 				];
 				$record->orderId = $commonEntity->getNumber();
@@ -172,7 +172,7 @@ class PacketSubmitter {
 	 * @return array
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
-	private function preparePacketRequest( Entity\Order $order ): array {
+	private function preparePacketData( Entity\Order $order ): array {
 		/*
 		TODO: extend validator to return specific errors.
 		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
@@ -180,16 +180,16 @@ class PacketSubmitter {
 		}
 		*/
 
-		$createPacketRequestData = $this->createPacketMapper->fromOrderToArray( $order );
+		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
 
 		/**
 		 * Allows to update CreatePacket request data.
 		 *
 		 * @since 1.4
 		 *
-		 * @param array $createPacketRequestData CreatePacket request data.
+		 * @param array $createPacketData CreatePacket request data.
 		 */
-		return apply_filters( 'packeta_create_packet', $createPacketRequestData );
+		return apply_filters( 'packeta_create_packet', $createPacketData );
 	}
 
 }

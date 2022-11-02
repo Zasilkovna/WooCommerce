@@ -65,9 +65,9 @@ add_filter( 'packetery_price', function ( float $price ): float {
 For example, to set the weight of all packets to 1.5 kg, you can use the following code inserted into ```wp-includes/functions.php```.
 
 ```
-add_filter( 'packeta_create_packet', function ( array $createPacketRequestData ): array {
-	$createPacketRequestData['weight'] = 1.5;
-	return $createPacketRequestData;
+add_filter( 'packeta_create_packet', function ( array $createPacketData ): array {
+	$createPacketData['weight'] = 1.5;
+	return $createPacketData;
 } );
 ```
 
