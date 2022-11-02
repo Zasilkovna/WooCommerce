@@ -9,8 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Request;
 
+use Packetery\Core\Entity;
+
 /**
  * Class CreatePacket.
+ * We deliberately don't use this class to send data to the API, but we keep the class for possible later use.
  *
  * @package Packetery\Api\Soap\Request
  */
@@ -82,30 +85,30 @@ class CreatePacket {
 	/**
 	 * Customer street for address delivery.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $street = null;
+	private $street;
 
 	/**
 	 * Customer houseNumber for address delivery.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $houseNumber = null;
+	private $houseNumber;
 
 	/**
 	 * Customer city for address delivery.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $city = null;
+	private $city;
 
 	/**
 	 * Customer zip for address delivery.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $zip = null;
+	private $zip;
 
 	/**
 	 * Cash on delivery value.
@@ -124,16 +127,16 @@ class CreatePacket {
 	/**
 	 * Carrier pickup point.
 	 *
-	 * @var string|null
+	 * @var string
 	 */
-	private $carrierPickupPoint = null;
+	private $carrierPickupPoint;
 
 	/**
 	 * Package size.
 	 *
-	 * @var array|null
+	 * @var array
 	 */
-	private $size = null;
+	private $size;
 
 	/**
 	 * Packet note.
@@ -152,42 +155,52 @@ class CreatePacket {
 	/**
 	 * CreatePacket constructor.
 	 *
-	 * @param array $createPacketData CreatePacket Data.
+	 * @param Entity\Order $order Order entity.
 	 */
-	public function __construct( array $createPacketData ) {
+	public function __construct( Entity\Order $order ) {
 		// Required attributes.
-		$this->number    = $createPacketData['number'];
-		$this->name      = $createPacketData['name'];
-		$this->surname   = $createPacketData['surname'];
-		$this->value     = $createPacketData['value'];
-		$this->weight    = $createPacketData['weight'];
-		$this->addressId = $createPacketData['addressId'];
-		$this->eshop     = $createPacketData['eshop'];
+		$this->number    = ( $order->getCustomNumber() ?? $order->getNumber() );
+		$this->name      = $order->getName();
+		$this->surname   = $order->getSurname();
+		$this->value     = $order->getValue();
+		$this->weight    = $order->getFinalWeight();
+		$this->addressId = $order->getPickupPointOrCarrierId();
+		$this->eshop     = $order->getEshop();
 		// Optional attributes.
-		$this->adultContent = $createPacketData['adultContent'];
-		$this->cod          = $createPacketData['cod'];
-		$this->currency     = $createPacketData['currency'];
-		$this->email        = $createPacketData['email'];
-		$this->note         = $createPacketData['note'];
-		$this->phone        = $createPacketData['phone'];
+		$this->adultContent = (int) $order->containsAdultContent();
+		$this->cod          = $order->getCod();
+		$this->currency     = $order->getCurrency();
+		$this->email        = $order->getEmail();
+		$this->note         = $order->getNote();
+		$this->phone        = $order->getPhone();
 
-		if ( ! empty( $createPacketData['carrierPickupPoint'] ) ) {
-			$this->carrierPickupPoint = $createPacketData['carrierPickupPoint'];
+		$pickupPoint = $order->getPickupPoint();
+		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {
+			$this->carrierPickupPoint = $pickupPoint->getId();
 		}
-		if ( ! empty( $createPacketData['street'] ) ) {
-			$this->street = $createPacketData['street'];
+
+		if ( $order->isHomeDelivery() ) {
+			$address = $order->getDeliveryAddress();
+			if ( null !== $address ) {
+				$this->street = $address->getStreet();
+				$this->city   = $address->getCity();
+				$this->zip    = $address->getZip();
+				if ( $address->getHouseNumber() ) {
+					$this->houseNumber = $address->getHouseNumber();
+				}
+			}
 		}
-		if ( ! empty( $createPacketData['city'] ) ) {
-			$this->city = $createPacketData['city'];
-		}
-		if ( ! empty( $createPacketData['zip'] ) ) {
-			$this->zip = $createPacketData['zip'];
-		}
-		if ( ! empty( $createPacketData['houseNumber'] ) ) {
-			$this->houseNumber = $createPacketData['houseNumber'];
-		}
-		if ( ! empty( $createPacketData['size'] ) ) {
-			$this->size = $createPacketData['size'];
+
+		$carrier = $order->getCarrier();
+		if ( null !== $carrier && $carrier->requiresSize() ) {
+			$size = $order->getSize();
+			if ( null !== $size ) {
+				$this->size = [
+					'length' => $size->getLength(),
+					'width'  => $size->getWidth(),
+					'height' => $size->getHeight(),
+				];
+			}
 		}
 	}
 

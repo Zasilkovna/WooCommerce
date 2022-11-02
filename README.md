@@ -71,6 +71,8 @@ add_filter( 'packeta_create_packet', function ( array $createPacketRequestData )
 } );
 ```
 
+You can find description of the attributes in the [official documentation](https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetattributes).
+
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions

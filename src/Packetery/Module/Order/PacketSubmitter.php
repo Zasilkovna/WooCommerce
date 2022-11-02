@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
-use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
@@ -132,7 +131,7 @@ class PacketSubmitter {
 				$record->status  = Log\Record::STATUS_ERROR;
 				$record->title   = __( 'Packet could not be created.', 'packeta' );
 				$record->params  = [
-					'request'      => $createPacketRequest->getSubmittableData(),
+					'request'      => $createPacketRequest,
 					'errorMessage' => $response->getErrorsAsString(),
 				];
 				$record->orderId = $commonEntity->getNumber();
@@ -152,7 +151,7 @@ class PacketSubmitter {
 				$record->status  = Log\Record::STATUS_SUCCESS;
 				$record->title   = __( 'Packet was sucessfully created.', 'packeta' );
 				$record->params  = [
-					'request'  => $createPacketRequest->getSubmittableData(),
+					'request'  => $createPacketRequest,
 					'packetId' => $response->getId(),
 				];
 				$record->orderId = $commonEntity->getNumber();
@@ -170,10 +169,10 @@ class PacketSubmitter {
 	 *
 	 * @param Entity\Order $order Order entity.
 	 *
-	 * @return CreatePacket
+	 * @return array
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
-	private function preparePacketRequest( Entity\Order $order ): CreatePacket {
+	private function preparePacketRequest( Entity\Order $order ): array {
 		/*
 		TODO: extend validator to return specific errors.
 		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
@@ -190,9 +189,7 @@ class PacketSubmitter {
 		 *
 		 * @param array $createPacketRequestData CreatePacket request data.
 		 */
-		$createPacketRequestData = apply_filters( 'packeta_create_packet', $createPacketRequestData );
-
-		return new CreatePacket( $createPacketRequestData );
+		return apply_filters( 'packeta_create_packet', $createPacketRequestData );
 	}
 
 }
