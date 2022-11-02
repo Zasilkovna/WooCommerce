@@ -363,7 +363,8 @@ class Page {
 
 		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
 					->setRequired( false )
-					->addRule( Form::INTEGER );
+					->addRule( Form::INTEGER )
+					->addRule( Form::MIN, null, 0 );
 
 		// TODO: Packet status sync.
 
