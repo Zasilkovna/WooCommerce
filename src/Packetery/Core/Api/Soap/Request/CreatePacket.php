@@ -13,6 +13,7 @@ use Packetery\Core\Entity;
 
 /**
  * Class CreatePacket.
+ * We deliberately don't use this class to send data to the API, but we keep the class for possible later use.
  *
  * @package Packetery\Api\Soap\Request
  */

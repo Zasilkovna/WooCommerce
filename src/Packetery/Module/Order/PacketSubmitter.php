@@ -11,10 +11,10 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap\Client;
-use Packetery\Core\Api\Soap\Request\CreatePacket;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
+use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\ShippingMethod;
 use WC_Order;
 
@@ -54,23 +54,33 @@ class PacketSubmitter {
 	private $orderRepository;
 
 	/**
+	 * CreatePacketMapper.
+	 *
+	 * @var CreatePacketMapper
+	 */
+	private $createPacketMapper;
+
+	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Client          $soapApiClient   SOAP API Client.
-	 * @param Validator\Order $orderValidator  Order validator.
-	 * @param Log\ILogger     $logger          Logger.
-	 * @param Repository      $orderRepository Order repository.
+	 * @param Client             $soapApiClient   SOAP API Client.
+	 * @param Validator\Order    $orderValidator  Order validator.
+	 * @param Log\ILogger        $logger          Logger.
+	 * @param Repository         $orderRepository Order repository.
+	 * @param CreatePacketMapper $createPacketMapper CreatePacketMapper.
 	 */
 	public function __construct(
 		Client $soapApiClient,
 		Validator\Order $orderValidator,
 		Log\ILogger $logger,
-		Repository $orderRepository
+		Repository $orderRepository,
+		CreatePacketMapper $createPacketMapper
 	) {
-		$this->soapApiClient   = $soapApiClient;
-		$this->orderValidator  = $orderValidator;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
+		$this->soapApiClient      = $soapApiClient;
+		$this->orderValidator     = $orderValidator;
+		$this->logger             = $logger;
+		$this->orderRepository    = $orderRepository;
+		$this->createPacketMapper = $createPacketMapper;
 	}
 
 	/**
@@ -95,7 +105,7 @@ class PacketSubmitter {
 		$shippingMethodId   = $shippingMethodData['method_id'];
 		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $commonEntity->isExported() ) {
 			try {
-				$createPacketRequest = $this->preparePacketRequest( $commonEntity );
+				$createPacketData = $this->preparePacketData( $commonEntity );
 			} catch ( InvalidRequestException $e ) {
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -114,14 +124,14 @@ class PacketSubmitter {
 				return;
 			}
 
-			$response = $this->soapApiClient->createPacket( $createPacketRequest );
+			$response = $this->soapApiClient->createPacket( $createPacketData );
 			if ( $response->hasFault() ) {
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
 				$record->status  = Log\Record::STATUS_ERROR;
 				$record->title   = __( 'Packet could not be created.', 'packeta' );
 				$record->params  = [
-					'request'      => $createPacketRequest->getSubmittableData(),
+					'request'      => $createPacketData,
 					'errorMessage' => $response->getErrorsAsString(),
 				];
 				$record->orderId = $commonEntity->getNumber();
@@ -141,7 +151,7 @@ class PacketSubmitter {
 				$record->status  = Log\Record::STATUS_SUCCESS;
 				$record->title   = __( 'Packet was sucessfully created.', 'packeta' );
 				$record->params  = [
-					'request'  => $createPacketRequest->getSubmittableData(),
+					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
 				];
 				$record->orderId = $commonEntity->getNumber();
@@ -159,10 +169,10 @@ class PacketSubmitter {
 	 *
 	 * @param Entity\Order $order Order entity.
 	 *
-	 * @return CreatePacket
+	 * @return array
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
-	private function preparePacketRequest( Entity\Order $order ): CreatePacket {
+	private function preparePacketData( Entity\Order $order ): array {
 		/*
 		TODO: extend validator to return specific errors.
 		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
@@ -170,23 +180,16 @@ class PacketSubmitter {
 		}
 		*/
 
-		return new CreatePacket(
-			/**
-			 * Filters the input order for CreatePacket request.
-			 *
-			 * @since 1.4
-			 *
-			 * @param Entity\Order $order Packeta core order. DO NOT USE THIS STRICT TYPE IN YOUR METHOD SIGNATURE!
-			 */
-			apply_filters(
-				'packeta_create_packet',
-				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize
-				unserialize(
-					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
-					serialize( $order )
-				)
-			)
-		);
+		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
+
+		/**
+		 * Allows to update CreatePacket request data.
+		 *
+		 * @since 1.4
+		 *
+		 * @param array $createPacketData CreatePacket request data.
+		 */
+		return apply_filters( 'packeta_create_packet', $createPacketData );
 	}
 
 }
