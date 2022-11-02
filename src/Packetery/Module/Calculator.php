@@ -65,7 +65,7 @@ class Calculator {
 	}
 
 	/**
-	 * Calculates the final weight of the shipment, taking into account the default weight and the weight of the
+	 * Calculates the default weight of the shipment, taking into account the default weight and the weight of the
 	 * package.
 	 *
 	 * @return float
