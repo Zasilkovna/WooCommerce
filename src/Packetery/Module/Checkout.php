@@ -11,11 +11,11 @@ namespace Packetery\Module;
 
 use Packetery\Core;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
-use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use function WC;
 
 /**
  * Class Checkout
@@ -788,10 +788,11 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
+				$fees = (float) WC()->cart->get_fee_total();
 				if (
 					isset( $options['maximum_cod_value'] ) &&
 					$options['maximum_cod_value'] > 0 &&
-					( $cartPrice + $cost ) > $options['maximum_cod_value']
+					( $cartPrice + $cost + $fees ) > $options['maximum_cod_value']
 				) {
 					continue;
 				}
