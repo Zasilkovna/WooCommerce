@@ -623,9 +623,9 @@ class Checkout {
 	/**
 	 * Gets cart contents weight in kg.
 	 *
-	 * @return float|int
+	 * @return float
 	 */
-	public function getCartWeightKg() {
+	public function getCartWeightKg(): float {
 		$weight = WC()->cart->cart_contents_weight;
 
 		return $this->calculator->getDynamicOrDefaultWeight( $weight );

@@ -65,7 +65,7 @@ class Calculator {
 	 *
 	 * @return float
 	 */
-	public function getDynamicOrDefaultWeight( float $weight ) {
+	public function getDynamicOrDefaultWeight( float $weight ): float {
 		$weightKg = wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->optionsProvider->getPackagingWeight();
