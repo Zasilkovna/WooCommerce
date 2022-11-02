@@ -629,9 +629,13 @@ class Checkout {
 	 * @return float
 	 */
 	public function getCartWeightKg(): float {
-		$weight = WC()->cart->cart_contents_weight;
+		$weight   = WC()->cart->cart_contents_weight;
+		$weightKg = wc_get_weight( $weight, 'kg' );
+		if ( $weightKg ) {
+			$weightKg += $this->options_provider->getPackagingWeight();
+		}
 
-		return (float) wc_get_weight( $weight, 'kg' );
+		return $weightKg;
 	}
 
 	/**

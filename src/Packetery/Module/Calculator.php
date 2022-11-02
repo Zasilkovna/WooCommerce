@@ -54,7 +54,12 @@ class Calculator {
 			}
 		}
 
-		return (float) wc_get_weight( $weight, 'kg' );
+		$weightKg = \wc_get_weight( $weight, 'kg' );
+		if ( $weightKg ) {
+			$weightKg += $this->optionsProvider->getPackagingWeight();
+		}
+
+		return $weightKg;
 	}
 
 	/**
