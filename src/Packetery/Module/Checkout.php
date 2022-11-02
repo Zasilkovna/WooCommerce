@@ -514,6 +514,8 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
+		$orderEntity->setWeight( $this->getCartWeightKg() );
+
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
 		$this->orderRepository->save( $orderEntity );
 	}
