@@ -271,8 +271,8 @@ class Provider {
 		return array_keys(
 			array_filter(
 				PacketSynchronizer::getPacketStatuses(),
-				function ( $packetStatus ) {
-					return true === $packetStatus->defaultSynchronization;
+				static function ( $packetStatus ): bool {
+					return true === $packetStatus->hasDefaultSynchronization();
 				}
 			)
 		);

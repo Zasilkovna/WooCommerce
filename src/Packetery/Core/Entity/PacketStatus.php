@@ -34,21 +34,21 @@ class PacketStatus {
 	 *
 	 * @var string
 	 */
-	public $name;
+	private $name;
 
 	/**
 	 * Translated name.
 	 *
 	 * @var string
 	 */
-	public $translatedName;
+	private $translatedName;
 
 	/**
 	 * Whether to synchronize packets with this state at default.
 	 *
 	 * @var bool
 	 */
-	public $defaultSynchronization;
+	private $defaultSynchronization;
 
 	/**
 	 * PacketStatus constructor.
@@ -61,6 +61,33 @@ class PacketStatus {
 		$this->name                   = $name;
 		$this->translatedName         = $translatedName;
 		$this->defaultSynchronization = $defaultSynchronization;
+	}
+
+	/**
+	 * Returns name.
+	 *
+	 * @return string
+	 */
+	public function getName(): string {
+		return $this->name;
+	}
+
+	/**
+	 * Returns translated name.
+	 *
+	 * @return string
+	 */
+	public function getTranslatedName(): string {
+		return $this->translatedName;
+	}
+
+	/**
+	 * Returns whether it has default synchronization.
+	 *
+	 * @return bool
+	 */
+	public function hasDefaultSynchronization(): bool {
+		return $this->defaultSynchronization;
 	}
 
 }

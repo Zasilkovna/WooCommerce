@@ -198,8 +198,8 @@ class Page {
 		foreach ( $statuses as $status => $statusEntity ) {
 			$result[ md5( $status ) ] = [
 				'key'     => $status,
-				'default' => $statusEntity->defaultSynchronization,
-				'label'   => $statusEntity->translatedName,
+				'default' => $statusEntity->hasDefaultSynchronization(),
+				'label'   => $statusEntity->getTranslatedName(),
 			];
 		}
 
