@@ -514,7 +514,10 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
-		$orderEntity->setWeight( $this->getCartWeightKg() );
+		$weightKg = $this->getCartWeightKg();
+		if ( ! $weightKg ) {
+			$orderEntity->setWeight( $this->calculator->getDefaultWeight() );
+		}
 
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
 		$this->orderRepository->save( $orderEntity );
@@ -628,7 +631,7 @@ class Checkout {
 	public function getCartWeightKg(): float {
 		$weight = WC()->cart->cart_contents_weight;
 
-		return $this->calculator->getDynamicOrDefaultWeight( $weight );
+		return (float) wc_get_weight( $weight, 'kg' );
 	}
 
 	/**

@@ -54,25 +54,16 @@ class Calculator {
 			}
 		}
 
-		return $this->getDynamicOrDefaultWeight( $weight );
+		return (float) wc_get_weight( $weight, 'kg' );
 	}
 
 	/**
-	 * Calculates the final weight of the shipment, taking into account the initial weight and the weight of the
+	 * Calculates the final weight of the shipment, taking into account the default weight and the weight of the
 	 * package.
-	 *
-	 * @param float $weight Weight.
 	 *
 	 * @return float
 	 */
-	public function getDynamicOrDefaultWeight( float $weight ): float {
-		$weightKg = wc_get_weight( $weight, 'kg' );
-		if ( $weightKg ) {
-			$weightKg += $this->optionsProvider->getPackagingWeight();
-		} else {
-			$weightKg = $this->optionsProvider->getDefaultWeight() ? $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() : 0;
-		}
-
-		return $weightKg;
+	public function getDefaultWeight(): float {
+		return $this->optionsProvider->getDefaultWeight() ? $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() : 0;
 	}
 }
