@@ -513,9 +513,11 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
-		$weightKg = $this->getCartWeightKg();
-		if ( ! $weightKg ) {
-			$orderEntity->setWeight( $this->calculator->getDefaultWeight() );
+		$weightKg      = $this->getCartWeightKg();
+		$defaultWeight = $this->calculator->getDefaultWeight();
+
+		if ( ! $weightKg && $defaultWeight ) {
+			$orderEntity->setWeight( $defaultWeight );
 		}
 
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
