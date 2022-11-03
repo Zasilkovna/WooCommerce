@@ -88,13 +88,6 @@ class Page {
 	private $httpRequest;
 
 	/**
-	 * Packet synchronizer.
-	 *
-	 * @var PacketSynchronizer
-	 */
-	private $packetSynchronizer;
-
-	/**
 	 * Plugin constructor.
 	 *
 	 * @param Engine                          $latte_engine       PacketeryLatte_engine.
@@ -104,17 +97,23 @@ class Page {
 	 * @param Log\ILogger                     $logger             Logger.
 	 * @param MessageManager                  $messageManager     Message manager.
 	 * @param \PacketeryNette\Http\Request    $httpRequest        HTTP request.
-	 * @param PacketSynchronizer              $packetSynchronizer Packet synchronizer.
 	 */
-	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, \Packetery\Core\Api\Soap\Client $packetaClient, Log\ILogger $logger, MessageManager $messageManager, \PacketeryNette\Http\Request $httpRequest, PacketSynchronizer $packetSynchronizer ) {
-		$this->latte_engine       = $latte_engine;
-		$this->optionsProvider    = $optionsProvider;
-		$this->formFactory        = $formFactory;
-		$this->packetaClient      = $packetaClient;
-		$this->logger             = $logger;
-		$this->messageManager     = $messageManager;
-		$this->httpRequest        = $httpRequest;
-		$this->packetSynchronizer = $packetSynchronizer;
+	public function __construct(
+		Engine $latte_engine,
+		Provider $optionsProvider,
+		FormFactory $formFactory,
+		\Packetery\Core\Api\Soap\Client $packetaClient,
+		Log\ILogger $logger,
+		MessageManager $messageManager,
+		\PacketeryNette\Http\Request $httpRequest
+	) {
+		$this->latte_engine    = $latte_engine;
+		$this->optionsProvider = $optionsProvider;
+		$this->formFactory     = $formFactory;
+		$this->packetaClient   = $packetaClient;
+		$this->logger          = $logger;
+		$this->messageManager  = $messageManager;
+		$this->httpRequest     = $httpRequest;
 	}
 
 	/**
@@ -196,11 +195,11 @@ class Page {
 
 		$result = [];
 
-		foreach ( $statuses as $status => $defaultValue ) {
+		foreach ( $statuses as $status => $statusEntity ) {
 			$result[ md5( $status ) ] = [
 				'key'     => $status,
-				'default' => $defaultValue,
-				'label'   => $this->packetSynchronizer->getPacketStatusTranslated( $status ),
+				'default' => $statusEntity->hasDefaultSynchronization(),
+				'label'   => $statusEntity->getTranslatedName(),
 			];
 		}
 

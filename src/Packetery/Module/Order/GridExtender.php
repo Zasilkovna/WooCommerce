@@ -83,13 +83,6 @@ class GridExtender {
 	private $modal;
 
 	/**
-	 * Packet synchronizer.
-	 *
-	 * @var PacketSynchronizer
-	 */
-	private $packetSynchronizer;
-
-	/**
 	 * GridExtender constructor.
 	 *
 	 * @param Helper             $helper                Helper.
@@ -99,7 +92,6 @@ class GridExtender {
 	 * @param ControllerRouter   $orderControllerRouter Order controller router.
 	 * @param Repository         $orderRepository       Order repository.
 	 * @param Modal              $modal                 Modal dialog.
-	 * @param PacketSynchronizer $packetSynchronizer    Packet synchronizer.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -108,8 +100,7 @@ class GridExtender {
 		Request $httpRequest,
 		ControllerRouter $orderControllerRouter,
 		Repository $orderRepository,
-		Modal $modal,
-		PacketSynchronizer $packetSynchronizer
+		Modal $modal
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;
@@ -118,7 +109,6 @@ class GridExtender {
 		$this->orderControllerRouter = $orderControllerRouter;
 		$this->orderRepository       = $orderRepository;
 		$this->modal                 = $modal;
-		$this->packetSynchronizer    = $packetSynchronizer;
 	}
 
 	/**
@@ -326,7 +316,8 @@ class GridExtender {
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $this->packetSynchronizer->getPacketStatusTranslated( $order->getPacketStatus() ) );
+				$statuses = PacketSynchronizer::getPacketStatuses();
+				echo esc_html( isset( $statuses[ $order->getPacketStatus() ] ) ? $statuses[ $order->getPacketStatus() ]->getTranslatedName() : $order->getPacketStatus() );
 				break;
 		}
 	}

@@ -9,8 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
-use Packetery\Core\Entity\Carrier;
-use Packetery\Core\Helper;
+use Packetery\Core\Entity\PacketStatus;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -268,7 +267,14 @@ class Provider {
 			return $value;
 		}
 
-		return array_keys( PacketSynchronizer::getPacketStatuses(), true, true );
+		return array_keys(
+			array_filter(
+				PacketSynchronizer::getPacketStatuses(),
+				static function ( PacketStatus $packetStatus ): bool {
+					return true === $packetStatus->hasDefaultSynchronization();
+				}
+			)
+		);
 	}
 
 	/**
