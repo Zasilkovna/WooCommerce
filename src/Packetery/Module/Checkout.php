@@ -457,14 +457,15 @@ class Checkout {
 			}
 		}
 
-		if ( $this->isHomeDeliveryOrder() ) {
-			$carrierId     = $this->getCarrierId( $chosenShippingMethod );
-			$optionId      = self::CARRIER_PREFIX . $carrierId;
-			$carrierOption = get_option( $optionId );
+		$carrierOptions = get_option( $chosenShippingMethod );
+		if ( ! $this->validateMaximumCod( $carrierOptions ) ) {
+			wc_add_notice( __( 'Order value exceeds maximum COD value setting for carrier, please choose different payment method.', 'packeta' ), 'error' );
+		}
 
+		if ( $this->isHomeDeliveryOrder() ) {
 			$addressValidation = 'none';
-			if ( $carrierOption ) {
-				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
+			if ( $carrierOptions ) {
+				$addressValidation = ( $carrierOptions['address_validation'] ?? $addressValidation );
 			}
 
 			if (
@@ -788,14 +789,6 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
-				$fees = (float) WC()->cart->get_fee_total();
-				if (
-					isset( $options['maximum_cod_value'] ) &&
-					$options['maximum_cod_value'] > 0 &&
-					( $cartPrice + $cost + $fees ) > $options['maximum_cod_value']
-				) {
-					continue;
-				}
 				$customRates[ $rateId ] = $this->createShippingRate( $options->getName(), $rateId, $cost );
 			}
 		}
@@ -1224,6 +1217,37 @@ class Checkout {
 			$this->isAgeVerification18PlusRequired(),
 			null
 		);
+	}
+
+	/**
+	 * Validates if payment method can be used with current cart.
+	 *
+	 * @param array|false $carrierOptions Carrier options.
+	 *
+	 * @return bool
+	 */
+	public function validateMaximumCod( array $carrierOptions ): bool {
+		if (
+			false === $carrierOptions ||
+			! isset( $carrierOptions['maximum_cod_value'] ) ||
+			0.0 === (float) $carrierOptions['maximum_cod_value']
+		) {
+			return true;
+		}
+
+		$cartPrice  = $this->getCartContentsTotalIncludingTax();
+		$cartWeight = $this->getCartWeightKg();
+		$cost       = $this->getRateCost( $carrierOptions, $cartPrice, $cartWeight );
+		$fees       = (float) WC()->cart->get_fee_total();
+
+		if (
+			$this->checkIfPaymentIsCod( WC()->session->get( 'chosen_payment_method' ) ) &&
+			( $cartPrice + $cost + $fees ) > $carrierOptions['maximum_cod_value']
+		) {
+			return false;
+		}
+
+		return true;
 	}
 
 }
