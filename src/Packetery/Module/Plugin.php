@@ -692,8 +692,15 @@ class Plugin {
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 		}
 
+		$addressPickerSettings = null;
 		if ( $isOrderDetailPage ) {
 			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
+			$addressPickerSettings = $this->order_metabox->createAddressPickerSettings();
+		}
+
+		if ( null !== $addressPickerSettings ) {
+			$this->enqueueScript( 'packetery-admin-address-picker', 'public/admin-address-picker.js', true, [ 'jquery' ] );
+			wp_localize_script( 'packetery-admin-address-picker', 'packeteryAddressPickerSettings', $addressPickerSettings );
 		}
 
 		if ( $this->contextResolver->isPacketeryConfirmPage() ) {

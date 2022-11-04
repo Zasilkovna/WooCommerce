@@ -198,10 +198,16 @@ class Metabox {
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT );
 
-		foreach ( Checkout::$pickupPointAttrs as $attrs ) {
-			$this->order_form->addHidden( $attrs['name'] );
+		foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
+			$this->order_form->addHidden( $pickupPointAttr['name'] );
 		}
+
+		foreach ( Checkout::$homeDeliveryAttrs as $homeDeliveryAttr ) {
+			$this->order_form->addHidden( $homeDeliveryAttr['name'] );
+		}
+
 		$this->order_form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
+		$this->order_form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 	}
 
 	/**
@@ -387,6 +393,21 @@ class Metabox {
 			$wcOrder->save();
 		}
 
+		if ( '1' === $values[ Checkout::ATTR_ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+			$address = new Core\Entity\Address(
+				$values[ Checkout::ATTR_ADDRESS_STREET ],
+				$values[ Checkout::ATTR_ADDRESS_CITY ],
+				$values[ Checkout::ATTR_ADDRESS_POST_CODE ]
+			);
+			$address->setHouseNumber( $values[ Checkout::ATTR_ADDRESS_HOUSE_NUMBER ] );
+			$address->setCounty( $values[ Checkout::ATTR_ADDRESS_COUNTY ] );
+			$address->setLatitude( $values[ Checkout::ATTR_ADDRESS_LATITUDE ] );
+			$address->setLongitude( $values[ Checkout::ATTR_ADDRESS_LONGITUDE ] );
+
+			$order->setDeliveryAddress( $address );
+			$order->setAddressValidated( true );
+		}
+
 		$orderSize = $order->getSize();
 		if ( null === $orderSize ) {
 			$orderSize = new Core\Entity\Size();
@@ -418,5 +439,53 @@ class Metabox {
 		$this->orderRepository->save( $order );
 
 		return $orderId;
+	}
+
+	/**
+	 * Creates address picker settings.
+	 *
+	 * @return array|null
+	 */
+	public function createAddressPickerSettings(): ?array {
+		global $post;
+
+		$order = $this->orderRepository->getById( (int) $post->ID );
+		if ( null === $order || false === $order->isHomeDelivery() ) {
+			return null;
+		}
+
+		$deliveryAddress = $order->getDeliveryAddress(); // Delivery address is always present in this case.
+		$widgetOptions   = [
+			'country'     => $order->getShippingCountry(),
+			'language'    => substr( get_user_locale(), 0, 2 ),
+			'layout'      => 'hd',
+			'appIdentity' => Plugin::getAppIdentity(),
+			'street'      => $deliveryAddress->getStreet(),
+			'city'        => $deliveryAddress->getCity(),
+			'postcode'    => $deliveryAddress->getZip(),
+		];
+
+		if ( $deliveryAddress->getHouseNumber() ) {
+			$widgetOptions += [ 'houseNumber' => $deliveryAddress->getHouseNumber() ];
+		}
+
+		if ( $deliveryAddress->getCounty() ) {
+			$widgetOptions += [ 'county' => $deliveryAddress->getCounty() ];
+		}
+
+		// TODO: Redo in carrier refactor.
+		if ( $order->getCarrier() && is_numeric( $order->getCarrier()->getId() ) ) {
+			$widgetOptions += [ 'carrierId' => $order->getCarrier()->getId() ];
+		}
+
+		return [
+			'packeteryApiKey'   => $this->optionsProvider->get_api_key(),
+			'homeDeliveryAttrs' => Checkout::$homeDeliveryAttrs,
+			'widgetOptions'     => $widgetOptions,
+			'translations'      => [
+				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order.', 'packeta' ),
+				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
+			],
+		];
 	}
 }
