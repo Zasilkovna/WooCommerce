@@ -701,9 +701,14 @@ class Checkout {
 		$customerCountry   = $this->getCustomerCountry();
 		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
 		$carrierOptions    = [];
+		$cartProducts      = WC()->cart->get_cart();
 
 		foreach ( $availableCarriers as $carrier ) {
 			if ( $this->isAgeVerification18PlusRequired() && false === $carrier->supportsAgeVerification() ) {
+				continue;
+			}
+
+			if ( $this->isCarrierRestrictedByProductsCategory( (int) $carrier->getId(), $cartProducts ) ) {
 				continue;
 			}
 
@@ -1024,5 +1029,32 @@ class Checkout {
 	 */
 	private function getCartContentsTotalIncludingTax():float {
 		return (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
+	}
+
+	/**
+	 * Check if given carrier is disabled in products categories in cart
+	 *
+	 * @param int   $idCarrier    Carrier Id.
+	 * @param array $cartProducts Array of cart products.
+	 *
+	 * @return bool
+	 */
+	private function isCarrierRestrictedByProductsCategory( int $idCarrier, array $cartProducts ): bool {
+		if ( $cartProducts ) {
+			foreach ( $cartProducts as $cartProduct ) {
+				$product            = WC()->product_factory->get_product( $cartProduct['product_id'] );
+				$productCategoryIds = $product->get_category_ids();
+
+				foreach ( $productCategoryIds as $productCategoryId ) {
+					$disallowedCategoryCarriers = get_term_meta( $productCategoryId, ProductCategory\Entity::META_DISALLOWED_CARRIERS, true );
+
+					if ( is_array( $disallowedCategoryCarriers ) && in_array( $idCarrier, array_keys( $disallowedCategoryCarriers ), true ) ) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 }
