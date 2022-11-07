@@ -362,7 +362,13 @@ class Checkout {
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
 	public function validateCheckoutData(): void {
-		$chosenMethod = $this->getChosenMethod();
+		$chosenMethod      = $this->getChosenMethod();
+		$postedMethodArray = $this->httpRequest->getPost( 'shipping_method' );
+		$postedMethod      = $this->getShortenedRateId( current( $postedMethodArray ) );
+		if ( $chosenMethod !== $postedMethod ) {
+			$chosenMethod = $postedMethod;
+		}
+
 		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
 			return;
 		}
@@ -370,6 +376,12 @@ class Checkout {
 		$post = $this->httpRequest->getPost();
 		if ( ! wp_verify_nonce( $post[ self::NONCE_NAME ], self::NONCE_ACTION ) ) {
 			wp_nonce_ays( '' );
+		}
+
+		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenMethod, WC()->cart->get_cart() ) ) {
+			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
+
+			return;
 		}
 
 		if ( $this->isPickupPointOrder() ) {
