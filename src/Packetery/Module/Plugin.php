@@ -679,9 +679,10 @@ class Plugin {
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
-		$page              = $this->request->getQuery( 'page' );
-		$isOrderGridPage   = $this->contextResolver->isOrderGridPage();
-		$isOrderDetailPage = $this->contextResolver->isOrderDetailPage();
+		$page                  = $this->request->getQuery( 'page' );
+		$isOrderGridPage       = $this->contextResolver->isOrderGridPage();
+		$isOrderDetailPage     = $this->contextResolver->isOrderDetailPage();
+		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
@@ -695,7 +696,7 @@ class Plugin {
 
 		$isProductDetailPage = $this->contextResolver->isProductDetailPage();
 
-		if ( $isOrderGridPage || $isOrderDetailPage || $isProductDetailPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
+		if ( $isOrderGridPage || $isOrderDetailPage || $isProductDetailPage || $isProductCategoryPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 		}
 
