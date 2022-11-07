@@ -708,11 +708,12 @@ class Checkout {
 				continue;
 			}
 
-			if ( $this->isCarrierRestrictedByProductsCategory( (int) $carrier->getId(), $cartProducts ) ) {
+			$optionId = self::CARRIER_PREFIX . $carrier->getId();
+
+			if ( $this->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts ) ) {
 				continue;
 			}
 
-			$optionId = self::CARRIER_PREFIX . $carrier->getId();
 			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
 		}
 
@@ -1034,21 +1035,21 @@ class Checkout {
 	/**
 	 * Check if given carrier is disabled in products categories in cart
 	 *
-	 * @param int   $idCarrier    Carrier Id.
-	 * @param array $cartProducts Array of cart products.
+	 * @param string $shippingRate Shipping rate.
+	 * @param array  $cartProducts Array of cart products.
 	 *
 	 * @return bool
 	 */
-	private function isCarrierRestrictedByProductsCategory( int $idCarrier, array $cartProducts ): bool {
+	private function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
 		if ( $cartProducts ) {
 			foreach ( $cartProducts as $cartProduct ) {
 				$product            = WC()->product_factory->get_product( $cartProduct['product_id'] );
 				$productCategoryIds = $product->get_category_ids();
 
 				foreach ( $productCategoryIds as $productCategoryId ) {
-					$disallowedCategoryCarriers = get_term_meta( $productCategoryId, ProductCategory\Entity::META_DISALLOWED_CARRIERS, true );
+					$disallowedCategoryShippingRates = get_term_meta( $productCategoryId, ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES, true );
 
-					if ( is_array( $disallowedCategoryCarriers ) && in_array( $idCarrier, array_keys( $disallowedCategoryCarriers ), true ) ) {
+					if ( is_array( $disallowedCategoryShippingRates ) && in_array( $shippingRate, array_keys( $disallowedCategoryShippingRates ), true ) ) {
 						return true;
 					}
 				}

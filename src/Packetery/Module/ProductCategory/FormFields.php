@@ -14,7 +14,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\ProductCategory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
-use Packetery\Module\Carrier\Repository;
+use Packetery\Module\Checkout;
 
 /**
  * Class FormFields
@@ -22,8 +22,6 @@ use Packetery\Module\Carrier\Repository;
  * @package Packetery\Module\ProductCategory
  */
 class FormFields {
-
-	public const PRODUCT_CATEGORY_FORM = 'packetery_product_category_form';
 
 	/**
 	 * Form factory.
@@ -40,23 +38,23 @@ class FormFields {
 	private $latteEngine;
 
 	/**
-	 * Carrier repository.
+	 * Checkout.
 	 *
-	 * @var Repository
+	 * @var Checkout
 	 */
-	private $carrierRepository;
+	private $checkout;
 
 	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory $formFactory       Factory engine.
-	 * @param Engine      $latteEngine       Latte engine.
-	 * @param Repository  $carrierRepository Carrier repository.
+	 * @param FormFactory $formFactory Factory engine.
+	 * @param Engine      $latteEngine Latte engine.
+	 * @param Checkout    $checkout    Checkout.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, Repository $carrierRepository ) {
-		$this->formFactory       = $formFactory;
-		$this->latteEngine       = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
+	public function __construct( FormFactory $formFactory, Engine $latteEngine, Checkout $checkout ) {
+		$this->formFactory = $formFactory;
+		$this->latteEngine = $latteEngine;
+		$this->checkout    = $checkout;
 	}
 
 	/**
@@ -79,18 +77,18 @@ class FormFields {
 	 * @return Form
 	 */
 	private function createForm( ?ProductCategory\Entity $category ): Form {
-		$form = $this->formFactory->create( self::PRODUCT_CATEGORY_FORM );
+		$form = $this->formFactory->create();
 
-		$carriersContainer = $form->addContainer( ProductCategory\Entity::META_DISALLOWED_CARRIERS );
-		$carriers          = $this->carrierRepository->getActiveCarriers();
+		$shippingRatesContainer = $form->addContainer( ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES );
+		$shippingRates          = $this->checkout->getAllShippingRates();
 
-		foreach ( $carriers as $carrier ) {
-			$carriersContainer->addCheckbox( $carrier->getId(), $carrier->getName() );
+		foreach ( $shippingRates as $shippingRate ) {
+			$shippingRatesContainer->addCheckbox( $shippingRate['id'], $shippingRate['label'] );
 		}
 
 		$form->setDefaults(
 			[
-				ProductCategory\Entity::META_DISALLOWED_CARRIERS => null !== $category ? $category->getDisallowedCarriers() : [],
+				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => null !== $category ? $category->getDisallowedShippingRates() : [],
 			]
 		);
 
@@ -107,7 +105,7 @@ class FormFields {
 	public function render( $term = null ): void {
 		$entity = is_object( $term ) ? Entity::fromTermId( $term->term_id ) : null;
 		$this->latteEngine->render(
-			PACKETERY_PLUGIN_DIR . '/template/category/form-fields.latte',
+			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[
 				'form'         => $this->createForm( $entity ),
 				'translations' => [
@@ -153,7 +151,7 @@ class FormFields {
 				$value = $value ? '1' : '0';
 			}
 
-			if ( ProductCategory\Entity::META_DISALLOWED_CARRIERS === $attr ) {
+			if ( ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES === $attr ) {
 				$value = array_filter( $value );
 			}
 
