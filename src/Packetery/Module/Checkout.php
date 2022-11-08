@@ -1062,9 +1062,10 @@ class Checkout {
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {
-				$disallowedCategoryShippingRates = get_term_meta( $productCategoryId, ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES, true );
+				$productCategoryEntity           = ProductCategory\Entity::fromTermId( (int) $productCategoryId );
+				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRates();
 
-				if ( is_array( $disallowedCategoryShippingRates ) && in_array( $shippingRate, array_keys( $disallowedCategoryShippingRates ), true ) ) {
+				if ( in_array( $shippingRate, array_keys( $disallowedCategoryShippingRates ), true ) ) {
 					return true;
 				}
 			}

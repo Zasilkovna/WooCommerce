@@ -2,7 +2,7 @@
 /**
  * Packetery product category form fields.
  *
- * @package Packetery\Module\Product
+ * @package Packetery
  */
 
 declare( strict_types=1 );
@@ -19,7 +19,7 @@ use Packetery\Module\Checkout;
 /**
  * Class FormFields
  *
- * @package Packeter
+ * @package Packetery
  */
 class FormFields {
 
@@ -131,7 +131,7 @@ class FormFields {
 		$productCategory = ProductCategory\Entity::fromTermId( $termId );
 		$form            = $this->createForm( $productCategory );
 
-		$form->onSuccess[] = function ( Form $form, array $values ) use ( $productCategory ) {
+		$form->onSuccess[] = function ( Form $form, array $values ) use ( $productCategory ): void {
 			$this->processFormData( $productCategory->getId(), $values );
 		};
 
