@@ -516,7 +516,7 @@ class Checkout {
 		$weightKg      = $this->getCartWeightKg();
 		$defaultWeight = $this->calculator->getDefaultWeight();
 
-		if ( ! $weightKg && $defaultWeight ) {
+		if ( 0 !== $weightKg && true === $this->options_provider->isDefaultWeightEnabled() && 0 !== $defaultWeight ) {
 			$orderEntity->setWeight( $defaultWeight );
 		}
 

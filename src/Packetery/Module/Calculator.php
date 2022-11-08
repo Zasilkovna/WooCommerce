@@ -65,12 +65,12 @@ class Calculator {
 	}
 
 	/**
-	 * Calculates the default weight of the shipment, taking into account the default weight and the weight of the
-	 * package.
+	 * Calculates the default weight of the shipment if default weight is enabled, taking into account the default
+	 * weight and the weight of the package.
 	 *
 	 * @return float
 	 */
 	public function getDefaultWeight(): float {
-		return $this->optionsProvider->getDefaultWeight() ? $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() : 0.0;
+		return $this->optionsProvider->isDefaultWeightEnabled() ? $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() : 0.0;
 	}
 }

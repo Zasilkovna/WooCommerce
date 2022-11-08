@@ -195,12 +195,16 @@ class Provider {
 	 * @return float
 	 */
 	public function getPackagingWeight(): float {
-		$value = $this->get( 'packaging_weight' );
-		if ( is_numeric( $value ) ) {
-			return (float) $value;
-		}
+		return (float) $this->get( 'packaging_weight' );
+	}
 
-		return 0.0;
+	/**
+	 * Order default weight enabled.
+	 *
+	 * @return bool
+	 */
+	public function isDefaultWeightEnabled(): bool {
+		return (bool) $this->get( 'default_weight_enabled' );
 	}
 
 	/**
@@ -209,12 +213,7 @@ class Provider {
 	 * @return float
 	 */
 	public function getDefaultWeight(): float {
-		$value = $this->get( 'default_weight' );
-		if ( is_numeric( $value ) ) {
-			return (float) $value;
-		}
-
-		return 0.0;
+		return (float) $this->get( 'default_weight' );
 	}
 
 	/**
