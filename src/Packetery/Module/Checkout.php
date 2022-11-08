@@ -362,14 +362,14 @@ class Checkout {
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
 	public function validateCheckoutData(): void {
-		$chosenMethod      = $this->getChosenMethod();
-		$postedMethodArray = $this->httpRequest->getPost( 'shipping_method' );
-		$postedMethod      = $this->getShortenedRateId( current( $postedMethodArray ) );
-		if ( $chosenMethod !== $postedMethod ) {
-			$chosenMethod = $postedMethod;
+		$chosenShippingMethod      = $this->getChosenMethod();
+		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
+		$postedShippingMethod      = $this->getShortenedRateId( current( $postedShippingMethodArray ) );
+		if ( $chosenShippingMethod !== $postedShippingMethod ) {
+			$chosenShippingMethod = $postedShippingMethod;
 		}
 
-		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
+		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
 			return;
 		}
 
@@ -378,7 +378,7 @@ class Checkout {
 			wp_nonce_ays( '' );
 		}
 
-		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenMethod, WC()->cart->get_cart() ) ) {
+		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, WC()->cart->get_cart_contents() ) ) {
 			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
 
 			return;
@@ -421,7 +421,7 @@ class Checkout {
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
-			$carrierId     = $this->getCarrierId( $chosenMethod );
+			$carrierId     = $this->getCarrierId( $chosenShippingMethod );
 			$optionId      = self::CARRIER_PREFIX . $carrierId;
 			$carrierOption = get_option( $optionId );
 
@@ -713,7 +713,7 @@ class Checkout {
 		$customerCountry   = $this->getCustomerCountry();
 		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
 		$carrierOptions    = [];
-		$cartProducts      = WC()->cart->get_cart();
+		$cartProducts      = WC()->cart->get_cart_contents();
 
 		foreach ( $availableCarriers as $carrier ) {
 			if ( $this->isAgeVerification18PlusRequired() && false === $carrier->supportsAgeVerification() ) {
@@ -1053,21 +1053,21 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
-		if ( $cartProducts ) {
-			foreach ( $cartProducts as $cartProduct ) {
-				$product            = WC()->product_factory->get_product( $cartProduct['product_id'] );
-				$productCategoryIds = $product->get_category_ids();
+		if ( ! $cartProducts ) {
+			return false;
+		}
 
-				foreach ( $productCategoryIds as $productCategoryId ) {
-					$disallowedCategoryShippingRates = get_term_meta( $productCategoryId, ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES, true );
+		foreach ( $cartProducts as $cartProduct ) {
+			$product            = WC()->product_factory->get_product( $cartProduct['product_id'] );
+			$productCategoryIds = $product->get_category_ids();
 
-					if ( is_array( $disallowedCategoryShippingRates ) && in_array( $shippingRate, array_keys( $disallowedCategoryShippingRates ), true ) ) {
-						return true;
-					}
+			foreach ( $productCategoryIds as $productCategoryId ) {
+				$disallowedCategoryShippingRates = get_term_meta( $productCategoryId, ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES, true );
+
+				if ( is_array( $disallowedCategoryShippingRates ) && in_array( $shippingRate, array_keys( $disallowedCategoryShippingRates ), true ) ) {
+					return true;
 				}
 			}
 		}
-
-		return false;
 	}
 }

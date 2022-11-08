@@ -1,8 +1,8 @@
 <?php
 /**
- * Product entity.
+ * Product category entity.
  *
- * @package Packetery\Module\Product
+ * @package Packetery
  */
 
 declare( strict_types=1 );
@@ -13,7 +13,7 @@ namespace Packetery\Module\ProductCategory;
 /**
  * Class Entity
  *
- * @package Packetery\Module\ProductCategory
+ * @package Packetery
  */
 class Entity {
 
@@ -56,11 +56,8 @@ class Entity {
 	 */
 	public function getDisallowedShippingRates(): array {
 		$choices = get_term_meta( $this->category->term_id, self::META_DISALLOWED_SHIPPING_RATES, true );
-		if ( ! $choices ) {
-			return [];
-		}
 
-		return $choices;
+		return '' !== $choices ? $choices : [];
 	}
 
 	/**

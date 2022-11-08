@@ -1,6 +1,6 @@
 <?php
 /**
- * Packetery product tab.
+ * Packetery product category form fields.
  *
  * @package Packetery\Module\Product
  */
@@ -19,7 +19,7 @@ use Packetery\Module\Checkout;
 /**
  * Class FormFields
  *
- * @package Packetery\Module\ProductCategory
+ * @package Packeter
  */
 class FormFields {
 
@@ -103,40 +103,39 @@ class FormFields {
 	 * @return void
 	 */
 	public function render( $term = null ): void {
-		$entity = is_object( $term ) ? Entity::fromTermId( $term->term_id ) : null;
+		$entity = isset( $term->term_id ) ? Entity::fromTermId( $term->term_id ) : null;
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[
 				'form'         => $this->createForm( $entity ),
 				'translations' => [
-					'disallowedShippingRatesHeading' => __( 'Packeta shipping methods disabled for this category.', 'packeta' ),
+					'disallowedShippingRatesHeading' => __( 'Packeta shipping methods disabled for this category', 'packeta' ),
 				],
 			]
 		);
 	}
 
 	/**
-	 * Saves product data.
+	 * Saves product category data.
 	 *
-	 * @param int|string $termId         Post ID.
-	 * @param mixed      $termTaxonomyId Term taxonomy ID.
-	 * @param string     $taxonomy       Taxonomy slug.
+	 * @param int    $termId         Post ID.
+	 * @param int    $termTaxonomyId Term taxonomy ID.
+	 * @param string $taxonomy       Taxonomy slug.
 	 *
 	 * @return void
 	 */
-	public function saveData( int $termId, $termTaxonomyId = '', $taxonomy = '' ): void {
-		if ( ProductCategory\Entity::TAXONOMY_NAME === $taxonomy ) {
-			$productCategory = ProductCategory\Entity::fromTermId( $termId );
-			$form            = $this->createForm( $productCategory );
-
-			$form->onSuccess[] = function ( Form $form, array $values ) use ( $productCategory ) {
-				$this->processFormData( $productCategory->getId(), $values );
-			};
-
-			if ( $form->isSubmitted() ) {
-				$form->fireEvents();
-			}
+	public function saveData( int $termId, int $termTaxonomyId, string $taxonomy = '' ): void {
+		if ( ProductCategory\Entity::TAXONOMY_NAME !== $taxonomy ) {
+			return;
 		}
+		$productCategory = ProductCategory\Entity::fromTermId( $termId );
+		$form            = $this->createForm( $productCategory );
+
+		$form->onSuccess[] = function ( Form $form, array $values ) use ( $productCategory ) {
+			$this->processFormData( $productCategory->getId(), $values );
+		};
+
+		$form->fireEvents();
 	}
 
 	/**

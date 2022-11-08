@@ -20,7 +20,7 @@ use PacketeryNette\Http\Request;
 class ContextResolver {
 
 	/**
-	 * Packetery request.
+	 * Request.
 	 *
 	 * @var Request
 	 */
