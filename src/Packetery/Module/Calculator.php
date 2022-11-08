@@ -55,7 +55,6 @@ class Calculator {
 		}
 
 		$weightKg = \wc_get_weight( $weight, 'kg' );
-
 		if ( $weightKg ) {
 			$weightKg += $this->optionsProvider->getPackagingWeight();
 		}
