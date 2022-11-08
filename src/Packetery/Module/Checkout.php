@@ -164,13 +164,6 @@ class Checkout {
 	private $currencySwitcherFacade;
 
 	/**
-	 * Calculator.
-	 *
-	 * @var Calculator
-	 */
-	private $calculator;
-
-	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                 $latte_engine      PacketeryLatte engine.
@@ -179,7 +172,6 @@ class Checkout {
 	 * @param Request                $httpRequest Http request.
 	 * @param Order\Repository       $orderRepository Order repository.
 	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
-	 * @param Calculator             $calculator Calculator.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -187,8 +179,7 @@ class Checkout {
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Order\Repository $orderRepository,
-		CurrencySwitcherFacade $currencySwitcherFacade,
-		Calculator $calculator
+		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
 		$this->latte_engine           = $latte_engine;
 		$this->options_provider       = $options_provider;
@@ -196,7 +187,6 @@ class Checkout {
 		$this->httpRequest            = $httpRequest;
 		$this->orderRepository        = $orderRepository;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
-		$this->calculator             = $calculator;
 	}
 
 	/**
@@ -514,9 +504,9 @@ class Checkout {
 		}
 
 		$weightKg      = $this->getCartWeightKg();
-		$defaultWeight = $this->calculator->getDefaultWeight();
+		$defaultWeight = $this->options_provider->getDefaultWeight();
 
-		if ( 0 !== $weightKg && true === $this->options_provider->isDefaultWeightEnabled() && 0 !== $defaultWeight ) {
+		if ( 0 === $weightKg && true === $this->options_provider->isDefaultWeightEnabled() ) {
 			$orderEntity->setWeight( $defaultWeight );
 		}
 
@@ -631,7 +621,7 @@ class Checkout {
 	 */
 	public function getCartWeightKg(): float {
 		$weight   = WC()->cart->cart_contents_weight;
-		$weightKg = wc_get_weight( $weight, 'kg' );
+		$weightKg = (float) wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}

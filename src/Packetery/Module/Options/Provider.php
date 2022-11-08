@@ -213,6 +213,9 @@ class Provider {
 	 * @return float
 	 */
 	public function getDefaultWeight(): float {
+		if ( $this->get( 'default_weight' ) === null ) {
+			return 0.0;
+		}
 		return (float) $this->get( 'default_weight' );
 	}
 
