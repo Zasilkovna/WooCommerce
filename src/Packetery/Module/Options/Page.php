@@ -363,7 +363,7 @@ class Page {
 
 		$container->addCheckbox( 'default_weight_enabled', __( 'Enable default weight', 'packeta' ) )
 					->addCondition( Form::EQUAL, true )
-					->toggle( '#packetery-default-weight-value' );
+						->toggle( '#packetery-default-weight-value' );
 
 		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
 					->addRule( Form::INTEGER )
