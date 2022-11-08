@@ -58,8 +58,6 @@ class Calculator {
 
 		if ( $weightKg ) {
 			$weightKg += $this->optionsProvider->getPackagingWeight();
-		} elseif ( $this->optionsProvider->isDefaultWeightEnabled() ) {
-			$weightKg = $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight();
 		}
 
 		return $weightKg;

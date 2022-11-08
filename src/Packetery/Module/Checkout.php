@@ -503,8 +503,8 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
-		if ( 0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
-			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() );
+		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
+			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
 		}
 
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
