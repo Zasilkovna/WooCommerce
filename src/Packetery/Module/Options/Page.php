@@ -366,10 +366,9 @@ class Page {
 					->toggle( '#packetery-default-weight-value' );
 
 		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
-					->setRequired( false )
 					->addRule( Form::INTEGER )
 					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
-					->setRequired();
+						->setRequired();
 
 		// TODO: Packet status sync.
 

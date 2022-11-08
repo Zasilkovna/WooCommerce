@@ -503,10 +503,9 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
-		$weightKg      = $this->getCartWeightKg();
 		$defaultWeight = $this->options_provider->getDefaultWeight();
 
-		if ( 0 === $weightKg && true === $this->options_provider->isDefaultWeightEnabled() ) {
+		if ( 0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
 			$orderEntity->setWeight( $defaultWeight );
 		}
 
