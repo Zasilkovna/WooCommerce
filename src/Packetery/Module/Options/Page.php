@@ -367,7 +367,7 @@ class Page {
 
 		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
 					->addRule( Form::FLOAT )
-					->addRule( Form::MIN, null, 1 )
+					->addRule( Form::MIN, null, 0.1 )
 					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
 						->setRequired();
 
