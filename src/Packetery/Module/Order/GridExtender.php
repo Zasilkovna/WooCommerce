@@ -297,12 +297,12 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'            => $order,
-						'showWarningIcon'  => $this->modal->showWarningIcon( $order ),
-						'packetSubmitUrl'  => $packetSubmitUrl,
-						'packetCancelLink' => $packetCancelLink,
-						'printLink'        => $printLink,
-						'translations'     => [
+						'order'              => $order,
+						'orderIsSubmittable' => $this->modal->orderIsSubmittable( $order ),
+						'packetSubmitUrl'    => $packetSubmitUrl,
+						'packetCancelLink'   => $packetCancelLink,
+						'printLink'          => $printLink,
+						'translations'       => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),

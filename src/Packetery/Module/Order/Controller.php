@@ -165,7 +165,7 @@ class Controller extends WP_REST_Controller {
 			'packetery_length'     => $order->getLength(),
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
-			'showWarningIcon'      => $this->orderModal->showWarningIcon( $order ),
+			'orderIsSubmittable'   => $this->orderModal->orderIsSubmittable( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];
 

@@ -135,16 +135,16 @@ class Modal {
 	}
 
 	/**
-	 * Returns true if size is invalid or weight not filled.
+	 * Returns true if all required params are filled
 	 *
 	 * @param Order $order Order entity.
 	 *
 	 * @return bool
 	 */
-	public function showWarningIcon( Order $order ): bool {
+	public function orderIsSubmittable( Order $order ): bool {
 		$isSizeValid = $this->orderValidator->validateSize( $order );
 		$hasWeight   = ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 );
 
-		return ! ( $isSizeValid && $hasWeight );
+		return ( $isSizeValid && $hasWeight );
 	}
 }
