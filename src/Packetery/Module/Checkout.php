@@ -698,9 +698,10 @@ class Checkout {
 	 * @return array
 	 */
 	public function getShippingRates(): array {
-		$customerCountry   = $this->getCustomerCountry();
-		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
-		$carrierOptions    = [];
+		$customerCountry           = $this->getCustomerCountry();
+		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
+		$availableCarriers         = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
+		$carrierOptions            = [];
 
 		foreach ( $availableCarriers as $carrier ) {
 			if ( $this->isAgeVerification18PlusRequired() && false === $carrier->supportsAgeVerification() ) {
@@ -708,21 +709,20 @@ class Checkout {
 			}
 
 			$optionId = self::CARRIER_PREFIX . $carrier->getId();
-			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
-		}
 
-		$cartPrice = $this->getCartContentsTotalIncludingTax();
-
-		$cartWeight                = $this->getCartWeightKg();
-		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
-
-		$customRates = [];
-		foreach ( $carrierOptions as $optionId => $options ) {
-			if ( ! is_array( $options ) ) {
+			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
 				continue;
 			}
 
-			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
+			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
+		}
+
+		$cartPrice   = $this->getCartContentsTotalIncludingTax();
+		$cartWeight  = $this->getCartWeightKg();
+		$customRates = [];
+
+		foreach ( $carrierOptions as $optionId => $options ) {
+			if ( ! is_array( $options ) ) {
 				continue;
 			}
 
@@ -743,14 +743,11 @@ class Checkout {
 	 * @return iterable
 	 */
 	public function getAllShippingRates(): iterable {
-		$countries = $this->carrierRepository->getCountries();
-		foreach ( $countries as $country ) {
-			$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $country );
-			foreach ( $availableCarriers as $carrier ) {
-				$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
-				if ( $carrierOptions->isActive() ) {
-					yield $this->createShippingRate( $carrierOptions->getName(), $carrierOptions->getOptionId(), null );
-				}
+		$availableCarriers = $this->carrierRepository->getAllCarriersIncludingZpoints();
+		foreach ( $availableCarriers as $carrier ) {
+			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
+			if ( $carrierOptions->isActive() ) {
+				yield $this->createShippingRate( $carrierOptions->getName(), $carrierOptions->getOptionId(), null );
 			}
 		}
 	}
