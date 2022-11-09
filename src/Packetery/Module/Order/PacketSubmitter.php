@@ -113,7 +113,7 @@ class PacketSubmitter {
 	 * @param MessageManager           $messageManager     Message manager.
 	 * @param Module\Log\Page          $logPage            Log page.
 	 * @param PacketActionsCommonLogic $commonLogic        Common logic.
-	 * @param Module\Options\Provider  $optionsProvider     Options provider.
+	 * @param Module\Options\Provider  $optionsProvider    Options provider.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -279,19 +279,21 @@ class PacketSubmitter {
 				$errorMessage = null;
 
 				$submissionResult->increaseSuccessCount();
-
-				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled() )
-					|| ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
-
-				if ( $shouldUpdateStatus ) {
-					$this->updateOrderStatusOrLogError( $order, $commonEntity->getNumber(), $submissionResult );
-				}
 			}
 
 			$submissionResult->increaseLogsCount();
 			$this->logger->add( $record );
 			$commonEntity->updateApiErrorMessage( $errorMessage );
 			$this->orderRepository->save( $commonEntity );
+
+			if ( false === $response->hasFault() ) {
+				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled() )
+				                      || ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
+
+				if ( $shouldUpdateStatus ) {
+					$this->updateOrderStatusOrLogError( $order, $commonEntity->getNumber(), $submissionResult );
+				}
+			}
 		} else {
 			$submissionResult->increaseIgnoredCount();
 		}

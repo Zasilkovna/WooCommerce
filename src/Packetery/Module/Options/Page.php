@@ -538,14 +538,6 @@ class Page {
 	public function options_validate( array $options ): array {
 		$form = $this->create_form();
 
-		/*
-		// Debugger::barDump( $options );
-		// $form[ self::FORM_FIELDS_CONTAINER ]->setValues( $this->resolveInvalidFormOptions( $options, $form ) );
-		// Debugger::barDump($form[ self::FORM_FIELDS_CONTAINER ]->isValid());
-		// $autoOrderStatus = $options[Provider::AUTO_ORDER_STATUS];
-		// unset($options[Provider::AUTO_ORDER_STATUS]);
-		*/
-
 		$form[ self::FORM_FIELDS_CONTAINER ]->setValues( $options );
 		if ( $form->isValid() === false ) {
 			foreach ( $form[ self::FORM_FIELDS_CONTAINER ]->getControls() as $control ) {
@@ -775,29 +767,5 @@ class Page {
 			$params,
 			get_admin_url( null, 'admin.php' )
 		);
-	}
-
-	/**
-	 * Resolves invalid form data.
-	 *
-	 * @param array $options Options.
-	 * @param Form  $form Form.
-	 *
-	 * @return array
-	 */
-	private function resolveInvalidFormOptions( array $options, Form $form ): array {
-
-		if ( isset( $options[ Provider::AUTO_ORDER_STATUS ] ) ) {
-			$validValues = array_keys( $form[ self::FORM_FIELDS_CONTAINER ][ Provider::AUTO_ORDER_STATUS ]->getItems() );
-			if ( ! in_array( $options[ Provider::AUTO_ORDER_STATUS ], $validValues, true ) ) {
-				$validOrderStatus = $this->optionsProvider->getValidAutoOrderStatus();
-				if ( ! in_array( $validOrderStatus, $validValues, true ) ) {
-					$validOrderStatus = $validValues[0] ?? '';
-				}
-				$options[ Provider::AUTO_ORDER_STATUS ] = $validOrderStatus;
-			}
-		}
-
-		return $options;
 	}
 }
