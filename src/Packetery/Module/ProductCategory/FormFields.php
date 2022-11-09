@@ -103,7 +103,7 @@ class FormFields {
 	 * @return void
 	 */
 	public function render( $term = null ): void {
-		$entity = isset( $term->term_id ) ? Entity::fromTermId( $term->term_id ) : null;
+		$entity = isset( $term->term_id ) ? Entity::fromTermId( (int) $term->term_id ) : null;
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[
@@ -135,7 +135,9 @@ class FormFields {
 			$this->processFormData( $productCategory->getId(), $values );
 		};
 
-		$form->fireEvents();
+		if ( $form->isSubmitted() ) {
+			$form->fireEvents();
+		}
 	}
 
 	/**

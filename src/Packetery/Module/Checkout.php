@@ -362,12 +362,7 @@ class Checkout {
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
 	public function validateCheckoutData(): void {
-		$chosenShippingMethod      = $this->getChosenMethod();
-		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
-		$postedShippingMethod      = $this->getShortenedRateId( current( $postedShippingMethodArray ) );
-		if ( $chosenShippingMethod !== $postedShippingMethod ) {
-			$chosenShippingMethod = $postedShippingMethod;
-		}
+		$chosenShippingMethod = $this->getChosenMethod();
 
 		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
 			return;
@@ -837,6 +832,12 @@ class Checkout {
 	 * @return string
 	 */
 	private function getChosenMethod(): string {
+		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
+
+		if ( null !== $postedShippingMethodArray ) {
+			return $this->getShortenedRateId( current( $postedShippingMethodArray ) );
+		}
+
 		$chosenShippingRates = WC()->cart->calculate_shipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
@@ -1070,5 +1071,7 @@ class Checkout {
 				}
 			}
 		}
+
+		return false;
 	}
 }

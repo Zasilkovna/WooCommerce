@@ -39,11 +39,11 @@ class Entity {
 	/**
 	 * Create instance from term ID.
 	 *
-	 * @param int|string $termId Term ID.
+	 * @param int $termId Term ID.
 	 *
 	 * @return static
 	 */
-	public static function fromTermId( $termId ): self {
+	public static function fromTermId( int $termId ): self {
 		$product = get_term( $termId );
 
 		return new self( $product );
