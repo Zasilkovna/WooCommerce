@@ -768,14 +768,11 @@ class Checkout {
 	 * @return iterable
 	 */
 	public function getAllShippingRates(): iterable {
-		$countries = $this->carrierRepository->getCountries();
-		foreach ( $countries as $country ) {
-			$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $country );
-			foreach ( $availableCarriers as $carrier ) {
-				$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
-				if ( $carrierOptions->isActive() ) {
-					yield $this->createShippingRate( $carrierOptions->getName(), $carrierOptions->getOptionId(), null );
-				}
+		$availableCarriers = $this->carrierRepository->getAllCarriersIncludingZpoints();
+		foreach ( $availableCarriers as $carrier ) {
+			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
+			if ( $carrierOptions->isActive() ) {
+				yield $this->createShippingRate( $carrierOptions->getName(), $carrierOptions->getOptionId(), null );
 			}
 		}
 	}
