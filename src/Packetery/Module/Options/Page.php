@@ -366,7 +366,8 @@ class Page {
 						->toggle( '#packetery-default-weight-value' );
 
 		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
-					->addRule( Form::INTEGER )
+					->addRule( Form::FLOAT )
+					->addRule( Form::MIN, null, 1 )
 					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
 						->setRequired();
 
