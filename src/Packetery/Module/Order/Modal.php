@@ -142,9 +142,6 @@ class Modal {
 	 * @return bool
 	 */
 	public function orderIsSubmittable( Order $order ): bool {
-		$isSizeValid = $this->orderValidator->validateSize( $order );
-		$hasWeight   = ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 );
-
-		return ( $isSizeValid && $hasWeight );
+		return ( $this->orderValidator->validateSize( $order ) && ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 ) );
 	}
 }
