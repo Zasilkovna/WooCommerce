@@ -76,22 +76,22 @@ class GridExtender {
 	private $orderRepository;
 
 	/**
-	 * Modal.
+	 * Order Validator.
 	 *
-	 * @var Modal
+	 * @var Core\Validator\Order
 	 */
-	private $modal;
+	private $orderValidator;
 
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper             $helper                Helper.
-	 * @param Carrier\Repository $carrierRepository     Carrier repository.
-	 * @param Engine             $latteEngine           Latte Engine.
-	 * @param Request            $httpRequest           Http Request.
-	 * @param ControllerRouter   $orderControllerRouter Order controller router.
-	 * @param Repository         $orderRepository       Order repository.
-	 * @param Modal              $modal                 Modal dialog.
+	 * @param Helper               $helper                Helper.
+	 * @param Carrier\Repository   $carrierRepository     Carrier repository.
+	 * @param Engine               $latteEngine           Latte Engine.
+	 * @param Request              $httpRequest           Http Request.
+	 * @param ControllerRouter     $orderControllerRouter Order controller router.
+	 * @param Repository           $orderRepository       Order repository.
+	 * @param Core\Validator\Order $orderValidator        Modal dialog.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -100,7 +100,7 @@ class GridExtender {
 		Request $httpRequest,
 		ControllerRouter $orderControllerRouter,
 		Repository $orderRepository,
-		Modal $modal
+		Core\Validator\Order $orderValidator
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;
@@ -108,7 +108,7 @@ class GridExtender {
 		$this->httpRequest           = $httpRequest;
 		$this->orderControllerRouter = $orderControllerRouter;
 		$this->orderRepository       = $orderRepository;
-		$this->modal                 = $modal;
+		$this->orderValidator        = $orderValidator;
 	}
 
 	/**
@@ -298,7 +298,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'              => $order,
-						'orderIsSubmittable' => $this->modal->orderIsSubmittable( $order ),
+						'orderIsSubmittable' => $this->orderValidator->validate( $order ) && ( $order->getFinalWeight() > 0 ),
 						'packetSubmitUrl'    => $packetSubmitUrl,
 						'packetCancelLink'   => $packetCancelLink,
 						'printLink'          => $printLink,
