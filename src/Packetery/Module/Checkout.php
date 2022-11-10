@@ -503,6 +503,10 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
+		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
+			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
+		}
+
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
 		$this->orderRepository->save( $orderEntity );
 	}
@@ -610,11 +614,11 @@ class Checkout {
 	/**
 	 * Gets cart contents weight in kg.
 	 *
-	 * @return float|int
+	 * @return float
 	 */
-	public function getCartWeightKg() {
+	public function getCartWeightKg(): float {
 		$weight   = WC()->cart->cart_contents_weight;
-		$weightKg = wc_get_weight( $weight, 'kg' );
+		$weightKg = (float) wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}

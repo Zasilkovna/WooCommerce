@@ -360,6 +360,16 @@ class Page {
 					->addRule( Form::MIN, null, 0 )
 					->setDefaultValue( 0 );
 
+		$container->addCheckbox( 'default_weight_enabled', __( 'Enable default weight', 'packeta' ) )
+					->addCondition( Form::EQUAL, true )
+						->toggle( '#packetery-default-weight-value' );
+
+		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
+					->addRule( Form::FLOAT )
+					->addRule( Form::MIN, null, 0.1 )
+					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
+						->setRequired();
+
 		// TODO: Packet status sync.
 
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packeta' ) )
@@ -620,6 +630,7 @@ class Page {
 				'</a>'
 			),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
+			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
 			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
 			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which cron will check the packet status', 'packeta' ),
 			'statusSyncingOrderStatusesDescription'  => __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),

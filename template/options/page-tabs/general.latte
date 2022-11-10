@@ -70,6 +70,27 @@
         </tr>
         <tr>
             <th scope="row">
+                <label n:name=packetery-default_weight_enabled />
+            </th>
+            <td>
+                <input n:name=packetery-default_weight_enabled>
+            </td>
+        </tr>
+        <tr id="packetery-default-weight-value">
+            <th scope="row">
+                <label n:name=packetery-default_weight />
+            </th>
+            <td>
+                <input type="number" step="0.1" n:name=packetery-default_weight>
+                <div class="packetery-help-block">
+                    <p>
+                        {$translations['defaultWeightDescription']}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
                 <label n:name=packetery-replace_shipping_address_with_pickup_point_address />
             </th>
             <td>
