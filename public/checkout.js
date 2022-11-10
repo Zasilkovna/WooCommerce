@@ -323,7 +323,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 	var dependencies = [];
 	dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
-	dependencies.push( $.getScript( "https://hd.widget.packeta.com/www/js/library.js" ) );
 
 	dependencies.push(
 		$.Deferred( function( deferred ) {
