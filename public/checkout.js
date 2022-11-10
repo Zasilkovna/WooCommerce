@@ -269,7 +269,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.postcode = destinationAddress.postCode;
 				widgetOptions.carrierId = settings.carrierConfig[ carrierRateId ][ 'id' ];
 
-				PacketaHD.Widget.pick( settings.packeteryApiKey, function( result ) {
+				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 					resetWidgetInfo();
 					showDeliveryAddress( carrierRateId );
 
@@ -323,7 +323,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 	var dependencies = [];
 	dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
-	dependencies.push( $.getScript( "https://hd.widget.packeta.com/www/js/library-hd.js" ) );
 
 	dependencies.push(
 		$.Deferred( function( deferred ) {
