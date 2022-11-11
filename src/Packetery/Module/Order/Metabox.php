@@ -281,17 +281,6 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
-		$widgetSettings = [
-			'packeteryApiKey'           => $this->optionsProvider->get_api_key(),
-			'country'                   => ( $order->getShippingCountry() ? $order->getShippingCountry() : '' ),
-			'language'                  => substr( get_locale(), 0, 2 ),
-			'isAgeVerificationRequired' => $order->containsAdultContent(),
-			'appIdentity'               => Plugin::getAppIdentity(),
-			'weight'                    => $order->getFinalWeight(),
-			'carriers'                  => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
-			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
-		];
-
 		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
 		$packetSubmitUrl        = add_query_arg(
 			[
@@ -311,7 +300,6 @@ class Metabox {
 				'showSubmitPacketButton' => $showSubmitPacketButton,
 				'packetSubmitUrl'        => $packetSubmitUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'widgetSettings'         => $widgetSettings,
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,
 				'hasOrderManualWeight'   => $order->hasManualWeight(),
@@ -439,6 +427,38 @@ class Metabox {
 		$this->orderRepository->save( $order );
 
 		return $orderId;
+	}
+
+	/**
+	 * Creates pickup point picker settings.
+	 *
+	 * @return array|null
+	 */
+	public function createPickupPointPickerSettings(): ?array {
+		global $post;
+
+		$order = $this->orderRepository->getById( (int) $post->ID );
+		if ( null === $order || false === $order->isPickupPointDelivery() ) {
+			return null;
+		}
+
+		$widgetOptions = [
+			'country'     => $order->getShippingCountry(),
+			'language'    => substr( get_user_locale(), 0, 2 ),
+			'appIdentity' => Plugin::getAppIdentity(),
+			'weight'      => $order->getFinalWeight(),
+			'carriers'    => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
+		];
+
+		if ( $order->containsAdultContent() ) {
+			$widgetOptions += [ 'livePickupPoint' => true ];
+		}
+
+		return [
+			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
+			'pickupPointAttrs' => Checkout::$pickupPointAttrs,
+			'widgetOptions'    => $widgetOptions,
+		];
 	}
 
 	/**

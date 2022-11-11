@@ -692,14 +692,25 @@ class Plugin {
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 		}
 
-		$addressPickerSettings = null;
+		$pickupPointPickerSettings = null;
+		$addressPickerSettings     = null;
+
 		if ( $isOrderDetailPage ) {
-			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
-			$addressPickerSettings = $this->order_metabox->createAddressPickerSettings();
+			$pickupPointPickerSettings = $this->order_metabox->createPickupPointPickerSettings();
+			$addressPickerSettings     = $this->order_metabox->createAddressPickerSettings();
+		}
+
+		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
+			wp_enqueue_script( 'packetery-widget-library', 'https://widget.packeta.com/v6/www/js/library.js', [], self::VERSION, true );
+		}
+
+		if ( null !== $pickupPointPickerSettings ) {
+			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
+			wp_localize_script( 'packetery-admin-pickup-point-picker', 'packeteryPickupPointPickerSettings', $pickupPointPickerSettings );
 		}
 
 		if ( null !== $addressPickerSettings ) {
-			$this->enqueueScript( 'packetery-admin-address-picker', 'public/admin-address-picker.js', true, [ 'jquery' ] );
+			$this->enqueueScript( 'packetery-admin-address-picker', 'public/admin-address-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
 			wp_localize_script( 'packetery-admin-address-picker', 'packeteryAddressPickerSettings', $addressPickerSettings );
 		}
 
