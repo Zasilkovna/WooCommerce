@@ -9,7 +9,7 @@
 		$widgetDiv.on( 'click', '[name=packetery_pick_address]', function( e ) {
 			e.preventDefault();
 
-			PacketaHD.Widget.pick( settings.packeteryApiKey, function( result ) {
+			Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 				if ( !result ) {
 					$widgetDiv.find( '.packeta-widget-info' ).html( settings.translations.addressValidationIsOutOfOrder );
 					return;
@@ -53,7 +53,7 @@
 	};
 
 	var dependencies = [];
-	dependencies.push( $.getScript( "https://hd.widget.packeta.com/www/js/library-hd.js" ) );
+	dependencies.push( $.getScript( "https://widget.packeta.com/v6/www/js/library.js" ) );
 
 	dependencies.push(
 		$.Deferred( function( deferred ) {
