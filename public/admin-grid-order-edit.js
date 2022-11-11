@@ -87,10 +87,13 @@
 				replaceFragmentsWith( response.data.fragments );
 
 				$lastModalButtonClicked.removeClass( 'dashicons-warning dashicons-edit' );
+				var $submitPacketButton = $lastModalButtonClicked.siblings('.packetery-submit-button-inline');
 				if ( response.data.orderIsSubmittable === true ) {
-					$lastModalButtonClicked.addClass( 'dashicons-edit' ).parent().find('.packetery-submit-button-inline').removeClass('hidden');
+					$lastModalButtonClicked.addClass( 'dashicons-edit' );
+					$submitPacketButton.removeClass('hidden');
 				} else {
-					$lastModalButtonClicked.addClass( 'dashicons-warning' ).parent().find('.packetery-submit-button-inline').addClass('hidden');
+					$lastModalButtonClicked.addClass( 'dashicons-warning' );
+					$submitPacketButton.addClass('hidden');
 				}
 				$( '[data-packetery-modal] .modal-close:first' ).trigger( 'click' );
 			} ).always( function() {
