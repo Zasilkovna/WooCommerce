@@ -175,7 +175,7 @@ class Controller extends WP_REST_Controller {
 			'packetery_length'     => $order->getLength(),
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
-			'orderIsSubmittable'   => $this->orderValidator->validate( $order ) && ( $order->getFinalWeight() > 0 ),
+			'orderIsSubmittable'   => $this->orderValidator->validate( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];
 
