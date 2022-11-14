@@ -11,6 +11,7 @@ services:
 	- Packetery\Module\Log\Page
 	- Packetery\Module\CronService
 	- Packetery\Module\Product\DataTab
+	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Core\Helper
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox

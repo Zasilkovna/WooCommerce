@@ -304,3 +304,7 @@ tbody .packetery-log-column-note {
     padding: 9px;
     padding-top: 0;
 }
+
+.packetery-product-category-carrier-item td {
+    padding: 0 9px 9px 9px;
+}

@@ -372,14 +372,21 @@ class Checkout {
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
 	public function validateCheckoutData(): void {
-		$chosenMethod = $this->getChosenMethod();
-		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
+		$chosenShippingMethod = $this->getChosenMethod();
+
+		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
 			return;
 		}
 
 		$post = $this->httpRequest->getPost();
 		if ( ! wp_verify_nonce( $post[ self::NONCE_NAME ], self::NONCE_ACTION ) ) {
 			wp_nonce_ays( '' );
+		}
+
+		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, WC()->cart->get_cart_contents() ) ) {
+			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
+
+			return;
 		}
 
 		if ( $this->isPickupPointOrder() ) {
@@ -419,7 +426,7 @@ class Checkout {
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
-			$carrierId     = $this->getCarrierId( $chosenMethod );
+			$carrierId     = $this->getCarrierId( $chosenShippingMethod );
 			$optionId      = self::CARRIER_PREFIX . $carrierId;
 			$carrierOption = get_option( $optionId );
 
@@ -715,6 +722,7 @@ class Checkout {
 		$customerCountry   = $this->getCustomerCountry();
 		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
 		$carrierOptions    = [];
+		$cartProducts      = WC()->cart->get_cart_contents();
 
 		foreach ( $availableCarriers as $carrier ) {
 			if ( $this->isAgeVerification18PlusRequired() && false === $carrier->supportsAgeVerification() ) {
@@ -722,6 +730,11 @@ class Checkout {
 			}
 
 			$optionId = self::CARRIER_PREFIX . $carrier->getId();
+
+			if ( $this->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts ) ) {
+				continue;
+			}
+
 			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
 		}
 
@@ -833,6 +846,12 @@ class Checkout {
 	 * @return string
 	 */
 	private function getChosenMethod(): string {
+		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
+
+		if ( null !== $postedShippingMethodArray ) {
+			return $this->getShortenedRateId( current( $postedShippingMethodArray ) );
+		}
+
 		$chosenShippingRates = WC()->cart->calculate_shipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
@@ -1038,5 +1057,35 @@ class Checkout {
 	 */
 	private function getCartContentsTotalIncludingTax():float {
 		return (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
+	}
+
+	/**
+	 * Check if given carrier is disabled in products categories in cart
+	 *
+	 * @param string $shippingRate Shipping rate.
+	 * @param array  $cartProducts Array of cart products.
+	 *
+	 * @return bool
+	 */
+	private function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
+		if ( ! $cartProducts ) {
+			return false;
+		}
+
+		foreach ( $cartProducts as $cartProduct ) {
+			$product            = WC()->product_factory->get_product( $cartProduct['product_id'] );
+			$productCategoryIds = $product->get_category_ids();
+
+			foreach ( $productCategoryIds as $productCategoryId ) {
+				$productCategoryEntity           = ProductCategory\Entity::fromTermId( (int) $productCategoryId );
+				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRates();
+
+				if ( in_array( $shippingRate, array_keys( $disallowedCategoryShippingRates ), true ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }

@@ -15,6 +15,7 @@ use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
 use Packetery\Module\Product;
+use Packetery\Module\ProductCategory\FormFields;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use PacketeryNette\Utils\Html;
@@ -224,34 +225,41 @@ class Plugin {
 	private $packetSubmitter;
 
 	/**
+	 * Category form fields.
+	 *
+	 * @var ProductCategory\FormFields
+	 */
+	private $productCategoryFormFields;
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox         $order_metabox        Order metabox.
-	 * @param MessageManager        $message_manager      Message manager.
-	 * @param Options\Page          $options_page         Options page.
-	 * @param Checkout              $checkout             Checkout class.
-	 * @param Engine                $latte_engine         PacketeryLatte engine.
-	 * @param OptionsPage           $carrierOptionsPage   Carrier options page.
-	 * @param Order\BulkActions     $orderBulkActions     Order BulkActions.
-	 * @param Order\LabelPrint      $labelPrint           Label printing.
-	 * @param Order\GridExtender    $gridExtender         Order grid extender.
-	 * @param Product\DataTab       $productTab           Product tab.
-	 * @param Log\Page              $logPage              Log page.
-	 * @param ILogger               $logger               Log manager.
-	 * @param Order\Controller      $orderController      Order controller.
-	 * @param Order\Modal           $orderModal           Order modal.
-	 * @param Options\Exporter      $exporter             Options exporter.
-	 * @param Order\CollectionPrint $orderCollectionPrint Order collection print.
-	 * @param Request               $request              HTTP request.
-	 * @param Order\Repository      $orderRepository      Order repository.
-	 * @param Upgrade               $upgrade              Plugin upgrade.
-	 * @param QueryProcessor        $queryProcessor       QueryProcessor.
-	 * @param Options\Provider      $optionsProvider      Options provider.
-	 * @param CronService           $cronService          Cron service.
-	 * @param Order\PacketCanceller $packetCanceller      Packet canceller.
-	 * @param ContextResolver       $contextResolver      Context resolver.
-	 * @param DashboardWidget       $dashboardWidget      Dashboard widget.
-	 * @param Order\PacketSubmitter $packetSubmitter      Packet submitter.
+	 * @param Order\Metabox              $order_metabox             Order metabox.
+	 * @param MessageManager             $message_manager           Message manager.
+	 * @param Options\Page               $options_page              Options page.
+	 * @param Checkout                   $checkout                  Checkout class.
+	 * @param Engine                     $latte_engine              PacketeryLatte engine.
+	 * @param OptionsPage                $carrierOptionsPage        Carrier options page.
+	 * @param Order\BulkActions          $orderBulkActions          Order BulkActions.
+	 * @param Order\LabelPrint           $labelPrint                Label printing.
+	 * @param Order\GridExtender         $gridExtender              Order grid extender.
+	 * @param Product\DataTab            $productTab                Product tab.
+	 * @param Log\Page                   $logPage                   Log page.
+	 * @param ILogger                    $logger                    Log manager.
+	 * @param Order\Controller           $orderController           Order controller.
+	 * @param Order\Modal                $orderModal                Order modal.
+	 * @param Options\Exporter           $exporter                  Options exporter.
+	 * @param Order\CollectionPrint      $orderCollectionPrint      Order collection print.
+	 * @param Request                    $request                   HTTP request.
+	 * @param Order\Repository           $orderRepository           Order repository.
+	 * @param Upgrade                    $upgrade                   Plugin upgrade.
+	 * @param QueryProcessor             $queryProcessor            QueryProcessor.
+	 * @param Options\Provider           $optionsProvider           Options provider.
+	 * @param CronService                $cronService               Cron service.
+	 * @param Order\PacketCanceller      $packetCanceller           Packet canceller.
+	 * @param ContextResolver            $contextResolver           Context resolver.
+	 * @param DashboardWidget            $dashboardWidget           Dashboard widget.
+	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
+	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -279,35 +287,37 @@ class Plugin {
 		Order\PacketCanceller $packetCanceller,
 		ContextResolver $contextResolver,
 		DashboardWidget $dashboardWidget,
-		Order\PacketSubmitter $packetSubmitter
+		Order\PacketSubmitter $packetSubmitter,
+		ProductCategory\FormFields $productCategoryFormFields
 	) {
-		$this->options_page         = $options_page;
-		$this->latte_engine         = $latte_engine;
-		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packeta.php';
-		$this->order_metabox        = $order_metabox;
-		$this->message_manager      = $message_manager;
-		$this->checkout             = $checkout;
-		$this->carrierOptionsPage   = $carrierOptionsPage;
-		$this->orderBulkActions     = $orderBulkActions;
-		$this->labelPrint           = $labelPrint;
-		$this->gridExtender         = $gridExtender;
-		$this->productTab           = $productTab;
-		$this->logPage              = $logPage;
-		$this->logger               = $logger;
-		$this->orderController      = $orderController;
-		$this->orderModal           = $orderModal;
-		$this->exporter             = $exporter;
-		$this->orderCollectionPrint = $orderCollectionPrint;
-		$this->request              = $request;
-		$this->orderRepository      = $orderRepository;
-		$this->upgrade              = $upgrade;
-		$this->queryProcessor       = $queryProcessor;
-		$this->optionsProvider      = $optionsProvider;
-		$this->cronService          = $cronService;
-		$this->packetCanceller      = $packetCanceller;
-		$this->contextResolver      = $contextResolver;
-		$this->dashboardWidget      = $dashboardWidget;
-		$this->packetSubmitter      = $packetSubmitter;
+		$this->options_page              = $options_page;
+		$this->latte_engine              = $latte_engine;
+		$this->main_file_path            = PACKETERY_PLUGIN_DIR . '/packeta.php';
+		$this->order_metabox             = $order_metabox;
+		$this->message_manager           = $message_manager;
+		$this->checkout                  = $checkout;
+		$this->carrierOptionsPage        = $carrierOptionsPage;
+		$this->orderBulkActions          = $orderBulkActions;
+		$this->labelPrint                = $labelPrint;
+		$this->gridExtender              = $gridExtender;
+		$this->productTab                = $productTab;
+		$this->logPage                   = $logPage;
+		$this->logger                    = $logger;
+		$this->orderController           = $orderController;
+		$this->orderModal                = $orderModal;
+		$this->exporter                  = $exporter;
+		$this->orderCollectionPrint      = $orderCollectionPrint;
+		$this->request                   = $request;
+		$this->orderRepository           = $orderRepository;
+		$this->upgrade                   = $upgrade;
+		$this->queryProcessor            = $queryProcessor;
+		$this->optionsProvider           = $optionsProvider;
+		$this->cronService               = $cronService;
+		$this->packetCanceller           = $packetCanceller;
+		$this->contextResolver           = $contextResolver;
+		$this->dashboardWidget           = $dashboardWidget;
+		$this->packetSubmitter           = $packetSubmitter;
+		$this->productCategoryFormFields = $productCategoryFormFields;
 	}
 
 	/**
@@ -371,6 +381,7 @@ class Plugin {
 		$this->checkout->register_hooks();
 		$this->productTab->register();
 		$this->cronService->register();
+		$this->productCategoryFormFields->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
@@ -668,9 +679,10 @@ class Plugin {
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
-		$page              = $this->request->getQuery( 'page' );
-		$isOrderGridPage   = $this->contextResolver->isOrderGridPage();
-		$isOrderDetailPage = $this->contextResolver->isOrderDetailPage();
+		$page                  = $this->request->getQuery( 'page' );
+		$isOrderGridPage       = $this->contextResolver->isOrderGridPage();
+		$isOrderDetailPage     = $this->contextResolver->isOrderDetailPage();
+		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
@@ -684,7 +696,7 @@ class Plugin {
 
 		$isProductDetailPage = $this->contextResolver->isProductDetailPage();
 
-		if ( $isOrderGridPage || $isOrderDetailPage || $isProductDetailPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
+		if ( $isOrderGridPage || $isOrderDetailPage || $isProductDetailPage || $isProductCategoryPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 		}
 
