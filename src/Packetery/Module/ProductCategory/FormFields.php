@@ -63,7 +63,7 @@ class FormFields {
 	 * @return void
 	 */
 	public function register(): void {
-		add_filter( 'product_cat_edit_form_fields', [ $this, 'render' ], 20, 1 );
+		add_action( 'product_cat_edit_form_fields', [ $this, 'render' ], 20, 1 );
 		add_action( 'product_cat_add_form_fields', [ $this, 'render' ], 20 );
 		add_action( 'edit_term', [ $this, 'saveData' ], 10, 3 );
 		add_action( 'created_term', [ $this, 'saveData' ], 10, 3 );
@@ -72,11 +72,11 @@ class FormFields {
 	/**
 	 * Creates form instance.
 	 *
-	 * @param ProductCategory\Entity|null $category Product category entity.
+	 * @param ProductCategory\Entity|null $productCategory Product category entity.
 	 *
 	 * @return Form
 	 */
-	private function createForm( ?ProductCategory\Entity $category ): Form {
+	private function createForm( ?ProductCategory\Entity $productCategory ): Form {
 		$form = $this->formFactory->create();
 
 		$shippingRatesContainer = $form->addContainer( ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES );
@@ -88,7 +88,7 @@ class FormFields {
 
 		$form->setDefaults(
 			[
-				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => null !== $category ? $category->getDisallowedShippingRates() : [],
+				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory ? $productCategory->getDisallowedShippingRates() : [],
 			]
 		);
 
@@ -98,16 +98,17 @@ class FormFields {
 	/**
 	 * Renders tab.
 	 *
-	 * @param mixed $term Term (category) being edited.
+	 * @param \WP_Term|string $term Term (category) being edited.
 	 *
 	 * @return void
 	 */
-	public function render( $term = null ): void {
-		$entity = isset( $term->term_id ) ? Entity::fromTermId( (int) $term->term_id ) : null;
+	public function render( $term ): void {
+		$isProductCategoryObject = ( is_object( $term ) && get_class( $term ) === \WP_Term::class );
+		$productCategory         = $isProductCategoryObject ? ProductCategory\Entity::fromTermId( $term->term_id ) : null;
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[
-				'form'         => $this->createForm( $entity ),
+				'form'         => $this->createForm( $productCategory ),
 				'translations' => [
 					'disallowedShippingRatesHeading' => __( 'Packeta shipping methods disabled for this category', 'packeta' ),
 				],
@@ -131,32 +132,14 @@ class FormFields {
 		$productCategory = ProductCategory\Entity::fromTermId( $termId );
 		$form            = $this->createForm( $productCategory );
 
-		$form->onSuccess[] = function ( Form $form, array $values ) use ( $productCategory ): void {
-			$this->processFormData( $productCategory->getId(), $values );
+		$form->onSuccess[] = function ( Form $form, array $shippingRates ) use ( $productCategory ): void {
+			if ( isset( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] ) ) {
+				update_term_meta( $productCategory->getId(), Entity::META_DISALLOWED_SHIPPING_RATES, $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] );
+			}
 		};
 
 		if ( $form->isSubmitted() ) {
 			$form->fireEvents();
-		}
-	}
-
-	/**
-	 * Process form data.
-	 *
-	 * @param int   $categoryId Product ID.
-	 * @param array $values     Form values.
-	 */
-	public function processFormData( int $categoryId, array $values ): void {
-		foreach ( $values as $attr => $value ) {
-			if ( is_bool( $value ) ) {
-				$value = $value ? '1' : '0';
-			}
-
-			if ( ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES === $attr ) {
-				$value = array_filter( $value );
-			}
-
-			update_term_meta( $categoryId, $attr, $value );
 		}
 	}
 }
