@@ -658,6 +658,10 @@ class Checkout {
 		$chosenCarrier  = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->getTaxClassWithMaxRate();
 
+		if ( $carrierOptions->hasCouponFreeShippingForFeesAllowed() && $this->isFreeShippingCouponApplied() ) {
+			return;
+		}
+
 		if (
 			null !== $chosenCarrier &&
 			$chosenCarrier->supportsAgeVerification() &&
@@ -719,33 +723,25 @@ class Checkout {
 	 * @return array
 	 */
 	public function getShippingRates(): array {
-		$customerCountry   = $this->getCustomerCountry();
-		$availableCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
-		$carrierOptions    = [];
-		$cartProducts      = WC()->cart->get_cart_contents();
+		$customerCountry           = $this->getCustomerCountry();
+		$availableCarriers         = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
+		$cartProducts              = WC()->cart->get_cart_contents();
+		$cartPrice                 = $this->getCartContentsTotalIncludingTax();
+		$cartWeight                = $this->getCartWeightKg();
+		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
+		$isAgeVerificationRequired = $this->isAgeVerification18PlusRequired();
 
+		$customRates = [];
 		foreach ( $availableCarriers as $carrier ) {
-			if ( $this->isAgeVerification18PlusRequired() && false === $carrier->supportsAgeVerification() ) {
+			if ( $isAgeVerificationRequired && false === $carrier->supportsAgeVerification() ) {
 				continue;
 			}
 
 			$optionId = self::CARRIER_PREFIX . $carrier->getId();
+			$rateId   = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+			$options  = Carrier\Options::createByOptionId( $optionId );
 
-			if ( $this->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts ) ) {
-				continue;
-			}
-
-			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
-		}
-
-		$cartPrice = $this->getCartContentsTotalIncludingTax();
-
-		$cartWeight                = $this->getCartWeightKg();
-		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
-
-		$customRates = [];
-		foreach ( $carrierOptions as $optionId => $options ) {
-			if ( ! is_array( $options ) ) {
+			if ( false === $options->isActive() ) {
 				continue;
 			}
 
@@ -753,11 +749,13 @@ class Checkout {
 				continue;
 			}
 
-			if ( true === $options['active'] ) {
-				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
-				if ( null !== $cost ) {
-					$customRates[ $optionId ] = $this->createShippingRate( $options['name'], $optionId, (float) $cost );
-				}
+			if ( $this->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts ) ) {
+				continue;
+			}
+
+			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
+			if ( null !== $cost ) {
+				$customRates[ $rateId ] = $this->createShippingRate( $options->getName(), $rateId, $cost );
 			}
 		}
 
@@ -785,14 +783,15 @@ class Checkout {
 	/**
 	 * Computes custom rate cost for carrier using cart contents.
 	 *
-	 * @param array     $carrierOptions Carrier options.
-	 * @param float     $cartPrice Price.
-	 * @param float|int $cartWeight Weight.
+	 * @param Carrier\Options $options    Carrier options.
+	 * @param float           $cartPrice  Price.
+	 * @param float|int       $cartWeight Weight.
 	 *
 	 * @return ?float
 	 */
-	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight ) {
-		$cost = null;
+	private function getRateCost( Carrier\Options $options, float $cartPrice, $cartWeight ): ?float {
+		$cost           = null;
+		$carrierOptions = $options->toArray();
 
 		foreach ( $carrierOptions['weight_limits'] as $weightLimit ) {
 			if ( $cartWeight <= $weightLimit['weight'] ) {
@@ -812,8 +811,28 @@ class Checkout {
 			}
 		}
 
+		if ( 0 !== $cost && $options->hasCouponFreeShippingActive() && $this->isFreeShippingCouponApplied() ) {
+			$cost = 0;
+		}
+
 		// WooCommerce currency-switcher.com compatibility.
 		return (float) $cost;
+	}
+
+	/**
+	 * Tells if free shipping coupon is applied.
+	 *
+	 * @return bool
+	 */
+	private function isFreeShippingCouponApplied(): bool {
+		$coupons = WC()->cart->get_coupons();
+		foreach ( $coupons as $coupon ) {
+			if ( $coupon->get_free_shipping() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

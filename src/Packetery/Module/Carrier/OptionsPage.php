@@ -159,6 +159,13 @@ class OptionsPage {
 
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+
+		$couponFreeShipping = $form->addContainer( 'coupon_free_shipping' );
+		$couponFreeShipping->addCheckbox( 'active', __( 'Apply free shipping coupon', 'packeta' ) );
+		$couponFreeShipping->addCheckbox( 'allow_for_fees', __( 'Apply free shipping coupon for fees', 'packeta' ) )
+							->addConditionOn( $form['coupon_free_shipping']['active'], Form::FILLED )
+							->toggle( $this->createCouponFreeShippingForFeesContainerId( $form ) );
+
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
@@ -199,6 +206,17 @@ class OptionsPage {
 		$form->setDefaults( $carrierOptions );
 
 		return $form;
+	}
+
+	/**
+	 * Creates form toggle ID for coupon free shipping.
+	 *
+	 * @param Form $form Form.
+	 *
+	 * @return string
+	 */
+	private function createCouponFreeShippingForFeesContainerId( Form $form ): string {
+		return sprintf( '%s_apply_free_shipping_coupon_allow_for_fees', $form->getName() );
 	}
 
 	/**
@@ -310,9 +328,10 @@ class OptionsPage {
 				}
 
 				$carriersData[] = [
-					'form'         => $form,
-					'formTemplate' => $formTemplate,
-					'carrier'      => $carrier,
+					'form'                                 => $form,
+					'formTemplate'                         => $formTemplate,
+					'carrier'                              => $carrier,
+					'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
 				];
 			}
 
