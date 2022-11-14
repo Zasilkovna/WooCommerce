@@ -91,7 +91,7 @@ class GridExtender {
 	 * @param Request              $httpRequest           Http Request.
 	 * @param ControllerRouter     $orderControllerRouter Order controller router.
 	 * @param Repository           $orderRepository       Order repository.
-	 * @param Core\Validator\Order $orderValidator        Modal dialog.
+	 * @param Core\Validator\Order $orderValidator        Order validator.
 	 */
 	public function __construct(
 		Helper $helper,
