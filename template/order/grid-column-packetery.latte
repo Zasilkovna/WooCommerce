@@ -11,7 +11,7 @@
     ></a>
 {else}
     <a data-packetery-order-inline-edit
-       class="button dashicons {if $showWarningIcon }dashicons-warning{else}dashicons-edit{/if}"
+       class="button dashicons {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
        data-order-data="{= json_encode(
        [
        'id' => $order->getNumber(),
@@ -26,8 +26,7 @@
        )}"
        title="{$translations['setAdditionalPacketInfo']}"
     ></a>
-    <a
-       class="button dashicons dashicons-upload"
+    <a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable }hidden{/if}"
        title="{$translations['submitToPacketa']}"
        href="{$packetSubmitUrl}"
     ></a>

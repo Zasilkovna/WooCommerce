@@ -55,18 +55,27 @@ class Controller extends WP_REST_Controller {
 	private $gridExtender;
 
 	/**
+	 * Order validator.
+	 *
+	 * @var \Packetery\Core\Validator\Order
+	 */
+	private $orderValidator;
+
+	/**
 	 * Controller constructor.
 	 *
-	 * @param Modal            $orderModal       Modal.
-	 * @param ControllerRouter $controllerRouter Router.
-	 * @param Order\Repository $orderRepository  Order repository.
-	 * @param GridExtender     $gridExtender     Grid extender.
+	 * @param Modal                           $orderModal       Modal.
+	 * @param ControllerRouter                $controllerRouter Router.
+	 * @param Order\Repository                $orderRepository  Order repository.
+	 * @param GridExtender                    $gridExtender     Grid extender.
+	 * @param \Packetery\Core\Validator\Order $orderValidator   Order validator.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
 		Order\Repository $orderRepository,
-		GridExtender $gridExtender
+		GridExtender $gridExtender,
+		\Packetery\Core\Validator\Order $orderValidator
 	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
@@ -74,6 +83,7 @@ class Controller extends WP_REST_Controller {
 		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->orderRepository = $orderRepository;
 		$this->gridExtender    = $gridExtender;
+		$this->orderValidator  = $orderValidator;
 	}
 
 	/**
@@ -165,7 +175,7 @@ class Controller extends WP_REST_Controller {
 			'packetery_length'     => $order->getLength(),
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
-			'showWarningIcon'      => $this->orderModal->showWarningIcon( $order ),
+			'orderIsSubmittable'   => $this->orderValidator->validate( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];
 

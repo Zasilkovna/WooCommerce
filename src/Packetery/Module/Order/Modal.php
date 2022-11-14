@@ -7,11 +7,8 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Order;
 
-use Packetery\Core;
-use Packetery\Core\Entity\Order;
 use Packetery\Module\FormFactory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -45,25 +42,16 @@ class Modal {
 	private $orderControllerRouter;
 
 	/**
-	 * Order validator.
-	 *
-	 * @var Core\Validator\Order
-	 */
-	private $orderValidator;
-
-	/**
 	 * Modal constructor.
 	 *
-	 * @param Engine               $latteEngine Latte engine.
-	 * @param FormFactory          $formFactory Form factory.
-	 * @param ControllerRouter     $orderController Order controller.
-	 * @param Core\Validator\Order $orderValidator Order validator.
+	 * @param Engine           $latteEngine Latte engine.
+	 * @param FormFactory      $formFactory Form factory.
+	 * @param ControllerRouter $orderController Order controller.
 	 */
-	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController, Core\Validator\Order $orderValidator ) {
+	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController ) {
 		$this->latteEngine           = $latteEngine;
 		$this->formFactory           = $formFactory;
 		$this->orderControllerRouter = $orderController;
-		$this->orderValidator        = $orderValidator;
 	}
 
 	/**
@@ -132,19 +120,5 @@ class Modal {
 		);
 
 		return $form;
-	}
-
-	/**
-	 * Returns true if size is invalid or weight not filled.
-	 *
-	 * @param Order $order Order entity.
-	 *
-	 * @return bool
-	 */
-	public function showWarningIcon( Order $order ): bool {
-		$isSizeValid = $this->orderValidator->validateSize( $order );
-		$hasWeight   = ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 );
-
-		return ! ( $isSizeValid && $hasWeight );
 	}
 }
