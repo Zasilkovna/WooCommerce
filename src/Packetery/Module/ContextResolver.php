@@ -44,10 +44,30 @@ class ContextResolver {
 	 *
 	 * @return bool
 	 */
-	public function isProductDetailPage(): bool {
+	private function isProductDetailPage(): bool {
 		global $pagenow, $typenow;
 
 		return 'post.php' === $pagenow && 'product' === $typenow;
+	}
+
+	/**
+	 * Tells if requesting user is at product create page.
+	 *
+	 * @return bool
+	 */
+	private function isProductCreatePage(): bool {
+		global $pagenow, $typenow;
+
+		return 'post-new.php' === $pagenow && 'product' === $typenow;
+	}
+
+	/**
+	 * Tells if requesting user is at product page.
+	 *
+	 * @return bool
+	 */
+	public function isProductPage(): bool {
+		return $this->isProductCreatePage() || $this->isProductDetailPage();
 	}
 
 	/**
