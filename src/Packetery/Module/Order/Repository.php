@@ -14,7 +14,6 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
-use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
