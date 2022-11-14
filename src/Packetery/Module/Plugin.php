@@ -694,9 +694,9 @@ class Plugin {
 			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery' ] );
 		}
 
-		$isProductDetailPage = $this->contextResolver->isProductDetailPage();
+		$isProductPage = $this->contextResolver->isProductPage();
 
-		if ( $isOrderGridPage || $isOrderDetailPage || $isProductDetailPage || $isProductCategoryPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
+		if ( $isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 		}
 
