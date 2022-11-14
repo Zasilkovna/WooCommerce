@@ -34,6 +34,16 @@ class Checkout {
 	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
 	const ATTR_POINT_URL    = 'packetery_point_url';
 
+	const ATTR_ADDRESS_IS_VALIDATED = 'packetery_address_isValidated';
+	const ATTR_ADDRESS_HOUSE_NUMBER = 'packetery_address_houseNumber';
+	const ATTR_ADDRESS_STREET       = 'packetery_address_street';
+	const ATTR_ADDRESS_CITY         = 'packetery_address_city';
+	const ATTR_ADDRESS_POST_CODE    = 'packetery_address_postCode';
+	const ATTR_ADDRESS_COUNTY       = 'packetery_address_county';
+	const ATTR_ADDRESS_COUNTRY      = 'packetery_address_country';
+	const ATTR_ADDRESS_LATITUDE     = 'packetery_address_latitude';
+	const ATTR_ADDRESS_LONGITUDE    = 'packetery_address_longitude';
+
 	const BUTTON_RENDERER_TABLE_ROW  = 'table-row';
 	const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
 
@@ -89,35 +99,35 @@ class Checkout {
 	 *
 	 * @var array[]
 	 */
-	private static $homeDeliveryAttrs = [
+	public static $homeDeliveryAttrs = [
 		'isValidated' => [
-			'name'                => 'packetery_address_isValidated', // Name of checkout hidden form field. Must be unique in entire form.
+			'name'                => self::ATTR_ADDRESS_IS_VALIDATED, // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default, it is.
 		],
 		'houseNumber' => [ // post type address field called 'houseNumber'.
-			'name' => 'packetery_address_houseNumber',
+			'name' => self::ATTR_ADDRESS_HOUSE_NUMBER,
 		],
 		'street'      => [
-			'name' => 'packetery_address_street',
+			'name' => self::ATTR_ADDRESS_STREET,
 		],
 		'city'        => [
-			'name' => 'packetery_address_city',
+			'name' => self::ATTR_ADDRESS_CITY,
 		],
 		'postCode'    => [
-			'name'              => 'packetery_address_postCode',
+			'name'              => self::ATTR_ADDRESS_POST_CODE,
 			'widgetResultField' => 'postcode', // Widget returns address object containing specified field. By default, it is the array key 'postCode', but in this case it is 'postcode'.
 		],
 		'county'      => [
-			'name' => 'packetery_address_county',
+			'name' => self::ATTR_ADDRESS_COUNTY,
 		],
 		'country'     => [
-			'name' => 'packetery_address_country',
+			'name' => self::ATTR_ADDRESS_COUNTRY,
 		],
 		'latitude'    => [
-			'name' => 'packetery_address_latitude',
+			'name' => self::ATTR_ADDRESS_LATITUDE,
 		],
 		'longitude'   => [
-			'name' => 'packetery_address_longitude',
+			'name' => self::ATTR_ADDRESS_LONGITUDE,
 		],
 	];
 

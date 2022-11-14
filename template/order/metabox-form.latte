@@ -49,9 +49,19 @@
                 </div>
                 <span data-packetery-widget-info></span>
             </div>
-            <script>
-			    packeteryLoadPickupPointPicker( jQuery, {$widgetSettings} );
-            </script>
+        {/if}
+
+        {if $order->isHomeDelivery()}
+            {foreach Packetery\Module\Checkout::$homeDeliveryAttrs as $attr}
+                <input n:name=$attr[name] />
+            {/foreach}
+            <div id="packetery-widget-button-wrapper">
+                <div class="packetery-widget-button-row">
+                    <img src="{$logo}">
+                    <button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_address >{$form[packetery_pick_address]->getCaption()}</button>
+                </div>
+                <span data-packetery-widget-info></span>
+            </div>
         {/if}
     </div>
 {/formContext}
