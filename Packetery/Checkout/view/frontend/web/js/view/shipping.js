@@ -187,7 +187,7 @@ define(
                     options.houseNumber = destinationAddress.houseNumber;
                 }
 
-                PacketaHD.Widget.pick(packetaApiKey, showSelectedAddress, options);
+                Packeta.Widget.pick(packetaApiKey, showSelectedAddress, options);
             },
 
             validateShippingInformation: function() {

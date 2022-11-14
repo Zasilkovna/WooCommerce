@@ -180,7 +180,7 @@ define([
                 );
             };
 
-            PacketaHD.Widget.pick(packetaApiKey, addressSelected, options);
+            Packeta.Widget.pick(packetaApiKey, addressSelected, options);
         }
     };
 
