@@ -49,6 +49,7 @@ class CreatePacketMapper {
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
+			'deliverOn'    => $order->getDeliverOn(),
 		];
 
 		$pickupPoint = $order->getPickupPoint();

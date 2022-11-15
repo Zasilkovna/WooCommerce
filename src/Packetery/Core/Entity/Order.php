@@ -222,6 +222,14 @@ class Order {
 	private $lastApiErrorDateTime;
 
 	/**
+	 * Deliver on
+	 *
+	 * @var string
+	 */
+	private $deliverOn;
+
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string $number         Order id.
@@ -888,6 +896,24 @@ class Order {
 	 */
 	public function getCarrierCode():string {
 		return $this->carrierCode;
+	}
+
+	/**
+	 * Returns deliver on date
+	 *
+	 * @return string
+	 */
+	public function getDeliverOn(): ?string {
+		return $this->deliverOn;
+	}
+
+	/**
+	 * Sets deliver on date
+	 *
+	 * @param string $deliverOn Deliver on.
+	 */
+	public function setDeliverOn( ?string $deliverOn ): void {
+		$this->deliverOn = $deliverOn;
 	}
 
 	/**

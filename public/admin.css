@@ -98,6 +98,11 @@
     overflow: hidden;
 }
 
+.packetery-table-cell .date-picker {
+    display: block;
+    width: calc(100% - 1px);
+}
+
 .log-error {
     font-weight: bold;
 }

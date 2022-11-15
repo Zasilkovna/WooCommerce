@@ -168,6 +168,7 @@ class Repository {
 				`cod` double NULL,
 				`carrier_number` varchar(255) NULL,
 				`packet_status` varchar(255) NULL,
+				`deliver_on` date NULL,
 				PRIMARY KEY (`id`)
 			) ' . $wpdbAdapter->get_charset_collate()
 		);
@@ -266,6 +267,7 @@ class Repository {
 					new \DateTimeZone( 'UTC' )
 				)->setTimezone( wp_timezone() )
 		);
+		$partialOrder->setDeliverOn( $result->deliver_on );
 
 		if ( $result->delivery_address ) {
 			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
@@ -377,6 +379,7 @@ class Repository {
 			'value'             => $order->getValue(),
 			'api_error_message' => $order->getLastApiErrorMessage(),
 			'api_error_date'    => $apiErrorDateTime,
+			'deliver_on'        => $order->getDeliverOn(),
 		];
 
 		return $data;
@@ -606,6 +609,17 @@ class Repository {
 		$wpdbAdapter = $this->wpdbAdapter;
 
 		$wpdbAdapter->query( 'ALTER TABLE `' . $wpdbAdapter->packetery_order . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
+	}
+
+	/**
+	 * Adds deliver on column.
+	 *
+	 * @return void
+	 */
+	public function addDeliverOnColumn(): void {
+		$wpdb = $this->wpdb;
+
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `deliver_on` date NULL DEFAULT NULL AFTER `cod`' );
 	}
 
 	/**

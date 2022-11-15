@@ -121,6 +121,7 @@ class Controller extends WP_REST_Controller {
 		$packeteryWidth          = $parameters['packeteryWidth'];
 		$packeteryLength         = $parameters['packeteryLength'];
 		$packeteryHeight         = $parameters['packeteryHeight'];
+		$packeteryDeliverOn      = $parameters['packeteryDeliverOn'];
 		$orderId                 = (int) $parameters['orderId'];
 
 		$form = $this->orderModal->createForm();
@@ -131,6 +132,7 @@ class Controller extends WP_REST_Controller {
 				'packetery_width'           => $packeteryWidth,
 				'packetery_length'          => $packeteryLength,
 				'packetery_height'          => $packeteryHeight,
+				'packetery_deliver_on'      => $packeteryDeliverOn,
 			]
 		);
 
@@ -164,6 +166,7 @@ class Controller extends WP_REST_Controller {
 		);
 
 		$order->setSize( $size );
+		$order->setDeliverOn( $packeteryDeliverOn );
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -175,6 +178,7 @@ class Controller extends WP_REST_Controller {
 			'packetery_length'     => $order->getLength(),
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
+			'packetery_deliver_on' => $order->getDeliverOn(),
 			'orderIsSubmittable'   => $this->orderValidator->validate( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];

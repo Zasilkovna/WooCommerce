@@ -105,6 +105,10 @@ class Modal {
 		$form->addText( 'packetery_height', __( 'Height (mm)', 'packeta' ) )
 			->setRequired( false )
 			->addRule( Form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$form->addText( 'packetery_deliver_on', __( 'Planned dispatch', 'packeta' ) )
+			->setHtmlAttribute( 'class', 'date-picker' )
+			->setHtmlAttribute( 'autocomplete', 'off' )
+			->setRequired( false );
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );
@@ -116,6 +120,7 @@ class Modal {
 				'packetery_length'          => '{{ data.order.packetery_length }}',
 				'packetery_width'           => '{{ data.order.packetery_width }}',
 				'packetery_height'          => '{{ data.order.packetery_height }}',
+				'packetery_deliver_on'      => '{{ data.order.packetery_deliver_on }}',
 			]
 		);
 

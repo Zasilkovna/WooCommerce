@@ -29,7 +29,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION                = '1.4';
+	public const VERSION                = '1.5';
 	public const DOMAIN                 = 'packeta';
 	public const MIN_LISTENER_PRIORITY  = - 9998;
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';
@@ -719,6 +719,7 @@ class Plugin {
 		$addressPickerSettings     = null;
 
 		if ( $isOrderDetailPage ) {
+			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery' ] );
 			$pickupPointPickerSettings = $this->order_metabox->createPickupPointPickerSettings();
 			$addressPickerSettings     = $this->order_metabox->createAddressPickerSettings();
 		}
