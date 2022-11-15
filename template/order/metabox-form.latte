@@ -14,7 +14,7 @@
                 Packetery\Module\Order\Metabox::FIELD_ADULT_CONTENT,
                 Packetery\Module\Order\Metabox::FIELD_COD,
                 Packetery\Module\Order\Metabox::FIELD_VALUE,
-                'packetery_deliver_on',
+                Packetery\Module\Order\Metabox::FIELD_DELIVER_ON,
             ] as $inputName}
                 <div class="packetery-table-row">
                     {if in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_COD, Packetery\Module\Order\Metabox::FIELD_VALUE ] ) }
@@ -31,15 +31,9 @@
                         </div>
                     {/if}
 
-                    {if in_array( $inputName, [ 'packetery_deliver_on' ] )}
-                            <div class="packetery-table-cell">
-                                <input class="date-picker" n:name=$inputName />
-                            </div>
-                        {else}
-                            <div class="packetery-table-cell">
-                                <input class="packetery-order-metabox-input" n:name=$inputName />
-                            </div>
-                    {/if}
+                    <div class="packetery-table-cell">
+                        <input n:class="$inputName === Packetery\Module\Order\Metabox::FIELD_DELIVER_ON ? date-picker, packetery-order-metabox-input : packetery-order-metabox-input" n:name=$inputName />
+                    </div>
                 </div>
             {/foreach}
 

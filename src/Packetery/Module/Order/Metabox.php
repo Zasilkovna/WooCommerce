@@ -199,7 +199,6 @@ class Metabox {
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT );
 		$this->order_form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
-							->setHtmlAttribute( 'class', 'date-picker' )
 							->setHtmlAttribute( 'autocomplete', 'off' )
 							->setRequired( false );
 
