@@ -222,7 +222,7 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-		// TODO: work with all POSTS from $GLOBALS.
+		// TODO: get all orders at once using post ids from $GLOBALS['posts'] and cache them.
 		if ( ! isset( self::$orderCache ) || (int) self::$orderCache->getNumber() !== $post->ID ) {
 			self::$orderCache = $this->orderRepository->getById( $post->ID );
 			if ( null === self::$orderCache ) {

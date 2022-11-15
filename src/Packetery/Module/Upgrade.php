@@ -191,7 +191,7 @@ class Upgrade {
 			$this->orderRepository->addCodColumn();
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.4.1', '<' ) ) {
+		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
 			$this->orderRepository->addColumnApiErrorMessage();
 			$this->orderRepository->addColumnApiErrorMessageDate();
 			$this->logRepository->addIndexForOrderId();

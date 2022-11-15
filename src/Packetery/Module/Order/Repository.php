@@ -257,7 +257,7 @@ class Repository {
 		$partialOrder->setValue( $this->parseFloat( $result->value ) );
 		$partialOrder->setCod( $this->parseFloat( $result->cod ) );
 		$partialOrder->setLastApiErrorMessage( $result->api_error_message );
-		$partialOrder->setLastApiErrorDate(
+		$partialOrder->setLastApiErrorDateTime(
 			( null === $result->api_error_date )
 				? $result->api_error_date
 				: \DateTimeImmutable::createFromFormat(
@@ -371,7 +371,7 @@ class Repository {
 			'cod'               => $order->getCod(),
 			'value'             => $order->getValue(),
 			'api_error_message' => $order->getLastApiErrorMessage(),
-			'api_error_date'    => ( null === $order->getLastApiErrorDate() ) ? null : $order->getLastApiErrorDate()->format( Helper::MYSQL_DATETIME_FORMAT ),
+			'api_error_date'    => ( null === $order->getLastApiErrorDateTime() ) ? null : $order->getLastApiErrorDateTime()->format( Helper::MYSQL_DATETIME_FORMAT ),
 		];
 
 		return $data;

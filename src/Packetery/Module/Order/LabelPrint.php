@@ -341,7 +341,6 @@ class LabelPrint {
 			if ( ! $response->hasFault() ) {
 				if ( null !== $order ) {
 					$order->setIsLabelPrinted( true );
-					$order->updateApiErrorMessage( null );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
@@ -359,11 +358,14 @@ class LabelPrint {
 					],
 					'errorMessage'      => $response->getFaultString(),
 				];
-				$order->updateApiErrorMessage( $response->getFaultString() );
 			}
 
 			$this->logger->add( $record );
-			$this->orderRepository->save( $order );
+
+			if ( null !== $order ) {
+				$order->updateApiErrorMessage( $response->getFaultString() );
+				$this->orderRepository->save( $order );
+			}
 		}
 
 		return $response;
@@ -392,7 +394,6 @@ class LabelPrint {
 				if ( null !== $order ) {
 					$order->setIsLabelPrinted( true );
 					$order->setCarrierNumber( $pairItem['courierNumber'] );
-					$order->updateApiErrorMessage( null );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
@@ -412,10 +413,12 @@ class LabelPrint {
 					],
 					'errorMessage'           => $response->getFaultString(),
 				];
-
-				$order->updateApiErrorMessage( $response->getFaultString() );
 			}
-			$this->orderRepository->save( $order );
+
+			if ( null !== $order ) {
+				$order->updateApiErrorMessage( $response->getFaultString() );
+				$this->orderRepository->save( $order );
+			}
 		}
 
 		return $response;

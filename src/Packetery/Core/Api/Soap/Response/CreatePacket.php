@@ -117,16 +117,7 @@ class CreatePacket extends BaseResponse {
 			return null;
 		}
 
-		return $this->getErrorsAsString( ! $this->hasValidationErrors() );
-	}
-
-	/**
-	 * Tells if validationErrors is set and not empty.
-	 *
-	 * @return bool
-	 */
-	public function hasValidationErrors(): bool {
-		return (bool) $this->validationErrors;
+		return $this->getErrorsAsString( ! $this->validationErrors );
 	}
 
 }

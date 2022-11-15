@@ -21,6 +21,7 @@ class Purger {
 
 	public const PURGER_OPTION_NAME      = 'packetery_delete_old_before';
 	public const PURGER_MODIFIER_DEFAULT = '- 90 days';
+
 	/**
 	 * Log repository.
 	 *

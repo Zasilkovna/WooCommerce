@@ -277,7 +277,7 @@ class Repository {
 		$wpdb = $this->wpdb;
 		$wpdb->query(
 			sprintf(
-				'ALTER TABLE `%s` ADD INDEX `order_id_idx` (`order_id`)',
+				'ALTER TABLE `%s` ADD INDEX `order_id` (`order_id`)',
 				$wpdb->packetery_log
 			)
 		);

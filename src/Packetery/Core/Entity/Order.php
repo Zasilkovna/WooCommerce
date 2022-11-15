@@ -215,11 +215,11 @@ class Order {
 	private $lastApiErrorMessage;
 
 	/**
-	 * Last API error date.
+	 * Last API error datetime.
 	 *
 	 * @var \DateTimeImmutable|null
 	 */
-	private $lastApiErrorDate;
+	private $lastApiErrorDateTime;
 
 	/**
 	 * Order entity constructor.
@@ -582,11 +582,12 @@ class Order {
 	/**
 	 * Sets API error date.
 	 *
-	 * @param \DateTimeImmutable|null $lastApiErrorDate API error date.
+	 * @param \DateTimeImmutable|null $lastApiErrorDateTime API error date.
 	 */
-	public function setLastApiErrorDate( ?\DateTimeImmutable $lastApiErrorDate ): void {
-		$this->lastApiErrorDate = $lastApiErrorDate;
+	public function setLastApiErrorDateTime( ?\DateTimeImmutable $lastApiErrorDateTime ): void {
+		$this->lastApiErrorDateTime = $lastApiErrorDateTime;
 	}
+
 	/**
 	 * Gets carrier object.
 	 *
@@ -888,6 +889,7 @@ class Order {
 	public function getCarrierCode():string {
 		return $this->carrierCode;
 	}
+
 	/**
 	 * Formatted API error message.
 	 *
@@ -902,8 +904,8 @@ class Order {
 	 *
 	 * @return \DateTimeImmutable|null
 	 */
-	public function getLastApiErrorDate(): ?\DateTimeImmutable {
-		return $this->lastApiErrorDate;
+	public function getLastApiErrorDateTime(): ?\DateTimeImmutable {
+		return $this->lastApiErrorDateTime;
 	}
 
 	/**
@@ -924,11 +926,11 @@ class Order {
 	 * @return void
 	 */
 	public function updateApiErrorMessage( ?string $errorMessage, ?\DateTimeImmutable $errorMessageDateTime = null ): void {
-		$this->lastApiErrorMessage = $errorMessage;
+		$this->setLastApiErrorMessage( $errorMessage );
 		if ( null === $errorMessage ) {
-			$this->lastApiErrorDate = null;
+			$this->setLastApiErrorDateTime( null );
 		} else {
-			$this->lastApiErrorDate = $errorMessageDateTime ?? Helper::now();
+			$this->setLastApiErrorDateTime( $errorMessageDateTime ?? Helper::now() );
 		}
 	}
 
