@@ -909,15 +909,6 @@ class Order {
 	}
 
 	/**
-	 * Tells if there is error from API.
-	 *
-	 * @return bool
-	 */
-	public function hasApiError(): bool {
-		return null !== $this->lastApiErrorMessage;
-	}
-
-	/**
 	 * Updates API error message and sets error message date accordingly.
 	 *
 	 * @param string|null             $errorMessage Error message.

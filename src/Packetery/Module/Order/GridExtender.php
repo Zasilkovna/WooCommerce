@@ -294,6 +294,7 @@ class GridExtender {
 					],
 					admin_url( 'admin.php' )
 				);
+				$showLogWarning   = ( null !== $order->getLastApiErrorMessage() ) && $this->isErrorMessageDateRecent( $order->getLastApiErrorDateTime() );
 
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
@@ -303,9 +304,9 @@ class GridExtender {
 						'packetSubmitUrl'    => $packetSubmitUrl,
 						'packetCancelLink'   => $packetCancelLink,
 						'printLink'          => $printLink,
-						'showLogWarning'   => $order->hasApiError() && $this->isErrorMessageDateRecent( $order->getLastApiErrorDate() ),
-						'logErrorMessage'  => $order->getLastApiErrorMessage(),
-						'translations'     => [
+						'showLogWarning'     => $showLogWarning,
+						'logErrorMessage'    => $order->getLastApiErrorMessage(),
+						'translations'       => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
