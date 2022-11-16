@@ -61,6 +61,11 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.4.1 =
+Fixed: Widget backwards compatibility break
+Fixed: Checkout widget button visibility handling on no customer address filled
+Fixed: Product-carrier limitation behaviour and user interface for product creation
+
 = 1.4 =
 Fixed: Performance optimization for loading the list of orders
 Fixed: Label print edge case error
