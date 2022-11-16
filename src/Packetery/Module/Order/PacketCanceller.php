@@ -174,7 +174,6 @@ class PacketCanceller {
 				'orderId'  => $order->getNumber(),
 				'packetId' => $order->getPacketId(),
 			];
-
 		} else {
 			$record->status  = Log\Record::STATUS_ERROR;
 			$record->orderId = $order->getNumber();

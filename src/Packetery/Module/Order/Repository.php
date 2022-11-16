@@ -259,7 +259,7 @@ class Repository {
 		$partialOrder->setLastApiErrorMessage( $result->api_error_message );
 		$partialOrder->setLastApiErrorDateTime(
 			( null === $result->api_error_date )
-				? $result->api_error_date
+				? null
 				: \DateTimeImmutable::createFromFormat(
 					Helper::MYSQL_DATETIME_FORMAT,
 					$result->api_error_date,
@@ -347,6 +347,11 @@ class Repository {
 			$deliveryAddress = wp_json_encode( $order->getDeliveryAddress()->export() );
 		}
 
+		$apiErrorDateTime = $order->getLastApiErrorDateTime();
+		if ( null !== $apiErrorDateTime ) {
+			$apiErrorDateTime = $apiErrorDateTime->format( Helper::MYSQL_DATETIME_FORMAT );
+		}
+
 		$data = [
 			'id'                => (int) $order->getNumber(),
 			'carrier_id'        => $order->getCarrierId(),
@@ -371,7 +376,7 @@ class Repository {
 			'cod'               => $order->getCod(),
 			'value'             => $order->getValue(),
 			'api_error_message' => $order->getLastApiErrorMessage(),
-			'api_error_date'    => ( null === $order->getLastApiErrorDateTime() ) ? null : $order->getLastApiErrorDateTime()->format( Helper::MYSQL_DATETIME_FORMAT ),
+			'api_error_date'    => $apiErrorDateTime,
 		];
 
 		return $data;

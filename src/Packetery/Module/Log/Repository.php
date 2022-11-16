@@ -268,19 +268,4 @@ class Repository {
 		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
 	}
 
-	/**
-	 * Adds index for order_id column.
-	 *
-	 * @return void
-	 */
-	public function addIndexForOrderId(): void {
-		$wpdb = $this->wpdb;
-		$wpdb->query(
-			sprintf(
-				'ALTER TABLE `%s` ADD INDEX `order_id` (`order_id`)',
-				$wpdb->packetery_log
-			)
-		);
-	}
-
 }

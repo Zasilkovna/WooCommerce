@@ -194,7 +194,6 @@ class Upgrade {
 		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
 			$this->orderRepository->addColumnApiErrorMessage();
 			$this->orderRepository->addColumnApiErrorMessageDate();
-			$this->logRepository->addIndexForOrderId();
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );

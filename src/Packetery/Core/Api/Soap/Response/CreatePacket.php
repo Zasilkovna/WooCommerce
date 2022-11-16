@@ -116,8 +116,9 @@ class CreatePacket extends BaseResponse {
 		if ( ! $this->hasFault() ) {
 			return null;
 		}
+		$prependFaultString = ! $this->validationErrors;
 
-		return $this->getErrorsAsString( ! $this->validationErrors );
+		return $this->getErrorsAsString( $prependFaultString );
 	}
 
 }

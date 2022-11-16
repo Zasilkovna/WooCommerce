@@ -414,6 +414,7 @@ class LabelPrint {
 					'errorMessage'           => $response->getFaultString(),
 				];
 			}
+			$this->logger->add( $record );
 
 			if ( null !== $order ) {
 				$order->updateApiErrorMessage( $response->getFaultString() );
