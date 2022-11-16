@@ -344,15 +344,15 @@ class Page {
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
-		$gateways        = $this->getAvailablePaymentGateways();
-		$enabledGateways = [];
+		$gateways      = WC()->payment_gateways()->payment_gateways();
+		$gatewayTitles = [];
 		foreach ( $gateways as $gateway ) {
-			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();
+			$gatewayTitles[ $gateway->id ] = $gateway->get_method_title();
 		}
 		$container->addSelect(
 			'cod_payment_method',
 			__( 'Payment method that represents cash on delivery', 'packeta' ),
-			$enabledGateways
+			$gatewayTitles
 		)->setPrompt( '--' )->checkDefaultValue( false );
 
 		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
@@ -384,38 +384,6 @@ class Page {
 		}
 
 		return $form;
-	}
-
-	/**
-	 * Get available gateways.
-	 *
-	 * @return \WC_Payment_Gateway[]
-	 */
-	public function getAvailablePaymentGateways(): array {
-		$availableGateways = [];
-
-		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
-			if ( 'yes' === $gateway->enabled ) {
-				$availableGateways[ $gateway->id ] = $gateway;
-			}
-		}
-
-		/**
-		 * Applies woocommerce_available_payment_gateways filters.
-		 *
-		 * @since 1.0.5
-		 */
-		return array_filter( (array) apply_filters( 'woocommerce_available_payment_gateways', $availableGateways ), [ $this, 'filterValidGatewayClass' ] );
-	}
-
-	/**
-	 * Callback for array filter. Returns true if gateway is of correct type.
-	 *
-	 * @param object $gateway Gateway to check.
-	 * @return bool
-	 */
-	protected function filterValidGatewayClass( object $gateway ): bool {
-		return ( $gateway instanceof \WC_Payment_Gateway );
 	}
 
 	/**
