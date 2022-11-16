@@ -344,15 +344,15 @@ class Page {
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
-		$gateways      = WC()->payment_gateways()->payment_gateways();
-		$gatewayTitles = [];
+		$gateways        = $this->getAvailablePaymentGateways();
+		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
-			$gatewayTitles[ $gateway->id ] = $gateway->get_method_title();
+			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();
 		}
 		$container->addSelect(
 			'cod_payment_method',
 			__( 'Payment method that represents cash on delivery', 'packeta' ),
-			$gatewayTitles
+			$enabledGateways
 		)->setPrompt( '--' )->checkDefaultValue( false );
 
 		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
@@ -384,6 +384,33 @@ class Page {
 		}
 
 		return $form;
+	}
+
+	/**
+	 * Get available gateways.
+	 *
+	 * @return \WC_Payment_Gateway[]
+	 */
+	public function getAvailablePaymentGateways(): array {
+		$availableGateways = [];
+
+		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
+			if ( 'yes' === $gateway->enabled ) {
+				$availableGateways[ $gateway->id ] = $gateway;
+			}
+		}
+
+		return array_filter( $availableGateways, [ $this, 'filterValidGatewayClass' ] );
+	}
+
+	/**
+	 * Callback for array filter. Returns true if gateway is of correct type.
+	 *
+	 * @param object $gateway Gateway to check.
+	 * @return bool
+	 */
+	protected function filterValidGatewayClass( object $gateway ): bool {
+		return ( $gateway instanceof \WC_Payment_Gateway );
 	}
 
 	/**
