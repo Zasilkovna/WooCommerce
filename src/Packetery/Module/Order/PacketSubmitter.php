@@ -18,6 +18,7 @@ use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\ShippingMethod;
 use PacketeryNette\Http\Request;
 use WC_Order;
@@ -94,6 +95,13 @@ class PacketSubmitter {
 	private $commonLogic;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Module\Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient      SOAP API Client.
@@ -105,6 +113,7 @@ class PacketSubmitter {
 	 * @param MessageManager           $messageManager     Message manager.
 	 * @param Module\Log\Page          $logPage            Log page.
 	 * @param PacketActionsCommonLogic $commonLogic        Common logic.
+	 * @param Module\Options\Provider  $optionsProvider     Options provider.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -115,7 +124,8 @@ class PacketSubmitter {
 		Request $request,
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
-		PacketActionsCommonLogic $commonLogic
+		PacketActionsCommonLogic $commonLogic,
+		Module\Options\Provider $optionsProvider
 	) {
 		$this->soapApiClient      = $soapApiClient;
 		$this->orderValidator     = $orderValidator;
@@ -126,6 +136,7 @@ class PacketSubmitter {
 		$this->messageManager     = $messageManager;
 		$this->logPage            = $logPage;
 		$this->commonLogic        = $commonLogic;
+		$this->optionsProvider    = $optionsProvider;
 	}
 
 	/**
@@ -253,6 +264,9 @@ class PacketSubmitter {
 			} else {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
+				if ( $this->optionsProvider->isForceOrderStatusChangeEnabled() ) {
+					$order->update_status( $this->optionsProvider->getForcedOrderStatus() );
+				}
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;

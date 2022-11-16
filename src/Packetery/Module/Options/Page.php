@@ -25,9 +25,10 @@ use PacketeryNette\Forms\Form;
  */
 class Page {
 
-	private const FORM_FIELDS_CONTAINER           = 'packetery';
-	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
-	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
+	private const FORM_FIELDS_CONTAINER                = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT      = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT      = 'carrier_label_format';
+	private const FORM_FIELD_FORCE_ORDER_STATUS_CHANGE = 'force_order_status_change';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -447,6 +448,25 @@ class Page {
 					->setRequired( false )
 					->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
 
+		$container->addCheckbox( self::FORM_FIELD_FORCE_ORDER_STATUS_CHANGE, __( 'Force order status change', 'packeta' ) )
+		          ->setRequired( false )
+		          ->setDefaultValue( Provider::FORCE_ORDER_STATUS_CHANGE_DEFAULT )
+		          ->addCondition( Form::EQUAL, true )
+		          ->toggle( '.packetery-force-order-status-row' );
+
+		$container->addSelect(
+			'forced_order_status',
+			__( 'New order status', 'packeta' ),
+			wc_get_order_statuses()
+		)
+		          ->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_FORCE_ORDER_STATUS_CHANGE ], Form::EQUAL, true )
+		          ->setRequired();
+
+		$container->addCheckbox(
+			'force_order_status_change_for_auto_submit',
+			__( 'Change order status after automatic packet submit', 'packeta' )
+		);
+
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
 		}
@@ -713,6 +733,7 @@ class Page {
 			'statusSyncingPacketStatusesDescription' => __( 'If an order has a shipment with one of these selected statuses, the shipment status will be tracked.', 'packeta' ),
 			'numberOfDaysToCheckDescription'         => __( 'Number of days after the creation of an order, during which the order status will be checked.', 'packeta' ),
 			'widgetAutoOpenDescription'              => __( 'If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout.', 'packeta' ),
+			'forceOrderStatusChangeDescription'      => __( 'Change order status after data submission to Packeta.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

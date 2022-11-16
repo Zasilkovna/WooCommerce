@@ -30,6 +30,7 @@ class Provider {
 	const FORCE_PACKET_CANCEL_DEFAULT               = true;
 	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
 	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
+	const FORCE_ORDER_STATUS_CHANGE_DEFAULT         = false;
 
 	/**
 	 *  Options data.
@@ -485,4 +486,28 @@ class Provider {
 		return self::WIDGET_AUTO_OPEN_DEFAULT;
 	}
 
+	/**
+	 * Force order status change on packet submit enabled.
+	 *
+	 * @return bool
+	 */
+	public function isForceOrderStatusChangeEnabled(): bool {
+		return (bool) $this->get( 'force_order_status_change' );
+	}
+
+	/**
+	 * Force order status change on packet submit enabled.
+	 *
+	 * @return bool
+	 */
+	public function isForceOrderStatusChangeForAutoSubmitEnabled(): bool {
+		return (bool) $this->get( 'force_order_status_change_for_auto_submit' );
+	}
+
+	/**
+	 *
+	 */
+	public function getForcedOrderStatus(): string {
+		return $this->get( 'forced_order_status' );
+	}
 }
