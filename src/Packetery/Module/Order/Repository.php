@@ -16,6 +16,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
 use Packetery\Module\ShippingMethod;
+use Packetery\Module\Wpdb;
 use WP_Post;
 
 /**
@@ -28,7 +29,7 @@ class Repository {
 	/**
 	 * Wpdb.
 	 *
-	 * @var \wpdb
+	 * @var Wpdb
 	 */
 	private $wpdb;
 
@@ -42,10 +43,10 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb   $wpdb         Wpdb.
+	 * @param Wpdb    $wpdb         Wpdb.
 	 * @param Builder $orderFactory Order factory.
 	 */
-	public function __construct( \wpdb $wpdb, Builder $orderFactory ) {
+	public function __construct( Wpdb $wpdb, Builder $orderFactory ) {
 		$this->wpdb    = $wpdb;
 		$this->builder = $orderFactory;
 	}
@@ -78,7 +79,7 @@ class Repository {
 			',',
 			array_map(
 				function ( string $orderStatus ): string {
-					return sprintf( '"%s"', $this->wpdb->_real_escape( $orderStatus ) );
+					return sprintf( '"%s"', $this->wpdb->realEscape( $orderStatus ) );
 				},
 				$orderStatusesToExclude
 			)
@@ -109,7 +110,7 @@ class Repository {
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdb->packetery_order . '` ON `' . $this->wpdb->packetery_order . '`.`id` = `' . $this->wpdb->posts . '`.`id`';
 
 			if ( $paramValues['packetery_carrier_id'] ) {
-				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $paramValues['packetery_carrier_id'] ) . '"';
+				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->realEscape( $paramValues['packetery_carrier_id'] ) . '"';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_to_submit'] ) {
@@ -124,9 +125,9 @@ class Repository {
 			}
 			if ( $paramValues['packetery_order_type'] ) {
 				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
-					$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->realEscape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
 				} else {
-					$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` != "' . $this->wpdb->_real_escape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` != "' . $this->wpdb->realEscape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
 				}
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
@@ -372,7 +373,7 @@ class Repository {
 	 * @return void
 	 */
 	public function save( Order $order ): void {
-		$this->wpdb->_insert_replace_helper( $this->wpdb->packetery_order, $this->orderToDbArray( $order ), null, 'REPLACE' );
+		$this->wpdb->insertReplaceHelper( $this->wpdb->packetery_order, $this->orderToDbArray( $order ), null, 'REPLACE' );
 	}
 
 	/**

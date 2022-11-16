@@ -12,6 +12,7 @@ namespace Packetery\Module\Log;
 
 use Packetery\Core\Helper;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Wpdb;
 
 /**
  * Class Repository
@@ -23,16 +24,16 @@ class Repository {
 	/**
 	 * WPDB.
 	 *
-	 * @var \wpdb
+	 * @var Wpdb
 	 */
 	private $wpdb;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param \wpdb $wpdb WPDB.
+	 * @param Wpdb $wpdb WPDB.
 	 */
-	public function __construct( \wpdb $wpdb ) {
+	public function __construct( Wpdb $wpdb ) {
 		$this->wpdb = $wpdb;
 	}
 
@@ -263,6 +264,6 @@ class Repository {
 			'date'     => $dateString,
 		];
 
-		$this->wpdb->_insert_replace_helper( $this->wpdb->packetery_log, $data, null, 'REPLACE' );
+		$this->wpdb->insertReplaceHelper( $this->wpdb->packetery_log, $data, null, 'REPLACE' );
 	}
 }

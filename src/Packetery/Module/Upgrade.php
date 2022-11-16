@@ -75,7 +75,7 @@ class Upgrade {
 	/**
 	 * WPDB.
 	 *
-	 * @var \wpdb
+	 * @var Wpdb
 	 */
 	private $wpdb;
 
@@ -86,7 +86,7 @@ class Upgrade {
 	 * @param MessageManager     $messageManager    Message manager.
 	 * @param ILogger            $logger            Logger.
 	 * @param Log\Repository     $logRepository     Log repository.
-	 * @param \wpdb              $wpdb              WPDB.
+	 * @param Wpdb               $wpdb              WPDB.
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 */
 	public function __construct(
@@ -94,7 +94,7 @@ class Upgrade {
 		MessageManager $messageManager,
 		ILogger $logger,
 		Log\Repository $logRepository,
-		\wpdb $wpdb,
+		Wpdb $wpdb,
 		Carrier\Repository $carrierRepository
 	) {
 		$this->orderRepository   = $orderRepository;
@@ -120,7 +120,7 @@ class Upgrade {
 		$this->logRepository->createTable();
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
-			$lastError = $this->wpdb->last_error;
+			$lastError = $this->wpdb->getLastWpdbError();
 			$this->messageManager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
@@ -135,7 +135,7 @@ class Upgrade {
 
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
-			$lastError = $this->wpdb->last_error;
+			$lastError = $this->wpdb->getLastWpdbError();
 			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
@@ -200,11 +200,9 @@ class Upgrade {
 	 * @return void
 	 */
 	private function migrateWpOrderMetadata(): void {
-		global $wpdb;
-
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
-			$lastError = $wpdb->last_error;
+			$lastError = $this->wpdb->getLastWpdbError();
 			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();

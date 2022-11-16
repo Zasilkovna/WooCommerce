@@ -11,6 +11,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\Wpdb;
 
 /**
  * Class CarrierRepository
@@ -25,7 +26,7 @@ class Repository {
 	/**
 	 * WordPress wpdb object from global
 	 *
-	 * @var \wpdb
+	 * @var Wpdb
 	 */
 	private $wpdb;
 
@@ -39,10 +40,10 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb                 $wpdb wpdb.
+	 * @param Wpdb                  $wpdb wpdb.
 	 * @param EntityFactory\Carrier $carrierEntityFactory Carrier Entity Factory.
 	 */
-	public function __construct( \wpdb $wpdb, EntityFactory\Carrier $carrierEntityFactory ) {
+	public function __construct( Wpdb $wpdb, EntityFactory\Carrier $carrierEntityFactory ) {
 		$this->wpdb                 = $wpdb;
 		$this->carrierEntityFactory = $carrierEntityFactory;
 	}
@@ -50,9 +51,9 @@ class Repository {
 	/**
 	 * Gets wpdb object from global variable with custom tables names set.
 	 *
-	 * @return \wpdb
+	 * @return Wpdb
 	 */
-	private function get_wpdb(): \wpdb {
+	private function get_wpdb(): Wpdb {
 		return $this->wpdb;
 	}
 
