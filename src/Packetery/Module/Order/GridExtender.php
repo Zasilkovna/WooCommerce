@@ -371,11 +371,7 @@ class GridExtender {
 	 * @return bool
 	 */
 	public function isErrorMessageDateRecent( \DateTimeImmutable $errorMessageDate ): bool {
-		static $logPurgerDatetimeModifierOption;
-
-		if ( null === $logPurgerDatetimeModifierOption ) {
-			$logPurgerDatetimeModifierOption = get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT );
-		}
+		$logPurgerDatetimeModifierOption = get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT );
 
 		return Helper::now()->modify( $logPurgerDatetimeModifierOption ) < $errorMessageDate;
 	}
