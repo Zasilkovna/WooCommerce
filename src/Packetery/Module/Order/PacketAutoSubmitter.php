@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core;
 use Packetery\Module;
 
 /**
@@ -33,13 +32,6 @@ class PacketAutoSubmitter {
 	private $optionsProvider;
 
 	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	private $orderRepository;
-
-	/**
 	 * Packet submitter.
 	 *
 	 * @var PacketSubmitter
@@ -54,33 +46,20 @@ class PacketAutoSubmitter {
 	private $optionsPage;
 
 	/**
-	 * Order validator.
-	 *
-	 * @var Core\Validator\Order
-	 */
-	private $orderValidator;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Module\Options\Provider $optionsProvider Options provider.
-	 * @param Repository              $orderRepository Order repository.
 	 * @param PacketSubmitter         $packetSubmitter Packet submitter.
 	 * @param Module\Options\Page     $optionsPage Options page.
-	 * @param Core\Validator\Order    $orderValidator Order validator.
 	 */
 	public function __construct(
 		Module\Options\Provider $optionsProvider,
-		Repository $orderRepository,
 		PacketSubmitter $packetSubmitter,
-		Module\Options\Page $optionsPage,
-		Core\Validator\Order $orderValidator
+		Module\Options\Page $optionsPage
 	) {
 		$this->optionsProvider = $optionsProvider;
-		$this->orderRepository = $orderRepository;
 		$this->packetSubmitter = $packetSubmitter;
 		$this->optionsPage     = $optionsPage;
-		$this->orderValidator  = $orderValidator;
 	}
 
 	/**
