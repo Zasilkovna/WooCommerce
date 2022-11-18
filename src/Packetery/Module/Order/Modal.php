@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\FormFactory;
+use Packetery\Module\FormValidators;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -108,7 +109,8 @@ class Modal {
 		$form->addText( 'packetery_deliver_on', __( 'Planned dispatch', 'packeta' ) )
 			->setHtmlAttribute( 'class', 'date-picker' )
 			->setHtmlAttribute( 'autocomplete', 'off' )
-			->setRequired( false );
+			->setRequired( false )
+			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be in future', 'packeta' ), wp_date( 'Y-m-d' ) );
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );

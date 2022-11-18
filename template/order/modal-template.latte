@@ -1,5 +1,6 @@
 <script type="text/template" id="tmpl-wc-packetery-modal-view-order">
     <div class="wc-backbone-modal" data-packetery-modal>
+        {dump}
         {form $form, 'id' => 'order-modal-edit-form', 'data-order-id' => "{{ data.order.id }}", 'data-nonce' => $nonce, 'data-order-save-url' => $orderSaveUrl}
         <div class="wc-backbone-modal-content">
             <section class="wc-backbone-modal-main" role="main">
@@ -38,12 +39,13 @@
                                 <td>{label packetery_height}</td>
                                 <td>{input packetery_height}</td>
                             </tr>
-                            <tr>
+                            <tr class="{{ data.order.packeteryDeliverOnClass }}">
                                 <td>{label packetery_deliver_on}</td>
                                 <td>{input packetery_deliver_on}</td>
                             </tr>
                             </tbody>
                         </table>
+                        {dump}
                     </div>
                 </article>
                 <footer>

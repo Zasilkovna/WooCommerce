@@ -318,6 +318,15 @@ class Order {
 	}
 
 	/**
+	 * Check if delivery method is internal packetery pickup point
+	 *
+	 * @return bool
+	 */
+	public function isPacketaInternalPickupPoint(): bool {
+		return ! $this->isExternalCarrier() && $this->isPickupPointDelivery();
+	}
+
+	/**
 	 * Gets pickup point/carrier id.
 	 *
 	 * @return int|null

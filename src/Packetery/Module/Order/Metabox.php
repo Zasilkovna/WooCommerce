@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
+use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
@@ -200,7 +201,8 @@ class Metabox {
 							->addRule( $this->order_form::FLOAT );
 		$this->order_form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
 							->setHtmlAttribute( 'autocomplete', 'off' )
-							->setRequired( false );
+							->setRequired( false )
+							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be in future', 'packeta' ), wp_date( 'Y-m-d' ) );
 
 		foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 			$this->order_form->addHidden( $pickupPointAttr['name'] );
@@ -308,6 +310,7 @@ class Metabox {
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,
 				'hasOrderManualWeight'   => $order->hasManualWeight(),
+				'isPacketaPickupPoint'   => $order->isPacketaInternalPickupPoint(),
 				'translations'           => [
 					'showLogs'       => __( 'Show logs', 'packeta' ),
 					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),

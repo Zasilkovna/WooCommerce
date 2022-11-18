@@ -29,4 +29,16 @@ class FormValidators {
 	public static function greaterThan( BaseControl $input, float $arg ): bool {
 		return $input->getValue() > $arg;
 	}
+
+	/**
+	 * Tests if input date is later than argument date
+	 *
+	 * @param \PacketeryNette\Forms\Controls\BaseControl $input Form input.
+	 * @param string                                     $date Validation argument.
+	 *
+	 * @return bool
+	 */
+	public static function dateIsLater( BaseControl $input, string $date ): bool {
+		return strtotime( $input->getValue() ) > strtotime( $date );
+	}
 }
