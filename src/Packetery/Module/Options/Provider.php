@@ -505,9 +505,18 @@ class Provider {
 	}
 
 	/**
+	 * Forced order status.
 	 *
+	 * @param bool $removeWcPrefix Remove 'wc-' prefix.
+	 *
+	 * @return string
 	 */
-	public function getForcedOrderStatus(): string {
-		return $this->get( 'forced_order_status' );
+	public function getForcedOrderStatus(bool $removeWcPrefix = true): string {
+		$status = $this->get( 'forced_order_status' );
+		if ( $removeWcPrefix && strpos( $status, 'wc-' ) === 0 ) {
+			return substr($status, 3);
+		}
+
+		return $status;
 	}
 }
