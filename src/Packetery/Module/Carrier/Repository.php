@@ -121,6 +121,28 @@ class Repository {
 	}
 
 	/**
+	 * Gets all active carriers for checkbox list
+	 *
+	 * @return array
+	 */
+	public function getAllActiveCarriersList(): array {
+		$activeCarriers = [];
+		$carriers       = $this->getAllCarriersIncludingZpoints();
+		foreach ( $carriers as $carrier ) {
+			$carrierOptions = Options::createByCarrierId( $carrier->getId() );
+			if ( $carrierOptions->isActive() ) {
+				$carrierId        = 'packetery_carrier_' . $carrierOptions->getOptionId();
+				$activeCarriers[] = [
+					'id'    => $carrierId,
+					'label' => $carrierOptions->getName(),
+				];
+			}
+		}
+
+		return $activeCarriers;
+	}
+
+	/**
 	 * Gets is_pickup_point attribute of a carrier.
 	 *
 	 * @param int $carrierId Carrier id.
