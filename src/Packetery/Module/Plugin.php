@@ -230,6 +230,13 @@ class Plugin {
 	 * @var ProductCategory\FormFields
 	 */
 	private $productCategoryFormFields;
+
+	/**
+	 * Packet auto submitter.
+	 *
+	 * @var Order\PacketAutoSubmitter
+	 */
+	private $packetAutoSubmitter;
 	/**
 	 * Plugin constructor.
 	 *
@@ -260,6 +267,7 @@ class Plugin {
 	 * @param DashboardWidget            $dashboardWidget           Dashboard widget.
 	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
+	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -288,7 +296,8 @@ class Plugin {
 		ContextResolver $contextResolver,
 		DashboardWidget $dashboardWidget,
 		Order\PacketSubmitter $packetSubmitter,
-		ProductCategory\FormFields $productCategoryFormFields
+		ProductCategory\FormFields $productCategoryFormFields,
+		Order\PacketAutoSubmitter $packetAutoSubmitter
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -318,6 +327,7 @@ class Plugin {
 		$this->dashboardWidget           = $dashboardWidget;
 		$this->packetSubmitter           = $packetSubmitter;
 		$this->productCategoryFormFields = $productCategoryFormFields;
+		$this->packetAutoSubmitter       = $packetAutoSubmitter;
 	}
 
 	/**
@@ -382,6 +392,7 @@ class Plugin {
 		$this->productTab->register();
 		$this->cronService->register();
 		$this->productCategoryFormFields->register();
+		$this->packetAutoSubmitter->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );

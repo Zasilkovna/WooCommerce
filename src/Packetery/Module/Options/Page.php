@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -35,6 +36,7 @@ class Page {
 	public const TAB_GENERAL            = 'general';
 	public const TAB_SUPPORT            = 'support';
 	public const TAB_PACKET_STATUS_SYNC = 'packet-status-sync';
+	public const TAB_AUTO_SUBMISSION    = 'auto-submission';
 
 	public const PARAM_TAB = 'tab';
 
@@ -223,6 +225,59 @@ class Page {
 		}
 
 		return $orderStatusesTransformed;
+	}
+
+	/**
+	 * Creates auto submission form.
+	 *
+	 * @return Form
+	 */
+	public function createAutoSubmissionForm(): Form {
+		$gateways = $this->getAvailablePaymentGateways();
+		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
+		$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+
+		$form->addCheckbox( 'allow', __( 'Allow', 'packeta' ) )
+				->setRequired( false )
+				->setDefaultValue( Provider::PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT );
+
+		$eventChoices = [
+			PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE => __( 'On order creation at frontend', 'packeta' ),
+			PacketAutoSubmitter::EVENT_ON_ORDER_PROCESSING => __( 'On order processing', 'packeta' ),
+			PacketAutoSubmitter::EVENT_ON_ORDER_COMPLETED  => __( 'On order completed', 'packeta' ),
+		];
+
+		$paymentMethodEvents = $form->addContainer( 'payment_method_events' );
+		foreach ( $gateways as $gateway ) {
+			$paymentMethodEventsMethod = $paymentMethodEvents->addContainer( $gateway->id );
+			$paymentMethodEventsMethod->addSelect( 'event', $gateway->get_method_title(), $eventChoices )
+										->setPrompt( __( 'Select event', 'packeta' ) )
+										->checkDefaultValue( false );
+		}
+
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
+
+		$form->setDefaults( $defaults );
+
+		$form->onSuccess[] = [ $this, 'onAutoSubmissionFormSuccess' ];
+
+		return $form;
+	}
+
+	/**
+	 * On auto submission form success.
+	 *
+	 * @param Form  $form Form.
+	 * @param array $values Form values.
+	 *
+	 * @return void
+	 */
+	public function onAutoSubmissionFormSuccess( Form $form, array $values ): void {
+		update_option( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION, $values );
+
+		if ( wp_safe_redirect( $this->createLink( self::TAB_AUTO_SUBMISSION ) ) ) {
+			exit;
+		}
 	}
 
 	/**
@@ -418,6 +473,17 @@ class Page {
 	}
 
 	/**
+	 * Tells if options page uses given payment gateway.
+	 *
+	 * @param \WC_Payment_Gateway $paymentGateway Payment gateway.
+	 *
+	 * @return bool
+	 */
+	public function hasPaymentGateway( \WC_Payment_Gateway $paymentGateway ): bool {
+		return array_key_exists( $paymentGateway->id, $this->getAvailablePaymentGateways() );
+	}
+
+	/**
 	 * Callback for array filter. Returns true if gateway is of correct type.
 	 *
 	 * @param object $gateway Gateway to check.
@@ -543,6 +609,11 @@ class Page {
 		if ( $packetStatusSyncForm['save']->isSubmittedBy() ) {
 			$packetStatusSyncForm->fireEvents();
 		}
+
+		$autoSubmissionForm = $this->createAutoSubmissionForm();
+		if ( $autoSubmissionForm['save']->isSubmittedBy() ) {
+			$autoSubmissionForm->fireEvents();
+		}
 	}
 
 	/**
@@ -554,6 +625,8 @@ class Page {
 		$latteParams = [];
 		if ( self::TAB_PACKET_STATUS_SYNC === $activeTab ) {
 			$latteParams = [ 'form' => $this->createPacketStatusSyncForm() ];
+		} elseif ( self::TAB_AUTO_SUBMISSION === $activeTab ) {
+			$latteParams = [ 'form' => $this->createAutoSubmissionForm() ];
 		} elseif ( self::TAB_GENERAL === $activeTab ) {
 			$latteParams = [ 'form' => $this->create_form() ];
 		}
@@ -576,6 +649,7 @@ class Page {
 		$latteParams['generalTabLink']          = $this->createLink();
 		$latteParams['supportTabLink']          = $this->createLink( self::TAB_SUPPORT );
 		$latteParams['packetStatusSyncTabLink'] = $this->createLink( self::TAB_PACKET_STATUS_SYNC );
+		$latteParams['autoSubmissionTabLink']   = $this->createLink( self::TAB_AUTO_SUBMISSION );
 
 		$latteParams['canValidateSender']    = (bool) $this->optionsProvider->get_sender();
 		$latteParams['senderValidationLink'] = add_query_arg(
@@ -605,6 +679,8 @@ class Page {
 			'packeta'                                => __( 'Packeta', 'packeta' ),
 			'options'                                => __( 'Options', 'packeta' ),
 			'general'                                => __( 'General', 'packeta' ),
+			'packetAutoSubmission'                   => __( 'Packet auto-submission', 'packeta' ),
+			'packetAutoSubmissionMappingDescription' => __( 'Choose events for payment methods that will trigger packet submission', 'packeta' ),
 			// translators: %s represents URL, keep intact.
 			'apiPasswordCanBeFoundAt%sUrl'           => __( 'API password can be found at %s', 'packeta' ),
 			'saveChanges'                            => __( 'Save changes', 'packeta' ),
@@ -622,7 +698,7 @@ class Page {
 			'settingsExportDatetime'                 => __( 'Date and time of the last export of settings', 'packeta' ),
 			'settingsNotYetExported'                 => __( 'The settings have not been exported yet.', 'packeta' ),
 			'senderDescription'                      => sprintf(
-			/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
+				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 				esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
 				'<strong>',
 				'</strong>',

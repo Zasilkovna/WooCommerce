@@ -158,13 +158,8 @@ class PacketSubmitter {
 
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order );
 
-		$resultsCounter = [
-			'success' => 0,
-			'ignored' => 0,
-			'errors'  => 0,
-			'logs'    => 0,
-		];
-		$this->submitPacket( wc_get_order( (int) $order->getNumber() ), $resultsCounter );
+		$submissionResult         = $this->submitPacket( wc_get_order( (int) $order->getNumber() ) );
+		$resultsCounter           = $submissionResult->getCounter();
 		$submissionResultMessages = $this->getTranslatedSubmissionMessages( $resultsCounter, (int) $order->getNumber() );
 
 		if ( $resultsCounter['success'] > 0 ) {
@@ -201,13 +196,16 @@ class PacketSubmitter {
 	 * Submits packet data to Packeta API.
 	 *
 	 * @param WC_Order $order WC order.
-	 * @param array    $resultsCounter Array with results.
+	 *
+	 * @return PacketSubmissionResult
 	 */
-	public function submitPacket( WC_Order $order, array &$resultsCounter ): void {
-		$commonEntity = $this->orderRepository->getByWcOrder( $order );
+	public function submitPacket( WC_Order $order ): PacketSubmissionResult {
+		$submissionResult = new PacketSubmissionResult();
+		$commonEntity     = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
-			$resultsCounter['ignored'] ++;
-			return;
+			$submissionResult->increaseIgnoredCount();
+
+			return $submissionResult;
 		}
 
 		$orderData       = $order->get_data();
@@ -231,10 +229,10 @@ class PacketSubmitter {
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
-				$resultsCounter['logs'] ++;
-				$resultsCounter['errors'] ++;
+				$submissionResult->increaseLogsCount();
+				$submissionResult->increaseErrorsCount();
 
-				return;
+				return $submissionResult;
 			}
 
 			$response = $this->soapApiClient->createPacket( $createPacketData );
@@ -250,19 +248,16 @@ class PacketSubmitter {
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
-				$resultsCounter['logs'] ++;
-				$resultsCounter['errors'] ++;
+				$submissionResult->increaseErrorsCount();
 			} else {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
 				$this->orderRepository->save( $commonEntity );
 
-				$resultsCounter['success'] ++;
-
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
 				$record->status  = Log\Record::STATUS_SUCCESS;
-				$record->title   = __( 'Packet was sucessfully created.', 'packeta' );
+				$record->title   = __( 'Packet was successfully created.', 'packeta' );
 				$record->params  = [
 					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
@@ -270,11 +265,14 @@ class PacketSubmitter {
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
 
-				$resultsCounter['logs'] ++;
+				$submissionResult->increaseSuccessCount();
 			}
+			$submissionResult->increaseLogsCount();
 		} else {
-			$resultsCounter['ignored'] ++;
+			$submissionResult->increaseIgnoredCount();
 		}
+
+		return $submissionResult;
 	}
 
 	/**
@@ -286,12 +284,9 @@ class PacketSubmitter {
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
-		/*
-		TODO: extend validator to return specific errors.
-		if ( ! $this->orderValidator->validate( $commonEntity ) ) {
+		if ( ! $this->orderValidator->validate( $order ) ) {
 			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
-		*/
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
 		if ( ! empty( $createPacketData['cod'] ) ) {
@@ -374,4 +369,5 @@ class PacketSubmitter {
 
 		return $latteParams;
 	}
+
 }

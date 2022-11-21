@@ -174,14 +174,22 @@ class Checkout {
 	private $currencySwitcherFacade;
 
 	/**
+	 * Packet auto submitter.
+	 *
+	 * @var Order\PacketAutoSubmitter
+	 */
+	private $packetAutoSubmitter;
+
+	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine                 $latte_engine      PacketeryLatte engine.
-	 * @param Provider               $options_provider  Options provider.
-	 * @param Carrier\Repository     $carrierRepository Carrier repository.
-	 * @param Request                $httpRequest Http request.
-	 * @param Order\Repository       $orderRepository Order repository.
-	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
+	 * @param Engine                    $latte_engine           PacketeryLatte engine.
+	 * @param Provider                  $options_provider       Options provider.
+	 * @param Carrier\Repository        $carrierRepository      Carrier repository.
+	 * @param Request                   $httpRequest            Http request.
+	 * @param Order\Repository          $orderRepository        Order repository.
+	 * @param CurrencySwitcherFacade    $currencySwitcherFacade Currency switcher facade.
+	 * @param Order\PacketAutoSubmitter $packetAutoSubmitter    Packet auto submitter.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -189,7 +197,8 @@ class Checkout {
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Order\Repository $orderRepository,
-		CurrencySwitcherFacade $currencySwitcherFacade
+		CurrencySwitcherFacade $currencySwitcherFacade,
+		Order\PacketAutoSubmitter $packetAutoSubmitter
 	) {
 		$this->latte_engine           = $latte_engine;
 		$this->options_provider       = $options_provider;
@@ -197,6 +206,7 @@ class Checkout {
 		$this->httpRequest            = $httpRequest;
 		$this->orderRepository        = $orderRepository;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
+		$this->packetAutoSubmitter    = $packetAutoSubmitter;
 	}
 
 	/**
@@ -469,12 +479,12 @@ class Checkout {
 			$propsToSave[ self::ATTR_CARRIER_ID ] = $carrierId;
 		}
 
-		if ( $this->isPickupPointOrder() ) {
-			$wcOrder = wc_get_order( $orderId );
-			if ( ! $wcOrder instanceof \WC_Order ) {
-				return;
-			}
+		$wcOrder = wc_get_order( $orderId );
+		if ( ! $wcOrder instanceof \WC_Order ) {
+			return;
+		}
 
+		if ( $this->isPickupPointOrder() ) {
 			foreach ( self::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
 				if ( ! isset( $post[ $attrName ] ) ) {
@@ -526,6 +536,7 @@ class Checkout {
 
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
 		$this->orderRepository->save( $orderEntity );
+		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $orderId );
 	}
 
 	/**

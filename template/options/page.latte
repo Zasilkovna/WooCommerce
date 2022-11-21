@@ -15,6 +15,12 @@
             {$translations['packetStatusSyncTabLinkLabel']}
         </a>
         <a
+                href="{$autoSubmissionTabLink}"
+                class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_AUTO_SUBMISSION} nav-tab-active{/if}"
+        >
+            {$translations['packetAutoSubmission']}
+        </a>
+        <a
                 href="{$supportTabLink}"
                 class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
         >

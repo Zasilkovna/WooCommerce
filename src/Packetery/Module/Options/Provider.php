@@ -19,14 +19,16 @@ use Packetery\Module\Order\PacketSynchronizer;
  */
 class Provider {
 
-	const OPTION_NAME_PACKETERY      = 'packetery';
-	const OPTION_NAME_PACKETERY_SYNC = 'packetery_sync';
+	const OPTION_NAME_PACKETERY                 = 'packetery';
+	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
+	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 
 	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
 	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
 	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 	const FORCE_PACKET_CANCEL_DEFAULT               = true;
+	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
 
 	/**
 	 *  Options data.
@@ -43,6 +45,13 @@ class Provider {
 	private $syncData;
 
 	/**
+	 * Auto submission data.
+	 *
+	 * @var array
+	 */
+	private $autoSubmissionData;
+
+	/**
 	 * Provider constructor.
 	 */
 	public function __construct() {
@@ -56,8 +65,14 @@ class Provider {
 			$syncData = [];
 		}
 
-		$this->data     = $data;
-		$this->syncData = $syncData;
+		$autoSubmissionData = get_option( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		if ( ! $autoSubmissionData ) {
+			$autoSubmissionData = [];
+		}
+
+		$this->data               = $data;
+		$this->syncData           = $syncData;
+		$this->autoSubmissionData = $autoSubmissionData;
 	}
 
 	/**
@@ -76,10 +91,15 @@ class Provider {
 			return $this->syncData;
 		}
 
+		if ( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION === $optionName ) {
+			return $this->autoSubmissionData;
+		}
+
 		if ( null === $optionName ) {
 			return [
 				self::OPTION_NAME_PACKETERY      => $this->data,
 				self::OPTION_NAME_PACKETERY_SYNC => $this->syncData,
+				self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
 			];
 		}
 	}
@@ -314,6 +334,56 @@ class Provider {
 		}
 
 		return self::FORCE_PACKET_CANCEL_DEFAULT;
+	}
+
+	/**
+	 * Gets packet auto submission payment method and event mapping.
+	 *
+	 * @return array
+	 */
+	private function getPacketAutoSubmissionPaymentMethodEventsMapping(): array {
+		return $this->autoSubmissionData['payment_method_events'] ?? [];
+	}
+
+	/**
+	 * Gets array of mapped events.
+	 *
+	 * @return string[]
+	 */
+	public function getPacketAutoSubmissionMappedUniqueEvents(): array {
+		$mapping = $this->getPacketAutoSubmissionPaymentMethodEventsMapping();
+		$result  = [];
+
+		foreach ( $mapping as $gatewayMapping ) {
+			$result[ $gatewayMapping['event'] ] = $gatewayMapping['event'];
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Gets packet auto-submission event by payment gateway ID.
+	 *
+	 * @param string $paymentGatewayId Payment gateway ID.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketAutoSubmissionEvenForPaymentGateway( string $paymentGatewayId ): ?string {
+		return $this->getPacketAutoSubmissionPaymentMethodEventsMapping()[ $paymentGatewayId ]['event'] ?? null;
+	}
+
+	/**
+	 * Tells if packet auto submission is enabled.
+	 *
+	 * @return bool
+	 */
+	public function isPacketAutoSubmissionEnabled(): bool {
+		$value = $this->autoSubmissionData['allow'] ?? null;
+		if ( null !== $value ) {
+			return (bool) $value;
+		}
+
+		return self::PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT;
 	}
 
 	/**
