@@ -908,7 +908,12 @@ class Checkout {
 		return [
 			'label'    => $name,
 			'id'       => $optionId,
-			'cost'     => $cost,
+			/**
+			 * Filter shipping rate cost in checkout
+			 *
+			 * @since 1.4.1
+			 */
+			'cost'     => apply_filters( 'packeta_shipping_price', $cost ),
 			'taxes'    => '',
 			'calc_tax' => 'per_order',
 		];
