@@ -7,6 +7,7 @@
 
 use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\Helper;
+use Packetery\Module\WpdbTracyPanel;
 use PacketeryNette\Bootstrap\Configurator;
 use PacketeryTracy\Debugger;
 
@@ -35,5 +36,9 @@ $configurator->defaultExtensions = [];
 
 $container = $configurator->createContainer();
 CompatibilityBridge::setContainer( $container );
+
+if ( Debugger::isEnabled() ) {
+	Debugger::getBar()->addPanel( $container->getByType( WpdbTracyPanel::class ) );
+}
 
 return $container;
