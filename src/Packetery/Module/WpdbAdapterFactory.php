@@ -1,6 +1,6 @@
 <?php
 /**
- * Class WpdbFactory
+ * Class WpdbAdapterFactory
  *
  * @package Packetery
  */
@@ -10,21 +10,21 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 /**
- * Class WpdbFactory
+ * Class WpdbAdapterFactory
  *
  * @package Packetery
  */
-class WpdbFactory {
+class WpdbAdapterFactory {
 
 	/**
 	 * Gets wpdb instance
 	 *
-	 * @return Wpdb
+	 * @return WpdbAdapter
 	 */
-	public function create(): Wpdb {
+	public function create(): WpdbAdapter {
 		global $wpdb;
 
-		$instance = new Wpdb( $wpdb );
+		$instance = new WpdbAdapter( $wpdb );
 
 		$wpdb->packetery_carrier = sprintf( '%scarrier', $instance->getPacketeryPrefix() );
 		$wpdb->packetery_order   = sprintf( '%sorder', $instance->getPacketeryPrefix() );

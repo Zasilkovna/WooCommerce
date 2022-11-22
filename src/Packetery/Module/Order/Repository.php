@@ -16,7 +16,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
 use Packetery\Module\ShippingMethod;
-use Packetery\Module\Wpdb;
+use Packetery\Module\WpdbAdapter;
 use WP_Post;
 
 /**
@@ -29,7 +29,7 @@ class Repository {
 	/**
 	 * Wpdb.
 	 *
-	 * @var Wpdb
+	 * @var WpdbAdapter
 	 */
 	private $wpdb;
 
@@ -43,10 +43,10 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param Wpdb    $wpdb         Wpdb.
-	 * @param Builder $orderFactory Order factory.
+	 * @param WpdbAdapter $wpdb         Wpdb.
+	 * @param Builder     $orderFactory Order factory.
 	 */
-	public function __construct( Wpdb $wpdb, Builder $orderFactory ) {
+	public function __construct( WpdbAdapter $wpdb, Builder $orderFactory ) {
 		$this->wpdb    = $wpdb;
 		$this->builder = $orderFactory;
 	}

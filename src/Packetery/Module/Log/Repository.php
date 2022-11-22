@@ -12,7 +12,7 @@ namespace Packetery\Module\Log;
 
 use Packetery\Core\Helper;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Wpdb;
+use Packetery\Module\WpdbAdapter;
 
 /**
  * Class Repository
@@ -24,16 +24,16 @@ class Repository {
 	/**
 	 * WPDB.
 	 *
-	 * @var Wpdb
+	 * @var WpdbAdapter
 	 */
 	private $wpdb;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Wpdb $wpdb WPDB.
+	 * @param WpdbAdapter $wpdb WPDB.
 	 */
-	public function __construct( Wpdb $wpdb ) {
+	public function __construct( WpdbAdapter $wpdb ) {
 		$this->wpdb = $wpdb;
 	}
 

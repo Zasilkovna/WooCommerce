@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Wpdb
+ * Class WpdbAdapter
  *
  * @package Packetery
  */
@@ -13,11 +13,11 @@ namespace Packetery\Module;
 use PacketeryTracy\Debugger;
 
 /**
- * Class Wpdb
+ * Class WpdbAdapter
  *
  * @package Packetery
  */
-class Wpdb {
+class WpdbAdapter {
 
 	/**
 	 * Packetery carrier table name.

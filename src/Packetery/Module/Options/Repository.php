@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
-use Packetery\Module\Wpdb;
+use Packetery\Module\WpdbAdapter;
 
 /**
  * Class Repository.
@@ -21,16 +21,16 @@ class Repository {
 	/**
 	 * Wpdb.
 	 *
-	 * @var Wpdb
+	 * @var WpdbAdapter
 	 */
 	private $wpdb;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Wpdb $wpdb Wpdb.
+	 * @param WpdbAdapter $wpdb Wpdb.
 	 */
-	public function __construct( Wpdb $wpdb ) {
+	public function __construct( WpdbAdapter $wpdb ) {
 		$this->wpdb = $wpdb;
 	}
 

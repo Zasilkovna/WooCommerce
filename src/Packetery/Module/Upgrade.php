@@ -75,7 +75,7 @@ class Upgrade {
 	/**
 	 * WPDB.
 	 *
-	 * @var Wpdb
+	 * @var WpdbAdapter
 	 */
 	private $wpdb;
 
@@ -86,7 +86,7 @@ class Upgrade {
 	 * @param MessageManager     $messageManager    Message manager.
 	 * @param ILogger            $logger            Logger.
 	 * @param Log\Repository     $logRepository     Log repository.
-	 * @param Wpdb               $wpdb              WPDB.
+	 * @param WpdbAdapter        $wpdb              WPDB.
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 */
 	public function __construct(
@@ -94,7 +94,7 @@ class Upgrade {
 		MessageManager $messageManager,
 		ILogger $logger,
 		Log\Repository $logRepository,
-		Wpdb $wpdb,
+		WpdbAdapter $wpdb,
 		Carrier\Repository $carrierRepository
 	) {
 		$this->orderRepository   = $orderRepository;
