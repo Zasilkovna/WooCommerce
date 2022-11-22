@@ -29,11 +29,12 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION                = '1.5';
+	public const VERSION                = '1.4';
 	public const DOMAIN                 = 'packeta';
 	public const MIN_LISTENER_PRIORITY  = - 9998;
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';
 	public const PARAM_NONCE            = '_wpnonce';
+	public const DATEPICKER_FORMAT      = 'Y-m-d';
 
 	/**
 	 * Options page.

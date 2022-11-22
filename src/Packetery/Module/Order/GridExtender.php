@@ -304,6 +304,7 @@ class GridExtender {
 						'packetCancelLink'          => $packetCancelLink,
 						'printLink'                 => $printLink,
 						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
+						'datePickerFormat'          => Plugin::DATEPICKER_FORMAT,
 						'translations'              => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),

@@ -277,7 +277,7 @@ class Metabox {
 				self::FIELD_ADULT_CONTENT       => $order->containsAdultContent(),
 				self::FIELD_COD                 => $order->getCod(),
 				self::FIELD_VALUE               => $order->getValue(),
-				self::FIELD_DELIVER_ON          => $order->getDeliverOn(),
+				self::FIELD_DELIVER_ON          => $order->getDeliverOn() ? $order->getDeliverOn()->format( Plugin::DATEPICKER_FORMAT ) : null,
 			]
 		);
 
@@ -429,7 +429,9 @@ class Metabox {
 		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
 		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
 		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
-		$order->setDeliverOn( $values[ self::FIELD_DELIVER_ON ] ?? null );
+		$packeteryDeliverOnDateTime = $values[ self::FIELD_DELIVER_ON ] ? new \DateTimeImmutable( $values[ self::FIELD_DELIVER_ON ] ) : null;
+		$packeteryDeliverOnDateTime = $packeteryDeliverOnDateTime ? $packeteryDeliverOnDateTime->setTimezone( wp_timezone() ) : null;
+		$order->setDeliverOn( $packeteryDeliverOnDateTime );
 		$order->setSize( $orderSize );
 		Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
 		$this->orderRepository->save( $order );

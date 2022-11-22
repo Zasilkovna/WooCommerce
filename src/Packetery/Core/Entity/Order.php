@@ -224,7 +224,7 @@ class Order {
 	/**
 	 * Deliver on
 	 *
-	 * @var string
+	 * @var \DateTimeImmutable
 	 */
 	private $deliverOn;
 
@@ -910,18 +910,20 @@ class Order {
 	/**
 	 * Returns deliver on date
 	 *
-	 * @return string
+	 * @return \DateTimeImmutable|null
 	 */
-	public function getDeliverOn(): ?string {
+	public function getDeliverOn(): ?\DateTimeImmutable {
 		return $this->deliverOn;
 	}
 
 	/**
 	 * Sets deliver on date
 	 *
-	 * @param string $deliverOn Deliver on.
+	 * @param \DateTimeImmutable|null $deliverOn Deliver on.
+	 *
+	 * @return void
 	 */
-	public function setDeliverOn( ?string $deliverOn ): void {
+	public function setDeliverOn( ?\DateTimeImmutable $deliverOn ): void {
 		$this->deliverOn = $deliverOn;
 	}
 

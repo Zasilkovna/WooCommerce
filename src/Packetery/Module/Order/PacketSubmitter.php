@@ -295,7 +295,7 @@ class PacketSubmitter {
 			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
 
-		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
+		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order, Module\Plugin::DATEPICKER_FORMAT );
 		if ( ! empty( $createPacketData['cod'] ) ) {
 			$roundingType            = Options::createByCarrierId( $order->getCarrierCode() )->getCodRoundingType();
 			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );

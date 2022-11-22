@@ -29,10 +29,11 @@ class CreatePacketMapper {
 	 * Maps order data to CreatePacket structure.
 	 *
 	 * @param Entity\Order $order Order entity.
+	 * @param string       $deliverOnFormat Order entity.
 	 *
 	 * @return array
 	 */
-	public function fromOrderToArray( Entity\Order $order ): array {
+	public function fromOrderToArray( Entity\Order $order, string $deliverOnFormat ): array {
 		$createPacketData = [
 			// Required attributes.
 			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),
@@ -49,7 +50,7 @@ class CreatePacketMapper {
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
-			'deliverOn'    => $order->getDeliverOn(),
+			'deliverOn'    => $order->getDeliverOn() ? $order->getDeliverOn()->format( $deliverOnFormat ) : null,
 		];
 
 		$pickupPoint = $order->getPickupPoint();
