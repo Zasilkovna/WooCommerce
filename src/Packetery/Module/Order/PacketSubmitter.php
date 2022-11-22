@@ -210,7 +210,7 @@ class PacketSubmitter {
 	 *
 	 * @return PacketSubmissionResult
 	 */
-	public function submitPacket( WC_Order $order ): PacketSubmissionResult {
+	public function submitPacket( WC_Order $order, bool $isAutoSubmitted = false ): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
 		$commonEntity     = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
@@ -264,8 +264,12 @@ class PacketSubmitter {
 			} else {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
-				if ( $this->optionsProvider->isForceOrderStatusChangeEnabled() ) {
-					$order->update_status( $this->optionsProvider->getForcedOrderStatus() );
+
+				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled())
+					|| ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled());
+
+				if ( $shouldUpdateStatus ) {
+					$order->update_status( $this->optionsProvider->getAutoOrderStatus() );
 				}
 
 				$record          = new Log\Record();

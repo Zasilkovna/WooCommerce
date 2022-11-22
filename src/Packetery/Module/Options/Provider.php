@@ -30,7 +30,9 @@ class Provider {
 	const FORCE_PACKET_CANCEL_DEFAULT               = true;
 	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
 	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
-	const FORCE_ORDER_STATUS_CHANGE_DEFAULT         = false;
+	const ORDER_STATUS_AUTO_CHANGE_DEFAULT          = false;
+	const AUTO_ORDER_STATUS_DEFAULT                 = 'wc-processing';
+	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT = false;
 
 	/**
 	 *  Options data.
@@ -491,8 +493,8 @@ class Provider {
 	 *
 	 * @return bool
 	 */
-	public function isForceOrderStatusChangeEnabled(): bool {
-		return (bool) $this->get( 'force_order_status_change' );
+	public function isOrderStatusAutoChangeEnabled(): bool {
+		return $this->get( 'order_status_auto_change' ) ?? self::ORDER_STATUS_AUTO_CHANGE_DEFAULT;
 	}
 
 	/**
@@ -500,23 +502,16 @@ class Provider {
 	 *
 	 * @return bool
 	 */
-	public function isForceOrderStatusChangeForAutoSubmitEnabled(): bool {
-		return (bool) $this->get( 'force_order_status_change_for_auto_submit' );
+	public function isOrderStatusAutoChangeForAutoSubmitEnabled(): bool {
+		return $this->get( 'order_status_auto_change_for_auto_submit' ) ?? self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT;
 	}
 
 	/**
 	 * Forced order status.
 	 *
-	 * @param bool $removeWcPrefix Remove 'wc-' prefix.
-	 *
 	 * @return string
 	 */
-	public function getForcedOrderStatus(bool $removeWcPrefix = true): string {
-		$status = $this->get( 'forced_order_status' );
-		if ( $removeWcPrefix && strpos( $status, 'wc-' ) === 0 ) {
-			return substr($status, 3);
-		}
-
-		return $status;
+	public function getAutoOrderStatus(): string {
+		return $this->get( 'auto_order_status' ) ?? self::AUTO_ORDER_STATUS_DEFAULT;
 	}
 }

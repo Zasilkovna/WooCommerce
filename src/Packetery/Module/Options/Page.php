@@ -28,7 +28,7 @@ class Page {
 	private const FORM_FIELDS_CONTAINER                = 'packetery';
 	private const FORM_FIELD_PACKETA_LABEL_FORMAT      = 'packeta_label_format';
 	private const FORM_FIELD_CARRIER_LABEL_FORMAT      = 'carrier_label_format';
-	private const FORM_FIELD_FORCE_ORDER_STATUS_CHANGE = 'force_order_status_change';
+	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE  = 'order_status_auto_change';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -445,25 +445,25 @@ class Page {
 					->setDefaultValue( Provider::FORCE_PACKET_CANCEL_DEFAULT );
 
 		$container->addCheckbox( 'widget_auto_open', __( 'Automatically open widget when shipping was selected', 'packeta' ) )
-					->setRequired( false )
-					->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
-
-		$container->addCheckbox( self::FORM_FIELD_FORCE_ORDER_STATUS_CHANGE, __( 'Force order status change', 'packeta' ) )
 		          ->setRequired( false )
-		          ->setDefaultValue( Provider::FORCE_ORDER_STATUS_CHANGE_DEFAULT )
+		          ->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
+
+		$container->addCheckbox( self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE, __( 'Order status auto change', 'packeta' ) )
+		          ->setRequired( false )
+			->setDefaultValue( Provider::ORDER_STATUS_AUTO_CHANGE_DEFAULT )
 		          ->addCondition( Form::EQUAL, true )
-		          ->toggle( '.packetery-force-order-status-row' );
+				->toggle( '.packetery-order-status-auto-change-row' );
 
 		$container->addSelect(
-			'forced_order_status',
+			'auto_order_status',
 			__( 'New order status', 'packeta' ),
 			wc_get_order_statuses()
 		)
-		          ->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_FORCE_ORDER_STATUS_CHANGE ], Form::EQUAL, true )
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE ], Form::EQUAL, true )
 		          ->setRequired();
 
 		$container->addCheckbox(
-			'force_order_status_change_for_auto_submit',
+			'order_status_auto_change_for_auto_submit',
 			__( 'Change order status after automatic packet submit', 'packeta' )
 		);
 
