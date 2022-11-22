@@ -261,7 +261,11 @@ class WpdbAdapter {
 	 * @return bool
 	 */
 	private function isPacketeryTableQueried( string $query ): bool {
-		return false !== preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?' . preg_quote( $this->getPacketeryPrefix(), '~' ) . '~i', $query );
+		$matches = [];
+		$prefix  = $this->getPacketeryPrefix();
+		preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?(' . preg_quote( $prefix, '~' ) . ')~i', $query, $matches );
+
+		return array_pop( $matches ) === $prefix;
 	}
 
 	/**
