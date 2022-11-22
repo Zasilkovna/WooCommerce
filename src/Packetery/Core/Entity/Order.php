@@ -224,7 +224,7 @@ class Order {
 	/**
 	 * Deliver on
 	 *
-	 * @var \DateTimeImmutable
+	 * @var \DateTimeImmutable|null
 	 */
 	private $deliverOn;
 

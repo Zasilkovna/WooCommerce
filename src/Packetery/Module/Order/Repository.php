@@ -15,7 +15,6 @@ use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
-use Packetery\Module\Plugin;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
 use WP_Post;
@@ -258,8 +257,7 @@ class Repository {
 		$partialOrder->setAdultContent( $this->parseBool( $result->adult_content ) );
 		$partialOrder->setValue( $this->parseFloat( $result->value ) );
 		$partialOrder->setCod( $this->parseFloat( $result->cod ) );
-		$deliverOn = $result->deliver_on ? new \DateTimeImmutable( $result->deliver_on ) : null;
-		$partialOrder->setDeliverOn( $deliverOn );
+		$partialOrder->setDeliverOn( Helper::getDateTimeFromString( $result->deliver_on ) );
 		$partialOrder->setLastApiErrorMessage( $result->api_error_message );
 		$partialOrder->setLastApiErrorDateTime(
 			( null === $result->api_error_date )
@@ -270,7 +268,6 @@ class Repository {
 					new \DateTimeZone( 'UTC' )
 				)->setTimezone( wp_timezone() )
 		);
-		$partialOrder->setDeliverOn( $result->deliver_on );
 
 		if ( $result->delivery_address ) {
 			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );

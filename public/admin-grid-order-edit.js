@@ -16,7 +16,7 @@
 				packeteryModal.find( '[name="packetery_weight"]' ).focus().select();
 				Nette.init();
 				$(document.body).trigger( 'wc-init-datepickers' );
-				$( 'input[name="packetery_deliver_on"]' ).datepicker( 'option', 'minDate', new Date() );
+				$( 'input[name="packetery_deliver_on"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
 			}
 		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
 			var $target = $( e.target );

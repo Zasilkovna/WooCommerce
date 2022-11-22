@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
+use Packetery\Core\Helper;
 use Packetery\Core\Log;
 use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
@@ -295,7 +296,7 @@ class PacketSubmitter {
 			throw new InvalidRequestException( 'All required order attributes are not set.' );
 		}
 
-		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order, Module\Plugin::DATEPICKER_FORMAT );
+		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order, Helper::DATEPICKER_FORMAT );
 		if ( ! empty( $createPacketData['cod'] ) ) {
 			$roundingType            = Options::createByCarrierId( $order->getCarrierCode() )->getCodRoundingType();
 			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );

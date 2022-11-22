@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Api\Soap;
 
 use Packetery\Core\Entity;
+use Packetery\Core\Helper;
 
 /**
  * Class CreatePacketMapper.
@@ -50,7 +51,7 @@ class CreatePacketMapper {
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
-			'deliverOn'    => $order->getDeliverOn() ? $order->getDeliverOn()->format( $deliverOnFormat ) : null,
+			'deliverOn'    => Helper::getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
 		];
 
 		$pickupPoint = $order->getPickupPoint();

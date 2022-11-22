@@ -1,5 +1,4 @@
 {varType \Packetery\Core\Entity\Order $order}
-{var $Helper = Packetery\Core\Helper::class}
 
 {if $order->getPacketId()}
     <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
@@ -22,7 +21,7 @@
        'packetery_length' => $order->getLength(),
        'packetery_width' => $order->getWidth(),
        'packetery_height' => $order->getHeight(),
-       'packetery_deliver_on' => $order->getDeliverOn() ? $order->getDeliverOn()->format( $datePickerFormat ),
+       'packetery_deliver_on' => $helper::getStringFromDateTime( $order->getDeliverOn(), $helper::DATEPICKER_FORMAT ),
        'packeteryDeliverOnClass' => $order->isPacketaInternalPickupPoint() ? '' : 'packetery-hidden ',
        'test' => $order->isPacketaInternalPickupPoint() ? 'internal' : 'external',
        'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',

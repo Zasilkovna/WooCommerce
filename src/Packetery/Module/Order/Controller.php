@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Size;
+use Packetery\Core\Helper;
 use Packetery\Module\Order;
 use WP_Error;
 use WP_REST_Controller;
@@ -166,7 +167,7 @@ class Controller extends WP_REST_Controller {
 		);
 
 		$order->setSize( $size );
-		$order->setDeliverOn( $packeteryDeliverOn );
+		$order->setDeliverOn( Helper::getDateTimeFromString( $packeteryDeliverOn ) );
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -178,7 +179,7 @@ class Controller extends WP_REST_Controller {
 			'packetery_length'     => $order->getLength(),
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
-			'packetery_deliver_on' => $order->getDeliverOn(),
+			'packetery_deliver_on' => Helper::getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
 			'orderIsSubmittable'   => $this->orderValidator->validate( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];

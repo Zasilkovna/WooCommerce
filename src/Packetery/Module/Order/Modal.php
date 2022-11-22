@@ -110,7 +110,8 @@ class Modal {
 			->setHtmlAttribute( 'class', 'date-picker' )
 			->setHtmlAttribute( 'autocomplete', 'off' )
 			->setRequired( false )
-			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be in future', 'packeta' ), wp_date( 'Y-m-d' ) );
+			// translators: %s: Represents minimal date for delayed delivery.
+			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( 'Y-m-d' ) );
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );

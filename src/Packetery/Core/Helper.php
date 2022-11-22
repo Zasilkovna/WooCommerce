@@ -18,6 +18,7 @@ namespace Packetery\Core;
 class Helper {
 	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
 	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+	public const DATEPICKER_FORMAT     = 'Y-m-d';
 
 	/**
 	 * Simplifies weight.
@@ -64,5 +65,29 @@ class Helper {
 	 */
 	public static function now(): \DateTimeImmutable {
 		return ( new \DateTimeImmutable() )->setTimezone( new \DateTimeZone( 'UTC' ) );
+	}
+
+	/**
+	 * Creates string in given format from DateTimeImmutable object
+	 *
+	 * @param \DateTimeImmutable|null $date   Datetime.
+	 * @param string                  $format Datetime format.
+	 *
+	 * @return string|null
+	 */
+	public static function getStringFromDateTime( ?\DateTimeImmutable $date, string $format ): ?string {
+		return $date ? $date->format( $format ) : null;
+	}
+
+	/**
+	 * Creates DateTimeImmutable object from string
+	 *
+	 * @param string $date Date.
+	 *
+	 * @return \DateTimeImmutable
+	 * @throws \Exception From DateTimeImmutable.
+	 */
+	public static function getDateTimeFromString( ?string $date ): ?\DateTimeImmutable {
+		return $date ? new \DateTimeImmutable( $date ) : null;
 	}
 }

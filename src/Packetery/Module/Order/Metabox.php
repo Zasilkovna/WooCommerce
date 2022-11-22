@@ -202,7 +202,8 @@ class Metabox {
 		$this->order_form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
 							->setHtmlAttribute( 'autocomplete', 'off' )
 							->setRequired( false )
-							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be in future', 'packeta' ), wp_date( 'Y-m-d' ) );
+							// translators: %s: Represents minimal date for delayed delivery.
+							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( 'Y-m-d' ) );
 
 		foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 			$this->order_form->addHidden( $pickupPointAttr['name'] );
@@ -277,7 +278,7 @@ class Metabox {
 				self::FIELD_ADULT_CONTENT       => $order->containsAdultContent(),
 				self::FIELD_COD                 => $order->getCod(),
 				self::FIELD_VALUE               => $order->getValue(),
-				self::FIELD_DELIVER_ON          => $order->getDeliverOn() ? $order->getDeliverOn()->format( Plugin::DATEPICKER_FORMAT ) : null,
+				self::FIELD_DELIVER_ON          => Helper::getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
 			]
 		);
 
@@ -429,9 +430,7 @@ class Metabox {
 		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
 		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
 		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
-		$packeteryDeliverOnDateTime = $values[ self::FIELD_DELIVER_ON ] ? new \DateTimeImmutable( $values[ self::FIELD_DELIVER_ON ] ) : null;
-		$packeteryDeliverOnDateTime = $packeteryDeliverOnDateTime ? $packeteryDeliverOnDateTime->setTimezone( wp_timezone() ) : null;
-		$order->setDeliverOn( $packeteryDeliverOnDateTime );
+		$order->setDeliverOn( Helper::getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
 		$order->setSize( $orderSize );
 		Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
 		$this->orderRepository->save( $order );
