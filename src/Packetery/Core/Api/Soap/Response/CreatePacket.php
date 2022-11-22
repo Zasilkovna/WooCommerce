@@ -83,15 +83,6 @@ class CreatePacket extends BaseResponse {
 	}
 
 	/**
-	 * Gets errors.
-	 *
-	 * @return array|null
-	 */
-	public function getValidationErrors(): ?array {
-		return $this->validationErrors;
-	}
-
-	/**
 	 * Gets all errors as string.
 	 *
 	 * @param bool $prependFaultString Prepend fault string.
@@ -106,19 +97,4 @@ class CreatePacket extends BaseResponse {
 
 		return implode( ', ', $allErrors );
 	}
-
-	/**
-	 * Returns error message, which is made of validation errors or fault string, otherwise null
-	 *
-	 * @return string|null
-	 */
-	public function getErrorMessage(): ?string {
-		if ( ! $this->hasFault() ) {
-			return null;
-		}
-		$prependFaultString = ! $this->validationErrors;
-
-		return $this->getErrorsAsString( $prependFaultString );
-	}
-
 }

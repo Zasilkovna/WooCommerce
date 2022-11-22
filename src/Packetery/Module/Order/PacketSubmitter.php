@@ -247,6 +247,7 @@ class PacketSubmitter {
 					'request'      => $createPacketData,
 					'errorMessage' => $response->getErrorsAsString(),
 				];
+				$errorMessage   = $response->getErrorsAsString( false );
 
 				$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
 
@@ -263,11 +264,13 @@ class PacketSubmitter {
 					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
 				];
+				$errorMessage   = null;
 
 				$submissionResult->increaseSuccessCount();
 			}
 			$submissionResult->increaseLogsCount();
-			$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
+			$this->logger->add( $record );
+			$commonEntity->updateApiErrorMessage( $errorMessage );
 			$this->orderRepository->save( $commonEntity );
 		} else {
 			$submissionResult->increaseIgnoredCount();

@@ -917,11 +917,7 @@ class Order {
 	 */
 	public function updateApiErrorMessage( ?string $errorMessage ): void {
 		$this->setLastApiErrorMessage( $errorMessage );
-		if ( null === $errorMessage ) {
-			$this->setLastApiErrorDateTime( null );
-		} else {
-			$this->setLastApiErrorDateTime( Helper::now() );
-		}
+		$this->setLastApiErrorDateTime( $errorMessage ? Helper::now() : null );
 	}
 
 }
