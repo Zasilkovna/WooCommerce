@@ -235,18 +235,18 @@ class PacketSubmitter {
 				return $submissionResult;
 			}
 
-			$response = $this->soapApiClient->createPacket( $createPacketData );
+			$response        = $this->soapApiClient->createPacket( $createPacketData );
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_SENDING;
+			$record->orderId = $commonEntity->getNumber();
+
 			if ( $response->hasFault() ) {
-				$record          = new Log\Record();
-				$record->action  = Log\Record::ACTION_PACKET_SENDING;
-				$record->status  = Log\Record::STATUS_ERROR;
-				$record->title   = __( 'Packet could not be created.', 'packeta' );
-				$record->params  = [
+				$record->status = Log\Record::STATUS_ERROR;
+				$record->title  = __( 'Packet could not be created.', 'packeta' );
+				$record->params = [
 					'request'      => $createPacketData,
 					'errorMessage' => $response->getErrorsAsString(),
 				];
-				$record->orderId = $commonEntity->getNumber();
-				$this->logger->add( $record );
 
 				$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
 
@@ -254,7 +254,6 @@ class PacketSubmitter {
 			} else {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
-				$commonEntity->updateApiErrorMessage( null );
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -264,12 +263,11 @@ class PacketSubmitter {
 					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
 				];
-				$record->orderId = $commonEntity->getNumber();
-				$this->logger->add( $record );
 
 				$submissionResult->increaseSuccessCount();
 			}
 			$submissionResult->increaseLogsCount();
+			$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
 			$this->orderRepository->save( $commonEntity );
 		} else {
 			$submissionResult->increaseIgnoredCount();

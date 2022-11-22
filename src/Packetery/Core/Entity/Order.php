@@ -911,17 +911,16 @@ class Order {
 	/**
 	 * Updates API error message and sets error message date accordingly.
 	 *
-	 * @param string|null             $errorMessage Error message.
-	 * @param \DateTimeImmutable|null $errorMessageDateTime Error message date.
+	 * @param string|null $errorMessage Error message.
 	 *
 	 * @return void
 	 */
-	public function updateApiErrorMessage( ?string $errorMessage, ?\DateTimeImmutable $errorMessageDateTime = null ): void {
+	public function updateApiErrorMessage( ?string $errorMessage ): void {
 		$this->setLastApiErrorMessage( $errorMessage );
 		if ( null === $errorMessage ) {
 			$this->setLastApiErrorDateTime( null );
 		} else {
-			$this->setLastApiErrorDateTime( $errorMessageDateTime ?? Helper::now() );
+			$this->setLastApiErrorDateTime( Helper::now() );
 		}
 	}
 
