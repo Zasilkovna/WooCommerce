@@ -261,7 +261,7 @@ class Wpdb {
 	 * @return bool
 	 */
 	private function isPacketeryTableQueried( string $query ): bool {
-		return false !== preg_match( '~(\s*)(FROM|JOIN|INSERT INTO|REPLACE INTO|UPDATE|ALTER TABLE|CREATE TABLE|DROP TABLE|TRUNCATE TABLE)(\s|`)+(' . preg_quote( $this->getPacketeryPrefix(), '~' ) . ')~i', $query );
+		return false !== preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?' . preg_quote( $this->getPacketeryPrefix(), '~' ) . '~i', $query );
 	}
 
 	/**
