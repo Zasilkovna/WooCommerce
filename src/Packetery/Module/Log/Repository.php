@@ -22,19 +22,19 @@ use Packetery\Module\WpdbAdapter;
 class Repository {
 
 	/**
-	 * WPDB.
+	 * WpdbAdapter.
 	 *
 	 * @var WpdbAdapter
 	 */
-	private $wpdb;
+	private $wpdbAdapter;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param WpdbAdapter $wpdb WPDB.
+	 * @param WpdbAdapter $wpdbAdapter WpdbAdapter.
 	 */
-	public function __construct( WpdbAdapter $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( WpdbAdapter $wpdbAdapter ) {
+		$this->wpdbAdapter = $wpdbAdapter;
 	}
 
 	/**
@@ -45,9 +45,9 @@ class Repository {
 	 * @return int
 	 */
 	public function countByOrderId( int $orderId ): int {
-		$wpdb = $this->wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
-		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . $wpdb->packetery_log . '` WHERE `order_id` = %d', $orderId ) );
+		return (int) $wpdbAdapter->get_var( $wpdbAdapter->prepare( 'SELECT COUNT(*) FROM `' . $wpdbAdapter->packetery_log . '` WHERE `order_id` = %d', $orderId ) );
 	}
 
 	/**
@@ -56,9 +56,9 @@ class Repository {
 	 * @return int
 	 */
 	public function countAll(): int {
-		$wpdb = $this->wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
-		return (int) $wpdb->get_var( 'SELECT COUNT(*) FROM `' . $wpdb->packetery_log . '`' );
+		return (int) $wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $wpdbAdapter->packetery_log . '`' );
 	}
 
 	/**
@@ -70,11 +70,11 @@ class Repository {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function find( array $arguments ): iterable {
-		$wpdb      = $this->wpdb;
-		$orderId   = $arguments['order_id'] ?? null;
-		$orderBy   = $arguments['orderby'] ?? [];
-		$limit     = $arguments['limit'] ?? null;
-		$dateQuery = $arguments['date_query'] ?? [];
+		$wpdbAdapter = $this->wpdbAdapter;
+		$orderId     = $arguments['order_id'] ?? null;
+		$orderBy     = $arguments['orderby'] ?? [];
+		$limit       = $arguments['limit'] ?? null;
+		$dateQuery   = $arguments['date_query'] ?? [];
 
 		$orderByTransformed = [];
 		foreach ( $orderBy as $orderByKey => $orderByValue ) {
@@ -98,12 +98,12 @@ class Repository {
 		$where = [];
 		foreach ( $dateQuery as $dateQueryItem ) {
 			if ( isset( $dateQueryItem['after'] ) ) {
-				$where[] = $wpdb->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
+				$where[] = $wpdbAdapter->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
 			}
 		}
 
 		if ( is_numeric( $orderId ) ) {
-			$where[] = $wpdb->prepare( '`order_id` = %d', $orderId );
+			$where[] = $wpdbAdapter->prepare( '`order_id` = %d', $orderId );
 		}
 
 		$whereClause = '';
@@ -112,7 +112,7 @@ class Repository {
 		}
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$result = $wpdb->get_results( 'SELECT * FROM ' . $wpdb->packetery_log . $whereClause . $orderByClause . $limitClause );
+		$result = $wpdbAdapter->get_results( 'SELECT * FROM ' . $wpdbAdapter->packetery_log . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
 			return $this->remapToRecord( $result );
 		}
@@ -128,10 +128,10 @@ class Repository {
 	 * @return void
 	 */
 	public function deleteOld( string $before ): void {
-		$wpdb            = $this->wpdb;
+		$wpdbAdapter     = $this->wpdbAdapter;
 		$dateToFormatted = Helper::now()->modify( $before )->format( Helper::MYSQL_DATETIME_FORMAT );
 
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $wpdb->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
+		$wpdbAdapter->query( $wpdbAdapter->prepare( 'DELETE FROM `' . $wpdbAdapter->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
 	}
 
 	/**
@@ -189,10 +189,10 @@ class Repository {
 	 * @return void
 	 */
 	public function createTable(): void {
-		$wpdb = $this->wpdb;
-		$wpdb->query(
+		$wpdbAdapter = $this->wpdbAdapter;
+		$wpdbAdapter->query(
 			'
-			CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_log . "` (
+			CREATE TABLE IF NOT EXISTS `' . $wpdbAdapter->packetery_log . "` (
 				`id` INT(11) NOT NULL AUTO_INCREMENT,
 				`order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 				`title` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
@@ -214,8 +214,8 @@ class Repository {
 	 * @return void
 	 */
 	public function addOrderIdColumn(): void {
-		$wpdb = $this->wpdb;
-		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_log . '` ADD COLUMN `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `id`' );
+		$wpdbAdapter = $this->wpdbAdapter;
+		$wpdbAdapter->query( 'ALTER TABLE `' . $wpdbAdapter->packetery_log . '` ADD COLUMN `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `id`' );
 	}
 
 	/**
@@ -224,8 +224,8 @@ class Repository {
 	 * @return void
 	 */
 	public function drop(): void {
-		$wpdb = $this->wpdb;
-		$wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->packetery_log . '`' );
+		$wpdbAdapter = $this->wpdbAdapter;
+		$wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $wpdbAdapter->packetery_log . '`' );
 	}
 
 	/**
@@ -264,6 +264,6 @@ class Repository {
 			'date'     => $dateString,
 		];
 
-		$this->wpdb->insertReplaceHelper( $this->wpdb->packetery_log, $data, null, 'REPLACE' );
+		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
 	}
 }

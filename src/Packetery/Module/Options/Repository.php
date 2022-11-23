@@ -19,19 +19,19 @@ use Packetery\Module\WpdbAdapter;
 class Repository {
 
 	/**
-	 * Wpdb.
+	 * WpdbAdapter.
 	 *
 	 * @var WpdbAdapter
 	 */
-	private $wpdb;
+	private $wpdbAdapter;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param WpdbAdapter $wpdb Wpdb.
+	 * @param WpdbAdapter $wpdbAdapter WpdbAdapter.
 	 */
-	public function __construct( WpdbAdapter $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( WpdbAdapter $wpdbAdapter ) {
+		$this->wpdbAdapter = $wpdbAdapter;
 	}
 
 	/**
@@ -40,9 +40,9 @@ class Repository {
 	 * @return array|object|null
 	 */
 	public function getPluginOptions() {
-		$wpdb = $this->wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
-		return $wpdb->get_results( "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE 'packetery%'" );
+		return $wpdbAdapter->get_results( "SELECT `option_name` FROM $wpdbAdapter->options WHERE `option_name` LIKE 'packetery%'" );
 	}
 
 }

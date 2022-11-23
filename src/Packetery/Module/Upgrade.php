@@ -73,11 +73,11 @@ class Upgrade {
 	private $carrierRepository;
 
 	/**
-	 * WPDB.
+	 * WpdbAdapter.
 	 *
 	 * @var WpdbAdapter
 	 */
-	private $wpdb;
+	private $wpdbAdapter;
 
 	/**
 	 * Constructor.
@@ -86,7 +86,7 @@ class Upgrade {
 	 * @param MessageManager     $messageManager    Message manager.
 	 * @param ILogger            $logger            Logger.
 	 * @param Log\Repository     $logRepository     Log repository.
-	 * @param WpdbAdapter        $wpdb              WPDB.
+	 * @param WpdbAdapter        $wpdbAdapter       WpdbAdapter.
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 */
 	public function __construct(
@@ -94,14 +94,14 @@ class Upgrade {
 		MessageManager $messageManager,
 		ILogger $logger,
 		Log\Repository $logRepository,
-		WpdbAdapter $wpdb,
+		WpdbAdapter $wpdbAdapter,
 		Carrier\Repository $carrierRepository
 	) {
 		$this->orderRepository   = $orderRepository;
 		$this->messageManager    = $messageManager;
 		$this->logger            = $logger;
 		$this->logRepository     = $logRepository;
-		$this->wpdb              = $wpdb;
+		$this->wpdbAdapter       = $wpdbAdapter;
 		$this->carrierRepository = $carrierRepository;
 	}
 
@@ -120,7 +120,7 @@ class Upgrade {
 		$this->logRepository->createTable();
 		$createResult = $this->carrierRepository->createTable();
 		if ( false === $createResult ) {
-			$lastError = $this->wpdb->getLastWpdbError();
+			$lastError = $this->wpdbAdapter->getLastWpdbError();
 			$this->messageManager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
@@ -135,7 +135,7 @@ class Upgrade {
 
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
-			$lastError = $this->wpdb->getLastWpdbError();
+			$lastError = $this->wpdbAdapter->getLastWpdbError();
 			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
@@ -202,7 +202,7 @@ class Upgrade {
 	private function migrateWpOrderMetadata(): void {
 		$createResult = $this->orderRepository->createTable();
 		if ( false === $createResult ) {
-			$lastError = $this->wpdb->getLastWpdbError();
+			$lastError = $this->wpdbAdapter->getLastWpdbError();
 			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			$record         = new Record();
