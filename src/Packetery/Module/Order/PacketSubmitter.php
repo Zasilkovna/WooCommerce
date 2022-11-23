@@ -235,18 +235,18 @@ class PacketSubmitter {
 				return $submissionResult;
 			}
 
-			$response        = $this->soapApiClient->createPacket( $createPacketData );
-			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_PACKET_SENDING;
-			$record->orderId = $commonEntity->getNumber();
-
+			$response = $this->soapApiClient->createPacket( $createPacketData );
 			if ( $response->hasFault() ) {
+				$record         = new Log\Record();
+				$record->action = Log\Record::ACTION_PACKET_SENDING;
 				$record->status = Log\Record::STATUS_ERROR;
 				$record->title  = __( 'Packet could not be created.', 'packeta' );
 				$record->params = [
 					'request'      => $createPacketData,
 					'errorMessage' => $response->getErrorsAsString(),
 				];
+				$record->orderId = $commonEntity->getNumber();
+				$this->logger->add( $record );
 				$errorMessage   = $response->getErrorsAsString( false );
 
 				$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
@@ -264,10 +264,13 @@ class PacketSubmitter {
 					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
 				];
+				$record->orderId = $commonEntity->getNumber();
+				$this->logger->add( $record );
 				$errorMessage   = null;
 
 				$submissionResult->increaseSuccessCount();
 			}
+
 			$submissionResult->increaseLogsCount();
 			$this->logger->add( $record );
 			$commonEntity->updateApiErrorMessage( $errorMessage );
