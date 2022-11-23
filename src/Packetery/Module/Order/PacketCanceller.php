@@ -164,9 +164,9 @@ class PacketCanceller {
 		$request = new Soap\Request\CancelPacket( (int) $order->getPacketId() );
 		$result  = $this->soapApiClient->cancelPacket( $request );
 
-		$record         = new Log\Record();
-		$record->action = Log\Record::ACTION_PACKET_CANCEL;
 		if ( ! $result->hasFault() ) {
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status  = Log\Record::STATUS_SUCCESS;
 			$record->orderId = $order->getNumber();
 			$record->title   = __( 'Packet cancel success', 'packeta' );
@@ -174,7 +174,13 @@ class PacketCanceller {
 				'orderId'  => $order->getNumber(),
 				'packetId' => $order->getPacketId(),
 			];
-		} else {
+			$this->logger->add( $record );
+			$errorMessage = null;
+		}
+
+		if ( $result->hasFault() ) {
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status  = Log\Record::STATUS_ERROR;
 			$record->orderId = $order->getNumber();
 			$record->title   = __( 'Packet cancel error', 'packeta' );
@@ -183,9 +189,12 @@ class PacketCanceller {
 				'packetId'     => $order->getPacketId(),
 				'errorMessage' => $result->getFaultString(),
 			];
+
+			$this->logger->add( $record );
+			$errorMessage = $result->getFaultString();
 		}
-		$this->logger->add( $record );
-		$order->updateApiErrorMessage( $result->getFaultString() );
+
+		$order->updateApiErrorMessage( $errorMessage );
 
 		if ( $this->shouldRevertSubmission( $result ) ) {
 			$order->setIsExported( false );
