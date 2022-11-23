@@ -247,7 +247,7 @@ class PacketSubmitter {
 				];
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
-				$errorMessage   = $response->getErrorsAsString( false );
+				$errorMessage = $response->getErrorsAsString( false );
 
 				$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
 
@@ -266,7 +266,7 @@ class PacketSubmitter {
 				];
 				$record->orderId = $commonEntity->getNumber();
 				$this->logger->add( $record );
-				$errorMessage   = null;
+				$errorMessage = null;
 
 				$submissionResult->increaseSuccessCount();
 			}
