@@ -174,6 +174,7 @@ class PacketCanceller {
 				'orderId'  => $order->getNumber(),
 				'packetId' => $order->getPacketId(),
 			];
+
 			$this->logger->add( $record );
 			$errorMessage = null;
 		}
