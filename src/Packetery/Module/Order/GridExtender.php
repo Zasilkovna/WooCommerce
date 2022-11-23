@@ -294,19 +294,17 @@ class GridExtender {
 					],
 					admin_url( 'admin.php' )
 				);
-				$showLogWarning   = ( null !== $order->getLastApiErrorMessage() ) && $this->isErrorMessageDateRecent( $order->getLastApiErrorDateTime() );
 
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'              => $order,
-						'orderIsSubmittable' => $this->orderValidator->validate( $order ),
-						'packetSubmitUrl'    => $packetSubmitUrl,
-						'packetCancelLink'   => $packetCancelLink,
-						'printLink'          => $printLink,
-						'showLogWarning'     => $showLogWarning,
-						'logErrorMessage'    => $order->getLastApiErrorMessage(),
-						'translations'       => [
+						'order'                     => $order,
+						'orderIsSubmittable'        => $this->orderValidator->validate( $order ),
+						'packetSubmitUrl'           => $packetSubmitUrl,
+						'packetCancelLink'          => $packetCancelLink,
+						'printLink'                 => $printLink,
+						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
+						'translations'              => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
@@ -361,18 +359,5 @@ class GridExtender {
 		global $pagenow, $typenow;
 
 		return ( 'edit.php' === $pagenow && 'shop_order' === $typenow );
-	}
-
-	/**
-	 * Checks if errorMessageDate is new enough.
-	 *
-	 * @param \DateTimeImmutable $errorMessageDate Error message date.
-	 *
-	 * @return bool
-	 */
-	public function isErrorMessageDateRecent( \DateTimeImmutable $errorMessageDate ): bool {
-		$logPurgerDatetimeModifierOption = get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT );
-
-		return Helper::now()->modify( $logPurgerDatetimeModifierOption ) < $errorMessageDate;
 	}
 }
