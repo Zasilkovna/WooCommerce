@@ -353,6 +353,7 @@ class Checkout {
 			'homeDeliveryAttrs'         => self::$homeDeliveryAttrs,
 			'appIdentity'               => Plugin::getAppIdentity(),
 			'packeteryApiKey'           => $this->options_provider->get_api_key(),
+			'widgetAutoOpen'            => $this->options_provider->shouldWidgetOpenAutomatically(),
 			'translations'              => [
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
 				'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),

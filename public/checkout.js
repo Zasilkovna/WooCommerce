@@ -171,6 +171,10 @@ var packeteryLoadCheckout = function( $, settings ) {
 			var _hasPickupPoints = hasPickupPoints( carrierRateId ),
 				_hasHomeDelivery = !_hasPickupPoints;
 
+			if (_hasPickupPoints && settings.widgetAutoOpen && $('iframe#packeta-widget').length === 0) {
+				$('.packeta-widget-button').click();
+			}
+
 			if ( _hasPickupPoints ) {
 				loadInfoForCarrierRate( carrierRateId, settings.pickupPointAttrs );
 				$widgetDiv.find( '.packeta-widget-info' ).html( getRateAttrValue( carrierRateId, 'packetery_point_name', '' ) );
