@@ -468,12 +468,7 @@ class Page {
 			}
 		}
 
-		/**
-		 * Applies woocommerce_available_payment_gateways filters.
-		 *
-		 * @since 1.0.5
-		 */
-		return array_filter( (array) apply_filters( 'woocommerce_available_payment_gateways', $availableGateways ), [ $this, 'filterValidGatewayClass' ] );
+		return array_filter( $availableGateways, [ $this, 'filterValidGatewayClass' ] );
 	}
 
 	/**
