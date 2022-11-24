@@ -145,7 +145,6 @@ class Repository {
 		foreach ( $logs as $log ) {
 			$record          = new Record();
 			$record->id      = $log->id;
-			$record->orderId = $log->order_id;
 			$record->status  = $log->status;
 			$record->date    = \DateTimeImmutable::createFromFormat( Helper::MYSQL_DATETIME_FORMAT, $log->date, new \DateTimeZone( 'UTC' ) )
 												->setTimezone( wp_timezone() );
@@ -267,5 +266,4 @@ class Repository {
 
 		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
 	}
-
 }
