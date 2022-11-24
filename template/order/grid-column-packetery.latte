@@ -21,9 +21,8 @@
        'packetery_length' => $order->getLength(),
        'packetery_width' => $order->getWidth(),
        'packetery_height' => $order->getHeight(),
-       'packetery_deliver_on' => $helper::getStringFromDateTime( $order->getDeliverOn(), $helper::DATEPICKER_FORMAT ),
+       'packetery_deliver_on' => $packetDeliverOn,
        'packeteryDeliverOnClass' => $order->isPacketaInternalPickupPoint() ? '' : 'packetery-hidden ',
-       'test' => $order->isPacketaInternalPickupPoint() ? 'internal' : 'external',
        'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',
        ]
        )}"

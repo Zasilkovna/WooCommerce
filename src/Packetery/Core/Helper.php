@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core;
 
+use DateTimeImmutable;
+
 /**
  * Class Helper
  *
@@ -61,21 +63,22 @@ class Helper {
 	/**
 	 * Creates UTC DateTime.
 	 *
-	 * @return \DateTimeImmutable
+	 * @return DateTimeImmutable
+	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public static function now(): \DateTimeImmutable {
-		return ( new \DateTimeImmutable() )->setTimezone( new \DateTimeZone( 'UTC' ) );
+	public static function now(): DateTimeImmutable {
+		return new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 	}
 
 	/**
 	 * Creates string in given format from DateTimeImmutable object
 	 *
-	 * @param \DateTimeImmutable|null $date   Datetime.
-	 * @param string                  $format Datetime format.
+	 * @param DateTimeImmutable|null $date   Datetime.
+	 * @param string                 $format Datetime format.
 	 *
 	 * @return string|null
 	 */
-	public static function getStringFromDateTime( ?\DateTimeImmutable $date, string $format ): ?string {
+	public static function getStringFromDateTime( ?DateTimeImmutable $date, string $format ): ?string {
 		return $date ? $date->format( $format ) : null;
 	}
 
@@ -87,7 +90,7 @@ class Helper {
 	 * @return \DateTimeImmutable
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public static function getDateTimeFromString( ?string $date ): ?\DateTimeImmutable {
-		return $date ? new \DateTimeImmutable( $date ) : null;
+	public static function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
+		return $date ? new DateTimeImmutable( $date ) : null;
 	}
 }

@@ -21,8 +21,8 @@ class FormValidators {
 	/**
 	 * Tests if input value is greater than argument.
 	 *
-	 * @param \PacketeryNette\Forms\Controls\BaseControl $input Form input.
-	 * @param float                                      $arg Validation argument.
+	 * @param BaseControl $input Form input.
+	 * @param float       $arg Validation argument.
 	 *
 	 * @return bool
 	 */
@@ -33,8 +33,8 @@ class FormValidators {
 	/**
 	 * Tests if input date is later than argument date
 	 *
-	 * @param \PacketeryNette\Forms\Controls\BaseControl $input Form input.
-	 * @param string                                     $date Validation argument.
+	 * @param BaseControl $input Form input.
+	 * @param string      $date Validation argument.
 	 *
 	 * @return bool
 	 */

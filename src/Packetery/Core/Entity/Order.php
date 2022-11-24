@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Entity;
 
 use Packetery\Core\Helper;
+use DateTimeImmutable;
 
 /**
  * Class Order
@@ -224,7 +225,7 @@ class Order {
 	/**
 	 * Deliver on
 	 *
-	 * @var \DateTimeImmutable|null
+	 * @var DateTimeImmutable|null
 	 */
 	private $deliverOn;
 
@@ -910,20 +911,20 @@ class Order {
 	/**
 	 * Returns deliver on date
 	 *
-	 * @return \DateTimeImmutable|null
+	 * @return DateTimeImmutable|null
 	 */
-	public function getDeliverOn(): ?\DateTimeImmutable {
+	public function getDeliverOn(): ?DateTimeImmutable {
 		return $this->deliverOn;
 	}
 
 	/**
 	 * Sets deliver on date
 	 *
-	 * @param \DateTimeImmutable|null $deliverOn Deliver on.
+	 * @param DateTimeImmutable|null $deliverOn Deliver on.
 	 *
 	 * @return void
 	 */
-	public function setDeliverOn( ?\DateTimeImmutable $deliverOn ): void {
+	public function setDeliverOn( ?DateTimeImmutable $deliverOn ): void {
 		$this->deliverOn = $deliverOn;
 	}
 

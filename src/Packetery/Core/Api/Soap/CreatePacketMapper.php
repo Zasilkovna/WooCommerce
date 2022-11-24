@@ -30,11 +30,10 @@ class CreatePacketMapper {
 	 * Maps order data to CreatePacket structure.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 * @param string       $deliverOnFormat Order entity.
 	 *
 	 * @return array
 	 */
-	public function fromOrderToArray( Entity\Order $order, string $deliverOnFormat ): array {
+	public function fromOrderToArray( Entity\Order $order ): array {
 		$createPacketData = [
 			// Required attributes.
 			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),
