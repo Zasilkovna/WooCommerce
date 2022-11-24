@@ -11,6 +11,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\WpdbAdapter;
 
 /**
  * Class CarrierRepository
@@ -23,11 +24,11 @@ class Repository {
 	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
 
 	/**
-	 * WordPress wpdb object from global
+	 * WpdbAdapter object from global
 	 *
-	 * @var \wpdb
+	 * @var WpdbAdapter
 	 */
-	private $wpdb;
+	private $wpdbAdapter;
 
 	/**
 	 * Carrier Entity Factory.
@@ -39,21 +40,21 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb                 $wpdb wpdb.
+	 * @param WpdbAdapter           $wpdbAdapter          WpdbAdapter.
 	 * @param EntityFactory\Carrier $carrierEntityFactory Carrier Entity Factory.
 	 */
-	public function __construct( \wpdb $wpdb, EntityFactory\Carrier $carrierEntityFactory ) {
-		$this->wpdb                 = $wpdb;
+	public function __construct( WpdbAdapter $wpdbAdapter, EntityFactory\Carrier $carrierEntityFactory ) {
+		$this->wpdbAdapter          = $wpdbAdapter;
 		$this->carrierEntityFactory = $carrierEntityFactory;
 	}
 
 	/**
-	 * Gets wpdb object from global variable with custom tables names set.
+	 * Gets WpdbAdapter object from global variable with custom tables names set.
 	 *
-	 * @return \wpdb
+	 * @return WpdbAdapter
 	 */
-	private function get_wpdb(): \wpdb {
-		return $this->wpdb;
+	private function getWpdbAdapter(): WpdbAdapter {
+		return $this->wpdbAdapter;
 	}
 
 	/**
@@ -62,9 +63,9 @@ class Repository {
 	 * @return bool
 	 */
 	public function createTable(): bool {
-		$wpdb = $this->get_wpdb();
-		return $wpdb->query(
-			'CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_carrier . '` (
+		$wpdbAdapter = $this->getWpdbAdapter();
+		return $wpdbAdapter->query(
+			'CREATE TABLE IF NOT EXISTS `' . $wpdbAdapter->packetery_carrier . '` (
 				`id` int NOT NULL,
 				`name` varchar(255) NOT NULL,
 				`is_pickup_points` boolean NOT NULL,
@@ -80,7 +81,7 @@ class Repository {
 				`max_weight` float NOT NULL,
 				`deleted` boolean NOT NULL,
 				PRIMARY KEY (`id`)
-			) ' . $wpdb->get_charset_collate()
+			) ' . $wpdbAdapter->get_charset_collate()
 		);
 	}
 
@@ -88,8 +89,8 @@ class Repository {
 	 * Drop table used to store carriers.
 	 */
 	public function drop(): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->packetery_carrier . '`' );
+		$wpdbAdapter = $this->getWpdbAdapter();
+		$wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $wpdbAdapter->packetery_carrier . '`' );
 	}
 
 	/**
@@ -98,9 +99,9 @@ class Repository {
 	 * @return array|null
 	 */
 	public function get_carrier_ids(): ?array {
-		$wpdb = $this->get_wpdb();
+		$wpdbAdapter = $this->getWpdbAdapter();
 
-		return $wpdb->get_results( 'SELECT `id` FROM `' . $wpdb->packetery_carrier . '`', ARRAY_A );
+		return $wpdbAdapter->get_results( 'SELECT `id` FROM `' . $wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 	}
 
 	/**
@@ -109,9 +110,9 @@ class Repository {
 	 * @return array|null
 	 */
 	public function getAllIncludingZpoints(): ?array {
-		$wpdb = $this->get_wpdb();
+		$wpdbAdapter = $this->getWpdbAdapter();
 
-		$carriers       = $wpdb->get_results( 'SELECT `id`, `name`, `is_pickup_points`  FROM `' . $wpdb->packetery_carrier . '`', ARRAY_A );
+		$carriers       = $wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`  FROM `' . $wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 		$zpointCarriers = $this->getZpointCarriers();
 		foreach ( $zpointCarriers as $zpointCarrier ) {
 			array_unshift( $carriers, $zpointCarrier );
@@ -128,9 +129,9 @@ class Repository {
 	 * @return bool
 	 */
 	public function hasPickupPoints( int $carrierId ): bool {
-		$wpdb = $this->get_wpdb();
+		$wpdbAdapter = $this->getWpdbAdapter();
 
-		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %d', $carrierId ) );
+		return (bool) $wpdbAdapter->get_var( $wpdbAdapter->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdbAdapter->packetery_carrier . '` WHERE `id` = %d', $carrierId ) );
 	}
 
 	/**
@@ -141,9 +142,9 @@ class Repository {
 	 * @return Entity\Carrier|null
 	 */
 	public function getById( int $carrierId ): ?Entity\Carrier {
-		$wpdb   = $this->get_wpdb();
-		$result = $wpdb->get_row(
-			$wpdb->prepare(
+		$wpdbAdapter = $this->getWpdbAdapter();
+		$result      = $wpdbAdapter->get_row(
+			$wpdbAdapter->prepare(
 				'SELECT
 					`id`,
 					`name`,
@@ -159,7 +160,7 @@ class Repository {
 					`currency`,
 					`max_weight`,
 					`deleted`
-				FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s',
+				FROM `' . $wpdbAdapter->packetery_carrier . '` WHERE `id` = %s',
 				$carrierId
 			),
 			ARRAY_A
@@ -202,11 +203,11 @@ class Repository {
 	 * @return Entity\Carrier[]
 	 */
 	public function getByCountry( string $country ): array {
-		$wpdb = $this->get_wpdb();
+		$wpdbAdapter = $this->getWpdbAdapter();
 
 		$entities        = [];
-		$countryCarriers = $wpdb->get_results(
-			$wpdb->prepare(
+		$countryCarriers = $wpdbAdapter->get_results(
+			$wpdbAdapter->prepare(
 				'SELECT
 					`id`,
 					`name`,
@@ -222,7 +223,7 @@ class Repository {
 					`currency`,
 					`max_weight`,
 					`deleted`
-				FROM `' . $wpdb->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false',
+				FROM `' . $wpdbAdapter->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false',
 				$country
 			),
 			ARRAY_A
@@ -241,10 +242,10 @@ class Repository {
 	 * @return Entity\Carrier[]
 	 */
 	public function getActiveCarriers(): array {
-		$wpdb = $this->wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
 		$entities        = [];
-		$countryCarriers = $wpdb->get_results(
+		$countryCarriers = $wpdbAdapter->get_results(
 			'SELECT
 				`id`,
 				`name`,
@@ -260,7 +261,7 @@ class Repository {
 				`currency`,
 				`max_weight`,
 				`deleted`
-			FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false',
+			FROM `' . $wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false',
 			ARRAY_A
 		);
 
@@ -309,9 +310,9 @@ class Repository {
 	 * @return bool
 	 */
 	public function hasAnyActiveFeedCarrier(): bool {
-		$wpdb = $this->wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
-		return (bool) $wpdb->get_var( 'SELECT 1 FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false LIMIT 1' );
+		return (bool) $wpdbAdapter->get_var( 'SELECT 1 FROM `' . $wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false LIMIT 1' );
 	}
 
 	/**
@@ -320,8 +321,8 @@ class Repository {
 	 * @return array
 	 */
 	public function getCountries(): array {
-		$wpdb      = $this->get_wpdb();
-		$countries = $wpdb->get_results( 'SELECT `country` FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
+		$wpdbAdapter = $this->getWpdbAdapter();
+		$countries   = $wpdbAdapter->get_results( 'SELECT `country` FROM `' . $wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
 
 		return array_column( ( $countries ? $countries : [] ), 'country' );
 	}
@@ -332,10 +333,10 @@ class Repository {
 	 * @param array $carriers_in_feed Carriers in feed.
 	 */
 	public function set_others_as_deleted( array $carriers_in_feed ): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->query(
+		$wpdbAdapter = $this->getWpdbAdapter();
+		$wpdbAdapter->query(
 			'UPDATE `' .
-			$wpdb->packetery_carrier .
+			$wpdbAdapter->packetery_carrier .
 			'` SET `deleted` = 1 WHERE `id` NOT IN (' .
 	            // @codingStandardsIgnoreStart
 				implode( ',', $carriers_in_feed )
@@ -350,8 +351,8 @@ class Repository {
 	 * @param array $data Carrier data.
 	 */
 	public function insert( array $data ): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->insert( $wpdb->packetery_carrier, $data );
+		$wpdbAdapter = $this->getWpdbAdapter();
+		$wpdbAdapter->insert( $wpdbAdapter->packetery_carrier, $data );
 	}
 
 	/**
@@ -361,8 +362,8 @@ class Repository {
 	 * @param int   $carrier_id Carrier id.
 	 */
 	public function update( array $data, int $carrier_id ): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->update( $wpdb->packetery_carrier, $data, array( 'id' => $carrier_id ) );
+		$wpdbAdapter = $this->getWpdbAdapter();
+		$wpdbAdapter->update( $wpdbAdapter->packetery_carrier, $data, array( 'id' => $carrier_id ) );
 	}
 
 	/**

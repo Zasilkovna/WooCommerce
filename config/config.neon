@@ -24,8 +24,8 @@ services:
 	- Packetery\Module\Carrier\Updater
 	- Packetery\Module\Carrier\Repository
 	- PacketeryGuzzleHttp\Client
-	wpdbFactory: Packetery\Module\WpdbFactory
-	wpdb: @wpdbFactory::create()
+	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
+	- @wpdbAdapterFactory::create()
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory

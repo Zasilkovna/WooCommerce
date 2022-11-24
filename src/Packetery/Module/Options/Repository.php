@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Module\WpdbAdapter;
+
 /**
  * Class Repository.
  *
@@ -17,14 +19,30 @@ namespace Packetery\Module\Options;
 class Repository {
 
 	/**
+	 * WpdbAdapter.
+	 *
+	 * @var WpdbAdapter
+	 */
+	private $wpdbAdapter;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param WpdbAdapter $wpdbAdapter WpdbAdapter.
+	 */
+	public function __construct( WpdbAdapter $wpdbAdapter ) {
+		$this->wpdbAdapter = $wpdbAdapter;
+	}
+
+	/**
 	 * Get all packetery related options.
 	 *
 	 * @return array|object|null
 	 */
 	public function getPluginOptions() {
-		global $wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
-		return $wpdb->get_results( "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE 'packetery%'" );
+		return $wpdbAdapter->get_results( "SELECT `option_name` FROM $wpdbAdapter->options WHERE `option_name` LIKE 'packetery%'" );
 	}
 
 }
