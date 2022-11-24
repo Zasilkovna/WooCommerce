@@ -54,7 +54,8 @@ class WpdbTracyPanel implements PacketeryTracy\IBarPanel {
 	 * @return \Generator
 	 */
 	private function getPacketeryQueries(): \Generator {
-		$queries = $this->wpdbAdapter->getWpdbQueries();
+		$queries    = $this->wpdbAdapter->getWpdbQueries();
+		$maxQueries = defined( 'PACKETERY_DEBUG_MAX_DB_PANEL_QUERIES' ) ? PACKETERY_DEBUG_MAX_DB_PANEL_QUERIES : 1000;
 
 		$count = 0;
 		foreach ( $queries as $queryInfo ) {
@@ -71,7 +72,7 @@ class WpdbTracyPanel implements PacketeryTracy\IBarPanel {
 			];
 
 			$count++;
-			if ( $count >= 1000 ) {
+			if ( $count >= $maxQueries ) {
 				yield false;
 				break;
 			}
