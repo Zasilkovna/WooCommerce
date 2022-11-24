@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Helper;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use PacketeryLatte\Engine;
@@ -111,7 +112,7 @@ class Modal {
 			->setHtmlAttribute( 'autocomplete', 'off' )
 			->setRequired( false )
 			// translators: %s: Represents minimal date for delayed delivery.
-			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( 'Y-m-d' ) );
+			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );

@@ -203,7 +203,7 @@ class Metabox {
 							->setHtmlAttribute( 'autocomplete', 'off' )
 							->setRequired( false )
 							// translators: %s: Represents minimal date for delayed delivery.
-							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( 'Y-m-d' ) );
+							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
 
 		foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 			$this->order_form->addHidden( $pickupPointAttr['name'] );
