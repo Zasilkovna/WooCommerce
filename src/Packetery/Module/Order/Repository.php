@@ -592,9 +592,9 @@ class Repository {
 	 * @return void
 	 */
 	public function addColumnApiErrorMessage(): void {
-		$wpdb = $this->wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
-		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `api_error_message` text NULL DEFAULT NULL AFTER `cod`' );
+		$wpdbAdapter->query( 'ALTER TABLE `' . $wpdbAdapter->packetery_order . '` ADD COLUMN `api_error_message` text NULL DEFAULT NULL AFTER `cod`' );
 	}
 
 	/**
@@ -603,9 +603,9 @@ class Repository {
 	 * @return void
 	 */
 	public function addColumnApiErrorMessageDate(): void {
-		$wpdb = $this->wpdb;
+		$wpdbAdapter = $this->wpdbAdapter;
 
-		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
+		$wpdbAdapter->query( 'ALTER TABLE `' . $wpdbAdapter->packetery_order . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
 	}
 
 	/**
