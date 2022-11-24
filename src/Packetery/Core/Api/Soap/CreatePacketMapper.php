@@ -20,11 +20,21 @@ use Packetery\Core\Helper;
 class CreatePacketMapper {
 
 	/**
-	 * CreatePacketMapper constructor.
+	 * Helper.
+	 *
+	 * @var \Packetery\Core\Helper
 	 */
-	public function __construct() {
+	private $helper;
 
+	/**
+	 * CreatePacketMapper constructor.
+	 *
+	 * @param Helper $helper Helper.
+	 */
+	public function __construct( Helper $helper ) {
+		$this->helper = $helper;
 	}
+
 
 	/**
 	 * Maps order data to CreatePacket structure.
@@ -50,7 +60,7 @@ class CreatePacketMapper {
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
-			'deliverOn'    => Helper::getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
+			'deliverOn'    => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
 		];
 
 		$pickupPoint = $order->getPickupPoint();

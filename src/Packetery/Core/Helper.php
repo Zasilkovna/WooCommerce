@@ -78,7 +78,7 @@ class Helper {
 	 *
 	 * @return string|null
 	 */
-	public static function getStringFromDateTime( ?DateTimeImmutable $date, string $format ): ?string {
+	public function getStringFromDateTime( ?DateTimeImmutable $date, string $format ): ?string {
 		return $date ? $date->format( $format ) : null;
 	}
 
@@ -90,7 +90,7 @@ class Helper {
 	 * @return \DateTimeImmutable
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public static function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
+	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
 		return $date ? new DateTimeImmutable( $date ) : null;
 	}
 }

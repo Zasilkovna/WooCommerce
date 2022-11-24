@@ -63,6 +63,13 @@ class Controller extends WP_REST_Controller {
 	private $orderValidator;
 
 	/**
+	 * Helper.
+	 *
+	 * @var \Packetery\Core\Helper
+	 */
+	private $helper;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param Modal                           $orderModal       Modal.
@@ -70,13 +77,15 @@ class Controller extends WP_REST_Controller {
 	 * @param Order\Repository                $orderRepository  Order repository.
 	 * @param GridExtender                    $gridExtender     Grid extender.
 	 * @param \Packetery\Core\Validator\Order $orderValidator   Order validator.
+	 * @param \Packetery\Core\Helper          $helper           Helper.
 	 */
 	public function __construct(
 		Modal $orderModal,
 		ControllerRouter $controllerRouter,
 		Order\Repository $orderRepository,
 		GridExtender $gridExtender,
-		\Packetery\Core\Validator\Order $orderValidator
+		\Packetery\Core\Validator\Order $orderValidator,
+		Helper $helper
 	) {
 		$this->orderModal      = $orderModal;
 		$this->router          = $controllerRouter;
@@ -85,6 +94,7 @@ class Controller extends WP_REST_Controller {
 		$this->orderRepository = $orderRepository;
 		$this->gridExtender    = $gridExtender;
 		$this->orderValidator  = $orderValidator;
+		$this->helper          = $helper;
 	}
 
 	/**
@@ -167,7 +177,7 @@ class Controller extends WP_REST_Controller {
 		);
 
 		$order->setSize( $size );
-		$order->setDeliverOn( Helper::getDateTimeFromString( $packeteryDeliverOn ) );
+		$order->setDeliverOn( $this->helper->getDateTimeFromString( $packeteryDeliverOn ) );
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -179,7 +189,7 @@ class Controller extends WP_REST_Controller {
 			'packetery_length'     => $order->getLength(),
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
-			'packetery_deliver_on' => Helper::getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
+			'packetery_deliver_on' => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
 			'orderIsSubmittable'   => $this->orderValidator->validate( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];

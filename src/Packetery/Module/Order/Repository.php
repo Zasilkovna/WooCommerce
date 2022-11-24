@@ -41,14 +41,23 @@ class Repository {
 	private $builder;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Helper
+	 */
+	private $helper;
+
+	/**
 	 * Repository constructor.
 	 *
 	 * @param WpdbAdapter $wpdbAdapter  WpdbAdapter.
 	 * @param Builder     $orderFactory Order factory.
+	 * @param Helper  $helper       Helper.
 	 */
-	public function __construct( WpdbAdapter $wpdbAdapter, Builder $orderFactory ) {
+	public function __construct( WpdbAdapter $wpdbAdapter, Builder $orderFactory, Helper $helper ) {
 		$this->wpdbAdapter = $wpdbAdapter;
 		$this->builder     = $orderFactory;
+		$this->helper      = $helper;
 	}
 
 	/**
@@ -257,7 +266,7 @@ class Repository {
 		$partialOrder->setAdultContent( $this->parseBool( $result->adult_content ) );
 		$partialOrder->setValue( $this->parseFloat( $result->value ) );
 		$partialOrder->setCod( $this->parseFloat( $result->cod ) );
-		$partialOrder->setDeliverOn( Helper::getDateTimeFromString( $result->deliver_on ) );
+		$partialOrder->setDeliverOn( $this->helper->getDateTimeFromString( $result->deliver_on ) );
 		$partialOrder->setLastApiErrorMessage( $result->api_error_message );
 		$partialOrder->setLastApiErrorDateTime(
 			( null === $result->api_error_date )
@@ -377,9 +386,9 @@ class Repository {
 			'adult_content'     => $order->containsAdultContent(),
 			'cod'               => $order->getCod(),
 			'value'             => $order->getValue(),
-			'deliver_on'        => $order->getDeliverOn() ? $order->getDeliverOn()->format( Plugin::DATEPICKER_FORMAT ) : null,
 			'api_error_message' => $order->getLastApiErrorMessage(),
 			'api_error_date'    => $apiErrorDateTime,
+			'deliver_on'        => $this->helper->getStringFromDateTime( $order->getDeliverOn(), $this->helper::DATEPICKER_FORMAT ),
 		];
 
 		return $data;
