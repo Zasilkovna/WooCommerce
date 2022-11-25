@@ -26,6 +26,7 @@ services:
 	- PacketeryGuzzleHttp\Client
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
+	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory

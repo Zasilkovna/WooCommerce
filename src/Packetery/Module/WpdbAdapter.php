@@ -292,4 +292,17 @@ class WpdbAdapter {
 	public function getLastWpdbError(): string {
 		return $this->wpdb->last_error;
 	}
+
+	/**
+	 * Gets wpdb queries.
+	 *
+	 * @return \Generator
+	 */
+	public function getWpdbQueries(): \Generator {
+		if ( ! empty( $this->wpdb->queries ) ) {
+			foreach ( $this->wpdb->queries as $queryInfo ) {
+				yield $queryInfo;
+			}
+		}
+	}
 }
