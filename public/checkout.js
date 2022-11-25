@@ -203,7 +203,11 @@ var packeteryLoadCheckout = function( $, settings ) {
 		};
 
 		var isPickupPointChosen = function ($widgetDiv) {
-			return $widgetDiv.find('.packeta-widget-info').html() !== '';
+			var $pickupPointInfo = $widgetDiv.find('.packeta-widget-info');
+			if ($pickupPointInfo.length === 0) {
+				return false;
+			}
+			return $pickupPointInfo.html() !== '';
 		}
 
 		updateWidgetButtonVisibility( getShippingRateId(), true );
