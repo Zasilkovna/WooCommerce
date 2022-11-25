@@ -959,7 +959,7 @@ class Checkout {
 	 *
 	 * @return array
 	 */
-	public function createShippingRate( string $name, string $optionId, ?float $cost ): array {
+	private function createShippingRate( string $name, string $optionId, ?float $cost ): array {
 		return [
 			'label'    => $name,
 			'id'       => $optionId,
