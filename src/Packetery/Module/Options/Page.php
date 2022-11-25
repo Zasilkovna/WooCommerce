@@ -25,10 +25,10 @@ use PacketeryNette\Forms\Form;
  */
 class Page {
 
-	private const FORM_FIELDS_CONTAINER                = 'packetery';
-	private const FORM_FIELD_PACKETA_LABEL_FORMAT      = 'packeta_label_format';
-	private const FORM_FIELD_CARRIER_LABEL_FORMAT      = 'carrier_label_format';
-	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE  = 'order_status_auto_change';
+	private const FORM_FIELDS_CONTAINER               = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
+	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE = 'order_status_auto_change';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 

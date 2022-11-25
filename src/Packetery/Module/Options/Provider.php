@@ -23,15 +23,15 @@ class Provider {
 	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
 	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 
-	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
-	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
-	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
-	const FORCE_PACKET_CANCEL_DEFAULT               = true;
-	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
-	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
-	const ORDER_STATUS_AUTO_CHANGE_DEFAULT          = false;
-	const AUTO_ORDER_STATUS_DEFAULT                 = 'wc-processing';
+	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT               = 'A6 on A4';
+	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT               = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	const MAX_STATUS_SYNCING_PACKETS_DEFAULT               = 100;
+	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT        = 14;
+	const FORCE_PACKET_CANCEL_DEFAULT                      = true;
+	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT           = false;
+	const WIDGET_AUTO_OPEN_DEFAULT                         = false;
+	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                 = false;
+	const AUTO_ORDER_STATUS_DEFAULT                        = 'wc-processing';
 	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT = false;
 
 	/**

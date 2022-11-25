@@ -207,6 +207,7 @@ class PacketSubmitter {
 	 * Submits packet data to Packeta API.
 	 *
 	 * @param WC_Order $order WC order.
+	 * @param bool     $isAutoSubmitted Packet auto submission.
 	 *
 	 * @return PacketSubmissionResult
 	 */
@@ -265,8 +266,8 @@ class PacketSubmitter {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
 
-				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled())
-					|| ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled());
+				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled() )
+					|| ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
 
 				if ( $shouldUpdateStatus ) {
 					$order->update_status( $this->optionsProvider->getAutoOrderStatus() );
