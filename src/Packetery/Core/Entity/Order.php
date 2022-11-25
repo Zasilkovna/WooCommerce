@@ -229,7 +229,6 @@ class Order {
 	 */
 	private $deliverOn;
 
-
 	/**
 	 * Order entity constructor.
 	 *

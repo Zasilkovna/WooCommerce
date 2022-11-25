@@ -1,4 +1,5 @@
 {varType \Packetery\Core\Entity\Order $order}
+{var $Helper = Packetery\Core\Helper::class}
 
 {if $order->getPacketId()}
     <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>

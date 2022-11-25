@@ -35,7 +35,6 @@ class CreatePacketMapper {
 		$this->helper = $helper;
 	}
 
-
 	/**
 	 * Maps order data to CreatePacket structure.
 	 *
