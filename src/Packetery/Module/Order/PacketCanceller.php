@@ -176,6 +176,7 @@ class PacketCanceller {
 			];
 
 			$this->logger->add( $record );
+			$errorMessage = null;
 		}
 
 		if ( $result->hasFault() ) {
@@ -191,7 +192,10 @@ class PacketCanceller {
 			];
 
 			$this->logger->add( $record );
+			$errorMessage = $result->getFaultString();
 		}
+
+		$order->updateApiErrorMessage( $errorMessage );
 
 		if ( $this->shouldRevertSubmission( $result ) ) {
 			$order->setIsExported( false );
@@ -199,7 +203,6 @@ class PacketCanceller {
 			$order->setCarrierNumber( null );
 			$order->setPacketStatus( null );
 			$order->setPacketId( null );
-			$this->orderRepository->save( $order );
 
 			if ( $result->hasFault() ) {
 				$this->messageManager->flash_message( __( 'Packet could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packeta' ), MessageManager::TYPE_SUCCESS );
@@ -213,6 +216,8 @@ class PacketCanceller {
 		if ( ! $this->shouldRevertSubmission( $result ) ) {
 			$this->messageManager->flash_message( __( 'Failed to cancel packet. See Packeta log for more details.', 'packeta' ), MessageManager::TYPE_ERROR );
 		}
+
+		$this->orderRepository->save( $order );
 	}
 
 	/**

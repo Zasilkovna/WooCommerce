@@ -187,7 +187,7 @@ class Order {
 	private $currency;
 
 	/**
-	 * Carrier number..
+	 * Carrier number.
 	 *
 	 * @var string|null
 	 */
@@ -206,6 +206,20 @@ class Order {
 	 * @var string|null
 	 */
 	private $shippingCountry;
+
+	/**
+	 * Last message built from Packeta API response.
+	 *
+	 * @var string|null
+	 */
+	private $lastApiErrorMessage;
+
+	/**
+	 * Last API error datetime.
+	 *
+	 * @var \DateTimeImmutable|null
+	 */
+	private $lastApiErrorDateTime;
 
 	/**
 	 * Order entity constructor.
@@ -555,6 +569,26 @@ class Order {
 	}
 
 	/**
+	 * Sets API response message.
+	 *
+	 * @param string|null $lastApiErrorMessage API response message.
+	 *
+	 * @return void
+	 */
+	public function setLastApiErrorMessage( ?string $lastApiErrorMessage ): void {
+		$this->lastApiErrorMessage = $lastApiErrorMessage;
+	}
+
+	/**
+	 * Sets API error date.
+	 *
+	 * @param \DateTimeImmutable|null $lastApiErrorDateTime API error date.
+	 */
+	public function setLastApiErrorDateTime( ?\DateTimeImmutable $lastApiErrorDateTime ): void {
+		$this->lastApiErrorDateTime = $lastApiErrorDateTime;
+	}
+
+	/**
 	 * Gets carrier object.
 	 *
 	 * @return Carrier|null
@@ -855,4 +889,35 @@ class Order {
 	public function getCarrierCode():string {
 		return $this->carrierCode;
 	}
+
+	/**
+	 * Formatted API error message.
+	 *
+	 * @return string|null
+	 */
+	public function getLastApiErrorMessage(): ?string {
+		return $this->lastApiErrorMessage;
+	}
+
+	/**
+	 * Gets last API error message date.
+	 *
+	 * @return \DateTimeImmutable|null
+	 */
+	public function getLastApiErrorDateTime(): ?\DateTimeImmutable {
+		return $this->lastApiErrorDateTime;
+	}
+
+	/**
+	 * Updates API error message and sets error message date accordingly.
+	 *
+	 * @param string|null $errorMessage Error message.
+	 *
+	 * @return void
+	 */
+	public function updateApiErrorMessage( ?string $errorMessage ): void {
+		$this->setLastApiErrorMessage( $errorMessage );
+		$this->setLastApiErrorDateTime( $errorMessage ? Helper::now() : null );
+	}
+
 }

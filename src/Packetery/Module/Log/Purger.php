@@ -19,6 +19,9 @@ use Packetery\Core\Helper;
  */
 class Purger {
 
+	public const PURGER_OPTION_NAME      = 'packetery_delete_old_before';
+	public const PURGER_MODIFIER_DEFAULT = '- 90 days';
+
 	/**
 	 * Log repository.
 	 *
@@ -41,6 +44,6 @@ class Purger {
 	 * @return void
 	 */
 	public function autoDeleteHook(): void {
-		$this->logRepository->deleteOld( get_option( 'packetery_delete_old_before', '- 90 days' ) );
+		$this->logRepository->deleteOld( get_option( self::PURGER_OPTION_NAME, self::PURGER_MODIFIER_DEFAULT ) );
 	}
 }

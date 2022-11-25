@@ -83,22 +83,17 @@ class CreatePacket extends BaseResponse {
 	}
 
 	/**
-	 * Gets errors.
-	 *
-	 * @return array|null
-	 */
-	public function getValidationErrors(): ?array {
-		return $this->validationErrors;
-	}
-
-	/**
 	 * Gets all errors as string.
+	 *
+	 * @param bool $prependFaultString Prepend fault string.
 	 *
 	 * @return string
 	 */
-	public function getErrorsAsString(): string {
+	public function getErrorsAsString( bool $prependFaultString = true ): string {
 		$allErrors = $this->validationErrors;
-		array_unshift( $allErrors, $this->getFaultString() );
+		if ( $prependFaultString ) {
+			array_unshift( $allErrors, $this->getFaultString() );
+		}
 
 		return implode( ', ', $allErrors );
 	}

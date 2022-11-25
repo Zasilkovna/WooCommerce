@@ -1,4 +1,5 @@
 {varType \Packetery\Core\Entity\Order $order}
+{var $Helper = Packetery\Core\Helper::class}
 
 {if $order->getPacketId()}
     <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
@@ -30,4 +31,8 @@
        title="{$translations['submitToPacketa']}"
        href="{$packetSubmitUrl}"
     ></a>
+{/if}
+
+{if null !== $order->getLastApiErrorMessage() && $order->getLastApiErrorDateTime() > $Helper::now()->modify( $logPurgerDatetimeModifier ) }
+    <span class="dashicons dashicons-warning attention" title="{$translations['lastErrorFromApi']}:&#13;{$order->getLastApiErrorMessage()}"></span>
 {/if}

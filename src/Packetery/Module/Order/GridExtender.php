@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
+use Packetery\Module\Log\Purger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module\Plugin;
@@ -221,7 +222,7 @@ class GridExtender {
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-
+		// TODO: get all orders at once using post ids from $GLOBALS['posts'] and cache them.
 		if ( ! isset( self::$orderCache ) || (int) self::$orderCache->getNumber() !== $post->ID ) {
 			self::$orderCache = $this->orderRepository->getById( $post->ID );
 			if ( null === self::$orderCache ) {
@@ -297,12 +298,13 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'              => $order,
-						'orderIsSubmittable' => $this->orderValidator->validate( $order ),
-						'packetSubmitUrl'    => $packetSubmitUrl,
-						'packetCancelLink'   => $packetCancelLink,
-						'printLink'          => $printLink,
-						'translations'       => [
+						'order'                     => $order,
+						'orderIsSubmittable'        => $this->orderValidator->validate( $order ),
+						'packetSubmitUrl'           => $packetSubmitUrl,
+						'packetCancelLink'          => $packetCancelLink,
+						'printLink'                 => $printLink,
+						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
+						'translations'              => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
@@ -311,6 +313,7 @@ class GridExtender {
 							// translators: %s: Packet number.
 							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
+							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
 						],
 					]
 				);
