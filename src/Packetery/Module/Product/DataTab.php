@@ -10,6 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
+use Packetery\Module\Carrier\Repository;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
@@ -47,16 +48,25 @@ class DataTab {
 	private $checkout;
 
 	/**
+	 * Carrier repository
+	 *
+	 * @var Repository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory $formFactory Factory engine.
-	 * @param Engine      $latteEngine Latte engine.
-	 * @param Checkout    $checkout    Checkout.
+	 * @param FormFactory $formFactory       Factory engine.
+	 * @param Engine      $latteEngine       Latte engine.
+	 * @param Checkout    $checkout          Checkout.
+	 * @param Repository  $carrierRepository Carrier repository.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, Checkout $checkout ) {
-		$this->formFactory = $formFactory;
-		$this->latteEngine = $latteEngine;
-		$this->checkout    = $checkout;
+	public function __construct( FormFactory $formFactory, Engine $latteEngine, Checkout $checkout, Repository $carrierRepository ) {
+		$this->formFactory       = $formFactory;
+		$this->latteEngine       = $latteEngine;
+		$this->checkout          = $checkout;
+		$this->carrierRepository = $carrierRepository;
 	}
 
 	/**
@@ -98,10 +108,10 @@ class DataTab {
 		$form = $this->formFactory->create();
 		$form->addCheckbox( Product\Entity::META_AGE_VERIFICATION_18_PLUS, __( 'Age verification 18+', 'packeta' ) );
 
-		$shippingRatesContainer = $form->addContainer( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
-		$shippingRates          = $this->checkout->getAllShippingRates();
-		foreach ( $shippingRates as $shippingRate ) {
-			$shippingRatesContainer->addCheckbox( $shippingRate['id'], $shippingRate['label'] );
+		$carriersContainer = $form->addContainer( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
+		$carriersList      = $this->carrierRepository->getAllActiveCarriersList();
+		foreach ( $carriersList as $carrier ) {
+			$carriersContainer->addCheckbox( $carrier['id'], $carrier['label'] );
 		}
 
 		$form->setDefaults(
