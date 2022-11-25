@@ -626,7 +626,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addDeliverOnColumn(): void {
-		$wpdb = $this->wpdb;
+		$wpdb = $this->wpdbAdapter;
 
 		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `deliver_on` date NULL DEFAULT NULL AFTER `cod`' );
 	}

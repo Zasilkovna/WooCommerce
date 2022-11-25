@@ -428,8 +428,8 @@ class Metabox {
 		}
 
 		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
-		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? $this->helper->simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
-		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? $this->helper->simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
+		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
+		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
 		$order->setDeliverOn( $this->helper->getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
 		$order->setSize( $orderSize );
 		Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
