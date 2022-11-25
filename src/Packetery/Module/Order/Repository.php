@@ -52,7 +52,7 @@ class Repository {
 	 *
 	 * @param WpdbAdapter $wpdbAdapter  WpdbAdapter.
 	 * @param Builder     $orderFactory Order factory.
-	 * @param Helper  $helper       Helper.
+	 * @param Helper      $helper       Helper.
 	 */
 	public function __construct( WpdbAdapter $wpdbAdapter, Builder $orderFactory, Helper $helper ) {
 		$this->wpdbAdapter = $wpdbAdapter;

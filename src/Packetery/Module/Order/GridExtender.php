@@ -298,16 +298,16 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'              => $order,
-						'orderIsSubmittable' => $this->orderValidator->validate( $order ),
-						'packetSubmitUrl'  => $packetSubmitUrl,
-						'packetCancelLink' => $packetCancelLink,
-						'printLink'        => $printLink,
-						'helper'           => new Helper(),
-						'datePickerFormat' => Helper::DATEPICKER_FORMAT,
+						'order'                     => $order,
+						'orderIsSubmittable'        => $this->orderValidator->validate( $order ),
+						'packetSubmitUrl'           => $packetSubmitUrl,
+						'packetCancelLink'          => $packetCancelLink,
+						'printLink'                 => $printLink,
+						'helper'                    => new Helper(),
+						'datePickerFormat'          => Helper::DATEPICKER_FORMAT,
 						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
-						'packetDeliverOn'    => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
-						'translations'       => [
+						'packetDeliverOn'           => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
+						'translations'              => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
