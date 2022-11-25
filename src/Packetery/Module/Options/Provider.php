@@ -31,7 +31,7 @@ class Provider {
 	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT           = false;
 	const WIDGET_AUTO_OPEN_DEFAULT                         = false;
 	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                 = false;
-	const AUTO_ORDER_STATUS_DEFAULT                        = 'wc-processing';
+	const AUTO_ORDER_STATUS_DEFAULT                        = 'wc-pending';
 	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT = false;
 
 	/**
@@ -494,7 +494,12 @@ class Provider {
 	 * @return bool
 	 */
 	public function isOrderStatusAutoChangeEnabled(): bool {
-		return $this->get( 'order_status_auto_change' ) ?? self::ORDER_STATUS_AUTO_CHANGE_DEFAULT;
+		$value = $this->get( 'order_status_auto_change' );
+		if ( null !== $value ) {
+			return (bool) $value;
+		}
+
+		return self::ORDER_STATUS_AUTO_CHANGE_DEFAULT;
 	}
 
 	/**
@@ -503,7 +508,12 @@ class Provider {
 	 * @return bool
 	 */
 	public function isOrderStatusAutoChangeForAutoSubmitEnabled(): bool {
-		return $this->get( 'order_status_auto_change_for_auto_submit' ) ?? self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT;
+		$value = $this->get( 'order_status_auto_change_for_auto_submit' );
+		if ( null !== $value ) {
+			return (bool) $value;
+		}
+
+		return self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT;
 	}
 
 	/**
