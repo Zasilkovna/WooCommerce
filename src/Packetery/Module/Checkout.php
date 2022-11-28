@@ -48,13 +48,6 @@ class Checkout {
 	const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
 
 	/**
-	 * Tells if hidden fields should be rendered at default place.
-	 *
-	 * @var bool
-	 */
-	private $shouldRenderHiddenFieldsAtDefaultPlace = true;
-
-	/**
 	 * Pickup point attributes configuration.
 	 *
 	 * @var array[]
@@ -243,10 +236,6 @@ class Checkout {
 			return;
 		}
 
-		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace ) {
-			$this->renderHiddenInputFields();
-		}
-
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
@@ -271,15 +260,6 @@ class Checkout {
 
 		if ( ! $this->isPacketeryOrder( $shippingRate->get_id() ) ) {
 			return;
-		}
-
-		static $hiddenInputsRendered    = false;
-		static $hiddenFieldsRenderedFor = null;
-
-		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace && ( ! $hiddenInputsRendered || $shippingRate->get_id() === $hiddenFieldsRenderedFor ) ) {
-			$this->renderHiddenInputFields();
-			$hiddenInputsRendered    = true;
-			$hiddenFieldsRenderedFor = $shippingRate->get_id();
 		}
 
 		$this->latte_engine->render(
@@ -587,12 +567,8 @@ class Checkout {
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
-		$activeTheme = strtolower( wp_get_theme()->get_template() );
-		if ( 'divi' === $activeTheme ) {
-			// TODO: Check the possibility to use this placement always.
-			add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
-			$this->shouldRenderHiddenFieldsAtDefaultPlace = false;
-		}
+		// This action works for both classic and Divi templates.
+		add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
