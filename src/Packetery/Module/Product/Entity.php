@@ -75,7 +75,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isAgeVerification18PlusRequired(): bool {
-		return $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
+		return (bool) $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
 	}
 
 	/**
@@ -85,7 +85,8 @@ class Entity {
 	 */
 	public function getDisallowedShippingRateChoices(): array {
 		$choices = $this->product->get_meta( self::META_DISALLOWED_SHIPPING_RATES );
-		if ( ! $choices ) {
+		if ( ! is_array( $choices ) ) {
+			// TODO: log this event, really happened.
 			return [];
 		}
 
