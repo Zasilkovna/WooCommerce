@@ -29,6 +29,7 @@ class Provider {
 	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 	const FORCE_PACKET_CANCEL_DEFAULT               = true;
 	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
+	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
 
 	/**
 	 *  Options data.
@@ -469,4 +470,19 @@ class Provider {
 
 		return $carrierLabelFormats;
 	}
+
+	/**
+	 * Tells if widget should open automatically.
+	 *
+	 * @return bool
+	 */
+	public function shouldWidgetOpenAutomatically(): bool {
+		$value = $this->get( 'widget_auto_open' );
+		if ( null !== $value ) {
+			return (bool) $value;
+		}
+
+		return self::WIDGET_AUTO_OPEN_DEFAULT;
+	}
+
 }
