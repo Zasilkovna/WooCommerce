@@ -694,6 +694,7 @@ class Plugin {
 		$isOrderGridPage       = $this->contextResolver->isOrderGridPage();
 		$isOrderDetailPage     = $this->contextResolver->isOrderDetailPage();
 		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
+		$datePickerSettings    = [ 'deliverOnMinDate' => wp_date( \Packetery\Core\Helper::DATEPICKER_FORMAT ) ];
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
@@ -713,12 +714,15 @@ class Plugin {
 
 		if ( $isOrderGridPage ) {
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
 		}
 
 		$pickupPointPickerSettings = null;
 		$addressPickerSettings     = null;
 
 		if ( $isOrderDetailPage ) {
+			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery' ] );
+			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
 			$pickupPointPickerSettings = $this->order_metabox->createPickupPointPickerSettings();
 			$addressPickerSettings     = $this->order_metabox->createAddressPickerSettings();
 		}

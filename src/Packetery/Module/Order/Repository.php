@@ -41,14 +41,23 @@ class Repository {
 	private $builder;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Helper
+	 */
+	private $helper;
+
+	/**
 	 * Repository constructor.
 	 *
 	 * @param WpdbAdapter $wpdbAdapter  WpdbAdapter.
 	 * @param Builder     $orderFactory Order factory.
+	 * @param Helper      $helper       Helper.
 	 */
-	public function __construct( WpdbAdapter $wpdbAdapter, Builder $orderFactory ) {
+	public function __construct( WpdbAdapter $wpdbAdapter, Builder $orderFactory, Helper $helper ) {
 		$this->wpdbAdapter = $wpdbAdapter;
 		$this->builder     = $orderFactory;
+		$this->helper      = $helper;
 	}
 
 	/**
@@ -168,6 +177,7 @@ class Repository {
 				`cod` double NULL,
 				`carrier_number` varchar(255) NULL,
 				`packet_status` varchar(255) NULL,
+				`deliver_on` date NULL,
 				PRIMARY KEY (`id`)
 			) ' . $wpdbAdapter->get_charset_collate()
 		);
@@ -256,6 +266,7 @@ class Repository {
 		$partialOrder->setAdultContent( $this->parseBool( $result->adult_content ) );
 		$partialOrder->setValue( $this->parseFloat( $result->value ) );
 		$partialOrder->setCod( $this->parseFloat( $result->cod ) );
+		$partialOrder->setDeliverOn( $this->helper->getDateTimeFromString( $result->deliver_on ) );
 		$partialOrder->setLastApiErrorMessage( $result->api_error_message );
 		$partialOrder->setLastApiErrorDateTime(
 			( null === $result->api_error_date )
@@ -377,6 +388,7 @@ class Repository {
 			'value'             => $order->getValue(),
 			'api_error_message' => $order->getLastApiErrorMessage(),
 			'api_error_date'    => $apiErrorDateTime,
+			'deliver_on'        => $this->helper->getStringFromDateTime( $order->getDeliverOn(), $this->helper::DATEPICKER_FORMAT ),
 		];
 
 		return $data;
@@ -606,6 +618,17 @@ class Repository {
 		$wpdbAdapter = $this->wpdbAdapter;
 
 		$wpdbAdapter->query( 'ALTER TABLE `' . $wpdbAdapter->packetery_order . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
+	}
+
+	/**
+	 * Adds deliver on column.
+	 *
+	 * @return void
+	 */
+	public function addDeliverOnColumn(): void {
+		$wpdb = $this->wpdbAdapter;
+
+		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_order . '` ADD COLUMN `deliver_on` date NULL DEFAULT NULL AFTER `cod`' );
 	}
 
 	/**

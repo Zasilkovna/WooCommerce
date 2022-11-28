@@ -15,6 +15,8 @@
 			if ( packeteryModal.length > 0 ) {
 				packeteryModal.find( '[name="packetery_weight"]' ).focus().select();
 				Nette.init();
+				$(document.body).trigger( 'wc-init-datepickers' );
+				$( 'input[name="packetery_deliver_on"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
 			}
 		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
 			var $target = $( e.target );
@@ -42,6 +44,7 @@
 			var packeteryLength = $packeteryModal.find( '[name="packetery_length"]' ).val();
 			var packeteryWidth  = $packeteryModal.find( '[name="packetery_width"]' ).val();
 			var packeteryHeight = $packeteryModal.find( '[name="packetery_height"]' ).val();
+			var packeteryDeliverOn = $packeteryModal.find( '[name="packetery_deliver_on"]' ).val();
 
 			var flashMessage = function( type, message ) {
 				$packeteryModal.find( '.notice' ).removeClass( 'notice-success' ).removeClass( 'notice-error' ).addClass( 'notice-' + type ).removeClass( 'hidden' ).find( 'p' ).text( message );
@@ -63,6 +66,7 @@
 					packeteryLength : packeteryLength,
 					packeteryWidth: packeteryWidth ,
 					packeteryHeight : packeteryHeight,
+					packeteryDeliverOn : packeteryDeliverOn,
 				}
 			} ).fail( function( response ) {
 				var message = (response.responseJSON && response.responseJSON.message) || 'Error';
@@ -74,6 +78,7 @@
 				$packeteryModal.find( '[name="packetery_length"]' ).val( response.data.packetery_length );
 				$packeteryModal.find( '[name="packetery_width"]' ).val( response.data.packetery_width );
 				$packeteryModal.find( '[name="packetery_height"]' ).val( response.data.packetery_height );
+				$packeteryModal.find( '[name="packetery_deliver_on"]' ).val( response.data.packetery_deliver_on );
 
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
 				orderData.packetery_weight = response.data.packetery_weight;
@@ -81,6 +86,7 @@
 				orderData.packetery_length = response.data.packetery_length;
 				orderData.packetery_width = response.data.packetery_width;
 				orderData.packetery_height = response.data.packetery_height;
+				orderData.packetery_deliver_on = response.data.packetery_deliver_on;
 				orderData.manualWeightIconExtraClass = response.data.hasOrderManualWeight === true ? '' : 'packetery-hidden ';
 				$lastModalButtonClicked.data( 'order-data', orderData );
 

@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
+use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
@@ -36,6 +37,7 @@ class Metabox {
 	const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
 	const FIELD_COD             = 'packetery_COD';
 	const FIELD_VALUE           = 'packetery_value';
+	const FIELD_DELIVER_ON      = 'packetery_deliver_on';
 
 	/**
 	 * PacketeryLatte engine.
@@ -197,6 +199,11 @@ class Metabox {
 		$this->order_form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT );
+		$this->order_form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
+							->setHtmlAttribute( 'autocomplete', 'off' )
+							->setRequired( false )
+							// translators: %s: Represents minimal date for delayed delivery.
+							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
 
 		foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
 			$this->order_form->addHidden( $pickupPointAttr['name'] );
@@ -271,6 +278,7 @@ class Metabox {
 				self::FIELD_ADULT_CONTENT       => $order->containsAdultContent(),
 				self::FIELD_COD                 => $order->getCod(),
 				self::FIELD_VALUE               => $order->getValue(),
+				self::FIELD_DELIVER_ON          => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
 			]
 		);
 
@@ -303,6 +311,7 @@ class Metabox {
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,
 				'hasOrderManualWeight'   => $order->hasManualWeight(),
+				'isPacketaPickupPoint'   => $order->isPacketaInternalPickupPoint(),
 				'translations'           => [
 					'showLogs'       => __( 'Show logs', 'packeta' ),
 					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
@@ -421,7 +430,7 @@ class Metabox {
 		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
 		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
 		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
-
+		$order->setDeliverOn( $this->helper->getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
 		$order->setSize( $orderSize );
 		Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
 		$this->orderRepository->save( $order );

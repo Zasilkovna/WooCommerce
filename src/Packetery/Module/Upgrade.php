@@ -196,6 +196,10 @@ class Upgrade {
 			$this->orderRepository->addColumnApiErrorMessageDate();
 		}
 
+		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
+			$this->orderRepository->addDeliverOnColumn();
+		}
+
 		update_option( 'packetery_version', Plugin::VERSION );
 	}
 

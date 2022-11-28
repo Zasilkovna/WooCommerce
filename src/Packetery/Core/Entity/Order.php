@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Entity;
 
 use Packetery\Core\Helper;
+use DateTimeImmutable;
 
 /**
  * Class Order
@@ -222,6 +223,13 @@ class Order {
 	private $lastApiErrorDateTime;
 
 	/**
+	 * Deliver on
+	 *
+	 * @var DateTimeImmutable|null
+	 */
+	private $deliverOn;
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string $number         Order id.
@@ -307,6 +315,15 @@ class Order {
 	 */
 	public function isExternalCarrier(): bool {
 		return ( Carrier::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
+	}
+
+	/**
+	 * Check if delivery method is internal packetery pickup point
+	 *
+	 * @return bool
+	 */
+	public function isPacketaInternalPickupPoint(): bool {
+		return ! $this->isExternalCarrier() && $this->isPickupPointDelivery();
 	}
 
 	/**
@@ -888,6 +905,26 @@ class Order {
 	 */
 	public function getCarrierCode():string {
 		return $this->carrierCode;
+	}
+
+	/**
+	 * Returns deliver on date
+	 *
+	 * @return DateTimeImmutable|null
+	 */
+	public function getDeliverOn(): ?DateTimeImmutable {
+		return $this->deliverOn;
+	}
+
+	/**
+	 * Sets deliver on date
+	 *
+	 * @param DateTimeImmutable|null $deliverOn Deliver on.
+	 *
+	 * @return void
+	 */
+	public function setDeliverOn( ?DateTimeImmutable $deliverOn ): void {
+		$this->deliverOn = $deliverOn;
 	}
 
 	/**

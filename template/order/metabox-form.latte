@@ -35,6 +35,16 @@
                     </div>
                 </div>
             {/foreach}
+            {if $isPacketaPickupPoint}
+                <div class="packetery-table-row">
+                    <div class="packetery-table-cell packetery-order-metabox-label-cell">
+                        <label n:name=Packetery\Module\Order\Metabox::FIELD_DELIVER_ON />
+                    </div>
+                    <div class="packetery-table-cell">
+                        <input n:name=Packetery\Module\Order\Metabox::FIELD_DELIVER_ON class="date-picker packetery-order-metabox-input">
+                    </div>
+                </div>
+            {/if}
 
         </div>
 
