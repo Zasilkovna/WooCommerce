@@ -454,11 +454,13 @@ class Page {
 		          ->addCondition( Form::EQUAL, true )
 				->toggle( '.packetery-order-status-auto-change-row' );
 
+		$orderStatuses = wc_get_order_statuses();
 		$container->addSelect(
 			'auto_order_status',
 			__( 'New order status', 'packeta' ),
-			wc_get_order_statuses()
+			$orderStatuses
 		)
+			->setDefaultValue( Provider::AUTO_ORDER_STATUS_DEFAULT)
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE ], Form::EQUAL, true )
 		          ->setRequired();
 
@@ -468,7 +470,9 @@ class Page {
 		);
 
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
-			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
+			$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY );
+			$defaults['auto_order_status'] = $this->optionsProvider->getValidAutoOrderStatus();
+			$container->setDefaults( $defaults );
 		}
 
 		return $form;

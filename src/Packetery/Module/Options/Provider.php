@@ -521,7 +521,13 @@ class Provider {
 	 *
 	 * @return string
 	 */
-	public function getAutoOrderStatus(): string {
-		return $this->get( 'auto_order_status' ) ?? self::AUTO_ORDER_STATUS_DEFAULT;
+	public function getValidAutoOrderStatus(): string {
+		$autoOrderStatus = $this->get( 'auto_order_status' ) ?? self::AUTO_ORDER_STATUS_DEFAULT;
+		if (  wc_is_order_status( $autoOrderStatus ) ) {
+			return $autoOrderStatus;
+		}
+
+		$wcOrderStatuses = wc_get_order_statuses();
+		return array_keys($wcOrderStatuses)[0] ?? ''; //TODO: what to do if no statuses are present (null or else)
 	}
 }

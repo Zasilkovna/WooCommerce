@@ -270,7 +270,7 @@ class PacketSubmitter {
 					|| ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
 
 				if ( $shouldUpdateStatus ) {
-					$order->update_status( $this->optionsProvider->getAutoOrderStatus() );
+					$order->update_status( $this->optionsProvider->getValidAutoOrderStatus() );
 				}
 
 				$record          = new Log\Record();
