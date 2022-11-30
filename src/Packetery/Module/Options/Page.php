@@ -17,6 +17,7 @@ use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
+use PacketeryTracy\Debugger;
 
 /**
  * Class Page
@@ -456,11 +457,14 @@ class Page {
 
 		$orderStatuses = wc_get_order_statuses();
 		$container->addSelect(
-			'auto_order_status',
+			Provider::AUTO_ORDER_STATUS,
 			__( 'New order status', 'packeta' ),
 			$orderStatuses
 		)
-			->setDefaultValue( Provider::AUTO_ORDER_STATUS_DEFAULT)
+			->checkDefaultValue( false )
+			->setDefaultValue( Provider::AUTO_ORDER_STATUS_DEFAULT )
+			->setPrompt( __( 'Select new order status', 'packeta' ) )
+			->addRule( $form::IS_IN, __( 'Select valid order status', 'packeta' ), array_keys( $orderStatuses ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE ], Form::EQUAL, true )
 		          ->setRequired();
 
@@ -470,8 +474,8 @@ class Page {
 		);
 
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
-			$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY );
-			$defaults['auto_order_status'] = $this->optionsProvider->getValidAutoOrderStatus();
+			$defaults                                = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY );
+			$defaults[ Provider::AUTO_ORDER_STATUS ] = $this->optionsProvider->getValidAutoOrderStatus();
 			$container->setDefaults( $defaults );
 		}
 
@@ -533,6 +537,15 @@ class Page {
 	 */
 	public function options_validate( array $options ): array {
 		$form = $this->create_form();
+
+		/*
+		// Debugger::barDump( $options );
+		// $form[ self::FORM_FIELDS_CONTAINER ]->setValues( $this->resolveInvalidFormOptions( $options, $form ) );
+		// Debugger::barDump($form[ self::FORM_FIELDS_CONTAINER ]->isValid());
+		// $autoOrderStatus = $options[Provider::AUTO_ORDER_STATUS];
+		// unset($options[Provider::AUTO_ORDER_STATUS]);
+		*/
+
 		$form[ self::FORM_FIELDS_CONTAINER ]->setValues( $options );
 		if ( $form->isValid() === false ) {
 			foreach ( $form[ self::FORM_FIELDS_CONTAINER ]->getControls() as $control ) {
@@ -563,7 +576,7 @@ class Page {
 	/**
 	 * Validates sender.
 	 *
-	 * @param string $senderLabel Sender lbel.
+	 * @param string $senderLabel Sender label.
 	 *
 	 * @return bool|null
 	 */
@@ -762,5 +775,29 @@ class Page {
 			$params,
 			get_admin_url( null, 'admin.php' )
 		);
+	}
+
+	/**
+	 * Resolves invalid form data.
+	 *
+	 * @param array $options Options.
+	 * @param Form  $form Form.
+	 *
+	 * @return array
+	 */
+	private function resolveInvalidFormOptions( array $options, Form $form ): array {
+
+		if ( isset( $options[ Provider::AUTO_ORDER_STATUS ] ) ) {
+			$validValues = array_keys( $form[ self::FORM_FIELDS_CONTAINER ][ Provider::AUTO_ORDER_STATUS ]->getItems() );
+			if ( ! in_array( $options[ Provider::AUTO_ORDER_STATUS ], $validValues, true ) ) {
+				$validOrderStatus = $this->optionsProvider->getValidAutoOrderStatus();
+				if ( ! in_array( $validOrderStatus, $validValues, true ) ) {
+					$validOrderStatus = $validValues[0] ?? '';
+				}
+				$options[ Provider::AUTO_ORDER_STATUS ] = $validOrderStatus;
+			}
+		}
+
+		return $options;
 	}
 }

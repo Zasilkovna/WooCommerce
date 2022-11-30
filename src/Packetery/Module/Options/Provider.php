@@ -31,8 +31,9 @@ class Provider {
 	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT           = false;
 	const WIDGET_AUTO_OPEN_DEFAULT                         = false;
 	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                 = false;
-	const AUTO_ORDER_STATUS_DEFAULT                        = 'wc-pending';
+	const AUTO_ORDER_STATUS_DEFAULT                        = '';
 	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT = false;
+	const AUTO_ORDER_STATUS                                = 'auto_order_status';
 
 	/**
 	 *  Options data.
@@ -522,12 +523,11 @@ class Provider {
 	 * @return string
 	 */
 	public function getValidAutoOrderStatus(): string {
-		$autoOrderStatus = $this->get( 'auto_order_status' ) ?? self::AUTO_ORDER_STATUS_DEFAULT;
-		if (  wc_is_order_status( $autoOrderStatus ) ) {
+		$autoOrderStatus = $this->get( self::AUTO_ORDER_STATUS );
+		if ( wc_is_order_status( $autoOrderStatus ) ) {
 			return $autoOrderStatus;
 		}
 
-		$wcOrderStatuses = wc_get_order_statuses();
-		return array_keys($wcOrderStatuses)[0] ?? ''; //TODO: what to do if no statuses are present (null or else)
+		return self::AUTO_ORDER_STATUS_DEFAULT;
 	}
 }
