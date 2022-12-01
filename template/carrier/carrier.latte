@@ -144,19 +144,30 @@
 					</td>
 				</tr>
 				{include weightRulesSection form => $form}
-				<tr>
-					<th scope="row">
-						<label n:name=default_COD_surcharge />
-					</th>
-					<td>
-						<div>
-							<input n:name=default_COD_surcharge data-lfv-message-id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">
-							<span> {$globalCurrency|noescape}</span>
-						</div>
-						<p class="packetery-input-validation-message help-block text-danger" id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">{inputError default_COD_surcharge}</p>
-					</td>
-				</tr>
-				{include surchargeRulesSection form => $form}
+
+				{if $carrier->supportsCod()}
+					<tr>
+						<th scope="row">
+							<label n:name=default_COD_surcharge />
+						</th>
+						<td>
+							<div>
+								<input n:name=default_COD_surcharge data-lfv-message-id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">
+								<span> {$globalCurrency|noescape}</span>
+							</div>
+							<p class="packetery-input-validation-message help-block text-danger" id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">{inputError default_COD_surcharge}</p>
+						</td>
+					</tr>
+					{include surchargeRulesSection form => $form}
+				{else}
+					<tr>
+						<th></th>
+						<td>
+							<p>{$translations['carrierDoesNotSupportCod']}</p>
+						</td>
+					</tr>
+				{/if}
+
 				<tr>
 					<th scope="row">
 						<label n:name=free_shipping_limit />
@@ -199,6 +210,7 @@
 					</td>
 				</tr>
 				{/if}
+				{if $carrier->supportsCod()}
 				<tr>
 					<th scope="row">
 						<label n:name=cod_rounding />
@@ -210,6 +222,7 @@
 						</p>
 					</td>
 				</tr>
+				{/if}
 				<tr>
 					<th scope="row">
 						<label n:name=coupon_free_shipping-active />
