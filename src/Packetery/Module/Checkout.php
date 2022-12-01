@@ -671,7 +671,7 @@ class Checkout {
 			);
 		}
 
-		if ( false === $this->checkIfPaymentIsCod( WC()->session->get( 'chosen_payment_method' ) ) ) {
+		if ( false === $this->isCodPaymentMethod( WC()->session->get( 'chosen_payment_method' ) ) ) {
 			return;
 		}
 
@@ -1117,11 +1117,8 @@ class Checkout {
 		}
 
 		foreach ( $availableGateways as $key => $availableGateway ) {
-
-			$tmp = $this->checkIfPaymentIsCod( $availableGateway->id );
-
 			if (
-				$this->checkIfPaymentIsCod( $availableGateway->id ) &&
+				$this->isCodPaymentMethod( $availableGateway->id ) &&
 				! $carrier->supportsCod()
 			) {
 				unset( $availableGateways[ $key ] );
@@ -1138,7 +1135,7 @@ class Checkout {
 	 *
 	 * @return bool
 	 */
-	private function checkIfPaymentIsCod( ?string $paymentMethod ): bool {
+	private function isCodPaymentMethod( ?string $paymentMethod ): bool {
 		if ( null === $paymentMethod ) {
 			return false;
 		}
