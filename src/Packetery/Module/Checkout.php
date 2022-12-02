@@ -1106,12 +1106,16 @@ class Checkout {
 	 * @return array
 	 */
 	public function filterPaymentGateways( array $availableGateways ): array {
+		if ( ! is_checkout() ) {
+			return $availableGateways;
+		}
+
 		$chosenMethod = $this->calculateShipping();
 		if ( ! $this->isPacketeryOrder( $chosenMethod ) ) {
 			return $availableGateways;
 		}
-		$carrier = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenMethod ) );
 
+		$carrier = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenMethod ) );
 		if ( null === $carrier ) {
 			return $availableGateways;
 		}
