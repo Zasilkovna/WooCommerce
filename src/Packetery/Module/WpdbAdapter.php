@@ -20,27 +20,6 @@ use PacketeryTracy\Debugger;
 class WpdbAdapter {
 
 	/**
-	 * Packetery carrier table name.
-	 *
-	 * @var string
-	 */
-	public $packetery_carrier;
-
-	/**
-	 * Packetery order table name.
-	 *
-	 * @var string
-	 */
-	public $packetery_order;
-
-	/**
-	 * Packetery log table name.
-	 *
-	 * @var string
-	 */
-	public $packetery_log;
-
-	/**
 	 * WordPress posts table name.
 	 *
 	 * @var string
@@ -305,4 +284,24 @@ class WpdbAdapter {
 			}
 		}
 	}
+
+	/**
+	 * This method outputs a one dimensional array. If more than one column is returned by the query,
+	 * only the specified column will be returned, but the entire result is cached for later use.
+	 *
+	 * @param string $query The query you wish to execute. Setting this parameter to null will return the specified column from the cached results of the previous query.
+	 * @param int    $column_offset The desired column (0 being the first). Defaults to 0.
+	 *
+	 * @return array Returns an empty array if no result is found.
+	 */
+	public function get_col( string $query, int $column_offset = 0 ): array {
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		$result = $this->wpdb->get_col( $query, $column_offset );
+		if ( [] === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
+			$this->handleError( $this->getLastWpdbError() );
+		}
+
+		return $result;
+	}
+
 }

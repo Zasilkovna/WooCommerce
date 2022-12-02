@@ -40,9 +40,7 @@ class Repository {
 	 * @return array|object|null
 	 */
 	public function getPluginOptions() {
-		$wpdbAdapter = $this->wpdbAdapter;
-
-		return $wpdbAdapter->get_results( "SELECT `option_name` FROM $wpdbAdapter->options WHERE `option_name` LIKE 'packetery%'" );
+		return $this->wpdbAdapter->get_results( "SELECT `option_name` FROM $this->wpdbAdapter->options WHERE `option_name` LIKE 'packetery%'" );
 	}
 
 }
