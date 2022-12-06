@@ -266,13 +266,6 @@ class PacketSubmitter {
 				$commonEntity->setIsExported( true );
 				$commonEntity->setPacketId( (string) $response->getId() );
 
-				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled() )
-					|| ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
-
-				if ( $shouldUpdateStatus ) {
-					$order->update_status( $this->optionsProvider->getValidAutoOrderStatus() );
-				}
-
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
 				$record->status  = Log\Record::STATUS_SUCCESS;
@@ -286,6 +279,13 @@ class PacketSubmitter {
 				$errorMessage = null;
 
 				$submissionResult->increaseSuccessCount();
+
+				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled() )
+					|| ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
+
+				if ( $shouldUpdateStatus ) {
+					$this->updateOrderStatusOrLogError( $order, $commonEntity->getNumber(), $submissionResult );
+				}
 			}
 
 			$submissionResult->increaseLogsCount();
@@ -385,6 +385,10 @@ class PacketSubmitter {
 			$errors = esc_html( $submissionResult['errors'] );
 		}
 
+		if ( is_numeric( $submissionResult['statusUnchanged'] ) && $submissionResult['statusUnchanged'] > 0 ) {
+			$errors = esc_html__( 'Some order statuses have not been automatically changed.', 'packeta' );
+		}
+
 		$latteParams = [
 			'success' => $success,
 			'ignored' => $ignored,
@@ -392,6 +396,35 @@ class PacketSubmitter {
 		];
 
 		return $latteParams;
+	}
+
+	/**
+	 * Updates order status or logs error.
+	 *
+	 * @param WC_Order               $order WC Order.
+	 * @param string                 $orderId  Order ID.
+	 * @param PacketSubmissionResult $submissionResult Packet submission result.
+	 *
+	 * @return void
+	 */
+	private function updateOrderStatusOrLogError( WC_Order $order, string $orderId, PacketSubmissionResult $submissionResult ):void {
+		$autoOrderStatus = $this->optionsProvider->getValidAutoOrderStatus();
+		if ( '' === $autoOrderStatus ) {
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_PACKET_SENDING;
+			$record->status = Log\Record::STATUS_ERROR;
+
+			$record->title = sprintf(
+			// translators: %s represents unknown order status.
+				__( 'Order status has not been changed, status "%s" doesn\'t exist.', 'packeta' ),
+				$this->optionsProvider->getAutoOrderStatus()
+			);
+			$record->orderId = $orderId;
+			$this->logger->add( $record );
+			$submissionResult->increaseStatusUnchangedCount();
+		} else {
+			$order->update_status( $autoOrderStatus );
+		}
 	}
 
 }

@@ -121,7 +121,7 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		$this->packetSubmitter->submitPacket( $wcOrder );
+		$this->packetSubmitter->submitPacket( $wcOrder, true );
 	}
 
 	/**

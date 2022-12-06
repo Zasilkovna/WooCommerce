@@ -22,10 +22,11 @@ class PacketSubmissionResult {
 	 * @var int[]
 	 */
 	private $counter = [
-		'success' => 0,
-		'ignored' => 0,
-		'errors'  => 0,
-		'logs'    => 0,
+		'success'         => 0,
+		'ignored'         => 0,
+		'errors'          => 0,
+		'logs'            => 0,
+		'statusUnchanged' => 0,
 	];
 
 	/**
@@ -65,6 +66,15 @@ class PacketSubmissionResult {
 	}
 
 	/**
+	 * Increases count of situations when order status couldn't be changed.
+	 *
+	 * @return void
+	 */
+	public function increaseStatusUnchangedCount(): void {
+		$this->counter['statusUnchanged'] ++;
+	}
+
+	/**
 	 * Merges given result into $this.
 	 *
 	 * @param self $result Result.
@@ -72,10 +82,13 @@ class PacketSubmissionResult {
 	 * @return void
 	 */
 	public function merge( self $result ): void {
-		$this->counter['success'] += $result->getCounter()['success'];
-		$this->counter['ignored'] += $result->getCounter()['ignored'];
-		$this->counter['errors']  += $result->getCounter()['errors'];
-		$this->counter['logs']    += $result->getCounter()['logs'];
+		$counter                           = $result->getCounter();
+		$this->counter['success']         += $counter['success'];
+		$this->counter['ignored']         += $counter['ignored'];
+		$this->counter['errors']          += $counter['errors'];
+		$this->counter['logs']            += $counter['logs'];
+		$this->counter['statusUnchanged'] += $counter['statusUnchanged'];
+
 	}
 
 	/**

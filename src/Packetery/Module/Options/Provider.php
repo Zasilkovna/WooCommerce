@@ -490,7 +490,7 @@ class Provider {
 	}
 
 	/**
-	 * Force order status change on packet submit enabled.
+	 * Auto order status change on packet submit enabled.
 	 *
 	 * @return bool
 	 */
@@ -504,7 +504,7 @@ class Provider {
 	}
 
 	/**
-	 * Force order status change on packet submit enabled.
+	 * Auto order status change on packet auto submit enabled.
 	 *
 	 * @return bool
 	 */
@@ -518,16 +518,25 @@ class Provider {
 	}
 
 	/**
-	 * Forced order status.
+	 * Tells auto order status, if it is valid, otherwise empty string.
 	 *
 	 * @return string
 	 */
 	public function getValidAutoOrderStatus(): string {
-		$autoOrderStatus = $this->get( self::AUTO_ORDER_STATUS );
+		$autoOrderStatus = $this->getAutoOrderStatus();
 		if ( wc_is_order_status( $autoOrderStatus ) ) {
 			return $autoOrderStatus;
 		}
 
 		return self::AUTO_ORDER_STATUS_DEFAULT;
+	}
+
+	/**
+	 * Tells auto order status.
+	 *
+	 * @return string|null
+	 */
+	public function getAutoOrderStatus(): ?string {
+		return $this->get( self::AUTO_ORDER_STATUS );
 	}
 }

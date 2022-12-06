@@ -60,7 +60,8 @@ class Order {
 			$order->getEshop() &&
 			$this->validateFinalWeight( $order ) &&
 			$this->validateAddress( $order ) &&
-			$this->validateSize( $order )
+			$this->validateSize( $order ) &&
+			null === $order->getPacketId()
 		);
 	}
 
