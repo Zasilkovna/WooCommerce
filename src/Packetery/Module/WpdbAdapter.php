@@ -20,25 +20,11 @@ use PacketeryTracy\Debugger;
 class WpdbAdapter {
 
 	/**
-	 * WordPress posts table name.
-	 *
-	 * @var string
-	 */
-	public $posts;
-
-	/**
-	 * WordPress options table name.
-	 *
-	 * @var string
-	 */
-	public $options;
-
-	/**
 	 * Wpdb.
 	 *
 	 * @var \wpdb
 	 */
-	private $wpdb;
+	public $wpdb;
 
 	/**
 	 * Constructor.
@@ -241,15 +227,6 @@ class WpdbAdapter {
 	 */
 	private function isPacketeryTableQueried( string $query ): bool {
 		return 1 === preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?' . preg_quote( $this->getPacketeryPrefix(), '~' ) . '~i', $query );
-	}
-
-	/**
-	 * Gets packetery prefix.
-	 *
-	 * @return string
-	 */
-	public function getPacketeryPrefix(): string {
-		return sprintf( '%spacketery_', $this->wpdb->prefix );
 	}
 
 	/**

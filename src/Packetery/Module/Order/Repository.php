@@ -26,7 +26,7 @@ use WP_Post;
  */
 class Repository {
 
-	private const TABLE_ORDER = 'order';
+	private const TABLE_ORDER = 'packetery_order';
 
 	/**
 	 * WpdbAdapter.
@@ -63,15 +63,6 @@ class Repository {
 	}
 
 	/**
-	 * Gets table name.
-	 *
-	 * @return string
-	 */
-	private function getTableName(): string {
-		return $this->wpdbAdapter->getPacketeryPrefix() . self::TABLE_ORDER;
-	}
-
-	/**
 	 * Applies custom order status filter.
 	 *
 	 * @param array     $clauses Query clauses.
@@ -105,7 +96,7 @@ class Repository {
 			)
 		);
 
-		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdbAdapter->posts, $sqlStatusesToExclude );
+		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdbAdapter->wpdb->posts, $sqlStatusesToExclude );
 	}
 
 	/**
@@ -127,27 +118,27 @@ class Repository {
 			)
 		) {
 			// TODO: Introduce variable.
-			$clauses['join'] .= ' LEFT JOIN `' . $this->getTableName() . '` ON `' . $this->getTableName() . '`.`id` = `' . $this->wpdbAdapter->posts . '`.`id`';
+			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` ON `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`id` = `' . $this->wpdbAdapter->wpdb->posts . '`.`id`';
 
 			if ( $paramValues['packetery_carrier_id'] ) {
-				$clauses['where'] .= ' AND `' . $this->getTableName() . '`.`carrier_id` = "' . $this->wpdbAdapter->realEscape( $paramValues['packetery_carrier_id'] ) . '"';
+				$clauses['where'] .= ' AND `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`carrier_id` = "' . $this->wpdbAdapter->realEscape( $paramValues['packetery_carrier_id'] ) . '"';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_to_submit'] ) {
-				$clauses['where'] .= ' AND `' . $this->getTableName() . '`.`carrier_id` IS NOT NULL ';
-				$clauses['where'] .= ' AND `' . $this->getTableName() . '`.`is_exported` = false ';
+				$clauses['where'] .= ' AND `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`carrier_id` IS NOT NULL ';
+				$clauses['where'] .= ' AND `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`is_exported` = false ';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_to_print'] ) {
-				$clauses['where'] .= ' AND `' . $this->getTableName() . '`.`packet_id` IS NOT NULL ';
-				$clauses['where'] .= ' AND `' . $this->getTableName() . '`.`is_label_printed` = false ';
+				$clauses['where'] .= ' AND `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`packet_id` IS NOT NULL ';
+				$clauses['where'] .= ' AND `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`is_label_printed` = false ';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_order_type'] ) {
 				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
-					$clauses['where'] .= ' AND `' . $this->getTableName() . '`.`carrier_id` = "' . $this->wpdbAdapter->realEscape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$clauses['where'] .= ' AND `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`carrier_id` = "' . $this->wpdbAdapter->realEscape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
 				} else {
-					$clauses['where'] .= ' AND `' . $this->getTableName() . '`.`carrier_id` != "' . $this->wpdbAdapter->realEscape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$clauses['where'] .= ' AND `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`carrier_id` != "' . $this->wpdbAdapter->realEscape( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
 				}
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
@@ -163,7 +154,7 @@ class Repository {
 	 */
 	public function createTable(): bool {
 		return $this->wpdbAdapter->query(
-			'CREATE TABLE IF NOT EXISTS `' . $this->getTableName() . '` (
+			'CREATE TABLE IF NOT EXISTS `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` (
 				`id` bigint(20) unsigned NOT NULL,
 				`carrier_id` varchar(255) NOT NULL,
 				`is_exported` boolean NOT NULL,
@@ -196,7 +187,7 @@ class Repository {
 	 * Drop table used to store orders.
 	 */
 	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->getTableName() . '`' );
+		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`' );
 	}
 
 	/**
@@ -230,8 +221,8 @@ class Repository {
 		$result = $this->wpdbAdapter->get_row(
 			$this->wpdbAdapter->prepare(
 				'
-			SELECT o.* FROM `' . $this->getTableName() . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` as wp_p ON wp_p.ID = o.id 
+			SELECT o.* FROM `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` o 
+			JOIN `' . $this->wpdbAdapter->wpdb->posts . '` as wp_p ON wp_p.ID = o.id 
 			WHERE o.`id` = %d',
 				$wcOrder->get_id()
 			)
@@ -408,7 +399,7 @@ class Repository {
 	 * @return void
 	 */
 	public function save( Order $order ): void {
-		$this->wpdbAdapter->insertReplaceHelper( $this->getTableName(), $this->orderToDbArray( $order ), null, 'REPLACE' );
+		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER, $this->orderToDbArray( $order ), null, 'REPLACE' );
 	}
 
 	/**
@@ -501,8 +492,8 @@ class Repository {
 
 		$sql = $this->wpdbAdapter->prepare(
 			'
-			SELECT o.* FROM `' . $this->getTableName() . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			SELECT o.* FROM `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` o 
+			JOIN `' . $this->wpdbAdapter->wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
 			' . $where . '
 			ORDER BY wp_p.`post_date` 
 			LIMIT %d',
@@ -529,8 +520,8 @@ class Repository {
 	 */
 	public function countOrdersToSubmit(): int {
 		return (int) $this->wpdbAdapter->get_var(
-			'SELECT COUNT(DISTINCT o.id) FROM `' . $this->getTableName() . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			'SELECT COUNT(DISTINCT o.id) FROM `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` o 
+			JOIN `' . $this->wpdbAdapter->wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
 			WHERE o.`carrier_id` IS NOT NULL AND o.`is_exported` = false'
 		);
 	}
@@ -542,8 +533,8 @@ class Repository {
 	 */
 	public function countOrdersToPrint(): int {
 		return (int) $this->wpdbAdapter->get_var(
-			'SELECT COUNT(DISTINCT o.id) FROM `' . $this->getTableName() . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			'SELECT COUNT(DISTINCT o.id) FROM `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` o 
+			JOIN `' . $this->wpdbAdapter->wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
 			WHERE o.`packet_id` IS NOT NULL AND o.`is_label_printed` = false'
 		);
 	}
@@ -555,9 +546,9 @@ class Repository {
 	 */
 	public function deleteOrphans(): void {
 		$this->wpdbAdapter->query(
-			'DELETE `' . $this->getTableName() . '` FROM `' . $this->getTableName() . '`
-			LEFT JOIN `' . $this->wpdbAdapter->posts . '` ON `' . $this->wpdbAdapter->posts . '`.`ID` = `' . $this->getTableName() . '`.`id`
-			WHERE `' . $this->wpdbAdapter->posts . '`.`ID` IS NULL'
+			'DELETE `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` FROM `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`
+			LEFT JOIN `' . $this->wpdbAdapter->wpdb->posts . '` ON `' . $this->wpdbAdapter->wpdb->posts . '`.`ID` = `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '`.`id`
+			WHERE `' . $this->wpdbAdapter->wpdb->posts . '`.`ID` IS NULL'
 		);
 	}
 
@@ -567,7 +558,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addAdultContentColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->getTableName() . '` ADD COLUMN `adult_content` boolean NULL DEFAULT NULL AFTER `height`' );
+		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` ADD COLUMN `adult_content` boolean NULL DEFAULT NULL AFTER `height`' );
 	}
 
 	/**
@@ -576,7 +567,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addValueColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->getTableName() . '` ADD COLUMN `value` double NULL DEFAULT NULL AFTER `adult_content`' );
+		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` ADD COLUMN `value` double NULL DEFAULT NULL AFTER `adult_content`' );
 	}
 
 	/**
@@ -585,7 +576,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addCodColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->getTableName() . '` ADD COLUMN `cod` double NULL DEFAULT NULL AFTER `value`' );
+		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` ADD COLUMN `cod` double NULL DEFAULT NULL AFTER `value`' );
 	}
 
 	/**
@@ -594,7 +585,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addColumnApiErrorMessage(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->getTableName() . '` ADD COLUMN `api_error_message` text NULL DEFAULT NULL AFTER `cod`' );
+		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` ADD COLUMN `api_error_message` text NULL DEFAULT NULL AFTER `cod`' );
 	}
 
 	/**
@@ -603,7 +594,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addColumnApiErrorMessageDate(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->getTableName() . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
+		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
 	}
 
 	/**
@@ -612,7 +603,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addDeliverOnColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->getTableName() . '` ADD COLUMN `deliver_on` date NULL DEFAULT NULL AFTER `cod`' );
+		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER . '` ADD COLUMN `deliver_on` date NULL DEFAULT NULL AFTER `cod`' );
 	}
 
 	/**
@@ -623,7 +614,7 @@ class Repository {
 	 * @return void
 	 */
 	private function delete( int $orderId ): void {
-		$this->wpdbAdapter->delete( $this->getTableName(), [ 'id' => $orderId ], '%d' );
+		$this->wpdbAdapter->delete( $this->wpdbAdapter->wpdb->prefix . self::TABLE_ORDER, [ 'id' => $orderId ], '%d' );
 	}
 
 	/**

@@ -24,11 +24,6 @@ class WpdbAdapterFactory {
 	public function create(): WpdbAdapter {
 		global $wpdb;
 
-		$instance = new WpdbAdapter( $wpdb );
-
-		$instance->posts   = $wpdb->posts;
-		$instance->options = $wpdb->options;
-
-		return $instance;
+		return new WpdbAdapter( $wpdb );
 	}
 }
