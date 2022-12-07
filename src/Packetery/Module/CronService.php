@@ -18,7 +18,7 @@ namespace Packetery\Module;
 class CronService {
 
 	private const CRON_LOG_AUTO_DELETION_HOOK  = 'packetery_cron_log_auto_deletion_hook';
-	private const CRON_CARRIERS_HOOK           = 'packetery_cron_carriers_hook';
+	public const CRON_CARRIERS_HOOK            = 'packetery_cron_carriers_hook';
 	private const CRON_PACKET_STATUS_SYNC_HOOK = 'packetery_cron_packet_status_sync_hook';
 
 	/**
@@ -66,10 +66,15 @@ class CronService {
 			wp_schedule_event( ( new \DateTime( 'next day 02:00', wp_timezone() ) )->getTimestamp(), 'daily', self::CRON_LOG_AUTO_DELETION_HOOK );
 		}
 
-		add_action( self::CRON_CARRIERS_HOOK, [ $this->carrierDownloader, 'runAndRender' ] );
-		if ( ! wp_next_scheduled( self::CRON_CARRIERS_HOOK ) ) {
-			wp_schedule_event( time(), 'daily', self::CRON_CARRIERS_HOOK );
-		}
+		add_action(
+			'init',
+			function () {
+				add_action( self::CRON_CARRIERS_HOOK, [ $this->carrierDownloader, 'runAndRender' ] );
+				if ( false === as_has_scheduled_action( self::CRON_CARRIERS_HOOK ) ) {
+					as_schedule_recurring_action( ( new \DateTime( 'next day 09:10', wp_timezone() ) )->getTimestamp(), 86400, self::CRON_CARRIERS_HOOK );
+				}
+			}
+		);
 
 		add_action( self::CRON_PACKET_STATUS_SYNC_HOOK, [ $this->packetSynchronizer, 'syncStatuses' ] );
 		if ( ! wp_next_scheduled( self::CRON_PACKET_STATUS_SYNC_HOOK ) ) {

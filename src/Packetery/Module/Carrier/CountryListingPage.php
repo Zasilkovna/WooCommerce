@@ -10,6 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Module\Checkout;
+use Packetery\Module\CronService;
+use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -56,6 +58,13 @@ class CountryListingPage {
 	private $checkout;
 
 	/**
+	 * Options provider
+	 *
+	 * @var Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine     $latteEngine       PacketeryLatte engine.
@@ -63,19 +72,22 @@ class CountryListingPage {
 	 * @param Downloader $downloader        Carrier downloader.
 	 * @param Request    $httpRequest       Http request.
 	 * @param Checkout   $checkout          Checkout.
+	 * @param Provider   $optionsProvider   Options provider.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
 		Downloader $downloader,
 		Request $httpRequest,
-		Checkout $checkout
+		Checkout $checkout,
+		Provider $optionsProvider
 	) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
 		$this->downloader        = $downloader;
 		$this->httpRequest       = $httpRequest;
 		$this->checkout          = $checkout;
+		$this->optionsProvider   = $optionsProvider;
 	}
 
 	/**
@@ -107,13 +119,29 @@ class CountryListingPage {
 		);
 		$carriersUpdateParams['lastUpdate'] = $this->getLastUpdate();
 
+		$isApiPasswordSet = false;
+		if ( null !== $this->optionsProvider->get_api_password() ) {
+			$isApiPasswordSet = true;
+		}
+
+		$nextScheduledRun          = null;
+		$nextScheduledRunTimestamp = as_next_scheduled_action( CronService::CRON_CARRIERS_HOOK );
+		if ( is_int( $nextScheduledRunTimestamp ) ) {
+			$date = new \DateTime();
+			$date->setTimezone( wp_timezone() );
+			$date->setTimestamp( $nextScheduledRunTimestamp );
+			$nextScheduledRun = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
+		}
+
 		$countries = $this->getActiveCountries();
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
 			[
-				'carriersUpdate' => $carriersUpdateParams,
-				'countries'      => $countries,
-				'translations'   => [
+				'carriersUpdate'   => $carriersUpdateParams,
+				'countries'        => $countries,
+				'isApiPasswordSet' => $isApiPasswordSet,
+				'nextScheduledRun' => $nextScheduledRun,
+				'translations'     => [
 					'packeta'                    => __( 'Packeta', 'packeta' ),
 					'carriers'                   => __( 'Carriers', 'packeta' ),
 					'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
@@ -127,6 +155,8 @@ class CountryListingPage {
 					'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
 					'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
 					'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
+					'pleaseCompleteSetupFirst'   => __( 'Before updating the carriers, please complete the plugin setup first.', 'packeta' ),
+					'nextScheduledRunPlannedAt'  => __( 'The next automatic update will occur at', 'packeta' ),
 				],
 			]
 		);
