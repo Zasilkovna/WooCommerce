@@ -8,6 +8,8 @@ define(
         'mage/translate',
         'mage/storage',
         'mage/url',
+        'Magento_Checkout/js/model/shipping-rates-validation-rules',
+        '../model/shipping-rates-validation-rules',
         'ko'
     ], function(
         quote,
@@ -18,9 +20,13 @@ define(
         $t,
         storage,
         url,
+        defaultShippingRatesValidationRules,
+        shippingRatesValidationRules,
         ko
     ) {
         'use strict';
+
+        defaultShippingRatesValidationRules.registerRules('packetery', shippingRatesValidationRules);
 
         var config = null;
 
