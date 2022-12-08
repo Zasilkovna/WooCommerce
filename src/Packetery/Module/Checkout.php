@@ -1137,14 +1137,16 @@ class Checkout {
 		}
 
 		foreach ( $cartProducts as $cartProduct ) {
+			if ( ! isset( $cartProduct['product_id'] ) ) {
+				continue;
+			}
 			$product            = WC()->product_factory->get_product( $cartProduct['product_id'] );
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {
 				$productCategoryEntity           = ProductCategory\Entity::fromTermId( (int) $productCategoryId );
 				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRates();
-
-				if ( in_array( $shippingRate, array_keys( $disallowedCategoryShippingRates ), true ) ) {
+				if ( isset( $disallowedCategoryShippingRates[ $shippingRate ] ) && true === $disallowedCategoryShippingRates[ $shippingRate ] ) {
 					return true;
 				}
 			}

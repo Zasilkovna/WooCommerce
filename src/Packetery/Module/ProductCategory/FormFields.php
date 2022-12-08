@@ -10,11 +10,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\ProductCategory;
 
+use Packetery\Module\Carrier\Repository;
 use Packetery\Module\FormFactory;
 use Packetery\Module\ProductCategory;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
-use Packetery\Module\Checkout;
 
 /**
  * Class FormFields
@@ -38,23 +38,23 @@ class FormFields {
 	private $latteEngine;
 
 	/**
-	 * Checkout.
+	 * Carrier repository.
 	 *
-	 * @var Checkout
+	 * @var Repository
 	 */
-	private $checkout;
+	private $carrierRepository;
 
 	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory $formFactory Factory engine.
-	 * @param Engine      $latteEngine Latte engine.
-	 * @param Checkout    $checkout    Checkout.
+	 * @param FormFactory $formFactory       Factory engine.
+	 * @param Engine      $latteEngine       Latte engine.
+	 * @param Repository  $carrierRepository Carrier repository.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, Checkout $checkout ) {
-		$this->formFactory = $formFactory;
-		$this->latteEngine = $latteEngine;
-		$this->checkout    = $checkout;
+	public function __construct( FormFactory $formFactory, Engine $latteEngine, Repository $carrierRepository ) {
+		$this->formFactory       = $formFactory;
+		$this->latteEngine       = $latteEngine;
+		$this->carrierRepository = $carrierRepository;
 	}
 
 	/**
@@ -80,10 +80,10 @@ class FormFields {
 		$form = $this->formFactory->create();
 
 		$shippingRatesContainer = $form->addContainer( ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES );
-		$shippingRates          = $this->checkout->getAllShippingRates();
+		$carriersList           = $this->carrierRepository->getAllActiveCarriersList();
 
-		foreach ( $shippingRates as $shippingRate ) {
-			$shippingRatesContainer->addCheckbox( $shippingRate['id'], $shippingRate['label'] );
+		foreach ( $carriersList as $carrier ) {
+			$shippingRatesContainer->addCheckbox( $carrier['id'], $carrier['label'] );
 		}
 
 		$form->setDefaults(
