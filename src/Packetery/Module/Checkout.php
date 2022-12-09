@@ -671,7 +671,8 @@ class Checkout {
 			);
 		}
 
-		if ( false === $this->isCodPaymentMethod( WC()->session->get( 'chosen_payment_method' ) ) ) {
+		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
+		if ( null === $paymentMethod || false === $this->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
 		}
 
@@ -1135,22 +1136,14 @@ class Checkout {
 	/**
 	 * Checks if payment method is a COD one.
 	 *
-	 * @param ?string $paymentMethod Payment method.
+	 * @param string $paymentMethod Payment method.
 	 *
 	 * @return bool
 	 */
-	private function isCodPaymentMethod( ?string $paymentMethod ): bool {
-		if ( null === $paymentMethod ) {
-			return false;
-		}
-
-		$isCod            = false;
+	private function isCodPaymentMethod( string $paymentMethod ): bool {
 		$codPaymentMethod = $this->options_provider->getCodPaymentMethod();
-		if ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod ) {
-			$isCod = true;
-		}
 
-		return $isCod;
+		return ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod );
 	}
 
 }

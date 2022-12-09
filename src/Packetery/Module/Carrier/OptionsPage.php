@@ -147,7 +147,7 @@ class OptionsPage {
 
 		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
 
-		if ( $carrier->supportsCod() ) {
+		if ( null !== $carrier && $carrier->supportsCod() ) {
 			$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )
 				->setRequired( false )
 				->addRule( Form::FLOAT )
@@ -159,6 +159,13 @@ class OptionsPage {
 					$this->addSurchargeLimit( $surchargeLimits, $index );
 				}
 			}
+			$roundingOptions = [
+				Rounder::DONT_ROUND => __( 'No rounding', 'packeta' ),
+				Rounder::ROUND_DOWN => __( 'Always round down', 'packeta' ),
+				Rounder::ROUND_UP   => __( 'Always round up', 'packeta' ),
+			];
+			$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
+				->setDefaultValue( Rounder::DONT_ROUND );
 		}
 
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
@@ -188,16 +195,6 @@ class OptionsPage {
 				->setRequired( false )
 				->addRule( Form::FLOAT )
 				->addRule( Form::MIN, null, 0 );
-		}
-
-		$roundingOptions = [
-			Rounder::DONT_ROUND => __( 'No rounding', 'packeta' ),
-			Rounder::ROUND_DOWN => __( 'Always round down', 'packeta' ),
-			Rounder::ROUND_UP   => __( 'Always round up', 'packeta' ),
-		];
-		if ( $carrier->supportsCod() ) {
-			$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
-				->setDefaultValue( Rounder::DONT_ROUND );
 		}
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
