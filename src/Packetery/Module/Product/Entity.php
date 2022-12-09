@@ -75,7 +75,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isAgeVerification18PlusRequired(): bool {
-		return (bool) $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
+		return (string) $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
 	}
 
 	/**
