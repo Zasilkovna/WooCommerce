@@ -208,6 +208,56 @@ class Repository {
 	}
 
 	/**
+	 * Get orders by order ids.
+	 *
+	 * @param array $orderIds Order IDs.
+	 *
+	 * @return array|null
+	 */
+	public function getOrdersByIds( $orderIds): ?array {
+		$orders = [];
+
+		if ( ! $orderIds ) {
+			return null;
+		}
+
+		$wpdbAdapter = $this->wpdbAdapter;
+
+		$sqlInString = '';
+		$ordersCount = count($orderIds);
+		for($i = 1; $i <= $ordersCount; $i++) {
+			$sqlInString .= $i === $ordersCount ? '%d' : '%d, ';
+		}
+
+		$result = $wpdbAdapter->get_results(
+			$wpdbAdapter->prepare(
+				'
+			SELECT o.* FROM `' . $wpdbAdapter->packetery_order . '` o 
+			JOIN `' . $wpdbAdapter->posts . '` as wp_p ON wp_p.ID = o.id 
+			WHERE o.`id` IN (' . $sqlInString . ')', $orderIds ), ARRAY_A
+		);
+
+		$wcOrders = [];
+		if($result) {
+			foreach($result as $orderItem) {
+				$wcOrders[$orderItem['id']] = (object) $orderItem;
+			}
+		}
+
+
+		foreach($orderIds as $orderId) {
+			$wcOrder = wc_get_order( $orderId );
+			if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+				continue;
+			}
+
+			$partialOrder = $this->createPartialOrder( $wcOrders[$orderId] );
+			$orders[] = $this->builder->finalize( $wcOrder, $partialOrder );
+		}
+		return $orders;
+	}
+
+	/**
 	 * Gets order by wc order.
 	 *
 	 * @param \WC_Order $wcOrder WC Order.

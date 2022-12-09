@@ -17,6 +17,7 @@ use Packetery\Module\Log\Purger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module\Plugin;
+use Tracy\Debugger;
 
 /**
  * Class GridExtender.
@@ -28,9 +29,9 @@ class GridExtender {
 	const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
 
 	/**
-	 * Order entity cache.
+	 * Orders cache.
 	 *
-	 * @var Entity\Order|null
+	 * @var array|null
 	 */
 	public static $orderCache;
 
@@ -216,21 +217,41 @@ class GridExtender {
 	}
 
 	/**
+	 * @return array|null Current page post ids
+	 */
+	private function getOrdersDataFromCurrentPage(): ?array {
+		$orderIds = [];
+
+		if ( isset( $GLOBALS['posts'] ) && is_array( $GLOBALS['posts'] ) ) {
+			foreach ( $GLOBALS['posts'] as $order ) {
+				if ( $order instanceof \WP_Post ) {
+					$orderIds[] = $order->ID;
+				}
+			}
+		}
+
+		$ordersData = $this->orderRepository->getOrdersByIds( $orderIds );
+
+		return $ordersData;
+	}
+
+	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
 	 */
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
-		// TODO: get all orders at once using post ids from $GLOBALS['posts'] and cache them.
-		if ( ! isset( self::$orderCache ) || (int) self::$orderCache->getNumber() !== $post->ID ) {
-			self::$orderCache = $this->orderRepository->getById( $post->ID );
+
+		if ( ! isset( self::$orderCache ) || ! is_array( self::$orderCache ) ) {
+			self::$orderCache = $this->getOrdersDataFromCurrentPage();
 			if ( null === self::$orderCache ) {
 				return;
 			}
 		}
 
-		$order = self::$orderCache;
+
+		$order = self::$orderCache[$post->ID];
 
 		switch ( $column ) {
 			case 'packetery_weight':
