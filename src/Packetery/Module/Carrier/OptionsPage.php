@@ -262,7 +262,7 @@ class OptionsPage {
 			'weight',
 			__( 'Weight rules are overlapping, please fix them.', 'packeta' )
 		);
-		if ( isset( $options['order_price'] ) ) {
+		if ( isset( $options['surcharge_limits'] ) ) {
 			$this->checkOverlapping(
 				$form,
 				$options,
