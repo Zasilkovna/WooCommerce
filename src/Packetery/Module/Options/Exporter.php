@@ -113,6 +113,7 @@ class Exporter {
 		$themeLatestVersion     = \WC_Admin_Status::get_latest_theme_version( $activeTheme );
 		$themeLatestVersionInfo = ( $themeLatestVersion !== $activeTheme->version ? ' (' . $themeLatestVersion . ' available)' : '' );
 		$latteParams            = [
+			'siteUrl'           => get_option( 'siteurl' ),
 			'wpVersion'         => get_bloginfo( 'version' ),
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
