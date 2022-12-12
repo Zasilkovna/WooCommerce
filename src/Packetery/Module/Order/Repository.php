@@ -214,7 +214,7 @@ class Repository {
 	 *
 	 * @return array|null
 	 */
-	public function getOrdersByIds( $orderIds): ?array {
+	public function getOrdersByIds( $orderIds ): ?array {
 		$orders = [];
 
 		if ( ! $orderIds ) {
@@ -224,35 +224,37 @@ class Repository {
 		$wpdbAdapter = $this->wpdbAdapter;
 
 		$sqlInString = '';
-		$ordersCount = count($orderIds);
-		for($i = 1; $i <= $ordersCount; $i++) {
+		$ordersCount = count( $orderIds );
+		for ( $i = 1; $i <= $ordersCount; $i++ ) {
 			$sqlInString .= $i === $ordersCount ? '%d' : '%d, ';
 		}
 
-		$result = $wpdbAdapter->get_results(
+		$packeteryOrdersResult = $wpdbAdapter->get_results(
 			$wpdbAdapter->prepare(
 				'
 			SELECT o.* FROM `' . $wpdbAdapter->packetery_order . '` o 
 			JOIN `' . $wpdbAdapter->posts . '` as wp_p ON wp_p.ID = o.id 
-			WHERE o.`id` IN (' . $sqlInString . ')', $orderIds ), ARRAY_A
+			WHERE o.`id` IN (' . $sqlInString . ')',
+				$orderIds
+			),
+			ARRAY_A
 		);
 
-		$wcOrders = [];
-		if($result) {
-			foreach($result as $orderItem) {
-				$wcOrders[$orderItem['id']] = (object) $orderItem;
+		$packeteryOrders = [];
+		if ( $packeteryOrdersResult ) {
+			foreach ( $packeteryOrdersResult as $packeteryOrder ) {
+				$packeteryOrders[ $packeteryOrder['id'] ] = (object) $packeteryOrder;
 			}
 		}
 
-
-		foreach($orderIds as $orderId) {
+		foreach ( $orderIds as $orderId ) {
 			$wcOrder = wc_get_order( $orderId );
 			if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
 
-			$partialOrder = $this->createPartialOrder( $wcOrders[$orderId] );
-			$orders[] = $this->builder->finalize( $wcOrder, $partialOrder );
+			$partialOrder       = $this->createPartialOrder( $packeteryOrders[ $orderId ] );
+			$orders[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
 		}
 		return $orders;
 	}

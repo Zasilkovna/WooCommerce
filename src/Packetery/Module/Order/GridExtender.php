@@ -217,6 +217,8 @@ class GridExtender {
 	}
 
 	/**
+	 * Returns data for current orders page for cache usage
+	 *
 	 * @return array|null Current page post ids
 	 */
 	private function getOrdersDataFromCurrentPage(): ?array {
@@ -250,8 +252,11 @@ class GridExtender {
 			}
 		}
 
+		$order = self::$orderCache[ $post->ID ];
 
-		$order = self::$orderCache[$post->ID];
+		if ( null === self::$orderCache[ $post->ID ] ) {
+			return;
+		}
 
 		switch ( $column ) {
 			case 'packetery_weight':
