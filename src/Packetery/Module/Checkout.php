@@ -21,20 +21,22 @@ use PacketeryNette\Http\Request;
  */
 class Checkout {
 
-	public const CARRIER_PREFIX = 'packetery_carrier_';
-	private const NONCE_ACTION  = 'packetery_checkout';
-	private const NONCE_NAME    = '_wpnonce_packetery_checkout';
+	public const CARRIER_PREFIX                    = 'packetery_carrier_';
+	public const PACKETERY_CARRIER_FALLBACK_STRING = 'packetery_carrier_packetery_carrier_';
+	private const NONCE_ACTION                     = 'packetery_checkout';
 
-	const ATTR_POINT_ID     = 'packetery_point_id';
-	const ATTR_POINT_NAME   = 'packetery_point_name';
-	const ATTR_POINT_CITY   = 'packetery_point_city';
-	const ATTR_POINT_ZIP    = 'packetery_point_zip';
-	const ATTR_POINT_STREET = 'packetery_point_street';
-	const ATTR_POINT_PLACE  = 'packetery_point_place'; // Business name of pickup point.
-	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
-	const ATTR_POINT_URL    = 'packetery_point_url';
+	private const NONCE_NAME = '_wpnonce_packetery_checkout';
+	const ATTR_POINT_ID      = 'packetery_point_id';
+	const ATTR_POINT_NAME    = 'packetery_point_name';
+	const ATTR_POINT_CITY    = 'packetery_point_city';
+	const ATTR_POINT_ZIP     = 'packetery_point_zip';
+	const ATTR_POINT_STREET  = 'packetery_point_street';
+	const ATTR_POINT_PLACE   = 'packetery_point_place'; // Business name of pickup point.
+	const ATTR_CARRIER_ID    = 'packetery_carrier_id';
 
-	const BUTTON_RENDERER_TABLE_ROW  = 'table-row';
+	const ATTR_POINT_URL            = 'packetery_point_url';
+	const BUTTON_RENDERER_TABLE_ROW = 'table-row';
+
 	const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
 
 	/**
@@ -713,9 +715,10 @@ class Checkout {
 				continue;
 			}
 
-			$optionId = self::CARRIER_PREFIX . $carrier->getId();
+			$optionId         = self::CARRIER_PREFIX . $carrier->getId();
+			$optionIdFallback = str_replace( self::CARRIER_PREFIX, self::PACKETERY_CARRIER_FALLBACK_STRING, $optionId );
 
-			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
+			if ( in_array( $optionId, $disallowedShippingRateIds, true ) || in_array( $optionIdFallback, $disallowedShippingRateIds, true ) ) {
 				continue;
 			}
 
