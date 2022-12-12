@@ -200,6 +200,10 @@ class Upgrade {
 			$this->orderRepository->addDeliverOnColumn();
 		}
 
+		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
+			wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
+		}
+
 		update_option( 'packetery_version', Plugin::VERSION );
 	}
 
