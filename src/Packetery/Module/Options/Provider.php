@@ -23,17 +23,17 @@ class Provider {
 	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
 	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 
-	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT               = 'A6 on A4';
-	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT               = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT               = 100;
-	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT        = 14;
-	const FORCE_PACKET_CANCEL_DEFAULT                      = true;
-	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT           = false;
-	const WIDGET_AUTO_OPEN_DEFAULT                         = false;
-	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                 = false;
-	const AUTO_ORDER_STATUS_DEFAULT                        = '';
-	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT = false;
-	const AUTO_ORDER_STATUS                                = 'auto_order_status';
+	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT                           = 'A6 on A4';
+	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT                           = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	const MAX_STATUS_SYNCING_PACKETS_DEFAULT                           = 100;
+	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT                    = 14;
+	const FORCE_PACKET_CANCEL_DEFAULT                                  = true;
+	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT                       = false;
+	const WIDGET_AUTO_OPEN_DEFAULT                                     = false;
+	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                             = false;
+	const AUTO_ORDER_STATUS_DEFAULT                                    = '';
+	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
+	const AUTO_ORDER_STATUS = 'auto_order_status';
 
 	/**
 	 *  Options data.
@@ -504,17 +504,21 @@ class Provider {
 	}
 
 	/**
-	 * Auto order status change on packet auto submit enabled.
+	 * Auto order status change on packet auto submit at frontend enabled.
 	 *
 	 * @return bool
 	 */
-	public function isOrderStatusAutoChangeForAutoSubmitEnabled(): bool {
-		$value = $this->get( 'order_status_auto_change_for_auto_submit' );
+	public function isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled(): bool {
+		if ( false === $this->isOrderStatusAutoChangeEnabled() ) {
+			return false;
+		}
+
+		$value = $this->get( 'order_status_auto_change_for_auto_submit_at_frontend' );
 		if ( null !== $value ) {
 			return (bool) $value;
 		}
 
-		return self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_DEFAULT;
+		return self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT;
 	}
 
 	/**
@@ -523,9 +527,9 @@ class Provider {
 	 * @return string
 	 */
 	public function getValidAutoOrderStatus(): string {
-		$autoOrderStatus = $this->getAutoOrderStatus();
-		if ( wc_is_order_status( $autoOrderStatus ) ) {
-			return $autoOrderStatus;
+		$value = $this->getAutoOrderStatus();
+		if ( wc_is_order_status( $value ) ) {
+			return $value;
 		}
 
 		return self::AUTO_ORDER_STATUS_DEFAULT;

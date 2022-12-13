@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\Log;
+use Packetery\Module\Options;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use WC_Order;
@@ -49,18 +50,27 @@ class BulkActions {
 	private $logPage;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * BulkActions constructor.
 	 *
-	 * @param Engine          $latteEngine     Latte engine.
-	 * @param Request         $httpRequest     HTTP request.
-	 * @param PacketSubmitter $packetSubmitter Order API Client.
-	 * @param Log\Page        $logPage         Log page.
+	 * @param Engine           $latteEngine     Latte engine.
+	 * @param Request          $httpRequest     HTTP request.
+	 * @param PacketSubmitter  $packetSubmitter Order API Client.
+	 * @param Log\Page         $logPage         Log page.
+	 * @param Options\Provider $optionsProvider Options provider.
 	 */
-	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter, Log\Page $logPage ) {
+	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter, Log\Page $logPage, Options\Provider $optionsProvider ) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
 		$this->packetSubmitter = $packetSubmitter;
 		$this->logPage         = $logPage;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -118,7 +128,7 @@ class BulkActions {
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$submissionResult = $this->packetSubmitter->submitPacket( $order );
+					$submissionResult = $this->packetSubmitter->submitPacket( $order, $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
 					$finalSubmissionResult->merge( $submissionResult );
 				}
 			}

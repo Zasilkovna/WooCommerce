@@ -169,7 +169,10 @@ class PacketSubmitter {
 
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order );
 
-		$submissionResult         = $this->submitPacket( wc_get_order( (int) $order->getNumber() ) );
+		$submissionResult         = $this->submitPacket(
+			wc_get_order( (int) $order->getNumber() ),
+			$this->optionsProvider->isOrderStatusAutoChangeEnabled()
+		);
 		$resultsCounter           = $submissionResult->getCounter();
 		$submissionResultMessages = $this->getTranslatedSubmissionMessages( $resultsCounter, (int) $order->getNumber() );
 
@@ -206,12 +209,12 @@ class PacketSubmitter {
 	/**
 	 * Submits packet data to Packeta API.
 	 *
-	 * @param WC_Order $order WC order.
-	 * @param bool     $isAutoSubmitted Packet auto submission.
+	 * @param WC_Order $order             WC order.
+	 * @param bool     $updateOrderStatus Update order status.
 	 *
 	 * @return PacketSubmissionResult
 	 */
-	public function submitPacket( WC_Order $order, bool $isAutoSubmitted = false ): PacketSubmissionResult {
+	public function submitPacket( WC_Order $order, bool $updateOrderStatus ): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
 		$commonEntity     = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
@@ -286,13 +289,8 @@ class PacketSubmitter {
 			$commonEntity->updateApiErrorMessage( $errorMessage );
 			$this->orderRepository->save( $commonEntity );
 
-			if ( false === $response->hasFault() ) {
-				$shouldUpdateStatus = ( $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitEnabled() )
-				                      || ( ! $isAutoSubmitted && $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
-
-				if ( $shouldUpdateStatus ) {
-					$this->updateOrderStatusOrLogError( $order, $commonEntity->getNumber(), $submissionResult );
-				}
+			if ( $updateOrderStatus && false === $response->hasFault() ) {
+				$this->updateOrderStatusOrLogError( $order, $commonEntity->getNumber(), $submissionResult );
 			}
 		} else {
 			$submissionResult->increaseIgnoredCount();

@@ -88,7 +88,6 @@ class PacketSubmissionResult {
 		$this->counter['errors']          += $counter['errors'];
 		$this->counter['logs']            += $counter['logs'];
 		$this->counter['statusUnchanged'] += $counter['statusUnchanged'];
-
 	}
 
 	/**

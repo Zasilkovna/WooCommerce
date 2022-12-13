@@ -68,7 +68,7 @@ class PacketAutoSubmitter {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 2 );
+		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 3 );
 
 		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
 			return;
@@ -79,8 +79,8 @@ class PacketAutoSubmitter {
 			if ( self::EVENT_ON_ORDER_COMPLETED === $mappedEvent ) {
 				add_action(
 					'woocommerce_order_status_completed',
-					function ( int $orderId ) {
-						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId );
+					function ( int $orderId ): void {
+						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId, is_admin() === false );
 					}
 				);
 				continue;
@@ -89,8 +89,8 @@ class PacketAutoSubmitter {
 			if ( self::EVENT_ON_ORDER_PROCESSING === $mappedEvent ) {
 				add_action(
 					'woocommerce_order_status_processing',
-					function ( int $orderId ) {
-						$this->handleEvent( self::EVENT_ON_ORDER_PROCESSING, $orderId );
+					function ( int $orderId ): void {
+						$this->handleEvent( self::EVENT_ON_ORDER_PROCESSING, $orderId, is_admin() === false );
 					}
 				);
 			}
@@ -100,12 +100,13 @@ class PacketAutoSubmitter {
 	/**
 	 * Handle event.
 	 *
-	 * @param string $event   Event.
-	 * @param int    $orderId WC Order.
+	 * @param string    $event               Event.
+	 * @param int       $orderId             WC Order.
+	 * @param bool|null $triggeredByFrontend Tells if event is triggered by frontend logic. NULL is passed when data from previous versions are being processed.
 	 *
 	 * @return void
 	 */
-	public function handleEvent( string $event, int $orderId ): void {
+	public function handleEvent( string $event, int $orderId, ?bool $triggeredByFrontend = null ): void {
 		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
 			return;
 		}
@@ -121,7 +122,10 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		$this->packetSubmitter->submitPacket( $wcOrder, true );
+		$this->packetSubmitter->submitPacket(
+			$wcOrder,
+			false === $triggeredByFrontend || ( true === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled() )
+		);
 	}
 
 	/**
@@ -133,6 +137,6 @@ class PacketAutoSubmitter {
 	 * @return void
 	 */
 	public function handleEventAsync( string $event, int $orderId ): void {
-		as_schedule_single_action( time(), self::HOOK_NAME_HANDLE_EVENT, [ $event, $orderId ] );
+		as_schedule_single_action( time(), self::HOOK_NAME_HANDLE_EVENT, [ $event, $orderId, is_admin() === false ] );
 	}
 }
