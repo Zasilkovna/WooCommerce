@@ -219,7 +219,7 @@ class Repository {
 		$orders = [];
 
 		if ( ! $orderIds ) {
-			return null;
+			return $orders;
 		}
 
 		$wpdbAdapter = $this->wpdbAdapter;
@@ -258,7 +258,7 @@ class Repository {
 			$partialOrder       = $this->createPartialOrder( $packeteryOrders[ $orderId ] );
 			$orders[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
 		}
-		return is_array( $orders ) && ! empty( $orders ) ? $orders : null;
+		return $orders;
 	}
 
 	/**
