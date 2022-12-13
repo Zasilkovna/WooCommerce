@@ -251,7 +251,7 @@ class Repository {
 
 		foreach ( $orderIds as $orderId ) {
 			$wcOrder = wc_get_order( $orderId );
-			if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			if ( ! $wcOrder instanceof \WC_Order || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
 
