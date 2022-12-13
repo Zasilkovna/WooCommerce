@@ -29,7 +29,7 @@ class GridExtender {
 	/**
 	 * Orders cache.
 	 *
-	 * @var array|null
+	 * @var Core\Entity\Order[]|null
 	 */
 	public static $orderCache;
 
@@ -230,9 +230,7 @@ class GridExtender {
 			}
 		}
 
-		$ordersData = $this->orderRepository->getOrdersByIds( $orderIds );
-
-		return $ordersData;
+		return $this->orderRepository->getOrdersByIds( $orderIds );
 	}
 
 	/**
@@ -250,11 +248,11 @@ class GridExtender {
 			}
 		}
 
-		$order = self::$orderCache[ $post->ID ];
-
-		if ( null === self::$orderCache[ $post->ID ] ) {
+		if ( ! isset( self::$orderCache[ $post->ID ] ) ) {
 			return;
 		}
+
+		$order = self::$orderCache[ $post->ID ];
 
 		switch ( $column ) {
 			case 'packetery_weight':

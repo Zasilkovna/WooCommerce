@@ -17,6 +17,7 @@ use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
+use PacketeryNette\Iterators\CachingIterator;
 use WP_Post;
 
 /**
@@ -214,7 +215,7 @@ class Repository {
 	 *
 	 * @return array|null
 	 */
-	public function getOrdersByIds( $orderIds ): ?array {
+	public function getOrdersByIds( array $orderIds ): ?array {
 		$orders = [];
 
 		if ( ! $orderIds ) {
@@ -223,10 +224,11 @@ class Repository {
 
 		$wpdbAdapter = $this->wpdbAdapter;
 
-		$sqlInString = '';
-		$ordersCount = count( $orderIds );
-		for ( $i = 1; $i <= $ordersCount; $i++ ) {
-			$sqlInString .= $i === $ordersCount ? '%d' : '%d, ';
+		$sqlInString     = '';
+		$cachingIterator = new CachingIterator( $orderIds );
+
+		foreach ( $cachingIterator as $iteration ) {
+			$sqlInString .= $cachingIterator->isLast() ? '%d' : '%d, ';
 		}
 
 		$packeteryOrdersResult = $wpdbAdapter->get_results(
@@ -237,13 +239,13 @@ class Repository {
 			WHERE o.`id` IN (' . $sqlInString . ')',
 				$orderIds
 			),
-			ARRAY_A
+			OBJECT_K
 		);
 
 		$packeteryOrders = [];
 		if ( $packeteryOrdersResult ) {
-			foreach ( $packeteryOrdersResult as $packeteryOrder ) {
-				$packeteryOrders[ $packeteryOrder['id'] ] = (object) $packeteryOrder;
+			foreach ( $packeteryOrdersResult as $orderId => $packeteryOrder ) {
+				$packeteryOrders[ $orderId ] = $packeteryOrder;
 			}
 		}
 
@@ -256,7 +258,7 @@ class Repository {
 			$partialOrder       = $this->createPartialOrder( $packeteryOrders[ $orderId ] );
 			$orders[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
 		}
-		return $orders;
+		return is_array( $orders ) && ! empty( $orders ) ? $orders : null;
 	}
 
 	/**
