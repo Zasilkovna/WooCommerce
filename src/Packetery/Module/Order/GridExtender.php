@@ -243,9 +243,6 @@ class GridExtender {
 
 		if ( ! isset( self::$orderCache ) || ! is_array( self::$orderCache ) ) {
 			self::$orderCache = $this->getOrdersDataFromCurrentPage();
-			if ( null === self::$orderCache ) {
-				return;
-			}
 		}
 
 		if ( ! isset( self::$orderCache[ $post->ID ] ) ) {

@@ -213,9 +213,9 @@ class Repository {
 	 *
 	 * @param array $orderIds Order IDs.
 	 *
-	 * @return array|null
+	 * @return array
 	 */
-	public function getOrdersByIds( array $orderIds ): ?array {
+	public function getOrdersByIds( array $orderIds ): array {
 		$orders = [];
 
 		if ( ! $orderIds ) {
