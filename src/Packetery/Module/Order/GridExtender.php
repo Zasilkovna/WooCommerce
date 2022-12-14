@@ -217,9 +217,9 @@ class GridExtender {
 	/**
 	 * Returns data for current orders page for cache usage
 	 *
-	 * @return array|null Current page post ids
+	 * @return array Current page post ids
 	 */
-	private function getOrdersDataFromCurrentPage(): ?array {
+	private function getOrdersDataFromCurrentPage(): array {
 		$orderIds = [];
 
 		if ( isset( $GLOBALS['posts'] ) && is_array( $GLOBALS['posts'] ) ) {
