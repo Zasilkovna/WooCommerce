@@ -70,6 +70,15 @@ add_filter( 'packeta_create_packet', function ( array $createPacketData ): array
 	return $createPacketData;
 } );
 ```
+##### Filter shipping rate cost
+
+To update packeta shipping rate cost in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
+
+```
+add_filter( 'packeta_shipping_price', function($price) {
+	return $price * 1.5;
+});
+```
 
 You can find description of the attributes in the [official documentation](https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetattributes).
 

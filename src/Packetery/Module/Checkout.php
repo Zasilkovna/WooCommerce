@@ -959,7 +959,14 @@ class Checkout {
 	 *
 	 * @return array
 	 */
-	public function createShippingRate( string $name, string $optionId, ?float $cost ): array {
+	private function createShippingRate( string $name, string $optionId, ?float $cost ): array {
+		/**
+		 * Filter shipping rate cost in checkout
+		 *
+		 * @since 1.4.1
+		 */
+		$cost = apply_filters( 'packeta_shipping_price', $cost );
+
 		return [
 			'label'    => $name,
 			'id'       => $optionId,

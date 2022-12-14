@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.4
+Stable tag: 1.4.1
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.5.1
@@ -61,6 +61,18 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.4.1 =
+Added: New filter packeta_shipping_price. With the packeta_shipping_price filter, you can adjust the shipping price shown during checkout.
+Fixed: checking return type of product get_meta.
+Fixed: Product-carrier limitation user interface for product creation.
+Fixed: Show all enabled payment methods in plugin settings.
+Fixed: Product-carrier limitation.
+Fixed: Checkout widget button visibility handling on no customer address filled.
+Updated: Filter packeta_create_packet updated to accept array of packet attributes instead of order entity.
+Updated: Packet status tracking interface and default values.
+Updated: Refactor of function that gets all available packeta shipping methods.
+Updated: small edit of translation strings.
+
 = 1.4 =
 Fixed: Performance optimization for loading the list of orders
 Fixed: Label print edge case error
