@@ -21,9 +21,8 @@ use PacketeryNette\Http\Request;
  */
 class Checkout {
 
-	public const CARRIER_PREFIX                    = 'packetery_carrier_';
-	public const PACKETERY_CARRIER_FALLBACK_STRING = 'packetery_carrier_packetery_carrier_';
-	private const NONCE_ACTION                     = 'packetery_checkout';
+	public const CARRIER_PREFIX = 'packetery_carrier_';
+	private const NONCE_ACTION  = 'packetery_checkout';
 
 	private const NONCE_NAME = '_wpnonce_packetery_checkout';
 	const ATTR_POINT_ID      = 'packetery_point_id';
@@ -715,9 +714,10 @@ class Checkout {
 				continue;
 			}
 
-			$optionId         = self::CARRIER_PREFIX . $carrier->getId();
-			$optionIdFallback = str_replace( self::CARRIER_PREFIX, self::PACKETERY_CARRIER_FALLBACK_STRING, $optionId );
+			$optionId = self::CARRIER_PREFIX . $carrier->getId();
 
+			// Bugfix for wrong data already stored in database.
+			$optionIdFallback = str_replace( self::CARRIER_PREFIX, 'packetery_carrier_packetery_carrier_', $optionId );
 			if ( in_array( $optionId, $disallowedShippingRateIds, true ) || in_array( $optionIdFallback, $disallowedShippingRateIds, true ) ) {
 				continue;
 			}
