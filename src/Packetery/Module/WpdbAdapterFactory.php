@@ -24,6 +24,13 @@ class WpdbAdapterFactory {
 	public function create(): WpdbAdapter {
 		global $wpdb;
 
-		return new WpdbAdapter( $wpdb );
+		$instance                    = new WpdbAdapter( $wpdb );
+		$instance->packetery_carrier = sprintf( '%scarrier', $instance->getPacketeryPrefix() );
+		$instance->packetery_order   = sprintf( '%sorder', $instance->getPacketeryPrefix() );
+		$instance->packetery_log     = sprintf( '%slog', $instance->getPacketeryPrefix() );
+		$instance->posts             = $wpdb->posts;
+		$instance->options           = $wpdb->options;
+
+		return $instance;
 	}
 }

@@ -15,6 +15,11 @@ use PacketeryTracy\Debugger;
 /**
  * Class WpdbAdapter
  *
+ * @property string $packetery_carrier
+ * @property string $packetery_order
+ * @property string $packetery_log
+ * @property string $posts
+ * @property string $options
  * @package Packetery
  */
 class WpdbAdapter {
@@ -24,7 +29,7 @@ class WpdbAdapter {
 	 *
 	 * @var \wpdb
 	 */
-	public $wpdb;
+	private $wpdb;
 
 	/**
 	 * Constructor.
@@ -48,8 +53,8 @@ class WpdbAdapter {
 	public function get_row( string $query, string $output = OBJECT ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_row( $query, $output );
-		if ( null === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( null === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
@@ -67,7 +72,7 @@ class WpdbAdapter {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->prepare( $query, ...$args );
 		if ( null === $result ) {
-			$this->handleError( 'Query to prepare is invalid. Likely due placeholder count mismatch.' );
+			$this->logError( 'Query to prepare is invalid. Likely due placeholder count mismatch.' );
 		}
 
 		return (string) $result;
@@ -84,8 +89,8 @@ class WpdbAdapter {
 	public function query( string $query ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->query( $query );
-		if ( false === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( false === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
@@ -103,22 +108,11 @@ class WpdbAdapter {
 	 */
 	public function insertReplaceHelper( string $table, array $data, ?array $format = null, string $type = 'INSERT' ) {
 		$result = $this->wpdb->_insert_replace_helper( $table, $data, $format, $type );
-		if ( false === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( false === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
-	}
-
-	/**
-	 * Real escape.
-	 *
-	 * @param string $input Input.
-	 *
-	 * @return string
-	 */
-	public function realEscape( string $input ): string {
-		return $this->wpdb->_real_escape( $input );
 	}
 
 	/**
@@ -132,8 +126,8 @@ class WpdbAdapter {
 	 */
 	public function delete( string $table, array $where, ?string $whereFormat = null ) {
 		$result = $this->wpdb->delete( $table, $where, $whereFormat );
-		if ( false === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( false === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
@@ -149,8 +143,8 @@ class WpdbAdapter {
 	 */
 	public function insert( string $table, array $data ) {
 		$result = $this->wpdb->insert( $table, $data );
-		if ( false === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( false === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
@@ -167,8 +161,8 @@ class WpdbAdapter {
 	 */
 	public function update( string $table, array $data, array $where ) {
 		$result = $this->wpdb->update( $table, $data, $where );
-		if ( false === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( false === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
@@ -194,9 +188,7 @@ class WpdbAdapter {
 	public function get_results( string $query, string $output = OBJECT ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_results( $query, $output );
-		if ( '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
-		}
+		$this->handleError();
 
 		return $result;
 	}
@@ -211,8 +203,8 @@ class WpdbAdapter {
 	public function get_var( string $query ): ?string {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_var( $query );
-		if ( null === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( null === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
@@ -230,14 +222,34 @@ class WpdbAdapter {
 	}
 
 	/**
-	 * Handles wpdb error.
+	 * Gets packetery prefix.
+	 *
+	 * @return string
+	 */
+	public function getPacketeryPrefix(): string {
+		return sprintf( '%spacketery_', $this->wpdb->prefix );
+	}
+
+	/**
+	 * Logs wpdb error.
 	 *
 	 * @param string $errorMessage Error message.
 	 *
 	 * @return void
 	 */
-	private function handleError( string $errorMessage ): void {
+	private function logError( string $errorMessage ): void {
 		Debugger::log( $errorMessage, sprintf( 'wpdb-errors_%s', gmdate( 'Y-m-d' ) ) );
+	}
+
+	/**
+	 * Handles wpdb error.
+	 *
+	 * @return void
+	 */
+	private function handleError(): void {
+		if ( '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
+			$this->logError( $this->getLastWpdbError() );
+		}
 	}
 
 	/**
@@ -274,8 +286,8 @@ class WpdbAdapter {
 	public function get_col( string $query, int $column_offset = 0 ): array {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_col( $query, $column_offset );
-		if ( [] === $result && '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
-			$this->handleError( $this->getLastWpdbError() );
+		if ( [] === $result ) {
+			$this->handleError();
 		}
 
 		return $result;
