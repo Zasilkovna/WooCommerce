@@ -25,16 +25,16 @@ class Checkout {
 	private const NONCE_ACTION  = 'packetery_checkout';
 	private const NONCE_NAME    = '_wpnonce_packetery_checkout';
 
-	const ATTR_POINT_ID             = 'packetery_point_id';
-	const ATTR_POINT_NAME           = 'packetery_point_name';
-	const ATTR_POINT_CITY           = 'packetery_point_city';
-	const ATTR_POINT_ZIP            = 'packetery_point_zip';
-	const ATTR_POINT_STREET         = 'packetery_point_street';
-	const ATTR_POINT_PLACE          = 'packetery_point_place'; // Business name of pickup point.
-	const ATTR_CARRIER_ID           = 'packetery_carrier_id';
-	const ATTR_POINT_URL            = 'packetery_point_url';
-	const BUTTON_RENDERER_TABLE_ROW = 'table-row';
+	const ATTR_POINT_ID     = 'packetery_point_id';
+	const ATTR_POINT_NAME   = 'packetery_point_name';
+	const ATTR_POINT_CITY   = 'packetery_point_city';
+	const ATTR_POINT_ZIP    = 'packetery_point_zip';
+	const ATTR_POINT_STREET = 'packetery_point_street';
+	const ATTR_POINT_PLACE  = 'packetery_point_place'; // Business name of pickup point.
+	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
+	const ATTR_POINT_URL    = 'packetery_point_url';
 
+	const BUTTON_RENDERER_TABLE_ROW  = 'table-row';
 	const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
 
 	/**
