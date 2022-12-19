@@ -249,8 +249,6 @@ class PacketSubmitter {
 				$this->logger->add( $record );
 				$errorMessage = $response->getErrorsAsString( false );
 
-				$commonEntity->updateApiErrorMessage( $response->getErrorMessage() );
-
 				$submissionResult->increaseErrorsCount();
 			} else {
 				$commonEntity->setIsExported( true );
