@@ -715,9 +715,7 @@ class Checkout {
 
 			$optionId = self::CARRIER_PREFIX . $carrier->getId();
 
-			// Bugfix for wrong data already stored in database.
-			$optionIdFallback = str_replace( self::CARRIER_PREFIX, 'packetery_carrier_packetery_carrier_', $optionId );
-			if ( in_array( $optionId, $disallowedShippingRateIds, true ) || in_array( $optionIdFallback, $disallowedShippingRateIds, true ) ) {
+			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
 				continue;
 			}
 

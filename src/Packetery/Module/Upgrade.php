@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Product\Entity;
 
 /**
  * Class Upgrade.
@@ -189,6 +190,10 @@ class Upgrade {
 			$this->orderRepository->addAdultContentColumn();
 			$this->orderRepository->addValueColumn();
 			$this->orderRepository->addCodColumn();
+		}
+
+		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
+			$this->migrateDisallowedCarriersByProducts();
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );
@@ -406,6 +411,48 @@ class Upgrade {
 		}
 
 		return $queryVars;
+	}
+
+	/**
+	 * In version 1.4.1 have been bug, which stored names of disabled carriers witch duplicated prefix.
+	 * This migration will replace carrier name prefix to right format.
+	 *
+	 * @return void
+	 */
+	private function migrateDisallowedCarriersByProducts(): void {
+		$productIds = $this->getProductsIdsWithExistingMeta( Entity::META_DISALLOWED_SHIPPING_RATES );
+
+		foreach ( $productIds as $productId ) {
+			$oldMeta = get_post_meta( $productId, Entity::META_DISALLOWED_SHIPPING_RATES, true );
+			if ( ! is_array( $oldMeta ) || empty( $oldMeta ) ) {
+				continue;
+			}
+
+			$newMeta = [];
+			foreach ( $oldMeta as $disallowedOptionId => $isDisallowed ) {
+				$newMeta[ str_replace( 'packetery_carrier_packetery_carrier_', 'packetery_carrier_', $disallowedOptionId ) ] = $isDisallowed;
+			}
+
+			update_post_meta( $productId, Entity::META_DISALLOWED_SHIPPING_RATES, $newMeta );
+		}
+	}
+
+	/**
+	 * Get IDs of products, which have specific meta key
+	 *
+	 * @param string $metaKey Meta key.
+	 *
+	 * @return int[] Array of post IDs.
+	 */
+	private function getProductsIdsWithExistingMeta( string $metaKey ): array {
+		global $wpdb;
+		$productsIdsRows = $wpdb->get_results( $wpdb->prepare( 'SELECT post_id FROM %s WHERE meta_key = %s', $wpdb->prefix . 'postmeta', $metaKey ) );
+		$productIds      = [];
+		foreach ( $productsIdsRows as $productRow ) {
+			$productIds[] = (int) $productRow->post_id;
+		}
+
+		return $productIds;
 	}
 
 }
