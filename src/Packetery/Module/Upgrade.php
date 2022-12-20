@@ -12,7 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Product\Entity;
+use Packetery\Module\Product;
 
 /**
  * Class Upgrade.
@@ -420,10 +420,10 @@ class Upgrade {
 	 * @return void
 	 */
 	private function migrateDisallowedCarriersByProducts(): void {
-		$productIds = $this->getProductsIdsWithExistingMeta( Entity::META_DISALLOWED_SHIPPING_RATES );
+		$productIds = $this->getProductsIdsWithExistingMeta( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
 
 		foreach ( $productIds as $productId ) {
-			$oldMeta = get_post_meta( $productId, Entity::META_DISALLOWED_SHIPPING_RATES, true );
+			$oldMeta = get_post_meta( $productId, Product\Entity::META_DISALLOWED_SHIPPING_RATES, true );
 			if ( ! is_array( $oldMeta ) || empty( $oldMeta ) ) {
 				continue;
 			}
@@ -434,7 +434,7 @@ class Upgrade {
 				$newMeta[ $optionId ] = $isDisallowed;
 			}
 
-			update_post_meta( $productId, Entity::META_DISALLOWED_SHIPPING_RATES, $newMeta );
+			update_post_meta( $productId, Product\Entity::META_DISALLOWED_SHIPPING_RATES, $newMeta );
 		}
 	}
 
