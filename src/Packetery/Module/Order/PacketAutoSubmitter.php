@@ -124,7 +124,8 @@ class PacketAutoSubmitter {
 
 		$this->packetSubmitter->submitPacket(
 			$wcOrder,
-			false === $triggeredByFrontend || ( true === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled() )
+			( false === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeEnabled() ) ||
+			( true === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled() )
 		);
 	}
 

@@ -210,7 +210,7 @@ class PacketSubmitter {
 	 * Submits packet data to Packeta API.
 	 *
 	 * @param WC_Order $order             WC order.
-	 * @param bool     $updateOrderStatus Update order status.
+	 * @param bool     $updateOrderStatus Updates WC order status if packet was successfully created. Value is based on plugin settings.
 	 *
 	 * @return PacketSubmissionResult
 	 */
