@@ -430,7 +430,8 @@ class Upgrade {
 
 			$newMeta = [];
 			foreach ( $oldMeta as $disallowedOptionId => $isDisallowed ) {
-				$newMeta[ str_replace( 'packetery_carrier_packetery_carrier_', 'packetery_carrier_', $disallowedOptionId ) ] = $isDisallowed;
+				$fixedOptionId             = str_replace( 'packetery_carrier_packetery_carrier_', 'packetery_carrier_', $disallowedOptionId );
+				$newMeta[ $fixedOptionId ] = $isDisallowed;
 			}
 
 			update_post_meta( $productId, Entity::META_DISALLOWED_SHIPPING_RATES, $newMeta );
@@ -446,7 +447,13 @@ class Upgrade {
 	 */
 	private function getProductsIdsWithExistingMeta( string $metaKey ): array {
 		global $wpdb;
-		$productsIdsRows = $wpdb->get_results( $wpdb->prepare( 'SELECT post_id FROM %s WHERE meta_key = %s', $wpdb->prefix . 'postmeta', $metaKey ) );
+		$productsIdsRows = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT `post_id` FROM `%s` WHERE `meta_key` = %s',
+				$wpdb->postmeta,
+				$metaKey
+			)
+		);
 		$productIds      = [];
 		foreach ( $productsIdsRows as $productRow ) {
 			$productIds[] = (int) $productRow->post_id;
