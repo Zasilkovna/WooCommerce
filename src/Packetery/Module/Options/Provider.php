@@ -495,9 +495,9 @@ class Provider {
 	 * @return bool
 	 */
 	public function isOrderStatusAutoChangeEnabled(): bool {
-		$value = $this->get( 'order_status_auto_change' );
-		if ( null !== $value ) {
-			return (bool) $value;
+		$orderStatusAutoChange = $this->get( 'order_status_auto_change' );
+		if ( null !== $orderStatusAutoChange ) {
+			return (bool) $orderStatusAutoChange;
 		}
 
 		return self::ORDER_STATUS_AUTO_CHANGE_DEFAULT;
@@ -513,9 +513,9 @@ class Provider {
 			return false;
 		}
 
-		$value = $this->get( 'order_status_auto_change_for_auto_submit_at_frontend' );
-		if ( null !== $value ) {
-			return (bool) $value;
+		$orderStatusAutoChnageForAutoSubmitAtFrontend = $this->get( 'order_status_auto_change_for_auto_submit_at_frontend' );
+		if ( null !== $orderStatusAutoChnageForAutoSubmitAtFrontend ) {
+			return (bool) $orderStatusAutoChnageForAutoSubmitAtFrontend;
 		}
 
 		return self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT;
@@ -527,9 +527,9 @@ class Provider {
 	 * @return string
 	 */
 	public function getValidAutoOrderStatus(): string {
-		$value = $this->getAutoOrderStatus();
-		if ( wc_is_order_status( $value ) ) {
-			return $value;
+		$autoOrderStatus = $this->getAutoOrderStatus();
+		if ( wc_is_order_status( $autoOrderStatus ) ) {
+			return $autoOrderStatus;
 		}
 
 		return self::AUTO_ORDER_STATUS_DEFAULT;

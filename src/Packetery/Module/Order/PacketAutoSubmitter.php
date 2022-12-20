@@ -124,9 +124,20 @@ class PacketAutoSubmitter {
 
 		$this->packetSubmitter->submitPacket(
 			$wcOrder,
-			( false === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeEnabled() ) ||
-			( true === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled() )
+			$this->shouldUpdateOrderStatus( $triggeredByFrontend )
 		);
+	}
+
+	/**
+	 * Tells if WC order status should be updated.
+	 *
+	 * @param bool|null $triggeredByFrontend Tells if submission is triggered by frontend action.
+	 *
+	 * @return bool
+	 */
+	private function shouldUpdateOrderStatus( ?bool $triggeredByFrontend ): bool {
+		return ( false === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeEnabled() ) ||
+			( true === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled() );
 	}
 
 	/**
