@@ -420,8 +420,9 @@ class Upgrade {
 	 * @return void
 	 */
 	private function migrateDisallowedCarriersByProducts(): void {
-		$productIds = $this->getProductsIdsWithExistingMeta( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
-
+		$carrierPrefix           = 'packetery_carrier_';
+		$duplicatedCarrierPrefix = 'packetery_carrier_packetery_carrier_';
+		$productIds              = $this->getBrokenDisallowedCarriersProductsIds( Product\Entity::META_DISALLOWED_SHIPPING_RATES, $duplicatedCarrierPrefix );
 		foreach ( $productIds as $productId ) {
 			$oldMeta = get_post_meta( $productId, Product\Entity::META_DISALLOWED_SHIPPING_RATES, true );
 			if ( ! is_array( $oldMeta ) || empty( $oldMeta ) ) {
@@ -430,7 +431,7 @@ class Upgrade {
 
 			$newMeta = [];
 			foreach ( $oldMeta as $optionId => $isDisallowed ) {
-				$optionId             = str_replace( 'packetery_carrier_packetery_carrier_', 'packetery_carrier_', $optionId );
+				$optionId             = str_replace( $duplicatedCarrierPrefix, $carrierPrefix, $optionId );
 				$newMeta[ $optionId ] = $isDisallowed;
 			}
 
@@ -439,26 +440,28 @@ class Upgrade {
 	}
 
 	/**
-	 * Get IDs of products, which have specific meta key
+	 * Get IDs of products, which have duplicate carrier prefix caused by bug in version 1.4.1.
 	 *
 	 * @param string $metaKey Meta key.
+	 * @param string $duplicatedPrefix Duplicated prefix.
 	 *
 	 * @return int[] Array of post IDs.
 	 */
-	private function getProductsIdsWithExistingMeta( string $metaKey ): array {
+	private function getBrokenDisallowedCarriersProductsIds( string $metaKey, string $duplicatedPrefix ): array {
 		global $wpdb;
-		$productsIdsRows = $wpdb->get_results(
+		$likeQuery  = '%' . $duplicatedPrefix . '%';
+		$productIds = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT `post_id` FROM $wpdb->postmeta WHERE `meta_key` = %s",
-				$metaKey
+				"SELECT `post_id` 
+					   FROM $wpdb->postmeta 
+					   WHERE `meta_key` = %s 
+					   AND `meta_value` LIKE %s",
+				$metaKey,
+				$likeQuery
 			)
 		);
-		$productIds      = [];
-		foreach ( $productsIdsRows as $productRow ) {
-			$productIds[] = (int) $productRow->post_id;
-		}
 
-		return $productIds;
+		return array_map( 'intval', $productIds );
 	}
 
 }
