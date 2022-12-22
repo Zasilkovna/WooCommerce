@@ -1,0 +1,13 @@
+parameters:
+    bootstrapFiles:
+        - phpstan/vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+        - phpstan/vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+        - phpstan/vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+        - constants.php
+    level: 3
+    fileExtensions:
+        - php
+    paths:
+        - src
+    scanDirectories:
+        - packetery_vendor

@@ -3,3 +3,4 @@
 /temp/*
 !/temp/.gitignore
 /log/
+/phpstan/vendor
