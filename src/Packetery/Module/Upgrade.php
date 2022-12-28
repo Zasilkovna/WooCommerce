@@ -449,7 +449,6 @@ class Upgrade {
 	 */
 	private function getBrokenDisallowedCarriersProductsIds( string $metaKey, string $duplicatedPrefix ): array {
 		global $wpdb;
-		$likeQuery  = '%' . $duplicatedPrefix . '%';
 		$productIds = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT `post_id` 
@@ -457,7 +456,7 @@ class Upgrade {
 					   WHERE `meta_key` = %s 
 					   AND `meta_value` LIKE %s",
 				$metaKey,
-				$likeQuery
+				'%' . $duplicatedPrefix . '%'
 			)
 		);
 
