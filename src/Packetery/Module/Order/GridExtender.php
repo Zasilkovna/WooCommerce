@@ -220,8 +220,9 @@ class GridExtender {
 	 * @return array Current page post ids
 	 */
 	private function getOrdersDataFromCurrentPage(): array {
-		$orderIds = [];
 		global $posts;
+
+		$orderIds = [];
 
 		if ( isset( $posts ) && is_array( $posts ) ) {
 			foreach ( $posts as $order ) {
