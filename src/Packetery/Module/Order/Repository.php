@@ -17,7 +17,6 @@ use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
-use PacketeryNette\Iterators\CachingIterator;
 use WP_Post;
 
 /**
@@ -213,7 +212,7 @@ class Repository {
 	 *
 	 * @param array $orderIds Order IDs.
 	 *
-	 * @return array
+	 * @return Order[]
 	 */
 	public function getOrdersByIds( array $orderIds ): array {
 		$orders = [];
@@ -224,19 +223,12 @@ class Repository {
 
 		$wpdbAdapter = $this->wpdbAdapter;
 
-		$sqlInString     = '';
-		$cachingIterator = new CachingIterator( $orderIds );
-
-		foreach ( $cachingIterator as $iteration ) {
-			$sqlInString .= $cachingIterator->isLast() ? '%d' : '%d, ';
-		}
-
 		$packeteryOrdersResult = $wpdbAdapter->get_results(
 			$wpdbAdapter->prepare(
 				'
 			SELECT o.* FROM `' . $wpdbAdapter->packetery_order . '` o 
 			JOIN `' . $wpdbAdapter->posts . '` as wp_p ON wp_p.ID = o.id 
-			WHERE o.`id` IN (' . $sqlInString . ')',
+			WHERE o.`id` IN (' . implode( ', ', array_fill( 0, count( $orderIds ), '%d' ) ) . ')',
 				$orderIds
 			),
 			OBJECT_K
