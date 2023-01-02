@@ -221,9 +221,10 @@ class GridExtender {
 	 */
 	private function getOrdersDataFromCurrentPage(): array {
 		$orderIds = [];
+		global $posts;
 
-		if ( isset( $GLOBALS['posts'] ) && is_array( $GLOBALS['posts'] ) ) {
-			foreach ( $GLOBALS['posts'] as $order ) {
+		if ( isset( $posts ) && is_array( $posts ) ) {
+			foreach ( $posts as $order ) {
 				if ( $order instanceof \WP_Post ) {
 					$orderIds[] = $order->ID;
 				}
