@@ -572,6 +572,9 @@ class Checkout {
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
+		if ( ! is_admin() ) {
+			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
+		}
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
 		add_action(
@@ -668,14 +671,8 @@ class Checkout {
 			);
 		}
 
-		$isCod               = false;
-		$codPaymentMethod    = $this->options_provider->getCodPaymentMethod();
-		$chosenPaymentMethod = WC()->session->get( 'chosen_payment_method' );
-		if ( null !== $codPaymentMethod && ! empty( $chosenPaymentMethod ) && $chosenPaymentMethod === $codPaymentMethod ) {
-			$isCod = true;
-		}
-
-		if ( false === $isCod ) {
+		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
+		if ( empty( $paymentMethod ) || false === $this->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
 		}
 
@@ -856,6 +853,15 @@ class Checkout {
 			return $this->getShortenedRateId( current( $postedShippingMethodArray ) );
 		}
 
+		return $this->calculateShipping();
+	}
+
+	/**
+	 * Calculates shipping without using POST data.
+	 *
+	 * @return string
+	 */
+	private function calculateShipping(): string {
 		$chosenShippingRates = WC()->cart->calculate_shipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
@@ -1099,4 +1105,52 @@ class Checkout {
 
 		return false;
 	}
+
+	/**
+	 * Filters out payment methods, that can not be used.
+	 *
+	 * @param array $availableGateways Available gateways.
+	 *
+	 * @return array
+	 */
+	public function filterPaymentGateways( array $availableGateways ): array {
+		if ( ! is_checkout() ) {
+			return $availableGateways;
+		}
+
+		$chosenMethod = $this->calculateShipping();
+		if ( ! $this->isPacketeryOrder( $chosenMethod ) ) {
+			return $availableGateways;
+		}
+
+		$carrier = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenMethod ) );
+		if ( null === $carrier ) {
+			return $availableGateways;
+		}
+
+		foreach ( $availableGateways as $key => $availableGateway ) {
+			if (
+				$this->isCodPaymentMethod( $availableGateway->id ) &&
+				! $carrier->supportsCod()
+			) {
+				unset( $availableGateways[ $key ] );
+			}
+		}
+
+		return $availableGateways;
+	}
+
+	/**
+	 * Checks if payment method is a COD one.
+	 *
+	 * @param string $paymentMethod Payment method.
+	 *
+	 * @return bool
+	 */
+	private function isCodPaymentMethod( string $paymentMethod ): bool {
+		$codPaymentMethod = $this->options_provider->getCodPaymentMethod();
+
+		return ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod );
+	}
+
 }

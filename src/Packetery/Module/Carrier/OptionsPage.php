@@ -145,16 +145,27 @@ class OptionsPage {
 			}
 		}
 
-		$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )
-			->setRequired( false )
-			->addRule( Form::FLOAT )
-			->addRule( Form::MIN, null, 0 );
+		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
 
-		$surchargeLimits = $form->addContainer( 'surcharge_limits' );
-		if ( ! empty( $carrierData['surcharge_limits'] ) ) {
-			foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
-				$this->addSurchargeLimit( $surchargeLimits, $index );
+		if ( null !== $carrier && $carrier->supportsCod() ) {
+			$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )
+				->setRequired( false )
+				->addRule( Form::FLOAT )
+				->addRule( Form::MIN, null, 0 );
+
+			$surchargeLimits = $form->addContainer( 'surcharge_limits' );
+			if ( ! empty( $carrierData['surcharge_limits'] ) ) {
+				foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
+					$this->addSurchargeLimit( $surchargeLimits, $index );
+				}
 			}
+			$roundingOptions = [
+				Rounder::DONT_ROUND => __( 'No rounding', 'packeta' ),
+				Rounder::ROUND_DOWN => __( 'Always round down', 'packeta' ),
+				Rounder::ROUND_UP   => __( 'Always round up', 'packeta' ),
+			];
+			$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
+				->setDefaultValue( Rounder::DONT_ROUND );
 		}
 
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
@@ -169,7 +180,6 @@ class OptionsPage {
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
-		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
 		if ( false === $carrier->hasPickupPoints() ) {
 			$addressValidationOptions = [
 				'none'     => __( 'No address validation', 'packeta' ),
@@ -186,14 +196,6 @@ class OptionsPage {
 				->addRule( Form::FLOAT )
 				->addRule( Form::MIN, null, 0 );
 		}
-
-		$roundingOptions = [
-			Rounder::DONT_ROUND => __( 'No rounding', 'packeta' ),
-			Rounder::ROUND_DOWN => __( 'Always round down', 'packeta' ),
-			Rounder::ROUND_UP   => __( 'Always round up', 'packeta' ),
-		];
-		$form->addSelect( 'cod_rounding', __( 'COD rounding', 'packeta' ) . ':', $roundingOptions )
-			->setDefaultValue( Rounder::DONT_ROUND );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
@@ -260,13 +262,15 @@ class OptionsPage {
 			'weight',
 			__( 'Weight rules are overlapping, please fix them.', 'packeta' )
 		);
-		$this->checkOverlapping(
-			$form,
-			$options,
-			'surcharge_limits',
-			'order_price',
-			__( 'Surcharge rules are overlapping, please fix them.', 'packeta' )
-		);
+		if ( isset( $options['surcharge_limits'] ) ) {
+			$this->checkOverlapping(
+				$form,
+				$options,
+				'surcharge_limits',
+				'order_price',
+				__( 'Surcharge rules are overlapping, please fix them.', 'packeta' )
+			);
+		}
 	}
 
 	/**
@@ -281,8 +285,10 @@ class OptionsPage {
 
 		$options = $this->mergeNewLimits( $options, 'weight_limits' );
 		$options = $this->sortLimits( $options, 'weight_limits', 'weight' );
-		$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
-		$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
+		if ( isset( $options['surcharge_limits'] ) ) {
+			$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
+			$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
+		}
 
 		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
@@ -357,6 +363,7 @@ class OptionsPage {
 						'countryOptions'               => __( 'Country options', 'packeta' ),
 						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
 						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
+						'carrierDoesNotSupportCod'     => __( 'This carrier does not support COD payment.', 'packeta' ),
 					],
 				]
 			);
