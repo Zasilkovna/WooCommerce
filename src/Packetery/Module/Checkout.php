@@ -328,7 +328,7 @@ class Checkout {
 			 *
 			 * @since 1.4.2
 			 */
-			'language'                  => apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
+			'language'                  => (string) apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
 			'country'                   => $this->getCustomerCountry(),
 			'weight'                    => $this->getCartWeightKg(),
 			'carrierConfig'             => $carrierConfig,
