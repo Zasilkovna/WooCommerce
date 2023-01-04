@@ -80,6 +80,16 @@ add_filter( 'packeta_shipping_price', function($price) {
 });
 ```
 
+##### Checkout widget language filter
+
+To set widget language in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
+
+```
+add_filter( 'packeta_widget_language', function($language) {
+	return 'hu';
+});
+```
+
 You can find description of the attributes in the [official documentation](https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetattributes).
 
 ## Credits
