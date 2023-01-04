@@ -17,6 +17,7 @@ var packeteryLoadPickupPointPicker = function( $, settings ) {
 				widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 			}
 
+			console.log('Widget options: ' + JSON.stringify(widgetOptions));
 			Packeta.Widget.pick( settings.packeteryApiKey, function( point ) {
 				if ( point == null ) {
 					return;
