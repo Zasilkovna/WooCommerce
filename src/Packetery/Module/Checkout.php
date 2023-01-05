@@ -414,6 +414,10 @@ class Checkout {
 			if ( $error ) {
 				wc_add_notice( __( 'Pick up point is not chosen.', 'packeta' ), 'error' );
 			}
+
+			if ( ! $this->carrierRepository->isValidForCountry( $post[ self::ATTR_CARRIER_ID ], $this->getCustomerCountry() ) ) {
+				wc_add_notice( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
+			}
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
