@@ -223,7 +223,7 @@ class GridExtender {
 			foreach ( $posts as $order ) {
 				$orderIds[] = $order->ID;
 			}
-			$ordersCache = $this->orderRepository->getOrdersByIds( $orderIds );
+			$ordersCache = $this->orderRepository->getByIds( $orderIds );
 		}
 
 		return $ordersCache[ $postId ] ?? null;
