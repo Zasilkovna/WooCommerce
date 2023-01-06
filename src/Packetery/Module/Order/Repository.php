@@ -418,7 +418,6 @@ class Repository {
 		}
 
 		$wpdbAdapter = $this->wpdbAdapter;
-		// TODO: zeptat se jardy na použití $this->quoteArrayOfStrings().
 		$ordersIdsPlaceholder  = implode( ', ', array_fill( 0, count( $orderIds ), '%d' ) );
 		$packeteryOrdersResult = $wpdbAdapter->get_results(
 			$wpdbAdapter->prepare(
