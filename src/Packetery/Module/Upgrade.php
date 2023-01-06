@@ -12,7 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Product;
+use Packetery\Module\Upgrade\Migrator;
 
 /**
  * Class Upgrade.
@@ -81,6 +81,14 @@ class Upgrade {
 	private $wpdb;
 
 	/**
+	 * Migrator.
+	 *
+	 * @var Migrator
+	 */
+	private $migrator;
+
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Order\Repository   $orderRepository   Order repository.
@@ -89,6 +97,7 @@ class Upgrade {
 	 * @param Log\Repository     $logRepository     Log repository.
 	 * @param \wpdb              $wpdb              WPDB.
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
+	 * @param Migrator           $migrator          Migrator.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
@@ -96,7 +105,8 @@ class Upgrade {
 		ILogger $logger,
 		Log\Repository $logRepository,
 		\wpdb $wpdb,
-		Carrier\Repository $carrierRepository
+		Carrier\Repository $carrierRepository,
+		Migrator $migrator
 	) {
 		$this->orderRepository   = $orderRepository;
 		$this->messageManager    = $messageManager;
@@ -104,6 +114,7 @@ class Upgrade {
 		$this->logRepository     = $logRepository;
 		$this->wpdb              = $wpdb;
 		$this->carrierRepository = $carrierRepository;
+		$this->migrator          = $migrator;
 	}
 
 	/**
@@ -192,9 +203,7 @@ class Upgrade {
 			$this->orderRepository->addCodColumn();
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
-			$this->migrateDisallowedCarriersByProducts();
-		}
+		$this->migrator->run( $oldVersion );
 
 		update_option( 'packetery_version', Plugin::VERSION );
 	}
@@ -411,56 +420,6 @@ class Upgrade {
 		}
 
 		return $queryVars;
-	}
-
-	/**
-	 * In version 1.4.1 have been bug, which stored names of disabled carriers witch duplicated prefix.
-	 * This migration will replace carrier name prefix to right format.
-	 *
-	 * @return void
-	 */
-	private function migrateDisallowedCarriersByProducts(): void {
-		$carrierPrefix           = 'packetery_carrier_';
-		$duplicatedCarrierPrefix = 'packetery_carrier_packetery_carrier_';
-		$productIds              = $this->getBrokenDisallowedCarriersProductsIds( Product\Entity::META_DISALLOWED_SHIPPING_RATES, $duplicatedCarrierPrefix );
-		foreach ( $productIds as $productId ) {
-			$oldMeta = get_post_meta( $productId, Product\Entity::META_DISALLOWED_SHIPPING_RATES, true );
-			if ( ! is_array( $oldMeta ) || empty( $oldMeta ) ) {
-				continue;
-			}
-
-			$newMeta = [];
-			foreach ( $oldMeta as $optionId => $isDisallowed ) {
-				$optionId             = str_replace( $duplicatedCarrierPrefix, $carrierPrefix, $optionId );
-				$newMeta[ $optionId ] = $isDisallowed;
-			}
-
-			update_post_meta( $productId, Product\Entity::META_DISALLOWED_SHIPPING_RATES, $newMeta );
-		}
-	}
-
-	/**
-	 * Get IDs of products, which have duplicate carrier prefix caused by bug in version 1.4.1.
-	 *
-	 * @param string $metaKey Meta key.
-	 * @param string $duplicatedPrefix Duplicated prefix.
-	 *
-	 * @return int[] Array of post IDs.
-	 */
-	private function getBrokenDisallowedCarriersProductsIds( string $metaKey, string $duplicatedPrefix ): array {
-		global $wpdb;
-		$productIds = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT `post_id` 
-					   FROM $wpdb->postmeta 
-					   WHERE `meta_key` = %s 
-					   AND `meta_value` LIKE %s",
-				$metaKey,
-				'%' . $duplicatedPrefix . '%'
-			)
-		);
-
-		return array_map( 'intval', $productIds );
 	}
 
 }
