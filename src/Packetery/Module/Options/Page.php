@@ -309,6 +309,8 @@ class Page {
 
 		update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $values );
 
+		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+
 		if ( wp_safe_redirect( $this->createLink( self::TAB_PACKET_STATUS_SYNC ) ) ) {
 			exit;
 		}
