@@ -472,7 +472,7 @@ class Repository {
 		}
 
 		$carrier = $this->getById( (int) $carrierId );
-		if ( null === $carrier || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry()) {
+		if ( null === $carrier || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
 			return false;
 		}
 

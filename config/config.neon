@@ -59,3 +59,4 @@ services:
 	- Packetery\Module\Calculator
 	- Packetery\Module\CurrencySwitcherFacade
 	- Packetery\Core\Api\Soap\CreatePacketMapper
+	- Packetery\Module\Order\PickupPointValidator

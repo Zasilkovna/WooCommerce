@@ -91,6 +91,7 @@ class Page {
 			Record::ACTION_SENDER_VALIDATION         => __( 'Sender validation', 'packeta' ),
 			Record::ACTION_PACKET_STATUS_SYNC        => __( 'Packet status synchronization', 'packeta' ),
 			Record::ACTION_PACKET_CANCEL             => __( 'Packet cancel', 'packeta' ),
+			Record::ACTION_PICKUP_POINT_VALIDATE     => __( 'Pickup point validation', 'packeta' ),
 		];
 
 		$translatedStatuses = [
