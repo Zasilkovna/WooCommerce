@@ -12,7 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Upgrade\Migrator;
+use Packetery\Module\Upgrade\Version_1_4_2;
 
 /**
  * Class Upgrade.
@@ -81,14 +81,6 @@ class Upgrade {
 	private $wpdb;
 
 	/**
-	 * Migrator.
-	 *
-	 * @var Migrator
-	 */
-	private $migrator;
-
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Order\Repository   $orderRepository   Order repository.
@@ -97,7 +89,6 @@ class Upgrade {
 	 * @param Log\Repository     $logRepository     Log repository.
 	 * @param \wpdb              $wpdb              WPDB.
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
-	 * @param Migrator           $migrator          Migrator.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
@@ -105,8 +96,7 @@ class Upgrade {
 		ILogger $logger,
 		Log\Repository $logRepository,
 		\wpdb $wpdb,
-		Carrier\Repository $carrierRepository,
-		Migrator $migrator
+		Carrier\Repository $carrierRepository
 	) {
 		$this->orderRepository   = $orderRepository;
 		$this->messageManager    = $messageManager;
@@ -114,7 +104,6 @@ class Upgrade {
 		$this->logRepository     = $logRepository;
 		$this->wpdb              = $wpdb;
 		$this->carrierRepository = $carrierRepository;
-		$this->migrator          = $migrator;
 	}
 
 	/**
@@ -203,7 +192,10 @@ class Upgrade {
 			$this->orderRepository->addCodColumn();
 		}
 
-		$this->migrator->run( $oldVersion );
+		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
+			$version_1_4_2 = new Version_1_4_2( $this->wpdb );
+			$version_1_4_2->run();
+		}
 
 		update_option( 'packetery_version', Plugin::VERSION );
 	}
