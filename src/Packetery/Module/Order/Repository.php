@@ -417,13 +417,12 @@ class Repository {
 			return [];
 		}
 
-		$wpdbAdapter = $this->wpdbAdapter;
+		$wpdbAdapter           = $this->wpdbAdapter;
 		$ordersIdsPlaceholder  = implode( ', ', array_fill( 0, count( $orderIds ), '%d' ) );
 		$packeteryOrdersResult = $wpdbAdapter->get_results(
 			$wpdbAdapter->prepare(
-				'
-			SELECT o.* FROM `' . $wpdbAdapter->packetery_order . '` o 
-			WHERE o.`id` IN (' . $ordersIdsPlaceholder . ')',
+				'SELECT * FROM `' . $wpdbAdapter->packetery_order . '` 
+				 WHERE `id` IN (' . $ordersIdsPlaceholder . ')',
 				$orderIds
 			),
 			OBJECT_K
