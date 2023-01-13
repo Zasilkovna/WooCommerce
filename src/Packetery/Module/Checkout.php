@@ -376,7 +376,7 @@ class Checkout {
 	 */
 	public function validateCheckoutData(): void {
 		$chosenShippingMethod = $this->getChosenMethod();
-		WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR, null );
+		WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
 		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
 			return;
@@ -428,7 +428,10 @@ class Checkout {
 				wc_add_notice( __( 'Pick up point is not chosen.', 'packeta' ), 'error' );
 			}
 
-			if ( ! $error && ! $this->carrierRepository->isValidForCountry( $post[ self::ATTR_CARRIER_ID ], $this->getCustomerCountry() ) ) {
+			if ( ! $error && ! $this->carrierRepository->isValidForCountry(
+				( $post[ self::ATTR_CARRIER_ID ] ? $post[ self::ATTR_CARRIER_ID ] : null ),
+				$this->getCustomerCountry()
+			) ) {
 				wc_add_notice( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
 				$error = true;
 			}
@@ -498,11 +501,11 @@ class Checkout {
 		}
 
 		if ( $this->isPickupPointOrder() ) {
-			$pickupPointValidationError = WC()->session->get( PickupPointValidator::VALIDATION_HTTP_ERROR );
+			$pickupPointValidationError = WC()->session->get( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
 			if ( null !== $pickupPointValidationError ) {
 				// translators: %s: Message from downloader.
 				$wcOrder->add_order_note( sprintf( __( 'The selected Packeta pickup point could not be validated, reason: %s.', 'packeta' ), $pickupPointValidationError ) );
-				WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR, null );
+				WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 			}
 
 			foreach ( self::$pickupPointAttrs as $attr ) {

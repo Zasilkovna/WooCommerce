@@ -28,7 +28,7 @@ use PacketeryGuzzleHttp\PacketeryPsr7\Response;
  */
 class PickupPointValidator implements IDownloader {
 
-	public const VALIDATION_HTTP_ERROR = 'packetery_validation_http_error';
+	public const VALIDATION_HTTP_ERROR_SESSION_KEY = 'packetery_validation_http_error';
 
 	/**
 	 * Guzzle client.
@@ -87,7 +87,7 @@ class PickupPointValidator implements IDownloader {
 				'request'      => $request->getSubmittableData(),
 			];
 			$this->logger->add( $record );
-			WC()->session->set( self::VALIDATION_HTTP_ERROR, $exception->getMessage() );
+			WC()->session->set( self::VALIDATION_HTTP_ERROR_SESSION_KEY, $exception->getMessage() );
 
 			return new PickupPointValidateResponse( true, [] );
 		}

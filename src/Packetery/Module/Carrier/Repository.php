@@ -459,13 +459,13 @@ class Repository {
 	/**
 	 * Validates carrier for country.
 	 *
-	 * @param string $carrierId       Empty string for internal pickup points.
-	 * @param string $customerCountry Customer country.
+	 * @param string|null $carrierId       Null for internal pickup points.
+	 * @param string      $customerCountry Customer country.
 	 *
 	 * @return bool
 	 */
-	public function isValidForCountry( string $carrierId, string $customerCountry ): bool {
-		if ( '' === $carrierId ) {
+	public function isValidForCountry( ?string $carrierId, string $customerCountry ): bool {
+		if ( null === $carrierId ) {
 			$zpointCarriers = $this->getZpointCarriers();
 
 			return ( ! empty( $zpointCarriers[ $customerCountry ] ) );

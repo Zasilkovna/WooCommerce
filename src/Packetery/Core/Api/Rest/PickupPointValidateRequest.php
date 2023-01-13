@@ -26,14 +26,14 @@ class PickupPointValidateRequest {
 	/**
 	 * Carrier id.
 	 *
-	 * @var ?string
+	 * @var string|null
 	 */
 	private $carrierId;
 
 	/**
 	 * Carrier pickup point id.
 	 *
-	 * @var ?string
+	 * @var string|null
 	 */
 	private $carrierPickupPointId;
 
