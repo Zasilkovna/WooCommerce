@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Upgrade;
 
+use Packetery\Module\Checkout;
 use Packetery\Module\Product;
 
 /**
@@ -51,8 +52,7 @@ class Version_1_4_2 {
 	 * @return void
 	 */
 	private function deduplicateCarrierPrefix(): void {
-		$carrierPrefix           = 'packetery_carrier_';
-		$duplicatedCarrierPrefix = 'packetery_carrier_packetery_carrier_';
+		$duplicatedCarrierPrefix = Checkout::CARRIER_PREFIX . Checkout::CARRIER_PREFIX;
 		$productIds              = $this->getDisallowedCarriersProductsIds( $duplicatedCarrierPrefix );
 		foreach ( $productIds as $productId ) {
 			$oldMeta = get_post_meta( $productId, Product\Entity::META_DISALLOWED_SHIPPING_RATES, true );
@@ -62,7 +62,7 @@ class Version_1_4_2 {
 
 			$newMeta = [];
 			foreach ( $oldMeta as $optionId => $isDisallowed ) {
-				$optionId             = str_replace( $duplicatedCarrierPrefix, $carrierPrefix, $optionId );
+				$optionId             = str_replace( $duplicatedCarrierPrefix, Checkout::CARRIER_PREFIX, $optionId );
 				$newMeta[ $optionId ] = $isDisallowed;
 			}
 
