@@ -455,4 +455,28 @@ class Repository {
 
 		return $zpointCarriers[ $country ]['id'];
 	}
+
+	/**
+	 * Validates carrier for country.
+	 *
+	 * @param string|null $carrierId       Null for internal pickup points.
+	 * @param string      $customerCountry Customer country.
+	 *
+	 * @return bool
+	 */
+	public function isValidForCountry( ?string $carrierId, string $customerCountry ): bool {
+		if ( null === $carrierId ) {
+			$zpointCarriers = $this->getZpointCarriers();
+
+			return ( ! empty( $zpointCarriers[ $customerCountry ] ) );
+		}
+
+		$carrier = $this->getById( (int) $carrierId );
+		if ( null === $carrier || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
+			return false;
+		}
+
+		return Options::createByCarrierId( $carrier->getId() )->isActive();
+	}
+
 }

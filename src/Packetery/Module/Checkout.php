@@ -10,7 +10,9 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core;
+use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\Order\PickupPointValidator;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -174,6 +176,13 @@ class Checkout {
 	private $packetAutoSubmitter;
 
 	/**
+	 * Pickup point validation API.
+	 *
+	 * @var PickupPointValidator
+	 */
+	private $pickupPointValidator;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                    $latte_engine           PacketeryLatte engine.
@@ -183,6 +192,7 @@ class Checkout {
 	 * @param Order\Repository          $orderRepository        Order repository.
 	 * @param CurrencySwitcherFacade    $currencySwitcherFacade Currency switcher facade.
 	 * @param Order\PacketAutoSubmitter $packetAutoSubmitter    Packet auto submitter.
+	 * @param PickupPointValidator      $pickupPointValidator    Pickup point validation API.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -191,7 +201,8 @@ class Checkout {
 		Request $httpRequest,
 		Order\Repository $orderRepository,
 		CurrencySwitcherFacade $currencySwitcherFacade,
-		Order\PacketAutoSubmitter $packetAutoSubmitter
+		Order\PacketAutoSubmitter $packetAutoSubmitter,
+		PickupPointValidator $pickupPointValidator
 	) {
 		$this->latte_engine           = $latte_engine;
 		$this->options_provider       = $options_provider;
@@ -200,6 +211,7 @@ class Checkout {
 		$this->orderRepository        = $orderRepository;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
 		$this->packetAutoSubmitter    = $packetAutoSubmitter;
+		$this->pickupPointValidator   = $pickupPointValidator;
 	}
 
 	/**
@@ -364,6 +376,7 @@ class Checkout {
 	 */
 	public function validateCheckoutData(): void {
 		$chosenShippingMethod = $this->getChosenMethod();
+		WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
 		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
 			return;
@@ -413,6 +426,28 @@ class Checkout {
 			}
 			if ( $error ) {
 				wc_add_notice( __( 'Pick up point is not chosen.', 'packeta' ), 'error' );
+			}
+
+			if ( ! $error && ! $this->carrierRepository->isValidForCountry(
+				( $post[ self::ATTR_CARRIER_ID ] ? $post[ self::ATTR_CARRIER_ID ] : null ),
+				$this->getCustomerCountry()
+			) ) {
+				wc_add_notice( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
+				$error = true;
+			}
+
+			if ( ! $error ) {
+				$pickupPointValidationResponse = $this->pickupPointValidator->validate(
+					$this->getPickupPointValidateRequest( $post[ self::ATTR_POINT_ID ], $carrierId, $pointCarrierId, $chosenShippingMethod )
+				);
+				if ( ! $pickupPointValidationResponse->isValid() ) {
+					wc_add_notice( __( 'The selected Packeta pickup point could not be validated. Please select another.', 'packeta' ), 'error' );
+					foreach ( $pickupPointValidationResponse->getErrors() as $validationError ) {
+						$reason = $this->pickupPointValidator->getTranslatedError()[ $validationError['code'] ];
+						// translators: %s: Reason for validation failure.
+						wc_add_notice( sprintf( __( 'Reason: %s', 'packeta' ), $reason ), 'error' );
+					}
+				}
 			}
 		}
 
@@ -466,6 +501,13 @@ class Checkout {
 		}
 
 		if ( $this->isPickupPointOrder() ) {
+			$pickupPointValidationError = WC()->session->get( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
+			if ( null !== $pickupPointValidationError ) {
+				// translators: %s: Message from downloader.
+				$wcOrder->add_order_note( sprintf( __( 'The selected Packeta pickup point could not be validated, reason: %s.', 'packeta' ), $pickupPointValidationError ) );
+				WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
+			}
+
 			foreach ( self::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
 				if ( ! isset( $post[ $attrName ] ) ) {
@@ -1151,6 +1193,36 @@ class Checkout {
 		$codPaymentMethod = $this->options_provider->getCodPaymentMethod();
 
 		return ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod );
+	}
+
+	/**
+	 * Creates PickupPointValidateRequest object.
+	 *
+	 * @param string  $pickupPointId Pickup point id.
+	 * @param ?string $carrierId Carrier id.
+	 * @param ?string $pointCarrierId Carrier pickup point id.
+	 * @param string  $chosenShippingMethod WC shipping method id.
+	 *
+	 * @return PickupPointValidateRequest
+	 */
+	private function getPickupPointValidateRequest(
+		string $pickupPointId,
+		?string $carrierId,
+		?string $pointCarrierId,
+		string $chosenShippingMethod
+	): PickupPointValidateRequest {
+		return new PickupPointValidateRequest(
+			$pickupPointId,
+			$carrierId,
+			$pointCarrierId,
+			$this->getCustomerCountry(),
+			$this->getCarrierId( $chosenShippingMethod ),
+			false,
+			false,
+			$this->getCartWeightKg(),
+			$this->isAgeVerification18PlusRequired(),
+			null
+		);
 	}
 
 }
