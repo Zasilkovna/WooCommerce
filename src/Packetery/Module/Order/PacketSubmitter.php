@@ -18,7 +18,6 @@ use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\Provider;
 use Packetery\Module\ShippingMethod;
 use PacketeryNette\Http\Request;
 use WC_Order;
