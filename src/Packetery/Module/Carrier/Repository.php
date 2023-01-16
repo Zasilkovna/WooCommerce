@@ -131,10 +131,9 @@ class Repository {
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = Options::createByCarrierId( $carrier->getId() );
 			if ( $carrierOptions->isActive() ) {
-				$carrierId        = 'packetery_carrier_' . $carrierOptions->getOptionId();
 				$activeCarriers[] = [
-					'id'    => $carrierId,
-					'label' => $carrierOptions->getName(),
+					'option_id' => $carrierOptions->getOptionId(),
+					'label'     => $carrierOptions->getName(),
 				];
 			}
 		}

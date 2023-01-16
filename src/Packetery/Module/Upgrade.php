@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Upgrade\Version_1_4_2;
 
 /**
  * Class Upgrade.
@@ -189,6 +190,11 @@ class Upgrade {
 			$this->orderRepository->addAdultContentColumn();
 			$this->orderRepository->addValueColumn();
 			$this->orderRepository->addCodColumn();
+		}
+
+		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
+			$version_1_4_2 = new Version_1_4_2( $this->wpdb );
+			$version_1_4_2->run();
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );

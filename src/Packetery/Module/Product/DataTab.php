@@ -111,7 +111,7 @@ class DataTab {
 		$carriersContainer = $form->addContainer( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
 		$carriersList      = $this->carrierRepository->getAllActiveCarriersList();
 		foreach ( $carriersList as $carrier ) {
-			$carriersContainer->addCheckbox( $carrier['id'], $carrier['label'] );
+			$carriersContainer->addCheckbox( $carrier['option_id'], $carrier['label'] );
 		}
 
 		$form->setDefaults(
