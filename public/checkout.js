@@ -255,6 +255,14 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}
 		};
 
+		var logWidgetOptions = function (widgetOptions) {
+			var widgeOptionsArray = [];
+			for (const property in widgetOptions) {
+				widgeOptionsArray.push(property + ': ' + widgetOptions[property]);
+			}
+			console.log('Widget options: ' + widgeOptionsArray.join(', '));
+		};
+
 		$( document ).on( 'click', '.packeta-widget-button', function( e ) {
 			e.preventDefault();
 
@@ -274,6 +282,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.postcode = destinationAddress.postCode;
 				widgetOptions.carrierId = settings.carrierConfig[ carrierRateId ][ 'id' ];
 
+				logWidgetOptions(widgetOptions);
 				PacketaHD.Widget.pick( settings.packeteryApiKey, function( result ) {
 					resetWidgetInfo();
 					showDeliveryAddress( carrierRateId );
@@ -313,6 +322,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 				}
 
+				logWidgetOptions(widgetOptions);
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint == null ) {
 						return;

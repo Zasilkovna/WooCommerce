@@ -850,6 +850,6 @@ class Plugin {
 	 * @return string
 	 */
 	public static function getAppIdentity(): string {
-		return 'Woocommerce: ' . get_bloginfo( 'version' ) . ', WordPress: ' . WC_VERSION . ', plugin Packeta: ' . self::VERSION;
+		return 'WordPress-' . get_bloginfo( 'version' ) . '-Woocommerce-' . WC_VERSION . '-Packeta-' . self::VERSION;
 	}
 }
