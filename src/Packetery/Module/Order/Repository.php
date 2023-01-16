@@ -408,25 +408,30 @@ class Repository {
 	 * @return Order[]
 	 */
 	public function getByIds( array $orderIds ): array {
-		$orderEntities = [];
-		$posts         = get_posts(
-			[
-				'post_type'   => 'shop_order',
-				'post__in'    => $orderIds,
-				'post_status' => [ 'any', 'trash' ],
-				'nopaging'    => true,
-			]
+		if ( empty( $orderIds ) ) {
+			return [];
+		}
+
+		$wpdbAdapter           = $this->wpdbAdapter;
+		$ordersIdsPlaceholder  = implode( ', ', array_fill( 0, count( $orderIds ), '%d' ) );
+		$packeteryOrdersResult = $wpdbAdapter->get_results(
+			$wpdbAdapter->prepare(
+				'SELECT * FROM `' . $wpdbAdapter->packetery_order . '` 
+				 WHERE `id` IN (' . $ordersIdsPlaceholder . ')',
+				$orderIds
+			),
+			OBJECT_K
 		);
-		foreach ( $posts as $post ) {
-			$wcOrder = wc_get_order( $post );
-			// In case WC_Order does not exist, result set is limited to existing records.
-			if ( ! $wcOrder ) {
+
+		$orderEntities = [];
+		foreach ( $orderIds as $orderId ) {
+			if ( ! isset( $packeteryOrdersResult[ $orderId ] ) ) {
 				continue;
 			}
-			$order = $this->getByWcOrder( $wcOrder );
-			if ( $order ) {
-				$orderEntities[ $order->getNumber() ] = $order;
-			}
+
+			$wcOrder                   = wc_get_order( $orderId );
+			$partialOrder              = $this->createPartialOrder( $packeteryOrdersResult[ $orderId ] );
+			$orderEntities[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
 		}
 
 		return $orderEntities;
