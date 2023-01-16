@@ -25,9 +25,10 @@ use PacketeryNette\Forms\Form;
  */
 class Page {
 
-	private const FORM_FIELDS_CONTAINER           = 'packetery';
-	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
-	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
+	private const FORM_FIELDS_CONTAINER               = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
+	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE = 'order_status_auto_change';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -447,6 +448,30 @@ class Page {
 					->setRequired( false )
 					->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
 
+		$container->addCheckbox( self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE, __( 'Order status auto change', 'packeta' ) )
+					->setRequired( false )
+					->setDefaultValue( Provider::ORDER_STATUS_AUTO_CHANGE_DEFAULT )
+					->addCondition( Form::EQUAL, true )
+						->toggle( '.packetery-order-status-auto-change-row' );
+
+		$orderStatuses = wc_get_order_statuses();
+		$container->addSelect(
+			Provider::AUTO_ORDER_STATUS,
+			__( 'New order status', 'packeta' ),
+			$orderStatuses
+		)
+				->checkDefaultValue( false )
+				->setDefaultValue( Provider::AUTO_ORDER_STATUS_DEFAULT )
+				->setPrompt( __( 'Select new order status', 'packeta' ) )
+				->addRule( Form::IS_IN, __( 'Select valid order status', 'packeta' ), array_keys( $orderStatuses ) )
+				->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE ], Form::EQUAL, true )
+					->setRequired();
+
+		$container->addCheckbox(
+			'order_status_auto_change_for_auto_submit_at_frontend',
+			__( 'Change order status after automatic packet submit at frontend', 'packeta' )
+		);
+
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
 		}
@@ -539,7 +564,7 @@ class Page {
 	/**
 	 * Validates sender.
 	 *
-	 * @param string $senderLabel Sender lbel.
+	 * @param string $senderLabel Sender label.
 	 *
 	 * @return bool|null
 	 */
@@ -713,6 +738,7 @@ class Page {
 			'statusSyncingPacketStatusesDescription' => __( 'If an order has a shipment with one of these selected statuses, the shipment status will be tracked.', 'packeta' ),
 			'numberOfDaysToCheckDescription'         => __( 'Number of days after the creation of an order, during which the order status will be checked.', 'packeta' ),
 			'widgetAutoOpenDescription'              => __( 'If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout.', 'packeta' ),
+			'autoOrderStatusChangeDescription'       => __( 'Change order status after data submission to Packeta.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

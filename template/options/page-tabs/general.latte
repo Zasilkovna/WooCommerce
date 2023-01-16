@@ -131,6 +131,35 @@
                 </div>
             </td>
         </tr>
+        <tr>
+            <th scope="row">
+                <label n:name=packetery-order_status_auto_change />
+            </th>
+            <td>
+                <input n:name=packetery-order_status_auto_change>
+                <div class="packetery-help-block">
+                    <p>
+                        {$translations['autoOrderStatusChangeDescription']}
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <tr class="packetery-order-status-auto-change-row">
+            <th scope="row">
+                <label n:name=packetery-auto_order_status />
+            </th>
+            <td>
+                <select n:name=packetery-auto_order_status></select>
+            </td>
+        </tr>
+        <tr class="packetery-order-status-auto-change-row">
+            <th scope="row">
+                <label n:name=packetery-order_status_auto_change_for_auto_submit_at_frontend />
+            </th>
+            <td>
+                <input n:name=packetery-order_status_auto_change_for_auto_submit_at_frontend>
+            </td>
+        </tr>
     </table>
     <p class="submit">
         <input type="submit" name="submit" id="submit" value="{$translations['saveChanges']}" class="button button-primary">

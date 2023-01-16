@@ -23,13 +23,17 @@ class Provider {
 	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
 	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 
-	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
-	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
-	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
-	const FORCE_PACKET_CANCEL_DEFAULT               = true;
-	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
-	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
+	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT                           = 'A6 on A4';
+	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT                           = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	const MAX_STATUS_SYNCING_PACKETS_DEFAULT                           = 100;
+	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT                    = 14;
+	const FORCE_PACKET_CANCEL_DEFAULT                                  = true;
+	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT                       = false;
+	const WIDGET_AUTO_OPEN_DEFAULT                                     = false;
+	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                             = false;
+	const AUTO_ORDER_STATUS_DEFAULT                                    = '';
+	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
+	const AUTO_ORDER_STATUS = 'auto_order_status';
 
 	/**
 	 *  Options data.
@@ -485,4 +489,58 @@ class Provider {
 		return self::WIDGET_AUTO_OPEN_DEFAULT;
 	}
 
+	/**
+	 * Auto order status change on packet submit enabled.
+	 *
+	 * @return bool
+	 */
+	public function isOrderStatusAutoChangeEnabled(): bool {
+		$orderStatusAutoChange = $this->get( 'order_status_auto_change' );
+		if ( null !== $orderStatusAutoChange ) {
+			return (bool) $orderStatusAutoChange;
+		}
+
+		return self::ORDER_STATUS_AUTO_CHANGE_DEFAULT;
+	}
+
+	/**
+	 * Auto order status change on packet auto submit at frontend enabled.
+	 *
+	 * @return bool
+	 */
+	public function isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled(): bool {
+		if ( false === $this->isOrderStatusAutoChangeEnabled() ) {
+			return false;
+		}
+
+		$orderStatusAutoChnageForAutoSubmitAtFrontend = $this->get( 'order_status_auto_change_for_auto_submit_at_frontend' );
+		if ( null !== $orderStatusAutoChnageForAutoSubmitAtFrontend ) {
+			return (bool) $orderStatusAutoChnageForAutoSubmitAtFrontend;
+		}
+
+		return self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT;
+	}
+
+	/**
+	 * Tells auto order status, if it is valid, otherwise empty string.
+	 *
+	 * @return string
+	 */
+	public function getValidAutoOrderStatus(): string {
+		$autoOrderStatus = $this->getAutoOrderStatus();
+		if ( wc_is_order_status( $autoOrderStatus ) ) {
+			return $autoOrderStatus;
+		}
+
+		return self::AUTO_ORDER_STATUS_DEFAULT;
+	}
+
+	/**
+	 * Tells auto order status.
+	 *
+	 * @return string|null
+	 */
+	public function getAutoOrderStatus(): ?string {
+		return $this->get( self::AUTO_ORDER_STATUS );
+	}
 }

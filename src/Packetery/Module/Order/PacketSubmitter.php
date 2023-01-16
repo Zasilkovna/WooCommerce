@@ -94,6 +94,13 @@ class PacketSubmitter {
 	private $commonLogic;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Module\Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient      SOAP API Client.
@@ -105,6 +112,7 @@ class PacketSubmitter {
 	 * @param MessageManager           $messageManager     Message manager.
 	 * @param Module\Log\Page          $logPage            Log page.
 	 * @param PacketActionsCommonLogic $commonLogic        Common logic.
+	 * @param Module\Options\Provider  $optionsProvider    Options provider.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -115,7 +123,8 @@ class PacketSubmitter {
 		Request $request,
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
-		PacketActionsCommonLogic $commonLogic
+		PacketActionsCommonLogic $commonLogic,
+		Module\Options\Provider $optionsProvider
 	) {
 		$this->soapApiClient      = $soapApiClient;
 		$this->orderValidator     = $orderValidator;
@@ -126,6 +135,7 @@ class PacketSubmitter {
 		$this->messageManager     = $messageManager;
 		$this->logPage            = $logPage;
 		$this->commonLogic        = $commonLogic;
+		$this->optionsProvider    = $optionsProvider;
 	}
 
 	/**
@@ -158,7 +168,10 @@ class PacketSubmitter {
 
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order );
 
-		$submissionResult         = $this->submitPacket( wc_get_order( (int) $order->getNumber() ) );
+		$submissionResult         = $this->submitPacket(
+			wc_get_order( (int) $order->getNumber() ),
+			$this->optionsProvider->isOrderStatusAutoChangeEnabled()
+		);
 		$resultsCounter           = $submissionResult->getCounter();
 		$submissionResultMessages = $this->getTranslatedSubmissionMessages( $resultsCounter, (int) $order->getNumber() );
 
@@ -195,11 +208,12 @@ class PacketSubmitter {
 	/**
 	 * Submits packet data to Packeta API.
 	 *
-	 * @param WC_Order $order WC order.
+	 * @param WC_Order $order             WC order.
+	 * @param bool     $updateOrderStatus Updates WC order status if packet was successfully created. Value is based on plugin settings.
 	 *
 	 * @return PacketSubmissionResult
 	 */
-	public function submitPacket( WC_Order $order ): PacketSubmissionResult {
+	public function submitPacket( WC_Order $order, bool $updateOrderStatus ): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
 		$commonEntity     = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $commonEntity ) {
@@ -271,6 +285,10 @@ class PacketSubmitter {
 			$this->logger->add( $record );
 			$commonEntity->updateApiErrorMessage( $errorMessage );
 			$this->orderRepository->save( $commonEntity );
+
+			if ( $updateOrderStatus && false === $response->hasFault() ) {
+				$this->updateOrderStatusOrLogError( $order, $commonEntity->getNumber(), $submissionResult );
+			}
 		} else {
 			$submissionResult->increaseIgnoredCount();
 		}
@@ -364,6 +382,10 @@ class PacketSubmitter {
 			$errors = esc_html( $submissionResult['errors'] );
 		}
 
+		if ( is_numeric( $submissionResult['statusUnchanged'] ) && $submissionResult['statusUnchanged'] > 0 ) {
+			$errors = esc_html__( 'Some order statuses have not been automatically changed.', 'packeta' );
+		}
+
 		$latteParams = [
 			'success' => $success,
 			'ignored' => $ignored,
@@ -371,6 +393,35 @@ class PacketSubmitter {
 		];
 
 		return $latteParams;
+	}
+
+	/**
+	 * Updates order status or logs error.
+	 *
+	 * @param WC_Order               $order WC Order.
+	 * @param string                 $orderId  Order ID.
+	 * @param PacketSubmissionResult $submissionResult Packet submission result.
+	 *
+	 * @return void
+	 */
+	private function updateOrderStatusOrLogError( WC_Order $order, string $orderId, PacketSubmissionResult $submissionResult ):void {
+		$autoOrderStatus = $this->optionsProvider->getValidAutoOrderStatus();
+		if ( '' === $autoOrderStatus ) {
+			$record         = new Log\Record();
+			$record->action = Log\Record::ACTION_PACKET_SENDING;
+			$record->status = Log\Record::STATUS_ERROR;
+
+			$record->title = sprintf(
+			// translators: %s represents unknown order status.
+				__( 'Order status has not been changed, status "%s" doesn\'t exist.', 'packeta' ),
+				$this->optionsProvider->getAutoOrderStatus()
+			);
+			$record->orderId = $orderId;
+			$this->logger->add( $record );
+			$submissionResult->increaseStatusUnchangedCount();
+		} else {
+			$order->update_status( $autoOrderStatus );
+		}
 	}
 
 }
