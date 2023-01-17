@@ -20,6 +20,7 @@ use PacketeryTracy\Debugger;
  * @property string $packetery_log
  * @property string $posts
  * @property string $options
+ * @property string $postmeta
  * @package Packetery
  */
 class WpdbAdapter {

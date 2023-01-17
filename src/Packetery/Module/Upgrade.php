@@ -205,9 +205,8 @@ class Upgrade {
 			wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
 		}
 
-		global $wpdb;
 		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
-			$version_1_4_2 = new Version_1_4_2( $wpdb );
+			$version_1_4_2 = new Version_1_4_2( $this->wpdbAdapter );
 			$version_1_4_2->run();
 		}
 

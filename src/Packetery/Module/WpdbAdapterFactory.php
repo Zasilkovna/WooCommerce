@@ -30,6 +30,7 @@ class WpdbAdapterFactory {
 		$instance->packetery_log     = sprintf( '%slog', $instance->getPacketeryPrefix() );
 		$instance->posts             = $wpdb->posts;
 		$instance->options           = $wpdb->options;
+		$instance->postmeta          = $wpdb->postmeta;
 
 		return $instance;
 	}
