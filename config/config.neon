@@ -55,6 +55,7 @@ services:
 	requestFactory: PacketeryNette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
 	- Packetery\Module\Upgrade
+	- Packetery\Module\Upgrade\Version_1_4_2
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\Calculator
 	- Packetery\Module\CurrencySwitcherFacade
