@@ -276,6 +276,8 @@ class Page {
 	public function onAutoSubmissionFormSuccess( Form $form, array $values ): void {
 		update_option( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION, $values );
 
+		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+
 		if ( wp_safe_redirect( $this->createLink( self::TAB_AUTO_SUBMISSION ) ) ) {
 			exit;
 		}
