@@ -260,7 +260,7 @@ class PacketSubmitter {
 					'errorMessage' => $response->getErrorsAsString(),
 				];
 				$record->orderId = $commonEntity->getNumber();
-				$errorMessage = $response->getErrorsAsString( false );
+				$errorMessage    = $response->getErrorsAsString( false );
 
 				$submissionResult->increaseErrorsCount();
 			} else {
@@ -276,7 +276,7 @@ class PacketSubmitter {
 					'packetId' => $response->getId(),
 				];
 				$record->orderId = $commonEntity->getNumber();
-				$errorMessage = null;
+				$errorMessage    = null;
 
 				$submissionResult->increaseSuccessCount();
 			}
