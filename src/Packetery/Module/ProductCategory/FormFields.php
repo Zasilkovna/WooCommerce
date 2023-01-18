@@ -88,7 +88,7 @@ class FormFields {
 
 		$form->setDefaults(
 			[
-				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory ? $productCategory->getDisallowedShippingRateIds() : [],
+				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory ? $productCategory->getDisallowedShippingRateChoices() : [],
 			]
 		);
 
@@ -134,7 +134,8 @@ class FormFields {
 
 		$form->onSuccess[] = function ( Form $form, array $shippingRates ) use ( $productCategory ): void {
 			if ( isset( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] ) ) {
-				update_term_meta( $productCategory->getId(), Entity::META_DISALLOWED_SHIPPING_RATES, $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] );
+				$disallowedShippingRates = array_filter( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] );
+				update_term_meta( $productCategory->getId(), Entity::META_DISALLOWED_SHIPPING_RATES, $disallowedShippingRates );
 			}
 		};
 
