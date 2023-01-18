@@ -1145,7 +1145,7 @@ class Checkout {
 
 			foreach ( $productCategoryIds as $productCategoryId ) {
 				$productCategoryEntity           = ProductCategory\Entity::fromTermId( (int) $productCategoryId );
-				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRates();
+				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRateIds();
 				if ( isset( $disallowedCategoryShippingRates[ $shippingRate ] ) && true === $disallowedCategoryShippingRates[ $shippingRate ] ) {
 					return true;
 				}
