@@ -83,7 +83,7 @@ class FormFields {
 		$carriersList           = $this->carrierRepository->getAllActiveCarriersList();
 
 		foreach ( $carriersList as $carrier ) {
-			$shippingRatesContainer->addCheckbox( $carrier['id'], $carrier['label'] );
+			$shippingRatesContainer->addCheckbox( $carrier['option_id'], $carrier['label'] );
 		}
 
 		$form->setDefaults(
