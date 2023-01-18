@@ -11,7 +11,6 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use PacketeryLatte\Engine;
-use PacketeryNette\Neon\Neon;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 
@@ -58,26 +57,36 @@ class DashboardWidget {
 	private $optionsPage;
 
 	/**
+	 * Survey config.
+	 *
+	 * @var array
+	 */
+	private $surveyConfig;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Engine              $latteEngine       Latte engine.
-	 * @param Carrier\Repository  $carrierRepository Carrier repository.
-	 * @param Options\Provider    $optionsProvider   Options provider.
+	 * @param Engine              $latteEngine        Latte engine.
+	 * @param Carrier\Repository  $carrierRepository  Carrier repository.
+	 * @param Options\Provider    $optionsProvider    Options provider.
 	 * @param Carrier\OptionsPage $carrierOptionsPage Carrier options page.
-	 * @param Options\Page        $optionsPage Options page.
+	 * @param Options\Page        $optionsPage        Options page.
+	 * @param array               $surveyConfig       Survey config.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
 		Options\Provider $optionsProvider,
 		Carrier\OptionsPage $carrierOptionsPage,
-		Options\Page $optionsPage
+		Options\Page $optionsPage,
+		array $surveyConfig
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
 		$this->optionsProvider    = $optionsProvider;
 		$this->carrierOptionsPage = $carrierOptionsPage;
 		$this->optionsPage        = $optionsPage;
+		$this->surveyConfig       = $surveyConfig;
 	}
 
 	/**
@@ -151,9 +160,6 @@ class DashboardWidget {
 			}
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$pluginConfig = Neon::decode( file_get_contents( PACKETERY_PLUGIN_DIR . '/config/config.neon' ) );
-
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/dashboard-widget.latte',
 			[
@@ -162,9 +168,9 @@ class DashboardWidget {
 				'isOptionsFormValid' => $this->optionsPage->create_form()->isValid(),
 				'hasExternalCarrier' => $this->carrierRepository->hasAnyActiveFeedCarrier(),
 				'hasPacketaShipping' => $this->isPacketaShippingMethodActive(),
-				'surveyActive'       => $pluginConfig['parameters']['surveyActive'],
-				'surveyUrl'          => $pluginConfig['parameters']['surveyUrl'],
-				'surveyImage'        => Plugin::buildAssetUrl( $pluginConfig['parameters']['surveyImage'] ),
+				'surveyActive'       => $this->surveyConfig['active'],
+				'surveyUrl'          => $this->surveyConfig['url'],
+				'surveyImage'        => Plugin::buildAssetUrl( $this->surveyConfig['image'] ),
 				'translations'       => [
 					'packeta'                => __( 'Packeta', 'packeta' ),
 					'activeCountriesNotice'  => __( 'You have set up Packeta carriers for the following countries', 'packeta' ),

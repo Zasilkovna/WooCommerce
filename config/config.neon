@@ -1,8 +1,9 @@
 parameters:
     latteTempFolder: %tempDir%/cache/view
-    surveyActive: true
-    surveyUrl: https://www.example.com/
-    surveyImage: public/survey-illustration.png
+    surveyConfig:
+        active: true
+        url: https://www.example.com/
+        image: public/survey-illustration.png
 
 services:
 	- Packetery\Module\ContextResolver
@@ -31,7 +32,7 @@ services:
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
-	- Packetery\Module\DashboardWidget
+	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
 	- Packetery\Module\Carrier\CountryListingPage
 	- Packetery\Module\Order\BulkActions
 	- Packetery\Module\Order\Repository
