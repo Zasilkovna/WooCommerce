@@ -30,9 +30,22 @@
                 <a href="{$activeCountry['url']}">{$activeCountry['name']}</a>{sep}, {/sep}
             {/foreach}
         </p>
+        {if $surveyActive}
+            <hr>
+            <p><strong>{$translations['surveyTitle']}</strong></p>
+            <div class="packetery-survey">
+                <div>{$translations['surveyDescription']}</p>
+                    <p><a href="{$surveyUrl}" target="_blank"
+                          class="button button-primary">{$translations['surveyButtonText']}</a></p>
+                </div>
+                <div>
+                    <img src="{$surveyImage}" alt="{$translations['packeta']}">
+                </div>
+            </div>
+        {/if}
     {else}
-            <p>
-                <span class="dashicons dashicons-warning"></span> {$translations['noActiveCountry']|noescape}
-            </p>
+        <p>
+            <span class="dashicons dashicons-warning"></span> {$translations['noActiveCountry']|noescape}
+        </p>
     {/if}
 {/if}

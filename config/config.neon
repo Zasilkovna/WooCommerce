@@ -1,5 +1,8 @@
 parameters:
     latteTempFolder: %tempDir%/cache/view
+    surveyActive: true
+    surveyUrl: https://www.example.com/
+    surveyImage: public/survey-illustration.png
 
 services:
 	- Packetery\Module\ContextResolver

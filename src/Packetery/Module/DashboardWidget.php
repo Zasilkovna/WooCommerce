@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use PacketeryLatte\Engine;
+use PacketeryNette\Neon\Neon;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 
@@ -150,6 +151,9 @@ class DashboardWidget {
 			}
 		}
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		$pluginConfig = Neon::decode( file_get_contents( PACKETERY_PLUGIN_DIR . '/config/config.neon' ) );
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/dashboard-widget.latte',
 			[
@@ -158,7 +162,11 @@ class DashboardWidget {
 				'isOptionsFormValid' => $this->optionsPage->create_form()->isValid(),
 				'hasExternalCarrier' => $this->carrierRepository->hasAnyActiveFeedCarrier(),
 				'hasPacketaShipping' => $this->isPacketaShippingMethodActive(),
+				'surveyActive'       => $pluginConfig['parameters']['surveyActive'],
+				'surveyUrl'          => $pluginConfig['parameters']['surveyUrl'],
+				'surveyImage'        => Plugin::buildAssetUrl( $pluginConfig['parameters']['surveyImage'] ),
 				'translations'       => [
+					'packeta'                => __( 'Packeta', 'packeta' ),
 					'activeCountriesNotice'  => __( 'You have set up Packeta carriers for the following countries', 'packeta' ),
 					'noGlobalSettings'       => sprintf(
 						// translators: 1: link start 2: link end.
@@ -193,6 +201,9 @@ class DashboardWidget {
 							)
 						)
 					),
+					'surveyTitle'            => __( 'Help us with plugin development', 'packeta' ),
+					'surveyDescription'      => __( 'An effective way to improve our plugin is to ask you, its users, for your opinion. It won\'t take you even two minutes and it will help us a lot to develop the plugin in the right way. Thank you very much.', 'packeta' ),
+					'surveyButtonText'       => __( 'Fill out a questionnaire', 'packeta' ),
 				],
 			]
 		);
