@@ -160,6 +160,8 @@ class DashboardWidget {
 			}
 		}
 
+		$surveyActive = ( $this->surveyConfig['active'] && new \DateTimeImmutable( 'now' ) <= $this->surveyConfig['validTo'] );
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/dashboard-widget.latte',
 			[
@@ -168,9 +170,9 @@ class DashboardWidget {
 				'isOptionsFormValid' => $this->optionsPage->create_form()->isValid(),
 				'hasExternalCarrier' => $this->carrierRepository->hasAnyActiveFeedCarrier(),
 				'hasPacketaShipping' => $this->isPacketaShippingMethodActive(),
-				'surveyActive'       => $this->surveyConfig['active'],
+				'surveyActive'       => $surveyActive,
 				'surveyUrl'          => $this->surveyConfig['url'],
-				'surveyImage'        => Plugin::buildAssetUrl( $this->surveyConfig['image'] ),
+				'surveyImage'        => Plugin::buildAssetUrl( 'public/survey-illustration.png' ),
 				'translations'       => [
 					'packeta'                => __( 'Packeta', 'packeta' ),
 					'activeCountriesNotice'  => __( 'You have set up Packeta carriers for the following countries', 'packeta' ),
