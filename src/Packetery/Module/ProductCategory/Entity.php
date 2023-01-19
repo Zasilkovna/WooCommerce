@@ -54,10 +54,22 @@ class Entity {
 	 *
 	 * @return array
 	 */
-	public function getDisallowedShippingRates(): array {
+	public function getDisallowedShippingRateChoices(): array {
 		$choices = get_term_meta( $this->category->term_id, self::META_DISALLOWED_SHIPPING_RATES, true );
+		if ( ! is_array( $choices ) ) {
+			return [];
+		}
 
-		return '' !== $choices ? $choices : [];
+		return $choices;
+	}
+
+	/**
+	 * Disallowed carrier choices.
+	 *
+	 * @return array
+	 */
+	public function getDisallowedShippingRateIds(): array {
+		return array_keys( $this->getDisallowedShippingRateChoices() );
 	}
 
 	/**
