@@ -161,7 +161,7 @@ class CountryListingPage {
 
 		$carrierChanges = get_transient( self::TRANSIENT_CARRIER_CHANGES );
 		if ( $carrierChanges ) {
-			$this->messageManager->flashMessage(
+			$this->messageManager->flashMessageObject(
 				Message::create()
 					->setType( MessageManager::TYPE_INFO )
 					->setText(
