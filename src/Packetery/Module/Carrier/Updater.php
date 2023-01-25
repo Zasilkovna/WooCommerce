@@ -151,8 +151,8 @@ class Updater {
 			}
 		}
 
-		$this->carrier_repository->set_as_deleted( array_keys( $carriersInDb ) );
 		if ( ! empty( $carriersInDb ) ) {
+			$this->carrier_repository->set_as_deleted( array_keys( $carriersInDb ) );
 			foreach ( $carriersInDb as $deletedCarrier ) {
 				if ( true === (bool) $deletedCarrier['deleted'] ) {
 					continue;
