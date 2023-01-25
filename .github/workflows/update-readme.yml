@@ -1,0 +1,21 @@
+name: Plugin asset/readme update
+on:
+  push:
+    branches: [ main ]
+    # https://docs.github.com/en/actions/using-workflows/triggering-a-workflow#example-including-paths
+    paths:
+      - './readme.txt'
+      - '.wordpress-org/*'
+
+jobs:
+  trunk:
+    name: Push to trunk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: WordPress.org plugin asset/readme update
+        uses: 10up/action-wordpress-plugin-asset-update@stable # https://github.com/10up/action-wordpress-plugin-asset-update
+        env:
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SLUG: packeta
