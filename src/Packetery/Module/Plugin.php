@@ -473,6 +473,7 @@ class Plugin {
 				'pickupPoint'              => $orderEntity->getPickupPoint(),
 				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
 				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
+				'isExternalCarrier'        => $orderEntity->isExternalCarrier(),
 				'translations'             => [
 					'packeta'                => __( 'Packeta', 'packeta' ),
 					'pickupPointDetail'      => __( 'Pickup Point Detail', 'packeta' ),
@@ -515,6 +516,7 @@ class Plugin {
 				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+				'isExternalCarrier'        => $order->isExternalCarrier(),
 				'translations'             => [
 					'packeta'             => __( 'Packeta', 'packeta' ),
 					'selectedPickupPoint' => __( 'Selected pickup point', 'packeta' ),
@@ -551,6 +553,7 @@ class Plugin {
 				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
 				'pickupPoint'              => $pickupPoint,
 				'validatedDeliveryAddress' => $validatedDeliveryAddress,
+				'isExternalCarrier'        => $packeteryOrder->isExternalCarrier(),
 				'translations'             => [
 					'packeta'                  => __( 'Packeta', 'packeta' ),
 					'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),

@@ -12,7 +12,7 @@
 				<th scope="row">{$translations['pickupPointName']}</th>
 				<td>
 					{$pickupPoint->getName()}
-					{if $pickupPoint->getUrl()}
+					{if $pickupPoint->getUrl() && !$isExternalCarrier}
 						<br>
 						<a class="button" target="_blank"
 						   href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetail']}</a>
