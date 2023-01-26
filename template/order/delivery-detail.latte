@@ -11,7 +11,7 @@
 
 		<p><strong>{$translations['name']}</strong>: {$pickupPoint->getName()}</p>
 		<p><strong>{$translations['address']}</strong>: {$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</p>
-		{if $pickupPoint->getUrl()}
+		{if $pickupPoint->getUrl() && !$isExternalCarrier}
 			<p><a class="button" target="_blank"
 				  href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetailCaps']}</a></p>
 		{/if}
