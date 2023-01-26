@@ -85,7 +85,7 @@ class Checkout {
 		),
 		'url'       => array(
 			'name'     => self::ATTR_POINT_URL,
-			'required' => true,
+			'required' => false,
 		),
 	);
 
