@@ -57,26 +57,36 @@ class DashboardWidget {
 	private $optionsPage;
 
 	/**
+	 * Survey config.
+	 *
+	 * @var array
+	 */
+	private $surveyConfig;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Engine              $latteEngine       Latte engine.
-	 * @param Carrier\Repository  $carrierRepository Carrier repository.
-	 * @param Options\Provider    $optionsProvider   Options provider.
+	 * @param Engine              $latteEngine        Latte engine.
+	 * @param Carrier\Repository  $carrierRepository  Carrier repository.
+	 * @param Options\Provider    $optionsProvider    Options provider.
 	 * @param Carrier\OptionsPage $carrierOptionsPage Carrier options page.
-	 * @param Options\Page        $optionsPage Options page.
+	 * @param Options\Page        $optionsPage        Options page.
+	 * @param array               $surveyConfig       Survey config.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
 		Options\Provider $optionsProvider,
 		Carrier\OptionsPage $carrierOptionsPage,
-		Options\Page $optionsPage
+		Options\Page $optionsPage,
+		array $surveyConfig
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
 		$this->optionsProvider    = $optionsProvider;
 		$this->carrierOptionsPage = $carrierOptionsPage;
 		$this->optionsPage        = $optionsPage;
+		$this->surveyConfig       = $surveyConfig;
 	}
 
 	/**
@@ -158,7 +168,13 @@ class DashboardWidget {
 				'isOptionsFormValid' => $this->optionsPage->create_form()->isValid(),
 				'hasExternalCarrier' => $this->carrierRepository->hasAnyActiveFeedCarrier(),
 				'hasPacketaShipping' => $this->isPacketaShippingMethodActive(),
+				'survey'             => new SurveyConfig(
+					( $this->surveyConfig['active'] && new \DateTimeImmutable( 'now' ) <= $this->surveyConfig['validTo'] ),
+					$this->surveyConfig['url'],
+					Plugin::buildAssetUrl( 'public/survey-illustration.png' )
+				),
 				'translations'       => [
+					'packeta'                => __( 'Packeta', 'packeta' ),
 					'activeCountriesNotice'  => __( 'You have set up Packeta carriers for the following countries', 'packeta' ),
 					'noGlobalSettings'       => sprintf(
 						// translators: 1: link start 2: link end.
@@ -193,6 +209,9 @@ class DashboardWidget {
 							)
 						)
 					),
+					'surveyTitle'            => __( 'Help us with plugin development', 'packeta' ),
+					'surveyDescription'      => __( 'An effective way to improve our plugin is to ask you, its users, for your opinion. It won\'t take you even two minutes and it will help us a lot to develop the plugin in the right way. Thank you very much.', 'packeta' ),
+					'surveyButtonText'       => __( 'Fill out a questionnaire', 'packeta' ),
 				],
 			]
 		);
