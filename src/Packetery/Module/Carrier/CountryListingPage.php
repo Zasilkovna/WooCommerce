@@ -13,8 +13,6 @@ use Packetery\Core\Log\Record;
 use Packetery\Module\Checkout;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
-use Packetery\Module\Message;
-use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -71,13 +69,6 @@ class CountryListingPage {
 	private $optionsProvider;
 
 	/**
-	 * Message manager.
-	 *
-	 * @var MessageManager
-	 */
-	private $messageManager;
-
-	/**
 	 * Log Page
 	 *
 	 * @var Log\Page
@@ -87,14 +78,13 @@ class CountryListingPage {
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine         $latteEngine       PacketeryLatte engine.
-	 * @param Repository     $carrierRepository Carrier repository.
-	 * @param Downloader     $downloader        Carrier downloader.
-	 * @param Request        $httpRequest       Http request.
-	 * @param Checkout       $checkout          Checkout.
-	 * @param Provider       $optionsProvider   Options provider.
-	 * @param MessageManager $messageManager    Message manager.
-	 * @param Log\Page       $logPage           Log page.
+	 * @param Engine     $latteEngine       PacketeryLatte engine.
+	 * @param Repository $carrierRepository Carrier repository.
+	 * @param Downloader $downloader        Carrier downloader.
+	 * @param Request    $httpRequest       Http request.
+	 * @param Checkout   $checkout          Checkout.
+	 * @param Provider   $optionsProvider   Options provider.
+	 * @param Log\Page   $logPage           Log page.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -103,7 +93,6 @@ class CountryListingPage {
 		Request $httpRequest,
 		Checkout $checkout,
 		Provider $optionsProvider,
-		MessageManager $messageManager,
 		Log\Page $logPage
 	) {
 		$this->latteEngine       = $latteEngine;
@@ -112,7 +101,6 @@ class CountryListingPage {
 		$this->httpRequest       = $httpRequest;
 		$this->checkout          = $checkout;
 		$this->optionsProvider   = $optionsProvider;
-		$this->messageManager    = $messageManager;
 		$this->logPage           = $logPage;
 	}
 
@@ -159,21 +147,13 @@ class CountryListingPage {
 			$nextScheduledRun = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 		}
 
-		$carrierChanges = get_transient( self::TRANSIENT_CARRIER_CHANGES );
+		$carrierChanges         = get_transient( self::TRANSIENT_CARRIER_CHANGES );
+		$settingsChangedMessage = null;
 		if ( $carrierChanges ) {
-			$this->messageManager->flashMessageObject(
-				Message::create()
-					->setType( MessageManager::TYPE_INFO )
-					->setText(
-						sprintf( // translators: 1: link start 2: link end.
-							esc_html__( 'The carrier settings have changed since the last carrier update. %1$sShow logs%2$s', 'packeta' ),
-							'<a href="' . $this->logPage->createLogListUrl( null, Record::ACTION_CARRIER_LIST_UPDATE ) . '">',
-							'</a>'
-						)
-					)
-					->setEscape( false )
-					->setRenderer( MessageManager::RENDERER_PACKETERY )
-					->setContext( 'carrier-update' )
+			$settingsChangedMessage = sprintf( // translators: 1: link start 2: link end.
+				esc_html__( 'The carrier settings have changed since the last carrier update. %1$sShow logs%2$s', 'packeta' ),
+				'<a href="' . $this->logPage->createLogListUrl( null, Record::ACTION_CARRIER_LIST_UPDATE ) . '">',
+				'</a>'
 			);
 		}
 
@@ -181,12 +161,12 @@ class CountryListingPage {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
 			[
-				'carriersUpdate'   => $carriersUpdateParams,
-				'countries'        => $countries,
-				'isApiPasswordSet' => $isApiPasswordSet,
-				'nextScheduledRun' => $nextScheduledRun,
-				'messages'         => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-update' ),
-				'translations'     => [
+				'carriersUpdate'         => $carriersUpdateParams,
+				'countries'              => $countries,
+				'isApiPasswordSet'       => $isApiPasswordSet,
+				'nextScheduledRun'       => $nextScheduledRun,
+				'settingsChangedMessage' => $settingsChangedMessage,
+				'translations'           => [
 					'packeta'                    => __( 'Packeta', 'packeta' ),
 					'carriers'                   => __( 'Carriers', 'packeta' ),
 					'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
