@@ -1,5 +1,9 @@
 parameters:
     latteTempFolder: %tempDir%/cache/view
+    surveyConfig:
+        active: true
+        validTo: 2023-02-28 23:59:59
+        url: https://forms.office.com/e/2YjCu9ZEt0
 
 services:
 	- Packetery\Module\ContextResolver
@@ -30,7 +34,7 @@ services:
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
-	- Packetery\Module\DashboardWidget
+	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
 	- Packetery\Module\Carrier\CountryListingPage
 	- Packetery\Module\Order\BulkActions
 	- Packetery\Module\Order\Repository

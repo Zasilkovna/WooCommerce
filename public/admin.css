@@ -328,6 +328,18 @@ tbody .packetery-log-column-note {
     padding-top: 0;
 }
 
+.packetery-survey {
+    display: flex;
+}
+
+.packetery-survey div > p {
+    margin-top: 0;
+}
+
+.packetery-survey img {
+    width: 167px;
+}
+
 .packetery-product-category-carrier-item td {
     padding: 0 9px 9px 9px;
 }

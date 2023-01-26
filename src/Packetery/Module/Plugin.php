@@ -711,8 +711,22 @@ class Plugin {
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
+		$screen        = get_current_screen();
+		$isDashboard   = ( $screen && 'dashboard' === $screen->id );
 
-		if ( $isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || in_array( $page, [ Options\Page::SLUG, Carrier\OptionsPage::SLUG, Log\Page::SLUG, Order\labelPrint::MENU_SLUG ], true ) ) {
+		if (
+			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard ||
+			in_array(
+				$page,
+				[
+					Options\Page::SLUG,
+					Carrier\OptionsPage::SLUG,
+					Log\Page::SLUG,
+					Order\labelPrint::MENU_SLUG,
+				],
+				true
+			)
+		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
 		}
 
