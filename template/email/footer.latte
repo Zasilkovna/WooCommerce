@@ -12,7 +12,7 @@
         <th class="td">{$translations['pickupPointName']}</th>
         <td class="td">{$pickupPoint->getName()}</td>
     </tr>
-	{if $pickupPoint->getUrl()}
+	{if $pickupPoint->getUrl() && !$isExternalCarrier}
 		<tr>
 			<th class="td">{$translations['pickupPointDetail']}</th>
 			<td class="td"><a href="{$pickupPoint->getUrl()}">{$translations['link']}</a></td>
