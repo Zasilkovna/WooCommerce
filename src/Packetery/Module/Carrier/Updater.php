@@ -180,18 +180,34 @@ class Updater {
 	 * @return string[]
 	 */
 	private function getArrayDifferences( array $old, array $new ): array {
-		$differences = [];
-		foreach ( $old as $key => $value ) {
+		$differences    = [];
+		$columnSettings = $this->getColumnSettings();
+
+		foreach ( $old as $key => $oldValue ) {
 			if ( 'id' === $key ) {
 				continue;
 			}
-			if ( '' === (string) $new[ $key ] && in_array( (string) $value, [ '0', '1' ], true ) ) {
-				$new[ $key ] = '0';
-			}
-			if ( (string) $value === (string) $new[ $key ] ) {
+
+			if ( 'deleted' === $key ) {
+				if ( '1' === (string) $oldValue && isset( $new['name'] ) ) {
+					$differences[ $key ] = sprintf( __( 'carrier was re-enabled', 'packeta' ), $new['name'] );
+				}
 				continue;
 			}
-			$differences[ $key ] = $key . ': ' . $value . ' => ' . $new[ $key ];
+
+			$newValue = (string) $new[ $key ];
+			if ( $columnSettings[ $key ]['isBoolean'] ) {
+				$newValue = ( '1' === $newValue ? $newValue : '0' );
+				$oldValue = ( '1' === (string) $oldValue ? (string) $oldValue : '0' );
+			}
+			if ( (string) $oldValue === $newValue ) {
+				continue;
+			}
+			if ( $columnSettings[ $key ]['isBoolean'] ) {
+				$newValue = ( '1' === $newValue ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
+				$oldValue = ( '1' === $oldValue ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
+			}
+			$differences[ $key ] = $columnSettings[ $key ]['label'] . ': ' . $oldValue . ' => ' . $newValue;
 		}
 
 		return $differences;
@@ -213,6 +229,64 @@ class Updater {
 		$record->title  = $message;
 		$record->params = [];
 		$this->logger->add( $record );
+	}
+
+	/**
+	 * Gets translations and isBoolean properties for column names.
+	 *
+	 * @return array[]
+	 */
+	private function getColumnSettings(): array {
+		return [
+			'name'                     => [
+				'label'     => __( 'name', 'packeta' ),
+				'isBoolean' => false,
+			],
+			'is_pickup_points'         => [
+				'label'     => __( 'offers own pickup points', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'has_carrier_direct_label' => [
+				'label'     => __( 'supports direct labels', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'separate_house_number'    => [
+				'label'     => __( 'requires separate house number', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'customs_declarations'     => [
+				'label'     => __( 'requires completion of customs declarations', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'requires_email'           => [
+				'label'     => __( 'requires email', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'requires_phone'           => [
+				'label'     => __( 'requires phone number', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'requires_size'            => [
+				'label'     => __( 'requires package size', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'disallows_cod'            => [
+				'label'     => __( 'disallows COD', 'packeta' ),
+				'isBoolean' => true,
+			],
+			'country'                  => [
+				'label'     => __( 'country', 'packeta' ),
+				'isBoolean' => false,
+			],
+			'currency'                 => [
+				'label'     => __( 'currency', 'packeta' ),
+				'isBoolean' => false,
+			],
+			'max_weight'               => [
+				'label'     => __( 'maximum weight (kg)', 'packeta' ),
+				'isBoolean' => false,
+			],
+		];
 	}
 
 }
