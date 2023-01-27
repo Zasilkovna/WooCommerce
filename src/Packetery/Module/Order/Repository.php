@@ -519,24 +519,32 @@ class Repository {
 	/**
 	 * Counts carrier orders.
 	 *
-	 * @param string $carrierId       Carrier ID.
-	 * @param string $shippingCountry Country.
+	 * @param string      $carrierId       Carrier ID.
+	 * @param string|null $shippingCountry Country.
 	 *
 	 * @return int
 	 */
-	public function countOrdersByCarrierIdAndShippingCountry( string $carrierId, string $shippingCountry ): int {
+	public function countOrders( string $carrierId, ?string $shippingCountry ): int {
 		$wpdb = $this->wpdb;
 
+		$join = [ 'JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`' ];
+
+		$andWhere = [ $this->wpdb->prepare( 'o.`carrier_id` = %s', $carrierId ) ];
+		if ( null !== $shippingCountry ) {
+			$join[]     = 'JOIN `' . $wpdb->postmeta . '` wp_pm ON wp_pm.`post_id` = wp_p.`ID`';
+			$andWhere[] = 'wp_pm.`meta_key` = "_shipping_country"';
+			$andWhere[] = $this->wpdb->prepare( 'wp_pm.`meta_value` = %s', strtoupper( $shippingCountry ) );
+		}
+
+		// @codingStandardsIgnoreStart
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(DISTINCT o.id) FROM `' . $wpdb->packetery_order . '` o 
-				JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
-				JOIN `' . $wpdb->postmeta . '` wp_pm ON wp_pm.`post_id` = wp_p.`ID`
-				WHERE o.`carrier_id` = %s AND wp_pm.`meta_key` = "_shipping_country" AND wp_pm.`meta_value` = %s',
-				$carrierId,
-				strtoupper($shippingCountry)
+				'SELECT COUNT(DISTINCT o.id) FROM `' . $wpdb->packetery_order . '` o ' .
+				implode( ' ', $join ) .
+				' WHERE ' . implode( ' AND ', $andWhere )
 			)
 		);
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Checkout;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -237,11 +238,12 @@ class CountryListingPage {
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
 				$carrierOptions['count_of_orders'] = 0;
-				$carrierEntity = $this->carrierRepository->getAnyById( $carrier['id'] );
+				$carrierEntity                     = $this->carrierRepository->getAnyById( $carrier['id'] );
 				if ( null !== $carrierEntity ) {
-					$carrierOptions['count_of_orders'] = $this->orderRepository->countOrdersByCarrierIdAndShippingCountry(
-						$this->checkout->getCarrierId( $optionId ),
-						$carrierEntity->getCountry()
+					$dbCarrierId                       = $this->checkout->getCarrierId( $optionId );
+					$carrierOptions['count_of_orders'] = $this->orderRepository->countOrders(
+						$dbCarrierId,
+						Carrier::INTERNAL_PICKUP_POINTS_ID === $dbCarrierId ? $carrierEntity->getCountry() : null
 					);
 				}
 
