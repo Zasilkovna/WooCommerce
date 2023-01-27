@@ -9,8 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Log\Record;
 use Packetery\Module\Checkout;
 use Packetery\Module\CronService;
+use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -21,6 +23,8 @@ use PacketeryNette\Http\Request;
  * @package Packetery\Carrier
  */
 class CountryListingPage {
+
+	public const TRANSIENT_CARRIER_CHANGES = 'packetery_carrier_changes';
 
 	/**
 	 * PacketeryLatteEngine.
@@ -65,6 +69,13 @@ class CountryListingPage {
 	private $optionsProvider;
 
 	/**
+	 * Log Page
+	 *
+	 * @var Log\Page
+	 */
+	private $logPage;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine     $latteEngine       PacketeryLatte engine.
@@ -73,6 +84,7 @@ class CountryListingPage {
 	 * @param Request    $httpRequest       Http request.
 	 * @param Checkout   $checkout          Checkout.
 	 * @param Provider   $optionsProvider   Options provider.
+	 * @param Log\Page   $logPage           Log page.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -80,7 +92,8 @@ class CountryListingPage {
 		Downloader $downloader,
 		Request $httpRequest,
 		Checkout $checkout,
-		Provider $optionsProvider
+		Provider $optionsProvider,
+		Log\Page $logPage
 	) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
@@ -88,6 +101,7 @@ class CountryListingPage {
 		$this->httpRequest       = $httpRequest;
 		$this->checkout          = $checkout;
 		$this->optionsProvider   = $optionsProvider;
+		$this->logPage           = $logPage;
 	}
 
 	/**
@@ -133,15 +147,26 @@ class CountryListingPage {
 			$nextScheduledRun = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 		}
 
+		$carrierChanges         = get_transient( self::TRANSIENT_CARRIER_CHANGES );
+		$settingsChangedMessage = null;
+		if ( $carrierChanges ) {
+			$settingsChangedMessage = sprintf( // translators: 1: link start 2: link end.
+				esc_html__( 'The carrier settings have changed since the last carrier update. %1$sShow logs%2$s', 'packeta' ),
+				'<a href="' . $this->logPage->createLogListUrl( null, Record::ACTION_CARRIER_LIST_UPDATE ) . '">',
+				'</a>'
+			);
+		}
+
 		$countries = $this->getActiveCountries();
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
 			[
-				'carriersUpdate'   => $carriersUpdateParams,
-				'countries'        => $countries,
-				'isApiPasswordSet' => $isApiPasswordSet,
-				'nextScheduledRun' => $nextScheduledRun,
-				'translations'     => [
+				'carriersUpdate'         => $carriersUpdateParams,
+				'countries'              => $countries,
+				'isApiPasswordSet'       => $isApiPasswordSet,
+				'nextScheduledRun'       => $nextScheduledRun,
+				'settingsChangedMessage' => $settingsChangedMessage,
+				'translations'           => [
 					'packeta'                    => __( 'Packeta', 'packeta' ),
 					'carriers'                   => __( 'Carriers', 'packeta' ),
 					'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
@@ -207,7 +232,7 @@ class CountryListingPage {
 					return 1;
 				}
 
-				return strnatcmp( $a['name'], $b['name'] );
+				return strnatcmp( (string) $a['name'], (string) $b['name'] );
 			}
 		);
 

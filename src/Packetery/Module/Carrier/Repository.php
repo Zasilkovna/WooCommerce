@@ -23,6 +23,23 @@ class Repository {
 
 	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
 
+	private const COLUMN_NAMES = [
+		'id',
+		'name',
+		'is_pickup_points',
+		'has_carrier_direct_label',
+		'separate_house_number',
+		'customs_declarations',
+		'requires_email',
+		'requires_phone',
+		'requires_size',
+		'disallows_cod',
+		'country',
+		'currency',
+		'max_weight',
+		'deleted',
+	];
+
 	/**
 	 * WpdbAdapter object from global
 	 *
@@ -150,21 +167,7 @@ class Repository {
 	public function getById( int $carrierId ): ?Entity\Carrier {
 		$result = $this->wpdbAdapter->get_row(
 			$this->wpdbAdapter->prepare(
-				'SELECT
-					`id`,
-					`name`,
-					`is_pickup_points`,
-					`has_carrier_direct_label`,
-					`separate_house_number`,
-					`customs_declarations`,
-					`requires_email`,
-					`requires_phone`,
-					`requires_size`,
-					`disallows_cod`,
-					`country`,
-					`currency`,
-					`max_weight`,
-					`deleted`
+				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 				FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `id` = %s',
 				$carrierId
 			),
@@ -211,21 +214,7 @@ class Repository {
 		$entities        = [];
 		$countryCarriers = $this->wpdbAdapter->get_results(
 			$this->wpdbAdapter->prepare(
-				'SELECT
-					`id`,
-					`name`,
-					`is_pickup_points`,
-					`has_carrier_direct_label`,
-					`separate_house_number`,
-					`customs_declarations`,
-					`requires_email`,
-					`requires_phone`,
-					`requires_size`,
-					`disallows_cod`,
-					`country`,
-					`currency`,
-					`max_weight`,
-					`deleted`
+				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 				FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false',
 				$country
 			),
@@ -245,32 +234,33 @@ class Repository {
 	 * @return Entity\Carrier[]
 	 */
 	public function getActiveCarriers(): array {
-		$entities        = [];
-		$countryCarriers = $this->wpdbAdapter->get_results(
-			'SELECT
-				`id`,
-				`name`,
-				`is_pickup_points`,
-				`has_carrier_direct_label`,
-				`separate_house_number`,
-				`customs_declarations`,
-				`requires_email`,
-				`requires_phone`,
-				`requires_size`,
-				`disallows_cod`,
-				`country`,
-				`currency`,
-				`max_weight`,
-				`deleted`
+		$entities       = [];
+		$activeCarriers = $this->wpdbAdapter->get_results(
+			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 			FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false',
 			ARRAY_A
 		);
 
-		foreach ( $countryCarriers as $carrierData ) {
+		foreach ( $activeCarriers as $carrierData ) {
 			$entities[ $carrierData['id'] ] = $this->carrierEntityFactory->fromDbResult( $carrierData );
 		}
 
 		return $entities;
+	}
+
+	/**
+	 * Gets all carriers.
+	 *
+	 * @return array[]
+	 */
+	public function getAllRawIndexed(): array {
+		$unIndexedResult = $this->wpdbAdapter->get_results(
+			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
+			FROM `' . $this->wpdbAdapter->packetery_carrier . '`',
+			ARRAY_A
+		);
+
+		return array_combine( array_column( $unIndexedResult, 'id' ), $unIndexedResult );
 	}
 
 	/**
@@ -324,14 +314,14 @@ class Repository {
 	}
 
 	/**
-	 * Set those not in feed as deleted.
+	 * Set carriers specified by ids as deleted.
 	 *
-	 * @param array $carriers_in_feed Carriers in feed.
+	 * @param array $carrierIdsNotInFeed Carriers not in feed.
 	 */
-	public function set_others_as_deleted( array $carriers_in_feed ): void {
+	public function set_as_deleted( array $carrierIdsNotInFeed ): void {
 		$this->wpdbAdapter->query(
 			'UPDATE `' . $this->wpdbAdapter->packetery_carrier . '`
-			SET `deleted` = 1 WHERE `id` NOT IN (' . implode( ',', $carriers_in_feed ) . ')'
+			SET `deleted` = 1 WHERE `id` IN (' . implode( ',', $carrierIdsNotInFeed ) . ')'
 		);
 	}
 

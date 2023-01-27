@@ -39,24 +39,15 @@ class Repository {
 
 	/**
 	 * Counts records.
-	 *
-	 * @param int $orderId Order ID.
-	 *
-	 * @return int
-	 */
-	public function countByOrderId( int $orderId ): int {
-		return (int) $this->wpdbAdapter->get_var(
-			$this->wpdbAdapter->prepare( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packetery_log . '` WHERE `order_id` = %d', $orderId )
-		);
-	}
 
-	/**
-	 * Counts records.
+	 * @param int|null    $orderId Order ID.
+	 * @param string|null $action  Action.
 	 *
 	 * @return int
 	 */
-	public function countAll(): int {
-		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packetery_log . '`' );
+	public function countRows( ?int $orderId, ?string $action ): int {
+		$whereClause = $this->getWhereClause( [], $orderId, $action );
+		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packetery_log . '`' . $whereClause );
 	}
 
 	/**
@@ -69,6 +60,7 @@ class Repository {
 	 */
 	public function find( array $arguments ): iterable {
 		$orderId   = $arguments['order_id'] ?? null;
+		$action    = $arguments['action'] ?? null;
 		$orderBy   = $arguments['orderby'] ?? [];
 		$limit     = $arguments['limit'] ?? null;
 		$dateQuery = $arguments['date_query'] ?? [];
@@ -99,16 +91,8 @@ class Repository {
 			}
 		}
 
-		if ( is_numeric( $orderId ) ) {
-			$where[] = $this->wpdbAdapter->prepare( '`order_id` = %d', $orderId );
-		}
+		$whereClause = $this->getWhereClause( $where, $orderId, $action );
 
-		$whereClause = '';
-		if ( $where ) {
-			$whereClause = ' WHERE ' . implode( ' AND ', $where );
-		}
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdbAdapter->get_results( 'SELECT * FROM `' . $this->wpdbAdapter->packetery_log . '` ' . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
 			return $this->remapToRecord( $result );
@@ -260,4 +244,30 @@ class Repository {
 
 		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
 	}
+
+	/**
+	 * Gets where clause for find and count queries.
+	 *
+	 * @param array       $where   Conditions.
+	 * @param int|null    $orderId Order id.
+	 * @param string|null $action  Action.
+	 *
+	 * @return string
+	 */
+	private function getWhereClause( array $where, ?int $orderId, ?string $action ): string {
+		if ( is_numeric( $orderId ) ) {
+			$where[] = $this->wpdbAdapter->prepare( '`order_id` = %d', $orderId );
+		}
+		if ( null !== $action ) {
+			$where[] = $this->wpdbAdapter->prepare( '`action` = %s', $action );
+		}
+
+		$whereClause = '';
+		if ( $where ) {
+			$whereClause = ' WHERE ' . implode( ' AND ', $where );
+		}
+
+		return $whereClause;
+	}
+
 }

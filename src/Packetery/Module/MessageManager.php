@@ -85,7 +85,7 @@ class MessageManager {
 			'context'  => $context,
 		];
 
-		$this->addMessage( $message );
+		$this->flashMessageArray( $message );
 	}
 
 	/**
@@ -95,8 +95,8 @@ class MessageManager {
 	 *
 	 * @return void
 	 */
-	public function flashMessage( Message $message ): void {
-		$this->addMessage( $message->toArray() );
+	public function flashMessageObject( Message $message ): void {
+		$this->flashMessageArray( $message->toArray() );
 	}
 
 	/**
@@ -106,7 +106,7 @@ class MessageManager {
 	 *
 	 * @return void
 	 */
-	private function addMessage( array $message ): void {
+	private function flashMessageArray( array $message ): void {
 		$this->messages[] = $message;
 
 		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );

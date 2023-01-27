@@ -176,7 +176,7 @@ class PacketSubmitter {
 		$submissionResultMessages = $this->getTranslatedSubmissionMessages( $resultsCounter, (int) $order->getNumber() );
 
 		if ( $resultsCounter['success'] > 0 ) {
-			$this->messageManager->flashMessage(
+			$this->messageManager->flashMessageObject(
 				Module\Message::create()
 					->setText( $submissionResultMessages['success'] )
 					->setEscape( false )
@@ -184,7 +184,7 @@ class PacketSubmitter {
 		}
 
 		if ( $resultsCounter['ignored'] > 0 ) {
-			$this->messageManager->flashMessage(
+			$this->messageManager->flashMessageObject(
 				Module\Message::create()
 					->setText( $submissionResultMessages['ignored'] )
 					->setEscape( false )
@@ -193,7 +193,7 @@ class PacketSubmitter {
 		}
 
 		if ( $resultsCounter['errors'] > 0 ) {
-			$this->messageManager->flashMessage(
+			$this->messageManager->flashMessageObject(
 				Module\Message::create()
 					->setText( $submissionResultMessages['errors'] )
 					->setEscape( false )
