@@ -190,7 +190,7 @@ class Updater {
 
 			if ( 'deleted' === $key ) {
 				if ( '1' === (string) $oldValue && isset( $new['name'] ) ) {
-					$differences[ $key ] = sprintf( __( 'carrier was re-enabled', 'packeta' ), $new['name'] );
+					$differences[ $key ] = __( 'carrier was re-enabled', 'packeta' );
 				}
 				continue;
 			}
