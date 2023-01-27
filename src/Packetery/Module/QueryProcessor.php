@@ -63,7 +63,6 @@ class QueryProcessor {
 	 */
 	public function processPostClauses( array $clauses, \WP_Query $queryObject ): array {
 		$paramValues = [
-			'packetery_carrier_id' => null,
 			'packetery_to_submit'  => null,
 			'packetery_to_print'   => null,
 			'packetery_order_type' => null,

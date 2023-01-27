@@ -12,6 +12,7 @@ namespace Packetery\Module\Carrier;
 use Packetery\Module\Checkout;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use Packetery\Module\Order;
 
 /**
  * Class CountryListingPage
@@ -33,6 +34,13 @@ class CountryListingPage {
 	 * @var Repository Carrier repository.
 	 */
 	private $carrierRepository;
+
+	/**
+	 * Order repository.
+	 *
+	 * @var Order\Repository
+	 */
+	private $orderRepository;
 
 	/**
 	 * Carrier downloader.
@@ -58,24 +66,27 @@ class CountryListingPage {
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine     $latteEngine       PacketeryLatte engine.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Downloader $downloader        Carrier downloader.
-	 * @param Request    $httpRequest       Http request.
-	 * @param Checkout   $checkout          Checkout.
+	 * @param Engine           $latteEngine       PacketeryLatte engine.
+	 * @param Repository       $carrierRepository Carrier repository.
+	 * @param Downloader       $downloader        Carrier downloader.
+	 * @param Request          $httpRequest       Http request.
+	 * @param Checkout         $checkout          Checkout.
+	 * @param Order\Repository $orderRepository   Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
 		Downloader $downloader,
 		Request $httpRequest,
-		Checkout $checkout
+		Checkout $checkout,
+		Order\Repository $orderRepository
 	) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
 		$this->downloader        = $downloader;
 		$this->httpRequest       = $httpRequest;
 		$this->checkout          = $checkout;
+		$this->orderRepository   = $orderRepository;
 	}
 
 	/**
@@ -226,17 +237,12 @@ class CountryListingPage {
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
 				$carrierOptions['count_of_orders'] = 0;
-				$carrierId                         = $this->checkout->getCarrierId( $optionId );
-				if ( $carrierId ) {
-					$orders = wc_get_orders(
-						[
-							'packetery_carrier_id' => $carrierId,
-							'nopaging'             => true,
-						]
+				$carrierEntity = $this->carrierRepository->getAnyById( $carrier['id'] );
+				if ( null !== $carrierEntity ) {
+					$carrierOptions['count_of_orders'] = $this->orderRepository->countOrdersByCarrierIdAndShippingCountry(
+						$this->checkout->getCarrierId( $optionId ),
+						$carrierEntity->getCountry()
 					);
-					if ( $orders ) {
-						$carrierOptions['count_of_orders'] = count( $orders );
-					}
 				}
 
 				$carriersWithSomeOptions[ $optionId ] = $carrierOptions;

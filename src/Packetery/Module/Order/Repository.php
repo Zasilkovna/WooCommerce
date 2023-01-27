@@ -108,10 +108,6 @@ class Repository {
 			// TODO: Introduce variable.
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdb->packetery_order . '` ON `' . $this->wpdb->packetery_order . '`.`id` = `' . $this->wpdb->posts . '`.`id`';
 
-			if ( $paramValues['packetery_carrier_id'] ) {
-				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $paramValues['packetery_carrier_id'] ) . '"';
-				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
-			}
 			if ( $paramValues['packetery_to_submit'] ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` IS NOT NULL ';
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`is_exported` = false ';
@@ -517,6 +513,29 @@ class Repository {
 			'SELECT COUNT(DISTINCT o.id) FROM `' . $wpdb->packetery_order . '` o 
 			JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
 			WHERE o.`packet_id` IS NOT NULL AND o.`is_label_printed` = false'
+		);
+	}
+
+	/**
+	 * Counts carrier orders.
+	 *
+	 * @param string $carrierId       Carrier ID.
+	 * @param string $shippingCountry Country.
+	 *
+	 * @return int
+	 */
+	public function countOrdersByCarrierIdAndShippingCountry( string $carrierId, string $shippingCountry ): int {
+		$wpdb = $this->wpdb;
+
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(DISTINCT o.id) FROM `' . $wpdb->packetery_order . '` o 
+				JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
+				JOIN `' . $wpdb->postmeta . '` wp_pm ON wp_pm.`post_id` = wp_p.`ID`
+				WHERE o.`carrier_id` = %s AND wp_pm.`meta_key` = "_shipping_country" AND wp_pm.`meta_value` = %s',
+				$carrierId,
+				strtoupper($shippingCountry)
+			)
 		);
 	}
 
