@@ -1,0 +1,12 @@
+{var $isCzechLocale = \Packetery\Module\Plugin::getLocale() === 'cs_CZ'}
+
+<div class="packeta_header">
+    <div n:class="packeta_logo, $isCzechLocale ? 'packeta_logo-cs'">
+        {if true === $isCzechLocale}
+            <img src="{\Packetery\Module\Plugin::buildAssetUrl('public/images/logo-zasilkovna.svg')}">
+        {else}
+            <img src="{\Packetery\Module\Plugin::buildAssetUrl('public/images/logo-packeta.svg')}">
+        {/if}
+    </div>
+    <h1 n:ifcontent>{$title}</h1>
+</div>

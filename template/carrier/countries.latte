@@ -1,6 +1,6 @@
-<div class="packetery-options-page">
-	<h1>{$translations['packeta']} - {$translations['carriers']}</h1>
+{include '../packeta-header.latte', title: $translations['carriers']}
 
+<div class="packetery-options-page packeta_page">
 	{if isset($carriersUpdate['result'])}
 		<div class="notice notice-{$carriersUpdate['resultClass']} is-dismissible">
 			<p>
@@ -48,7 +48,7 @@
 	<h2>{$translations['packeta']} - {$translations['countries']}</h2>
 
 	{if $countries}
-		<table>
+		<table class="packeta_country_list">
 			<tr>
 				<th>{$translations['countryName']}</th>
 				<th>{$translations['countryCode']}</th>
@@ -56,11 +56,11 @@
 				<th>{$translations['action']}</th>
 			</tr>
 			{foreach $countries as $country}
-				<tr>
-					<td>{$country['name']}</td>
+				<tr class="packeta_country_list_item">
+					<td><img src="{\Packetery\Module\Plugin::buildAssetUrl('public/images/flags/' . $country['code'] . '.png')}"> {$country['name']}</td>
 					<td>{$country['code']|upper}</td>
-					<td>{implode(', ', $country['activeCarriers'])}</td>
-					<td><a class="button" href="{$country['url']}">{$translations['setUp']}</a></td>
+					<td class="packeta_active_carriers_column">{implode(', ', $country['activeCarriers'])}</td>
+					<td><a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a></td>
 				</tr>
 			{/foreach}
 		</table>

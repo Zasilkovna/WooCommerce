@@ -760,7 +760,7 @@ class Plugin {
 	/**
 	 * Gets current locale.
 	 */
-	private function getLocale(): string {
+	public static function getLocale(): string {
 		/**
 		 * Applies plugin_locale filters.
 		 *
