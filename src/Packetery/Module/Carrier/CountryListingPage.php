@@ -222,13 +222,13 @@ class CountryListingPage {
 	 */
 	public function getCarriersForOptionsExport(): array {
 		$carriersWithSomeOptions = [];
-		$allCarriers             = $this->carrierRepository->getAllIncludingZpoints();
+		$allCarriers             = $this->carrierRepository->getAllCarriersIncludingZpoints();
 		foreach ( $allCarriers as $carrier ) {
-			$optionId       = Checkout::CARRIER_PREFIX . $carrier['id'];
+			$optionId       = Checkout::CARRIER_PREFIX . $carrier->getId();
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
-				$originalName = $carrier['name'];
+				$originalName = $carrier->getName();
 				$cartName     = $carrierOptions['name'];
 				unset( $carrierOptions['name'] );
 				$addition       = [
@@ -237,15 +237,11 @@ class CountryListingPage {
 				];
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
-				$carrierOptions['count_of_orders'] = 0;
-				$carrierEntity                     = $this->carrierRepository->getAnyById( $carrier['id'] );
-				if ( null !== $carrierEntity ) {
-					$dbCarrierId                       = $this->checkout->getCarrierId( $optionId );
-					$carrierOptions['count_of_orders'] = $this->orderRepository->countOrders(
-						$dbCarrierId,
-						Carrier::INTERNAL_PICKUP_POINTS_ID === $dbCarrierId ? $carrierEntity->getCountry() : null
-					);
-				}
+				$dbCarrierId                       = $this->checkout->getCarrierId( $optionId );
+				$carrierOptions['count_of_orders'] = $this->orderRepository->countOrders(
+					$dbCarrierId,
+					Carrier::INTERNAL_PICKUP_POINTS_ID === $dbCarrierId ? $carrier->getCountry() : null
+				);
 
 				$carriersWithSomeOptions[ $optionId ] = $carrierOptions;
 			}
