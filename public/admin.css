@@ -561,6 +561,7 @@ tbody .packetery-log-column-note {
 
 .packeta_page .nav-tab-wrapper {
     border: none;
+    padding-top: 0;
 }
 
 .packeta_page .nav-tab-wrapper .nav-tab {
@@ -665,7 +666,9 @@ tbody .packetery-log-column-note {
 
 .packeta_log {
     max-width: 100%;
-    width: calc(100% - 16px);
+    width: 100%;
+    margin-right: 16px;
+    box-sizing: border-box;
 }
 
 .packeta_carrier_list {
