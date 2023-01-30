@@ -539,7 +539,7 @@ class Repository {
 		// @codingStandardsIgnoreStart
 		return (int) $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(DISTINCT o.id) FROM `' . $wpdb->packetery_order . '` o ' .
+				'SELECT COUNT(DISTINCT o.`id`) FROM `' . $wpdb->packetery_order . '` o ' .
 				implode( ' ', $join ) .
 				' WHERE ' . implode( ' AND ', $andWhere )
 			)
