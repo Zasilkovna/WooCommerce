@@ -685,6 +685,7 @@ tbody .packetery-log-column-note {
 .packeta_carrier_detail {
     width: 100%;
     max-width: 100%;
+    padding: 24px 16px;
 }
 
 .packeta_carrier_title {
@@ -693,9 +694,11 @@ tbody .packetery-log-column-note {
     font-size: 24px;
     line-height: 1.5;
     padding: 0 32px;
-    margin-left: -26px;
+    margin-left: -16px;
     display: inline-block;
     position: relative;
+    font-family: 'Uni Sans', Helvetica, Arial, sans-serif;
+    font-weight: 600;
 }
 
 .packeta_carrier_title:after {
