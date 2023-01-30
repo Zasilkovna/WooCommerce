@@ -225,6 +225,7 @@ tbody .packetery-log-column-note {
 
 .packetery-log-table {
     border-collapse: collapse;
+    width: 100%;
 }
 
 .packetery-log-table tr:nth-child(odd) {
