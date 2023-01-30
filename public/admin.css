@@ -666,9 +666,7 @@ tbody .packetery-log-column-note {
 
 .packeta_log {
     max-width: 100%;
-    width: 100%;
-    margin-right: 16px;
-    box-sizing: border-box;
+    width: calc(100% - 16px);
 }
 
 .packeta_carrier_list {
@@ -687,6 +685,7 @@ tbody .packetery-log-column-note {
     max-width: 100%;
     padding: 24px 16px;
     box-shadow: 0 0 16px rgb(0 0 0 / 10%) !important;
+    margin-top: 0;
 }
 
 .packeta_carrier_detail .form-table .packetery-rule input[type="text"] {
