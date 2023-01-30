@@ -662,30 +662,33 @@ tbody .packetery-log-column-note {
     font-weight: 400;
 }
 
+.packeta_log {
+    max-width: 100%;
+    width: calc(100% - 16px);
+}
+
 .packeta_carrier_list {
-    overflow: hidden;
     width: 100%;
     display: flex;
     flex-wrap: wrap;
 }
 
 .packeta_carrier_detail_wrapper {
-    width: calc(50% - 48px);
-    max-width: 50%;
-    padding: 24px;
-}
-
-@media (max-width: 1920px) {
-    .packeta_carrier_detail_wrapper {
-        max-width: 100%;
-        width: calc(100% - 48px);
-    }
+    max-width: 100%;
+    width: calc(100% - 16px);
 }
 
 .packeta_carrier_detail {
     width: 100%;
     max-width: 100%;
     padding: 24px 16px;
+    box-shadow: 0 0 16px rgb(0 0 0 / 10%) !important;
+}
+
+.packeta_carrier_detail .form-table .packetery-rule input[type="text"] {
+    min-width: 60px;
+    padding: 12px 4px;
+    text-align: right;
 }
 
 .packeta_carrier_title {
