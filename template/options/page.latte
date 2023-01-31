@@ -1,5 +1,6 @@
-<div id="packetery-options-page">
-    <h1>{$translations['packeta']} - {$translations['options']}</h1>
+{include '../packeta-header.latte'}
+
+<div id="packetery-options-page" class="packeta_page">
 
     <nav class="nav-tab-wrapper">
         <a
@@ -28,13 +29,15 @@
         </a>
     </nav>
 
-    {if isset($error)}
-        <div class="notice notice-error">
-            <p><strong>{$error}</strong></p>
-        </div>
-    {/if}
+    <div class="packeta_tab_content">
+        {if isset($error)}
+            <div class="notice notice-error">
+                <p><strong>{$error}</strong></p>
+            </div>
+        {/if}
 
-    {$messages|noescape}
+        {$messages|noescape}
 
-    {include 'page-tabs/' . $activeTab . '.latte'}
+        {include 'page-tabs/' . $activeTab . '.latte'}
+    </div>
 </div>

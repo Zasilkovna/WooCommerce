@@ -114,7 +114,7 @@ class Page {
 				'translatedStatuses' => $translatedStatuses,
 				'translations'       => [
 					'packeta'        => __( 'Packeta', 'packeta' ),
-					'logsPageTitle'  => __( 'Log', 'packeta' ),
+					'title'          => __( 'Log', 'packeta' ),
 					'status'         => __( 'Status', 'packeta' ),
 					'dateAndTime'    => __( 'Date and time', 'packeta' ),
 					'action'         => __( 'Action', 'packeta' ),

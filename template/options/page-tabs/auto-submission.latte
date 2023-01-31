@@ -9,9 +9,11 @@
             </td>
         </tr>
         <tr>
-            <th colspan="2">
-                <legend>{$translations['packetAutoSubmissionMappingDescription']}</legend>
-            </th>
+            <td colspan="2">
+                <div class="packetery-help-block">
+                    <p>{$translations['packetAutoSubmissionMappingDescription']}</p>
+                </div>
+            </td>
         </tr>
         {foreach $form[payment_method_events]->getComponents() as $paymentMethodEvents}
             <tr>
@@ -25,6 +27,6 @@
         {/foreach}
     </table>
     <p class="submit">
-        <input type="submit" n:name=save class="button button-primary">
+        <button n:name=save class="button button-primary">{$translations['saveChanges']}</button>
     </p>
 </form>

@@ -21,7 +21,7 @@
         </tr>
         <tr>
             <th scope="row">
-                {$translations['statusSyncingOrderStatusesLabel']}
+                <label>{$translations['statusSyncingOrderStatusesLabel']}</label>
             </th>
             <td>
                 {foreach $form[ 'status_syncing_order_statuses' ]->getControls() as $control}
@@ -36,7 +36,7 @@
         </tr>
         <tr>
             <th scope="row">
-                {$translations['statusSyncingPacketStatusesLabel']}
+                <label>{$translations['statusSyncingPacketStatusesLabel']}</label>
             </th>
             <td>
                 {foreach $form[ 'status_syncing_packet_statuses' ]->getControls() as $control}
@@ -51,6 +51,6 @@
         </tr>
     </table>
     <p class="submit">
-        <input type="submit" n:name=save class="button button-primary">
+        <button n:name=save class="button button-primary">{$translations['saveChanges']}</button>
     </p>
 </form>

@@ -360,7 +360,8 @@ class OptionsPage {
 						'roundingDescription'          => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
 						'saveChanges'                  => __( 'Save changes', 'packeta' ),
 						'packeta'                      => __( 'Packeta', 'packeta' ),
-						'countryOptions'               => __( 'Country options', 'packeta' ),
+						// translators: %s is country code.
+						'title'                        => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
 						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
 						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
 						'carrierDoesNotSupportCod'     => __( 'This carrier does not support COD payment.', 'packeta' ),

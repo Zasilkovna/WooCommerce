@@ -476,6 +476,8 @@ class Page {
 			__( 'Change order status after automatic packet submit at frontend', 'packeta' )
 		);
 
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
+
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
 		}
@@ -705,7 +707,7 @@ class Page {
 		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations']                 = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
-			'options'                                => __( 'Options', 'packeta' ),
+			'title'                                  => __( 'Options', 'packeta' ),
 			'general'                                => __( 'General', 'packeta' ),
 			'packetAutoSubmission'                   => __( 'Packet auto-submission', 'packeta' ),
 			'packetAutoSubmissionMappingDescription' => __( 'Choose events for payment methods that will trigger packet submission', 'packeta' ),
