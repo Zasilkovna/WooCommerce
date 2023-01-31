@@ -9,9 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Checkout;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use Packetery\Module\Order;
 
 /**
  * Class CountryListingPage
@@ -33,6 +35,13 @@ class CountryListingPage {
 	 * @var Repository Carrier repository.
 	 */
 	private $carrierRepository;
+
+	/**
+	 * Order repository.
+	 *
+	 * @var Order\Repository
+	 */
+	private $orderRepository;
 
 	/**
 	 * Carrier downloader.
@@ -58,24 +67,27 @@ class CountryListingPage {
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine     $latteEngine       PacketeryLatte engine.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Downloader $downloader        Carrier downloader.
-	 * @param Request    $httpRequest       Http request.
-	 * @param Checkout   $checkout          Checkout.
+	 * @param Engine           $latteEngine       PacketeryLatte engine.
+	 * @param Repository       $carrierRepository Carrier repository.
+	 * @param Downloader       $downloader        Carrier downloader.
+	 * @param Request          $httpRequest       Http request.
+	 * @param Checkout         $checkout          Checkout.
+	 * @param Order\Repository $orderRepository   Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
 		Downloader $downloader,
 		Request $httpRequest,
-		Checkout $checkout
+		Checkout $checkout,
+		Order\Repository $orderRepository
 	) {
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
 		$this->downloader        = $downloader;
 		$this->httpRequest       = $httpRequest;
 		$this->checkout          = $checkout;
+		$this->orderRepository   = $orderRepository;
 	}
 
 	/**
@@ -210,13 +222,13 @@ class CountryListingPage {
 	 */
 	public function getCarriersForOptionsExport(): array {
 		$carriersWithSomeOptions = [];
-		$allCarriers             = $this->carrierRepository->getAllIncludingZpoints();
+		$allCarriers             = $this->carrierRepository->getAllCarriersIncludingZpoints();
 		foreach ( $allCarriers as $carrier ) {
-			$optionId       = Checkout::CARRIER_PREFIX . $carrier['id'];
+			$optionId       = Checkout::CARRIER_PREFIX . $carrier->getId();
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
-				$originalName = $carrier['name'];
+				$originalName = $carrier->getName();
 				$cartName     = $carrierOptions['name'];
 				unset( $carrierOptions['name'] );
 				$addition       = [
@@ -225,19 +237,11 @@ class CountryListingPage {
 				];
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
-				$carrierOptions['count_of_orders'] = 0;
-				$carrierId                         = $this->checkout->getCarrierId( $optionId );
-				if ( $carrierId ) {
-					$orders = wc_get_orders(
-						[
-							'packetery_carrier_id' => $carrierId,
-							'nopaging'             => true,
-						]
-					);
-					if ( $orders ) {
-						$carrierOptions['count_of_orders'] = count( $orders );
-					}
-				}
+				$dbCarrierId                       = $this->checkout->getCarrierId( $optionId );
+				$carrierOptions['count_of_orders'] = $this->orderRepository->countOrders(
+					$dbCarrierId,
+					Carrier::INTERNAL_PICKUP_POINTS_ID === $dbCarrierId ? $carrier->getCountry() : null
+				);
 
 				$carriersWithSomeOptions[ $optionId ] = $carrierOptions;
 			}

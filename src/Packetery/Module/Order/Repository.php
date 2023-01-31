@@ -108,10 +108,6 @@ class Repository {
 			// TODO: Introduce variable.
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdb->packetery_order . '` ON `' . $this->wpdb->packetery_order . '`.`id` = `' . $this->wpdb->posts . '`.`id`';
 
-			if ( $paramValues['packetery_carrier_id'] ) {
-				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` = "' . $this->wpdb->_real_escape( $paramValues['packetery_carrier_id'] ) . '"';
-				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
-			}
 			if ( $paramValues['packetery_to_submit'] ) {
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`carrier_id` IS NOT NULL ';
 				$clauses['where'] .= ' AND `' . $this->wpdb->packetery_order . '`.`is_exported` = false ';
@@ -518,6 +514,37 @@ class Repository {
 			JOIN `' . $wpdb->posts . '` wp_p ON wp_p.`ID` = o.`id`
 			WHERE o.`packet_id` IS NOT NULL AND o.`is_label_printed` = false'
 		);
+	}
+
+	/**
+	 * Counts carrier orders.
+	 *
+	 * @param string      $carrierId       Carrier ID.
+	 * @param string|null $shippingCountry Country.
+	 *
+	 * @return int
+	 */
+	public function countOrders( string $carrierId, ?string $shippingCountry ): int {
+		$wpdb = $this->wpdb;
+
+		$join = [ 'JOIN `' . $wpdb->posts . '` `wp_p` ON `wp_p`.`ID` = o.`id`' ];
+
+		$andWhere = [ $this->wpdb->prepare( '`o`.`carrier_id` = %s', $carrierId ) ];
+		if ( null !== $shippingCountry ) {
+			$join[]     = 'JOIN `' . $wpdb->postmeta . '` `wp_pm` ON `wp_pm`.`post_id` = `wp_p`.`ID`';
+			$andWhere[] = '`wp_pm`.`meta_key` = "_shipping_country"';
+			$andWhere[] = $this->wpdb->prepare( '`wp_pm`.`meta_value` = %s', strtoupper( $shippingCountry ) );
+		}
+
+		// @codingStandardsIgnoreStart
+		return (int) $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(DISTINCT `o`.`id`) FROM `' . $wpdb->packetery_order . '` `o` ' .
+				implode( ' ', $join ) .
+				' WHERE ' . implode( ' AND ', $andWhere )
+			)
+		);
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
