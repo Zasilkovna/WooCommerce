@@ -57,7 +57,12 @@
 			</tr>
 			{foreach $countries as $country}
 				<tr class="packeta_country_list_item">
-					<td>{if null !== $country['flag']}<img src="{$country['flag']}" alt="{$country['name']}">{/if} {$country['name']}</td>
+					<td>
+						{if null !== $country['flag']}
+							<img src="{$country['flag']}" alt="{$country['name']}">
+						{/if}
+						{$country['name']}
+					</td>
 					<td>{$country['code']|upper}</td>
 					<td class="packeta_active_carriers_column">{implode(', ', $country['activeCarriers'])}</td>
 					<td><a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a></td>

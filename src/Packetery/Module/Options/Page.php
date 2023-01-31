@@ -476,6 +476,8 @@ class Page {
 			__( 'Change order status after automatic packet submit at frontend', 'packeta' )
 		);
 
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
+
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
 		}
