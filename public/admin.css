@@ -684,8 +684,9 @@ tbody .packetery-log-column-note {
     width: 100%;
     max-width: 100%;
     padding: 24px 16px;
-    box-shadow: 0 0 16px rgb(0 0 0 / 10%) !important;
+    box-shadow: 0 0 40px rgb(0 0 0 / 10%) !important;
     margin-top: 0;
+    margin-bottom: 16px;
 }
 
 .packeta_carrier_detail .form-table .packetery-rule input[type="text"] {

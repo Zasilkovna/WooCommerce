@@ -16,6 +16,7 @@ use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
+use Packetery\Module\Plugin;
 
 /**
  * Class CountryListingPage
@@ -168,7 +169,7 @@ class CountryListingPage {
 				'settingsChangedMessage' => $settingsChangedMessage,
 				'translations'           => [
 					'packeta'                    => __( 'Packeta', 'packeta' ),
-					'carriers'                   => __( 'Carriers', 'packeta' ),
+					'title'                      => __( 'Carriers', 'packeta' ),
 					'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
 					'countries'                  => __( 'Countries', 'packeta' ),
 					'activeCarrier'              => __( 'Active carrier', 'packeta' ),
@@ -213,6 +214,7 @@ class CountryListingPage {
 					get_admin_url( null, 'admin.php' )
 				),
 				'activeCarriers' => $activeCarriers,
+				'flag'           => Plugin::buildAssetUrl( sprintf( 'public/images/flags/%s.png', $country ) ),
 			];
 		}
 

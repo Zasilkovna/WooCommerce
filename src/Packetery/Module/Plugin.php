@@ -665,14 +665,14 @@ class Plugin {
 	 *
 	 * @param string $asset Relative asset path without leading slash.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public static function buildAssetUrl( string $asset ): string {
+	public static function buildAssetUrl( string $asset ): ?string {
 		$url      = plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . $asset;
 		$filename = PACKETERY_PLUGIN_DIR . '/' . $asset;
 
 		if ( ! file_exists( $filename ) ) {
-			return '';
+			return null;
 		}
 
 		return add_query_arg( [ 'v' => md5( (string) filemtime( $filename ) ) ], $url );

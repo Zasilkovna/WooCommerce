@@ -705,7 +705,7 @@ class Page {
 		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations']                 = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
-			'options'                                => __( 'Options', 'packeta' ),
+			'title'                                  => __( 'Options', 'packeta' ),
 			'general'                                => __( 'General', 'packeta' ),
 			'packetAutoSubmission'                   => __( 'Packet auto-submission', 'packeta' ),
 			'packetAutoSubmissionMappingDescription' => __( 'Choose events for payment methods that will trigger packet submission', 'packeta' ),
