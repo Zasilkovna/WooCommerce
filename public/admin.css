@@ -1,15 +1,15 @@
 @font-face {
-    font-family: Uni Sans;
-    src: local("Uni Sans Regular"), local("UniSansRegular"), url('../public/fonts/UniSansRegular.woff2') format("woff2"), url('../public/fonts/UniSansRegular.otf') format("otf");
+    font-family: Ubuntu;
+    src: local("Ubuntu Regular"), local("UbuntuRegular"), local("Ubuntu-Regular"), url('../public/fonts/UbuntuRegular.woff2') format("woff2"), url('../public/fonts/UbuntuRegular.ttf') format("ttf");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
 }
 
 @font-face {
-    font-family: Uni Sans;
-    src: local("Uni Sans SemiBold"), local("UniSansSemiBold"), url('../public/fonts/UniSansSemiBold.woff2') format("woff2"), url('../public/fonts/UniSansSemiBold.otf') format("otf");
-    font-weight: 600;
+    font-family: Ubuntu;
+    src: local("Ubuntu Medium"), local("UbuntuMedium"), local("Ubuntu-Medium"), url('../public/fonts/UbuntuMedium.woff2') format("woff2"), url('../public/fonts/UbuntuMedium.ttf') format("ttf");
+    font-weight: 500;
     font-style: normal;
     font-display: swap;
 }
@@ -343,7 +343,8 @@ tbody .packetery-log-column-note {
 
 .packeta_header h1 {
     color: #ba1b02;
-    font-family: "Uni Sans", sans-serif;
+    font-family: Ubuntu, Helvetica, Arial, sans-serif;
+    font-weight: 500;
 }
 
 .packeta_logo {
@@ -506,8 +507,9 @@ tbody .packetery-log-column-note {
 }
 
 .packeta_page .nav-tab {
-    font-family: "Uni Sans", sans-serif;
+    font-family: Ubuntu, Helvetica, Arial, sans-serif;
     font-size: 18px;
+    font-weight: 500;
 }
 
 .packeta_page .card,
@@ -544,8 +546,8 @@ tbody .packetery-log-column-note {
 }
 
 .packeta_page .form-table tr th label {
-    font-family: 'Uni Sans', Helvetica, Arial, sans-serif;
-    font-weight: 600;
+    font-family: Ubuntu, Helvetica, Arial, sans-serif;
+    font-weight: 500;
     width: auto;
     font-size: 16px;
     margin-right: 10px;
@@ -704,8 +706,8 @@ tbody .packetery-log-column-note {
     margin-left: -16px;
     display: inline-block;
     position: relative;
-    font-family: 'Uni Sans', Helvetica, Arial, sans-serif;
-    font-weight: 600;
+    font-family: Ubuntu, Helvetica, Arial, sans-serif;
+    font-weight: 500;
 }
 
 .packeta_carrier_title:after {
