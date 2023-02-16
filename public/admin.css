@@ -1,6 +1,6 @@
 @font-face {
     font-family: Ubuntu;
-    src: local("Ubuntu Regular"), local("UbuntuRegular"), local("Ubuntu-Regular"), url('../public/fonts/UbuntuRegular.woff2') format("woff2"), url('../public/fonts/UbuntuRegular.ttf') format("ttf");
+    src: local("Ubuntu Regular"), local("UbuntuRegular"), local("Ubuntu-Regular"), url('../public/fonts/UbuntuRegular.woff2') format("woff2"), url('../public/fonts/UbuntuRegular.otf') format("otf");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -8,7 +8,7 @@
 
 @font-face {
     font-family: Ubuntu;
-    src: local("Ubuntu Medium"), local("UbuntuMedium"), local("Ubuntu-Medium"), url('../public/fonts/UbuntuMedium.woff2') format("woff2"), url('../public/fonts/UbuntuMedium.ttf') format("ttf");
+    src: local("Ubuntu Medium"), local("UbuntuMedium"), local("Ubuntu-Medium"), url('../public/fonts/UbuntuMedium.woff2') format("woff2"), url('../public/fonts/UbuntuMedium.otf') format("otf");
     font-weight: 500;
     font-style: normal;
     font-display: swap;
