@@ -117,7 +117,7 @@ class Repository {
 			array_unshift( $carriers, $zpointCarrier );
 		}
 
-		return $carriers;
+		return apply_filters( 'packeta_all_carriers', $carriers );
 	}
 
 	/**
