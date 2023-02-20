@@ -114,10 +114,10 @@ class Repository {
 	 * @return array|null
 	 */
 	public function getAllIncludingZpoints(): ?array {
-		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
+		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 		$zpointCarriers = $this->getZpointCarriers();
-		foreach ( $zpointCarriers as $zpointCarrier ) {
-			array_unshift( $carriers, $zpointCarrier );
+		foreach ( $zpointCarriers as $zpointCountry => $zpointCarrier ) {
+			array_unshift( $carriers, $zpointCarrier + [ 'country' => $zpointCountry ] );
 		}
 
 		return $carriers;

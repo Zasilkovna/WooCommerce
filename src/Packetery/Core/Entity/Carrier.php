@@ -16,7 +16,8 @@ namespace Packetery\Core\Entity;
  */
 class Carrier {
 
-	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
+	public const INTERNAL_PICKUP_POINTS_ID    = 'packeta';
+	public const ADDRESS_VALIDATION_COUNTRIES = [ 'cz', 'sk' ];
 
 	/**
 	 * Carrier id.

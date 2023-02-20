@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Helper;
 use Packetery\Core\Rounder;
 use Packetery\Module\Checkout;
@@ -180,7 +181,7 @@ class OptionsPage {
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
-		if ( false === $carrier->hasPickupPoints() ) {
+		if ( false === $carrier->hasPickupPoints() && in_array( $carrier->getCountry(), Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 			$addressValidationOptions = [
 				'none'     => __( 'No address validation', 'packeta' ),
 				'optional' => __( 'Optional address validation', 'packeta' ),
