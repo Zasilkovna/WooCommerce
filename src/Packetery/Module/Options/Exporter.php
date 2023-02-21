@@ -87,6 +87,8 @@ class Exporter {
 	 * Prepares and outputs export text.
 	 */
 	public function outputExportTxt(): void {
+		global $wpdb;
+
 		if (
 			$this->httpRequest->getQuery( 'page' ) !== Page::SLUG ||
 			$this->httpRequest->getQuery( 'action' ) !== self::ACTION_EXPORT_SETTINGS
@@ -118,6 +120,7 @@ class Exporter {
 			'wcVersion'         => WC_VERSION,
 			'template'          => $activeTheme->name . ' ' . $activeTheme->version . $themeLatestVersionInfo,
 			'phpVersion'        => PHP_VERSION,
+			'dbServer'          => $wpdb->db_server_info(),
 			'soap'              => wc_bool_to_string( extension_loaded( 'soap' ) ),
 			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
 			'packetaDebug'      => wc_bool_to_string( PACKETERY_DEBUG ),
