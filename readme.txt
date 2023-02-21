@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.5.1
@@ -61,6 +61,17 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.4.2 =
+* Added: Shop url in settings export
+* Added: Checkout widget language filter packeta_widget_language
+* Updated: logging widget options to console, appIdentity update
+* Fixed: Product-carrier limitation now works properly (bug found in 1.4.1)
+* Added: Packet status tracking options page success message
+* Added: Link to a questionnaire at the dashboard
+* Fixed: Widget backwards compatibility break
+* Updated: External carrier pickup point detail link is no longer displayed
+* Fixed: The translations have been modified to load correctly from wordpress.org
+
 = 1.4.1 =
 Added: New filter packeta_shipping_price. With the packeta_shipping_price filter, you can adjust the shipping price shown during checkout.
 Fixed: checking return type of product get_meta.
