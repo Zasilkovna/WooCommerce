@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 6.5.1
@@ -61,6 +61,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.4.3 =
+* Added: Database server version to options export
+
 = 1.4.2 =
 * Added: Shop url in settings export
 * Added: Checkout widget language filter packeta_widget_language
