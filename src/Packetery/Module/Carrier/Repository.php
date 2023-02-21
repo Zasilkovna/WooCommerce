@@ -116,8 +116,8 @@ class Repository {
 	public function getAllIncludingZpoints(): ?array {
 		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 		$zpointCarriers = $this->getZpointCarriers();
-		foreach ( $zpointCarriers as $zpointCountry => $zpointCarrier ) {
-			array_unshift( $carriers, $zpointCarrier + [ 'country' => $zpointCountry ] );
+		foreach ( $zpointCarriers as $zpointCarrier ) {
+			array_unshift( $carriers, $zpointCarrier );
 		}
 
 		return $carriers;
@@ -357,6 +357,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'CZK',
 				'supports_age_verification' => true,
+				'country'                   => 'cz',
 			],
 			'sk' => [
 				'id'                        => 'zpointsk',
@@ -364,6 +365,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'EUR',
 				'supports_age_verification' => true,
+				'country'                   => 'sk',
 			],
 			'hu' => [
 				'id'                        => 'zpointhu',
@@ -371,6 +373,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'HUF',
 				'supports_age_verification' => true,
+				'country'                   => 'hu',
 			],
 			'ro' => [
 				'id'                        => 'zpointro',
@@ -378,6 +381,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'RON',
 				'supports_age_verification' => true,
+				'country'                   => 'ro',
 			],
 		];
 	}
