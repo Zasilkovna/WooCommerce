@@ -190,9 +190,9 @@ class Repository {
 	public function getAnyById( string $extendedBranchServiceId ): ?Entity\Carrier {
 		$zpointCarriers = $this->getZpointCarriers();
 
-		foreach ( $zpointCarriers as $zpointCountry => $zpointCarrier ) {
+		foreach ( $zpointCarriers as $zpointCarrier ) {
 			if ( $zpointCarrier['id'] === $extendedBranchServiceId ) {
-				return $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier + [ 'country' => $zpointCountry ] );
+				return $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier );
 			}
 		}
 
@@ -274,9 +274,7 @@ class Repository {
 		$countryCarriers = $this->getByCountry( $country );
 		$zpointCarriers  = $this->getZpointCarriers();
 		if ( ! empty( $zpointCarriers[ $country ] ) ) {
-			$zpointCarrierData            = $zpointCarriers[ $country ];
-			$zpointCarrierData['country'] = $country;
-			$zpointCarrier                = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrierData );
+			$zpointCarrier = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarriers[ $country ] );
 			array_unshift( $countryCarriers, $zpointCarrier );
 		}
 
@@ -395,8 +393,8 @@ class Repository {
 		$carriers       = [];
 		$zpointCarriers = $this->getZpointCarriers();
 
-		foreach ( $zpointCarriers as $country => $zpointCarrier ) {
-			$carriers[ $zpointCarrier['id'] ] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier + [ 'country' => $country ] );
+		foreach ( $zpointCarriers as $zpointCarrier ) {
+			$carriers[ $zpointCarrier['id'] ] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier );
 		}
 
 		return $carriers;
