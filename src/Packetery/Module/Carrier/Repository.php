@@ -343,6 +343,15 @@ class Repository {
 	}
 
 	/**
+	 * Gets internal countries.
+	 *
+	 * @return string[]
+	 */
+	public function getInternalCountries(): array {
+		return array_keys( $this->getZpointCarriers() );
+	}
+
+	/**
 	 * Returns internal pickup points configuration
 	 *
 	 * @return array[]

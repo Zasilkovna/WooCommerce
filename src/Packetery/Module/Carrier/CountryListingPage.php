@@ -196,7 +196,7 @@ class CountryListingPage {
 	private function getActiveCountries(): array {
 		$countries = $this->carrierRepository->getCountries();
 
-		$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
+		$internalCountries = $this->carrierRepository->getInternalCountries();
 		$countries         = array_unique( array_merge( $internalCountries, $countries ) );
 
 		$countriesFinal = [];
