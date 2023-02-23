@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
+use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
@@ -36,6 +37,7 @@ class Metabox {
 	const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
 	const FIELD_COD             = 'packetery_COD';
 	const FIELD_VALUE           = 'packetery_value';
+	const FIELD_DELIVER_ON      = 'packetery_deliver_on';
 
 	/**
 	 * PacketeryLatte engine.
@@ -197,11 +199,22 @@ class Metabox {
 		$this->order_form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
 							->setRequired( false )
 							->addRule( $this->order_form::FLOAT );
+		$this->order_form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
+							->setHtmlAttribute( 'autocomplete', 'off' )
+							->setRequired( false )
+							// translators: %s: Represents minimal date for delayed delivery.
+							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
 
-		foreach ( Checkout::$pickupPointAttrs as $attrs ) {
-			$this->order_form->addHidden( $attrs['name'] );
+		foreach ( Checkout::$pickupPointAttrs as $pickupPointAttr ) {
+			$this->order_form->addHidden( $pickupPointAttr['name'] );
 		}
+
+		foreach ( Checkout::$homeDeliveryAttrs as $homeDeliveryAttr ) {
+			$this->order_form->addHidden( $homeDeliveryAttr['name'] );
+		}
+
 		$this->order_form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
+		$this->order_form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 	}
 
 	/**
@@ -224,10 +237,10 @@ class Metabox {
 		if ( $packetId ) {
 			$packetCancelLink = add_query_arg(
 				[
-					PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
-					PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_DETAIL,
-					Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
-					Plugin::PARAM_NONCE                => wp_create_nonce( PacketCanceller::createNonceAction( PacketCanceller::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+					PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+					PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+					Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+					Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
 				],
 				admin_url( 'admin.php' )
 			);
@@ -265,6 +278,7 @@ class Metabox {
 				self::FIELD_ADULT_CONTENT       => $order->containsAdultContent(),
 				self::FIELD_COD                 => $order->getCod(),
 				self::FIELD_VALUE               => $order->getValue(),
+				self::FIELD_DELIVER_ON          => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
 			]
 		);
 
@@ -275,30 +289,33 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
-		$widgetSettings = [
-			'packeteryApiKey'           => $this->optionsProvider->get_api_key(),
-			'country'                   => ( $order->getShippingCountry() ? $order->getShippingCountry() : '' ),
-			'language'                  => substr( get_locale(), 0, 2 ),
-			'isAgeVerificationRequired' => $order->containsAdultContent(),
-			'appIdentity'               => Plugin::getAppIdentity(),
-			'weight'                    => $order->getFinalWeight(),
-			'carriers'                  => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
-			'pickupPointAttrs'          => Checkout::$pickupPointAttrs,
-		];
+		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
+		$packetSubmitUrl        = add_query_arg(
+			[
+				PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+				PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+				Plugin::PARAM_PACKETERY_ACTION           => PacketActionsCommonLogic::ACTION_SUBMIT_PACKET,
+				Plugin::PARAM_NONCE                      => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
+			],
+			admin_url( 'admin.php' )
+		);
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form'                 => $this->order_form,
-				'order'                => $order,
-				'orderCurrency'        => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'widgetSettings'       => $widgetSettings,
-				'logo'                 => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
-				'showLogsLink'         => $showLogsLink,
-				'hasOrderManualWeight' => $order->hasManualWeight(),
-				'translations'         => [
+				'form'                   => $this->order_form,
+				'order'                  => $order,
+				'showSubmitPacketButton' => $showSubmitPacketButton,
+				'packetSubmitUrl'        => $packetSubmitUrl,
+				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
+				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'showLogsLink'           => $showLogsLink,
+				'hasOrderManualWeight'   => $order->hasManualWeight(),
+				'isPacketaPickupPoint'   => $order->isPacketaInternalPickupPoint(),
+				'translations'           => [
 					'showLogs'       => __( 'Show logs', 'packeta' ),
-					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove the field content and save.', 'packeta' ),
+					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
+					'submitPacket'   => __( 'Submit to packeta', 'packeta' ),
 				],
 			]
 		);
@@ -373,6 +390,21 @@ class Metabox {
 			$wcOrder->save();
 		}
 
+		if ( '1' === $values[ Checkout::ATTR_ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+			$address = new Core\Entity\Address(
+				$values[ Checkout::ATTR_ADDRESS_STREET ],
+				$values[ Checkout::ATTR_ADDRESS_CITY ],
+				$values[ Checkout::ATTR_ADDRESS_POST_CODE ]
+			);
+			$address->setHouseNumber( $values[ Checkout::ATTR_ADDRESS_HOUSE_NUMBER ] );
+			$address->setCounty( $values[ Checkout::ATTR_ADDRESS_COUNTY ] );
+			$address->setLatitude( $values[ Checkout::ATTR_ADDRESS_LATITUDE ] );
+			$address->setLongitude( $values[ Checkout::ATTR_ADDRESS_LONGITUDE ] );
+
+			$order->setDeliveryAddress( $address );
+			$order->setAddressValidated( true );
+		}
+
 		$orderSize = $order->getSize();
 		if ( null === $orderSize ) {
 			$orderSize = new Core\Entity\Size();
@@ -398,11 +430,91 @@ class Metabox {
 		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
 		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
 		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
-
+		$order->setDeliverOn( $this->helper->getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
 		$order->setSize( $orderSize );
 		Checkout::updateOrderEntityFromPropsToSave( $order, $propsToSave );
 		$this->orderRepository->save( $order );
 
 		return $orderId;
+	}
+
+	/**
+	 * Creates pickup point picker settings.
+	 *
+	 * @return array|null
+	 */
+	public function createPickupPointPickerSettings(): ?array {
+		global $post;
+
+		$order = $this->orderRepository->getById( (int) $post->ID );
+		if ( null === $order || false === $order->isPickupPointDelivery() ) {
+			return null;
+		}
+
+		$widgetOptions = [
+			'country'     => $order->getShippingCountry(),
+			'language'    => substr( get_user_locale(), 0, 2 ),
+			'appIdentity' => Plugin::getAppIdentity(),
+			'weight'      => $order->getFinalWeight(),
+			'carriers'    => Checkout::getWidgetCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() ),
+		];
+
+		if ( $order->containsAdultContent() ) {
+			$widgetOptions += [ 'livePickupPoint' => true ];
+		}
+
+		return [
+			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
+			'pickupPointAttrs' => Checkout::$pickupPointAttrs,
+			'widgetOptions'    => $widgetOptions,
+		];
+	}
+
+	/**
+	 * Creates address picker settings.
+	 *
+	 * @return array|null
+	 */
+	public function createAddressPickerSettings(): ?array {
+		global $post;
+
+		$order = $this->orderRepository->getById( (int) $post->ID );
+		if ( null === $order || false === $order->isHomeDelivery() ) {
+			return null;
+		}
+
+		$deliveryAddress = $order->getDeliveryAddress(); // Delivery address is always present in this case.
+		$widgetOptions   = [
+			'country'     => $order->getShippingCountry(),
+			'language'    => substr( get_user_locale(), 0, 2 ),
+			'layout'      => 'hd',
+			'appIdentity' => Plugin::getAppIdentity(),
+			'street'      => $deliveryAddress->getStreet(),
+			'city'        => $deliveryAddress->getCity(),
+			'postcode'    => $deliveryAddress->getZip(),
+		];
+
+		if ( $deliveryAddress->getHouseNumber() ) {
+			$widgetOptions += [ 'houseNumber' => $deliveryAddress->getHouseNumber() ];
+		}
+
+		if ( $deliveryAddress->getCounty() ) {
+			$widgetOptions += [ 'county' => $deliveryAddress->getCounty() ];
+		}
+
+		// TODO: Redo in carrier refactor.
+		if ( $order->getCarrier() && is_numeric( $order->getCarrier()->getId() ) ) {
+			$widgetOptions += [ 'carrierId' => $order->getCarrier()->getId() ];
+		}
+
+		return [
+			'packeteryApiKey'   => $this->optionsProvider->get_api_key(),
+			'homeDeliveryAttrs' => Checkout::$homeDeliveryAttrs,
+			'widgetOptions'     => $widgetOptions,
+			'translations'      => [
+				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order.', 'packeta' ),
+				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
+			],
+		];
 	}
 }

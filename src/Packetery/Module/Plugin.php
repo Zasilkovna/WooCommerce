@@ -15,6 +15,7 @@ use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
 use Packetery\Module\Product;
+use Packetery\Module\ProductCategory\FormFields;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use PacketeryNette\Utils\Html;
@@ -217,33 +218,56 @@ class Plugin {
 	private $contextResolver;
 
 	/**
+	 * Packet submitter
+	 *
+	 * @var Order\PacketSubmitter
+	 */
+	private $packetSubmitter;
+
+	/**
+	 * Category form fields.
+	 *
+	 * @var ProductCategory\FormFields
+	 */
+	private $productCategoryFormFields;
+
+	/**
+	 * Packet auto submitter.
+	 *
+	 * @var Order\PacketAutoSubmitter
+	 */
+	private $packetAutoSubmitter;
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox         $order_metabox        Order metabox.
-	 * @param MessageManager        $message_manager      Message manager.
-	 * @param Options\Page          $options_page         Options page.
-	 * @param Checkout              $checkout             Checkout class.
-	 * @param Engine                $latte_engine         PacketeryLatte engine.
-	 * @param OptionsPage           $carrierOptionsPage   Carrier options page.
-	 * @param Order\BulkActions     $orderBulkActions     Order BulkActions.
-	 * @param Order\LabelPrint      $labelPrint           Label printing.
-	 * @param Order\GridExtender    $gridExtender         Order grid extender.
-	 * @param Product\DataTab       $productTab           Product tab.
-	 * @param Log\Page              $logPage              Log page.
-	 * @param ILogger               $logger               Log manager.
-	 * @param Order\Controller      $orderController      Order controller.
-	 * @param Order\Modal           $orderModal           Order modal.
-	 * @param Options\Exporter      $exporter             Options exporter.
-	 * @param Order\CollectionPrint $orderCollectionPrint Order collection print.
-	 * @param Request               $request              HTTP request.
-	 * @param Order\Repository      $orderRepository      Order repository.
-	 * @param Upgrade               $upgrade              Plugin upgrade.
-	 * @param QueryProcessor        $queryProcessor       QueryProcessor.
-	 * @param Options\Provider      $optionsProvider      Options provider.
-	 * @param CronService           $cronService          Cron service.
-	 * @param Order\PacketCanceller $packetCanceller      Packet canceller.
-	 * @param ContextResolver       $contextResolver      Context resolver.
-	 * @param DashboardWidget       $dashboardWidget      Dashboard widget.
+	 * @param Order\Metabox              $order_metabox             Order metabox.
+	 * @param MessageManager             $message_manager           Message manager.
+	 * @param Options\Page               $options_page              Options page.
+	 * @param Checkout                   $checkout                  Checkout class.
+	 * @param Engine                     $latte_engine              PacketeryLatte engine.
+	 * @param OptionsPage                $carrierOptionsPage        Carrier options page.
+	 * @param Order\BulkActions          $orderBulkActions          Order BulkActions.
+	 * @param Order\LabelPrint           $labelPrint                Label printing.
+	 * @param Order\GridExtender         $gridExtender              Order grid extender.
+	 * @param Product\DataTab            $productTab                Product tab.
+	 * @param Log\Page                   $logPage                   Log page.
+	 * @param ILogger                    $logger                    Log manager.
+	 * @param Order\Controller           $orderController           Order controller.
+	 * @param Order\Modal                $orderModal                Order modal.
+	 * @param Options\Exporter           $exporter                  Options exporter.
+	 * @param Order\CollectionPrint      $orderCollectionPrint      Order collection print.
+	 * @param Request                    $request                   HTTP request.
+	 * @param Order\Repository           $orderRepository           Order repository.
+	 * @param Upgrade                    $upgrade                   Plugin upgrade.
+	 * @param QueryProcessor             $queryProcessor            QueryProcessor.
+	 * @param Options\Provider           $optionsProvider           Options provider.
+	 * @param CronService                $cronService               Cron service.
+	 * @param Order\PacketCanceller      $packetCanceller           Packet canceller.
+	 * @param ContextResolver            $contextResolver           Context resolver.
+	 * @param DashboardWidget            $dashboardWidget           Dashboard widget.
+	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
+	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
+	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -270,34 +294,40 @@ class Plugin {
 		CronService $cronService,
 		Order\PacketCanceller $packetCanceller,
 		ContextResolver $contextResolver,
-		DashboardWidget $dashboardWidget
+		DashboardWidget $dashboardWidget,
+		Order\PacketSubmitter $packetSubmitter,
+		ProductCategory\FormFields $productCategoryFormFields,
+		Order\PacketAutoSubmitter $packetAutoSubmitter
 	) {
-		$this->options_page         = $options_page;
-		$this->latte_engine         = $latte_engine;
-		$this->main_file_path       = PACKETERY_PLUGIN_DIR . '/packeta.php';
-		$this->order_metabox        = $order_metabox;
-		$this->message_manager      = $message_manager;
-		$this->checkout             = $checkout;
-		$this->carrierOptionsPage   = $carrierOptionsPage;
-		$this->orderBulkActions     = $orderBulkActions;
-		$this->labelPrint           = $labelPrint;
-		$this->gridExtender         = $gridExtender;
-		$this->productTab           = $productTab;
-		$this->logPage              = $logPage;
-		$this->logger               = $logger;
-		$this->orderController      = $orderController;
-		$this->orderModal           = $orderModal;
-		$this->exporter             = $exporter;
-		$this->orderCollectionPrint = $orderCollectionPrint;
-		$this->request              = $request;
-		$this->orderRepository      = $orderRepository;
-		$this->upgrade              = $upgrade;
-		$this->queryProcessor       = $queryProcessor;
-		$this->optionsProvider      = $optionsProvider;
-		$this->cronService          = $cronService;
-		$this->packetCanceller      = $packetCanceller;
-		$this->contextResolver      = $contextResolver;
-		$this->dashboardWidget      = $dashboardWidget;
+		$this->options_page              = $options_page;
+		$this->latte_engine              = $latte_engine;
+		$this->main_file_path            = PACKETERY_PLUGIN_DIR . '/packeta.php';
+		$this->order_metabox             = $order_metabox;
+		$this->message_manager           = $message_manager;
+		$this->checkout                  = $checkout;
+		$this->carrierOptionsPage        = $carrierOptionsPage;
+		$this->orderBulkActions          = $orderBulkActions;
+		$this->labelPrint                = $labelPrint;
+		$this->gridExtender              = $gridExtender;
+		$this->productTab                = $productTab;
+		$this->logPage                   = $logPage;
+		$this->logger                    = $logger;
+		$this->orderController           = $orderController;
+		$this->orderModal                = $orderModal;
+		$this->exporter                  = $exporter;
+		$this->orderCollectionPrint      = $orderCollectionPrint;
+		$this->request                   = $request;
+		$this->orderRepository           = $orderRepository;
+		$this->upgrade                   = $upgrade;
+		$this->queryProcessor            = $queryProcessor;
+		$this->optionsProvider           = $optionsProvider;
+		$this->cronService               = $cronService;
+		$this->packetCanceller           = $packetCanceller;
+		$this->contextResolver           = $contextResolver;
+		$this->dashboardWidget           = $dashboardWidget;
+		$this->packetSubmitter           = $packetSubmitter;
+		$this->productCategoryFormFields = $productCategoryFormFields;
+		$this->packetAutoSubmitter       = $packetAutoSubmitter;
 	}
 
 	/**
@@ -361,6 +391,8 @@ class Plugin {
 		$this->checkout->register_hooks();
 		$this->productTab->register();
 		$this->cronService->register();
+		$this->productCategoryFormFields->register();
+		$this->packetAutoSubmitter->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
@@ -384,7 +416,7 @@ class Plugin {
 		add_action( 'admin_init', [ $this->orderCollectionPrint, 'print' ] );
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
-		add_action( 'admin_init', [ $this->packetCanceller, 'processActions' ] );
+		add_action( 'admin_init', [ $this, 'handleActions' ] );
 		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
@@ -636,11 +668,15 @@ class Plugin {
 	 *
 	 * @param string $asset Relative asset path without leading slash.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public static function buildAssetUrl( string $asset ): string {
+	public static function buildAssetUrl( string $asset ): ?string {
 		$url      = plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . $asset;
 		$filename = PACKETERY_PLUGIN_DIR . '/' . $asset;
+
+		if ( ! file_exists( $filename ) ) {
+			return null;
+		}
 
 		return add_query_arg( [ 'v' => md5( (string) filemtime( $filename ) ) ], $url );
 	}
@@ -661,9 +697,11 @@ class Plugin {
 	 * Enqueues javascript files and stylesheets for administration.
 	 */
 	public function enqueueAdminAssets(): void {
-		$page              = $this->request->getQuery( 'page' );
-		$isOrderGridPage   = $this->contextResolver->isOrderGridPage();
-		$isOrderDetailPage = $this->contextResolver->isOrderDetailPage();
+		$page                  = $this->request->getQuery( 'page' );
+		$isOrderGridPage       = $this->contextResolver->isOrderGridPage();
+		$isOrderDetailPage     = $this->contextResolver->isOrderDetailPage();
+		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
+		$datePickerSettings    = [ 'deliverOnMinDate' => wp_date( \Packetery\Core\Helper::DATEPICKER_FORMAT ) ];
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
@@ -680,7 +718,7 @@ class Plugin {
 		$isDashboard   = ( $screen && 'dashboard' === $screen->id );
 
 		if (
-			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isDashboard ||
+			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard ||
 			in_array(
 				$page,
 				[
@@ -697,10 +735,31 @@ class Plugin {
 
 		if ( $isOrderGridPage ) {
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
 		}
 
+		$pickupPointPickerSettings = null;
+		$addressPickerSettings     = null;
+
 		if ( $isOrderDetailPage ) {
-			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', false, [ 'jquery' ] );
+			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery' ] );
+			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
+			$pickupPointPickerSettings = $this->order_metabox->createPickupPointPickerSettings();
+			$addressPickerSettings     = $this->order_metabox->createAddressPickerSettings();
+		}
+
+		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
+			wp_enqueue_script( 'packetery-widget-library', 'https://widget.packeta.com/v6/www/js/library.js', [], self::VERSION, true );
+		}
+
+		if ( null !== $pickupPointPickerSettings ) {
+			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
+			wp_localize_script( 'packetery-admin-pickup-point-picker', 'packeteryPickupPointPickerSettings', $pickupPointPickerSettings );
+		}
+
+		if ( null !== $addressPickerSettings ) {
+			$this->enqueueScript( 'packetery-admin-address-picker', 'public/admin-address-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
+			wp_localize_script( 'packetery-admin-address-picker', 'packeteryAddressPickerSettings', $addressPickerSettings );
 		}
 
 		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
@@ -722,7 +781,7 @@ class Plugin {
 	/**
 	 * Gets current locale.
 	 */
-	private function getLocale(): string {
+	public static function getLocale(): string {
 		/**
 		 * Applies plugin_locale filters.
 		 *
@@ -868,5 +927,22 @@ class Plugin {
 	 */
 	public static function getAppIdentity(): string {
 		return 'WordPress-' . get_bloginfo( 'version' ) . '-Woocommerce-' . WC_VERSION . '-Packeta-' . self::VERSION;
+	}
+
+	/**
+	 * Check for action parameter and process wanted action.
+	 *
+	 * @return void
+	 */
+	public function handleActions(): void {
+		$action = $this->request->getQuery( self::PARAM_PACKETERY_ACTION );
+
+		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET === $action ) {
+			$this->packetSubmitter->processAction();
+		}
+
+		if ( Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET === $action ) {
+			$this->packetCanceller->processAction();
+		}
 	}
 }

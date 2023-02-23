@@ -56,9 +56,9 @@ class Order {
 			$order->getName() &&
 			$order->getSurname() &&
 			$order->getValue() &&
-			$order->getFinalWeight() &&
 			$order->getPickupPointOrCarrierId() &&
 			$order->getEshop() &&
+			$this->validateFinalWeight( $order ) &&
 			$this->validateAddress( $order ) &&
 			$this->validateSize( $order )
 		);
@@ -82,6 +82,17 @@ class Order {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Validate weight.
+	 *
+	 * @param Entity\Order $order Order.
+	 *
+	 * @return bool
+	 */
+	private function validateFinalWeight( Entity\Order $order ): bool {
+		return null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
 	}
 
 	/**

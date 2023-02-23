@@ -1,0 +1,15 @@
+{formContext $form}
+    <tr class="form-field">
+        <th scope="row"><p><strong>{$translations['disallowedShippingRatesHeading']}</strong></p></th>
+        <td>
+            <table>
+                {foreach $form[Packetery\Module\ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES]->getControls() as $control}
+                    <tr class="packetery-product-category-carrier-item">
+                        <td><input n:name=$control /></td>
+                        <td><label n:name=$control /></td>
+                    </tr>
+                {/foreach}
+            </table>
+        </td>
+    </tr>
+{/formContext}

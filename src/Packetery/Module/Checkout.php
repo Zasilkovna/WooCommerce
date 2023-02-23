@@ -10,7 +10,9 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core;
+use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\Order\PickupPointValidator;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -34,15 +36,18 @@ class Checkout {
 	const ATTR_CARRIER_ID   = 'packetery_carrier_id';
 	const ATTR_POINT_URL    = 'packetery_point_url';
 
+	const ATTR_ADDRESS_IS_VALIDATED = 'packetery_address_isValidated';
+	const ATTR_ADDRESS_HOUSE_NUMBER = 'packetery_address_houseNumber';
+	const ATTR_ADDRESS_STREET       = 'packetery_address_street';
+	const ATTR_ADDRESS_CITY         = 'packetery_address_city';
+	const ATTR_ADDRESS_POST_CODE    = 'packetery_address_postCode';
+	const ATTR_ADDRESS_COUNTY       = 'packetery_address_county';
+	const ATTR_ADDRESS_COUNTRY      = 'packetery_address_country';
+	const ATTR_ADDRESS_LATITUDE     = 'packetery_address_latitude';
+	const ATTR_ADDRESS_LONGITUDE    = 'packetery_address_longitude';
+
 	const BUTTON_RENDERER_TABLE_ROW  = 'table-row';
 	const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
-
-	/**
-	 * Tells if hidden fields should be rendered at default place.
-	 *
-	 * @var bool
-	 */
-	private $shouldRenderHiddenFieldsAtDefaultPlace = true;
 
 	/**
 	 * Pickup point attributes configuration.
@@ -89,35 +94,35 @@ class Checkout {
 	 *
 	 * @var array[]
 	 */
-	private static $homeDeliveryAttrs = [
+	public static $homeDeliveryAttrs = [
 		'isValidated' => [
-			'name'                => 'packetery_address_isValidated', // Name of checkout hidden form field. Must be unique in entire form.
+			'name'                => self::ATTR_ADDRESS_IS_VALIDATED, // Name of checkout hidden form field. Must be unique in entire form.
 			'isWidgetResultField' => false, // Is attribute included in widget result address? By default, it is.
 		],
 		'houseNumber' => [ // post type address field called 'houseNumber'.
-			'name' => 'packetery_address_houseNumber',
+			'name' => self::ATTR_ADDRESS_HOUSE_NUMBER,
 		],
 		'street'      => [
-			'name' => 'packetery_address_street',
+			'name' => self::ATTR_ADDRESS_STREET,
 		],
 		'city'        => [
-			'name' => 'packetery_address_city',
+			'name' => self::ATTR_ADDRESS_CITY,
 		],
 		'postCode'    => [
-			'name'              => 'packetery_address_postCode',
+			'name'              => self::ATTR_ADDRESS_POST_CODE,
 			'widgetResultField' => 'postcode', // Widget returns address object containing specified field. By default, it is the array key 'postCode', but in this case it is 'postcode'.
 		],
 		'county'      => [
-			'name' => 'packetery_address_county',
+			'name' => self::ATTR_ADDRESS_COUNTY,
 		],
 		'country'     => [
-			'name' => 'packetery_address_country',
+			'name' => self::ATTR_ADDRESS_COUNTRY,
 		],
 		'latitude'    => [
-			'name' => 'packetery_address_latitude',
+			'name' => self::ATTR_ADDRESS_LATITUDE,
 		],
 		'longitude'   => [
-			'name' => 'packetery_address_longitude',
+			'name' => self::ATTR_ADDRESS_LONGITUDE,
 		],
 	];
 
@@ -164,14 +169,30 @@ class Checkout {
 	private $currencySwitcherFacade;
 
 	/**
+	 * Packet auto submitter.
+	 *
+	 * @var Order\PacketAutoSubmitter
+	 */
+	private $packetAutoSubmitter;
+
+	/**
+	 * Pickup point validation API.
+	 *
+	 * @var PickupPointValidator
+	 */
+	private $pickupPointValidator;
+
+	/**
 	 * Checkout constructor.
 	 *
-	 * @param Engine                 $latte_engine      PacketeryLatte engine.
-	 * @param Provider               $options_provider  Options provider.
-	 * @param Carrier\Repository     $carrierRepository Carrier repository.
-	 * @param Request                $httpRequest Http request.
-	 * @param Order\Repository       $orderRepository Order repository.
-	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
+	 * @param Engine                    $latte_engine           PacketeryLatte engine.
+	 * @param Provider                  $options_provider       Options provider.
+	 * @param Carrier\Repository        $carrierRepository      Carrier repository.
+	 * @param Request                   $httpRequest            Http request.
+	 * @param Order\Repository          $orderRepository        Order repository.
+	 * @param CurrencySwitcherFacade    $currencySwitcherFacade Currency switcher facade.
+	 * @param Order\PacketAutoSubmitter $packetAutoSubmitter    Packet auto submitter.
+	 * @param PickupPointValidator      $pickupPointValidator    Pickup point validation API.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -179,7 +200,9 @@ class Checkout {
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Order\Repository $orderRepository,
-		CurrencySwitcherFacade $currencySwitcherFacade
+		CurrencySwitcherFacade $currencySwitcherFacade,
+		Order\PacketAutoSubmitter $packetAutoSubmitter,
+		PickupPointValidator $pickupPointValidator
 	) {
 		$this->latte_engine           = $latte_engine;
 		$this->options_provider       = $options_provider;
@@ -187,6 +210,8 @@ class Checkout {
 		$this->httpRequest            = $httpRequest;
 		$this->orderRepository        = $orderRepository;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
+		$this->packetAutoSubmitter    = $packetAutoSubmitter;
+		$this->pickupPointValidator   = $pickupPointValidator;
 	}
 
 	/**
@@ -223,10 +248,6 @@ class Checkout {
 			return;
 		}
 
-		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace ) {
-			$this->renderHiddenInputFields();
-		}
-
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
@@ -251,15 +272,6 @@ class Checkout {
 
 		if ( ! $this->isPacketeryOrder( $shippingRate->get_id() ) ) {
 			return;
-		}
-
-		static $hiddenInputsRendered    = false;
-		static $hiddenFieldsRenderedFor = null;
-
-		if ( $this->shouldRenderHiddenFieldsAtDefaultPlace && ( ! $hiddenInputsRendered || $shippingRate->get_id() === $hiddenFieldsRenderedFor ) ) {
-			$this->renderHiddenInputFields();
-			$hiddenInputsRendered    = true;
-			$hiddenFieldsRenderedFor = $shippingRate->get_id();
 		}
 
 		$this->latte_engine->render(
@@ -338,6 +350,7 @@ class Checkout {
 			'homeDeliveryAttrs'         => self::$homeDeliveryAttrs,
 			'appIdentity'               => Plugin::getAppIdentity(),
 			'packeteryApiKey'           => $this->options_provider->get_api_key(),
+			'widgetAutoOpen'            => $this->options_provider->shouldWidgetOpenAutomatically(),
 			'translations'              => [
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
 				'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
@@ -367,14 +380,22 @@ class Checkout {
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 */
 	public function validateCheckoutData(): void {
-		$chosenMethod = $this->getChosenMethod();
-		if ( false === $this->isPacketeryOrder( $chosenMethod ) ) {
+		$chosenShippingMethod = $this->getChosenMethod();
+		WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
+
+		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
 			return;
 		}
 
 		$post = $this->httpRequest->getPost();
 		if ( ! wp_verify_nonce( $post[ self::NONCE_NAME ], self::NONCE_ACTION ) ) {
 			wp_nonce_ays( '' );
+		}
+
+		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, WC()->cart->get_cart_contents() ) ) {
+			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
+
+			return;
 		}
 
 		if ( $this->isPickupPointOrder() ) {
@@ -411,10 +432,32 @@ class Checkout {
 			if ( $error ) {
 				wc_add_notice( __( 'Pick up point is not chosen.', 'packeta' ), 'error' );
 			}
+
+			if ( ! $error && ! $this->carrierRepository->isValidForCountry(
+				( $post[ self::ATTR_CARRIER_ID ] ? $post[ self::ATTR_CARRIER_ID ] : null ),
+				$this->getCustomerCountry()
+			) ) {
+				wc_add_notice( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
+				$error = true;
+			}
+
+			if ( ! $error ) {
+				$pickupPointValidationResponse = $this->pickupPointValidator->validate(
+					$this->getPickupPointValidateRequest( $post[ self::ATTR_POINT_ID ], $carrierId, $pointCarrierId, $chosenShippingMethod )
+				);
+				if ( ! $pickupPointValidationResponse->isValid() ) {
+					wc_add_notice( __( 'The selected Packeta pickup point could not be validated. Please select another.', 'packeta' ), 'error' );
+					foreach ( $pickupPointValidationResponse->getErrors() as $validationError ) {
+						$reason = $this->pickupPointValidator->getTranslatedError()[ $validationError['code'] ];
+						// translators: %s: Reason for validation failure.
+						wc_add_notice( sprintf( __( 'Reason: %s', 'packeta' ), $reason ), 'error' );
+					}
+				}
+			}
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
-			$carrierId     = $this->getCarrierId( $chosenMethod );
+			$carrierId     = $this->getCarrierId( $chosenShippingMethod );
 			$optionId      = self::CARRIER_PREFIX . $carrierId;
 			$carrierOption = get_option( $optionId );
 
@@ -457,10 +500,17 @@ class Checkout {
 			$propsToSave[ self::ATTR_CARRIER_ID ] = $carrierId;
 		}
 
+		$wcOrder = wc_get_order( $orderId );
+		if ( ! $wcOrder instanceof \WC_Order ) {
+			return;
+		}
+
 		if ( $this->isPickupPointOrder() ) {
-			$wcOrder = wc_get_order( $orderId );
-			if ( ! $wcOrder instanceof \WC_Order ) {
-				return;
+			$pickupPointValidationError = WC()->session->get( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
+			if ( null !== $pickupPointValidationError ) {
+				// translators: %s: Message from downloader.
+				$wcOrder->add_order_note( sprintf( __( 'The selected Packeta pickup point could not be validated, reason: %s.', 'packeta' ), $pickupPointValidationError ) );
+				WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 			}
 
 			foreach ( self::$pickupPointAttrs as $attr ) {
@@ -508,8 +558,13 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
+		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
+			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
+		}
+
 		self::updateOrderEntityFromPropsToSave( $orderEntity, $propsToSave );
 		$this->orderRepository->save( $orderEntity );
+		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $orderId );
 	}
 
 	/**
@@ -559,15 +614,14 @@ class Checkout {
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
-		$activeTheme = strtolower( wp_get_theme()->get_template() );
-		if ( 'divi' === $activeTheme ) {
-			// TODO: Check the possibility to use this placement always.
-			add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
-			$this->shouldRenderHiddenFieldsAtDefaultPlace = false;
-		}
+		// This action works for both classic and Divi templates.
+		add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
+		if ( ! is_admin() ) {
+			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
+		}
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
 		add_action(
@@ -615,11 +669,11 @@ class Checkout {
 	/**
 	 * Gets cart contents weight in kg.
 	 *
-	 * @return float|int
+	 * @return float
 	 */
-	public function getCartWeightKg() {
+	public function getCartWeightKg(): float {
 		$weight   = WC()->cart->cart_contents_weight;
-		$weightKg = wc_get_weight( $weight, 'kg' );
+		$weightKg = (float) wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}
@@ -642,6 +696,10 @@ class Checkout {
 		$chosenCarrier  = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->getTaxClassWithMaxRate();
 
+		if ( $carrierOptions->hasCouponFreeShippingForFeesAllowed() && $this->isFreeShippingCouponApplied() ) {
+			return;
+		}
+
 		if (
 			null !== $chosenCarrier &&
 			$chosenCarrier->supportsAgeVerification() &&
@@ -660,14 +718,8 @@ class Checkout {
 			);
 		}
 
-		$isCod               = false;
-		$codPaymentMethod    = $this->options_provider->getCodPaymentMethod();
-		$chosenPaymentMethod = WC()->session->get( 'chosen_payment_method' );
-		if ( null !== $codPaymentMethod && ! empty( $chosenPaymentMethod ) && $chosenPaymentMethod === $codPaymentMethod ) {
-			$isCod = true;
-		}
-
-		if ( false === $isCod ) {
+		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
+		if ( empty( $paymentMethod ) || false === $this->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
 		}
 
@@ -704,38 +756,38 @@ class Checkout {
 	 */
 	public function getShippingRates(): array {
 		$customerCountry           = $this->getCustomerCountry();
-		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
 		$availableCarriers         = $this->carrierRepository->getByCountryIncludingZpoints( $customerCountry );
-		$carrierOptions            = [];
+		$cartProducts              = WC()->cart->get_cart_contents();
+		$cartPrice                 = $this->getCartContentsTotalIncludingTax();
+		$cartWeight                = $this->getCartWeightKg();
+		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
+		$isAgeVerificationRequired = $this->isAgeVerification18PlusRequired();
 
+		$customRates = [];
 		foreach ( $availableCarriers as $carrier ) {
-			if ( $this->isAgeVerification18PlusRequired() && false === $carrier->supportsAgeVerification() ) {
+			if ( $isAgeVerificationRequired && false === $carrier->supportsAgeVerification() ) {
 				continue;
 			}
 
 			$optionId = self::CARRIER_PREFIX . $carrier->getId();
+			$rateId   = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+			$options  = Carrier\Options::createByOptionId( $optionId );
+
+			if ( false === $options->isActive() ) {
+				continue;
+			}
 
 			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
 				continue;
 			}
 
-			$carrierOptions[ ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId ] = get_option( $optionId );
-		}
-
-		$cartPrice   = $this->getCartContentsTotalIncludingTax();
-		$cartWeight  = $this->getCartWeightKg();
-		$customRates = [];
-
-		foreach ( $carrierOptions as $optionId => $options ) {
-			if ( ! is_array( $options ) ) {
+			if ( $this->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts ) ) {
 				continue;
 			}
 
-			if ( true === $options['active'] ) {
-				$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
-				if ( null !== $cost ) {
-					$customRates[ $optionId ] = $this->createShippingRate( $options['name'], $optionId, (float) $cost );
-				}
+			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
+			if ( null !== $cost ) {
+				$customRates[ $rateId ] = $this->createShippingRate( $options->getName(), $rateId, $cost );
 			}
 		}
 
@@ -745,14 +797,15 @@ class Checkout {
 	/**
 	 * Computes custom rate cost for carrier using cart contents.
 	 *
-	 * @param array     $carrierOptions Carrier options.
-	 * @param float     $cartPrice Price.
-	 * @param float|int $cartWeight Weight.
+	 * @param Carrier\Options $options    Carrier options.
+	 * @param float           $cartPrice  Price.
+	 * @param float|int       $cartWeight Weight.
 	 *
 	 * @return ?float
 	 */
-	private function getRateCost( array $carrierOptions, float $cartPrice, $cartWeight ) {
-		$cost = null;
+	private function getRateCost( Carrier\Options $options, float $cartPrice, $cartWeight ): ?float {
+		$cost           = null;
+		$carrierOptions = $options->toArray();
 
 		foreach ( $carrierOptions['weight_limits'] as $weightLimit ) {
 			if ( $cartWeight <= $weightLimit['weight'] ) {
@@ -772,8 +825,28 @@ class Checkout {
 			}
 		}
 
+		if ( 0 !== $cost && $options->hasCouponFreeShippingActive() && $this->isFreeShippingCouponApplied() ) {
+			$cost = 0;
+		}
+
 		// WooCommerce currency-switcher.com compatibility.
 		return (float) $cost;
+	}
+
+	/**
+	 * Tells if free shipping coupon is applied.
+	 *
+	 * @return bool
+	 */
+	private function isFreeShippingCouponApplied(): bool {
+		$coupons = WC()->cart->get_coupons();
+		foreach ( $coupons as $coupon ) {
+			if ( $coupon->get_free_shipping() ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -806,6 +879,21 @@ class Checkout {
 	 * @return string
 	 */
 	private function getChosenMethod(): string {
+		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
+
+		if ( null !== $postedShippingMethodArray ) {
+			return $this->getShortenedRateId( current( $postedShippingMethodArray ) );
+		}
+
+		return $this->calculateShipping();
+	}
+
+	/**
+	 * Calculates shipping without using POST data.
+	 *
+	 * @return string
+	 */
+	private function calculateShipping(): string {
 		$chosenShippingRates = WC()->cart->calculate_shipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
@@ -1019,4 +1107,114 @@ class Checkout {
 	private function getCartContentsTotalIncludingTax():float {
 		return (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
 	}
+
+	/**
+	 * Check if given carrier is disabled in products categories in cart
+	 *
+	 * @param string $shippingRate Shipping rate.
+	 * @param array  $cartProducts Array of cart products.
+	 *
+	 * @return bool
+	 */
+	private function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
+		if ( ! $cartProducts ) {
+			return false;
+		}
+
+		foreach ( $cartProducts as $cartProduct ) {
+			if ( ! isset( $cartProduct['product_id'] ) ) {
+				continue;
+			}
+			$product            = WC()->product_factory->get_product( $cartProduct['product_id'] );
+			$productCategoryIds = $product->get_category_ids();
+
+			foreach ( $productCategoryIds as $productCategoryId ) {
+				$productCategoryEntity           = ProductCategory\Entity::fromTermId( (int) $productCategoryId );
+				$disallowedCategoryShippingRates = $productCategoryEntity->getDisallowedShippingRateIds();
+				if ( in_array( $shippingRate, $disallowedCategoryShippingRates, true ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Filters out payment methods, that can not be used.
+	 *
+	 * @param array $availableGateways Available gateways.
+	 *
+	 * @return array
+	 */
+	public function filterPaymentGateways( array $availableGateways ): array {
+		if ( ! is_checkout() ) {
+			return $availableGateways;
+		}
+
+		$chosenMethod = $this->calculateShipping();
+		if ( ! $this->isPacketeryOrder( $chosenMethod ) ) {
+			return $availableGateways;
+		}
+
+		$carrier = $this->carrierRepository->getAnyById( $this->getExtendedBranchServiceId( $chosenMethod ) );
+		if ( null === $carrier ) {
+			return $availableGateways;
+		}
+
+		foreach ( $availableGateways as $key => $availableGateway ) {
+			if (
+				$this->isCodPaymentMethod( $availableGateway->id ) &&
+				! $carrier->supportsCod()
+			) {
+				unset( $availableGateways[ $key ] );
+			}
+		}
+
+		return $availableGateways;
+	}
+
+	/**
+	 * Checks if payment method is a COD one.
+	 *
+	 * @param string $paymentMethod Payment method.
+	 *
+	 * @return bool
+	 */
+	private function isCodPaymentMethod( string $paymentMethod ): bool {
+		$codPaymentMethod = $this->options_provider->getCodPaymentMethod();
+
+		return ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod );
+	}
+
+	/**
+	 * Creates PickupPointValidateRequest object.
+	 *
+	 * @param string  $pickupPointId Pickup point id.
+	 * @param ?string $carrierId Carrier id.
+	 * @param ?string $pointCarrierId Carrier pickup point id.
+	 * @param string  $chosenShippingMethod WC shipping method id.
+	 *
+	 * @return PickupPointValidateRequest
+	 */
+	private function getPickupPointValidateRequest(
+		string $pickupPointId,
+		?string $carrierId,
+		?string $pointCarrierId,
+		string $chosenShippingMethod
+	): PickupPointValidateRequest {
+		return new PickupPointValidateRequest(
+			$pickupPointId,
+			$carrierId,
+			$pointCarrierId,
+			$this->getCustomerCountry(),
+			$this->getCarrierId( $chosenShippingMethod ),
+			false,
+			false,
+			$this->getCartWeightKg(),
+			$this->isAgeVerification18PlusRequired(),
+			null
+		);
+	}
+
 }

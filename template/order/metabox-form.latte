@@ -35,6 +35,16 @@
                     </div>
                 </div>
             {/foreach}
+            {if $isPacketaPickupPoint}
+                <div class="packetery-table-row">
+                    <div class="packetery-table-cell packetery-order-metabox-label-cell">
+                        <label n:name=Packetery\Module\Order\Metabox::FIELD_DELIVER_ON />
+                    </div>
+                    <div class="packetery-table-cell">
+                        <input n:name=Packetery\Module\Order\Metabox::FIELD_DELIVER_ON class="date-picker packetery-order-metabox-input">
+                    </div>
+                </div>
+            {/if}
 
         </div>
 
@@ -49,14 +59,29 @@
                 </div>
                 <span data-packetery-widget-info></span>
             </div>
-            <script>
-			    packeteryLoadPickupPointPicker( jQuery, {$widgetSettings} );
-            </script>
+        {/if}
+
+        {if $order->isHomeDelivery()}
+            {foreach Packetery\Module\Checkout::$homeDeliveryAttrs as $attr}
+                <input n:name=$attr[name] />
+            {/foreach}
+            <div id="packetery-widget-button-wrapper">
+                <div class="packetery-widget-button-row">
+                    <img src="{$logo}">
+                    <button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_address >{$form[packetery_pick_address]->getCaption()}</button>
+                </div>
+                <span data-packetery-widget-info></span>
+            </div>
         {/if}
     </div>
 {/formContext}
 
 <ul>
+    <li n:if="$showSubmitPacketButton">
+        <a class="button dashicons dashicons-upload packetery-dashicons-button-fix" href="{$packetSubmitUrl}">
+            <span class="packetery-dashicons-button-fix-text">{$translations['submitPacket']}</span>
+        </a>
+    </li>
     <li n:if="$showLogsLink">
         <a class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
     </li>

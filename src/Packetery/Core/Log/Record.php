@@ -28,6 +28,7 @@ class Record {
 	public const ACTION_SENDER_VALIDATION         = 'sender-validation';
 	public const ACTION_PACKET_STATUS_SYNC        = 'packet-status-sync';
 	public const ACTION_PACKET_CANCEL             = 'packet-cancel';
+	public const ACTION_PICKUP_POINT_VALIDATE     = 'pickup-point-validate';
 
 	public const STATUS_SUCCESS = 'success';
 	public const STATUS_ERROR   = 'error';

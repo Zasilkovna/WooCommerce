@@ -12,6 +12,7 @@ namespace Packetery\Module\Log;
 
 use Packetery\Core\Helper;
 use Packetery\Core\Log\Record;
+use Packetery\Module\WpdbAdapter;
 
 /**
  * Class Repository
@@ -21,43 +22,32 @@ use Packetery\Core\Log\Record;
 class Repository {
 
 	/**
-	 * WPDB.
+	 * WpdbAdapter.
 	 *
-	 * @var \wpdb
+	 * @var WpdbAdapter
 	 */
-	private $wpdb;
+	private $wpdbAdapter;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param \wpdb $wpdb WPDB.
+	 * @param WpdbAdapter $wpdbAdapter WpdbAdapter.
 	 */
-	public function __construct( \wpdb $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( WpdbAdapter $wpdbAdapter ) {
+		$this->wpdbAdapter = $wpdbAdapter;
 	}
 
 	/**
 	 * Counts records.
-	 *
-	 * @param int $orderId Order ID.
-	 *
-	 * @return int
-	 */
-	public function countByOrderId( int $orderId ): int {
-		$wpdb = $this->wpdb;
 
-		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM `' . $wpdb->packetery_log . '` WHERE `order_id` = %d', $orderId ) );
-	}
-
-	/**
-	 * Counts records.
+	 * @param int|null    $orderId Order ID.
+	 * @param string|null $action  Action.
 	 *
 	 * @return int
 	 */
-	public function countAll(): int {
-		$wpdb = $this->wpdb;
-
-		return (int) $wpdb->get_var( 'SELECT COUNT(*) FROM `' . $wpdb->packetery_log . '`' );
+	public function countRows( ?int $orderId, ?string $action ): int {
+		$whereClause = $this->getWhereClause( [], $orderId, $action );
+		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packetery_log . '`' . $whereClause );
 	}
 
 	/**
@@ -69,8 +59,8 @@ class Repository {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function find( array $arguments ): iterable {
-		$wpdb      = $this->wpdb;
 		$orderId   = $arguments['order_id'] ?? null;
+		$action    = $arguments['action'] ?? null;
 		$orderBy   = $arguments['orderby'] ?? [];
 		$limit     = $arguments['limit'] ?? null;
 		$dateQuery = $arguments['date_query'] ?? [];
@@ -97,21 +87,13 @@ class Repository {
 		$where = [];
 		foreach ( $dateQuery as $dateQueryItem ) {
 			if ( isset( $dateQueryItem['after'] ) ) {
-				$where[] = $wpdb->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
+				$where[] = $this->wpdbAdapter->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
 			}
 		}
 
-		if ( is_numeric( $orderId ) ) {
-			$where[] = $wpdb->prepare( '`order_id` = %d', $orderId );
-		}
+		$whereClause = $this->getWhereClause( $where, $orderId, $action );
 
-		$whereClause = '';
-		if ( $where ) {
-			$whereClause = ' WHERE ' . implode( ' AND ', $where );
-		}
-
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$result = $wpdb->get_results( 'SELECT * FROM ' . $wpdb->packetery_log . $whereClause . $orderByClause . $limitClause );
+		$result = $this->wpdbAdapter->get_results( 'SELECT * FROM `' . $this->wpdbAdapter->packetery_log . '` ' . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
 			return $this->remapToRecord( $result );
 		}
@@ -127,10 +109,10 @@ class Repository {
 	 * @return void
 	 */
 	public function deleteOld( string $before ): void {
-		$wpdb            = $this->wpdb;
 		$dateToFormatted = Helper::now()->modify( $before )->format( Helper::MYSQL_DATETIME_FORMAT );
-
-		$wpdb->query( $wpdb->prepare( 'DELETE FROM `' . $wpdb->packetery_log . '` WHERE `date` < %s', $dateToFormatted ) );
+		$this->wpdbAdapter->query(
+			$this->wpdbAdapter->prepare( 'DELETE FROM `' . $this->wpdbAdapter->packetery_log . '` WHERE `date` < %s', $dateToFormatted )
+		);
 	}
 
 	/**
@@ -188,10 +170,9 @@ class Repository {
 	 * @return void
 	 */
 	public function createTable(): void {
-		$wpdb = $this->wpdb;
-		$wpdb->query(
+		$this->wpdbAdapter->query(
 			'
-			CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_log . "` (
+			CREATE TABLE IF NOT EXISTS `' . $this->wpdbAdapter->packetery_log . "` (
 				`id` INT(11) NOT NULL AUTO_INCREMENT,
 				`order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
 				`title` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
@@ -213,8 +194,7 @@ class Repository {
 	 * @return void
 	 */
 	public function addOrderIdColumn(): void {
-		$wpdb = $this->wpdb;
-		$wpdb->query( 'ALTER TABLE `' . $wpdb->packetery_log . '` ADD COLUMN `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `id`' );
+		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_log . '` ADD COLUMN `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `id`' );
 	}
 
 	/**
@@ -223,8 +203,7 @@ class Repository {
 	 * @return void
 	 */
 	public function drop(): void {
-		$wpdb = $this->wpdb;
-		$wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->packetery_log . '`' );
+		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packetery_log . '`' );
 	}
 
 	/**
@@ -263,6 +242,32 @@ class Repository {
 			'date'     => $dateString,
 		];
 
-		$this->wpdb->_insert_replace_helper( $this->wpdb->packetery_log, $data, null, 'REPLACE' );
+		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
 	}
+
+	/**
+	 * Gets where clause for find and count queries.
+	 *
+	 * @param array       $where   Conditions.
+	 * @param int|null    $orderId Order id.
+	 * @param string|null $action  Action.
+	 *
+	 * @return string
+	 */
+	private function getWhereClause( array $where, ?int $orderId, ?string $action ): string {
+		if ( is_numeric( $orderId ) ) {
+			$where[] = $this->wpdbAdapter->prepare( '`order_id` = %d', $orderId );
+		}
+		if ( null !== $action ) {
+			$where[] = $this->wpdbAdapter->prepare( '`action` = %s', $action );
+		}
+
+		$whereClause = '';
+		if ( $where ) {
+			$whereClause = ' WHERE ' . implode( ' AND ', $where );
+		}
+
+		return $whereClause;
+	}
+
 }

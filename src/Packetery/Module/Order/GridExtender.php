@@ -10,9 +10,9 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core;
-use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
+use Packetery\Module\Log\Purger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module\Plugin;
@@ -25,13 +25,6 @@ use Packetery\Module\Plugin;
 class GridExtender {
 
 	const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
-
-	/**
-	 * Order entity cache.
-	 *
-	 * @var Entity\Order|null
-	 */
-	public static $orderCache;
 
 	/**
 	 * Generic Helper.
@@ -76,30 +69,22 @@ class GridExtender {
 	private $orderRepository;
 
 	/**
-	 * Modal.
+	 * Order Validator.
 	 *
-	 * @var Modal
+	 * @var Core\Validator\Order
 	 */
-	private $modal;
-
-	/**
-	 * Packet synchronizer.
-	 *
-	 * @var PacketSynchronizer
-	 */
-	private $packetSynchronizer;
+	private $orderValidator;
 
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper             $helper                Helper.
-	 * @param Carrier\Repository $carrierRepository     Carrier repository.
-	 * @param Engine             $latteEngine           Latte Engine.
-	 * @param Request            $httpRequest           Http Request.
-	 * @param ControllerRouter   $orderControllerRouter Order controller router.
-	 * @param Repository         $orderRepository       Order repository.
-	 * @param Modal              $modal                 Modal dialog.
-	 * @param PacketSynchronizer $packetSynchronizer    Packet synchronizer.
+	 * @param Helper               $helper                Helper.
+	 * @param Carrier\Repository   $carrierRepository     Carrier repository.
+	 * @param Engine               $latteEngine           Latte Engine.
+	 * @param Request              $httpRequest           Http Request.
+	 * @param ControllerRouter     $orderControllerRouter Order controller router.
+	 * @param Repository           $orderRepository       Order repository.
+	 * @param Core\Validator\Order $orderValidator        Order validator.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -108,8 +93,7 @@ class GridExtender {
 		Request $httpRequest,
 		ControllerRouter $orderControllerRouter,
 		Repository $orderRepository,
-		Modal $modal,
-		PacketSynchronizer $packetSynchronizer
+		Core\Validator\Order $orderValidator
 	) {
 		$this->helper                = $helper;
 		$this->carrierRepository     = $carrierRepository;
@@ -117,8 +101,7 @@ class GridExtender {
 		$this->httpRequest           = $httpRequest;
 		$this->orderControllerRouter = $orderControllerRouter;
 		$this->orderRepository       = $orderRepository;
-		$this->modal                 = $modal;
-		$this->packetSynchronizer    = $packetSynchronizer;
+		$this->orderValidator        = $orderValidator;
 	}
 
 	/**
@@ -225,6 +208,28 @@ class GridExtender {
 	}
 
 	/**
+	 * Get Order Entity from cache
+	 *
+	 * @param int $postId Post ID.
+	 *
+	 * @return Core\Entity\Order|null
+	 */
+	private function getOrderByPostId( int $postId ): ?Core\Entity\Order {
+		global $posts;
+		static $ordersCache;
+
+		if ( ! isset( $ordersCache ) ) {
+			$orderIds = [];
+			foreach ( $posts as $order ) {
+				$orderIds[] = $order->ID;
+			}
+			$ordersCache = $this->orderRepository->getByIds( $orderIds );
+		}
+
+		return $ordersCache[ $postId ] ?? null;
+	}
+
+	/**
 	 * Fills custom order list columns.
 	 *
 	 * @param string $column Current order column name.
@@ -232,14 +237,11 @@ class GridExtender {
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
 
-		if ( ! isset( self::$orderCache ) || (int) self::$orderCache->getNumber() !== $post->ID ) {
-			self::$orderCache = $this->orderRepository->getById( $post->ID );
-			if ( null === self::$orderCache ) {
-				return;
-			}
-		}
+		$order = $this->getOrderByPostId( $post->ID );
 
-		$order = self::$orderCache;
+		if ( null === $order ) {
+			return;
+		}
 
 		switch ( $column ) {
 			case 'packetery_weight':
@@ -275,7 +277,15 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$packetSubmitUrl  = add_query_arg( [], $this->orderControllerRouter->getRouteUrl( Controller::PATH_SUBMIT_TO_API ) );
+				$packetSubmitUrl  = add_query_arg(
+					[
+						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+						Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_SUBMIT_PACKET,
+						PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
+						Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
+					],
+					admin_url( 'admin.php' )
+				);
 				$printLink        = add_query_arg(
 					[
 						'page'                       => LabelPrint::MENU_SLUG,
@@ -288,10 +298,10 @@ class GridExtender {
 				);
 				$packetCancelLink = add_query_arg(
 					[
-						PacketCanceller::PARAM_ORDER_ID    => $order->getNumber(),
-						Plugin::PARAM_PACKETERY_ACTION     => PacketCanceller::ACTION_CANCEL_PACKET,
-						PacketCanceller::PARAM_REDIRECT_TO => PacketCanceller::REDIRECT_TO_ORDER_GRID,
-						Plugin::PARAM_NONCE                => wp_create_nonce( PacketCanceller::createNonceAction( PacketCanceller::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+						Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+						PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
+						Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
 					],
 					admin_url( 'admin.php' )
 				);
@@ -299,13 +309,16 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'            => $order,
-						'showWarningIcon'  => $this->modal->showWarningIcon( $order ),
-						'packetSubmitUrl'  => $packetSubmitUrl,
-						'packetCancelLink' => $packetCancelLink,
-						'restNonce'        => wp_create_nonce( 'wp_rest' ),
-						'printLink'        => $printLink,
-						'translations'     => [
+						'order'                     => $order,
+						'orderIsSubmittable'        => $this->orderValidator->validate( $order ),
+						'packetSubmitUrl'           => $packetSubmitUrl,
+						'packetCancelLink'          => $packetCancelLink,
+						'printLink'                 => $printLink,
+						'helper'                    => new Helper(),
+						'datePickerFormat'          => Helper::DATEPICKER_FORMAT,
+						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
+						'packetDeliverOn'           => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
+						'translations'              => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
@@ -314,12 +327,14 @@ class GridExtender {
 							// translators: %s: Packet number.
 							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
+							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
 						],
 					]
 				);
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( $this->packetSynchronizer->getPacketStatusTranslated( $order->getPacketStatus() ) );
+				$statuses = PacketSynchronizer::getPacketStatuses();
+				echo esc_html( isset( $statuses[ $order->getPacketStatus() ] ) ? $statuses[ $order->getPacketStatus() ]->getTranslatedName() : $order->getPacketStatus() );
 				break;
 		}
 	}

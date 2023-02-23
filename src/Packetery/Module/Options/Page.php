@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
@@ -24,9 +25,10 @@ use PacketeryNette\Forms\Form;
  */
 class Page {
 
-	private const FORM_FIELDS_CONTAINER           = 'packetery';
-	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
-	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
+	private const FORM_FIELDS_CONTAINER               = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
+	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE = 'order_status_auto_change';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -35,6 +37,7 @@ class Page {
 	public const TAB_GENERAL            = 'general';
 	public const TAB_SUPPORT            = 'support';
 	public const TAB_PACKET_STATUS_SYNC = 'packet-status-sync';
+	public const TAB_AUTO_SUBMISSION    = 'auto-submission';
 
 	public const PARAM_TAB = 'tab';
 
@@ -88,13 +91,6 @@ class Page {
 	private $httpRequest;
 
 	/**
-	 * Packet synchronizer.
-	 *
-	 * @var PacketSynchronizer
-	 */
-	private $packetSynchronizer;
-
-	/**
 	 * Plugin constructor.
 	 *
 	 * @param Engine                          $latte_engine       PacketeryLatte_engine.
@@ -104,17 +100,23 @@ class Page {
 	 * @param Log\ILogger                     $logger             Logger.
 	 * @param MessageManager                  $messageManager     Message manager.
 	 * @param \PacketeryNette\Http\Request    $httpRequest        HTTP request.
-	 * @param PacketSynchronizer              $packetSynchronizer Packet synchronizer.
 	 */
-	public function __construct( Engine $latte_engine, Provider $optionsProvider, FormFactory $formFactory, \Packetery\Core\Api\Soap\Client $packetaClient, Log\ILogger $logger, MessageManager $messageManager, \PacketeryNette\Http\Request $httpRequest, PacketSynchronizer $packetSynchronizer ) {
-		$this->latte_engine       = $latte_engine;
-		$this->optionsProvider    = $optionsProvider;
-		$this->formFactory        = $formFactory;
-		$this->packetaClient      = $packetaClient;
-		$this->logger             = $logger;
-		$this->messageManager     = $messageManager;
-		$this->httpRequest        = $httpRequest;
-		$this->packetSynchronizer = $packetSynchronizer;
+	public function __construct(
+		Engine $latte_engine,
+		Provider $optionsProvider,
+		FormFactory $formFactory,
+		\Packetery\Core\Api\Soap\Client $packetaClient,
+		Log\ILogger $logger,
+		MessageManager $messageManager,
+		\PacketeryNette\Http\Request $httpRequest
+	) {
+		$this->latte_engine    = $latte_engine;
+		$this->optionsProvider = $optionsProvider;
+		$this->formFactory     = $formFactory;
+		$this->packetaClient   = $packetaClient;
+		$this->logger          = $logger;
+		$this->messageManager  = $messageManager;
+		$this->httpRequest     = $httpRequest;
 	}
 
 	/**
@@ -196,11 +198,11 @@ class Page {
 
 		$result = [];
 
-		foreach ( $statuses as $status => $defaultValue ) {
+		foreach ( $statuses as $status => $statusEntity ) {
 			$result[ md5( $status ) ] = [
 				'key'     => $status,
-				'default' => $defaultValue,
-				'label'   => $this->packetSynchronizer->getPacketStatusTranslated( $status ),
+				'default' => $statusEntity->hasDefaultSynchronization(),
+				'label'   => $statusEntity->getTranslatedName(),
 			];
 		}
 
@@ -224,6 +226,61 @@ class Page {
 		}
 
 		return $orderStatusesTransformed;
+	}
+
+	/**
+	 * Creates auto submission form.
+	 *
+	 * @return Form
+	 */
+	public function createAutoSubmissionForm(): Form {
+		$gateways = $this->getAvailablePaymentGateways();
+		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
+		$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+
+		$form->addCheckbox( 'allow', __( 'Allow', 'packeta' ) )
+				->setRequired( false )
+				->setDefaultValue( Provider::PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT );
+
+		$eventChoices = [
+			PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE => __( 'On order creation at frontend', 'packeta' ),
+			PacketAutoSubmitter::EVENT_ON_ORDER_PROCESSING => __( 'On order processing', 'packeta' ),
+			PacketAutoSubmitter::EVENT_ON_ORDER_COMPLETED  => __( 'On order completed', 'packeta' ),
+		];
+
+		$paymentMethodEvents = $form->addContainer( 'payment_method_events' );
+		foreach ( $gateways as $gateway ) {
+			$paymentMethodEventsMethod = $paymentMethodEvents->addContainer( $gateway->id );
+			$paymentMethodEventsMethod->addSelect( 'event', $gateway->get_method_title(), $eventChoices )
+										->setPrompt( __( 'Select event', 'packeta' ) )
+										->checkDefaultValue( false );
+		}
+
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
+
+		$form->setDefaults( $defaults );
+
+		$form->onSuccess[] = [ $this, 'onAutoSubmissionFormSuccess' ];
+
+		return $form;
+	}
+
+	/**
+	 * On auto submission form success.
+	 *
+	 * @param Form  $form Form.
+	 * @param array $values Form values.
+	 *
+	 * @return void
+	 */
+	public function onAutoSubmissionFormSuccess( Form $form, array $values ): void {
+		update_option( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION, $values );
+
+		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+
+		if ( wp_safe_redirect( $this->createLink( self::TAB_AUTO_SUBMISSION ) ) ) {
+			exit;
+		}
 	}
 
 	/**
@@ -363,6 +420,16 @@ class Page {
 					->addRule( Form::MIN, null, 0 )
 					->setDefaultValue( 0 );
 
+		$container->addCheckbox( 'default_weight_enabled', __( 'Enable default weight', 'packeta' ) )
+					->addCondition( Form::EQUAL, true )
+						->toggle( '#packetery-default-weight-value' );
+
+		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
+					->addRule( Form::FLOAT )
+					->addRule( Form::MIN, null, 0.1 )
+					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
+						->setRequired();
+
 		// TODO: Packet status sync.
 
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packeta' ) )
@@ -380,6 +447,36 @@ class Page {
 		$container->addCheckbox( 'force_packet_cancel', __( 'Force order cancellation', 'packeta' ) )
 					->setRequired( false )
 					->setDefaultValue( Provider::FORCE_PACKET_CANCEL_DEFAULT );
+
+		$container->addCheckbox( 'widget_auto_open', __( 'Automatically open widget when shipping was selected', 'packeta' ) )
+					->setRequired( false )
+					->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
+
+		$container->addCheckbox( self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE, __( 'Order status auto change', 'packeta' ) )
+					->setRequired( false )
+					->setDefaultValue( Provider::ORDER_STATUS_AUTO_CHANGE_DEFAULT )
+					->addCondition( Form::EQUAL, true )
+						->toggle( '.packetery-order-status-auto-change-row' );
+
+		$orderStatuses = wc_get_order_statuses();
+		$container->addSelect(
+			Provider::AUTO_ORDER_STATUS,
+			__( 'New order status', 'packeta' ),
+			$orderStatuses
+		)
+				->checkDefaultValue( false )
+				->setDefaultValue( Provider::AUTO_ORDER_STATUS_DEFAULT )
+				->setPrompt( __( 'Select new order status', 'packeta' ) )
+				->addRule( Form::IS_IN, __( 'Select valid order status', 'packeta' ), array_keys( $orderStatuses ) )
+				->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE ], Form::EQUAL, true )
+					->setRequired();
+
+		$container->addCheckbox(
+			'order_status_auto_change_for_auto_submit_at_frontend',
+			__( 'Change order status after automatic packet submit at frontend', 'packeta' )
+		);
+
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
 			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
@@ -403,6 +500,17 @@ class Page {
 		}
 
 		return array_filter( $availableGateways, [ $this, 'filterValidGatewayClass' ] );
+	}
+
+	/**
+	 * Tells if options page uses given payment gateway.
+	 *
+	 * @param \WC_Payment_Gateway $paymentGateway Payment gateway.
+	 *
+	 * @return bool
+	 */
+	public function hasPaymentGateway( \WC_Payment_Gateway $paymentGateway ): bool {
+		return array_key_exists( $paymentGateway->id, $this->getAvailablePaymentGateways() );
 	}
 
 	/**
@@ -462,7 +570,7 @@ class Page {
 	/**
 	 * Validates sender.
 	 *
-	 * @param string $senderLabel Sender lbel.
+	 * @param string $senderLabel Sender label.
 	 *
 	 * @return bool|null
 	 */
@@ -531,6 +639,11 @@ class Page {
 		if ( $packetStatusSyncForm['save']->isSubmittedBy() ) {
 			$packetStatusSyncForm->fireEvents();
 		}
+
+		$autoSubmissionForm = $this->createAutoSubmissionForm();
+		if ( $autoSubmissionForm['save']->isSubmittedBy() ) {
+			$autoSubmissionForm->fireEvents();
+		}
 	}
 
 	/**
@@ -542,6 +655,8 @@ class Page {
 		$latteParams = [];
 		if ( self::TAB_PACKET_STATUS_SYNC === $activeTab ) {
 			$latteParams = [ 'form' => $this->createPacketStatusSyncForm() ];
+		} elseif ( self::TAB_AUTO_SUBMISSION === $activeTab ) {
+			$latteParams = [ 'form' => $this->createAutoSubmissionForm() ];
 		} elseif ( self::TAB_GENERAL === $activeTab ) {
 			$latteParams = [ 'form' => $this->create_form() ];
 		}
@@ -564,6 +679,7 @@ class Page {
 		$latteParams['generalTabLink']          = $this->createLink();
 		$latteParams['supportTabLink']          = $this->createLink( self::TAB_SUPPORT );
 		$latteParams['packetStatusSyncTabLink'] = $this->createLink( self::TAB_PACKET_STATUS_SYNC );
+		$latteParams['autoSubmissionTabLink']   = $this->createLink( self::TAB_AUTO_SUBMISSION );
 
 		$latteParams['canValidateSender']    = (bool) $this->optionsProvider->get_sender();
 		$latteParams['senderValidationLink'] = add_query_arg(
@@ -591,8 +707,10 @@ class Page {
 		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations']                 = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
-			'options'                                => __( 'Options', 'packeta' ),
+			'title'                                  => __( 'Options', 'packeta' ),
 			'general'                                => __( 'General', 'packeta' ),
+			'packetAutoSubmission'                   => __( 'Packet auto-submission', 'packeta' ),
+			'packetAutoSubmissionMappingDescription' => __( 'Choose events for payment methods that will trigger packet submission', 'packeta' ),
 			// translators: %s represents URL, keep intact.
 			'apiPasswordCanBeFoundAt%sUrl'           => __( 'API password can be found at %s', 'packeta' ),
 			'saveChanges'                            => __( 'Save changes', 'packeta' ),
@@ -610,7 +728,7 @@ class Page {
 			'settingsExportDatetime'                 => __( 'Date and time of the last export of settings', 'packeta' ),
 			'settingsNotYetExported'                 => __( 'The settings have not been exported yet.', 'packeta' ),
 			'senderDescription'                      => sprintf(
-			/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
+				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
 				esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
 				'<strong>',
 				'</strong>',
@@ -618,12 +736,15 @@ class Page {
 				'</a>'
 			),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
+			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
 			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
 			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which cron will check the packet status', 'packeta' ),
 			'statusSyncingOrderStatusesDescription'  => __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),
 			'statusSyncingPacketStatusesLabel'       => __( 'Packet statuses that are being checked', 'packeta' ),
 			'statusSyncingPacketStatusesDescription' => __( 'If an order has a shipment with one of these selected statuses, the shipment status will be tracked.', 'packeta' ),
 			'numberOfDaysToCheckDescription'         => __( 'Number of days after the creation of an order, during which the order status will be checked.', 'packeta' ),
+			'widgetAutoOpenDescription'              => __( 'If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout.', 'packeta' ),
+			'autoOrderStatusChangeDescription'       => __( 'Change order status after data submission to Packeta.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );

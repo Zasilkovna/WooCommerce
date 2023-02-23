@@ -15,6 +15,7 @@ services:
 	- Packetery\Module\Log\Page
 	- Packetery\Module\CronService
 	- Packetery\Module\Product\DataTab
+	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Core\Helper
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
@@ -27,8 +28,9 @@ services:
 	- Packetery\Module\Carrier\Updater
 	- Packetery\Module\Carrier\Repository
 	- PacketeryGuzzleHttp\Client
-	wpdbFactory: Packetery\Module\WpdbFactory
-	wpdb: @wpdbFactory::create()
+	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
+	- @wpdbAdapterFactory::create()
+	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
@@ -39,6 +41,7 @@ services:
 	- Packetery\Module\Order\LabelPrint
 	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
+	- Packetery\Module\Order\PacketActionsCommonLogic
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\Order\Builder
@@ -52,6 +55,7 @@ services:
 	- Packetery\Module\Options\Exporter
 	- Packetery\Module\Order\CollectionPrint
 	- Packetery\Module\Order\PacketSynchronizer
+	- Packetery\Module\Order\PacketAutoSubmitter
 	requestFactory: PacketeryNette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
 	- Packetery\Module\Upgrade
@@ -60,3 +64,4 @@ services:
 	- Packetery\Module\Calculator
 	- Packetery\Module\CurrencySwitcherFacade
 	- Packetery\Core\Api\Soap\CreatePacketMapper
+	- Packetery\Module\Order\PickupPointValidator

@@ -11,6 +11,7 @@ namespace Packetery\Module\Upgrade;
 
 use Packetery\Module\Checkout;
 use Packetery\Module\Product;
+use Packetery\Module\WpdbAdapter;
 
 /**
  * Class Version_1_4_2
@@ -22,19 +23,18 @@ class Version_1_4_2 {
 	/**
 	 * WPDB.
 	 *
-	 * @var \wpdb
+	 * @var WpdbAdapter
 	 */
-	private $wpdb;
+	private $wpdbAdapter;
 
 	/**
 	 * Version_1_4_2 constructor.
 	 *
-	 * @param \wpdb $wpdb WPDB.
+	 * @param WpdbAdapter $wpdbAdapter WPDB.
 	 */
-	public function __construct( \wpdb $wpdb ) {
-		$this->wpdb = $wpdb;
+	public function __construct( WpdbAdapter $wpdbAdapter ) {
+		$this->wpdbAdapter = $wpdbAdapter;
 	}
-
 
 	/**
 	 * Run migration.
@@ -46,8 +46,8 @@ class Version_1_4_2 {
 	}
 
 	/**
-	 * In version 1.4.1 have been bug, which stored names of disabled carriers witch duplicated prefix.
-	 * This migration will replace carrier name prefix to right format.
+	 * In version 1.4.1 has been bug, which stored names of disabled carriers witch duplicated prefix.
+	 * This migration will replace carrier name prefix with correct format.
 	 *
 	 * @return void
 	 */
@@ -78,13 +78,12 @@ class Version_1_4_2 {
 	 * @return int[] Array of post IDs.
 	 */
 	private function getDisallowedCarriersProductsIds( string $prefix ): array {
-		$wpdb       = $this->wpdb;
-		$productIds = $wpdb->get_col(
-			$wpdb->prepare(
-				"SELECT `post_id` 
-					   FROM $wpdb->postmeta 
+		$productIds = $this->wpdbAdapter->get_col(
+			$this->wpdbAdapter->prepare(
+				'SELECT `post_id` 
+					   FROM `' . $this->wpdbAdapter->postmeta . '` 
 					   WHERE `meta_key` = %s 
-					   AND `meta_value` LIKE %s",
+					   AND `meta_value` LIKE %s',
 				Product\Entity::META_DISALLOWED_SHIPPING_RATES,
 				'%' . $prefix . '%'
 			)
@@ -92,6 +91,5 @@ class Version_1_4_2 {
 
 		return array_map( 'intval', $productIds );
 	}
-
 
 }

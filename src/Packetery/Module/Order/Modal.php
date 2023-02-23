@@ -7,12 +7,11 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Order;
 
-use Packetery\Core;
-use Packetery\Core\Entity\Order;
+use Packetery\Core\Helper;
 use Packetery\Module\FormFactory;
+use Packetery\Module\FormValidators;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -45,25 +44,16 @@ class Modal {
 	private $orderControllerRouter;
 
 	/**
-	 * Order validator.
-	 *
-	 * @var Core\Validator\Order
-	 */
-	private $orderValidator;
-
-	/**
 	 * Modal constructor.
 	 *
-	 * @param Engine               $latteEngine Latte engine.
-	 * @param FormFactory          $formFactory Form factory.
-	 * @param ControllerRouter     $orderController Order controller.
-	 * @param Core\Validator\Order $orderValidator Order validator.
+	 * @param Engine           $latteEngine Latte engine.
+	 * @param FormFactory      $formFactory Form factory.
+	 * @param ControllerRouter $orderController Order controller.
 	 */
-	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController, Core\Validator\Order $orderValidator ) {
+	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController ) {
 		$this->latteEngine           = $latteEngine;
 		$this->formFactory           = $formFactory;
 		$this->orderControllerRouter = $orderController;
-		$this->orderValidator        = $orderValidator;
 	}
 
 	/**
@@ -117,6 +107,12 @@ class Modal {
 		$form->addText( 'packetery_height', __( 'Height (mm)', 'packeta' ) )
 			->setRequired( false )
 			->addRule( Form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$form->addText( 'packetery_deliver_on', __( 'Planned dispatch', 'packeta' ) )
+			->setHtmlAttribute( 'class', 'date-picker' )
+			->setHtmlAttribute( 'autocomplete', 'off' )
+			->setRequired( false )
+			// translators: %s: Represents minimal date for delayed delivery.
+			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );
@@ -128,23 +124,10 @@ class Modal {
 				'packetery_length'          => '{{ data.order.packetery_length }}',
 				'packetery_width'           => '{{ data.order.packetery_width }}',
 				'packetery_height'          => '{{ data.order.packetery_height }}',
+				'packetery_deliver_on'      => '{{ data.order.packetery_deliver_on }}',
 			]
 		);
 
 		return $form;
-	}
-
-	/**
-	 * Returns true if size is invalid or weight not filled.
-	 *
-	 * @param Order $order Order entity.
-	 *
-	 * @return bool
-	 */
-	public function showWarningIcon( Order $order ): bool {
-		$isSizeValid = $this->orderValidator->validateSize( $order );
-		$hasWeight   = ( null !== $order->getFinalWeight() && $order->getFinalWeight() > 0 );
-
-		return ! ( $isSizeValid && $hasWeight );
 	}
 }

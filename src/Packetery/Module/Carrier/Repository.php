@@ -11,6 +11,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\WpdbAdapter;
 
 /**
  * Class CarrierRepository
@@ -22,12 +23,29 @@ class Repository {
 
 	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
 
+	private const COLUMN_NAMES = [
+		'id',
+		'name',
+		'is_pickup_points',
+		'has_carrier_direct_label',
+		'separate_house_number',
+		'customs_declarations',
+		'requires_email',
+		'requires_phone',
+		'requires_size',
+		'disallows_cod',
+		'country',
+		'currency',
+		'max_weight',
+		'deleted',
+	];
+
 	/**
-	 * WordPress wpdb object from global
+	 * WpdbAdapter object from global
 	 *
-	 * @var \wpdb
+	 * @var WpdbAdapter
 	 */
-	private $wpdb;
+	private $wpdbAdapter;
 
 	/**
 	 * Carrier Entity Factory.
@@ -39,21 +57,12 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param \wpdb                 $wpdb wpdb.
+	 * @param WpdbAdapter           $wpdbAdapter          WpdbAdapter.
 	 * @param EntityFactory\Carrier $carrierEntityFactory Carrier Entity Factory.
 	 */
-	public function __construct( \wpdb $wpdb, EntityFactory\Carrier $carrierEntityFactory ) {
-		$this->wpdb                 = $wpdb;
+	public function __construct( WpdbAdapter $wpdbAdapter, EntityFactory\Carrier $carrierEntityFactory ) {
+		$this->wpdbAdapter          = $wpdbAdapter;
 		$this->carrierEntityFactory = $carrierEntityFactory;
-	}
-
-	/**
-	 * Gets wpdb object from global variable with custom tables names set.
-	 *
-	 * @return \wpdb
-	 */
-	private function get_wpdb(): \wpdb {
-		return $this->wpdb;
 	}
 
 	/**
@@ -62,9 +71,8 @@ class Repository {
 	 * @return bool
 	 */
 	public function createTable(): bool {
-		$wpdb = $this->get_wpdb();
-		return $wpdb->query(
-			'CREATE TABLE IF NOT EXISTS `' . $wpdb->packetery_carrier . '` (
+		return $this->wpdbAdapter->query(
+			'CREATE TABLE IF NOT EXISTS `' . $this->wpdbAdapter->packetery_carrier . '` (
 				`id` int NOT NULL,
 				`name` varchar(255) NOT NULL,
 				`is_pickup_points` boolean NOT NULL,
@@ -80,7 +88,7 @@ class Repository {
 				`max_weight` float NOT NULL,
 				`deleted` boolean NOT NULL,
 				PRIMARY KEY (`id`)
-			) ' . $wpdb->get_charset_collate()
+			) ' . $this->wpdbAdapter->get_charset_collate()
 		);
 	}
 
@@ -88,8 +96,7 @@ class Repository {
 	 * Drop table used to store carriers.
 	 */
 	public function drop(): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->query( 'DROP TABLE IF EXISTS `' . $wpdb->packetery_carrier . '`' );
+		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packetery_carrier . '`' );
 	}
 
 	/**
@@ -98,9 +105,7 @@ class Repository {
 	 * @return array|null
 	 */
 	public function get_carrier_ids(): ?array {
-		$wpdb = $this->get_wpdb();
-
-		return $wpdb->get_results( 'SELECT `id` FROM `' . $wpdb->packetery_carrier . '`', ARRAY_A );
+		return $this->wpdbAdapter->get_results( 'SELECT `id` FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 	}
 
 	/**
@@ -109,9 +114,7 @@ class Repository {
 	 * @return array|null
 	 */
 	public function getAllIncludingZpoints(): ?array {
-		$wpdb = $this->get_wpdb();
-
-		$carriers       = $wpdb->get_results( 'SELECT `id`, `name`, `is_pickup_points`  FROM `' . $wpdb->packetery_carrier . '`', ARRAY_A );
+		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 		$zpointCarriers = $this->getZpointCarriers();
 		foreach ( $zpointCarriers as $zpointCarrier ) {
 			array_unshift( $carriers, $zpointCarrier );
@@ -149,9 +152,9 @@ class Repository {
 	 * @return bool
 	 */
 	public function hasPickupPoints( int $carrierId ): bool {
-		$wpdb = $this->get_wpdb();
-
-		return (bool) $wpdb->get_var( $wpdb->prepare( 'SELECT `is_pickup_points` FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %d', $carrierId ) );
+		return (bool) $this->wpdbAdapter->get_var(
+			$this->wpdbAdapter->prepare( 'SELECT `is_pickup_points` FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `id` = %d', $carrierId )
+		);
 	}
 
 	/**
@@ -162,25 +165,10 @@ class Repository {
 	 * @return Entity\Carrier|null
 	 */
 	public function getById( int $carrierId ): ?Entity\Carrier {
-		$wpdb   = $this->get_wpdb();
-		$result = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT
-					`id`,
-					`name`,
-					`is_pickup_points`,
-					`has_carrier_direct_label`,
-					`separate_house_number`,
-					`customs_declarations`,
-					`requires_email`,
-					`requires_phone`,
-					`requires_size`,
-					`disallows_cod`,
-					`country`,
-					`currency`,
-					`max_weight`,
-					`deleted`
-				FROM `' . $wpdb->packetery_carrier . '` WHERE `id` = %s',
+		$result = $this->wpdbAdapter->get_row(
+			$this->wpdbAdapter->prepare(
+				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
+				FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `id` = %s',
 				$carrierId
 			),
 			ARRAY_A
@@ -223,27 +211,11 @@ class Repository {
 	 * @return Entity\Carrier[]
 	 */
 	public function getByCountry( string $country ): array {
-		$wpdb = $this->get_wpdb();
-
 		$entities        = [];
-		$countryCarriers = $wpdb->get_results(
-			$wpdb->prepare(
-				'SELECT
-					`id`,
-					`name`,
-					`is_pickup_points`,
-					`has_carrier_direct_label`,
-					`separate_house_number`,
-					`customs_declarations`,
-					`requires_email`,
-					`requires_phone`,
-					`requires_size`,
-					`disallows_cod`,
-					`country`,
-					`currency`,
-					`max_weight`,
-					`deleted`
-				FROM `' . $wpdb->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false',
+		$countryCarriers = $this->wpdbAdapter->get_results(
+			$this->wpdbAdapter->prepare(
+				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
+				FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false',
 				$country
 			),
 			ARRAY_A
@@ -262,34 +234,33 @@ class Repository {
 	 * @return Entity\Carrier[]
 	 */
 	public function getActiveCarriers(): array {
-		$wpdb = $this->wpdb;
-
-		$entities        = [];
-		$countryCarriers = $wpdb->get_results(
-			'SELECT
-				`id`,
-				`name`,
-				`is_pickup_points`,
-				`has_carrier_direct_label`,
-				`separate_house_number`,
-				`customs_declarations`,
-				`requires_email`,
-				`requires_phone`,
-				`requires_size`,
-				`disallows_cod`,
-				`country`,
-				`currency`,
-				`max_weight`,
-				`deleted`
-			FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false',
+		$entities       = [];
+		$activeCarriers = $this->wpdbAdapter->get_results(
+			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
+			FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false',
 			ARRAY_A
 		);
 
-		foreach ( $countryCarriers as $carrierData ) {
+		foreach ( $activeCarriers as $carrierData ) {
 			$entities[ $carrierData['id'] ] = $this->carrierEntityFactory->fromDbResult( $carrierData );
 		}
 
 		return $entities;
+	}
+
+	/**
+	 * Gets all carriers.
+	 *
+	 * @return array[]
+	 */
+	public function getAllRawIndexed(): array {
+		$unIndexedResult = $this->wpdbAdapter->get_results(
+			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
+			FROM `' . $this->wpdbAdapter->packetery_carrier . '`',
+			ARRAY_A
+		);
+
+		return array_combine( array_column( $unIndexedResult, 'id' ), $unIndexedResult );
 	}
 
 	/**
@@ -330,9 +301,7 @@ class Repository {
 	 * @return bool
 	 */
 	public function hasAnyActiveFeedCarrier(): bool {
-		$wpdb = $this->wpdb;
-
-		return (bool) $wpdb->get_var( 'SELECT 1 FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false LIMIT 1' );
+		return (bool) $this->wpdbAdapter->get_var( 'SELECT 1 FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false LIMIT 1' );
 	}
 
 	/**
@@ -341,27 +310,18 @@ class Repository {
 	 * @return array
 	 */
 	public function getCountries(): array {
-		$wpdb      = $this->get_wpdb();
-		$countries = $wpdb->get_results( 'SELECT `country` FROM `' . $wpdb->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`', ARRAY_A );
-
-		return array_column( ( $countries ? $countries : [] ), 'country' );
+		return $this->wpdbAdapter->get_col( 'SELECT `country` FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`' );
 	}
 
 	/**
-	 * Set those not in feed as deleted.
+	 * Set carriers specified by ids as deleted.
 	 *
-	 * @param array $carriers_in_feed Carriers in feed.
+	 * @param array $carrierIdsNotInFeed Carriers not in feed.
 	 */
-	public function set_others_as_deleted( array $carriers_in_feed ): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->query(
-			'UPDATE `' .
-			$wpdb->packetery_carrier .
-			'` SET `deleted` = 1 WHERE `id` NOT IN (' .
-	            // @codingStandardsIgnoreStart
-				implode( ',', $carriers_in_feed )
-	            // @codingStandardsIgnoreEnd
-			. ')'
+	public function set_as_deleted( array $carrierIdsNotInFeed ): void {
+		$this->wpdbAdapter->query(
+			'UPDATE `' . $this->wpdbAdapter->packetery_carrier . '`
+			SET `deleted` = 1 WHERE `id` IN (' . implode( ',', $carrierIdsNotInFeed ) . ')'
 		);
 	}
 
@@ -371,8 +331,7 @@ class Repository {
 	 * @param array $data Carrier data.
 	 */
 	public function insert( array $data ): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->insert( $wpdb->packetery_carrier, $data );
+		$this->wpdbAdapter->insert( $this->wpdbAdapter->packetery_carrier, $data );
 	}
 
 	/**
@@ -382,8 +341,7 @@ class Repository {
 	 * @param int   $carrier_id Carrier id.
 	 */
 	public function update( array $data, int $carrier_id ): void {
-		$wpdb = $this->get_wpdb();
-		$wpdb->update( $wpdb->packetery_carrier, $data, array( 'id' => $carrier_id ) );
+		$this->wpdbAdapter->update( $this->wpdbAdapter->packetery_carrier, $data, [ 'id' => $carrier_id ] );
 	}
 
 	/**
@@ -468,6 +426,46 @@ class Repository {
 		}
 
 		return false === $this->hasPickupPoints( (int) $carrierId );
+	}
+
+	/**
+	 * Tells zpoint carrier Id for given country.
+	 *
+	 * @param string $country Country ISO code.
+	 *
+	 * @return string|null
+	 */
+	public function getZpointCarrierIdByCountry( string $country ): ?string {
+		$zpointCarriers = $this->getZpointCarriers();
+
+		if ( ! isset( $zpointCarriers[ $country ] ) ) {
+			return null;
+		}
+
+		return $zpointCarriers[ $country ]['id'];
+	}
+
+	/**
+	 * Validates carrier for country.
+	 *
+	 * @param string|null $carrierId       Null for internal pickup points.
+	 * @param string      $customerCountry Customer country.
+	 *
+	 * @return bool
+	 */
+	public function isValidForCountry( ?string $carrierId, string $customerCountry ): bool {
+		if ( null === $carrierId ) {
+			$zpointCarriers = $this->getZpointCarriers();
+
+			return ( ! empty( $zpointCarriers[ $customerCountry ] ) );
+		}
+
+		$carrier = $this->getById( (int) $carrierId );
+		if ( null === $carrier || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
+			return false;
+		}
+
+		return Options::createByCarrierId( $carrier->getId() )->isActive();
 	}
 
 }

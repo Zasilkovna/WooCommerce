@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Entity;
 
 use Packetery\Core\Helper;
+use DateTimeImmutable;
 
 /**
  * Class Order
@@ -159,6 +160,13 @@ class Order {
 	private $carrierId;
 
 	/**
+	 * Internal carrier code.
+	 *
+	 * @var string
+	 */
+	private $carrierCode;
+
+	/**
 	 * Tells if is packet submitted.
 	 *
 	 * @var bool
@@ -180,7 +188,7 @@ class Order {
 	private $currency;
 
 	/**
-	 * Carrier number..
+	 * Carrier number.
 	 *
 	 * @var string|null
 	 */
@@ -199,6 +207,27 @@ class Order {
 	 * @var string|null
 	 */
 	private $shippingCountry;
+
+	/**
+	 * Last message built from Packeta API response.
+	 *
+	 * @var string|null
+	 */
+	private $lastApiErrorMessage;
+
+	/**
+	 * Last API error datetime.
+	 *
+	 * @var \DateTimeImmutable|null
+	 */
+	private $lastApiErrorDateTime;
+
+	/**
+	 * Deliver on
+	 *
+	 * @var DateTimeImmutable|null
+	 */
+	private $deliverOn;
 
 	/**
 	 * Order entity constructor.
@@ -286,6 +315,15 @@ class Order {
 	 */
 	public function isExternalCarrier(): bool {
 		return ( Carrier::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
+	}
+
+	/**
+	 * Check if delivery method is internal packetery pickup point
+	 *
+	 * @return bool
+	 */
+	public function isPacketaInternalPickupPoint(): bool {
+		return ! $this->isExternalCarrier() && $this->isPickupPointDelivery();
 	}
 
 	/**
@@ -545,6 +583,26 @@ class Order {
 	 */
 	public function setShippingCountry( $shippingCountry ): void {
 		$this->shippingCountry = $shippingCountry;
+	}
+
+	/**
+	 * Sets API response message.
+	 *
+	 * @param string|null $lastApiErrorMessage API response message.
+	 *
+	 * @return void
+	 */
+	public function setLastApiErrorMessage( ?string $lastApiErrorMessage ): void {
+		$this->lastApiErrorMessage = $lastApiErrorMessage;
+	}
+
+	/**
+	 * Sets API error date.
+	 *
+	 * @param \DateTimeImmutable|null $lastApiErrorDateTime API error date.
+	 */
+	public function setLastApiErrorDateTime( ?\DateTimeImmutable $lastApiErrorDateTime ): void {
+		$this->lastApiErrorDateTime = $lastApiErrorDateTime;
 	}
 
 	/**
@@ -818,6 +876,85 @@ class Order {
 	 */
 	public function getShippingCountry(): ?string {
 		return $this->shippingCountry;
+	}
+
+	/**
+	 * Tells if order has COD.
+	 *
+	 * @return bool
+	 */
+	public function hasCod(): bool {
+		return ( null !== $this->getCod() );
+	}
+
+	/**
+	 * Setter for carrierCode.
+	 *
+	 * @param string $carrierCode Carrier code.
+	 *
+	 * @return void
+	 */
+	public function setCarrierCode( string $carrierCode ): void {
+		$this->carrierCode = $carrierCode;
+	}
+
+	/**
+	 * Returns carrierId for external carriers or carrierCode.
+	 *
+	 * @return string
+	 */
+	public function getCarrierCode():string {
+		return $this->carrierCode;
+	}
+
+	/**
+	 * Returns deliver on date
+	 *
+	 * @return DateTimeImmutable|null
+	 */
+	public function getDeliverOn(): ?DateTimeImmutable {
+		return $this->deliverOn;
+	}
+
+	/**
+	 * Sets deliver on date
+	 *
+	 * @param DateTimeImmutable|null $deliverOn Deliver on.
+	 *
+	 * @return void
+	 */
+	public function setDeliverOn( ?DateTimeImmutable $deliverOn ): void {
+		$this->deliverOn = $deliverOn;
+	}
+
+	/**
+	 * Formatted API error message.
+	 *
+	 * @return string|null
+	 */
+	public function getLastApiErrorMessage(): ?string {
+		return $this->lastApiErrorMessage;
+	}
+
+	/**
+	 * Gets last API error message date.
+	 *
+	 * @return \DateTimeImmutable|null
+	 */
+	public function getLastApiErrorDateTime(): ?\DateTimeImmutable {
+		return $this->lastApiErrorDateTime;
+	}
+
+	/**
+	 * Updates API error message and sets error message date accordingly.
+	 *
+	 * @param string|null $errorMessage Error message.
+	 *
+	 * @return void
+	 */
+	public function updateApiErrorMessage( ?string $errorMessage ): void {
+		$this->setLastApiErrorMessage( $errorMessage );
+		$this->setLastApiErrorDateTime( $errorMessage ? Helper::now() : null );
 	}
 
 }

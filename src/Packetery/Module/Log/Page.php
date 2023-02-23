@@ -25,6 +25,7 @@ class Page {
 	public const SLUG = 'packeta-logs';
 
 	public const PARAM_ORDER_ID = 'order_id';
+	public const PARAM_ACTION   = 'action';
 
 	private const MAX_ROWS = 500;
 
@@ -91,6 +92,7 @@ class Page {
 			Record::ACTION_SENDER_VALIDATION         => __( 'Sender validation', 'packeta' ),
 			Record::ACTION_PACKET_STATUS_SYNC        => __( 'Packet status synchronization', 'packeta' ),
 			Record::ACTION_PACKET_CANCEL             => __( 'Packet cancel', 'packeta' ),
+			Record::ACTION_PICKUP_POINT_VALIDATE     => __( 'Pickup point validation', 'packeta' ),
 		];
 
 		$translatedStatuses = [
@@ -99,8 +101,9 @@ class Page {
 		];
 
 		$orderId    = $this->getOrderId();
-		$rows       = $this->logger->getRecords( $orderId, [ 'date' => 'DESC' ], self::MAX_ROWS );
-		$totalCount = $this->countRows( $orderId );
+		$action     = $this->getAction();
+		$rows       = $this->logger->getRecords( $orderId, $action, [ 'date' => 'DESC' ], self::MAX_ROWS );
+		$totalCount = $this->countRows( $orderId, $action );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/log/page.latte',
@@ -111,7 +114,7 @@ class Page {
 				'translatedStatuses' => $translatedStatuses,
 				'translations'       => [
 					'packeta'        => __( 'Packeta', 'packeta' ),
-					'logsPageTitle'  => __( 'Log', 'packeta' ),
+					'title'          => __( 'Log', 'packeta' ),
 					'status'         => __( 'Status', 'packeta' ),
 					'dateAndTime'    => __( 'Date and time', 'packeta' ),
 					'action'         => __( 'Action', 'packeta' ),
@@ -139,6 +142,20 @@ class Page {
 	}
 
 	/**
+	 * Returns action.
+	 *
+	 * @return string|null
+	 */
+	private function getAction(): ?string {
+		$action = $this->request->getQuery( self::PARAM_ACTION );
+		if ( ! empty( $action ) ) {
+			return (string) $action;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Tells if log page displays at least one row.
 	 *
 	 * @param int|null $orderId Order ID.
@@ -152,28 +169,33 @@ class Page {
 	/**
 	 * Counts rows.
 	 *
-	 * @param int|null $orderId Order ID.
+	 * @param int|null    $orderId Order ID.
+	 * @param string|null $action  Action.
 	 *
 	 * @return int
 	 */
-	private function countRows( ?int $orderId ): int {
-		return $this->logger->countRecords( $orderId );
+	private function countRows( ?int $orderId = null, ?string $action = null ): int {
+		return $this->logger->countRecords( $orderId, $action );
 	}
 
 	/**
 	 * Creates link to log page.
 	 *
-	 * @param int|null $orderId Order ID.
+	 * @param int|null    $orderId Order ID.
+	 * @param string|null $action  Action.
 	 *
 	 * @return string
 	 */
-	public function createLogListUrl( ?int $orderId = null ): string {
+	public function createLogListUrl( ?int $orderId = null, ?string $action = null ): string {
 		$params = [
 			'page' => self::SLUG,
 		];
 
 		if ( null !== $orderId ) {
 			$params[ self::PARAM_ORDER_ID ] = $orderId;
+		}
+		if ( null !== $action ) {
+			$params[ self::PARAM_ACTION ] = $action;
 		}
 
 		return add_query_arg(

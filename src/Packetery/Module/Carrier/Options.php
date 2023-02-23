@@ -10,6 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Rounder;
 use Packetery\Module\Checkout;
 
 /**
@@ -136,6 +137,24 @@ class Options {
 	}
 
 	/**
+	 * Tells if carrier has coupon free shipping active.
+	 *
+	 * @return bool
+	 */
+	public function hasCouponFreeShippingActive(): bool {
+		return $this->options['coupon_free_shipping']['active'] ?? false;
+	}
+
+	/**
+	 * Tells if carrier has coupon free shipping for fees allowed.
+	 *
+	 * @return bool
+	 */
+	public function hasCouponFreeShippingForFeesAllowed(): bool {
+		return $this->hasCouponFreeShippingActive() && ( $this->options['coupon_free_shipping']['allow_for_fees'] ?? false );
+	}
+
+	/**
 	 * Gets default COD surcharge.
 	 *
 	 * @return float|null
@@ -160,5 +179,14 @@ class Options {
 		}
 
 		return ! empty( $this->options['surcharge_limits'] );
+	}
+
+	/**
+	 * Tells COD rounding type.
+	 *
+	 * @return int
+	 */
+	public function getCodRoundingType(): int {
+		return $this->options['cod_rounding'] ?? Rounder::DONT_ROUND;
 	}
 }

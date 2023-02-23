@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\Log;
+use Packetery\Module\Options;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use WC_Order;
@@ -49,18 +50,27 @@ class BulkActions {
 	private $logPage;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * BulkActions constructor.
 	 *
-	 * @param Engine          $latteEngine     Latte engine.
-	 * @param Request         $httpRequest     HTTP request.
-	 * @param PacketSubmitter $packetSubmitter Order API Client.
-	 * @param Log\Page        $logPage         Log page.
+	 * @param Engine           $latteEngine     Latte engine.
+	 * @param Request          $httpRequest     HTTP request.
+	 * @param PacketSubmitter  $packetSubmitter Order API Client.
+	 * @param Log\Page         $logPage         Log page.
+	 * @param Options\Provider $optionsProvider Options provider.
 	 */
-	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter, Log\Page $logPage ) {
+	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter, Log\Page $logPage, Options\Provider $optionsProvider ) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
 		$this->packetSubmitter = $packetSubmitter;
 		$this->logPage         = $logPage;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -114,20 +124,16 @@ class BulkActions {
 		}
 
 		if ( 'submit_to_api' === $action ) {
-			$resultsCounter = [
-				'success' => 0,
-				'ignored' => 0,
-				'errors'  => 0,
-				'logs'    => 0,
-			];
+			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
 				$order = wc_get_order( $postId );
 				if ( is_a( $order, WC_Order::class ) ) {
-					$this->packetSubmitter->submitPacket( $order, $resultsCounter );
+					$submissionResult = $this->packetSubmitter->submitPacket( $order, $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
+					$finalSubmissionResult->merge( $submissionResult );
 				}
 			}
 
-			$queryArgs                  = $resultsCounter;
+			$queryArgs                  = $finalSubmissionResult->getCounter();
 			$queryArgs['submit_to_api'] = true;
 
 			if ( count( $postIds ) === 1 ) {
@@ -156,63 +162,7 @@ class BulkActions {
 			$orderId = null;
 		}
 
-		$success = null;
-		if ( is_numeric( $get['success'] ) && $get['success'] > 0 ) {
-			if ( $get['logs'] > 0 ) {
-				$success = sprintf(
-					// translators: 1: link start 2: link end.
-					esc_html__( 'Shipments were submitted successfully. %1$sShow logs%2$s', 'packeta' ),
-					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
-					'</a>'
-				);
-			} else {
-				$success = esc_html__( 'Shipments were submitted successfully.', 'packeta' );
-			}
-		}
-		$ignored = null;
-		if ( is_numeric( $get['ignored'] ) && $get['ignored'] > 0 ) {
-			if ( $get['logs'] > 0 ) {
-				$ignored = sprintf(
-					// translators: 1: total number of shipments 2: link start 3: link end.
-					esc_html__( 'Some shipments (%1$s in total) were not submitted (these were submitted already or are not Packeta orders). %2$sShow logs%3$s', 'packeta' ),
-					$get['ignored'],
-					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
-					'</a>'
-				);
-			} else {
-				$ignored = sprintf(
-					// translators: %s is count.
-					esc_html__( 'Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders).', 'packeta' ),
-					$get['ignored']
-				);
-			}
-		}
-		$errors = null;
-		if ( is_numeric( $get['errors'] ) && $get['errors'] > 0 ) {
-			if ( $get['logs'] > 0 ) {
-				$errors = sprintf(
-					// translators: 1: total number of shipments 2: link start 3: link end.
-					esc_html__( 'Some shipments (%1$s in total) failed to be submitted to Packeta. %2$sShow logs%3$s', 'packeta' ),
-					$get['errors'],
-					'<a href="' . $this->logPage->createLogListUrl( $orderId ) . '">',
-					'</a>'
-				);
-			} else {
-				$errors = sprintf(
-					// translators: %s is count.
-					esc_html__( 'Some shipments (%s in total) failed to be submitted to Packeta.', 'packeta' ),
-					$get['errors']
-				);
-			}
-		} elseif ( isset( $get['errors'] ) ) {
-			$errors = $get['errors'];
-		}
-
-		$latteParams = [
-			'success' => $success,
-			'ignored' => $ignored,
-			'errors'  => $errors,
-		];
+		$latteParams = $this->packetSubmitter->getTranslatedSubmissionMessages( $get, $orderId );
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/export-result.latte', $latteParams );
 	}
 }

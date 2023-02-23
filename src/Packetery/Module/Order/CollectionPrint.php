@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
+use Packetery\Core\Entity\Order;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
@@ -144,6 +145,7 @@ class CollectionPrint {
 
 		$shipmentResult = $this->requestShipment( $packetIds );
 		if ( $shipmentResult->hasFault() && $shipmentResult->getInvalidPacketIds() ) {
+			$this->logApiErrorMessageFromCreateShipmentResponse( $shipmentResult, $orders );
 			$packetIds      = array_diff( $packetIds, $shipmentResult->getInvalidPacketIds() );
 			$shipmentResult = $this->requestShipment( $packetIds );
 		}
@@ -245,5 +247,23 @@ class CollectionPrint {
 	private function requestBarcodePng( string $barcode ): Response\BarcodePng {
 		$request = new Request\BarcodePng( $barcode );
 		return $this->soapApiClient->barcodePng( $request );
+	}
+
+	/**
+	 * Saves API error message to order.
+	 *
+	 * @param Response\CreateShipment $createShipmentResponse CreateShipment response.
+	 * @param Order[]                 $orders Indexed array of Order entities.
+	 *
+	 * @return void
+	 */
+	private function logApiErrorMessageFromCreateShipmentResponse( Response\CreateShipment $createShipmentResponse, array $orders ): void {
+		$invalidPacketIds = $createShipmentResponse->getInvalidPacketIds();
+		foreach ( $orders as $order ) {
+			if ( in_array( (int) $order->getPacketId(), $invalidPacketIds, true ) ) {
+				$order->updateApiErrorMessage( $createShipmentResponse->getFaultString() );
+				$this->orderRepository->save( $order );
+			}
+		}
 	}
 }

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Core\Entity\PacketStatus;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -18,14 +19,21 @@ use Packetery\Module\Order\PacketSynchronizer;
  */
 class Provider {
 
-	const OPTION_NAME_PACKETERY      = 'packetery';
-	const OPTION_NAME_PACKETERY_SYNC = 'packetery_sync';
+	const OPTION_NAME_PACKETERY                 = 'packetery';
+	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
+	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 
-	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
-	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
-	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
-	const FORCE_PACKET_CANCEL_DEFAULT               = true;
+	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT                           = 'A6 on A4';
+	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT                           = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	const MAX_STATUS_SYNCING_PACKETS_DEFAULT                           = 100;
+	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT                    = 14;
+	const FORCE_PACKET_CANCEL_DEFAULT                                  = true;
+	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT                       = false;
+	const WIDGET_AUTO_OPEN_DEFAULT                                     = false;
+	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                             = false;
+	const AUTO_ORDER_STATUS_DEFAULT                                    = '';
+	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
+	const AUTO_ORDER_STATUS = 'auto_order_status';
 
 	/**
 	 *  Options data.
@@ -42,6 +50,13 @@ class Provider {
 	private $syncData;
 
 	/**
+	 * Auto submission data.
+	 *
+	 * @var array
+	 */
+	private $autoSubmissionData;
+
+	/**
 	 * Provider constructor.
 	 */
 	public function __construct() {
@@ -55,8 +70,14 @@ class Provider {
 			$syncData = [];
 		}
 
-		$this->data     = $data;
-		$this->syncData = $syncData;
+		$autoSubmissionData = get_option( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		if ( ! $autoSubmissionData ) {
+			$autoSubmissionData = [];
+		}
+
+		$this->data               = $data;
+		$this->syncData           = $syncData;
+		$this->autoSubmissionData = $autoSubmissionData;
 	}
 
 	/**
@@ -75,10 +96,15 @@ class Provider {
 			return $this->syncData;
 		}
 
+		if ( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION === $optionName ) {
+			return $this->autoSubmissionData;
+		}
+
 		if ( null === $optionName ) {
 			return [
 				self::OPTION_NAME_PACKETERY      => $this->data,
 				self::OPTION_NAME_PACKETERY_SYNC => $this->syncData,
+				self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
 			];
 		}
 	}
@@ -193,12 +219,28 @@ class Provider {
 	 * @return float
 	 */
 	public function getPackagingWeight(): float {
-		$value = $this->get( 'packaging_weight' );
-		if ( is_numeric( $value ) ) {
-			return (float) $value;
-		}
+		return (float) $this->get( 'packaging_weight' );
+	}
 
-		return 0.0;
+	/**
+	 * Order default weight enabled.
+	 *
+	 * @return bool
+	 */
+	public function isDefaultWeightEnabled(): bool {
+		return (bool) $this->get( 'default_weight_enabled' );
+	}
+
+	/**
+	 * Order default weight.
+	 *
+	 * @return float
+	 */
+	public function getDefaultWeight(): float {
+		if ( $this->get( 'default_weight' ) === null ) {
+			return 0.0;
+		}
+		return (float) $this->get( 'default_weight' );
 	}
 
 	/**
@@ -266,7 +308,14 @@ class Provider {
 			return $value;
 		}
 
-		return array_keys( PacketSynchronizer::getPacketStatuses(), true, true );
+		return array_keys(
+			array_filter(
+				PacketSynchronizer::getPacketStatuses(),
+				static function ( PacketStatus $packetStatus ): bool {
+					return true === $packetStatus->hasDefaultSynchronization();
+				}
+			)
+		);
 	}
 
 	/**
@@ -290,6 +339,56 @@ class Provider {
 		}
 
 		return self::FORCE_PACKET_CANCEL_DEFAULT;
+	}
+
+	/**
+	 * Gets packet auto submission payment method and event mapping.
+	 *
+	 * @return array
+	 */
+	private function getPacketAutoSubmissionPaymentMethodEventsMapping(): array {
+		return $this->autoSubmissionData['payment_method_events'] ?? [];
+	}
+
+	/**
+	 * Gets array of mapped events.
+	 *
+	 * @return string[]
+	 */
+	public function getPacketAutoSubmissionMappedUniqueEvents(): array {
+		$mapping = $this->getPacketAutoSubmissionPaymentMethodEventsMapping();
+		$result  = [];
+
+		foreach ( $mapping as $gatewayMapping ) {
+			$result[ $gatewayMapping['event'] ] = $gatewayMapping['event'];
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Gets packet auto-submission event by payment gateway ID.
+	 *
+	 * @param string $paymentGatewayId Payment gateway ID.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketAutoSubmissionEvenForPaymentGateway( string $paymentGatewayId ): ?string {
+		return $this->getPacketAutoSubmissionPaymentMethodEventsMapping()[ $paymentGatewayId ]['event'] ?? null;
+	}
+
+	/**
+	 * Tells if packet auto submission is enabled.
+	 *
+	 * @return bool
+	 */
+	public function isPacketAutoSubmissionEnabled(): bool {
+		$value = $this->autoSubmissionData['allow'] ?? null;
+		if ( null !== $value ) {
+			return (bool) $value;
+		}
+
+		return self::PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT;
 	}
 
 	/**
@@ -374,5 +473,74 @@ class Provider {
 		}
 
 		return $carrierLabelFormats;
+	}
+
+	/**
+	 * Tells if widget should open automatically.
+	 *
+	 * @return bool
+	 */
+	public function shouldWidgetOpenAutomatically(): bool {
+		$value = $this->get( 'widget_auto_open' );
+		if ( null !== $value ) {
+			return (bool) $value;
+		}
+
+		return self::WIDGET_AUTO_OPEN_DEFAULT;
+	}
+
+	/**
+	 * Auto order status change on packet submit enabled.
+	 *
+	 * @return bool
+	 */
+	public function isOrderStatusAutoChangeEnabled(): bool {
+		$orderStatusAutoChange = $this->get( 'order_status_auto_change' );
+		if ( null !== $orderStatusAutoChange ) {
+			return (bool) $orderStatusAutoChange;
+		}
+
+		return self::ORDER_STATUS_AUTO_CHANGE_DEFAULT;
+	}
+
+	/**
+	 * Auto order status change on packet auto submit at frontend enabled.
+	 *
+	 * @return bool
+	 */
+	public function isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled(): bool {
+		if ( false === $this->isOrderStatusAutoChangeEnabled() ) {
+			return false;
+		}
+
+		$orderStatusAutoChnageForAutoSubmitAtFrontend = $this->get( 'order_status_auto_change_for_auto_submit_at_frontend' );
+		if ( null !== $orderStatusAutoChnageForAutoSubmitAtFrontend ) {
+			return (bool) $orderStatusAutoChnageForAutoSubmitAtFrontend;
+		}
+
+		return self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT;
+	}
+
+	/**
+	 * Tells auto order status, if it is valid, otherwise empty string.
+	 *
+	 * @return string
+	 */
+	public function getValidAutoOrderStatus(): string {
+		$autoOrderStatus = $this->getAutoOrderStatus();
+		if ( wc_is_order_status( $autoOrderStatus ) ) {
+			return $autoOrderStatus;
+		}
+
+		return self::AUTO_ORDER_STATUS_DEFAULT;
+	}
+
+	/**
+	 * Tells auto order status.
+	 *
+	 * @return string|null
+	 */
+	public function getAutoOrderStatus(): ?string {
+		return $this->get( self::AUTO_ORDER_STATUS );
 	}
 }
