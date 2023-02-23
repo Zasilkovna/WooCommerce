@@ -795,21 +795,6 @@ class Checkout {
 	}
 
 	/**
-	 * Gets all possible shipping rates without calculated costs.
-	 *
-	 * @return iterable
-	 */
-	public function getAllShippingRates(): iterable {
-		$availableCarriers = $this->carrierRepository->getAllCarriersIncludingZpoints();
-		foreach ( $availableCarriers as $carrier ) {
-			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
-			if ( $carrierOptions->isActive() ) {
-				yield $this->createShippingRate( $carrierOptions->getName(), $carrierOptions->getOptionId(), null );
-			}
-		}
-	}
-
-	/**
 	 * Computes custom rate cost for carrier using cart contents.
 	 *
 	 * @param Carrier\Options $options    Carrier options.
