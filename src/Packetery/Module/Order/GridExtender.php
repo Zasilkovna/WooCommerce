@@ -277,16 +277,18 @@ class GridExtender {
 				}
 				break;
 			case 'packetery':
-				$packetSubmitUrl  = add_query_arg(
+				$encodedOrderGridParams = rawurlencode( $this->httpRequest->getUrl()->getQuery() );
+				$packetSubmitUrl        = add_query_arg(
 					[
 						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
 						Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_SUBMIT_PACKET,
 						PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
 						Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
+						PacketActionsCommonLogic::PARAM_ORDER_GRID_PARAMS => $encodedOrderGridParams,
 					],
 					admin_url( 'admin.php' )
 				);
-				$printLink        = add_query_arg(
+				$printLink              = add_query_arg(
 					[
 						'page'                       => LabelPrint::MENU_SLUG,
 						LabelPrint::LABEL_TYPE_PARAM => ( $order->isExternalCarrier() ? LabelPrint::ACTION_CARRIER_LABELS : LabelPrint::ACTION_PACKETA_LABELS ),
@@ -296,12 +298,13 @@ class GridExtender {
 					],
 					admin_url( 'admin.php' )
 				);
-				$packetCancelLink = add_query_arg(
+				$packetCancelLink       = add_query_arg(
 					[
 						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
 						Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
 						PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
 						Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+						PacketActionsCommonLogic::PARAM_ORDER_GRID_PARAMS => $encodedOrderGridParams,
 					],
 					admin_url( 'admin.php' )
 				);

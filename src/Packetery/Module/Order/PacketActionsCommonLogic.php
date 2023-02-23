@@ -24,6 +24,7 @@ class PacketActionsCommonLogic {
 
 	public const PARAM_ORDER_ID           = 'order_id';
 	public const PARAM_REDIRECT_TO        = 'packetery_redirect_to';
+	public const PARAM_ORDER_GRID_PARAMS  = 'packetery_order_grid_params';
 	public const REDIRECT_TO_ORDER_GRID   = 'order-grid';
 	public const REDIRECT_TO_ORDER_DETAIL = 'order-detail';
 	public const ACTION_CANCEL_PACKET     = 'cancel_packet';
@@ -106,10 +107,13 @@ class PacketActionsCommonLogic {
 	 */
 	public function redirectTo( string $redirectTo, ?Entity\Order $order ): void {
 		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
+			$orderGridParams = [];
+			parse_str( $this->request->getQuery( self::PARAM_ORDER_GRID_PARAMS ) ?? '', $orderGridParams );
+
 			$redirectLink = add_query_arg(
 				[
 					'post_type' => 'shop_order',
-				],
+				] + $orderGridParams,
 				admin_url( 'edit.php' )
 			);
 
