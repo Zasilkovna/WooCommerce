@@ -256,7 +256,7 @@ class GridExtender {
 					$pointName         = $pickupPoint->getName();
 					$pointId           = $pickupPoint->getId();
 					$country           = $order->getShippingCountry();
-					$internalCountries = array_keys( $this->carrierRepository->getZpointCarriers() );
+					$internalCountries = $this->carrierRepository->getInternalCountries();
 					if ( in_array( $country, $internalCountries, true ) ) {
 						echo esc_html( "$pointName ($pointId)" );
 					} else {

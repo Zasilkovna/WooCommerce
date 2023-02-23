@@ -326,7 +326,7 @@ class Checkout {
 				$carrierOption = get_option( $optionId );
 
 				$addressValidation = 'none';
-				if ( $carrierOption ) {
+				if ( $carrierOption && in_array( $carrier['country'], Core\Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 					$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 				}
 

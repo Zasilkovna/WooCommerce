@@ -114,7 +114,7 @@ class Repository {
 	 * @return array|null
 	 */
 	public function getAllIncludingZpoints(): ?array {
-		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
+		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 		$zpointCarriers = $this->getZpointCarriers();
 		foreach ( $zpointCarriers as $zpointCarrier ) {
 			array_unshift( $carriers, $zpointCarrier );
@@ -190,9 +190,9 @@ class Repository {
 	public function getAnyById( string $extendedBranchServiceId ): ?Entity\Carrier {
 		$zpointCarriers = $this->getZpointCarriers();
 
-		foreach ( $zpointCarriers as $zpointCountry => $zpointCarrier ) {
+		foreach ( $zpointCarriers as $zpointCarrier ) {
 			if ( $zpointCarrier['id'] === $extendedBranchServiceId ) {
-				return $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier + [ 'country' => $zpointCountry ] );
+				return $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier );
 			}
 		}
 
@@ -274,9 +274,7 @@ class Repository {
 		$countryCarriers = $this->getByCountry( $country );
 		$zpointCarriers  = $this->getZpointCarriers();
 		if ( ! empty( $zpointCarriers[ $country ] ) ) {
-			$zpointCarrierData            = $zpointCarriers[ $country ];
-			$zpointCarrierData['country'] = $country;
-			$zpointCarrier                = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrierData );
+			$zpointCarrier = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarriers[ $country ] );
 			array_unshift( $countryCarriers, $zpointCarrier );
 		}
 
@@ -345,6 +343,15 @@ class Repository {
 	}
 
 	/**
+	 * Gets internal countries.
+	 *
+	 * @return string[]
+	 */
+	public function getInternalCountries(): array {
+		return array_keys( $this->getZpointCarriers() );
+	}
+
+	/**
 	 * Returns internal pickup points configuration
 	 *
 	 * @return array[]
@@ -357,6 +364,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'CZK',
 				'supports_age_verification' => true,
+				'country'                   => 'cz',
 			],
 			'sk' => [
 				'id'                        => 'zpointsk',
@@ -364,6 +372,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'EUR',
 				'supports_age_verification' => true,
+				'country'                   => 'sk',
 			],
 			'hu' => [
 				'id'                        => 'zpointhu',
@@ -371,6 +380,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'HUF',
 				'supports_age_verification' => true,
+				'country'                   => 'hu',
 			],
 			'ro' => [
 				'id'                        => 'zpointro',
@@ -378,6 +388,7 @@ class Repository {
 				'is_pickup_points'          => 1,
 				'currency'                  => 'RON',
 				'supports_age_verification' => true,
+				'country'                   => 'ro',
 			],
 		];
 	}
@@ -391,8 +402,8 @@ class Repository {
 		$carriers       = [];
 		$zpointCarriers = $this->getZpointCarriers();
 
-		foreach ( $zpointCarriers as $country => $zpointCarrier ) {
-			$carriers[ $zpointCarrier['id'] ] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier + [ 'country' => $country ] );
+		foreach ( $zpointCarriers as $zpointCarrier ) {
+			$carriers[ $zpointCarrier['id'] ] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier );
 		}
 
 		return $carriers;
