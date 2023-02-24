@@ -1,5 +1,6 @@
 {varType PacketeryNette\Forms\Form $form}
 {varType Packetery\Core\Entity\Order $order}
+{varType bool $isCodPayment}
 
 {formContext $form}
     <div data-packetery-order-metabox>
@@ -15,6 +16,8 @@
                 Packetery\Module\Order\Metabox::FIELD_COD,
                 Packetery\Module\Order\Metabox::FIELD_VALUE,
             ] as $inputName}
+                {continueIf $inputName === Packetery\Module\Order\Metabox::FIELD_COD && false === $isCodPayment}
+
                 <div class="packetery-table-row">
                     {if in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_COD, Packetery\Module\Order\Metabox::FIELD_VALUE ] ) }
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">

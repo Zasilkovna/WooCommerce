@@ -223,7 +223,12 @@ class Metabox {
 	public function render_metabox(): void {
 		global $post;
 
-		$order = $this->orderRepository->getById( (int) $post->ID );
+		$wcOrder = wc_get_order( (int) $post->ID );
+		if ( ! $wcOrder instanceof \WC_Order ) {
+			return;
+		}
+
+		$order = $this->orderRepository->getByWcOrder( $wcOrder );
 		if ( null === $order ) {
 			return;
 		}
@@ -308,6 +313,7 @@ class Metabox {
 				'showSubmitPacketButton' => $showSubmitPacketButton,
 				'packetSubmitUrl'        => $packetSubmitUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
+				'isCodPayment'           => $wcOrder->get_payment_method() === $this->optionsProvider->getCodPaymentMethod(),
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,
 				'hasOrderManualWeight'   => $order->hasManualWeight(),
