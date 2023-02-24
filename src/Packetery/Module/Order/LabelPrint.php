@@ -97,17 +97,25 @@ class LabelPrint {
 	private $logPage;
 
 	/**
+	 * Packet actions common logic.
+	 *
+	 * @var PacketActionsCommonLogic
+	 */
+	private $packetActionsCommonLogic;
+
+	/**
 	 * LabelPrint constructor.
 	 *
-	 * @param Engine          $latteEngine     Latte Engine.
-	 * @param Provider        $optionsProvider Options provider.
-	 * @param FormFactory     $formFactory     Form factory.
-	 * @param Http\Request    $httpRequest     Http Request.
-	 * @param Client          $soapApiClient   SOAP API Client.
-	 * @param MessageManager  $messageManager  Message Manager.
-	 * @param Log\ILogger     $logger          Logger.
-	 * @param Repository      $orderRepository Order repository.
-	 * @param Module\Log\Page $logPage         Log page.
+	 * @param Engine                   $latteEngine              Latte Engine.
+	 * @param Provider                 $optionsProvider          Options provider.
+	 * @param FormFactory              $formFactory              Form factory.
+	 * @param Http\Request             $httpRequest              Http Request.
+	 * @param Client                   $soapApiClient            SOAP API Client.
+	 * @param MessageManager           $messageManager           Message Manager.
+	 * @param Log\ILogger              $logger                   Logger.
+	 * @param Repository               $orderRepository          Order repository.
+	 * @param Module\Log\Page          $logPage                  Log page.
+	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Packet actions common logic.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -118,17 +126,19 @@ class LabelPrint {
 		MessageManager $messageManager,
 		Log\ILogger $logger,
 		Repository $orderRepository,
-		Module\Log\Page $logPage
+		Module\Log\Page $logPage,
+		PacketActionsCommonLogic $packetActionsCommonLogic
 	) {
-		$this->latteEngine     = $latteEngine;
-		$this->optionsProvider = $optionsProvider;
-		$this->formFactory     = $formFactory;
-		$this->httpRequest     = $httpRequest;
-		$this->soapApiClient   = $soapApiClient;
-		$this->messageManager  = $messageManager;
-		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
-		$this->logPage         = $logPage;
+		$this->latteEngine              = $latteEngine;
+		$this->optionsProvider          = $optionsProvider;
+		$this->formFactory              = $formFactory;
+		$this->httpRequest              = $httpRequest;
+		$this->soapApiClient            = $soapApiClient;
+		$this->messageManager           = $messageManager;
+		$this->logger                   = $logger;
+		$this->orderRepository          = $orderRepository;
+		$this->logPage                  = $logPage;
+		$this->packetActionsCommonLogic = $packetActionsCommonLogic;
 	}
 
 	/**
@@ -222,9 +232,7 @@ class LabelPrint {
 		}
 		if ( ! $packetIds ) {
 			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
-			if ( wp_safe_redirect( add_query_arg( [ 'post_type' => 'shop_order' ], admin_url( 'edit.php' ) ) ) ) {
-				exit;
-			}
+			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 			return;
 		}
 
@@ -255,9 +263,8 @@ class LabelPrint {
 				__( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' ) :
 				__( 'You selected orders that were not submitted yet', 'packeta' );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
-			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
-				exit;
-			}
+			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+			return;
 		}
 
 		header( 'Content-Type: application/pdf' );

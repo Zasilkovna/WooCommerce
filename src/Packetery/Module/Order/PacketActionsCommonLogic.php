@@ -105,7 +105,7 @@ class PacketActionsCommonLogic {
 	 *
 	 * @return void
 	 */
-	public function redirectTo( string $redirectTo, ?Entity\Order $order ): void {
+	public function redirectTo( string $redirectTo, ?Entity\Order $order = null ): void {
 		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
 			$orderGridParams = [];
 			parse_str( $this->request->getQuery( self::PARAM_ORDER_GRID_PARAMS ) ?? '', $orderGridParams );
