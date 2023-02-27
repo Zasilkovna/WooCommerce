@@ -273,12 +273,19 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}
 		};
 
-		var logWidgetOptions = function (widgetOptions) {
+		var stringifyOptions = function (widgetOptions) {
 			var widgeOptionsArray = [];
 			for (const property in widgetOptions) {
-				widgeOptionsArray.push(property + ': ' + widgetOptions[property]);
+				if (!widgetOptions.hasOwnProperty(property)) {
+					continue;
+				}
+				if (typeof widgetOptions[property] === 'object') {
+					widgeOptionsArray.push(property + ': ' + stringifyOptions(widgetOptions[property]));
+				} else {
+					widgeOptionsArray.push(property + ': ' + widgetOptions[property]);
+				}
 			}
-			console.log('Widget options: ' + widgeOptionsArray.join(', '));
+			return widgeOptionsArray.join(', ');
 		};
 
 		$( document ).on( 'click', '.packeta-widget-button', function( e ) {
@@ -300,7 +307,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.postcode = destinationAddress.postCode;
 				widgetOptions.carrierId = settings.carrierConfig[ carrierRateId ][ 'id' ];
 
-				logWidgetOptions(widgetOptions);
+				console.log('Widget options: ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 					resetWidgetInfo();
 					showDeliveryAddress( carrierRateId );
@@ -334,13 +341,17 @@ var packeteryLoadCheckout = function( $, settings ) {
 			if ( hasPickupPoints( carrierRateId ) ) {
 				widgetOptions.appIdentity = settings.appIdentity;
 				widgetOptions.weight = settings.weight;
-				widgetOptions.carriers = settings.carrierConfig[ carrierRateId ].carriers;
+				widgetOptions.defaultPrice = settings.carrierConfig[ carrierRateId ].defaultPrice;
+				widgetOptions.defaultCurrency = settings.carrierConfig[ carrierRateId ].defaultCurrency;
+				if (settings.carrierConfig[carrierRateId].vendors) {
+					widgetOptions.vendors = settings.carrierConfig[carrierRateId].vendors;
+				}
 
 				if ( settings.isAgeVerificationRequired ) {
 					widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 				}
 
-				logWidgetOptions(widgetOptions);
+				console.log('Widget options: ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint == null ) {
 						return;

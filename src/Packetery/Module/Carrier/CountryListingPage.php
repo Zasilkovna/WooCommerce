@@ -10,10 +10,10 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Log\Record;
-use Packetery\Module\Checkout;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\ShippingFacade;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module\Plugin;
@@ -58,9 +58,9 @@ class CountryListingPage {
 	/**
 	 * Checkout.
 	 *
-	 * @var Checkout
+	 * @var ShippingFacade
 	 */
-	private $checkout;
+	private $shippingFacade;
 
 	/**
 	 * Options provider
@@ -79,20 +79,20 @@ class CountryListingPage {
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine     $latteEngine       PacketeryLatte engine.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Downloader $downloader        Carrier downloader.
-	 * @param Request    $httpRequest       Http request.
-	 * @param Checkout   $checkout          Checkout.
-	 * @param Provider   $optionsProvider   Options provider.
-	 * @param Log\Page   $logPage           Log page.
+	 * @param Engine         $latteEngine       PacketeryLatte engine.
+	 * @param Repository     $carrierRepository Carrier repository.
+	 * @param Downloader     $downloader        Carrier downloader.
+	 * @param Request        $httpRequest       Http request.
+	 * @param ShippingFacade $shippingFacade    Checkout.
+	 * @param Provider       $optionsProvider   Options provider.
+	 * @param Log\Page       $logPage           Log page.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
 		Downloader $downloader,
 		Request $httpRequest,
-		Checkout $checkout,
+		ShippingFacade $shippingFacade,
 		Provider $optionsProvider,
 		Log\Page $logPage
 	) {
@@ -100,7 +100,7 @@ class CountryListingPage {
 		$this->carrierRepository = $carrierRepository;
 		$this->downloader        = $downloader;
 		$this->httpRequest       = $httpRequest;
-		$this->checkout          = $checkout;
+		$this->shippingFacade    = $shippingFacade;
 		$this->optionsProvider   = $optionsProvider;
 		$this->logPage           = $logPage;
 	}
@@ -269,7 +269,7 @@ class CountryListingPage {
 		$carriersWithSomeOptions = [];
 		$allCarriers             = $this->carrierRepository->getAllIncludingZpoints();
 		foreach ( $allCarriers as $carrier ) {
-			$optionId       = Checkout::CARRIER_PREFIX . $carrier['id'];
+			$optionId       = ShippingFacade::CARRIER_PREFIX . $carrier['id'];
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
@@ -283,7 +283,7 @@ class CountryListingPage {
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
 				$carrierOptions['count_of_orders'] = 0;
-				$carrierId                         = $this->checkout->getCarrierId( $optionId );
+				$carrierId                         = $this->shippingFacade->getCarrierId( $optionId );
 				if ( $carrierId ) {
 					$orders = wc_get_orders(
 						[
@@ -314,7 +314,7 @@ class CountryListingPage {
 		$activeCarriers  = [];
 		$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
-			$optionId       = Checkout::CARRIER_PREFIX . $carrier->getId();
+			$optionId       = ShippingFacade::CARRIER_PREFIX . $carrier->getId();
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions && $carrierOptions['active'] ) {
 				$activeCarriers[] = $carrier->getName();

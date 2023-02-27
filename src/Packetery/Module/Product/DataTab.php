@@ -11,7 +11,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Product;
 
 use Packetery\Module\Carrier\Repository;
-use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
 use PacketeryLatte\Engine;
@@ -41,13 +40,6 @@ class DataTab {
 	private $latteEngine;
 
 	/**
-	 * Checkout.
-	 *
-	 * @var Checkout
-	 */
-	private $checkout;
-
-	/**
 	 * Carrier repository
 	 *
 	 * @var Repository
@@ -59,13 +51,11 @@ class DataTab {
 	 *
 	 * @param FormFactory $formFactory       Factory engine.
 	 * @param Engine      $latteEngine       Latte engine.
-	 * @param Checkout    $checkout          Checkout.
 	 * @param Repository  $carrierRepository Carrier repository.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, Checkout $checkout, Repository $carrierRepository ) {
+	public function __construct( FormFactory $formFactory, Engine $latteEngine, Repository $carrierRepository ) {
 		$this->formFactory       = $formFactory;
 		$this->latteEngine       = $latteEngine;
-		$this->checkout          = $checkout;
 		$this->carrierRepository = $carrierRepository;
 	}
 

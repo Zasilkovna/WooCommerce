@@ -48,7 +48,7 @@ class Carrier {
 	/**
 	 * Carrier factory.
 	 *
-	 * @param array $zpointCarrierData Data from db.
+	 * @param array $zpointCarrierData Data from configuration.
 	 *
 	 * @return Entity\Carrier
 	 */
@@ -63,7 +63,7 @@ class Carrier {
 			false,
 			false,
 			false,
-			true,
+			( $zpointCarrierData['supports_cod'] ?? true ),
 			$zpointCarrierData['country'],
 			$zpointCarrierData['currency'],
 			10,

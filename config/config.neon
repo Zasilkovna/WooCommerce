@@ -65,3 +65,5 @@ services:
 	- Packetery\Module\CurrencySwitcherFacade
 	- Packetery\Core\Api\Soap\CreatePacketMapper
 	- Packetery\Module\Order\PickupPointValidator
+	- Packetery\Module\ShippingFacade
+	- Packetery\Module\Order\Facade

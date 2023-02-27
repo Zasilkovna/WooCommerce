@@ -11,7 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity\Carrier;
-use Packetery\Module\Checkout;
+use Packetery\Module\ShippingFacade;
 
 /**
  * Class Entity
@@ -40,7 +40,7 @@ class Entity {
 	 * Gets options.
 	 */
 	private function getOptions(): array {
-		$options = get_option( Checkout::CARRIER_PREFIX . $this->carrier->getId() );
+		$options = get_option( ShippingFacade::CARRIER_PREFIX . $this->carrier->getId() );
 		if ( ! $options ) {
 			return [];
 		}

@@ -4,14 +4,25 @@
 		return;
 	}
 
+	var stringifyOptions = function (widgetOptions) {
+		var widgeOptionsArray = [];
+		for (const property in widgetOptions) {
+			if (!widgetOptions.hasOwnProperty(property)) {
+				continue;
+			}
+			if (typeof widgetOptions[property] === 'object') {
+				widgeOptionsArray.push(property + ': ' + stringifyOptions(widgetOptions[property]));
+			} else {
+				widgeOptionsArray.push(property + ': ' + widgetOptions[property]);
+			}
+		}
+		return widgeOptionsArray.join(', ');
+	};
+
 	$widgetDiv.on( 'click', '[name=packetery_pick_pickup_point]', function( e ) {
 		e.preventDefault();
 
-		var widgeOptionsArray = [];
-		for (const property in settings.widgetOptions) {
-			widgeOptionsArray.push(property + ': ' + settings.widgetOptions[property]);
-		}
-		console.log('Widget options: ' + widgeOptionsArray.join(', '));
+		console.log('Widget options: ' + stringifyOptions(settings.widgetOptions));
 
 		Packeta.Widget.pick( settings.packeteryApiKey, function( point ) {
 			if ( point == null ) {

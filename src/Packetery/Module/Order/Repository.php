@@ -48,16 +48,30 @@ class Repository {
 	private $helper;
 
 	/**
+	 * Carrier repository
+	 *
+	 * @var Carrier\Repository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter $wpdbAdapter  WpdbAdapter.
-	 * @param Builder     $orderFactory Order factory.
-	 * @param Helper      $helper       Helper.
+	 * @param WpdbAdapter        $wpdbAdapter       WpdbAdapter.
+	 * @param Builder            $orderFactory      Order factory.
+	 * @param Helper             $helper            Helper.
+	 * @param Carrier\Repository $carrierRepository Carrier repository.
 	 */
-	public function __construct( WpdbAdapter $wpdbAdapter, Builder $orderFactory, Helper $helper ) {
-		$this->wpdbAdapter = $wpdbAdapter;
-		$this->builder     = $orderFactory;
-		$this->helper      = $helper;
+	public function __construct(
+		WpdbAdapter $wpdbAdapter,
+		Builder $orderFactory,
+		Helper $helper,
+		Carrier\Repository $carrierRepository
+	) {
+		$this->wpdbAdapter       = $wpdbAdapter;
+		$this->builder           = $orderFactory;
+		$this->helper            = $helper;
+		$this->carrierRepository = $carrierRepository;
 	}
 
 	/**
@@ -84,17 +98,7 @@ class Repository {
 			return;
 		}
 
-		$sqlStatusesToExclude = implode(
-			',',
-			array_map(
-				function ( string $orderStatus ): string {
-					return sprintf( '"%s"', esc_sql( $orderStatus ) );
-				},
-				$orderStatusesToExclude
-			)
-		);
-
-		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdbAdapter->posts, $sqlStatusesToExclude );
+		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdbAdapter->posts, $this->wpdbAdapter->prepareInClause( $orderStatusesToExclude ) );
 	}
 
 	/**
@@ -134,10 +138,13 @@ class Repository {
 			}
 			if ( $paramValues['packetery_order_type'] ) {
 				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
-					$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` = "' . esc_sql( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$comparison = 'IN';
 				} else {
-					$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` != "' . esc_sql( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$comparison = 'NOT IN';
 				}
+				$internalCarriers   = array_keys( $this->carrierRepository->getVendorCarriers() );
+				$internalCarriers[] = Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
+				$clauses['where']  .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` ' . $comparison . ' (' . $this->wpdbAdapter->prepareInClause( $internalCarriers ) . ')';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 		}
@@ -438,22 +445,6 @@ class Repository {
 	}
 
 	/**
-	 * Quote array of strings.
-	 *
-	 * @param array $input Input.
-	 *
-	 * @return array
-	 */
-	private function quoteArrayOfStrings( array $input ): array {
-		return array_map(
-			function ( string $item ) {
-				return $this->wpdbAdapter->prepare( '%s', $item );
-			},
-			$input
-		);
-	}
-
-	/**
 	 * Finds orders.
 	 *
 	 * @param array $allowedPacketStatuses Allowed packet statuses.
@@ -475,7 +466,7 @@ class Repository {
 		$orPacketStatus[] = 'o.`packet_status` IS NULL';
 
 		if ( $allowedPacketStatuses ) {
-			$orPacketStatus[] = 'o.`packet_status` IN (' . implode( ',', $this->quoteArrayOfStrings( $allowedPacketStatuses ) ) . ')';
+			$orPacketStatus[] = '`o`.`packet_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		}
 
 		if ( $orPacketStatus ) {
@@ -483,7 +474,7 @@ class Repository {
 		}
 
 		if ( $allowedOrderStatuses ) {
-			$andWhere[] = 'wp_p.`post_status` IN (' . implode( ',', $this->quoteArrayOfStrings( $allowedOrderStatuses ) ) . ')';
+			$andWhere[] = '`wp_p`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} else {
 			$andWhere[] = '1 = 0';
 		}

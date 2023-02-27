@@ -22,6 +22,7 @@ use Packetery\Module\WpdbAdapter;
 class Repository {
 
 	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
+	public const ZPOINT_CARRIER_PREFIX     = 'zpoint';
 
 	private const COLUMN_NAMES = [
 		'id',
@@ -114,8 +115,8 @@ class Repository {
 	 * @return array|null
 	 */
 	public function getAllIncludingZpoints(): ?array {
-		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
-		$zpointCarriers = $this->getZpointCarriers();
+		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`, `currency`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
+		$zpointCarriers = $this->getNonFeedCarriers();
 		foreach ( $zpointCarriers as $zpointCarrier ) {
 			array_unshift( $carriers, $zpointCarrier );
 		}
@@ -188,7 +189,7 @@ class Repository {
 	 * @return Entity\Carrier|null
 	 */
 	public function getAnyById( string $extendedBranchServiceId ): ?Entity\Carrier {
-		$zpointCarriers = $this->getZpointCarriers();
+		$zpointCarriers = $this->getNonFeedCarriers();
 
 		foreach ( $zpointCarriers as $zpointCarrier ) {
 			if ( $zpointCarrier['id'] === $extendedBranchServiceId ) {
@@ -271,14 +272,17 @@ class Repository {
 	 * @return Entity\Carrier[]
 	 */
 	public function getByCountryIncludingZpoints( string $country ): array {
-		$countryCarriers = $this->getByCountry( $country );
-		$zpointCarriers  = $this->getZpointCarriers();
-		if ( ! empty( $zpointCarriers[ $country ] ) ) {
-			$zpointCarrier = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarriers[ $country ] );
-			array_unshift( $countryCarriers, $zpointCarrier );
+		$countryCarriers = [];
+		$zpointCarriers  = $this->getNonFeedCarriersByCountry( $country );
+		if ( $zpointCarriers ) {
+			foreach ( $zpointCarriers as $zpointCarrierData ) {
+				$countryCarriers[] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrierData );
+			}
 		}
 
-		return $countryCarriers;
+		$feedCarriers = $this->getByCountry( $country );
+
+		return array_merge( $countryCarriers, $feedCarriers );
 	}
 
 	/**
@@ -365,6 +369,11 @@ class Repository {
 				'currency'                  => 'CZK',
 				'supports_age_verification' => true,
 				'country'                   => 'cz',
+				'vendor_codes'              => [
+					'czzpoint',
+					'czzbox',
+					'czalzabox',
+				],
 			],
 			'sk' => [
 				'id'                        => 'zpointsk',
@@ -373,6 +382,10 @@ class Repository {
 				'currency'                  => 'EUR',
 				'supports_age_verification' => true,
 				'country'                   => 'sk',
+				'vendor_codes'              => [
+					'skzpoint',
+					'skzbox',
+				],
 			],
 			'hu' => [
 				'id'                        => 'zpointhu',
@@ -381,6 +394,10 @@ class Repository {
 				'currency'                  => 'HUF',
 				'supports_age_verification' => true,
 				'country'                   => 'hu',
+				'vendor_codes'              => [
+					'huzpoint',
+					'huzbox',
+				],
 			],
 			'ro' => [
 				'id'                        => 'zpointro',
@@ -389,8 +406,128 @@ class Repository {
 				'currency'                  => 'RON',
 				'supports_age_verification' => true,
 				'country'                   => 'ro',
+				'vendor_codes'              => [
+					'rozpoint',
+					'rozbox',
+				],
 			],
 		];
+	}
+
+	/**
+	 * Gets vendor carriers settings.
+	 *
+	 * @return array[]
+	 */
+	public function getVendorCarriers(): array {
+		return [
+			'czzpoint'  => [
+				'country'      => 'cz',
+				'group'        => 'zpoint',
+				'name'         => __( 'CZ Packeta internal pickup points', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'czzbox'    => [
+				'country'      => 'cz',
+				'group'        => 'zbox',
+				'name'         => __( 'CZ Packeta Z-BOX', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'czalzabox' => [
+				'country'      => 'cz',
+				'group'        => 'alzabox',
+				'name'         => __( 'CZ AlzaBox', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'skzpoint'  => [
+				'country'      => 'sk',
+				'group'        => 'zpoint',
+				'name'         => __( 'SK Packeta internal pickup points', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'skzbox'    => [
+				'country'      => 'sk',
+				'group'        => 'zbox',
+				'name'         => __( 'SK Packeta Z-BOX', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'huzpoint'  => [
+				'country'      => 'hu',
+				'group'        => 'zpoint',
+				'name'         => __( 'HU Packeta internal pickup points', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'huzbox'    => [
+				'country'      => 'hu',
+				'group'        => 'zbox',
+				'name'         => __( 'HU Packeta Z-BOX', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'rozpoint'  => [
+				'country'      => 'ro',
+				'group'        => 'zpoint',
+				'name'         => __( 'RO Packeta internal pickup points', 'packeta' ),
+				'supports_cod' => true,
+			],
+			'rozbox'    => [
+				'country'      => 'ro',
+				'group'        => 'zbox',
+				'name'         => __( 'RO Packeta Z-BOX', 'packeta' ),
+				'supports_cod' => true,
+			],
+		];
+	}
+
+	/**
+	 * Gets all non-feed carriers settings.
+	 *
+	 * @return array
+	 */
+	public function getNonFeedCarriers(): array {
+		$nonFeedCarriers = [];
+
+		$zPointCarriers = $this->getZpointCarriers();
+		foreach ( $zPointCarriers as $country => $zpointCarrier ) {
+			$nonFeedCarriers[ $zpointCarrier['id'] ] = ( $zpointCarrier + [ 'country' => $country ] );
+		}
+
+		foreach ( $this->getVendorCarriers() as $carrierId => $vendorCarrier ) {
+			$nonFeedCarriers[ $carrierId ] = [
+				'id'                        => $carrierId,
+				'name'                      => $vendorCarrier['name'],
+
+				// Vendor loads some settings from country.
+				'is_pickup_points'          => $zPointCarriers[ $vendorCarrier['country'] ]['is_pickup_points'],
+				'currency'                  => $zPointCarriers[ $vendorCarrier['country'] ]['currency'],
+				'supports_age_verification' => $zPointCarriers[ $vendorCarrier['country'] ]['supports_age_verification'],
+
+				'vendor_codes'              => [ $carrierId ],
+				'country'                   => $vendorCarrier['country'],
+				'supports_cod'              => $vendorCarrier['supports_cod'],
+			];
+		}
+
+		return $nonFeedCarriers;
+	}
+
+	/**
+	 * Gets non-feed carriers settings by country.
+	 *
+	 * @param string $country Country.
+	 *
+	 * @return array
+	 */
+	public function getNonFeedCarriersByCountry( string $country ): array {
+		$filteredCarriers = [];
+		$nonFeedCarriers  = $this->getNonFeedCarriers();
+
+		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
+			if ( $nonFeedCarrier['country'] === $country ) {
+				$filteredCarriers[] = $nonFeedCarrier;
+			}
+		}
+
+		return $filteredCarriers;
 	}
 
 	/**
@@ -400,7 +537,7 @@ class Repository {
 	 */
 	public function getZpointCarrierCarriers(): array {
 		$carriers       = [];
-		$zpointCarriers = $this->getZpointCarriers();
+		$zpointCarriers = $this->getNonFeedCarriers();
 
 		foreach ( $zpointCarriers as $zpointCarrier ) {
 			$carriers[ $zpointCarrier['id'] ] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier );
@@ -418,6 +555,10 @@ class Repository {
 	 */
 	public function isPickupPointCarrier( string $carrierId ): bool {
 		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+			return true;
+		}
+		$vendorCarriers = $this->getVendorCarriers();
+		if ( isset( $vendorCarriers[ $carrierId ] ) ) {
 			return true;
 		}
 

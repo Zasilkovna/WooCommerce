@@ -314,7 +314,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isExternalCarrier(): bool {
-		return ( Carrier::INTERNAL_PICKUP_POINTS_ID !== $this->getCarrierId() );
+		return is_numeric( $this->getCarrierId() );
 	}
 
 	/**

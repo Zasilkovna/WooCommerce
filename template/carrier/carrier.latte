@@ -159,7 +159,36 @@
                                id="{$form[name]->getHtmlId() . '_message'}">{inputError name}</p>
                         </td>
                     </tr>
-                    {include weightRulesSection form => $form}
+
+                    {if isset($form['vendor_groups'])}
+                        {var $vendorCheckboxes = $form['vendor_groups']->getComponents()}
+                        <tr>
+                            <th scope="row">
+                                <label>{$translations['allowedPickupPointTypes']}:</label>
+                            </th>
+                            <td>
+                                <table>
+                                    {foreach $vendorCheckboxes as $component}
+                                        <tr>
+                                            <th scope="row">
+                                                <label n:name=$component />
+                                            </th>
+                                            <td>
+                                                <input n:name=$component>
+                                            </td>
+                                        </tr>
+                                    {/foreach}
+                                </table>
+                                {if count($vendorCheckboxes) > \Packetery\Module\Carrier\OptionsPage::MINIMUM_CHECKED_VENDORS}
+                                    <p>
+                                        {$translations['checkAtLeastTwo']}
+                                    </p>
+                                {/if}
+                            </td>
+                        </tr>
+                    {/if}
+
+					{include weightRulesSection form => $form}
 
                     {if $carrier->supportsCod()}
                         <tr>
