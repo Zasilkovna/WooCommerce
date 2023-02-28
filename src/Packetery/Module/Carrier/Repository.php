@@ -361,6 +361,7 @@ class Repository {
 	 * @return array[]
 	 */
 	public function getZpointCarriers(): array {
+		// TODO: take into account that not all types of pickup points support age verification.
 		return [
 			'cz' => [
 				'id'                        => 'zpointcz',
@@ -422,58 +423,67 @@ class Repository {
 	public function getVendorCarriers(): array {
 		return [
 			'czzpoint'  => [
-				'country'      => 'cz',
-				'group'        => 'zpoint',
-				'name'         => __( 'CZ Packeta internal pickup points', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'cz',
+				'group'                     => 'zpoint',
+				'name'                      => 'CZ ' . __( 'Packeta internal pickup points', 'packeta' ),
+				'supports_cod'              => true,
+				'supports_age_verification' => true,
 			],
 			'czzbox'    => [
-				'country'      => 'cz',
-				'group'        => 'zbox',
-				'name'         => __( 'CZ Packeta Z-BOX', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'cz',
+				'group'                     => 'zbox',
+				'name'                      => 'CZ ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+				'supports_cod'              => true,
+				'supports_age_verification' => false,
 			],
 			'czalzabox' => [
-				'country'      => 'cz',
-				'group'        => 'alzabox',
-				'name'         => __( 'CZ AlzaBox', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'cz',
+				'group'                     => 'alzabox',
+				'name'                      => 'CZ AlzaBox',
+				'supports_cod'              => true,
+				'supports_age_verification' => false,
 			],
 			'skzpoint'  => [
-				'country'      => 'sk',
-				'group'        => 'zpoint',
-				'name'         => __( 'SK Packeta internal pickup points', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'sk',
+				'group'                     => 'zpoint',
+				'name'                      => 'SK ' . __( 'Packeta internal pickup points', 'packeta' ),
+				'supports_cod'              => true,
+				'supports_age_verification' => true,
 			],
 			'skzbox'    => [
-				'country'      => 'sk',
-				'group'        => 'zbox',
-				'name'         => __( 'SK Packeta Z-BOX', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'sk',
+				'group'                     => 'zbox',
+				'name'                      => 'SK ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+				'supports_cod'              => true,
+				'supports_age_verification' => false,
 			],
 			'huzpoint'  => [
-				'country'      => 'hu',
-				'group'        => 'zpoint',
-				'name'         => __( 'HU Packeta internal pickup points', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'hu',
+				'group'                     => 'zpoint',
+				'name'                      => 'HU ' . __( 'Packeta internal pickup points', 'packeta' ),
+				'supports_cod'              => true,
+				'supports_age_verification' => true,
 			],
 			'huzbox'    => [
-				'country'      => 'hu',
-				'group'        => 'zbox',
-				'name'         => __( 'HU Packeta Z-BOX', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'hu',
+				'group'                     => 'zbox',
+				'name'                      => 'HU ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+				'supports_cod'              => true,
+				'supports_age_verification' => false,
 			],
 			'rozpoint'  => [
-				'country'      => 'ro',
-				'group'        => 'zpoint',
-				'name'         => __( 'RO Packeta internal pickup points', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'ro',
+				'group'                     => 'zpoint',
+				'name'                      => 'RO ' . __( 'Packeta internal pickup points', 'packeta' ),
+				'supports_cod'              => true,
+				'supports_age_verification' => true,
 			],
 			'rozbox'    => [
-				'country'      => 'ro',
-				'group'        => 'zbox',
-				'name'         => __( 'RO Packeta Z-BOX', 'packeta' ),
-				'supports_cod' => true,
+				'country'                   => 'ro',
+				'group'                     => 'zbox',
+				'name'                      => 'RO ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+				'supports_cod'              => true,
+				'supports_age_verification' => false,
 			],
 		];
 	}
@@ -487,23 +497,21 @@ class Repository {
 		$nonFeedCarriers = [];
 
 		$zPointCarriers = $this->getZpointCarriers();
-		foreach ( $zPointCarriers as $country => $zpointCarrier ) {
-			$nonFeedCarriers[ $zpointCarrier['id'] ] = ( $zpointCarrier + [ 'country' => $country ] );
+		foreach ( $zPointCarriers as $zpointCarrier ) {
+			$nonFeedCarriers[ $zpointCarrier['id'] ] = $zpointCarrier;
 		}
 
 		foreach ( $this->getVendorCarriers() as $carrierId => $vendorCarrier ) {
 			$nonFeedCarriers[ $carrierId ] = [
 				'id'                        => $carrierId,
 				'name'                      => $vendorCarrier['name'],
-
-				// Vendor loads some settings from country.
-				'is_pickup_points'          => $zPointCarriers[ $vendorCarrier['country'] ]['is_pickup_points'],
-				'currency'                  => $zPointCarriers[ $vendorCarrier['country'] ]['currency'],
-				'supports_age_verification' => $zPointCarriers[ $vendorCarrier['country'] ]['supports_age_verification'],
-
-				'vendor_codes'              => [ $carrierId ],
 				'country'                   => $vendorCarrier['country'],
 				'supports_cod'              => $vendorCarrier['supports_cod'],
+				'supports_age_verification' => $vendorCarrier['supports_age_verification'],
+				'vendor_codes'              => [ $carrierId ],
+				// Vendor loads some settings from country.
+				'currency'                  => $zPointCarriers[ $vendorCarrier['country'] ]['currency'],
+				'is_pickup_points'          => $zPointCarriers[ $vendorCarrier['country'] ]['is_pickup_points'],
 			];
 		}
 
