@@ -15,6 +15,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
+use Packetery\Module\Upgrade;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -91,6 +92,13 @@ class Page {
 	private $httpRequest;
 
 	/**
+	 * Plugin upgrade.
+	 *
+	 * @var Upgrade
+	 */
+	private $upgrade;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Engine                          $latte_engine       PacketeryLatte_engine.
@@ -100,6 +108,7 @@ class Page {
 	 * @param Log\ILogger                     $logger             Logger.
 	 * @param MessageManager                  $messageManager     Message manager.
 	 * @param \PacketeryNette\Http\Request    $httpRequest        HTTP request.
+	 * @param Upgrade                         $upgrade            Upgrade.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -108,7 +117,8 @@ class Page {
 		\Packetery\Core\Api\Soap\Client $packetaClient,
 		Log\ILogger $logger,
 		MessageManager $messageManager,
-		\PacketeryNette\Http\Request $httpRequest
+		\PacketeryNette\Http\Request $httpRequest,
+		Upgrade $upgrade
 	) {
 		$this->latte_engine    = $latte_engine;
 		$this->optionsProvider = $optionsProvider;
@@ -117,6 +127,7 @@ class Page {
 		$this->logger          = $logger;
 		$this->messageManager  = $messageManager;
 		$this->httpRequest     = $httpRequest;
+		$this->upgrade         = $upgrade;
 	}
 
 	/**
@@ -650,6 +661,10 @@ class Page {
 	 *  Renders page.
 	 */
 	public function render(): void {
+		if ( $this->upgrade->isInstalling() ) {
+			return;
+		}
+
 		$activeTab = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
 
 		$latteParams = [];

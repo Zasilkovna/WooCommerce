@@ -12,6 +12,7 @@ namespace Packetery\Module\Log;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Upgrade;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -51,16 +52,25 @@ class Page {
 	private $request;
 
 	/**
+	 * Plugin upgrade.
+	 *
+	 * @var Upgrade
+	 */
+	private $upgrade;
+
+	/**
 	 * Page constructor.
 	 *
 	 * @param Engine  $latteEngine Engine.
 	 * @param ILogger $manager     Manager.
 	 * @param Request $request     Request.
+	 * @param Upgrade $upgrade     Upgrade.
 	 */
-	public function __construct( Engine $latteEngine, ILogger $manager, Request $request ) {
+	public function __construct( Engine $latteEngine, ILogger $manager, Request $request, Upgrade $upgrade ) {
 		$this->latteEngine = $latteEngine;
 		$this->logger      = $manager;
 		$this->request     = $request;
+		$this->upgrade     = $upgrade;
 	}
 
 	/**
@@ -81,6 +91,10 @@ class Page {
 	 * Renders Page.
 	 */
 	public function render(): void {
+		if ( $this->upgrade->isInstalling() ) {
+			return;
+		}
+
 		$translatedActions = [
 			Record::ACTION_PACKET_SENDING            => __( 'Packet sending', 'packeta' ),
 			Record::ACTION_CARRIER_LABEL_PRINT       => __( 'Carrier label print', 'packeta' ),

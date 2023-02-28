@@ -9,15 +9,26 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use ActionScheduler_Store;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Upgrade\Version_1_4_2;
+use PacketeryLatte\Engine;
+use function update_option;
 
 /**
  * Class Upgrade.
  */
 class Upgrade {
+
+	private const MIGRATION_TRANSIENT   = 'packeta_installing';
+	private const ACTIONSCHEDULER_GROUP = 'packeta_upgrade';
+
+	private const HOOK_COLUMN_ADD_API_ERROR_MESSAGE      = 'packeta_addColumnApiErrorMessage';
+	private const HOOK_COLUMN_ADD_API_ERROR_MESSAGE_DATE = 'packeta_addColumnApiErrorMessageDate';
+	private const HOOK_COLUMN_ADD_DELIVER_ON             = 'packeta_addDeliverOnColumn';
+	private const HOOK_CLEAR_CRON_CARRIERS_HOOK          = 'packeta_clearCronCarriersHook';
 
 	const POST_TYPE_VALIDATED_ADDRESS = 'packetery_address';
 
@@ -81,6 +92,13 @@ class Upgrade {
 	private $wpdbAdapter;
 
 	/**
+	 * Latte engine.
+	 *
+	 * @var Engine
+	 */
+	private $latteEngine;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Order\Repository   $orderRepository   Order repository.
@@ -89,6 +107,7 @@ class Upgrade {
 	 * @param Log\Repository     $logRepository     Log repository.
 	 * @param WpdbAdapter        $wpdbAdapter       WpdbAdapter.
 	 * @param Carrier\Repository $carrierRepository Carrier repository.
+	 * @param Engine             $latteEngine       Latte engine.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
@@ -96,7 +115,8 @@ class Upgrade {
 		ILogger $logger,
 		Log\Repository $logRepository,
 		WpdbAdapter $wpdbAdapter,
-		Carrier\Repository $carrierRepository
+		Carrier\Repository $carrierRepository,
+		Engine $latteEngine
 	) {
 		$this->orderRepository   = $orderRepository;
 		$this->messageManager    = $messageManager;
@@ -104,6 +124,7 @@ class Upgrade {
 		$this->logRepository     = $logRepository;
 		$this->wpdbAdapter       = $wpdbAdapter;
 		$this->carrierRepository = $carrierRepository;
+		$this->latteEngine       = $latteEngine;
 	}
 
 	/**
@@ -118,36 +139,9 @@ class Upgrade {
 			return;
 		}
 
-		$this->logRepository->createTable();
-		$createResult = $this->carrierRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
-
-		$createResult = $this->orderRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database order table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
+		// Legacy synchronous part start. TODO make asynchronous.
+		$this->createCarrierTable();
+		$this->createOrderTable();
 
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
@@ -179,10 +173,12 @@ class Upgrade {
 			}
 
 			unregister_post_type( self::POST_TYPE_VALIDATED_ADDRESS );
+			update_option( 'packetery_version', '1.2.0' );
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.2.6', '<' ) ) {
 			$this->orderRepository->deleteOrphans();
+			update_option( 'packetery_version', '1.2.6' );
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) {
@@ -190,27 +186,139 @@ class Upgrade {
 			$this->orderRepository->addAdultContentColumn();
 			$this->orderRepository->addValueColumn();
 			$this->orderRepository->addCodColumn();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
-			$this->orderRepository->addColumnApiErrorMessage();
-			$this->orderRepository->addColumnApiErrorMessageDate();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
-			$this->orderRepository->addDeliverOnColumn();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
-			wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
+			update_option( 'packetery_version', '1.4' );
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
 			$version_1_4_2 = new Version_1_4_2( $this->wpdbAdapter );
 			$version_1_4_2->run();
+			update_option( 'packetery_version', '1.4.2' );
 		}
 
-		update_option( 'packetery_version', Plugin::VERSION );
+		// Asynchronous part start.
+		if ( $this->isInstalling() ) {
+			return;
+		}
+		set_transient( self::MIGRATION_TRANSIENT, 'yes' );
+
+		// TODO: change version to target version.
+		$nextVersion = '1.4';
+
+		add_action(
+			self::HOOK_COLUMN_ADD_API_ERROR_MESSAGE,
+			function () {
+				$this->orderRepository->addColumnApiErrorMessage();
+				$this->scheduleIfNotScheduled( self::HOOK_COLUMN_ADD_API_ERROR_MESSAGE_DATE );
+			}
+		);
+		add_action(
+			self::HOOK_COLUMN_ADD_API_ERROR_MESSAGE_DATE,
+			function () {
+				$this->orderRepository->addColumnApiErrorMessageDate();
+				$this->scheduleIfNotScheduled( self::HOOK_COLUMN_ADD_DELIVER_ON );
+			}
+		);
+		add_action(
+			self::HOOK_COLUMN_ADD_DELIVER_ON,
+			function () {
+				$this->orderRepository->addDeliverOnColumn();
+				$this->scheduleIfNotScheduled( self::HOOK_CLEAR_CRON_CARRIERS_HOOK );
+			}
+		);
+		add_action(
+			self::HOOK_CLEAR_CRON_CARRIERS_HOOK,
+			function () use ( $nextVersion ) {
+				wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
+				update_option( 'packetery_version', $nextVersion );
+			}
+		);
+
+		if ( $oldVersion && version_compare( $oldVersion, $nextVersion, '<' ) ) {
+			$this->scheduleIfNotScheduled( self::HOOK_COLUMN_ADD_API_ERROR_MESSAGE );
+		}
+
+		if ( ! $this->hasUnfinishedActions() ) {
+			delete_transient( self::MIGRATION_TRANSIENT );
+			update_option( 'packetery_version', Plugin::VERSION );
+		}
+	}
+
+	/**
+	 * Checks if there are some asynchronously planned upgrade tasks.
+	 *
+	 * @return bool
+	 */
+	private function hasUnfinishedActions(): bool {
+		$actions = as_get_scheduled_actions(
+			[
+				'group'  => self::ACTIONSCHEDULER_GROUP,
+				'status' => [
+					ActionScheduler_Store::STATUS_PENDING,
+					ActionScheduler_Store::STATUS_RUNNING,
+				],
+			],
+			ARRAY_A
+		);
+		if ( ! empty( $actions ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if upgrade process is running.
+	 *
+	 * @return bool
+	 */
+	public function isInstalling(): bool {
+		return ( 'yes' === get_transient( self::MIGRATION_TRANSIENT ) );
+	}
+
+	/**
+	 * Schedules asynchronous task, if was not scheduled before.
+	 *
+	 * @param string $hookName Hook to schedule name.
+	 *
+	 * @return void
+	 */
+	private function scheduleIfNotScheduled( string $hookName ): void {
+		if ( ! as_has_scheduled_action(
+			$hookName,
+			[
+				// All except canceled.
+				'status' => [
+					ActionScheduler_Store::STATUS_PENDING,
+					ActionScheduler_Store::STATUS_RUNNING,
+					ActionScheduler_Store::STATUS_COMPLETE,
+					ActionScheduler_Store::STATUS_FAILED,
+				],
+			],
+			self::ACTIONSCHEDULER_GROUP
+		) ) {
+			as_schedule_single_action( time(), $hookName, [], self::ACTIONSCHEDULER_GROUP );
+		}
+	}
+
+	/**
+	 * Print installing notice.
+	 *
+	 * @return void
+	 */
+	public function echoInstallingNotice(): void {
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/admin-notice.latte',
+			[
+				'message'      => [
+					'type'    => 'warning',
+					'message' => __( 'Packeta plugin upgrade is in progress. Wait for it to complete to use it fully.', 'packeta' ),
+				],
+				'logo'         => Plugin::buildAssetUrl( 'public/packeta.svg' ),
+				'translations' => [
+					'packeta' => __( 'Packeta', 'packeta' ),
+				],
+			]
+		);
 	}
 
 	/**
@@ -219,20 +327,7 @@ class Upgrade {
 	 * @return void
 	 */
 	private function migrateWpOrderMetadata(): void {
-		$createResult = $this->orderRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database order table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
+		$this->createOrderTable();
 
 		// Did not work when called from plugins_loaded hook.
 		$orders = wc_get_orders(
@@ -423,6 +518,51 @@ class Upgrade {
 		}
 
 		return $queryVars;
+	}
+
+	/**
+	 * Creates carrier table.
+	 *
+	 * @return void
+	 */
+	private function createCarrierTable(): void {
+		$this->logRepository->createTable();
+		$createResult = $this->carrierRepository->createTable();
+		if ( false === $createResult ) {
+			$lastError = $this->wpdbAdapter->getLastWpdbError();
+			$this->messageManager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
+		}
+	}
+
+	/**
+	 * Creates order table.
+	 *
+	 * @return void
+	 */
+	private function createOrderTable(): void {
+		$createResult = $this->orderRepository->createTable();
+		if ( false === $createResult ) {
+			$lastError = $this->wpdbAdapter->getLastWpdbError();
+			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
+
+			$record         = new Record();
+			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'Database order table was not created.', 'packeta' );
+			$record->params = [
+				'errorMessage' => $lastError,
+			];
+			$this->logger->add( $record );
+		}
 	}
 
 }
