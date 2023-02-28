@@ -36,6 +36,18 @@ class Version_1_4_2 {
 		$this->wpdbAdapter = $wpdbAdapter;
 	}
 
+	public function isApplicable(  ) {
+		// kontrola verze a dalsich podminek
+	}
+
+	public function getHookNames(): array {
+		return [
+			'migration_142_change_db_structure' => function() {
+
+			},
+		];
+	}
+
 	/**
 	 * Run migration.
 	 *
