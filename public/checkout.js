@@ -220,7 +220,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}
 
 			currentPaymentMethod = targetPaymentMethod;
-			jQuery('body').trigger('update_checkout');
+			// TODO: solve, causes unwanted flickering
+			//jQuery('body').trigger('update_checkout');
 		};
 
 		$(document).on('change', '#payment input[type="radio"]', checkPaymentChange);

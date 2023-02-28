@@ -15,7 +15,6 @@ use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
-use function WC;
 
 /**
  * Class Checkout
@@ -457,23 +456,20 @@ class Checkout {
 			}
 		}
 
-		$carrierOptions = get_option( $chosenShippingMethod );
+		/*
+		TODO: it just shows "Invalid payment method." when the method is disabled in filterPaymentGateways. We do NOT want either message.
 		if ( ! $this->validateMaximumCod( $carrierOptions ) ) {
 			wc_add_notice( __( 'Order value exceeds maximum COD value setting for carrier, please choose different payment method.', 'packeta' ), 'error' );
 		}
-
+		*/
 		if ( $this->isHomeDeliveryOrder() ) {
-			$addressValidation = 'none';
-			if ( $carrierOptions ) {
-				$addressValidation = ( $carrierOptions['address_validation'] ?? $addressValidation );
-			}
-
+			$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
 			if (
-				'required' === $addressValidation &&
 				(
 					! isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) ||
 					'1' !== $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]
-				)
+				) &&
+				'required' === $carrierOptions->getAddressValidation()
 			) {
 				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 			}
@@ -891,7 +887,7 @@ class Checkout {
 	}
 
 	/**
-	 * Calculates shipping without using POST data.
+	 * Calculates shipping without using POST data and returns chosen method.
 	 *
 	 * @return string
 	 */
@@ -1164,10 +1160,11 @@ class Checkout {
 			return $availableGateways;
 		}
 
+		$carrierOptions = Carrier\Options::createByOptionId( $chosenMethod );
 		foreach ( $availableGateways as $key => $availableGateway ) {
 			if (
 				$this->isCodPaymentMethod( $availableGateway->id ) &&
-				! $carrier->supportsCod()
+				( ! $carrier->supportsCod() || ! $this->validateMaximumCod( $carrierOptions ) )
 			) {
 				unset( $availableGateways[ $key ] );
 			}
@@ -1222,15 +1219,14 @@ class Checkout {
 	/**
 	 * Validates if payment method can be used with current cart.
 	 *
-	 * @param array|false $carrierOptions Carrier options.
+	 * @param Carrier\Options $carrierOptions Carrier options.
 	 *
 	 * @return bool
 	 */
-	public function validateMaximumCod( array $carrierOptions ): bool {
+	public function validateMaximumCod( Carrier\Options $carrierOptions ): bool {
 		if (
-			false === $carrierOptions ||
-			! isset( $carrierOptions['maximum_cod_value'] ) ||
-			0.0 === (float) $carrierOptions['maximum_cod_value']
+			null === $carrierOptions->getMaximumCodValue() ||
+			0.0 === $carrierOptions->getMaximumCodValue()
 		) {
 			return true;
 		}
@@ -1238,11 +1234,13 @@ class Checkout {
 		$cartPrice  = $this->getCartContentsTotalIncludingTax();
 		$cartWeight = $this->getCartWeightKg();
 		$cost       = $this->getRateCost( $carrierOptions, $cartPrice, $cartWeight );
-		$fees       = (float) WC()->cart->get_fee_total();
+		// TODO: fees can't be determined at this time. Provide new filter for the user?
+		/* $fees       = (float) WC()->cart->get_fee_total(); */
 
+		$maximumCodValue = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getMaximumCodValue() );
 		if (
-			$this->checkIfPaymentIsCod( WC()->session->get( 'chosen_payment_method' ) ) &&
-			( $cartPrice + $cost + $fees ) > $carrierOptions['maximum_cod_value']
+			( $cartPrice + $cost ) > $maximumCodValue &&
+			$this->isCodPaymentMethod( WC()->session->get( 'chosen_payment_method' ) )
 		) {
 			return false;
 		}
