@@ -430,7 +430,7 @@ class Checkout {
 				$error = true;
 			}
 			if ( $error ) {
-				wc_add_notice( __( 'Pick up point is not chosen.', 'packeta' ), 'error' );
+				wc_add_notice( __( 'Pickup point is not chosen.', 'packeta' ), 'error' );
 			}
 
 			if ( ! $error && ! $this->carrierRepository->isValidForCountry(

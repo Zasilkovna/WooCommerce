@@ -361,7 +361,7 @@ class GridExtender {
 				$new_columns['packetery']               = __( 'Packeta', 'packeta' );
 				$new_columns['packetery_packet_id']     = __( 'Barcode', 'packeta' );
 				$new_columns['packetery_packet_status'] = __( 'Packeta packet status', 'packeta' );
-				$new_columns['packetery_destination']   = __( 'Pick up point or carrier', 'packeta' );
+				$new_columns['packetery_destination']   = __( 'Pickup point or carrier', 'packeta' );
 			}
 		}
 

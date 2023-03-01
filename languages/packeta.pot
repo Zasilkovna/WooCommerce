@@ -311,7 +311,7 @@ msgid "Delivery address has not been verified. Verification of delivery address 
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:412
-msgid "Pick up point is not chosen."
+msgid "Pickup point is not chosen."
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:682
@@ -759,7 +759,7 @@ msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:193
 #: src/Packetery/Module/Order/GridExtender.php:345
-msgid "Pick up point or carrier"
+msgid "Pickup point or carrier"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:194

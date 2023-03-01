@@ -192,7 +192,7 @@ class CollectionPrint {
 					'created'                => __( 'Created', 'packeta' ),
 					'nameAndSurname'         => __( 'Name and surname', 'packeta' ),
 					'cod'                    => __( 'C.O.D.', 'packeta' ),
-					'pickUpPointOrCarrier'   => __( 'Pick up point or carrier', 'packeta' ),
+					'pickUpPointOrCarrier'   => __( 'Pickup point or carrier', 'packeta' ),
 					'end'                    => __( 'END', 'packeta' ),
 				],
 			]
