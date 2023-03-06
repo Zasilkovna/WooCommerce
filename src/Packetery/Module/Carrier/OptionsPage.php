@@ -15,7 +15,6 @@ use Packetery\Core\Rounder;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
-use Packetery\Module\ShippingFacade;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
@@ -42,7 +41,7 @@ class OptionsPage {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository Carrier repository.
+	 * @var EntityRepository Carrier repository.
 	 */
 	private $carrierRepository;
 
@@ -75,31 +74,31 @@ class OptionsPage {
 	private $messageManager;
 
 	/**
-	 * ShippingFacade
+	 * Internal pickup points config.
 	 *
-	 * @var ShippingFacade
+	 * @var PacketaPickupPointsConfig
 	 */
-	private $shippingFacade;
+	private $pickupPointsConfig;
 
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine             $latteEngine        PacketeryLatte_engine.
-	 * @param Repository         $carrierRepository  Carrier repository.
-	 * @param FormFactory        $formFactory        Form factory.
-	 * @param Request            $httpRequest        PacketeryNette Request.
-	 * @param CountryListingPage $countryListingPage CountryListingPage.
-	 * @param MessageManager     $messageManager     Message manager.
-	 * @param ShippingFacade     $shippingFacade     ShippingFacade.
+	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
+	 * @param EntityRepository          $carrierRepository  Carrier repository.
+	 * @param FormFactory               $formFactory        Form factory.
+	 * @param Request                   $httpRequest        PacketeryNette Request.
+	 * @param CountryListingPage        $countryListingPage CountryListingPage.
+	 * @param MessageManager            $messageManager     Message manager.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 */
 	public function __construct(
 		Engine $latteEngine,
-		Repository $carrierRepository,
+		EntityRepository $carrierRepository,
 		FormFactory $formFactory,
 		Request $httpRequest,
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
-		ShippingFacade $shippingFacade
+		PacketaPickupPointsConfig $pickupPointsConfig
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
@@ -107,7 +106,7 @@ class OptionsPage {
 		$this->httpRequest        = $httpRequest;
 		$this->countryListingPage = $countryListingPage;
 		$this->messageManager     = $messageManager;
-		$this->shippingFacade     = $shippingFacade;
+		$this->pickupPointsConfig = $pickupPointsConfig;
 	}
 
 	/**
@@ -136,7 +135,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createForm( array $carrierData ): Form {
-		$optionId = ShippingFacade::CARRIER_PREFIX . $carrierData['id'];
+		$optionId = OptionManager::getOptionId( $carrierData['id'] );
 
 		$form = $this->formFactory->create( $optionId );
 
@@ -148,34 +147,18 @@ class OptionsPage {
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
 
-		$availableVendors = [];
-		if ( $this->shippingFacade->isZpointCarrierId( $carrierData['id'] ) ) {
-			$zPointCarriers = $this->carrierRepository->getZpointCarriers();
-			foreach ( $zPointCarriers as $zpointCarrier ) {
-				$availableVendors[ $zpointCarrier['id'] ] = $zpointCarrier['vendor_codes'];
-			}
-		}
-
 		$carrierOptions = get_option( $optionId );
-		if (
-			! empty( $availableVendors ) &&
-			! empty( $availableVendors[ $carrierData['id'] ] )
-		) {
-			$vendorCarriers = $this->carrierRepository->getVendorCarriers();
 
-			$vendorCheckboxes = $form->addContainer( 'vendor_groups' );
-			foreach ( $availableVendors[ $carrierData['id'] ] as $vendorId ) {
-				$vendorData = $vendorCarriers[ $vendorId ];
-				$checkbox   = $vendorCheckboxes->addCheckbox( $vendorData['group'], $vendorData['name'] );
-				if ( count( $availableVendors[ $carrierData['id'] ] ) <= self::MINIMUM_CHECKED_VENDORS ) {
-					$checkbox->setDisabled()->setOmitted( false );
+		$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], $carrierOptions );
+		if ( $vendorCheckboxes ) {
+			$vendorsContainer = $form->addContainer( 'vendor_groups' );
+			foreach ( $vendorCheckboxes as $checkboxConfig ) {
+				$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
+				if ( true === $checkboxConfig['disabled'] ) {
+					$checkboxControl->setDisabled()->setOmitted( false );
 				}
-				if (
-					! isset( $carrierOptions['vendor_groups'] ) ||
-					count( $availableVendors[ $carrierData['id'] ] ) <= self::MINIMUM_CHECKED_VENDORS ||
-					in_array( $vendorData['group'], $carrierOptions['vendor_groups'], true )
-				) {
-					$checkbox->setDefaultValue( true );
+				if ( true === $checkboxConfig['default'] ) {
+					$checkboxControl->setDefaultValue( true );
 				}
 			}
 		}
@@ -272,7 +255,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createFormTemplate( array $carrierData ): Form {
-		$optionId = ShippingFacade::CARRIER_PREFIX . $carrierData['id'];
+		$optionId = OptionManager::getOptionId( $carrierData['id'] );
 
 		$form = $this->formFactory->create( $optionId . '_template' );
 
@@ -348,7 +331,7 @@ class OptionsPage {
 			$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 		}
 
-		update_option( ShippingFacade::CARRIER_PREFIX . $options['id'], $options );
+		update_option( OptionManager::getOptionId( $options['id'] ), $options );
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(
@@ -383,7 +366,7 @@ class OptionsPage {
 					}
 				} else {
 					$carrierData = $carrier->__toArray();
-					$options     = get_option( ShippingFacade::CARRIER_PREFIX . $carrier->getId() );
+					$options     = get_option( OptionManager::getOptionId( $carrier->getId() ) );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
@@ -584,14 +567,73 @@ class OptionsPage {
 		}
 
 		$newVendors = [];
-		foreach ( $vendorCodes as $vendorId => $vendorActive ) {
-			if ( ! $vendorActive ) {
+		foreach ( $vendorCodes as $vendorId => $isChecked ) {
+			if ( ! $isChecked ) {
 				continue;
 			}
 			$newVendors[] = $vendorId;
 		}
 
 		return $newVendors;
+	}
+
+	/**
+	 * Gets available vendors for compound carrier.
+	 *
+	 * @param string $id Compound carrier id.
+	 *
+	 * @return array|null
+	 */
+	private function getAvailableVendors( $id ): ?array {
+		if ( ! $this->pickupPointsConfig->isCompoundCarrierId( $id ) ) {
+			return null;
+		}
+
+		$compoundCarriers = $this->pickupPointsConfig->getCompoundCarriers();
+		foreach ( $compoundCarriers as $compoundCarrier ) {
+			if ( $id === $compoundCarrier['id'] ) {
+				return $compoundCarrier['vendor_codes'];
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets configuration of vendor checkboxes.
+	 *
+	 * @param string $carrierId      Carrier id.
+	 * @param array  $carrierOptions Carrier options.
+	 *
+	 * @return array
+	 */
+	private function getVendorCheckboxesConfig( string $carrierId, array $carrierOptions ): array {
+		$vendorCheckboxes = [];
+		$availableVendors = $this->getAvailableVendors( $carrierId );
+		if ( null !== $availableVendors ) {
+			$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
+			foreach ( $availableVendors as $vendorId ) {
+				$vendorData           = $vendorCarriers[ $vendorId ];
+				$checkbox             = [
+					'group'    => $vendorData['group'],
+					'name'     => $vendorData['name'],
+					'disabled' => null,
+					'default'  => null,
+				];
+				$hasLowCountAvailable = count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
+				if ( $hasLowCountAvailable ) {
+					$checkbox['disabled'] = true;
+				}
+				$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
+				$hasTheGroupAllowed    = in_array( $vendorData['group'], $carrierOptions['vendor_groups'], true );
+				if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
+					$checkbox['default'] = true;
+				}
+				$vendorCheckboxes[] = $checkbox;
+			}
+		}
+
+		return $vendorCheckboxes;
 	}
 
 }

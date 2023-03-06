@@ -61,9 +61,13 @@ services:
 	- Packetery\Module\Upgrade
 	- Packetery\Module\Upgrade\Version_1_4_2
 	- Packetery\Module\QueryProcessor
-	- Packetery\Module\Calculator
+	- Packetery\Module\WeightCalculator
 	- Packetery\Module\CurrencySwitcherFacade
 	- Packetery\Core\Api\Soap\CreatePacketMapper
 	- Packetery\Module\Order\PickupPointValidator
-	- Packetery\Module\ShippingFacade
-	- Packetery\Module\Order\Facade
+	- Packetery\Module\RateCalculator
+	- Packetery\Module\Carrier\PacketaPickupPointsConfig
+	- Packetery\Module\Carrier\EntityRepository
+	- Packetery\Module\Order\AttributeMapper
+	- Packetery\Module\WidgetOptionsBuilder
+

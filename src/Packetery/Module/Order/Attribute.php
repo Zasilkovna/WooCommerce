@@ -1,22 +1,20 @@
 <?php
 /**
- * Class Facade.
+ * Class Attribute
  *
  * @package Packetery
  */
+
+declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity;
-use WC_Data_Exception;
-use WC_Order;
-
 /**
- * Class Facade.
+ * Class Attribute
  *
  * @package Packetery
  */
-class Facade {
+class Attribute {
 
 	public const ATTR_POINT_ID     = 'packetery_point_id';
 	public const ATTR_POINT_NAME   = 'packetery_point_name';
@@ -42,41 +40,40 @@ class Facade {
 	 *
 	 * @var array[]
 	 */
-	public static $pickupPointAttrs = array(
-		'id'        => array(
+	public static $pickupPointAttrs = [
+		'id'        => [
 			'name'     => self::ATTR_POINT_ID,
 			'required' => true,
-		),
-		'name'      => array(
+		],
+		'name'      => [
 			'name'     => self::ATTR_POINT_NAME,
 			'required' => true,
-		),
-		'city'      => array(
+		],
+		'city'      => [
 			'name'     => self::ATTR_POINT_CITY,
 			'required' => true,
-		),
-		'zip'       => array(
+		],
+		'zip'       => [
 			'name'     => self::ATTR_POINT_ZIP,
 			'required' => true,
-		),
-		'street'    => array(
+		],
+		'street'    => [
 			'name'     => self::ATTR_POINT_STREET,
 			'required' => true,
-		),
-		'place'     => array(
+		],
+		'place'     => [
 			'name'     => self::ATTR_POINT_PLACE,
 			'required' => false,
-		),
-		'carrierId' => array(
+		],
+		'carrierId' => [
 			'name'     => self::ATTR_CARRIER_ID,
 			'required' => false,
-		),
-		'url'       => array(
+		],
+		'url'       => [
 			'name'     => self::ATTR_POINT_URL,
 			'required' => false,
-		),
-	);
-
+		],
+	];
 	/**
 	 * Home delivery attributes configuration.
 	 *
@@ -116,74 +113,4 @@ class Facade {
 			'name' => self::ATTR_ADDRESS_LONGITUDE,
 		],
 	];
-
-	/**
-	 * Updates order entity from props to save.
-	 *
-	 * @param Entity\Order $orderEntity Order entity.
-	 * @param array        $propsToSave Props to save.
-	 *
-	 * @return void
-	 */
-	public function updateOrderEntityFromPropsToSave( Entity\Order $orderEntity, array $propsToSave ): void {
-		$orderEntityPickupPoint = $orderEntity->getPickupPoint();
-		if ( null === $orderEntityPickupPoint ) {
-			$orderEntityPickupPoint = new Entity\PickupPoint();
-		}
-
-		foreach ( $propsToSave as $attrName => $attrValue ) {
-			switch ( $attrName ) {
-				case self::ATTR_CARRIER_ID:
-					$orderEntity->setCarrierId( $attrValue );
-					break;
-				case self::ATTR_POINT_ID:
-					$orderEntityPickupPoint->setId( $attrValue );
-					break;
-				case self::ATTR_POINT_NAME:
-					$orderEntityPickupPoint->setName( $attrValue );
-					break;
-				case self::ATTR_POINT_URL:
-					$orderEntityPickupPoint->setUrl( $attrValue );
-					break;
-				case self::ATTR_POINT_STREET:
-					$orderEntityPickupPoint->setStreet( $attrValue );
-					break;
-				case self::ATTR_POINT_ZIP:
-					$orderEntityPickupPoint->setZip( $attrValue );
-					break;
-				case self::ATTR_POINT_CITY:
-					$orderEntityPickupPoint->setCity( $attrValue );
-					break;
-			}
-		}
-
-		$orderEntity->setPickupPoint( $orderEntityPickupPoint );
-	}
-
-	/**
-	 * Update order shipping.
-	 *
-	 * @param WC_Order $wcOrder       WC Order.
-	 * @param string   $attributeName Attribute name.
-	 * @param string   $value         Value.
-	 *
-	 * @return void
-	 * @throws WC_Data_Exception When shipping input is invalid.
-	 */
-	public function updateShippingAddressProperty( WC_Order $wcOrder, string $attributeName, string $value ): void {
-		if ( self::ATTR_POINT_STREET === $attributeName ) {
-			$wcOrder->set_shipping_address_1( $value );
-			$wcOrder->set_shipping_address_2( '' );
-		}
-		if ( self::ATTR_POINT_PLACE === $attributeName ) {
-			$wcOrder->set_shipping_company( $value );
-		}
-		if ( self::ATTR_POINT_CITY === $attributeName ) {
-			$wcOrder->set_shipping_city( $value );
-		}
-		if ( self::ATTR_POINT_ZIP === $attributeName ) {
-			$wcOrder->set_shipping_postcode( $value );
-		}
-	}
-
 }

@@ -13,7 +13,6 @@ use Packetery\Core\Log\Record;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
-use Packetery\Module\ShippingFacade;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module\Plugin;
@@ -56,13 +55,6 @@ class CountryListingPage {
 	private $httpRequest;
 
 	/**
-	 * Checkout.
-	 *
-	 * @var ShippingFacade
-	 */
-	private $shippingFacade;
-
-	/**
 	 * Options provider
 	 *
 	 * @var Provider
@@ -77,32 +69,49 @@ class CountryListingPage {
 	private $logPage;
 
 	/**
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
+
+	/**
+	 * Carrier entity repository.
+	 *
+	 * @var EntityRepository
+	 */
+	private $carrierEntityRepository;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine         $latteEngine       PacketeryLatte engine.
-	 * @param Repository     $carrierRepository Carrier repository.
-	 * @param Downloader     $downloader        Carrier downloader.
-	 * @param Request        $httpRequest       Http request.
-	 * @param ShippingFacade $shippingFacade    Checkout.
-	 * @param Provider       $optionsProvider   Options provider.
-	 * @param Log\Page       $logPage           Log page.
+	 * @param Engine                    $latteEngine             PacketeryLatte engine.
+	 * @param Repository                $carrierRepository       Carrier repository.
+	 * @param Downloader                $downloader              Carrier downloader.
+	 * @param Request                   $httpRequest             Http request.
+	 * @param Provider                  $optionsProvider         Options provider.
+	 * @param Log\Page                  $logPage                 Log page.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig      Internal pickup points config.
+	 * @param EntityRepository          $carrierEntityRepository Carrier repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
 		Downloader $downloader,
 		Request $httpRequest,
-		ShippingFacade $shippingFacade,
 		Provider $optionsProvider,
-		Log\Page $logPage
+		Log\Page $logPage,
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		EntityRepository $carrierEntityRepository
 	) {
-		$this->latteEngine       = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
-		$this->downloader        = $downloader;
-		$this->httpRequest       = $httpRequest;
-		$this->shippingFacade    = $shippingFacade;
-		$this->optionsProvider   = $optionsProvider;
-		$this->logPage           = $logPage;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository       = $carrierRepository;
+		$this->downloader              = $downloader;
+		$this->httpRequest             = $httpRequest;
+		$this->optionsProvider         = $optionsProvider;
+		$this->logPage                 = $logPage;
+		$this->pickupPointsConfig      = $pickupPointsConfig;
+		$this->carrierEntityRepository = $carrierEntityRepository;
 	}
 
 	/**
@@ -196,7 +205,7 @@ class CountryListingPage {
 	private function getActiveCountries(): array {
 		$countries = $this->carrierRepository->getCountries();
 
-		$internalCountries = $this->carrierRepository->getInternalCountries();
+		$internalCountries = $this->pickupPointsConfig->getInternalCountries();
 		$countries         = array_unique( array_merge( $internalCountries, $countries ) );
 
 		$countriesFinal = [];
@@ -269,7 +278,8 @@ class CountryListingPage {
 		$carriersWithSomeOptions = [];
 		$allCarriers             = $this->carrierRepository->getAllIncludingZpoints();
 		foreach ( $allCarriers as $carrier ) {
-			$optionId       = ShippingFacade::CARRIER_PREFIX . $carrier['id'];
+			$carrierId      = $carrier['id'];
+			$optionId       = OptionManager::getOptionId( $carrierId );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
@@ -283,7 +293,6 @@ class CountryListingPage {
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
 				$carrierOptions['count_of_orders'] = 0;
-				$carrierId                         = $this->shippingFacade->getCarrierId( $optionId );
 				if ( $carrierId ) {
 					$orders = wc_get_orders(
 						[
@@ -312,9 +321,9 @@ class CountryListingPage {
 	 */
 	private function getActiveCarriersNamesByCountry( string $countryCode ): array {
 		$activeCarriers  = [];
-		$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryCode );
+		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingZpoints( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
-			$optionId       = ShippingFacade::CARRIER_PREFIX . $carrier->getId();
+			$optionId       = OptionManager::getOptionId( $carrier->getId() );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions && $carrierOptions['active'] ) {
 				$activeCarriers[] = $carrier->getName();

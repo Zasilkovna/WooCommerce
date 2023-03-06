@@ -9,11 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Log;
 use Packetery\Module\Options;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
-use WC_Order;
 
 /**
  * Class BulkActions
@@ -43,13 +41,6 @@ class BulkActions {
 	private $packetSubmitter;
 
 	/**
-	 * Log page.
-	 *
-	 * @var Log\Page
-	 */
-	private $logPage;
-
-	/**
 	 * Options provider.
 	 *
 	 * @var Options\Provider
@@ -57,20 +48,33 @@ class BulkActions {
 	private $optionsProvider;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
+
+	/**
 	 * BulkActions constructor.
 	 *
 	 * @param Engine           $latteEngine     Latte engine.
 	 * @param Request          $httpRequest     HTTP request.
 	 * @param PacketSubmitter  $packetSubmitter Order API Client.
-	 * @param Log\Page         $logPage         Log page.
 	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param Repository       $orderRepository Order repository.
 	 */
-	public function __construct( Engine $latteEngine, Request $httpRequest, PacketSubmitter $packetSubmitter, Log\Page $logPage, Options\Provider $optionsProvider ) {
+	public function __construct(
+		Engine $latteEngine,
+		Request $httpRequest,
+		PacketSubmitter $packetSubmitter,
+		Options\Provider $optionsProvider,
+		Repository $orderRepository
+	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
 		$this->packetSubmitter = $packetSubmitter;
-		$this->logPage         = $logPage;
 		$this->optionsProvider = $optionsProvider;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -126,8 +130,8 @@ class BulkActions {
 		if ( 'submit_to_api' === $action ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
-				$order = wc_get_order( $postId );
-				if ( is_a( $order, WC_Order::class ) ) {
+				$order = $this->orderRepository->getWcOrderById( $postId );
+				if ( null !== $order ) {
 					$submissionResult = $this->packetSubmitter->submitPacket( $order, $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
 					$finalSubmissionResult->merge( $submissionResult );
 				}

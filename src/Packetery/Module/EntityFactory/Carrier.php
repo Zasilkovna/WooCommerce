@@ -48,27 +48,27 @@ class Carrier {
 	/**
 	 * Carrier factory.
 	 *
-	 * @param array $zpointCarrierData Data from configuration.
+	 * @param array $nonFeedCarrierData Data from configuration.
 	 *
 	 * @return Entity\Carrier
 	 */
-	public function fromZpointCarrierData( array $zpointCarrierData ): Entity\Carrier {
+	public function fromNonFeedCarrierData( array $nonFeedCarrierData ): Entity\Carrier {
 		return new Entity\Carrier(
-			(string) $zpointCarrierData['id'],
-			$zpointCarrierData['name'],
-			(bool) $zpointCarrierData['is_pickup_points'],
+			(string) $nonFeedCarrierData['id'],
+			$nonFeedCarrierData['name'],
+			(bool) $nonFeedCarrierData['is_pickup_points'],
 			false,
 			false,
 			false,
 			false,
 			false,
 			false,
-			( $zpointCarrierData['supports_cod'] ?? true ),
-			$zpointCarrierData['country'],
-			$zpointCarrierData['currency'],
+			( $nonFeedCarrierData['supports_cod'] ?? true ),
+			$nonFeedCarrierData['country'],
+			$nonFeedCarrierData['currency'],
 			10,
 			false,
-			$zpointCarrierData['supports_age_verification']
+			$nonFeedCarrierData['supports_age_verification']
 		);
 	}
 }

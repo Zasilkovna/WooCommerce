@@ -9,8 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Core\Entity;
-use Packetery\Module\EntityFactory;
 use Packetery\Module\WpdbAdapter;
 
 /**
@@ -22,7 +20,6 @@ use Packetery\Module\WpdbAdapter;
 class Repository {
 
 	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
-	public const ZPOINT_CARRIER_PREFIX     = 'zpoint';
 
 	private const COLUMN_NAMES = [
 		'id',
@@ -49,21 +46,24 @@ class Repository {
 	private $wpdbAdapter;
 
 	/**
-	 * Carrier Entity Factory.
+	 * Internal pickup points config.
 	 *
-	 * @var EntityFactory\Carrier
+	 * @var PacketaPickupPointsConfig
 	 */
-	private $carrierEntityFactory;
+	private $pickupPointsConfig;
 
 	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter           $wpdbAdapter          WpdbAdapter.
-	 * @param EntityFactory\Carrier $carrierEntityFactory Carrier Entity Factory.
+	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 */
-	public function __construct( WpdbAdapter $wpdbAdapter, EntityFactory\Carrier $carrierEntityFactory ) {
-		$this->wpdbAdapter          = $wpdbAdapter;
-		$this->carrierEntityFactory = $carrierEntityFactory;
+	public function __construct(
+		WpdbAdapter $wpdbAdapter,
+		PacketaPickupPointsConfig $pickupPointsConfig
+	) {
+		$this->wpdbAdapter        = $wpdbAdapter;
+		$this->pickupPointsConfig = $pickupPointsConfig;
 	}
 
 	/**
@@ -101,48 +101,18 @@ class Repository {
 	}
 
 	/**
-	 * Gets known carrier ids.
-	 *
-	 * @return array|null
-	 */
-	public function get_carrier_ids(): ?array {
-		return $this->wpdbAdapter->get_results( 'SELECT `id` FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
-	}
-
-	/**
 	 * Gets all active carriers including internal pickup point carriers.
 	 *
 	 * @return array|null
 	 */
 	public function getAllIncludingZpoints(): ?array {
-		$carriers       = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`, `currency`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
-		$zpointCarriers = $this->getNonFeedCarriers();
-		foreach ( $zpointCarriers as $zpointCarrier ) {
-			array_unshift( $carriers, $zpointCarrier );
+		$carriers        = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`, `currency`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
+		$nonFeedCarriers = $this->pickupPointsConfig->getCompoundAndVendorCarriers();
+		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
+			array_unshift( $carriers, $nonFeedCarrier );
 		}
 
 		return $carriers;
-	}
-
-	/**
-	 * Gets all active carriers for checkbox list
-	 *
-	 * @return array
-	 */
-	public function getAllActiveCarriersList(): array {
-		$activeCarriers = [];
-		$carriers       = $this->getAllCarriersIncludingZpoints();
-		foreach ( $carriers as $carrier ) {
-			$carrierOptions = Options::createByCarrierId( $carrier->getId() );
-			if ( $carrierOptions->isActive() ) {
-				$activeCarriers[] = [
-					'option_id' => $carrierOptions->getOptionId(),
-					'label'     => $carrierOptions->getName(),
-				];
-			}
-		}
-
-		return $activeCarriers;
 	}
 
 	/**
@@ -163,10 +133,10 @@ class Repository {
 	 *
 	 * @param int $carrierId Carrier id.
 	 *
-	 * @return Entity\Carrier|null
+	 * @return array|object|null
 	 */
-	public function getById( int $carrierId ): ?Entity\Carrier {
-		$result = $this->wpdbAdapter->get_row(
+	public function getById( int $carrierId ) {
+		return $this->wpdbAdapter->get_row(
 			$this->wpdbAdapter->prepare(
 				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 				FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `id` = %s',
@@ -174,34 +144,6 @@ class Repository {
 			),
 			ARRAY_A
 		);
-		if ( null === $result ) {
-			return null;
-		}
-
-		return $this->carrierEntityFactory->fromDbResult( $result );
-	}
-
-	/**
-	 * Gets feed carrier or packeta carrier by id.
-	 *
-	 * @param string $extendedBranchServiceId Extended branch service id.
-	 *
-	 * @return Entity\Carrier|null
-	 */
-	public function getAnyById( string $extendedBranchServiceId ): ?Entity\Carrier {
-		$zpointCarriers = $this->getNonFeedCarriers();
-
-		foreach ( $zpointCarriers as $zpointCarrier ) {
-			if ( $zpointCarrier['id'] === $extendedBranchServiceId ) {
-				return $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier );
-			}
-		}
-
-		if ( ! is_numeric( $extendedBranchServiceId ) ) {
-			return null;
-		}
-
-		return $this->getById( (int) $extendedBranchServiceId );
 	}
 
 	/**
@@ -209,11 +151,10 @@ class Repository {
 	 *
 	 * @param string $country ISO code.
 	 *
-	 * @return Entity\Carrier[]
+	 * @return array|object|null
 	 */
-	public function getByCountry( string $country ): array {
-		$entities        = [];
-		$countryCarriers = $this->wpdbAdapter->get_results(
+	public function getByCountry( string $country ) {
+		return $this->wpdbAdapter->get_results(
 			$this->wpdbAdapter->prepare(
 				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 				FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `country` = %s AND `deleted` = false',
@@ -221,32 +162,19 @@ class Repository {
 			),
 			ARRAY_A
 		);
-
-		foreach ( $countryCarriers as $carrierData ) {
-			$entities[] = $this->carrierEntityFactory->fromDbResult( $carrierData );
-		}
-
-		return $entities;
 	}
 
 	/**
 	 * Gets all active carriers.
 	 *
-	 * @return Entity\Carrier[]
+	 * @return array|object|null
 	 */
-	public function getActiveCarriers(): array {
-		$entities       = [];
-		$activeCarriers = $this->wpdbAdapter->get_results(
+	public function getActiveCarriers() {
+		return $this->wpdbAdapter->get_results(
 			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 			FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false',
 			ARRAY_A
 		);
-
-		foreach ( $activeCarriers as $carrierData ) {
-			$entities[ $carrierData['id'] ] = $this->carrierEntityFactory->fromDbResult( $carrierData );
-		}
-
-		return $entities;
 	}
 
 	/**
@@ -262,39 +190,6 @@ class Repository {
 		);
 
 		return array_combine( array_column( $unIndexedResult, 'id' ), $unIndexedResult );
-	}
-
-	/**
-	 * Gets all active carriers for a country including internal pickup point carriers.
-	 *
-	 * @param string $country ISO code.
-	 *
-	 * @return Entity\Carrier[]
-	 */
-	public function getByCountryIncludingZpoints( string $country ): array {
-		$countryCarriers = [];
-		$zpointCarriers  = $this->getNonFeedCarriersByCountry( $country );
-		if ( $zpointCarriers ) {
-			foreach ( $zpointCarriers as $zpointCarrierData ) {
-				$countryCarriers[] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrierData );
-			}
-		}
-
-		$feedCarriers = $this->getByCountry( $country );
-
-		return array_merge( $countryCarriers, $feedCarriers );
-	}
-
-	/**
-	 * Get all carriers.
-	 *
-	 * @return Entity\Carrier[]
-	 */
-	public function getAllCarriersIncludingZpoints(): array {
-		$feedCarriers   = $this->getActiveCarriers();
-		$zpointCarriers = $this->getZpointCarrierCarriers();
-
-		return array_merge( $feedCarriers, $zpointCarriers );
 	}
 
 	/**
@@ -347,214 +242,6 @@ class Repository {
 	}
 
 	/**
-	 * Gets internal countries.
-	 *
-	 * @return string[]
-	 */
-	public function getInternalCountries(): array {
-		return array_keys( $this->getZpointCarriers() );
-	}
-
-	/**
-	 * Returns internal pickup points configuration
-	 *
-	 * @return array[]
-	 */
-	public function getZpointCarriers(): array {
-		// TODO: take into account that not all types of pickup points support age verification.
-		return [
-			'cz' => [
-				'id'                        => 'zpointcz',
-				'name'                      => __( 'CZ Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'CZK',
-				'supports_age_verification' => true,
-				'country'                   => 'cz',
-				'vendor_codes'              => [
-					'czzpoint',
-					'czzbox',
-					'czalzabox',
-				],
-			],
-			'sk' => [
-				'id'                        => 'zpointsk',
-				'name'                      => __( 'SK Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'EUR',
-				'supports_age_verification' => true,
-				'country'                   => 'sk',
-				'vendor_codes'              => [
-					'skzpoint',
-					'skzbox',
-				],
-			],
-			'hu' => [
-				'id'                        => 'zpointhu',
-				'name'                      => __( 'HU Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'HUF',
-				'supports_age_verification' => true,
-				'country'                   => 'hu',
-				'vendor_codes'              => [
-					'huzpoint',
-					'huzbox',
-				],
-			],
-			'ro' => [
-				'id'                        => 'zpointro',
-				'name'                      => __( 'RO Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'RON',
-				'supports_age_verification' => true,
-				'country'                   => 'ro',
-				'vendor_codes'              => [
-					'rozpoint',
-					'rozbox',
-				],
-			],
-		];
-	}
-
-	/**
-	 * Gets vendor carriers settings.
-	 *
-	 * @return array[]
-	 */
-	public function getVendorCarriers(): array {
-		return [
-			'czzpoint'  => [
-				'country'                   => 'cz',
-				'group'                     => 'zpoint',
-				'name'                      => 'CZ ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'czzbox'    => [
-				'country'                   => 'cz',
-				'group'                     => 'zbox',
-				'name'                      => 'CZ ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'czalzabox' => [
-				'country'                   => 'cz',
-				'group'                     => 'alzabox',
-				'name'                      => 'CZ AlzaBox',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'skzpoint'  => [
-				'country'                   => 'sk',
-				'group'                     => 'zpoint',
-				'name'                      => 'SK ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'skzbox'    => [
-				'country'                   => 'sk',
-				'group'                     => 'zbox',
-				'name'                      => 'SK ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'huzpoint'  => [
-				'country'                   => 'hu',
-				'group'                     => 'zpoint',
-				'name'                      => 'HU ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'huzbox'    => [
-				'country'                   => 'hu',
-				'group'                     => 'zbox',
-				'name'                      => 'HU ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'rozpoint'  => [
-				'country'                   => 'ro',
-				'group'                     => 'zpoint',
-				'name'                      => 'RO ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'rozbox'    => [
-				'country'                   => 'ro',
-				'group'                     => 'zbox',
-				'name'                      => 'RO ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-		];
-	}
-
-	/**
-	 * Gets all non-feed carriers settings.
-	 *
-	 * @return array
-	 */
-	public function getNonFeedCarriers(): array {
-		$nonFeedCarriers = [];
-
-		$zPointCarriers = $this->getZpointCarriers();
-		foreach ( $zPointCarriers as $zpointCarrier ) {
-			$nonFeedCarriers[ $zpointCarrier['id'] ] = $zpointCarrier;
-		}
-
-		foreach ( $this->getVendorCarriers() as $carrierId => $vendorCarrier ) {
-			$nonFeedCarriers[ $carrierId ] = [
-				'id'                        => $carrierId,
-				'name'                      => $vendorCarrier['name'],
-				'country'                   => $vendorCarrier['country'],
-				'supports_cod'              => $vendorCarrier['supports_cod'],
-				'supports_age_verification' => $vendorCarrier['supports_age_verification'],
-				'vendor_codes'              => [ $carrierId ],
-				// Vendor loads some settings from country.
-				'currency'                  => $zPointCarriers[ $vendorCarrier['country'] ]['currency'],
-				'is_pickup_points'          => $zPointCarriers[ $vendorCarrier['country'] ]['is_pickup_points'],
-			];
-		}
-
-		return $nonFeedCarriers;
-	}
-
-	/**
-	 * Gets non-feed carriers settings by country.
-	 *
-	 * @param string $country Country.
-	 *
-	 * @return array
-	 */
-	public function getNonFeedCarriersByCountry( string $country ): array {
-		$filteredCarriers = [];
-		$nonFeedCarriers  = $this->getNonFeedCarriers();
-
-		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
-			if ( $nonFeedCarrier['country'] === $country ) {
-				$filteredCarriers[] = $nonFeedCarrier;
-			}
-		}
-
-		return $filteredCarriers;
-	}
-
-	/**
-	 * Gets zpoint carriers as object.
-	 *
-	 * @return Entity\Carrier[]
-	 */
-	public function getZpointCarrierCarriers(): array {
-		$carriers       = [];
-		$zpointCarriers = $this->getNonFeedCarriers();
-
-		foreach ( $zpointCarriers as $zpointCarrier ) {
-			$carriers[ $zpointCarrier['id'] ] = $this->carrierEntityFactory->fromZpointCarrierData( $zpointCarrier );
-		}
-
-		return $carriers;
-	}
-
-	/**
 	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
 	 *
 	 * @param string $carrierId Carrier id.
@@ -565,8 +252,7 @@ class Repository {
 		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
 			return true;
 		}
-		$vendorCarriers = $this->getVendorCarriers();
-		if ( isset( $vendorCarriers[ $carrierId ] ) ) {
+		if ( $this->pickupPointsConfig->isVendorCarrierId( $carrierId ) ) {
 			return true;
 		}
 
@@ -586,46 +272,6 @@ class Repository {
 		}
 
 		return false === $this->hasPickupPoints( (int) $carrierId );
-	}
-
-	/**
-	 * Tells zpoint carrier Id for given country.
-	 *
-	 * @param string $country Country ISO code.
-	 *
-	 * @return string|null
-	 */
-	public function getZpointCarrierIdByCountry( string $country ): ?string {
-		$zpointCarriers = $this->getZpointCarriers();
-
-		if ( ! isset( $zpointCarriers[ $country ] ) ) {
-			return null;
-		}
-
-		return $zpointCarriers[ $country ]['id'];
-	}
-
-	/**
-	 * Validates carrier for country.
-	 *
-	 * @param string|null $carrierId       Null for internal pickup points.
-	 * @param string      $customerCountry Customer country.
-	 *
-	 * @return bool
-	 */
-	public function isValidForCountry( ?string $carrierId, string $customerCountry ): bool {
-		if ( null === $carrierId ) {
-			$zpointCarriers = $this->getZpointCarriers();
-
-			return ( ! empty( $zpointCarriers[ $customerCountry ] ) );
-		}
-
-		$carrier = $this->getById( (int) $carrierId );
-		if ( null === $carrier || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
-			return false;
-		}
-
-		return Options::createByCarrierId( $carrier->getId() )->isActive();
 	}
 
 }

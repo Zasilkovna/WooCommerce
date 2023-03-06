@@ -15,8 +15,10 @@ use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
+use WC_Order;
 use WP_Post;
 
 /**
@@ -48,30 +50,30 @@ class Repository {
 	private $helper;
 
 	/**
-	 * Carrier repository
+	 * Internal pickup points config.
 	 *
-	 * @var Carrier\Repository
+	 * @var PacketaPickupPointsConfig
 	 */
-	private $carrierRepository;
+	private $pickupPointsConfig;
 
 	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter        $wpdbAdapter       WpdbAdapter.
-	 * @param Builder            $orderFactory      Order factory.
-	 * @param Helper             $helper            Helper.
-	 * @param Carrier\Repository $carrierRepository Carrier repository.
+	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
+	 * @param Builder                   $orderFactory       Order factory.
+	 * @param Helper                    $helper             Helper.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
 		Builder $orderFactory,
 		Helper $helper,
-		Carrier\Repository $carrierRepository
+		PacketaPickupPointsConfig $pickupPointsConfig
 	) {
-		$this->wpdbAdapter       = $wpdbAdapter;
-		$this->builder           = $orderFactory;
-		$this->helper            = $helper;
-		$this->carrierRepository = $carrierRepository;
+		$this->wpdbAdapter        = $wpdbAdapter;
+		$this->builder            = $orderFactory;
+		$this->helper             = $helper;
+		$this->pickupPointsConfig = $pickupPointsConfig;
 	}
 
 	/**
@@ -142,7 +144,7 @@ class Repository {
 				} else {
 					$comparison = 'NOT IN';
 				}
-				$internalCarriers   = array_keys( $this->carrierRepository->getVendorCarriers() );
+				$internalCarriers   = array_keys( $this->pickupPointsConfig->getVendorCarriers() );
 				$internalCarriers[] = Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
 				$clauses['where']  .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` ' . $comparison . ' (' . $this->wpdbAdapter->prepareInClause( $internalCarriers ) . ')';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
@@ -203,8 +205,8 @@ class Repository {
 	 * @return Order|null
 	 */
 	public function getById( int $id ): ?Order {
-		$wcOrder = wc_get_order( $id );
-		if ( ! $wcOrder instanceof \WC_Order ) {
+		$wcOrder = $this->getWcOrderById( $id );
+		if ( null === $wcOrder ) {
 			return null;
 		}
 
@@ -214,11 +216,11 @@ class Repository {
 	/**
 	 * Gets order by wc order.
 	 *
-	 * @param \WC_Order $wcOrder WC Order.
+	 * @param WC_Order $wcOrder WC Order.
 	 *
 	 * @return Order|null
 	 */
-	public function getByWcOrder( \WC_Order $wcOrder ): ?Order {
+	public function getByWcOrder( WC_Order $wcOrder ): ?Order {
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			return null;
 		}
@@ -436,7 +438,7 @@ class Repository {
 				continue;
 			}
 
-			$wcOrder                   = wc_get_order( $orderId );
+			$wcOrder                   = $this->getWcOrderById( $orderId );
 			$partialOrder              = $this->createPartialOrder( $packeteryOrdersResult[ $orderId ] );
 			$orderEntities[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
 		}
@@ -497,7 +499,7 @@ class Repository {
 		$rows = $this->wpdbAdapter->get_results( $sql );
 
 		foreach ( $rows as $row ) {
-			$wcOrder = wc_get_order( $row->id );
+			$wcOrder = $this->getWcOrderById( $row->id );
 			if ( false === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
@@ -623,6 +625,22 @@ class Repository {
 		if ( 'shop_order' === $post->post_type ) {
 			$this->delete( $postId );
 		}
+	}
+
+	/**
+	 * Gets WC_Order object.
+	 *
+	 * @param int $id Order id.
+	 *
+	 * @return WC_Order|null
+	 */
+	public function getWcOrderById( int $id ): ?WC_Order {
+		$result = wc_get_order( $id );
+		if ( $result instanceof WC_Order ) {
+			return $result;
+		}
+
+		return null;
 	}
 
 }

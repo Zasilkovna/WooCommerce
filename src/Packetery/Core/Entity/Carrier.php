@@ -17,7 +17,7 @@ namespace Packetery\Core\Entity;
 class Carrier {
 
 	public const INTERNAL_PICKUP_POINTS_ID    = 'packeta';
-	public const GROUP_ZPOINT                 = 'zpoint';
+	public const VENDOR_GROUP_ZPOINT          = 'zpoint';
 	public const ADDRESS_VALIDATION_COUNTRIES = [ 'cz', 'sk' ];
 
 	/**

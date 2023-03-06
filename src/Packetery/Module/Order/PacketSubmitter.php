@@ -169,7 +169,7 @@ class PacketSubmitter {
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order );
 
 		$submissionResult         = $this->submitPacket(
-			wc_get_order( (int) $order->getNumber() ),
+			$this->orderRepository->getWcOrderById( (int) $order->getNumber() ),
 			$this->optionsProvider->isOrderStatusAutoChangeEnabled()
 		);
 		$resultsCounter           = $submissionResult->getCounter();

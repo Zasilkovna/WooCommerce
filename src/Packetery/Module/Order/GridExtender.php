@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Log\Purger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -36,7 +37,7 @@ class GridExtender {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Carrier\Repository
+	 * @var Carrier\EntityRepository
 	 */
 	private $carrierRepository;
 
@@ -55,13 +56,6 @@ class GridExtender {
 	private $httpRequest;
 
 	/**
-	 * Controller router.
-	 *
-	 * @var ControllerRouter
-	 */
-	private $orderControllerRouter;
-
-	/**
 	 * Order repository.
 	 *
 	 * @var Repository
@@ -76,32 +70,39 @@ class GridExtender {
 	private $orderValidator;
 
 	/**
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
+
+	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper               $helper                Helper.
-	 * @param Carrier\Repository   $carrierRepository     Carrier repository.
-	 * @param Engine               $latteEngine           Latte Engine.
-	 * @param Request              $httpRequest           Http Request.
-	 * @param ControllerRouter     $orderControllerRouter Order controller router.
-	 * @param Repository           $orderRepository       Order repository.
-	 * @param Core\Validator\Order $orderValidator        Order validator.
+	 * @param Helper                    $helper                Helper.
+	 * @param Carrier\EntityRepository  $carrierRepository     Carrier repository.
+	 * @param Engine                    $latteEngine           Latte Engine.
+	 * @param Request                   $httpRequest           Http Request.
+	 * @param Repository                $orderRepository       Order repository.
+	 * @param Core\Validator\Order      $orderValidator        Order validator.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
 	 */
 	public function __construct(
 		Helper $helper,
-		Carrier\Repository $carrierRepository,
+		Carrier\EntityRepository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
-		ControllerRouter $orderControllerRouter,
 		Repository $orderRepository,
-		Core\Validator\Order $orderValidator
+		Core\Validator\Order $orderValidator,
+		PacketaPickupPointsConfig $pickupPointsConfig
 	) {
-		$this->helper                = $helper;
-		$this->carrierRepository     = $carrierRepository;
-		$this->latteEngine           = $latteEngine;
-		$this->httpRequest           = $httpRequest;
-		$this->orderControllerRouter = $orderControllerRouter;
-		$this->orderRepository       = $orderRepository;
-		$this->orderValidator        = $orderValidator;
+		$this->helper             = $helper;
+		$this->carrierRepository  = $carrierRepository;
+		$this->latteEngine        = $latteEngine;
+		$this->httpRequest        = $httpRequest;
+		$this->orderRepository    = $orderRepository;
+		$this->orderValidator     = $orderValidator;
+		$this->pickupPointsConfig = $pickupPointsConfig;
 	}
 
 	/**
@@ -256,7 +257,7 @@ class GridExtender {
 					$pointName         = $pickupPoint->getName();
 					$pointId           = $pickupPoint->getId();
 					$country           = $order->getShippingCountry();
-					$internalCountries = $this->carrierRepository->getInternalCountries();
+					$internalCountries = $this->pickupPointsConfig->getInternalCountries();
 					if ( in_array( $country, $internalCountries, true ) ) {
 						echo esc_html( "$pointName ($pointId)" );
 					} else {

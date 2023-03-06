@@ -13,13 +13,15 @@ use Packetery\Core;
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Module\Plugin;
-use Packetery\Module\ShippingFacade;
+use Packetery\Module\RateCalculator;
+use Packetery\Module\WidgetOptionsBuilder;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http\Request;
@@ -105,40 +107,48 @@ class Metabox {
 	private $logPage;
 
 	/**
-	 * Carrier repository.
+	 * Internal pickup points config.
 	 *
-	 * @var Carrier\Repository
+	 * @var PacketaPickupPointsConfig
 	 */
-	private $carrierRepository;
+	private $pickupPointsConfig;
 
 	/**
 	 * OrderFacade.
 	 *
-	 * @var Facade
+	 * @var AttributeMapper
 	 */
-	private $orderFacade;
+	private $mapper;
 
 	/**
-	 * ShippingFacade.
+	 * RateCalculator.
 	 *
-	 * @var ShippingFacade
+	 * @var RateCalculator
 	 */
-	private $shippingFacade;
+	private $rateBuilder;
+
+	/**
+	 * Widget options builder.
+	 *
+	 * @var WidgetOptionsBuilder
+	 */
+	private $widgetOptionsBuilder;
 
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine             $latte_engine      PacketeryLatte engine.
-	 * @param MessageManager     $message_manager   Message manager.
-	 * @param Helper             $helper            Helper.
-	 * @param Request            $request           Http request.
-	 * @param Options\Provider   $optionsProvider   Options provider.
-	 * @param FormFactory        $formFactory       Form factory.
-	 * @param Repository         $orderRepository   Order repository.
-	 * @param Log\Page           $logPage           Log page.
-	 * @param Carrier\Repository $carrierRepository Carrier repository.
-	 * @param Facade             $orderFacade       Facade.
-	 * @param ShippingFacade     $shippingFacade    ShippingFacade.
+	 * @param Engine                    $latte_engine         PacketeryLatte engine.
+	 * @param MessageManager            $message_manager      Message manager.
+	 * @param Helper                    $helper               Helper.
+	 * @param Request                   $request              Http request.
+	 * @param Options\Provider          $optionsProvider      Options provider.
+	 * @param FormFactory               $formFactory          Form factory.
+	 * @param Repository                $orderRepository      Order repository.
+	 * @param Log\Page                  $logPage              Log page.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
+	 * @param AttributeMapper           $mapper               AttributeMapper.
+	 * @param RateCalculator            $rateBuilder          RateCalculator.
+	 * @param WidgetOptionsBuilder      $widgetOptionsBuilder Widget options builder.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -149,21 +159,23 @@ class Metabox {
 		FormFactory $formFactory,
 		Repository $orderRepository,
 		Log\Page $logPage,
-		Carrier\Repository $carrierRepository,
-		Facade $orderFacade,
-		ShippingFacade $shippingFacade
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		AttributeMapper $mapper,
+		RateCalculator $rateBuilder,
+		WidgetOptionsBuilder $widgetOptionsBuilder
 	) {
-		$this->latte_engine      = $latte_engine;
-		$this->message_manager   = $message_manager;
-		$this->helper            = $helper;
-		$this->request           = $request;
-		$this->optionsProvider   = $optionsProvider;
-		$this->formFactory       = $formFactory;
-		$this->orderRepository   = $orderRepository;
-		$this->logPage           = $logPage;
-		$this->carrierRepository = $carrierRepository;
-		$this->orderFacade       = $orderFacade;
-		$this->shippingFacade    = $shippingFacade;
+		$this->latte_engine         = $latte_engine;
+		$this->message_manager      = $message_manager;
+		$this->helper               = $helper;
+		$this->request              = $request;
+		$this->optionsProvider      = $optionsProvider;
+		$this->formFactory          = $formFactory;
+		$this->orderRepository      = $orderRepository;
+		$this->logPage              = $logPage;
+		$this->pickupPointsConfig   = $pickupPointsConfig;
+		$this->mapper               = $mapper;
+		$this->rateBuilder          = $rateBuilder;
+		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
 	}
 
 	/**
@@ -237,11 +249,11 @@ class Metabox {
 							// translators: %s: Represents minimal date for delayed delivery.
 							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
 
-		foreach ( Facade::$pickupPointAttrs as $pickupPointAttr ) {
+		foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 			$this->order_form->addHidden( $pickupPointAttr['name'] );
 		}
 
-		foreach ( Facade::$homeDeliveryAttrs as $homeDeliveryAttr ) {
+		foreach ( Attribute::$homeDeliveryAttrs as $homeDeliveryAttr ) {
 			$this->order_form->addHidden( $homeDeliveryAttr['name'] );
 		}
 
@@ -255,8 +267,8 @@ class Metabox {
 	public function render_metabox(): void {
 		global $post;
 
-		$wcOrder = wc_get_order( (int) $post->ID );
-		if ( ! $wcOrder instanceof \WC_Order ) {
+		$wcOrder = $this->orderRepository->getWcOrderById( (int) $post->ID );
+		if ( null === $wcOrder ) {
 			return;
 		}
 
@@ -410,34 +422,34 @@ class Metabox {
 			$propsToSave[ self::FIELD_WEIGHT ] = (float) $values[ self::FIELD_WEIGHT ];
 		}
 
-		if ( $values[ Facade::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
-			$wcOrder = wc_get_order( $orderId ); // Can not be false due condition at the beginning of method.
-			foreach ( Facade::$pickupPointAttrs as $pickupPointAttr ) {
+		if ( $values[ Attribute::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
+			$wcOrder = $this->orderRepository->getWcOrderById( $orderId ); // Can not be false due condition at the beginning of method.
+			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
-				if ( Facade::ATTR_CARRIER_ID === $pickupPointAttr['name'] ) {
-					$value = ( ! empty( $values[ Facade::ATTR_CARRIER_ID ] ) ? $values[ Facade::ATTR_CARRIER_ID ] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+				if ( Attribute::ATTR_CARRIER_ID === $pickupPointAttr['name'] ) {
+					$value = ( ! empty( $values[ Attribute::ATTR_CARRIER_ID ] ) ? $values[ Attribute::ATTR_CARRIER_ID ] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 				}
 
 				$propsToSave[ $pickupPointAttr['name'] ] = $value;
 
 				if ( $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
-					$this->orderFacade->updateShippingAddressProperty( $wcOrder, $pickupPointAttr['name'], (string) $value );
+					$this->mapper->toWcOrderShippingAddress( $wcOrder, $pickupPointAttr['name'], (string) $value );
 				}
 			}
 			$wcOrder->save();
 		}
 
-		if ( '1' === $values[ Facade::ATTR_ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+		if ( '1' === $values[ Attribute::ATTR_ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
 			$address = new Core\Entity\Address(
-				$values[ Facade::ATTR_ADDRESS_STREET ],
-				$values[ Facade::ATTR_ADDRESS_CITY ],
-				$values[ Facade::ATTR_ADDRESS_POST_CODE ]
+				$values[ Attribute::ATTR_ADDRESS_STREET ],
+				$values[ Attribute::ATTR_ADDRESS_CITY ],
+				$values[ Attribute::ATTR_ADDRESS_POST_CODE ]
 			);
-			$address->setHouseNumber( $values[ Facade::ATTR_ADDRESS_HOUSE_NUMBER ] );
-			$address->setCounty( $values[ Facade::ATTR_ADDRESS_COUNTY ] );
-			$address->setLatitude( $values[ Facade::ATTR_ADDRESS_LATITUDE ] );
-			$address->setLongitude( $values[ Facade::ATTR_ADDRESS_LONGITUDE ] );
+			$address->setHouseNumber( $values[ Attribute::ATTR_ADDRESS_HOUSE_NUMBER ] );
+			$address->setCounty( $values[ Attribute::ATTR_ADDRESS_COUNTY ] );
+			$address->setLatitude( $values[ Attribute::ATTR_ADDRESS_LATITUDE ] );
+			$address->setLongitude( $values[ Attribute::ATTR_ADDRESS_LONGITUDE ] );
 
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );
@@ -470,7 +482,7 @@ class Metabox {
 		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
 		$order->setDeliverOn( $this->helper->getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
 		$order->setSize( $orderSize );
-		$this->orderFacade->updateOrderEntityFromPropsToSave( $order, $propsToSave );
+		$this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
 		$this->orderRepository->save( $order );
 
 		return $orderId;
@@ -492,24 +504,18 @@ class Metabox {
 		if ( $order->isExternalCarrier() ) {
 			$carrierId = $order->getCarrierId();
 		} else {
-			$carrierId = $this->carrierRepository->getZpointCarrierIdByCountry( $order->getShippingCountry() );
+			$carrierId = $this->pickupPointsConfig->getCompoundCarrierIdByCountry( $order->getShippingCountry() );
 		}
 
 		$defaultPrice = null;
 		if ( null !== $carrierId ) {
-			$wcOrder      = wc_get_order( $post->ID );
-			$defaultPrice = $this->shippingFacade->getShippingRateCost(
+			$wcOrder      = $this->orderRepository->getWcOrderById( $post->ID );
+			$defaultPrice = $this->rateBuilder->getShippingRateCost(
 				Carrier\Options::createByCarrierId( $carrierId ),
 				$wcOrder->get_total() - $wcOrder->get_shipping_total(),
 				$order->getWeight(),
-				$this->shippingFacade->isFreeShippingCouponApplied( $wcOrder )
+				$this->rateBuilder->isFreeShippingCouponApplied( $wcOrder )
 			);
-			/**
-			 * Filter shipping rate cost in checkout
-			 *
-			 * @since 1.4.1
-			 */
-			$defaultPrice = apply_filters( 'packeta_shipping_price', $defaultPrice );
 		}
 
 		$widgetOptions = [
@@ -528,7 +534,7 @@ class Metabox {
 
 		// In backend, we want all pickup points in that country for packeta carrier.
 		if ( $order->getCarrierId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
-			$widgetOptions['vendors'] = $this->shippingFacade->getWidgetVendorsParam(
+			$widgetOptions['vendors'] = $this->widgetOptionsBuilder->getWidgetVendorsParam(
 				$order->getCarrierId(),
 				$order->getShippingCountry(),
 				null
@@ -541,7 +547,7 @@ class Metabox {
 
 		return [
 			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
-			'pickupPointAttrs' => Facade::$pickupPointAttrs,
+			'pickupPointAttrs' => Attribute::$pickupPointAttrs,
 			'widgetOptions'    => $widgetOptions,
 		];
 	}
@@ -585,7 +591,7 @@ class Metabox {
 
 		return [
 			'packeteryApiKey'   => $this->optionsProvider->get_api_key(),
-			'homeDeliveryAttrs' => Facade::$homeDeliveryAttrs,
+			'homeDeliveryAttrs' => Attribute::$homeDeliveryAttrs,
 			'widgetOptions'     => $widgetOptions,
 			'translations'      => [
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order.', 'packeta' ),

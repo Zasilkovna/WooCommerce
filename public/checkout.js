@@ -274,18 +274,20 @@ var packeteryLoadCheckout = function( $, settings ) {
 		};
 
 		var stringifyOptions = function (widgetOptions) {
-			var widgeOptionsArray = [];
+			var widgetOptionsArray = [];
 			for (const property in widgetOptions) {
 				if (!widgetOptions.hasOwnProperty(property)) {
 					continue;
 				}
+				var propertyValue;
 				if (typeof widgetOptions[property] === 'object') {
-					widgeOptionsArray.push(property + ': ' + stringifyOptions(widgetOptions[property]));
+					propertyValue = stringifyOptions(widgetOptions[property]);
 				} else {
-					widgeOptionsArray.push(property + ': ' + widgetOptions[property]);
+					propertyValue = widgetOptions[property];
 				}
+				widgetOptionsArray.push(property + ': ' + propertyValue);
 			}
-			return widgeOptionsArray.join(', ');
+			return widgetOptionsArray.join(', ');
 		};
 
 		$( document ).on( 'click', '.packeta-widget-button', function( e ) {
