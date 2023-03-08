@@ -4,8 +4,27 @@
 		return;
 	}
 
+	var stringifyOptions = function (widgetOptions) {
+		var widgetOptionsArray = [];
+		for (const property in widgetOptions) {
+			if (!widgetOptions.hasOwnProperty(property)) {
+				continue;
+			}
+			var propertyValue;
+			if (typeof widgetOptions[property] === 'object') {
+				propertyValue = stringifyOptions(widgetOptions[property]);
+			} else {
+				propertyValue = widgetOptions[property];
+			}
+			widgetOptionsArray.push(property + ': ' + propertyValue);
+		}
+		return widgetOptionsArray.join(', ');
+	};
+
 	$widgetDiv.on( 'click', '[name=packetery_pick_address]', function( e ) {
 		e.preventDefault();
+
+		console.log('Widget options: ' + stringifyOptions(settings.widgetOptions));
 
 		Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 			if ( !result ) {

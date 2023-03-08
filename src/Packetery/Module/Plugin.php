@@ -15,7 +15,6 @@ use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
 use Packetery\Module\Product;
-use Packetery\Module\ProductCategory\FormFields;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use PacketeryNette\Utils\Html;
@@ -237,6 +236,7 @@ class Plugin {
 	 * @var Order\PacketAutoSubmitter
 	 */
 	private $packetAutoSubmitter;
+
 	/**
 	 * Plugin constructor.
 	 *
@@ -744,8 +744,8 @@ class Plugin {
 		if ( $isOrderDetailPage ) {
 			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery' ] );
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
-			$pickupPointPickerSettings = $this->order_metabox->createPickupPointPickerSettings();
-			$addressPickerSettings     = $this->order_metabox->createAddressPickerSettings();
+			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
+			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();
 		}
 
 		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
@@ -799,7 +799,7 @@ class Plugin {
 	 */
 	public function loadTranslation(): void {
 		$domain = self::DOMAIN;
-		$locale = $this->getLocale();
+		$locale = self::getLocale();
 
 		$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-$locale.mo";
 		$result = load_textdomain( $domain, $moFile );

@@ -29,4 +29,26 @@ class OptionManager {
 		return self::CARRIER_OPTION_PREFIX . $carrierId;
 	}
 
+	/**
+	 * Removes prefix from packetery shippping option id.
+	 *
+	 * @param string $optionId Option id.
+	 *
+	 * @return string
+	 */
+	public function removePrefix( string $optionId ): string {
+		return str_replace( self::CARRIER_OPTION_PREFIX, '', $optionId );
+	}
+
+	/**
+	 * Checks if is packetery shippping option id.
+	 *
+	 * @param string $optionId Option id.
+	 *
+	 * @return bool
+	 */
+	public function isOptionId( string $optionId ): bool {
+		return ( strpos( $optionId, self::CARRIER_OPTION_PREFIX ) === 0 );
+	}
+
 }

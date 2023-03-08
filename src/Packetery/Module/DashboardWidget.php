@@ -149,7 +149,7 @@ class DashboardWidget {
 		$activeCountries    = [];
 		$isCodSettingNeeded = false;
 
-		foreach ( $this->carrierEntityRepository->getAllCarriersIncludingZpoints() as $carrier ) {
+		foreach ( $this->carrierEntityRepository->getAllCarriersIncludingNonFeed() as $carrier ) {
 			$country        = $carrier->getCountry();
 			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
 

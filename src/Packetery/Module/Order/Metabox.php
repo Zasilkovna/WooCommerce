@@ -9,22 +9,19 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core;
-use Packetery\Core\Entity;
 use Packetery\Core\Helper;
-use Packetery\Module\Carrier;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Module\Plugin;
-use Packetery\Module\RateCalculator;
 use Packetery\Module\WidgetOptionsBuilder;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 use PacketeryNette\Http\Request;
+use WC_Data_Exception;
+use WC_Order;
 
 /**
  * Class Metabox
@@ -33,15 +30,15 @@ use PacketeryNette\Http\Request;
  */
 class Metabox {
 
-	const FIELD_WEIGHT          = 'packetery_weight';
-	const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
-	const FIELD_WIDTH           = 'packetery_width';
-	const FIELD_LENGTH          = 'packetery_length';
-	const FIELD_HEIGHT          = 'packetery_height';
-	const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
-	const FIELD_COD             = 'packetery_COD';
-	const FIELD_VALUE           = 'packetery_value';
-	const FIELD_DELIVER_ON      = 'packetery_deliver_on';
+	public const FIELD_WEIGHT           = 'packetery_weight';
+	private const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
+	public const FIELD_WIDTH            = 'packetery_width';
+	public const FIELD_LENGTH           = 'packetery_length';
+	public const FIELD_HEIGHT           = 'packetery_height';
+	public const FIELD_ADULT_CONTENT    = 'packetery_adult_content';
+	public const FIELD_COD              = 'packetery_COD';
+	public const FIELD_VALUE            = 'packetery_value';
+	public const FIELD_DELIVER_ON       = 'packetery_deliver_on';
 
 	/**
 	 * PacketeryLatte engine.
@@ -107,25 +104,11 @@ class Metabox {
 	private $logPage;
 
 	/**
-	 * Internal pickup points config.
-	 *
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointsConfig;
-
-	/**
 	 * OrderFacade.
 	 *
 	 * @var AttributeMapper
 	 */
 	private $mapper;
-
-	/**
-	 * RateCalculator.
-	 *
-	 * @var RateCalculator
-	 */
-	private $rateBuilder;
 
 	/**
 	 * Widget options builder.
@@ -137,18 +120,16 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine                    $latte_engine         PacketeryLatte engine.
-	 * @param MessageManager            $message_manager      Message manager.
-	 * @param Helper                    $helper               Helper.
-	 * @param Request                   $request              Http request.
-	 * @param Options\Provider          $optionsProvider      Options provider.
-	 * @param FormFactory               $formFactory          Form factory.
-	 * @param Repository                $orderRepository      Order repository.
-	 * @param Log\Page                  $logPage              Log page.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
-	 * @param AttributeMapper           $mapper               AttributeMapper.
-	 * @param RateCalculator            $rateBuilder          RateCalculator.
-	 * @param WidgetOptionsBuilder      $widgetOptionsBuilder Widget options builder.
+	 * @param Engine               $latte_engine         PacketeryLatte engine.
+	 * @param MessageManager       $message_manager      Message manager.
+	 * @param Helper               $helper               Helper.
+	 * @param Request              $request              Http request.
+	 * @param Options\Provider     $optionsProvider      Options provider.
+	 * @param FormFactory          $formFactory          Form factory.
+	 * @param Repository           $orderRepository      Order repository.
+	 * @param Log\Page             $logPage              Log page.
+	 * @param AttributeMapper      $mapper               AttributeMapper.
+	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -159,9 +140,7 @@ class Metabox {
 		FormFactory $formFactory,
 		Repository $orderRepository,
 		Log\Page $logPage,
-		PacketaPickupPointsConfig $pickupPointsConfig,
 		AttributeMapper $mapper,
-		RateCalculator $rateBuilder,
 		WidgetOptionsBuilder $widgetOptionsBuilder
 	) {
 		$this->latte_engine         = $latte_engine;
@@ -172,9 +151,7 @@ class Metabox {
 		$this->formFactory          = $formFactory;
 		$this->orderRepository      = $orderRepository;
 		$this->logPage              = $logPage;
-		$this->pickupPointsConfig   = $pickupPointsConfig;
 		$this->mapper               = $mapper;
-		$this->rateBuilder          = $rateBuilder;
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
 	}
 
@@ -377,7 +354,7 @@ class Metabox {
 	 * @param mixed $orderId Order id.
 	 *
 	 * @return mixed Order id.
-	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
+	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function save_fields( $orderId ) {
 		$order = $this->orderRepository->getById( $orderId );
@@ -423,7 +400,12 @@ class Metabox {
 		}
 
 		if ( $values[ Attribute::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
-			$wcOrder = $this->orderRepository->getWcOrderById( $orderId ); // Can not be false due condition at the beginning of method.
+			/**
+			 * Cannot be null due to the condition at the beginning of the method.
+			 *
+			 * @var WC_Order $wcOrder
+			 */
+			$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
@@ -441,48 +423,21 @@ class Metabox {
 		}
 
 		if ( '1' === $values[ Attribute::ATTR_ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
-			$address = new Core\Entity\Address(
-				$values[ Attribute::ATTR_ADDRESS_STREET ],
-				$values[ Attribute::ATTR_ADDRESS_CITY ],
-				$values[ Attribute::ATTR_ADDRESS_POST_CODE ]
-			);
-			$address->setHouseNumber( $values[ Attribute::ATTR_ADDRESS_HOUSE_NUMBER ] );
-			$address->setCounty( $values[ Attribute::ATTR_ADDRESS_COUNTY ] );
-			$address->setLatitude( $values[ Attribute::ATTR_ADDRESS_LATITUDE ] );
-			$address->setLongitude( $values[ Attribute::ATTR_ADDRESS_LONGITUDE ] );
+			$address = $this->mapper->toDeliveryAddress( $values );
 
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );
 		}
 
-		$orderSize = $order->getSize();
-		if ( null === $orderSize ) {
-			$orderSize = new Core\Entity\Size();
-		}
-
-		foreach ( $propsToSave as $attrName => $attrValue ) {
-			switch ( $attrName ) {
-				case self::FIELD_WEIGHT:
-					$order->setWeight( $attrValue );
-					break;
-				case self::FIELD_WIDTH:
-					$orderSize->setWidth( $attrValue );
-					break;
-				case self::FIELD_LENGTH:
-					$orderSize->setLength( $attrValue );
-					break;
-				case self::FIELD_HEIGHT:
-					$orderSize->setHeight( $attrValue );
-					break;
-			}
-		}
+		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
 
 		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
 		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
 		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
 		$order->setDeliverOn( $this->helper->getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
 		$order->setSize( $orderSize );
-		$this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
+		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
+		$order->setPickupPoint( $pickupPoint );
 		$this->orderRepository->save( $order );
 
 		return $orderId;
@@ -493,7 +448,7 @@ class Metabox {
 	 *
 	 * @return array|null
 	 */
-	public function createPickupPointPickerSettings(): ?array {
+	public function getPickupPointWidgetSettings(): ?array {
 		global $post;
 
 		$order = $this->orderRepository->getById( (int) $post->ID );
@@ -501,49 +456,7 @@ class Metabox {
 			return null;
 		}
 
-		if ( $order->isExternalCarrier() ) {
-			$carrierId = $order->getCarrierId();
-		} else {
-			$carrierId = $this->pickupPointsConfig->getCompoundCarrierIdByCountry( $order->getShippingCountry() );
-		}
-
-		$defaultPrice = null;
-		if ( null !== $carrierId ) {
-			$wcOrder      = $this->orderRepository->getWcOrderById( $post->ID );
-			$defaultPrice = $this->rateBuilder->getShippingRateCost(
-				Carrier\Options::createByCarrierId( $carrierId ),
-				$wcOrder->get_total() - $wcOrder->get_shipping_total(),
-				$order->getWeight(),
-				$this->rateBuilder->isFreeShippingCouponApplied( $wcOrder )
-			);
-		}
-
-		$widgetOptions = [
-			'country'      => $order->getShippingCountry(),
-			'language'     => substr( get_user_locale(), 0, 2 ),
-			'appIdentity'  => Plugin::getAppIdentity(),
-			'weight'       => $order->getFinalWeight(),
-			'defaultPrice' => $defaultPrice,
-		];
-
-		// TODO: update later when carrier will not be nullable.
-		$orderCarrier = $order->getCarrier();
-		if ( $orderCarrier ) {
-			$widgetOptions['defaultCurrency'] = $orderCarrier->getCurrency();
-		}
-
-		// In backend, we want all pickup points in that country for packeta carrier.
-		if ( $order->getCarrierId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
-			$widgetOptions['vendors'] = $this->widgetOptionsBuilder->getWidgetVendorsParam(
-				$order->getCarrierId(),
-				$order->getShippingCountry(),
-				null
-			);
-		}
-
-		if ( $order->containsAdultContent() ) {
-			$widgetOptions += [ 'livePickupPoint' => true ];
-		}
+		$widgetOptions = $this->widgetOptionsBuilder->createPickupPointForAdmin( $order );
 
 		return [
 			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
@@ -557,7 +470,7 @@ class Metabox {
 	 *
 	 * @return array|null
 	 */
-	public function createAddressPickerSettings(): ?array {
+	public function getAddressWidgetSettings(): ?array {
 		global $post;
 
 		$order = $this->orderRepository->getById( (int) $post->ID );
@@ -565,29 +478,7 @@ class Metabox {
 			return null;
 		}
 
-		$deliveryAddress = $order->getDeliveryAddress(); // Delivery address is always present in this case.
-		$widgetOptions   = [
-			'country'     => $order->getShippingCountry(),
-			'language'    => substr( get_user_locale(), 0, 2 ),
-			'layout'      => 'hd',
-			'appIdentity' => Plugin::getAppIdentity(),
-			'street'      => $deliveryAddress->getStreet(),
-			'city'        => $deliveryAddress->getCity(),
-			'postcode'    => $deliveryAddress->getZip(),
-		];
-
-		if ( $deliveryAddress->getHouseNumber() ) {
-			$widgetOptions += [ 'houseNumber' => $deliveryAddress->getHouseNumber() ];
-		}
-
-		if ( $deliveryAddress->getCounty() ) {
-			$widgetOptions += [ 'county' => $deliveryAddress->getCounty() ];
-		}
-
-		// TODO: Redo in carrier refactor.
-		if ( $order->getCarrier() && is_numeric( $order->getCarrier()->getId() ) ) {
-			$widgetOptions += [ 'carrierId' => $order->getCarrier()->getId() ];
-		}
+		$widgetOptions = $this->widgetOptionsBuilder->createAddressForAdmin( $order );
 
 		return [
 			'packeteryApiKey'   => $this->optionsProvider->get_api_key(),
@@ -599,4 +490,5 @@ class Metabox {
 			],
 		];
 	}
+
 }

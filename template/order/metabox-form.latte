@@ -8,10 +8,10 @@
             <input n:name=packetery_order_metabox_nonce />
             <input n:name=packetery_original_weight />
             {foreach [
-                'packetery_weight',
-                'packetery_length',
-                'packetery_width',
-                'packetery_height',
+                Packetery\Module\Order\Metabox::FIELD_WEIGHT,
+                Packetery\Module\Order\Metabox::FIELD_LENGTH,
+                Packetery\Module\Order\Metabox::FIELD_WIDTH,
+                Packetery\Module\Order\Metabox::FIELD_HEIGHT,
                 Packetery\Module\Order\Metabox::FIELD_ADULT_CONTENT,
                 Packetery\Module\Order\Metabox::FIELD_COD,
                 Packetery\Module\Order\Metabox::FIELD_VALUE,
@@ -52,7 +52,7 @@
         </div>
 
         {if $order->isPickupPointDelivery()}
-            {foreach Packetery\Module\Order\AttributeMapper::$pickupPointAttrs as $attr}
+            {foreach Packetery\Module\Order\Attribute::$pickupPointAttrs as $attr}
                 <input n:name=$attr[name] />
             {/foreach}
             <div id="packetery-widget-button-wrapper">
@@ -65,7 +65,7 @@
         {/if}
 
         {if $order->isHomeDelivery()}
-            {foreach Packetery\Module\Order\AttributeMapper::$homeDeliveryAttrs as $attr}
+            {foreach Packetery\Module\Order\Attribute::$homeDeliveryAttrs as $attr}
                 <input n:name=$attr[name] />
             {/foreach}
             <div id="packetery-widget-button-wrapper">

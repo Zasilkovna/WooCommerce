@@ -105,7 +105,7 @@ class Repository {
 	 *
 	 * @return array|null
 	 */
-	public function getAllIncludingZpoints(): ?array {
+	public function getAllIncludingNonFeed(): ?array {
 		$carriers        = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`, `currency`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
 		$nonFeedCarriers = $this->pickupPointsConfig->getCompoundAndVendorCarriers();
 		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
@@ -239,24 +239,6 @@ class Repository {
 	 */
 	public function update( array $data, int $carrier_id ): void {
 		$this->wpdbAdapter->update( $this->wpdbAdapter->packetery_carrier, $data, [ 'id' => $carrier_id ] );
-	}
-
-	/**
-	 * Checks if chosen carrier has pickup points and sets carrier id in provided array.
-	 *
-	 * @param string $carrierId Carrier id.
-	 *
-	 * @return bool
-	 */
-	public function isPickupPointCarrier( string $carrierId ): bool {
-		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
-			return true;
-		}
-		if ( $this->pickupPointsConfig->isVendorCarrierId( $carrierId ) ) {
-			return true;
-		}
-
-		return $this->hasPickupPoints( (int) $carrierId );
 	}
 
 	/**

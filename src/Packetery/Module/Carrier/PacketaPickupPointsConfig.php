@@ -27,6 +27,7 @@ class PacketaPickupPointsConfig {
 	 */
 	public function getCompoundCarriers(): array {
 		// TODO: take into account that not all types of pickup points support age verification.
+		// Can lead to situation with no pickup points selected when age verification is required.
 		return [
 			'cz' => [
 				'id'                        => 'zpointcz',

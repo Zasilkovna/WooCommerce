@@ -28,12 +28,12 @@ class AttributeMapper {
 	 * @param Entity\Order $orderEntity Order entity.
 	 * @param array        $propsToSave Props to save.
 	 *
-	 * @return void
+	 * @return Entity\PickupPoint
 	 */
-	public function toOrderEntityPickupPoint( Entity\Order $orderEntity, array $propsToSave ): void {
-		$orderEntityPickupPoint = $orderEntity->getPickupPoint();
-		if ( null === $orderEntityPickupPoint ) {
-			$orderEntityPickupPoint = new Entity\PickupPoint();
+	public function toOrderEntityPickupPoint( Entity\Order $orderEntity, array $propsToSave ): Entity\PickupPoint {
+		$pickupPoint = $orderEntity->getPickupPoint();
+		if ( null === $pickupPoint ) {
+			$pickupPoint = new Entity\PickupPoint();
 		}
 
 		foreach ( $propsToSave as $attrName => $attrValue ) {
@@ -42,27 +42,27 @@ class AttributeMapper {
 					$orderEntity->setCarrierId( $attrValue );
 					break;
 				case Attribute::ATTR_POINT_ID:
-					$orderEntityPickupPoint->setId( $attrValue );
+					$pickupPoint->setId( $attrValue );
 					break;
 				case Attribute::ATTR_POINT_NAME:
-					$orderEntityPickupPoint->setName( $attrValue );
+					$pickupPoint->setName( $attrValue );
 					break;
 				case Attribute::ATTR_POINT_URL:
-					$orderEntityPickupPoint->setUrl( $attrValue );
+					$pickupPoint->setUrl( $attrValue );
 					break;
 				case Attribute::ATTR_POINT_STREET:
-					$orderEntityPickupPoint->setStreet( $attrValue );
+					$pickupPoint->setStreet( $attrValue );
 					break;
 				case Attribute::ATTR_POINT_ZIP:
-					$orderEntityPickupPoint->setZip( $attrValue );
+					$pickupPoint->setZip( $attrValue );
 					break;
 				case Attribute::ATTR_POINT_CITY:
-					$orderEntityPickupPoint->setCity( $attrValue );
+					$pickupPoint->setCity( $attrValue );
 					break;
 			}
 		}
 
-		$orderEntity->setPickupPoint( $orderEntityPickupPoint );
+		return $pickupPoint;
 	}
 
 	/**
@@ -89,6 +89,82 @@ class AttributeMapper {
 		if ( Attribute::ATTR_POINT_ZIP === $attributeName ) {
 			$wcOrder->set_shipping_postcode( $value );
 		}
+	}
+
+	/**
+	 * From prepared properties to order Size.
+	 *
+	 * @param Entity\Order $order       Order.
+	 * @param array        $propsToSave Prepared properties.
+	 *
+	 * @return Entity\Size
+	 */
+	public function toOrderSize( Entity\Order $order, array $propsToSave ): Entity\Size {
+		$orderSize = $order->getSize();
+		if ( null === $orderSize ) {
+			$orderSize = new Entity\Size();
+		}
+
+		foreach ( $propsToSave as $attrName => $attrValue ) {
+			switch ( $attrName ) {
+				case Metabox::FIELD_WEIGHT:
+					$order->setWeight( $attrValue );
+					break;
+				case Metabox::FIELD_WIDTH:
+					$orderSize->setWidth( $attrValue );
+					break;
+				case Metabox::FIELD_LENGTH:
+					$orderSize->setLength( $attrValue );
+					break;
+				case Metabox::FIELD_HEIGHT:
+					$orderSize->setHeight( $attrValue );
+					break;
+			}
+		}
+
+		return $orderSize;
+	}
+
+	/**
+	 * From form to delivery address in backend.
+	 *
+	 * @param array $values Data from form.
+	 *
+	 * @return Entity\Address
+	 */
+	public function toDeliveryAddress( array $values ): Entity\Address {
+		$address = new Entity\Address(
+			$values[ Attribute::ATTR_ADDRESS_STREET ],
+			$values[ Attribute::ATTR_ADDRESS_CITY ],
+			$values[ Attribute::ATTR_ADDRESS_POST_CODE ]
+		);
+		$address->setHouseNumber( $values[ Attribute::ATTR_ADDRESS_HOUSE_NUMBER ] );
+		$address->setCounty( $values[ Attribute::ATTR_ADDRESS_COUNTY ] );
+		$address->setLatitude( $values[ Attribute::ATTR_ADDRESS_LATITUDE ] );
+		$address->setLongitude( $values[ Attribute::ATTR_ADDRESS_LONGITUDE ] );
+
+		return $address;
+	}
+
+	/**
+	 * From frontend post data to validated address.
+	 *
+	 * @param array $post Post data.
+	 *
+	 * @return Entity\Address
+	 */
+	public function toValidatedAddress( array $post ): Entity\Address {
+		$validatedAddress = new Entity\Address(
+			$post[ Attribute::$homeDeliveryAttrs['street']['name'] ],
+			$post[ Attribute::$homeDeliveryAttrs['city']['name'] ],
+			$post[ Attribute::$homeDeliveryAttrs['postCode']['name'] ]
+		);
+		$validatedAddress->setCounty( $post[ Attribute::$homeDeliveryAttrs['county']['name'] ] );
+		$validatedAddress->setHouseNumber( $post[ Attribute::$homeDeliveryAttrs['houseNumber']['name'] ] );
+		$validatedAddress->setLatitude( $post[ Attribute::$homeDeliveryAttrs['latitude']['name'] ] );
+		$validatedAddress->setLongitude( $post[ Attribute::$homeDeliveryAttrs['longitude']['name'] ] );
+
+		return $validatedAddress;
 	}
 
 }

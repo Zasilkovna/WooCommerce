@@ -276,7 +276,7 @@ class CountryListingPage {
 	 */
 	public function getCarriersForOptionsExport(): array {
 		$carriersWithSomeOptions = [];
-		$allCarriers             = $this->carrierRepository->getAllIncludingZpoints();
+		$allCarriers             = $this->carrierRepository->getAllIncludingNonFeed();
 		foreach ( $allCarriers as $carrier ) {
 			$carrierId      = $carrier['id'];
 			$optionId       = OptionManager::getOptionId( $carrierId );
@@ -321,7 +321,7 @@ class CountryListingPage {
 	 */
 	private function getActiveCarriersNamesByCountry( string $countryCode ): array {
 		$activeCarriers  = [];
-		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingZpoints( $countryCode );
+		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
 			$optionId       = OptionManager::getOptionId( $carrier->getId() );
 			$carrierOptions = get_option( $optionId );

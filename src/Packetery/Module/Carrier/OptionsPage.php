@@ -354,7 +354,7 @@ class OptionsPage {
 	public function render(): void {
 		$countryIso = $this->httpRequest->getQuery( 'code' );
 		if ( $countryIso ) {
-			$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryIso );
+			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrier ) {
@@ -602,35 +602,37 @@ class OptionsPage {
 	/**
 	 * Gets configuration of vendor checkboxes.
 	 *
-	 * @param string $carrierId      Carrier id.
-	 * @param array  $carrierOptions Carrier options.
+	 * @param string      $carrierId      Carrier id.
+	 * @param array|false $carrierOptions Carrier options.
 	 *
 	 * @return array
 	 */
-	private function getVendorCheckboxesConfig( string $carrierId, array $carrierOptions ): array {
-		$vendorCheckboxes = [];
+	private function getVendorCheckboxesConfig( string $carrierId, $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null !== $availableVendors ) {
-			$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
-			foreach ( $availableVendors as $vendorId ) {
-				$vendorData           = $vendorCarriers[ $vendorId ];
-				$checkbox             = [
-					'group'    => $vendorData['group'],
-					'name'     => $vendorData['name'],
-					'disabled' => null,
-					'default'  => null,
-				];
-				$hasLowCountAvailable = count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
-				if ( $hasLowCountAvailable ) {
-					$checkbox['disabled'] = true;
-				}
-				$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
-				$hasTheGroupAllowed    = in_array( $vendorData['group'], $carrierOptions['vendor_groups'], true );
-				if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
-					$checkbox['default'] = true;
-				}
-				$vendorCheckboxes[] = $checkbox;
+		if ( null === $availableVendors || false === $carrierOptions ) {
+			return [];
+		}
+
+		$vendorCheckboxes = [];
+		$vendorCarriers   = $this->pickupPointsConfig->getVendorCarriers();
+		foreach ( $availableVendors as $vendorId ) {
+			$vendorData           = $vendorCarriers[ $vendorId ];
+			$checkbox             = [
+				'group'    => $vendorData['group'],
+				'name'     => $vendorData['name'],
+				'disabled' => null,
+				'default'  => null,
+			];
+			$hasLowCountAvailable = count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
+			if ( $hasLowCountAvailable ) {
+				$checkbox['disabled'] = true;
 			}
+			$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
+			$hasTheGroupAllowed    = in_array( $vendorData['group'], $carrierOptions['vendor_groups'], true );
+			if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
+				$checkbox['default'] = true;
+			}
+			$vendorCheckboxes[] = $checkbox;
 		}
 
 		return $vendorCheckboxes;

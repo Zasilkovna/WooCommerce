@@ -70,4 +70,4 @@ services:
 	- Packetery\Module\Carrier\EntityRepository
 	- Packetery\Module\Order\AttributeMapper
 	- Packetery\Module\WidgetOptionsBuilder
-
+	- Packetery\Module\Carrier\OptionManager

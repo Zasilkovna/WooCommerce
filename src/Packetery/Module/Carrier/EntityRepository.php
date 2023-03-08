@@ -76,24 +76,24 @@ class EntityRepository {
 	/**
 	 * Gets feed carrier or packeta carrier by id.
 	 *
-	 * @param string $extendedBranchServiceId Extended branch service id.
+	 * @param string $carrierId Extended branch service id.
 	 *
 	 * @return Entity\Carrier|null
 	 */
-	public function getAnyById( string $extendedBranchServiceId ): ?Entity\Carrier {
+	public function getAnyById( string $carrierId ): ?Entity\Carrier {
 		$nonFeedCarriers = $this->pickupPointsConfig->getCompoundAndVendorCarriers();
 
 		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
-			if ( $nonFeedCarrier['id'] === $extendedBranchServiceId ) {
+			if ( $nonFeedCarrier['id'] === $carrierId ) {
 				return $this->carrierEntityFactory->fromNonFeedCarrierData( $nonFeedCarrier );
 			}
 		}
 
-		if ( ! is_numeric( $extendedBranchServiceId ) ) {
+		if ( ! is_numeric( $carrierId ) ) {
 			return null;
 		}
 
-		return $this->getById( (int) $extendedBranchServiceId );
+		return $this->getById( (int) $carrierId );
 	}
 
 	/**
@@ -138,7 +138,7 @@ class EntityRepository {
 	 *
 	 * @return Entity\Carrier[]
 	 */
-	public function getByCountryIncludingZpoints( string $country ): array {
+	public function getByCountryIncludingNonFeed( string $country ): array {
 		$nonFeedCarriers       = [];
 		$nonFeedCarriersArrays = $this->pickupPointsConfig->getNonFeedCarriersByCountry( $country );
 		foreach ( $nonFeedCarriersArrays as $nonFeedCarrierData ) {
@@ -154,7 +154,7 @@ class EntityRepository {
 	 *
 	 * @return Entity\Carrier[]
 	 */
-	public function getAllCarriersIncludingZpoints(): array {
+	public function getAllCarriersIncludingNonFeed(): array {
 		$feedCarriers    = $this->getActiveCarriers();
 		$nonFeedCarriers = $this->getNonFeedCarriers();
 
@@ -184,7 +184,7 @@ class EntityRepository {
 	 */
 	public function getAllActiveCarriersList(): array {
 		$activeCarriers = [];
-		$carriers       = $this->getAllCarriersIncludingZpoints();
+		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = Options::createByCarrierId( $carrier->getId() );
 			if ( $carrierOptions->isActive() ) {
