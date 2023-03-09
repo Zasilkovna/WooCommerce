@@ -135,7 +135,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createForm( array $carrierData ): Form {
-		$optionId = OptionManager::getOptionId( $carrierData['id'] );
+		$optionId = OptionPrefixer::getOptionId( $carrierData['id'] );
 
 		$form = $this->formFactory->create( $optionId );
 
@@ -147,9 +147,8 @@ class OptionsPage {
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
 
-		$carrierOptions = get_option( $optionId );
-
-		$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], $carrierOptions );
+		$carrierOptions   = get_option( $optionId );
+		$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
 		if ( $vendorCheckboxes ) {
 			$vendorsContainer = $form->addContainer( 'vendor_groups' );
 			foreach ( $vendorCheckboxes as $checkboxConfig ) {
@@ -227,9 +226,11 @@ class OptionsPage {
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
-		$carrierOptions['id'] = $carrierData['id'];
-		if ( empty( $carrierOptions[ self::FORM_FIELD_NAME ] ) ) {
-			$carrierOptions[ self::FORM_FIELD_NAME ] = $carrierData['name'];
+		if ( false === $carrierOptions ) {
+			$carrierOptions = [
+				'id'                  => $carrierData['id'],
+				self::FORM_FIELD_NAME => $carrierData['name'],
+			];
 		}
 		$form->setDefaults( $carrierOptions );
 
@@ -255,7 +256,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createFormTemplate( array $carrierData ): Form {
-		$optionId = OptionManager::getOptionId( $carrierData['id'] );
+		$optionId = OptionPrefixer::getOptionId( $carrierData['id'] );
 
 		$form = $this->formFactory->create( $optionId . '_template' );
 
@@ -331,7 +332,7 @@ class OptionsPage {
 			$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 		}
 
-		update_option( OptionManager::getOptionId( $options['id'] ), $options );
+		update_option( OptionPrefixer::getOptionId( $options['id'] ), $options );
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(
@@ -366,7 +367,7 @@ class OptionsPage {
 					}
 				} else {
 					$carrierData = $carrier->__toArray();
-					$options     = get_option( OptionManager::getOptionId( $carrier->getId() ) );
+					$options     = get_option( OptionPrefixer::getOptionId( $carrier->getId() ) );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
@@ -602,14 +603,14 @@ class OptionsPage {
 	/**
 	 * Gets configuration of vendor checkboxes.
 	 *
-	 * @param string      $carrierId      Carrier id.
-	 * @param array|false $carrierOptions Carrier options.
+	 * @param string     $carrierId      Carrier id.
+	 * @param array|null $carrierOptions Carrier options.
 	 *
 	 * @return array
 	 */
-	private function getVendorCheckboxesConfig( string $carrierId, $carrierOptions ): array {
+	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null === $availableVendors || false === $carrierOptions ) {
+		if ( null === $availableVendors ) {
 			return [];
 		}
 

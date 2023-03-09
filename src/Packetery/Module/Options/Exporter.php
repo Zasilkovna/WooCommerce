@@ -135,7 +135,7 @@ class Exporter {
 			 *
 			 * @since 3.0.0
 			 */
-			'plugins'           => $this->getFormattedPlugins( apply_filters( 'all_plugins', get_plugins() ) ),
+			'plugins'           => $this->getFormattedPlugins( (array) apply_filters( 'all_plugins', get_plugins() ) ),
 			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
 			'currencySwitchers' => $this->formatVariable( Module\CurrencySwitcherFacade::$supportedCurrencySwitchers ),
 		];

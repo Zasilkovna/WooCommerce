@@ -130,9 +130,12 @@ class BulkActions {
 		if ( 'submit_to_api' === $action ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
-				$order = $this->orderRepository->getWcOrderById( $postId );
-				if ( null !== $order ) {
-					$submissionResult = $this->packetSubmitter->submitPacket( $order, $this->optionsProvider->isOrderStatusAutoChangeEnabled() );
+				$wcOrder = $this->orderRepository->getWcOrderById( $postId );
+				if ( null !== $wcOrder ) {
+					$submissionResult = $this->packetSubmitter->submitPacket(
+						$wcOrder,
+						$this->optionsProvider->isOrderStatusAutoChangeEnabled()
+					);
 					$finalSubmissionResult->merge( $submissionResult );
 				}
 			}

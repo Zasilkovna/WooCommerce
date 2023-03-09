@@ -75,7 +75,7 @@ class Options {
 	 * @return static
 	 */
 	public static function createByCarrierId( string $carrierId ): self {
-		$optionId = OptionManager::getOptionId( $carrierId );
+		$optionId = OptionPrefixer::getOptionId( $carrierId );
 		return self::createByOptionId( $optionId );
 	}
 

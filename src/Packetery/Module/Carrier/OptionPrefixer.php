@@ -1,6 +1,6 @@
 <?php
 /**
- * Class OptionManager
+ * Class OptionPrefixer
  *
  * @package Packetery
  */
@@ -10,11 +10,11 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 /**
- * Class OptionManager
+ * Class OptionPrefixer
  *
  * @package Packetery
  */
-class OptionManager {
+class OptionPrefixer {
 
 	public const CARRIER_OPTION_PREFIX = 'packetery_carrier_';
 
@@ -30,25 +30,25 @@ class OptionManager {
 	}
 
 	/**
-	 * Removes prefix from packetery shippping option id.
-	 *
-	 * @param string $optionId Option id.
-	 *
-	 * @return string
-	 */
-	public function removePrefix( string $optionId ): string {
-		return str_replace( self::CARRIER_OPTION_PREFIX, '', $optionId );
-	}
-
-	/**
-	 * Checks if is packetery shippping option id.
+	 * Checks if is packetery shipping option id.
 	 *
 	 * @param string $optionId Option id.
 	 *
 	 * @return bool
 	 */
-	public function isOptionId( string $optionId ): bool {
+	public static function isOptionId( string $optionId ): bool {
 		return ( strpos( $optionId, self::CARRIER_OPTION_PREFIX ) === 0 );
+	}
+
+	/**
+	 * Removes prefix from packetery shipping option id.
+	 *
+	 * @param string $optionId Option id.
+	 *
+	 * @return string
+	 */
+	public static function removePrefix( string $optionId ): string {
+		return str_replace( self::CARRIER_OPTION_PREFIX, '', $optionId );
 	}
 
 }

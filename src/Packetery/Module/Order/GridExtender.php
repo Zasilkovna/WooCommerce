@@ -265,11 +265,9 @@ class GridExtender {
 					}
 					break;
 				}
-				$homeDeliveryCarrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
-				if ( $homeDeliveryCarrier ) {
-					$homeDeliveryCarrierEntity = new Carrier\Entity( $homeDeliveryCarrier );
-					echo esc_html( $homeDeliveryCarrierEntity->getFinalName() );
-				}
+
+				$homeDeliveryCarrierOptions = Carrier\Options::createByCarrierId( $order->getCarrierId() );
+				echo esc_html( $homeDeliveryCarrierOptions->getName() );
 				break;
 			case 'packetery_packet_id':
 				$packetId = $order->getPacketId();

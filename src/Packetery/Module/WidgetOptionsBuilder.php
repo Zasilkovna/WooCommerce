@@ -69,7 +69,7 @@ class WidgetOptionsBuilder {
 	 *
 	 * @return array|null
 	 */
-	public function getWidgetVendorsParam( string $carrierId, string $country, ?array $vendorGroups ): ?array {
+	private function getWidgetVendorsParam( string $carrierId, string $country, ?array $vendorGroups ): ?array {
 		if ( is_numeric( $carrierId ) ) {
 			return [
 				[

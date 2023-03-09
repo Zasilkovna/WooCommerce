@@ -787,7 +787,7 @@ class Plugin {
 		 *
 		 * @since 1.0.0
 		 */
-		return apply_filters(
+		return (string) apply_filters(
 			'plugin_locale',
 			( is_admin() ? get_user_locale() : get_locale() ),
 			self::DOMAIN

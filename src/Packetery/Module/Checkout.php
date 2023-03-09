@@ -124,13 +124,6 @@ class Checkout {
 	private $carrierEntityRepository;
 
 	/**
-	 * Carrier OptionManager.
-	 *
-	 * @var Carrier\OptionManager
-	 */
-	private $carrierOptionManager;
-
-	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                    $latte_engine            PacketeryLatte engine.
@@ -146,7 +139,6 @@ class Checkout {
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig      Internal pickup points config.
 	 * @param WidgetOptionsBuilder      $widgetOptionsBuilder    Widget options builder.
 	 * @param Carrier\EntityRepository  $carrierEntityRepository Carrier repository.
-	 * @param Carrier\OptionManager     $carrierOptionManager    Carrier OptionManager.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -161,8 +153,7 @@ class Checkout {
 		RateCalculator $rateCalculator,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
-		Carrier\EntityRepository $carrierEntityRepository,
-		Carrier\OptionManager $carrierOptionManager
+		Carrier\EntityRepository $carrierEntityRepository
 	) {
 		$this->latte_engine            = $latte_engine;
 		$this->options_provider        = $options_provider;
@@ -177,7 +168,6 @@ class Checkout {
 		$this->pickupPointsConfig      = $pickupPointsConfig;
 		$this->widgetOptionsBuilder    = $widgetOptionsBuilder;
 		$this->carrierEntityRepository = $carrierEntityRepository;
-		$this->carrierOptionManager    = $carrierOptionManager;
 	}
 
 	/**
@@ -262,7 +252,7 @@ class Checkout {
 		$carriersConfig          = $this->carrierRepository->getAllIncludingNonFeed();
 
 		foreach ( $carriersConfig as $carrierConfig ) {
-			$optionId     = Carrier\OptionManager::getOptionId( $carrierConfig['id'] );
+			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrierConfig['id'] );
 			$defaultPrice = $this->getRateCost(
 				Carrier\Options::createByCarrierId( $carrierConfig['id'] ),
 				$this->getCartContentsTotalIncludingTax(),
@@ -313,7 +303,12 @@ class Checkout {
 	public function renderHiddenInputFields(): void {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
-			[ 'fields' => array_merge( array_column( Order\Attribute::$pickupPointAttrs, 'name' ), array_column( Order\Attribute::$homeDeliveryAttrs, 'name' ) ) ]
+			[
+				'fields' => array_merge(
+					array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
+					array_column( Order\Attribute::$homeDeliveryAttrs, 'name' )
+				),
+			]
 		);
 
 		wp_nonce_field( self::NONCE_ACTION, self::NONCE_NAME );
@@ -404,7 +399,7 @@ class Checkout {
 
 		if ( $this->isHomeDeliveryOrder() ) {
 			$carrierId     = $this->getCarrierId( $chosenShippingMethod );
-			$optionId      = Carrier\OptionManager::getOptionId( $carrierId );
+			$optionId      = Carrier\OptionPrefixer::getOptionId( $carrierId );
 			$carrierOption = get_option( $optionId );
 
 			$addressValidation = 'none';
@@ -415,8 +410,8 @@ class Checkout {
 			if (
 				'required' === $addressValidation &&
 				(
-					! isset( $post[ Order\Attribute::$homeDeliveryAttrs['isValidated']['name'] ] ) ||
-					'1' !== $post[ Order\Attribute::$homeDeliveryAttrs['isValidated']['name'] ]
+					! isset( $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ] ) ||
+					'1' !== $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ]
 				)
 			) {
 				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
@@ -486,8 +481,8 @@ class Checkout {
 
 		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
 		if (
-			isset( $post[ Order\Attribute::$homeDeliveryAttrs['isValidated']['name'] ] ) &&
-			'1' === $post[ Order\Attribute::$homeDeliveryAttrs['isValidated']['name'] ] &&
+			isset( $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ] ) &&
+			'1' === $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ] &&
 			$this->isHomeDeliveryOrder()
 		) {
 			$validatedAddress = $this->mapper->toValidatedAddress( $post );
@@ -501,6 +496,7 @@ class Checkout {
 
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $orderEntity, $propsToSave );
 		$orderEntity->setPickupPoint( $pickupPoint );
+
 		$this->orderRepository->save( $orderEntity );
 		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $orderId );
 	}
@@ -664,8 +660,7 @@ class Checkout {
 				continue;
 			}
 
-			$optionId = Carrier\OptionManager::getOptionId( $carrier->getId() );
-			$rateId   = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+			$optionId = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
 			$options  = Carrier\Options::createByOptionId( $optionId );
 
 			if ( false === $options->isActive() ) {
@@ -682,6 +677,7 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
+				$rateId                 = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
 				$customRates[ $rateId ] = $this->createShippingRate( $options->getName(), $rateId, $cost );
 			}
 		}
@@ -798,7 +794,7 @@ class Checkout {
 			return null;
 		}
 
-		return $this->carrierOptionManager->removePrefix( $chosenMethod );
+		return Carrier\OptionPrefixer::removePrefix( $chosenMethod );
 	}
 
 	/**
@@ -811,7 +807,7 @@ class Checkout {
 	private function isPacketeryShippingMethod( string $chosenMethod ): bool {
 		$optionId = $this->removeShippingMethodPrefix( $chosenMethod );
 
-		return $this->carrierOptionManager->isOptionId( $optionId );
+		return Carrier\OptionPrefixer::isOptionId( $optionId );
 	}
 
 	/**

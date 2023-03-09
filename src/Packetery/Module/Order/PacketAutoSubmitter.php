@@ -121,7 +121,9 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		$wcOrder        = $this->orderRepository->getWcOrderById( $orderId );
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+		assert( null !== $wcOrder, 'WC order has to be present' );
+
 		$paymentGateway = wc_get_payment_gateway_by_order( $wcOrder );
 		if ( false === $this->optionsPage->hasPaymentGateway( $paymentGateway ) ) {
 			return;

@@ -86,7 +86,7 @@ class RateCalculator {
 		 *
 		 * @since 1.4.1
 		 */
-		return apply_filters( 'packeta_shipping_price', (float) $cost );
+		return (float) apply_filters( 'packeta_shipping_price', (float) $cost );
 	}
 
 	/**

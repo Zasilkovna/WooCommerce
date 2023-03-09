@@ -423,21 +423,22 @@ class Metabox {
 		}
 
 		if ( '1' === $values[ Attribute::ATTR_ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
-			$address = $this->mapper->toDeliveryAddress( $values );
-
+			$address = $this->mapper->toValidatedAddress( $values );
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );
 		}
-
-		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
 
 		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
 		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
 		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
 		$order->setDeliverOn( $this->helper->getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
+
+		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
 		$order->setSize( $orderSize );
+
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
 		$order->setPickupPoint( $pickupPoint );
+
 		$this->orderRepository->save( $order );
 
 		return $orderId;

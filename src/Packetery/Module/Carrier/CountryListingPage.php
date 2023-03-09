@@ -279,7 +279,7 @@ class CountryListingPage {
 		$allCarriers             = $this->carrierRepository->getAllIncludingNonFeed();
 		foreach ( $allCarriers as $carrier ) {
 			$carrierId      = $carrier['id'];
-			$optionId       = OptionManager::getOptionId( $carrierId );
+			$optionId       = OptionPrefixer::getOptionId( $carrierId );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
@@ -323,7 +323,7 @@ class CountryListingPage {
 		$activeCarriers  = [];
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
-			$optionId       = OptionManager::getOptionId( $carrier->getId() );
+			$optionId       = OptionPrefixer::getOptionId( $carrier->getId() );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions && $carrierOptions['active'] ) {
 				$activeCarriers[] = $carrier->getName();

@@ -170,7 +170,8 @@ class PacketSubmitter {
 
 		$submissionResult         = $this->submitPacket(
 			$this->orderRepository->getWcOrderById( (int) $order->getNumber() ),
-			$this->optionsProvider->isOrderStatusAutoChangeEnabled()
+			$this->optionsProvider->isOrderStatusAutoChangeEnabled(),
+			$order
 		);
 		$resultsCounter           = $submissionResult->getCounter();
 		$submissionResultMessages = $this->getTranslatedSubmissionMessages( $resultsCounter, (int) $order->getNumber() );
@@ -208,29 +209,36 @@ class PacketSubmitter {
 	/**
 	 * Submits packet data to Packeta API.
 	 *
-	 * @param WC_Order $order             WC order.
-	 * @param bool     $updateOrderStatus Updates WC order status if packet was successfully created. Value is based on plugin settings.
+	 * @param WC_Order          $wcOrder           WC order.
+	 * @param bool              $updateOrderStatus Updates WC order status if packet was successfully created. Value is based on plugin settings.
+	 * @param Entity\Order|null $order             Order.
 	 *
 	 * @return PacketSubmissionResult
 	 */
-	public function submitPacket( WC_Order $order, bool $updateOrderStatus ): PacketSubmissionResult {
+	public function submitPacket(
+		WC_Order $wcOrder,
+		bool $updateOrderStatus,
+		?Entity\Order $order = null
+	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
-		$commonEntity     = $this->orderRepository->getByWcOrder( $order );
-		if ( null === $commonEntity ) {
+		if ( null === $order ) {
+			$order = $this->orderRepository->getByWcOrder( $wcOrder );
+		}
+		if ( null === $order ) {
 			$submissionResult->increaseIgnoredCount();
 
 			return $submissionResult;
 		}
 
-		$orderData       = $order->get_data();
-		$shippingMethods = $order->get_shipping_methods();
+		$orderData       = $wcOrder->get_data();
+		$shippingMethods = $wcOrder->get_shipping_methods();
 		$shippingMethod  = reset( $shippingMethods );
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $commonEntity->isExported() ) {
+		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $order->isExported() ) {
 			try {
-				$createPacketData = $this->preparePacketData( $commonEntity );
+				$createPacketData = $this->preparePacketData( $order );
 			} catch ( InvalidRequestException $e ) {
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -240,7 +248,7 @@ class PacketSubmitter {
 					'orderId'      => $orderData['id'],
 					'errorMessage' => $e->getMessage(),
 				];
-				$record->orderId = $commonEntity->getNumber();
+				$record->orderId = $order->getNumber();
 				$this->logger->add( $record );
 
 				$submissionResult->increaseLogsCount();
@@ -259,13 +267,13 @@ class PacketSubmitter {
 					'request'      => $createPacketData,
 					'errorMessage' => $response->getErrorsAsString(),
 				];
-				$record->orderId = $commonEntity->getNumber();
+				$record->orderId = $order->getNumber();
 				$errorMessage    = $response->getErrorsAsString( false );
 
 				$submissionResult->increaseErrorsCount();
 			} else {
-				$commonEntity->setIsExported( true );
-				$commonEntity->setPacketId( (string) $response->getId() );
+				$order->setIsExported( true );
+				$order->setPacketId( (string) $response->getId() );
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -275,7 +283,7 @@ class PacketSubmitter {
 					'request'  => $createPacketData,
 					'packetId' => $response->getId(),
 				];
-				$record->orderId = $commonEntity->getNumber();
+				$record->orderId = $order->getNumber();
 				$errorMessage    = null;
 
 				$submissionResult->increaseSuccessCount();
@@ -283,11 +291,11 @@ class PacketSubmitter {
 
 			$submissionResult->increaseLogsCount();
 			$this->logger->add( $record );
-			$commonEntity->updateApiErrorMessage( $errorMessage );
-			$this->orderRepository->save( $commonEntity );
+			$order->updateApiErrorMessage( $errorMessage );
+			$this->orderRepository->save( $order );
 
 			if ( $updateOrderStatus && false === $response->hasFault() ) {
-				$this->updateOrderStatusOrLogError( $order, $commonEntity->getNumber(), $submissionResult );
+				$this->updateOrderStatusOrLogError( $wcOrder, $order->getNumber(), $submissionResult );
 			}
 		} else {
 			$submissionResult->increaseIgnoredCount();
@@ -323,7 +331,7 @@ class PacketSubmitter {
 		 *
 		 * @param array $createPacketData CreatePacket request data.
 		 */
-		return apply_filters( 'packeta_create_packet', $createPacketData );
+		return (array) apply_filters( 'packeta_create_packet', $createPacketData );
 	}
 
 	/**
@@ -386,13 +394,11 @@ class PacketSubmitter {
 			$errors = esc_html__( 'Some order statuses have not been automatically changed.', 'packeta' );
 		}
 
-		$latteParams = [
+		return [
 			'success' => $success,
 			'ignored' => $ignored,
 			'errors'  => $errors,
 		];
-
-		return $latteParams;
 	}
 
 	/**

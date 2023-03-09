@@ -95,7 +95,7 @@ class Repository {
 		 * @param \WP_Query $queryObject WP Query.
 		 * @param array $paramValues Param values.
 		 */
-		$orderStatusesToExclude = apply_filters( 'packetery_exclude_orders_with_status', [], $queryObject, $paramValues );
+		$orderStatusesToExclude = (array) apply_filters( 'packetery_exclude_orders_with_status', [], $queryObject, $paramValues );
 		if ( ! $orderStatusesToExclude ) {
 			return;
 		}
@@ -438,7 +438,9 @@ class Repository {
 				continue;
 			}
 
-			$wcOrder                   = $this->getWcOrderById( $orderId );
+			$wcOrder = $this->getWcOrderById( $orderId );
+			assert( null !== $wcOrder, 'WC order has to be present' );
+
 			$partialOrder              = $this->createPartialOrder( $packeteryOrdersResult[ $orderId ] );
 			$orderEntities[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
 		}
@@ -500,7 +502,7 @@ class Repository {
 
 		foreach ( $rows as $row ) {
 			$wcOrder = $this->getWcOrderById( $row->id );
-			if ( false === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			if ( null === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
 

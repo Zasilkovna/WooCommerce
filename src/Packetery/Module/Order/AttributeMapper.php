@@ -39,6 +39,7 @@ class AttributeMapper {
 		foreach ( $propsToSave as $attrName => $attrValue ) {
 			switch ( $attrName ) {
 				case Attribute::ATTR_CARRIER_ID:
+					// TODO: Remove in carrier refactor.
 					$orderEntity->setCarrierId( $attrValue );
 					break;
 				case Attribute::ATTR_POINT_ID:
@@ -126,13 +127,13 @@ class AttributeMapper {
 	}
 
 	/**
-	 * From form to delivery address in backend.
+	 * From post data to validated address both in frontend and backend.
 	 *
 	 * @param array $values Data from form.
 	 *
 	 * @return Entity\Address
 	 */
-	public function toDeliveryAddress( array $values ): Entity\Address {
+	public function toValidatedAddress( array $values ): Entity\Address {
 		$address = new Entity\Address(
 			$values[ Attribute::ATTR_ADDRESS_STREET ],
 			$values[ Attribute::ATTR_ADDRESS_CITY ],
@@ -144,27 +145,6 @@ class AttributeMapper {
 		$address->setLongitude( $values[ Attribute::ATTR_ADDRESS_LONGITUDE ] );
 
 		return $address;
-	}
-
-	/**
-	 * From frontend post data to validated address.
-	 *
-	 * @param array $post Post data.
-	 *
-	 * @return Entity\Address
-	 */
-	public function toValidatedAddress( array $post ): Entity\Address {
-		$validatedAddress = new Entity\Address(
-			$post[ Attribute::$homeDeliveryAttrs['street']['name'] ],
-			$post[ Attribute::$homeDeliveryAttrs['city']['name'] ],
-			$post[ Attribute::$homeDeliveryAttrs['postCode']['name'] ]
-		);
-		$validatedAddress->setCounty( $post[ Attribute::$homeDeliveryAttrs['county']['name'] ] );
-		$validatedAddress->setHouseNumber( $post[ Attribute::$homeDeliveryAttrs['houseNumber']['name'] ] );
-		$validatedAddress->setLatitude( $post[ Attribute::$homeDeliveryAttrs['latitude']['name'] ] );
-		$validatedAddress->setLongitude( $post[ Attribute::$homeDeliveryAttrs['longitude']['name'] ] );
-
-		return $validatedAddress;
 	}
 
 }
