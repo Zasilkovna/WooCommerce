@@ -55,16 +55,16 @@ class Carrier {
 	 */
 	public function fromNonFeedCarrierData( BaseProvider $nonFeedCarrierProvider ): Entity\Carrier {
 		return new Entity\Carrier(
-			(string) $nonFeedCarrierProvider->getId(),
+			$nonFeedCarrierProvider->getId(),
 			$nonFeedCarrierProvider->getName(),
-			(bool) $nonFeedCarrierProvider->hasPickupPoints(),
+			$nonFeedCarrierProvider->hasPickupPoints(),
 			false,
 			false,
 			false,
 			false,
 			false,
 			false,
-			( $nonFeedCarrierProvider->supportsCod() ?? true ),
+			$nonFeedCarrierProvider->supportsCod(),
 			$nonFeedCarrierProvider->getCountry(),
 			$nonFeedCarrierProvider->getCurrency(),
 			10,

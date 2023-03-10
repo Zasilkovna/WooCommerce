@@ -137,7 +137,11 @@ class Builder {
 			$order->setCarrier( $carrier );
 			$order->setCarrierCode( $order->getCarrierId() );
 		} else {
-			$order->setCarrierCode( $this->pickupPointsConfig->getCompoundCarrierIdByCountry( $order->getShippingCountry() ) );
+			$order->setCarrierCode(
+				$this->pickupPointsConfig->getCompoundCarrierIdByCountry(
+					$order->getShippingCountry()
+				)
+			);
 		}
 
 		$order->setCurrency( $wcOrder->get_currency() );

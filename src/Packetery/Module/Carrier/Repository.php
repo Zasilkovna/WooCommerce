@@ -133,7 +133,7 @@ class Repository {
 	 *
 	 * @param int $carrierId Carrier id.
 	 *
-	 * @return array|object|null
+	 * @return array|null
 	 */
 	public function getById( int $carrierId ) {
 		return $this->wpdbAdapter->get_row(
@@ -151,7 +151,7 @@ class Repository {
 	 *
 	 * @param string $country ISO code.
 	 *
-	 * @return array|object|null
+	 * @return array|null
 	 */
 	public function getByCountry( string $country ) {
 		return $this->wpdbAdapter->get_results(
@@ -167,7 +167,7 @@ class Repository {
 	/**
 	 * Gets all active carriers.
 	 *
-	 * @return array|object|null
+	 * @return array|null
 	 */
 	public function getActiveCarriers() {
 		return $this->wpdbAdapter->get_results(
