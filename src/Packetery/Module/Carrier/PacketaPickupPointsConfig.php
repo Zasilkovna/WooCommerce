@@ -71,6 +71,7 @@ class PacketaPickupPointsConfig {
 			$carrierId = $compoundProvider->getId();
 			assert( isset( $translatedNames[ $carrierId ] ), 'Missing name for carrier id ' . $carrierId );
 			$compoundProvider->setTranslatedName( $translatedNames[ $carrierId ] );
+			// There is only one provider for each country.
 			$indexedCollection[ $compoundProvider->getCountry() ] = $compoundProvider;
 		}
 

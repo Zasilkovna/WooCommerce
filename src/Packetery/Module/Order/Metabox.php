@@ -382,7 +382,7 @@ class Metabox {
 			$propsToSave[ self::FIELD_WEIGHT ] = (float) $values[ self::FIELD_WEIGHT ];
 		}
 
-		if ( $values[ Attribute::ATTR_POINT_ID ] && $order->isPickupPointDelivery() ) {
+		if ( $values[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
 			/**
 			 * Cannot be null due to the condition at the beginning of the method.
 			 *
@@ -392,8 +392,8 @@ class Metabox {
 			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 
-				if ( Attribute::ATTR_CARRIER_ID === $pickupPointAttr['name'] ) {
-					$value = ( ! empty( $values[ Attribute::ATTR_CARRIER_ID ] ) ? $values[ Attribute::ATTR_CARRIER_ID ] : $order->getCarrierId() );
+				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
+					$value = ( ! empty( $values[ Attribute::CARRIER_ID ] ) ? $values[ Attribute::CARRIER_ID ] : $order->getCarrierId() );
 				}
 
 				$propsToSave[ $pickupPointAttr['name'] ] = $value;
@@ -405,7 +405,7 @@ class Metabox {
 			$wcOrder->save();
 		}
 
-		if ( '1' === $values[ Attribute::ATTR_ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+		if ( '1' === $values[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
 			$address = $this->mapper->toValidatedAddress( $values );
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );

@@ -38,26 +38,26 @@ class AttributeMapper {
 
 		foreach ( $propsToSave as $attrName => $attrValue ) {
 			switch ( $attrName ) {
-				case Attribute::ATTR_CARRIER_ID:
+				case Attribute::CARRIER_ID:
 					// TODO: Remove in carrier refactor.
 					$orderEntity->setCarrierId( $attrValue );
 					break;
-				case Attribute::ATTR_POINT_ID:
+				case Attribute::POINT_ID:
 					$pickupPoint->setId( $attrValue );
 					break;
-				case Attribute::ATTR_POINT_NAME:
+				case Attribute::POINT_NAME:
 					$pickupPoint->setName( $attrValue );
 					break;
-				case Attribute::ATTR_POINT_URL:
+				case Attribute::POINT_URL:
 					$pickupPoint->setUrl( $attrValue );
 					break;
-				case Attribute::ATTR_POINT_STREET:
+				case Attribute::POINT_STREET:
 					$pickupPoint->setStreet( $attrValue );
 					break;
-				case Attribute::ATTR_POINT_ZIP:
+				case Attribute::POINT_ZIP:
 					$pickupPoint->setZip( $attrValue );
 					break;
-				case Attribute::ATTR_POINT_CITY:
+				case Attribute::POINT_CITY:
 					$pickupPoint->setCity( $attrValue );
 					break;
 			}
@@ -77,17 +77,17 @@ class AttributeMapper {
 	 * @throws WC_Data_Exception When shipping input is invalid.
 	 */
 	public function toWcOrderShippingAddress( WC_Order $wcOrder, string $attributeName, string $value ): void {
-		if ( Attribute::ATTR_POINT_STREET === $attributeName ) {
+		if ( Attribute::POINT_STREET === $attributeName ) {
 			$wcOrder->set_shipping_address_1( $value );
 			$wcOrder->set_shipping_address_2( '' );
 		}
-		if ( Attribute::ATTR_POINT_PLACE === $attributeName ) {
+		if ( Attribute::POINT_PLACE === $attributeName ) {
 			$wcOrder->set_shipping_company( $value );
 		}
-		if ( Attribute::ATTR_POINT_CITY === $attributeName ) {
+		if ( Attribute::POINT_CITY === $attributeName ) {
 			$wcOrder->set_shipping_city( $value );
 		}
-		if ( Attribute::ATTR_POINT_ZIP === $attributeName ) {
+		if ( Attribute::POINT_ZIP === $attributeName ) {
 			$wcOrder->set_shipping_postcode( $value );
 		}
 	}
@@ -135,14 +135,14 @@ class AttributeMapper {
 	 */
 	public function toValidatedAddress( array $values ): Entity\Address {
 		$address = new Entity\Address(
-			$values[ Attribute::ATTR_ADDRESS_STREET ],
-			$values[ Attribute::ATTR_ADDRESS_CITY ],
-			$values[ Attribute::ATTR_ADDRESS_POST_CODE ]
+			$values[ Attribute::ADDRESS_STREET ],
+			$values[ Attribute::ADDRESS_CITY ],
+			$values[ Attribute::ADDRESS_POST_CODE ]
 		);
-		$address->setHouseNumber( $values[ Attribute::ATTR_ADDRESS_HOUSE_NUMBER ] );
-		$address->setCounty( $values[ Attribute::ATTR_ADDRESS_COUNTY ] );
-		$address->setLatitude( $values[ Attribute::ATTR_ADDRESS_LATITUDE ] );
-		$address->setLongitude( $values[ Attribute::ATTR_ADDRESS_LONGITUDE ] );
+		$address->setHouseNumber( $values[ Attribute::ADDRESS_HOUSE_NUMBER ] );
+		$address->setCounty( $values[ Attribute::ADDRESS_COUNTY ] );
+		$address->setLatitude( $values[ Attribute::ADDRESS_LATITUDE ] );
+		$address->setLongitude( $values[ Attribute::ADDRESS_LONGITUDE ] );
 
 		return $address;
 	}

@@ -135,7 +135,7 @@ class Repository {
 	 *
 	 * @return array|null
 	 */
-	public function getById( int $carrierId ) {
+	public function getById( int $carrierId ): ?array {
 		return $this->wpdbAdapter->get_row(
 			$this->wpdbAdapter->prepare(
 				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
@@ -153,7 +153,7 @@ class Repository {
 	 *
 	 * @return array|null
 	 */
-	public function getByCountry( string $country ) {
+	public function getByCountry( string $country ): ?array {
 		return $this->wpdbAdapter->get_results(
 			$this->wpdbAdapter->prepare(
 				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
@@ -169,7 +169,7 @@ class Repository {
 	 *
 	 * @return array|null
 	 */
-	public function getActiveCarriers() {
+	public function getActiveCarriers(): ?array {
 		return $this->wpdbAdapter->get_results(
 			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
 			FROM `' . $this->wpdbAdapter->packetery_carrier . '` WHERE `deleted` = false',

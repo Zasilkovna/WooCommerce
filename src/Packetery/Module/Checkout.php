@@ -363,7 +363,7 @@ class Checkout {
 			}
 
 			if ( ! $error && ! $this->carrierEntityRepository->isValidForCountry(
-				( $post[ Order\Attribute::ATTR_CARRIER_ID ] ? $post[ Order\Attribute::ATTR_CARRIER_ID ] : null ),
+				( $post[ Order\Attribute::CARRIER_ID ] ? $post[ Order\Attribute::CARRIER_ID ] : null ),
 				$this->getCustomerCountry()
 			) ) {
 				wc_add_notice( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
@@ -371,8 +371,8 @@ class Checkout {
 			}
 
 			if ( ! $error ) {
-				$pickupPointId         = $post[ Order\Attribute::ATTR_POINT_ID ];
-				$carrierId             = ( $post[ Order\Attribute::ATTR_CARRIER_ID ] ?? null );
+				$pickupPointId         = $post[ Order\Attribute::POINT_ID ];
+				$carrierId             = ( $post[ Order\Attribute::CARRIER_ID ] ?? null );
 				$carriersForValidation = $chosenShippingMethod;
 				if ( '' === $carrierId ) {
 					$carrierId             = Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
@@ -410,8 +410,8 @@ class Checkout {
 			if (
 				'required' === $addressValidation &&
 				(
-					! isset( $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ] ) ||
-					'1' !== $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ]
+					! isset( $post[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) ||
+					'1' !== $post[ Order\Attribute::ADDRESS_IS_VALIDATED ]
 				)
 			) {
 				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
@@ -437,8 +437,8 @@ class Checkout {
 		$propsToSave = [];
 		// Save carrier id for home delivery (we got no id from widget).
 		$carrierId = $this->getCarrierId( $chosenMethod );
-		if ( empty( $post[ Order\Attribute::ATTR_CARRIER_ID ] ) && $carrierId ) {
-			$propsToSave[ Order\Attribute::ATTR_CARRIER_ID ] = $carrierId;
+		if ( empty( $post[ Order\Attribute::CARRIER_ID ] ) && $carrierId ) {
+			$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
@@ -463,8 +463,8 @@ class Checkout {
 
 				$saveMeta = true;
 				if (
-					( Order\Attribute::ATTR_CARRIER_ID === $attrName && ! $attrValue ) ||
-					( Order\Attribute::ATTR_POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
+					( Order\Attribute::CARRIER_ID === $attrName && ! $attrValue ) ||
+					( Order\Attribute::POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
 				) {
 					$saveMeta = false;
 				}
@@ -481,8 +481,8 @@ class Checkout {
 
 		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
 		if (
-			isset( $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ] ) &&
-			'1' === $post[ Order\Attribute::ATTR_ADDRESS_IS_VALIDATED ] &&
+			isset( $post[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
+			'1' === $post[ Order\Attribute::ADDRESS_IS_VALIDATED ] &&
 			$this->isHomeDeliveryOrder()
 		) {
 			$validatedAddress = $this->mapper->toValidatedAddress( $post );
