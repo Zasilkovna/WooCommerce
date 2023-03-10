@@ -81,7 +81,7 @@ class WidgetOptionsBuilder {
 
 		$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
 		if ( ! empty( $vendorCarriers[ $carrierId ] ) ) {
-			$vendorGroups = [ $vendorCarriers[ $carrierId ]['group'] ];
+			$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
 		}
 
 		if ( empty( $vendorGroups ) ) {
@@ -106,33 +106,33 @@ class WidgetOptionsBuilder {
 	/**
 	 * Gets carrier configuration for widgets in frontend.
 	 *
-	 * @param array      $carrierConfig   Carrier configuration.
-	 * @param float|null $defaultPrice    Default price.
-	 * @param string     $optionId        Option id.
-	 * @param string     $customerCountry Customer country.
+	 * @param Entity\Carrier $carrier         Carrier configuration.
+	 * @param float|null     $defaultPrice    Default price.
+	 * @param string         $optionId        Option id.
+	 * @param string         $customerCountry Customer country.
 	 *
 	 * @return array
 	 */
-	public function getCarrierForCheckout( array $carrierConfig, ?float $defaultPrice, string $optionId, string $customerCountry ): array {
+	public function getCarrierForCheckout( Entity\Carrier $carrier, ?float $defaultPrice, string $optionId, string $customerCountry ): array {
 		$carrierConfigForWidget = [
-			'id'               => $carrierConfig['id'],
-			'is_pickup_points' => $carrierConfig['is_pickup_points'],
+			'id'               => $carrier->getId(),
+			'is_pickup_points' => (int) $carrier->hasPickupPoints(),
 			'defaultPrice'     => $defaultPrice,
-			'defaultCurrency'  => $carrierConfig['currency'],
+			'defaultCurrency'  => $carrier->getCurrency(),
 		];
 
 		$carrierOption = get_option( $optionId );
-		if ( $carrierConfig['is_pickup_points'] ) {
+		if ( $carrier->hasPickupPoints() ) {
 			$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
-				(string) $carrierConfig['id'],
+				(string) $carrier->getId(),
 				$customerCountry,
 				( ( $carrierOption && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
 			);
 		}
 
-		if ( ! $carrierConfig['is_pickup_points'] ) {
+		if ( ! $carrier->hasPickupPoints() ) {
 			$addressValidation = 'none';
-			if ( $carrierOption && in_array( $carrierConfig['country'], Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
+			if ( $carrierOption && in_array( $carrier->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 			}
 

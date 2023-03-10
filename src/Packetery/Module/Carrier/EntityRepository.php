@@ -84,7 +84,7 @@ class EntityRepository {
 		$nonFeedCarriers = $this->pickupPointsConfig->getCompoundAndVendorCarriers();
 
 		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
-			if ( $nonFeedCarrier['id'] === $carrierId ) {
+			if ( $nonFeedCarrier->getId() === $carrierId ) {
 				return $this->carrierEntityFactory->fromNonFeedCarrierData( $nonFeedCarrier );
 			}
 		}
@@ -171,7 +171,7 @@ class EntityRepository {
 		$nonFeedCarriers = $this->pickupPointsConfig->getCompoundAndVendorCarriers();
 
 		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
-			$carriers[ $nonFeedCarrier['id'] ] = $this->carrierEntityFactory->fromNonFeedCarrierData( $nonFeedCarrier );
+			$carriers[ $nonFeedCarrier->getId() ] = $this->carrierEntityFactory->fromNonFeedCarrierData( $nonFeedCarrier );
 		}
 
 		return $carriers;

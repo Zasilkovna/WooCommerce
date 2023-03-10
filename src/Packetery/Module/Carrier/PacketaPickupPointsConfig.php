@@ -9,7 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Core\Entity;
+use Packetery\Core\PickupPointProvider\BaseProvider;
+use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
+use Packetery\Core\PickupPointProvider\CompoundProvider;
+use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
+use Packetery\Core\PickupPointProvider\VendorProvider;
 
 /**
  * Packeta pickup points configuration.
@@ -21,171 +25,99 @@ class PacketaPickupPointsConfig {
 	public const COMPOUND_CARRIER_PREFIX = 'zpoint';
 
 	/**
+	 * CompoundCarrierCollectionFactory.
+	 *
+	 * @var CompoundCarrierCollectionFactory
+	 */
+	private $compoundCarrierFactory;
+
+	/**
+	 * VendorCollectionFactory.
+	 *
+	 * @var VendorCollectionFactory
+	 */
+	private $vendorCollectionFactory;
+
+	/**
+	 * PacketaPickupPointsConfig.
+	 *
+	 * @param CompoundCarrierCollectionFactory $compoundCarrierFactory CompoundCarrierCollectionFactory.
+	 * @param VendorCollectionFactory          $vendorCollectionFactory VendorCollectionFactory.
+	 */
+	public function __construct(
+		CompoundCarrierCollectionFactory $compoundCarrierFactory,
+		VendorCollectionFactory $vendorCollectionFactory
+	) {
+		$this->vendorCollectionFactory = $vendorCollectionFactory;
+		$this->compoundCarrierFactory  = $compoundCarrierFactory;
+	}
+
+	/**
 	 * Returns internal pickup points configuration
 	 *
-	 * @return array[]
+	 * @return CompoundProvider[]
 	 */
 	public function getCompoundCarriers(): array {
-		// TODO: take into account that not all types of pickup points support age verification.
-		// Can lead to situation with no pickup points selected when age verification is required.
-		return [
-			'cz' => [
-				'id'                        => 'zpointcz',
-				'name'                      => __( 'CZ Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'CZK',
-				'supports_age_verification' => true,
-				'country'                   => 'cz',
-				'vendor_codes'              => [
-					'czzpoint',
-					'czzbox',
-					'czalzabox',
-				],
-			],
-			'sk' => [
-				'id'                        => 'zpointsk',
-				'name'                      => __( 'SK Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'EUR',
-				'supports_age_verification' => true,
-				'country'                   => 'sk',
-				'vendor_codes'              => [
-					'skzpoint',
-					'skzbox',
-				],
-			],
-			'hu' => [
-				'id'                        => 'zpointhu',
-				'name'                      => __( 'HU Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'HUF',
-				'supports_age_verification' => true,
-				'country'                   => 'hu',
-				'vendor_codes'              => [
-					'huzpoint',
-					'huzbox',
-				],
-			],
-			'ro' => [
-				'id'                        => 'zpointro',
-				'name'                      => __( 'RO Packeta pickup points', 'packeta' ),
-				'is_pickup_points'          => 1,
-				'currency'                  => 'RON',
-				'supports_age_verification' => true,
-				'country'                   => 'ro',
-				'vendor_codes'              => [
-					'rozpoint',
-					'rozbox',
-				],
-			],
+		$translatedNames = [
+			'zpointcz' => __( 'CZ Packeta pickup points', 'packeta' ),
+			'zpointsk' => __( 'SK Packeta pickup points', 'packeta' ),
+			'zpointhu' => __( 'HU Packeta pickup points', 'packeta' ),
+			'zpointro' => __( 'RO Packeta pickup points', 'packeta' ),
 		];
+
+		$indexedCollection         = [];
+		$compoundCarrierCollection = $this->compoundCarrierFactory->create();
+		foreach ( $compoundCarrierCollection as $compoundProvider ) {
+			$carrierId = $compoundProvider->getId();
+			assert( isset( $translatedNames[ $carrierId ] ), 'Missing name for carrier id ' . $carrierId );
+			$compoundProvider->setTranslatedName( $translatedNames[ $carrierId ] );
+			$indexedCollection[ $compoundProvider->getCountry() ] = $compoundProvider;
+		}
+
+		return $indexedCollection;
 	}
 
 	/**
 	 * Gets vendor carriers settings.
 	 *
-	 * @return array[]
+	 * @return VendorProvider[]
 	 */
 	public function getVendorCarriers(): array {
-		return [
-			'czzpoint'  => [
-				'country'                   => 'cz',
-				'group'                     => Entity\Carrier::VENDOR_GROUP_ZPOINT,
-				'name'                      => 'CZ ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'czzbox'    => [
-				'country'                   => 'cz',
-				'group'                     => 'zbox',
-				'name'                      => 'CZ ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'czalzabox' => [
-				'country'                   => 'cz',
-				'group'                     => 'alzabox',
-				'name'                      => 'CZ AlzaBox',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'skzpoint'  => [
-				'country'                   => 'sk',
-				'group'                     => Entity\Carrier::VENDOR_GROUP_ZPOINT,
-				'name'                      => 'SK ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'skzbox'    => [
-				'country'                   => 'sk',
-				'group'                     => 'zbox',
-				'name'                      => 'SK ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'huzpoint'  => [
-				'country'                   => 'hu',
-				'group'                     => Entity\Carrier::VENDOR_GROUP_ZPOINT,
-				'name'                      => 'HU ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'huzbox'    => [
-				'country'                   => 'hu',
-				'group'                     => 'zbox',
-				'name'                      => 'HU ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
-			'rozpoint'  => [
-				'country'                   => 'ro',
-				'group'                     => Entity\Carrier::VENDOR_GROUP_ZPOINT,
-				'name'                      => 'RO ' . __( 'Packeta internal pickup points', 'packeta' ),
-				'supports_cod'              => true,
-				'supports_age_verification' => true,
-			],
-			'rozbox'    => [
-				'country'                   => 'ro',
-				'group'                     => 'zbox',
-				'name'                      => 'RO ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-				'supports_cod'              => true,
-				'supports_age_verification' => false,
-			],
+		$translatedNames = [
+			'czzpoint'  => 'CZ ' . __( 'Packeta internal pickup points', 'packeta' ),
+			'czzbox'    => 'CZ ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+			'czalzabox' => 'CZ AlzaBox',
+			'skzpoint'  => 'SK ' . __( 'Packeta internal pickup points', 'packeta' ),
+			'skzbox'    => 'SK ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+			'huzpoint'  => 'HU ' . __( 'Packeta internal pickup points', 'packeta' ),
+			'huzbox'    => 'HU ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+			'rozpoint'  => 'RO ' . __( 'Packeta internal pickup points', 'packeta' ),
+			'rozbox'    => 'RO ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
 		];
+
+		$indexedCollection = [];
+		$vendorCollection  = $this->vendorCollectionFactory->create();
+		foreach ( $vendorCollection as $vendorProvider ) {
+			$vendorId = $vendorProvider->getId();
+			assert( isset( $translatedNames[ $vendorId ] ), 'Missing name for vendor id ' . $vendorId );
+			$vendorProvider->setTranslatedName( $translatedNames[ $vendorId ] );
+			$indexedCollection[ $vendorId ] = $vendorProvider;
+		}
+
+		return $indexedCollection;
 	}
 
 	/**
 	 * Gets all non-feed carriers settings.
 	 *
-	 * @return array
+	 * @return BaseProvider[]
 	 */
 	public function getCompoundAndVendorCarriers(): array {
-		$nonFeedCarriers = [];
-
-		$compoundCarriers = $this->getCompoundCarriers();
-		foreach ( $compoundCarriers as $compoundCarrier ) {
-			$nonFeedCarriers[ $compoundCarrier['id'] ] = $compoundCarrier;
-		}
-
-		foreach ( $this->getVendorCarriers() as $carrierId => $vendorCarrier ) {
-			$nonFeedCarriers[ $carrierId ] = [
-				'id'                        => $carrierId,
-				'name'                      => $vendorCarrier['name'],
-				'country'                   => $vendorCarrier['country'],
-				'supports_cod'              => $vendorCarrier['supports_cod'],
-				'supports_age_verification' => $vendorCarrier['supports_age_verification'],
-				'vendor_codes'              => [ $carrierId ],
-				// Vendor loads some settings from country.
-				'currency'                  => $compoundCarriers[ $vendorCarrier['country'] ]['currency'],
-				'is_pickup_points'          => $compoundCarriers[ $vendorCarrier['country'] ]['is_pickup_points'],
-			];
-		}
-
-		return $nonFeedCarriers;
+		return array_merge( $this->getCompoundCarriers(), $this->getVendorCarriers() );
 	}
 
 	/**
-	 * Tells zpoint carrier Id for given country.
+	 * Gets zpoint carrier id for given country.
 	 *
 	 * @param string $country Country ISO code.
 	 *
@@ -198,7 +130,7 @@ class PacketaPickupPointsConfig {
 			return null;
 		}
 
-		return $compoundCarriers[ $country ]['id'];
+		return $compoundCarriers[ $country ]->getId();
 	}
 
 	/**
@@ -236,7 +168,7 @@ class PacketaPickupPointsConfig {
 		$nonFeedCarriers  = $this->getCompoundAndVendorCarriers();
 
 		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
-			if ( $nonFeedCarrier['country'] === $country ) {
+			if ( $nonFeedCarrier->getCountry() === $country ) {
 				$filteredCarriers[] = $nonFeedCarrier;
 			}
 		}

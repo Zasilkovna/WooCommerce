@@ -249,18 +249,18 @@ class Checkout {
 	 */
 	public function createSettings(): array {
 		$carriersConfigForWidget = [];
-		$carriersConfig          = $this->carrierRepository->getAllIncludingNonFeed();
+		$carriers                = $this->carrierEntityRepository->getAllCarriersIncludingNonFeed();
 
-		foreach ( $carriersConfig as $carrierConfig ) {
-			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrierConfig['id'] );
+		foreach ( $carriers as $carrier ) {
+			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
 			$defaultPrice = $this->getRateCost(
-				Carrier\Options::createByCarrierId( $carrierConfig['id'] ),
+				Carrier\Options::createByCarrierId( $carrier->getId() ),
 				$this->getCartContentsTotalIncludingTax(),
 				$this->getCartWeightKg()
 			);
 
 			$carriersConfigForWidget[ $optionId ] = $this->widgetOptionsBuilder->getCarrierForCheckout(
-				$carrierConfig,
+				$carrier,
 				$defaultPrice,
 				$optionId,
 				$this->getCustomerCountry()

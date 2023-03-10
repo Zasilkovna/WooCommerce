@@ -70,3 +70,5 @@ services:
 	- Packetery\Module\Carrier\EntityRepository
 	- Packetery\Module\Order\AttributeMapper
 	- Packetery\Module\WidgetOptionsBuilder
+	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
+	- Packetery\Core\PickupPointProvider\VendorCollectionFactory

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\EntityFactory;
 
 use Packetery\Core\Entity;
+use Packetery\Core\PickupPointProvider\BaseProvider;
 
 /**
  * Class Carrier.
@@ -48,27 +49,27 @@ class Carrier {
 	/**
 	 * Carrier factory.
 	 *
-	 * @param array $nonFeedCarrierData Data from configuration.
+	 * @param BaseProvider $nonFeedCarrierProvider Data from configuration.
 	 *
 	 * @return Entity\Carrier
 	 */
-	public function fromNonFeedCarrierData( array $nonFeedCarrierData ): Entity\Carrier {
+	public function fromNonFeedCarrierData( BaseProvider $nonFeedCarrierProvider ): Entity\Carrier {
 		return new Entity\Carrier(
-			(string) $nonFeedCarrierData['id'],
-			$nonFeedCarrierData['name'],
-			(bool) $nonFeedCarrierData['is_pickup_points'],
+			(string) $nonFeedCarrierProvider->getId(),
+			$nonFeedCarrierProvider->getName(),
+			(bool) $nonFeedCarrierProvider->hasPickupPoints(),
 			false,
 			false,
 			false,
 			false,
 			false,
 			false,
-			( $nonFeedCarrierData['supports_cod'] ?? true ),
-			$nonFeedCarrierData['country'],
-			$nonFeedCarrierData['currency'],
+			( $nonFeedCarrierProvider->supportsCod() ?? true ),
+			$nonFeedCarrierProvider->getCountry(),
+			$nonFeedCarrierProvider->getCurrency(),
 			10,
 			false,
-			$nonFeedCarrierData['supports_age_verification']
+			$nonFeedCarrierProvider->supportsAgeVerification()
 		);
 	}
 }

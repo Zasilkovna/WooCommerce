@@ -592,8 +592,8 @@ class OptionsPage {
 
 		$compoundCarriers = $this->pickupPointsConfig->getCompoundCarriers();
 		foreach ( $compoundCarriers as $compoundCarrier ) {
-			if ( $id === $compoundCarrier['id'] ) {
-				return $compoundCarrier['vendor_codes'];
+			if ( $id === $compoundCarrier->getId() ) {
+				return $compoundCarrier->getVendorCodes();
 			}
 		}
 
@@ -617,10 +617,10 @@ class OptionsPage {
 		$vendorCheckboxes = [];
 		$vendorCarriers   = $this->pickupPointsConfig->getVendorCarriers();
 		foreach ( $availableVendors as $vendorId ) {
-			$vendorData           = $vendorCarriers[ $vendorId ];
+			$vendorProvider       = $vendorCarriers[ $vendorId ];
 			$checkbox             = [
-				'group'    => $vendorData['group'],
-				'name'     => $vendorData['name'],
+				'group'    => $vendorProvider->getGroup(),
+				'name'     => $vendorProvider->getName(),
 				'disabled' => null,
 				'default'  => null,
 			];
@@ -629,7 +629,7 @@ class OptionsPage {
 				$checkbox['disabled'] = true;
 			}
 			$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
-			$hasTheGroupAllowed    = in_array( $vendorData['group'], $carrierOptions['vendor_groups'], true );
+			$hasTheGroupAllowed    = in_array( $vendorProvider->getGroup(), $carrierOptions['vendor_groups'], true );
 			if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
 				$checkbox['default'] = true;
 			}

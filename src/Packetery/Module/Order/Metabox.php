@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
@@ -261,16 +262,7 @@ class Metabox {
 		}
 
 		if ( $packetId ) {
-			$packetCancelLink = add_query_arg(
-				[
-					PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
-					PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
-					Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
-					Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
-				],
-				admin_url( 'admin.php' )
-			);
-
+			$packetCancelLink = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_CANCEL_PACKET );
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				[
@@ -316,16 +308,7 @@ class Metabox {
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
 		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
-		$packetSubmitUrl        = add_query_arg(
-			[
-				PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
-				PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
-				Plugin::PARAM_PACKETERY_ACTION           => PacketActionsCommonLogic::ACTION_SUBMIT_PACKET,
-				Plugin::PARAM_NONCE                      => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET, $order->getNumber() ) ),
-			],
-			admin_url( 'admin.php' )
-		);
-
+		$packetSubmitUrl        = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
@@ -410,7 +393,7 @@ class Metabox {
 				$value = $values[ $pickupPointAttr['name'] ];
 
 				if ( Attribute::ATTR_CARRIER_ID === $pickupPointAttr['name'] ) {
-					$value = ( ! empty( $values[ Attribute::ATTR_CARRIER_ID ] ) ? $values[ Attribute::ATTR_CARRIER_ID ] : \Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+					$value = ( ! empty( $values[ Attribute::ATTR_CARRIER_ID ] ) ? $values[ Attribute::ATTR_CARRIER_ID ] : $order->getCarrierId() );
 				}
 
 				$propsToSave[ $pickupPointAttr['name'] ] = $value;
@@ -490,6 +473,26 @@ class Metabox {
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
 			],
 		];
+	}
+
+	/**
+	 * Gets order action link.
+	 *
+	 * @param Entity\Order $order  Order.
+	 * @param string       $action Action.
+	 *
+	 * @return string
+	 */
+	private function getOrderActionLink( Entity\Order $order, string $action ): string {
+		return add_query_arg(
+			[
+				PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+				PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+				Plugin::PARAM_PACKETERY_ACTION           => $action,
+				Plugin::PARAM_NONCE                      => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( $action, $order->getNumber() ) ),
+			],
+			admin_url( 'admin.php' )
+		);
 	}
 
 }
