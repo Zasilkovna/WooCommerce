@@ -109,11 +109,10 @@ class WidgetOptionsBuilder {
 	 * @param Entity\Carrier $carrier         Carrier configuration.
 	 * @param float|null     $defaultPrice    Default price.
 	 * @param string         $optionId        Option id.
-	 * @param string         $customerCountry Customer country.
 	 *
 	 * @return array
 	 */
-	public function getCarrierForCheckout( Entity\Carrier $carrier, ?float $defaultPrice, string $optionId, string $customerCountry ): array {
+	public function getCarrierForCheckout( Entity\Carrier $carrier, ?float $defaultPrice, string $optionId ): array {
 		$carrierConfigForWidget = [
 			'id'               => $carrier->getId(),
 			'is_pickup_points' => (int) $carrier->hasPickupPoints(),
@@ -125,7 +124,7 @@ class WidgetOptionsBuilder {
 		if ( $carrier->hasPickupPoints() ) {
 			$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
 				(string) $carrier->getId(),
-				$customerCountry,
+				$carrier->getCountry(),
 				( ( $carrierOption && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
 			);
 		}

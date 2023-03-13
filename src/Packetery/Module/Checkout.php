@@ -262,8 +262,7 @@ class Checkout {
 			$carriersConfigForWidget[ $optionId ] = $this->widgetOptionsBuilder->getCarrierForCheckout(
 				$carrier,
 				$defaultPrice,
-				$optionId,
-				$this->getCustomerCountry()
+				$optionId
 			);
 		}
 
