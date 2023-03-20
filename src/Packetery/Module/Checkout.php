@@ -498,9 +498,18 @@ class Checkout {
 		}
 
 		$carrierOptions = Carrier\Options::createByOptionId( $chosenMethod );
-		if ( $this->isCodPaymentMethod( $this->getChosenPaymentMethod() ) && ! $this->validateMaximumCod( $carrierOptions, $this->getCartTotal() ) ) {
-			// translators: 1: Max COD 2: Carrier name.
-			$wcOrder->add_order_note( sprintf( __( 'Order value exceeds maximum COD value "%1$s" for carrier "%2$s".', 'packeta' ), $carrierOptions->getMaximumCodValue(), $carrierOptions->getName() ) );
+		if (
+			$this->isCodPaymentMethod( $this->getChosenPaymentMethod() ) &&
+			! $this->validateMaximumCod( $carrierOptions, (float) \WC()->cart->get_total( 'raw' ) )
+		) {
+			$wcOrder->add_order_note(
+				sprintf(
+					// translators: 1: Max COD 2: Carrier name.
+					__( 'Order value exceeds maximum COD value "%1$s" for carrier "%2$s".', 'packeta' ),
+					$carrierOptions->getMaximumCodValue(),
+					$carrierOptions->getName()
+				)
+			);
 		}
 
 		if ( $this->isPickupPointOrder() ) {
@@ -1252,7 +1261,7 @@ class Checkout {
 		}
 
 		$contentPrice     = $this->getCartContentsTotalIncludingTax();
-		$shippingPrice    = $this->getCartShippingTotalIncludingTax();
+		$shippingPrice    = (float) \WC()->cart->get_shipping_total() + (float) \WC()->cart->get_shipping_tax();
 		$packetaFees      = $this->createFees( $this->options_provider->getCodPaymentMethod() );
 		$packetaFeesTotal = array_sum( array_column( $packetaFees, 'amount' ) );
 		$packetaFeesTax   = array_sum(
@@ -1295,24 +1304,6 @@ class Checkout {
 
 		$maximumCodValue = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getMaximumCodValue() );
 		return $againstConvertedValue <= $maximumCodValue;
-	}
-
-	/**
-	 * Gets cart total shipping price.
-	 *
-	 * @return float
-	 */
-	private function getCartShippingTotalIncludingTax(): float {
-		return (float) WC()->cart->get_shipping_total() + (float) WC()->cart->get_shipping_tax();
-	}
-
-	/**
-	 * Gets cart total price.
-	 *
-	 * @return float
-	 */
-	private function getCartTotal(): float {
-		return (float) WC()->cart->get_total( 'raw' );
 	}
 
 }
