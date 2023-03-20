@@ -14,6 +14,7 @@ use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\CompoundProvider;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorProvider;
+use Packetery\Module\Options\FeatureFlag;
 
 /**
  * Packeta pickup points configuration.
@@ -39,17 +40,27 @@ class PacketaPickupPointsConfig {
 	private $vendorCollectionFactory;
 
 	/**
+	 * Feature flag.
+	 *
+	 * @var FeatureFlag
+	 */
+	private $featureFlag;
+
+	/**
 	 * PacketaPickupPointsConfig.
 	 *
-	 * @param CompoundCarrierCollectionFactory $compoundCarrierFactory CompoundCarrierCollectionFactory.
+	 * @param CompoundCarrierCollectionFactory $compoundCarrierFactory  CompoundCarrierCollectionFactory.
 	 * @param VendorCollectionFactory          $vendorCollectionFactory VendorCollectionFactory.
+	 * @param FeatureFlag                      $featureFlag             Feature flag.
 	 */
 	public function __construct(
 		CompoundCarrierCollectionFactory $compoundCarrierFactory,
-		VendorCollectionFactory $vendorCollectionFactory
+		VendorCollectionFactory $vendorCollectionFactory,
+		FeatureFlag $featureFlag
 	) {
 		$this->vendorCollectionFactory = $vendorCollectionFactory;
 		$this->compoundCarrierFactory  = $compoundCarrierFactory;
+		$this->featureFlag             = $featureFlag;
 	}
 
 	/**
@@ -84,6 +95,10 @@ class PacketaPickupPointsConfig {
 	 * @return VendorProvider[]
 	 */
 	public function getVendorCarriers(): array {
+		if ( ! $this->featureFlag->isSplitActive() ) {
+			return [];
+		}
+
 		$translatedNames = [
 			'czzpoint'  => 'CZ ' . __( 'Packeta internal pickup points', 'packeta' ),
 			'czzbox'    => 'CZ ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',

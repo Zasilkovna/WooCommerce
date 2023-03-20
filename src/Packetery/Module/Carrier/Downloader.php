@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Module\Exception\DownloadException;
 use Packetery\Module\Options\Provider;
 use PacketeryGuzzleHttp\Client;
 use PacketeryGuzzleHttp\Exception\GuzzleException;
@@ -133,12 +134,12 @@ class Downloader {
 	 */
 	private function download_json(): string {
 		$url = sprintf( self::API_URL, $this->options_provider->get_api_key() );
+		/**
+		 * Guzzle response.
+		 *
+		 * @var Response $result Guzzle response.
+		 */
 		try {
-			/**
-			 * Guzzle response.
-			 *
-			 * @var Response $result Guzzle response.
-			 */
 			$result = $this->client->get( $url );
 		} catch ( GuzzleException $exception ) {
 			throw new DownloadException( $exception->getMessage() );

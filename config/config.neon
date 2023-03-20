@@ -72,3 +72,4 @@ services:
 	- Packetery\Module\WidgetOptionsBuilder
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
 	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
+	- Packetery\Module\Options\FeatureFlag

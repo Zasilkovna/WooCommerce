@@ -15,6 +15,7 @@ use Packetery\Core\Rounder;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Options\FeatureFlag;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
@@ -81,6 +82,13 @@ class OptionsPage {
 	private $pickupPointsConfig;
 
 	/**
+	 * Feature flag.
+	 *
+	 * @var FeatureFlag
+	 */
+	private $featureFlag;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
@@ -90,6 +98,7 @@ class OptionsPage {
 	 * @param CountryListingPage        $countryListingPage CountryListingPage.
 	 * @param MessageManager            $messageManager     Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param FeatureFlag               $featureFlag        Feature flag.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -98,7 +107,8 @@ class OptionsPage {
 		Request $httpRequest,
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
-		PacketaPickupPointsConfig $pickupPointsConfig
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		FeatureFlag $featureFlag
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
@@ -107,6 +117,7 @@ class OptionsPage {
 		$this->countryListingPage = $countryListingPage;
 		$this->messageManager     = $messageManager;
 		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->featureFlag        = $featureFlag;
 	}
 
 	/**
@@ -147,17 +158,19 @@ class OptionsPage {
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
 
-		$carrierOptions   = get_option( $optionId );
-		$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
-		if ( $vendorCheckboxes ) {
-			$vendorsContainer = $form->addContainer( 'vendor_groups' );
-			foreach ( $vendorCheckboxes as $checkboxConfig ) {
-				$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
-				if ( true === $checkboxConfig['disabled'] ) {
-					$checkboxControl->setDisabled()->setOmitted( false );
-				}
-				if ( true === $checkboxConfig['default'] ) {
-					$checkboxControl->setDefaultValue( true );
+		$carrierOptions = get_option( $optionId );
+		if ( $this->featureFlag->isSplitActive() ) {
+			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
+			if ( $vendorCheckboxes ) {
+				$vendorsContainer = $form->addContainer( 'vendor_groups' );
+				foreach ( $vendorCheckboxes as $checkboxConfig ) {
+					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
+					if ( true === $checkboxConfig['disabled'] ) {
+						$checkboxControl->setDisabled()->setOmitted( false );
+					}
+					if ( true === $checkboxConfig['default'] ) {
+						$checkboxControl->setDefaultValue( true );
+					}
 				}
 			}
 		}
@@ -282,15 +295,17 @@ class OptionsPage {
 
 		$options = $form->getValues( 'array' );
 
-		$checkedVendors = $this->getCheckedVendors( $options );
-		if (
-			isset( $options['vendor_groups'] ) &&
-			count( $options['vendor_groups'] ) >= self::MINIMUM_CHECKED_VENDORS &&
-			count( $checkedVendors ) < self::MINIMUM_CHECKED_VENDORS
-		) {
-			$vendorMessage = __( 'Check at least two types of pickup points or set corresponding separate carriers.', 'packeta' );
-			add_settings_error( 'vendor_groups', 'vendor_groups', esc_attr( $vendorMessage ) );
-			$form->addError( $vendorMessage );
+		if ( $this->featureFlag->isSplitActive() ) {
+			$checkedVendors = $this->getCheckedVendors( $options );
+			if (
+				isset( $options['vendor_groups'] ) &&
+				count( $options['vendor_groups'] ) >= self::MINIMUM_CHECKED_VENDORS &&
+				count( $checkedVendors ) < self::MINIMUM_CHECKED_VENDORS
+			) {
+				$vendorMessage = __( 'Check at least two types of pickup points or set corresponding separate carriers.', 'packeta' );
+				add_settings_error( 'vendor_groups', 'vendor_groups', esc_attr( $vendorMessage ) );
+				$form->addError( $vendorMessage );
+			}
 		}
 
 		$this->checkOverlapping(

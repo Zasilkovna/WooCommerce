@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Options\FeatureFlag;
 use Packetery\Module\Order\Repository;
 use WC_Order;
 
@@ -44,20 +45,30 @@ class WidgetOptionsBuilder {
 	private $orderRepository;
 
 	/**
+	 * Feature flag.
+	 *
+	 * @var FeatureFlag
+	 */
+	private $featureFlag;
+
+	/**
 	 * WidgetOptionsBuilder constructor.
 	 *
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig     Internal pickup points config.
-	 * @param RateCalculator            $rateCalculator       RateCalculator.
-	 * @param Repository                $orderRepository      Order repository.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param RateCalculator            $rateCalculator     RateCalculator.
+	 * @param Repository                $orderRepository    Order repository.
+	 * @param FeatureFlag               $featureFlag        Feature flag.
 	 */
 	public function __construct(
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		RateCalculator $rateCalculator,
-		Repository $orderRepository
+		Repository $orderRepository,
+		FeatureFlag $featureFlag
 	) {
 		$this->pickupPointsConfig = $pickupPointsConfig;
 		$this->rateCalculator     = $rateCalculator;
 		$this->orderRepository    = $orderRepository;
+		$this->featureFlag        = $featureFlag;
 	}
 
 	/**
@@ -121,7 +132,7 @@ class WidgetOptionsBuilder {
 		];
 
 		$carrierOption = get_option( $optionId );
-		if ( $carrier->hasPickupPoints() ) {
+		if ( $carrier->hasPickupPoints() && $this->featureFlag->isSplitActive() ) {
 			$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
 				(string) $carrier->getId(),
 				$carrier->getCountry(),
@@ -186,7 +197,10 @@ class WidgetOptionsBuilder {
 		}
 
 		// In backend, we want all pickup points in that country for packeta carrier.
-		if ( $order->getCarrierId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
+		if (
+			$order->getCarrierId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID &&
+			$this->featureFlag->isSplitActive()
+		) {
 			$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
 				$order->getCarrierId(),
 				$order->getShippingCountry(),
