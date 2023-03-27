@@ -169,6 +169,20 @@ class Options {
 	}
 
 	/**
+	 * Gets maximum COD value.
+	 *
+	 * @return float|null
+	 */
+	public function getMaximumCodValue(): ?float {
+		$value = $this->options['maximum_cod_value'] ?? null;
+		if ( is_numeric( $value ) ) {
+			return (float) $value;
+		}
+
+		return null;
+	}
+
+	/**
 	 * Tells if any COD surcharge was configured.
 	 *
 	 * @return bool

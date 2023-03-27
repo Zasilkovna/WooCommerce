@@ -457,21 +457,13 @@ class Checkout {
 		}
 
 		if ( $this->isHomeDeliveryOrder() ) {
-			$carrierId     = $this->getCarrierId( $chosenShippingMethod );
-			$optionId      = self::CARRIER_PREFIX . $carrierId;
-			$carrierOption = get_option( $optionId );
-
-			$addressValidation = 'none';
-			if ( $carrierOption ) {
-				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
-			}
-
+			$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
 			if (
-				'required' === $addressValidation &&
 				(
 					! isset( $post[ self::$homeDeliveryAttrs['isValidated']['name'] ] ) ||
 					'1' !== $post[ self::$homeDeliveryAttrs['isValidated']['name'] ]
-				)
+				) &&
+				'required' === $carrierOptions->getAddressValidation()
 			) {
 				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 			}
@@ -503,6 +495,21 @@ class Checkout {
 		$wcOrder = wc_get_order( $orderId );
 		if ( ! $wcOrder instanceof \WC_Order ) {
 			return;
+		}
+
+		$carrierOptions = Carrier\Options::createByOptionId( $chosenMethod );
+		if (
+			$this->isCodPaymentMethod( $this->getChosenPaymentMethod() ) &&
+			! $this->validateMaximumCod( $carrierOptions, (float) \WC()->cart->get_total( 'raw' ) )
+		) {
+			$wcOrder->add_order_note(
+				sprintf(
+					// translators: 1: Max COD 2: Carrier name.
+					__( 'Order value exceeds maximum COD value "%1$s" for carrier "%2$s".', 'packeta' ),
+					$carrierOptions->getMaximumCodValue(),
+					$carrierOptions->getName()
+				)
+			);
 		}
 
 		if ( $this->isPickupPointOrder() ) {
@@ -687,9 +694,25 @@ class Checkout {
 	 * @return void
 	 */
 	public function calculateFees(): void {
+		$fees = $this->createFees( $this->getChosenPaymentMethod() );
+		foreach ( $fees as $fee ) {
+			WC()->cart->fees_api()->add_fee( $fee );
+		}
+	}
+
+	/**
+	 * Creates fees.
+	 *
+	 * @param string|null $paymentMethod Payment method.
+	 *
+	 * @return array
+	 */
+	private function createFees( ?string $paymentMethod ): array {
+		$fees = [];
+
 		$chosenShippingMethod = $this->getChosenMethod();
 		if ( false === $this->isPacketeryOrder( $chosenShippingMethod ) ) {
-			return;
+			return $fees;
 		}
 
 		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
@@ -697,7 +720,7 @@ class Checkout {
 		$maxTaxClass    = $this->getTaxClassWithMaxRate();
 
 		if ( $carrierOptions->hasCouponFreeShippingForFeesAllowed() && $this->isFreeShippingCouponApplied() ) {
-			return;
+			return $fees;
 		}
 
 		if (
@@ -707,29 +730,26 @@ class Checkout {
 			$this->isAgeVerification18PlusRequired()
 		) {
 			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
-			WC()->cart->fees_api()->add_fee(
-				[
-					'id'        => 'packetery-age-verification-fee',
-					'name'      => __( 'Age verification fee', 'packeta' ),
-					'amount'    => $feeAmount,
-					'taxable'   => ! ( false === $maxTaxClass ),
-					'tax_class' => $maxTaxClass,
-				]
-			);
+			$fees[]    = [
+				'id'        => 'packetery-age-verification-fee',
+				'name'      => __( 'Age verification fee', 'packeta' ),
+				'amount'    => $feeAmount,
+				'taxable'   => ! ( false === $maxTaxClass ),
+				'tax_class' => $maxTaxClass,
+			];
 		}
 
-		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
 		if ( empty( $paymentMethod ) || false === $this->isCodPaymentMethod( $paymentMethod ) ) {
-			return;
+			return $fees;
 		}
 
 		$applicableSurcharge = $this->getCODSurcharge( $carrierOptions->toArray(), $this->getCartPrice() );
 		$applicableSurcharge = $this->currencySwitcherFacade->getConvertedPrice( $applicableSurcharge );
 		if ( 0 >= $applicableSurcharge ) {
-			return;
+			return $fees;
 		}
 
-		$fee = [
+		$fees[] = [
 			'id'        => 'packetery-cod-surcharge',
 			'name'      => __( 'COD surcharge', 'packeta' ),
 			'amount'    => $applicableSurcharge,
@@ -737,7 +757,7 @@ class Checkout {
 			'tax_class' => $maxTaxClass,
 		];
 
-		WC()->cart->fees_api()->add_fee( $fee );
+		return $fees;
 	}
 
 	/**
@@ -889,7 +909,16 @@ class Checkout {
 	}
 
 	/**
-	 * Calculates shipping without using POST data.
+	 * Gets chosen payment method.
+	 *
+	 * @return string
+	 */
+	private function getChosenPaymentMethod(): string {
+		return (string) WC()->session->get( 'chosen_payment_method' );
+	}
+
+	/**
+	 * Calculates shipping without using POST data and returns chosen method.
 	 *
 	 * @return string
 	 */
@@ -1162,11 +1191,13 @@ class Checkout {
 			return $availableGateways;
 		}
 
+		$carrierOptions = Carrier\Options::createByOptionId( $chosenMethod );
 		foreach ( $availableGateways as $key => $availableGateway ) {
-			if (
-				$this->isCodPaymentMethod( $availableGateway->id ) &&
-				! $carrier->supportsCod()
-			) {
+			if ( false === $this->isCodPaymentMethod( $availableGateway->id ) ) {
+				continue;
+			}
+
+			if ( false === $carrier->supportsCod() || false === $this->validateMaximumCodAgainstEstimatedTotal( $carrierOptions ) ) {
 				unset( $availableGateways[ $key ] );
 			}
 		}
@@ -1215,6 +1246,64 @@ class Checkout {
 			$this->isAgeVerification18PlusRequired(),
 			null
 		);
+	}
+
+	/**
+	 * Validates maximum COD against estimated value.
+	 *
+	 * @param Carrier\Options $carrierOptions Carrier Options.
+	 *
+	 * @return bool
+	 */
+	public function validateMaximumCodAgainstEstimatedTotal( Carrier\Options $carrierOptions ): bool {
+		if ( null === $carrierOptions->getMaximumCodValue() ) {
+			return true;
+		}
+
+		$contentPrice     = $this->getCartContentsTotalIncludingTax();
+		$shippingPrice    = (float) \WC()->cart->get_shipping_total() + (float) \WC()->cart->get_shipping_tax();
+		$packetaFees      = $this->createFees( $this->options_provider->getCodPaymentMethod() );
+		$packetaFeesTotal = array_sum( array_column( $packetaFees, 'amount' ) );
+		$packetaFeesTax   = array_sum(
+			array_map(
+				static function ( array $fee ): float {
+					if ( ! is_string( $fee['tax_class'] ) ) {
+						return 0;
+					}
+
+					return array_sum( \WC_Tax::calc_tax( $fee['amount'], \WC_Tax::get_rates( $fee['tax_class'], WC()->cart->get_customer() ) ) );
+				},
+				$packetaFees
+			)
+		);
+
+		$estimatedTotal = $contentPrice + $shippingPrice + $packetaFeesTotal + $packetaFeesTax;
+
+		/**
+		 * Applies packeta_estimated_cart_total_for_cod_payment_removal filters.
+		 *
+		 * @since 1.4.4
+		 */
+		$estimatedTotal = apply_filters( 'packeta_estimated_cart_total_for_cod_payment_removal', $estimatedTotal, $packetaFees );
+
+		return $this->validateMaximumCod( $carrierOptions, $estimatedTotal );
+	}
+
+	/**
+	 * Validates if payment method can be used with current cart.
+	 *
+	 * @param Carrier\Options $carrierOptions        Carrier options.
+	 * @param float           $againstConvertedValue Total value to pay in final currency.
+	 *
+	 * @return bool
+	 */
+	public function validateMaximumCod( Carrier\Options $carrierOptions, float $againstConvertedValue ): bool {
+		if ( null === $carrierOptions->getMaximumCodValue() ) {
+			return true;
+		}
+
+		$maximumCodValue = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getMaximumCodValue() );
+		return $againstConvertedValue <= $maximumCodValue;
 	}
 
 }
