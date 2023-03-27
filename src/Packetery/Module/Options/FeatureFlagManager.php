@@ -101,7 +101,7 @@ class FeatureFlagManager {
 			self::FLAG_SPLIT_ACTIVE => (bool) $responseDecoded['features']['split'],
 		];
 
-		$lastDownload                       = new DateTimeImmutable( 'now', wp_timezone() );
+		$lastDownload                       = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 		$flags[ self::FLAGS_LAST_DOWNLOAD ] = $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT );
 		update_option( self::FLAGS_OPTION_ID, $flags );
 
@@ -132,11 +132,11 @@ class FeatureFlagManager {
 		}
 
 		if ( $hasApiKey ) {
-			$now        = new DateTimeImmutable( 'now', wp_timezone() );
+			$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 			$lastUpdate = DateTimeImmutable::createFromFormat(
 				Helper::MYSQL_DATETIME_FORMAT,
 				$flags[ self::FLAGS_LAST_DOWNLOAD ],
-				wp_timezone()
+				new \DateTimeZone( 'UTC' )
 			);
 			$ageHours   = ( ( $now->getTimestamp() - $lastUpdate->getTimestamp() ) / HOUR_IN_SECONDS );
 			if ( $ageHours >= self::VALID_FOR_HOURS ) {
