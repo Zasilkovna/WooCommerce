@@ -14,7 +14,7 @@ use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\CompoundProvider;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorProvider;
-use Packetery\Module\Options\FeatureFlag;
+use Packetery\Module\Options\FeatureFlagManager;
 
 /**
  * Packeta pickup points configuration.
@@ -42,7 +42,7 @@ class PacketaPickupPointsConfig {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlag
+	 * @var FeatureFlagManager
 	 */
 	private $featureFlag;
 
@@ -51,12 +51,12 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param CompoundCarrierCollectionFactory $compoundCarrierFactory  CompoundCarrierCollectionFactory.
 	 * @param VendorCollectionFactory          $vendorCollectionFactory VendorCollectionFactory.
-	 * @param FeatureFlag                      $featureFlag             Feature flag.
+	 * @param FeatureFlagManager               $featureFlag             Feature flag.
 	 */
 	public function __construct(
 		CompoundCarrierCollectionFactory $compoundCarrierFactory,
 		VendorCollectionFactory $vendorCollectionFactory,
-		FeatureFlag $featureFlag
+		FeatureFlagManager $featureFlag
 	) {
 		$this->vendorCollectionFactory = $vendorCollectionFactory;
 		$this->compoundCarrierFactory  = $compoundCarrierFactory;

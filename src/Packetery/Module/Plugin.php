@@ -238,6 +238,13 @@ class Plugin {
 	private $packetAutoSubmitter;
 
 	/**
+	 * Feature Flag Manager.
+	 *
+	 * @var Options\FeatureFlagManager
+	 */
+	private $featureFlagManager;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -268,6 +275,7 @@ class Plugin {
 	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
+	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -297,7 +305,8 @@ class Plugin {
 		DashboardWidget $dashboardWidget,
 		Order\PacketSubmitter $packetSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
-		Order\PacketAutoSubmitter $packetAutoSubmitter
+		Order\PacketAutoSubmitter $packetAutoSubmitter,
+		Options\FeatureFlagManager $featureFlagManager
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -328,6 +337,7 @@ class Plugin {
 		$this->packetSubmitter           = $packetSubmitter;
 		$this->productCategoryFormFields = $productCategoryFormFields;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
+		$this->featureFlagManager        = $featureFlagManager;
 	}
 
 	/**
@@ -731,6 +741,10 @@ class Plugin {
 			)
 		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
+			if ( $this->featureFlagManager->hasSplitActivationNotice() ) {
+				add_action( 'admin_notices', [ $this->featureFlagManager, 'renderSplitActivationNotice' ] );
+			}
 		}
 
 		if ( $isOrderGridPage ) {
@@ -943,6 +957,10 @@ class Plugin {
 
 		if ( Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET === $action ) {
 			$this->packetCanceller->processAction();
+		}
+
+		if ( Options\FeatureFlagManager::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
+			$this->featureFlagManager->dismissSplitActivationNotice();
 		}
 	}
 }

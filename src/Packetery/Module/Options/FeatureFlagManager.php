@@ -1,0 +1,221 @@
+<?php
+/**
+ * Class FeatureFlagManager
+ *
+ * @package Packetery
+ */
+
+declare( strict_types=1 );
+
+namespace Packetery\Module\Options;
+
+use DateTimeImmutable;
+use Exception;
+use Packetery\Core\Helper;
+use Packetery\Module\Exception\DownloadException;
+use Packetery\Module\Plugin;
+use PacketeryGuzzleHttp\Client;
+use PacketeryGuzzleHttp\Exception\GuzzleException;
+use PacketeryGuzzleHttp\PacketeryPsr7\Response;
+use PacketeryLatte\Engine;
+
+/**
+ * Class FeatureFlagManager
+ *
+ * @package Packetery
+ */
+class FeatureFlagManager {
+
+	private const ENDPOINT_URL                 = 'https://pes-features-test.packeta-com.codenow.com/v1/wp';
+	private const VALID_FOR_HOURS              = 4;
+	private const FLAGS_OPTION_ID              = 'packeta_feature_flags';
+	private const FLAGS_LAST_DOWNLOAD          = 'lastDownload';
+	private const TRANSIENT_SHOW_SPLIT_MESSAGE = 'packeta_show_split_message';
+	public const ACTION_HIDE_SPLIT_MESSAGE     = 'dismiss_split_message';
+
+	private const FLAG_SPLIT_ACTIVE = 'splitActive';
+
+	/**
+	 * Guzzle client.
+	 *
+	 * @var Client Guzzle client.
+	 */
+	private $client;
+
+	/**
+	 * Latte engine.
+	 *
+	 * @var Engine
+	 */
+	private $latteEngine;
+
+	/**
+	 * Options provider.
+	 *
+	 * @var Provider
+	 */
+	private $optionsProvider;
+
+	/**
+	 * Downloader constructor.
+	 *
+	 * @param Client   $guzzleClient Guzzle client.
+	 * @param Engine   $latteEngine Latte engine.
+	 * @param Provider $optionsProvider Options provider.
+	 */
+	public function __construct( Client $guzzleClient, Engine $latteEngine, Provider $optionsProvider ) {
+		$this->client          = $guzzleClient;
+		$this->latteEngine     = $latteEngine;
+		$this->optionsProvider = $optionsProvider;
+	}
+
+	/**
+	 * Downloads flags.
+	 *
+	 * @return array
+	 * @throws DownloadException Download exception.
+	 * @throws Exception From DateTimeImmutable.
+	 */
+	private function fetchFlags(): array {
+		/**
+		 * Guzzle response.
+		 *
+		 * @var Response $response Guzzle response.
+		 */
+		try {
+			$response = $this->client->get(
+				self::ENDPOINT_URL,
+				[
+					'query' => [
+						'api_key' => $this->optionsProvider->get_api_key(),
+					],
+				]
+			);
+		} catch ( GuzzleException $exception ) {
+			throw new DownloadException( $exception->getMessage() );
+		}
+		$responseJson    = $response->getBody()->getContents();
+		$responseDecoded = json_decode( $responseJson, true );
+
+		$flags = [
+			self::FLAG_SPLIT_ACTIVE => (bool) $responseDecoded['features']['split'],
+		];
+
+		$lastDownload                       = new DateTimeImmutable( 'now', wp_timezone() );
+		$flags[ self::FLAGS_LAST_DOWNLOAD ] = $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT );
+		update_option( self::FLAGS_OPTION_ID, $flags );
+
+		return $flags;
+	}
+
+	/**
+	 * Gets or downloads flags.
+	 *
+	 * @return array
+	 * @throws DownloadException Download exception.
+	 * @throws Exception From DateTimeImmutable.
+	 */
+	private function getFlags(): array {
+		static $flags;
+
+		if ( ! isset( $flags ) ) {
+			$flags = get_option( self::FLAGS_OPTION_ID );
+		}
+
+		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
+		if ( false === $flags ) {
+			if ( ! $hasApiKey ) {
+				return [];
+			}
+
+			return $this->fetchFlags();
+		}
+
+		if ( $hasApiKey ) {
+			$now        = new DateTimeImmutable( 'now', wp_timezone() );
+			$lastUpdate = DateTimeImmutable::createFromFormat(
+				Helper::MYSQL_DATETIME_FORMAT,
+				$flags[ self::FLAGS_LAST_DOWNLOAD ],
+				wp_timezone()
+			);
+			$ageHours   = ( ( $now->getTimestamp() - $lastUpdate->getTimestamp() ) / HOUR_IN_SECONDS );
+			if ( $ageHours >= self::VALID_FOR_HOURS ) {
+				$oldFlags = $flags;
+				$flags    = $this->fetchFlags();
+			}
+
+			if (
+				isset( $oldFlags ) &&
+				false === $oldFlags[ self::FLAG_SPLIT_ACTIVE ] &&
+				true === $flags[ self::FLAG_SPLIT_ACTIVE ]
+			) {
+				set_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE, 'yes' );
+			}
+		}
+
+		return $flags;
+	}
+
+	/**
+	 * Tells if split is active.
+	 *
+	 * @return bool
+	 * @throws DownloadException Download exception.
+	 */
+	public function isSplitActive(): bool {
+		$flags = $this->getFlags();
+		if ( isset( $flags[ self::FLAG_SPLIT_ACTIVE ] ) ) {
+			return (bool) $flags[ self::FLAG_SPLIT_ACTIVE ];
+		}
+
+		return false;
+	}
+
+	/**
+	 * Dismiss split notice.
+	 *
+	 * @return void
+	 */
+	public function dismissSplitActivationNotice(): void {
+		delete_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE );
+	}
+
+	/**
+	 * Determines whether to display split notice.
+	 *
+	 * @return bool
+	 */
+	public function hasSplitActivationNotice(): bool {
+		return ( 'yes' === get_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE ) );
+	}
+
+	/**
+	 * Print split activation notice.
+	 *
+	 * @return void
+	 */
+	public function renderSplitActivationNotice(): void {
+		$dismissUrl = add_query_arg( [ Plugin::PARAM_PACKETERY_ACTION => self::ACTION_HIDE_SPLIT_MESSAGE ] );
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/admin-notice.latte',
+			[
+				'message' => [
+					'type'    => 'warning',
+					'escape'  => false,
+					'message' => sprintf(
+					// translators: 1: documentation link start 2: link end 3: dismiss link start 4: link end.
+						__(
+							'We have just enabled new options for setting Packeta pickup points. You can now choose a different price for Z-Box and pickup points in the carrier settings. More information can be found in %1$sthe plugin documentation%2$s. %3$sDismiss this message%4$s',
+							'packeta'
+						),
+						'<a href="https://github.com/Zasilkovna/WooCommerce/wiki" target="_blank">',
+						'</a>',
+						'<a href="' . $dismissUrl . '" class="button button-primary">',
+						'</a>'
+					),
+				],
+			]
+		);
+	}
+
+}

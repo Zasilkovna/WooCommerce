@@ -15,7 +15,7 @@ use Packetery\Core\Rounder;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\FeatureFlag;
+use Packetery\Module\Options\FeatureFlagManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
@@ -84,7 +84,7 @@ class OptionsPage {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlag
+	 * @var FeatureFlagManager
 	 */
 	private $featureFlag;
 
@@ -98,7 +98,7 @@ class OptionsPage {
 	 * @param CountryListingPage        $countryListingPage CountryListingPage.
 	 * @param MessageManager            $messageManager     Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param FeatureFlag               $featureFlag        Feature flag.
+	 * @param FeatureFlagManager        $featureFlag        Feature flag.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -108,7 +108,7 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlag $featureFlag
+		FeatureFlagManager $featureFlag
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
