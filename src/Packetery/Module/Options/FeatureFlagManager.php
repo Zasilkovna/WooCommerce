@@ -208,10 +208,8 @@ class FeatureFlagManager {
 							'We have just enabled new options for setting Packeta pickup points. You can now choose a different price for Z-Box and pickup points in the carrier settings. More information can be found in %1$sthe plugin documentation%2$s. %3$sDismiss this message%4$s',
 							'packeta'
 						),
-						'<a href="https://github.com/Zasilkovna/WooCommerce/wiki" target="_blank">',
-						'</a>',
-						'<a href="' . $dismissUrl . '" class="button button-primary">',
-						'</a>'
+						...Plugin::createLinkParts( 'https://github.com/Zasilkovna/WooCommerce/wiki', '_blank' ),
+						...Plugin::createLinkParts( $dismissUrl, null, 'button button-primary' )
 					),
 				],
 			]
