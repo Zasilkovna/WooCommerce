@@ -208,7 +208,7 @@ class CollectionPrint {
 			\Packetery\Module\Options\Page::SLUG,
 			__( 'Print AWB', 'packeta' ),
 			__( 'Print AWB', 'packeta' ),
-			'manage_options',
+			'shop_manager',
 			self::PAGE_SLUG,
 			[
 				$this,
