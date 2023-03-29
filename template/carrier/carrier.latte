@@ -244,20 +244,6 @@
                                 </p>
                             </td>
                         </tr>
-                        <tr>
-                            <th scope="row">
-                                <label n:name=maximum_cod_value />
-                            </th>
-                            <td>
-                                <div>
-                                    <input n:name=maximum_cod_value
-                                            data-lfv-message-id="{$form[maximum_cod_value]->getHtmlId() . '_message'}">
-                                    <span> {$globalCurrency|noescape}</span>
-                                </div>
-                                <p class="packetery-input-validation-message help-block text-danger"
-                                   id="{$form[maximum_cod_value]->getHtmlId() . '_message'}">{inputError maximum_cod_value}</p>
-                            </td>
-                        </tr>
                     {/if}
                     <tr>
                         <th scope="row">
