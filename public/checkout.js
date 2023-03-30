@@ -223,7 +223,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			jQuery('body').trigger('update_checkout');
 		};
 
-		$(document).on('change', '#payment input[type="radio"]', packeteryDebounce( checkPaymentChange, 200 ));
+		$(document).on('change', '#payment input[type="radio"]', checkPaymentChange);
 		$( document ).on( 'updated_checkout', function() {
 			$widgetDiv = getPacketaWidget();
 			var destinationAddress = getDestinationAddress();

@@ -688,8 +688,7 @@ class Plugin {
 		if ( is_checkout() ) {
 			$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
 			$this->enqueueStyle( 'packetery-custom-front-styles', 'public/custom-front.css' );
-			$this->enqueueScript( 'packetery-debounce', 'public/debounce.js', true );
-			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery', 'packetery-debounce' ] );
+			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
 			wp_localize_script( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkout->createSettings() );
 		}
 	}

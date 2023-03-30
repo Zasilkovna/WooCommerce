@@ -92,17 +92,6 @@ add_filter( 'packeta_widget_language', static function ( string $language ): str
 
 You can find description of the attributes in the [official documentation](https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetattributes).
 
-##### Estimated cart total for COD payment needed for correct maximum COD validation
-
-Since 1.4.4. To correctly remove COD payment option from checkout before selection by customer, correct cart total estimation is needed.
-You can use this filter to override estimated cart total amount. You most likely need to add extra fees amount sum including tax.
-
-```
-add_filter( 'packeta_estimated_cart_total_for_cod_payment_removal', function ( float $estimatedCartTotal, array $packetaFees ): float {
-	return $correctTotal;
-} );
-```
-
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions
