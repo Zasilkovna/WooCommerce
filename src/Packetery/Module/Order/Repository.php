@@ -173,6 +173,8 @@ class Repository {
 				`adult_content` boolean NULL,
 				`value` double NULL,
 				`cod` double NULL,
+				`api_error_message` text NULL,
+				`api_error_date` datetime NULL,
 				`carrier_number` varchar(255) NULL,
 				`packet_status` varchar(255) NULL,
 				`deliver_on` date NULL,
