@@ -12,10 +12,10 @@ namespace Packetery\Module\Carrier;
 use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Helper;
 use Packetery\Core\Rounder;
-use Packetery\Module\Checkout;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
+use Packetery\Module\Options\FeatureFlagManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
@@ -28,8 +28,9 @@ use PacketeryNette\Http\Request;
  */
 class OptionsPage {
 
-	public const FORM_FIELD_NAME = 'name';
-	public const SLUG            = 'packeta-country';
+	public const FORM_FIELD_NAME         = 'name';
+	public const SLUG                    = 'packeta-country';
+	public const MINIMUM_CHECKED_VENDORS = 2;
 
 	/**
 	 * PacketeryLatte_engine.
@@ -41,7 +42,7 @@ class OptionsPage {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository Carrier repository.
+	 * @var EntityRepository Carrier repository.
 	 */
 	private $carrierRepository;
 
@@ -74,22 +75,40 @@ class OptionsPage {
 	private $messageManager;
 
 	/**
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
+
+	/**
+	 * Feature flag.
+	 *
+	 * @var FeatureFlagManager
+	 */
+	private $featureFlag;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine             $latteEngine PacketeryLatte_engine.
-	 * @param Repository         $carrierRepository Carrier repository.
-	 * @param FormFactory        $formFactory Form factory.
-	 * @param Request            $httpRequest PacketeryNette Request.
-	 * @param CountryListingPage $countryListingPage CountryListingPage.
-	 * @param MessageManager     $messageManager Message manager.
+	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
+	 * @param EntityRepository          $carrierRepository  Carrier repository.
+	 * @param FormFactory               $formFactory        Form factory.
+	 * @param Request                   $httpRequest        PacketeryNette Request.
+	 * @param CountryListingPage        $countryListingPage CountryListingPage.
+	 * @param MessageManager            $messageManager     Message manager.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param FeatureFlagManager        $featureFlag        Feature flag.
 	 */
 	public function __construct(
 		Engine $latteEngine,
-		Repository $carrierRepository,
+		EntityRepository $carrierRepository,
 		FormFactory $formFactory,
 		Request $httpRequest,
 		CountryListingPage $countryListingPage,
-		MessageManager $messageManager
+		MessageManager $messageManager,
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		FeatureFlagManager $featureFlag
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
@@ -97,6 +116,8 @@ class OptionsPage {
 		$this->httpRequest        = $httpRequest;
 		$this->countryListingPage = $countryListingPage;
 		$this->messageManager     = $messageManager;
+		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->featureFlag        = $featureFlag;
 	}
 
 	/**
@@ -125,7 +146,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createForm( array $carrierData ): Form {
-		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
+		$optionId = OptionPrefixer::getOptionId( $carrierData['id'] );
 
 		$form = $this->formFactory->create( $optionId );
 
@@ -136,6 +157,23 @@ class OptionsPage {
 
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
+
+		$carrierOptions = get_option( $optionId );
+		if ( $this->featureFlag->isSplitActive() ) {
+			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
+			if ( $vendorCheckboxes ) {
+				$vendorsContainer = $form->addContainer( 'vendor_groups' );
+				foreach ( $vendorCheckboxes as $checkboxConfig ) {
+					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
+					if ( true === $checkboxConfig['disabled'] ) {
+						$checkboxControl->setDisabled()->setOmitted( false );
+					}
+					if ( true === $checkboxConfig['default'] ) {
+						$checkboxControl->setDefaultValue( true );
+					}
+				}
+			}
+		}
 
 		$weightLimits = $form->addContainer( 'weight_limits' );
 		if ( empty( $carrierData['weight_limits'] ) ) {
@@ -201,10 +239,11 @@ class OptionsPage {
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
-		$carrierOptions       = get_option( $optionId );
-		$carrierOptions['id'] = $carrierData['id'];
-		if ( empty( $carrierOptions[ self::FORM_FIELD_NAME ] ) ) {
-			$carrierOptions[ self::FORM_FIELD_NAME ] = $carrierData['name'];
+		if ( false === $carrierOptions ) {
+			$carrierOptions = [
+				'id'                  => $carrierData['id'],
+				self::FORM_FIELD_NAME => $carrierData['name'],
+			];
 		}
 		$form->setDefaults( $carrierOptions );
 
@@ -230,7 +269,7 @@ class OptionsPage {
 	 * @return Form
 	 */
 	private function createFormTemplate( array $carrierData ): Form {
-		$optionId = Checkout::CARRIER_PREFIX . $carrierData['id'];
+		$optionId = OptionPrefixer::getOptionId( $carrierData['id'] );
 
 		$form = $this->formFactory->create( $optionId . '_template' );
 
@@ -255,6 +294,19 @@ class OptionsPage {
 		}
 
 		$options = $form->getValues( 'array' );
+
+		if ( $this->featureFlag->isSplitActive() ) {
+			$checkedVendors = $this->getCheckedVendors( $options );
+			if (
+				isset( $options['vendor_groups'] ) &&
+				count( $options['vendor_groups'] ) >= self::MINIMUM_CHECKED_VENDORS &&
+				count( $checkedVendors ) < self::MINIMUM_CHECKED_VENDORS
+			) {
+				$vendorMessage = __( 'Check at least two types of pickup points or set corresponding separate carriers.', 'packeta' );
+				add_settings_error( 'vendor_groups', 'vendor_groups', esc_attr( $vendorMessage ) );
+				$form->addError( $vendorMessage );
+			}
+		}
 
 		$this->checkOverlapping(
 			$form,
@@ -282,7 +334,11 @@ class OptionsPage {
 	 * @return void
 	 */
 	public function updateOptions( Form $form ): void {
-		$options = $form->getValues( 'array' );
+		$options    = $form->getValues( 'array' );
+		$newVendors = $this->getCheckedVendors( $options );
+		if ( $newVendors ) {
+			$options['vendor_groups'] = $newVendors;
+		}
 
 		$options = $this->mergeNewLimits( $options, 'weight_limits' );
 		$options = $this->sortLimits( $options, 'weight_limits', 'weight' );
@@ -291,7 +347,7 @@ class OptionsPage {
 			$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
 		}
 
-		update_option( Checkout::CARRIER_PREFIX . $options['id'], $options );
+		update_option( OptionPrefixer::getOptionId( $options['id'] ), $options );
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(
@@ -314,7 +370,7 @@ class OptionsPage {
 	public function render(): void {
 		$countryIso = $this->httpRequest->getQuery( 'code' );
 		if ( $countryIso ) {
-			$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryIso );
+			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrier ) {
@@ -326,7 +382,7 @@ class OptionsPage {
 					}
 				} else {
 					$carrierData = $carrier->__toArray();
-					$options     = get_option( Checkout::CARRIER_PREFIX . $carrier->getId() );
+					$options     = get_option( OptionPrefixer::getOptionId( $carrier->getId() ) );
 					if ( false !== $options ) {
 						$carrierData += $options;
 					}
@@ -366,6 +422,8 @@ class OptionsPage {
 						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
 						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
 						'carrierDoesNotSupportCod'     => __( 'This carrier does not support COD payment.', 'packeta' ),
+						'allowedPickupPointTypes'      => __( 'Allowed pickup point types.', 'packeta' ),
+						'checkAtLeastTwo'              => __( 'Check at least two types of pickup points or set corresponding separate carriers.', 'packeta' ),
 					],
 				]
 			);
@@ -510,4 +568,90 @@ class OptionsPage {
 			admin_url( 'admin.php' )
 		);
 	}
+
+	/**
+	 * Gets checked vendors.
+	 *
+	 * @param array $options Form options.
+	 *
+	 * @return array
+	 */
+	private function getCheckedVendors( array $options ): array {
+		$vendorCodes = [];
+		if ( ! empty( $options['vendor_groups'] ) ) {
+			$vendorCodes = $options['vendor_groups'];
+		}
+
+		$newVendors = [];
+		foreach ( $vendorCodes as $vendorId => $isChecked ) {
+			if ( ! $isChecked ) {
+				continue;
+			}
+			$newVendors[] = $vendorId;
+		}
+
+		return $newVendors;
+	}
+
+	/**
+	 * Gets available vendors for compound carrier.
+	 *
+	 * @param string $id Compound carrier id.
+	 *
+	 * @return array|null
+	 */
+	private function getAvailableVendors( $id ): ?array {
+		if ( ! $this->pickupPointsConfig->isCompoundCarrierId( $id ) ) {
+			return null;
+		}
+
+		$compoundCarriers = $this->pickupPointsConfig->getCompoundCarriers();
+		foreach ( $compoundCarriers as $compoundCarrier ) {
+			if ( $id === $compoundCarrier->getId() ) {
+				return $compoundCarrier->getVendorCodes();
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Gets configuration of vendor checkboxes.
+	 *
+	 * @param string     $carrierId      Carrier id.
+	 * @param array|null $carrierOptions Carrier options.
+	 *
+	 * @return array
+	 */
+	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
+		$availableVendors = $this->getAvailableVendors( $carrierId );
+		if ( null === $availableVendors ) {
+			return [];
+		}
+
+		$vendorCheckboxes = [];
+		$vendorCarriers   = $this->pickupPointsConfig->getVendorCarriers();
+		foreach ( $availableVendors as $vendorId ) {
+			$vendorProvider       = $vendorCarriers[ $vendorId ];
+			$checkbox             = [
+				'group'    => $vendorProvider->getGroup(),
+				'name'     => $vendorProvider->getName(),
+				'disabled' => null,
+				'default'  => null,
+			];
+			$hasLowCountAvailable = count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
+			if ( $hasLowCountAvailable ) {
+				$checkbox['disabled'] = true;
+			}
+			$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
+			$hasTheGroupAllowed    = in_array( $vendorProvider->getGroup(), $carrierOptions['vendor_groups'], true );
+			if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
+				$checkbox['default'] = true;
+			}
+			$vendorCheckboxes[] = $checkbox;
+		}
+
+		return $vendorCheckboxes;
+	}
+
 }

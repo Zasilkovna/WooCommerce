@@ -15,8 +15,10 @@ use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
+use WC_Order;
 use WP_Post;
 
 /**
@@ -48,16 +50,30 @@ class Repository {
 	private $helper;
 
 	/**
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
+
+	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter $wpdbAdapter  WpdbAdapter.
-	 * @param Builder     $orderFactory Order factory.
-	 * @param Helper      $helper       Helper.
+	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
+	 * @param Builder                   $orderFactory       Order factory.
+	 * @param Helper                    $helper             Helper.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 */
-	public function __construct( WpdbAdapter $wpdbAdapter, Builder $orderFactory, Helper $helper ) {
-		$this->wpdbAdapter = $wpdbAdapter;
-		$this->builder     = $orderFactory;
-		$this->helper      = $helper;
+	public function __construct(
+		WpdbAdapter $wpdbAdapter,
+		Builder $orderFactory,
+		Helper $helper,
+		PacketaPickupPointsConfig $pickupPointsConfig
+	) {
+		$this->wpdbAdapter        = $wpdbAdapter;
+		$this->builder            = $orderFactory;
+		$this->helper             = $helper;
+		$this->pickupPointsConfig = $pickupPointsConfig;
 	}
 
 	/**
@@ -79,22 +95,12 @@ class Repository {
 		 * @param \WP_Query $queryObject WP Query.
 		 * @param array $paramValues Param values.
 		 */
-		$orderStatusesToExclude = apply_filters( 'packetery_exclude_orders_with_status', [], $queryObject, $paramValues );
+		$orderStatusesToExclude = (array) apply_filters( 'packetery_exclude_orders_with_status', [], $queryObject, $paramValues );
 		if ( ! $orderStatusesToExclude ) {
 			return;
 		}
 
-		$sqlStatusesToExclude = implode(
-			',',
-			array_map(
-				function ( string $orderStatus ): string {
-					return sprintf( '"%s"', esc_sql( $orderStatus ) );
-				},
-				$orderStatusesToExclude
-			)
-		);
-
-		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdbAdapter->posts, $sqlStatusesToExclude );
+		$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdbAdapter->posts, $this->wpdbAdapter->prepareInClause( $orderStatusesToExclude ) );
 	}
 
 	/**
@@ -134,10 +140,13 @@ class Repository {
 			}
 			if ( $paramValues['packetery_order_type'] ) {
 				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
-					$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` = "' . esc_sql( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$comparison = 'IN';
 				} else {
-					$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` != "' . esc_sql( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID ) . '"';
+					$comparison = 'NOT IN';
 				}
+				$internalCarriers   = array_keys( $this->pickupPointsConfig->getVendorCarriers() );
+				$internalCarriers[] = Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
+				$clauses['where']  .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` ' . $comparison . ' (' . $this->wpdbAdapter->prepareInClause( $internalCarriers ) . ')';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 		}
@@ -198,8 +207,8 @@ class Repository {
 	 * @return Order|null
 	 */
 	public function getById( int $id ): ?Order {
-		$wcOrder = wc_get_order( $id );
-		if ( ! $wcOrder instanceof \WC_Order ) {
+		$wcOrder = $this->getWcOrderById( $id );
+		if ( null === $wcOrder ) {
 			return null;
 		}
 
@@ -209,11 +218,11 @@ class Repository {
 	/**
 	 * Gets order by wc order.
 	 *
-	 * @param \WC_Order $wcOrder WC Order.
+	 * @param WC_Order $wcOrder WC Order.
 	 *
 	 * @return Order|null
 	 */
-	public function getByWcOrder( \WC_Order $wcOrder ): ?Order {
+	public function getByWcOrder( WC_Order $wcOrder ): ?Order {
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			return null;
 		}
@@ -431,28 +440,14 @@ class Repository {
 				continue;
 			}
 
-			$wcOrder                   = wc_get_order( $orderId );
+			$wcOrder = $this->getWcOrderById( $orderId );
+			assert( null !== $wcOrder, 'WC order has to be present' );
+
 			$partialOrder              = $this->createPartialOrder( $packeteryOrdersResult[ $orderId ] );
 			$orderEntities[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
 		}
 
 		return $orderEntities;
-	}
-
-	/**
-	 * Quote array of strings.
-	 *
-	 * @param array $input Input.
-	 *
-	 * @return array
-	 */
-	private function quoteArrayOfStrings( array $input ): array {
-		return array_map(
-			function ( string $item ) {
-				return $this->wpdbAdapter->prepare( '%s', $item );
-			},
-			$input
-		);
 	}
 
 	/**
@@ -477,7 +472,7 @@ class Repository {
 		$orPacketStatus[] = 'o.`packet_status` IS NULL';
 
 		if ( $allowedPacketStatuses ) {
-			$orPacketStatus[] = 'o.`packet_status` IN (' . implode( ',', $this->quoteArrayOfStrings( $allowedPacketStatuses ) ) . ')';
+			$orPacketStatus[] = '`o`.`packet_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		}
 
 		if ( $orPacketStatus ) {
@@ -485,7 +480,7 @@ class Repository {
 		}
 
 		if ( $allowedOrderStatuses ) {
-			$andWhere[] = 'wp_p.`post_status` IN (' . implode( ',', $this->quoteArrayOfStrings( $allowedOrderStatuses ) ) . ')';
+			$andWhere[] = '`wp_p`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} else {
 			$andWhere[] = '1 = 0';
 		}
@@ -508,8 +503,8 @@ class Repository {
 		$rows = $this->wpdbAdapter->get_results( $sql );
 
 		foreach ( $rows as $row ) {
-			$wcOrder = wc_get_order( $row->id );
-			if ( false === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			$wcOrder = $this->getWcOrderById( $row->id );
+			if ( null === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
 
@@ -634,6 +629,22 @@ class Repository {
 		if ( 'shop_order' === $post->post_type ) {
 			$this->delete( $postId );
 		}
+	}
+
+	/**
+	 * Gets WC_Order object.
+	 *
+	 * @param int $id Order id.
+	 *
+	 * @return WC_Order|null
+	 */
+	public function getWcOrderById( int $id ): ?WC_Order {
+		$result = wc_get_order( $id );
+		if ( $result instanceof WC_Order ) {
+			return $result;
+		}
+
+		return null;
 	}
 
 }

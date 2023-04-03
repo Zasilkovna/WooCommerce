@@ -11,7 +11,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Rounder;
-use Packetery\Module\Checkout;
 
 /**
  * Options class.
@@ -76,7 +75,7 @@ class Options {
 	 * @return static
 	 */
 	public static function createByCarrierId( string $carrierId ): self {
-		$optionId = Checkout::CARRIER_PREFIX . $carrierId;
+		$optionId = OptionPrefixer::getOptionId( $carrierId );
 		return self::createByOptionId( $optionId );
 	}
 

@@ -15,7 +15,6 @@ use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
 use Packetery\Module\Product;
-use Packetery\Module\ProductCategory\FormFields;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use PacketeryNette\Utils\Html;
@@ -237,6 +236,14 @@ class Plugin {
 	 * @var Order\PacketAutoSubmitter
 	 */
 	private $packetAutoSubmitter;
+
+	/**
+	 * Feature Flag Manager.
+	 *
+	 * @var Options\FeatureFlagManager
+	 */
+	private $featureFlagManager;
+
 	/**
 	 * Plugin constructor.
 	 *
@@ -268,6 +275,7 @@ class Plugin {
 	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
+	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -297,7 +305,8 @@ class Plugin {
 		DashboardWidget $dashboardWidget,
 		Order\PacketSubmitter $packetSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
-		Order\PacketAutoSubmitter $packetAutoSubmitter
+		Order\PacketAutoSubmitter $packetAutoSubmitter,
+		Options\FeatureFlagManager $featureFlagManager
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -328,6 +337,7 @@ class Plugin {
 		$this->packetSubmitter           = $packetSubmitter;
 		$this->productCategoryFormFields = $productCategoryFormFields;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
+		$this->featureFlagManager        = $featureFlagManager;
 	}
 
 	/**
@@ -459,12 +469,23 @@ class Plugin {
 	/**
 	 * Creates HTML link parts in array.
 	 *
-	 * @param string $href Href.
+	 * @param string      $href Href.
+	 * @param string|null $target Target.
+	 * @param string|null $class Class.
 	 *
 	 * @return string[]
 	 */
-	public static function createLinkParts( string $href ): array {
+	public static function createLinkParts( string $href, ?string $target = null, ?string $class = null ): array {
 		$link = Html::el( 'a' )->href( $href );
+
+		if ( null !== $target ) {
+			$link->target( $target );
+		}
+
+		if ( null !== $class ) {
+			$link->class( $class );
+		}
+
 		return [ $link->startTag(), $link->endTag() ];
 	}
 
@@ -731,6 +752,10 @@ class Plugin {
 			)
 		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
+			if ( $this->featureFlagManager->hasSplitActivationNotice() ) {
+				add_action( 'admin_notices', [ $this->featureFlagManager, 'renderSplitActivationNotice' ] );
+			}
 		}
 
 		if ( $isOrderGridPage ) {
@@ -744,8 +769,8 @@ class Plugin {
 		if ( $isOrderDetailPage ) {
 			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery' ] );
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
-			$pickupPointPickerSettings = $this->order_metabox->createPickupPointPickerSettings();
-			$addressPickerSettings     = $this->order_metabox->createAddressPickerSettings();
+			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
+			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();
 		}
 
 		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
@@ -787,7 +812,7 @@ class Plugin {
 		 *
 		 * @since 1.0.0
 		 */
-		return apply_filters(
+		return (string) apply_filters(
 			'plugin_locale',
 			( is_admin() ? get_user_locale() : get_locale() ),
 			self::DOMAIN
@@ -799,7 +824,7 @@ class Plugin {
 	 */
 	public function loadTranslation(): void {
 		$domain = self::DOMAIN;
-		$locale = $this->getLocale();
+		$locale = self::getLocale();
 
 		$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-$locale.mo";
 		$result = load_textdomain( $domain, $moFile );
@@ -943,6 +968,10 @@ class Plugin {
 
 		if ( Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET === $action ) {
 			$this->packetCanceller->processAction();
+		}
+
+		if ( Options\FeatureFlagManager::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
+			$this->featureFlagManager->dismissSplitActivationNotice();
 		}
 	}
 }

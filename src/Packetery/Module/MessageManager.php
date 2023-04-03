@@ -118,7 +118,7 @@ class MessageManager {
 	 * @param string $renderer Message renderer.
 	 * @param string $context  Message context.
 	 */
-	public function render( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): void {
+	public function render( string $renderer, string $context = '' ): void {
 		// @codingStandardsIgnoreStart
 		echo $this->renderToString( $renderer, $context );
 		// @codingStandardsIgnoreEnd
@@ -130,7 +130,7 @@ class MessageManager {
 	 * @param string $renderer Message renderer.
 	 * @param string $context  Message context.
 	 */
-	public function renderToString( string $renderer = self::RENDERER_WORDPRESS, string $context = '' ): string {
+	public function renderToString( string $renderer, string $context ): string {
 		$output = '';
 
 		foreach ( $this->messages as $key => $message ) {

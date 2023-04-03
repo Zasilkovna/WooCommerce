@@ -46,20 +46,30 @@ class PacketAutoSubmitter {
 	private $optionsPage;
 
 	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Module\Options\Provider $optionsProvider Options provider.
 	 * @param PacketSubmitter         $packetSubmitter Packet submitter.
-	 * @param Module\Options\Page     $optionsPage Options page.
+	 * @param Module\Options\Page     $optionsPage     Options page.
+	 * @param Repository              $orderRepository Order repository.
 	 */
 	public function __construct(
 		Module\Options\Provider $optionsProvider,
 		PacketSubmitter $packetSubmitter,
-		Module\Options\Page $optionsPage
+		Module\Options\Page $optionsPage,
+		Repository $orderRepository
 	) {
 		$this->optionsProvider = $optionsProvider;
 		$this->packetSubmitter = $packetSubmitter;
 		$this->optionsPage     = $optionsPage;
+		$this->orderRepository = $orderRepository;
 	}
 
 	/**
@@ -111,7 +121,9 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		$wcOrder        = wc_get_order( $orderId );
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+		assert( null !== $wcOrder, 'WC order has to be present' );
+
 		$paymentGateway = wc_get_payment_gateway_by_order( $wcOrder );
 		if ( false === $this->optionsPage->hasPaymentGateway( $paymentGateway ) ) {
 			return;

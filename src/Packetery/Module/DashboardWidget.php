@@ -64,14 +64,22 @@ class DashboardWidget {
 	private $surveyConfig;
 
 	/**
+	 * Carrier entity repository.
+	 *
+	 * @var Carrier\EntityRepository
+	 */
+	private $carrierEntityRepository;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Engine              $latteEngine        Latte engine.
-	 * @param Carrier\Repository  $carrierRepository  Carrier repository.
-	 * @param Options\Provider    $optionsProvider    Options provider.
-	 * @param Carrier\OptionsPage $carrierOptionsPage Carrier options page.
-	 * @param Options\Page        $optionsPage        Options page.
-	 * @param array               $surveyConfig       Survey config.
+	 * @param Engine                   $latteEngine             Latte engine.
+	 * @param Carrier\Repository       $carrierRepository       Carrier repository.
+	 * @param Options\Provider         $optionsProvider         Options provider.
+	 * @param Carrier\OptionsPage      $carrierOptionsPage      Carrier options page.
+	 * @param Options\Page             $optionsPage             Options page.
+	 * @param array                    $surveyConfig            Survey config.
+	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -79,14 +87,16 @@ class DashboardWidget {
 		Options\Provider $optionsProvider,
 		Carrier\OptionsPage $carrierOptionsPage,
 		Options\Page $optionsPage,
-		array $surveyConfig
+		array $surveyConfig,
+		Carrier\EntityRepository $carrierEntityRepository
 	) {
-		$this->latteEngine        = $latteEngine;
-		$this->carrierRepository  = $carrierRepository;
-		$this->optionsProvider    = $optionsProvider;
-		$this->carrierOptionsPage = $carrierOptionsPage;
-		$this->optionsPage        = $optionsPage;
-		$this->surveyConfig       = $surveyConfig;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository       = $carrierRepository;
+		$this->optionsProvider         = $optionsProvider;
+		$this->carrierOptionsPage      = $carrierOptionsPage;
+		$this->optionsPage             = $optionsPage;
+		$this->surveyConfig            = $surveyConfig;
+		$this->carrierEntityRepository = $carrierEntityRepository;
 	}
 
 	/**
@@ -139,7 +149,7 @@ class DashboardWidget {
 		$activeCountries    = [];
 		$isCodSettingNeeded = false;
 
-		foreach ( $this->carrierRepository->getAllCarriersIncludingZpoints() as $carrier ) {
+		foreach ( $this->carrierEntityRepository->getAllCarriersIncludingNonFeed() as $carrier ) {
 			$country        = $carrier->getCountry();
 			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
 

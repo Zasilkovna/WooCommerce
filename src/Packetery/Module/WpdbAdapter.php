@@ -294,4 +294,31 @@ class WpdbAdapter {
 		return $result;
 	}
 
+	/**
+	 * Quote array of strings.
+	 *
+	 * @param array $input Input.
+	 *
+	 * @return array
+	 */
+	private function quoteArrayOfStrings( array $input ): array {
+		return array_map(
+			function ( string $item ) {
+				return $this->prepare( '%s', $item );
+			},
+			$input
+		);
+	}
+
+	/**
+	 * Prepare IN clause from array of strings.
+	 *
+	 * @param array $input Input array.
+	 *
+	 * @return string
+	 */
+	public function prepareInClause( array $input ): string {
+		return implode( ',', $this->quoteArrayOfStrings( $input ) );
+	}
+
 }

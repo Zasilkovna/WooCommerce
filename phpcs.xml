@@ -23,6 +23,7 @@
         <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
         <exclude name="PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore"/>
         <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodDoubleUnderscore"/>
+        <exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber"/>
     </rule>
 
     <rule ref="WordPress.WP.I18n">

@@ -10,8 +10,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Log;
 
-use Packetery\Core\Helper;
-
 /**
  * Class Page
  *

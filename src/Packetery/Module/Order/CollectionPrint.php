@@ -132,7 +132,7 @@ class CollectionPrint {
 
 			$orderNumber               = $order->getNumber();
 			$packetIds[ $orderNumber ] = $order->getPacketId();
-			$wpOrders[ $orderNumber ]  = wc_get_order( $orderNumber );
+			$wpOrders[ $orderNumber ]  = $this->orderRepository->getWcOrderById( (int) $orderNumber );
 		}
 
 		if ( ! $packetIds ) {

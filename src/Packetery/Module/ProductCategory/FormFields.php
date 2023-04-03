@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\ProductCategory;
 
-use Packetery\Module\Carrier\Repository;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\FormFactory;
 use Packetery\Module\ProductCategory;
 use PacketeryLatte\Engine;
@@ -40,18 +40,18 @@ class FormFields {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Repository
+	 * @var EntityRepository
 	 */
 	private $carrierRepository;
 
 	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory $formFactory       Factory engine.
-	 * @param Engine      $latteEngine       Latte engine.
-	 * @param Repository  $carrierRepository Carrier repository.
+	 * @param FormFactory      $formFactory       Factory engine.
+	 * @param Engine           $latteEngine       Latte engine.
+	 * @param EntityRepository $carrierRepository Carrier repository.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, Repository $carrierRepository ) {
+	public function __construct( FormFactory $formFactory, Engine $latteEngine, EntityRepository $carrierRepository ) {
 		$this->formFactory       = $formFactory;
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;

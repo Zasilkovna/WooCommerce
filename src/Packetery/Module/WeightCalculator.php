@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Calculator
+ * Class WeightCalculator
  *
  * @package Packetery\Module\Weight
  */
@@ -13,11 +13,11 @@ namespace Packetery\Module;
 use Packetery\Module\Options;
 
 /**
- * Class Calculator
+ * Class WeightCalculator
  *
  * @package Packetery\Module\Order
  */
-class Calculator {
+class WeightCalculator {
 
 	/**
 	 * Options provider.

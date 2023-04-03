@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Log\Record;
-use Packetery\Module\Checkout;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
@@ -56,13 +55,6 @@ class CountryListingPage {
 	private $httpRequest;
 
 	/**
-	 * Checkout.
-	 *
-	 * @var Checkout
-	 */
-	private $checkout;
-
-	/**
 	 * Options provider
 	 *
 	 * @var Provider
@@ -77,32 +69,49 @@ class CountryListingPage {
 	private $logPage;
 
 	/**
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
+
+	/**
+	 * Carrier entity repository.
+	 *
+	 * @var EntityRepository
+	 */
+	private $carrierEntityRepository;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine     $latteEngine       PacketeryLatte engine.
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param Downloader $downloader        Carrier downloader.
-	 * @param Request    $httpRequest       Http request.
-	 * @param Checkout   $checkout          Checkout.
-	 * @param Provider   $optionsProvider   Options provider.
-	 * @param Log\Page   $logPage           Log page.
+	 * @param Engine                    $latteEngine             PacketeryLatte engine.
+	 * @param Repository                $carrierRepository       Carrier repository.
+	 * @param Downloader                $downloader              Carrier downloader.
+	 * @param Request                   $httpRequest             Http request.
+	 * @param Provider                  $optionsProvider         Options provider.
+	 * @param Log\Page                  $logPage                 Log page.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig      Internal pickup points config.
+	 * @param EntityRepository          $carrierEntityRepository Carrier repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
 		Downloader $downloader,
 		Request $httpRequest,
-		Checkout $checkout,
 		Provider $optionsProvider,
-		Log\Page $logPage
+		Log\Page $logPage,
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		EntityRepository $carrierEntityRepository
 	) {
-		$this->latteEngine       = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
-		$this->downloader        = $downloader;
-		$this->httpRequest       = $httpRequest;
-		$this->checkout          = $checkout;
-		$this->optionsProvider   = $optionsProvider;
-		$this->logPage           = $logPage;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository       = $carrierRepository;
+		$this->downloader              = $downloader;
+		$this->httpRequest             = $httpRequest;
+		$this->optionsProvider         = $optionsProvider;
+		$this->logPage                 = $logPage;
+		$this->pickupPointsConfig      = $pickupPointsConfig;
+		$this->carrierEntityRepository = $carrierEntityRepository;
 	}
 
 	/**
@@ -196,7 +205,7 @@ class CountryListingPage {
 	private function getActiveCountries(): array {
 		$countries = $this->carrierRepository->getCountries();
 
-		$internalCountries = $this->carrierRepository->getInternalCountries();
+		$internalCountries = $this->pickupPointsConfig->getInternalCountries();
 		$countries         = array_unique( array_merge( $internalCountries, $countries ) );
 
 		$countriesFinal = [];
@@ -267,9 +276,10 @@ class CountryListingPage {
 	 */
 	public function getCarriersForOptionsExport(): array {
 		$carriersWithSomeOptions = [];
-		$allCarriers             = $this->carrierRepository->getAllIncludingZpoints();
+		$allCarriers             = $this->carrierRepository->getAllIncludingNonFeed();
 		foreach ( $allCarriers as $carrier ) {
-			$optionId       = Checkout::CARRIER_PREFIX . $carrier['id'];
+			$carrierId      = $carrier['id'];
+			$optionId       = OptionPrefixer::getOptionId( $carrierId );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
@@ -283,7 +293,6 @@ class CountryListingPage {
 				$carrierOptions = array_merge( $addition, $carrierOptions );
 
 				$carrierOptions['count_of_orders'] = 0;
-				$carrierId                         = $this->checkout->getCarrierId( $optionId );
 				if ( $carrierId ) {
 					$orders = wc_get_orders(
 						[
@@ -312,9 +321,9 @@ class CountryListingPage {
 	 */
 	private function getActiveCarriersNamesByCountry( string $countryCode ): array {
 		$activeCarriers  = [];
-		$countryCarriers = $this->carrierRepository->getByCountryIncludingZpoints( $countryCode );
+		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
-			$optionId       = Checkout::CARRIER_PREFIX . $carrier->getId();
+			$optionId       = OptionPrefixer::getOptionId( $carrier->getId() );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions && $carrierOptions['active'] ) {
 				$activeCarriers[] = $carrier->getName();
