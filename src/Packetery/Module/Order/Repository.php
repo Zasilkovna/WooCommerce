@@ -157,39 +157,40 @@ class Repository {
 	/**
 	 * Create table to store orders.
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function createTable(): bool {
-		return $this->wpdbAdapter->query(
-			'CREATE TABLE IF NOT EXISTS `' . $this->wpdbAdapter->packetery_order . '` (
-				`id` bigint(20) unsigned NOT NULL,
-				`carrier_id` varchar(255) NOT NULL,
-				`is_exported` boolean NOT NULL,
-				`packet_id` varchar(255) NULL,
-				`is_label_printed` boolean NOT NULL,
-				`point_id` varchar(255) NULL,
-				`point_name` varchar(255) NULL,
-				`point_url` varchar(255) NULL,
-				`point_street` varchar(255) NULL,
-				`point_zip` varchar(255) NULL,
-				`point_city` varchar(255) NULL,
-				`address_validated` boolean NOT NULL,
-				`delivery_address` TEXT NULL,
-				`weight` float NULL,
-				`length` float NULL,
-				`width` float NULL,
-				`height` float NULL,
-				`adult_content` boolean NULL,
-				`value` double NULL,
-				`cod` double NULL,
-				`api_error_message` text NULL,
-				`api_error_date` datetime NULL,
-				`carrier_number` varchar(255) NULL,
-				`packet_status` varchar(255) NULL,
-				`deliver_on` date NULL,
-				PRIMARY KEY (`id`)
-			) ' . $this->wpdbAdapter->get_charset_collate()
-		);
+	public function createOrAlterTable(): void {
+		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_order . ' (
+			`id` bigint(20) unsigned NOT NULL,
+			`carrier_id` varchar(255) NOT NULL,
+			`is_exported` tinyint(1) NOT NULL,
+			`packet_id` varchar(255) NULL,
+			`is_label_printed` tinyint(1) NOT NULL,
+			`point_id` varchar(255) NULL,
+			`point_name` varchar(255) NULL,
+			`point_url` varchar(255) NULL,
+			`point_street` varchar(255) NULL,
+			`point_zip` varchar(255) NULL,
+			`point_city` varchar(255) NULL,
+			`address_validated` tinyint(1) NOT NULL,
+			`delivery_address` text NULL,
+			`weight` float NULL,
+			`length` float NULL,
+			`width` float NULL,
+			`height` float NULL,
+			`adult_content` tinyint(1) NULL,
+			`value` double NULL,
+			`cod` double NULL,
+			`api_error_message` text NULL,
+			`api_error_date` datetime NULL,
+			`carrier_number` varchar(255) NULL,
+			`packet_status` varchar(255) NULL,
+			`deliver_on` date NULL,
+			PRIMARY KEY  (`id`)
+		) ' . $this->wpdbAdapter->get_charset_collate();
+
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		$this->wpdbAdapter->logDbDeltaResult( dbDelta( $createTableQuery ) );
 	}
 
 	/**
@@ -550,60 +551,6 @@ class Repository {
 			LEFT JOIN `' . $this->wpdbAdapter->posts . '` ON `' . $this->wpdbAdapter->posts . '`.`ID` = `' . $this->wpdbAdapter->packetery_order . '`.`id`
 			WHERE `' . $this->wpdbAdapter->posts . '`.`ID` IS NULL'
 		);
-	}
-
-	/**
-	 * Adds adult content column.
-	 *
-	 * @return void
-	 */
-	public function addAdultContentColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_order . '` ADD COLUMN `adult_content` boolean NULL DEFAULT NULL AFTER `height`' );
-	}
-
-	/**
-	 * Adds value column.
-	 *
-	 * @return void
-	 */
-	public function addValueColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_order . '` ADD COLUMN `value` double NULL DEFAULT NULL AFTER `adult_content`' );
-	}
-
-	/**
-	 * Adds COD column.
-	 *
-	 * @return void
-	 */
-	public function addCodColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_order . '` ADD COLUMN `cod` double NULL DEFAULT NULL AFTER `value`' );
-	}
-
-	/**
-	 * Adds api_error_message column.
-	 *
-	 * @return void
-	 */
-	public function addColumnApiErrorMessage(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_order . '` ADD COLUMN `api_error_message` text NULL DEFAULT NULL AFTER `cod`' );
-	}
-
-	/**
-	 * Adds api_error_message column.
-	 *
-	 * @return void
-	 */
-	public function addColumnApiErrorMessageDate(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_order . '` ADD COLUMN `api_error_date` datetime NULL DEFAULT NULL AFTER `api_error_message`' );
-	}
-
-	/**
-	 * Adds deliver on column.
-	 *
-	 * @return void
-	 */
-	public function addDeliverOnColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_order . '` ADD COLUMN `deliver_on` date NULL DEFAULT NULL AFTER `cod`' );
 	}
 
 	/**

@@ -184,9 +184,9 @@ class WpdbAdapter {
 	 * @param string $query  SQL query.
 	 * @param string $output Optional. Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
 	 *
-	 * @return array|object|null Database query results.
+	 * @return array|object[]|null Database query results.
 	 */
-	public function get_results( string $query, string $output = OBJECT ) {
+	public function get_results( string $query, string $output = OBJECT ): ?array {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_results( $query, $output );
 		$this->handleError();
@@ -319,6 +319,33 @@ class WpdbAdapter {
 	 */
 	public function prepareInClause( array $input ): string {
 		return implode( ',', $this->quoteArrayOfStrings( $input ) );
+	}
+
+	/**
+	 * Checks if table exists.
+	 *
+	 * @param string $tableName Table name.
+	 *
+	 * @return bool
+	 */
+	public function tableExists( string $tableName ): bool {
+		return ( $this->get_var( $this->prepare( 'SHOW TABLES LIKE %s', $tableName ) ) === $tableName );
+	}
+
+	/**
+	 * Logs result of dbDelta function.
+	 *
+	 * @param array $result dbDelta result.
+	 *
+	 * @return void
+	 */
+	public function logDbDeltaResult( array $result ): void {
+		foreach ( $result as $tableOrColumn => $message ) {
+			Debugger::log(
+				sprintf( '%s => %s', $tableOrColumn, $message ),
+				sprintf( 'dbdelta_%s', gmdate( 'Y-m-d' ) )
+			);
+		}
 	}
 
 }

@@ -37,9 +37,9 @@ class Repository {
 	/**
 	 * Get all packetery related options.
 	 *
-	 * @return object|null
+	 * @return object[]|null
 	 */
-	public function getPluginOptions(): ?object {
+	public function getPluginOptions(): ?array {
 		return $this->wpdbAdapter->get_results( 'SELECT `option_name` FROM `' . $this->wpdbAdapter->options . "` WHERE `option_name` LIKE 'packetery%'" );
 	}
 
