@@ -333,13 +333,16 @@ class WpdbAdapter {
 	}
 
 	/**
-	 * Logs result of dbDelta function.
+	 * Wrapper for dbDelta function, logs result.
 	 *
-	 * @param array $result dbDelta result.
+	 * @param string $createTableQuery Create table query.
 	 *
 	 * @return void
 	 */
-	public function logDbDeltaResult( array $result ): void {
+	public function dbDelta( string $createTableQuery ): void {
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		$result = dbDelta( $createTableQuery );
+
 		foreach ( $result as $tableOrColumn => $message ) {
 			Debugger::log(
 				sprintf( '%s => %s', $tableOrColumn, $message ),

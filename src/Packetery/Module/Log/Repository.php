@@ -181,8 +181,7 @@ class Repository {
 			PRIMARY KEY  (`id`)
 		) " . $this->wpdbAdapter->get_charset_collate();
 
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		$this->wpdbAdapter->logDbDeltaResult( dbDelta( $createTableQuery ) );
+		$this->wpdbAdapter->dbDelta( $createTableQuery );
 	}
 
 	/**
