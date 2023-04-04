@@ -158,18 +158,9 @@ class Upgrade {
 			$this->orderRepository->deleteOrphans();
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) {
-			$this->logRepository->createOrAlterTable();
-			$this->orderRepository->createOrAlterTable();
-		}
-
 		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
 			$version_1_4_2 = new Version_1_4_2( $this->wpdbAdapter );
 			$version_1_4_2->run();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
-			$this->orderRepository->createOrAlterTable();
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
