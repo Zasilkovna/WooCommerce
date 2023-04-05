@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use PacketeryTracy\Debugger;
+use WC_Logger;
 
 /**
  * Class WpdbAdapter
@@ -343,11 +344,14 @@ class WpdbAdapter {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		$result = dbDelta( $createTableQuery );
 
+		/**
+		 * WC logger.
+		 *
+		 * @var WC_Logger $wcLogger
+		 */
+		$wcLogger = wc_get_logger();
 		foreach ( $result as $tableOrColumn => $message ) {
-			Debugger::log(
-				sprintf( '%s => %s', $tableOrColumn, $message ),
-				sprintf( 'dbdelta_%s', gmdate( 'Y-m-d' ) )
-			);
+			$wcLogger->info( sprintf( 'dbDelta: %s => %s', $tableOrColumn, $message ), [ 'source' => 'packeta' ] );
 		}
 	}
 

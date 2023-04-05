@@ -118,7 +118,7 @@ class Upgrade {
 			return;
 		}
 
-		$this->logRepository->createOrAlterTable();
+		$this->createLogTable();
 		$this->createCarrierTable();
 		$this->createOrderTable();
 
@@ -370,6 +370,22 @@ class Upgrade {
 	}
 
 	/**
+	 * Creates log table.
+	 *
+	 * @return void
+	 */
+	private function createLogTable(): void {
+		$this->logRepository->createOrAlterTable();
+		$tableExists = $this->wpdbAdapter->tableExists( $this->wpdbAdapter->packetery_log );
+		if ( false === $tableExists ) {
+			$this->messageManager->flash_message(
+				__( 'Database log table of Packeta plugin could not be created, more information might be found in WooCommerce logs.', 'packeta' ),
+				MessageManager::TYPE_ERROR
+			);
+		}
+	}
+
+	/**
 	 * Creates carrier table.
 	 *
 	 * @return void
@@ -378,16 +394,15 @@ class Upgrade {
 		$this->carrierRepository->createOrAlterTable();
 		$tableExists = $this->wpdbAdapter->tableExists( $this->wpdbAdapter->packetery_carrier );
 		if ( false === $tableExists ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message(
+				__( 'Database carrier table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ),
+				MessageManager::TYPE_ERROR
+			);
 
 			$record         = new Record();
 			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
+			$record->title  = __( 'Database carrier table could not be created, more information might be found in WooCommerce logs.', 'packeta' );
 			$this->logger->add( $record );
 		}
 	}
@@ -401,16 +416,15 @@ class Upgrade {
 		$this->orderRepository->createOrAlterTable();
 		$tableExists = $this->wpdbAdapter->tableExists( $this->wpdbAdapter->packetery_order );
 		if ( false === $tableExists ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message(
+				__( 'Database order table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ),
+				MessageManager::TYPE_ERROR
+			);
 
 			$record         = new Record();
 			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
 			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database order table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
+			$record->title  = __( 'Database order table could not be created, more information might be found in WooCommerce logs.', 'packeta' );
 			$this->logger->add( $record );
 		}
 	}
