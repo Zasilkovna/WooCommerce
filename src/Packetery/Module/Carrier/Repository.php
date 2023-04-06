@@ -19,8 +19,6 @@ use Packetery\Module\WpdbAdapter;
  */
 class Repository {
 
-	public const INTERNAL_PICKUP_POINTS_ID = 'packeta';
-
 	private const COLUMN_NAMES = [
 		'id',
 		'name',
@@ -234,7 +232,7 @@ class Repository {
 	 * @return bool
 	 */
 	public function isHomeDeliveryCarrier( string $carrierId ): bool {
-		if ( self::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+		if ( $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
 			return false;
 		}
 

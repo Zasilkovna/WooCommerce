@@ -11,6 +11,7 @@ namespace Packetery\Module;
 
 use Packetery\Core;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
+use Packetery\Core\Entity;
 use Packetery\Module\Api;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
@@ -342,6 +343,7 @@ class Checkout {
 			return;
 		}
 
+		// Cannot be null because of previous condition.
 		$carrierId = $this->getCarrierId( $chosenShippingMethod );
 
 		if ( $this->isPickupPointOrder() ) {
@@ -385,8 +387,8 @@ class Checkout {
 				$pickupPointId         = $checkoutData[ Order\Attribute::POINT_ID ];
 				$carriersForValidation = $chosenShippingMethod;
 				if ( '' === $carrierId ) {
-					$carrierId             = Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
-					$carriersForValidation = Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
+					$carrierId             = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
+					$carriersForValidation = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
 				}
 				$pickupPointValidationResponse = $this->pickupPointValidator->validate(
 					$this->getPickupPointValidateRequest(
@@ -487,7 +489,7 @@ class Checkout {
 			$wcOrder->save();
 		}
 
-		$orderEntity = new Core\Entity\Order( (string) $orderId, $carrierId );
+		$orderEntity = new Core\Entity\Order( (string) $orderId, $this->carrierEntityRepository->getAnyById( $carrierId ) );
 		if (
 			isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
 			'1' === $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] &&
@@ -784,10 +786,6 @@ class Checkout {
 			return null;
 		}
 
-		if ( $this->pickupPointsConfig->isCompoundCarrierId( $carrierId ) ) {
-			return Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
-		}
-
 		return $carrierId;
 	}
 
@@ -1060,10 +1058,7 @@ class Checkout {
 	 * @return bool
 	 */
 	public function isPickupPointCarrier( string $carrierId ): bool {
-		if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
-			return true;
-		}
-		if ( $this->pickupPointsConfig->isVendorCarrierId( $carrierId ) ) {
+		if ( $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
 			return true;
 		}
 

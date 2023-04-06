@@ -36,7 +36,7 @@ class Order {
 	/**
 	 * Order carrier object.
 	 *
-	 * @var Carrier|null
+	 * @var Carrier
 	 */
 	private $carrier;
 
@@ -153,20 +153,6 @@ class Order {
 	private $packetStatus;
 
 	/**
-	 * Carrier id.
-	 *
-	 * @var string
-	 */
-	private $carrierId;
-
-	/**
-	 * Internal carrier code. Null for orders with changed country.
-	 *
-	 * @var string|null
-	 */
-	private $carrierCode;
-
-	/**
 	 * Tells if is packet submitted.
 	 *
 	 * @var bool
@@ -232,21 +218,17 @@ class Order {
 	/**
 	 * Order entity constructor.
 	 *
-	 * @param string $number         Order id.
-	 * @param string $carrierId      Carrier id.
-	 * @param bool   $isExported     Is exported.
-	 * @param bool   $isLabelPrinted Is label printed.
+	 * @param string  $number  Order id.
+	 * @param Carrier $carrier Carrier entity.
 	 */
 	public function __construct(
 		string $number,
-		string $carrierId,
-		bool $isExported = false,
-		bool $isLabelPrinted = false
+		Carrier $carrier
 	) {
 		$this->number           = $number;
-		$this->carrierId        = $carrierId;
-		$this->isExported       = $isExported;
-		$this->isLabelPrinted   = $isLabelPrinted;
+		$this->carrier          = $carrier;
+		$this->isExported       = false;
+		$this->isLabelPrinted   = false;
 		$this->addressValidated = false;
 	}
 
@@ -314,7 +296,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isExternalCarrier(): bool {
-		return is_numeric( $this->getCarrierId() );
+		return is_numeric( $this->getCarrier()->getId() );
 	}
 
 	/**
@@ -333,7 +315,7 @@ class Order {
 	 */
 	public function getPickupPointOrCarrierId(): ?int {
 		if ( $this->isExternalCarrier() ) {
-			return (int) $this->getCarrierId();
+			return (int) $this->getCarrier()->getId();
 		}
 
 		if ( null === $this->pickupPoint ) {
@@ -342,15 +324,6 @@ class Order {
 
 		// Typing to int is safe in case of internal pickup points.
 		return (int) $this->pickupPoint->getId();
-	}
-
-	/**
-	 * Sets carrier.
-	 *
-	 * @param Carrier|null $carrier Carrier.
-	 */
-	public function setCarrier( ?Carrier $carrier ): void {
-		$this->carrier = $carrier;
 	}
 
 	/**
@@ -493,15 +466,6 @@ class Order {
 	}
 
 	/**
-	 * Sets carrier id.
-	 *
-	 * @param string|null $carrierId Carrier id.
-	 */
-	public function setCarrierId( ?string $carrierId ): void {
-		$this->carrierId = $carrierId;
-	}
-
-	/**
 	 * Sets packet id.
 	 *
 	 * @param string|null $packetId Packet id.
@@ -612,9 +576,9 @@ class Order {
 	/**
 	 * Gets carrier object.
 	 *
-	 * @return Carrier|null
+	 * @return Carrier
 	 */
-	public function getCarrier(): ?Carrier {
+	public function getCarrier(): Carrier {
 		return $this->carrier;
 	}
 
@@ -670,15 +634,6 @@ class Order {
 	 */
 	public function getPacketStatus(): ?string {
 		return $this->packetStatus;
-	}
-
-	/**
-	 * Gets carrier id.
-	 *
-	 * @return string
-	 */
-	public function getCarrierId(): string {
-		return $this->carrierId;
 	}
 
 	/**
@@ -889,26 +844,6 @@ class Order {
 	 */
 	public function hasCod(): bool {
 		return ( null !== $this->getCod() );
-	}
-
-	/**
-	 * Setter for carrierCode.
-	 *
-	 * @param string|null $carrierCode Carrier code.
-	 *
-	 * @return void
-	 */
-	public function setCarrierCode( ?string $carrierCode ): void {
-		$this->carrierCode = $carrierCode;
-	}
-
-	/**
-	 * Returns carrierId for external carriers or carrierCode.
-	 *
-	 * @return string|null
-	 */
-	public function getCarrierCode(): ?string {
-		return $this->carrierCode;
 	}
 
 	/**

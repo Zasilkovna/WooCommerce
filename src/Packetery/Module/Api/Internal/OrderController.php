@@ -12,6 +12,7 @@ namespace Packetery\Module\Api\Internal;
 use Packetery\Core;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Validator;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
 use Packetery\Module\Order\GridExtender;
 use WP_Error;
@@ -149,7 +150,11 @@ final class OrderController extends WP_REST_Controller {
 			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
-		$order = $this->orderRepository->getById( $orderId );
+		try {
+			$order = $this->orderRepository->getById( $orderId );
+		} catch ( InvalidCarrierException $exception ) {
+			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
+		}
 		if ( null === $order ) {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}

@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Api;
 use Packetery\Module\Carrier\OptionsPage;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
@@ -513,12 +514,16 @@ class Plugin {
 	 * @param WC_Order $order WordPress order.
 	 */
 	public function renderDeliveryDetail( WC_Order $order ): void {
-		$orderEntity = $this->orderRepository->getByWcOrder( $order );
+		try {
+			$orderEntity = $this->orderRepository->getByWcOrder( $order );
+		} catch ( InvalidCarrierException $exception ) {
+			$orderEntity = null;
+		}
 		if ( null === $orderEntity ) {
 			return;
 		}
 
-		$carrierId      = $orderEntity->getCarrierId();
+		$carrierId      = $orderEntity->getCarrier()->getId();
 		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
 
 		$this->latte_engine->render(
@@ -553,7 +558,11 @@ class Plugin {
 	 * @param WC_Order $wcOrder WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $wcOrder ): void {
-		$order = $this->orderRepository->getById( $wcOrder->get_id() );
+		try {
+			$order = $this->orderRepository->getById( $wcOrder->get_id() );
+		} catch ( InvalidCarrierException $exception ) {
+			$order = null;
+		}
 		if ( null === $order ) {
 			return;
 		}
@@ -593,7 +602,11 @@ class Plugin {
 			return;
 		}
 
-		$packeteryOrder = $this->orderRepository->getByWcOrder( $email->object );
+		try {
+			$packeteryOrder = $this->orderRepository->getByWcOrder( $email->object );
+		} catch ( InvalidCarrierException $exception ) {
+			$packeteryOrder = null;
+		}
 		if ( null === $packeteryOrder ) {
 			return;
 		}

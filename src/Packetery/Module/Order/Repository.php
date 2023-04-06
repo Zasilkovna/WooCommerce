@@ -9,13 +9,16 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Helper;
+use Packetery\Core;
+use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
+use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
@@ -45,7 +48,7 @@ class Repository {
 	/**
 	 * Helper.
 	 *
-	 * @var Helper
+	 * @var Core\Helper
 	 */
 	private $helper;
 
@@ -57,23 +60,33 @@ class Repository {
 	private $pickupPointsConfig;
 
 	/**
+	 * Carrier repository.
+	 *
+	 * @var Carrier\EntityRepository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * Repository constructor.
 	 *
 	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
 	 * @param Builder                   $orderFactory       Order factory.
-	 * @param Helper                    $helper             Helper.
+	 * @param Core\Helper               $helper             Helper.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param Carrier\EntityRepository  $carrierRepository  Carrier repository.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
 		Builder $orderFactory,
-		Helper $helper,
-		PacketaPickupPointsConfig $pickupPointsConfig
+		Core\Helper $helper,
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		Carrier\EntityRepository $carrierRepository
 	) {
 		$this->wpdbAdapter        = $wpdbAdapter;
 		$this->builder            = $orderFactory;
 		$this->helper             = $helper;
 		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->carrierRepository  = $carrierRepository;
 	}
 
 	/**
@@ -139,13 +152,13 @@ class Repository {
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
 			if ( $paramValues['packetery_order_type'] ) {
-				if ( Carrier\Repository::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
+				if ( Entity\Carrier::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
 					$comparison = 'IN';
 				} else {
 					$comparison = 'NOT IN';
 				}
-				$internalCarriers   = array_keys( $this->pickupPointsConfig->getVendorCarriers() );
-				$internalCarriers[] = Carrier\Repository::INTERNAL_PICKUP_POINTS_ID;
+				$internalCarriers   = array_keys( $this->carrierRepository->getNonFeedCarriers() );
+				$internalCarriers[] = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
 				$clauses['where']  .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` ' . $comparison . ' (' . $this->wpdbAdapter->prepareInClause( $internalCarriers ) . ')';
 				$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 			}
@@ -205,6 +218,7 @@ class Repository {
 	 * @param int $id Order id.
 	 *
 	 * @return Order|null
+	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getById( int $id ): ?Order {
 		$wcOrder = $this->getWcOrderById( $id );
@@ -216,49 +230,72 @@ class Repository {
 	}
 
 	/**
+	 * Gets Packeta order data by id.
+	 *
+	 * @param int $id Order id.
+	 *
+	 * @return object|null
+	 */
+	public function getDataById( int $id ): ?object {
+		return $this->wpdbAdapter->get_row(
+			$this->wpdbAdapter->prepare(
+				'
+			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` `o`
+			JOIN `' . $this->wpdbAdapter->posts . '` AS `wp_p` ON `wp_p`.`ID` = `o`.`id` 
+			WHERE `o`.`id` = %d',
+				$id
+			)
+		);
+	}
+
+	/**
 	 * Gets order by wc order.
 	 *
 	 * @param WC_Order $wcOrder WC Order.
 	 *
 	 * @return Order|null
+	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getByWcOrder( WC_Order $wcOrder ): ?Order {
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			return null;
 		}
 
-		$result = $this->wpdbAdapter->get_row(
-			$this->wpdbAdapter->prepare(
-				'
-			SELECT o.* FROM `' . $this->wpdbAdapter->packetery_order . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` as wp_p ON wp_p.ID = o.id 
-			WHERE o.`id` = %d',
-				$wcOrder->get_id()
-			)
-		);
-
+		$result = $this->getDataById( $wcOrder->get_id() );
 		if ( ! $result ) {
 			return null;
 		}
 
-		$partialOrder = $this->createPartialOrder( $result );
+		$partialOrder = $this->createPartialOrder( $result, Module\Helper::getWcOrderCountry( $wcOrder ) );
 		return $this->builder->finalize( $wcOrder, $partialOrder );
 	}
 
 	/**
 	 * Creates partial order.
 	 *
-	 * @param \stdClass $result DB result.
+	 * @param \stdClass $result  DB result.
+	 * @param string    $country Lowercase country.
 	 *
 	 * @return Order
+	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
-	private function createPartialOrder( \stdClass $result ): Order {
-		$partialOrder = new Order(
-			$result->id,
-			$result->carrier_id
-		);
-
-		$orderWeight = $this->parseFloat( $result->weight );
+	private function createPartialOrder( \stdClass $result, string $country ): Order {
+		if ( empty( $country ) ) {
+			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
+		}
+		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
+		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
+		if ( null === $carrier ) {
+			throw new InvalidCarrierException(
+				sprintf(
+				// translators: %s is carrier id.
+					__( 'Order carrier is invalid (%s). Please contact Packeta support.', 'packeta' ),
+					$carrierId
+				)
+			);
+		}
+		$partialOrder = new Order( $result->id, $carrier );
+		$orderWeight  = $this->parseFloat( $result->weight );
 		if ( null !== $orderWeight ) {
 			$partialOrder->setWeight( $orderWeight );
 		}
@@ -278,7 +315,7 @@ class Repository {
 			( null === $result->api_error_date )
 				? null
 				: \DateTimeImmutable::createFromFormat(
-					Helper::MYSQL_DATETIME_FORMAT,
+					Core\Helper::MYSQL_DATETIME_FORMAT,
 					$result->api_error_date,
 					new \DateTimeZone( 'UTC' )
 				)->setTimezone( wp_timezone() )
@@ -366,12 +403,12 @@ class Repository {
 
 		$apiErrorDateTime = $order->getLastApiErrorDateTime();
 		if ( null !== $apiErrorDateTime ) {
-			$apiErrorDateTime = $apiErrorDateTime->format( Helper::MYSQL_DATETIME_FORMAT );
+			$apiErrorDateTime = $apiErrorDateTime->format( Core\Helper::MYSQL_DATETIME_FORMAT );
 		}
 
 		$data = [
 			'id'                => (int) $order->getNumber(),
-			'carrier_id'        => $order->getCarrierId(),
+			'carrier_id'        => $order->getCarrier()->getId(),
 			'is_exported'       => (int) $order->isExported(),
 			'packet_id'         => $order->getPacketId(),
 			'packet_status'     => $order->getPacketStatus(),
@@ -443,8 +480,15 @@ class Repository {
 			$wcOrder = $this->getWcOrderById( (int) $orderId );
 			assert( null !== $wcOrder, 'WC order has to be present' );
 
-			$partialOrder              = $this->createPartialOrder( $packeteryOrdersResult[ $orderId ] );
-			$orderEntities[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
+			try {
+				$partialOrder              = $this->createPartialOrder(
+					$packeteryOrdersResult[ $orderId ],
+					Module\Helper::getWcOrderCountry( $wcOrder )
+				);
+				$orderEntities[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
+			} catch ( InvalidCarrierException $exception ) {
+				continue;
+			}
 		}
 
 		return $orderEntities;
@@ -461,7 +505,7 @@ class Repository {
 	 * @return iterable|Order[]
 	 */
 	public function findStatusSyncingOrders( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
-		$dateLimit = Helper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
+		$dateLimit = Core\Helper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
 		$andWhere = [];
 
@@ -508,8 +552,12 @@ class Repository {
 				continue;
 			}
 
-			$partial = $this->createPartialOrder( $row );
-			yield $this->builder->finalize( $wcOrder, $partial );
+			try {
+				$partial = $this->createPartialOrder( $row, Module\Helper::getWcOrderCountry( $wcOrder ) );
+				yield $this->builder->finalize( $wcOrder, $partial );
+			} catch ( InvalidCarrierException $exception ) {
+				continue;
+			}
 		}
 	}
 

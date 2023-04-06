@@ -74,4 +74,20 @@ class Helper {
 		echo $string;
 	}
 
+	/**
+	 * Gets country from WC order.
+	 *
+	 * @param \WC_Order $wcOrder WC order.
+	 *
+	 * @return string May be empty.
+	 */
+	public static function getWcOrderCountry( \WC_Order $wcOrder ): string {
+		$country = $wcOrder->get_shipping_country();
+		if ( empty( $country ) ) {
+			$country = $wcOrder->get_billing_country();
+		}
+
+		return strtolower( $country );
+	}
+
 }

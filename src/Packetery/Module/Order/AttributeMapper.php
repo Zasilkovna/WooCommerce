@@ -38,10 +38,6 @@ class AttributeMapper {
 
 		foreach ( $propsToSave as $attrName => $attrValue ) {
 			switch ( $attrName ) {
-				case Attribute::CARRIER_ID:
-					// TODO: Remove in carrier refactor.
-					$orderEntity->setCarrierId( $attrValue );
-					break;
 				case Attribute::POINT_ID:
 					$pickupPoint->setId( $attrValue );
 					break;

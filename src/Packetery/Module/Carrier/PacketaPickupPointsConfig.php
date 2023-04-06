@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Entity;
 use Packetery\Core\PickupPointProvider\BaseProvider;
 use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\CompoundProvider;
@@ -173,6 +174,17 @@ class PacketaPickupPointsConfig {
 	}
 
 	/**
+	 * All internal pickup point carrier ids are strings, including old 'packeta' value.
+	 *
+	 * @param string $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public function isInternalPickupPointCarrier( string $carrierId ): bool {
+		return ! is_numeric( $carrierId );
+	}
+
+	/**
 	 * Gets non-feed carriers settings by country.
 	 *
 	 * @param string $country Country.
@@ -199,6 +211,23 @@ class PacketaPickupPointsConfig {
 	 */
 	public function getInternalCountries(): array {
 		return array_keys( $this->getCompoundCarriers() );
+	}
+
+	/**
+	 * Changes previously used identifier 'packeta' to zpoint type id.
+	 * Returns one of ids from CompoundCarrierCollectionFactory, e.g. zpointcz.
+	 *
+	 * @param string $carrierId Carrier id.
+	 * @param string $country Lowercase country.
+	 *
+	 * @return string|null Null in case of split vendor when split is off.
+	 */
+	public function getFixedCarrierId( string $carrierId, string $country ): ?string {
+		if ( Entity\Carrier::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+			return $this->getCompoundCarrierIdByCountry( $country );
+		}
+
+		return $carrierId;
 	}
 
 }
