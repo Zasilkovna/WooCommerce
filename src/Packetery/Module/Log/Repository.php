@@ -167,9 +167,9 @@ class Repository {
 	/**
 	 * Creates log table.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function createOrAlterTable(): void {
+	public function createOrAlterTable(): bool {
 		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_log . " (
 			`id` int(11) NOT NULL AUTO_INCREMENT,
 			`order_id` bigint(20) unsigned NULL,
@@ -181,7 +181,7 @@ class Repository {
 			PRIMARY KEY  (`id`)
 		) " . $this->wpdbAdapter->get_charset_collate();
 
-		$this->wpdbAdapter->dbDelta( $createTableQuery );
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_log );
 	}
 
 	/**

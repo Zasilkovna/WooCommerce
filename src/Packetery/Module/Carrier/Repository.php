@@ -69,9 +69,9 @@ class Repository {
 	/**
 	 * Create table to store carriers.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function createOrAlterTable(): void {
+	public function createOrAlterTable(): bool {
 		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_carrier . ' (
 			`id` int(11) NOT NULL,
 			`name` varchar(255) NOT NULL,
@@ -90,7 +90,7 @@ class Repository {
 			PRIMARY KEY  (`id`)
 		) ' . $this->wpdbAdapter->get_charset_collate();
 
-		$this->wpdbAdapter->dbDelta( $createTableQuery );
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_carrier );
 	}
 
 	/**

@@ -323,26 +323,17 @@ class WpdbAdapter {
 	}
 
 	/**
-	 * Checks if table exists.
+	 * Wrapper for dbDelta function, logs result.
 	 *
+	 * @param string $createTableQuery Create table query.
 	 * @param string $tableName Table name.
 	 *
 	 * @return bool
 	 */
-	public function tableExists( string $tableName ): bool {
-		return ( $this->get_var( $this->prepare( 'SHOW TABLES LIKE %s', $tableName ) ) === $tableName );
-	}
-
-	/**
-	 * Wrapper for dbDelta function, logs result.
-	 *
-	 * @param string $createTableQuery Create table query.
-	 *
-	 * @return void
-	 */
-	public function dbDelta( string $createTableQuery ): void {
+	public function dbDelta( string $createTableQuery, string $tableName ): bool {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-		$result = dbDelta( $createTableQuery );
+		$result1 = dbDelta( $createTableQuery );
+		$result2 = dbDelta( $createTableQuery );
 
 		/**
 		 * WC logger.
@@ -350,9 +341,41 @@ class WpdbAdapter {
 		 * @var WC_Logger $wcLogger
 		 */
 		$wcLogger = wc_get_logger();
-		foreach ( $result as $tableOrColumn => $message ) {
+		foreach ( $result1 as $tableOrColumn => $message ) {
 			$wcLogger->info( sprintf( 'dbDelta: %s => %s', $tableOrColumn, $message ), [ 'source' => 'packeta' ] );
 		}
+
+		// If the first command tries to create the table and so does the second, it means it failed.
+		// Otherwise, we assume everything is fine.
+		$parsedResult1 = $this->parseDbdeltaOutput( $result1 );
+		$parsedResult2 = $this->parseDbdeltaOutput( $result2 );
+		if (
+			in_array( $tableName, $parsedResult1['created_tables'], true ) &&
+			in_array( $tableName, $parsedResult2['created_tables'], true )
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Parses the output given by dbDelta and returns information about it. Taken from DatabaseUtil 7.5.1.
+	 *
+	 * @param array $dbdeltaOutput The output from the execution of dbDelta.
+	 *
+	 * @return array[] An array containing a 'created_tables' key whose value is an array with the names of the tables that have been (or would have been) created.
+	 */
+	private function parseDbdeltaOutput( array $dbdeltaOutput ): array {
+		$createdTables = [];
+
+		foreach ( $dbdeltaOutput as $tableName => $result ) {
+			if ( "Created table $tableName" === $result ) {
+				$createdTables[] = $tableName;
+			}
+		}
+
+		return [ 'created_tables' => $createdTables ];
 	}
 
 }

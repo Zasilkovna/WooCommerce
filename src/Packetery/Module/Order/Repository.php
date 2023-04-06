@@ -157,9 +157,9 @@ class Repository {
 	/**
 	 * Create table to store orders.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function createOrAlterTable(): void {
+	public function createOrAlterTable(): bool {
 		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_order . ' (
 			`id` bigint(20) unsigned NOT NULL,
 			`carrier_id` varchar(255) NOT NULL,
@@ -189,7 +189,7 @@ class Repository {
 			PRIMARY KEY  (`id`)
 		) ' . $this->wpdbAdapter->get_charset_collate();
 
-		$this->wpdbAdapter->dbDelta( $createTableQuery );
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_order );
 	}
 
 	/**

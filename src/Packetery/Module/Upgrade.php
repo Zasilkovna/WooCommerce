@@ -375,11 +375,10 @@ class Upgrade {
 	 * @return void
 	 */
 	private function createLogTable(): void {
-		$this->logRepository->createOrAlterTable();
-		$tableExists = $this->wpdbAdapter->tableExists( $this->wpdbAdapter->packetery_log );
-		if ( false === $tableExists ) {
+		if ( false === $this->logRepository->createOrAlterTable() ) {
 			$this->messageManager->flash_message(
-				__( 'Database log table of Packeta plugin could not be created, more information might be found in WooCommerce logs.', 'packeta' ),
+				// translators: %s: Short table name.
+				sprintf( __( 'Database %s table could not be created, more information might be found in WooCommerce logs.', 'packeta' ), 'log' ),
 				MessageManager::TYPE_ERROR
 			);
 		}
@@ -391,14 +390,8 @@ class Upgrade {
 	 * @return void
 	 */
 	private function createCarrierTable(): void {
-		$this->carrierRepository->createOrAlterTable();
-		$tableExists = $this->wpdbAdapter->tableExists( $this->wpdbAdapter->packetery_carrier );
-		if ( false === $tableExists ) {
-			$this->flashAndLog(
-				__( 'Database carrier table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ),
-				__( 'Database carrier table could not be created, more information might be found in WooCommerce logs.', 'packeta' ),
-				Record::ACTION_CARRIER_TABLE_NOT_CREATED
-			);
+		if ( false === $this->carrierRepository->createOrAlterTable() ) {
+			$this->flashAndLog( 'carrier', Record::ACTION_CARRIER_TABLE_NOT_CREATED );
 		}
 	}
 
@@ -408,33 +401,30 @@ class Upgrade {
 	 * @return void
 	 */
 	private function createOrderTable(): void {
-		$this->orderRepository->createOrAlterTable();
-		$tableExists = $this->wpdbAdapter->tableExists( $this->wpdbAdapter->packetery_order );
-		if ( false === $tableExists ) {
-			$this->flashAndLog(
-				__( 'Database order table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ),
-				__( 'Database order table could not be created, more information might be found in WooCommerce logs.', 'packeta' ),
-				Record::ACTION_ORDER_TABLE_NOT_CREATED
-			);
+		if ( false === $this->orderRepository->createOrAlterTable() ) {
+			$this->flashAndLog( 'order', Record::ACTION_ORDER_TABLE_NOT_CREATED );
 		}
 	}
 
 	/**
 	 * Flashes error and logs to Packeta log.
 	 *
-	 * @param string $flashMessage Message to flash.
+	 * @param string $table Short table name.
 	 * @param string $logMessage Message to log.
 	 * @param string $action Log action.
 	 *
 	 * @return void
 	 */
-	private function flashAndLog( string $flashMessage, string $logMessage, string $action ): void {
+	private function flashAndLog( string $table, string $logMessage, string $action ): void {
+		// translators: %s: Short table name.
+		$flashMessage = sprintf( __( 'Database %s table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ), $table );
 		$this->messageManager->flash_message( $flashMessage, MessageManager::TYPE_ERROR );
 
 		$record         = new Record();
 		$record->action = $action;
 		$record->status = Record::STATUS_ERROR;
-		$record->title  = $logMessage;
+		// translators: %s: Short table name.
+		$record->title = sprintf( __( 'Database %s table could not be created, more information might be found in WooCommerce logs.', 'packeta' ), $table );
 		$this->logger->add( $record );
 	}
 
