@@ -174,7 +174,7 @@ class Repository {
 			`id` int(11) NOT NULL AUTO_INCREMENT,
 			`order_id` bigint(20) unsigned NULL,
 			`title` varchar(255) NOT NULL DEFAULT '',
-			`params` text NOT NULL DEFAULT '',
+			`params` text NOT NULL,
 			`status` varchar(255) NOT NULL DEFAULT '',
 			`action` varchar(255) NOT NULL DEFAULT '',
 			`date` datetime NOT NULL,
