@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use PacketeryTracy\Debugger;
+use WC_Logger;
 
 /**
  * Class WpdbAdapter
@@ -184,9 +185,9 @@ class WpdbAdapter {
 	 * @param string $query  SQL query.
 	 * @param string $output Optional. Any of ARRAY_A | ARRAY_N | OBJECT | OBJECT_K constants.
 	 *
-	 * @return array|object|null Database query results.
+	 * @return array|object[]|null Database query results.
 	 */
-	public function get_results( string $query, string $output = OBJECT ) {
+	public function get_results( string $query, string $output = OBJECT ): ?array {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_results( $query, $output );
 		$this->handleError();
@@ -319,6 +320,62 @@ class WpdbAdapter {
 	 */
 	public function prepareInClause( array $input ): string {
 		return implode( ',', $this->quoteArrayOfStrings( $input ) );
+	}
+
+	/**
+	 * Wrapper for dbDelta function, logs result.
+	 *
+	 * @param string $createTableQuery Create table query.
+	 * @param string $tableName Table name.
+	 *
+	 * @return bool
+	 */
+	public function dbDelta( string $createTableQuery, string $tableName ): bool {
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		$result1 = dbDelta( $createTableQuery );
+		$result2 = dbDelta( $createTableQuery );
+
+		/**
+		 * WC logger.
+		 *
+		 * @var WC_Logger $wcLogger
+		 */
+		$wcLogger = wc_get_logger();
+		foreach ( $result1 as $tableOrColumn => $message ) {
+			$wcLogger->info( sprintf( 'dbDelta: %s => %s', $tableOrColumn, $message ), [ 'source' => 'packeta' ] );
+		}
+
+		// If the first command tries to create the table and so does the second, it means it failed.
+		// Otherwise, we assume everything is fine.
+		$parsedResult1 = $this->parseDbdeltaOutput( $result1 );
+		$parsedResult2 = $this->parseDbdeltaOutput( $result2 );
+		if (
+			in_array( $tableName, $parsedResult1['created_tables'], true ) &&
+			in_array( $tableName, $parsedResult2['created_tables'], true )
+		) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Parses the output given by dbDelta and returns information about it. Taken from DatabaseUtil 7.5.1.
+	 *
+	 * @param array $dbdeltaOutput The output from the execution of dbDelta.
+	 *
+	 * @return array[] An array containing a 'created_tables' key whose value is an array with the names of the tables that have been (or would have been) created.
+	 */
+	private function parseDbdeltaOutput( array $dbdeltaOutput ): array {
+		$createdTables = [];
+
+		foreach ( $dbdeltaOutput as $tableName => $result ) {
+			if ( "Created table $tableName" === $result ) {
+				$createdTables[] = $tableName;
+			}
+		}
+
+		return [ 'created_tables' => $createdTables ];
 	}
 
 }

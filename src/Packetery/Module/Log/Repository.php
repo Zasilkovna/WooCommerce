@@ -167,34 +167,21 @@ class Repository {
 	/**
 	 * Creates log table.
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	public function createTable(): void {
-		$this->wpdbAdapter->query(
-			'
-			CREATE TABLE IF NOT EXISTS `' . $this->wpdbAdapter->packetery_log . "` (
-				`id` INT(11) NOT NULL AUTO_INCREMENT,
-				`order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL,
-				`title` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
-				`params` TEXT NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
-				`status` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
-				`action` VARCHAR(255) NOT NULL DEFAULT '' COLLATE 'utf8_general_ci',
-				`date` DATETIME NOT NULL,
-				PRIMARY KEY (`id`) USING BTREE
-			)
-			COLLATE='utf8_general_ci'
-			ENGINE=InnoDB
-		"
-		);
-	}
+	public function createOrAlterTable(): bool {
+		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_log . " (
+			`id` int(11) NOT NULL AUTO_INCREMENT,
+			`order_id` bigint(20) unsigned NULL,
+			`title` varchar(255) NOT NULL DEFAULT '',
+			`params` text NOT NULL DEFAULT '',
+			`status` varchar(255) NOT NULL DEFAULT '',
+			`action` varchar(255) NOT NULL DEFAULT '',
+			`date` datetime NOT NULL,
+			PRIMARY KEY  (`id`)
+		) " . $this->wpdbAdapter->get_charset_collate();
 
-	/**
-	 * Adds order id column.
-	 *
-	 * @return void
-	 */
-	public function addOrderIdColumn(): void {
-		$this->wpdbAdapter->query( 'ALTER TABLE `' . $this->wpdbAdapter->packetery_log . '` ADD COLUMN `order_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL AFTER `id`' );
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_log );
 	}
 
 	/**

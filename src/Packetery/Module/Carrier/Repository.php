@@ -71,26 +71,26 @@ class Repository {
 	 *
 	 * @return bool
 	 */
-	public function createTable(): bool {
-		return $this->wpdbAdapter->query(
-			'CREATE TABLE IF NOT EXISTS `' . $this->wpdbAdapter->packetery_carrier . '` (
-				`id` int NOT NULL,
-				`name` varchar(255) NOT NULL,
-				`is_pickup_points` boolean NOT NULL,
-				`has_carrier_direct_label` boolean NOT NULL,
-				`separate_house_number` boolean NOT NULL,
-				`customs_declarations` boolean NOT NULL,
-				`requires_email` boolean NOT NULL,
-				`requires_phone` boolean NOT NULL,
-				`requires_size` boolean NOT NULL,
-				`disallows_cod` boolean NOT NULL,
-				`country` varchar(255) NOT NULL,
-				`currency` varchar(255) NOT NULL,
-				`max_weight` float NOT NULL,
-				`deleted` boolean NOT NULL,
-				PRIMARY KEY (`id`)
-			) ' . $this->wpdbAdapter->get_charset_collate()
-		);
+	public function createOrAlterTable(): bool {
+		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_carrier . ' (
+			`id` int(11) NOT NULL,
+			`name` varchar(255) NOT NULL,
+			`is_pickup_points` tinyint(1) NOT NULL,
+			`has_carrier_direct_label` tinyint(1) NOT NULL,
+			`separate_house_number` tinyint(1) NOT NULL,
+			`customs_declarations` tinyint(1) NOT NULL,
+			`requires_email` tinyint(1) NOT NULL,
+			`requires_phone` tinyint(1) NOT NULL,
+			`requires_size` tinyint(1) NOT NULL,
+			`disallows_cod` tinyint(1) NOT NULL,
+			`country` varchar(255) NOT NULL,
+			`currency` varchar(255) NOT NULL,
+			`max_weight` float NOT NULL,
+			`deleted` tinyint(1) NOT NULL,
+			PRIMARY KEY  (`id`)
+		) ' . $this->wpdbAdapter->get_charset_collate();
+
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_carrier );
 	}
 
 	/**

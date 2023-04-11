@@ -118,36 +118,9 @@ class Upgrade {
 			return;
 		}
 
-		$this->logRepository->createTable();
-		$createResult = $this->carrierRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database carrier table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_CARRIER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database carrier table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
-
-		$createResult = $this->orderRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database order table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
+		$this->createLogTable();
+		$this->createCarrierTable();
+		$this->createOrderTable();
 
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
@@ -185,29 +158,13 @@ class Upgrade {
 			$this->orderRepository->deleteOrphans();
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) {
-			$this->logRepository->addOrderIdColumn();
-			$this->orderRepository->addAdultContentColumn();
-			$this->orderRepository->addValueColumn();
-			$this->orderRepository->addCodColumn();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
-			$this->orderRepository->addColumnApiErrorMessage();
-			$this->orderRepository->addColumnApiErrorMessageDate();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
-			$this->orderRepository->addDeliverOnColumn();
+		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
+			$version_1_4_2 = new Version_1_4_2( $this->wpdbAdapter );
+			$version_1_4_2->run();
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
 			wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
-			$version_1_4_2 = new Version_1_4_2( $this->wpdbAdapter );
-			$version_1_4_2->run();
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );
@@ -219,20 +176,7 @@ class Upgrade {
 	 * @return void
 	 */
 	private function migrateWpOrderMetadata(): void {
-		$createResult = $this->orderRepository->createTable();
-		if ( false === $createResult ) {
-			$lastError = $this->wpdbAdapter->getLastWpdbError();
-			$this->messageManager->flash_message( __( 'Database order table was not created, you can find more information in Packeta log.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-			$record         = new Record();
-			$record->action = Record::ACTION_ORDER_TABLE_NOT_CREATED;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Database order table was not created.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $lastError,
-			];
-			$this->logger->add( $record );
-		}
+		$this->createOrderTable();
 
 		// Did not work when called from plugins_loaded hook.
 		$orders = wc_get_orders(
@@ -423,6 +367,65 @@ class Upgrade {
 		}
 
 		return $queryVars;
+	}
+
+	/**
+	 * Creates log table.
+	 *
+	 * @return void
+	 */
+	private function createLogTable(): void {
+		if ( false === $this->logRepository->createOrAlterTable() ) {
+			$this->messageManager->flash_message(
+				// translators: %s: Short table name.
+				sprintf( __( 'Database %s table could not be created, more information might be found in WooCommerce logs.', 'packeta' ), 'log' ),
+				MessageManager::TYPE_ERROR
+			);
+		}
+	}
+
+	/**
+	 * Creates carrier table.
+	 *
+	 * @return void
+	 */
+	private function createCarrierTable(): void {
+		if ( false === $this->carrierRepository->createOrAlterTable() ) {
+			$this->flashAndLog( 'carrier', Record::ACTION_CARRIER_TABLE_NOT_CREATED );
+		}
+	}
+
+	/**
+	 * Creates order table.
+	 *
+	 * @return void
+	 */
+	private function createOrderTable(): void {
+		if ( false === $this->orderRepository->createOrAlterTable() ) {
+			$this->flashAndLog( 'order', Record::ACTION_ORDER_TABLE_NOT_CREATED );
+		}
+	}
+
+	/**
+	 * Flashes error and logs to Packeta log.
+	 *
+	 * @param string $table Short table name.
+	 * @param string $logMessage Message to log.
+	 * @param string $action Log action.
+	 *
+	 * @return void
+	 */
+	private function flashAndLog( string $table, string $logMessage, string $action ): void {
+		// translators: %s: Short table name.
+		$flashMessage = sprintf( __( 'Database %s table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ), $table );
+		$this->messageManager->flash_message( $flashMessage, MessageManager::TYPE_ERROR );
+
+		$record         = new Record();
+		$record->action = $action;
+		$record->status = Record::STATUS_ERROR;
+		// translators: %s: Short table name.
+		$record->title = sprintf( __( 'Database %s table could not be created, more information might be found in WooCommerce logs.', 'packeta' ), $table );
+		$this->logger->add( $record );
 	}
 
 }
