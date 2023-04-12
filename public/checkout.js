@@ -345,8 +345,11 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.weight = settings.weight;
 				widgetOptions.defaultPrice = settings.carrierConfig[ carrierRateId ].defaultPrice;
 				widgetOptions.defaultCurrency = settings.carrierConfig[ carrierRateId ].defaultCurrency;
-				if (settings.carrierConfig[carrierRateId].vendors) {
-					widgetOptions.vendors = settings.carrierConfig[carrierRateId].vendors;
+				if ( settings.carrierConfig[ carrierRateId ].carriers ) {
+					widgetOptions.carriers = settings.carrierConfig[ carrierRateId ].carriers;
+				}
+				if ( settings.carrierConfig[ carrierRateId ].vendors ) {
+					widgetOptions.vendors = settings.carrierConfig[ carrierRateId ].vendors;
 				}
 
 				if ( settings.isAgeVerificationRequired ) {

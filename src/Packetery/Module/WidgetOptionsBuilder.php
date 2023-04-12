@@ -115,6 +115,22 @@ class WidgetOptionsBuilder {
 	}
 
 	/**
+	 * Gets widget carriers param.
+	 *
+	 * @param bool   $isPickupPoints Is context pickup point related.
+	 * @param string $carrierId      Carrier id.
+	 *
+	 * @return string|null
+	 */
+	public function getCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
+		if ( $isPickupPoints ) {
+			return ( is_numeric( $carrierId ) ? $carrierId : Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+		}
+
+		return null;
+	}
+
+	/**
 	 * Gets carrier configuration for widgets in frontend.
 	 *
 	 * @param Entity\Carrier $carrier         Carrier configuration.
@@ -132,12 +148,16 @@ class WidgetOptionsBuilder {
 		];
 
 		$carrierOption = get_option( $optionId );
-		if ( $carrier->hasPickupPoints() && $this->featureFlag->isSplitActive() ) {
-			$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
-				(string) $carrier->getId(),
-				$carrier->getCountry(),
-				( ( $carrierOption && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
-			);
+		if ( $carrier->hasPickupPoints() ) {
+			if ( $this->featureFlag->isSplitActive() ) {
+				$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
+					(string) $carrier->getId(),
+					$carrier->getCountry(),
+					( ( $carrierOption && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
+				);
+			} else {
+				$carrierConfigForWidget['carriers'] = $this->getCarriersParam( true, $carrier->getId() );
+			}
 		}
 
 		if ( ! $carrier->hasPickupPoints() ) {
@@ -196,16 +216,17 @@ class WidgetOptionsBuilder {
 			$widgetOptions['defaultCurrency'] = $orderCarrier->getCurrency();
 		}
 
-		// In backend, we want all pickup points in that country for packeta carrier.
-		if (
-			$order->getCarrierId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID &&
-			$this->featureFlag->isSplitActive()
-		) {
-			$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
-				$order->getCarrierId(),
-				$order->getShippingCountry(),
-				null
-			);
+		if ( $this->featureFlag->isSplitActive() ) {
+			// In backend, we want all pickup points in that country for packeta carrier.
+			if ( $order->getCarrierId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
+				$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
+					$order->getCarrierId(),
+					$order->getShippingCountry(),
+					null
+				);
+			}
+		} else {
+			$widgetOptions['carriers'] = $this->getCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() );
 		}
 
 		if ( $order->containsAdultContent() ) {
