@@ -122,7 +122,7 @@ class WidgetOptionsBuilder {
 	 *
 	 * @return string|null
 	 */
-	public function getCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
+	private function getCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
 		if ( $isPickupPoints ) {
 			return ( is_numeric( $carrierId ) ? $carrierId : Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
 		}
