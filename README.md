@@ -75,10 +75,16 @@ add_filter( 'packeta_create_packet', function ( array $createPacketData ): array
 To update packeta shipping rate cost in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
 
 ```
-add_filter( 'packeta_shipping_price', function($price) {
+add_filter( 'packeta_shipping_price', function( $price, $filterParameters ) {
 	return $price * 1.5;
 });
 ```
+
+In the `$filterParameters` variable, there are available following keys:
+* `carrier_id` - Either numeric carrier id from the official feed, `zpointxx` for all Packeta pickup points, `xxzpoint` for internal Packeta pickup points, `xxzbox` for Z-BOXes, or `czalzabox` for AlzaBoxes in Czech Republic, where `xx` is lowercase two-letter country code of country with Packeta pickup points.
+* `cart_price_including_tax` - Cart price including tax.
+* `free_shipping_limit` - Free shipping limit.
+* `weight_limits` - Array of weight limits used by internal method to compute the price.
 
 ##### Checkout widget language filter
 

@@ -70,6 +70,7 @@ class RateCalculator {
 			return null;
 		}
 
+		$freeShippingLimit = null;
 		if ( $carrierOptions['free_shipping_limit'] ) {
 			$freeShippingLimit = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions['free_shipping_limit'] );
 			if ( $cartPrice >= $freeShippingLimit ) {
@@ -81,12 +82,19 @@ class RateCalculator {
 			$cost = 0;
 		}
 
+		$filterParameters = [
+			'carrier_id'               => $carrierOptions['id'],
+			'cart_price_including_tax' => $cartPrice,
+			'free_shipping_limit'      => $freeShippingLimit,
+			'weight_limits'            => $carrierOptions['weight_limits'],
+		];
+
 		/**
 		 * Filter shipping rate cost in checkout
 		 *
 		 * @since 1.4.1
 		 */
-		return (float) apply_filters( 'packeta_shipping_price', (float) $cost );
+		return (float) apply_filters( 'packeta_shipping_price', (float) $cost, $filterParameters );
 	}
 
 	/**
