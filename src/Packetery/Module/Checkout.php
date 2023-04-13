@@ -204,7 +204,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$widgetButtonRowHtml = $this->latte_engine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
@@ -214,6 +214,12 @@ class Checkout {
 				],
 			]
 		);
+		/**
+		 * This filter allows you to change the widget button row.
+		 *
+		 * @since 1.5.1 // TODO: change version to target version.
+		 */
+		Helper::renderString( (string) apply_filters( 'packeta_widget_button_row', $widgetButtonRowHtml ) );
 	}
 
 	/**
@@ -230,7 +236,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$widgetButtonHtml = $this->latte_engine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
@@ -240,6 +246,12 @@ class Checkout {
 				],
 			]
 		);
+		/**
+		 * This filter allows you to change the widget button.
+		 *
+		 * @since 1.5.1 // TODO: change version to target version.
+		 */
+		Helper::renderString( (string) apply_filters( 'packeta_widget_button', $widgetButtonHtml ) );
 	}
 
 	/**

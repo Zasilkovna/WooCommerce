@@ -61,4 +61,17 @@ class Helper {
 			// @codingStandardsIgnoreEnd
 		}
 	}
+
+	/**
+	 * Renders string.
+	 *
+	 * @param string $string String to render.
+	 *
+	 * @return void
+	 */
+	public static function renderString( string $string ): void {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $string;
+	}
+
 }

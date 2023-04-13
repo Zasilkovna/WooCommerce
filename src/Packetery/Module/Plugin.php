@@ -600,7 +600,7 @@ class Plugin {
 		$pickupPoint              = $packeteryOrder->getPickupPoint();
 		$validatedDeliveryAddress = $packeteryOrder->getValidatedDeliveryAddress();
 
-		$this->latte_engine->render(
+		$emailFooterHtml = $this->latte_engine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
 			[
 				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
@@ -622,6 +622,12 @@ class Plugin {
 				],
 			]
 		);
+		/**
+		 * This filter allows you to change the HTML of e-mail footer.
+		 *
+		 * @since 1.5.1 // TODO: change version to target version.
+		 */
+		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailFooterHtml ) );
 	}
 
 	/**
