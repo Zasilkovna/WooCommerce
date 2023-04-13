@@ -369,7 +369,7 @@ class Checkout {
 				$error = true;
 			}
 
-			if ( ! $error ) {
+			if ( ! $error && PickupPointValidator::IS_ACTIVE ) {
 				$pickupPointId         = $post[ Order\Attribute::POINT_ID ];
 				$carrierId             = ( $post[ Order\Attribute::CARRIER_ID ] ?? null );
 				$carriersForValidation = $chosenShippingMethod;
@@ -446,11 +446,13 @@ class Checkout {
 		}
 
 		if ( $this->isPickupPointOrder() ) {
-			$pickupPointValidationError = WC()->session->get( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
-			if ( null !== $pickupPointValidationError ) {
-				// translators: %s: Message from downloader.
-				$wcOrder->add_order_note( sprintf( __( 'The selected Packeta pickup point could not be validated, reason: %s.', 'packeta' ), $pickupPointValidationError ) );
-				WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
+			if ( PickupPointValidator::IS_ACTIVE ) {
+				$pickupPointValidationError = WC()->session->get( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
+				if ( null !== $pickupPointValidationError ) {
+					// translators: %s: Message from downloader.
+					$wcOrder->add_order_note( sprintf( __( 'The selected Packeta pickup point could not be validated, reason: %s.', 'packeta' ), $pickupPointValidationError ) );
+					WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
+				}
 			}
 
 			foreach ( Order\Attribute::$pickupPointAttrs as $attr ) {
