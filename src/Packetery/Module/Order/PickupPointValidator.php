@@ -28,6 +28,9 @@ use PacketeryGuzzleHttp\PacketeryPsr7\Response;
  */
 class PickupPointValidator implements IDownloader {
 
+	// TODO: It needs to be thoroughly tested.
+	public const IS_ACTIVE = false;
+
 	public const VALIDATION_HTTP_ERROR_SESSION_KEY = 'packetery_validation_http_error';
 
 	/**
