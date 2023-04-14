@@ -388,7 +388,7 @@ class Metabox {
 			 *
 			 * @var WC_Order $wcOrder
 			 */
-			$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
 			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 				$value = $values[ $pickupPointAttr['name'] ];
 

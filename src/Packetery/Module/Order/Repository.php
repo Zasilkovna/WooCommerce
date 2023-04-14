@@ -440,7 +440,7 @@ class Repository {
 				continue;
 			}
 
-			$wcOrder = $this->getWcOrderById( $orderId );
+			$wcOrder = $this->getWcOrderById( (int) $orderId );
 			assert( null !== $wcOrder, 'WC order has to be present' );
 
 			$partialOrder              = $this->createPartialOrder( $packeteryOrdersResult[ $orderId ] );
@@ -503,7 +503,7 @@ class Repository {
 		$rows = $this->wpdbAdapter->get_results( $sql );
 
 		foreach ( $rows as $row ) {
-			$wcOrder = $this->getWcOrderById( $row->id );
+			$wcOrder = $this->getWcOrderById( (int) $row->id );
 			if ( null === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
