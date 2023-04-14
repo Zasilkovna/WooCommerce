@@ -78,11 +78,11 @@ class PacketAutoSubmitter {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 3 );
-
 		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
 			return;
 		}
+
+		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 3 );
 
 		$mappedEvents = $this->optionsProvider->getPacketAutoSubmissionMappedUniqueEvents();
 		foreach ( $mappedEvents as $mappedEvent ) {
@@ -161,6 +161,10 @@ class PacketAutoSubmitter {
 	 * @return void
 	 */
 	public function handleEventAsync( string $event, int $orderId ): void {
+		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
+			return;
+		}
 		as_schedule_single_action( time(), self::HOOK_NAME_HANDLE_EVENT, [ $event, $orderId, is_admin() === false ] );
 	}
+
 }
