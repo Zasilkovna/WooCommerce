@@ -163,7 +163,7 @@ class Upgrade {
 			$version_1_4_2->run();
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.4', '<' ) ) { // TODO: change version to target version.
+		if ( $oldVersion && version_compare( $oldVersion, '1.5', '<' ) ) {
 			wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
 		}
 
