@@ -13,27 +13,20 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var $widgetDiv = getPacketaWidget();
 
-		var getDestinationAddress = function ( defaultCountry ) {
-			var extractDestination = function( section, defaultCountry ) {
-				var country;
-				if ( $( '#' + section + '_country' ).length >= 1 ) {
-					country = $( '#' + section + '_country' ).val().toLowerCase()
-				} else {
-					country = defaultCountry;
-				}
-
+		var getDestinationAddress = function() {
+			var extractDestination = function( section ) {
 				return {
 					street: $( '#' + section + '_address_1' ).val(),
 					city: $( '#' + section + '_city' ).val(),
-					country: country,
+					country: $( '#' + section + '_country' ).val().toLowerCase(),
 					postCode: $( '#' + section + '_postcode' ).val()
 				};
 			};
 
 			if ( $( '#shipping_country:visible' ).length === 1 ) {
-				return extractDestination( 'shipping', defaultCountry );
+				return extractDestination( 'shipping' );
 			} else {
-				return extractDestination( 'billing', defaultCountry );
+				return extractDestination( 'billing' );
 			}
 		};
 
@@ -233,7 +226,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 		$(document).on('change', '#payment input[type="radio"]', checkPaymentChange);
 		$( document ).on( 'updated_checkout', function() {
 			$widgetDiv = getPacketaWidget();
-			var destinationAddress = getDestinationAddress( settings.country );
+			var destinationAddress = getDestinationAddress();
 			if ( destinationAddress.country !== settings.country ) {
 				clearInfo( settings.pickupPointAttrs );
 				clearInfo( settings.homeDeliveryAttrs );
@@ -310,7 +303,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.layout = 'hd';
 				widgetOptions.appIdentity = settings.appIdentity;
 
-				var destinationAddress = getDestinationAddress( settings.country );
+				var destinationAddress = getDestinationAddress();
 				widgetOptions.street = destinationAddress.street;
 				widgetOptions.city = destinationAddress.city;
 				widgetOptions.postcode = destinationAddress.postCode;
