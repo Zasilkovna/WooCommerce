@@ -112,7 +112,7 @@ class Repository {
 			array_unshift( $carriers, $nonFeedCarrier );
 		}
 
-		return $carriers;
+		return apply_filters( 'packeta_all_carriers', $carriers );
 	}
 
 	/**
