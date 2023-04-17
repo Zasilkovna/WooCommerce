@@ -84,7 +84,6 @@ class RateCalculator {
 
 		$filterParameters = [
 			'carrier_id'               => $carrierOptions['id'],
-			'cart_price_including_tax' => $cartPrice,
 			'free_shipping_limit'      => $freeShippingLimit,
 			'weight_limits'            => $carrierOptions['weight_limits'],
 		];
