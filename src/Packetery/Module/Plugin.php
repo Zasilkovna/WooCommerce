@@ -600,34 +600,35 @@ class Plugin {
 		$pickupPoint              = $packeteryOrder->getPickupPoint();
 		$validatedDeliveryAddress = $packeteryOrder->getValidatedDeliveryAddress();
 
+		$templateParams  = [
+			'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
+			'pickupPoint'              => $pickupPoint,
+			'validatedDeliveryAddress' => $validatedDeliveryAddress,
+			'isExternalCarrier'        => $packeteryOrder->isExternalCarrier(),
+			'translations'             => [
+				'packeta'                  => __( 'Packeta', 'packeta' ),
+				'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
+				'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
+				'link'                     => __( 'Link', 'packeta' ),
+				'pickupPointAddress'       => __( 'Pickup Point Address', 'packeta' ),
+				'validatedDeliveryAddress' => __( 'validated delivery address', 'packeta' ),
+				'street'                   => __( 'Street', 'packeta' ),
+				'houseNumber'              => __( 'House number', 'packeta' ),
+				'city'                     => __( 'City', 'packeta' ),
+				'zip'                      => __( 'Zip', 'packeta' ),
+				'county'                   => __( 'County', 'packeta' ),
+			],
+		];
 		$emailFooterHtml = $this->latte_engine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
-			[
-				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
-				'pickupPoint'              => $pickupPoint,
-				'validatedDeliveryAddress' => $validatedDeliveryAddress,
-				'isExternalCarrier'        => $packeteryOrder->isExternalCarrier(),
-				'translations'             => [
-					'packeta'                  => __( 'Packeta', 'packeta' ),
-					'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
-					'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
-					'link'                     => __( 'Link', 'packeta' ),
-					'pickupPointAddress'       => __( 'Pickup Point Address', 'packeta' ),
-					'validatedDeliveryAddress' => __( 'validated delivery address', 'packeta' ),
-					'street'                   => __( 'Street', 'packeta' ),
-					'houseNumber'              => __( 'House number', 'packeta' ),
-					'city'                     => __( 'City', 'packeta' ),
-					'zip'                      => __( 'Zip', 'packeta' ),
-					'county'                   => __( 'County', 'packeta' ),
-				],
-			]
+			$templateParams
 		);
 		/**
 		 * This filter allows you to change the HTML of e-mail footer.
 		 *
 		 * @since 1.5.1 // TODO: change version to target version.
 		 */
-		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailFooterHtml ) );
+		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailFooterHtml, $templateParams ) );
 	}
 
 	/**

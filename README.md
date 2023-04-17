@@ -116,9 +116,29 @@ add_filter( 'packeta_widget_button', function ( $buttonHtml ) {
 
 ##### Filter to modify information about Packeta pickup point or validated address in e-mail
 
-To modify this HTML, you can use `packeta_email_footer` filter.
-Since parsing and editing this HTML is not easy, and we can't think of a meaningful example,
-we present this filter without an example.
+To modify this HTML, you can use `packeta_email_footer` filter, for example to render pickup point name or simple address only:
+
+```
+add_filter( 'packeta_email_footer', 'packeta_email_footer', 20, 2 );
+function packeta_email_footer ( string $footerHtml, array $templateParams ) {
+	if ( $templateParams['pickupPoint'] && $templateParams['displayPickupPointInfo'] ) {
+		$pickupPoint = $templateParams['pickupPoint'];
+		$footerHtml  = '<p>' . $pickupPoint->getName() . '</p>';
+	} elseif ( $templateParams['validatedDeliveryAddress'] ) {
+		$address    = $templateParams['validatedDeliveryAddress'];
+		$footerHtml = '<p>' . $address->getStreet() . ' ' . $address->getHouseNumber() . ', ' . $address->getCity() . ' ' . $address->getZip() . '</p>';
+	}
+
+	return $footerHtml;
+}
+```
+
+Available keys in the variable `$templateParams` are:
+* `displayPickupPointInfo` - true if option "Replace shipping address with pickup point address" is not set or WooCommerce is set to ship to billing address only
+* `pickupPoint` - \Packetery\Core\Entity\PickupPoint object if applicable
+* `validatedDeliveryAddress` - \Packetery\Core\Entity\Address object if applicable
+* `isExternalCarrier` - true if selected delivery option is not one of Packeta Pick-up Points
+* `translations` - to examine the content, export this field during filter development
 
 ## Credits
 
