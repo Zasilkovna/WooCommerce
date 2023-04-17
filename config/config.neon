@@ -49,8 +49,11 @@ services:
 	- Packetery\Core\Validator\Size
 	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
-	- Packetery\Module\Order\Controller
-	- Packetery\Module\Order\ControllerRouter
+	- Packetery\Module\Api\Internal\OrderController
+	- Packetery\Module\Api\Internal\OrderRouter
+	- Packetery\Module\Api\Internal\CheckoutController
+	- Packetery\Module\Api\Internal\CheckoutRouter
+	- Packetery\Module\Api\Registrar
 	- Packetery\Module\Order\Modal
 	- Packetery\Module\Options\Exporter
 	- Packetery\Module\Order\CollectionPrint

@@ -201,13 +201,14 @@ class EntityRepository {
 	/**
 	 * Validates carrier for country.
 	 *
-	 * @param string|null $carrierId       Null for internal pickup points.
-	 * @param string      $customerCountry Customer country.
+	 * @param string $carrierId       Carrier id.
+	 * @param string $customerCountry Customer country.
 	 *
 	 * @return bool
 	 */
-	public function isValidForCountry( ?string $carrierId, string $customerCountry ): bool {
-		if ( null === $carrierId ) {
+	public function isValidForCountry( string $carrierId, string $customerCountry ): bool {
+		// There is no separate validation for vendor carriers yet.
+		if ( ! is_numeric( $carrierId ) ) {
 			$compoundCarriers = $this->pickupPointsConfig->getCompoundCarriers();
 
 			return ( ! empty( $compoundCarriers[ $customerCountry ] ) );

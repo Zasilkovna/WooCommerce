@@ -233,7 +233,7 @@ class Order {
 	 * Order entity constructor.
 	 *
 	 * @param string $number         Order id.
-	 * @param string $carrierId      Sender label.
+	 * @param string $carrierId      Carrier id.
 	 * @param bool   $isExported     Is exported.
 	 * @param bool   $isLabelPrinted Is label printed.
 	 */

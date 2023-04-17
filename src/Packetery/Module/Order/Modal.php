@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
+use Packetery\Module\Api;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use PacketeryLatte\Engine;
@@ -37,23 +38,23 @@ class Modal {
 	private $formFactory;
 
 	/**
-	 * Order controller.
+	 * Order router.
 	 *
-	 * @var ControllerRouter
+	 * @var Api\Internal\OrderRouter;
 	 */
-	private $orderControllerRouter;
+	private $apiRouter;
 
 	/**
 	 * Modal constructor.
 	 *
-	 * @param Engine           $latteEngine Latte engine.
-	 * @param FormFactory      $formFactory Form factory.
-	 * @param ControllerRouter $orderController Order controller.
+	 * @param Engine                   $latteEngine Latte engine.
+	 * @param FormFactory              $formFactory Form factory.
+	 * @param Api\Internal\OrderRouter $apiRouter   API router.
 	 */
-	public function __construct( Engine $latteEngine, FormFactory $formFactory, ControllerRouter $orderController ) {
-		$this->latteEngine           = $latteEngine;
-		$this->formFactory           = $formFactory;
-		$this->orderControllerRouter = $orderController;
+	public function __construct( Engine $latteEngine, FormFactory $formFactory, Api\Internal\OrderRouter $apiRouter ) {
+		$this->latteEngine = $latteEngine;
+		$this->formFactory = $formFactory;
+		$this->apiRouter   = $apiRouter;
 	}
 
 	/**
@@ -68,7 +69,7 @@ class Modal {
 	 */
 	public function renderTemplate(): void {
 		$nonce        = wp_create_nonce( 'wp_rest' );
-		$orderSaveUrl = $this->orderControllerRouter->getRouteUrl( Controller::PATH_SAVE_MODAL );
+		$orderSaveUrl = $this->apiRouter->getSaveModalUrl();
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/modal-template.latte',
 			[

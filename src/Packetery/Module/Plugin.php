@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Core\Log\ILogger;
+use Packetery\Module\Api;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
@@ -149,9 +150,9 @@ class Plugin {
 	/**
 	 * Order controller.
 	 *
-	 * @var Order\Controller
+	 * @var Api\Registrar
 	 */
-	private $orderController;
+	private $apiRegistrar;
 
 	/**
 	 * Order modal.
@@ -259,7 +260,7 @@ class Plugin {
 	 * @param Product\DataTab            $productTab                Product tab.
 	 * @param Log\Page                   $logPage                   Log page.
 	 * @param ILogger                    $logger                    Log manager.
-	 * @param Order\Controller           $orderController           Order controller.
+	 * @param Api\Registrar              $apiRegistar               API endpoints registrar.
 	 * @param Order\Modal                $orderModal                Order modal.
 	 * @param Options\Exporter           $exporter                  Options exporter.
 	 * @param Order\CollectionPrint      $orderCollectionPrint      Order collection print.
@@ -290,7 +291,7 @@ class Plugin {
 		Product\DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
-		Order\Controller $orderController,
+		Api\Registrar $apiRegistar,
 		Order\Modal $orderModal,
 		Options\Exporter $exporter,
 		Order\CollectionPrint $orderCollectionPrint,
@@ -321,7 +322,7 @@ class Plugin {
 		$this->productTab                = $productTab;
 		$this->logPage                   = $logPage;
 		$this->logger                    = $logger;
-		$this->orderController           = $orderController;
+		$this->apiRegistrar              = $apiRegistar;
 		$this->orderModal                = $orderModal;
 		$this->exporter                  = $exporter;
 		$this->orderCollectionPrint      = $orderCollectionPrint;
@@ -355,7 +356,7 @@ class Plugin {
 		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_action( 'init', [ $this->logger, 'register' ] );
 		add_action( 'init', [ $this->message_manager, 'init' ] );
-		add_action( 'rest_api_init', [ $this->orderController, 'registerRoutes' ] );
+		add_action( 'rest_api_init', [ $this->apiRegistrar, 'registerRoutes' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueueFrontAssets' ] );
