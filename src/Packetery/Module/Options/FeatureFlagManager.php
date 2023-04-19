@@ -26,7 +26,7 @@ use PacketeryLatte\Engine;
  */
 class FeatureFlagManager {
 
-	private const ENDPOINT_URL                 = 'https://pes-features-test.packeta-com.codenow.com/v1/wp';
+	private const ENDPOINT_URL                 = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
 	private const VALID_FOR_HOURS              = 4;
 	private const FLAGS_OPTION_ID              = 'packeta_feature_flags';
 	private const FLAGS_LAST_DOWNLOAD          = 'lastDownload';
