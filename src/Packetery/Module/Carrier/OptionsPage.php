@@ -644,7 +644,10 @@ class OptionsPage {
 				$checkbox['disabled'] = true;
 			}
 			$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
-			$hasTheGroupAllowed    = in_array( $vendorProvider->getGroup(), $carrierOptions['vendor_groups'], true );
+			$hasTheGroupAllowed    = (
+				$hasGroupSettingsSaved &&
+				in_array( $vendorProvider->getGroup(), $carrierOptions['vendor_groups'], true )
+			);
 			if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
 				$checkbox['default'] = true;
 			}
