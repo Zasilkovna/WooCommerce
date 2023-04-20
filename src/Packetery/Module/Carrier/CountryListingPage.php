@@ -276,14 +276,14 @@ class CountryListingPage {
 	 */
 	public function getCarriersForOptionsExport(): array {
 		$carriersWithSomeOptions = [];
-		$allCarriers             = $this->carrierRepository->getAllIncludingNonFeed();
+		$allCarriers             = $this->carrierEntityRepository->getAllCarriersIncludingNonFeed();
 		foreach ( $allCarriers as $carrier ) {
-			$carrierId      = $carrier['id'];
+			$carrierId      = $carrier->getId();
 			$optionId       = OptionPrefixer::getOptionId( $carrierId );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions ) {
 				unset( $carrierOptions['id'] );
-				$originalName = $carrier['name'];
+				$originalName = $carrier->getName();
 				$cartName     = $carrierOptions['name'];
 				unset( $carrierOptions['name'] );
 				$addition       = [

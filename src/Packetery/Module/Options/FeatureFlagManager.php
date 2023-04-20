@@ -125,10 +125,14 @@ class FeatureFlagManager {
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
 		if ( false === $flags ) {
 			if ( ! $hasApiKey ) {
-				return [];
+				$flags = [];
+
+				return $flags;
 			}
 
-			return $this->fetchFlags();
+			$flags = $this->fetchFlags();
+
+			return $flags;
 		}
 
 		if ( $hasApiKey ) {
