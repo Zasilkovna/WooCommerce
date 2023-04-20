@@ -101,21 +101,6 @@ class Repository {
 	}
 
 	/**
-	 * Gets all active carriers including internal pickup point carriers.
-	 *
-	 * @return array|null
-	 */
-	public function getAllIncludingNonFeed(): ?array {
-		$carriers        = $this->wpdbAdapter->get_results( 'SELECT `id`, `name`, `is_pickup_points`, `country`, `currency`  FROM `' . $this->wpdbAdapter->packetery_carrier . '`', ARRAY_A );
-		$nonFeedCarriers = $this->pickupPointsConfig->getCompoundAndVendorCarriers();
-		foreach ( $nonFeedCarriers as $nonFeedCarrier ) {
-			array_unshift( $carriers, $nonFeedCarrier );
-		}
-
-		return $carriers;
-	}
-
-	/**
 	 * Gets is_pickup_point attribute of a carrier.
 	 *
 	 * @param int $carrierId Carrier id.
