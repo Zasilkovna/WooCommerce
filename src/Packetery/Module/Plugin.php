@@ -752,6 +752,8 @@ class Plugin {
 			)
 		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+			// We want to trigger the message on all pages and show it on first request.
+			$this->featureFlagManager->isSplitActive();
 			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
 			if ( $this->featureFlagManager->hasSplitActivationNotice() ) {
 				add_action( 'admin_notices', [ $this->featureFlagManager, 'renderSplitActivationNotice' ] );
