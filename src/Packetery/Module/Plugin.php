@@ -722,7 +722,9 @@ class Plugin {
 		$isOrderGridPage       = $this->contextResolver->isOrderGridPage();
 		$isOrderDetailPage     = $this->contextResolver->isOrderDetailPage();
 		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
-		$datePickerSettings    = [ 'deliverOnMinDate' => wp_date( \Packetery\Core\Helper::DATEPICKER_FORMAT ) ];
+		$datePickerSettings    = [
+			'deliverOnMinDate' => wp_date( \Packetery\Core\Helper::DATEPICKER_FORMAT, strtotime( 'tomorrow' ) ),
+		];
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
