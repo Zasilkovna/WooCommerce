@@ -61,6 +61,26 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.5.0 =
+Added: In the list of orders, an exclamation mark icon is now displayed, which informs about an unsuccessful action (sending/cancelling a shipment, printing a label).
+Added: Possibility to automatically open widget when shipping is selected in the checkout.
+Added: Automatic order submission.
+Added: Possibility to auto-change order status after packet submission and after auto-submission.
+Added: Possibility to verify the delivery address in order detail in administration.
+Added: It is now possible to round the cash on delivery value when sending a shipment to our system.
+Added: It is now possible to send a shipment also from the order details in the administration.
+Added: For each category, it is possible to disable specific Packeta carriers.
+Added: The plugin now supports free shipping coupons. It is possible to set whether it will also apply to surcharges with specific carriers.
+Added: If you do not have a weight set for the products, you can now set a default shipment weight.
+Added: If the carrier does not support cash on delivery, it is now not possible to choose a cash on delivery payment at the checkout.
+Added: You can now set a planned delivery for the order (the shipment will not be delivered before the specified date).
+Added: A planned task to automatically download the list of carriers. The changes made in the list of carriers are now stored in the log.
+Updated: The icon for sending the order to Packeta is no longer displayed if all mandatory parameters (e.g. weight) have not been entered for the order.
+Updated: Improved compatibility with templates that modify the checkout (e.g. Elementor). In the past it happened that with some more complex third party templates, it was not possible to complete the order.
+Updated: The plugin now remembers the filter settings in the list of orders even after some action has been taken (e.g. sending a shipment).
+Updated: Some translations have been updated.
+Fixed: The information about sending the shipment was written twice in the log. Now it only logs in correctly once.
+
 = 1.4.3 =
 * Added: Database server version to options export
 
