@@ -71,7 +71,7 @@ class Page {
 			\Packetery\Module\Options\Page::SLUG,
 			__( 'Log', 'packeta' ),
 			__( 'Log', 'packeta' ),
-			'manage_options',
+			'manage_woocommerce',
 			self::SLUG,
 			[ $this, 'render' ]
 		);
