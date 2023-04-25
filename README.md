@@ -75,9 +75,9 @@ add_filter( 'packeta_create_packet', function ( array $createPacketData ): array
 To update packeta shipping rate cost in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
 
 ```
-add_filter( 'packeta_shipping_price', function( $price, $filterParameters ) {
+add_filter( 'packeta_shipping_price', function ( $price, $filterParameters ) {
 	return $price * 1.5;
-});
+}, 20, 2 );
 ```
 
 In the `$filterParameters` variable, there are available following keys:
