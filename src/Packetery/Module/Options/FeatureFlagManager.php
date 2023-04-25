@@ -73,7 +73,6 @@ class FeatureFlagManager {
 	 * Downloads flags.
 	 *
 	 * @return array
-	 * @throws DownloadException Download exception.
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function fetchFlags(): array {
@@ -92,7 +91,8 @@ class FeatureFlagManager {
 				]
 			);
 		} catch ( GuzzleException $exception ) {
-			throw new DownloadException( $exception->getMessage() );
+			// We need to not block the presentation. TODO: solve logging.
+			return [];
 		}
 		$responseJson    = $response->getBody()->getContents();
 		$responseDecoded = json_decode( $responseJson, true );
@@ -149,7 +149,7 @@ class FeatureFlagManager {
 			}
 
 			if (
-				isset( $oldFlags ) &&
+				isset( $oldFlags, $flags[ self::FLAG_SPLIT_ACTIVE ] ) &&
 				false === $oldFlags[ self::FLAG_SPLIT_ACTIVE ] &&
 				true === $flags[ self::FLAG_SPLIT_ACTIVE ]
 			) {
