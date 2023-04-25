@@ -309,11 +309,36 @@ class Metabox {
 
 		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
 		$packetSubmitUrl        = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
+
+		$showWidgetButton  = $order->isPickupPointDelivery();
+		$widgetButtonError = null;
+		if ( ! $order->isExternalCarrier() && $order->getCarrierCode() === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
+			// This means that more accurate carrier id could not be determined. See Order\Builder.
+			$showWidgetButton  = false;
+			$widgetButtonError = $this->latte_engine->renderToString(
+				PACKETERY_PLUGIN_DIR . '/template/order/metabox-notice.latte',
+				[
+					'message' => sprintf(
+						// translators: %s is country code.
+						__(
+							'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+							'packeta'
+						),
+						$order->getShippingCountry()
+					),
+				]
+			);
+		}
+
+		$showHdWidget = $order->isHomeDelivery() && in_array( $order->getShippingCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
 				'form'                   => $this->order_form,
 				'order'                  => $order,
+				'showWidgetButton'       => $showWidgetButton,
+				'widgetButtonError'      => $widgetButtonError,
+				'showHdWidget'           => $showHdWidget,
 				'showSubmitPacketButton' => $showSubmitPacketButton,
 				'packetSubmitUrl'        => $packetSubmitUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),

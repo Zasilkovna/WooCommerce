@@ -132,17 +132,7 @@ class Builder {
 
 		$order->setSize( $order->getSize() );
 
-		if ( $order->isExternalCarrier() ) {
-			$carrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
-			$order->setCarrier( $carrier );
-			$order->setCarrierCode( $order->getCarrierId() );
-		} else {
-			$order->setCarrierCode(
-				$this->pickupPointsConfig->getCompoundCarrierIdByCountry(
-					$order->getShippingCountry()
-				)
-			);
-		}
+		$order->setCarrierCode( $this->getCarrierId( $order ) );
 
 		$order->setCurrency( $wcOrder->get_currency() );
 
@@ -168,6 +158,32 @@ class Builder {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Gets carrier id for order.
+	 * We want the order to stay being Packeta order even in case Packeta does not ship to selected country.
+	 *
+	 * @param Entity\Order $order Order.
+	 *
+	 * @return string
+	 */
+	private function getCarrierId( Entity\Order $order ): string {
+		if ( $order->isExternalCarrier() ) {
+			$carrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
+			$order->setCarrier( $carrier );
+			return $order->getCarrierId();
+		}
+
+		$shippingCountry = $order->getShippingCountry();
+		if ( null === $shippingCountry ) {
+			return Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
+		}
+
+		// TODO: for non-compound split carriers use value from database. See Metabox and PacketSubmitter.
+		$carrierId = $this->pickupPointsConfig->getCompoundCarrierIdByCountry( $shippingCountry );
+
+		return ( $carrierId ?? Entity\Carrier::INTERNAL_PICKUP_POINTS_ID );
 	}
 
 }

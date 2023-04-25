@@ -581,8 +581,12 @@ class Order {
 	 *
 	 * @return void
 	 */
-	public function setShippingCountry( $shippingCountry ): void {
-		$this->shippingCountry = $shippingCountry;
+	public function setShippingCountry( string $shippingCountry ): void {
+		if ( '' === $shippingCountry ) {
+			$this->shippingCountry = null;
+		} else {
+			$this->shippingCountry = $shippingCountry;
+		}
 	}
 
 	/**
