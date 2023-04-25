@@ -373,7 +373,7 @@ class Provider {
 	 *
 	 * @return string|null
 	 */
-	public function getPacketAutoSubmissionEvenForPaymentGateway( string $paymentGatewayId ): ?string {
+	public function getPacketAutoSubmissionEventForPaymentGateway( string $paymentGatewayId ): ?string {
 		return $this->getPacketAutoSubmissionPaymentMethodEventsMapping()[ $paymentGatewayId ]['event'] ?? null;
 	}
 
@@ -543,4 +543,17 @@ class Provider {
 	public function getAutoOrderStatus(): ?string {
 		return $this->get( self::AUTO_ORDER_STATUS );
 	}
+
+	/**
+	 * Performs replacements needed by Nette form to pass validation, see https://github.com/dg/nette-component-model/blob/master/src/ComponentModel/Container.php#L50 .
+	 * There may be an edge case where a replacement causes a conflict with another method. We do not address this issue yet.
+	 *
+	 * @param string $id Payment gateway id.
+	 *
+	 * @return string
+	 */
+	public function sanitizePaymentGatewayId( string $id ): string {
+		return preg_replace( '/\W/', '_', $id );
+	}
+
 }
