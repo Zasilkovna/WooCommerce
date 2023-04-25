@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.5.0
+Stable tag: 1.5.1
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 7.6.0
@@ -61,6 +61,13 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.5.1 =
+Updated: Viewing the log and printing labels is now possible with the manage_woocommerce permission, which is part of the "Shop Manager" role.
+Updated: We are extending the packeta_shipping_price filter with another parameter (carrier ID, free shipping limit, prices for individual weight limits). Using this filter, you can set a new shipping price, for example, according to the price of the order.
+Updated: It is no longer possible to select today's date in the calendar in the "postponed delivery" function.
+Fixed: When using a payment plugin with a hyphen in its name (e.g. gopay-inline), our plugin crashed. Now everything works as expected.
+Fixed: If the internal API of Packeta is unsuccessfully called (e.g. due to firewall settings), the plugin will no longer crash.
+
 = 1.5.0 =
 Added: In the list of orders, an exclamation mark icon is now displayed, which informs about an unsuccessful action (sending/cancelling a shipment, printing a label).
 Added: Possibility to automatically open widget when shipping is selected in the checkout.
