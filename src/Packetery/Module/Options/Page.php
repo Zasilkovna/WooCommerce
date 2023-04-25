@@ -250,7 +250,9 @@ class Page {
 
 		$paymentMethodEvents = $form->addContainer( 'payment_method_events' );
 		foreach ( $gateways as $gateway ) {
-			$paymentMethodEventsMethod = $paymentMethodEvents->addContainer( $gateway->id );
+			$paymentMethodEventsMethod = $paymentMethodEvents->addContainer(
+				$this->optionsProvider->sanitizePaymentGatewayId( $gateway->id )
+			);
 			$paymentMethodEventsMethod->addSelect( 'event', $gateway->get_method_title(), $eventChoices )
 										->setPrompt( __( 'Select event', 'packeta' ) )
 										->checkDefaultValue( false );

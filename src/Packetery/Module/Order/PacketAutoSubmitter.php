@@ -129,7 +129,9 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		$mappingEventForGateway = $this->optionsProvider->getPacketAutoSubmissionEvenForPaymentGateway( $paymentGateway->id );
+		$mappingEventForGateway = $this->optionsProvider->getPacketAutoSubmissionEventForPaymentGateway(
+			$this->optionsProvider->sanitizePaymentGatewayId( $paymentGateway->id )
+		);
 		if ( null === $mappingEventForGateway || $mappingEventForGateway !== $event ) {
 			return;
 		}
