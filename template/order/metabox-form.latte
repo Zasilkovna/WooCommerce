@@ -52,7 +52,11 @@
         </div>
 
         {if $widgetButtonError}
-            {$widgetButtonError|noescape}
+            <div class="packeta-metabox-notice">
+                <p>
+                    {$widgetButtonError}
+                </p>
+            </div>
         {/if}
         {if $showWidgetButton}
             {foreach Packetery\Module\Order\Attribute::$pickupPointAttrs as $attr}

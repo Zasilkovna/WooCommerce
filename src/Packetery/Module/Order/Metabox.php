@@ -315,18 +315,13 @@ class Metabox {
 		if ( ! $order->isExternalCarrier() && $order->getCarrierCode() === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 			// This means that more accurate carrier id could not be determined. See Order\Builder.
 			$showWidgetButton  = false;
-			$widgetButtonError = $this->latte_engine->renderToString(
-				PACKETERY_PLUGIN_DIR . '/template/order/metabox-notice.latte',
-				[
-					'message' => sprintf(
-						// translators: %s is country code.
-						__(
-							'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
-							'packeta'
-						),
-						$order->getShippingCountry()
-					),
-				]
+			$widgetButtonError = sprintf(
+			// translators: %s is country code.
+				__(
+					'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+					'packeta'
+				),
+				$order->getShippingCountry()
 			);
 		}
 
