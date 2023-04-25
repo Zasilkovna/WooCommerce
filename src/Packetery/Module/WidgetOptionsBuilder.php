@@ -144,7 +144,7 @@ class WidgetOptionsBuilder {
 			'id'               => $carrier->getId(),
 			'is_pickup_points' => (int) $carrier->hasPickupPoints(),
 			'defaultPrice'     => $defaultPrice,
-			'defaultCurrency'  => $carrier->getCurrency(),
+			'defaultCurrency'  => get_woocommerce_currency(),
 		];
 
 		$carrierOption = get_option( $optionId );
@@ -203,11 +203,12 @@ class WidgetOptionsBuilder {
 		}
 
 		$widgetOptions = [
-			'country'      => $order->getShippingCountry(),
-			'language'     => substr( get_user_locale(), 0, 2 ),
-			'appIdentity'  => Plugin::getAppIdentity(),
-			'weight'       => $order->getFinalWeight(),
-			'defaultPrice' => $defaultPrice,
+			'country'         => $order->getShippingCountry(),
+			'language'        => substr( get_user_locale(), 0, 2 ),
+			'appIdentity'     => Plugin::getAppIdentity(),
+			'weight'          => $order->getFinalWeight(),
+			'defaultPrice'    => $defaultPrice,
+			'defaultCurrency' => $order->getCurrency(),
 		];
 
 		// TODO: update later when carrier will not be nullable.
