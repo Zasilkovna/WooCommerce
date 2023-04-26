@@ -133,11 +133,7 @@ class FeatureFlagManager {
 			return $flags;
 		}
 
-		if ( ! isset( $flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
-			return $flags;
-		}
-
-		if ( $hasApiKey ) {
+		if ( $hasApiKey && isset( $flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
 			$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 			$lastUpdate = DateTimeImmutable::createFromFormat(
 				Helper::MYSQL_DATETIME_FORMAT,
