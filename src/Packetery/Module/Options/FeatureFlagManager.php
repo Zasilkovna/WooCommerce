@@ -12,7 +12,6 @@ namespace Packetery\Module\Options;
 use DateTimeImmutable;
 use Exception;
 use Packetery\Core\Helper;
-use Packetery\Module\Exception\DownloadException;
 use Packetery\Module\Plugin;
 use PacketeryGuzzleHttp\Client;
 use PacketeryGuzzleHttp\Exception\GuzzleException;
@@ -97,12 +96,12 @@ class FeatureFlagManager {
 		$responseJson    = $response->getBody()->getContents();
 		$responseDecoded = json_decode( $responseJson, true );
 
-		$flags = [
-			self::FLAG_SPLIT_ACTIVE => (bool) $responseDecoded['features']['split'],
+		$lastDownload = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+		$flags        = [
+			self::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
+			self::FLAG_LAST_DOWNLOAD => $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT ),
 		];
 
-		$lastDownload                      = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
-		$flags[ self::FLAG_LAST_DOWNLOAD ] = $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT );
 		update_option( self::FLAGS_OPTION_ID, $flags );
 
 		return $flags;
@@ -112,7 +111,6 @@ class FeatureFlagManager {
 	 * Gets or downloads flags.
 	 *
 	 * @return array
-	 * @throws DownloadException Download exception.
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function getFlags(): array {
@@ -168,7 +166,7 @@ class FeatureFlagManager {
 	 * Tells if split is active.
 	 *
 	 * @return bool
-	 * @throws DownloadException Download exception.
+	 * @throws Exception From DateTimeImmutable.
 	 */
 	public function isSplitActive(): bool {
 		$flags = $this->getFlags();
