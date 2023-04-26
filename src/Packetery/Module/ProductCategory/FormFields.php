@@ -149,11 +149,23 @@ class FormFields {
 	/**
 	 * Saves product category data.
 	 *
-	 * @param int    $termId         Post ID.
-	 * @param int    $termTaxonomyId Term taxonomy ID.
-	 * @param string $taxonomy       Taxonomy slug.
+	 * @param int|mixed    $termId         Post ID.
+	 * @param int|mixed    $termTaxonomyId Term taxonomy ID.
+	 * @param string|mixed $taxonomy       Taxonomy slug.
 	 */
-	public function saveData( int $termId, int $termTaxonomyId, string $taxonomy = '' ): void {
+	public function saveData( $termId, $termTaxonomyId, $taxonomy = '' ): void {
+		if ( ! is_int( $termId ) ) {
+			return;
+		}
+
+		if ( ! is_int( $termTaxonomyId ) ) {
+			return;
+		}
+
+		if ( ! is_string( $taxonomy ) ) {
+			return;
+		}
+
 		if ( $taxonomy !== ProductCategory\Entity::TAXONOMY_NAME ) {
 			return;
 		}
