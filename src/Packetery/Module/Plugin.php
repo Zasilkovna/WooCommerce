@@ -492,11 +492,15 @@ class Plugin {
 	/**
 	 * Filter queries.
 	 *
-	 * @param array $query Query.
+	 * @param array|mixed $query Query.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function transformGetOrdersQuery( array $query ): array {
+	public function transformGetOrdersQuery( $query ) {
+		if ( ! is_array( $query ) ) {
+			return $query;
+		}
+
 		if ( ! empty( $query['packetery_meta_query'] ) ) {
 			// @codingStandardsIgnoreStart
 			$query['meta_query'] = $query['packetery_meta_query'];
@@ -509,9 +513,13 @@ class Plugin {
 	/**
 	 * Renders delivery detail for packetery orders.
 	 *
-	 * @param WC_Order $order WordPress order.
+	 * @param WC_Order|mixed $order WordPress order.
 	 */
-	public function renderDeliveryDetail( WC_Order $order ): void {
+	public function renderDeliveryDetail( $order ): void {
+		if ( ! $order instanceof WC_Order ) {
+			return;
+		}
+
 		$orderEntity = $this->orderRepository->getByWcOrder( $order );
 		if ( null === $orderEntity ) {
 			return;
@@ -549,9 +557,13 @@ class Plugin {
 	/**
 	 * Renders delivery detail for packetery orders, on "thank you" page and in frontend detail.
 	 *
-	 * @param WC_Order $wcOrder WordPress order.
+	 * @param WC_Order|mixed $wcOrder WordPress order.
 	 */
-	public function renderOrderDetail( WC_Order $wcOrder ): void {
+	public function renderOrderDetail( $wcOrder ): void {
+		if ( ! $wcOrder instanceof WC_Order ) {
+			return;
+		}
+
 		$order = $this->orderRepository->getById( $wcOrder->get_id() );
 		if ( null === $order ) {
 			return;

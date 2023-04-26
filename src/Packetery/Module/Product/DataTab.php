@@ -73,11 +73,15 @@ class DataTab {
 	/**
 	 * Registers tab.
 	 *
-	 * @param array $tabs Tabs definition array.
+	 * @param array|mixed $tabs Tabs definition array.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function registerTab( array $tabs ): array {
+	public function registerTab( $tabs ) {
+		if ( ! is_array( $tabs ) ) {
+			return $tabs;
+		}
+
 		$tabs[ self::NAME ] = [
 			'label'  => __( 'Packeta', 'packeta' ),
 			'target' => self::NAME,

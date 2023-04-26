@@ -96,13 +96,25 @@ class BulkActions {
 	/**
 	 * Executes the action for selected orders and returns url to redirect to.
 	 *
-	 * @param string $redirectTo Url.
-	 * @param string $action Action id.
-	 * @param array  $postIds Order ids.
+	 * @param string|mixed $redirectTo Url.
+	 * @param string|mixed $action Action id.
+	 * @param array|mixed  $postIds Order ids.
 	 *
-	 * @return string
+	 * @return string|mixed
 	 */
-	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
+	public function handleActions( $redirectTo, $action, $postIds ) {
+		if ( ! is_string( $redirectTo ) ) {
+			return $redirectTo;
+		}
+
+		if ( ! is_string( $action ) ) {
+			return $redirectTo;
+		}
+
+		if ( ! is_array( $postIds ) ) {
+			return $redirectTo;
+		}
+
 		if ( CollectionPrint::ACTION_PRINT_ORDER_COLLECTION === $action ) {
 			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
 

@@ -219,9 +219,13 @@ class Checkout {
 	/**
 	 * Renders widget button and information about chosen pickup point
 	 *
-	 * @param \WC_Shipping_Rate $shippingRate Shipping rate.
+	 * @param \WC_Shipping_Rate|mixed $shippingRate Shipping rate.
 	 */
-	public function renderWidgetButtonAfterShippingRate( \WC_Shipping_Rate $shippingRate ): void {
+	public function renderWidgetButtonAfterShippingRate( $shippingRate ): void {
+		if ( ! $shippingRate instanceof \WC_Shipping_Rate ) {
+			return;
+		}
+
 		if ( ! is_checkout() ) {
 			return;
 		}
@@ -421,11 +425,15 @@ class Checkout {
 	/**
 	 * Saves pickup point and other Packeta information to order.
 	 *
-	 * @param int $orderId Order id.
+	 * @param int|mixed $orderId Order id.
 	 *
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function updateOrderMeta( int $orderId ): void {
+	public function updateOrderMeta( $orderId ): void {
+		if ( ! is_int( $orderId ) ) {
+			return;
+		}
+
 		$chosenMethod = $this->getChosenMethod();
 		if ( false === $this->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return;
