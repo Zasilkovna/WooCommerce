@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Module\Carrier;
 use WC_Cart;
 use WC_Order;
+use function method_exists;
 
 /**
  * Class RateCalculator. Calculates cost for WooCommerce shipping rate.
@@ -106,7 +107,7 @@ class RateCalculator {
 	public function isFreeShippingCouponApplied( $cartOrOrder ): bool {
 		$coupons = $cartOrOrder->get_coupons();
 		foreach ( $coupons as $coupon ) {
-			if ( $coupon->get_free_shipping() ) {
+			if ( method_exists( $coupon, 'get_free_shipping' ) && $coupon->get_free_shipping() ) {
 				return true;
 			}
 		}
