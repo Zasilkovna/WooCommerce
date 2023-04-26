@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 7.6.0
@@ -61,6 +61,12 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.5.2 =
+Fixed: Displaying an order with a shipping method that doesn't have coupons enabled, with free shipping, and with a coupon used now doesn't throw an error.
+Fixed: For international shipping, the wrong shipping currency was being passed to the widget.
+Fixed: The plugin stopped working if the delivery country was changed in the order detail to a country not supported by the selected shipping method.
+Fixed: Failed communication with the Packeta's internal API will no longer result in an error.
+
 = 1.5.1 =
 Updated: Viewing the log and printing labels is now possible with the manage_woocommerce permission, which is part of the "Shop Manager" role.
 Updated: We are extending the packeta_shipping_price filter with another parameter (carrier ID, free shipping limit, prices for individual weight limits). Using this filter, you can set a new shipping price, for example, according to the price of the order.

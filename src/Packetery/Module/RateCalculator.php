@@ -12,7 +12,6 @@ namespace Packetery\Module;
 use Packetery\Module\Carrier;
 use WC_Cart;
 use WC_Order;
-use function method_exists;
 
 /**
  * Class RateCalculator. Calculates cost for WooCommerce shipping rate.
