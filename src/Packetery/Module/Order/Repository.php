@@ -691,12 +691,20 @@ class Repository {
 	/**
 	 * Fires after post deletion.
 	 *
-	 * @param int     $postId Post id.
-	 * @param WP_Post $post Post object.
+	 * @param int|mixed     $postId Post id.
+	 * @param WP_Post|mixed $post Post object.
 	 *
 	 * @return void
 	 */
-	public function deletedPostHook( int $postId, WP_Post $post ): void {
+	public function deletedPostHook( $postId, $post ): void {
+		if ( ! is_int( $postId ) ) {
+			return;
+		}
+
+		if ( ! $post instanceof WP_Post ) {
+			return;
+		}
+
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		if ( $post->post_type === 'shop_order' ) {
 			$this->delete( $postId );
