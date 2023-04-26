@@ -312,7 +312,7 @@ class Metabox {
 
 		$showWidgetButton  = $order->isPickupPointDelivery();
 		$widgetButtonError = null;
-		if ( ! $order->isExternalCarrier() && $order->getCarrierCode() === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
+		if ( $order->getCarrierCode() === null ) {
 			// This means that more accurate carrier id could not be determined. See Order\Builder.
 			$showWidgetButton  = false;
 			$widgetButtonError = sprintf(

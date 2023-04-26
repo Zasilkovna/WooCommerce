@@ -160,9 +160,9 @@ class Order {
 	private $carrierId;
 
 	/**
-	 * Internal carrier code.
+	 * Internal carrier code. Null for orders with changed country.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $carrierCode;
 
@@ -894,20 +894,20 @@ class Order {
 	/**
 	 * Setter for carrierCode.
 	 *
-	 * @param string $carrierCode Carrier code.
+	 * @param string|null $carrierCode Carrier code.
 	 *
 	 * @return void
 	 */
-	public function setCarrierCode( string $carrierCode ): void {
+	public function setCarrierCode( ?string $carrierCode ): void {
 		$this->carrierCode = $carrierCode;
 	}
 
 	/**
 	 * Returns carrierId for external carriers or carrierCode.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getCarrierCode():string {
+	public function getCarrierCode(): ?string {
 		return $this->carrierCode;
 	}
 

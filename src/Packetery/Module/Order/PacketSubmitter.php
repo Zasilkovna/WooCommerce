@@ -319,7 +319,7 @@ class PacketSubmitter {
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
 		if ( ! empty( $createPacketData['cod'] ) ) {
-			if ( $order->getCarrierCode() === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
+			if ( $order->getCarrierCode() === null ) {
 				// This means that more accurate carrier id could not be determined. See Order\Builder.
 				$roundingType = Rounder::DONT_ROUND;
 			} else {
