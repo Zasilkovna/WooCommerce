@@ -132,17 +132,19 @@ class Builder {
 
 		$order->setSize( $order->getSize() );
 
+		$carrierCode = null;
 		if ( $order->isExternalCarrier() ) {
 			$carrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
 			$order->setCarrier( $carrier );
-			$order->setCarrierCode( $order->getCarrierId() );
+			$carrierCode = $order->getCarrierId();
 		} else {
-			$order->setCarrierCode(
-				$this->pickupPointsConfig->getCompoundCarrierIdByCountry(
-					$order->getShippingCountry()
-				)
-			);
+			$shippingCountry = $order->getShippingCountry();
+			if ( null !== $shippingCountry ) {
+				// TODO: for non-compound split carriers use value from database. See Metabox and PacketSubmitter.
+				$carrierCode = $this->pickupPointsConfig->getCompoundCarrierIdByCountry( $shippingCountry );
+			}
 		}
+		$order->setCarrierCode( $carrierCode );
 
 		$order->setCurrency( $wcOrder->get_currency() );
 

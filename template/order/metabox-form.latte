@@ -51,7 +51,14 @@
 
         </div>
 
-        {if $order->isPickupPointDelivery()}
+        {if $widgetButtonError}
+            <div class="packeta-metabox-notice">
+                <p>
+                    {$widgetButtonError}
+                </p>
+            </div>
+        {/if}
+        {if $showWidgetButton}
             {foreach Packetery\Module\Order\Attribute::$pickupPointAttrs as $attr}
                 <input n:name=$attr[name] />
             {/foreach}
@@ -64,7 +71,7 @@
             </div>
         {/if}
 
-        {if $order->isHomeDelivery()}
+        {if $showHdWidget}
             {foreach Packetery\Module\Order\Attribute::$homeDeliveryAttrs as $attr}
                 <input n:name=$attr[name] />
             {/foreach}

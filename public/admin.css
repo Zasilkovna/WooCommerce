@@ -736,3 +736,7 @@ tbody .packetery-log-column-note {
     margin-left: 0;
     margin-right: 0;
 }
+
+.packeta-metabox-notice {
+    font-weight: bold;
+}

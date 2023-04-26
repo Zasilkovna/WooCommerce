@@ -319,7 +319,13 @@ class PacketSubmitter {
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
 		if ( ! empty( $createPacketData['cod'] ) ) {
-			$roundingType            = Options::createByCarrierId( $order->getCarrierCode() )->getCodRoundingType();
+			if ( $order->getCarrierCode() === null ) {
+				// This means that more accurate carrier id could not be determined. See Order\Builder.
+				$roundingType = Rounder::DONT_ROUND;
+			} else {
+				$roundingType = Options::createByCarrierId( $order->getCarrierCode() )->getCodRoundingType();
+			}
+
 			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );
 			$createPacketData['cod'] = $roundedCod;
 		}
