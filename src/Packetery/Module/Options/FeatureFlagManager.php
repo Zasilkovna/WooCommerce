@@ -12,7 +12,6 @@ namespace Packetery\Module\Options;
 use DateTimeImmutable;
 use Exception;
 use Packetery\Core\Helper;
-use Packetery\Module\Exception\DownloadException;
 use Packetery\Module\Plugin;
 use PacketeryGuzzleHttp\Client;
 use PacketeryGuzzleHttp\Exception\GuzzleException;
@@ -29,11 +28,11 @@ class FeatureFlagManager {
 	private const ENDPOINT_URL                 = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
 	private const VALID_FOR_HOURS              = 4;
 	private const FLAGS_OPTION_ID              = 'packeta_feature_flags';
-	private const FLAGS_LAST_DOWNLOAD          = 'lastDownload';
 	private const TRANSIENT_SHOW_SPLIT_MESSAGE = 'packeta_show_split_message';
 	public const ACTION_HIDE_SPLIT_MESSAGE     = 'dismiss_split_message';
 
-	private const FLAG_SPLIT_ACTIVE = 'splitActive';
+	private const FLAG_LAST_DOWNLOAD = 'lastDownload';
+	private const FLAG_SPLIT_ACTIVE  = 'splitActive';
 
 	/**
 	 * Guzzle client.
@@ -97,12 +96,12 @@ class FeatureFlagManager {
 		$responseJson    = $response->getBody()->getContents();
 		$responseDecoded = json_decode( $responseJson, true );
 
-		$flags = [
-			self::FLAG_SPLIT_ACTIVE => (bool) $responseDecoded['features']['split'],
+		$lastDownload = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+		$flags        = [
+			self::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
+			self::FLAG_LAST_DOWNLOAD => $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT ),
 		];
 
-		$lastDownload                       = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
-		$flags[ self::FLAGS_LAST_DOWNLOAD ] = $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT );
 		update_option( self::FLAGS_OPTION_ID, $flags );
 
 		return $flags;
@@ -112,7 +111,6 @@ class FeatureFlagManager {
 	 * Gets or downloads flags.
 	 *
 	 * @return array
-	 * @throws DownloadException Download exception.
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function getFlags(): array {
@@ -135,11 +133,11 @@ class FeatureFlagManager {
 			return $flags;
 		}
 
-		if ( $hasApiKey ) {
+		if ( $hasApiKey && isset( $flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
 			$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 			$lastUpdate = DateTimeImmutable::createFromFormat(
 				Helper::MYSQL_DATETIME_FORMAT,
-				$flags[ self::FLAGS_LAST_DOWNLOAD ],
+				$flags[ self::FLAG_LAST_DOWNLOAD ],
 				new \DateTimeZone( 'UTC' )
 			);
 			$ageHours   = ( ( $now->getTimestamp() - $lastUpdate->getTimestamp() ) / HOUR_IN_SECONDS );
@@ -164,7 +162,7 @@ class FeatureFlagManager {
 	 * Tells if split is active.
 	 *
 	 * @return bool
-	 * @throws DownloadException Download exception.
+	 * @throws Exception From DateTimeImmutable.
 	 */
 	public function isSplitActive(): bool {
 		$flags = $this->getFlags();
