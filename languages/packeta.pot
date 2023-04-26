@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.5.1\n"
+"Project-Id-Version: Packeta 1.5.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-04-25T14:01:51+02:00\n"
+"POT-Creation-Date: 2023-04-26T14:19:31+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packeta\n"
@@ -29,7 +29,7 @@ msgstr ""
 #: src/Packetery/Module/Options/Page.php:129
 #: src/Packetery/Module/Options/Page.php:130
 #: src/Packetery/Module/Options/Page.php:711
-#: src/Packetery/Module/Order/GridExtender.php:361
+#: src/Packetery/Module/Order/GridExtender.php:360
 #: src/Packetery/Module/Order/LabelPrint.php:187
 #: src/Packetery/Module/Order/Metabox.php:187
 #: src/Packetery/Module/Plugin.php:531
@@ -440,7 +440,7 @@ msgid "Address validation is out of order"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:290
-#: src/Packetery/Module/Order/Metabox.php:473
+#: src/Packetery/Module/Order/Metabox.php:493
 msgid "The selected country does not correspond to the destination country."
 msgstr ""
 
@@ -633,7 +633,7 @@ msgid "Total row count: %1$d. Number of displayed rows: %2$d."
 msgstr ""
 
 #. translators: 1: documentation link start 2: link end 3: dismiss link start 4: link end.
-#: src/Packetery/Module/Options/FeatureFlagManager.php:211
+#: src/Packetery/Module/Options/FeatureFlagManager.php:209
 msgid "We have just enabled new options for setting Packeta pickup points. You can now choose a different price for Z-Box and pickup points in the carrier settings. More information can be found in %1$sthe plugin documentation%2$s. %3$sDismiss this message%4$s"
 msgstr ""
 
@@ -964,7 +964,7 @@ msgid "Order number"
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:191
-#: src/Packetery/Module/Order/GridExtender.php:362
+#: src/Packetery/Module/Order/GridExtender.php:361
 msgid "Barcode"
 msgstr ""
 
@@ -981,7 +981,7 @@ msgid "C.O.D."
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:195
-#: src/Packetery/Module/Order/GridExtender.php:364
+#: src/Packetery/Module/Order/GridExtender.php:363
 msgid "Pickup point or carrier"
 msgstr ""
 
@@ -1022,7 +1022,7 @@ msgid "Set additional packet information"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:327
-#: src/Packetery/Module/Order/Metabox.php:328
+#: src/Packetery/Module/Order/Metabox.php:348
 msgid "Submit to packeta"
 msgstr ""
 
@@ -1049,12 +1049,12 @@ msgstr ""
 msgid "Last error from Packeta API"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:360
+#: src/Packetery/Module/Order/GridExtender.php:359
 #: src/Packetery/Module/Order/Modal.php:95
 msgid "Weight"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:363
+#: src/Packetery/Module/Order/GridExtender.php:362
 msgid "Packeta packet status"
 msgstr ""
 
@@ -1175,27 +1175,32 @@ msgid "Packet tracking online"
 msgstr ""
 
 #: src/Packetery/Module/Order/Metabox.php:275
-#: src/Packetery/Module/Order/Metabox.php:326
+#: src/Packetery/Module/Order/Metabox.php:346
 msgid "Show logs"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:327
+#. translators: %s is country code.
+#: src/Packetery/Module/Order/Metabox.php:320
+msgid "The pickup point cannot be changed because the selected carrier does not deliver to country \"%s\". First, change the country of delivery in the shipping address."
+msgstr ""
+
+#: src/Packetery/Module/Order/Metabox.php:347
 msgid "Weight is manually set. To calculate weight remove field content and save."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:354
+#: src/Packetery/Module/Order/Metabox.php:374
 msgid "Packeta: entered data is not valid!"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:362
+#: src/Packetery/Module/Order/Metabox.php:382
 msgid "Session has expired! Please try again."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:368
+#: src/Packetery/Module/Order/Metabox.php:388
 msgid "You do not have sufficient rights to make changes!"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:472
+#: src/Packetery/Module/Order/Metabox.php:492
 msgid "Address validation is out of order."
 msgstr ""
 
@@ -1266,40 +1271,40 @@ msgid "Packet was successfully created."
 msgstr ""
 
 #. translators: 1: link start 2: link end.
-#: src/Packetery/Module/Order/PacketSubmitter.php:350
+#: src/Packetery/Module/Order/PacketSubmitter.php:356
 msgid "Shipments were submitted successfully. %1$sShow logs%2$s"
 msgstr ""
 
-#: src/Packetery/Module/Order/PacketSubmitter.php:355
+#: src/Packetery/Module/Order/PacketSubmitter.php:361
 msgid "Shipments were submitted successfully."
 msgstr ""
 
 #. translators: 1: total number of shipments 2: link start 3: link end.
-#: src/Packetery/Module/Order/PacketSubmitter.php:362
+#: src/Packetery/Module/Order/PacketSubmitter.php:368
 msgid "Some shipments (%1$s in total) were not submitted (these were submitted already or are not Packeta orders). %2$sShow logs%3$s"
 msgstr ""
 
 #. translators: %s is count.
-#: src/Packetery/Module/Order/PacketSubmitter.php:369
+#: src/Packetery/Module/Order/PacketSubmitter.php:375
 msgid "Some shipments (%s in total) were not submitted (these were submitted already or are not Packeta orders)."
 msgstr ""
 
 #. translators: 1: total number of shipments 2: link start 3: link end.
-#: src/Packetery/Module/Order/PacketSubmitter.php:378
+#: src/Packetery/Module/Order/PacketSubmitter.php:384
 msgid "Some shipments (%1$s in total) failed to be submitted to Packeta. %2$sShow logs%3$s"
 msgstr ""
 
 #. translators: %s is count.
-#: src/Packetery/Module/Order/PacketSubmitter.php:385
+#: src/Packetery/Module/Order/PacketSubmitter.php:391
 msgid "Some shipments (%s in total) failed to be submitted to Packeta."
 msgstr ""
 
-#: src/Packetery/Module/Order/PacketSubmitter.php:394
+#: src/Packetery/Module/Order/PacketSubmitter.php:400
 msgid "Some order statuses have not been automatically changed."
 msgstr ""
 
 #. translators: %s represents unknown order status.
-#: src/Packetery/Module/Order/PacketSubmitter.php:422
+#: src/Packetery/Module/Order/PacketSubmitter.php:428
 msgid "Order status has not been changed, status \"%s\" doesn't exist."
 msgstr ""
 
