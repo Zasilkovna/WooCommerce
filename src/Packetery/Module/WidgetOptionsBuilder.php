@@ -13,8 +13,6 @@ use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\FeatureFlagManager;
-use Packetery\Module\Order\Repository;
-use WC_Order;
 
 /**
  * Class WidgetOptionsBuilder
@@ -31,20 +29,6 @@ class WidgetOptionsBuilder {
 	private $pickupPointsConfig;
 
 	/**
-	 * RateCalculator.
-	 *
-	 * @var RateCalculator
-	 */
-	private $rateCalculator;
-
-	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	private $orderRepository;
-
-	/**
 	 * Feature flag.
 	 *
 	 * @var FeatureFlagManager
@@ -55,19 +39,13 @@ class WidgetOptionsBuilder {
 	 * WidgetOptionsBuilder constructor.
 	 *
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param RateCalculator            $rateCalculator     RateCalculator.
-	 * @param Repository                $orderRepository    Order repository.
 	 * @param FeatureFlagManager        $featureFlag        Feature flag.
 	 */
 	public function __construct(
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		RateCalculator $rateCalculator,
-		Repository $orderRepository,
 		FeatureFlagManager $featureFlag
 	) {
 		$this->pickupPointsConfig = $pickupPointsConfig;
-		$this->rateCalculator     = $rateCalculator;
-		$this->orderRepository    = $orderRepository;
 		$this->featureFlag        = $featureFlag;
 	}
 
@@ -151,7 +129,7 @@ class WidgetOptionsBuilder {
 		if ( $carrier->hasPickupPoints() ) {
 			if ( $this->featureFlag->isSplitActive() ) {
 				$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
-					(string) $carrier->getId(),
+					$carrier->getId(),
 					$carrier->getCountry(),
 					( ( $carrierOption && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
 				);
@@ -180,42 +158,12 @@ class WidgetOptionsBuilder {
 	 * @return array|null
 	 */
 	public function createPickupPointForAdmin( Order $order ): array {
-		if ( $order->isExternalCarrier() ) {
-			$carrierId = $order->getCarrierId();
-		} else {
-			$carrierId = $this->pickupPointsConfig->getCompoundCarrierIdByCountry( $order->getShippingCountry() );
-		}
-
-		$defaultPrice = null;
-		if ( null !== $carrierId ) {
-			/**
-			 * Cannot be null due to the conditions in the caller method.
-			 *
-			 * @var WC_Order $wcOrder
-			 */
-			$wcOrder      = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
-			$defaultPrice = $this->rateCalculator->getShippingRateCost(
-				Carrier\Options::createByCarrierId( $carrierId ),
-				$wcOrder->get_total() - $wcOrder->get_shipping_total(),
-				$order->getWeight(),
-				$this->rateCalculator->isFreeShippingCouponApplied( $wcOrder )
-			);
-		}
-
 		$widgetOptions = [
 			'country'         => $order->getShippingCountry(),
 			'language'        => substr( get_user_locale(), 0, 2 ),
 			'appIdentity'     => Plugin::getAppIdentity(),
 			'weight'          => $order->getFinalWeight(),
-			'defaultPrice'    => $defaultPrice,
-			'defaultCurrency' => $order->getCurrency(),
 		];
-
-		// TODO: update later when carrier will not be nullable.
-		$orderCarrier = $order->getCarrier();
-		if ( $orderCarrier ) {
-			$widgetOptions['defaultCurrency'] = $orderCarrier->getCurrency();
-		}
 
 		if ( $this->featureFlag->isSplitActive() ) {
 			// In backend, we want all pickup points in that country for packeta carrier.
