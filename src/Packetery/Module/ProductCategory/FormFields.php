@@ -15,6 +15,7 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\FormFactory;
 use Packetery\Module\ProductCategory;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -155,14 +156,17 @@ class FormFields {
 	 */
 	public function saveData( $termId, $termTaxonomyId, $taxonomy = '' ): void {
 		if ( ! is_int( $termId ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'termId', 'int', $termId );
 			return;
 		}
 
 		if ( ! is_int( $termTaxonomyId ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'termTaxonomyId', 'int', $termTaxonomyId );
 			return;
 		}
 
 		if ( ! is_string( $taxonomy ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'taxonomy', 'string', $taxonomy );
 			return;
 		}
 

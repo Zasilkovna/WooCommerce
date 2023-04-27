@@ -16,6 +16,7 @@ use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
+use Packetery\Module\WcLogger;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -105,6 +106,7 @@ class DataTab {
 	 */
 	public function registerTab( $tabs ) {
 		if ( ! is_array( $tabs ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'tabs', 'array', $tabs );
 			return $tabs;
 		}
 

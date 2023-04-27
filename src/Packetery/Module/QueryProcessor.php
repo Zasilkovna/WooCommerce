@@ -65,15 +65,25 @@ class QueryProcessor {
 	 *
 	 * @link https://wordpress.stackexchange.com/questions/50305/how-to-extend-wp-query-to-include-custom-table-in-query
 	 *
-	 * @param array<string, string> $clauses     Clauses.
-	 * @param \WP_Query             $queryObject WP_Query.
+	 * @param array<string, string>|mixed $clauses     Clauses.
+	 * @param \WP_Query|mixed             $queryObject WP_Query.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string>|mixed
 	 */
 	public function processClauses( array $clauses, \WP_Query $queryObject ): array {
 		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return $clauses;
 		}
+
+        if ( ! is_array( $clauses ) ) {
+            WcLogger::logArgumentTypeError( __METHOD__, 'clauses', 'array', $clauses );
+            return $clauses;
+        }
+
+        if ( ! $queryObject instanceof \WP_Query ) {
+            WcLogger::logArgumentTypeError( __METHOD__, 'queryObject', \WP_Query::class, $queryObject );
+            return $clauses;
+        }
 
 		$isOrderPostQueryCall =
 			isset( $queryObject->query['post_type'] ) &&

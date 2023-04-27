@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Module\Options;
+use Packetery\Module\WcLogger;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Http\Request;
 
@@ -71,11 +73,16 @@ class BulkActions {
 	/**
 	 * Adds custom actions to dropdown in admin order list.
 	 *
-	 * @param array<string, string> $actions Array of action.
+	 * @param array<string, string>|mixed $actions Array of action.
 	 *
-	 * @return array<string, string>
+	 * @return array<string, string>|mixed
 	 */
-	public function addActions( array $actions ): array {
+	public function addActions( $actions ) {
+		if ( ! is_array( $actions ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'actions', 'array', $actions );
+			return $actions;
+		}
+
 		$actions[ self::ACTION_SUBMIT_TO_API ]                     = __( 'Packeta export', 'packeta' );
 		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'Packeta download labels', 'packeta' );
 		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'Packeta download carrier labels', 'packeta' );
@@ -95,14 +102,17 @@ class BulkActions {
 	 */
 	public function handleActions( $redirectTo, $action, $postIds ) {
 		if ( ! is_string( $redirectTo ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'redirectTo', 'string', $redirectTo );
 			return $redirectTo;
 		}
 
 		if ( ! is_string( $action ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'action', 'string', $action );
 			return $redirectTo;
 		}
 
 		if ( ! is_array( $postIds ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'postIds', 'array', $postIds );
 			return $redirectTo;
 		}
 
