@@ -15,6 +15,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
+use Packetery\Module\WcLogger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -154,11 +155,16 @@ class Page {
 	/**
 	 * Returns menu_order with Packeta item in last position.
 	 *
-	 * @param array $menuOrder WP $menu_order.
+	 * @param array|mixed $menuOrder WP $menu_order.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function customMenuOrder( array $menuOrder ): array {
+	public function customMenuOrder( $menuOrder ) {
+		if ( ! is_array( $menuOrder ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'menuOrder', 'array', $menuOrder );
+			return $menuOrder;
+		}
+
 		$currentPosition = array_search( self::SLUG, $menuOrder, true );
 
 		if ( false !== $currentPosition ) {

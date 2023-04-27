@@ -17,6 +17,7 @@ use Packetery\Core\Entity\Address;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ShippingMethod;
+use Packetery\Module\WcLogger;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
 use WP_Post;
@@ -573,10 +574,12 @@ class Repository {
 	 */
 	public function deletedPostHook( $postId, $post ): void {
 		if ( ! is_int( $postId ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'postId', 'int', $postId );
 			return;
 		}
 
 		if ( ! $post instanceof WP_Post ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'post', WP_Post::class, $post );
 			return;
 		}
 

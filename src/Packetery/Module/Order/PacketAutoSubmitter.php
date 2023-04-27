@@ -89,7 +89,12 @@ class PacketAutoSubmitter {
 			if ( self::EVENT_ON_ORDER_COMPLETED === $mappedEvent ) {
 				add_action(
 					'woocommerce_order_status_completed',
-					function ( int $orderId ): void {
+					function ( $orderId ): void {
+						if ( ! is_int( $orderId ) ) {
+							Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+							return;
+						}
+
 						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId, is_admin() === false );
 					}
 				);
@@ -99,7 +104,12 @@ class PacketAutoSubmitter {
 			if ( self::EVENT_ON_ORDER_PROCESSING === $mappedEvent ) {
 				add_action(
 					'woocommerce_order_status_processing',
-					function ( int $orderId ): void {
+					function ( $orderId ): void {
+						if ( ! is_int( $orderId ) ) {
+							Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+							return;
+						}
+
 						$this->handleEvent( self::EVENT_ON_ORDER_PROCESSING, $orderId, is_admin() === false );
 					}
 				);
@@ -110,13 +120,28 @@ class PacketAutoSubmitter {
 	/**
 	 * Handle event.
 	 *
-	 * @param string    $event               Event.
-	 * @param int       $orderId             WC Order.
-	 * @param bool|null $triggeredByFrontend Tells if event is triggered by frontend logic. NULL is passed when data from previous versions are being processed.
+	 * @param string|mixed    $event               Event.
+	 * @param int|mixed       $orderId             WC Order.
+	 * @param bool|null|mixed $triggeredByFrontend Tells if event is triggered by frontend logic. NULL is passed when data from previous versions are being processed.
 	 *
 	 * @return void
 	 */
-	public function handleEvent( string $event, int $orderId, ?bool $triggeredByFrontend = null ): void {
+	public function handleEvent( $event, $orderId, $triggeredByFrontend = null ): void {
+		if ( ! is_string( $event ) ) {
+			Module\WcLogger::logArgumentTypeError( __METHOD__, 'event', 'string', $event );
+			return;
+		}
+
+		if ( ! is_int( $orderId ) ) {
+			Module\WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
+			return;
+		}
+
+		if ( ! is_bool( $triggeredByFrontend ) && null !== $triggeredByFrontend ) {
+			Module\WcLogger::logArgumentTypeError( __METHOD__, 'triggeredByFrontend', '?bool', $triggeredByFrontend );
+			return;
+		}
+
 		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
 			return;
 		}

@@ -223,6 +223,7 @@ class Checkout {
 	 */
 	public function renderWidgetButtonAfterShippingRate( $shippingRate ): void {
 		if ( ! $shippingRate instanceof \WC_Shipping_Rate ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'shippingRate', \WC_Shipping_Rate::class, $shippingRate );
 			return;
 		}
 
@@ -431,6 +432,7 @@ class Checkout {
 	 */
 	public function updateOrderMeta( $orderId ): void {
 		if ( ! is_int( $orderId ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'orderId', 'int', $orderId );
 			return;
 		}
 
@@ -978,11 +980,16 @@ class Checkout {
 	/**
 	 * Filters out payment methods, that can not be used.
 	 *
-	 * @param array $availableGateways Available gateways.
+	 * @param array|mixed $availableGateways Available gateways.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function filterPaymentGateways( array $availableGateways ): array {
+	public function filterPaymentGateways( $availableGateways ) {
+		if ( ! is_array( $availableGateways ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'availableGateways', 'array', $availableGateways );
+			return $availableGateways;
+		}
+
 		if ( ! is_checkout() ) {
 			return $availableGateways;
 		}

@@ -498,6 +498,7 @@ class Plugin {
 	 */
 	public function transformGetOrdersQuery( $query ) {
 		if ( ! is_array( $query ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'query', 'array', $query );
 			return $query;
 		}
 
@@ -517,6 +518,7 @@ class Plugin {
 	 */
 	public function renderDeliveryDetail( $order ): void {
 		if ( ! $order instanceof WC_Order ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'order', WC_Order::class, $order );
 			return;
 		}
 
@@ -561,6 +563,7 @@ class Plugin {
 	 */
 	public function renderOrderDetail( $wcOrder ): void {
 		if ( ! $wcOrder instanceof WC_Order ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'wcOrder', WC_Order::class, $wcOrder );
 			return;
 		}
 
@@ -935,11 +938,16 @@ class Plugin {
 	/**
 	 * Adds Packeta method to available shipping methods.
 	 *
-	 * @param array $methods Previous state.
+	 * @param array|mixed $methods Previous state.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function add_shipping_method( array $methods ): array {
+	public function add_shipping_method( $methods ) {
+		if ( ! is_array( $methods ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'methods', 'array', $methods );
+			return $methods;
+		}
+
 		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 
 		return $methods;

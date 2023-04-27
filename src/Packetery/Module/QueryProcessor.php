@@ -56,12 +56,22 @@ class QueryProcessor {
 	 *
 	 * @link https://wordpress.stackexchange.com/questions/50305/how-to-extend-wp-query-to-include-custom-table-in-query
 	 *
-	 * @param array     $clauses     Clauses.
-	 * @param \WP_Query $queryObject WP_Query.
+	 * @param array|mixed     $clauses     Clauses.
+	 * @param \WP_Query|mixed $queryObject WP_Query.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function processPostClauses( array $clauses, \WP_Query $queryObject ): array {
+	public function processPostClauses( $clauses, $queryObject ) {
+		if ( ! is_array( $clauses ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'clauses', 'array', $clauses );
+			return $clauses;
+		}
+
+		if ( ! $queryObject instanceof \WP_Query ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'queryObject', \WP_Query::class, $queryObject );
+			return $clauses;
+		}
+
 		$paramValues = [
 			'packetery_carrier_id' => null,
 			'packetery_to_submit'  => null,
