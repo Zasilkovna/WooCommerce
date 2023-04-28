@@ -16,7 +16,6 @@ use PacketeryTracy\Logger;
  */
 class WcLogger {
 
-	public const LEVEL_INFO  = 'info';
 	public const LEVEL_ERROR = 'error';
 
 	/**
@@ -24,8 +23,9 @@ class WcLogger {
 	 * @param string                  $level
 	 * @return void
 	 */
-	public static function log( $message, string $level = self::LEVEL_INFO ): void {
+	public static function log( $message, string $level ): void {
 		$logCallback = static function () use ( $level, $message ): void {
+			/** WC_Logger is always returned. @noinspection NullPointerExceptionInspection */
 			wc_get_logger()->log(
 				$level,
 				Logger::formatMessage( $message ),
