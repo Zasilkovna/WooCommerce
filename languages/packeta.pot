@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-04-26T14:19:31+02:00\n"
+"POT-Creation-Date: 2023-04-28T11:53:00+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packeta\n"
@@ -213,7 +213,7 @@ msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:305
 #: src/Packetery/Module/Carrier/OptionsPage.php:426
-msgid "Check at least two types of pickup points or set corresponding separate carriers."
+msgid "Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type."
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:316
@@ -292,7 +292,7 @@ msgid "This carrier does not support COD payment."
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:425
-msgid "Allowed pickup point types."
+msgid "Pickup point types."
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:505
@@ -644,11 +644,11 @@ msgid "Settings"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:241
-msgid "Allow"
+msgid "Allow packet auto-submission"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:246
-msgid "On order creation at frontend"
+msgid "On order creation at e-shop checkout"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:247
@@ -738,7 +738,7 @@ msgid "Automatically open widget when shipping was selected"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:457
-msgid "Order status auto change"
+msgid "Order status change after parcel creation"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:466
@@ -754,7 +754,7 @@ msgid "Select valid order status"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:478
-msgid "Change order status after automatic packet submit at frontend"
+msgid "Change order status after automatic packet submit at checkout"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:533
