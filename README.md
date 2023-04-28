@@ -120,13 +120,13 @@ To modify this HTML, you can use `packeta_email_footer` filter, for example to r
 
 ```
 add_filter( 'packeta_email_footer', 'packeta_email_footer', 20, 2 );
-function packeta_email_footer ( string $footerHtml, array $templateParams ) {
+function packeta_email_footer( string $footerHtml, array $templateParams ) {
 	if ( $templateParams['pickupPoint'] && $templateParams['displayPickupPointInfo'] ) {
 		$pickupPoint = $templateParams['pickupPoint'];
-		$footerHtml  = '<p>' . $pickupPoint->getName() . '</p>';
+		$footerHtml  = '<p>' . htmlspecialchars( $pickupPoint->getName() ) . '</p>';
 	} elseif ( $templateParams['validatedDeliveryAddress'] ) {
 		$address    = $templateParams['validatedDeliveryAddress'];
-		$footerHtml = '<p>' . $address->getStreet() . ' ' . $address->getHouseNumber() . ', ' . $address->getCity() . ' ' . $address->getZip() . '</p>';
+		$footerHtml = '<p>' . htmlspecialchars( $address->getStreet() . ' ' . $address->getHouseNumber() . ', ' . $address->getCity() . ' ' . $address->getZip() ) . '</p>';
 	}
 
 	return $footerHtml;
