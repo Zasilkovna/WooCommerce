@@ -137,7 +137,7 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		if ( ! is_bool( $triggeredByFrontend ) && null !== $triggeredByFrontend ) {
+		if ( null !== $triggeredByFrontend && ! is_bool( $triggeredByFrontend ) ) {
 			Module\WcLogger::logArgumentTypeError( __METHOD__, 'triggeredByFrontend', '?bool', $triggeredByFrontend );
 			return;
 		}

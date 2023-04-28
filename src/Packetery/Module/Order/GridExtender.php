@@ -109,14 +109,14 @@ class GridExtender {
 	/**
 	 * Adds custom filtering links to order grid.
 	 *
-	 * @param array|mixed $var Array of html links.
+	 * @param array|mixed $htmlLinks Array of html links.
 	 *
 	 * @return array|mixed
 	 */
-	public function addFilterLinks( $var ) {
-		if ( ! is_array( $var ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'var', 'array', $var );
-			return $var;
+	public function addFilterLinks( $htmlLinks ) {
+		if ( ! is_array( $htmlLinks ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'var', 'array', $htmlLinks );
+			return $htmlLinks;
 		}
 
 		$latteParams = [
@@ -133,7 +133,7 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		$latteParams = [
 			'link'       => add_query_arg(
@@ -149,9 +149,9 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
-		return $var;
+		return $htmlLinks;
 	}
 
 	/**
