@@ -76,7 +76,33 @@ To update packeta shipping rate cost in checkout, you can use the following code
 
 ```
 add_filter( 'packeta_shipping_price', function ( $price, $filterParameters ) {
-	return $price * 1.5;
+	$order_price = (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
+
+	if ( ! empty( $filterParameters['free_shipping_limit'] ) && $order_price >= $filterParameters['free_shipping_limit'] ) {
+		return 0;
+	}
+
+	if ( $filterParameters['carrier_id'] === 'zpointcz' ) {
+		if ( $order_price > 300 ) {
+			return 70;
+		}
+		if ( $order_price > 50 ) {
+			return 75;
+		}
+	} elseif ( $filterParameters['carrier_id'] === '106' ) {
+		if ( $order_price > 300 ) {
+			return 110;
+		}
+		if ( $order_price > 50 ) {
+			return 120;
+		}
+	} else {
+		$firstWeightRule = array_shift( $filterParameters['weight_limits'] );
+
+		return round( $firstWeightRule['price'] * 1.5, 2 );
+	}
+
+	return $price;
 }, 20, 2 );
 ```
 
