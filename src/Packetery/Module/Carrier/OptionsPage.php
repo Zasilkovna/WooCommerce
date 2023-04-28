@@ -302,7 +302,7 @@ class OptionsPage {
 				count( $options['vendor_groups'] ) >= self::MINIMUM_CHECKED_VENDORS &&
 				count( $checkedVendors ) < self::MINIMUM_CHECKED_VENDORS
 			) {
-				$vendorMessage = __( 'Check at least two types of pickup points or set corresponding separate carriers.', 'packeta' );
+				$vendorMessage = __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' );
 				add_settings_error( 'vendor_groups', 'vendor_groups', esc_attr( $vendorMessage ) );
 				$form->addError( $vendorMessage );
 			}
@@ -422,8 +422,8 @@ class OptionsPage {
 						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
 						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
 						'carrierDoesNotSupportCod'     => __( 'This carrier does not support COD payment.', 'packeta' ),
-						'allowedPickupPointTypes'      => __( 'Allowed pickup point types.', 'packeta' ),
-						'checkAtLeastTwo'              => __( 'Check at least two types of pickup points or set corresponding separate carriers.', 'packeta' ),
+						'allowedPickupPointTypes'      => __( 'Pickup point types.', 'packeta' ),
+						'checkAtLeastTwo'              => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
 					],
 				]
 			);

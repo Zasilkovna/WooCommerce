@@ -238,12 +238,12 @@ class Page {
 		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
 		$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
 
-		$form->addCheckbox( 'allow', __( 'Allow', 'packeta' ) )
+		$form->addCheckbox( 'allow', __( 'Allow packet auto-submission', 'packeta' ) )
 				->setRequired( false )
 				->setDefaultValue( Provider::PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT );
 
 		$eventChoices = [
-			PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE => __( 'On order creation at frontend', 'packeta' ),
+			PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE => __( 'On order creation at e-shop checkout', 'packeta' ),
 			PacketAutoSubmitter::EVENT_ON_ORDER_PROCESSING => __( 'On order processing', 'packeta' ),
 			PacketAutoSubmitter::EVENT_ON_ORDER_COMPLETED  => __( 'On order completed', 'packeta' ),
 		];
@@ -454,7 +454,7 @@ class Page {
 					->setRequired( false )
 					->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
 
-		$container->addCheckbox( self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE, __( 'Order status auto change', 'packeta' ) )
+		$container->addCheckbox( self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE, __( 'Order status change after parcel creation', 'packeta' ) )
 					->setRequired( false )
 					->setDefaultValue( Provider::ORDER_STATUS_AUTO_CHANGE_DEFAULT )
 					->addCondition( Form::EQUAL, true )
@@ -475,7 +475,7 @@ class Page {
 
 		$container->addCheckbox(
 			'order_status_auto_change_for_auto_submit_at_frontend',
-			__( 'Change order status after automatic packet submit at frontend', 'packeta' )
+			__( 'Change order status after automatic packet submit at checkout', 'packeta' )
 		);
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
