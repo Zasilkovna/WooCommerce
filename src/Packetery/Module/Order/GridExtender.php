@@ -156,10 +156,10 @@ class GridExtender {
 	 *
 	 * @return string[]|mixed
 	 */
-	public function addFilterLinks( array $htmlLinks ): array {
+	public function addFilterLinks( $htmlLinks ) {
         if ( ! is_array( $htmlLinks ) ) {
-            WcLogger::logArgumentTypeError( __METHOD__, 'var', 'array', $htmlLinks );
-            return $var;
+            WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
+            return $htmlLinks;
         }
         $linkConfig         = new GridLinksConfig(
 			$this->wpAdapter->__( 'Packeta orders to submit', 'packeta' ),
