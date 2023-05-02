@@ -144,10 +144,12 @@ class Updater {
 			} else {
 				$carrier['id'] = $carrier_id;
 				$this->carrier_repository->insert( $carrier );
-				$this->addLogEntry(
-					// translators: %s is carrier name.
-					sprintf( __( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
-				);
+				if ( ! empty( $carriersInDb ) ) {
+					$this->addLogEntry(
+						// translators: %s is carrier name.
+						sprintf( __( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
+					);
+				}
 			}
 		}
 
