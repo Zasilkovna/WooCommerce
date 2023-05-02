@@ -40,36 +40,42 @@
 			</p>
 		{else}
 			<p>
-				{$translations['pleaseCompleteSetupFirst']}
+				{$translations['completeSetupBeforeUpdate']}
 			</p>
 		{/if}
 	</div>
 
 	<h2>{$translations['packeta']} - {$translations['countries']}</h2>
 
-	{if $countries}
-		<table class="packeta_country_list">
-			<tr>
-				<th>{$translations['countryName']}</th>
-				<th>{$translations['countryCode']}</th>
-				<th>{$translations['activeCarrier']}</th>
-				<th>{$translations['action']}</th>
-			</tr>
-			{foreach $countries as $country}
-				<tr class="packeta_country_list_item">
-					<td>
-						{if null !== $country['flag']}
-							<img src="{$country['flag']}" alt="{$country['name']}">
-						{/if}
-						{$country['name']}
-					</td>
-					<td>{$country['code']|upper}</td>
-					<td class="packeta_active_carriers_column">{implode(', ', $country['activeCarriers'])}</td>
-					<td><a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a></td>
+	{if $isApiPasswordSet}
+		{if $countries}
+			<table class="packeta_country_list">
+				<tr>
+					<th>{$translations['countryName']}</th>
+					<th>{$translations['countryCode']}</th>
+					<th>{$translations['activeCarrier']}</th>
+					<th>{$translations['action']}</th>
 				</tr>
-			{/foreach}
-		</table>
+				{foreach $countries as $country}
+					<tr class="packeta_country_list_item">
+						<td>
+							{if null !== $country['flag']}
+								<img src="{$country['flag']}" alt="{$country['name']}">
+							{/if}
+							{$country['name']}
+						</td>
+						<td>{$country['code']|upper}</td>
+						<td class="packeta_active_carriers_column">{implode(', ', $country['activeCarriers'])}</td>
+						<td><a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a></td>
+					</tr>
+				{/foreach}
+			</table>
+		{else}
+			{$translations['noActiveCountries']}
+		{/if}
 	{else}
-		{$translations['noActiveCountries']}
+		<p>
+			{$translations['completeSetupBeforeSetCarriers']}
+		</p>
 	{/if}
 </div>

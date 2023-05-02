@@ -16,6 +16,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\Provider;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
@@ -89,6 +90,13 @@ class OptionsPage {
 	private $featureFlag;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
@@ -99,6 +107,7 @@ class OptionsPage {
 	 * @param MessageManager            $messageManager     Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 * @param FeatureFlagManager        $featureFlag        Feature flag.
+	 * @param Provider                  $optionsProvider    Options provider.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -108,7 +117,8 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag
+		FeatureFlagManager $featureFlag,
+		Provider $optionsProvider
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
@@ -118,6 +128,7 @@ class OptionsPage {
 		$this->messageManager     = $messageManager;
 		$this->pickupPointsConfig = $pickupPointsConfig;
 		$this->featureFlag        = $featureFlag;
+		$this->optionsProvider    = $optionsProvider;
 	}
 
 	/**
@@ -401,29 +412,31 @@ class OptionsPage {
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
 				[
-					'forms'          => $carriersData,
-					'country_iso'    => $countryIso,
-					'globalCurrency' => get_woocommerce_currency_symbol(),
-					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
-					'translations'   => [
+					'forms'            => $carriersData,
+					'country_iso'      => $countryIso,
+					'globalCurrency'   => get_woocommerce_currency_symbol(),
+					'flashMessages'    => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+					'isApiPasswordSet' => ( null !== $this->optionsProvider->get_api_password() ),
+					'translations'     => [
 						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
-						'delete'                       => __( 'Delete', 'packeta' ),
-						'weightRules'                  => __( 'Weight rules', 'packeta' ),
-						'addWeightRule'                => __( 'Add weight rule', 'packeta' ),
-						'codSurchargeRules'            => __( 'COD surcharge rules', 'packeta' ),
-						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
+						'delete'                         => __( 'Delete', 'packeta' ),
+						'weightRules'                    => __( 'Weight rules', 'packeta' ),
+						'addWeightRule'                  => __( 'Add weight rule', 'packeta' ),
+						'codSurchargeRules'              => __( 'COD surcharge rules', 'packeta' ),
+						'addCodSurchargeRule'            => __( 'Add COD surcharge rule', 'packeta' ),
 						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
-						'addressValidationDescription' => __( 'Customer address validation.', 'packeta' ),
-						'roundingDescription'          => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
-						'saveChanges'                  => __( 'Save changes', 'packeta' ),
-						'packeta'                      => __( 'Packeta', 'packeta' ),
+						'addressValidationDescription'   => __( 'Customer address validation.', 'packeta' ),
+						'roundingDescription'            => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
+						'saveChanges'                    => __( 'Save changes', 'packeta' ),
+						'packeta'                        => __( 'Packeta', 'packeta' ),
 						// translators: %s is country code.
-						'title'                        => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
-						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
+						'title'                          => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
+						'noKnownCarrierForThisCountry'   => __( 'No carriers available for this country.', 'packeta' ),
 						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
-						'carrierDoesNotSupportCod'     => __( 'This carrier does not support COD payment.', 'packeta' ),
-						'allowedPickupPointTypes'      => __( 'Pickup point types.', 'packeta' ),
-						'checkAtLeastTwo'              => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+						'carrierDoesNotSupportCod'       => __( 'This carrier does not support COD payment.', 'packeta' ),
+						'allowedPickupPointTypes'        => __( 'Pickup point types.', 'packeta' ),
+						'checkAtLeastTwo'                => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+						'completeSetupBeforeSetCarriers' => __( 'Before setting the carriers options, please complete the plugin setup first.', 'packeta' ),
 					],
 				]
 			);

@@ -4,13 +4,19 @@
 	{$flashMessages|noescape}
 	{php settings_errors()}
 
-	{if $forms}
-		<div class="packeta_carrier_list">
-			{foreach $forms as $carrier_data}
-				{include 'carrier.latte', carrier_data: $carrier_data}
-			{/foreach}
-		</div>
+	{if $isApiPasswordSet}
+		{if $forms}
+			<div class="packeta_carrier_list">
+				{foreach $forms as $carrier_data}
+					{include 'carrier.latte', carrier_data: $carrier_data}
+				{/foreach}
+			</div>
+		{else}
+			{$translations['noKnownCarrierForThisCountry']}
+		{/if}
 	{else}
-		{$translations['noKnownCarrierForThisCountry']}
+		<p>
+			{$translations['completeSetupBeforeSetCarriers']}
+		</p>
 	{/if}
 </div>

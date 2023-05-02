@@ -64,6 +64,13 @@ class Downloader {
 	 * @return array
 	 */
 	public function run(): array {
+		if ( null === $this->options_provider->get_api_key() ) {
+			return [
+				__( 'Before updating the carriers, please complete the plugin setup first.', 'packeta' ),
+				'error',
+			];
+		}
+
 		try {
 			$carriers = $this->fetch_as_array();
 		} catch ( \Exception $e ) {
