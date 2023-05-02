@@ -20,7 +20,7 @@ class CreateShipment extends BaseResponse {
 	/**
 	 * Shipment ID.
 	 *
-	 * @var int
+	 * @var string
 	 */
 	private $id;
 
@@ -48,25 +48,25 @@ class CreateShipment extends BaseResponse {
 	/**
 	 * Invalid packet IDs.
 	 *
-	 * @var int[]
+	 * @var string[]
 	 */
 	private $invalidPacketIds = [];
 
 	/**
 	 * Gets ID.
 	 *
-	 * @return int
+	 * @return string
 	 */
-	public function getId(): int {
+	public function getId(): string {
 		return $this->id;
 	}
 
 	/**
 	 * Sets ID.
 	 *
-	 * @param int $id ID.
+	 * @param string $id ID.
 	 */
-	public function setId( int $id ): void {
+	public function setId( string $id ): void {
 		$this->id = $id;
 	}
 
@@ -139,7 +139,7 @@ class CreateShipment extends BaseResponse {
 	/**
 	 * Gets invalid packet IDs.
 	 *
-	 * @return int[]
+	 * @return string[]
 	 */
 	public function getInvalidPacketIds(): array {
 		return $this->invalidPacketIds;
