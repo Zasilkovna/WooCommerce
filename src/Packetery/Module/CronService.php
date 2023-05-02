@@ -89,6 +89,7 @@ class CronService {
 	 */
 	public static function deactivate(): void {
 		wp_clear_scheduled_hook( self::CRON_LOG_AUTO_DELETION_HOOK );
+		as_unschedule_action( self::CRON_CARRIERS_HOOK );
 		wp_clear_scheduled_hook( self::CRON_PACKET_STATUS_SYNC_HOOK );
 	}
 }
