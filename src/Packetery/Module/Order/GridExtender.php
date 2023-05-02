@@ -115,7 +115,7 @@ class GridExtender {
 	 */
 	public function addFilterLinks( $htmlLinks ) {
 		if ( ! is_array( $htmlLinks ) ) {
-			WcLogger::logArgumentTypeError( __METHOD__, 'var', 'array', $htmlLinks );
+			WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
 			return $htmlLinks;
 		}
 
