@@ -21,7 +21,7 @@ use SoapFault;
  */
 class Client {
 
-	private const WSDL_URL = 'https://www.zasilkovna.cz/api/soap-php-bugfix.wsdl';
+	private const WSDL_URL = 'http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl';
 
 	/**
 	 * API password.
