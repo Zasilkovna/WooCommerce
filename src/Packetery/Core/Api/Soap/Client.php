@@ -21,7 +21,7 @@ use SoapFault;
  */
 class Client {
 
-	private const WSDL_URL = 'http://www.zasilkovna.cz/api/soap.wsdl';
+	private const WSDL_URL = 'http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl';
 
 	/**
 	 * API password.
@@ -125,11 +125,11 @@ class Client {
 		$response = new Response\CreateShipment();
 		try {
 			$soapClient = new SoapClient( self::WSDL_URL );
-			$packet     = $soapClient->createShipment( $this->apiPassword, $request->getPacketIds(), $request->getCustomBarcode() );
-			$response->setId( $packet->id );
-			$response->setChecksum( $packet->checksum );
-			$response->setBarcode( $packet->barcode );
-			$response->setBarcodeText( $packet->barcodeText );
+			$shipment     = $soapClient->createShipment( $this->apiPassword, $request->getPacketIds(), $request->getCustomBarcode() );
+			$response->setId( (string) $shipment->id );
+			$response->setChecksum( $shipment->checksum );
+			$response->setBarcode( $shipment->barcode );
+			$response->setBarcodeText( $shipment->barcodeText );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );

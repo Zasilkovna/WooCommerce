@@ -161,7 +161,7 @@ class PacketCanceller {
 			return;
 		}
 
-		$request = new Soap\Request\CancelPacket( (int) $order->getPacketId() );
+		$request = new Soap\Request\CancelPacket( $order->getPacketId() );
 		$result  = $this->soapApiClient->cancelPacket( $request );
 
 		if ( ! $result->hasFault() ) {

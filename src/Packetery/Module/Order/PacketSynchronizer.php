@@ -86,7 +86,7 @@ class PacketSynchronizer {
 		foreach ( $results as $order ) {
 			$packetId = $order->getPacketId();
 
-			$request  = new Api\Soap\Request\PacketStatus( (int) $packetId );
+			$request  = new Api\Soap\Request\PacketStatus( $packetId );
 			$response = $this->apiSoapClient->packetStatus( $request );
 
 			if ( $response->hasFault() ) {

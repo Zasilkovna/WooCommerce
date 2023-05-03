@@ -19,7 +19,7 @@ class PacketCourierNumber {
 	/**
 	 * Packet id.
 	 *
-	 * @var int
+	 * @var string
 	 */
 	private $packetId;
 

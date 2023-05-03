@@ -260,7 +260,7 @@ class CollectionPrint {
 	private function logApiErrorMessageFromCreateShipmentResponse( Response\CreateShipment $createShipmentResponse, array $orders ): void {
 		$invalidPacketIds = $createShipmentResponse->getInvalidPacketIds();
 		foreach ( $orders as $order ) {
-			if ( in_array( (int) $order->getPacketId(), $invalidPacketIds, true ) ) {
+			if ( in_array( $order->getPacketId(), $invalidPacketIds, true ) ) {
 				$order->updateApiErrorMessage( $createShipmentResponse->getFaultString() );
 				$this->orderRepository->save( $order );
 			}

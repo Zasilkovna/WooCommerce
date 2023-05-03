@@ -273,7 +273,7 @@ class PacketSubmitter {
 				$submissionResult->increaseErrorsCount();
 			} else {
 				$order->setIsExported( true );
-				$order->setPacketId( (string) $response->getId() );
+				$order->setPacketId( $response->getId() );
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;

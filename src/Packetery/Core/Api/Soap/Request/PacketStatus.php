@@ -20,25 +20,25 @@ class PacketStatus {
 	/**
 	 * Packet ID.
 	 *
-	 * @var int
+	 * @var string
 	 */
 	private $packetId;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param int $packetId Packet ID.
+	 * @param string $packetId Packet ID.
 	 */
-	public function __construct( int $packetId ) {
+	public function __construct( string $packetId ) {
 		$this->packetId = $packetId;
 	}
 
 	/**
 	 * Gets packet ID.
 	 *
-	 * @return int
+	 * @return string
 	 */
-	public function getPacketId(): int {
+	public function getPacketId(): string {
 		return $this->packetId;
 	}
 }

@@ -19,7 +19,7 @@ class CreatePacket extends BaseResponse {
 	/**
 	 * Barcode without leading Z.
 	 *
-	 * @var int
+	 * @var string
 	 */
 	private $id;
 
@@ -40,9 +40,9 @@ class CreatePacket extends BaseResponse {
 	/**
 	 * Sets id.
 	 *
-	 * @param int $id Id.
+	 * @param string $id Id.
 	 */
-	public function setId( int $id ): void {
+	public function setId( string $id ): void {
 		$this->id = $id;
 	}
 
@@ -67,9 +67,9 @@ class CreatePacket extends BaseResponse {
 	/**
 	 * Gets id.
 	 *
-	 * @return int
+	 * @return string
 	 */
-	public function getId(): int {
+	public function getId(): string {
 		return $this->id;
 	}
 
