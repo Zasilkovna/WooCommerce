@@ -19,6 +19,7 @@ services:
 	- Packetery\Core\Helper
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
+	- Packetery\Module\Order\CustomsDeclarationMetabox
 	- Packetery\Module\Plugin
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)

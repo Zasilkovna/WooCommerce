@@ -109,8 +109,16 @@
     width: 100%;
 }
 
+.packetery-table [hidden] {
+    display: none !important;
+}
+
 .packetery-table-row {
     display: table-row;
+}
+
+.packetery-table-row-group {
+    display: table-row-group;
 }
 
 .packetery-table-cell {
@@ -740,4 +748,8 @@ tbody .packetery-log-column-note {
 
 .packeta-metabox-notice {
     font-weight: bold;
+}
+
+.packetery-customs-declaration-fields .packetery-table-cell input {
+    display: block;
 }

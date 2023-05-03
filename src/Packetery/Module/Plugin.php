@@ -78,6 +78,13 @@ class Plugin {
 	 */
 	private $order_metabox;
 
+    /**
+     * Customs declaration metabox.
+     *
+     * @var Order\CustomsDeclarationMetabox
+     */
+    private $customsDeclarationMetabox;
+
 	/**
 	 * Message manager.
 	 *
@@ -246,39 +253,40 @@ class Plugin {
 	 */
 	private $featureFlagManager;
 
-	/**
-	 * Plugin constructor.
-	 *
-	 * @param Order\Metabox              $order_metabox             Order metabox.
-	 * @param MessageManager             $message_manager           Message manager.
-	 * @param Options\Page               $options_page              Options page.
-	 * @param Checkout                   $checkout                  Checkout class.
-	 * @param Engine                     $latte_engine              PacketeryLatte engine.
-	 * @param OptionsPage                $carrierOptionsPage        Carrier options page.
-	 * @param Order\BulkActions          $orderBulkActions          Order BulkActions.
-	 * @param Order\LabelPrint           $labelPrint                Label printing.
-	 * @param Order\GridExtender         $gridExtender              Order grid extender.
-	 * @param Product\DataTab            $productTab                Product tab.
-	 * @param Log\Page                   $logPage                   Log page.
-	 * @param ILogger                    $logger                    Log manager.
-	 * @param Api\Registrar              $apiRegistar               API endpoints registrar.
-	 * @param Order\Modal                $orderModal                Order modal.
-	 * @param Options\Exporter           $exporter                  Options exporter.
-	 * @param Order\CollectionPrint      $orderCollectionPrint      Order collection print.
-	 * @param Request                    $request                   HTTP request.
-	 * @param Order\Repository           $orderRepository           Order repository.
-	 * @param Upgrade                    $upgrade                   Plugin upgrade.
-	 * @param QueryProcessor             $queryProcessor            QueryProcessor.
-	 * @param Options\Provider           $optionsProvider           Options provider.
-	 * @param CronService                $cronService               Cron service.
-	 * @param Order\PacketCanceller      $packetCanceller           Packet canceller.
-	 * @param ContextResolver            $contextResolver           Context resolver.
-	 * @param DashboardWidget            $dashboardWidget           Dashboard widget.
-	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
-	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
-	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
-	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
-	 */
+    /**
+     * Plugin constructor.
+     *
+     * @param Order\Metabox $order_metabox Order metabox.
+     * @param MessageManager $message_manager Message manager.
+     * @param Options\Page $options_page Options page.
+     * @param Checkout $checkout Checkout class.
+     * @param Engine $latte_engine PacketeryLatte engine.
+     * @param OptionsPage $carrierOptionsPage Carrier options page.
+     * @param Order\BulkActions $orderBulkActions Order BulkActions.
+     * @param Order\LabelPrint $labelPrint Label printing.
+     * @param Order\GridExtender $gridExtender Order grid extender.
+     * @param Product\DataTab $productTab Product tab.
+     * @param Log\Page $logPage Log page.
+     * @param ILogger $logger Log manager.
+	 * @param Api\Registrar $apiRegistar API endpoints registrar.
+     * @param Order\Modal $orderModal Order modal.
+     * @param Options\Exporter $exporter Options exporter.
+     * @param Order\CollectionPrint $orderCollectionPrint Order collection print.
+     * @param Request $request HTTP request.
+     * @param Order\Repository $orderRepository Order repository.
+     * @param Upgrade $upgrade Plugin upgrade.
+     * @param QueryProcessor $queryProcessor QueryProcessor.
+     * @param Options\Provider $optionsProvider Options provider.
+     * @param CronService $cronService Cron service.
+     * @param Order\PacketCanceller $packetCanceller Packet canceller.
+     * @param ContextResolver $contextResolver Context resolver.
+     * @param DashboardWidget $dashboardWidget Dashboard widget.
+     * @param Order\PacketSubmitter $packetSubmitter Packet submitter.
+     * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
+     * @param Order\PacketAutoSubmitter $packetAutoSubmitter Packet auto submitter.
+     * @param Options\FeatureFlagManager $featureFlagManager Feature Flag Manager.
+     * @param Order\CustomsDeclarationMetabox $customsDeclarationMetabox Customs declaration metabox.
+     */
 	public function __construct(
 		Order\Metabox $order_metabox,
 		MessageManager $message_manager,
@@ -308,8 +316,9 @@ class Plugin {
 		Order\PacketSubmitter $packetSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
-		Options\FeatureFlagManager $featureFlagManager
-	) {
+		Options\FeatureFlagManager $featureFlagManager,
+        Order\CustomsDeclarationMetabox $customsDeclarationMetabox
+    ) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
 		$this->main_file_path            = PACKETERY_PLUGIN_DIR . '/packeta.php';
@@ -340,7 +349,8 @@ class Plugin {
 		$this->productCategoryFormFields = $productCategoryFormFields;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
 		$this->featureFlagManager        = $featureFlagManager;
-	}
+        $this->customsDeclarationMetabox = $customsDeclarationMetabox;
+    }
 
 	/**
 	 * Method to register hooks
@@ -399,6 +409,7 @@ class Plugin {
 		add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
 		$this->orderModal->register();
 		$this->order_metabox->register();
+        $this->customsDeclarationMetabox->register();
 
 		$this->checkout->register_hooks();
 		$this->productTab->register();
@@ -754,7 +765,8 @@ class Plugin {
 		}
 
 		if ( Carrier\OptionsPage::SLUG === $page ) {
-			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery' ] );
+            $this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery' ] );
+			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery', 'packetery-multiplier' ] );
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
@@ -792,7 +804,8 @@ class Plugin {
 		$addressPickerSettings     = null;
 
 		if ( $isOrderDetailPage ) {
-			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery' ] );
+            $this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery' ] );
+			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery', 'packetery-multiplier' ] );
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
 			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();

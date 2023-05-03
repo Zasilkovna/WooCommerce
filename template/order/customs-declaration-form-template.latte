@@ -1,0 +1,13 @@
+{varType PacketeryNette\Forms\Form $formTemplate}
+
+<form n:name=$formTemplate class="packetery-hidden">
+    <div class="packetery-customs-declaration-item">
+        <table>
+            <tbody>
+            {foreach $formTemplate['items']->getComponents() as $id => $item}
+                {include 'customs-declaration-item.latte' item => $item, container => $formTemplate['items'], id => $id}
+            {/foreach}
+            </tbody>
+        </table>
+    </div>
+</form>
