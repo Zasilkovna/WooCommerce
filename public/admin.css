@@ -347,6 +347,7 @@ tbody .packetery-log-column-note {
 .packeta_header {
     display: flex;
     align-items: center;
+    margin-top: 32px;
     margin-bottom: 32px;
     background: #ffffff;
     filter: drop-shadow(7px 5px 35px rgba(0, 0, 0, .05));
