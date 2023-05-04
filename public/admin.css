@@ -750,6 +750,78 @@ tbody .packetery-log-column-note {
     font-weight: bold;
 }
 
-.packetery-customs-declaration-fields .packetery-table-cell input {
+.packetery-customs-declaration-fields label {
     display: block;
+}
+
+.packetery-customs-declaration-fields input + p {
+    margin: 0;
+}
+
+.packetery-customs-declaration-fields select + p {
+    margin: 0;
+}
+
+.packetery-customs-declaration-fields input {
+    width: 100%;
+}
+
+.packetery-customs-declaration-fields input[type=checkbox] {
+    width: auto;
+}
+
+.packetery-customs-declaration-fields select {
+    width: 100%;
+}
+
+.packetery-flex-container {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+    margin-left: -5px;
+    margin-right: -5px;
+    container-type: inline-size;
+}
+
+.packetery-flex-container-no-margin {
+    margin: 0;
+}
+
+.packetery-customs-declaration-flex-item {
+    width: 50%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.packetery-customs-declaration-fields .packetery-customs-declaration-flex-item .packetery-customs-declaration-flex-item-content {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+@container (max-width: 500px) {
+    .packetery-customs-declaration-flex-item {
+        width: 100%;
+    }
+}
+
+.packetery-customs-declaration-fields [data-replication-add] {
+    margin-top: 10px;
+}
+
+.packetery-customs-declaration-fields [data-packetery-customs-declaration-item] .packetery-flex-container:nth-child(odd) {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.packetery-customs-declaration-fields .packetery-customs-declaration-flex-item:has([data-replication-delete]) {
+    margin: 0;
+}
+
+.packetery-customs-declaration-fields [data-replication-delete] {
+    margin-top: 10px;
 }

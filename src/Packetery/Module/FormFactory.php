@@ -43,6 +43,8 @@ class FormFactory {
 				Validator::$messages[ Form::INTEGER ] = __( 'Enter valid number', 'packeta' );
 				Validator::$messages[ Form::FLOAT ]   = __( 'Enter valid number', 'packeta' );
 				Validator::$messages[ Form::FILLED ]  = __( 'This field is required', 'packeta' );
+				// translators: %d is number of characters.
+				Validator::$messages[ Form::LENGTH ] = __( 'Please enter exactly %d characters', 'packeta' );
 			},
 			11
 		);

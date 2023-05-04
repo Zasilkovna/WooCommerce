@@ -2,91 +2,77 @@
 {varType PacketeryNette\Forms\Form $form}
 
 {formContainer $form}
-    <div class="packetery-table packetery-customs-declaration-fields" data-replication-form-id="{$form->getElementPrototype()->getAttribute('id')}">
 
-        <div class="packetery-table-row">
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <label n:name=ead />
-            </div>
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <select n:name=ead></select>
-            </div>
-        </div>
-
-        <div class="packetery-table-row">
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <label n:name=delivery_cost />
-            </div>
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <input n:name=delivery_cost>
-            </div>
-        </div>
-
-        <div class="packetery-table-row">
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <label n:name=invoice_number />
-            </div>
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <input n:name=invoice_number>
-            </div>
-        </div>
-
-        <div class="packetery-table-row">
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <label n:name=invoice_issue_date />
-            </div>
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <input n:name=invoice_issue_date>
-            </div>
-        </div>
-
-        <div class="packetery-table-row">
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <label n:name=invoice />
-            </div>
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <input n:name=invoice>
-            </div>
-        </div>
-
-        <div id="ead_own_fields" class="packetery-table-row-group">
-            <div class="packetery-table-row">
-                <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                    <label id="mrn-label" n:name=mrn />
-                </div>
-                <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                    <input n:name=mrn>
+    <div class="packetery-customs-declaration-fields" data-replication-form-id="{$form->getElementPrototype()->getAttribute('id')}">
+        <div class="packetery-flex-container">
+            <div class="packetery-customs-declaration-flex-item">
+                <div class="packetery-customs-declaration-flex-item-content">
+                    <label n:name=ead />
+                    <select n:name=ead data-lfv-message-id="{$form[ead]->getHtmlId() . '_message'}"></select>
+                    <p class="packetery-input-validation-message help-block text-danger"
+                       id="{$form[ead]->getHtmlId() . '_message'}">{inputError ead}</p>
                 </div>
             </div>
-
-            <div class="packetery-table-row">
-                <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                    <label n:name=vdd />
+            <div class="packetery-customs-declaration-flex-item">
+                <div class="packetery-customs-declaration-flex-item-content">
+                    <label n:name=delivery_cost />
+                    <input n:name=delivery_cost data-lfv-message-id="{$form[delivery_cost]->getHtmlId() . '_message'}">
+                    <p class="packetery-input-validation-message help-block text-danger"
+                       id="{$form[delivery_cost]->getHtmlId() . '_message'}">{inputError delivery_cost}</p>
                 </div>
-                <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                    <input n:name=vdd>
+            </div>
+            <div class="packetery-customs-declaration-flex-item">
+                <div class="packetery-customs-declaration-flex-item-content">
+                    <label n:name=invoice_number />
+                    <input n:name=invoice_number data-lfv-message-id="{$form[invoice_number]->getHtmlId() . '_message'}">
+                    <p class="packetery-input-validation-message help-block text-danger"
+                       id="{$form[invoice_number]->getHtmlId() . '_message'}">{inputError invoice_number}</p>
+                </div>
+            </div>
+            <div class="packetery-customs-declaration-flex-item">
+                <div class="packetery-customs-declaration-flex-item-content">
+                    <label n:name=invoice_issue_date />
+                    <input n:name=invoice_issue_date autocomplete="off" data-lfv-message-id="{$form[invoice_issue_date]->getHtmlId() . '_message'}">
+                    <p class="packetery-input-validation-message help-block text-danger"
+                       id="{$form[invoice_issue_date]->getHtmlId() . '_message'}">{inputError invoice_issue_date}</p>
+                </div>
+            </div>
+            <div class="packetery-customs-declaration-flex-item">
+                <div class="packetery-customs-declaration-flex-item-content">
+                    <label n:name=invoice />
+                    <input n:name=invoice accept=".pdf" data-lfv-message-id="{$form[invoice]->getHtmlId() . '_message'}">
+                    <p class="packetery-input-validation-message help-block text-danger"
+                       id="{$form[invoice]->getHtmlId() . '_message'}">{inputError invoice}</p>
+                </div>
+            </div>
+            <div id="customs-declaration-own-field-mrn" class="packetery-customs-declaration-flex-item">
+                <div class="packetery-customs-declaration-flex-item-content">
+                    <label n:name=mrn />
+                    <input n:name=mrn data-lfv-message-id="{$form[mrn]->getHtmlId() . '_message'}">
+                    <p class="packetery-input-validation-message help-block text-danger"
+                       id="{$form[mrn]->getHtmlId() . '_message'}">{inputError mrn}</p>
+                </div>
+            </div>
+            <div id="customs-declaration-own-field-ead_file" class="packetery-customs-declaration-flex-item">
+                <div class="packetery-customs-declaration-flex-item-content">
+                    <label n:name=ead_file />
+                    <input n:name=ead_file accept=".pdf" data-lfv-message-id="{$form[ead_file]->getHtmlId() . '_message'}">
+                    <p class="packetery-input-validation-message help-block text-danger"
+                       id="{$form[ead_file]->getHtmlId() . '_message'}">{inputError ead_file}</p>
                 </div>
             </div>
         </div>
 
-        <div class="packetery-table-row">
-            <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                <label>{$translations['itemsLabel']}</label>
-            </div>
-        </div>
+        <h3>{$translations['itemsLabel']}</h3>
 
-        <div class="packetery-table-row">
-            <div class="packetery-table-cell packetery-order-metabox-label-cell packetery-customs-declaration-item">
-                <table>
-                    <tbody data-replication-item-container data-replication-min-items="1">
-                    {foreach $form['items']->getComponents() as $id => $item}
-                        {include 'customs-declaration-item.latte' item => $item, container => $form['items'], id => $id}
-                    {/foreach}
-                    </tbody>
-                </table>
-
-                <button type="button" data-replication-add class="button button-small">{$translations['addCustomsDeclarationItem']}</button>
+        <div data-packetery-customs-declaration-item>
+            <div data-replication-item-container data-replication-min-items="1">
+                {foreach $form['items']->getComponents() as $id => $item}
+                    {include 'customs-declaration-item.latte' container => $form['items'], id => $id}
+                {/foreach}
             </div>
+
+            <button type="button" data-replication-add class="button button-small">{$translations['addCustomsDeclarationItem']}</button>
         </div>
     </div>
 {/formContainer}

@@ -1,207 +1,247 @@
 <?php
+/**
+ * Class CustomsDeclarationMetabox.
+ *
+ * @package Packetery
+ */
 
 declare(strict_types=1);
 
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Helper;
-use Packetery\Module\FormValidators;
+use Packetery\Module\FormFactory;
+use Packetery\Module\FormRulesParts;
+use PacketeryLatte\Engine;
+use PacketeryNette\Forms\Container;
 use PacketeryNette\Forms\Form;
 
-class CustomsDeclarationMetabox
-{
-    /** @var Repository */
-    private $orderRepository;
+/**
+ * Class CustomsDeclarationMetabox.
+ */
+class CustomsDeclarationMetabox {
 
-    /** @var \PacketeryLatte\Engine */
-    private $latteEngine;
+	private const EAD_OWN     = 'own';
+	private const EAD_CREATE  = 'create';
+	private const EAD_CARRIER = 'carrier';
 
-    /** @var \Packetery\Module\FormFactory */
-    private $formFactory;
+	private const FORM_NAME = 'customs-declaration-metabox-form';
 
-    /**
-     * @param \Packetery\Module\Order\Repository $orderRepository
-     * @param \PacketeryLatte\Engine $latteEngine
-     * @param \Packetery\Module\FormFactory $formFactory
-     */
-    public function __construct(Repository $orderRepository, \PacketeryLatte\Engine $latteEngine, \Packetery\Module\FormFactory $formFactory)
-    {
-        $this->orderRepository = $orderRepository;
-        $this->latteEngine = $latteEngine;
-        $this->formFactory = $formFactory;
-    }
+	/**
+	 * Order repository.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
 
-    /**
-     * Registers related hooks.
-     */
-    public function register(): void {
-        add_action('add_meta_boxes', [$this, 'addMetaBoxes']);
-    }
+	/**
+	 * Latte engine.
+	 *
+	 * @var \PacketeryLatte\Engine
+	 */
+	private $latteEngine;
 
-    /**
-     * Adds meta boxes.
-     */
-    public function addMetaBoxes(): void {
-        global $post;
+	/**
+	 * Form factory.
+	 *
+	 * @var \Packetery\Module\FormFactory
+	 */
+	private $formFactory;
 
-        $order = $this->orderRepository->getById( (int) $post->ID );
-        if ( null === $order ) {
-            return;
-        }
+	/**
+	 * Constructor.
+	 *
+	 * @param \Packetery\Module\Order\Repository $orderRepository Order repository.
+	 * @param \PacketeryLatte\Engine             $latteEngine Latte engine.
+	 * @param \Packetery\Module\FormFactory      $formFactory Form factory.
+	 */
+	public function __construct(
+		Repository $orderRepository,
+		Engine $latteEngine,
+		FormFactory $formFactory
+	) {
+		$this->orderRepository = $orderRepository;
+		$this->latteEngine     = $latteEngine;
+		$this->formFactory     = $formFactory;
+	}
 
-        // todo
-//        if ( null === $order->getCarrier() || false === $order->getCarrier()->requiresCustomsDeclarations() ) {
-//            return;
-//        }
+	/**
+	 * Registers related hooks.
+	 */
+	public function register(): void {
+		add_action( 'add_meta_boxes', [ $this, 'addMetaBoxes' ] );
+		add_action( 'admin_head', [ $this, 'renderTemplate' ] );
+	}
 
-        add_meta_box(
-            'packetery_customs_declaration_metabox',
-            __( 'Customs declaration', 'packeta' ),
-            [ $this, 'render', ],
-            'shop_order',
-            'advanced',
-            'high'
-        );
-        add_action( 'admin_head', [ $this, 'renderTemplate' ] );
-    }
+	/**
+	 * Adds meta boxes.
+	 */
+	public function addMetaBoxes(): void {
+		global $post;
 
-    public function renderTemplate(): void
-    {
-        $formTemplate = $this->formFactory->create( 'customs-declaration-metabox-form_template' );
-        $items = $formTemplate->addContainer('items');
-        $this->addCustomsDeclarationItem($items, '0');
+		$order = $this->orderRepository->getById( (int) $post->ID );
 
-        $this->latteEngine->render(
-            PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-form-template.latte',
-            [
-                'formTemplate' => $formTemplate,
-                'translations' => [
-                    'addCustomsDeclarationItem' => __('Add item', 'packeta'),
-                    'delete' => __('Delete', 'packeta'),
-                    'itemsLabel' => __('Items', 'packeta'),
-                ]
-            ]
-        );
-    }
+		if (
+			null === $order ||
+			null === $order->getCarrier() ||
+			false === $order->getCarrier()->requiresCustomsDeclarations()
+		) {
+			return;
+		}
 
-    /**
-     * Renders meta box.
-     *
-     * @return void
-     */
-    public function render(): void
-    {
-        global $post;
+		add_meta_box(
+			'packetery_customs_declaration_metabox',
+			__( 'Customs declaration', 'packeta' ),
+			[ $this, 'render' ],
+			'shop_order',
+			'advanced',
+			'high'
+		);
+	}
 
-        $wcOrder = $this->orderRepository->getWcOrderById( (int) $post->ID );
-        if ( null === $wcOrder ) {
-            return;
-        }
+	/**
+	 * Renders template.
+	 *
+	 * @return void
+	 */
+	public function renderTemplate(): void {
+		$formTemplate = $this->formFactory->create( sprintf( '%s_template', self::FORM_NAME ) );
+		$items        = $formTemplate->addContainer( 'items' );
+		$this->addCustomsDeclarationItem( $items, '0' );
 
-        $order = $this->orderRepository->getByWcOrder( $wcOrder );
-        if ( null === $order ) {
-            return;
-        }
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-form-template.latte',
+			[
+				'formTemplate' => $formTemplate,
+				'translations' => [
+					'delete' => __( 'Delete', 'packeta' ),
+				],
+			]
+		);
+	}
 
-        $form = $this->formFactory->create( 'customs-declaration-metabox-form' );
+	/**
+	 * Renders meta box.
+	 *
+	 * @return void
+	 */
+	public function render(): void {
+		global $post;
 
-        $form->addSelect(
-            'ead',
-            __( 'EAD', 'packeta' ),
-            [
-                //Vlastní celní prohlášení (mám VDD) (own)
-                //Vystavení VDD přes Zásilkovnu (create)
-                //Poštovní clení (bez VDD a bez poplatků) (carrier)
-                'own' => __( 'Own', 'packeta' ),
-                'create' => __( 'Create', 'packeta' ),
-                'carrier' => __( 'Carrier', 'packeta' ),
-            ]
-        );
+		$order = $this->orderRepository->getById( (int) $post->ID );
+		if ( null === $order ) {
+			return;
+		}
 
-        $form->addText('delivery_cost', __( 'Delivery cost', 'packeta' ))
-            ->setRequired()
-            ->addRule(Form::FLOAT)
-            ->addRule(Form::MIN, null, 0); // todo no zero
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
+			[
+				'form'         => $this->createForm(),
+				'translations' => [
+					'addCustomsDeclarationItem' => __( 'Add item', 'packeta' ),
+					'delete'                    => __( 'Delete', 'packeta' ),
+					'itemsLabel'                => __( 'Items', 'packeta' ),
+				],
+			]
+		);
+	}
 
+	/**
+	 * Creates form.
+	 *
+	 * @return Form
+	 */
+	private function createForm(): Form {
+		$form = $this->formFactory->create( self::FORM_NAME );
 
-        $form->addText('invoice_number', __( 'Invoice number', 'packeta' ))
-            ->setRequired();
+		$ead = $form->addSelect(
+			'ead',
+			__( 'EAD', 'packeta' ),
+			[
+				self::EAD_OWN     => __( 'Self-declaration (I have a EAD)', 'packeta' ),
+				self::EAD_CREATE  => __( 'Issuing a EAD via Packeta', 'packeta' ),
+				self::EAD_CARRIER => __( 'Postal clearance (no EAD and no fees)', 'packeta' ),
+			]
+		)
+			->setRequired();
 
-        $form->addText('invoice_issue_date', __( 'Invoice issue date', 'packeta' ))
-            ->setRequired();
+		$form->addText( 'delivery_cost', __( 'Delivery cost', 'packeta' ) )
+			->setRequired()
+			->addRule( Form::FLOAT )
+			->addRule( ...FormRulesParts::greaterThan( 0 ) );
 
-        $form->addUpload('invoice', __( 'Invoice', 'packeta' ))
-            ->setRequired(false)
-            ->addConditionOn($form['ead'], Form::EQUAL, 'own')
-            ->setRequired()
-            ->elseCondition()
-            ->addConditionOn($form['ead'], Form::EQUAL, 'create')
-            ->setRequired();
+		$form->addText( 'invoice_number', __( 'Invoice number', 'packeta' ) )
+			->setRequired();
 
-        $form->addText('mrn', __( 'MRN', 'packeta' ))
-            ->addConditionOn($form['ead'], Form::EQUAL, 'own')
-            ->toggle('ead_own_fields')
-            ->setRequired();
+		$form->addText( 'invoice_issue_date', __( 'Invoice issue date', 'packeta' ) )
+			->setRequired();
 
-        $form->addUpload('vdd', __( 'VDD', 'packeta' ))
-            ->addConditionOn($form['ead'], Form::EQUAL, 'own')
-            ->toggle('ead_own_fields')
-            ->setRequired();
+		$form->addUpload( 'invoice', __( 'Invoice PDF file', 'packeta' ) )
+			->setRequired( false )
+			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+				->setRequired()
+			->endCondition()
+			->addConditionOn( $ead, Form::EQUAL, self::EAD_CREATE )
+				->setRequired();
 
-        $items = $form->addContainer('items');
-        $this->addCustomsDeclarationItem($items, '0');
+		$form->addText( 'mrn', __( 'MRN', 'packeta' ) )
+			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+				->toggle( 'customs-declaration-own-field-mrn' )
+				->setRequired();
 
-        $this->latteEngine->render(
-            PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
-            [
-                'form' => $form,
-                'translations' => [
-                    'addCustomsDeclarationItem' => __('Add item', 'packeta'),
-                    'delete' => __('Delete', 'packeta'),
-                    'itemsLabel' => __('Items', 'packeta'),
-                ],
-            ]
-        );
-    }
+		$form->addUpload( 'ead_file', __( 'EAD PDF file', 'packeta' ) )
+			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+				->toggle( 'customs-declaration-own-field-ead_file' )
+				->setRequired();
 
-    public function addCustomsDeclarationItem(\PacketeryNette\Forms\Container $container, string $index ): void
-    {
-        $item = $container->addContainer( $index );
-        $item->addText('code', __('code', 'packeta'))
-            ->setRequired();
+		$items = $form->addContainer( 'items' );
+		$this->addCustomsDeclarationItem( $items, '0' );
 
-        $item->addText('value', __('value', 'packeta'))
-            ->setRequired()
-            ->addRule(Form::FLOAT)
-            // translators: %d is numeric threshold.
-            ->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+		return $form;
+	}
 
-        $item->addText('productNameEn', __('Product name (EN)', 'packeta') )
-            ->setRequired();
-        $item->addText('productName', __('Product name', 'packeta'));
+	/**
+	 * Adds customs declaration item.
+	 *
+	 * @param \PacketeryNette\Forms\Container $container Container.
+	 * @param string                          $index Item index.
+	 * @return void
+	 */
+	public function addCustomsDeclarationItem( Container $container, string $index ): void {
+		$item = $container->addContainer( $index );
+		$item->addText( 'code', __( 'Code', 'packeta' ) )
+			->setRequired();
 
-        $item->addText('count', __('count', 'packeta'))
-            ->setRequired()
-            ->addRule(Form::INTEGER)
-            // translators: %d is numeric threshold.
-            ->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+		$item->addText( 'value', __( 'Value', 'packeta' ) )
+			->setRequired()
+			->addRule( Form::FLOAT )
+			->addRule( ...FormRulesParts::greaterThan( 0 ) );
 
-        $item->addText('countryCode', __('Country Code', 'packeta'))
-            ->addRule(Form::MIN_LENGTH, null, 2);
+		$item->addText( 'product_name_en', __( 'Product name (EN)', 'packeta' ) )
+			->setRequired();
+		$item->addText( 'product_name', __( 'Product name', 'packeta' ) );
 
-        $item->addText('weight', __('Weight (kg)', 'packeta'))
-            ->setRequired()
-            // translators: %d is numeric threshold.
-            ->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
-        $item['weight']->addFilter(
-            static function ( float $value ): float {
-                return Helper::simplifyWeight( $value );
-            }
-        );
-        // translators: %d is numeric threshold.
-        $item['weight']->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+		$item->addText( 'amount', __( 'Amount', 'packeta' ) )
+			->setRequired()
+			->addRule( Form::INTEGER )
+			->addRule( ...FormRulesParts::greaterThan( 0 ) );
 
-        $item->addCheckbox('food_or_book', __('Food or book?', 'packeta'));
-        $item->addCheckbox('voc', __('Is VOC?', 'packeta'));
-    }
+		$item->addText( 'country_code', __( 'Country of origin code', 'packeta' ) )
+			->setRequired()
+			->addRule( Form::LENGTH, null, 2 );
+
+		$item->addText( 'weight', __( 'Weight (kg)', 'packeta' ) )
+			->setRequired()
+			->addRule( Form::FLOAT )
+			->addRule( ...FormRulesParts::greaterThan( 0 ) )
+			->addFilter(
+				static function ( float $value ): float {
+					return Helper::simplifyWeight( $value );
+				}
+			)
+			->addRule( ...FormRulesParts::greaterThan( 0 ) );
+
+		$item->addCheckbox( 'food_or_book', __( 'Food or book?', 'packeta' ) );
+		$item->addCheckbox( 'voc', __( 'Is VOC?', 'packeta' ) );
+	}
 }

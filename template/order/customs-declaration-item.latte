@@ -1,55 +1,89 @@
 {varType array $translations}
+{varType string $id}
+{varType PacketeryNette\Forms\Container $container}
 
-<tr n:formContainer="$item" data-replication-item>
-    <td>
-        <div>
-            <label n:name=code />
-            <input n:name=code data-lfv-message-id="{$container[$id][code]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][code]->getHtmlId() . '_message'}">{inputError code}</p>
+{formContainer $container[$id]}
+<div data-replication-item>
+    <div class="packetery-flex-container packetery-flex-container-no-margin">
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=code />
+                <input n:name=code data-lfv-message-id="{$container[$id][code]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][code]->getHtmlId() . '_message'}">{inputError code}</p>
+            </div>
         </div>
-        <div>
-            <label n:name=productNameEn />
-            <input n:name=productNameEn data-lfv-message-id="{$container[$id][productNameEn]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][productNameEn]->getHtmlId() . '_message'}">{inputError productNameEn}</p>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=value />
+                <input n:name=value data-lfv-message-id="{$container[$id][value]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][value]->getHtmlId() . '_message'}">{inputError value}</p>
+            </div>
         </div>
-        <div>
-            <label n:name=productName />
-            <input n:name=productName data-lfv-message-id="{$container[$id][productName]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][productName]->getHtmlId() . '_message'}">{inputError productName}</p>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=product_name_en />
+                <input n:name=product_name_en data-lfv-message-id="{$container[$id][product_name_en]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][product_name_en]->getHtmlId() . '_message'}">{inputError product_name_en}</p>
+            </div>
         </div>
-        <div>
-            <label n:name=count />
-            <input n:name=count data-lfv-message-id="{$container[$id][count]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][count]->getHtmlId() . '_message'}">{inputError count}</p>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=product_name />
+                <input n:name=product_name data-lfv-message-id="{$container[$id][product_name]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][product_name]->getHtmlId() . '_message'}">{inputError product_name}</p>
+            </div>
         </div>
-        <div>
-            <label n:name=countryCode />
-            <input n:name=countryCode data-lfv-message-id="{$container[$id][countryCode]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][countryCode]->getHtmlId() . '_message'}">{inputError countryCode}</p>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=amount />
+                <input n:name=amount data-lfv-message-id="{$container[$id][amount]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][amount]->getHtmlId() . '_message'}">{inputError amount}</p>
+            </div>
         </div>
-        <div>
-            <label n:name=weight />
-            <input n:name=weight data-lfv-message-id="{$container[$id][weight]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][weight]->getHtmlId() . '_message'}">{inputError weight}</p>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=country_code />
+                <input n:name=country_code data-lfv-message-id="{$container[$id][country_code]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][country_code]->getHtmlId() . '_message'}">{inputError country_code}</p>
+            </div>
         </div>
-        <div>
-            <label n:name=food_or_book />
-            <input n:name=food_or_book data-lfv-message-id="{$container[$id][food_or_book]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][food_or_book]->getHtmlId() . '_message'}">{inputError food_or_book}</p>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=weight />
+                <input n:name=weight data-lfv-message-id="{$container[$id][weight]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][weight]->getHtmlId() . '_message'}">{inputError weight}</p>
+            </div>
         </div>
-        <div>
-            <label n:name=voc />
-            <input n:name=voc data-lfv-message-id="{$container[$id][voc]->getHtmlId() . '_message'}">
-            <p class="packetery-input-validation-message help-block text-danger"
-               id="{$container[$id][voc]->getHtmlId() . '_message'}">{inputError voc}</p>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=food_or_book />
+                <input n:name=food_or_book data-lfv-message-id="{$container[$id][food_or_book]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][food_or_book]->getHtmlId() . '_message'}">{inputError food_or_book}</p>
+            </div>
         </div>
-        <button type="button" data-replication-delete class="button button-small">{$translations['delete']}</button>
-    </td>
-</tr>
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <label n:name=voc />
+                <input n:name=voc data-lfv-message-id="{$container[$id][voc]->getHtmlId() . '_message'}">
+                <p class="packetery-input-validation-message help-block text-danger"
+                   id="{$container[$id][voc]->getHtmlId() . '_message'}">{inputError voc}</p>
+            </div>
+        </div>
+    </div>
+    <div class="packetery-flex-container">
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <button type="button" data-replication-delete class="button button-small">{$translations['delete']}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{/formContainer}

@@ -24,10 +24,8 @@ var PacketeryMultiplier = function (wrapperSelector) {
         $template.find('[data-nette-rules]').each(function() {
             this.removeAttribute('data-lfv-initialized');
             LiveForm.setupHandlers(this);
-            Nette.validateControl(this);
         });
 
-        jQuery('input', $template).eq(0).focus();
         this.toggleDeleteButton($container);
     };
 
