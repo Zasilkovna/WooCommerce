@@ -79,6 +79,21 @@ class Address {
 	}
 
 	/**
+	 * Gets full address.
+	 *
+	 * @return string
+	 */
+	public function getFullAddress(): string {
+		return sprintf(
+			'%s%s, %s %s',
+			$this->street,
+			( $this->houseNumber ? ' ' . $this->houseNumber : '' ),
+			$this->city,
+			$this->zip
+		);
+	}
+
+	/**
 	 * Gets street.
 	 *
 	 * @return string|null

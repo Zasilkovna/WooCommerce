@@ -126,7 +126,7 @@ function packeta_email_footer( string $footerHtml, array $templateParams ) {
 		$footerHtml  = '<p>' . htmlspecialchars( $pickupPoint->getName() ) . '</p>';
 	} elseif ( $templateParams['validatedDeliveryAddress'] ) {
 		$address    = $templateParams['validatedDeliveryAddress'];
-		$footerHtml = '<p>' . htmlspecialchars( $address->getStreet() . ' ' . $address->getHouseNumber() . ', ' . $address->getCity() . ' ' . $address->getZip() ) . '</p>';
+		$footerHtml = '<p>' . htmlspecialchars( $address->getFullAddress() ) . '</p>';
 	}
 
 	return $footerHtml;
