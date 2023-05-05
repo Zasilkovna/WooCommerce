@@ -70,6 +70,9 @@ add_filter( 'packeta_create_packet', function ( array $createPacketData ): array
 	return $createPacketData;
 } );
 ```
+
+You can find description of the attributes in the [official documentation](https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetattributes).
+
 ##### Filter shipping rate cost
 
 To update packeta shipping rate cost in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
@@ -121,7 +124,47 @@ add_filter( 'packeta_widget_language', static function ( string $language ): str
 } );
 ```
 
-You can find description of the attributes in the [official documentation](https://docs.packetery.com/03-creating-packets/06-packetery-api-reference.html#toc-packetattributes).
+##### Filters to modify widget button HTML
+
+To modify widget button HTML, you can use either `packeta_widget_button` or `packeta_widget_button_row` filter.
+Please note that the same HTML as in `packeta_widget_button` is used within `packeta_widget_button_row`,
+it depends on the plugin settings which one is used.
+
+If you, for example, want to add custom class to the button wrapper div, you can use:
+
+```
+add_filter( 'packeta_widget_button', function ( $buttonHtml ) {
+	$buttonHtml = str_replace( 'class="packetery-widget-button-wrapper"', 'class="packetery-widget-button-wrapper custom-class"', $buttonHtml );
+
+	return $buttonHtml;
+} );
+```
+
+##### Filter to modify information about Packeta pickup point or validated address in e-mail
+
+To modify this HTML, you can use `packeta_email_footer` filter, for example to render pickup point name or simple address only:
+
+```
+add_filter( 'packeta_email_footer', 'packeta_email_footer', 20, 2 );
+function packeta_email_footer( string $footerHtml, array $templateParams ) {
+	if ( $templateParams['pickupPoint'] && $templateParams['displayPickupPointInfo'] ) {
+		$pickupPoint = $templateParams['pickupPoint'];
+		$footerHtml  = '<p>' . htmlspecialchars( $pickupPoint->getName() ) . '</p>';
+	} elseif ( $templateParams['validatedDeliveryAddress'] ) {
+		$address    = $templateParams['validatedDeliveryAddress'];
+		$footerHtml = '<p>' . htmlspecialchars( $address->getFullAddress() ) . '</p>';
+	}
+
+	return $footerHtml;
+}
+```
+
+Available keys in the variable `$templateParams` are:
+* `displayPickupPointInfo` - true if option "Replace shipping address with pickup point address" is not set or WooCommerce is set to ship to billing address only
+* `pickupPoint` - \Packetery\Core\Entity\PickupPoint object if applicable
+* `validatedDeliveryAddress` - \Packetery\Core\Entity\Address object if applicable
+* `isExternalCarrier` - true if selected delivery option is not one of Packeta Pick-up Points
+* `translations` - to examine the content, export this field during filter development
 
 ## Credits
 
