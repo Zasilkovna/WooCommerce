@@ -125,7 +125,7 @@ class Client {
 		$response = new Response\CreateShipment();
 		try {
 			$soapClient = new SoapClient( self::WSDL_URL );
-			$shipment     = $soapClient->createShipment( $this->apiPassword, $request->getPacketIds(), $request->getCustomBarcode() );
+			$shipment   = $soapClient->createShipment( $this->apiPassword, $request->getPacketIds(), $request->getCustomBarcode() );
 			$response->setId( (string) $shipment->id );
 			$response->setChecksum( $shipment->checksum );
 			$response->setBarcode( $shipment->barcode );

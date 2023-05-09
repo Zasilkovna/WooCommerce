@@ -159,10 +159,10 @@ class WidgetOptionsBuilder {
 	 */
 	public function createPickupPointForAdmin( Order $order ): array {
 		$widgetOptions = [
-			'country'         => $order->getShippingCountry(),
-			'language'        => substr( get_user_locale(), 0, 2 ),
-			'appIdentity'     => Plugin::getAppIdentity(),
-			'weight'          => $order->getFinalWeight(),
+			'country'     => $order->getShippingCountry(),
+			'language'    => substr( get_user_locale(), 0, 2 ),
+			'appIdentity' => Plugin::getAppIdentity(),
+			'weight'      => $order->getFinalWeight(),
 		];
 
 		if ( $this->featureFlag->isSplitActive() ) {
