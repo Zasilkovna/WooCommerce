@@ -24,7 +24,7 @@
 	$widgetDiv.on( 'click', '[name=packetery_pick_address]', function( e ) {
 		e.preventDefault();
 
-		console.log('Widget options: ' + stringifyOptions(settings.widgetOptions));
+		console.log('Widget options: Api key: ' + settings.packeteryApiKey + ', ' + stringifyOptions(settings.widgetOptions));
 
 		Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 			if ( !result ) {

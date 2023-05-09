@@ -309,7 +309,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.postcode = destinationAddress.postCode;
 				widgetOptions.carrierId = settings.carrierConfig[ carrierRateId ][ 'id' ];
 
-				console.log('Address widget options: ' + stringifyOptions(widgetOptions));
+				console.log('Address widget options: Api key: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 					resetWidgetInfo();
 					showDeliveryAddress( carrierRateId );
@@ -356,7 +356,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 				}
 
-				console.log('Pickup point widget options: ' + stringifyOptions(widgetOptions));
+				console.log('Pickup point widget options: Api key: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint == null ) {
 						return;
