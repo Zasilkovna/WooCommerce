@@ -626,7 +626,7 @@ class Plugin {
 		/**
 		 * This filter allows you to change the HTML of e-mail footer.
 		 *
-		 * @since 1.5.1 // TODO: change version to target version.
+		 * @since 1.5.3
 		 */
 		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailFooterHtml, $templateParams ) );
 	}
