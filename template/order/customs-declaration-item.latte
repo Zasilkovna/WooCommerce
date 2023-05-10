@@ -7,10 +7,10 @@
     <div class="packetery-flex-container packetery-flex-container-no-margin">
         <div class="packetery-customs-declaration-flex-item">
             <div class="packetery-customs-declaration-flex-item-content">
-                <label n:name=code />
-                <input n:name=code data-lfv-message-id="{$container[$id][code]->getHtmlId() . '_message'}">
+                <label n:name=customs_code />
+                <input n:name=customs_code data-lfv-message-id="{$container[$id][customs_code]->getHtmlId() . '_message'}">
                 <p class="packetery-input-validation-message help-block text-danger"
-                   id="{$container[$id][code]->getHtmlId() . '_message'}">{inputError code}</p>
+                   id="{$container[$id][customs_code]->getHtmlId() . '_message'}">{inputError customs_code}</p>
             </div>
         </div>
         <div class="packetery-customs-declaration-flex-item">
@@ -39,18 +39,18 @@
         </div>
         <div class="packetery-customs-declaration-flex-item">
             <div class="packetery-customs-declaration-flex-item-content">
-                <label n:name=amount />
-                <input n:name=amount data-lfv-message-id="{$container[$id][amount]->getHtmlId() . '_message'}">
+                <label n:name=units_count />
+                <input n:name=units_count data-lfv-message-id="{$container[$id][units_count]->getHtmlId() . '_message'}">
                 <p class="packetery-input-validation-message help-block text-danger"
-                   id="{$container[$id][amount]->getHtmlId() . '_message'}">{inputError amount}</p>
+                   id="{$container[$id][units_count]->getHtmlId() . '_message'}">{inputError units_count}</p>
             </div>
         </div>
         <div class="packetery-customs-declaration-flex-item">
             <div class="packetery-customs-declaration-flex-item-content">
-                <label n:name=country_code />
-                <input n:name=country_code data-lfv-message-id="{$container[$id][country_code]->getHtmlId() . '_message'}">
+                <label n:name=country_of_origin />
+                <input n:name=country_of_origin data-lfv-message-id="{$container[$id][country_of_origin]->getHtmlId() . '_message'}">
                 <p class="packetery-input-validation-message help-block text-danger"
-                   id="{$container[$id][country_code]->getHtmlId() . '_message'}">{inputError country_code}</p>
+                   id="{$container[$id][country_of_origin]->getHtmlId() . '_message'}">{inputError country_of_origin}</p>
             </div>
         </div>
         <div class="packetery-customs-declaration-flex-item">
@@ -63,18 +63,18 @@
         </div>
         <div class="packetery-customs-declaration-flex-item">
             <div class="packetery-customs-declaration-flex-item-content">
-                <label n:name=food_or_book />
-                <input n:name=food_or_book data-lfv-message-id="{$container[$id][food_or_book]->getHtmlId() . '_message'}">
+                <label n:name=is_food_or_book />
+                <input n:name=is_food_or_book data-lfv-message-id="{$container[$id][is_food_or_book]->getHtmlId() . '_message'}">
                 <p class="packetery-input-validation-message help-block text-danger"
-                   id="{$container[$id][food_or_book]->getHtmlId() . '_message'}">{inputError food_or_book}</p>
+                   id="{$container[$id][is_food_or_book]->getHtmlId() . '_message'}">{inputError is_food_or_book}</p>
             </div>
         </div>
         <div class="packetery-customs-declaration-flex-item">
             <div class="packetery-customs-declaration-flex-item-content">
-                <label n:name=voc />
-                <input n:name=voc data-lfv-message-id="{$container[$id][voc]->getHtmlId() . '_message'}">
+                <label n:name=is_voc />
+                <input n:name=is_voc data-lfv-message-id="{$container[$id][is_voc]->getHtmlId() . '_message'}">
                 <p class="packetery-input-validation-message help-block text-danger"
-                   id="{$container[$id][voc]->getHtmlId() . '_message'}">{inputError voc}</p>
+                   id="{$container[$id][is_voc]->getHtmlId() . '_message'}">{inputError is_voc}</p>
             </div>
         </div>
     </div>

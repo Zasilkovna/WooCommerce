@@ -9,12 +9,20 @@ declare(strict_types=1);
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Entity;
+use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRulesParts;
+use Packetery\Module\Message;
+use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Container;
+use PacketeryNette\Forms\Controls\BaseControl;
 use PacketeryNette\Forms\Form;
+use PacketeryNette\Http\FileUpload;
+use PacketeryNette\Http\Request;
+use Packetery\Module\CustomsDeclaration;
 
 /**
  * Class CustomsDeclarationMetabox.
@@ -25,7 +33,15 @@ class CustomsDeclarationMetabox {
 	private const EAD_CREATE  = 'create';
 	private const EAD_CARRIER = 'carrier';
 
-	private const FORM_NAME = 'customs-declaration-metabox-form';
+	public const FORM_ID             = 'packetery-customs-declaration-metabox-form';
+	public const FORM_CONTAINER_NAME = 'packetery_customs_declaration';
+
+	/**
+	 * Relevant order.
+	 *
+	 * @var Order|null
+	 */
+	private $order = null;
 
 	/**
 	 * Order repository.
@@ -49,37 +65,95 @@ class CustomsDeclarationMetabox {
 	private $formFactory;
 
 	/**
+	 * Customs declaration repository.
+	 *
+	 * @var CustomsDeclaration\Repository
+	 */
+	private $customsDeclarationRepository;
+
+	/**
+	 * Customs declaration entity factory.
+	 *
+	 * @var \Packetery\Module\EntityFactory\CustomsDeclaration
+	 */
+	private $customsDeclarationEntityFactory;
+
+	/**
+	 * Request.
+	 *
+	 * @var Request
+	 */
+	private $request;
+
+	/**
+	 * Message manager.
+	 *
+	 * @var MessageManager
+	 */
+	private $messageManager;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param \Packetery\Module\Order\Repository $orderRepository Order repository.
-	 * @param \PacketeryLatte\Engine             $latteEngine Latte engine.
-	 * @param \Packetery\Module\FormFactory      $formFactory Form factory.
+	 * @param Repository                                         $orderRepository Order repository.
+	 * @param \PacketeryLatte\Engine                             $latteEngine Latte engine.
+	 * @param \Packetery\Module\FormFactory                      $formFactory Form factory.
+	 * @param CustomsDeclaration\Repository                      $customsDeclarationRepository Customs declaration repository.
+	 * @param \Packetery\Module\EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
+	 * @param Request                                            $request Request.
+	 * @param MessageManager                                     $messageManager Message manager.
 	 */
 	public function __construct(
 		Repository $orderRepository,
 		Engine $latteEngine,
-		FormFactory $formFactory
+		FormFactory $formFactory,
+		CustomsDeclaration\Repository $customsDeclarationRepository,
+		\Packetery\Module\EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
+		Request $request,
+		MessageManager $messageManager
 	) {
-		$this->orderRepository = $orderRepository;
-		$this->latteEngine     = $latteEngine;
-		$this->formFactory     = $formFactory;
+		$this->orderRepository                 = $orderRepository;
+		$this->latteEngine                     = $latteEngine;
+		$this->formFactory                     = $formFactory;
+		$this->customsDeclarationRepository    = $customsDeclarationRepository;
+		$this->customsDeclarationEntityFactory = $customsDeclarationEntityFactory;
+		$this->request                         = $request;
+		$this->messageManager                  = $messageManager;
+	}
+
+	/**
+	 * Gets order.
+	 *
+	 * @return Order|null
+	 */
+	private function getOrder(): ?Order {
+		global $post;
+
+		if ( null === $this->order ) {
+			$this->order = $this->orderRepository->getById( (int) $post->ID );
+		}
+
+		return $this->order;
 	}
 
 	/**
 	 * Registers related hooks.
+	 *
+	 * @return void
 	 */
 	public function register(): void {
 		add_action( 'add_meta_boxes', [ $this, 'addMetaBoxes' ] );
 		add_action( 'admin_head', [ $this, 'renderTemplate' ] );
+		add_action( 'save_post', [ $this, 'saveFields' ] );
 	}
 
 	/**
 	 * Adds meta boxes.
+	 *
+	 * @return void
 	 */
 	public function addMetaBoxes(): void {
-		global $post;
-
-		$order = $this->orderRepository->getById( (int) $post->ID );
+		$order = $this->getOrder();
 
 		if (
 			null === $order ||
@@ -105,8 +179,9 @@ class CustomsDeclarationMetabox {
 	 * @return void
 	 */
 	public function renderTemplate(): void {
-		$formTemplate = $this->formFactory->create( sprintf( '%s_template', self::FORM_NAME ) );
-		$items        = $formTemplate->addContainer( 'items' );
+		$formTemplate    = $this->formFactory->create();
+		$prefixContainer = $formTemplate->addContainer( self::FORM_CONTAINER_NAME );
+		$items           = $prefixContainer->addContainer( 'items' );
 		$this->addCustomsDeclarationItem( $items, '0' );
 
 		$this->latteEngine->render(
@@ -121,22 +196,69 @@ class CustomsDeclarationMetabox {
 	}
 
 	/**
+	 * Saves submitted form fields data.
+	 *
+	 * @param int|mixed $orderId Order ID.
+	 * @return int|mixed
+	 */
+	public function saveFields( $orderId ) {
+		$order = $this->getOrder();
+		if (
+			null === $order ||
+			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
+			null === $this->request->getPost( self::FORM_CONTAINER_NAME )
+		) {
+			return $orderId;
+		}
+
+		$form = $this->createForm(
+			$this->request->getPost(),
+			$this->customsDeclarationRepository->getByOrder( $order )
+		);
+
+		if ( $form->isSubmitted() ) {
+			$form->fireEvents();
+		}
+
+		return $orderId;
+	}
+
+	/**
 	 * Renders meta box.
 	 *
 	 * @return void
 	 */
 	public function render(): void {
-		global $post;
-
-		$order = $this->orderRepository->getById( (int) $post->ID );
+		$order = $this->getOrder();
 		if ( null === $order ) {
 			return;
 		}
 
+		$customsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );
+
+		$formData = [];
+		if ( null !== $customsDeclaration ) {
+			$formData                                       = [
+				self::FORM_CONTAINER_NAME => $this->customsDeclarationRepository->declarationToDbArray(
+					$customsDeclaration,
+					[ 'invoice_file', 'ead_file', 'order_id' ]
+				),
+			];
+			$formData[ self::FORM_CONTAINER_NAME ]['items'] = [];
+
+			$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclaration( $customsDeclaration );
+			foreach ( $customsDeclarationItems as $customsDeclarationItem ) {
+				$formData[ self::FORM_CONTAINER_NAME ]['items'][ $customsDeclarationItem->getId() ] = $this->customsDeclarationRepository->declarationItemToDbArray( $customsDeclarationItem );
+			}
+		}
+
+		$form = $this->createForm( $formData, $customsDeclaration );
+		$form->setDefaults( $formData );
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
 			[
-				'form'         => $this->createForm(),
+				'form'         => $form,
 				'translations' => [
 					'addCustomsDeclarationItem' => __( 'Add item', 'packeta' ),
 					'delete'                    => __( 'Delete', 'packeta' ),
@@ -149,12 +271,15 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Creates form.
 	 *
+	 * @param array                          $data Structure specifying data.
+	 * @param Entity\CustomsDeclaration|null $customsDeclaration Related customs declaration.
 	 * @return Form
 	 */
-	private function createForm(): Form {
-		$form = $this->formFactory->create( self::FORM_NAME );
+	private function createForm( array $data, ?Entity\CustomsDeclaration $customsDeclaration ): Form {
+		$form            = $this->formFactory->create();
+		$prefixContainer = $form->addContainer( self::FORM_CONTAINER_NAME );
 
-		$ead = $form->addSelect(
+		$ead = $prefixContainer->addSelect(
 			'ead',
 			__( 'EAD', 'packeta' ),
 			[
@@ -165,52 +290,195 @@ class CustomsDeclarationMetabox {
 		)
 			->setRequired();
 
-		$form->addText( 'delivery_cost', __( 'Delivery cost', 'packeta' ) )
+		$prefixContainer->addText( 'delivery_cost', __( 'Delivery cost', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::FLOAT )
 			->addRule( ...FormRulesParts::greaterThan( 0 ) );
 
-		$form->addText( 'invoice_number', __( 'Invoice number', 'packeta' ) )
+		$prefixContainer->addText( 'invoice_number', __( 'Invoice number', 'packeta' ) )
 			->setRequired();
 
-		$form->addText( 'invoice_issue_date', __( 'Invoice issue date', 'packeta' ) )
+		$prefixContainer->addText( 'invoice_issue_date', __( 'Invoice issue date', 'packeta' ) )
 			->setRequired();
 
-		$form->addUpload( 'invoice', __( 'Invoice PDF file', 'packeta' ) )
+		$invoiceFile = $prefixContainer->addUpload( 'invoice_file', __( 'Invoice PDF file', 'packeta' ) )
+			->setRequired( false );
+
+		if ( null === $customsDeclaration || null === $customsDeclaration->getInvoiceFile() ) {
+			$invoiceFile
+				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+					->setRequired()
+				->endCondition()
+				->addConditionOn( $ead, Form::EQUAL, self::EAD_CREATE )
+					->setRequired();
+		}
+
+		$prefixContainer->addText( 'mrn', __( 'MRN', 'packeta' ) )
 			->setRequired( false )
-			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
-				->setRequired()
-			->endCondition()
-			->addConditionOn( $ead, Form::EQUAL, self::EAD_CREATE )
-				->setRequired();
-
-		$form->addText( 'mrn', __( 'MRN', 'packeta' ) )
+			->addRule( Form::MAX_LENGTH, null, 32 )
 			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 				->toggle( 'customs-declaration-own-field-mrn' )
 				->setRequired();
 
-		$form->addUpload( 'ead_file', __( 'EAD PDF file', 'packeta' ) )
+		$eadFile = $prefixContainer->addUpload( 'ead_file', __( 'EAD PDF file', 'packeta' ) )
+			->setRequired( false )
 			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
-				->toggle( 'customs-declaration-own-field-ead_file' )
-				->setRequired();
+				->toggle( 'customs-declaration-own-field-ead_file' );
 
-		$items = $form->addContainer( 'items' );
-		$this->addCustomsDeclarationItem( $items, '0' );
+		if ( null === $customsDeclaration || null === $customsDeclaration->getEadFile() ) {
+			$eadFile
+				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+				->setRequired();
+		}
+
+		$form->addSubmit( 'save' );
+
+		$items = $prefixContainer->addContainer( 'items' );
+
+		if ( empty( $data[ self::FORM_CONTAINER_NAME ]['items'] ) ) {
+			$this->addCustomsDeclarationItem( $items, 'new_0' );
+		} else {
+			foreach ( $data[ self::FORM_CONTAINER_NAME ]['items'] as $itemId => $itemDefaults ) {
+				$this->addCustomsDeclarationItem( $items, (string) $itemId );
+			}
+		}
+
+		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
+		$form->onError[]   = [ $this, 'onFormError' ];
 
 		return $form;
 	}
 
 	/**
+	 * On form error.
+	 *
+	 * @param \PacketeryNette\Forms\Form $form Form.
+	 * @return void
+	 */
+	public function onFormError( Form $form ): void {
+		/** Form input control. @var BaseControl[] $controls */
+		$controls = $form->getComponents( true, BaseControl::class );
+		foreach ( $controls as $control ) {
+			foreach ( $control->getErrors() as $error ) {
+				$this->messageManager->flashMessageObject(
+					Message::create()
+						->setText( sprintf( '%s: %s', $control->getCaption(), $error ) )
+						->setType( MessageManager::TYPE_ERROR )
+				);
+			}
+		}
+	}
+
+	/**
+	 * On form success callback.
+	 *
+	 * @param Form $form Form.
+	 * @return void
+	 */
+	public function onFormSuccess( Form $form ): void {
+		$order = $this->getOrder();
+		if ( null === $order ) {
+			return;
+		}
+
+		$fieldsToOmit                = [];
+		$customsDeclarationContainer = $form[ self::FORM_CONTAINER_NAME ];
+		$prefixedValues              = $form->getValues( 'array' );
+		$values                      = $prefixedValues[ self::FORM_CONTAINER_NAME ];
+		$items                       = $values['items'];
+		unset( $values['items'] );
+
+		/** Invoice file. @var \PacketeryNette\Http\FileUpload $invoiceFile */
+		$invoiceFile = $values['invoice_file'];
+		/** EAD file. @var \PacketeryNette\Http\FileUpload $eadFile */
+		$eadFile = $values['ead_file'];
+
+		if ( $invoiceFile->hasFile() && $invoiceFile->getSize() >= 16 * 1024 * 1024 ) {
+			// translators: %d is numeric value.
+			$customsDeclarationContainer['invoice_file']->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), 16 ) );
+			$invoiceFile = new FileUpload( null );
+		}
+
+		if ( $eadFile->hasFile() && $eadFile->getSize() >= 16 * 1024 * 1024 ) {
+			// translators: %d is numeric value.
+			$customsDeclarationContainer['ead_file']->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), 16 ) );
+			$eadFile = new FileUpload( null );
+		}
+
+		if ( $invoiceFile->hasFile() && $invoiceFile->isOk() ) {
+			$values['invoice_file'] = $invoiceFile->getContents();
+		}
+
+		if ( $invoiceFile->hasFile() && false === $invoiceFile->isOk() ) {
+			$values['invoice_file'] = null;
+			$customsDeclarationContainer['invoice_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
+		}
+
+		if ( is_object( $values['invoice_file'] ) ) {
+			$values['invoice_file'] = '';
+			$fieldsToOmit[]         = 'invoice_file';
+		}
+
+		if ( $eadFile->hasFile() && $eadFile->isOk() ) {
+			$values['ead_file'] = $eadFile->getContents();
+		}
+
+		if ( $eadFile->hasFile() && false === $eadFile->isOk() ) {
+			$values['ead_file'] = null;
+			$customsDeclarationContainer['ead_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
+		}
+
+		if ( is_object( $values['ead_file'] ) ) {
+			$values['ead_file'] = '';
+			$fieldsToOmit[]     = 'ead_file';
+		}
+
+		$values['id']          = null;
+		$oldCustomsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );
+		if ( null !== $oldCustomsDeclaration ) {
+			$values['id'] = $oldCustomsDeclaration->getId();
+		}
+
+		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $values, $order );
+		$this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
+
+		$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclaration( $customsDeclaration );
+		foreach ( $customsDeclarationItems as $customsDeclarationItem ) {
+			$itemId = $customsDeclarationItem->getId();
+			if ( ! isset( $items[ $itemId ] ) ) {
+				$this->customsDeclarationRepository->deleteItem( (int) $itemId );
+			}
+		}
+
+		foreach ( $items as $itemId => $item ) {
+			if ( 0 === strpos( (string) $itemId, 'new_' ) ) {
+				$itemId = null;
+			} else {
+				$itemId = (string) $itemId;
+			}
+
+			$item['id'] = $itemId;
+			$this->customsDeclarationRepository->saveItem(
+				$this->customsDeclarationEntityFactory->createItemFromStandardizedStructure(
+					$item,
+					$customsDeclaration
+				)
+			);
+		}
+	}
+
+	/**
 	 * Adds customs declaration item.
 	 *
-	 * @param \PacketeryNette\Forms\Container $container Container.
-	 * @param string                          $index Item index.
+	 * @param Container $container Container.
+	 * @param string    $index Item index.
 	 * @return void
 	 */
 	public function addCustomsDeclarationItem( Container $container, string $index ): void {
 		$item = $container->addContainer( $index );
-		$item->addText( 'code', __( 'Code', 'packeta' ) )
-			->setRequired();
+		$item->addText( 'customs_code', __( 'Customs code', 'packeta' ) )
+			->setRequired()
+			->addRule( Form::MAX_LENGTH, null, 8 );
 
 		$item->addText( 'value', __( 'Value', 'packeta' ) )
 			->setRequired()
@@ -221,12 +489,12 @@ class CustomsDeclarationMetabox {
 			->setRequired();
 		$item->addText( 'product_name', __( 'Product name', 'packeta' ) );
 
-		$item->addText( 'amount', __( 'Amount', 'packeta' ) )
+		$item->addText( 'units_count', __( 'Units count', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::INTEGER )
 			->addRule( ...FormRulesParts::greaterThan( 0 ) );
 
-		$item->addText( 'country_code', __( 'Country of origin code', 'packeta' ) )
+		$item->addText( 'country_of_origin', __( 'Country of origin code', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::LENGTH, null, 2 );
 
@@ -241,7 +509,7 @@ class CustomsDeclarationMetabox {
 			)
 			->addRule( ...FormRulesParts::greaterThan( 0 ) );
 
-		$item->addCheckbox( 'food_or_book', __( 'Food or book?', 'packeta' ) );
-		$item->addCheckbox( 'voc', __( 'Is VOC?', 'packeta' ) );
+		$item->addCheckbox( 'is_food_or_book', __( 'Food or book?', 'packeta' ) );
+		$item->addCheckbox( 'is_voc', __( 'Is VOC?', 'packeta' ) );
 	}
 }

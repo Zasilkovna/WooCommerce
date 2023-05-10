@@ -2,7 +2,8 @@
 
 	$( document ).ready(function( ) {
 		$( 'input[name="packetery_deliver_on"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
-		$( '.packetery-customs-declaration-fields input[name="invoice_issue_date"]' ).datepicker(
+		var $invoiceIssueDate = $( '.packetery-customs-declaration-fields input[name="packetery_customs_declaration[invoice_issue_date]"]' );
+		$invoiceIssueDate.datepicker(
 			{
 				dateFormat: datePickerSettings.dateFormat,
 				onSelect: function() {
@@ -10,6 +11,7 @@
 				}
 			}
 		);
+		$invoiceIssueDate.closest('form').attr('enctype', 'multipart/form-data');
 	});
 
 	new PacketeryMultiplier('[data-packetery-customs-declaration-item]');
