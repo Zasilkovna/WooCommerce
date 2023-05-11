@@ -410,12 +410,11 @@ class Upgrade {
 	 * Flashes error and logs to Packeta log.
 	 *
 	 * @param string $table Short table name.
-	 * @param string $logMessage Message to log.
 	 * @param string $action Log action.
 	 *
 	 * @return void
 	 */
-	private function flashAndLog( string $table, string $logMessage, string $action ): void {
+	private function flashAndLog( string $table, string $action ): void {
 		// translators: %s: Short table name.
 		$flashMessage = sprintf( __( 'Database %s table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ), $table );
 		$this->messageManager->flash_message( $flashMessage, MessageManager::TYPE_ERROR );
