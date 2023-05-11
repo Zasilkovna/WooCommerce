@@ -324,14 +324,15 @@ class Metabox {
 		$showWidgetButton  = $order->isPickupPointDelivery();
 		$widgetButtonError = null;
 		$shippingCountry   = $order->getShippingCountry();
+		$showHdWidget      = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		if (
 			null === $shippingCountry ||
 			null === $order->getCarrierCode() ||
 			! $this->carrierRepository->isValidForCountry( $order->isExternalCarrier() ? $order->getCarrierId() : null, $shippingCountry )
 		) {
 			// If carrier code is null, it means that more accurate carrier id could not be determined. See Order\Builder.
-			$showWidgetButton = false;
 			if ( $order->isPickupPointDelivery() ) {
+				$showWidgetButton  = false;
 				$widgetButtonError = sprintf(
 				// translators: %s is country code.
 					__(
@@ -341,6 +342,7 @@ class Metabox {
 					$shippingCountry
 				);
 			} else {
+				$showHdWidget      = false;
 				$widgetButtonError = sprintf(
 				// translators: %s is country code.
 					__(
@@ -352,7 +354,6 @@ class Metabox {
 			}
 		}
 
-		$showHdWidget = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
