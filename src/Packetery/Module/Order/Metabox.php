@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
@@ -119,6 +120,13 @@ class Metabox {
 	private $widgetOptionsBuilder;
 
 	/**
+	 * Carrier repository.
+	 *
+	 * @var EntityRepository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine               $latte_engine         PacketeryLatte engine.
@@ -131,6 +139,7 @@ class Metabox {
 	 * @param Log\Page             $logPage              Log page.
 	 * @param AttributeMapper      $mapper               AttributeMapper.
 	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
+	 * @param EntityRepository     $carrierRepository    Carrier repository.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -142,7 +151,8 @@ class Metabox {
 		Repository $orderRepository,
 		Log\Page $logPage,
 		AttributeMapper $mapper,
-		WidgetOptionsBuilder $widgetOptionsBuilder
+		WidgetOptionsBuilder $widgetOptionsBuilder,
+		EntityRepository $carrierRepository
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
@@ -154,6 +164,7 @@ class Metabox {
 		$this->logPage              = $logPage;
 		$this->mapper               = $mapper;
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
+		$this->carrierRepository    = $carrierRepository;
 	}
 
 	/**
@@ -312,20 +323,36 @@ class Metabox {
 
 		$showWidgetButton  = $order->isPickupPointDelivery();
 		$widgetButtonError = null;
-		if ( $order->getCarrierCode() === null ) {
-			// This means that more accurate carrier id could not be determined. See Order\Builder.
-			$showWidgetButton  = false;
-			$widgetButtonError = sprintf(
-			// translators: %s is country code.
-				__(
-					'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
-					'packeta'
-				),
-				$order->getShippingCountry()
-			);
+		$shippingCountry   = $order->getShippingCountry();
+		if (
+			null === $shippingCountry ||
+			null === $order->getCarrierCode() ||
+			! $this->carrierRepository->isValidForCountry( $order->isExternalCarrier() ? $order->getCarrierId() : null, $shippingCountry )
+		) {
+			// If carrier code is null, it means that more accurate carrier id could not be determined. See Order\Builder.
+			$showWidgetButton = false;
+			if ( $order->isPickupPointDelivery() ) {
+				$widgetButtonError = sprintf(
+				// translators: %s is country code.
+					__(
+						'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+						'packeta'
+					),
+					$shippingCountry
+				);
+			} else {
+				$widgetButtonError = sprintf(
+				// translators: %s is country code.
+					__(
+						'The address cannot be validated because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+						'packeta'
+					),
+					$shippingCountry
+				);
+			}
 		}
 
-		$showHdWidget = $order->isHomeDelivery() && in_array( $order->getShippingCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
+		$showHdWidget = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
@@ -456,7 +483,7 @@ class Metabox {
 		global $post;
 
 		$order = $this->orderRepository->getById( (int) $post->ID );
-		if ( null === $order || false === $order->isPickupPointDelivery() ) {
+		if ( null === $order || false === $order->isPickupPointDelivery() || null === $order->getShippingCountry() ) {
 			return null;
 		}
 
