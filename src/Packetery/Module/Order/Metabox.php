@@ -321,17 +321,21 @@ class Metabox {
 		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
 		$packetSubmitUrl        = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
 
-		$showWidgetButton      = $order->isPickupPointDelivery();
-		$widgetButtonError     = null;
-		$shippingCountry       = $order->getShippingCountry();
-		$isHdValidationAllowed = in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
-		$showHdWidget          = $order->isHomeDelivery() && $isHdValidationAllowed;
+		$showWidgetButton  = $order->isPickupPointDelivery();
+		$widgetButtonError = null;
+		$shippingCountry   = $order->getShippingCountry();
+		$showHdWidget      = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		if (
 			null === $shippingCountry ||
+			// If carrier code is null, it means that more accurate carrier id could not be determined. See Order\Builder.
 			null === $order->getCarrierCode() ||
 			! $this->carrierRepository->isValidForCountry( $order->isExternalCarrier() ? $order->getCarrierId() : null, $shippingCountry )
 		) {
-			// If carrier code is null, it means that more accurate carrier id could not be determined. See Order\Builder.
+			$carrierCountry = null;
+			if ( null !== $order->getCarrier() ) {
+				$carrierCountry = $order->getCarrier()->getCountry();
+			}
+
 			if ( $order->isPickupPointDelivery() ) {
 				$showWidgetButton = false;
 				if ( empty( $shippingCountry ) ) {
@@ -349,7 +353,7 @@ class Metabox {
 						$shippingCountry
 					);
 				}
-			} elseif ( $isHdValidationAllowed ) {
+			} elseif ( in_array( $carrierCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$showHdWidget = false;
 				if ( empty( $shippingCountry ) ) {
 					$widgetButtonError = __(
