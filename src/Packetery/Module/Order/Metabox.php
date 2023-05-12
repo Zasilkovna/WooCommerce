@@ -321,10 +321,11 @@ class Metabox {
 		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
 		$packetSubmitUrl        = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
 
-		$showWidgetButton  = $order->isPickupPointDelivery();
-		$widgetButtonError = null;
-		$shippingCountry   = $order->getShippingCountry();
-		$showHdWidget      = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
+		$showWidgetButton      = $order->isPickupPointDelivery();
+		$widgetButtonError     = null;
+		$shippingCountry       = $order->getShippingCountry();
+		$isHdValidationAllowed = in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
+		$showHdWidget          = $order->isHomeDelivery() && $isHdValidationAllowed;
 		if (
 			null === $shippingCountry ||
 			null === $order->getCarrierCode() ||
@@ -332,25 +333,39 @@ class Metabox {
 		) {
 			// If carrier code is null, it means that more accurate carrier id could not be determined. See Order\Builder.
 			if ( $order->isPickupPointDelivery() ) {
-				$showWidgetButton  = false;
-				$widgetButtonError = sprintf(
-				// translators: %s is country code.
-					__(
-						'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+				$showWidgetButton = false;
+				if ( empty( $shippingCountry ) ) {
+					$widgetButtonError = __(
+						'The pickup point cannot be changed because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
-					),
-					$shippingCountry
-				);
-			} else {
-				$showHdWidget      = false;
-				$widgetButtonError = sprintf(
-				// translators: %s is country code.
-					__(
-						'The address cannot be validated because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+					);
+				} else {
+					$widgetButtonError = sprintf(
+					// translators: %s is country code.
+						__(
+							'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+							'packeta'
+						),
+						$shippingCountry
+					);
+				}
+			} elseif ( $isHdValidationAllowed ) {
+				$showHdWidget = false;
+				if ( empty( $shippingCountry ) ) {
+					$widgetButtonError = __(
+						'The address cannot be validated because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
-					),
-					$shippingCountry
-				);
+					);
+				} else {
+					$widgetButtonError = sprintf(
+					// translators: %s is country code.
+						__(
+							'The address cannot be validated because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
+							'packeta'
+						),
+						$shippingCountry
+					);
+				}
 			}
 		}
 
