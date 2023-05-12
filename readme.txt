@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.5.3
+Stable tag: 1.5.4
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 7.6.0
@@ -61,6 +61,10 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.5.4 =
+Fixed: An error that would occur when opening order detail for orders to external carriers pickup points after changing the delivery address.
+Added: The list of parameters, which are being logged into the console of the web browser now also contains the API key.
+
 = 1.5.3 =
 Added: A filter to modify the HTML generated for use in email.
 Updated: When changing the delivery point in the administration, we will not calculate and display the shipping price in the widget, because it is already stored in the order.
