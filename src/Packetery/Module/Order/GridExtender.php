@@ -254,11 +254,9 @@ class GridExtender {
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
 				if ( null !== $pickupPoint ) {
-					$pointName         = $pickupPoint->getName();
-					$pointId           = $pickupPoint->getId();
-					$country           = $order->getShippingCountry();
-					$internalCountries = $this->pickupPointsConfig->getInternalCountries();
-					if ( in_array( $country, $internalCountries, true ) ) {
+					$pointName = $pickupPoint->getName();
+					$pointId   = $pickupPoint->getId();
+					if ( ! $order->isExternalCarrier() ) {
 						echo esc_html( "$pointName ($pointId)" );
 					} else {
 						echo esc_html( $pointName );
