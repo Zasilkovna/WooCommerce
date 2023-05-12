@@ -1,17 +1,19 @@
 <?php
 /**
- * Class Controller
+ * Class OrderController
  *
- * @package Packetery\Module\Order
+ * @package Packetery
  */
 
 declare( strict_types=1 );
 
-namespace Packetery\Module\Order;
+namespace Packetery\Module\Api\Internal;
 
+use Packetery\Core;
 use Packetery\Core\Entity\Size;
-use Packetery\Core\Helper;
+use Packetery\Core\Validator;
 use Packetery\Module\Order;
+use Packetery\Module\Order\GridExtender;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -19,32 +21,30 @@ use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class Controller
+ * Class OrderController
  *
- * @package Packetery\Module\Order
+ * @package Packetery
  */
-class Controller extends WP_REST_Controller {
-
-	public const PATH_SAVE_MODAL = '/save';
-
-	/**
-	 * Order modal.
-	 *
-	 * @var Modal
-	 */
-	private $orderModal;
+final class OrderController extends WP_REST_Controller {
 
 	/**
 	 * Router.
 	 *
-	 * @var ControllerRouter
+	 * @var OrderRouter
 	 */
 	private $router;
 
 	/**
+	 * Order modal.
+	 *
+	 * @var Order\Modal
+	 */
+	private $orderModal;
+
+	/**
 	 * Order repository.
 	 *
-	 * @var Repository
+	 * @var Order\Repository
 	 */
 	private $orderRepository;
 
@@ -58,43 +58,41 @@ class Controller extends WP_REST_Controller {
 	/**
 	 * Order validator.
 	 *
-	 * @var \Packetery\Core\Validator\Order
+	 * @var Validator\Order
 	 */
 	private $orderValidator;
 
 	/**
 	 * Helper.
 	 *
-	 * @var \Packetery\Core\Helper
+	 * @var Core\Helper
 	 */
 	private $helper;
 
 	/**
 	 * Controller constructor.
 	 *
-	 * @param Modal                           $orderModal       Modal.
-	 * @param ControllerRouter                $controllerRouter Router.
-	 * @param Order\Repository                $orderRepository  Order repository.
-	 * @param GridExtender                    $gridExtender     Grid extender.
-	 * @param \Packetery\Core\Validator\Order $orderValidator   Order validator.
-	 * @param \Packetery\Core\Helper          $helper           Helper.
+	 * @param OrderRouter      $router          Router.
+	 * @param Order\Modal      $orderModal      Modal.
+	 * @param Order\Repository $orderRepository Order repository.
+	 * @param GridExtender     $gridExtender    Grid extender.
+	 * @param Validator\Order  $orderValidator  Order validator.
+	 * @param Core\Helper      $helper          Helper.
 	 */
 	public function __construct(
-		Modal $orderModal,
-		ControllerRouter $controllerRouter,
+		OrderRouter $router,
+		Order\Modal $orderModal,
 		Order\Repository $orderRepository,
 		GridExtender $gridExtender,
-		\Packetery\Core\Validator\Order $orderValidator,
-		Helper $helper
+		Validator\Order $orderValidator,
+		Core\Helper $helper
 	) {
 		$this->orderModal      = $orderModal;
-		$this->router          = $controllerRouter;
-		$this->namespace       = $controllerRouter->getNamespace();
-		$this->rest_base       = $controllerRouter->getRestBase();
 		$this->orderRepository = $orderRepository;
 		$this->gridExtender    = $gridExtender;
 		$this->orderValidator  = $orderValidator;
 		$this->helper          = $helper;
+		$this->router          = $router;
 	}
 
 	/**
@@ -104,7 +102,7 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function registerRoutes(): void {
 		$this->router->registerRoute(
-			self::PATH_SAVE_MODAL,
+			OrderRouter::PATH_SAVE_MODAL,
 			[
 				[
 					'methods'             => WP_REST_Server::EDITABLE,
@@ -189,11 +187,12 @@ class Controller extends WP_REST_Controller {
 			'packetery_length'     => $order->getLength(),
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
-			'packetery_deliver_on' => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
+			'packetery_deliver_on' => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
 			'orderIsSubmittable'   => $this->orderValidator->validate( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];
 
 		return new WP_REST_Response( $data, 200 );
 	}
+
 }

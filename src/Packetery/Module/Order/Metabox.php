@@ -329,7 +329,7 @@ class Metabox {
 			null === $shippingCountry ||
 			// If carrier code is null, it means that more accurate carrier id could not be determined. See Order\Builder.
 			null === $order->getCarrierCode() ||
-			! $this->carrierRepository->isValidForCountry( $order->isExternalCarrier() ? $order->getCarrierId() : null, $shippingCountry )
+			! $this->carrierRepository->isValidForCountry( $order->getCarrierId(), $shippingCountry )
 		) {
 			$carrierCountry = null;
 			if ( null !== $order->getCarrier() ) {

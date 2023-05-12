@@ -1,52 +1,34 @@
 <?php
 /**
- * Class ControllerRouter
+ * Class BaseRouter
  *
- * @package Packetery\Module\Order
+ * @package Packetery
  */
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Module\Order;
+namespace Packetery\Module\Api;
 
 /**
- * Class ControllerRouter
+ * Class BaseRouter
  *
- * @package Packetery\Module\Order
+ * @package Packetery
  */
-class ControllerRouter {
+class BaseRouter {
+
 	/**
 	 * Namespace.
 	 *
 	 * @var string
 	 */
-	private $namespace = 'packetery/v1';
+	protected $namespace;
 
 	/**
-	 * Rest base,
+	 * Rest base.
 	 *
 	 * @var string
 	 */
-	private $restBase = 'order';
-
-	/**
-	 * Gets namespace.
-	 *
-	 * @return string
-	 */
-	public function getNamespace(): string {
-		return $this->namespace;
-	}
-
-	/**
-	 * Gets rest base.
-	 *
-	 * @return string
-	 */
-	public function getRestBase(): string {
-		return $this->restBase;
-	}
+	protected $restBase;
 
 	/**
 	 * Gets route URL.
@@ -75,4 +57,5 @@ class ControllerRouter {
 	public function registerRoute( string $path, array $params ): void {
 		register_rest_route( $this->namespace, $this->getRoute( $path ), $params );
 	}
+
 }

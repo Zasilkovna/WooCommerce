@@ -1,6 +1,9 @@
 var packeteryLoadCheckout = function( $, settings ) {
 	var packeteryCheckout = function( settings ) {
 		var rateAttrValues = {};
+		if ( settings.savedData ) {
+			rateAttrValues = settings.savedData;
+		}
 
 		var getPacketaWidget = function() {
 			var $widgetDiv = $( '#shipping_method input[type="radio"]:checked' ).parent().find( '.packeta-widget' );
@@ -15,10 +18,15 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var getDestinationAddress = function() {
 			var extractDestination = function( section ) {
+				var countryValue;
+				var $country = $( '#' + section + '_country' );
+				if ( $country.length >= 1 ) {
+					countryValue = $country.val().toLowerCase();
+				}
 				return {
 					street: $( '#' + section + '_address_1' ).val(),
 					city: $( '#' + section + '_city' ).val(),
-					country: $( '#' + section + '_country' ).val().toLowerCase(),
+					country: countryValue,
 					postCode: $( '#' + section + '_postcode' ).val()
 				};
 			};
@@ -155,6 +163,12 @@ var packeteryLoadCheckout = function( $, settings ) {
 			return !hasPickupPoints( carrierRateId );
 		};
 
+		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
+			$( '#' + name ).val( addressFieldValue );
+			rateAttrValues[ carrierRateId ] = rateAttrValues[ carrierRateId ] || {};
+			rateAttrValues[ carrierRateId ][ name ] = addressFieldValue;
+		};
+
 		var updateWidgetButtonVisibility = function( carrierRateId, useAutoOpen ) {
 			$widgetDiv = getPacketaWidget();
 			$( '.packeta-widget' ).addClass( 'packetery-hidden' );
@@ -223,18 +237,51 @@ var packeteryLoadCheckout = function( $, settings ) {
 			jQuery('body').trigger('update_checkout');
 		};
 
-		$(document).on('change', '#payment input[type="radio"]', checkPaymentChange);
-		$( document ).on( 'updated_checkout', function() {
+		$( document ).on( 'change', '#payment input[type="radio"]', checkPaymentChange );
+
+		var initialDestinationAddress = getDestinationAddress();
+		var initialCarrierRateId = getShippingRateId();
+		$( document ).on( 'updated_checkout', function () {
 			$widgetDiv = getPacketaWidget();
 			var destinationAddress = getDestinationAddress();
-			if ( destinationAddress.country !== settings.country ) {
+			var carrierRateId = getShippingRateId();
+			if ( carrierRateId === null ) {
+				carrierRateId = initialCarrierRateId;
+			}
+
+			var clearSavedData = false;
+			if ( hasPickupPoints( initialCarrierRateId ) ) {
+				if ( initialDestinationAddress.country !== destinationAddress.country ) {
+					clearSavedData = true;
+				}
+			} else if ( hasHomeDelivery( initialCarrierRateId ) ) {
+				if (
+					initialDestinationAddress.country !== destinationAddress.country ||
+					initialDestinationAddress.street !== destinationAddress.street ||
+					initialDestinationAddress.city !== destinationAddress.city ||
+					initialDestinationAddress.postCode !== destinationAddress.postCode
+				) {
+					clearSavedData = true;
+				}
+			}
+			if ( clearSavedData === true ) {
 				clearInfo( settings.pickupPointAttrs );
 				clearInfo( settings.homeDeliveryAttrs );
+
+				$.post(
+					settings.removeSavedDataUrl, {}
+				).fail( function ( xhr, status, error ) {
+					console.log( 'Packeta: Failed to remove saved selected pickup point or validated address data: ' + error );
+				} );
+
 				resetWidgetInfo();
+
+				initialDestinationAddress = destinationAddress;
+				initialCarrierRateId = carrierRateId;
 				settings.country = destinationAddress.country;
 			}
 
-			updateWidgetButtonVisibility( getShippingRateId(), true );
+			updateWidgetButtonVisibility( carrierRateId, true );
 			checkPaymentChange(); // If Packeta shipping method with COD is selected, then switch to non-COD shipping method does not trigger payment method input change.
 		} );
 
@@ -249,12 +296,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 				updateWidgetButtonVisibility( getShippingRateId(), false );
 			}, 1000 );
 		} );
-
-		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
-			$( '#' + name ).val( addressFieldValue );
-			rateAttrValues[ carrierRateId ] = rateAttrValues[ carrierRateId ] || {};
-			rateAttrValues[ carrierRateId ][ name ] = addressFieldValue;
-		};
 
 		var fillHiddenFields = function( carrierRateId, data, target ) {
 			for ( var attrKey in data ) {
@@ -337,6 +378,15 @@ var packeteryLoadCheckout = function( $, settings ) {
 					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '1' );
 					fillHiddenFields( carrierRateId, settings.homeDeliveryAttrs, selectedAddress );
 					showDeliveryAddress( carrierRateId );
+
+					var addressDataToSave = rateAttrValues[ carrierRateId ];
+					addressDataToSave.packetery_rate_id = carrierRateId;
+					$.post(
+						settings.saveValidatedAddressUrl,
+						addressDataToSave
+					).fail( function ( xhr, status, error ) {
+						console.log( 'Packeta: Failed to save validated address data: ' + error );
+					} );
 				}, widgetOptions );
 			}
 
@@ -365,6 +415,15 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					fillHiddenFields( carrierRateId, settings.pickupPointAttrs, pickupPoint );
 					$widgetDiv.find( '.packeta-widget-info' ).html( pickupPoint.name );
+
+					var pickupPointDataToSave = rateAttrValues[ carrierRateId ];
+					pickupPointDataToSave.packetery_rate_id = carrierRateId;
+					$.post(
+						settings.saveSelectedPickupPointUrl,
+						pickupPointDataToSave
+					).fail( function ( xhr, status, error ) {
+						console.log( 'Packeta: Failed to save pickup point data: ' + error );
+					} );
 				}, widgetOptions );
 			}
 		} );
