@@ -51,6 +51,32 @@ class Client {
 	}
 
 	/**
+	 * Creates storage file.
+	 *
+	 * @param \Packetery\Core\Api\Soap\Request\CreateStorageFile $request Request.
+	 * @return void
+	 */
+	public function createStorageFile( Request\CreateStorageFile $request ): Response\CreateStorageFile {
+		$response = new Response\CreateStorageFile();
+		try {
+			$soapClient  = new SoapClient( self::WSDL_URL );
+			$storageFile = $soapClient->createStorageFile(
+				$this->apiPassword,
+				[
+					'content' => $request->getContent(),
+					'name'    => $request->getName(),
+				]
+			);
+			$response->setId( (string) $storageFile->id );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Submits packet data to Packeta API.
 	 * We deliberately don't use Request\CreatePacket class to send data to the API, but we keep the class for possible later use.
 	 *

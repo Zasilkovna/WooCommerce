@@ -50,6 +50,13 @@ final class OrderController extends WP_REST_Controller {
 	private $orderRepository;
 
 	/**
+	 * Customs declaration repository.
+	 *
+	 * @var \Packetery\Module\CustomsDeclaration\Repository
+	 */
+	private $customsDeclarationRepository;
+
+	/**
 	 * Grid extender service.
 	 *
 	 * @var GridExtender
@@ -73,12 +80,13 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter      $router          Router.
-	 * @param Order\Modal      $orderModal      Modal.
-	 * @param Order\Repository $orderRepository Order repository.
-	 * @param GridExtender     $gridExtender    Grid extender.
-	 * @param Validator\Order  $orderValidator  Order validator.
-	 * @param Core\Helper      $helper          Helper.
+	 * @param OrderRouter                                     $router Router.
+	 * @param Order\Modal                                     $orderModal Modal.
+	 * @param Order\Repository                                $orderRepository Order repository.
+	 * @param GridExtender                                    $gridExtender Grid extender.
+	 * @param Validator\Order                                 $orderValidator Order validator.
+	 * @param Core\Helper                                     $helper Helper.
+	 * @param \Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -86,14 +94,16 @@ final class OrderController extends WP_REST_Controller {
 		Order\Repository $orderRepository,
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
-		Core\Helper $helper
+		Core\Helper $helper,
+		\Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
-		$this->orderModal      = $orderModal;
-		$this->orderRepository = $orderRepository;
-		$this->gridExtender    = $gridExtender;
-		$this->orderValidator  = $orderValidator;
-		$this->helper          = $helper;
-		$this->router          = $router;
+		$this->orderModal                   = $orderModal;
+		$this->orderRepository              = $orderRepository;
+		$this->gridExtender                 = $gridExtender;
+		$this->orderValidator               = $orderValidator;
+		$this->helper                       = $helper;
+		$this->router                       = $router;
+		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
 
 	/**

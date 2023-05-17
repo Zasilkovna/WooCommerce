@@ -797,8 +797,14 @@ class Plugin {
 		}
 
 		if ( $isOrderGridPage ) {
+			$orderGridPageSettings = [
+				'translations' => [
+					'mustFillCustomsDeclaration' => __( 'Customs declaration must be filled in order detail.', 'packeta' ),
+				],
+			];
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
+			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'settings', $orderGridPageSettings );
 		}
 
 		$pickupPointPickerSettings = null;

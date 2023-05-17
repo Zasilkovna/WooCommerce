@@ -55,7 +55,7 @@ class Repository {
 		$row = $this->wpdbAdapter->get_row(
 			sprintf(
 				'SELECT 
-                            id, order_id, ead, delivery_cost, invoice_number, invoice_issue_date, mrn
+                            id, order_id, ead, delivery_cost, invoice_number, invoice_issue_date, mrn, invoice_file_id, ead_file_id
                         FROM `%s`
                         WHERE `order_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration,
@@ -96,6 +96,36 @@ class Repository {
 	}
 
 	/**
+	 * Has invoice file.
+	 *
+	 * @param int $customsDeclarationId ID.
+	 * @return bool
+	 */
+	public function hasInvoiceFile( int $customsDeclarationId ): bool {
+		return '1' !== $this->wpdbAdapter->get_var(
+			$this->wpdbAdapter->prepare(
+				'SELECT "1" FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `id` = %d AND `invoice_file` IS NULL',
+				$customsDeclarationId
+			)
+		);
+	}
+
+	/**
+	 * Has EAD file.
+	 *
+	 * @param int $customsDeclarationId ID.
+	 * @return bool
+	 */
+	public function hasEadFile( int $customsDeclarationId ): bool {
+		return '1' !== $this->wpdbAdapter->get_var(
+			$this->wpdbAdapter->prepare(
+				'SELECT "1" FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `id` = %d AND `invoice_file` IS NULL',
+				$customsDeclarationId
+			)
+		);
+	}
+
+	/**
 	 * Gets customs declaration items by order.
 	 *
 	 * @param CustomsDeclaration $customsDeclaration Order.
@@ -133,7 +163,7 @@ class Repository {
 	 * @param array              $fieldsToOmit Fields to omit.
 	 * @return void
 	 */
-	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [] ): void {
+	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [ 'invoice_file', 'ead_file' ] ): void {
 		if ( null === $customsDeclaration->getId() ) {
 			$this->wpdbAdapter->insertReplaceHelper(
 				$this->wpdbAdapter->packetery_customs_declaration,
@@ -236,7 +266,9 @@ class Repository {
 			'delivery_cost'      => $customsDeclaration->getDeliveryCost(),
 			'invoice_number'     => $customsDeclaration->getInvoiceNumber(),
 			'invoice_issue_date' => $customsDeclaration->getInvoiceIssueDate()->format( Helper::MYSQL_DATE_FORMAT ),
+			'invoice_file_id'    => $customsDeclaration->getInvoiceFileId(),
 			'mrn'                => $customsDeclaration->getMrn(),
+			'ead_file_id'        => $customsDeclaration->getEadFileId(),
 		];
 
 		foreach ( $fieldsToOmit as $fieldToOmit ) {
@@ -261,7 +293,7 @@ class Repository {
 			'product_name_en'        => $customsDeclarationItem->getProductNameEn(),
 			'product_name'           => $customsDeclarationItem->getProductName(),
 			'units_count'            => $customsDeclarationItem->getUnitsCount(),
-			'country_of_origin'      => $customsDeclarationItem->getCountryOfOrigin(),
+			'country_of_origin'      => strtoupper( $customsDeclarationItem->getCountryOfOrigin() ),
 			'weight'                 => $customsDeclarationItem->getWeight(),
 			'is_food_or_book'        => (int) $customsDeclarationItem->isFoodOrBook(),
 			'is_voc'                 => (int) $customsDeclarationItem->isVoc(),
@@ -283,8 +315,10 @@ class Repository {
             `invoice_number` VARCHAR(255) NOT NULL,
             `invoice_issue_date` DATE NOT NULL,
             `invoice_file` MEDIUMBLOB NULL DEFAULT NULL,
+            `invoice_file_id` VARCHAR(255) NULL DEFAULT NULL,
             `mrn` VARCHAR(32) NULL DEFAULT NULL,
             `ead_file` MEDIUMBLOB NULL DEFAULT NULL,
+            `ead_file_id` VARCHAR(255) NULL DEFAULT NULL,
             PRIMARY KEY (`id`)
         ) %s',
 			$this->wpdbAdapter->packetery_customs_declaration,

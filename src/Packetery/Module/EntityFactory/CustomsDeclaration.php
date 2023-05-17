@@ -37,7 +37,9 @@ class CustomsDeclaration {
 				new \DateTimeZone( 'UTC' )
 			)
 		);
+		$entity->setInvoiceFileId( $data['invoice_file_id'] );
 		$entity->setMrn( $data['mrn'] );
+		$entity->setEadFileId( $data['ead_file_id'] );
 
 		return $entity;
 	}

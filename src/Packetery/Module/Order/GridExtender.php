@@ -64,6 +64,13 @@ class GridExtender {
 	private $orderRepository;
 
 	/**
+	 * Customs declaration repository.
+	 *
+	 * @var \Packetery\Module\CustomsDeclaration\Repository
+	 */
+	private $customsDeclarationRepository;
+
+	/**
 	 * Order Validator.
 	 *
 	 * @var Core\Validator\Order
@@ -81,12 +88,13 @@ class GridExtender {
 	 * GridExtender constructor.
 	 *
 	 * @param Core\Helper               $helper                Helper.
-	 * @param Carrier\EntityRepository  $carrierRepository     Carrier repository.
-	 * @param Engine                    $latteEngine           Latte Engine.
-	 * @param Request                   $httpRequest           Http Request.
-	 * @param Repository                $orderRepository       Order repository.
-	 * @param Core\Validator\Order      $orderValidator        Order validator.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
+	 * @param Carrier\EntityRepository                        $carrierRepository Carrier repository.
+	 * @param Engine                                          $latteEngine Latte Engine.
+	 * @param Request                                         $httpRequest Http Request.
+	 * @param Repository                                      $orderRepository Order repository.
+	 * @param Core\Validator\Order                            $orderValidator Order validator.
+	 * @param PacketaPickupPointsConfig                       $pickupPointsConfig Internal pickup points config.
+	 * @param \Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		Core\Helper $helper,
@@ -95,15 +103,17 @@ class GridExtender {
 		Request $httpRequest,
 		Repository $orderRepository,
 		Core\Validator\Order $orderValidator,
-		PacketaPickupPointsConfig $pickupPointsConfig
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		\Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
-		$this->helper             = $helper;
-		$this->carrierRepository  = $carrierRepository;
-		$this->latteEngine        = $latteEngine;
-		$this->httpRequest        = $httpRequest;
-		$this->orderRepository    = $orderRepository;
-		$this->orderValidator     = $orderValidator;
-		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->helper                       = $helper;
+		$this->carrierRepository            = $carrierRepository;
+		$this->latteEngine                  = $latteEngine;
+		$this->httpRequest                  = $httpRequest;
+		$this->orderRepository              = $orderRepository;
+		$this->orderValidator               = $orderValidator;
+		$this->pickupPointsConfig           = $pickupPointsConfig;
+		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
 
 	/**
@@ -311,19 +321,29 @@ class GridExtender {
 					admin_url( 'admin.php' )
 				);
 
+				$hasCustomsDeclaration =
+					null !== ( $customsDeclaration = $this->customsDeclarationRepository->getByOrder( $order ) ) &&
+					[] !== $this->customsDeclarationRepository->getItemsByCustomsDeclaration( $customsDeclaration );
+
+				$mustFillCustomsDeclaration =
+					null !== $order->getCarrier() &&
+					$order->getCarrier()->requiresCustomsDeclarations() &&
+					false === $hasCustomsDeclaration;
+
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'                     => $order,
-						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
-						'packetSubmitUrl'           => $packetSubmitUrl,
-						'packetCancelLink'          => $packetCancelLink,
-						'printLink'                 => $printLink,
+						'order'                      => $order,
+						'orderIsSubmittable'         => $this->orderValidator->isValid( $order ),
+						'mustFillCustomsDeclaration' => $mustFillCustomsDeclaration,
+						'packetSubmitUrl'            => $packetSubmitUrl,
+						'packetCancelLink'           => $packetCancelLink,
+						'printLink'                  => $printLink,
 						'helper'                    => new Core\Helper(),
 						'datePickerFormat'          => Core\Helper::DATEPICKER_FORMAT,
-						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
+						'logPurgerDatetimeModifier'  => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
 						'packetDeliverOn'           => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
-						'translations'              => [
+						'translations'               => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
 							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),

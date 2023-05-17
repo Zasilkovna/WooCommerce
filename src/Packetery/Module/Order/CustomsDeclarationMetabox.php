@@ -406,36 +406,48 @@ class CustomsDeclarationMetabox {
 		}
 
 		if ( $invoiceFile->hasFile() && $invoiceFile->isOk() ) {
-			$values['invoice_file'] = static function () use ( $invoiceFile ): string {
+			$values['invoice_file']    = static function () use ( $invoiceFile ): string {
 				return $invoiceFile->getContents();
 			};
+			$values['invoice_file_id'] = null;
 		}
 
 		if ( $invoiceFile->hasFile() && false === $invoiceFile->isOk() ) {
-			$values['invoice_file'] = null;
+			$values['invoice_file']    = null;
+			$values['invoice_file_id'] = null;
 			$customsDeclarationContainer['invoice_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
 		}
 
 		if ( $values['invoice_file'] instanceof FileUpload ) {
-			$values['invoice_file'] = null;
-			$fieldsToOmit[]         = 'invoice_file';
+			$values['invoice_file']    = null;
+			$values['invoice_file_id'] = null;
+			$fieldsToOmit[]            = 'invoice_file';
+			$fieldsToOmit[]            = 'invoice_file_id';
 		}
 
 		if ( $eadFile->hasFile() && $eadFile->isOk() ) {
-			$values['ead_file'] = static function () use ( $eadFile ): string {
+			$values['ead_file']    = static function () use ( $eadFile ): string {
 				return $eadFile->getContents();
 			};
+			$values['ead_file_id'] = null;
 		}
 
 		if ( $eadFile->hasFile() && false === $eadFile->isOk() ) {
-			$values['ead_file'] = null;
+			$values['ead_file']    = null;
+			$values['ead_file_id'] = null;
 			$customsDeclarationContainer['ead_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
 		}
 
 		if ( $values['ead_file'] instanceof FileUpload ) {
-			$values['ead_file'] = null;
-			$fieldsToOmit[]     = 'ead_file';
+			$values['ead_file']    = null;
+			$values['ead_file_id'] = null;
+			$fieldsToOmit[]        = 'ead_file';
+			$fieldsToOmit[]        = 'ead_file_id';
 		}
+
+        if ( '' === $values['mrn'] ) {
+            $values['mrn'] = null;
+        }
 
 		$values['id']          = null;
 		$oldCustomsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );

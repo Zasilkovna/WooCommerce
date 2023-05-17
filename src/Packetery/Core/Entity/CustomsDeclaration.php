@@ -64,6 +64,13 @@ class CustomsDeclaration {
 	private $invoiceFile = null;
 
 	/**
+	 * Invoice file ID.
+	 *
+	 * @var string|null
+	 */
+	private $invoiceFileId = null;
+
+	/**
 	 * MRN.
 	 *
 	 * @var string|null
@@ -76,6 +83,13 @@ class CustomsDeclaration {
 	 * @var callable|null
 	 */
 	private $eadFile = null;
+
+	/**
+	 * EAD file ID.
+	 *
+	 * @var string|null
+	 */
+	private $eadFileId = null;
 
 	/**
 	 * Constructor.
@@ -101,6 +115,44 @@ class CustomsDeclaration {
 		$this->deliveryCost     = $deliveryCost;
 		$this->invoiceNumber    = $invoiceNumber;
 		$this->invoiceIssueDate = $invoiceIssueDate;
+	}
+
+	/**
+	 * Gets invoice file ID.
+	 *
+	 * @return string|null
+	 */
+	public function getInvoiceFileId(): ?string {
+		return $this->invoiceFileId;
+	}
+
+	/**
+	 * Sets invoice file ID.
+	 *
+	 * @param string|null $invoiceFileId Invoice file ID.
+	 * @return void
+	 */
+	public function setInvoiceFileId( ?string $invoiceFileId ): void {
+		$this->invoiceFileId = $invoiceFileId;
+	}
+
+	/**
+	 * Gets EAD file ID.
+	 *
+	 * @return string|null
+	 */
+	public function getEadFileId(): ?string {
+		return $this->eadFileId;
+	}
+
+	/**
+	 * Sets EAD file ID.
+	 *
+	 * @param string|null $eadFileId
+	 * @return void
+	 */
+	public function setEadFileId( ?string $eadFileId ): void {
+		$this->eadFileId = $eadFileId;
 	}
 
 	/**
