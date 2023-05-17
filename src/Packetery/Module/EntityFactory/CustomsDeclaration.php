@@ -38,8 +38,6 @@ class CustomsDeclaration {
 			)
 		);
 		$entity->setMrn( $data['mrn'] );
-		$entity->setInvoiceFile( $data['invoice_file'] );
-		$entity->setEadFile( $data['ead_file'] );
 
 		return $entity;
 	}

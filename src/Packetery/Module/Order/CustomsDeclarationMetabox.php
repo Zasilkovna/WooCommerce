@@ -406,7 +406,9 @@ class CustomsDeclarationMetabox {
 		}
 
 		if ( $invoiceFile->hasFile() && $invoiceFile->isOk() ) {
-			$values['invoice_file'] = $invoiceFile->getContents();
+			$values['invoice_file'] = static function () use ( $invoiceFile ): string {
+				return $invoiceFile->getContents();
+			};
 		}
 
 		if ( $invoiceFile->hasFile() && false === $invoiceFile->isOk() ) {
@@ -414,13 +416,15 @@ class CustomsDeclarationMetabox {
 			$customsDeclarationContainer['invoice_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
 		}
 
-		if ( is_object( $values['invoice_file'] ) ) {
-			$values['invoice_file'] = '';
+		if ( $values['invoice_file'] instanceof FileUpload ) {
+			$values['invoice_file'] = null;
 			$fieldsToOmit[]         = 'invoice_file';
 		}
 
 		if ( $eadFile->hasFile() && $eadFile->isOk() ) {
-			$values['ead_file'] = $eadFile->getContents();
+			$values['ead_file'] = static function () use ( $eadFile ): string {
+				return $eadFile->getContents();
+			};
 		}
 
 		if ( $eadFile->hasFile() && false === $eadFile->isOk() ) {
@@ -428,8 +432,8 @@ class CustomsDeclarationMetabox {
 			$customsDeclarationContainer['ead_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
 		}
 
-		if ( is_object( $values['ead_file'] ) ) {
-			$values['ead_file'] = '';
+		if ( $values['ead_file'] instanceof FileUpload ) {
+			$values['ead_file'] = null;
 			$fieldsToOmit[]     = 'ead_file';
 		}
 
@@ -440,6 +444,8 @@ class CustomsDeclarationMetabox {
 		}
 
 		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $values, $order );
+		$customsDeclaration->setInvoiceFile( $values['invoice_file'] );
+		$customsDeclaration->setEadFile( $values['ead_file'] );
 		$this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
 
 		$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclaration( $customsDeclaration );

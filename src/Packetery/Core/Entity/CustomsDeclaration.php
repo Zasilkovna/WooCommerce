@@ -29,13 +29,6 @@ class CustomsDeclaration {
 	private $order;
 
 	/**
-	 * Order ID.
-	 *
-	 * @var string
-	 */
-	private $orderId;
-
-	/**
 	 * EAD.
 	 *
 	 * @var string
@@ -66,7 +59,7 @@ class CustomsDeclaration {
 	/**
 	 * Invoice.
 	 *
-	 * @var string|null
+	 * @var callable|null
 	 */
 	private $invoiceFile = null;
 
@@ -80,7 +73,7 @@ class CustomsDeclaration {
 	/**
 	 * Ead file.
 	 *
-	 * @var string|null
+	 * @var callable|null
 	 */
 	private $eadFile = null;
 
@@ -104,7 +97,6 @@ class CustomsDeclaration {
 	) {
 		$this->id               = $id;
 		$this->order            = $order;
-		$this->orderId          = $order->getNumber();
 		$this->ead              = $ead;
 		$this->deliveryCost     = $deliveryCost;
 		$this->invoiceNumber    = $invoiceNumber;
@@ -127,16 +119,25 @@ class CustomsDeclaration {
 	 * @return string|null
 	 */
 	public function getInvoiceFile(): ?string {
-		return $this->invoiceFile;
+		return call_user_func( $this->invoiceFile );
+	}
+
+	/**
+	 * Tells if invoice file is set.
+	 *
+	 * @return bool
+	 */
+	public function hasInvoiceFile(): bool {
+		return null !== $this->invoiceFile;
 	}
 
 	/**
 	 * Sets invoice.
 	 *
-	 * @param string|null $invoice Invoice.
+	 * @param callable|null $invoice Invoice.
 	 * @return void
 	 */
-	public function setInvoiceFile( ?string $invoice ): void {
+	public function setInvoiceFile( ?callable $invoice ): void {
 		$this->invoiceFile = $invoice;
 	}
 
@@ -165,16 +166,25 @@ class CustomsDeclaration {
 	 * @return string|null
 	 */
 	public function getEadFile(): ?string {
-		return $this->eadFile;
+		return call_user_func( $this->eadFile );
+	}
+
+	/**
+	 * Tells if EAD file is present.
+	 *
+	 * @return bool
+	 */
+	public function hasEadFile(): bool {
+		return null !== $this->eadFile;
 	}
 
 	/**
 	 * Sets EAD PDF file content.
 	 *
-	 * @param string|null $eadFile EAD file content.
+	 * @param callable|null $eadFile EAD file content.
 	 * @return void
 	 */
-	public function setEadFile( ?string $eadFile ): void {
+	public function setEadFile( ?callable $eadFile ): void {
 		$this->eadFile = $eadFile;
 	}
 
@@ -194,15 +204,6 @@ class CustomsDeclaration {
 	 */
 	public function getOrder(): Order {
 		return $this->order;
-	}
-
-	/**
-	 * Gets order ID.
-	 *
-	 * @return string
-	 */
-	public function getOrderId(): string {
-		return $this->orderId;
 	}
 
 	/**

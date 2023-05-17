@@ -54,7 +54,10 @@ class Repository {
 	public function getByOrder( Order $order ): ?CustomsDeclaration {
 		$row = $this->wpdbAdapter->get_row(
 			sprintf(
-				'SELECT * FROM `%s` WHERE `order_id` = %d',
+				'SELECT 
+                            id, order_id, ead, delivery_cost, invoice_number, invoice_issue_date, mrn
+                        FROM `%s`
+                        WHERE `order_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration,
 				$order->getNumber()
 			),
@@ -65,7 +68,31 @@ class Repository {
 			return null;
 		}
 
-		return $this->entityFactory->fromStandardizedStructure( $row, $order );
+		$result = $this->entityFactory->fromStandardizedStructure( $row, $order );
+
+		$result->setInvoiceFile(
+			function () use ( $order ): ?string {
+				return $this->wpdbAdapter->get_var(
+					$this->wpdbAdapter->prepare(
+						'SELECT invoice_file FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+						$order->getNumber()
+					)
+				);
+			}
+		);
+
+		$result->setEadFile(
+			function () use ( $order ): ?string {
+				return $this->wpdbAdapter->get_var(
+					$this->wpdbAdapter->prepare(
+						'SELECT ead_file FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+						$order->getNumber()
+					)
+				);
+			}
+		);
+
+		return $result;
 	}
 
 	/**
@@ -120,6 +147,46 @@ class Repository {
 				[ 'id' => (int) $customsDeclaration->getId() ]
 			);
 		}
+
+		$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
+		if ( false === $omitInvoiceFile && $customsDeclaration->hasInvoiceFile() ) {
+			$this->wpdbAdapter->query(
+				$this->wpdbAdapter->prepare(
+					'UPDATE `' . $this->wpdbAdapter->packetery_customs_declaration . '` SET `invoice_file` = %s WHERE `id` = %d',
+					$customsDeclaration->getInvoiceFile(),
+					$customsDeclaration->getId()
+				)
+			);
+		}
+
+		if ( false === $omitInvoiceFile && false === $customsDeclaration->hasInvoiceFile() ) {
+			$this->wpdbAdapter->query(
+				$this->wpdbAdapter->prepare(
+					'UPDATE ' . $this->wpdbAdapter->packetery_customs_declaration . ' SET `invoice_file` = NULL WHERE `id` = %d',
+					$customsDeclaration->getId()
+				)
+			);
+		}
+
+		$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
+		if ( false === $omitEadFile && $customsDeclaration->hasEadFile() ) {
+			$this->wpdbAdapter->query(
+				$this->wpdbAdapter->prepare(
+					'UPDATE `' . $this->wpdbAdapter->packetery_customs_declaration . '` SET `ead_file` = %s WHERE `id` = %d',
+					$customsDeclaration->getEadFile(),
+					$customsDeclaration->getId()
+				)
+			);
+		}
+
+		if ( false === $omitEadFile && false === $customsDeclaration->hasEadFile() ) {
+			$this->wpdbAdapter->query(
+				$this->wpdbAdapter->prepare(
+					'UPDATE ' . $this->wpdbAdapter->packetery_customs_declaration . ' SET `ead_file` = NULL WHERE `id` = %d',
+					$customsDeclaration->getId()
+				)
+			);
+		}
 	}
 
 	/**
@@ -169,9 +236,7 @@ class Repository {
 			'delivery_cost'      => $customsDeclaration->getDeliveryCost(),
 			'invoice_number'     => $customsDeclaration->getInvoiceNumber(),
 			'invoice_issue_date' => $customsDeclaration->getInvoiceIssueDate()->format( Helper::MYSQL_DATE_FORMAT ),
-			'invoice_file'       => $customsDeclaration->getInvoiceFile(),
 			'mrn'                => $customsDeclaration->getMrn(),
-			'ead_file'           => $customsDeclaration->getEadFile(),
 		];
 
 		foreach ( $fieldsToOmit as $fieldToOmit ) {
