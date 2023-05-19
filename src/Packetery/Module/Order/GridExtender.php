@@ -321,8 +321,9 @@ class GridExtender {
 					admin_url( 'admin.php' )
 				);
 
+				$customsDeclaration    = $this->customsDeclarationRepository->getByOrder( $order );
 				$hasCustomsDeclaration =
-					null !== ( $customsDeclaration = $this->customsDeclarationRepository->getByOrder( $order ) ) &&
+					null !== $customsDeclaration &&
 					[] !== $this->customsDeclarationRepository->getItemsByCustomsDeclaration( $customsDeclaration );
 
 				$mustFillCustomsDeclaration =

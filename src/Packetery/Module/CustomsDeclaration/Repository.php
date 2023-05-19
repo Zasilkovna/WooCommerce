@@ -98,14 +98,18 @@ class Repository {
 	/**
 	 * Has invoice file.
 	 *
-	 * @param int $customsDeclarationId ID.
+	 * @param CustomsDeclaration|null $customsDeclaration Customs declaration.
 	 * @return bool
 	 */
-	public function hasInvoiceFile( int $customsDeclarationId ): bool {
+	public function hasInvoiceFile( ?CustomsDeclaration $customsDeclaration ): bool {
+		if ( null === $customsDeclaration ) {
+			return false;
+		}
+
 		return '1' !== $this->wpdbAdapter->get_var(
 			$this->wpdbAdapter->prepare(
 				'SELECT "1" FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `id` = %d AND `invoice_file` IS NULL',
-				$customsDeclarationId
+				$customsDeclaration->getId()
 			)
 		);
 	}
@@ -113,14 +117,18 @@ class Repository {
 	/**
 	 * Has EAD file.
 	 *
-	 * @param int $customsDeclarationId ID.
+	 * @param CustomsDeclaration|null $customsDeclaration Customs declaration.
 	 * @return bool
 	 */
-	public function hasEadFile( int $customsDeclarationId ): bool {
+	public function hasEadFile( ?CustomsDeclaration $customsDeclaration ): bool {
+		if ( null === $customsDeclaration ) {
+			return false;
+		}
+
 		return '1' !== $this->wpdbAdapter->get_var(
 			$this->wpdbAdapter->prepare(
-				'SELECT "1" FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `id` = %d AND `invoice_file` IS NULL',
-				$customsDeclarationId
+				'SELECT "1" FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `id` = %d AND `ead_file` IS NULL',
+				$customsDeclaration->getId()
 			)
 		);
 	}
@@ -132,6 +140,10 @@ class Repository {
 	 * @return CustomsDeclarationItem[]
 	 */
 	public function getItemsByCustomsDeclaration( CustomsDeclaration $customsDeclaration ): array {
+		if ( null === $customsDeclaration->getId() ) {
+			return [];
+		}
+
 		$rows = $this->wpdbAdapter->get_results(
 			sprintf(
 				'SELECT * FROM `%s` WHERE `customs_declaration_id` = %d',

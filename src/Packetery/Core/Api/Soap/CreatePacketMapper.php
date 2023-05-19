@@ -38,8 +38,8 @@ class CreatePacketMapper {
 	/**
 	 * Maps order data to CreatePacket structure.
 	 *
-	 * @param Entity\Order                                    $order Order entity.
-	 * @param \Packetery\Core\Entity\CustomsDeclarationItem[] $customsDeclarationItems
+	 * @param Entity\Order                    $order Order entity.
+	 * @param Entity\CustomsDeclarationItem[] $customsDeclarationItems Customs declaration items.
 	 * @return array
 	 */
 	public function fromEntitiesToArray( Entity\Order $order, array $customsDeclarationItems ): array {
@@ -89,6 +89,10 @@ class CreatePacketMapper {
 					'height' => $size->getHeight(),
 				];
 			}
+		}
+
+		if ( null === $carrier || false === $carrier->requiresCustomsDeclarations() ) {
+			return $createPacketData;
 		}
 
 		$createPacketData['attributes'] = [];

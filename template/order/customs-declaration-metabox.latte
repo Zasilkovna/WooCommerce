@@ -43,6 +43,7 @@
                     <input n:name=invoice_file accept=".pdf" data-lfv-message-id="{$formContainer[invoice_file]->getHtmlId() . '_message'}">
                     <p class="packetery-input-validation-message help-block text-danger"
                        id="{$formContainer[invoice_file]->getHtmlId() . '_message'}">{inputError invoice_file}</p>
+                    <span n:if=$hasInvoiceFile>✓ {$translations['fileUploaded']}</span>
                 </div>
             </div>
             <div id="customs-declaration-own-field-mrn" class="packetery-customs-declaration-flex-item">
@@ -59,6 +60,7 @@
                     <input n:name=ead_file accept=".pdf" data-lfv-message-id="{$formContainer[ead_file]->getHtmlId() . '_message'}">
                     <p class="packetery-input-validation-message help-block text-danger"
                        id="{$formContainer[ead_file]->getHtmlId() . '_message'}">{inputError ead_file}</p>
+                    <span n:if=$hasEadFile>✓ {$translations['fileUploaded']}</span>
                 </div>
             </div>
         </div>

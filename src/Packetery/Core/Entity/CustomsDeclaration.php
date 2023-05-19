@@ -94,12 +94,12 @@ class CustomsDeclaration {
 	/**
 	 * Constructor.
 	 *
-	 * @param string|null                  $id ID.
-	 * @param \Packetery\Core\Entity\Order $order Order.
-	 * @param string                       $ead Ead.
-	 * @param float                        $deliveryCost Delivery cost.
-	 * @param string                       $invoiceNumber Invoice number.
-	 * @param \DateTimeImmutable           $invoiceIssueDate Invoice issue date.
+	 * @param string|null        $id ID.
+	 * @param Order              $order Order.
+	 * @param string             $ead Ead.
+	 * @param float              $deliveryCost Delivery cost.
+	 * @param string             $invoiceNumber Invoice number.
+	 * @param \DateTimeImmutable $invoiceIssueDate Invoice issue date.
 	 */
 	public function __construct(
 		?string $id,
@@ -148,7 +148,7 @@ class CustomsDeclaration {
 	/**
 	 * Sets EAD file ID.
 	 *
-	 * @param string|null $eadFileId
+	 * @param string|null $eadFileId EAD file ID.
 	 * @return void
 	 */
 	public function setEadFileId( ?string $eadFileId ): void {
@@ -252,7 +252,7 @@ class CustomsDeclaration {
 	/**
 	 * Gets order.
 	 *
-	 * @return \Packetery\Core\Entity\Order
+	 * @return Order
 	 */
 	public function getOrder(): Order {
 		return $this->order;

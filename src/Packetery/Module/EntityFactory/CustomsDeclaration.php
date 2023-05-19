@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Packetery\Module\EntityFactory;
 
-use Packetery\Core\Entity\CustomsDeclarationItem;
-use Packetery\Core\Entity\Order;
+use Packetery\Core\Entity;
+use Packetery\Core\Helper;
 
 /**
  * Class CustomsDeclaration.
@@ -20,21 +20,20 @@ class CustomsDeclaration {
 	/**
 	 * Creates customs declaration entity from standard structure.
 	 *
-	 * @param array                        $data Data.
-	 * @param \Packetery\Core\Entity\Order $order Order.
-	 * @return \Packetery\Core\Entity\CustomsDeclaration
+	 * @param array        $data Data.
+	 * @param Entity\Order $order Order.
+	 * @return Entity\CustomsDeclaration
 	 */
-	public function fromStandardizedStructure( array $data, Order $order ): \Packetery\Core\Entity\CustomsDeclaration {
-		$entity = new \Packetery\Core\Entity\CustomsDeclaration(
+	public function fromStandardizedStructure( array $data, Entity\Order $order ): Entity\CustomsDeclaration {
+		$entity = new Entity\CustomsDeclaration(
 			$data['id'] ?? null,
 			$order,
 			$data['ead'],
 			(float) $data['delivery_cost'],
 			$data['invoice_number'],
 			\DateTimeImmutable::createFromFormat(
-				\Packetery\Core\Helper::MYSQL_DATE_FORMAT,
-				$data['invoice_issue_date'],
-				new \DateTimeZone( 'UTC' )
+				Helper::MYSQL_DATE_FORMAT,
+				$data['invoice_issue_date']
 			)
 		);
 		$entity->setInvoiceFileId( $data['invoice_file_id'] );
@@ -47,12 +46,12 @@ class CustomsDeclaration {
 	/**
 	 * Creates item from standardized structure.
 	 *
-	 * @param array                                     $data Data.
-	 * @param \Packetery\Core\Entity\CustomsDeclaration $customsDeclaration Customs declaration.
-	 * @return CustomsDeclarationItem
+	 * @param array                     $data Data.
+	 * @param Entity\CustomsDeclaration $customsDeclaration Customs declaration.
+	 * @return Entity\CustomsDeclarationItem
 	 */
-	public function createItemFromStandardizedStructure( array $data, \Packetery\Core\Entity\CustomsDeclaration $customsDeclaration ): CustomsDeclarationItem {
-		$entity = new CustomsDeclarationItem(
+	public function createItemFromStandardizedStructure( array $data, Entity\CustomsDeclaration $customsDeclaration ): Entity\CustomsDeclarationItem {
+		$entity = new Entity\CustomsDeclarationItem(
 			$data['id'] ?? null,
 			$customsDeclaration,
 			$data['customs_code'],

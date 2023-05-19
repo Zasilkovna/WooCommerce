@@ -109,16 +109,8 @@
     width: 100%;
 }
 
-.packetery-table [hidden] {
-    display: none !important;
-}
-
 .packetery-table-row {
     display: table-row;
-}
-
-.packetery-table-row-group {
-    display: table-row-group;
 }
 
 .packetery-table-cell {

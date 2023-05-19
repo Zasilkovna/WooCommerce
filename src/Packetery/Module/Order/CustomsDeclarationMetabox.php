@@ -258,11 +258,14 @@ class CustomsDeclarationMetabox {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
 			[
-				'form'         => $form,
-				'translations' => [
+				'form'           => $form,
+				'hasInvoiceFile' => $this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration ),
+				'hasEadFile'     => $this->customsDeclarationRepository->hasEadFile( $customsDeclaration ),
+				'translations'   => [
 					'addCustomsDeclarationItem' => __( 'Add item', 'packeta' ),
 					'delete'                    => __( 'Delete', 'packeta' ),
 					'itemsLabel'                => __( 'Items', 'packeta' ),
+					'fileUploaded'              => __( 'File uploaded.', 'packeta' ),
 				],
 			]
 		);
@@ -304,7 +307,7 @@ class CustomsDeclarationMetabox {
 		$invoiceFile = $prefixContainer->addUpload( 'invoice_file', __( 'Invoice PDF file', 'packeta' ) )
 			->setRequired( false );
 
-		if ( null === $customsDeclaration || null === $customsDeclaration->getInvoiceFile() ) {
+		if ( false === $this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration ) ) {
 			$invoiceFile
 				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 					->setRequired()
@@ -325,7 +328,7 @@ class CustomsDeclarationMetabox {
 			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 				->toggle( 'customs-declaration-own-field-ead_file' );
 
-		if ( null === $customsDeclaration || null === $customsDeclaration->getEadFile() ) {
+		if ( false === $this->customsDeclarationRepository->hasEadFile( $customsDeclaration ) ) {
 			$eadFile
 				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 				->setRequired();
@@ -445,9 +448,9 @@ class CustomsDeclarationMetabox {
 			$fieldsToOmit[]        = 'ead_file_id';
 		}
 
-        if ( '' === $values['mrn'] ) {
-            $values['mrn'] = null;
-        }
+		if ( '' === $values['mrn'] ) {
+			$values['mrn'] = null;
+		}
 
 		$values['id']          = null;
 		$oldCustomsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );

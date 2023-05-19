@@ -54,7 +54,7 @@ class Client {
 	 * Creates storage file.
 	 *
 	 * @param \Packetery\Core\Api\Soap\Request\CreateStorageFile $request Request.
-	 * @return void
+	 * @return Response\CreateStorageFile
 	 */
 	public function createStorageFile( Request\CreateStorageFile $request ): Response\CreateStorageFile {
 		$response = new Response\CreateStorageFile();

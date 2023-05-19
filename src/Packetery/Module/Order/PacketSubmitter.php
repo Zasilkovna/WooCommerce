@@ -257,11 +257,12 @@ class PacketSubmitter {
 			if (
 				null !== $customsDeclaration &&
 				null === $customsDeclaration->getInvoiceFileId() &&
-				$this->customsDeclarationRepository->hasInvoiceFile( (int) $customsDeclaration->getId() )
+				$this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration )
 			) {
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
 						static function () use ( $customsDeclaration ): string {
+                            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 							return base64_encode( $customsDeclaration->getInvoiceFile() );
 						},
 						sprintf( 'invoice_file_%s.pdf', $customsDeclaration->getId() )
@@ -277,9 +278,10 @@ class PacketSubmitter {
 						'errorMessage' => $invoiceFileResponse->getFaultString(),
 					];
 					$record->orderId = $order->getNumber();
+					$this->logger->add( $record );
+					$submissionResult->increaseLogsCount();
 
 					$submissionResult->increaseErrorsCount();
-					$this->logger->add( $record );
 					$order->updateApiErrorMessage( $invoiceFileResponse->getFaultString() );
 					$this->orderRepository->save( $order );
 
@@ -293,11 +295,12 @@ class PacketSubmitter {
 			if (
 				null !== $customsDeclaration &&
 				null === $customsDeclaration->getEadFileId() &&
-				$this->customsDeclarationRepository->hasEadFile( (int) $customsDeclaration->getId() )
+				$this->customsDeclarationRepository->hasEadFile( $customsDeclaration )
 			) {
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
 						static function () use ( $customsDeclaration ): string {
+                            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 							return base64_encode( $customsDeclaration->getEadFile() );
 						},
 						sprintf( 'ead_file_%s.pdf', $customsDeclaration->getId() )
@@ -313,9 +316,10 @@ class PacketSubmitter {
 						'errorMessage' => $eadFileResponse->getFaultString(),
 					];
 					$record->orderId = $order->getNumber();
+					$this->logger->add( $record );
+					$submissionResult->increaseLogsCount();
 
 					$submissionResult->increaseErrorsCount();
-					$this->logger->add( $record );
 					$order->updateApiErrorMessage( $eadFileResponse->getFaultString() );
 					$this->orderRepository->save( $order );
 
@@ -396,10 +400,10 @@ class PacketSubmitter {
 	/**
 	 * Prepares packet attributes.
 	 *
-	 * @param Entity\Order $order Order entity.
-	 *
+	 * @param Entity\Order                   $order Order entity.
+	 * @param Entity\CustomsDeclaration|null $customsDeclaration Customs declaration.
 	 * @return array
-	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
+	 * @throws \Packetery\Core\Api\InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
 		$validationErrors = $this->orderValidator->validate( $order );

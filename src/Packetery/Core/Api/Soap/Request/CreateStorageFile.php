@@ -29,8 +29,10 @@ class CreateStorageFile {
 	private $name;
 
 	/**
-	 * @param callable $content
-	 * @param string   $name
+	 * Constructor.
+	 *
+	 * @param callable $content Content.
+	 * @param string   $name Name.
 	 */
 	public function __construct( callable $content, string $name ) {
 		$this->content = $content;
