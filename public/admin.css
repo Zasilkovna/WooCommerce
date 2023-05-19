@@ -787,6 +787,14 @@ tbody .packetery-log-column-note {
     margin: 0;
 }
 
+.packetery-flex-break-row {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
 .packetery-customs-declaration-flex-item {
     width: 50%;
     margin-top: 5px;

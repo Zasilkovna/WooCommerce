@@ -12,6 +12,12 @@
 			}
 		);
 		$invoiceIssueDate.closest('form').attr('enctype', 'multipart/form-data');
+	}).on('change', '.packetery-customs-declaration-fields [name="packetery_customs_declaration[ead]"]', function( e ) {
+		var $form = $(e.target).closest('form');
+
+		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[invoice_file]"]')[0] );
+		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[ead_file]"]')[0] );
+		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[mrn]"]')[0] );
 	});
 
 	new PacketeryMultiplier('[data-packetery-customs-declaration-item]');
