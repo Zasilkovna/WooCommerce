@@ -378,7 +378,7 @@ class Upgrade {
 		if ( false === $this->logRepository->createOrAlterTable() ) {
 			$this->messageManager->flash_message(
 				// translators: %s: Short table name.
-				sprintf( __( 'Database %s table could not be created, more information might be found in WooCommerce logs.', 'packeta' ), 'log' ),
+				sprintf( __( 'Database %s table could not be created or altered, more information might be found in WooCommerce logs.', 'packeta' ), 'log' ),
 				MessageManager::TYPE_ERROR
 			);
 		}
@@ -410,21 +410,20 @@ class Upgrade {
 	 * Flashes error and logs to Packeta log.
 	 *
 	 * @param string $table Short table name.
-	 * @param string $logMessage Message to log.
 	 * @param string $action Log action.
 	 *
 	 * @return void
 	 */
-	private function flashAndLog( string $table, string $logMessage, string $action ): void {
+	private function flashAndLog( string $table, string $action ): void {
 		// translators: %s: Short table name.
-		$flashMessage = sprintf( __( 'Database %s table of Packeta plugin could not be created, you can find more information in Packeta log.', 'packeta' ), $table );
+		$flashMessage = sprintf( __( 'Database %s table of Packeta plugin could not be created or altered, you can find more information in Packeta log.', 'packeta' ), $table );
 		$this->messageManager->flash_message( $flashMessage, MessageManager::TYPE_ERROR );
 
 		$record         = new Record();
 		$record->action = $action;
 		$record->status = Record::STATUS_ERROR;
 		// translators: %s: Short table name.
-		$record->title = sprintf( __( 'Database %s table could not be created, more information might be found in WooCommerce logs.', 'packeta' ), $table );
+		$record->title = sprintf( __( 'Database %s table could not be created or altered, more information might be found in WooCommerce logs.', 'packeta' ), $table );
 		$this->logger->add( $record );
 	}
 
