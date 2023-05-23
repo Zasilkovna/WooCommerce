@@ -14,6 +14,7 @@ use Packetery\Core\Helper;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Log\Purger;
+use Packetery\Module\WcLogger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 use Packetery\Module\Plugin;
@@ -108,11 +109,16 @@ class GridExtender {
 	/**
 	 * Adds custom filtering links to order grid.
 	 *
-	 * @param array $var Array of html links.
+	 * @param array|mixed $htmlLinks Array of html links.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function addFilterLinks( array $var ): array {
+	public function addFilterLinks( $htmlLinks ) {
+		if ( ! is_array( $htmlLinks ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'htmlLinks', 'array', $htmlLinks );
+			return $htmlLinks;
+		}
+
 		$latteParams = [
 			'link'       => add_query_arg(
 				[
@@ -127,7 +133,7 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		$latteParams = [
 			'link'       => add_query_arg(
@@ -143,9 +149,9 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
-		return $var;
+		return $htmlLinks;
 	}
 
 	/**
@@ -233,9 +239,14 @@ class GridExtender {
 	/**
 	 * Fills custom order list columns.
 	 *
-	 * @param string $column Current order column name.
+	 * @param string|mixed $column Current order column name.
 	 */
-	public function fillCustomOrderListColumns( string $column ): void {
+	public function fillCustomOrderListColumns( $column ): void {
+		if ( ! is_string( $column ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'column', 'string', $column );
+			return;
+		}
+
 		global $post;
 
 		$order = $this->getOrderByPostId( $post->ID );
@@ -343,11 +354,16 @@ class GridExtender {
 	/**
 	 * Add order list columns.
 	 *
-	 * @param string[] $columns Order list columns.
+	 * @param string[]|mixed $columns Order list columns.
 	 *
-	 * @return string[] All columns.
+	 * @return string[]|mixed All columns.
 	 */
-	public function addOrderListColumns( array $columns ): array {
+	public function addOrderListColumns( $columns ) {
+		if ( ! is_array( $columns ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'columns', 'array', $columns );
+			return $columns;
+		}
+
 		$new_columns = array();
 
 		foreach ( $columns as $column_name => $column_info ) {

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\Options;
+use Packetery\Module\WcLogger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
 
@@ -80,11 +81,16 @@ class BulkActions {
 	/**
 	 * Adds custom actions to dropdown in admin order list.
 	 *
-	 * @param array $actions Array of action.
+	 * @param array|mixed $actions Array of action.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function addActions( array $actions ): array {
+	public function addActions( $actions ) {
+		if ( ! is_array( $actions ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'actions', 'array', $actions );
+			return $actions;
+		}
+
 		$actions['submit_to_api']                                  = __( 'Submit orders to Packeta', 'packeta' );
 		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'Print labels', 'packeta' );
 		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'Print carrier labels', 'packeta' );
@@ -96,13 +102,28 @@ class BulkActions {
 	/**
 	 * Executes the action for selected orders and returns url to redirect to.
 	 *
-	 * @param string $redirectTo Url.
-	 * @param string $action Action id.
-	 * @param array  $postIds Order ids.
+	 * @param string|mixed $redirectTo Url.
+	 * @param string|mixed $action Action id.
+	 * @param array|mixed  $postIds Order ids.
 	 *
-	 * @return string
+	 * @return string|mixed
 	 */
-	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
+	public function handleActions( $redirectTo, $action, $postIds ) {
+		if ( ! is_string( $redirectTo ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'redirectTo', 'string', $redirectTo );
+			return $redirectTo;
+		}
+
+		if ( ! is_string( $action ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'action', 'string', $action );
+			return $redirectTo;
+		}
+
+		if ( ! is_array( $postIds ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'postIds', 'array', $postIds );
+			return $redirectTo;
+		}
+
 		if ( CollectionPrint::ACTION_PRINT_ORDER_COLLECTION === $action ) {
 			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
 

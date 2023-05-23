@@ -329,12 +329,22 @@ class Upgrade {
 	/**
 	 * Transforms custom query variable to meta query.
 	 *
-	 * @param array $queryVars Query vars.
-	 * @param array $get Input values.
+	 * @param array|mixed $queryVars Query vars.
+	 * @param array|mixed $get Input values.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function handleCustomQueryVar( array $queryVars, array $get ): array {
+	public function handleCustomQueryVar( $queryVars, $get ) {
+		if ( ! is_array( $queryVars ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'queryVars', 'array', $queryVars );
+			return $queryVars;
+		}
+
+		if ( ! is_array( $get ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'get', 'array', $get );
+			return $get;
+		}
+
 		$metaQuery = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $get );
 		if ( $metaQuery ) {
 			// @codingStandardsIgnoreStart

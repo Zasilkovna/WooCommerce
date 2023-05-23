@@ -13,6 +13,7 @@ namespace Packetery\Module\Product;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
+use Packetery\Module\WcLogger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Forms\Form;
 
@@ -73,11 +74,16 @@ class DataTab {
 	/**
 	 * Registers tab.
 	 *
-	 * @param array $tabs Tabs definition array.
+	 * @param array|mixed $tabs Tabs definition array.
 	 *
-	 * @return array
+	 * @return array|mixed
 	 */
-	public function registerTab( array $tabs ): array {
+	public function registerTab( $tabs ) {
+		if ( ! is_array( $tabs ) ) {
+			WcLogger::logArgumentTypeError( __METHOD__, 'tabs', 'array', $tabs );
+			return $tabs;
+		}
+
 		$tabs[ self::NAME ] = [
 			'label'  => __( 'Packeta', 'packeta' ),
 			'target' => self::NAME,
