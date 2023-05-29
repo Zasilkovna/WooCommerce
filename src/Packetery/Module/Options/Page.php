@@ -12,6 +12,7 @@ namespace Packetery\Module\Options;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
@@ -253,7 +254,7 @@ class Page {
 			$paymentMethodEventsMethod = $paymentMethodEvents->addContainer(
 				$this->optionsProvider->sanitizePaymentGatewayId( $gateway->id )
 			);
-			$paymentMethodEventsMethod->addSelect( 'event', $gateway->get_method_title(), $eventChoices )
+			$paymentMethodEventsMethod->addSelect( 'event', Helper::getPaymentMethodTitleForBE( $gateway ), $eventChoices )
 										->setPrompt( __( 'Select event', 'packeta' ) )
 										->checkDefaultValue( false );
 		}
@@ -408,7 +409,7 @@ class Page {
 		$gateways        = $this->getAvailablePaymentGateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
-			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();
+			$enabledGateways[ $gateway->id ] = Helper::getPaymentMethodTitleForBE( $gateway );
 		}
 		$container->addSelect(
 			'cod_payment_method',
@@ -496,7 +497,7 @@ class Page {
 		$availableGateways = [];
 
 		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
-			if ( 'yes' === $gateway->enabled ) {
+			if ( 'yes' === $gateway->enabled && '' !== $gateway->id ) {
 				$availableGateways[ $gateway->id ] = $gateway;
 			}
 		}
