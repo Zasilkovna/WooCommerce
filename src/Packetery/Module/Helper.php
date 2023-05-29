@@ -81,11 +81,11 @@ class Helper {
 	 * @return string
 	 */
 	public static function getPaymentMethodTitleForBE( \WC_Payment_Gateway $paymentGateway ): string {
-		$methodTitle = $paymentGateway->get_method_title();
+		$methodTitle = (string) $paymentGateway->get_method_title();
 		if ( '' !== $methodTitle ) {
 			return $methodTitle;
 		}
 
-		return $paymentGateway->get_title();
+		return (string) $paymentGateway->get_title();
 	}
 }
