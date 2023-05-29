@@ -74,4 +74,18 @@ class Helper {
 		echo $string;
 	}
 
+	/**
+	 * Gets payment method title for backend.
+	 *
+	 * @param \WC_Payment_Gateway $paymentGateway Payment gateway.
+	 * @return string
+	 */
+	public static function getPaymentMethodTitleForBE( \WC_Payment_Gateway $paymentGateway ): string {
+		$methodTitle = $paymentGateway->get_method_title();
+		if ( '' !== $methodTitle ) {
+			return $methodTitle;
+		}
+
+		return $paymentGateway->get_title();
+	}
 }
