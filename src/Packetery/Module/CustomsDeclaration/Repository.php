@@ -329,18 +329,18 @@ class Repository {
 	public function createOrAlterTable(): bool {
 		$createTableQuery = sprintf(
 			'CREATE TABLE `%s` (
-            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-            `order_id` BIGINT(20) UNSIGNED NOT NULL,
-            `ead` VARCHAR(50) NOT NULL,
-            `delivery_cost` DECIMAL(13,2) UNSIGNED NOT NULL,
-            `invoice_number` VARCHAR(255) NOT NULL,
-            `invoice_issue_date` DATE NOT NULL,
-            `invoice_file` MEDIUMBLOB NULL DEFAULT NULL,
-            `invoice_file_id` VARCHAR(255) NULL DEFAULT NULL,
-            `mrn` VARCHAR(32) NULL DEFAULT NULL,
-            `ead_file` MEDIUMBLOB NULL DEFAULT NULL,
-            `ead_file_id` VARCHAR(255) NULL DEFAULT NULL,
-            PRIMARY KEY (`id`)
+            `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `order_id` bigint(20) UNSIGNED NOT NULL,
+            `ead` varchar(50) NOT NULL,
+            `delivery_cost` decimal(13,2) UNSIGNED NOT NULL,
+            `invoice_number` varchar(255) NOT NULL,
+            `invoice_issue_date` date NOT NULL,
+            `invoice_file` mediumblob NULL DEFAULT NULL,
+            `invoice_file_id` varchar(255) NULL DEFAULT NULL,
+            `mrn` varchar(32) NULL DEFAULT NULL,
+            `ead_file` mediumblob NULL DEFAULT NULL,
+            `ead_file_id` varchar(255) NULL DEFAULT NULL,
+            PRIMARY KEY  (`id`)
         ) %s',
 			$this->wpdbAdapter->packetery_customs_declaration,
 			$this->wpdbAdapter->get_charset_collate()
@@ -357,18 +357,18 @@ class Repository {
 	public function createOrAlterItemTable(): bool {
 		$createItemTableQuery = sprintf(
 			'CREATE TABLE `%s` (
-            `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-            `customs_declaration_id` INT(11) UNSIGNED NOT NULL,
-            `customs_code` VARCHAR(8) NOT NULL,
-            `value` DECIMAL(13,2) UNSIGNED NOT NULL,
-            `product_name_en` VARCHAR(255) NOT NULL,
-            `product_name` VARCHAR(255) NULL DEFAULT NULL,
-            `units_count` INT(11) UNSIGNED NOT NULL,
-            `country_of_origin` CHAR(2) NOT NULL,
-            `weight` DECIMAL(10,3) UNSIGNED NOT NULL,
-            `is_food_or_book` TINYINT(1) NOT NULL,
-            `is_voc` TINYINT(1) NOT NULL,
-            PRIMARY KEY (`id`)
+            `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `customs_declaration_id` int(11) UNSIGNED NOT NULL,
+            `customs_code` varchar(8) NOT NULL,
+            `value` decimal(13,2) UNSIGNED NOT NULL,
+            `product_name_en` varchar(255) NOT NULL,
+            `product_name` varchar(255) NULL DEFAULT NULL,
+            `units_count` int(11) UNSIGNED NOT NULL,
+            `country_of_origin` char(2) NOT NULL,
+            `weight` decimal(10,3) UNSIGNED NOT NULL,
+            `is_food_or_book` tinyint(1) NOT NULL,
+            `is_voc` tinyint(1) NOT NULL,
+            PRIMARY KEY  (`id`)
         ) %s',
 			$this->wpdbAdapter->packetery_customs_declaration_item,
 			$this->wpdbAdapter->get_charset_collate()

@@ -112,16 +112,16 @@ class PacketSubmitter {
 	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Soap\Client                   $soapApiClient SOAP API Client.
-	 * @param Validator\Order               $orderValidator Order validator.
-	 * @param Log\ILogger                   $logger Logger.
-	 * @param Repository                    $orderRepository Order repository.
-	 * @param CreatePacketMapper            $createPacketMapper CreatePacketMapper.
-	 * @param Request                       $request Request.
-	 * @param MessageManager                $messageManager Message manager.
-	 * @param Module\Log\Page               $logPage Log page.
-	 * @param PacketActionsCommonLogic      $commonLogic Common logic.
-	 * @param Module\Options\Provider       $optionsProvider Options provider.
+	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
+	 * @param Validator\Order               $orderValidator               Order validator.
+	 * @param Log\ILogger                   $logger                       Logger.
+	 * @param Repository                    $orderRepository              Order repository.
+	 * @param CreatePacketMapper            $createPacketMapper           CreatePacketMapper.
+	 * @param Request                       $request                      Request.
+	 * @param MessageManager                $messageManager               Message manager.
+	 * @param Module\Log\Page               $logPage                      Log page.
+	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
+	 * @param Module\Options\Provider       $optionsProvider              Options provider.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
@@ -263,7 +263,7 @@ class PacketSubmitter {
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
 						static function () use ( $customsDeclaration ): string {
-                            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 							return base64_encode( $customsDeclaration->getInvoiceFile() );
 						},
 						sprintf( 'invoice_%s.pdf', $customsDeclaration->getId() )
@@ -301,7 +301,7 @@ class PacketSubmitter {
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
 						static function () use ( $customsDeclaration ): string {
-                            // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 							return base64_encode( $customsDeclaration->getEadFile() );
 						},
 						sprintf( 'ead_%s.pdf', $customsDeclaration->getId() )

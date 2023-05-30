@@ -94,11 +94,11 @@ class CustomsDeclaration {
 	/**
 	 * Constructor.
 	 *
-	 * @param string|null        $id ID.
-	 * @param Order              $order Order.
-	 * @param string             $ead Ead.
-	 * @param float              $deliveryCost Delivery cost.
-	 * @param string             $invoiceNumber Invoice number.
+	 * @param string|null        $id               ID.
+	 * @param Order              $order            Order.
+	 * @param string             $ead              Ead.
+	 * @param float              $deliveryCost     Delivery cost.
+	 * @param string             $invoiceNumber    Invoice number.
 	 * @param \DateTimeImmutable $invoiceIssueDate Invoice issue date.
 	 */
 	public function __construct(

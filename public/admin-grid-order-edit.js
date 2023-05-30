@@ -22,8 +22,8 @@
 				$(document.body).trigger( 'wc-init-datepickers' );
 				$( 'input[name="packetery_deliver_on"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
 
-				if( $lastModalButtonClicked.data( 'order-data' ).mustFillCustomsDeclaration ) {
-					flashMessage( packeteryModal, 'error', settings.translations.mustFillCustomsDeclaration )
+				if( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
+					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
 				}
 			}
 		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {

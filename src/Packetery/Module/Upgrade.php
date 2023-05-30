@@ -90,12 +90,12 @@ class Upgrade {
 	/**
 	 * Constructor.
 	 *
-	 * @param Order\Repository              $orderRepository Order repository.
-	 * @param MessageManager                $messageManager Message manager.
-	 * @param ILogger                       $logger Logger.
-	 * @param Log\Repository                $logRepository Log repository.
-	 * @param WpdbAdapter                   $wpdbAdapter WpdbAdapter.
-	 * @param Carrier\Repository            $carrierRepository Carrier repository.
+	 * @param Order\Repository              $orderRepository              Order repository.
+	 * @param MessageManager                $messageManager               Message manager.
+	 * @param ILogger                       $logger                       Logger.
+	 * @param Log\Repository                $logRepository                Log repository.
+	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
+	 * @param Carrier\Repository            $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(

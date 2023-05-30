@@ -96,13 +96,13 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Constructor.
 	 *
-	 * @param Repository                       $orderRepository Order repository.
-	 * @param \PacketeryLatte\Engine           $latteEngine Latte engine.
-	 * @param \Packetery\Module\FormFactory    $formFactory Form factory.
-	 * @param CustomsDeclaration\Repository    $customsDeclarationRepository Customs declaration repository.
+	 * @param Repository                       $orderRepository                 Order repository.
+	 * @param \PacketeryLatte\Engine           $latteEngine                     Latte engine.
+	 * @param \Packetery\Module\FormFactory    $formFactory                     Form factory.
+	 * @param CustomsDeclaration\Repository    $customsDeclarationRepository    Customs declaration repository.
 	 * @param EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
-	 * @param Request                          $request Request.
-	 * @param MessageManager                   $messageManager Message manager.
+	 * @param Request                          $request                         Request.
+	 * @param MessageManager                   $messageManager                  Message manager.
 	 */
 	public function __construct(
 		Repository $orderRepository,
