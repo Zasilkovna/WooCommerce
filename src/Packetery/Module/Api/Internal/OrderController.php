@@ -12,6 +12,7 @@ namespace Packetery\Module\Api\Internal;
 use Packetery\Core;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Validator;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
 use Packetery\Module\Order\GridExtender;
@@ -52,7 +53,7 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Customs declaration repository.
 	 *
-	 * @var \Packetery\Module\CustomsDeclaration\Repository
+	 * @var CustomsDeclaration\Repository
 	 */
 	private $customsDeclarationRepository;
 
@@ -80,13 +81,13 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter                                     $router Router.
-	 * @param Order\Modal                                     $orderModal Modal.
-	 * @param Order\Repository                                $orderRepository Order repository.
-	 * @param GridExtender                                    $gridExtender Grid extender.
-	 * @param Validator\Order                                 $orderValidator Order validator.
-	 * @param Core\Helper                                     $helper Helper.
-	 * @param \Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
+	 * @param OrderRouter                   $router Router.
+	 * @param Order\Modal                   $orderModal Modal.
+	 * @param Order\Repository              $orderRepository Order repository.
+	 * @param GridExtender                  $gridExtender Grid extender.
+	 * @param Validator\Order               $orderValidator Order validator.
+	 * @param Core\Helper                   $helper Helper.
+	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -95,7 +96,7 @@ final class OrderController extends WP_REST_Controller {
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
 		Core\Helper $helper,
-		\Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
 		$this->orderModal                   = $orderModal;
 		$this->orderRepository              = $orderRepository;

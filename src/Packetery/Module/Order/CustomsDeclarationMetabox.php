@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRulesParts;
 use Packetery\Module\Message;
@@ -74,7 +75,7 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Customs declaration entity factory.
 	 *
-	 * @var \Packetery\Module\EntityFactory\CustomsDeclaration
+	 * @var EntityFactory\CustomsDeclaration
 	 */
 	private $customsDeclarationEntityFactory;
 
@@ -95,20 +96,20 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Constructor.
 	 *
-	 * @param Repository                                         $orderRepository Order repository.
-	 * @param \PacketeryLatte\Engine                             $latteEngine Latte engine.
-	 * @param \Packetery\Module\FormFactory                      $formFactory Form factory.
-	 * @param CustomsDeclaration\Repository                      $customsDeclarationRepository Customs declaration repository.
-	 * @param \Packetery\Module\EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
-	 * @param Request                                            $request Request.
-	 * @param MessageManager                                     $messageManager Message manager.
+	 * @param Repository                       $orderRepository Order repository.
+	 * @param \PacketeryLatte\Engine           $latteEngine Latte engine.
+	 * @param \Packetery\Module\FormFactory    $formFactory Form factory.
+	 * @param CustomsDeclaration\Repository    $customsDeclarationRepository Customs declaration repository.
+	 * @param EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
+	 * @param Request                          $request Request.
+	 * @param MessageManager                   $messageManager Message manager.
 	 */
 	public function __construct(
 		Repository $orderRepository,
 		Engine $latteEngine,
 		FormFactory $formFactory,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
-		\Packetery\Module\EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
+		EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
 		Request $request,
 		MessageManager $messageManager
 	) {

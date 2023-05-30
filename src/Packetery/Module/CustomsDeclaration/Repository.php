@@ -13,6 +13,7 @@ use Packetery\Core\Entity\CustomsDeclaration;
 use Packetery\Core\Entity\CustomsDeclarationItem;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
+use Packetery\Module\EntityFactory;
 use Packetery\Module\WpdbAdapter;
 
 /**
@@ -30,17 +31,17 @@ class Repository {
 	/**
 	 * Entity factory.
 	 *
-	 * @var \Packetery\Module\EntityFactory\CustomsDeclaration
+	 * @var EntityFactory\CustomsDeclaration
 	 */
 	private $entityFactory;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param WpdbAdapter                                        $wpdbAdapter Wpdb adapter.
-	 * @param \Packetery\Module\EntityFactory\CustomsDeclaration $entityFactory Entity factory.
+	 * @param WpdbAdapter                      $wpdbAdapter Wpdb adapter.
+	 * @param EntityFactory\CustomsDeclaration $entityFactory Entity factory.
 	 */
-	public function __construct( WpdbAdapter $wpdbAdapter, \Packetery\Module\EntityFactory\CustomsDeclaration $entityFactory ) {
+	public function __construct( WpdbAdapter $wpdbAdapter, EntityFactory\CustomsDeclaration $entityFactory ) {
 		$this->wpdbAdapter   = $wpdbAdapter;
 		$this->entityFactory = $entityFactory;
 	}
@@ -55,7 +56,15 @@ class Repository {
 		$row = $this->wpdbAdapter->get_row(
 			sprintf(
 				'SELECT 
-                            id, order_id, ead, delivery_cost, invoice_number, invoice_issue_date, mrn, invoice_file_id, ead_file_id
+                            `id`,
+                            `order_id`,
+                            `ead`,
+                            `delivery_cost`,
+                            `invoice_number`,
+                            `invoice_issue_date`,
+                            `mrn`,
+                            `invoice_file_id`,
+                            `ead_file_id`
                         FROM `%s`
                         WHERE `order_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration,
@@ -74,7 +83,7 @@ class Repository {
 			function () use ( $order ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
-						'SELECT invoice_file FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+						'SELECT `invoice_file` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
 						$order->getNumber()
 					)
 				);
@@ -85,7 +94,7 @@ class Repository {
 			function () use ( $order ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
-						'SELECT ead_file FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+						'SELECT `ead_file` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
 						$order->getNumber()
 					)
 				);

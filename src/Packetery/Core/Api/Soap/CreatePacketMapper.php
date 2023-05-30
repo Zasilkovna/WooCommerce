@@ -171,14 +171,14 @@ class CreatePacketMapper {
 			if ( null !== $customsDeclaration->getEadFileId() ) {
 				$createPacketData['attributes'][] = [
 					'key'   => 'eadFile',
-					'value' => (float) $customsDeclaration->getEadFileId(),
+					'value' => $customsDeclaration->getEadFileId(),
 				];
 			}
 
 			if ( null !== $customsDeclaration->getInvoiceFileId() ) {
 				$createPacketData['attributes'][] = [
 					'key'   => 'invoiceFile',
-					'value' => (float) $customsDeclaration->getInvoiceFileId(),
+					'value' => $customsDeclaration->getInvoiceFileId(),
 				];
 			}
 		}

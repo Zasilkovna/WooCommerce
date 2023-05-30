@@ -17,6 +17,7 @@ use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\Carrier\Options;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
@@ -104,24 +105,24 @@ class PacketSubmitter {
 	/**
 	 * Customs declaration repository.
 	 *
-	 * @var \Packetery\Module\CustomsDeclaration\Repository
+	 * @var CustomsDeclaration\Repository
 	 */
 	private $customsDeclarationRepository;
 
 	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Soap\Client                                     $soapApiClient SOAP API Client.
-	 * @param Validator\Order                                 $orderValidator Order validator.
-	 * @param Log\ILogger                                     $logger Logger.
-	 * @param Repository                                      $orderRepository Order repository.
-	 * @param CreatePacketMapper                              $createPacketMapper CreatePacketMapper.
-	 * @param Request                                         $request Request.
-	 * @param MessageManager                                  $messageManager Message manager.
-	 * @param Module\Log\Page                                 $logPage Log page.
-	 * @param PacketActionsCommonLogic                        $commonLogic Common logic.
-	 * @param Module\Options\Provider                         $optionsProvider Options provider.
-	 * @param \Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
+	 * @param Soap\Client                   $soapApiClient SOAP API Client.
+	 * @param Validator\Order               $orderValidator Order validator.
+	 * @param Log\ILogger                   $logger Logger.
+	 * @param Repository                    $orderRepository Order repository.
+	 * @param CreatePacketMapper            $createPacketMapper CreatePacketMapper.
+	 * @param Request                       $request Request.
+	 * @param MessageManager                $messageManager Message manager.
+	 * @param Module\Log\Page               $logPage Log page.
+	 * @param PacketActionsCommonLogic      $commonLogic Common logic.
+	 * @param Module\Options\Provider       $optionsProvider Options provider.
+	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -134,7 +135,7 @@ class PacketSubmitter {
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
 		Module\Options\Provider $optionsProvider,
-		\Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidator;
@@ -265,7 +266,7 @@ class PacketSubmitter {
                             // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 							return base64_encode( $customsDeclaration->getInvoiceFile() );
 						},
-						sprintf( 'invoice_file_%s.pdf', $customsDeclaration->getId() )
+						sprintf( 'invoice_%s.pdf', $customsDeclaration->getId() )
 					)
 				);
 
@@ -303,7 +304,7 @@ class PacketSubmitter {
                             // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 							return base64_encode( $customsDeclaration->getEadFile() );
 						},
-						sprintf( 'ead_file_%s.pdf', $customsDeclaration->getId() )
+						sprintf( 'ead_%s.pdf', $customsDeclaration->getId() )
 					)
 				);
 
@@ -403,7 +404,7 @@ class PacketSubmitter {
 	 * @param Entity\Order                   $order Order entity.
 	 * @param Entity\CustomsDeclaration|null $customsDeclaration Customs declaration.
 	 * @return array
-	 * @throws \Packetery\Core\Api\InvalidRequestException For the case request is not eligible to be sent to API.
+	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
 		$validationErrors = $this->orderValidator->validate( $order );

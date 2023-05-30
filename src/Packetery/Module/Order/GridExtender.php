@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
 use Packetery\Latte\Engine;
@@ -66,7 +67,7 @@ class GridExtender {
 	/**
 	 * Customs declaration repository.
 	 *
-	 * @var \Packetery\Module\CustomsDeclaration\Repository
+	 * @var CustomsDeclaration\Repository
 	 */
 	private $customsDeclarationRepository;
 
@@ -88,13 +89,13 @@ class GridExtender {
 	 * GridExtender constructor.
 	 *
 	 * @param Core\Helper               $helper                Helper.
-	 * @param Carrier\EntityRepository                        $carrierRepository Carrier repository.
-	 * @param Engine                                          $latteEngine Latte Engine.
-	 * @param Request                                         $httpRequest Http Request.
-	 * @param Repository                                      $orderRepository Order repository.
-	 * @param Core\Validator\Order                            $orderValidator Order validator.
-	 * @param PacketaPickupPointsConfig                       $pickupPointsConfig Internal pickup points config.
-	 * @param \Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
+	 * @param Carrier\EntityRepository      $carrierRepository Carrier repository.
+	 * @param Engine                        $latteEngine Latte Engine.
+	 * @param Request                       $httpRequest Http Request.
+	 * @param Repository                    $orderRepository Order repository.
+	 * @param Core\Validator\Order          $orderValidator Order validator.
+	 * @param PacketaPickupPointsConfig     $pickupPointsConfig Internal pickup points config.
+	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		Core\Helper $helper,
@@ -104,7 +105,7 @@ class GridExtender {
 		Repository $orderRepository,
 		Core\Validator\Order $orderValidator,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		\Packetery\Module\CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
 		$this->helper                       = $helper;
 		$this->carrierRepository            = $carrierRepository;
