@@ -254,18 +254,17 @@ class PacketSubmitter {
 		$shippingMethodId   = $shippingMethodData['method_id'];
 		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $order->isExported() ) {
 
-			$customsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );
+			$customsDeclaration = $order->getCustomsDeclaration();
 			if (
 				null !== $customsDeclaration &&
 				null === $customsDeclaration->getInvoiceFileId() &&
 				$this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration )
 			) {
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+				$fileContent         = base64_encode( $customsDeclaration->getInvoiceFile() );
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
-						static function () use ( $customsDeclaration ): string {
-							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-							return base64_encode( $customsDeclaration->getInvoiceFile() );
-						},
+						$fileContent,
 						sprintf( 'invoice_%s.pdf', $customsDeclaration->getId() )
 					)
 				);
@@ -298,12 +297,11 @@ class PacketSubmitter {
 				null === $customsDeclaration->getEadFileId() &&
 				$this->customsDeclarationRepository->hasEadFile( $customsDeclaration )
 			) {
+				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+				$fileContent     = base64_encode( $customsDeclaration->getEadFile() );
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
-						static function () use ( $customsDeclaration ): string {
-							// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-							return base64_encode( $customsDeclaration->getEadFile() );
-						},
+						$fileContent,
 						sprintf( 'ead_%s.pdf', $customsDeclaration->getId() )
 					)
 				);
@@ -332,7 +330,7 @@ class PacketSubmitter {
 			}
 
 			try {
-				$createPacketData = $this->preparePacketData( $order, $customsDeclaration );
+				$createPacketData = $this->preparePacketData( $order );
 			} catch ( InvalidRequestException $e ) {
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -401,8 +399,7 @@ class PacketSubmitter {
 	/**
 	 * Prepares packet attributes.
 	 *
-	 * @param Entity\Order                   $order Order entity.
-	 * @param Entity\CustomsDeclaration|null $customsDeclaration Customs declaration.
+	 * @param Entity\Order $order Order entity.
 	 * @return array
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */

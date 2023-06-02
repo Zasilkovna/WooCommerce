@@ -26,7 +26,6 @@ class CustomsDeclaration {
 	 */
 	public function fromStandardizedStructure( array $data, Entity\Order $order ): Entity\CustomsDeclaration {
 		$entity = new Entity\CustomsDeclaration(
-			$data['id'] ?? null,
 			$order,
 			$data['ead'],
 			(float) $data['delivery_cost'],
@@ -36,6 +35,7 @@ class CustomsDeclaration {
 				$data['invoice_issue_date']
 			)
 		);
+		$entity->setId( $data['id'] ?? null );
 		$entity->setInvoiceFileId( $data['invoice_file_id'] );
 		$entity->setMrn( $data['mrn'] );
 		$entity->setEadFileId( $data['ead_file_id'] );
@@ -46,14 +46,12 @@ class CustomsDeclaration {
 	/**
 	 * Creates item from standardized structure.
 	 *
-	 * @param array                     $data Data.
-	 * @param Entity\CustomsDeclaration $customsDeclaration Customs declaration.
+	 * @param array $data Data.
 	 * @return Entity\CustomsDeclarationItem
 	 */
-	public function createItemFromStandardizedStructure( array $data, Entity\CustomsDeclaration $customsDeclaration ): Entity\CustomsDeclarationItem {
+	public function createItemFromStandardizedStructure( array $data ): Entity\CustomsDeclarationItem {
 		$entity = new Entity\CustomsDeclarationItem(
-			$data['id'] ?? null,
-			$customsDeclaration,
+			$data['customs_declaration_id'],
 			$data['customs_code'],
 			(float) $data['value'],
 			$data['product_name_en'],
@@ -61,6 +59,7 @@ class CustomsDeclaration {
 			$data['country_of_origin'],
 			(float) $data['weight']
 		);
+		$entity->setId( $data['id'] ?? null );
 		$entity->setProductName( $data['product_name'] );
 		$entity->setIsFoodOrBook( (bool) ( $data['is_food_or_book'] ?? false ) );
 		$entity->setIsVoc( (bool) ( $data['is_voc'] ?? false ) );

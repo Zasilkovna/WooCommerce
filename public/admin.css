@@ -742,6 +742,29 @@ tbody .packetery-log-column-note {
     font-weight: bold;
 }
 
+.packetery-flex-container {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+    margin-left: -5px;
+    margin-right: -5px;
+    container-type: inline-size;
+}
+
+.packetery-flex-container-no-margin {
+    margin: 0;
+}
+
+.packetery-flex-break-row {
+    flex-basis: 100%;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/* customs declaration */
+
 .packetery-customs-declaration-fields label {
     display: block;
 }
@@ -764,27 +787,6 @@ tbody .packetery-log-column-note {
 
 .packetery-customs-declaration-fields select {
     width: 100%;
-}
-
-.packetery-flex-container {
-    display: flex;
-    flex-flow: row wrap;
-    padding: 0;
-    margin-left: -5px;
-    margin-right: -5px;
-    container-type: inline-size;
-}
-
-.packetery-flex-container-no-margin {
-    margin: 0;
-}
-
-.packetery-flex-break-row {
-    flex-basis: 100%;
-    height: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
 }
 
 .packetery-customs-declaration-flex-item {

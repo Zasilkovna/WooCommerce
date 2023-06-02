@@ -12,7 +12,7 @@ namespace Packetery\Module;
 /**
  * Class FormRules.
  */
-class FormRulesParts {
+class FormRules {
 
 	/**
 	 * Creates greaterThan validator parts for addRule form method.
@@ -20,7 +20,7 @@ class FormRulesParts {
 	 * @param float $threshold Threshold.
 	 * @return array
 	 */
-	public static function greaterThan( float $threshold ): array {
+	public static function getGreaterThanParts( float $threshold ): array {
 		return [
 			[ FormValidators::class, 'greaterThan' ],
 			// translators: %d is numeric threshold.

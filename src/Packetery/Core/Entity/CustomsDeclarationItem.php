@@ -24,9 +24,9 @@ class CustomsDeclarationItem {
 	/**
 	 * Customs declaration.
 	 *
-	 * @var CustomsDeclaration
+	 * @var string
 	 */
-	private $customsDeclaration;
+	private $customsDeclarationId;
 
 	/**
 	 * Code.
@@ -94,18 +94,16 @@ class CustomsDeclarationItem {
 	/**
 	 * Constructor.
 	 *
-	 * @param string|null        $id ID.
-	 * @param CustomsDeclaration $customsDeclaration Customs declaration.
-	 * @param string             $customsCode Code.
-	 * @param float              $value Value.
-	 * @param string             $productNameEn Product name in english.
-	 * @param int                $unitsCount Amount.
-	 * @param string             $countryOfOrigin Country of origin.
-	 * @param float              $weight Weight.
+	 * @param string $customsDeclarationId Customs declaration.
+	 * @param string $customsCode Code.
+	 * @param float  $value Value.
+	 * @param string $productNameEn Product name in english.
+	 * @param int    $unitsCount Amount.
+	 * @param string $countryOfOrigin Country of origin.
+	 * @param float  $weight Weight.
 	 */
 	public function __construct(
-		?string $id,
-		CustomsDeclaration $customsDeclaration,
+		string $customsDeclarationId,
 		string $customsCode,
 		float $value,
 		string $productNameEn,
@@ -113,23 +111,58 @@ class CustomsDeclarationItem {
 		string $countryOfOrigin,
 		float $weight
 	) {
-		$this->id                 = $id;
-		$this->customsDeclaration = $customsDeclaration;
-		$this->customsCode        = $customsCode;
-		$this->value              = $value;
-		$this->productNameEn      = $productNameEn;
-		$this->unitsCount         = $unitsCount;
-		$this->countryOfOrigin    = $countryOfOrigin;
-		$this->weight             = $weight;
+		$this->customsDeclarationId = $customsDeclarationId;
+		$this->customsCode          = $customsCode;
+		$this->value                = $value;
+		$this->productNameEn        = $productNameEn;
+		$this->unitsCount           = $unitsCount;
+		$this->countryOfOrigin      = $countryOfOrigin;
+		$this->weight               = $weight;
+	}
+
+	/**
+	 * Country of origin.
+	 *
+	 * @return string
+	 */
+	public function getCountryOfOrigin(): string {
+		return $this->countryOfOrigin;
+	}
+
+	/**
+	 * Customs code.
+	 *
+	 * @return string
+	 */
+	public function getCustomsCode(): string {
+		return $this->customsCode;
+	}
+
+	/**
+	 * Gets customs declaration.
+	 *
+	 * @return string
+	 */
+	public function getCustomsDeclarationId(): string {
+		return $this->customsDeclarationId;
+	}
+
+	/**
+	 * Gets ID.
+	 *
+	 * @return string|null
+	 */
+	public function getId(): ?string {
+		return $this->id;
 	}
 
 	/**
 	 * Sets ID.
 	 *
-	 * @param string $id ID.
+	 * @param string|null $id ID.
 	 * @return void
 	 */
-	public function setId( string $id ): void {
+	public function setId( ?string $id ): void {
 		$this->id = $id;
 	}
 
@@ -150,6 +183,42 @@ class CustomsDeclarationItem {
 	 */
 	public function setProductName( ?string $productName ): void {
 		$this->productName = $productName;
+	}
+
+	/**
+	 * Product name english.
+	 *
+	 * @return string
+	 */
+	public function getProductNameEn(): string {
+		return $this->productNameEn;
+	}
+
+	/**
+	 * Amount.
+	 *
+	 * @return int
+	 */
+	public function getUnitsCount(): int {
+		return $this->unitsCount;
+	}
+
+	/**
+	 * Gets value.
+	 *
+	 * @return float
+	 */
+	public function getValue(): float {
+		return $this->value;
+	}
+
+	/**
+	 * Gets weight.
+	 *
+	 * @return float
+	 */
+	public function getWeight(): float {
+		return $this->weight;
 	}
 
 	/**
@@ -188,77 +257,5 @@ class CustomsDeclarationItem {
 	 */
 	public function setIsVoc( bool $isVoc ): void {
 		$this->isVoc = $isVoc;
-	}
-
-	/**
-	 * Gets ID.
-	 *
-	 * @return string|null
-	 */
-	public function getId(): ?string {
-		return $this->id;
-	}
-
-	/**
-	 * Gets customs declaration.
-	 *
-	 * @return CustomsDeclaration
-	 */
-	public function getCustomsDeclaration(): CustomsDeclaration {
-		return $this->customsDeclaration;
-	}
-
-	/**
-	 * Customs code.
-	 *
-	 * @return string
-	 */
-	public function getCustomsCode(): string {
-		return $this->customsCode;
-	}
-
-	/**
-	 * Gets value.
-	 *
-	 * @return float
-	 */
-	public function getValue(): float {
-		return $this->value;
-	}
-
-	/**
-	 * Product name english.
-	 *
-	 * @return string
-	 */
-	public function getProductNameEn(): string {
-		return $this->productNameEn;
-	}
-
-	/**
-	 * Amount.
-	 *
-	 * @return int
-	 */
-	public function getUnitsCount(): int {
-		return $this->unitsCount;
-	}
-
-	/**
-	 * Country of origin.
-	 *
-	 * @return string
-	 */
-	public function getCountryOfOrigin(): string {
-		return $this->countryOfOrigin;
-	}
-
-	/**
-	 * Gets weight.
-	 *
-	 * @return float
-	 */
-	public function getWeight(): float {
-		return $this->weight;
 	}
 }

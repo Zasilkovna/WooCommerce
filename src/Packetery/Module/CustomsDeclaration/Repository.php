@@ -38,7 +38,7 @@ class Repository {
 	/**
 	 * Constructor.
 	 *
-	 * @param WpdbAdapter                      $wpdbAdapter Wpdb adapter.
+	 * @param WpdbAdapter                      $wpdbAdapter   Wpdb adapter.
 	 * @param EntityFactory\CustomsDeclaration $entityFactory Entity factory.
 	 */
 	public function __construct( WpdbAdapter $wpdbAdapter, EntityFactory\CustomsDeclaration $entityFactory ) {
@@ -53,33 +53,33 @@ class Repository {
 	 * @return CustomsDeclaration|null
 	 */
 	public function getByOrder( Order $order ): ?CustomsDeclaration {
-		$row = $this->wpdbAdapter->get_row(
+		$customsDeclarationRow = $this->wpdbAdapter->get_row(
 			sprintf(
 				'SELECT 
-                            `id`,
-                            `order_id`,
-                            `ead`,
-                            `delivery_cost`,
-                            `invoice_number`,
-                            `invoice_issue_date`,
-                            `mrn`,
-                            `invoice_file_id`,
-                            `ead_file_id`
-                        FROM `%s`
-                        WHERE `order_id` = %d',
+					`id`,
+					`order_id`,
+					`ead`,
+					`delivery_cost`,
+					`invoice_number`,
+					`invoice_issue_date`,
+					`mrn`,
+					`invoice_file_id`,
+					`ead_file_id`
+				FROM `%s`
+				WHERE `order_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration,
 				$order->getNumber()
 			),
 			ARRAY_A
 		);
 
-		if ( null === $row ) {
+		if ( null === $customsDeclarationRow ) {
 			return null;
 		}
 
-		$result = $this->entityFactory->fromStandardizedStructure( $row, $order );
+		$customsDeclaration = $this->entityFactory->fromStandardizedStructure( $customsDeclarationRow, $order );
 
-		$result->setInvoiceFile(
+		$customsDeclaration->setInvoiceFile(
 			function () use ( $order ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
@@ -90,7 +90,7 @@ class Repository {
 			}
 		);
 
-		$result->setEadFile(
+		$customsDeclaration->setEadFile(
 			function () use ( $order ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
@@ -101,7 +101,9 @@ class Repository {
 			}
 		);
 
-		return $result;
+		$customsDeclaration->setItems( $this->getItemsByCustomsDeclarationId( $customsDeclaration->getId() ) );
+
+		return $customsDeclaration;
 	}
 
 	/**
@@ -145,36 +147,45 @@ class Repository {
 	/**
 	 * Gets customs declaration items by order.
 	 *
-	 * @param CustomsDeclaration $customsDeclaration Order.
+	 * @param string|null $customsDeclarationId Customs declaration ID.
 	 * @return CustomsDeclarationItem[]
 	 */
-	public function getItemsByCustomsDeclaration( CustomsDeclaration $customsDeclaration ): array {
-		if ( null === $customsDeclaration->getId() ) {
+	public function getItemsByCustomsDeclarationId( ?string $customsDeclarationId ): array {
+		if ( null === $customsDeclarationId ) {
 			return [];
 		}
 
-		$rows = $this->wpdbAdapter->get_results(
+		$customsDeclarationItemRows = $this->wpdbAdapter->get_results(
 			sprintf(
-				'SELECT * FROM `%s` WHERE `customs_declaration_id` = %d',
+				'SELECT
+					    `id`,
+					    `customs_declaration_id`,
+					    `customs_code`,
+					    `value`,
+					    `product_name_en`,
+					    `product_name`,
+					    `units_count`,
+					    `country_of_origin`,
+					    `weight`,
+					    `is_food_or_book`,
+					    `is_voc`
+				    FROM `%s` WHERE `customs_declaration_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration_item,
-				$customsDeclaration->getId()
+				$customsDeclarationId
 			),
 			ARRAY_A
 		);
 
-		if ( null === $rows ) {
+		if ( null === $customsDeclarationItemRows ) {
 			return [];
 		}
 
-		$results = [];
-		foreach ( $rows as $row ) {
-			$results[] = $this->entityFactory->createItemFromStandardizedStructure(
-				$row,
-				$customsDeclaration
-			);
+		$customsDeclarationItems = [];
+		foreach ( $customsDeclarationItemRows as $row ) {
+			$customsDeclarationItems[] = $this->entityFactory->createItemFromStandardizedStructure( $row );
 		}
 
-		return $results;
+		return $customsDeclarationItems;
 	}
 
 	/**
@@ -281,8 +292,8 @@ class Repository {
 	 */
 	public function declarationToDbArray( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [] ): array {
 		$data = [
-			'id'                 => (int) $customsDeclaration->getId(),
-			'order_id'           => (int) $customsDeclaration->getOrder()->getNumber(),
+			'id'                 => $customsDeclaration->getId(),
+			'order_id'           => $customsDeclaration->getOrderId(),
 			'ead'                => $customsDeclaration->getEad(),
 			'delivery_cost'      => $customsDeclaration->getDeliveryCost(),
 			'invoice_number'     => $customsDeclaration->getInvoiceNumber(),
@@ -307,8 +318,8 @@ class Repository {
 	 */
 	public function declarationItemToDbArray( CustomsDeclarationItem $customsDeclarationItem ): array {
 		return [
-			'id'                     => (int) $customsDeclarationItem->getId(),
-			'customs_declaration_id' => (int) $customsDeclarationItem->getCustomsDeclaration()->getId(),
+			'id'                     => $customsDeclarationItem->getId(),
+			'customs_declaration_id' => $customsDeclarationItem->getCustomsDeclarationId(),
 			'customs_code'           => $customsDeclarationItem->getCustomsCode(),
 			'value'                  => $customsDeclarationItem->getValue(),
 			'product_name_en'        => $customsDeclarationItem->getProductNameEn(),
@@ -357,19 +368,19 @@ class Repository {
 	public function createOrAlterItemTable(): bool {
 		$createItemTableQuery = sprintf(
 			'CREATE TABLE `%s` (
-            `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-            `customs_declaration_id` int(11) UNSIGNED NOT NULL,
-            `customs_code` varchar(8) NOT NULL,
-            `value` decimal(13,2) UNSIGNED NOT NULL,
-            `product_name_en` varchar(255) NOT NULL,
-            `product_name` varchar(255) NULL DEFAULT NULL,
-            `units_count` int(11) UNSIGNED NOT NULL,
-            `country_of_origin` char(2) NOT NULL,
-            `weight` decimal(10,3) UNSIGNED NOT NULL,
-            `is_food_or_book` tinyint(1) NOT NULL,
-            `is_voc` tinyint(1) NOT NULL,
-            PRIMARY KEY  (`id`)
-        ) %s',
+				`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+				`customs_declaration_id` int(11) UNSIGNED NOT NULL,
+				`customs_code` varchar(8) NOT NULL,
+				`value` decimal(13,2) UNSIGNED NOT NULL,
+				`product_name_en` varchar(255) NOT NULL,
+				`product_name` varchar(255) NULL DEFAULT NULL,
+				`units_count` int(11) UNSIGNED NOT NULL,
+				`country_of_origin` char(2) NOT NULL,
+				`weight` decimal(10,3) UNSIGNED NOT NULL,
+				`is_food_or_book` tinyint(1) NOT NULL,
+				`is_voc` tinyint(1) NOT NULL,
+			PRIMARY KEY  (`id`)
+		) %s',
 			$this->wpdbAdapter->packetery_customs_declaration_item,
 			$this->wpdbAdapter->get_charset_collate()
 		);

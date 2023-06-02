@@ -13,8 +13,9 @@ use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
-use Packetery\Module\FormRulesParts;
+use Packetery\Module\FormRules;
 use Packetery\Module\Message;
 use Packetery\Module\MessageManager;
 use PacketeryLatte\Engine;
@@ -131,7 +132,11 @@ class CustomsDeclarationMetabox {
 		global $post;
 
 		if ( null === $this->order ) {
-			$this->order = $this->orderRepository->getById( (int) $post->ID );
+			try {
+				$this->order = $this->orderRepository->getById( (int) $post->ID );
+			} catch ( InvalidCarrierException $invalidCarrierException ) {
+				return null;
+			}
 		}
 
 		return $this->order;
@@ -145,7 +150,6 @@ class CustomsDeclarationMetabox {
 	public function register(): void {
 		add_action( 'add_meta_boxes', [ $this, 'addMetaBoxes' ] );
 		add_action( 'admin_head', [ $this, 'renderTemplate' ] );
-		add_action( 'save_post', [ $this, 'saveFields' ] );
 	}
 
 	/**
@@ -158,7 +162,6 @@ class CustomsDeclarationMetabox {
 
 		if (
 			null === $order ||
-			null === $order->getCarrier() ||
 			false === $order->getCarrier()->requiresCustomsDeclarations()
 		) {
 			return;
@@ -199,17 +202,15 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Saves submitted form fields data.
 	 *
-	 * @param int|mixed $orderId Order ID.
-	 * @return int|mixed
+	 * @param Order $order Order ID.
+	 * @return void
 	 */
-	public function saveFields( $orderId ) {
-		$order = $this->getOrder();
+	public function saveFields( Order $order ) {
 		if (
-			null === $order ||
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			null === $this->request->getPost( self::FORM_CONTAINER_NAME )
 		) {
-			return $orderId;
+			return;
 		}
 
 		$form = $this->createForm(
@@ -220,8 +221,6 @@ class CustomsDeclarationMetabox {
 		if ( $form->isSubmitted() ) {
 			$form->fireEvents();
 		}
-
-		return $orderId;
 	}
 
 	/**
@@ -247,7 +246,7 @@ class CustomsDeclarationMetabox {
 			];
 			$formData[ self::FORM_CONTAINER_NAME ]['items'] = [];
 
-			$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclaration( $customsDeclaration );
+			$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclarationId( $customsDeclaration->getId() );
 			foreach ( $customsDeclarationItems as $customsDeclarationItem ) {
 				$formData[ self::FORM_CONTAINER_NAME ]['items'][ $customsDeclarationItem->getId() ] = $this->customsDeclarationRepository->declarationItemToDbArray( $customsDeclarationItem );
 			}
@@ -297,7 +296,7 @@ class CustomsDeclarationMetabox {
 		$prefixContainer->addText( 'delivery_cost', __( 'Delivery cost', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::FLOAT )
-			->addRule( ...FormRulesParts::greaterThan( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
 
 		$prefixContainer->addText( 'invoice_number', __( 'Invoice number', 'packeta' ) )
 			->setRequired();
@@ -388,14 +387,14 @@ class CustomsDeclarationMetabox {
 		$fieldsToOmit                = [];
 		$customsDeclarationContainer = $form[ self::FORM_CONTAINER_NAME ];
 		$prefixedValues              = $form->getValues( 'array' );
-		$values                      = $prefixedValues[ self::FORM_CONTAINER_NAME ];
-		$items                       = $values['items'];
-		unset( $values['items'] );
+		$containerValues             = $prefixedValues[ self::FORM_CONTAINER_NAME ];
+		$items                       = $containerValues['items'];
+		unset( $containerValues['items'] );
 
 		/** Invoice file. @var \PacketeryNette\Http\FileUpload $invoiceFile */
-		$invoiceFile = $values['invoice_file'];
+		$invoiceFile = $containerValues['invoice_file'];
 		/** EAD file. @var \PacketeryNette\Http\FileUpload $eadFile */
-		$eadFile = $values['ead_file'];
+		$eadFile = $containerValues['ead_file'];
 
 		if ( $invoiceFile->hasFile() && $invoiceFile->getSize() >= 16 * 1024 * 1024 ) {
 			// translators: %d is numeric value.
@@ -410,61 +409,62 @@ class CustomsDeclarationMetabox {
 		}
 
 		if ( $invoiceFile->hasFile() && $invoiceFile->isOk() ) {
-			$values['invoice_file']    = static function () use ( $invoiceFile ): string {
+			$containerValues['invoice_file']    = static function () use ( $invoiceFile ): string {
 				return $invoiceFile->getContents();
 			};
-			$values['invoice_file_id'] = null;
+			$containerValues['invoice_file_id'] = null;
 		}
 
 		if ( $invoiceFile->hasFile() && false === $invoiceFile->isOk() ) {
-			$values['invoice_file']    = null;
-			$values['invoice_file_id'] = null;
+			$containerValues['invoice_file']    = null;
+			$containerValues['invoice_file_id'] = null;
 			$customsDeclarationContainer['invoice_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
 		}
 
-		if ( $values['invoice_file'] instanceof FileUpload ) {
-			$values['invoice_file']    = null;
-			$values['invoice_file_id'] = null;
-			$fieldsToOmit[]            = 'invoice_file';
-			$fieldsToOmit[]            = 'invoice_file_id';
+		if ( $containerValues['invoice_file'] instanceof FileUpload ) {
+			$containerValues['invoice_file']    = null;
+			$containerValues['invoice_file_id'] = null;
+			$fieldsToOmit[]                     = 'invoice_file';
+			$fieldsToOmit[]                     = 'invoice_file_id';
 		}
 
 		if ( $eadFile->hasFile() && $eadFile->isOk() ) {
-			$values['ead_file']    = static function () use ( $eadFile ): string {
+			$containerValues['ead_file']    = static function () use ( $eadFile ): string {
 				return $eadFile->getContents();
 			};
-			$values['ead_file_id'] = null;
+			$containerValues['ead_file_id'] = null;
 		}
 
 		if ( $eadFile->hasFile() && false === $eadFile->isOk() ) {
-			$values['ead_file']    = null;
-			$values['ead_file_id'] = null;
+			$containerValues['ead_file']    = null;
+			$containerValues['ead_file_id'] = null;
 			$customsDeclarationContainer['ead_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
 		}
 
-		if ( $values['ead_file'] instanceof FileUpload ) {
-			$values['ead_file']    = null;
-			$values['ead_file_id'] = null;
-			$fieldsToOmit[]        = 'ead_file';
-			$fieldsToOmit[]        = 'ead_file_id';
+		if ( $containerValues['ead_file'] instanceof FileUpload ) {
+			$containerValues['ead_file']    = null;
+			$containerValues['ead_file_id'] = null;
+			$fieldsToOmit[]                 = 'ead_file';
+			$fieldsToOmit[]                 = 'ead_file_id';
 		}
 
-		if ( '' === $values['mrn'] ) {
-			$values['mrn'] = null;
+		if ( '' === $containerValues['mrn'] ) {
+			$containerValues['mrn'] = null;
 		}
 
-		$values['id']          = null;
+		$containerValues['id'] = null;
 		$oldCustomsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );
 		if ( null !== $oldCustomsDeclaration ) {
-			$values['id'] = $oldCustomsDeclaration->getId();
+			$containerValues['id'] = $oldCustomsDeclaration->getId();
 		}
 
-		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $values, $order );
-		$customsDeclaration->setInvoiceFile( $values['invoice_file'] );
-		$customsDeclaration->setEadFile( $values['ead_file'] );
+		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $containerValues, $order );
+		$customsDeclaration->setInvoiceFile( $containerValues['invoice_file'] );
+		$customsDeclaration->setEadFile( $containerValues['ead_file'] );
 		$this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
 
-		$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclaration( $customsDeclaration );
+		$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclarationId( $customsDeclaration->getId() );
+		$customsDeclaration->setItems( $customsDeclarationItems );
 		foreach ( $customsDeclarationItems as $customsDeclarationItem ) {
 			$itemId = $customsDeclarationItem->getId();
 			if ( ! isset( $items[ $itemId ] ) ) {
@@ -479,12 +479,10 @@ class CustomsDeclarationMetabox {
 				$itemId = (string) $itemId;
 			}
 
-			$item['id'] = $itemId;
+			$item['id']                     = $itemId;
+			$item['customs_declaration_id'] = $customsDeclaration->getId();
 			$this->customsDeclarationRepository->saveItem(
-				$this->customsDeclarationEntityFactory->createItemFromStandardizedStructure(
-					$item,
-					$customsDeclaration
-				)
+				$this->customsDeclarationEntityFactory->createItemFromStandardizedStructure( $item )
 			);
 		}
 	}
@@ -505,7 +503,7 @@ class CustomsDeclarationMetabox {
 		$item->addText( 'value', __( 'Value', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::FLOAT )
-			->addRule( ...FormRulesParts::greaterThan( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
 
 		$item->addText( 'product_name_en', __( 'Product name (EN)', 'packeta' ) )
 			->setRequired();
@@ -514,7 +512,7 @@ class CustomsDeclarationMetabox {
 		$item->addText( 'units_count', __( 'Units count', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::INTEGER )
-			->addRule( ...FormRulesParts::greaterThan( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
 
 		$item->addText( 'country_of_origin', __( 'Country of origin code', 'packeta' ) )
 			->setRequired()
@@ -523,13 +521,13 @@ class CustomsDeclarationMetabox {
 		$item->addText( 'weight', __( 'Weight (kg)', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::FLOAT )
-			->addRule( ...FormRulesParts::greaterThan( 0 ) )
+			->addRule( ...FormRules::getGreaterThanParts( 0 ) )
 			->addFilter(
 				static function ( float $value ): float {
 					return Helper::simplifyWeight( $value );
 				}
 			)
-			->addRule( ...FormRulesParts::greaterThan( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
 
 		$item->addCheckbox( 'is_food_or_book', __( 'Food or book?', 'packeta' ) );
 		$item->addCheckbox( 'is_voc', __( 'Is VOC?', 'packeta' ) );

@@ -65,7 +65,6 @@ class Order {
 	 * Validates data needed to submit packet.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 * @param bool         $hasCustomsDeclaration Tells if customs declaration is set.
 	 *
 	 * @return bool
 	 */

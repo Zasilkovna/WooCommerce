@@ -6,6 +6,7 @@ parameters:
         url: https://forms.office.com/e/2YjCu9ZEt0
 
 services:
+	- Packetery\Module\Order\MetaboxesWrapper
 	- Packetery\Module\ContextResolver
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address

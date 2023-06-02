@@ -5,7 +5,7 @@
  * @package Packetery
  */
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 namespace Packetery\Core\Entity;
 
@@ -22,11 +22,12 @@ class CustomsDeclaration {
 	private $id;
 
 	/**
-	 * Order.
 	 *
-	 * @var Order
+	 * Order ID.
+	 *
+	 * @var string
 	 */
-	private $order;
+	private $orderId;
 
 	/**
 	 * EAD.
@@ -92,9 +93,15 @@ class CustomsDeclaration {
 	private $eadFileId = null;
 
 	/**
+	 * Customs declaration item.
+	 *
+	 * @var CustomsDeclarationItem[]
+	 */
+	private $items = [];
+
+	/**
 	 * Constructor.
 	 *
-	 * @param string|null        $id               ID.
 	 * @param Order              $order            Order.
 	 * @param string             $ead              Ead.
 	 * @param float              $deliveryCost     Delivery cost.
@@ -102,15 +109,13 @@ class CustomsDeclaration {
 	 * @param \DateTimeImmutable $invoiceIssueDate Invoice issue date.
 	 */
 	public function __construct(
-		?string $id,
 		Order $order,
 		string $ead,
 		float $deliveryCost,
 		string $invoiceNumber,
 		\DateTimeImmutable $invoiceIssueDate
 	) {
-		$this->id               = $id;
-		$this->order            = $order;
+		$this->orderId          = $order->getNumber();
 		$this->ead              = $ead;
 		$this->deliveryCost     = $deliveryCost;
 		$this->invoiceNumber    = $invoiceNumber;
@@ -118,22 +123,63 @@ class CustomsDeclaration {
 	}
 
 	/**
-	 * Gets invoice file ID.
+	 * Gets delivery cost.
 	 *
-	 * @return string|null
+	 * @return float
 	 */
-	public function getInvoiceFileId(): ?string {
-		return $this->invoiceFileId;
+	public function getDeliveryCost(): float {
+		return $this->deliveryCost;
 	}
 
 	/**
-	 * Sets invoice file ID.
+	 * Sets delivery cost.
 	 *
-	 * @param string|null $invoiceFileId Invoice file ID.
+	 * @param float $deliveryCost Delivery cost.
+	 *
 	 * @return void
 	 */
-	public function setInvoiceFileId( ?string $invoiceFileId ): void {
-		$this->invoiceFileId = $invoiceFileId;
+	public function setDeliveryCost( float $deliveryCost ): void {
+		$this->deliveryCost = $deliveryCost;
+	}
+
+	/**
+	 * Gets EAD.
+	 *
+	 * @return string
+	 */
+	public function getEad(): string {
+		return $this->ead;
+	}
+
+	/**
+	 * Set EAD.
+	 *
+	 * @param string $ead EAD.
+	 *
+	 * @return void
+	 */
+	public function setEad( string $ead ): void {
+		$this->ead = $ead;
+	}
+
+	/**
+	 * Gets EAD file.
+	 *
+	 * @return string|null
+	 */
+	public function getEadFile(): ?string {
+		return call_user_func( $this->eadFile );
+	}
+
+	/**
+	 * Sets EAD PDF file content.
+	 *
+	 * @param callable|null $eadFile EAD file content.
+	 *
+	 * @return void
+	 */
+	public function setEadFile( ?callable $eadFile ): void {
+		$this->eadFile = $eadFile;
 	}
 
 	/**
@@ -149,6 +195,7 @@ class CustomsDeclaration {
 	 * Sets EAD file ID.
 	 *
 	 * @param string|null $eadFileId EAD file ID.
+	 *
 	 * @return void
 	 */
 	public function setEadFileId( ?string $eadFileId ): void {
@@ -156,12 +203,22 @@ class CustomsDeclaration {
 	}
 
 	/**
+	 * Gets ID.
+	 *
+	 * @return string|null
+	 */
+	public function getId(): ?string {
+		return $this->id;
+	}
+
+	/**
 	 * Sets ID.
 	 *
-	 * @param string $id ID.
+	 * @param string|null $id ID.
+	 *
 	 * @return void
 	 */
-	public function setId( string $id ): void {
+	public function setId( ?string $id ): void {
 		$this->id = $id;
 	}
 
@@ -175,22 +232,94 @@ class CustomsDeclaration {
 	}
 
 	/**
-	 * Tells if invoice file is set.
-	 *
-	 * @return bool
-	 */
-	public function hasInvoiceFile(): bool {
-		return null !== $this->invoiceFile;
-	}
-
-	/**
 	 * Sets invoice.
 	 *
 	 * @param callable|null $invoice Invoice.
+	 *
 	 * @return void
 	 */
 	public function setInvoiceFile( ?callable $invoice ): void {
 		$this->invoiceFile = $invoice;
+	}
+
+	/**
+	 * Gets invoice file ID.
+	 *
+	 * @return string|null
+	 */
+	public function getInvoiceFileId(): ?string {
+		return $this->invoiceFileId;
+	}
+
+	/**
+	 * Sets invoice file ID.
+	 *
+	 * @param string|null $invoiceFileId Invoice file ID.
+	 *
+	 * @return void
+	 */
+	public function setInvoiceFileId( ?string $invoiceFileId ): void {
+		$this->invoiceFileId = $invoiceFileId;
+	}
+
+	/**
+	 * Gets invoice issue date.
+	 *
+	 * @return \DateTimeImmutable
+	 */
+	public function getInvoiceIssueDate(): \DateTimeImmutable {
+		return $this->invoiceIssueDate;
+	}
+
+	/**
+	 * Sets invoice issue date.
+	 *
+	 * @param \DateTimeImmutable $invoiceIssueDate Invoice issue date.
+	 *
+	 * @return void
+	 */
+	public function setInvoiceIssueDate( \DateTimeImmutable $invoiceIssueDate ): void {
+		$this->invoiceIssueDate = $invoiceIssueDate;
+	}
+
+	/**
+	 * Gets invoice number.
+	 *
+	 * @return string
+	 */
+	public function getInvoiceNumber(): string {
+		return $this->invoiceNumber;
+	}
+
+	/**
+	 * Sets invoice number.
+	 *
+	 * @param string $invoiceNumber Invoice number.
+	 *
+	 * @return void
+	 */
+	public function setInvoiceNumber( string $invoiceNumber ): void {
+		$this->invoiceNumber = $invoiceNumber;
+	}
+
+	/**
+	 * Gets items.
+	 *
+	 * @return CustomsDeclarationItem[]
+	 */
+	public function getItems(): array {
+		return $this->items;
+	}
+
+	/**
+	 * Sets items.
+	 *
+	 * @param array $items Items.
+	 *
+	 * @return void
+	 */
+	public function setItems( array $items ): void {
+		$this->items = $items;
 	}
 
 	/**
@@ -206,6 +335,7 @@ class CustomsDeclaration {
 	 * Sets MRN.
 	 *
 	 * @param string|null $mrn MRN.
+	 *
 	 * @return void
 	 */
 	public function setMrn( ?string $mrn ): void {
@@ -213,12 +343,12 @@ class CustomsDeclaration {
 	}
 
 	/**
-	 * Gets EAD file.
+	 * Get order ID.
 	 *
 	 * @return string|null
 	 */
-	public function getEadFile(): ?string {
-		return call_user_func( $this->eadFile );
+	public function getOrderId(): ?string {
+		return $this->orderId;
 	}
 
 	/**
@@ -231,106 +361,11 @@ class CustomsDeclaration {
 	}
 
 	/**
-	 * Sets EAD PDF file content.
+	 * Tells if invoice file is set.
 	 *
-	 * @param callable|null $eadFile EAD file content.
-	 * @return void
+	 * @return bool
 	 */
-	public function setEadFile( ?callable $eadFile ): void {
-		$this->eadFile = $eadFile;
-	}
-
-	/**
-	 * Gets ID.
-	 *
-	 * @return string|null
-	 */
-	public function getId(): ?string {
-		return $this->id;
-	}
-
-	/**
-	 * Gets order.
-	 *
-	 * @return Order
-	 */
-	public function getOrder(): Order {
-		return $this->order;
-	}
-
-	/**
-	 * Gets EAD.
-	 *
-	 * @return string
-	 */
-	public function getEad(): string {
-		return $this->ead;
-	}
-
-	/**
-	 * Gets delivery cost.
-	 *
-	 * @return float
-	 */
-	public function getDeliveryCost(): float {
-		return $this->deliveryCost;
-	}
-
-	/**
-	 * Gets invoice number.
-	 *
-	 * @return string
-	 */
-	public function getInvoiceNumber(): string {
-		return $this->invoiceNumber;
-	}
-
-	/**
-	 * Gets invoice issue date.
-	 *
-	 * @return \DateTimeImmutable
-	 */
-	public function getInvoiceIssueDate(): \DateTimeImmutable {
-		return $this->invoiceIssueDate;
-	}
-
-	/**
-	 * Set EAD.
-	 *
-	 * @param string $ead EAD.
-	 * @return void
-	 */
-	public function setEad( string $ead ): void {
-		$this->ead = $ead;
-	}
-
-	/**
-	 * Sets delivery cost.
-	 *
-	 * @param float $deliveryCost Delivery cost.
-	 * @return void
-	 */
-	public function setDeliveryCost( float $deliveryCost ): void {
-		$this->deliveryCost = $deliveryCost;
-	}
-
-	/**
-	 * Sets invoice number.
-	 *
-	 * @param string $invoiceNumber Invoice number.
-	 * @return void
-	 */
-	public function setInvoiceNumber( string $invoiceNumber ): void {
-		$this->invoiceNumber = $invoiceNumber;
-	}
-
-	/**
-	 * Sets invoice issue date.
-	 *
-	 * @param \DateTimeImmutable $invoiceIssueDate Invoice issue date.
-	 * @return void
-	 */
-	public function setInvoiceIssueDate( \DateTimeImmutable $invoiceIssueDate ): void {
-		$this->invoiceIssueDate = $invoiceIssueDate;
+	public function hasInvoiceFile(): bool {
+		return null !== $this->invoiceFile;
 	}
 }

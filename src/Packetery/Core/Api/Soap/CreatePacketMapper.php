@@ -38,11 +38,10 @@ class CreatePacketMapper {
 	/**
 	 * Maps order data to CreatePacket structure.
 	 *
-	 * @param Entity\Order                    $order Order entity.
-	 * @param Entity\CustomsDeclarationItem[] $customsDeclarationItems Customs declaration items.
+	 * @param Entity\Order $order Order entity.
 	 * @return array
 	 */
-	public function fromEntitiesToArray( Entity\Order $order, array $customsDeclarationItems ): array {
+	public function fromEntitiesToArray( Entity\Order $order ): array {
 		$createPacketData = [
 			// Required attributes.
 			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),
@@ -91,16 +90,19 @@ class CreatePacketMapper {
 			}
 		}
 
-		if ( null === $carrier || false === $carrier->requiresCustomsDeclarations() ) {
+		if ( false === $carrier->requiresCustomsDeclarations() ) {
 			return $createPacketData;
 		}
 
 		$createPacketData['attributes'] = [];
 
-		$customsDeclaration        = null;
+		$customsDeclaration = $order->getCustomsDeclaration();
+		if ( null === $customsDeclaration ) {
+			return $createPacketData;
+		}
+
 		$createPacketData['items'] = [];
-		foreach ( $customsDeclarationItems as $customsDeclarationItem ) {
-			$customsDeclaration          = $customsDeclarationItem->getCustomsDeclaration();
+		foreach ( $customsDeclaration->getItems() as $customsDeclarationItem ) {
 			$createPacketData['items'][] = [
 				'attributes' => [
 					[
@@ -143,44 +145,42 @@ class CreatePacketMapper {
 			];
 		}
 
-		if ( null !== $customsDeclaration ) {
-			$createPacketData['attributes'][] = [
-				'key'   => 'ead',
-				'value' => $customsDeclaration->getEad(),
-			];
-			$createPacketData['attributes'][] = [
-				'key'   => 'deliveryCost',
-				'value' => $customsDeclaration->getDeliveryCost(),
-			];
-			$createPacketData['attributes'][] = [
-				'key'   => 'invoiceNumber',
-				'value' => $customsDeclaration->getInvoiceNumber(),
-			];
-			$createPacketData['attributes'][] = [
-				'key'   => 'invoiceIssueDate',
-				'value' => $customsDeclaration->getInvoiceIssueDate()->format( 'Y-m-d' ),
-			];
+		$createPacketData['attributes'][] = [
+			'key'   => 'ead',
+			'value' => $customsDeclaration->getEad(),
+		];
+		$createPacketData['attributes'][] = [
+			'key'   => 'deliveryCost',
+			'value' => $customsDeclaration->getDeliveryCost(),
+		];
+		$createPacketData['attributes'][] = [
+			'key'   => 'invoiceNumber',
+			'value' => $customsDeclaration->getInvoiceNumber(),
+		];
+		$createPacketData['attributes'][] = [
+			'key'   => 'invoiceIssueDate',
+			'value' => $customsDeclaration->getInvoiceIssueDate()->format( 'Y-m-d' ),
+		];
 
-			if ( null !== $customsDeclaration->getMrn() ) {
-				$createPacketData['attributes'][] = [
-					'key'   => 'mrn',
-					'value' => $customsDeclaration->getMrn(),
-				];
-			}
+		if ( null !== $customsDeclaration->getMrn() ) {
+			$createPacketData['attributes'][] = [
+				'key'   => 'mrn',
+				'value' => $customsDeclaration->getMrn(),
+			];
+		}
 
-			if ( null !== $customsDeclaration->getEadFileId() ) {
-				$createPacketData['attributes'][] = [
-					'key'   => 'eadFile',
-					'value' => $customsDeclaration->getEadFileId(),
-				];
-			}
+		if ( null !== $customsDeclaration->getEadFileId() ) {
+			$createPacketData['attributes'][] = [
+				'key'   => 'eadFile',
+				'value' => $customsDeclaration->getEadFileId(),
+			];
+		}
 
-			if ( null !== $customsDeclaration->getInvoiceFileId() ) {
-				$createPacketData['attributes'][] = [
-					'key'   => 'invoiceFile',
-					'value' => $customsDeclaration->getInvoiceFileId(),
-				];
-			}
+		if ( null !== $customsDeclaration->getInvoiceFileId() ) {
+			$createPacketData['attributes'][] = [
+				'key'   => 'invoiceFile',
+				'value' => $customsDeclaration->getInvoiceFileId(),
+			];
 		}
 
 		return $createPacketData;

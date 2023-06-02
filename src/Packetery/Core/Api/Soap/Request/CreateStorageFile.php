@@ -17,7 +17,7 @@ class CreateStorageFile {
 	/**
 	 * Content.
 	 *
-	 * @var callable
+	 * @var string
 	 */
 	private $content;
 
@@ -31,10 +31,10 @@ class CreateStorageFile {
 	/**
 	 * Constructor.
 	 *
-	 * @param callable $content Content.
-	 * @param string   $name Name.
+	 * @param string $content Content.
+	 * @param string $name Name.
 	 */
-	public function __construct( callable $content, string $name ) {
+	public function __construct( string $content, string $name ) {
 		$this->content = $content;
 		$this->name    = $name;
 	}
@@ -45,7 +45,7 @@ class CreateStorageFile {
 	 * @return string
 	 */
 	public function getContent(): string {
-		return call_user_func( $this->content );
+		return $this->content;
 	}
 
 	/**

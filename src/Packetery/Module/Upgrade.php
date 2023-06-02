@@ -430,11 +430,11 @@ class Upgrade {
 	 */
 	private function createCustomsDeclarationTables(): void {
 		if ( false === $this->customsDeclarationRepository->createOrAlterTable() ) {
-			$this->flashAndLog( 'customs_declaration', Record::ACTION_ORDER_TABLE_NOT_CREATED );
+			$this->flashAndLog( 'customs_declaration', Record::ACTION_CUSTOMS_DECLARATION_TABLE_NOT_CREATED );
 		}
 
 		if ( false === $this->customsDeclarationRepository->createOrAlterItemTable() ) {
-			$this->flashAndLog( 'customs_declaration_item', Record::ACTION_ORDER_TABLE_NOT_CREATED );
+			$this->flashAndLog( 'customs_declaration_item', Record::ACTION_CUSTOMS_DECLARATION_ITEM_TABLE_NOT_CREATED );
 		}
 	}
 
