@@ -10,7 +10,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use PacketeryTracy\Debugger;
 use WC_Logger;
 
 /**
@@ -240,7 +239,14 @@ class WpdbAdapter {
 	 * @return void
 	 */
 	private function logError( string $errorMessage ): void {
-		Debugger::log( $errorMessage, sprintf( 'wpdb-errors_%s', gmdate( 'Y-m-d' ) ) );
+		/**
+		 * WC logger.
+		 *
+		 * @var WC_Logger $wcLogger
+		 */
+		$wcLogger = wc_get_logger();
+
+		$wcLogger->error( sprintf( 'wpdb: %s', $errorMessage ), [ 'source' => 'packeta' ] );
 	}
 
 	/**
@@ -345,17 +351,21 @@ class WpdbAdapter {
 			$wcLogger->info( sprintf( 'dbDelta: %s => %s', $tableOrColumn, $message ), [ 'source' => 'packeta' ] );
 		}
 
-		// If the first command tries to create the table and so does the second, it means it failed.
-		// Otherwise, we assume everything is fine.
 		$parsedResult1 = $this->parseDbdeltaOutput( $result1 );
 		$parsedResult2 = $this->parseDbdeltaOutput( $result2 );
+		// If the first command tries to create the table and so does the second, it means it failed.
 		if (
 			in_array( $tableName, $parsedResult1['created_tables'], true ) &&
 			in_array( $tableName, $parsedResult2['created_tables'], true )
 		) {
 			return false;
 		}
+		// If the first command tries to add column and so does the second, it means it failed.
+		if ( ! empty( $parsedResult1['added_columns'] ) && ! empty( $parsedResult2['added_columns'] ) ) {
+			return false;
+		}
 
+		// Otherwise, we assume everything is fine, column changes errors are not safe to catch this way.
 		return true;
 	}
 
@@ -368,14 +378,22 @@ class WpdbAdapter {
 	 */
 	private function parseDbdeltaOutput( array $dbdeltaOutput ): array {
 		$createdTables = [];
+		$addedColumns  = [];
 
-		foreach ( $dbdeltaOutput as $tableName => $result ) {
-			if ( "Created table $tableName" === $result ) {
-				$createdTables[] = $tableName;
+		foreach ( $dbdeltaOutput as $tableOrColumn => $result ) {
+			if ( "Created table $tableOrColumn" === $result ) {
+				$createdTables[] = $tableOrColumn;
+				continue;
+			}
+			if ( "Added column $tableOrColumn" === $result ) {
+				$addedColumns[] = $tableOrColumn;
 			}
 		}
 
-		return [ 'created_tables' => $createdTables ];
+		return [
+			'created_tables' => $createdTables,
+			'added_columns'  => $addedColumns,
+		];
 	}
 
 }
