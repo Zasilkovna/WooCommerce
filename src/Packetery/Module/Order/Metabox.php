@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
@@ -188,9 +189,14 @@ class Metabox {
 	public function add_meta_boxes(): void {
 		global $post;
 
-		$order = $this->orderRepository->getById( (int) $post->ID );
-		if ( null === $order ) {
-			return;
+		try {
+			$order = $this->orderRepository->getById( (int) $post->ID );
+			if ( null === $order ) {
+				return;
+			}
+			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		} catch ( InvalidCarrierException $exception ) {
+			// Let's display message in the box.
 		}
 
 		add_meta_box(
@@ -261,7 +267,18 @@ class Metabox {
 			return;
 		}
 
-		$order = $this->orderRepository->getByWcOrder( $wcOrder );
+		try {
+			$order = $this->orderRepository->getByWcOrder( $wcOrder );
+		} catch ( InvalidCarrierException $exception ) {
+			$this->latte_engine->render(
+				PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
+				[
+					'errorMessage' => $exception->getMessage(),
+				]
+			);
+
+			return;
+		}
 		if ( null === $order ) {
 			return;
 		}
@@ -327,15 +344,8 @@ class Metabox {
 		$showHdWidget      = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		if (
 			null === $shippingCountry ||
-			// If carrier code is null, it means that more accurate carrier id could not be determined. See Order\Builder.
-			null === $order->getCarrierCode() ||
-			! $this->carrierRepository->isValidForCountry( $order->getCarrierId(), $shippingCountry )
+			! $this->carrierRepository->isValidForCountry( $order->getCarrier()->getId(), $shippingCountry )
 		) {
-			$carrierCountry = null;
-			if ( null !== $order->getCarrier() ) {
-				$carrierCountry = $order->getCarrier()->getCountry();
-			}
-
 			if ( $order->isPickupPointDelivery() ) {
 				$showWidgetButton = false;
 				if ( empty( $shippingCountry ) ) {
@@ -353,7 +363,7 @@ class Metabox {
 						$shippingCountry
 					);
 				}
-			} elseif ( in_array( $carrierCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
+			} elseif ( in_array( $order->getCarrier()->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$showHdWidget = false;
 				if ( empty( $shippingCountry ) ) {
 					$widgetButtonError = __(
@@ -407,7 +417,11 @@ class Metabox {
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function save_fields( $orderId ) {
-		$order = $this->orderRepository->getById( $orderId );
+		try {
+			$order = $this->orderRepository->getById( $orderId );
+		} catch ( InvalidCarrierException $exception ) {
+			$order = null;
+		}
 		if (
 			null === $order ||
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
@@ -423,9 +437,9 @@ class Metabox {
 			return $orderId;
 		}
 
-		$values = $this->order_form->getValues( 'array' );
+		$orderFormValues = $this->order_form->getValues( 'array' );
 
-		if ( ! wp_verify_nonce( $values['packetery_order_metabox_nonce'] ) ) {
+		if ( ! wp_verify_nonce( $orderFormValues['packetery_order_metabox_nonce'] ) ) {
 			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return $orderId;
@@ -438,18 +452,18 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			self::FIELD_WIDTH  => ( is_numeric( $values[ self::FIELD_WIDTH ] ) ? (float) number_format( $values[ self::FIELD_WIDTH ], 0, '.', '' ) : null ),
-			self::FIELD_LENGTH => ( is_numeric( $values[ self::FIELD_LENGTH ] ) ? (float) number_format( $values[ self::FIELD_LENGTH ], 0, '.', '' ) : null ),
-			self::FIELD_HEIGHT => ( is_numeric( $values[ self::FIELD_HEIGHT ] ) ? (float) number_format( $values[ self::FIELD_HEIGHT ], 0, '.', '' ) : null ),
+			self::FIELD_WIDTH  => ( is_numeric( $orderFormValues[ self::FIELD_WIDTH ] ) ? (float) number_format( $orderFormValues[ self::FIELD_WIDTH ], 0, '.', '' ) : null ),
+			self::FIELD_LENGTH => ( is_numeric( $orderFormValues[ self::FIELD_LENGTH ] ) ? (float) number_format( $orderFormValues[ self::FIELD_LENGTH ], 0, '.', '' ) : null ),
+			self::FIELD_HEIGHT => ( is_numeric( $orderFormValues[ self::FIELD_HEIGHT ] ) ? (float) number_format( $orderFormValues[ self::FIELD_HEIGHT ], 0, '.', '' ) : null ),
 		];
 
-		if ( ! is_numeric( $values[ self::FIELD_WEIGHT ] ) ) {
+		if ( ! is_numeric( $orderFormValues[ self::FIELD_WEIGHT ] ) ) {
 			$propsToSave[ self::FIELD_WEIGHT ] = null;
-		} elseif ( (float) $values[ self::FIELD_WEIGHT ] !== (float) $values[ self::FIELD_ORIGINAL_WEIGHT ] ) {
-			$propsToSave[ self::FIELD_WEIGHT ] = (float) $values[ self::FIELD_WEIGHT ];
+		} elseif ( (float) $orderFormValues[ self::FIELD_WEIGHT ] !== (float) $orderFormValues[ self::FIELD_ORIGINAL_WEIGHT ] ) {
+			$propsToSave[ self::FIELD_WEIGHT ] = (float) $orderFormValues[ self::FIELD_WEIGHT ];
 		}
 
-		if ( $values[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
+		if ( $orderFormValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
 			/**
 			 * Cannot be null due to the condition at the beginning of the method.
 			 *
@@ -457,31 +471,35 @@ class Metabox {
 			 */
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
 			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
-				$value = $values[ $pickupPointAttr['name'] ];
+				$pickupPointValue = $orderFormValues[ $pickupPointAttr['name'] ];
 
 				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
-					$value = ( ! empty( $values[ Attribute::CARRIER_ID ] ) ? $values[ Attribute::CARRIER_ID ] : $order->getCarrierId() );
+					if ( ! empty( $orderFormValues[ Attribute::CARRIER_ID ] ) ) {
+						$pickupPointValue = $orderFormValues[ Attribute::CARRIER_ID ];
+					} else {
+						$pickupPointValue = $order->getCarrier()->getId();
+					}
 				}
 
-				$propsToSave[ $pickupPointAttr['name'] ] = $value;
+				$propsToSave[ $pickupPointAttr['name'] ] = $pickupPointValue;
 
 				if ( $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
-					$this->mapper->toWcOrderShippingAddress( $wcOrder, $pickupPointAttr['name'], (string) $value );
+					$this->mapper->toWcOrderShippingAddress( $wcOrder, $pickupPointAttr['name'], (string) $pickupPointValue );
 				}
 			}
 			$wcOrder->save();
 		}
 
-		if ( '1' === $values[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
-			$address = $this->mapper->toValidatedAddress( $values );
+		if ( '1' === $orderFormValues[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+			$address = $this->mapper->toValidatedAddress( $orderFormValues );
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );
 		}
 
-		$order->setAdultContent( $values[ self::FIELD_ADULT_CONTENT ] );
-		$order->setCod( is_numeric( $values[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $values[ self::FIELD_COD ], 10 ) : null );
-		$order->setValue( is_numeric( $values[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $values[ self::FIELD_VALUE ], 10 ) : null );
-		$order->setDeliverOn( $this->helper->getDateTimeFromString( $values[ self::FIELD_DELIVER_ON ] ) );
+		$order->setAdultContent( $orderFormValues[ self::FIELD_ADULT_CONTENT ] );
+		$order->setCod( is_numeric( $orderFormValues[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $orderFormValues[ self::FIELD_COD ], 10 ) : null );
+		$order->setValue( is_numeric( $orderFormValues[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $orderFormValues[ self::FIELD_VALUE ], 10 ) : null );
+		$order->setDeliverOn( $this->helper->getDateTimeFromString( $orderFormValues[ self::FIELD_DELIVER_ON ] ) );
 
 		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
 		$order->setSize( $orderSize );
@@ -502,7 +520,11 @@ class Metabox {
 	public function getPickupPointWidgetSettings(): ?array {
 		global $post;
 
-		$order = $this->orderRepository->getById( (int) $post->ID );
+		try {
+			$order = $this->orderRepository->getById( (int) $post->ID );
+		} catch ( InvalidCarrierException $exception ) {
+			$order = null;
+		}
 		if ( null === $order || false === $order->isPickupPointDelivery() || null === $order->getShippingCountry() ) {
 			return null;
 		}
@@ -524,7 +546,11 @@ class Metabox {
 	public function getAddressWidgetSettings(): ?array {
 		global $post;
 
-		$order = $this->orderRepository->getById( (int) $post->ID );
+		try {
+			$order = $this->orderRepository->getById( (int) $post->ID );
+		} catch ( InvalidCarrierException $exception ) {
+			$order = null;
+		}
 		if ( null === $order || false === $order->isHomeDelivery() ) {
 			return null;
 		}

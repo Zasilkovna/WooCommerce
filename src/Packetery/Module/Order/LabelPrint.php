@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Log;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\Provider;
@@ -343,7 +344,11 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getById( $orderId );
+			try {
+				$order = $this->orderRepository->getById( $orderId );
+			} catch ( InvalidCarrierException $exception ) {
+				$order = null;
+			}
 
 			if ( ! $response->hasFault() ) {
 				if ( null !== $order ) {
@@ -395,7 +400,11 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getById( $orderId );
+			try {
+				$order = $this->orderRepository->getById( $orderId );
+			} catch ( InvalidCarrierException $exception ) {
+				$order = null;
+			}
 
 			if ( ! $response->hasFault() ) {
 				if ( null !== $order ) {
@@ -507,7 +516,11 @@ class LabelPrint {
 				];
 				$record->orderId = $orderId;
 				$this->logger->add( $record );
-				$order = $this->orderRepository->getById( $orderId );
+				try {
+					$order = $this->orderRepository->getById( $orderId );
+				} catch ( InvalidCarrierException $exception ) {
+					$order = null;
+				}
 				if ( null !== $order ) {
 					$order->updateApiErrorMessage( $response->getFaultString() );
 					$this->orderRepository->save( $order );

@@ -128,10 +128,10 @@ class Carrier {
 	/**
 	 * Carrier constructor.
 	 *
-	 * @param string $id Carrier id.
-	 * @param string $name Carrier name.
-	 * @param bool   $hasPickupPoints Carrier hasPickupPoints.
-	 * @param bool   $hasDirectLabel Carrier hasDirectLabel.
+	 * @param string $id                          Carrier id.
+	 * @param string $name                        Carrier name.
+	 * @param bool   $hasPickupPoints             Carrier hasPickupPoints.
+	 * @param bool   $hasDirectLabel              Carrier hasDirectLabel.
 	 * @param bool   $requiresSeparateHouseNumber Carrier requiresSeparateHouseNumber.
 	 * @param bool   $requiresCustomsDeclarations Carrier requiresCustomsDeclarations.
 	 * @param bool   $requiresEmail               Carrier requiresEmail.

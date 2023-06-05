@@ -69,7 +69,7 @@
 
                 {if $order->getPickupPoint()}
                     <td>{$order->getPickupPoint()->getId()}, {$order->getPickupPoint()->getName()}</td>
-                {elseif $order->getCarrier()}
+                {else}
                     <td>{$order->getCarrier()->getId()}, {$order->getCarrier()->getName()}</td>
                 {/if}
             </tr>

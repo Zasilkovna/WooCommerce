@@ -1,7 +1,7 @@
 <select name="packetery_order_type">
 	<option value="">{$translations['packetaMethodType']}</option>
 	<option value="carriers"{if $packeteryOrderType === 'carriers'} selected="selected"{/if}>{$translations['carrierPackets']}</option>
-	<option value="packeta"{if $packeteryOrderType === Packetery\Module\Carrier\Repository::INTERNAL_PICKUP_POINTS_ID}
+	<option value="packeta"{if $packeteryOrderType === Packetery\Core\Entity\Carrier::INTERNAL_PICKUP_POINTS_ID}
 		selected="selected"{/if}>{$translations['packetaPickupPointPackets']}</option>
 </select>
 {foreach $linkFilters as $name => $value}

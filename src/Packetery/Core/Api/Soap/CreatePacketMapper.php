@@ -80,7 +80,7 @@ class CreatePacketMapper {
 		}
 
 		$carrier = $order->getCarrier();
-		if ( null !== $carrier && $carrier->requiresSize() ) {
+		if ( $carrier->requiresSize() ) {
 			$size = $order->getSize();
 			if ( null !== $size ) {
 				$createPacketData['size'] = [

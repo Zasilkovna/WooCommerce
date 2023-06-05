@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
 use PacketeryNette\Http\Request;
@@ -160,7 +161,11 @@ class PacketActionsCommonLogic {
 	public function getOrder(): ?Entity\Order {
 		$orderId = $this->getOrderId();
 		if ( null !== $orderId ) {
-			return $this->orderRepository->getById( $orderId );
+			try {
+				return $this->orderRepository->getById( $orderId );
+			} catch ( InvalidCarrierException $exception ) {
+				return null;
+			}
 		}
 
 		return null;

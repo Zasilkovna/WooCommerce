@@ -11,9 +11,8 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
+use Packetery\Module\Helper;
 use Packetery\Module\WeightCalculator;
-use Packetery\Module\Carrier;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Product;
 use WC_Order;
@@ -33,13 +32,6 @@ class Builder {
 	private $optionsProvider;
 
 	/**
-	 * Carrier repository.
-	 *
-	 * @var Carrier\EntityRepository Carrier repository.
-	 */
-	private $carrierRepository;
-
-	/**
 	 * Weight calculator.
 	 *
 	 * @var WeightCalculator
@@ -47,30 +39,17 @@ class Builder {
 	private $calculator;
 
 	/**
-	 * Internal pickup points config.
-	 *
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointsConfig;
-
-	/**
 	 * Order constructor.
 	 *
-	 * @param Provider                  $optionsProvider    Options Provider.
-	 * @param Carrier\EntityRepository  $carrierRepository  Carrier repository.
-	 * @param WeightCalculator          $weightCalculator   Weight calculator.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param Provider         $optionsProvider Options Provider.
+	 * @param WeightCalculator $calculator Weight calculator.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
-		Carrier\EntityRepository $carrierRepository,
-		WeightCalculator $weightCalculator,
-		PacketaPickupPointsConfig $pickupPointsConfig
+		WeightCalculator $calculator
 	) {
-		$this->optionsProvider    = $optionsProvider;
-		$this->carrierRepository  = $carrierRepository;
-		$this->calculator         = $weightCalculator;
-		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->optionsProvider = $optionsProvider;
+		$this->calculator      = $calculator;
 	}
 
 	/**
@@ -88,7 +67,7 @@ class Builder {
 			$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		}
 
-		$order->setShippingCountry( strtolower( $wcOrder->get_shipping_country() ) );
+		$order->setShippingCountry( Helper::getWcOrderCountry( $wcOrder ) );
 
 		$orderData   = $wcOrder->get_data();
 		$contactInfo = ( $wcOrder->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
@@ -131,21 +110,6 @@ class Builder {
 		}
 
 		$order->setSize( $order->getSize() );
-
-		$carrierCode = null;
-		if ( $order->isExternalCarrier() ) {
-			$carrier = $this->carrierRepository->getById( (int) $order->getCarrierId() );
-			$order->setCarrier( $carrier );
-			$carrierCode = $order->getCarrierId();
-		} else {
-			$shippingCountry = $order->getShippingCountry();
-			if ( null !== $shippingCountry ) {
-				// TODO: for non-compound split carriers use value from database. See Metabox and PacketSubmitter.
-				$carrierCode = $this->pickupPointsConfig->getCompoundCarrierIdByCountry( $shippingCountry );
-			}
-		}
-		$order->setCarrierCode( $carrierCode );
-
 		$order->setCurrency( $wcOrder->get_currency() );
 
 		return $order;

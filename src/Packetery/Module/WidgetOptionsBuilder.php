@@ -102,7 +102,7 @@ class WidgetOptionsBuilder {
 	 */
 	private function getCarriersParam( bool $isPickupPoints, string $carrierId ): ?string {
 		if ( $isPickupPoints ) {
-			return ( is_numeric( $carrierId ) ? $carrierId : Carrier\Repository::INTERNAL_PICKUP_POINTS_ID );
+			return ( is_numeric( $carrierId ) ? $carrierId : Entity\Carrier::INTERNAL_PICKUP_POINTS_ID );
 		}
 
 		return null;
@@ -167,15 +167,15 @@ class WidgetOptionsBuilder {
 
 		if ( $this->featureFlag->isSplitActive() ) {
 			// In backend, we want all pickup points in that country for packeta carrier.
-			if ( $order->getCarrierId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
+			if ( $order->getCarrier()->getId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 				$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
-					$order->getCarrierId(),
+					$order->getCarrier()->getId(),
 					$order->getShippingCountry(),
 					null
 				);
 			}
 		} else {
-			$widgetOptions['carriers'] = $this->getCarriersParam( $order->isPickupPointDelivery(), $order->getCarrierId() );
+			$widgetOptions['carriers'] = $this->getCarriersParam( $order->isPickupPointDelivery(), $order->getCarrier()->getId() );
 		}
 
 		if ( $order->containsAdultContent() ) {
@@ -217,8 +217,7 @@ class WidgetOptionsBuilder {
 			$widgetOptions += [ 'county' => $deliveryAddress->getCounty() ];
 		}
 
-		// TODO: Redo in carrier refactor.
-		if ( $order->getCarrier() && is_numeric( $order->getCarrier()->getId() ) ) {
+		if ( is_numeric( $order->getCarrier()->getId() ) ) {
 			$widgetOptions += [ 'carrierId' => $order->getCarrier()->getId() ];
 		}
 

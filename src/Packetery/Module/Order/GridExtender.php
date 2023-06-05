@@ -10,9 +10,10 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core;
-use Packetery\Core\Helper;
+use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
 use PacketeryLatte\Engine;
 use PacketeryNette\Http\Request;
@@ -30,7 +31,7 @@ class GridExtender {
 	/**
 	 * Generic Helper.
 	 *
-	 * @var Helper
+	 * @var Core\Helper
 	 */
 	private $helper;
 
@@ -79,7 +80,7 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper                    $helper                Helper.
+	 * @param Core\Helper               $helper                Helper.
 	 * @param Carrier\EntityRepository  $carrierRepository     Carrier repository.
 	 * @param Engine                    $latteEngine           Latte Engine.
 	 * @param Request                   $httpRequest           Http Request.
@@ -88,7 +89,7 @@ class GridExtender {
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
 	 */
 	public function __construct(
-		Helper $helper,
+		Core\Helper $helper,
 		Carrier\EntityRepository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
@@ -214,17 +215,13 @@ class GridExtender {
 	 * @param int $postId Post ID.
 	 *
 	 * @return Core\Entity\Order|null
+	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	private function getOrderByPostId( int $postId ): ?Core\Entity\Order {
-		global $posts;
 		static $ordersCache;
 
-		if ( ! isset( $ordersCache ) ) {
-			$orderIds = [];
-			foreach ( $posts as $order ) {
-				$orderIds[] = $order->ID;
-			}
-			$ordersCache = $this->orderRepository->getByIds( $orderIds );
+		if ( ! isset( $ordersCache[ $postId ] ) ) {
+			$ordersCache[ $postId ] = $this->orderRepository->getById( $postId );
 		}
 
 		return $ordersCache[ $postId ] ?? null;
@@ -238,8 +235,15 @@ class GridExtender {
 	public function fillCustomOrderListColumns( string $column ): void {
 		global $post;
 
-		$order = $this->getOrderByPostId( $post->ID );
+		try {
+			$order = $this->getOrderByPostId( $post->ID );
+		} catch ( InvalidCarrierException $exception ) {
+			if ( 'packetery' === $column ) {
+				Module\Helper::renderString( $exception->getMessage() );
+			}
 
+			return;
+		}
 		if ( null === $order ) {
 			return;
 		}
@@ -264,7 +268,7 @@ class GridExtender {
 					break;
 				}
 
-				$homeDeliveryCarrierOptions = Carrier\Options::createByCarrierId( $order->getCarrierId() );
+				$homeDeliveryCarrierOptions = Carrier\Options::createByCarrierId( $order->getCarrier()->getId() );
 				echo esc_html( $homeDeliveryCarrierOptions->getName() );
 				break;
 			case 'packetery_packet_id':
@@ -315,10 +319,10 @@ class GridExtender {
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,
 						'printLink'                 => $printLink,
-						'helper'                    => new Helper(),
-						'datePickerFormat'          => Helper::DATEPICKER_FORMAT,
+						'helper'                    => new Core\Helper(),
+						'datePickerFormat'          => Core\Helper::DATEPICKER_FORMAT,
 						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
-						'packetDeliverOn'           => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
+						'packetDeliverOn'           => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
 						'translations'              => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),

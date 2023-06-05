@@ -17,6 +17,7 @@ use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\Carrier\Options;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
 use PacketeryNette\Http\Request;
@@ -222,7 +223,11 @@ class PacketSubmitter {
 	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
 		if ( null === $order ) {
-			$order = $this->orderRepository->getByWcOrder( $wcOrder );
+			try {
+				$order = $this->orderRepository->getByWcOrder( $wcOrder );
+			} catch ( InvalidCarrierException $exception ) {
+				$order = null;
+			}
 		}
 		if ( null === $order ) {
 			$submissionResult->increaseIgnoredCount();
@@ -319,13 +324,7 @@ class PacketSubmitter {
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
 		if ( ! empty( $createPacketData['cod'] ) ) {
-			if ( $order->getCarrierCode() === null ) {
-				// This means that more accurate carrier id could not be determined. See Order\Builder.
-				$roundingType = Rounder::DONT_ROUND;
-			} else {
-				$roundingType = Options::createByCarrierId( $order->getCarrierCode() )->getCodRoundingType();
-			}
-
+			$roundingType            = Options::createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
 			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );
 			$createPacketData['cod'] = $roundedCod;
 		}
