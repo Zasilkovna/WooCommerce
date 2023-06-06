@@ -705,7 +705,7 @@ class Page {
 			$latteParams['lastExport'] = $lastExport;
 		}
 
-		$latteParams['forcePacketCancelDescription'] = __( 'Cancel the order even if the cancellation in the Packeta system will be unsuccessful', 'packeta' );
+		$latteParams['forcePacketCancelDescription'] = __( 'Cancel the packet for an order even if the cancellation in the Packeta system will not be successful.', 'packeta' );
 		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations']                 = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
