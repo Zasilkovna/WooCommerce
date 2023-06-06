@@ -742,6 +742,8 @@ tbody .packetery-log-column-note {
     font-weight: bold;
 }
 
+/* customs declaration */
+
 .packetery-flex-container {
     display: flex;
     flex-flow: row wrap;
@@ -762,8 +764,6 @@ tbody .packetery-log-column-note {
     padding: 0;
     border: 0;
 }
-
-/* customs declaration */
 
 .packetery-customs-declaration-fields label {
     display: block;

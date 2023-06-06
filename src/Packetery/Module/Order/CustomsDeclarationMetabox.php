@@ -296,7 +296,7 @@ class CustomsDeclarationMetabox {
 		$prefixContainer->addText( 'delivery_cost', __( 'Delivery cost', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::FLOAT )
-			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$prefixContainer->addText( 'invoice_number', __( 'Invoice number', 'packeta' ) )
 			->setRequired();
@@ -503,7 +503,7 @@ class CustomsDeclarationMetabox {
 		$item->addText( 'value', __( 'Value', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::FLOAT )
-			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$item->addText( 'product_name_en', __( 'Product name (EN)', 'packeta' ) )
 			->setRequired();
@@ -512,7 +512,7 @@ class CustomsDeclarationMetabox {
 		$item->addText( 'units_count', __( 'Units count', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::INTEGER )
-			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$item->addText( 'country_of_origin', __( 'Country of origin code', 'packeta' ) )
 			->setRequired()
@@ -521,13 +521,13 @@ class CustomsDeclarationMetabox {
 		$item->addText( 'weight', __( 'Weight (kg)', 'packeta' ) )
 			->setRequired()
 			->addRule( Form::FLOAT )
-			->addRule( ...FormRules::getGreaterThanParts( 0 ) )
+			->addRule( ...FormRules::getGreaterThanParameters( 0 ) )
 			->addFilter(
 				static function ( float $value ): float {
 					return Helper::simplifyWeight( $value );
 				}
 			)
-			->addRule( ...FormRules::getGreaterThanParts( 0 ) );
+			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$item->addCheckbox( 'is_food_or_book', __( 'Food or book?', 'packeta' ) );
 		$item->addCheckbox( 'is_voc', __( 'Is VOC?', 'packeta' ) );

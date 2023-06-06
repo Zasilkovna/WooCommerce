@@ -260,7 +260,7 @@ class Order {
 	}
 
 	/**
-	 * Has customs eclaration items.
+	 * Has customs declaration items.
 	 *
 	 * @return bool
 	 */

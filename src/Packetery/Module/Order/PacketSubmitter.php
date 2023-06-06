@@ -260,11 +260,10 @@ class PacketSubmitter {
 				null === $customsDeclaration->getInvoiceFileId() &&
 				$this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration )
 			) {
-				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-				$fileContent         = base64_encode( $customsDeclaration->getInvoiceFile() );
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
-						$fileContent,
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+						base64_encode( $customsDeclaration->getInvoiceFile() ),
 						sprintf( 'invoice_%s.pdf', $customsDeclaration->getId() )
 					)
 				);
@@ -297,11 +296,10 @@ class PacketSubmitter {
 				null === $customsDeclaration->getEadFileId() &&
 				$this->customsDeclarationRepository->hasEadFile( $customsDeclaration )
 			) {
-				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
-				$fileContent     = base64_encode( $customsDeclaration->getEadFile() );
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
-						$fileContent,
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+						base64_encode( $customsDeclaration->getEadFile() ),
 						sprintf( 'ead_%s.pdf', $customsDeclaration->getId() )
 					)
 				);
@@ -409,7 +407,7 @@ class PacketSubmitter {
 			throw new InvalidRequestException( 'All required order attributes are not set.', $validationErrors );
 		}
 
-		$createPacketData = $this->createPacketMapper->fromEntitiesToArray( $order );
+		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
 		if ( ! empty( $createPacketData['cod'] ) ) {
 			$roundingType            = Options::createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
 			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );

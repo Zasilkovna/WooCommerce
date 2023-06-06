@@ -22,7 +22,6 @@ class CustomsDeclaration {
 	private $id;
 
 	/**
-	 *
 	 * Order ID.
 	 *
 	 * @var string
@@ -102,20 +101,20 @@ class CustomsDeclaration {
 	/**
 	 * Constructor.
 	 *
-	 * @param Order              $order            Order.
+	 * @param string             $orderId          Order ID.
 	 * @param string             $ead              Ead.
 	 * @param float              $deliveryCost     Delivery cost.
 	 * @param string             $invoiceNumber    Invoice number.
 	 * @param \DateTimeImmutable $invoiceIssueDate Invoice issue date.
 	 */
 	public function __construct(
-		Order $order,
+		string $orderId,
 		string $ead,
 		float $deliveryCost,
 		string $invoiceNumber,
 		\DateTimeImmutable $invoiceIssueDate
 	) {
-		$this->orderId          = $order->getNumber();
+		$this->orderId          = $orderId;
 		$this->ead              = $ead;
 		$this->deliveryCost     = $deliveryCost;
 		$this->invoiceNumber    = $invoiceNumber;

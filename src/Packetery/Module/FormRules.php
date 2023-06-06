@@ -20,7 +20,7 @@ class FormRules {
 	 * @param float $threshold Threshold.
 	 * @return array
 	 */
-	public static function getGreaterThanParts( float $threshold ): array {
+	public static function getGreaterThanParameters( float $threshold ): array {
 		return [
 			[ FormValidators::class, 'greaterThan' ],
 			// translators: %d is numeric threshold.

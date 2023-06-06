@@ -76,6 +76,7 @@ class GridExtender {
 	 * @var PacketaPickupPointsConfig
 	 */
 	private $pickupPointsConfig;
+
 	/**
 	 * GridExtender constructor.
 	 *

@@ -41,7 +41,7 @@ class CreatePacketMapper {
 	 * @param Entity\Order $order Order entity.
 	 * @return array
 	 */
-	public function fromEntitiesToArray( Entity\Order $order ): array {
+	public function fromOrderToArray( Entity\Order $order ): array {
 		$createPacketData = [
 			// Required attributes.
 			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),

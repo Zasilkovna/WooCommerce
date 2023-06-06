@@ -26,7 +26,7 @@ class CustomsDeclaration {
 	 */
 	public function fromStandardizedStructure( array $data, Entity\Order $order ): Entity\CustomsDeclaration {
 		$entity = new Entity\CustomsDeclaration(
-			$order,
+			$order->getNumber(),
 			$data['ead'],
 			(float) $data['delivery_cost'],
 			$data['invoice_number'],
