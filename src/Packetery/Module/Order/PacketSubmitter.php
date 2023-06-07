@@ -318,8 +318,9 @@ class PacketSubmitter {
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
-		if ( ! $this->orderValidator->validate( $order ) ) {
-			throw new InvalidRequestException( 'All required order attributes are not set.' );
+		$validationErrors = $this->orderValidator->getValidationErrors( $order );
+		if ( ! empty( $validationErrors ) ) {
+			throw new InvalidRequestException( implode( ' ', $validationErrors ) );
 		}
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );

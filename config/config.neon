@@ -47,7 +47,8 @@ services:
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
-	- Packetery\Core\Validator\Order
+	orderValidatorFactory: Packetery\Module\Order\ValidatorFactory
+	orderValidator: @orderValidatorFactory::create()
 	- Packetery\Module\Options\Repository
 	- Packetery\Module\Api\Internal\OrderController
 	- Packetery\Module\Api\Internal\OrderRouter
