@@ -63,25 +63,20 @@ class MetaboxesWrapper {
 	public function register(): void {
 		$this->generalMetabox->register();
 		$this->customDeclarationMetabox->register();
-		add_action( 'save_post', [ $this, 'saveFields' ], 10, 2 );
+		add_action( 'save_post_shop_order', [ $this, 'saveFields' ] );
 	}
 
 	/**
 	 * Saves metabox fields.
 	 *
-	 * @param int|mixed      $postId     Post ID.
-	 * @param \WP_Post|mixed $postObject Post object.
+	 * @param int|mixed $wcOrderId Order ID.
 	 *
 	 * @return void
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function saveFields( $postId, $postObject ) {
-		if ( ! $postObject instanceof \WP_Post || 'shop_order' !== $postObject->post_type ) {
-			return;
-		}
-
+	public function saveFields( $wcOrderId ) {
 		try {
-			$order = $this->orderRepository->getById( (int) $postId );
+			$order = $this->orderRepository->getById( (int) $wcOrderId );
 		} catch ( InvalidCarrierException $invalidCarrierException ) {
 			return;
 		}
