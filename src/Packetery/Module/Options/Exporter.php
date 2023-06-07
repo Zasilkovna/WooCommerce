@@ -97,14 +97,14 @@ class Exporter {
 		}
 
 		$globalSettings = $this->optionsProvider->data_to_array();
-		if ( ! empty( $globalSettings['api_password'] ) ) {
-			$globalSettings['api_password'] = sprintf(
+		if ( ! empty( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
+			$globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
 				'%s...%s (%s)',
-				substr( $globalSettings['api_password'], 0, 16 ),
-				substr( $globalSettings['api_password'], - 2, 2 ),
-				strlen( $globalSettings['api_password'] )
+				substr( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'], 0, 16 ),
+				substr( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'], - 2, 2 ),
+				strlen( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] )
 			);
-			unset( $globalSettings['api_key'] );
+			unset( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_key'] );
 		}
 		$globalSettings['woocommerce_allowed_countries']          = get_option( 'woocommerce_allowed_countries' );
 		$globalSettings['woocommerce_specific_allowed_countries'] = get_option( 'woocommerce_specific_allowed_countries' );

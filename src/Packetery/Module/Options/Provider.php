@@ -83,9 +83,9 @@ class Provider {
 	/**
 	 * Casts data to array.
 	 *
-	 * @param string $optionName Option name of settings.
+	 * @param string|null $optionName Option name of settings.
 	 *
-	 * @return array Data.
+	 * @return array<string, array|mixed> All plugin options data or only section of such data by given $optionName.
 	 */
 	public function data_to_array( ?string $optionName = null ): array {
 		if ( self::OPTION_NAME_PACKETERY === $optionName ) {
