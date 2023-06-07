@@ -258,7 +258,7 @@ class PacketSubmitter {
 			if (
 				null !== $customsDeclaration &&
 				null === $customsDeclaration->getInvoiceFileId() &&
-				$this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration )
+				$customsDeclaration->hasInvoiceFileContent()
 			) {
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(
@@ -294,7 +294,7 @@ class PacketSubmitter {
 			if (
 				null !== $customsDeclaration &&
 				null === $customsDeclaration->getEadFileId() &&
-				$this->customsDeclarationRepository->hasEadFile( $customsDeclaration )
+				$customsDeclaration->hasEadFileContent()
 			) {
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
 					new Soap\Request\CreateStorageFile(

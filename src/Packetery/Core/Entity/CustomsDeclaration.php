@@ -57,6 +57,13 @@ class CustomsDeclaration {
 	private $invoiceIssueDate;
 
 	/**
+	 * Tells if invoice file has content.
+	 *
+	 * @var bool
+	 */
+	private $hasInvoiceFileContent = false;
+
+	/**
 	 * Invoice.
 	 *
 	 * @var callable|null
@@ -76,6 +83,13 @@ class CustomsDeclaration {
 	 * @var string|null
 	 */
 	private $mrn = null;
+
+	/**
+	 * Tells if EAD file has content.
+	 *
+	 * @var bool
+	 */
+	private $hasEadFileContent = false;
 
 	/**
 	 * Ead file.
@@ -173,12 +187,14 @@ class CustomsDeclaration {
 	/**
 	 * Sets EAD PDF file content.
 	 *
-	 * @param callable|null $eadFile EAD file content.
+	 * @param callable|null $eadFile    EAD file content.
+	 * @param bool          $hasContent Tells if file has content.
 	 *
 	 * @return void
 	 */
-	public function setEadFile( ?callable $eadFile ): void {
-		$this->eadFile = $eadFile;
+	public function setEadFile( ?callable $eadFile, bool $hasContent ): void {
+		$this->eadFile           = $eadFile;
+		$this->hasEadFileContent = $hasContent;
 	}
 
 	/**
@@ -233,12 +249,14 @@ class CustomsDeclaration {
 	/**
 	 * Sets invoice.
 	 *
-	 * @param callable|null $invoice Invoice.
+	 * @param callable|null $invoice    Invoice.
+	 * @param bool          $hasContent Tells if file has content.
 	 *
 	 * @return void
 	 */
-	public function setInvoiceFile( ?callable $invoice ): void {
-		$this->invoiceFile = $invoice;
+	public function setInvoiceFile( ?callable $invoice, bool $hasContent ): void {
+		$this->invoiceFile           = $invoice;
+		$this->hasInvoiceFileContent = $hasContent;
 	}
 
 	/**
@@ -355,8 +373,8 @@ class CustomsDeclaration {
 	 *
 	 * @return bool
 	 */
-	public function hasEadFile(): bool {
-		return null !== $this->eadFile;
+	public function hasEadFileContent(): bool {
+		return $this->hasEadFileContent;
 	}
 
 	/**
@@ -364,7 +382,7 @@ class CustomsDeclaration {
 	 *
 	 * @return bool
 	 */
-	public function hasInvoiceFile(): bool {
-		return null !== $this->invoiceFile;
+	public function hasInvoiceFileContent(): bool {
+		return $this->hasInvoiceFileContent;
 	}
 }

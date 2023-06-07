@@ -259,8 +259,8 @@ class CustomsDeclarationMetabox {
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
 			[
 				'form'           => $form,
-				'hasInvoiceFile' => $this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration ),
-				'hasEadFile'     => $this->customsDeclarationRepository->hasEadFile( $customsDeclaration ),
+				'hasInvoiceFile' => $customsDeclaration->hasInvoiceFileContent(),
+				'hasEadFile'     => $customsDeclaration->hasEadFileContent(),
 				'translations'   => [
 					'addCustomsDeclarationItem' => __( 'Add item', 'packeta' ),
 					'delete'                    => __( 'Delete', 'packeta' ),
@@ -307,7 +307,7 @@ class CustomsDeclarationMetabox {
 		$invoiceFile = $prefixContainer->addUpload( 'invoice_file', __( 'Invoice PDF file', 'packeta' ) )
 			->setRequired( false );
 
-		if ( false === $this->customsDeclarationRepository->hasInvoiceFile( $customsDeclaration ) ) {
+		if ( null === $customsDeclaration || false === $customsDeclaration->hasInvoiceFileContent() ) {
 			$invoiceFile
 				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 					->setRequired()
@@ -328,7 +328,7 @@ class CustomsDeclarationMetabox {
 			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 				->toggle( 'customs-declaration-own-field-ead_file' );
 
-		if ( false === $this->customsDeclarationRepository->hasEadFile( $customsDeclaration ) ) {
+		if ( null === $customsDeclaration || false === $customsDeclaration->hasEadFileContent() ) {
 			$eadFile
 				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 				->setRequired();
@@ -459,8 +459,8 @@ class CustomsDeclarationMetabox {
 		}
 
 		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $containerValues, $order );
-		$customsDeclaration->setInvoiceFile( $containerValues['invoice_file'] );
-		$customsDeclaration->setEadFile( $containerValues['ead_file'] );
+		$customsDeclaration->setInvoiceFile( $containerValues['invoice_file'], $containerValues['invoice_file'] && $invoiceFile->getSize() > 0 );
+		$customsDeclaration->setEadFile( $containerValues['ead_file'], $containerValues['ead_file'] && $eadFile->getSize() > 0 );
 		$this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
 
 		$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclarationId( $customsDeclaration->getId() );

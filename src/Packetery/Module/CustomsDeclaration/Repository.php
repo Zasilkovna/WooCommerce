@@ -64,7 +64,9 @@ class Repository {
 					`invoice_issue_date`,
 					`mrn`,
 					`invoice_file_id`,
-					`ead_file_id`
+					`ead_file_id`,
+					`invoice_file` IS NOT NULL AS has_invoice_file_content,
+					`ead_file` IS NOT NULL AS has_ead_file_content
 				FROM `%s`
 				WHERE `order_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration,
@@ -87,7 +89,8 @@ class Repository {
 						$order->getNumber()
 					)
 				);
-			}
+			},
+			(bool) $customsDeclarationRow['has_invoice_file_content']
 		);
 
 		$customsDeclaration->setEadFile(
@@ -98,50 +101,13 @@ class Repository {
 						$order->getNumber()
 					)
 				);
-			}
+			},
+			(bool) $customsDeclarationRow['has_ead_file_content']
 		);
 
 		$customsDeclaration->setItems( $this->getItemsByCustomsDeclarationId( $customsDeclaration->getId() ) );
 
 		return $customsDeclaration;
-	}
-
-	/**
-	 * Has invoice file.
-	 *
-	 * @param CustomsDeclaration|null $customsDeclaration Customs declaration.
-	 * @return bool
-	 */
-	public function hasInvoiceFile( ?CustomsDeclaration $customsDeclaration ): bool {
-		if ( null === $customsDeclaration ) {
-			return false;
-		}
-
-		return '1' !== $this->wpdbAdapter->get_var(
-			$this->wpdbAdapter->prepare(
-				'SELECT "1" FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `id` = %d AND `invoice_file` IS NULL',
-				$customsDeclaration->getId()
-			)
-		);
-	}
-
-	/**
-	 * Has EAD file.
-	 *
-	 * @param CustomsDeclaration|null $customsDeclaration Customs declaration.
-	 * @return bool
-	 */
-	public function hasEadFile( ?CustomsDeclaration $customsDeclaration ): bool {
-		if ( null === $customsDeclaration ) {
-			return false;
-		}
-
-		return '1' !== $this->wpdbAdapter->get_var(
-			$this->wpdbAdapter->prepare(
-				'SELECT "1" FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `id` = %d AND `ead_file` IS NULL',
-				$customsDeclaration->getId()
-			)
-		);
 	}
 
 	/**
@@ -211,7 +177,7 @@ class Repository {
 		}
 
 		$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
-		if ( false === $omitInvoiceFile && $customsDeclaration->hasInvoiceFile() ) {
+		if ( false === $omitInvoiceFile && $customsDeclaration->hasInvoiceFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE `' . $this->wpdbAdapter->packetery_customs_declaration . '` SET `invoice_file` = %s WHERE `id` = %d',
@@ -221,7 +187,7 @@ class Repository {
 			);
 		}
 
-		if ( false === $omitInvoiceFile && false === $customsDeclaration->hasInvoiceFile() ) {
+		if ( false === $omitInvoiceFile && false === $customsDeclaration->hasInvoiceFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE ' . $this->wpdbAdapter->packetery_customs_declaration . ' SET `invoice_file` = NULL WHERE `id` = %d',
@@ -231,7 +197,7 @@ class Repository {
 		}
 
 		$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
-		if ( false === $omitEadFile && $customsDeclaration->hasEadFile() ) {
+		if ( false === $omitEadFile && $customsDeclaration->hasEadFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE `' . $this->wpdbAdapter->packetery_customs_declaration . '` SET `ead_file` = %s WHERE `id` = %d',
@@ -241,7 +207,7 @@ class Repository {
 			);
 		}
 
-		if ( false === $omitEadFile && false === $customsDeclaration->hasEadFile() ) {
+		if ( false === $omitEadFile && false === $customsDeclaration->hasEadFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE ' . $this->wpdbAdapter->packetery_customs_declaration . ' SET `ead_file` = NULL WHERE `id` = %d',
