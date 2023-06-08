@@ -19,14 +19,14 @@ use Packetery\Core\TranslationMissingException;
  */
 class Order {
 
-	public const TRANSLATION_KEY_NUMBER_ERROR                     = 'number';
-	public const TRANSLATION_KEY_NAME_ERROR                       = 'name';
-	public const TRANSLATION_KEY_VALUE_ERROR                      = 'value';
-	public const TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID_ERROR = 'pickup_point_or_carrier_id';
-	public const TRANSLATION_KEY_ESHOP_ERROR                      = 'eshop';
-	public const TRANSLATION_KEY_WEIGHT_ERROR                     = 'weight';
-	public const TRANSLATION_KEY_ADDRESS_ERROR                    = 'address';
-	public const TRANSLATION_KEY_SIZE_ERROR                       = 'size';
+	public const ERROR_TRANSLATION_KEY_NUMBER                     = 'number';
+	public const ERROR_TRANSLATION_KEY_NAME                       = 'name';
+	public const ERROR_TRANSLATION_KEY_VALUE                      = 'value';
+	public const ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID = 'pickup_point_or_carrier_id';
+	public const ERROR_TRANSLATION_KEY_ESHOP                      = 'eshop';
+	public const ERROR_TRANSLATION_KEY_WEIGHT                     = 'weight';
+	public const ERROR_TRANSLATION_KEY_ADDRESS                    = 'address';
+	public const ERROR_TRANSLATION_KEY_SIZE                       = 'size';
 
 	/**
 	 * Address validator.
@@ -93,52 +93,52 @@ class Order {
 	public function getValidationErrors( Entity\Order $order ): array {
 		$errors = [];
 		if ( ! $order->getNumber() ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_NUMBER_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_NUMBER ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_NUMBER_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_NUMBER ];
 		}
 		if ( ! $order->getName() ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_NAME_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_NAME ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_NAME_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_NAME ];
 		}
 		if ( ! $order->getValue() ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_VALUE_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_VALUE ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_VALUE_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_VALUE ];
 		}
 		if ( ! $order->getPickupPointOrCarrierId() ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID ];
 		}
 		if ( ! $order->getEshop() ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_ESHOP_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_ESHOP ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_ESHOP_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_ESHOP ];
 		}
 		if ( ! $this->validateFinalWeight( $order ) ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_WEIGHT_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_WEIGHT ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_WEIGHT_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_WEIGHT ];
 		}
 		if ( ! $this->validateAddress( $order ) ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_ADDRESS_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_ADDRESS ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_ADDRESS_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_ADDRESS ];
 		}
 		if ( ! $this->validateSize( $order ) ) {
-			if ( empty( $this->translations[ self::TRANSLATION_KEY_SIZE_ERROR ] ) ) {
+			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_SIZE ] ) ) {
 				throw new TranslationMissingException( 'Order validator must have all translations set' );
 			}
-			$errors[] = $this->translations[ self::TRANSLATION_KEY_SIZE_ERROR ];
+			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_SIZE ];
 		}
 
 		return $errors;
