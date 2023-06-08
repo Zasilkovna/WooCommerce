@@ -1,0 +1,39 @@
+<?php
+/**
+ * Class ValidatorTranslations.
+ *
+ * @package Packetery
+ */
+
+declare( strict_types=1 );
+
+namespace Packetery\Module\Order;
+
+use Packetery\Core\Validator;
+
+/**
+ * Class ValidatorTranslations.
+ *
+ * @package Packetery
+ */
+class ValidatorTranslations {
+
+	/**
+	 * Translations with specified keys.
+	 *
+	 * @return array
+	 */
+	public function get(): array {
+		return [
+			Validator\Order::TRANSLATION_KEY_NUMBER  => __( 'Order number is not set.', 'packeta' ),
+			Validator\Order::TRANSLATION_KEY_NAME    => __( 'Customer name is not set.', 'packeta' ),
+			Validator\Order::TRANSLATION_KEY_VALUE   => __( 'Order value is not set.', 'packeta' ),
+			Validator\Order::TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => __( 'Pickup point or carrier id is not set.', 'packeta' ),
+			Validator\Order::TRANSLATION_KEY_ESHOP   => __( 'Sender label is not set.', 'packeta' ),
+			Validator\Order::TRANSLATION_KEY_WEIGHT  => __( 'Weight is not set or is zero.', 'packeta' ),
+			Validator\Order::TRANSLATION_KEY_ADDRESS => __( 'Address is not set or is incomplete.', 'packeta' ),
+			Validator\Order::TRANSLATION_KEY_SIZE    => __( 'Order dimensions are not set.', 'packeta' ),
+		];
+	}
+
+}

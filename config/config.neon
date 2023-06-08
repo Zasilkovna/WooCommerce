@@ -47,8 +47,9 @@ services:
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
-	orderValidatorFactory: Packetery\Module\Order\ValidatorFactory
-	orderValidator: @orderValidatorFactory::create()
+	validatorTranslations: Packetery\Module\Order\ValidatorTranslations
+	- Packetery\Core\Validator\Order(translations: @validatorTranslations::get())
+	- Packetery\Core\TranslationMissingException
 	- Packetery\Module\Options\Repository
 	- Packetery\Module\Api\Internal\OrderController
 	- Packetery\Module\Api\Internal\OrderRouter
