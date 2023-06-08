@@ -74,7 +74,7 @@ class MetaboxesWrapper {
 	 * @return void
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function saveFields( $wcOrderId ) {
+	public function saveFields( $wcOrderId ): void {
 		try {
 			$order = $this->orderRepository->getById( (int) $wcOrderId );
 		} catch ( InvalidCarrierException $invalidCarrierException ) {

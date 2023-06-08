@@ -49,10 +49,11 @@ class Repository {
 	/**
 	 * Gets customs declaration by order.
 	 *
-	 * @param Order $order Order.
+	 * @param string $orderNumber Order.
+	 *
 	 * @return CustomsDeclaration|null
 	 */
-	public function getByOrder( Order $order ): ?CustomsDeclaration {
+	public function getByOrderNumber( string $orderNumber ): ?CustomsDeclaration {
 		$customsDeclarationRow = $this->wpdbAdapter->get_row(
 			sprintf(
 				'SELECT 
@@ -65,12 +66,12 @@ class Repository {
 					`mrn`,
 					`invoice_file_id`,
 					`ead_file_id`,
-					`invoice_file` IS NOT NULL AS has_invoice_file_content,
-					`ead_file` IS NOT NULL AS has_ead_file_content
+					`invoice_file` IS NOT NULL AS `has_invoice_file_content`,
+					`ead_file` IS NOT NULL AS `has_ead_file_content`
 				FROM `%s`
 				WHERE `order_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration,
-				$order->getNumber()
+				$orderNumber
 			),
 			ARRAY_A
 		);
@@ -79,14 +80,14 @@ class Repository {
 			return null;
 		}
 
-		$customsDeclaration = $this->entityFactory->fromStandardizedStructure( $customsDeclarationRow, $order );
+		$customsDeclaration = $this->entityFactory->fromStandardizedStructure( $customsDeclarationRow, $orderNumber );
 
 		$customsDeclaration->setInvoiceFile(
-			function () use ( $order ): ?string {
+			function () use ( $orderNumber ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
 						'SELECT `invoice_file` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
-						$order->getNumber()
+						$orderNumber
 					)
 				);
 			},
@@ -94,11 +95,11 @@ class Repository {
 		);
 
 		$customsDeclaration->setEadFile(
-			function () use ( $order ): ?string {
+			function () use ( $orderNumber ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
 						'SELECT `ead_file` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
-						$order->getNumber()
+						$orderNumber
 					)
 				);
 			},

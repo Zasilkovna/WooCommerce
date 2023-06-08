@@ -426,7 +426,7 @@ class Metabox {
 	 * @return void
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function saveFields( Entity\Order $order ) {
+	public function saveFields( Entity\Order $order ): void {
 		$orderId = (int) $order->getNumber();
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||

@@ -123,7 +123,7 @@ class Builder {
 		$order->setSize( $order->getSize() );
 		$order->setCurrency( $wcOrder->get_currency() );
 
-		$order->setCustomsDeclaration( $this->customsDeclarationRepository->getByOrder( $order ) );
+		$order->setCustomsDeclaration( $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() ) );
 
 		return $order;
 	}

@@ -31,6 +31,8 @@ use Packetery\Module\CustomsDeclaration;
  */
 class CustomsDeclarationMetabox {
 
+	private const MAX_UPLOAD_FILE_MEGABYTES = 16;
+
 	private const EAD_OWN     = 'own';
 	private const EAD_CREATE  = 'create';
 	private const EAD_CARRIER = 'carrier';
@@ -205,7 +207,7 @@ class CustomsDeclarationMetabox {
 	 * @param Order $order Order ID.
 	 * @return void
 	 */
-	public function saveFields( Order $order ) {
+	public function saveFields( Order $order ): void {
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			null === $this->request->getPost( self::FORM_CONTAINER_NAME )
@@ -215,7 +217,7 @@ class CustomsDeclarationMetabox {
 
 		$form = $this->createForm(
 			$this->request->getPost(),
-			$this->customsDeclarationRepository->getByOrder( $order )
+			$this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() )
 		);
 
 		if ( $form->isSubmitted() ) {
@@ -234,7 +236,7 @@ class CustomsDeclarationMetabox {
 			return;
 		}
 
-		$customsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );
+		$customsDeclaration = $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() );
 
 		$formData = [];
 		if ( null !== $customsDeclaration ) {
@@ -274,11 +276,13 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Creates form.
 	 *
-	 * @param array                          $data Structure specifying data.
+	 * @param array $structureData Data specifying how form will be constructed.
+	 *                             When user browser sends added customs declaration items, the form factory has to reflect that.
 	 * @param Entity\CustomsDeclaration|null $customsDeclaration Related customs declaration.
+	 *
 	 * @return Form
 	 */
-	private function createForm( array $data, ?Entity\CustomsDeclaration $customsDeclaration ): Form {
+	private function createForm( array $structureData, ?Entity\CustomsDeclaration $customsDeclaration ): Form {
 		$form            = $this->formFactory->create();
 		$prefixContainer = $form->addContainer( self::FORM_CONTAINER_NAME );
 
@@ -338,10 +342,10 @@ class CustomsDeclarationMetabox {
 
 		$items = $prefixContainer->addContainer( 'items' );
 
-		if ( empty( $data[ self::FORM_CONTAINER_NAME ]['items'] ) ) {
+		if ( empty( $structureData[ self::FORM_CONTAINER_NAME ]['items'] ) ) {
 			$this->addCustomsDeclarationItem( $items, 'new_0' );
 		} else {
-			foreach ( $data[ self::FORM_CONTAINER_NAME ]['items'] as $itemId => $itemDefaults ) {
+			foreach ( $structureData[ self::FORM_CONTAINER_NAME ]['items'] as $itemId => $itemDefaults ) {
 				$this->addCustomsDeclarationItem( $items, (string) $itemId );
 			}
 		}
@@ -385,82 +389,42 @@ class CustomsDeclarationMetabox {
 		}
 
 		$fieldsToOmit                = [];
+		/** Form container. @var Container $customsDeclarationContainer */
 		$customsDeclarationContainer = $form[ self::FORM_CONTAINER_NAME ];
 		$prefixedValues              = $form->getValues( 'array' );
 		$containerValues             = $prefixedValues[ self::FORM_CONTAINER_NAME ];
 		$items                       = $containerValues['items'];
 		unset( $containerValues['items'] );
 
-		/** Invoice file. @var \PacketeryNette\Http\FileUpload $invoiceFile */
-		$invoiceFile = $containerValues['invoice_file'];
-		/** EAD file. @var \PacketeryNette\Http\FileUpload $eadFile */
-		$eadFile = $containerValues['ead_file'];
+		$this->processUploadedFile(
+			'invoice_file',
+			'invoice_file_id',
+			$containerValues,
+			$customsDeclarationContainer,
+			$fieldsToOmit
+		);
 
-		if ( $invoiceFile->hasFile() && $invoiceFile->getSize() >= 16 * 1024 * 1024 ) {
-			// translators: %d is numeric value.
-			$customsDeclarationContainer['invoice_file']->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), 16 ) );
-			$invoiceFile = new FileUpload( null );
-		}
-
-		if ( $eadFile->hasFile() && $eadFile->getSize() >= 16 * 1024 * 1024 ) {
-			// translators: %d is numeric value.
-			$customsDeclarationContainer['ead_file']->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), 16 ) );
-			$eadFile = new FileUpload( null );
-		}
-
-		if ( $invoiceFile->hasFile() && $invoiceFile->isOk() ) {
-			$containerValues['invoice_file']    = static function () use ( $invoiceFile ): string {
-				return $invoiceFile->getContents();
-			};
-			$containerValues['invoice_file_id'] = null;
-		}
-
-		if ( $invoiceFile->hasFile() && false === $invoiceFile->isOk() ) {
-			$containerValues['invoice_file']    = null;
-			$containerValues['invoice_file_id'] = null;
-			$customsDeclarationContainer['invoice_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
-		}
-
-		if ( $containerValues['invoice_file'] instanceof FileUpload ) {
-			$containerValues['invoice_file']    = null;
-			$containerValues['invoice_file_id'] = null;
-			$fieldsToOmit[]                     = 'invoice_file';
-			$fieldsToOmit[]                     = 'invoice_file_id';
-		}
-
-		if ( $eadFile->hasFile() && $eadFile->isOk() ) {
-			$containerValues['ead_file']    = static function () use ( $eadFile ): string {
-				return $eadFile->getContents();
-			};
-			$containerValues['ead_file_id'] = null;
-		}
-
-		if ( $eadFile->hasFile() && false === $eadFile->isOk() ) {
-			$containerValues['ead_file']    = null;
-			$containerValues['ead_file_id'] = null;
-			$customsDeclarationContainer['ead_file']->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
-		}
-
-		if ( $containerValues['ead_file'] instanceof FileUpload ) {
-			$containerValues['ead_file']    = null;
-			$containerValues['ead_file_id'] = null;
-			$fieldsToOmit[]                 = 'ead_file';
-			$fieldsToOmit[]                 = 'ead_file_id';
-		}
+		$this->processUploadedFile(
+			'ead_file',
+			'ead_file_id',
+			$containerValues,
+			$customsDeclarationContainer,
+			$fieldsToOmit
+		);
 
 		if ( '' === $containerValues['mrn'] ) {
 			$containerValues['mrn'] = null;
 		}
 
 		$containerValues['id'] = null;
-		$oldCustomsDeclaration = $this->customsDeclarationRepository->getByOrder( $order );
+		$oldCustomsDeclaration = $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() );
 		if ( null !== $oldCustomsDeclaration ) {
 			$containerValues['id'] = $oldCustomsDeclaration->getId();
 		}
 
-		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $containerValues, $order );
-		$customsDeclaration->setInvoiceFile( $containerValues['invoice_file'], $containerValues['invoice_file'] && $invoiceFile->getSize() > 0 );
-		$customsDeclaration->setEadFile( $containerValues['ead_file'], $containerValues['ead_file'] && $eadFile->getSize() > 0 );
+		$customsDeclaration = $this->customsDeclarationEntityFactory->fromStandardizedStructure( $containerValues, $order->getNumber() );
+		$customsDeclaration->setInvoiceFile( $containerValues['invoice_file'], (bool) $containerValues['invoice_file'] );
+		$customsDeclaration->setEadFile( $containerValues['ead_file'], (bool) $containerValues['ead_file'] );
 		$this->customsDeclarationRepository->save( $customsDeclaration, $fieldsToOmit );
 
 		$customsDeclarationItems = $this->customsDeclarationRepository->getItemsByCustomsDeclarationId( $customsDeclaration->getId() );
@@ -531,5 +495,53 @@ class CustomsDeclarationMetabox {
 
 		$item->addCheckbox( 'is_food_or_book', __( 'Food or book?', 'packeta' ) );
 		$item->addCheckbox( 'is_voc', __( 'Is VOC?', 'packeta' ) );
+	}
+
+	/**
+	 * Handle file upload.
+	 *
+	 * @param string    $key              File key.
+	 * @param string    $relatedFileIdKey Related file id key.
+	 * @param array     $containerValues  Container values.
+	 * @param Container $formContainer    Form container.
+	 * @param array     $fieldsToOmit     Fields to omit.
+	 *
+	 * @return void
+	 */
+	private function processUploadedFile( string $key, string $relatedFileIdKey, array &$containerValues, Container $formContainer, array &$fieldsToOmit ): void {
+		$fileUpload    = $containerValues[ $key ];
+		$uploadControl = $formContainer[ $key ];
+
+		if ( $fileUpload->hasFile() && 0 >= $fileUpload->getSize() ) {
+			// translators: %d is numeric value.
+			$formContainer[$key]->addError( __( 'Uploaded file is empty.', 'packeta' ) );
+			$fileUpload = new FileUpload( null );
+		}
+
+		if ( $fileUpload->hasFile() && self::MAX_UPLOAD_FILE_MEGABYTES * 1024 * 1024 === $fileUpload->getSize() ) {
+			// translators: %d is numeric value.
+			$formContainer[$key]->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), self::MAX_UPLOAD_FILE_MEGABYTES ) );
+			$fileUpload = new FileUpload( null );
+		}
+
+		if ( $fileUpload->hasFile() && $fileUpload->isOk() ) {
+			$containerValues[ $key ]              = static function () use ( $fileUpload ): string {
+				return $fileUpload->getContents();
+			};
+			$containerValues[ $relatedFileIdKey ] = null;
+		}
+
+		if ( $fileUpload->hasFile() && false === $fileUpload->isOk() ) {
+			$containerValues[ $key ]              = null;
+			$containerValues[ $relatedFileIdKey ] = null;
+			$uploadControl->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
+		}
+
+		if ( $containerValues[ $key ] instanceof FileUpload ) {
+			$containerValues[ $key ]              = null;
+			$containerValues[ $relatedFileIdKey ] = null;
+			$fieldsToOmit[]                       = $key;
+			$fieldsToOmit[]                       = $relatedFileIdKey;
+		}
 	}
 }

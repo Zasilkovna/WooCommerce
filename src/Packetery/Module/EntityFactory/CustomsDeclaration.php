@@ -20,13 +20,14 @@ class CustomsDeclaration {
 	/**
 	 * Creates customs declaration entity from standard structure.
 	 *
-	 * @param array        $data Data.
-	 * @param Entity\Order $order Order.
+	 * @param array  $data    Data.
+	 * @param string $orderId Order ID.
+	 *
 	 * @return Entity\CustomsDeclaration
 	 */
-	public function fromStandardizedStructure( array $data, Entity\Order $order ): Entity\CustomsDeclaration {
+	public function fromStandardizedStructure( array $data, string $orderId ): Entity\CustomsDeclaration {
 		$entity = new Entity\CustomsDeclaration(
-			$order->getNumber(),
+			$orderId,
 			$data['ead'],
 			(float) $data['delivery_cost'],
 			$data['invoice_number'],
