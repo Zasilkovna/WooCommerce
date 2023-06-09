@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Core\Validator;
 
 use Packetery\Core\Entity;
-use Packetery\Core\TranslationMissingException;
 
 /**
  * Class Order
@@ -19,14 +18,14 @@ use Packetery\Core\TranslationMissingException;
  */
 class Order {
 
-	public const ERROR_TRANSLATION_KEY_NUMBER                     = 'number';
-	public const ERROR_TRANSLATION_KEY_NAME                       = 'name';
-	public const ERROR_TRANSLATION_KEY_VALUE                      = 'value';
-	public const ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID = 'pickup_point_or_carrier_id';
-	public const ERROR_TRANSLATION_KEY_ESHOP                      = 'eshop';
-	public const ERROR_TRANSLATION_KEY_WEIGHT                     = 'weight';
-	public const ERROR_TRANSLATION_KEY_ADDRESS                    = 'address';
-	public const ERROR_TRANSLATION_KEY_SIZE                       = 'size';
+	public const ERROR_TRANSLATION_KEY_NUMBER                     = 'validation_error_number';
+	public const ERROR_TRANSLATION_KEY_NAME                       = 'validation_error_name';
+	public const ERROR_TRANSLATION_KEY_VALUE                      = 'validation_error_value';
+	public const ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID = 'validation_error_pickup_point_or_carrier_id';
+	public const ERROR_TRANSLATION_KEY_ESHOP                      = 'validation_error_eshop';
+	public const ERROR_TRANSLATION_KEY_WEIGHT                     = 'validation_error_weight';
+	public const ERROR_TRANSLATION_KEY_ADDRESS                    = 'validation_error_address';
+	public const ERROR_TRANSLATION_KEY_SIZE                       = 'validation_error_size';
 
 	/**
 	 * Address validator.
@@ -69,17 +68,8 @@ class Order {
 	 *
 	 * @return bool
 	 */
-	public function validate( Entity\Order $order ): bool {
-		return (
-			$order->getNumber() &&
-			$order->getName() &&
-			$order->getValue() &&
-			$order->getPickupPointOrCarrierId() &&
-			$order->getEshop() &&
-			$this->validateFinalWeight( $order ) &&
-			$this->validateAddress( $order ) &&
-			$this->validateSize( $order )
-		);
+	public function isValid( Entity\Order $order ): bool {
+		return empty( $this->validate( $order ) );
 	}
 
 	/**
@@ -88,60 +78,48 @@ class Order {
 	 * @param Entity\Order $order Order entity.
 	 *
 	 * @return string[]
-	 * @throws TranslationMissingException For the case required translation is not set.
 	 */
-	public function getValidationErrors( Entity\Order $order ): array {
+	public function validate( Entity\Order $order ): array {
 		$errors = [];
 		if ( ! $order->getNumber() ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_NUMBER ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_NUMBER ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_NUMBER );
 		}
 		if ( ! $order->getName() ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_NAME ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_NAME ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_NAME );
 		}
 		if ( ! $order->getValue() ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_VALUE ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_VALUE ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_VALUE );
 		}
 		if ( ! $order->getPickupPointOrCarrierId() ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID );
 		}
 		if ( ! $order->getEshop() ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_ESHOP ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_ESHOP ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_ESHOP );
 		}
 		if ( ! $this->validateFinalWeight( $order ) ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_WEIGHT ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_WEIGHT ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_WEIGHT );
 		}
 		if ( ! $this->validateAddress( $order ) ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_ADDRESS ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_ADDRESS ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_ADDRESS );
 		}
 		if ( ! $this->validateSize( $order ) ) {
-			if ( empty( $this->translations[ self::ERROR_TRANSLATION_KEY_SIZE ] ) ) {
-				throw new TranslationMissingException( 'Order validator must have all translations set' );
-			}
-			$errors[] = $this->translations[ self::ERROR_TRANSLATION_KEY_SIZE ];
+			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_SIZE );
 		}
 
 		return $errors;
+	}
+
+	/**
+	 * Return the key if translation is not set.
+	 *
+	 * @param string $key Translation key.
+	 * @return string
+	 */
+	private function getTranslation( string $key ): string {
+		if ( empty( $this->translations[ $key ] ) ) {
+			return $key;
+		}
+		return $this->translations[ $key ];
 	}
 
 	/**
@@ -182,7 +160,7 @@ class Order {
 	 *
 	 * @return bool
 	 */
-	public function validateSize( Entity\Order $order ): bool {
+	private function validateSize( Entity\Order $order ): bool {
 		if ( $order->getCarrier()->requiresSize() ) {
 			$size = $order->getSize();
 			if ( null === $size ) {

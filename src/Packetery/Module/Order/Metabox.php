@@ -346,7 +346,7 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
-		$showSubmitPacketButton = $this->orderValidator->validate( $order );
+		$showSubmitPacketButton = $this->orderValidator->isValid( $order );
 		$packetSubmitUrl        = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
 
 		$showWidgetButton  = $order->isPickupPointDelivery();
