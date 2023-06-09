@@ -250,8 +250,9 @@ class PacketSubmitter {
 				$record->status  = Log\Record::STATUS_ERROR;
 				$record->title   = __( 'Packet could not be created.', 'packeta' );
 				$record->params  = [
-					'orderId'      => $orderData['id'],
-					'errorMessage' => $e->getMessage(),
+					'orderId'       => $orderData['id'],
+					'errorMessage'  => $e->getMessage(),
+					'errorMessages' => $e->getMessages(),
 				];
 				$record->orderId = $order->getNumber();
 				$this->logger->add( $record );
@@ -320,7 +321,7 @@ class PacketSubmitter {
 	private function preparePacketData( Entity\Order $order ): array {
 		$validationErrors = $this->orderValidator->validate( $order );
 		if ( ! empty( $validationErrors ) ) {
-			throw new InvalidRequestException( implode( ' ', $validationErrors ) );
+			throw new InvalidRequestException( __( 'All required order attributes are not set.', 'packeta' ), $validationErrors );
 		}
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
