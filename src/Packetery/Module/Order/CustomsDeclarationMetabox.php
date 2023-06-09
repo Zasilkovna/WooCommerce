@@ -533,7 +533,7 @@ class CustomsDeclarationMetabox {
 		if ( $fileUpload->hasFile() && false === $fileUpload->isOk() ) {
 			$containerValues[ $key ]              = null;
 			$containerValues[ $relatedFileIdKey ] = null;
-			$uploadControl->addError( __( 'System failed to process provided file.', 'packeta' ) );
+			$uploadControl->addError( __( 'File failed to upload.', 'packeta' ) );
 		}
 
 		if ( $containerValues[ $key ] instanceof FileUpload ) {
