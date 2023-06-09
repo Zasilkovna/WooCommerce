@@ -276,8 +276,8 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Creates form.
 	 *
-	 * @param array $structureData Data specifying how form will be constructed.
-	 *                             When user browser sends added customs declaration items, the form factory has to reflect that.
+	 * @param array                          $structureData Data specifying how form will be constructed.
+	 *                                                      When user browser sends added customs declaration items, the form factory has to reflect that.
 	 * @param Entity\CustomsDeclaration|null $customsDeclaration Related customs declaration.
 	 *
 	 * @return Form
@@ -388,7 +388,7 @@ class CustomsDeclarationMetabox {
 			return;
 		}
 
-		$fieldsToOmit                = [];
+		$fieldsToOmit = [];
 		/** Form container. @var Container $customsDeclarationContainer */
 		$customsDeclarationContainer = $form[ self::FORM_CONTAINER_NAME ];
 		$prefixedValues              = $form->getValues( 'array' );
@@ -513,14 +513,13 @@ class CustomsDeclarationMetabox {
 		$uploadControl = $formContainer[ $key ];
 
 		if ( $fileUpload->hasFile() && 0 >= $fileUpload->getSize() ) {
-			// translators: %d is numeric value.
-			$formContainer[$key]->addError( __( 'Uploaded file is empty.', 'packeta' ) );
+			$formContainer[ $key ]->addError( __( 'Uploaded file is empty.', 'packeta' ) );
 			$fileUpload = new FileUpload( null );
 		}
 
 		if ( $fileUpload->hasFile() && self::MAX_UPLOAD_FILE_MEGABYTES * 1024 * 1024 === $fileUpload->getSize() ) {
 			// translators: %d is numeric value.
-			$formContainer[$key]->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), self::MAX_UPLOAD_FILE_MEGABYTES ) );
+			$formContainer[ $key ]->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), self::MAX_UPLOAD_FILE_MEGABYTES ) );
 			$fileUpload = new FileUpload( null );
 		}
 
@@ -534,7 +533,7 @@ class CustomsDeclarationMetabox {
 		if ( $fileUpload->hasFile() && false === $fileUpload->isOk() ) {
 			$containerValues[ $key ]              = null;
 			$containerValues[ $relatedFileIdKey ] = null;
-			$uploadControl->addError( __( 'Uploaded file is not OK.', 'packeta' ) );
+			$uploadControl->addError( __( 'System failed to process provided file.', 'packeta' ) );
 		}
 
 		if ( $containerValues[ $key ] instanceof FileUpload ) {
