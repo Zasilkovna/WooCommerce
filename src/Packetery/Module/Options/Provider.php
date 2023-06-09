@@ -81,32 +81,33 @@ class Provider {
 	}
 
 	/**
-	 * Casts data to array.
+	 * Gets data section.
 	 *
-	 * @param string|null $optionName Option name of settings.
+	 * @param string $optionsName Option name of settings.
 	 *
-	 * @return array<string, array|mixed> All plugin options data or only section of such data by given $optionName.
+	 * @return array<string, mixed> Only section of options data by given $optionName.
+	 * @throws \InvalidArgumentException When provided option name does not exist.
 	 */
-	public function data_to_array( ?string $optionName = null ): array {
-		if ( self::OPTION_NAME_PACKETERY === $optionName ) {
-			return $this->data;
+	public function getOptionsByName( string $optionsName ): array {
+		$data = $this->getAllOptions();
+		if ( ! isset( $data[ $optionsName ] ) ) {
+			throw new \InvalidArgumentException( 'Option name does not exist.' );
 		}
 
-		if ( self::OPTION_NAME_PACKETERY_SYNC === $optionName ) {
-			return $this->syncData;
-		}
+		return $data[ $optionsName ];
+	}
 
-		if ( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION === $optionName ) {
-			return $this->autoSubmissionData;
-		}
-
-		if ( null === $optionName ) {
-			return [
-				self::OPTION_NAME_PACKETERY      => $this->data,
-				self::OPTION_NAME_PACKETERY_SYNC => $this->syncData,
-				self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
-			];
-		}
+	/**
+	 * Gets data as array.
+	 *
+	 * @return array<string, array> All plugin options data by given $optionName.
+	 */
+	public function getAllOptions(): array {
+		return [
+			self::OPTION_NAME_PACKETERY                 => $this->data,
+			self::OPTION_NAME_PACKETERY_SYNC            => $this->syncData,
+			self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
+		];
 	}
 
 	/**
@@ -117,7 +118,7 @@ class Provider {
 	 * @return bool Has any data.
 	 */
 	public function has_any( string $optionName ): bool {
-		return ! empty( $this->data_to_array( $optionName ) );
+		return ! empty( $this->getOptionsByName( $optionName ) );
 	}
 
 	/**

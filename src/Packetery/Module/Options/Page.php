@@ -236,7 +236,7 @@ class Page {
 	public function createAutoSubmissionForm(): Form {
 		$gateways = $this->getAvailablePaymentGateways();
 		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
-		$defaults = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		$defaults = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
 
 		$form->addCheckbox( 'allow', __( 'Allow packet auto-submission', 'packeta' ) )
 				->setRequired( false )
@@ -292,7 +292,7 @@ class Page {
 	 */
 	private function createPacketStatusSyncForm(): Form {
 		$form     = $this->formFactory->create( 'packetery_packet_status_sync_form' );
-		$settings = $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY_SYNC );
+		$settings = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_SYNC );
 
 		$form->addText( 'max_status_syncing_packets', __( 'Number of orders synced during one cron call', 'packeta' ) )
 				->setRequired( false )
@@ -481,7 +481,7 @@ class Page {
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
-			$container->setDefaults( $this->optionsProvider->data_to_array( Provider::OPTION_NAME_PACKETERY ) );
+			$container->setDefaults( $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY ) );
 		}
 
 		return $form;

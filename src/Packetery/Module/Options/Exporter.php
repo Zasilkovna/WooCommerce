@@ -96,7 +96,7 @@ class Exporter {
 			return;
 		}
 
-		$globalSettings = $this->optionsProvider->data_to_array();
+		$globalSettings = $this->optionsProvider->getAllOptions();
 		if ( ! empty( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
 			$globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
 				'%s...%s (%s)',
