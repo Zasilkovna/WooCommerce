@@ -10,15 +10,15 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use PacketeryLatte;
-use PacketeryTracy;
+use Packetery\Latte;
+use Packetery\Tracy;
 
 /**
  * Class WpdbTracyPanel
  *
  * @package packetery
  */
-class WpdbTracyPanel implements PacketeryTracy\IBarPanel {
+class WpdbTracyPanel implements Tracy\IBarPanel {
 
 	/**
 	 * WpdbAdapter.
@@ -30,19 +30,19 @@ class WpdbTracyPanel implements PacketeryTracy\IBarPanel {
 	/**
 	 * Latte engine.
 	 *
-	 * @var PacketeryLatte\Engine
+	 * @var Latte\Engine
 	 */
 	private $latteEngine;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param WpdbAdapter           $wpdbAdapter WpdbAdapter.
-	 * @param PacketeryLatte\Engine $latteEngine Latte engine.
+	 * @param WpdbAdapter  $wpdbAdapter WpdbAdapter.
+	 * @param Latte\Engine $latteEngine Latte engine.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
-		PacketeryLatte\Engine $latteEngine
+		Latte\Engine $latteEngine
 	) {
 		$this->wpdbAdapter = $wpdbAdapter;
 		$this->latteEngine = $latteEngine;

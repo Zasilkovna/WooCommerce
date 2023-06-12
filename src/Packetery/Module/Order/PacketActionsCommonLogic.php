@@ -13,7 +13,7 @@ use Packetery\Core\Entity;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
-use PacketeryNette\Http\Request;
+use Packetery\Nette\Http\Request;
 
 
 /**

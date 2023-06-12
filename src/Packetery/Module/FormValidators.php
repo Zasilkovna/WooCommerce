@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Packetery\Module;
 
-use PacketeryNette\Forms\Controls\BaseControl;
+use Packetery\Nette\Forms\Controls\BaseControl;
 
 /**
  * Class FormValidators

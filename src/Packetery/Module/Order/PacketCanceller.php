@@ -14,7 +14,7 @@ use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
-use PacketeryNette\Http\Request;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class PacketCanceller

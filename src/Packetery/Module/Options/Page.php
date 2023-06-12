@@ -15,8 +15,8 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
-use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Form;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Form;
 
 /**
  * Class Page
@@ -86,7 +86,7 @@ class Page {
 	/**
 	 * HTTP request.
 	 *
-	 * @var \PacketeryNette\Http\Request
+	 * @var \Packetery\Nette\Http\Request
 	 */
 	private $httpRequest;
 
@@ -99,7 +99,7 @@ class Page {
 	 * @param \Packetery\Core\Api\Soap\Client $packetaClient      Packeta Client.
 	 * @param Log\ILogger                     $logger             Logger.
 	 * @param MessageManager                  $messageManager     Message manager.
-	 * @param \PacketeryNette\Http\Request    $httpRequest        HTTP request.
+	 * @param \Packetery\Nette\Http\Request   $httpRequest        HTTP request.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -108,7 +108,7 @@ class Page {
 		\Packetery\Core\Api\Soap\Client $packetaClient,
 		Log\ILogger $logger,
 		MessageManager $messageManager,
-		\PacketeryNette\Http\Request $httpRequest
+		\Packetery\Nette\Http\Request $httpRequest
 	) {
 		$this->latte_engine    = $latte_engine;
 		$this->optionsProvider = $optionsProvider;

@@ -17,9 +17,9 @@ use Packetery\Module\Log;
 use Packetery\Module\Options;
 use Packetery\Module\Order;
 use Packetery\Module\Product;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http\Request;
-use PacketeryNette\Utils\Html;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http\Request;
+use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
 

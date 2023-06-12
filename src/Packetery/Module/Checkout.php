@@ -18,8 +18,8 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class Checkout

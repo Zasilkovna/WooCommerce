@@ -12,8 +12,8 @@ namespace Packetery\Module\Log;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class Page

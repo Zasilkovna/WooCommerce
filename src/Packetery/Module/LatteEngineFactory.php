@@ -9,11 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use PacketeryLatte\Engine;
-use PacketeryLatte\MacroNode;
-use PacketeryLatte\Macros\MacroSet;
-use PacketeryLatte\PhpWriter;
-use PacketeryNette\Bridges\FormsPacketeryLatte\FormMacros;
+use Packetery\Latte\Engine;
+use Packetery\Latte\MacroNode;
+use Packetery\Latte\Macros\MacroSet;
+use Packetery\Latte\PhpWriter;
+use Packetery\Nette\Bridges\FormsLatte\FormMacros;
 
 /**
  * Class PacketeryLatte_Engine_Factory

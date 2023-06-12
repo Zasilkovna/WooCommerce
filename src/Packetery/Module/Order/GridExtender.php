@@ -15,8 +15,8 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
 
 /**

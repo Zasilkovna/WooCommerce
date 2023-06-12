@@ -21,9 +21,9 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
-use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Form;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Http\Request;
 use WC_Data_Exception;
 use WC_Order;
 

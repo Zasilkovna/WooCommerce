@@ -9,9 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use PacketeryNette\Forms\Form;
-use PacketeryNette\Forms\Validator;
-use PacketeryNette\Http\Request;
+use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Forms\Validator;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class FormFactory
@@ -57,8 +57,8 @@ class FormFactory {
 	 * @return Form
 	 */
 	public function create( ?string $name = null ): Form {
-		$form = new Form( $name );
-		$form->setHttpRequest( $this->request );
+		$form              = new Form( $name );
+		$form->httpRequest = $this->request;
 		$form->allowCrossOrigin();
 		return $form;
 	}

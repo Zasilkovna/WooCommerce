@@ -5,8 +5,8 @@
  * @package Packetery
  */
 
-use PacketeryLatte\Engine;
-use PacketeryNette\Utils\Finder;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Utils\Finder;
 
 require_once __DIR__ . '/../../../../wp-includes/wp-db.php';
 

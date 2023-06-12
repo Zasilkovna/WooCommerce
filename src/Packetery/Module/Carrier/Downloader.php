@@ -11,9 +11,9 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Module\Exception\DownloadException;
 use Packetery\Module\Options\Provider;
-use PacketeryGuzzleHttp\Client;
-use PacketeryGuzzleHttp\Exception\GuzzleException;
-use PacketeryGuzzleHttp\PacketeryPsr7\Response;
+use Packetery\GuzzleHttp\Client;
+use Packetery\GuzzleHttp\Exception\GuzzleException;
+use Packetery\GuzzleHttp\Psr7\Response;
 
 /**
  * Class Downloader

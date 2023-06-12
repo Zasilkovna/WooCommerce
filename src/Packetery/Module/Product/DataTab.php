@@ -13,8 +13,8 @@ namespace Packetery\Module\Product;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
-use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Form;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Form;
 
 /**
  * Class Tab

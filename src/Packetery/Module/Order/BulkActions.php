@@ -10,8 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\Options;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class BulkActions
