@@ -89,7 +89,7 @@ class CronService {
 				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK ) ) {
 					// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 					// Monday to Friday at 02:10, 06:10, 10:10, 14:10, 18:10, 22:10.
-					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 2,6,10,14,18,22 * * 1,2,3,4,5 *', self::CRON_PACKET_STATUS_SYNC_HOOK );
+					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 2,6,10,14,18,22 * * 1-5', self::CRON_PACKET_STATUS_SYNC_HOOK );
 				}
 			}
 		);
@@ -100,7 +100,7 @@ class CronService {
 				add_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND, [ $this->packetSynchronizer, 'syncStatuses' ] );
 				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND ) ) {
 					// Saturday, Sunday at 03:10.
-					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 3 * * 6,7 *', self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND );
+					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 3 * * 6,0', self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND );
 				}
 			}
 		);
