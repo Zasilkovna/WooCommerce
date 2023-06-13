@@ -91,7 +91,7 @@ class Provider {
 	public function getOptionsByName( string $optionsName ): array {
 		$data = $this->getAllOptions();
 		if ( ! isset( $data[ $optionsName ] ) ) {
-			throw new \InvalidArgumentException( 'Option name does not exist.' );
+			throw new \InvalidArgumentException( sprintf( 'Option name "%s" does not exist.', $optionsName ) );
 		}
 
 		return $data[ $optionsName ];
