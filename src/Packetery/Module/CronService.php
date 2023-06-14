@@ -17,9 +17,10 @@ namespace Packetery\Module;
  */
 class CronService {
 
-	private const CRON_LOG_AUTO_DELETION_HOOK  = 'packetery_cron_log_auto_deletion_hook';
-	public const CRON_CARRIERS_HOOK            = 'packetery_cron_carriers_hook';
-	private const CRON_PACKET_STATUS_SYNC_HOOK = 'packetery_cron_packet_status_sync_hook';
+	public const CRON_LOG_AUTO_DELETION_HOOK           = 'packetery_cron_log_auto_deletion_hook';
+	public const CRON_CARRIERS_HOOK                    = 'packetery_cron_carriers_hook';
+	public const CRON_PACKET_STATUS_SYNC_HOOK          = 'packetery_cron_packet_status_sync_hook';
+	private const CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND = 'packetery_cron_packet_status_sync_hook_weekend';
 
 	/**
 	 * Log purger.
@@ -61,25 +62,48 @@ class CronService {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( self::CRON_LOG_AUTO_DELETION_HOOK, [ $this->logPurger, 'autoDeleteHook' ] );
-		if ( ! wp_next_scheduled( self::CRON_LOG_AUTO_DELETION_HOOK ) ) {
-			wp_schedule_event( ( new \DateTime( 'next day 02:00', wp_timezone() ) )->getTimestamp(), 'daily', self::CRON_LOG_AUTO_DELETION_HOOK );
-		}
+		add_action(
+			'init',
+			function () {
+				add_action( self::CRON_LOG_AUTO_DELETION_HOOK, [ $this->logPurger, 'autoDeleteHook' ] );
+				if ( false === as_has_scheduled_action( self::CRON_LOG_AUTO_DELETION_HOOK ) ) {
+					as_schedule_recurring_action( ( new \DateTime( 'next day 02:00', wp_timezone() ) )->getTimestamp(), DAY_IN_SECONDS, self::CRON_LOG_AUTO_DELETION_HOOK );
+				}
+			}
+		);
 
 		add_action(
 			'init',
 			function () {
 				add_action( self::CRON_CARRIERS_HOOK, [ $this->carrierDownloader, 'runAndRender' ] );
 				if ( false === as_has_scheduled_action( self::CRON_CARRIERS_HOOK ) ) {
-					as_schedule_recurring_action( ( new \DateTime( 'next day 09:10', wp_timezone() ) )->getTimestamp(), 86400, self::CRON_CARRIERS_HOOK );
+					as_schedule_recurring_action( ( new \DateTime( 'next day 09:10', wp_timezone() ) )->getTimestamp(), DAY_IN_SECONDS, self::CRON_CARRIERS_HOOK );
 				}
 			}
 		);
 
-		add_action( self::CRON_PACKET_STATUS_SYNC_HOOK, [ $this->packetSynchronizer, 'syncStatuses' ] );
-		if ( ! wp_next_scheduled( self::CRON_PACKET_STATUS_SYNC_HOOK ) ) {
-			wp_schedule_event( ( new \DateTime( 'next day 03:00:00', wp_timezone() ) )->getTimestamp(), 'daily', self::CRON_PACKET_STATUS_SYNC_HOOK );
-		}
+		add_action(
+			'init',
+			function () {
+				add_action( self::CRON_PACKET_STATUS_SYNC_HOOK, [ $this->packetSynchronizer, 'syncStatuses' ] );
+				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK ) ) {
+					// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+					// Monday to Friday at 02:10, 06:10, 10:10, 14:10, 18:10, 22:10.
+					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 2,6,10,14,18,22 * * 1-5', self::CRON_PACKET_STATUS_SYNC_HOOK );
+				}
+			}
+		);
+
+		add_action(
+			'init',
+			function () {
+				add_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND, [ $this->packetSynchronizer, 'syncStatuses' ] );
+				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND ) ) {
+					// Saturday, Sunday at 03:10.
+					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 3 * * 6,0', self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND );
+				}
+			}
+		);
 	}
 
 	/**
@@ -88,7 +112,9 @@ class CronService {
 	 * @return void
 	 */
 	public static function deactivate(): void {
-		wp_clear_scheduled_hook( self::CRON_LOG_AUTO_DELETION_HOOK );
-		wp_clear_scheduled_hook( self::CRON_PACKET_STATUS_SYNC_HOOK );
+		as_unschedule_action( self::CRON_LOG_AUTO_DELETION_HOOK );
+		as_unschedule_action( self::CRON_CARRIERS_HOOK );
+		as_unschedule_action( self::CRON_PACKET_STATUS_SYNC_HOOK );
+		as_unschedule_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND );
 	}
 }
