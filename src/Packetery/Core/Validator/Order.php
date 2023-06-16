@@ -80,30 +80,28 @@ class Order {
 	 * @return string[]
 	 */
 	public function validate( Entity\Order $order ): array {
-		$errors = [];
-		if ( ! $order->getNumber() ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_NUMBER );
-		}
-		if ( ! $order->getName() ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_NAME );
-		}
-		if ( ! $order->getValue() ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_VALUE );
-		}
-		if ( ! $order->getPickupPointOrCarrierId() ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID );
-		}
-		if ( ! $order->getEshop() ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_ESHOP );
-		}
-		if ( ! $this->validateFinalWeight( $order ) ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_WEIGHT );
-		}
-		if ( ! $this->validateAddress( $order ) ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_ADDRESS );
-		}
-		if ( ! $this->validateSize( $order ) ) {
-			$errors[] = $this->getTranslation( self::ERROR_TRANSLATION_KEY_SIZE );
+		$errors = [
+			self::ERROR_TRANSLATION_KEY_NUMBER  => ! $order->getNumber(),
+			self::ERROR_TRANSLATION_KEY_NAME    => ! $order->getName(),
+			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->getValue(),
+			self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => ! $order->getPickupPointOrCarrierId(),
+			self::ERROR_TRANSLATION_KEY_ESHOP   => ! $order->getEshop(),
+			self::ERROR_TRANSLATION_KEY_WEIGHT  => ! $this->validateFinalWeight( $order ),
+			self::ERROR_TRANSLATION_KEY_ADDRESS => ! $this->validateAddress( $order ),
+			self::ERROR_TRANSLATION_KEY_SIZE    => ! $this->validateSize( $order ),
+		];
+
+		$errors = array_keys(
+			array_filter(
+				$errors,
+				static function( $value ) {
+					return false !== $value;
+				}
+			)
+		);
+
+		foreach ( $errors as &$error ) {
+			$error = $this->getTranslation( $error );
 		}
 
 		return $errors;
