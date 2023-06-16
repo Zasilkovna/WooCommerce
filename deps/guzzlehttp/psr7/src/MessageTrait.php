@@ -1,28 +1,26 @@
 <?php
 
-declare (strict_types=1);
 namespace Packetery\GuzzleHttp\Psr7;
 
-use Packetery\Psr\Http\Message\MessageInterface;
 use Packetery\Psr\Http\Message\StreamInterface;
 /**
  * Trait implementing functionality common to requests and responses.
  */
 trait MessageTrait
 {
-    /** @var array<string, string[]> Map of all registered headers, as original name => array of values */
+    /** @var array Map of all registered headers, as original name => array of values */
     private $headers = [];
-    /** @var array<string, string> Map of lowercase header name => original name at registration */
+    /** @var array Map of lowercase header name => original name at registration */
     private $headerNames = [];
     /** @var string */
     private $protocol = '1.1';
     /** @var StreamInterface|null */
     private $stream;
-    public function getProtocolVersion() : string
+    public function getProtocolVersion()
     {
         return $this->protocol;
     }
-    public function withProtocolVersion($version) : MessageInterface
+    public function withProtocolVersion($version)
     {
         if ($this->protocol === $version) {
             return $this;
@@ -31,15 +29,15 @@ trait MessageTrait
         $new->protocol = $version;
         return $new;
     }
-    public function getHeaders() : array
+    public function getHeaders()
     {
         return $this->headers;
     }
-    public function hasHeader($header) : bool
+    public function hasHeader($header)
     {
         return isset($this->headerNames[\strtolower($header)]);
     }
-    public function getHeader($header) : array
+    public function getHeader($header)
     {
         $header = \strtolower($header);
         if (!isset($this->headerNames[$header])) {
@@ -48,11 +46,11 @@ trait MessageTrait
         $header = $this->headerNames[$header];
         return $this->headers[$header];
     }
-    public function getHeaderLine($header) : string
+    public function getHeaderLine($header)
     {
         return \implode(', ', $this->getHeader($header));
     }
-    public function withHeader($header, $value) : MessageInterface
+    public function withHeader($header, $value)
     {
         $this->assertHeader($header);
         $value = $this->normalizeHeaderValue($value);
@@ -65,7 +63,7 @@ trait MessageTrait
         $new->headers[$header] = $value;
         return $new;
     }
-    public function withAddedHeader($header, $value) : MessageInterface
+    public function withAddedHeader($header, $value)
     {
         $this->assertHeader($header);
         $value = $this->normalizeHeaderValue($value);
@@ -80,7 +78,7 @@ trait MessageTrait
         }
         return $new;
     }
-    public function withoutHeader($header) : MessageInterface
+    public function withoutHeader($header)
     {
         $normalized = \strtolower($header);
         if (!isset($this->headerNames[$normalized])) {
@@ -91,14 +89,14 @@ trait MessageTrait
         unset($new->headers[$header], $new->headerNames[$normalized]);
         return $new;
     }
-    public function getBody() : StreamInterface
+    public function getBody()
     {
         if (!$this->stream) {
             $this->stream = Utils::streamFor('');
         }
         return $this->stream;
     }
-    public function withBody(StreamInterface $body) : MessageInterface
+    public function withBody(StreamInterface $body)
     {
         if ($body === $this->stream) {
             return $this;
@@ -107,15 +105,15 @@ trait MessageTrait
         $new->stream = $body;
         return $new;
     }
-    /**
-     * @param array<string|int, string|string[]> $headers
-     */
-    private function setHeaders(array $headers) : void
+    private function setHeaders(array $headers)
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
-            // Numeric array keys are converted to int by PHP.
-            $header = (string) $header;
+            if (\is_int($header)) {
+                // Numeric array keys are converted to int by PHP but having a header name '123' is not forbidden by the spec
+                // and also allowed in withHeader(). So we need to cast it to string again for the following assertion to pass.
+                $header = (string) $header;
+            }
             $this->assertHeader($header);
             $value = $this->normalizeHeaderValue($value);
             $normalized = \strtolower($header);
@@ -133,7 +131,7 @@ trait MessageTrait
      *
      * @return string[]
      */
-    private function normalizeHeaderValue($value) : array
+    private function normalizeHeaderValue($value)
     {
         if (!\is_array($value)) {
             return $this->trimAndValidateHeaderValues([$value]);
@@ -157,7 +155,7 @@ trait MessageTrait
      *
      * @see https://tools.ietf.org/html/rfc7230#section-3.2.4
      */
-    private function trimAndValidateHeaderValues(array $values) : array
+    private function trimAndValidateHeaderValues(array $values)
     {
         return \array_map(function ($value) {
             if (!\is_scalar($value) && null !== $value) {
@@ -172,17 +170,26 @@ trait MessageTrait
      * @see https://tools.ietf.org/html/rfc7230#section-3.2
      *
      * @param mixed $header
+     *
+     * @return void
      */
-    private function assertHeader($header) : void
+    private function assertHeader($header)
     {
         if (!\is_string($header)) {
             throw new \InvalidArgumentException(\sprintf('Header name must be a string but %s provided.', \is_object($header) ? \get_class($header) : \gettype($header)));
+        }
+        if ($header === '') {
+            throw new \InvalidArgumentException('Header name can not be empty.');
         }
         if (!\preg_match('/^[a-zA-Z0-9\'`#$%&*+.^_|~!-]+$/D', $header)) {
             throw new \InvalidArgumentException(\sprintf('"%s" is not valid header name.', $header));
         }
     }
     /**
+     * @param string $value
+     *
+     * @return void
+     *
      * @see https://tools.ietf.org/html/rfc7230#section-3.2
      *
      * field-value    = *( field-content / obs-fold )
@@ -192,7 +199,7 @@ trait MessageTrait
      * obs-text       = %x80-FF
      * obs-fold       = CRLF 1*( SP / HTAB )
      */
-    private function assertValue(string $value) : void
+    private function assertValue($value)
     {
         // The regular expression intentionally does not support the obs-fold production, because as
         // per RFC 7230#3.2.4:

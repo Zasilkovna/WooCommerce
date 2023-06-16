@@ -1,6 +1,5 @@
 <?php
 
-declare (strict_types=1);
 namespace Packetery\GuzzleHttp\Promise;
 
 /**
@@ -11,17 +10,15 @@ namespace Packetery\GuzzleHttp\Promise;
  * by calling the `run()` function of the global task queue in an event loop.
  *
  *     GuzzleHttp\Promise\Utils::queue()->run();
- *
- * @final
  */
 class TaskQueue implements TaskQueueInterface
 {
     private $enableShutdown = \true;
     private $queue = [];
-    public function __construct(bool $withShutdown = \true)
+    public function __construct($withShutdown = \true)
     {
         if ($withShutdown) {
-            \register_shutdown_function(function () : void {
+            \register_shutdown_function(function () {
                 if ($this->enableShutdown) {
                     // Only run the tasks if an E_ERROR didn't occur.
                     $err = \error_get_last();
@@ -32,15 +29,15 @@ class TaskQueue implements TaskQueueInterface
             });
         }
     }
-    public function isEmpty() : bool
+    public function isEmpty()
     {
         return !$this->queue;
     }
-    public function add(callable $task) : void
+    public function add(callable $task)
     {
         $this->queue[] = $task;
     }
-    public function run() : void
+    public function run()
     {
         while ($task = \array_shift($this->queue)) {
             /** @var callable $task */
@@ -58,7 +55,7 @@ class TaskQueue implements TaskQueueInterface
      *
      * Note: This shutdown will occur before any destructors are triggered.
      */
-    public function disableShutdown() : void
+    public function disableShutdown()
     {
         $this->enableShutdown = \false;
     }

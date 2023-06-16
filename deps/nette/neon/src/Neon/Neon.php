@@ -14,41 +14,23 @@ namespace Packetery\Nette\Neon;
 final class Neon
 {
     public const BLOCK = Encoder::BLOCK;
-    public const Chain = '!!chain';
-    public const CHAIN = self::Chain;
+    public const CHAIN = '!!chain';
     /**
-     * Returns value converted to NEON.
+     * Returns value converted to NEON. The flag can be Neon::BLOCK, which will create multiline output.
      */
-    public static function encode($value, bool $blockMode = \false, string $indentation = "\t") : string
+    public static function encode($value, int $flags = 0) : string
     {
         $encoder = new Encoder();
-        $encoder->blockMode = $blockMode;
-        $encoder->indentation = $indentation;
-        return $encoder->encode($value);
+        return $encoder->encode($value, $flags);
     }
     /**
      * Converts given NEON to PHP value.
+     * Returns scalars, arrays, DateTimeImmutable and Entity objects.
      * @return mixed
      */
     public static function decode(string $input)
     {
         $decoder = new Decoder();
         return $decoder->decode($input);
-    }
-    /**
-     * Converts given NEON file to PHP value.
-     * @return mixed
-     */
-    public static function decodeFile(string $file)
-    {
-        if (!\is_file($file)) {
-            throw new Exception("File '{$file}' does not exist.");
-        }
-        $input = \file_get_contents($file);
-        if (\substr($input, 0, 3) === "﻿") {
-            // BOM
-            $input = \substr($input, 3);
-        }
-        return self::decode($input);
     }
 }

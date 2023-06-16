@@ -3,6 +3,6 @@
 namespace Packetery;
 
 // Don't redefine the functions if included multiple times.
-if (!\function_exists('Packetery\\GuzzleHttp\\describe_type')) {
+if (!\function_exists('Packetery\\GuzzleHttp\\uri_template')) {
     require __DIR__ . '/functions.php';
 }

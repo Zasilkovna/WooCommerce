@@ -7,7 +7,7 @@
 declare (strict_types=1);
 namespace Packetery\Nette\Forms\Controls;
 
-use Packetery\Nette\Utils\Html;
+use Packetery\Nette;
 /**
  * Push button control with no default behavior.
  */
@@ -37,26 +37,14 @@ class Button extends BaseControl
     {
         return null;
     }
-    /** @return static */
-    public function renderAsButton(bool $state = \true)
-    {
-        $this->control->setName($state ? 'button' : 'input');
-        return $this;
-    }
     /**
      * Generates control's HTML element.
      * @param  string|object  $caption
      */
-    public function getControl($caption = null) : Html
+    public function getControl($caption = null) : \Packetery\Nette\Utils\Html
     {
         $this->setOption('rendered', \true);
-        $caption = $this->translate($caption ?? $this->getCaption());
-        $el = (clone $this->control)->addAttributes(['name' => $this->getHtmlName(), 'disabled' => $this->isDisabled()]);
-        if ($caption instanceof Html || $caption !== null && $el->getName() === 'button') {
-            $el->setName('button')->setText($caption);
-        } else {
-            $el->value = $caption;
-        }
-        return $el;
+        $el = clone $this->control;
+        return $el->addAttributes(['name' => $this->getHtmlName(), 'disabled' => $this->isDisabled(), 'value' => $this->translate($caption ?? $this->getCaption())]);
     }
 }

@@ -10,7 +10,6 @@ namespace Packetery\Nette\DI\Extensions;
 use Packetery\Nette;
 /**
  * PHP directives definition.
- * @deprecated  use \Packetery\Nette\Bootstrap\Extensions\PhpExtension
  */
 final class PhpExtension extends \Packetery\Nette\DI\CompilerExtension
 {
@@ -20,7 +19,6 @@ final class PhpExtension extends \Packetery\Nette\DI\CompilerExtension
     }
     public function loadConfiguration()
     {
-        \trigger_error(self::class . ' is deprecated, use \\Packetery\\Nette\\Bootstrap\\Extensions\\PhpExtension.', \E_USER_DEPRECATED);
         foreach ($this->getConfig() as $name => $value) {
             if ($value === null) {
                 continue;

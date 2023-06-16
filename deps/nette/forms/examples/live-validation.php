@@ -15,9 +15,9 @@ use Packetery\Tracy\Dumper;
 Debugger::enable();
 $form = new Form();
 $form->addText('name', 'Your name:')->setRequired('Enter your name');
-$form->addText('age', 'Your age:')->setRequired('Enter your age')->addRule($form::Integer, 'Age must be numeric value')->addRule($form::Range, 'Age must be in range from %d to %d', [10, 100]);
-$form->addPassword('password', 'Choose password:')->setRequired('Choose your password')->addRule($form::MinLength, 'The password is too short: it must be at least %d characters', 3);
-$form->addPassword('password2', 'Reenter password:')->setRequired('Reenter your password')->addRule($form::Equal, 'Passwords do not match', $form['password']);
+$form->addText('age', 'Your age:')->setRequired('Enter your age')->addRule($form::INTEGER, 'Age must be numeric value')->addRule($form::RANGE, 'Age must be in range from %d to %d', [10, 100]);
+$form->addPassword('password', 'Choose password:')->setRequired('Choose your password')->addRule($form::MIN_LENGTH, 'The password is too short: it must be at least %d characters', 3);
+$form->addPassword('password2', 'Reenter password:')->setRequired('Reenter your password')->addRule($form::EQUAL, 'Passwords do not match', $form['password']);
 $form->addSubmit('submit', 'Send');
 if ($form->isSuccess()) {
     echo '<h2>Form was submitted and successfully validated</h2>';

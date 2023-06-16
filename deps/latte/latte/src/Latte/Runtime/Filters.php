@@ -10,7 +10,6 @@ namespace Packetery\Latte\Runtime;
 use Packetery\Latte;
 use Packetery\Latte\Engine;
 use Packetery\Latte\RuntimeException;
-use Packetery\Nette;
 use function is_array, is_string, count, strlen;
 /**
  * Template filters. Uses UTF-8 only.
@@ -19,7 +18,7 @@ use function is_array, is_string, count, strlen;
 class Filters
 {
     /** @deprecated */
-    public static $dateFormat = "j. n. Y";
+    public static $dateFormat = '%x';
     /** @internal @var bool  use XHTML syntax? */
     public static $xhtml = \false;
     /**
@@ -38,11 +37,11 @@ class Filters
      */
     public static function escapeHtmlText($s) : string
     {
-        if ($s instanceof HtmlStringable || $s instanceof Nette\Utils\IHtmlString) {
+        if ($s instanceof HtmlStringable || $s instanceof \Packetery\Nette\Utils\IHtmlString) {
             return $s->__toString(\true);
         }
         $s = \htmlspecialchars((string) $s, \ENT_NOQUOTES | \ENT_SUBSTITUTE, 'UTF-8');
-        $s = \strtr($s, ['{{' => '{<!-- -->{', '{' => '&#123;']);
+        $s = \str_replace('{{', '{<!-- -->{', $s);
         return $s;
     }
     /**
@@ -58,9 +57,7 @@ class Filters
             $s .= ' ';
             // protection against innerHTML mXSS vulnerability nette/nette#1496
         }
-        $s = \htmlspecialchars($s, \ENT_QUOTES | \ENT_HTML5 | \ENT_SUBSTITUTE, 'UTF-8', $double);
-        $s = \str_replace('{', '&#123;', $s);
-        return $s;
+        return \htmlspecialchars($s, \ENT_QUOTES | \ENT_HTML5 | \ENT_SUBSTITUTE, 'UTF-8', $double);
     }
     /**
      * Escapes HTML for use inside HTML attribute.
@@ -138,10 +135,10 @@ class Filters
      */
     public static function escapeJs($s) : string
     {
-        if ($s instanceof HtmlStringable || $s instanceof Nette\Utils\IHtmlString) {
+        if ($s instanceof HtmlStringable || $s instanceof \Packetery\Nette\Utils\IHtmlString) {
             $s = $s->__toString(\true);
         }
-        $json = \json_encode($s, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | (\PHP_VERSION_ID >= 70200 ? \JSON_INVALID_UTF8_SUBSTITUTE : 0));
+        $json = \json_encode($s, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES);
         if ($error = \json_last_error()) {
             throw new \Packetery\Latte\RuntimeException(\json_last_error_msg(), $error);
         }
@@ -202,6 +199,7 @@ class Filters
             return $conv($s);
         } else {
             throw new RuntimeException('Filters: unable to convert content type ' . \strtoupper($source) . ' to ' . \strtoupper($dest));
+            return $s;
         }
     }
     public static function getConvertor(string $source, string $dest) : ?callable
@@ -248,7 +246,7 @@ class Filters
     /**
      * Output buffering handler for spacelessHtml.
      */
-    public static function spacelessHtmlHandler(string $s, ?int $phase = null) : string
+    public static function spacelessHtmlHandler(string $s, int $phase = null) : string
     {
         static $strip;
         $left = $right = '';
@@ -322,7 +320,7 @@ class Filters
      * Date/time formatting.
      * @param  string|int|\DateTimeInterface|\DateInterval  $time
      */
-    public static function date($time, ?string $format = null) : ?string
+    public static function date($time, string $format = null) : ?string
     {
         if ($time == null) {
             // intentionally ==
@@ -339,13 +337,8 @@ class Filters
         } elseif (!$time instanceof \DateTimeInterface) {
             $time = new \DateTime($time);
         }
-        if (\strpos($format, '%') !== \false) {
-            if (\PHP_VERSION_ID >= 80100) {
-                \trigger_error("Function strftime() used by filter |date is deprecated since PHP 8.1, use format without % characters like 'Y-m-d'.", \E_USER_DEPRECATED);
-            }
-            return @\strftime($format, $time->format('U') + 0);
-        }
-        return $time->format($format);
+        return \strpos($format, '%') === \false ? $time->format($format) : \strftime($format, $time->format('U') + 0);
+        // formats according to locales
     }
     /**
      * Converts to human readable file size.
@@ -397,7 +390,7 @@ class Filters
      * The data: URI generator.
      * @return string plain text
      */
-    public static function dataStream(string $data, ?string $type = null) : string
+    public static function dataStream(string $data, string $type = null) : string
     {
         if ($type === null) {
             $type = \finfo_buffer(\finfo_open(\FILEINFO_MIME_TYPE), $data);
@@ -414,7 +407,7 @@ class Filters
     /**
      * Returns a part of string.
      */
-    public static function substring($s, int $start, ?int $length = null) : string
+    public static function substring($s, int $start, int $length = null) : string
     {
         $s = (string) $s;
         if ($length === null) {
@@ -574,7 +567,7 @@ class Filters
      * @param  mixed[]  $array
      * @return mixed[]
      */
-    public static function sort(array $array, ?\Closure $callback = null) : array
+    public static function sort(array $array, \Closure $callback = null) : array
     {
         $callback ? \uasort($array, $callback) : \asort($array);
         return $array;
@@ -600,7 +593,7 @@ class Filters
      */
     public static function query($data) : string
     {
-        return is_array($data) ? \http_build_query($data, '', '&') : \urlencode((string) $data);
+        return is_string($data) ? \urlencode($data) : \http_build_query($data, '', '&');
     }
     /**
      * Is divisible by?
@@ -630,7 +623,7 @@ class Filters
      */
     public static function first($value)
     {
-        return is_array($value) ? count($value) ? \reset($value) : null : self::substring($value, 0, 1);
+        return is_string($value) ? self::substring($value, 0, 1) : (count($value) ? \reset($value) : null);
     }
     /**
      * Returns the last item from the array or null if array is empty.
@@ -639,16 +632,16 @@ class Filters
      */
     public static function last($value)
     {
-        return is_array($value) ? count($value) ? \end($value) : null : self::substring($value, -1);
+        return is_string($value) ? self::substring($value, -1) : (count($value) ? \end($value) : null);
     }
     /**
      * Extracts a slice of an array or string.
      * @param  string|array  $value
      * @return string|array
      */
-    public static function slice($value, int $start, ?int $length = null, bool $preserveKeys = \false)
+    public static function slice($value, int $start, int $length = null, bool $preserveKeys = \false)
     {
-        return is_array($value) ? \array_slice($value, $start, $length, $preserveKeys) : self::substring($value, $start, $length);
+        return is_string($value) ? self::substring($value, $start, $length) : \array_slice($value, $start, $length, $preserveKeys);
     }
     public static function round(float $value, int $precision = 0) : float
     {

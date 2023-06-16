@@ -57,8 +57,8 @@ class FormFactory {
 	 * @return Form
 	 */
 	public function create( ?string $name = null ): Form {
-		$form              = new Form( $name );
-		$form->httpRequest = $this->request;
+		$form = new Form( $name );
+		$form->setHttpRequest( $this->request );
 		$form->allowCrossOrigin();
 		return $form;
 	}

@@ -15,7 +15,7 @@ use Packetery\Tracy;
 class PsrToTracyLoggerAdapter implements \Packetery\Tracy\ILogger
 {
     /** Tracy logger level to PSR-3 log level mapping */
-    private const LevelMap = [Tracy\ILogger::DEBUG => Psr\Log\LogLevel::DEBUG, \Packetery\Tracy\ILogger::INFO => Psr\Log\LogLevel::INFO, \Packetery\Tracy\ILogger::WARNING => Psr\Log\LogLevel::WARNING, \Packetery\Tracy\ILogger::ERROR => Psr\Log\LogLevel::ERROR, \Packetery\Tracy\ILogger::EXCEPTION => Psr\Log\LogLevel::ERROR, \Packetery\Tracy\ILogger::CRITICAL => Psr\Log\LogLevel::CRITICAL];
+    private const LevelMap = [\Packetery\Tracy\ILogger::DEBUG => Psr\Log\LogLevel::DEBUG, \Packetery\Tracy\ILogger::INFO => Psr\Log\LogLevel::INFO, \Packetery\Tracy\ILogger::WARNING => Psr\Log\LogLevel::WARNING, \Packetery\Tracy\ILogger::ERROR => Psr\Log\LogLevel::ERROR, \Packetery\Tracy\ILogger::EXCEPTION => Psr\Log\LogLevel::ERROR, \Packetery\Tracy\ILogger::CRITICAL => Psr\Log\LogLevel::CRITICAL];
     /** @var Psr\Log\LoggerInterface */
     private $psrLogger;
     public function __construct(Psr\Log\LoggerInterface $psrLogger)

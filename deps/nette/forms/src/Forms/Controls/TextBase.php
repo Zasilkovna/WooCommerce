@@ -80,6 +80,15 @@ abstract class TextBase extends BaseControl
         $this->control->maxlength = $length;
         return $this;
     }
+    /**
+     * Appends input string filter callback.
+     * @return static
+     */
+    public function addFilter(callable $filter)
+    {
+        $this->getRules()->addFilter($filter);
+        return $this;
+    }
     public function getControl() : \Packetery\Nette\Utils\Html
     {
         $el = parent::getControl();
@@ -103,7 +112,7 @@ abstract class TextBase extends BaseControl
                 return parent::addRule($validator, $errorMessage, $arg);
             }
         }
-        if ($validator === Form::Length || $validator === Form::MaxLength) {
+        if ($validator === Form::LENGTH || $validator === Form::MAX_LENGTH) {
             $tmp = \is_array($arg) ? $arg[1] : $arg;
             if (\is_scalar($tmp)) {
                 $this->control->maxlength = isset($this->control->maxlength) ? \min($this->control->maxlength, $tmp) : $tmp;

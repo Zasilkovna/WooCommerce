@@ -90,7 +90,7 @@ trait Base
     private function doValidateRange($value, array $range, Context $context, string $types = '') : bool
     {
         if (\is_array($value) || \is_string($value)) {
-            [$length, $label] = \is_array($value) ? [\count($value), 'items'] : (\in_array('unicode', \explode('|', $types), \true) ? [Nette\Utils\Strings::length($value), 'characters'] : [\strlen($value), 'bytes']);
+            [$length, $label] = \is_array($value) ? [\count($value), 'items'] : (\in_array('unicode', \explode('|', $types), \true) ? [\Packetery\Nette\Utils\Strings::length($value), 'characters'] : [\strlen($value), 'bytes']);
             if (!self::isInRange($length, $range)) {
                 $context->addError("The length of %label% %path% expects to be in range %expected%, %length% {$label} given.", \Packetery\Nette\Schema\Message::LENGTH_OUT_OF_RANGE, ['value' => $value, 'length' => $length, 'expected' => \implode('..', $range)]);
                 return \false;

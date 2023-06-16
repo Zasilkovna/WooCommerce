@@ -14,7 +14,7 @@
  */
 function customize_php_scoper_config( array $config ): array {
 	$config['patchers'][] = static function ( string $filePath, string $prefix, string $content ): string {
-		$regexForPrefix = "([\\s\"'(<@|])";
+		$regexForPrefix = "([\\s\"'\\[(<@|])";
 		if ( str_contains( $filePath, 'latte/latte' ) ) {
 			// would not work for other imported namespace
 			// e.g.: use Nette\Bridges\Latte; echo Latte\SomeClass::method();
@@ -34,6 +34,17 @@ function customize_php_scoper_config( array $config ): array {
 				],
 				$content
 			);
+
+			$content = str_replace( [
+				'namespace \\Packetery',
+				'use Tracy\\Dumper;',
+				'use Tracy\\Helpers;',
+			], [
+				// would not work in string context
+				'namespace Packetery',
+				'use \\Packetery\\Tracy\\Dumper;',
+				'use \\Packetery\\Tracy\\Helpers;',
+			], $content );
 		}
 
 		if ( str_contains( $filePath, 'nette/' ) ) {
@@ -54,14 +65,16 @@ function customize_php_scoper_config( array $config ): array {
 			);
 
 			$content = str_replace( [
+				'namespace \\Packetery',
 				'use Nette;',
 				'use Tracy\\Dumper;',
 				'use Tracy\\Helpers;',
 			], [
 				// would not work in string context
-				'use Packetery\\Nette;',
-				'use Packetery\\Tracy\\Dumper;',
-				'use Packetery\\Tracy\\Helpers;',
+				'namespace Packetery',
+				'use \\Packetery\\Nette;',
+				'use \\Packetery\\Tracy\\Dumper;',
+				'use \\Packetery\\Tracy\\Helpers;',
 			], $content );
 		}
 
@@ -84,10 +97,12 @@ function customize_php_scoper_config( array $config ): array {
 
 			$content = str_replace(
 				[
+					'namespace \\Packetery',
 					'namespace Tracy',
 				],
 				[
 					// would not work in string context
+					'namespace Packetery',
 					'namespace Packetery\\Tracy',
 				],
 				$content

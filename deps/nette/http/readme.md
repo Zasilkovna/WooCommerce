@@ -41,7 +41,7 @@ It requires PHP version 7.2 and supports PHP up to 8.2.
 HTTP Request
 ============
 
-An HTTP request is an [Nette\Http\Request](https://api.nette.org/3.0/Nette/Http/Request.html) object. What is important is that Nette when [creating](#RequestFactory) this object, it clears all GET, POST and COOKIE input parameters as well as URLs of control characters and invalid UTF-8 sequences. So you can safely continue working with the data. The cleaned data is then used in presenters and forms.
+An HTTP request is an [\Packetery\Nette\Http\Request](https://api.nette.org/3.0/Nette/Http/Request.html) object. What is important is that Nette when [creating](#RequestFactory) this object, it clears all GET, POST and COOKIE input parameters as well as URLs of control characters and invalid UTF-8 sequences. So you can safely continue working with the data. The cleaned data is then used in presenters and forms.
 
 Class `Request` is immutable. It has no setters, it has only one so-called wither `withUrl()`, which does not change the object, but returns a new instance with a modified value.
 
@@ -82,7 +82,7 @@ $id = $httpRequest->getPost('id');  // returns POST parameter 'id' (or null)
 
 getFile(string $key): \Packetery\Nette\Http\FileUpload|array|null
 ------------------------------------------------------
-Returns [upload](#Uploaded-Files) as object [Nette\Http\FileUpload](https://api.nette.org/3.0/Nette/Http/FileUpload.html):
+Returns [upload](#Uploaded-Files) as object [\Packetery\Nette\Http\FileUpload](https://api.nette.org/3.0/Nette/Http/FileUpload.html):
 
 ```php
 $file = $httpRequest->getFile('avatar');
@@ -94,7 +94,7 @@ if ($file->hasFile()) { // was any file uploaded?
 
 getFiles(): array
 -----------------
-Returns tree of [upload files](#Uploaded-Files) in a normalized structure, with each leaf an instance of [Nette\Http\FileUpload](https://api.nette.org/3.0/Nette/Http/FileUpload.html):
+Returns tree of [upload files](#Uploaded-Files) in a normalized structure, with each leaf an instance of [\Packetery\Nette\Http\FileUpload](https://api.nette.org/3.0/Nette/Http/FileUpload.html):
 
 ```php
 $files = $httpRequest->getFiles();
@@ -197,7 +197,7 @@ echo $httpRequest->detectLanguage($langs); // en
 RequestFactory
 --------------
 
-The object of the current HTTP request is created by [Nette\Http\RequestFactory](https://api.nette.org/3.0/Nette/Http/RequestFactory.html). If you are writing an application that does not use a DI container, you create a request as follows:
+The object of the current HTTP request is created by [\Packetery\Nette\Http\RequestFactory](https://api.nette.org/3.0/Nette/Http/RequestFactory.html). If you are writing an application that does not use a DI container, you create a request as follows:
 
 ```php
 $factory = new \Packetery\Nette\Http\RequestFactory;
@@ -224,7 +224,7 @@ $requestFactory->urlFilters['path']['/{2,}'] = '/';
 HTTP Response
 =============
 
-An HTTP response is an [Nette\Http\Response](https://api.nette.org/3.0/Nette/Http/Response.html) object. Unlike the [Request](#HTTP-Request), the object is mutable, so you can use setters to change the state, ie to send headers. Remember that all setters **must be called before any actual output is sent.** The `isSent()` method tells if output have been sent. If it returns `true`, each attempt to send a header throws an `Nette\InvalidStateException` exception.
+An HTTP response is an [\Packetery\Nette\Http\Response](https://api.nette.org/3.0/Nette/Http/Response.html) object. Unlike the [Request](#HTTP-Request), the object is mutable, so you can use setters to change the state, ie to send headers. Remember that all setters **must be called before any actual output is sent.** The `isSent()` method tells if output have been sent. If it returns `true`, each attempt to send a header throws an `Nette\InvalidStateException` exception.
 
 
 setCode(int $code, string $reason = null)
@@ -487,7 +487,7 @@ Sessions
 
 When using sessions, each user receives a unique identifier called session ID, which is passed in a cookie. This serves as the key to the session data. Unlike cookies, which are stored on the browser side, session data is stored on the server side.
 
-The session is managed by the [Nette\Http\Session](https://api.nette.org/3.0/Nette/Http/Session.html) object.
+The session is managed by the [\Packetery\Nette\Http\Session](https://api.nette.org/3.0/Nette/Http/Session.html) object.
 
 
 Starting Session
@@ -505,7 +505,7 @@ Section
 
 In pure PHP, the session data store is implemented as an array accessible via a global variable `$_SESSION`. The problem is that applications normally consist of a number of independent parts, and if all have only one same array available, sooner or later a name collision will occur.
 
-Nette Framework solves the problem by dividing the entire space into sections (objects [Nette\Http\SessionSection](https://api.nette.org/3.0/Nette/Http/SessionSection.html)). Each unit then uses its own section with a unique name and no collisions can occur.
+Nette Framework solves the problem by dividing the entire space into sections (objects [\Packetery\Nette\Http\SessionSection](https://api.nette.org/3.0/Nette/Http/SessionSection.html)). Each unit then uses its own section with a unique name and no collisions can occur.
 
 We get the section from the session manager:
 
@@ -649,7 +649,7 @@ Function ini_set is used for configuring PHP, but unfortunately, its use is proh
 Url
 ===
 
-The [Nette\Http\Url](https://api.nette.org/3.0/Nette/Http/Url.html) class makes it easy to work with the URL and its individual components, which are outlined in this diagram:
+The [\Packetery\Nette\Http\Url](https://api.nette.org/3.0/Nette/Http/Url.html) class makes it easy to work with the URL and its individual components, which are outlined in this diagram:
 
 ```
  scheme  user  password  host   port    path        query  fragment
@@ -736,7 +736,7 @@ $url->isEqual('https://nette.org');
 UrlImmutable
 ============
 
-The class [Nette\Http\UrlImmutable](https://api.nette.org/3.0/Nette/Http/UrlImmutable.html) is an immutable alternative to class `Url` (just as in PHP `DateTimeImmutable` is immutable alternative to `DateTime`). Instead of setters, it has so-called withers, which do not change the object, but return new instances with a modified value:
+The class [\Packetery\Nette\Http\UrlImmutable](https://api.nette.org/3.0/Nette/Http/UrlImmutable.html) is an immutable alternative to class `Url` (just as in PHP `DateTimeImmutable` is immutable alternative to `DateTime`). Instead of setters, it has so-called withers, which do not change the object, but return new instances with a modified value:
 
 ```php
 use \Packetery\Nette\Http\UrlImmutable;

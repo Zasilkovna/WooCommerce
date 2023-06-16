@@ -35,9 +35,9 @@ class TracyExtension extends Nette\DI\CompilerExtension
     public function loadConfiguration()
     {
         $builder = $this->getContainerBuilder();
-        $builder->addDefinition($this->prefix('logger'))->setClass(\Packetery\Tracy\ILogger::class)->setFactory([Tracy\Debugger::class, 'getLogger']);
-        $builder->addDefinition($this->prefix('blueScreen'))->setFactory([Tracy\Debugger::class, 'getBlueScreen']);
-        $builder->addDefinition($this->prefix('bar'))->setFactory([Tracy\Debugger::class, 'getBar']);
+        $builder->addDefinition($this->prefix('logger'))->setClass(\Packetery\Tracy\ILogger::class)->setFactory([\Packetery\Tracy\Debugger::class, 'getLogger']);
+        $builder->addDefinition($this->prefix('blueScreen'))->setFactory([\Packetery\Tracy\Debugger::class, 'getBlueScreen']);
+        $builder->addDefinition($this->prefix('bar'))->setFactory([\Packetery\Tracy\Debugger::class, 'getBar']);
     }
     public function afterCompile(Nette\PhpGenerator\ClassType $class)
     {
@@ -46,7 +46,7 @@ class TracyExtension extends Nette\DI\CompilerExtension
         $builder = $this->getContainerBuilder();
         $logger = $builder->getDefinition($this->prefix('logger'));
         $initialize->addBody($builder->formatPhp('$logger = ?;', [$logger]));
-        if (!$logger instanceof Nette\DI\Definitions\ServiceDefinition || $logger->getFactory()->getEntity() !== [Tracy\Debugger::class, 'getLogger']) {
+        if (!$logger instanceof Nette\DI\Definitions\ServiceDefinition || $logger->getFactory()->getEntity() !== [\Packetery\Tracy\Debugger::class, 'getLogger']) {
             $initialize->addBody('\\Packetery\\Tracy\\Debugger::setLogger($logger);');
         }
         $options = (array) $this->config;

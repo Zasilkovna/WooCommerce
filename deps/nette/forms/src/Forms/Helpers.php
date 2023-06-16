@@ -16,10 +16,10 @@ use Packetery\Nette\Utils\Strings;
 class Helpers
 {
     use \Packetery\Nette\StaticClass;
-    private const UnsafeNames = ['attributes', 'children', 'elements', 'focus', 'length', 'reset', 'style', 'submit', 'onsubmit', 'form', 'presenter', 'action'];
+    private const UNSAFE_NAMES = ['attributes', 'children', 'elements', 'focus', 'length', 'reset', 'style', 'submit', 'onsubmit', 'form', 'presenter', 'action'];
     /**
      * Extracts and sanitizes submitted form data for single control.
-     * @param  int  $type  type Form::DataText, DataLine, DataFile, DataKeys
+     * @param  int  $type  type Form::DATA_TEXT, DATA_LINE, DATA_FILE, DATA_KEYS
      * @return string|string[]
      * @internal
      */
@@ -27,7 +27,7 @@ class Helpers
     {
         $name = \explode('[', \str_replace(['[]', ']', '.'], ['', '', '_'], $htmlName));
         $data = \Packetery\Nette\Utils\Arrays::get($data, $name, null);
-        $itype = $type & ~Form::DataKeys;
+        $itype = $type & ~Form::DATA_KEYS;
         if (\substr($htmlName, -2) === '[]') {
             if (!\is_array($data)) {
                 return [];
@@ -38,7 +38,7 @@ class Helpers
                     unset($data[$k]);
                 }
             }
-            if ($type & Form::DataKeys) {
+            if ($type & Form::DATA_KEYS) {
                 return $data;
             }
             return \array_values($data);
@@ -48,11 +48,11 @@ class Helpers
     }
     private static function sanitize(int $type, $value)
     {
-        if ($type === Form::DataText) {
+        if ($type === Form::DATA_TEXT) {
             return \is_scalar($value) ? Strings::normalizeNewLines($value) : null;
-        } elseif ($type === Form::DataLine) {
+        } elseif ($type === Form::DATA_LINE) {
             return \is_scalar($value) ? Strings::trim(\strtr((string) $value, "\r\n", '  ')) : null;
-        } elseif ($type === Form::DataFile) {
+        } elseif ($type === Form::DATA_FILE) {
             return $value instanceof \Packetery\Nette\Http\FileUpload ? $value : null;
         } else {
             throw new \Packetery\Nette\InvalidArgumentException('Unknown data type');
@@ -67,7 +67,7 @@ class Helpers
         if ($count) {
             $name = \substr_replace($name, '', \strpos($name, ']'), 1) . ']';
         }
-        if (\is_numeric($name) || \in_array($name, self::UnsafeNames, \true)) {
+        if (\is_numeric($name) || \in_array($name, self::UNSAFE_NAMES, \true)) {
             $name = '_' . $name;
         }
         return $name;
@@ -112,7 +112,7 @@ class Helpers
         }
         return $payload;
     }
-    public static function createInputList(array $items, ?array $inputAttrs = null, ?array $labelAttrs = null, $wrapper = null) : string
+    public static function createInputList(array $items, array $inputAttrs = null, array $labelAttrs = null, $wrapper = null) : string
     {
         [$inputAttrs, $inputTag] = self::prepareAttrs($inputAttrs, 'input');
         [$labelAttrs, $labelTag] = self::prepareAttrs($labelAttrs, 'label');
@@ -128,11 +128,11 @@ class Helpers
                 $label->attrs[$k] = $v[$value] ?? null;
             }
             $input->value = $value;
-            $res .= ($res === '' && $wrapperEnd === '' ? '' : $wrapper) . $labelTag . $label->attributes() . '>' . $inputTag . $input->attributes() . (isset(Html::$xhtml) && Html::$xhtml ? ' />' : '>') . ($caption instanceof \Packetery\Nette\HtmlStringable ? $caption : \htmlspecialchars((string) $caption, \ENT_NOQUOTES, 'UTF-8')) . '</label>' . $wrapperEnd;
+            $res .= ($res === '' && $wrapperEnd === '' ? '' : $wrapper) . $labelTag . $label->attributes() . '>' . $inputTag . $input->attributes() . (Html::$xhtml ? ' />' : '>') . ($caption instanceof \Packetery\Nette\HtmlStringable ? $caption : \htmlspecialchars((string) $caption, \ENT_NOQUOTES, 'UTF-8')) . '</label>' . $wrapperEnd;
         }
         return $res;
     }
-    public static function createSelectBox(array $items, ?array $optionAttrs = null, $selected = null) : Html
+    public static function createSelectBox(array $items, array $optionAttrs = null, $selected = null) : Html
     {
         if ($selected !== null) {
             $optionAttrs['selected?'] = $selected;
@@ -191,17 +191,5 @@ class Helpers
         $value = \ini_get($name);
         $units = ['k' => 10, 'm' => 20, 'g' => 30];
         return isset($units[$ch = \strtolower(\substr($value, -1))]) ? (int) $value << $units[$ch] : (int) $value;
-    }
-    /** @internal */
-    public static function getSingleType($reflection) : ?string
-    {
-        $type = \Packetery\Nette\Utils\Type::fromReflection($reflection);
-        if (!$type) {
-            return null;
-        } elseif ($res = $type->getSingleName()) {
-            return $res;
-        } else {
-            throw new \Packetery\Nette\InvalidStateException(\Packetery\Nette\Utils\Reflection::toString($reflection) . " has unsupported type '{$type}'.");
-        }
     }
 }

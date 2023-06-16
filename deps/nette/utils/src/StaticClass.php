@@ -12,10 +12,7 @@ namespace Packetery\Nette;
  */
 trait StaticClass
 {
-    /**
-     * @return never
-     * @throws \Error
-     */
+    /** @throws \Error */
     public final function __construct()
     {
         throw new \Error('Class ' . static::class . ' is static and cannot be instantiated.');

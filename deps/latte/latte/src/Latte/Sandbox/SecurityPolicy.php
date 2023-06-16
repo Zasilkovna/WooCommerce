@@ -16,7 +16,7 @@ class SecurityPolicy implements \Packetery\Latte\Policy
     use \Packetery\Latte\Strict;
     public const ALL = ['*'];
     /** @var string[] */
-    private $tags = [];
+    private $macros = [];
     /** @var string[] */
     private $filters = [];
     /** @var string[] */
@@ -34,29 +34,20 @@ class SecurityPolicy implements \Packetery\Latte\Policy
         $policy = new self();
         // does not include: contentType, debugbreak, dump, extends, import, include, includeblock, layout,
         // php (but 'do' is allowed), sandbox, snippet, snippetArea, templatePrint, varPrint, embed
-        $policy->allowTags(['_', '=', 'attr', 'block', 'breakIf', 'capture', 'case', 'class', 'continueIf', 'default', 'define', 'do', 'else', 'elseif', 'elseifset', 'first', 'for', 'foreach', 'if', 'ifchanged', 'ifcontent', 'iterateWhile', 'ifset', 'l', 'last', 'r', 'rollback', 'sep', 'skipIf', 'spaceless', 'switch', 'templateType', 'translate', 'try', 'var', 'varType', 'while']);
+        $policy->allowMacros(['_', '=', 'attr', 'block', 'breakIf', 'capture', 'case', 'class', 'continueIf', 'default', 'define', 'do', 'else', 'elseif', 'elseifset', 'first', 'for', 'foreach', 'if', 'ifchanged', 'ifcontent', 'iterateWhile', 'ifset', 'l', 'last', 'r', 'rollback', 'sep', 'skipIf', 'spaceless', 'switch', 'templateType', 'try', 'var', 'varType', 'while']);
         // does not include: dataStream, noEscape, noCheck
-        $policy->allowFilters(['batch', 'breaklines', 'breakLines', 'bytes', 'capitalize', 'ceil', 'clamp', 'date', 'escapeCss', 'escapeHtml', 'escapeHtmlComment', 'escapeICal', 'escapeJs', 'escapeUrl', 'escapeXml', 'explode', 'first', 'firstUpper', 'floor', 'checkUrl', 'implode', 'indent', 'join', 'last', 'length', 'lower', 'number', 'padLeft', 'padRight', 'query', 'random', 'repeat', 'replace', 'replaceRe', 'reverse', 'round', 'slice', 'sort', 'spaceless', 'split', 'strip', 'striphtml', 'stripHtml', 'striptags', 'stripTags', 'substr', 'trim', 'truncate', 'upper', 'webalize']);
+        $policy->allowFilters(['batch', 'breakLines', 'bytes', 'capitalize', 'ceil', 'clamp', 'date', 'escapeCss', 'escapeHtml', 'escapeHtmlComment', 'escapeICal', 'escapeJs', 'escapeUrl', 'escapeXml', 'explode', 'first', 'firstUpper', 'floor', 'checkUrl', 'implode', 'indent', 'join', 'last', 'length', 'lower', 'number', 'padLeft', 'padRight', 'query', 'random', 'repeat', 'replace', 'replaceRe', 'reverse', 'round', 'slice', 'sort', 'spaceless', 'split', 'strip', 'stripHtml', 'stripTags', 'substr', 'trim', 'truncate', 'upper', 'webalize']);
         $policy->allowFunctions(['clamp', 'divisibleBy', 'even', 'first', 'last', 'odd', 'slice']);
         $policy->allowMethods(\Packetery\Latte\Runtime\CachingIterator::class, self::ALL);
         $policy->allowProperties(\Packetery\Latte\Runtime\CachingIterator::class, self::ALL);
         return $policy;
     }
     /**
-     * @deprecated  use allowTags()
+     * @param  string[]  $macros
      */
-    public function allowMacros(array $tags) : self
+    public function allowMacros(array $macros) : self
     {
-        \trigger_error(__METHOD__ . '() is deprecated, use allowTags()', \E_USER_DEPRECATED);
-        $this->allowTags($tags);
-        return $this;
-    }
-    /**
-     * @param  string[]  $tags
-     */
-    public function allowTags(array $tags) : self
-    {
-        $this->tags += \array_flip(\array_map('strtolower', $tags));
+        $this->macros += \array_flip(\array_map('strtolower', $macros));
         return $this;
     }
     /**
@@ -95,7 +86,7 @@ class SecurityPolicy implements \Packetery\Latte\Policy
     }
     public function isMacroAllowed(string $macro) : bool
     {
-        return isset($this->tags[\strtolower($macro)]) || isset($this->tags['*']);
+        return isset($this->macros[\strtolower($macro)]) || isset($this->macros['*']);
     }
     public function isFilterAllowed(string $filter) : bool
     {

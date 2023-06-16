@@ -78,6 +78,7 @@ class Tracer
                 unset($params[$key]);
             }
         }
+        unset($params['_l'], $params['_g']);
         return $params;
     }
 }

@@ -102,13 +102,13 @@ abstract class BaseControl extends \Packetery\Nette\ComponentModel\Component imp
      */
     public function loadHttpData() : void
     {
-        $this->setValue($this->getHttpData(Form::DataText));
+        $this->setValue($this->getHttpData(Form::DATA_TEXT));
     }
     /**
      * Loads HTTP data.
      * @return mixed
      */
-    protected function getHttpData($type, ?string $htmlTail = null)
+    protected function getHttpData($type, string $htmlTail = null)
     {
         return $this->getForm()->getHttpData($type, $this->getHtmlName() . $htmlTail);
     }
@@ -336,6 +336,7 @@ abstract class BaseControl extends \Packetery\Nette\ComponentModel\Component imp
     }
     /**
      * Adds a validation condition a returns new branch.
+     * @return Rules      new branch
      */
     public function addCondition($validator, $value = null) : Rules
     {
@@ -343,19 +344,11 @@ abstract class BaseControl extends \Packetery\Nette\ComponentModel\Component imp
     }
     /**
      * Adds a validation condition based on another control a returns new branch.
+     * @return Rules      new branch
      */
     public function addConditionOn(Control $control, $validator, $value = null) : Rules
     {
         return $this->rules->addConditionOn($control, $validator, $value);
-    }
-    /**
-     * Adds a input filter callback.
-     * @return static
-     */
-    public function addFilter(callable $filter)
-    {
-        $this->getRules()->addFilter($filter);
-        return $this;
     }
     public function getRules() : Rules
     {
@@ -437,12 +430,9 @@ abstract class BaseControl extends \Packetery\Nette\ComponentModel\Component imp
      * Returns user-specific option.
      * @return mixed
      */
-    public function getOption($key)
+    public function getOption($key, $default = null)
     {
-        if (\func_num_args() > 1) {
-            $default = \func_get_arg(1);
-        }
-        return $this->options[$key] ?? $default ?? null;
+        return $this->options[$key] ?? $default;
     }
     /**
      * Returns user-specific options.

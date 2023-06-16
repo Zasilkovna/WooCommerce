@@ -34,7 +34,7 @@ final class SearchExtension extends \Packetery\Nette\DI\CompilerExtension
     {
         foreach (\array_filter($this->config) as $name => $batch) {
             if (!\is_dir($batch->in)) {
-                throw new \Packetery\Nette\DI\InvalidConfigurationException(\sprintf("Option '%s › %s › in' must be valid directory name, '%s' given.", $this->name, $name, $batch->in));
+                throw new \Packetery\Nette\DI\InvalidConfigurationException("Option '{$this->name} › {$name} › in' must be valid directory name, '{$batch->in}' given.");
             }
             foreach ($this->findClasses($batch) as $class) {
                 $this->classes[$class] = \array_merge($this->classes[$class] ?? [], $batch->tags);
@@ -58,7 +58,7 @@ final class SearchExtension extends \Packetery\Nette\DI\CompilerExtension
         $found = [];
         foreach ($classes as $class) {
             if (!\class_exists($class) && !\interface_exists($class) && !\trait_exists($class)) {
-                throw new \Packetery\Nette\InvalidStateException(\sprintf('Class %s was found, but it cannot be loaded by autoloading.', $class));
+                throw new \Packetery\Nette\InvalidStateException("Class {$class} was found, but it cannot be loaded by autoloading.");
             }
             $rc = new \ReflectionClass($class);
             if (($rc->isInstantiable() || $rc->isInterface() && \count($methods = $rc->getMethods()) === 1 && $methods[0]->name === 'create') && (!$acceptRE || \preg_match($acceptRE, $rc->name)) && (!$rejectRE || !\preg_match($rejectRE, $rc->name)) && (!$acceptParent || Arrays::some($acceptParent, function ($nm) use($rc) {

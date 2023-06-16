@@ -23,49 +23,15 @@ use Packetery\Nette\Utils\Html;
 class Form extends Container implements \Packetery\Nette\HtmlStringable
 {
     /** validator */
-    public const Equal = ':equal', IsIn = self::Equal, NotEqual = ':notEqual', IsNotIn = self::NotEqual, Filled = ':filled', Blank = ':blank', Required = self::Filled, Valid = ':valid', Submitted = ':submitted', MinLength = ':minLength', MaxLength = ':maxLength', Length = ':length', Email = ':email', URL = ':url', Pattern = ':pattern', PatternInsensitive = ':patternCaseInsensitive', Integer = ':integer', Numeric = ':numeric', Float = ':float', Min = ':min', Max = ':max', Range = ':range', Count = self::Length, MaxFileSize = ':fileSize', MimeType = ':mimeType', Image = ':image', MaxPostSize = ':maxPostSize';
+    public const EQUAL = ':equal', IS_IN = self::EQUAL, NOT_EQUAL = ':notEqual', IS_NOT_IN = self::NOT_EQUAL, FILLED = ':filled', BLANK = ':blank', REQUIRED = self::FILLED, VALID = ':valid', SUBMITTED = ':submitted', MIN_LENGTH = ':minLength', MAX_LENGTH = ':maxLength', LENGTH = ':length', EMAIL = ':email', URL = ':url', PATTERN = ':pattern', PATTERN_ICASE = ':patternCaseInsensitive', INTEGER = ':integer', NUMERIC = ':numeric', FLOAT = ':float', MIN = ':min', MAX = ':max', RANGE = ':range', COUNT = self::LENGTH, MAX_FILE_SIZE = ':fileSize', MIME_TYPE = ':mimeType', IMAGE = ':image', MAX_POST_SIZE = ':maxPostSize';
     /** method */
-    public const Get = 'get', Post = 'post';
+    public const GET = 'get', POST = 'post';
     /** submitted data types */
-    public const DataText = 1, DataLine = 2, DataFile = 3, DataKeys = 8;
+    public const DATA_TEXT = 1, DATA_LINE = 2, DATA_FILE = 3, DATA_KEYS = 8;
     /** @internal tracker ID */
-    public const TrackerId = '_form_';
+    public const TRACKER_ID = '_form_';
     /** @internal protection token ID */
-    public const ProtectorId = '_token_';
-    public const EQUAL = self::Equal;
-    public const IS_IN = self::IsIn;
-    public const NOT_EQUAL = self::NotEqual;
-    public const IS_NOT_IN = self::IsNotIn;
-    public const FILLED = self::Filled;
-    public const BLANK = self::Blank;
-    public const REQUIRED = self::Required;
-    public const VALID = self::Valid;
-    public const SUBMITTED = self::Submitted;
-    public const MIN_LENGTH = self::MinLength;
-    public const MAX_LENGTH = self::MaxLength;
-    public const LENGTH = self::Length;
-    public const EMAIL = self::Email;
-    public const PATTERN = self::Pattern;
-    public const PATTERN_ICASE = self::PatternInsensitive;
-    public const INTEGER = self::Integer;
-    public const NUMERIC = self::Numeric;
-    public const FLOAT = self::Float;
-    public const MIN = self::Min;
-    public const MAX = self::Max;
-    public const RANGE = self::Range;
-    public const COUNT = self::Count;
-    public const MAX_FILE_SIZE = self::MaxFileSize;
-    public const MIME_TYPE = self::MimeType;
-    public const IMAGE = self::Image;
-    public const MAX_POST_SIZE = self::MaxPostSize;
-    public const GET = self::Get;
-    public const POST = self::Post;
-    public const DATA_TEXT = self::DataText;
-    public const DATA_LINE = self::DataLine;
-    public const DATA_FILE = self::DataFile;
-    public const DATA_KEYS = self::DataKeys;
-    public const TRACKER_ID = self::TrackerId;
-    public const PROTECTOR_ID = self::ProtectorId;
+    public const PROTECTOR_ID = '_token_';
     /**
      * Occurs when the form is submitted and successfully validated
      * @var array<callable(self, array|object): void|callable(array|object): void>
@@ -83,9 +49,9 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
     protected $crossOrigin = \false;
     /** @var \Packetery\Nette\Http\IRequest */
     private static $defaultHttpRequest;
-    /** @var SubmitterControl|bool */
+    /** @var mixed or null meaning: not detected yet */
     private $submittedBy;
-    /** @var array|null */
+    /** @var array */
     private $httpData;
     /** @var Html  element <form> */
     private $element;
@@ -99,13 +65,16 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
     private $errors = [];
     /** @var bool */
     private $beforeRenderCalled;
-    public function __construct(?string $name = null)
+    /**
+     * Form constructor.
+     */
+    public function __construct(string $name = null)
     {
         if ($name !== null) {
             $this->getElementPrototype()->id = 'frm-' . $name;
             $tracker = new Controls\HiddenField($name);
             $tracker->setOmitted();
-            $this[self::TrackerId] = $tracker;
+            $this[self::TRACKER_ID] = $tracker;
             $this->setParent(null, $name);
         }
         $this->monitor(self::class, function () : void {
@@ -183,19 +152,16 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
     /**
      * Cross-Site Request Forgery (CSRF) form protection.
      */
-    public function addProtection(?string $errorMessage = null) : Controls\CsrfProtection
+    public function addProtection(string $errorMessage = null) : Controls\CsrfProtection
     {
         $control = new Controls\CsrfProtection($errorMessage);
-        $children = (array) $this->getComponents();
-        $first = $children ? (string) \key($children) : null;
-        $this->addComponent($control, self::ProtectorId, $first);
+        $this->addComponent($control, self::PROTECTOR_ID, \key((array) $this->getComponents()));
         return $control;
     }
     /**
      * Adds fieldset group to the form.
-     * @param  string|object  $caption
      */
-    public function addGroup($caption = null, bool $setAsCurrent = \true) : ControlGroup
+    public function addGroup(string $caption = null, bool $setAsCurrent = \true) : ControlGroup
     {
         $group = new ControlGroup();
         $group->setOption('label', $caption);
@@ -271,7 +237,7 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
      */
     public function isSubmitted()
     {
-        if ($this->httpData === null) {
+        if ($this->submittedBy === null) {
             $this->getHttpData();
         }
         return $this->submittedBy;
@@ -297,7 +263,7 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
      * Returns submitted HTTP data.
      * @return mixed
      */
-    public function getHttpData(?int $type = null, ?string $htmlName = null)
+    public function getHttpData(int $type = null, string $htmlName = null)
     {
         if ($this->httpData === null) {
             if (!$this->isAnchored()) {
@@ -322,9 +288,7 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
         } elseif (!$this->getErrors()) {
             $this->validate();
         }
-        $handled = \count($this->onSuccess ?? []) || \count($this->onSubmit ?? []);
         if ($this->submittedBy instanceof Controls\SubmitButton) {
-            $handled = $handled || \count($this->submittedBy->onClick ?? []);
             if ($this->isValid()) {
                 $this->invokeHandlers($this->submittedBy->onClick, $this->submittedBy);
             } else {
@@ -338,15 +302,12 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
             Arrays::invoke($this->onError, $this);
         }
         Arrays::invoke($this->onSubmit, $this);
-        if (!$handled) {
-            \trigger_error("Form was submitted but there are no associated handlers (form '{$this->getName()}').", \E_USER_WARNING);
-        }
     }
     private function invokeHandlers(iterable $handlers, $button = null) : void
     {
         foreach ($handlers as $handler) {
             $params = \Packetery\Nette\Utils\Callback::toReflection($handler)->getParameters();
-            $types = \array_map([Helpers::class, 'getSingleType'], $params);
+            $types = \array_map([\Packetery\Nette\Utils\Reflection::class, 'getParameterType'], $params);
             if (!isset($types[0])) {
                 $arg0 = $button ?: $this;
             } elseif ($this instanceof $types[0]) {
@@ -393,15 +354,15 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
                 return null;
             }
         }
-        if ($tracker = $this->getComponent(self::TrackerId, \false)) {
-            if (!isset($data[self::TrackerId]) || $data[self::TrackerId] !== $tracker->getValue()) {
+        if ($tracker = $this->getComponent(self::TRACKER_ID, \false)) {
+            if (!isset($data[self::TRACKER_ID]) || $data[self::TRACKER_ID] !== $tracker->getValue()) {
                 return null;
             }
         }
         return $data;
     }
     /********************* validation ****************d*g**/
-    public function validate(?array $controls = null) : void
+    public function validate(array $controls = null) : void
     {
         $this->cleanErrors();
         if ($controls === null && $this->submittedBy instanceof SubmitterControl) {
@@ -418,7 +379,7 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
         }
         $maxSize = Helpers::iniGetSize('post_max_size');
         if ($maxSize > 0 && $maxSize < $_SERVER['CONTENT_LENGTH']) {
-            $this->addError(\sprintf(Validator::$messages[self::MaxFileSize], $maxSize));
+            $this->addError(\sprintf(Validator::$messages[self::MAX_FILE_SIZE], $maxSize));
         }
     }
     /**
@@ -464,7 +425,7 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
             $this->element = Html::el('form');
             $this->element->action = '';
             // RFC 1808 -> empty uri means 'this'
-            $this->element->method = self::Post;
+            $this->element->method = self::POST;
         }
         return $this->element;
     }
@@ -551,10 +512,13 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
             if (\headers_sent($file, $line)) {
                 throw new \Packetery\Nette\InvalidStateException('Create a form or call \\Packetery\\Nette\\Forms\\Form::initialize() before the headers are sent to initialize CSRF protection.' . ($file ? " (output started at {$file}:{$line})" : '') . '. ');
             }
-            $response = new \Packetery\Nette\Http\Response();
-            $response->cookieSecure = self::$defaultHttpRequest->isSecured();
-            \Packetery\Nette\Http\Helpers::initCookie(self::$defaultHttpRequest, $response);
+            \Packetery\Nette\Http\Helpers::initCookie(self::$defaultHttpRequest, new \Packetery\Nette\Http\Response());
         }
+    }
+    /** @internal */
+    public function setHttpRequest(\Packetery\Nette\Http\IRequest $request)
+    {
+        $this->httpRequest = $request;
     }
     private function getHttpRequest() : \Packetery\Nette\Http\IRequest
     {

@@ -13,7 +13,6 @@ namespace Packetery\Latte;
 class MacroTokens extends TokenIterator
 {
     public const T_WHITESPACE = 1, T_COMMENT = 2, T_SYMBOL = 3, T_NUMBER = 4, T_VARIABLE = 5, T_STRING = 6, T_CAST = 7, T_KEYWORD = 8, T_CHAR = 9;
-    public const SIGNIFICANT = [self::T_SYMBOL, self::T_NUMBER, self::T_VARIABLE, self::T_STRING, self::T_CAST, self::T_KEYWORD, self::T_CHAR], NON_SIGNIFICANT = [self::T_COMMENT, self::T_WHITESPACE];
     /** @var int */
     public $depth = 0;
     /** @var Tokenizer|null */
@@ -24,7 +23,7 @@ class MacroTokens extends TokenIterator
     public function __construct($input = [])
     {
         parent::__construct(\is_array($input) ? $input : $this->parse($input));
-        $this->ignored = self::NON_SIGNIFICANT;
+        $this->ignored = [self::T_COMMENT, self::T_WHITESPACE];
     }
     /**
      * @return array<array{string, int, int}>
@@ -51,7 +50,7 @@ class MacroTokens extends TokenIterator
      * @param  string|array{string, int, int}  $val
      * @return static
      */
-    public function append($val, ?int $position = null)
+    public function append($val, int $position = null)
     {
         if ($val != null) {
             // intentionally @
@@ -127,7 +126,7 @@ class MacroTokens extends TokenIterator
     {
         $modifiers = (array) $modifiers;
         $pos = $this->position;
-        if (($mod = $this->nextValue(...$modifiers)) && ($this->nextToken($this::T_WHITESPACE) || !\ctype_alnum($mod)) && ($name = $this->fetchWord())) {
+        if (($mod = $this->nextValue(...$modifiers)) && $this->nextToken($this::T_WHITESPACE) && ($name = $this->fetchWord())) {
             return [$name, $mod];
         }
         $this->position = $pos;

@@ -1,6 +1,5 @@
 <?php
 
-declare (strict_types=1);
 namespace Packetery\GuzzleHttp\Psr7;
 
 use Packetery\Psr\Http\Message\UriInterface;
@@ -16,9 +15,13 @@ final class UriResolver
     /**
      * Removes dot segments from a path and returns the new path.
      *
+     * @param string $path
+     *
+     * @return string
+     *
      * @link http://tools.ietf.org/html/rfc3986#section-5.2.4
      */
-    public static function removeDotSegments(string $path) : string
+    public static function removeDotSegments($path)
     {
         if ($path === '' || $path === '/') {
             return $path;
@@ -46,9 +49,14 @@ final class UriResolver
     /**
      * Converts the relative URI into a new URI that is resolved against the base URI.
      *
+     * @param UriInterface $base Base URI
+     * @param UriInterface $rel  Relative URI
+     *
+     * @return UriInterface
+     *
      * @link http://tools.ietf.org/html/rfc3986#section-5.2
      */
-    public static function resolve(UriInterface $base, UriInterface $rel) : UriInterface
+    public static function resolve(UriInterface $base, UriInterface $rel)
     {
         if ((string) $rel === '') {
             // we can simply return the same base URI instance for this same-document reference
@@ -107,8 +115,13 @@ final class UriResolver
      * relative-path reference will be returned as-is.
      *
      *    echo UriResolver::relativize($base, new Uri('/a/b/c'));  // prints 'c' as well
+     *
+     * @param UriInterface $base   Base URI
+     * @param UriInterface $target Target URI
+     *
+     * @return UriInterface The relative URI reference
      */
-    public static function relativize(UriInterface $base, UriInterface $target) : UriInterface
+    public static function relativize(UriInterface $base, UriInterface $target)
     {
         if ($target->getScheme() !== '' && ($base->getScheme() !== $target->getScheme() || $target->getAuthority() === '' && $base->getAuthority() !== '')) {
             return $target;
@@ -137,13 +150,12 @@ final class UriResolver
         // inherit the base query component when resolving.
         if ($target->getQuery() === '') {
             $segments = \explode('/', $target->getPath());
-            /** @var string $lastSegment */
             $lastSegment = \end($segments);
             return $emptyPathUri->withPath($lastSegment === '' ? './' : $lastSegment);
         }
         return $emptyPathUri;
     }
-    private static function getRelativePath(UriInterface $base, UriInterface $target) : string
+    private static function getRelativePath(UriInterface $base, UriInterface $target)
     {
         $sourceSegments = \explode('/', $base->getPath());
         $targetSegments = \explode('/', $target->getPath());

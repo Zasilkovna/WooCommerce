@@ -37,8 +37,6 @@ class HiddenField extends BaseControl
     {
         if ($value === null) {
             $value = '';
-        } elseif ($value instanceof \BackedEnum) {
-            $value = $value->value;
         } elseif (!\is_scalar($value) && !(\is_object($value) && \method_exists($value, '__toString'))) {
             throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Value must be scalar or null, %s given in field '%s'.", \gettype($value), $this->name));
         }
@@ -58,6 +56,15 @@ class HiddenField extends BaseControl
     public function setNullable(bool $value = \true)
     {
         $this->nullable = $value;
+        return $this;
+    }
+    /**
+     * Appends input string filter callback.
+     * @return static
+     */
+    public function addFilter(callable $filter)
+    {
+        $this->getRules()->addFilter($filter);
         return $this;
     }
     public function getControl() : \Packetery\Nette\Utils\Html

@@ -15,11 +15,7 @@ use Packetery\Nette\DI\Definitions\Definition;
 class ContainerBuilder
 {
     use \Packetery\Nette\SmartObject;
-    public const ThisService = 'self', ThisContainer = 'container';
-    /** @deprecated use ContainerBuilder::ThisService */
-    public const THIS_SERVICE = self::ThisService;
-    /** @deprecated use ContainerBuilder::ThisContainer */
-    public const THIS_CONTAINER = self::ThisContainer;
+    public const THIS_SERVICE = 'self', THIS_CONTAINER = 'container';
     /** @var array */
     public $parameters = [];
     /** @var Definition[] */
@@ -37,13 +33,13 @@ class ContainerBuilder
     public function __construct()
     {
         $this->autowiring = new Autowiring($this);
-        $this->addImportedDefinition(self::ThisContainer)->setType(Container::class);
+        $this->addImportedDefinition(self::THIS_CONTAINER)->setType(Container::class);
     }
     /**
      * Adds new service definition.
      * @return Definitions\ServiceDefinition
      */
-    public function addDefinition(?string $name, ?Definition $definition = null) : Definition
+    public function addDefinition(?string $name, Definition $definition = null) : Definition
     {
         $this->needsResolve = \true;
         if ($name === null) {
@@ -52,16 +48,16 @@ class ContainerBuilder
             $name = '0' . $i;
             // prevents converting to integer in array key
         } elseif (\is_int(\key([$name => 1])) || !\preg_match('#^\\w+(\\.\\w+)*$#D', $name)) {
-            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service name must be a alpha-numeric string and not a number, '%s' given.", $name));
+            throw new \Packetery\Nette\InvalidArgumentException(\sprintf('Service name must be a alpha-numeric string and not a number, %s given.', \gettype($name)));
         } else {
             $name = $this->aliases[$name] ?? $name;
             if (isset($this->definitions[$name])) {
-                throw new \Packetery\Nette\InvalidStateException(\sprintf("Service '%s' has already been added.", $name));
+                throw new \Packetery\Nette\InvalidStateException("Service '{$name}' has already been added.");
             }
             $lname = \strtolower($name);
             foreach ($this->definitions as $nm => $foo) {
                 if ($lname === \strtolower($nm)) {
-                    throw new \Packetery\Nette\InvalidStateException(\sprintf("Service '%s' has the same name as '%s' in a case-insensitive manner.", $name, $nm));
+                    throw new \Packetery\Nette\InvalidStateException("Service '{$name}' has the same name as '{$nm}' in a case-insensitive manner.");
                 }
             }
         }
@@ -104,7 +100,7 @@ class ContainerBuilder
     {
         $service = $this->aliases[$name] ?? $name;
         if (!isset($this->definitions[$service])) {
-            throw new MissingServiceException(\sprintf("Service '%s' not found.", $name));
+            throw new MissingServiceException("Service '{$name}' not found.");
         }
         return $this->definitions[$service];
     }
@@ -128,14 +124,14 @@ class ContainerBuilder
     {
         if (!$alias) {
             // builder is not ready for falsy names such as '0'
-            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Alias name must be a non-empty string, '%s' given.", $alias));
+            throw new \Packetery\Nette\InvalidArgumentException(\sprintf('Alias name must be a non-empty string, %s given.', \gettype($alias)));
         } elseif (!$service) {
             // builder is not ready for falsy names such as '0'
-            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service name must be a non-empty string, '%s' given.", $service));
+            throw new \Packetery\Nette\InvalidArgumentException(\sprintf('Service name must be a non-empty string, %s given.', \gettype($service)));
         } elseif (isset($this->aliases[$alias])) {
-            throw new \Packetery\Nette\InvalidStateException(\sprintf("Alias '%s' has already been added.", $alias));
+            throw new \Packetery\Nette\InvalidStateException("Alias '{$alias}' has already been added.");
         } elseif (isset($this->definitions[$alias])) {
-            throw new \Packetery\Nette\InvalidStateException(\sprintf("Service '%s' has already been added.", $alias));
+            throw new \Packetery\Nette\InvalidStateException("Service '{$alias}' has already been added.");
         }
         $this->aliases[$alias] = $service;
     }
@@ -303,9 +299,9 @@ class ContainerBuilder
         }
         return $meta;
     }
-    public static function literal(string $code, ?array $args = null) : \Packetery\Nette\PhpGenerator\PhpLiteral
+    public static function literal(string $code, array $args = null) : \Packetery\Nette\PhpGenerator\PhpLiteral
     {
-        return new \Packetery\Nette\PhpGenerator\PhpLiteral($args === null ? $code : (new \Packetery\Nette\PhpGenerator\Dumper())->format($code, ...$args));
+        return new \Packetery\Nette\PhpGenerator\PhpLiteral($args === null ? $code : \Packetery\Nette\PhpGenerator\Helpers::formatArgs($code, $args));
     }
     /** @deprecated */
     public function formatPhp(string $statement, array $args) : string
@@ -318,5 +314,11 @@ class ContainerBuilder
             }
         });
         return (new PhpGenerator($this))->formatPhp($statement, $args);
+    }
+    /** @deprecated use resolve() */
+    public function prepareClassList() : void
+    {
+        \trigger_error(__METHOD__ . '() is deprecated, use resolve()', \E_USER_DEPRECATED);
+        $this->resolve();
     }
 }

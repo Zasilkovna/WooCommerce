@@ -15,7 +15,7 @@ use Packetery\Nette\Schema;
 class Compiler
 {
     use \Packetery\Nette\SmartObject;
-    private const Services = 'services', Parameters = 'parameters', DI = 'di';
+    private const SERVICES = 'services', PARAMETERS = 'parameters', DI = 'di';
     /** @var CompilerExtension[] */
     private $extensions = [];
     /** @var ContainerBuilder */
@@ -30,12 +30,12 @@ class Compiler
     private $dependencies;
     /** @var string */
     private $className = 'Container';
-    public function __construct(?ContainerBuilder $builder = null)
+    public function __construct(ContainerBuilder $builder = null)
     {
         $this->builder = $builder ?: new ContainerBuilder();
         $this->dependencies = new DependencyChecker();
-        $this->addExtension(self::Services, new Extensions\ServicesExtension());
-        $this->addExtension(self::Parameters, new Extensions\ParametersExtension($this->configs));
+        $this->addExtension(self::SERVICES, new Extensions\ServicesExtension());
+        $this->addExtension(self::PARAMETERS, new Extensions\ParametersExtension($this->configs));
     }
     /**
      * Add custom configurator extension.
@@ -46,18 +46,18 @@ class Compiler
         if ($name === null) {
             $name = '_' . \count($this->extensions);
         } elseif (isset($this->extensions[$name])) {
-            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Name '%s' is already used or reserved.", $name));
+            throw new \Packetery\Nette\InvalidArgumentException("Name '{$name}' is already used or reserved.");
         }
         $lname = \strtolower($name);
         foreach (\array_keys($this->extensions) as $nm) {
             if ($lname === \strtolower((string) $nm)) {
-                throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Name of extension '%s' has the same name as '%s' in a case-insensitive manner.", $name, $nm));
+                throw new \Packetery\Nette\InvalidArgumentException("Name of extension '{$name}' has the same name as '{$nm}' in a case-insensitive manner.");
             }
         }
         $this->extensions[$name] = $extension->setCompiler($this, $name);
         return $this;
     }
-    public function getExtensions(?string $type = null) : array
+    public function getExtensions(string $type = null) : array
     {
         return $type ? \array_filter($this->extensions, function ($item) use($type) : bool {
             return $item instanceof $type;
@@ -89,7 +89,7 @@ class Compiler
      * Adds new configuration from file.
      * @return static
      */
-    public function loadConfig(string $file, ?Config\Loader $loader = null)
+    public function loadConfig(string $file, Config\Loader $loader = null)
     {
         $sources = $this->sources . "// source: {$file}\n";
         $loader = $loader ?: new Config\Loader();
@@ -114,8 +114,8 @@ class Compiler
      */
     public function setDynamicParameterNames(array $names)
     {
-        \assert($this->extensions[self::Parameters] instanceof Extensions\ParametersExtension);
-        $this->extensions[self::Parameters]->dynamicParams = $names;
+        \assert($this->extensions[self::PARAMETERS] instanceof Extensions\ParametersExtension);
+        $this->extensions[self::PARAMETERS]->dynamicParams = $names;
         return $this;
     }
     /**
@@ -173,7 +173,7 @@ class Compiler
         if ($decorator = $this->getExtensions(Extensions\DecoratorExtension::class)) {
             \Packetery\Nette\Utils\Arrays::insertBefore($this->extensions, \key($decorator), $this->getExtensions(Extensions\SearchExtension::class));
         }
-        $extensions = \array_diff_key($this->extensions, $first, [self::Services => 1]);
+        $extensions = \array_diff_key($this->extensions, $first, [self::SERVICES => 1]);
         foreach ($extensions as $name => $extension) {
             $config = $this->processSchema($extension->getConfigSchema(), $this->configs[$name] ?? [], $name);
             $extension->setConfig($this->config[$name] = $config);
@@ -186,11 +186,12 @@ class Compiler
             $extension->setConfig($this->config[$name] = $config);
             $extension->loadConfiguration();
         }
-        if ($extra = \array_diff_key($this->extensions, $extensions, $first, [self::Services => 1])) {
-            throw new \Packetery\Nette\DeprecatedException(\sprintf("Extensions '%s' were added while container was being compiled.", \implode("', '", \array_keys($extra))));
+        if ($extra = \array_diff_key($this->extensions, $extensions, $first, [self::SERVICES => 1])) {
+            $extra = \implode("', '", \array_keys($extra));
+            throw new \Packetery\Nette\DeprecatedException("Extensions '{$extra}' were added while container was being compiled.");
         } elseif ($extra = \key(\array_diff_key($this->configs, $this->extensions))) {
             $hint = \Packetery\Nette\Utils\Helpers::getSuggestion(\array_keys($this->extensions), $extra);
-            throw new InvalidConfigurationException(\sprintf("Found section '%s' in configuration, but corresponding extension is missing", $extra) . ($hint ? ", did you mean '{$hint}'?" : '.'));
+            throw new InvalidConfigurationException("Found section '{$extra}' in configuration, but corresponding extension is missing" . ($hint ? ", did you mean '{$hint}'?" : '.'));
         }
     }
     private function processBeforeCompile() : void
@@ -211,7 +212,7 @@ class Compiler
         $processor = new Schema\Processor();
         $processor->onNewContext[] = function (Schema\Context $context) use($name) {
             $context->path = $name ? [$name] : [];
-            $context->dynamics =& $this->extensions[self::Parameters]->dynamicValidators;
+            $context->dynamics =& $this->extensions[self::PARAMETERS]->dynamicValidators;
         };
         try {
             $res = $processor->processMultiple($schema, $configs);
@@ -240,12 +241,22 @@ class Compiler
      */
     public function loadDefinitionsFromConfig(array $configList) : void
     {
-        $extension = $this->extensions[self::Services];
+        $extension = $this->extensions[self::SERVICES];
         \assert($extension instanceof Extensions\ServicesExtension);
         $extension->loadDefinitions($this->processSchema($extension->getConfigSchema(), [$configList]));
     }
     protected function createPhpGenerator() : PhpGenerator
     {
         return new PhpGenerator($this->builder);
+    }
+    /** @deprecated use non-static Compiler::loadDefinitionsFromConfig() */
+    public static function loadDefinitions() : void
+    {
+        throw new \Packetery\Nette\DeprecatedException(__METHOD__ . '() is deprecated, use non-static Compiler::loadDefinitionsFromConfig(array $configList).');
+    }
+    /** @deprecated use non-static Compiler::loadDefinitionsFromConfig() */
+    public static function loadDefinition() : void
+    {
+        throw new \Packetery\Nette\DeprecatedException(__METHOD__ . '() is deprecated, use non-static Compiler::loadDefinitionsFromConfig(array $configList).');
     }
 }

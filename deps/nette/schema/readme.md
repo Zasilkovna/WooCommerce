@@ -39,7 +39,7 @@ Basic Usage
 
 In variable `$schema` we have a validation schema (what exactly this means and how to create it we will say later) and in variable `$data` we have a data structure that we want to validate and normalize. This can be, for example, data sent by the user through an API, configuration file, etc.
 
-The task is handled by the [Nette\Schema\Processor](https://api.nette.org/3.0/Nette/Schema/Processor.html) class, which processes the input and either returns normalized data or throws an [Nette\Schema\ValidationException](https://api.nette.org/3.0/Nette/Schema/ValidationException.html) exception on error.
+The task is handled by the [\Packetery\Nette\Schema\Processor](https://api.nette.org/3.0/Nette/Schema/Processor.html) class, which processes the input and either returns normalized data or throws an [\Packetery\Nette\Schema\ValidationException](https://api.nette.org/3.0/Nette/Schema/ValidationException.html) exception on error.
 
 ```php
 $processor = new \Packetery\Nette\Schema\Processor;
@@ -51,13 +51,13 @@ try {
 }
 ```
 
-Method `$e->getMessages()` returns array of all message strings and `$e->getMessageObjects()` return all messages as [Nette\Schema\Message](https://api.nette.org/3.1/Nette/Schema/Message.html) objects.
+Method `$e->getMessages()` returns array of all message strings and `$e->getMessageObjects()` return all messages as [\Packetery\Nette\Schema\Message](https://api.nette.org/3.1/Nette/Schema/Message.html) objects.
 
 
 Defining Schema
 ---------------
 
-And now let's create a schema. The class [Nette\Schema\Expect](https://api.nette.org/3.0/Nette/Schema/Expect.html) is used to define it, we actually define expectations of what the data should look like. Let's say that the input data must be a structure (e.g. an array) containing elements `processRefund` of type bool and `refundAmount` of type int.
+And now let's create a schema. The class [\Packetery\Nette\Schema\Expect](https://api.nette.org/3.0/Nette/Schema/Expect.html) is used to define it, we actually define expectations of what the data should look like. Let's say that the input data must be a structure (e.g. an array) containing elements `processRefund` of type bool and `refundAmount` of type int.
 
 ```php
 use \Packetery\Nette\Schema\Expect;

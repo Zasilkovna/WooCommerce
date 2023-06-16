@@ -56,7 +56,7 @@ class MacroNode
     public $endLine;
     /** @var array{string, bool}|null */
     public $saved;
-    public function __construct(Macro $macro, string $name, string $args = '', string $modifiers = '', ?self $parentNode = null, ?HtmlNode $htmlNode = null, ?string $prefix = null)
+    public function __construct(Macro $macro, string $name, string $args = '', string $modifiers = '', self $parentNode = null, HtmlNode $htmlNode = null, string $prefix = null)
     {
         $this->macro = $macro;
         $this->name = $name;
@@ -79,7 +79,7 @@ class MacroNode
     /**
      * @param  string[]  $names
      */
-    public function closest(array $names, ?callable $condition = null) : ?self
+    public function closest(array $names, callable $condition = null) : ?self
     {
         $node = $this->parentNode;
         while ($node && (!\in_array($node->name, $names, \true) || $condition && !$condition($node))) {

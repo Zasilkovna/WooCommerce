@@ -49,7 +49,7 @@ abstract class Definition
         if ($type === null) {
             $this->type = null;
         } elseif (!\class_exists($type) && !\interface_exists($type)) {
-            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service '%s': Class or interface '%s' not found.", $this->name, $type));
+            throw new \Packetery\Nette\InvalidArgumentException("Service '{$this->name}': Class or interface '{$type}' not found.");
         } else {
             $this->type = \Packetery\Nette\DI\Helpers::normalizeClass($type);
         }
@@ -135,13 +135,11 @@ abstract class Definition
     /** @deprecated Use '$def instanceof \Packetery\Nette\DI\Definitions\ImportedDefinition' */
     public function isDynamic() : bool
     {
-        \trigger_error(\sprintf('Service %s: %s() is deprecated, use "instanceof ImportedDefinition".', $this->getName(), __METHOD__), \E_USER_DEPRECATED);
         return \false;
     }
     /** @deprecated Use \Packetery\Nette\DI\Definitions\FactoryDefinition or AccessorDefinition */
     public function getImplement() : ?string
     {
-        \trigger_error(\sprintf('Service %s: %s() is deprecated.', $this->getName(), __METHOD__), \E_USER_DEPRECATED);
         return null;
     }
     /** @deprecated Use getAutowired() */

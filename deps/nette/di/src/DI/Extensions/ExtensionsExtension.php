@@ -11,7 +11,7 @@ use Packetery\Nette;
 /**
  * Enables registration of other extensions in $config file
  */
-class ExtensionsExtension extends \Packetery\Nette\DI\CompilerExtension
+final class ExtensionsExtension extends \Packetery\Nette\DI\CompilerExtension
 {
     public function getConfigSchema() : \Packetery\Nette\Schema\Schema
     {
@@ -28,7 +28,7 @@ class ExtensionsExtension extends \Packetery\Nette\DI\CompilerExtension
                 [$class, $args] = [$class->getEntity(), $class->arguments];
             }
             if (!\is_a($class, \Packetery\Nette\DI\CompilerExtension::class, \true)) {
-                throw new \Packetery\Nette\DI\InvalidConfigurationException(\sprintf("Extension '%s' not found or is not \\Packetery\\Nette\\DI\\CompilerExtension descendant.", $class));
+                throw new \Packetery\Nette\DI\InvalidConfigurationException("Extension '{$class}' not found or is not \\Packetery\\Nette\\DI\\CompilerExtension descendant.");
             }
             $this->compiler->addExtension($name, (new \ReflectionClass($class))->newInstanceArgs($args));
         }

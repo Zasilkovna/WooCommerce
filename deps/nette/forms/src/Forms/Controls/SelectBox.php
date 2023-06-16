@@ -14,21 +14,20 @@ use Packetery\Nette;
 class SelectBox extends ChoiceControl
 {
     /** validation rule */
-    public const Valid = ':selectBoxValid';
-    public const VALID = self::Valid;
+    public const VALID = ':selectBoxValid';
     /** @var array of option / optgroup */
     private $options = [];
     /** @var string|object|false */
     private $prompt = \false;
     /** @var array */
     private $optionAttributes = [];
-    public function __construct($label = null, ?array $items = null)
+    public function __construct($label = null, array $items = null)
     {
         parent::__construct($label, $items);
         $this->setOption('type', 'select');
         $this->addCondition(function () {
             return $this->prompt === \false && $this->options && $this->control->size < 2;
-        })->addRule(\Packetery\Nette\Forms\Form::Filled, \Packetery\Nette\Forms\Validator::$messages[self::Valid]);
+        })->addRule(\Packetery\Nette\Forms\Form::FILLED, \Packetery\Nette\Forms\Validator::$messages[self::VALID]);
     }
     /**
      * Sets first prompt item in select box.

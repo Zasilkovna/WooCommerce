@@ -236,7 +236,7 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
     public static $xhtml = \false;
     /** @var array<string, int>  void elements */
     public static $emptyElements = ['img' => 1, 'hr' => 1, 'br' => 1, 'input' => 1, 'meta' => 1, 'area' => 1, 'embed' => 1, 'keygen' => 1, 'source' => 1, 'base' => 1, 'col' => 1, 'link' => 1, 'param' => 1, 'basefont' => 1, 'frame' => 1, 'isindex' => 1, 'wbr' => 1, 'command' => 1, 'track' => 1];
-    /** @var array<int, HtmlStringable|string> nodes */
+    /** @var array<int, Html|string> nodes */
     protected $children = [];
     /** @var string  element's name */
     private $name;
@@ -247,7 +247,7 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
      * @param  array|string $attrs element's attributes or plain text content
      * @return static
      */
-    public static function el(?string $name = null, $attrs = null)
+    public static function el(string $name = null, $attrs = null)
     {
         $el = new static();
         $parts = \explode(' ', (string) $name, 2);
@@ -303,7 +303,7 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
      * Changes element's name.
      * @return static
      */
-    public final function setName(string $name, ?bool $isEmpty = null)
+    public final function setName(string $name, bool $isEmpty = null)
     {
         $this->name = $name;
         $this->isEmpty = $isEmpty ?? isset(static::$emptyElements[$name]);
@@ -453,7 +453,7 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
      * Special setter for element's attribute.
      * @return static
      */
-    public final function href(string $path, ?array $query = null)
+    public final function href(string $path, array $query = null)
     {
         if ($query) {
             $query = \http_build_query($query, '', '&');
@@ -575,9 +575,8 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
     /**
      * Returns child node (\ArrayAccess implementation).
      * @param  int  $index
-     * @return HtmlStringable|string
+     * @return static|string
      */
-    #[\ReturnTypeWillChange]
     public final function offsetGet($index)
     {
         return $this->children[$index];
@@ -616,7 +615,6 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
     }
     /**
      * Iterates over elements.
-     * @return \ArrayIterator<int, HtmlStringable|string>
      */
     public final function getIterator() : \ArrayIterator
     {
@@ -632,7 +630,7 @@ class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringab
     /**
      * Renders element's start tag, content and end tag.
      */
-    public final function render(?int $indent = null) : string
+    public final function render(int $indent = null) : string
     {
         $s = $this->startTag();
         if (!$this->isEmpty) {

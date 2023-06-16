@@ -1,6 +1,5 @@
 <?php
 
-declare (strict_types=1);
 namespace Packetery\GuzzleHttp\Promise;
 
 /**
@@ -10,6 +9,8 @@ interface PromisorInterface
 {
     /**
      * Returns a promise.
+     *
+     * @return PromiseInterface
      */
-    public function promise() : PromiseInterface;
+    public function promise();
 }

@@ -19,7 +19,7 @@ use Packetery\Nette\Utils\ArrayHash;
 class Container extends \Packetery\Nette\ComponentModel\Container implements \ArrayAccess
 {
     use \Packetery\Nette\ComponentModel\ArrayAccess;
-    private const Array = 'array';
+    private const ARRAY = 'array';
     /**
      * Occurs when the form was validated
      * @var array<callable(self, array|object): void|callable(array|object): void>
@@ -29,8 +29,8 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
     protected $currentGroup;
     /** @var callable[]  extension methods */
     private static $extMethods = [];
-    /** @var ?bool */
-    private $validated = \false;
+    /** @var bool */
+    private $validated;
     /** @var ?string */
     private $mappedType;
     /********************* data exchange ****************d*g**/
@@ -85,21 +85,19 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * @param  Control[]|null  $controls
      * @return object|array
      */
-    public function getValues($returnType = null, ?array $controls = null)
+    public function getValues($returnType = null, array $controls = null)
     {
         $form = $this->getForm(\false);
         if ($form && ($submitter = $form->isSubmitted())) {
-            if ($this->validated === null) {
-                throw new \Packetery\Nette\InvalidStateException('You cannot call getValues() during the validation process. Use getUntrustedValues() instead.');
-            } elseif (!$this->isValid()) {
-                \trigger_error(__METHOD__ . "() invoked but the form is not valid (form '{$this->getName()}').", \E_USER_WARNING);
+            if (!$this->isValid()) {
+                \trigger_error(__METHOD__ . '() invoked but the form is not valid.', \E_USER_WARNING);
             }
             if ($controls === null && $submitter instanceof SubmitterControl) {
                 $controls = $submitter->getValidationScope();
             }
         }
-        $returnType = $returnType === \true ? self::Array : $returnType;
-        return $this->getUntrustedValues($returnType, $controls);
+        $returnType = $returnType === \true ? self::ARRAY : $returnType;
+        return $this->getUnsafeValues($returnType, $controls);
     }
     /**
      * Returns the potentially unvalidated values submitted by the form.
@@ -107,40 +105,26 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * @param  Control[]|null  $controls
      * @return object|array
      */
-    public function getUntrustedValues($returnType = ArrayHash::class, ?array $controls = null)
+    public function getUnsafeValues($returnType, array $controls = null)
     {
         if (\is_object($returnType)) {
             $obj = $returnType;
-            $rc = new \ReflectionClass($obj);
         } else {
             $returnType = $returnType ?? $this->mappedType ?? ArrayHash::class;
-            $rc = new \ReflectionClass($returnType === self::Array ? \stdClass::class : $returnType);
-            if ($rc->hasMethod('__construct') && $rc->getMethod('__construct')->getNumberOfRequiredParameters()) {
-                $obj = new \stdClass();
-                $useConstructor = \true;
-            } else {
-                $obj = $rc->newInstance();
-            }
+            $obj = $returnType === self::ARRAY ? new \stdClass() : new $returnType();
         }
+        $rc = new \ReflectionClass($obj);
         foreach ($this->getComponents() as $name => $control) {
             $allowed = $controls === null || \in_array($control, $controls, \true);
             $name = (string) $name;
             if ($control instanceof Control && $allowed && !$control->isOmitted()) {
                 $obj->{$name} = $control->getValue();
             } elseif ($control instanceof self) {
-                $type = $returnType === self::Array && !$control->mappedType ? self::Array : ($rc->hasProperty($name) ? Helpers::getSingleType($rc->getProperty($name)) : null);
-                $obj->{$name} = $control->getUntrustedValues($type, $allowed ? null : $controls);
+                $type = $returnType === self::ARRAY && !$control->mappedType ? self::ARRAY : ($rc->hasProperty($name) ? \Packetery\Nette\Utils\Reflection::getPropertyType($rc->getProperty($name)) : null);
+                $obj->{$name} = $control->getUnsafeValues($type, $allowed ? null : $controls);
             }
         }
-        if (isset($useConstructor)) {
-            return new $returnType(...(array) $obj);
-        }
-        return $returnType === self::Array ? (array) $obj : $obj;
-    }
-    /** @eprecated use getUntrustedValues() */
-    public function getUnsafeValues($returnType, ?array $controls = null)
-    {
-        return $this->getUntrustedValues($returnType, $controls);
+        return $returnType === self::ARRAY ? (array) $obj : $obj;
     }
     /** @return static */
     public function setMappedType(string $type)
@@ -154,9 +138,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      */
     public function isValid() : bool
     {
-        if ($this->validated === null) {
-            throw new \Packetery\Nette\InvalidStateException('You cannot call isValid() during the validation process.');
-        } elseif (!$this->validated) {
+        if (!$this->validated) {
             if ($this->getErrors()) {
                 return \false;
             }
@@ -168,9 +150,8 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Performs the server side validation.
      * @param  Control[]|null  $controls
      */
-    public function validate(?array $controls = null) : void
+    public function validate(array $controls = null) : void
     {
-        $this->validated = null;
         foreach ($controls ?? $this->getComponents() as $control) {
             if ($control instanceof Control || $control instanceof self) {
                 $control->validate();
@@ -179,8 +160,8 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
         $this->validated = \true;
         foreach ($this->onValidate as $handler) {
             $params = \Packetery\Nette\Utils\Callback::toReflection($handler)->getParameters();
-            $types = \array_map([Helpers::class, 'getSingleType'], $params);
-            $args = isset($types[0]) && !$this instanceof $types[0] ? [$this->getUntrustedValues($types[0])] : [$this, isset($params[1]) ? $this->getUntrustedValues($types[1]) : null];
+            $types = \array_map([\Packetery\Nette\Utils\Reflection::class, 'getParameterType'], $params);
+            $args = isset($types[0]) && !$this instanceof $types[0] ? [$this->getUnsafeValues($types[0])] : [$this, isset($params[1]) ? $this->getUnsafeValues($types[1]) : null];
             $handler(...$args);
         }
     }
@@ -197,7 +178,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
     }
     /********************* form building ****************d*g**/
     /** @return static */
-    public function setCurrentGroup(?ControlGroup $group = null)
+    public function setCurrentGroup(ControlGroup $group = null)
     {
         $this->currentGroup = $group;
         return $this;
@@ -214,7 +195,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * @return static
      * @throws \Packetery\Nette\InvalidStateException
      */
-    public function addComponent(\Packetery\Nette\ComponentModel\IComponent $component, ?string $name, ?string $insertBefore = null)
+    public function addComponent(\Packetery\Nette\ComponentModel\IComponent $component, ?string $name, string $insertBefore = null)
     {
         parent::addComponent($component, $name, $insertBefore);
         if ($this->currentGroup !== null) {
@@ -241,7 +222,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Adds single-line text input control to the form.
      * @param  string|object  $label
      */
-    public function addText(string $name, $label = null, ?int $cols = null, ?int $maxLength = null) : Controls\TextInput
+    public function addText(string $name, $label = null, int $cols = null, int $maxLength = null) : Controls\TextInput
     {
         return $this[$name] = (new Controls\TextInput($label, $maxLength))->setHtmlAttribute('size', $cols);
     }
@@ -249,7 +230,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Adds single-line text input control used for sensitive input such as passwords.
      * @param  string|object  $label
      */
-    public function addPassword(string $name, $label = null, ?int $cols = null, ?int $maxLength = null) : Controls\TextInput
+    public function addPassword(string $name, $label = null, int $cols = null, int $maxLength = null) : Controls\TextInput
     {
         return $this[$name] = (new Controls\TextInput($label, $maxLength))->setHtmlAttribute('size', $cols)->setHtmlType('password');
     }
@@ -257,7 +238,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Adds multi-line text input control to the form.
      * @param  string|object  $label
      */
-    public function addTextArea(string $name, $label = null, ?int $cols = null, ?int $rows = null) : Controls\TextArea
+    public function addTextArea(string $name, $label = null, int $cols = null, int $rows = null) : Controls\TextArea
     {
         return $this[$name] = (new Controls\TextArea($label))->setHtmlAttribute('cols', $cols)->setHtmlAttribute('rows', $rows);
     }
@@ -267,7 +248,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      */
     public function addEmail(string $name, $label = null) : Controls\TextInput
     {
-        return $this[$name] = (new Controls\TextInput($label))->addRule(Form::Email);
+        return $this[$name] = (new Controls\TextInput($label))->addRule(Form::EMAIL);
     }
     /**
      * Adds input for integer.
@@ -275,7 +256,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      */
     public function addInteger(string $name, $label = null) : Controls\TextInput
     {
-        return $this[$name] = (new Controls\TextInput($label))->setNullable()->addRule(Form::Integer);
+        return $this[$name] = (new Controls\TextInput($label))->setNullable()->addRule(Form::INTEGER);
     }
     /**
      * Adds control that allows the user to upload files.
@@ -312,7 +293,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Adds set of radio button controls to the form.
      * @param  string|object  $label
      */
-    public function addRadioList(string $name, $label = null, ?array $items = null) : Controls\RadioList
+    public function addRadioList(string $name, $label = null, array $items = null) : Controls\RadioList
     {
         return $this[$name] = new Controls\RadioList($label, $items);
     }
@@ -320,7 +301,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Adds set of checkbox controls to the form.
      * @param  string|object  $label
      */
-    public function addCheckboxList(string $name, $label = null, ?array $items = null) : Controls\CheckboxList
+    public function addCheckboxList(string $name, $label = null, array $items = null) : Controls\CheckboxList
     {
         return $this[$name] = new Controls\CheckboxList($label, $items);
     }
@@ -328,7 +309,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Adds select box control that allows single item selection.
      * @param  string|object  $label
      */
-    public function addSelect(string $name, $label = null, ?array $items = null, ?int $size = null) : Controls\SelectBox
+    public function addSelect(string $name, $label = null, array $items = null, int $size = null) : Controls\SelectBox
     {
         return $this[$name] = (new Controls\SelectBox($label, $items))->setHtmlAttribute('size', $size > 1 ? $size : null);
     }
@@ -336,7 +317,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * Adds select box control that allows multiple item selection.
      * @param  string|object  $label
      */
-    public function addMultiSelect(string $name, $label = null, ?array $items = null, ?int $size = null) : Controls\MultiSelectBox
+    public function addMultiSelect(string $name, $label = null, array $items = null, int $size = null) : Controls\MultiSelectBox
     {
         return $this[$name] = (new Controls\MultiSelectBox($label, $items))->setHtmlAttribute('size', $size > 1 ? $size : null);
     }
@@ -361,7 +342,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      * @param  string  $src  URI of the image
      * @param  string  $alt  alternate text for the image
      */
-    public function addImageButton(string $name, ?string $src = null, ?string $alt = null) : Controls\ImageButton
+    public function addImageButton(string $name, string $src = null, string $alt = null) : Controls\ImageButton
     {
         return $this[$name] = new Controls\ImageButton($src, $alt);
     }

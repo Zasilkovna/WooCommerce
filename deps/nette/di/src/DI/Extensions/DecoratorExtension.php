@@ -24,13 +24,13 @@ final class DecoratorExtension extends \Packetery\Nette\DI\CompilerExtension
         $this->getContainerBuilder()->resolve();
         foreach ($this->config as $type => $info) {
             if (!\class_exists($type) && !\interface_exists($type)) {
-                throw new \Packetery\Nette\DI\InvalidConfigurationException(\sprintf("Decorated class '%s' not found.", $type));
+                throw new \Packetery\Nette\DI\InvalidConfigurationException("Decorated class '{$type}' not found.");
             }
             if ($info->inject !== null) {
-                $info->tags[InjectExtension::TagInject] = $info->inject;
+                $info->tags[InjectExtension::TAG_INJECT] = $info->inject;
             }
             $this->addSetups($type, \Packetery\Nette\DI\Helpers::filterArguments($info->setup));
-            $this->addTags($type, $info->tags);
+            $this->addTags($type, \Packetery\Nette\DI\Helpers::filterArguments($info->tags));
         }
     }
     public function addSetups(string $type, array $setups) : void

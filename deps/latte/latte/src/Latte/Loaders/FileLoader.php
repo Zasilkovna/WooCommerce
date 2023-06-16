@@ -16,7 +16,7 @@ class FileLoader implements \Packetery\Latte\Loader
     use \Packetery\Latte\Strict;
     /** @var string|null */
     protected $baseDir;
-    public function __construct(?string $baseDir = null)
+    public function __construct(string $baseDir = null)
     {
         $this->baseDir = $baseDir ? $this->normalizePath("{$baseDir}/") : null;
     }

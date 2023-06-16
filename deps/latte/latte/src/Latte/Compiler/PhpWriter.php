@@ -23,16 +23,13 @@ class PhpWriter
     private $policy;
     /** @var string[] */
     private $functions = [];
-    /** @var string[] */
-    private $filters = [];
     /** @var int|null */
     private $line;
-    public static function using(MacroNode $node, ?Compiler $compiler = null) : self
+    public static function using(MacroNode $node, Compiler $compiler = null) : self
     {
         $me = new static($node->tokenizer, null, $node->context);
         $me->modifiers =& $node->modifiers;
         $me->functions = $compiler ? $compiler->getFunctions() : [];
-        $me->filters = $compiler ? $compiler->getFilters() : [];
         $me->policy = $compiler ? $compiler->getPolicy() : null;
         $me->line = $node->startLine;
         return $me;
@@ -40,7 +37,7 @@ class PhpWriter
     /**
      * @param  array{string, mixed}|null  $context
      */
-    public function __construct(MacroTokens $tokens, ?string $modifiers = null, ?array $context = null)
+    public function __construct(MacroTokens $tokens, string $modifiers = null, array $context = null)
     {
         $this->tokens = $tokens;
         $this->modifiers = $modifiers;
@@ -129,7 +126,7 @@ class PhpWriter
     /**
      * Formats macro arguments to PHP code. (It advances tokenizer to the end as a side effect.)
      */
-    public function formatArgs(?MacroTokens $tokens = null) : string
+    public function formatArgs(MacroTokens $tokens = null) : string
     {
         $tokens = $this->preprocess($tokens);
         $tokens = $this->quotingPass($tokens);
@@ -139,7 +136,7 @@ class PhpWriter
     /**
      * Formats macro arguments to PHP array. (It advances tokenizer to the end as a side effect.)
      */
-    public function formatArray(?MacroTokens $tokens = null) : string
+    public function formatArray(MacroTokens $tokens = null) : string
     {
         $tokens = $this->preprocess($tokens);
         $tokens = $this->namedArgumentsPass($tokens);
@@ -153,24 +150,16 @@ class PhpWriter
      */
     public function formatWord(string $s) : string
     {
-        if (\is_numeric($s) || \preg_match('#^[$([]|[\'"\\ ]|^(true|TRUE)$|^(false|FALSE)$|^(null|NULL)$|^[\\w\\\\]{3,}::[A-Z][A-Za-z0-9_]{2,}$#D', $s)) {
+        if (\is_numeric($s) || \preg_match('#^[$([]|[\'"\\ ]|^(true|TRUE)$|^(false|FALSE)$|^(null|NULL)$|^[\\w\\\\]{3,}::[A-Z0-9_]{2,}$#D', $s)) {
             $s = \preg_match('#\\s#', $s) ? "({$s})" : $s;
             return $this->formatArgs(new MacroTokens($s));
-        }
-        if ($s && !\preg_match('~^\\w+(?:-+\\w+)*$~', $s) && !\preg_match('~ ([./@_a-z0-9#!-] | :(?!:) | \\{\\$ [_a-z0-9\\[\\]()>-]+ })++ $ ~xAi', $s)) {
-            if (\preg_match('~[\\w-]+\\$~A', $s)) {
-                $hint = \preg_replace('~\\$\\w+(->\\w+)?~', '{$0}', $s);
-                \trigger_error("Put variables in curly brackets, replace '{$s}' with '{$hint}' (or wrap whole expression in double quotes)", \E_USER_DEPRECATED);
-            } else {
-                \trigger_error("Expression '{$s}' should be wrapped in double quotes.", \E_USER_DEPRECATED);
-            }
         }
         return '"' . $s . '"';
     }
     /**
      * Preprocessor for tokens. (It advances tokenizer to the end as a side effect.)
      */
-    public function preprocess(?MacroTokens $tokens = null) : MacroTokens
+    public function preprocess(MacroTokens $tokens = null) : MacroTokens
     {
         $tokens = $tokens ?? $this->tokens;
         $this->validateTokens($tokens);
@@ -191,10 +180,8 @@ class PhpWriter
         $pos = $tokens->position;
         while ($tokens->nextToken()) {
             $tokenValue = $tokens->currentValue();
-            if ($tokens->isCurrent('?>') || $tokens->isCurrent('#')) {
-                throw new CompileException("Forbidden {$tokenValue} inside tag");
-            } elseif ($tokens->isCurrent('/') && $tokens->isNext('/')) {
-                throw new CompileException('Forbidden // inside tag');
+            if ($tokens->isCurrent('?>')) {
+                throw new CompileException('Forbidden ?> inside tag');
             } elseif ($tokens->isCurrent('(', '[', '{')) {
                 static $counterpart = ['(' => ')', '[' => ']', '{' => '}'];
                 $brackets[] = $counterpart[$tokenValue];
@@ -202,12 +189,8 @@ class PhpWriter
                 throw new CompileException('Unexpected ' . $tokenValue);
             } elseif ($tokens->isCurrent('`')) {
                 throw new CompileException('Backtick operator is forbidden in Latte.');
-            } elseif ($this->policy && $tokens->isCurrent($tokens::T_STRING) && $tokenValue[0] === '"' && (\strpos($tokenValue, '{$') !== \false || \strpos($tokenValue, '${') !== \false)) {
-                throw new CompileException('Forbidden complex expressions in strings.');
             } elseif (Helpers::startsWith($tokenValue, '$ʟ_') || $this->policy && $tokens->isCurrent('$this')) {
                 throw new CompileException("Forbidden variable {$tokenValue}.");
-            } elseif ($tokenValue === '$iterations') {
-                \trigger_error("Variable \$iterations is deprecated (on line {$tokens->currentToken()[2]})", \E_USER_DEPRECATED);
             }
         }
         if ($brackets) {
@@ -233,7 +216,9 @@ class PhpWriter
     {
         $res = new MacroTokens();
         while ($tokens->nextToken()) {
-            $res->append($tokens->isCurrent($tokens::T_COMMENT) ? ' ' : $tokens->currentToken());
+            if (!$tokens->isCurrent($tokens::T_COMMENT)) {
+                $res->append($tokens->currentToken());
+            }
         }
         return $res;
     }
@@ -264,7 +249,7 @@ class PhpWriter
         $res = new MacroTokens();
         $inTernary = [];
         while ($tokens->nextToken()) {
-            if ($tokens->isCurrent('?') && $tokens->isNext(...$tokens::SIGNIFICANT) && !$tokens->isNext(',', ')', ']', '|', '[')) {
+            if ($tokens->isCurrent('?') && $tokens->isNext() && !$tokens->isNext(',', ')', ']', '|', '[')) {
                 $inTernary[] = $tokens->depth;
             } elseif ($tokens->isCurrent(':')) {
                 \array_pop($inTernary);
@@ -294,8 +279,26 @@ class PhpWriter
             }
             $addBraces = '';
             $expr = new MacroTokens([$tokens->currentToken()]);
+            $var = $tokens->currentValue();
             do {
-                if ($tokens->nextToken('?->')) {
+                if ($tokens->nextToken('?')) {
+                    if ($tokens->isNext() && (!$tokens->isNext($tokens::T_CHAR) || $tokens->isNext('(', '[', '{', ':', '!', '@', '\\'))) {
+                        $expr->append($addBraces . ' ?');
+                        break;
+                    }
+                    if (!$tokens->isNext('::')) {
+                        $expr->prepend('(');
+                        $expr->append(' ?? null)' . $addBraces);
+                        \trigger_error("Syntax '{$var}?' is deprecated, use '{$var} ?? null' instead.", \E_USER_DEPRECATED);
+                        break;
+                    }
+                    \trigger_error("Syntax '{$var}?::' is deprecated.", \E_USER_DEPRECATED);
+                    $expr->prepend('(($ʟ_tmp = ');
+                    $expr->append(' ?? null) === null ? null : ');
+                    $res->tokens = \array_merge($res->tokens, $expr->tokens);
+                    $expr = new MacroTokens('$ʟ_tmp');
+                    $addBraces .= ')';
+                } elseif ($tokens->nextToken('?->')) {
                     if (\PHP_VERSION_ID >= 80000) {
                         $expr->append($tokens->currentToken());
                         $expr->append($tokens->nextToken());
@@ -372,7 +375,7 @@ class PhpWriter
     {
         $res = new MacroTokens();
         while ($tokens->nextToken()) {
-            $res->append($tokens->isCurrent($tokens::T_SYMBOL) && (!$tokens->isPrev(...$tokens::SIGNIFICANT) || $tokens->isPrev(',', '(', '[', '=>', ':', '?', '.', '<', '>', '<=', '>=', '===', '!==', '==', '!=', '<>', '&&', '||', '=', 'and', 'or', 'xor', '??')) && (!$tokens->isNext(...$tokens::SIGNIFICANT) || $tokens->isNext(',', ';', ')', ']', '=>', ':', '?', '.', '<', '>', '<=', '>=', '===', '!==', '==', '!=', '<>', '&&', '||', 'and', 'or', 'xor', '??')) && !((!$tokens->isPrev(...$tokens::SIGNIFICANT) || $tokens->isPrev('(', ',')) && $tokens->isNext(':')) && !\preg_match('#^[A-Z_][A-Z0-9_]{2,}$#', $tokens->currentValue()) && !($tokens->isCurrent('default') && $tokens->isNext('=>')) ? "'" . $tokens->currentValue() . "'" : $tokens->currentToken());
+            $res->append($tokens->isCurrent($tokens::T_SYMBOL) && (!$tokens->isPrev() || $tokens->isPrev(',', '(', '[', '=>', ':', '?', '.', '<', '>', '<=', '>=', '===', '!==', '==', '!=', '<>', '&&', '||', '=', 'and', 'or', 'xor', '??')) && (!$tokens->isNext() || $tokens->isNext(',', ';', ')', ']', '=>', ':', '?', '.', '<', '>', '<=', '>=', '===', '!==', '==', '!=', '<>', '&&', '||', 'and', 'or', 'xor', '??')) && !((!$tokens->isPrev() || $tokens->isPrev('(', ',')) && $tokens->isNext(':')) && !\preg_match('#^[A-Z_][A-Z0-9_]{2,}$#', $tokens->currentValue()) ? "'" . $tokens->currentValue() . "'" : $tokens->currentToken());
         }
         return $res;
     }
@@ -383,7 +386,7 @@ class PhpWriter
     {
         $res = new MacroTokens();
         while ($tokens->nextToken()) {
-            if ($tokens->depth === 0 && $tokens->isCurrent($tokens::T_SYMBOL) && (!$tokens->isPrev(...$tokens::SIGNIFICANT) || $tokens->isPrev(',')) && $tokens->isNext(':')) {
+            if ($tokens->depth === 0 && $tokens->isCurrent($tokens::T_SYMBOL) && (!$tokens->isPrev() || $tokens->isPrev(',')) && $tokens->isNext(':')) {
                 $res->append("'" . $tokens->currentValue() . "' =>");
                 $tokens->nextToken(':');
             } else {
@@ -429,7 +432,7 @@ class PhpWriter
                     $expr[] = $tokens->nextToken();
                 }
                 if ($depth === $tokens->depth && $tokens->nextValue('in') && ($arr[] = $tokens->nextToken('['))) {
-                    while ($tokens->isNext(...$tokens::SIGNIFICANT)) {
+                    while ($tokens->isNext()) {
                         $arr[] = $tokens->nextToken();
                         if ($tokens->isCurrent(']') && $tokens->depth === $depth) {
                             $new = \array_merge($tokens->parse('in_array('), $expr, $tokens->parse(', '), $arr, $tokens->parse(', true)'));
@@ -630,27 +633,20 @@ class PhpWriter
                     $inside = \false;
                 } elseif (!$tokens->depth && $tokens->isCurrent($tokens::T_SYMBOL) && $tokens->isPrev(',', ':') && $tokens->isNext(':')) {
                     $hint = (clone $tokens)->reset()->joinAll();
-                    \trigger_error("Colon as argument separator is deprecated, replace ':' with ',' in '{$hint}'", \E_USER_DEPRECATED);
+                    \trigger_error("Colon as argument separator is deprecated, use comma in '{$hint}'.", \E_USER_DEPRECATED);
                     $res->append($tokens->currentToken());
                 } else {
-                    if ($tokens->isNext(':') && !$tokens->depth) {
-                        $hint = (clone $tokens)->reset()->joinAll();
-                        \trigger_error("Colon as argument separator is deprecated, replace ':' with ',' in '{$hint}'", \E_USER_DEPRECATED);
-                    }
                     $res->append($tokens->currentToken());
                 }
             } elseif ($tokens->isCurrent($tokens::T_SYMBOL)) {
                 if ($tokens->isCurrent('escape')) {
                     if ($isContent) {
-                        $res->prepend('LR\\Filters::convertTo($ʟ_fi, ' . PhpHelpers::dump(\implode('', $this->context)) . ', ')->append(')');
+                        $res->prepend('LR\\Filters::convertTo($ʟ_fi, ' . PhpHelpers::dump(\implode($this->context)) . ', ')->append(')');
                     } else {
                         $res = $this->escapePass($res);
                     }
                     $tokens->nextToken('|');
-                } elseif (!\strcasecmp($tokens->currentValue(), 'checkUrl')) {
-                    if ($tokens->currentValue() !== 'checkUrl') {
-                        \trigger_error("Case mismatch on filter name |{$tokens->currentValue()}, correct name is |checkUrl.", \E_USER_WARNING);
-                    }
+                } elseif (!\strcasecmp($tokens->currentValue(), 'checkurl')) {
                     $res->prepend('LR\\Filters::safeUrl(');
                     $inside = \true;
                 } elseif (!\strcasecmp($tokens->currentValue(), 'noescape') || !\strcasecmp($tokens->currentValue(), 'nocheck')) {
@@ -660,13 +656,7 @@ class PhpWriter
                     if ($this->policy && !$this->policy->isFilterAllowed($name)) {
                         throw new SecurityViolationException("Filter |{$name} is not allowed.");
                     }
-                    $lower = \strtolower($name);
-                    if (!isset($this->filters[$name])) {
-                        $orig = \array_search($lower, $this->filters, \true);
-                        if ($orig) {
-                            \trigger_error("Case mismatch on filter name |{$name}, correct name is |{$orig}.", \E_USER_WARNING);
-                        }
-                    }
+                    $name = \strtolower($name);
                     $res->prepend($isContent ? '$this->filters->filterContent(' . PhpHelpers::dump($name) . ', $ʟ_fi, ' : '($this->filters->' . $name . ')(');
                     $inside = \true;
                 }

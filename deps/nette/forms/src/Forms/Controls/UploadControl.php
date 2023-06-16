@@ -11,15 +11,13 @@ use Packetery\Nette;
 use Packetery\Nette\Forms;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\FileUpload;
-use Packetery\Nette\Utils\Arrays;
 /**
  * Text box and browse button that allow users to select a file to upload to the server.
  */
 class UploadControl extends BaseControl
 {
     /** validation rule */
-    public const Valid = ':uploadControlValid';
-    public const VALID = self::Valid;
+    public const VALID = ':uploadControlValid';
     /**
      * @param  string|object  $label
      */
@@ -29,11 +27,8 @@ class UploadControl extends BaseControl
         $this->control->type = 'file';
         $this->control->multiple = $multiple;
         $this->setOption('type', 'file');
-        $this->addCondition(\true)->addRule([$this, 'isOk'], Forms\Validator::$messages[self::Valid]);
-        $this->addRule(Form::MaxFileSize, null, Forms\Helpers::iniGetSize('upload_max_filesize'));
-        if ($multiple) {
-            $this->addRule(Form::MaxLength, 'The maximum allowed number of uploaded files is %i', (int) \ini_get('max_file_uploads'));
-        }
+        $this->addCondition(\true)->addRule([$this, 'isOk'], Forms\Validator::$messages[self::VALID]);
+        $this->addRule(Form::MAX_FILE_SIZE, null, Forms\Helpers::iniGetSize('upload_max_filesize'));
         $this->monitor(Form::class, function (Form $form) : void {
             if (!$form->isMethod('post')) {
                 throw new \Packetery\Nette\InvalidStateException('File upload requires method POST.');
@@ -43,7 +38,7 @@ class UploadControl extends BaseControl
     }
     public function loadHttpData() : void
     {
-        $this->value = $this->getHttpData(Form::DataFile);
+        $this->value = $this->getHttpData(Form::DATA_FILE);
         if ($this->value === null) {
             $this->value = new FileUpload(null);
         }
@@ -68,29 +63,25 @@ class UploadControl extends BaseControl
         return $this->value instanceof FileUpload ? $this->value->getError() !== \UPLOAD_ERR_NO_FILE : (bool) $this->value;
     }
     /**
-     * Have been all files successfully uploaded?
+     * Have been all files succesfully uploaded?
      */
     public function isOk() : bool
     {
-        return $this->value instanceof FileUpload ? $this->value->isOk() : $this->value && Arrays::every($this->value, function (FileUpload $upload) : bool {
-            return $upload->isOk();
-        });
+        return $this->value instanceof FileUpload ? $this->value->isOk() : $this->value && \array_reduce($this->value, function (bool $carry, FileUpload $fileUpload) : bool {
+            return $carry && $fileUpload->isOk();
+        }, \true);
     }
     /** @return static */
     public function addRule($validator, $errorMessage = null, $arg = null)
     {
-        if ($validator === Form::Image) {
+        if ($validator === Form::IMAGE) {
             $this->control->accept = \implode(', ', FileUpload::IMAGE_MIME_TYPES);
-        } elseif ($validator === Form::MimeType) {
+        } elseif ($validator === Form::MIME_TYPE) {
             $this->control->accept = \implode(', ', (array) $arg);
-        } elseif ($validator === Form::MaxFileSize) {
-            if ($arg > ($ini = Forms\Helpers::iniGetSize('upload_max_filesize'))) {
-                \trigger_error("Value of MaxFileSize ({$arg}) is greater than value of directive upload_max_filesize ({$ini}).", \E_USER_WARNING);
-            }
-            $this->getRules()->removeRule($validator);
-        } elseif ($validator === Form::MaxLength) {
-            if ($arg > ($ini = \ini_get('max_file_uploads'))) {
-                \trigger_error("Value of MaxLength ({$arg}) is greater than value of directive max_file_uploads ({$ini}).", \E_USER_WARNING);
+        } elseif ($validator === Form::MAX_FILE_SIZE) {
+            if ($arg > Forms\Helpers::iniGetSize('upload_max_filesize')) {
+                $ini = \ini_get('upload_max_filesize');
+                \trigger_error("Value of MAX_FILE_SIZE ({$arg}) is greater than value of directive upload_max_filesize ({$ini}).", \E_USER_WARNING);
             }
             $this->getRules()->removeRule($validator);
         }

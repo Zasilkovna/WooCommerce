@@ -14,9 +14,7 @@ use Packetery\Nette;
 final class Reference
 {
     use \Packetery\Nette\SmartObject;
-    public const Self = 'self';
-    /** @deprecated use Reference::Self */
-    public const SELF = self::Self;
+    public const SELF = 'self';
     /** @var string */
     private $value;
     public static function fromType(string $value) : self
@@ -36,7 +34,7 @@ final class Reference
     }
     public function isName() : bool
     {
-        return \strpos($this->value, '\\') === \false && $this->value !== self::Self;
+        return \strpos($this->value, '\\') === \false && $this->value !== self::SELF;
     }
     public function isType() : bool
     {
@@ -44,6 +42,6 @@ final class Reference
     }
     public function isSelf() : bool
     {
-        return $this->value === self::Self;
+        return $this->value === self::SELF;
     }
 }

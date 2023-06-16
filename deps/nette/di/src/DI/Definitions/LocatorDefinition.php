@@ -8,6 +8,7 @@ declare (strict_types=1);
 namespace Packetery\Nette\DI\Definitions;
 
 use Packetery\Nette;
+use Packetery\Nette\Utils\Reflection;
 /**
  * Multi accessor/factory definition.
  */
@@ -18,28 +19,21 @@ final class LocatorDefinition extends Definition
     /** @var string|null */
     private $tagged;
     /** @return static */
-    public function setImplement(string $interface)
+    public function setImplement(string $type)
     {
-        if (!\interface_exists($interface)) {
-            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service '%s': Interface '%s' not found.", $this->getName(), $interface));
+        if (!\interface_exists($type)) {
+            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service '%s': Interface '%s' not found.", $this->getName(), $type));
         }
-        $methods = (new \ReflectionClass($interface))->getMethods();
+        $methods = (new \ReflectionClass($type))->getMethods();
         if (!$methods) {
-            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service '%s': Interface %s must have at least one method.", $this->getName(), $interface));
+            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service '%s': Interface %s must have at least one method.", $this->getName(), $type));
         }
         foreach ($methods as $method) {
             if ($method->isStatic() || !(\preg_match('#^(get|create)$#', $method->name) && $method->getNumberOfParameters() === 1 || \preg_match('#^(get|create)[A-Z]#', $method->name) && $method->getNumberOfParameters() === 0)) {
-                throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service '%s': Method %s::%s() does not meet the requirements: is create(\$name), get(\$name), create*() or get*() and is non-static.", $this->getName(), $interface, $method->name));
-            }
-            if ($method->getNumberOfParameters() === 0) {
-                try {
-                    \Packetery\Nette\DI\Helpers::ensureClassType(\Packetery\Nette\Utils\Type::fromReflection($method), "return type of {$interface}::{$method->name}()", \true);
-                } catch (\Packetery\Nette\DI\ServiceCreationException $e) {
-                    \trigger_error($e->getMessage(), \E_USER_DEPRECATED);
-                }
+                throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Service '%s': Method %s::%s() does not meet the requirements: is create(\$name), get(\$name), create*() or get*() and is non-static.", $this->getName(), $type, $method->name));
             }
         }
-        return parent::setType($interface);
+        return parent::setType($type);
     }
     public function getImplement() : ?string
     {
@@ -78,7 +72,7 @@ final class LocatorDefinition extends Definition
             $this->references = [];
             foreach ($resolver->getContainerBuilder()->findByTag($this->tagged) as $name => $tag) {
                 if (isset($this->references[$tag])) {
-                    \trigger_error(\sprintf("Service '%s': duplicated tag '%s' with value '%s'.", $this->getName(), $this->tagged, $tag), \E_USER_NOTICE);
+                    \trigger_error("Service '{$this->getName()}': duplicated tag '{$this->tagged}' with value '{$tag}'.", \E_USER_NOTICE);
                 }
                 $this->references[$tag] = new Reference($name);
             }
@@ -96,7 +90,7 @@ final class LocatorDefinition extends Definition
             \preg_match('#^(get|create)(.*)#', $rm->name, $m);
             $name = \lcfirst($m[2]);
             $nullable = $rm->getReturnType()->allowsNull();
-            $methodInner = $class->addMethod($rm->name)->setReturnType((string) \Packetery\Nette\Utils\Type::fromReflection($rm));
+            $methodInner = $class->addMethod($rm->name)->setReturnType(Reflection::getReturnType($rm))->setReturnNullable($nullable);
             if (!$name) {
                 $class->addProperty('mapping', \array_map(function ($item) {
                     return $item->getValue();
@@ -110,7 +104,7 @@ return $this->container->' . $m[1] . 'Service($this->mapping[$name]);')->addPara
                 if ($m[1] === 'get') {
                     $methodInner->setBody('return $this->container->getService(?);', [$ref]);
                 } else {
-                    $methodInner->setBody('return $this->container->?();', [Nette\DI\Container::getMethodName($ref)]);
+                    $methodInner->setBody('return $this->container->?();', [\Packetery\Nette\DI\Container::getMethodName($ref)]);
                 }
             } else {
                 $methodInner->setBody($nullable ? 'return null;' : 'throw new \\Packetery\\Nette\\DI\\MissingServiceException("Service is not defined.");');

@@ -31,7 +31,7 @@ final class ParametersExtension extends \Packetery\Nette\DI\CompilerExtension
         $resolver = new \Packetery\Nette\DI\Resolver($builder);
         $generator = new \Packetery\Nette\DI\PhpGenerator($builder);
         foreach ($this->dynamicParams as $key) {
-            $params[$key] = \array_key_exists($key, $params) ? new DynamicParameter($generator->formatPhp('($this->parameters[?] \\?\\? ?)', $resolver->completeArguments(\Packetery\Nette\DI\Helpers::filterArguments([$key, $params[$key]])))) : new DynamicParameter((new \Packetery\Nette\PhpGenerator\Dumper())->format('$this->parameters[?]', $key));
+            $params[$key] = \array_key_exists($key, $params) ? new DynamicParameter($generator->formatPhp('($this->parameters[?] \\?\\? ?)', $resolver->completeArguments(\Packetery\Nette\DI\Helpers::filterArguments([$key, $params[$key]])))) : new DynamicParameter(\Packetery\Nette\PhpGenerator\Helpers::format('$this->parameters[?]', $key));
         }
         $builder->parameters = \Packetery\Nette\DI\Helpers::expand($params, $params, \true);
         // expand all except 'services'

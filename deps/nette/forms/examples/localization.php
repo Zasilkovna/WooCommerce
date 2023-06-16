@@ -33,7 +33,7 @@ $translator = new MyTranslator(\parse_ini_file(__DIR__ . '/localization.ini'));
 $form->setTranslator($translator);
 $form->addGroup('Personal data');
 $form->addText('name', 'Your name:')->setRequired('Enter your name');
-$form->addText('age', 'Your age:')->setRequired('Enter your age')->addRule($form::Integer, 'Age must be numeric value')->addRule($form::Range, 'Age must be in range from %d to %d', [10, 100]);
+$form->addText('age', 'Your age:')->setRequired('Enter your age')->addRule($form::INTEGER, 'Age must be numeric value')->addRule($form::RANGE, 'Age must be in range from %d to %d', [10, 100]);
 $countries = ['World' => ['bu' => 'Buranda', 'qu' => 'Qumran', 'st' => 'Saint Georges Island'], '?' => 'other'];
 $form->addSelect('country', 'Country:', $countries)->setPrompt('Select your country');
 $form->addSubmit('submit', 'Send');

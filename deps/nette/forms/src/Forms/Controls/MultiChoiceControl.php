@@ -20,7 +20,7 @@ abstract class MultiChoiceControl extends BaseControl
     private $checkDefaultValue = \true;
     /** @var array */
     private $items = [];
-    public function __construct($label = null, ?array $items = null)
+    public function __construct($label = null, array $items = null)
     {
         parent::__construct($label);
         if ($items !== null) {
@@ -29,7 +29,7 @@ abstract class MultiChoiceControl extends BaseControl
     }
     public function loadHttpData() : void
     {
-        $this->value = \array_keys(\array_flip($this->getHttpData(\Packetery\Nette\Forms\Form::DataText)));
+        $this->value = \array_keys(\array_flip($this->getHttpData(\Packetery\Nette\Forms\Form::DATA_TEXT)));
         if (\is_array($this->disabled)) {
             $this->value = \array_diff($this->value, \array_keys($this->disabled));
         }
@@ -48,9 +48,7 @@ abstract class MultiChoiceControl extends BaseControl
         }
         $flip = [];
         foreach ($values as $value) {
-            if ($value instanceof \BackedEnum) {
-                $value = $value->value;
-            } elseif (!\is_scalar($value) && !(\is_object($value) && \method_exists($value, '__toString'))) {
+            if (!\is_scalar($value) && !(\is_object($value) && \method_exists($value, '__toString'))) {
                 throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Values must be scalar, %s given in field '%s'.", \gettype($value), $this->name));
             }
             $flip[(string) $value] = \true;

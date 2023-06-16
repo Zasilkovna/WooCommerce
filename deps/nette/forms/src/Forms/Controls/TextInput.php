@@ -17,7 +17,7 @@ class TextInput extends TextBase
     /**
      * @param  string|object  $label
      */
-    public function __construct($label = null, ?int $maxLength = null)
+    public function __construct($label = null, int $maxLength = null)
     {
         parent::__construct($label);
         $this->control->maxlength = $maxLength;
@@ -25,7 +25,7 @@ class TextInput extends TextBase
     }
     public function loadHttpData() : void
     {
-        $this->setValue($this->getHttpData(Form::DataLine));
+        $this->setValue($this->getHttpData(Form::DATA_LINE));
     }
     /**
      * Changes control's type attribute.
@@ -56,13 +56,13 @@ class TextInput extends TextBase
                 return parent::addRule($validator, $errorMessage, $arg);
             }
         }
-        if ($this->control->type === null && \in_array($validator, [Form::Email, Form::URL, Form::Integer], \true)) {
-            $types = [Form::Email => 'email', Form::URL => 'url', Form::Integer => 'number'];
+        if ($this->control->type === null && \in_array($validator, [Form::EMAIL, Form::URL, Form::INTEGER], \true)) {
+            static $types = [Form::EMAIL => 'email', Form::URL => 'url', Form::INTEGER => 'number'];
             $this->control->type = $types[$validator];
-        } elseif (\in_array($validator, [Form::Min, Form::Max, Form::Range], \true) && \in_array($this->control->type, ['number', 'range', 'datetime-local', 'datetime', 'date', 'month', 'week', 'time'], \true)) {
-            if ($validator === Form::Min) {
+        } elseif (\in_array($validator, [Form::MIN, Form::MAX, Form::RANGE], \true) && \in_array($this->control->type, ['number', 'range', 'datetime-local', 'datetime', 'date', 'month', 'week', 'time'], \true)) {
+            if ($validator === Form::MIN) {
                 $range = [$arg, null];
-            } elseif ($validator === Form::Max) {
+            } elseif ($validator === Form::MAX) {
                 $range = [null, $arg];
             } else {
                 $range = $arg;
@@ -73,7 +73,7 @@ class TextInput extends TextBase
             if (isset($range[1]) && \is_scalar($range[1])) {
                 $this->control->max = isset($this->control->max) ? \min($this->control->max, $range[1]) : $range[1];
             }
-        } elseif ($validator === Form::Pattern && \is_scalar($arg) && \in_array($this->control->type, [null, 'text', 'search', 'tel', 'url', 'email', 'password'], \true)) {
+        } elseif ($validator === Form::PATTERN && \is_scalar($arg) && \in_array($this->control->type, [null, 'text', 'search', 'tel', 'url', 'email', 'password'], \true)) {
             $this->control->pattern = $arg;
         }
         return parent::addRule($validator, $errorMessage, $arg);

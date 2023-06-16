@@ -1,6 +1,5 @@
 <?php
 
-declare (strict_types=1);
 namespace Packetery\GuzzleHttp\Promise;
 
 /**
@@ -8,7 +7,7 @@ namespace Packetery\GuzzleHttp\Promise;
  */
 class AggregateException extends RejectionException
 {
-    public function __construct(string $msg, array $reasons)
+    public function __construct($msg, array $reasons)
     {
         parent::__construct($reasons, \sprintf('%s; %d rejected promises', $msg, \count($reasons)));
     }

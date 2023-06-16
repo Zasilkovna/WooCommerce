@@ -12,7 +12,7 @@ use Packetery\Nette;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Utils\Html;
 /**
- * Runtime helpers for Latte v2 & v3.
+ * Runtime helpers for Latte.
  * @internal
  */
 class Runtime
@@ -65,39 +65,66 @@ class Runtime
     /**
      * Generates blueprint of form.
      */
-    public static function renderFormPrint(Form $form) : void
+    public static function renderBlueprint($form) : void
     {
-        $blueprint = \class_exists(Latte\Runtime\Blueprint::class) ? new Latte\Runtime\Blueprint() : new Latte\Essential\Blueprint();
+        $dummyForm = new Form();
+        $dict = new \SplObjectStorage();
+        foreach ($form->getControls() as $name => $input) {
+            $dict[$input] = $dummyInput = new class extends \Packetery\Nette\Forms\Controls\BaseControl
+            {
+                public $inner;
+                public function getLabel($name = null)
+                {
+                    return $this->inner->getLabel() ? '{label ' . $this->inner->lookupPath(Form::class) . '/}' : null;
+                }
+                public function getControl()
+                {
+                    return '{input ' . $this->inner->lookupPath(Form::class) . '}';
+                }
+                public function isRequired() : bool
+                {
+                    return $this->inner->isRequired();
+                }
+                public function getOption($key, $default = null)
+                {
+                    return $key === 'rendered' ? parent::getOption($key) : $this->inner->getOption($key, $default);
+                }
+            };
+            $dummyInput->inner = $input;
+            $dummyForm->addComponent($dummyInput, (string) $dict->count());
+            $dummyInput->addError('{inputError ' . $input->lookupPath(Form::class) . '}');
+        }
+        foreach ($form->getGroups() as $group) {
+            $dummyGroup = $dummyForm->addGroup();
+            foreach ($group->getOptions() as $k => $v) {
+                $dummyGroup->setOption($k, $v);
+            }
+            foreach ($group->getControls() as $control) {
+                if ($dict[$control]) {
+                    $dummyGroup->add($dict[$control]);
+                }
+            }
+        }
+        $renderer = clone $form->getRenderer();
+        $dummyForm->setRenderer($renderer);
+        if ($renderer instanceof \Packetery\Nette\Forms\Rendering\DefaultFormRenderer) {
+            $renderer->wrappers['error']['container'] = $renderer->getWrapper('error container')->setAttribute('n:ifcontent', \true);
+            $renderer->wrappers['error']['item'] = $renderer->getWrapper('error item')->setAttribute('n:foreach', '$form->getOwnErrors() as $error');
+            $renderer->wrappers['control']['errorcontainer'] = $renderer->getWrapper('control errorcontainer')->setAttribute('n:ifcontent', \true);
+            $dummyForm->addError('{$error}');
+            \ob_start();
+            $dummyForm->render('end');
+            $end = \ob_get_clean();
+        }
+        \ob_start();
+        $dummyForm->render();
+        $body = \ob_get_clean();
+        $body = \str_replace($dummyForm->getElementPrototype()->startTag(), '<form n:name="' . $form->getName() . '">', $body);
+        $body = \str_replace($end ?? '', '</form>', $body);
+        $blueprint = new Latte\Runtime\Blueprint();
         $end = $blueprint->printCanvas();
         $blueprint->printHeader('Form ' . $form->getName());
-        $blueprint->printCode((new \Packetery\Nette\Forms\Rendering\LatteRenderer())->render($form), 'latte');
+        echo '<xmp>', $body, '</xmp>';
         echo $end;
-    }
-    /**
-     * Generates blueprint of form data class.
-     */
-    public static function renderFormClassPrint(Form $form) : void
-    {
-        $blueprint = \class_exists(Latte\Runtime\Blueprint::class) ? new Latte\Runtime\Blueprint() : new Latte\Essential\Blueprint();
-        $end = $blueprint->printCanvas();
-        $blueprint->printHeader('Form Data Class ' . $form->getName());
-        $generator = new \Packetery\Nette\Forms\Rendering\DataClassGenerator();
-        $blueprint->printCode($generator->generateCode($form));
-        if (\PHP_VERSION_ID >= 80000) {
-            $generator->propertyPromotion = \true;
-            $blueprint->printCode($generator->generateCode($form));
-        }
-        echo $end;
-    }
-    public static function item($item, $global) : object
-    {
-        if (\is_object($item)) {
-            return $item;
-        }
-        $form = \end($global->formsStack);
-        if (!$form) {
-            throw new \LogicException('Form declaration is missing, did you use {form} or <form n:name> tag?');
-        }
-        return $form[$item];
     }
 }

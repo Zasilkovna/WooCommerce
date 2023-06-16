@@ -14,8 +14,7 @@ use Packetery\Nette\Application\UI\Presenter;
  */
 class CsrfProtection extends HiddenField
 {
-    public const Protection = 'Packetery\\Nette\\Forms\\Controls\\CsrfProtection::validateCsrf';
-    public const PROTECTION = self::Protection;
+    public const PROTECTION = 'Packetery\\Nette\\Forms\\Controls\\CsrfProtection::validateCsrf';
     /** @var \Packetery\Nette\Http\Session|null */
     public $session;
     /**
@@ -24,7 +23,7 @@ class CsrfProtection extends HiddenField
     public function __construct($errorMessage)
     {
         parent::__construct();
-        $this->setOmitted()->setRequired()->addRule(self::Protection, $errorMessage);
+        $this->setOmitted()->setRequired()->addRule(self::PROTECTION, $errorMessage);
         $this->monitor(Presenter::class, function (Presenter $presenter) : void {
             if (!$this->session) {
                 $this->session = $presenter->getSession();
@@ -48,7 +47,7 @@ class CsrfProtection extends HiddenField
     }
     public function loadHttpData() : void
     {
-        $this->value = $this->getHttpData(\Packetery\Nette\Forms\Form::DataText);
+        $this->value = $this->getHttpData(\Packetery\Nette\Forms\Form::DATA_TEXT);
     }
     public function getToken() : string
     {
@@ -61,7 +60,7 @@ class CsrfProtection extends HiddenField
         }
         return $session->token ^ $this->session->getId();
     }
-    private function generateToken(?string $random = null) : string
+    private function generateToken(string $random = null) : string
     {
         if ($random === null) {
             $random = \Packetery\Nette\Utils\Random::generate(10);

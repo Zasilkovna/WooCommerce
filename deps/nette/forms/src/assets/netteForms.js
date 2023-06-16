@@ -1,4 +1,4 @@
-/**!
+/**
  * NetteForms - simple form validation.
  *
  * This file is part of the Nette Framework (https://nette.org)
@@ -34,7 +34,7 @@
 	var toggleListeners = new window.WeakMap();
 
 	Nette.formErrors = [];
-	Nette.version = '3.3.0';
+	Nette.version = '3.0';
 	Nette.invalidNumberMessage = 'Please enter a valid value.';
 
 
@@ -294,46 +294,12 @@
 		}
 
 		if (messages.length) {
-			Nette.showModal(messages.join('\n'), function () {
-				if (focusElem) {
-					focusElem.focus();
-				}
-			});
+			alert(messages.join('\n'));
+
+			if (focusElem) {
+				focusElem.focus();
+			}
 		}
-	};
-
-
-	/**
-	 * Display modal window.
-	 */
-	Nette.showModal = function(message, onclose) {
-		var dialog = document.createElement('dialog'),
-			ua = navigator.userAgentData;
-
-		if (ua && dialog.showModal
-			&& ua.brands.some(function(item) { return item.brand === 'Opera' || (item.brand === 'Chromium' && ua.mobile); })
-		) {
-			var style = document.createElement('style');
-			style.innerText = '.netteFormsModal { text-align: center; margin: auto; border: 2px solid black; padding: 1rem } .netteFormsModal button { padding: .1em 2em }';
-
-			var button = document.createElement('button');
-			button.innerText = 'OK';
-			button.onclick = function () {
-				dialog.remove();
-				onclose();
-			};
-
-			dialog.setAttribute('class', 'netteFormsModal');
-			dialog.innerText = message + '\n\n';
-			dialog.appendChild(style);
-			dialog.appendChild(button);
-			document.body.appendChild(dialog);
-			dialog.showModal();
-			return;
-		}
-
-		alert(message);
-		onclose();
 	};
 
 
@@ -386,13 +352,13 @@
 				return null;
 			}
 
-			var toString = function(val) {
+			function toString(val) {
 				if (typeof val === 'number' || typeof val === 'string') {
 					return '' + val;
 				} else {
 					return val === true ? '1' : '';
 				}
-			};
+			}
 
 			val = Array.isArray(val) ? val : [val];
 			arg = Array.isArray(arg) ? arg : [arg];

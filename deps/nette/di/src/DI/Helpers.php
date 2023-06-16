@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\DI\Definitions\Reference;
 use Packetery\Nette\DI\Definitions\Statement;
 use Packetery\Nette\Utils\Reflection;
-use Packetery\Nette\Utils\Type;
 /**
  * The DI helpers.
  * @internal
@@ -59,7 +58,7 @@ final class Helpers
                     } elseif ($val instanceof DynamicParameter) {
                         $val = new DynamicParameter($val . '[' . \var_export($key, \true) . ']');
                     } else {
-                        throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Missing parameter '%s'.", $part));
+                        throw new \Packetery\Nette\InvalidArgumentException("Missing parameter '{$part}'.");
                     }
                 }
                 if ($recursive) {
@@ -71,7 +70,7 @@ final class Helpers
                 if ($val instanceof DynamicParameter) {
                     $php = \true;
                 } elseif (!\is_scalar($val)) {
-                    throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Unable to concatenate non-scalar parameter '%s' into '%s'.", $part, $var));
+                    throw new \Packetery\Nette\InvalidArgumentException("Unable to concatenate non-scalar parameter '{$part}' into '{$var}'.");
                 }
                 $res[] = $val;
             }
@@ -107,15 +106,15 @@ final class Helpers
         return $value;
     }
     /**
-     * Process constants recursively.
+     * Removes ... and process constants recursively.
      */
     public static function filterArguments(array $args) : array
     {
         foreach ($args as $k => $v) {
-            if (\PHP_VERSION_ID >= 80100 && \is_string($v) && \preg_match('#^([\\w\\\\]+)::\\w+$#D', $v, $m) && \enum_exists($m[1])) {
-                $args[$k] = new \Packetery\Nette\PhpGenerator\PhpLiteral($v);
-            } elseif (\is_string($v) && \preg_match('#^[\\w\\\\]*::[A-Z][a-zA-Z0-9_]*$#D', $v)) {
-                $args[$k] = new \Packetery\Nette\PhpGenerator\PhpLiteral(\ltrim($v, ':'));
+            if ($v === '...') {
+                unset($args[$k]);
+            } elseif (\is_string($v) && \preg_match('#^[\\w\\\\]*::[A-Z][A-Z0-9_]*$#D', $v, $m)) {
+                $args[$k] = \constant(\ltrim($v, ':'));
             } elseif (\is_string($v) && \preg_match('#^@[\\w\\\\]+$#D', $v)) {
                 $args[$k] = new Reference(\substr($v, 1));
             } elseif (\is_array($v)) {
@@ -166,29 +165,20 @@ final class Helpers
         }
         return null;
     }
-    public static function getReturnTypeAnnotation(\ReflectionFunctionAbstract $func) : ?Type
+    public static function getReturnType(\ReflectionFunctionAbstract $func) : ?string
     {
-        $type = \preg_replace('#[|\\s].*#', '', (string) self::parseAnnotation($func, 'return'));
-        if (!$type || $type === 'object' || $type === 'mixed') {
-            return null;
-        } elseif ($func instanceof \ReflectionMethod) {
-            $type = $type === '$this' ? 'static' : $type;
-            $type = Reflection::expandClassName($type, $func->getDeclaringClass());
+        if ($type = Reflection::getReturnType($func)) {
+            return $type;
+        } elseif ($type = \preg_replace('#[|\\s].*#', '', (string) self::parseAnnotation($func, 'return'))) {
+            if ($type === 'object' || $type === 'mixed') {
+                return null;
+            } elseif ($func instanceof \ReflectionMethod) {
+                return $type === 'static' || $type === '$this' ? $func->getDeclaringClass()->name : Reflection::expandClassName($type, $func->getDeclaringClass());
+            } else {
+                return $type;
+            }
         }
-        return Type::fromString($type);
-    }
-    public static function ensureClassType(?Type $type, string $hint, bool $allowNullable = \false) : string
-    {
-        if (!$type) {
-            throw new ServiceCreationException(\sprintf('%s is not declared.', \ucfirst($hint)));
-        } elseif (!$type->isClass() || !$allowNullable && $type->allows('null')) {
-            throw new ServiceCreationException(\sprintf("%s is expected to not be %sbuilt-in/complex, '%s' given.", \ucfirst($hint), $allowNullable ? '' : 'nullable/', $type));
-        }
-        $class = $type->getSingleName();
-        if (!\class_exists($class) && !\interface_exists($class)) {
-            throw new ServiceCreationException(\sprintf("Class '%s' not found.\nCheck the %s.", $class, $hint));
-        }
-        return $class;
+        return null;
     }
     public static function normalizeClass(string $type) : string
     {
@@ -213,6 +203,7 @@ final class Helpers
                 return $norm;
             }
         }
-        throw new \Packetery\Nette\InvalidStateException(\sprintf('Cannot convert %s to %s.', \is_scalar($value) ? "'{$value}'" : \gettype($value), $type));
+        $value = \is_scalar($value) ? "'{$value}'" : \gettype($value);
+        throw new \Packetery\Nette\InvalidStateException("Cannot convert {$value} to {$type}.");
     }
 }

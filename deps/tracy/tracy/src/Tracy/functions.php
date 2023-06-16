@@ -14,7 +14,7 @@ if (!\function_exists('Packetery\\dump')) {
      */
     function dump($var)
     {
-        \array_map([Tracy\Debugger::class, 'dump'], \func_get_args());
+        \array_map([\Packetery\Tracy\Debugger::class, 'dump'], \func_get_args());
         return $var;
     }
 }
@@ -25,7 +25,7 @@ if (!\function_exists('Packetery\\dumpe')) {
      */
     function dumpe($var) : void
     {
-        \array_map([Tracy\Debugger::class, 'dump'], \func_get_args());
+        \array_map([\Packetery\Tracy\Debugger::class, 'dump'], \func_get_args());
         if (!Tracy\Debugger::$productionMode) {
             exit;
         }

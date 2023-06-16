@@ -8,7 +8,6 @@ declare (strict_types=1);
 namespace Packetery\Nette\Bootstrap\Extensions;
 
 use Packetery\Nette;
-use Packetery\Nette\Schema\Expect;
 /**
  * PHP directives definition.
  */
@@ -16,7 +15,7 @@ final class PhpExtension extends \Packetery\Nette\DI\CompilerExtension
 {
     public function getConfigSchema() : \Packetery\Nette\Schema\Schema
     {
-        return Expect::arrayOf(Expect::scalar()->dynamic());
+        return \Packetery\Nette\Schema\Expect::arrayOf('scalar');
     }
     public function loadConfiguration()
     {
@@ -32,7 +31,7 @@ final class PhpExtension extends \Packetery\Nette\DI\CompilerExtension
             } elseif ($name === 'date.timezone') {
                 $this->initialization->addBody('date_default_timezone_set(?);', [$value]);
             } elseif (\function_exists('ini_set')) {
-                $this->initialization->addBody('ini_set(?, (string) (?));', [$name, $value]);
+                $this->initialization->addBody('ini_set(?, ?);', [$name, $value === \false ? '0' : (string) $value]);
             } elseif (\ini_get($name) !== (string) $value) {
                 throw new \Packetery\Nette\NotSupportedException('Required function ini_set() is disabled.');
             }

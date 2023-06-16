@@ -14,14 +14,11 @@ use Packetery\Latte\Helpers;
  * Filter executor.
  * @internal
  */
-#[\AllowDynamicProperties]
 class FilterExecutor
 {
-    /** @var string[] */
-    public $_origNames = [];
     /** @var callable[] */
     private $_dynamic = [];
-    /** @var array<string, array{callable, ?bool}> */
+    /** @var array<string, array{callable, ?bool}>  [name => [callback, FilterInfo aware] */
     private $_static = [];
     /**
      * Registers run-time filter.
@@ -32,10 +29,9 @@ class FilterExecutor
         if ($name === null) {
             \array_unshift($this->_dynamic, $callback);
         } else {
-            $lower = \strtolower($name);
-            $this->_static[$lower] = [$callback, null, $name];
-            $this->_origNames[$name] = $lower;
-            unset($this->{$lower});
+            $name = \strtolower($name);
+            $this->_static[$name] = [$callback, null];
+            unset($this->{$name});
         }
         return $this;
     }
@@ -76,7 +72,7 @@ class FilterExecutor
         }
         return $this->{$lname} = function (...$args) use($lname, $name) {
             // dynamic filter
-            \array_unshift($args, $name);
+            \array_unshift($args, $lname);
             foreach ($this->_dynamic as $filter) {
                 $res = $filter(...$args);
                 if ($res !== null) {

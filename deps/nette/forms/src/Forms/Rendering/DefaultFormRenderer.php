@@ -61,7 +61,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
      * Provides complete form rendering.
      * @param  string  $mode  'begin', 'errors', 'ownerrors', 'body', 'end' or empty to render all
      */
-    public function render(\Packetery\Nette\Forms\Form $form, ?string $mode = null) : string
+    public function render(\Packetery\Nette\Forms\Form $form, string $mode = null) : string
     {
         if ($this->form !== $form) {
             $this->form = $form;
@@ -133,7 +133,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
     /**
      * Renders validation errors (per form or per control).
      */
-    public function renderErrors(?Nette\Forms\Control $control = null, bool $own = \true) : string
+    public function renderErrors(\Packetery\Nette\Forms\Control $control = null, bool $own = \true) : string
     {
         $errors = $control ? $control->getErrors() : ($own ? $this->form->getOwnErrors() : $this->form->getErrors());
         return $this->doRenderErrors($errors, (bool) $control);
@@ -168,7 +168,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
             if (!$group->getControls() || !$group->getOption('visual')) {
                 continue;
             }
-            $container = $group->getOption('container') ?? $defaultContainer;
+            $container = $group->getOption('container', $defaultContainer);
             $container = $container instanceof Html ? clone $container : Html::el($container);
             $id = $group->getOption('id');
             if ($id) {
@@ -266,7 +266,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
         $s = [];
         foreach ($controls as $control) {
             if (!$control instanceof \Packetery\Nette\Forms\Control) {
-                throw new \Packetery\Nette\InvalidArgumentException('Argument must be array of \\Packetery\\Nette\\Forms\\Control instances.');
+                throw new \Packetery\Nette\InvalidArgumentException('Argument must be array of \\Packetery\\Nette\\Forms\\IControl instances.');
             }
             $description = $control->getOption('description');
             if ($description instanceof HtmlStringable) {
@@ -281,7 +281,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
                 $description = '';
             }
             $control->setOption('rendered', \true);
-            $el = $this->renderControlElement($control);
+            $el = $control->getControl();
             if ($el instanceof Html) {
                 if ($el->getName() === 'input') {
                     $el->class($this->getValue("control .{$el->type}"), \true);
@@ -301,7 +301,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
     public function renderLabel(\Packetery\Nette\Forms\Control $control) : Html
     {
         $suffix = $this->getValue('label suffix') . ($control->isRequired() ? $this->getValue('label requiredsuffix') : '');
-        $label = $this->renderLabelElement($control);
+        $label = $control->getLabel();
         if ($label instanceof Html) {
             $label->addHtml($suffix);
             if ($control->isRequired()) {
@@ -344,7 +344,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
         $els = $errors = [];
         renderControl:
         $control->setOption('rendered', \true);
-        $el = $this->renderControlElement($control);
+        $el = $control->getControl();
         if ($el instanceof Html) {
             if ($el->getName() === 'input') {
                 $el->class($this->getValue("control .{$el->type}"), \true);
@@ -359,16 +359,6 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
             goto renderControl;
         }
         return $body->setHtml(\implode('', $els) . $description . $this->doRenderErrors($errors, \true));
-    }
-    /** @return string|Html|null */
-    protected function renderLabelElement(\Packetery\Nette\Forms\Control $control)
-    {
-        return $control->getLabel();
-    }
-    /** @return string|Html */
-    protected function renderControlElement(\Packetery\Nette\Forms\Control $control)
-    {
-        return $control->getControl();
     }
     public function getWrapper(string $name) : Html
     {

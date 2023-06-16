@@ -1,6 +1,5 @@
 <?php
 
-declare (strict_types=1);
 namespace Packetery\GuzzleHttp\Promise;
 
 /**
@@ -13,8 +12,8 @@ class RejectionException extends \RuntimeException
     /** @var mixed Rejection reason. */
     private $reason;
     /**
-     * @param mixed       $reason      Rejection reason.
-     * @param string|null $description Optional description.
+     * @param mixed  $reason      Rejection reason.
+     * @param string $description Optional description
      */
     public function __construct($reason, $description = null)
     {

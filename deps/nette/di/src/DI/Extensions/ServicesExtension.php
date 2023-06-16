@@ -19,7 +19,7 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
     use \Packetery\Nette\SmartObject;
     public function getConfigSchema() : \Packetery\Nette\Schema\Schema
     {
-        return \Packetery\Nette\Schema\Expect::arrayOf(new DefinitionSchema($this->getContainerBuilder()));
+        return \Packetery\Nette\Schema\Expect::arrayOf(new \Packetery\Nette\DI\Config\DefinitionSchema($this->getContainerBuilder()));
     }
     public function loadConfiguration()
     {
@@ -47,10 +47,10 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
                 throw new \Packetery\Nette\DI\InvalidConfigurationException('missing original definition for alteration.');
             }
             $def = $this->retrieveDefinition($name, $config);
-            $methods = [Definitions\ServiceDefinition::class => 'updateServiceDefinition', Definitions\AccessorDefinition::class => 'updateAccessorDefinition', Definitions\FactoryDefinition::class => 'updateFactoryDefinition', Definitions\LocatorDefinition::class => 'updateLocatorDefinition', Definitions\ImportedDefinition::class => 'updateImportedDefinition'];
+            static $methods = [Definitions\ServiceDefinition::class => 'updateServiceDefinition', Definitions\AccessorDefinition::class => 'updateAccessorDefinition', Definitions\FactoryDefinition::class => 'updateFactoryDefinition', Definitions\LocatorDefinition::class => 'updateLocatorDefinition', Definitions\ImportedDefinition::class => 'updateImportedDefinition'];
             $this->{$methods[$config->defType]}($def, $config);
             $this->updateDefinition($def, $config);
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             throw new \Packetery\Nette\DI\InvalidConfigurationException(($name ? "Service '{$name}': " : '') . $e->getMessage(), 0, $e);
         }
     }
@@ -59,8 +59,8 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
      */
     private function updateServiceDefinition(Definitions\ServiceDefinition $definition, \stdClass $config) : void
     {
-        if ($config->create) {
-            $definition->setCreator(Helpers::filterArguments([$config->create])[0]);
+        if ($config->factory) {
+            $definition->setFactory(Helpers::filterArguments([$config->factory])[0]);
             $definition->setType(null);
         }
         if ($config->type) {
@@ -69,7 +69,7 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
         if ($config->arguments) {
             $arguments = Helpers::filterArguments($config->arguments);
             if (empty($config->reset['arguments']) && !Nette\Utils\Arrays::isList($arguments)) {
-                $arguments = \array_replace($definition->getCreator()->arguments, $arguments);
+                $arguments += $definition->getFactory()->arguments;
             }
             $definition->setArguments($arguments);
         }
@@ -85,7 +85,7 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
             }
         }
         if (isset($config->inject)) {
-            $definition->addTag(InjectExtension::TagInject, $config->inject);
+            $definition->addTag(InjectExtension::TAG_INJECT, $config->inject);
         }
     }
     private function updateAccessorDefinition(Definitions\AccessorDefinition $definition, \stdClass $config) : void
@@ -93,7 +93,7 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
         if (isset($config->implement)) {
             $definition->setImplement($config->implement);
         }
-        if ($ref = $config->create ?? $config->type ?? null) {
+        if ($ref = $config->factory ?? $config->type ?? null) {
             $definition->setReference($ref);
         }
     }
@@ -104,16 +104,16 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
             $definition->setImplement($config->implement);
             $definition->setAutowired(\true);
         }
-        if ($config->create) {
-            $resultDef->setCreator(Helpers::filterArguments([$config->create])[0]);
+        if ($config->factory) {
+            $resultDef->setFactory(Helpers::filterArguments([$config->factory])[0]);
         }
         if ($config->type) {
-            $resultDef->setCreator($config->type);
+            $resultDef->setFactory($config->type);
         }
         if ($config->arguments) {
             $arguments = Helpers::filterArguments($config->arguments);
             if (empty($config->reset['arguments']) && !Nette\Utils\Arrays::isList($arguments)) {
-                $arguments = \array_replace($resultDef->getCreator()->arguments, $arguments);
+                $arguments += $resultDef->getFactory()->arguments;
             }
             $resultDef->setArguments($arguments);
         }
@@ -132,7 +132,7 @@ final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
             $definition->setParameters($config->parameters);
         }
         if (isset($config->inject)) {
-            $definition->addTag(InjectExtension::TagInject, $config->inject);
+            $definition->addTag(InjectExtension::TAG_INJECT, $config->inject);
         }
     }
     private function updateLocatorDefinition(Definitions\LocatorDefinition $definition, \stdClass $config) : void

@@ -18,13 +18,11 @@ use Packetery\Tracy;
 class Configurator
 {
     use \Packetery\Nette\SmartObject;
-    public const CookieSecret = 'nette-debug';
-    /** @deprecated  use Configurator::CookieSecret */
-    public const COOKIE_SECRET = self::CookieSecret;
+    public const COOKIE_SECRET = 'nette-debug';
     /** @var callable[]  function (Configurator $sender, DI\Compiler $compiler); Occurs after the compiler is created */
     public $onCompile = [];
     /** @var array */
-    public $defaultExtensions = ['application' => [Nette\Bridges\ApplicationDI\ApplicationExtension::class, ['%debugMode%', ['%appDir%'], '%tempDir%/cache/nette.application']], 'cache' => [Nette\Bridges\CacheDI\CacheExtension::class, ['%tempDir%']], 'constants' => Extensions\ConstantsExtension::class, 'database' => [Nette\Bridges\DatabaseDI\DatabaseExtension::class, ['%debugMode%']], 'decorator' => \Packetery\Nette\DI\Extensions\DecoratorExtension::class, 'di' => [Nette\DI\Extensions\DIExtension::class, ['%debugMode%']], 'extensions' => \Packetery\Nette\DI\Extensions\ExtensionsExtension::class, 'forms' => \Packetery\Nette\Bridges\FormsDI\FormsExtension::class, 'http' => [Nette\Bridges\HttpDI\HttpExtension::class, ['%consoleMode%']], 'inject' => \Packetery\Nette\DI\Extensions\InjectExtension::class, 'latte' => [Nette\Bridges\ApplicationDI\LatteExtension::class, ['%tempDir%/cache/latte', '%debugMode%']], 'mail' => \Packetery\Nette\Bridges\MailDI\MailExtension::class, 'php' => Extensions\PhpExtension::class, 'routing' => [Nette\Bridges\ApplicationDI\RoutingExtension::class, ['%debugMode%']], 'search' => [Nette\DI\Extensions\SearchExtension::class, ['%tempDir%/cache/nette.search']], 'security' => [Nette\Bridges\SecurityDI\SecurityExtension::class, ['%debugMode%']], 'session' => [Nette\Bridges\HttpDI\SessionExtension::class, ['%debugMode%', '%consoleMode%']], 'tracy' => [Tracy\Bridges\Nette\TracyExtension::class, ['%debugMode%', '%consoleMode%']]];
+    public $defaultExtensions = ['application' => [\Packetery\Nette\Bridges\ApplicationDI\ApplicationExtension::class, ['%debugMode%', ['%appDir%'], '%tempDir%/cache/nette.application']], 'cache' => [\Packetery\Nette\Bridges\CacheDI\CacheExtension::class, ['%tempDir%']], 'constants' => Extensions\ConstantsExtension::class, 'database' => [\Packetery\Nette\Bridges\DatabaseDI\DatabaseExtension::class, ['%debugMode%']], 'decorator' => \Packetery\Nette\DI\Extensions\DecoratorExtension::class, 'di' => [\Packetery\Nette\DI\Extensions\DIExtension::class, ['%debugMode%']], 'extensions' => \Packetery\Nette\DI\Extensions\ExtensionsExtension::class, 'forms' => \Packetery\Nette\Bridges\FormsDI\FormsExtension::class, 'http' => [\Packetery\Nette\Bridges\HttpDI\HttpExtension::class, ['%consoleMode%']], 'inject' => \Packetery\Nette\DI\Extensions\InjectExtension::class, 'latte' => [\Packetery\Nette\Bridges\ApplicationDI\LatteExtension::class, ['%tempDir%/cache/latte', '%debugMode%']], 'mail' => \Packetery\Nette\Bridges\MailDI\MailExtension::class, 'php' => Extensions\PhpExtension::class, 'routing' => [\Packetery\Nette\Bridges\ApplicationDI\RoutingExtension::class, ['%debugMode%']], 'search' => [\Packetery\Nette\DI\Extensions\SearchExtension::class, ['%tempDir%/cache/nette.search']], 'security' => [\Packetery\Nette\Bridges\SecurityDI\SecurityExtension::class, ['%debugMode%']], 'session' => [\Packetery\Nette\Bridges\HttpDI\SessionExtension::class, ['%debugMode%', '%consoleMode%']], 'tracy' => [Tracy\Bridges\Nette\TracyExtension::class, ['%debugMode%', '%consoleMode%']]];
     /** @var string[] of classes which shouldn't be autowired */
     public $autowireExcludedClasses = [\ArrayAccess::class, \Countable::class, \IteratorAggregate::class, \stdClass::class, \Traversable::class];
     /** @var array */
@@ -123,7 +121,7 @@ class Configurator
         $loaderRc = \class_exists(ClassLoader::class) ? new \ReflectionClass(ClassLoader::class) : null;
         return ['appDir' => isset($trace[1]['file']) ? \dirname($trace[1]['file']) : null, 'wwwDir' => isset($last['file']) ? \dirname($last['file']) : null, 'vendorDir' => $loaderRc ? \dirname($loaderRc->getFileName(), 2) : null, 'debugMode' => $debugMode, 'productionMode' => !$debugMode, 'consoleMode' => \PHP_SAPI === 'cli'];
     }
-    public function enableTracy(?string $logDirectory = null, ?string $email = null) : void
+    public function enableTracy(string $logDirectory = null, string $email = null) : void
     {
         if (!\class_exists(Tracy\Debugger::class)) {
             throw new \Packetery\Nette\NotSupportedException('Tracy not found, do you have `tracy/tracy` package installed?');
@@ -138,7 +136,7 @@ class Configurator
     /**
      * Alias for enableTracy()
      */
-    public function enableDebugger(?string $logDirectory = null, ?string $email = null) : void
+    public function enableDebugger(string $logDirectory = null, string $email = null) : void
     {
         $this->enableTracy($logDirectory, $email);
     }
@@ -172,16 +170,14 @@ class Configurator
     /**
      * Returns system DI container.
      */
-    public function createContainer(bool $initialize = \true) : DI\Container
+    public function createContainer() : DI\Container
     {
         $class = $this->loadContainer();
         $container = new $class($this->dynamicParameters);
         foreach ($this->services as $name => $service) {
             $container->addService($name, $service);
         }
-        if ($initialize) {
-            $container->initialize();
-        }
+        $container->initialize();
         return $container;
     }
     /**
@@ -190,7 +186,14 @@ class Configurator
     public function loadContainer() : string
     {
         $loader = new DI\ContainerLoader($this->getCacheDirectory() . '/nette.configurator', $this->staticParameters['debugMode']);
-        return $loader->load([$this, 'generateContainer'], $this->generateContainerKey());
+        return $loader->load([$this, 'generateContainer'], [
+            $this->staticParameters,
+            \array_keys($this->dynamicParameters),
+            $this->configs,
+            \PHP_VERSION_ID - \PHP_RELEASE_VERSION,
+            // minor PHP version
+            \class_exists(ClassLoader::class) ? \filemtime((new \ReflectionClass(ClassLoader::class))->getFilename()) : null,
+        ]);
     }
     /**
      * @internal
@@ -223,17 +226,6 @@ class Configurator
     {
         return new DI\Config\Loader();
     }
-    protected function generateContainerKey() : array
-    {
-        return [
-            $this->staticParameters,
-            \array_keys($this->dynamicParameters),
-            $this->configs,
-            \PHP_VERSION_ID - \PHP_RELEASE_VERSION,
-            // minor PHP version
-            \class_exists(ClassLoader::class) ? \filemtime((new \ReflectionClass(ClassLoader::class))->getFilename()) : null,
-        ];
-    }
     protected function getCacheDirectory() : string
     {
         if (empty($this->staticParameters['tempDir'])) {
@@ -251,7 +243,7 @@ class Configurator
     public static function detectDebugMode($list = null) : bool
     {
         $addr = $_SERVER['REMOTE_ADDR'] ?? \php_uname('n');
-        $secret = \is_string($_COOKIE[self::CookieSecret] ?? null) ? $_COOKIE[self::CookieSecret] : null;
+        $secret = \is_string($_COOKIE[self::COOKIE_SECRET] ?? null) ? $_COOKIE[self::COOKIE_SECRET] : null;
         $list = \is_string($list) ? \preg_split('#[,\\s]+#', $list) : (array) $list;
         if (!isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !isset($_SERVER['HTTP_FORWARDED'])) {
             $list[] = '127.0.0.1';

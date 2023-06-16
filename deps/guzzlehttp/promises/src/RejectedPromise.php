@@ -1,6 +1,5 @@
 <?php
 
-declare (strict_types=1);
 namespace Packetery\GuzzleHttp\Promise;
 
 /**
@@ -8,15 +7,10 @@ namespace Packetery\GuzzleHttp\Promise;
  *
  * Thenning off of this promise will invoke the onRejected callback
  * immediately and ignore other callbacks.
- *
- * @final
  */
 class RejectedPromise implements PromiseInterface
 {
     private $reason;
-    /**
-     * @param mixed $reason
-     */
     public function __construct($reason)
     {
         if (\is_object($reason) && \method_exists($reason, 'then')) {
@@ -24,7 +18,7 @@ class RejectedPromise implements PromiseInterface
         }
         $this->reason = $reason;
     }
-    public function then(callable $onFulfilled = null, callable $onRejected = null) : PromiseInterface
+    public function then(callable $onFulfilled = null, callable $onRejected = null)
     {
         // If there's no onRejected callback then just return self.
         if (!$onRejected) {
@@ -33,7 +27,7 @@ class RejectedPromise implements PromiseInterface
         $queue = Utils::queue();
         $reason = $this->reason;
         $p = new Promise([$queue, 'run']);
-        $queue->add(static function () use($p, $reason, $onRejected) : void {
+        $queue->add(static function () use($p, $reason, $onRejected) {
             if (Is::pending($p)) {
                 try {
                     // Return a resolved promise if onRejected does not throw.
@@ -41,37 +35,40 @@ class RejectedPromise implements PromiseInterface
                 } catch (\Throwable $e) {
                     // onRejected threw, so return a rejected promise.
                     $p->reject($e);
+                } catch (\Exception $e) {
+                    // onRejected threw, so return a rejected promise.
+                    $p->reject($e);
                 }
             }
         });
         return $p;
     }
-    public function otherwise(callable $onRejected) : PromiseInterface
+    public function otherwise(callable $onRejected)
     {
         return $this->then(null, $onRejected);
     }
-    public function wait(bool $unwrap = \true)
+    public function wait($unwrap = \true, $defaultDelivery = null)
     {
         if ($unwrap) {
             throw Create::exceptionFor($this->reason);
         }
         return null;
     }
-    public function getState() : string
+    public function getState()
     {
         return self::REJECTED;
     }
-    public function resolve($value) : void
+    public function resolve($value)
     {
-        throw new \LogicException('Cannot resolve a rejected promise');
+        throw new \LogicException("Cannot resolve a rejected promise");
     }
-    public function reject($reason) : void
+    public function reject($reason)
     {
         if ($reason !== $this->reason) {
-            throw new \LogicException('Cannot reject a rejected promise');
+            throw new \LogicException("Cannot reject a rejected promise");
         }
     }
-    public function cancel() : void
+    public function cancel()
     {
         // pass
     }

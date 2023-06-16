@@ -18,35 +18,22 @@ use Packetery\Nette\Neon;
 final class NeonAdapter implements \Packetery\Nette\DI\Config\Adapter
 {
     use \Packetery\Nette\SmartObject;
-    private const PreventMergingSuffix = '!';
-    /** @var string */
-    private $file;
+    private const PREVENT_MERGING_SUFFIX = '!';
     /**
      * Reads configuration from NEON file.
      */
     public function load(string $file) : array
     {
-        $input = \Packetery\Nette\Utils\FileSystem::read($file);
-        if (\substr($input, 0, 3) === "﻿") {
-            // BOM
-            $input = \substr($input, 3);
-        }
-        $this->file = $file;
-        $decoder = new Neon\Decoder();
-        $node = $decoder->parseToNode($input);
-        $traverser = new Neon\Traverser();
-        $node = $traverser->traverse($node, [$this, 'removeUnderscoreVisitor']);
-        $node = $traverser->traverse($node, [$this, 'convertAtSignVisitor']);
-        return $this->process((array) $node->toValue());
+        return $this->process((array) Neon\Neon::decode(\Packetery\Nette\Utils\FileSystem::read($file)));
     }
     /** @throws \Packetery\Nette\InvalidStateException */
     public function process(array $arr) : array
     {
         $res = [];
         foreach ($arr as $key => $val) {
-            if (\is_string($key) && \substr($key, -1) === self::PreventMergingSuffix) {
+            if (\is_string($key) && \substr($key, -1) === self::PREVENT_MERGING_SUFFIX) {
                 if (!\is_array($val) && $val !== null) {
-                    throw new \Packetery\Nette\DI\InvalidConfigurationException(\sprintf("Replacing operator is available only for arrays, item '%s' is not array (used in '%s')", $key, $this->file));
+                    throw new \Packetery\Nette\DI\InvalidConfigurationException("Replacing operator is available only for arrays, item '{$key}' is not array.");
                 }
                 $key = \substr($key, 0, -1);
                 $val[Helpers::PREVENT_MERGING] = \true;
@@ -63,7 +50,7 @@ final class NeonAdapter implements \Packetery\Nette\DI\Config\Adapter
                 } else {
                     $tmp = $this->process([$val->value]);
                     if (\is_string($tmp[0]) && \strpos($tmp[0], '?') !== \false) {
-                        throw new \Packetery\Nette\DI\InvalidConfigurationException("Operator ? is deprecated in config file (used in '{$this->file}')");
+                        \trigger_error('Operator ? is deprecated in config files.', \E_USER_DEPRECATED);
                     }
                     $val = new Statement($tmp[0], $this->process($val->attributes));
                 }
@@ -106,40 +93,5 @@ final class NeonAdapter implements \Packetery\Nette\DI\Config\Adapter
             }
         }
         return new Neon\Entity($entity, $val->arguments);
-    }
-    /** @internal */
-    public function removeUnderscoreVisitor(Neon\Node $node)
-    {
-        if (!$node instanceof Neon\Node\EntityNode) {
-            return;
-        }
-        $index = \false;
-        foreach ($node->attributes as $i => $attr) {
-            if ($index) {
-                $attr->key = $attr->key ?? new Neon\Node\LiteralNode((string) $i);
-            }
-            if ($attr->value instanceof Neon\Node\LiteralNode && $attr->value->value === '_') {
-                unset($node->attributes[$i]);
-                $index = \true;
-            } elseif ($attr->value instanceof Neon\Node\LiteralNode && $attr->value->value === '...') {
-                \trigger_error("Replace ... with _ in configuration file '{$this->file}'.", \E_USER_DEPRECATED);
-                unset($node->attributes[$i]);
-                $index = \true;
-            }
-        }
-    }
-    /** @internal */
-    public function convertAtSignVisitor(Neon\Node $node)
-    {
-        if ($node instanceof Neon\Node\StringNode) {
-            if (\substr($node->value, 0, 2) === '@@') {
-                \trigger_error("There is no need to escape @ anymore, replace @@ with @ in: '{$node->value}' (used in {$this->file})", \E_USER_DEPRECATED);
-            } else {
-                $node->value = \preg_replace('#^@#', '$0$0', $node->value);
-                // escape
-            }
-        } elseif ($node instanceof Neon\Node\LiteralNode && \is_string($node->value) && \substr($node->value, 0, 2) === '@@') {
-            \trigger_error("There is no need to escape @ anymore, replace @@ with @ and put string in quotes: '{$node->value}' (used in {$this->file})", \E_USER_DEPRECATED);
-        }
     }
 }

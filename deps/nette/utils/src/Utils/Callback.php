@@ -19,7 +19,7 @@ final class Callback
      * @param  string|object|callable  $callable  class, object, callable
      * @deprecated use Closure::fromCallable()
      */
-    public static function closure($callable, ?string $method = null) : \Closure
+    public static function closure($callable, string $method = null) : \Closure
     {
         \trigger_error(__METHOD__ . '() is deprecated, use Closure::fromCallable().', \E_USER_DEPRECATED);
         try {
@@ -132,9 +132,8 @@ final class Callback
     }
     /**
      * Unwraps closure created by Closure::fromCallable().
-     * @return callable|array
      */
-    public static function unwrap(\Closure $closure)
+    public static function unwrap(\Closure $closure) : callable
     {
         $r = new \ReflectionFunction($closure);
         if (\substr($r->name, -1) === '}') {

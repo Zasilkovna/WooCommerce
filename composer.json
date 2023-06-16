@@ -2,6 +2,14 @@
     "require-dev": {
         "wpify/scoper": "3.0.1"
     },
+    "config": {
+        "platform": {
+            "php": "8.1"
+        },
+        "allow-plugins": {
+            "wpify/scoper": true
+        }
+    },
     "extra": {
         "wpify-scoper": {
             "prefix": "Packetery",

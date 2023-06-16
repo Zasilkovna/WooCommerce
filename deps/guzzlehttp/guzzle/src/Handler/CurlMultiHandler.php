@@ -4,7 +4,6 @@ namespace Packetery\GuzzleHttp\Handler;
 
 use Packetery\GuzzleHttp\Promise as P;
 use Packetery\GuzzleHttp\Promise\Promise;
-use Packetery\GuzzleHttp\Promise\PromiseInterface;
 use Packetery\GuzzleHttp\Utils;
 use Packetery\Psr\Http\Message\RequestInterface;
 /**
@@ -14,40 +13,16 @@ use Packetery\Psr\Http\Message\RequestInterface;
  * associative array of curl option constants mapping to values in the
  * **curl** key of the provided request options.
  *
- * @property resource|\CurlMultiHandle $_mh Internal use only. Lazy loaded multi-handle.
- *
- * @final
+ * @property resource $_mh Internal use only. Lazy loaded multi-handle.
  */
-#[\AllowDynamicProperties]
 class CurlMultiHandler
 {
-    /**
-     * @var CurlFactoryInterface
-     */
+    /** @var CurlFactoryInterface */
     private $factory;
-    /**
-     * @var int
-     */
     private $selectTimeout;
-    /**
-     * @var int Will be higher than 0 when `curl_multi_exec` is still running.
-     */
-    private $active = 0;
-    /**
-     * @var array Request entry handles, indexed by handle id in `addRequest`.
-     *
-     * @see CurlMultiHandler::addRequest
-     */
+    private $active;
     private $handles = [];
-    /**
-     * @var array<int, float> An array of delay times, indexed by handle id in `addRequest`.
-     *
-     * @see CurlMultiHandler::addRequest
-     */
     private $delays = [];
-    /**
-     * @var array<mixed> An associative array of CURLMOPT_* options and corresponding values for curl_multi_setopt()
-     */
     private $options = [];
     /**
      * This handler accepts the following options:
@@ -57,43 +32,34 @@ class CurlMultiHandler
      *   out while selecting curl handles. Defaults to 1 second.
      * - options: An associative array of CURLMOPT_* options and
      *   corresponding values for curl_multi_setopt()
+     *
+     * @param array $options
      */
     public function __construct(array $options = [])
     {
-        $this->factory = $options['handle_factory'] ?? new CurlFactory(50);
+        $this->factory = isset($options['handle_factory']) ? $options['handle_factory'] : new CurlFactory(50);
         if (isset($options['select_timeout'])) {
             $this->selectTimeout = $options['select_timeout'];
-        } elseif ($selectTimeout = Utils::getenv('GUZZLE_CURL_SELECT_TIMEOUT')) {
-            @\trigger_error('Since guzzlehttp/guzzle 7.2.0: Using environment variable GUZZLE_CURL_SELECT_TIMEOUT is deprecated. Use option "select_timeout" instead.', \E_USER_DEPRECATED);
-            $this->selectTimeout = (int) $selectTimeout;
+        } elseif ($selectTimeout = \getenv('GUZZLE_CURL_SELECT_TIMEOUT')) {
+            $this->selectTimeout = $selectTimeout;
         } else {
             $this->selectTimeout = 1;
         }
-        $this->options = $options['options'] ?? [];
+        $this->options = isset($options['options']) ? $options['options'] : [];
     }
-    /**
-     * @param string $name
-     *
-     * @return resource|\CurlMultiHandle
-     *
-     * @throws \BadMethodCallException when another field as `_mh` will be gotten
-     * @throws \RuntimeException       when curl can not initialize a multi handle
-     */
     public function __get($name)
     {
-        if ($name !== '_mh') {
-            throw new \BadMethodCallException("Can not get other property as '_mh'.");
+        if ($name === '_mh') {
+            $this->_mh = \curl_multi_init();
+            foreach ($this->options as $option => $value) {
+                // A warning is raised in case of a wrong option.
+                \curl_multi_setopt($this->_mh, $option, $value);
+            }
+            // Further calls to _mh will return the value directly, without entering the
+            // __get() method at all.
+            return $this->_mh;
         }
-        $multiHandle = \curl_multi_init();
-        if (\false === $multiHandle) {
-            throw new \RuntimeException('Can not initialize curl multi handle.');
-        }
-        $this->_mh = $multiHandle;
-        foreach ($this->options as $option => $value) {
-            // A warning is raised in case of a wrong option.
-            \curl_multi_setopt($this->_mh, $option, $value);
-        }
-        return $this->_mh;
+        throw new \BadMethodCallException();
     }
     public function __destruct()
     {
@@ -102,7 +68,7 @@ class CurlMultiHandler
             unset($this->_mh);
         }
     }
-    public function __invoke(RequestInterface $request, array $options) : PromiseInterface
+    public function __invoke(RequestInterface $request, array $options)
     {
         $easy = $this->factory->create($request, $options);
         $id = (int) $easy->handle;
@@ -115,7 +81,7 @@ class CurlMultiHandler
     /**
      * Ticks the curl event loop.
      */
-    public function tick() : void
+    public function tick()
     {
         // Add any delayed handles if needed.
         if ($this->delays) {
@@ -128,7 +94,7 @@ class CurlMultiHandler
             }
         }
         // Step through the task queue which may add additional requests.
-        P\Utils::queue()->run();
+        P\queue()->run();
         if ($this->active && \curl_multi_select($this->_mh, $this->selectTimeout) === -1) {
             // Perform a usleep if a select returns -1.
             // See: https://bugs.php.net/bug.php?id=61141
@@ -141,9 +107,9 @@ class CurlMultiHandler
     /**
      * Runs until all outstanding connections have completed.
      */
-    public function execute() : void
+    public function execute()
     {
-        $queue = P\Utils::queue();
+        $queue = P\queue();
         while ($this->handles || !$queue->isEmpty()) {
             // If there are no transfers, then sleep for the next delay
             if (!$this->active && $this->delays) {
@@ -152,7 +118,7 @@ class CurlMultiHandler
             $this->tick();
         }
     }
-    private function addRequest(array $entry) : void
+    private function addRequest(array $entry)
     {
         $easy = $entry['easy'];
         $id = (int) $easy->handle;
@@ -170,11 +136,8 @@ class CurlMultiHandler
      *
      * @return bool True on success, false on failure.
      */
-    private function cancel($id) : bool
+    private function cancel($id)
     {
-        if (!\is_int($id)) {
-            trigger_deprecation('guzzlehttp/guzzle', '7.4', 'Not passing an integer to %s::%s() is deprecated and will cause an error in 8.0.', __CLASS__, __FUNCTION__);
-        }
         // Cannot cancel if it has been processed.
         if (!isset($this->handles[$id])) {
             return \false;
@@ -185,13 +148,9 @@ class CurlMultiHandler
         \curl_close($handle);
         return \true;
     }
-    private function processMessages() : void
+    private function processMessages()
     {
         while ($done = \curl_multi_info_read($this->_mh)) {
-            if ($done['msg'] !== \CURLMSG_DONE) {
-                // if it's not done, then it would be premature to remove the handle. ref https://github.com/guzzle/guzzle/pull/2892#issuecomment-945150216
-                continue;
-            }
             $id = (int) $done['handle'];
             \curl_multi_remove_handle($this->_mh, $done['handle']);
             if (!isset($this->handles[$id])) {
@@ -204,7 +163,7 @@ class CurlMultiHandler
             $entry['deferred']->resolve(CurlFactory::finish($this, $entry['easy'], $this->factory));
         }
     }
-    private function timeToNext() : int
+    private function timeToNext()
     {
         $currentTime = Utils::currentTime();
         $nextTime = \PHP_INT_MAX;
@@ -213,6 +172,6 @@ class CurlMultiHandler
                 $nextTime = $time;
             }
         }
-        return (int) \max(0, $nextTime - $currentTime) * 1000000;
+        return \max(0, $nextTime - $currentTime) * 1000000;
     }
 }
