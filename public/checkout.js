@@ -275,12 +275,11 @@ var packeteryLoadCheckout = function( $, settings ) {
 				} );
 
 				resetWidgetInfo();
-
-				initialDestinationAddress = destinationAddress;
-				initialCarrierRateId = carrierRateId;
-				settings.country = destinationAddress.country;
 			}
 
+			initialDestinationAddress = destinationAddress;
+			initialCarrierRateId = carrierRateId;
+			settings.country = destinationAddress.country;
 			updateWidgetButtonVisibility( carrierRateId, true );
 			checkPaymentChange(); // If Packeta shipping method with COD is selected, then switch to non-COD shipping method does not trigger payment method input change.
 		} );
