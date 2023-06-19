@@ -193,7 +193,7 @@ final class OrderController extends WP_REST_Controller {
 			'packetery_width'      => $order->getWidth(),
 			'packetery_height'     => $order->getHeight(),
 			'packetery_deliver_on' => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
-			'orderIsSubmittable'   => $this->orderValidator->validate( $order ),
+			'orderIsSubmittable'   => $this->orderValidator->isValid( $order ),
 			'hasOrderManualWeight' => $order->hasManualWeight(),
 		];
 

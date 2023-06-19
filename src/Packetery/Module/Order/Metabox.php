@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
+use Packetery\Core\Validator;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
@@ -128,6 +129,13 @@ class Metabox {
 	private $carrierRepository;
 
 	/**
+	 * Order validator.
+	 *
+	 * @var Validator\Order
+	 */
+	private $orderValidator;
+
+	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine               $latte_engine         PacketeryLatte engine.
@@ -141,6 +149,7 @@ class Metabox {
 	 * @param AttributeMapper      $mapper               AttributeMapper.
 	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
 	 * @param EntityRepository     $carrierRepository    Carrier repository.
+	 * @param Validator\Order      $orderValidator       Order validator.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -153,7 +162,8 @@ class Metabox {
 		Log\Page $logPage,
 		AttributeMapper $mapper,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
-		EntityRepository $carrierRepository
+		EntityRepository $carrierRepository,
+		Validator\Order $orderValidator
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
@@ -166,6 +176,7 @@ class Metabox {
 		$this->mapper               = $mapper;
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
 		$this->carrierRepository    = $carrierRepository;
+		$this->orderValidator       = $orderValidator;
 	}
 
 	/**
@@ -335,7 +346,7 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
-		$showSubmitPacketButton = null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
+		$showSubmitPacketButton = $this->orderValidator->isValid( $order );
 		$packetSubmitUrl        = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
 
 		$showWidgetButton  = $order->isPickupPointDelivery();
