@@ -47,19 +47,19 @@ class Attribute {
 		],
 		'name'      => [
 			'name'     => self::POINT_NAME,
-			'required' => true,
+			'required' => false,
 		],
 		'city'      => [
 			'name'     => self::POINT_CITY,
-			'required' => true,
+			'required' => false,
 		],
 		'zip'       => [
 			'name'     => self::POINT_ZIP,
-			'required' => true,
+			'required' => false,
 		],
 		'street'    => [
 			'name'     => self::POINT_STREET,
-			'required' => true,
+			'required' => false,
 		],
 		'place'     => [
 			'name'     => self::POINT_PLACE,

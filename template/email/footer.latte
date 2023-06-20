@@ -20,7 +20,7 @@
 	{/if}
     <tr>
         <th class="td">{$translations['pickupPointAddress']}</th>
-        <td class="td">{$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</td>
+        <td class="td">{$pickupPoint->getFullAddress()}</td>
     </tr>
 </table>
 {/if}

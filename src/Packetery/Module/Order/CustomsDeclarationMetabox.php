@@ -261,8 +261,8 @@ class CustomsDeclarationMetabox {
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
 			[
 				'form'           => $form,
-				'hasInvoiceFile' => $customsDeclaration->hasInvoiceFileContent(),
-				'hasEadFile'     => $customsDeclaration->hasEadFileContent(),
+				'hasInvoiceFile' => null !== $customsDeclaration && $customsDeclaration->hasInvoiceFileContent(),
+				'hasEadFile'     => null !== $customsDeclaration && $customsDeclaration->hasEadFileContent(),
 				'translations'   => [
 					'addCustomsDeclarationItem' => __( 'Add item', 'packeta' ),
 					'delete'                    => __( 'Delete', 'packeta' ),
