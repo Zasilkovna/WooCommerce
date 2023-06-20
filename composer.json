@@ -1,13 +1,15 @@
 {
     "require-dev": {
-        "wpify/scoper": "3.0.1"
+        "wpify/scoper": "3.0.1",
+        "woocommerce/woocommerce-sniffs": "^0.1"
     },
     "config": {
         "platform": {
             "php": "8.1"
         },
         "allow-plugins": {
-            "wpify/scoper": true
+            "wpify/scoper": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     },
     "extra": {
