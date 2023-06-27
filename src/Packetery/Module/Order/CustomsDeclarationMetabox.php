@@ -9,11 +9,11 @@ declare(strict_types=1);
 
 namespace Packetery\Module\Order;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\EntityFactory;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRules;
 use Packetery\Module\Message;
@@ -41,30 +41,16 @@ class CustomsDeclarationMetabox {
 	public const FORM_CONTAINER_NAME = 'packetery_customs_declaration';
 
 	/**
-	 * Relevant order.
-	 *
-	 * @var Order|null
-	 */
-	private $order = null;
-
-	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	private $orderRepository;
-
-	/**
 	 * Latte engine.
 	 *
-	 * @var \PacketeryLatte\Engine
+	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
 	 * Form factory.
 	 *
-	 * @var \Packetery\Module\FormFactory
+	 * @var FormFactory
 	 */
 	private $formFactory;
 
@@ -97,51 +83,39 @@ class CustomsDeclarationMetabox {
 	private $messageManager;
 
 	/**
+	 * Common logic.
+	 *
+	 * @var MetaboxCommonLogic
+	 */
+	private $commonLogic;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Repository                       $orderRepository                 Order repository.
-	 * @param \PacketeryLatte\Engine           $latteEngine                     Latte engine.
-	 * @param \Packetery\Module\FormFactory    $formFactory                     Form factory.
+	 * @param Engine                           $latteEngine                     Latte engine.
+	 * @param FormFactory                      $formFactory                     Form factory.
 	 * @param CustomsDeclaration\Repository    $customsDeclarationRepository    Customs declaration repository.
 	 * @param EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
 	 * @param Request                          $request                         Request.
 	 * @param MessageManager                   $messageManager                  Message manager.
+	 * @param MetaboxCommonLogic               $commonLogic                     Common logic.
 	 */
 	public function __construct(
-		Repository $orderRepository,
 		Engine $latteEngine,
 		FormFactory $formFactory,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
 		Request $request,
-		MessageManager $messageManager
+		MessageManager $messageManager,
+		MetaboxCommonLogic $commonLogic
 	) {
-		$this->orderRepository                 = $orderRepository;
 		$this->latteEngine                     = $latteEngine;
 		$this->formFactory                     = $formFactory;
 		$this->customsDeclarationRepository    = $customsDeclarationRepository;
 		$this->customsDeclarationEntityFactory = $customsDeclarationEntityFactory;
 		$this->request                         = $request;
 		$this->messageManager                  = $messageManager;
-	}
-
-	/**
-	 * Gets order.
-	 *
-	 * @return Order|null
-	 */
-	private function getOrder(): ?Order {
-		global $post;
-
-		if ( null === $this->order ) {
-			try {
-				$this->order = $this->orderRepository->getById( (int) $post->ID );
-			} catch ( InvalidCarrierException $invalidCarrierException ) {
-				return null;
-			}
-		}
-
-		return $this->order;
+		$this->commonLogic                     = $commonLogic;
 	}
 
 	/**
@@ -160,7 +134,7 @@ class CustomsDeclarationMetabox {
 	 * @return void
 	 */
 	public function addMetaBoxes(): void {
-		$order = $this->getOrder();
+		$order = $this->commonLogic->getOrder();
 
 		if (
 			null === $order ||
@@ -173,7 +147,7 @@ class CustomsDeclarationMetabox {
 			'packetery_customs_declaration_metabox',
 			__( 'Customs declaration', 'packeta' ),
 			[ $this, 'render' ],
-			'shop_order',
+			OrderUtil::custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
 			'advanced',
 			'high'
 		);
@@ -231,7 +205,7 @@ class CustomsDeclarationMetabox {
 	 * @return void
 	 */
 	public function render(): void {
-		$order = $this->getOrder();
+		$order = $this->commonLogic->getOrder();
 		if ( null === $order ) {
 			return;
 		}
@@ -386,7 +360,7 @@ class CustomsDeclarationMetabox {
 	 * @return void
 	 */
 	public function onFormSuccess( Form $form ): void {
-		$order = $this->getOrder();
+		$order = $this->commonLogic->getOrder();
 		if ( null === $order ) {
 			return;
 		}

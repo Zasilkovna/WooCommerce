@@ -13,11 +13,13 @@ use Packetery\Core;
 use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
+use WC_Order;
 
 /**
  * Class GridExtender.
@@ -78,6 +80,13 @@ class GridExtender {
 	private $pickupPointsConfig;
 
 	/**
+	 * Context resolver.
+	 *
+	 * @var ContextResolver
+	 */
+	private $contextResolver;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param Core\Helper               $helper             Helper.
@@ -87,6 +96,7 @@ class GridExtender {
 	 * @param Repository                $orderRepository    Order repository.
 	 * @param Core\Validator\Order      $orderValidator     Order validator.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param ContextResolver           $contextResolver    Context resolver.
 	 */
 	public function __construct(
 		Core\Helper $helper,
@@ -95,7 +105,8 @@ class GridExtender {
 		Request $httpRequest,
 		Repository $orderRepository,
 		Core\Validator\Order $orderValidator,
-		PacketaPickupPointsConfig $pickupPointsConfig
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		ContextResolver $contextResolver
 	) {
 		$this->helper             = $helper;
 		$this->carrierRepository  = $carrierRepository;
@@ -104,6 +115,7 @@ class GridExtender {
 		$this->orderRepository    = $orderRepository;
 		$this->orderValidator     = $orderValidator;
 		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->contextResolver    = $contextResolver;
 	}
 
 	/**
@@ -153,7 +165,7 @@ class GridExtender {
 	 * Adds select to order grid.
 	 */
 	public function renderOrderTypeSelect(): void {
-		if ( ! $this->isOrderGridPage() ) {
+		if ( false === $this->contextResolver->isOrderGridPage() ) {
 			return;
 		}
 
@@ -212,31 +224,42 @@ class GridExtender {
 	/**
 	 * Get Order Entity from cache
 	 *
-	 * @param int $postId Post ID.
+	 * @param int $orderId Order ID.
 	 *
 	 * @return Core\Entity\Order|null
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
-	private function getOrderByPostId( int $postId ): ?Core\Entity\Order {
+	private function getOrderByIdCached( int $orderId ): ?Core\Entity\Order {
 		static $ordersCache;
 
-		if ( ! isset( $ordersCache[ $postId ] ) ) {
-			$ordersCache[ $postId ] = $this->orderRepository->getById( $postId );
+		if ( ! isset( $ordersCache[ $orderId ] ) ) {
+			$ordersCache[ $orderId ] = $this->orderRepository->getById( $orderId );
 		}
 
-		return $ordersCache[ $postId ] ?? null;
+		return $ordersCache[ $orderId ] ?? null;
 	}
 
 	/**
 	 * Fills custom order list columns.
 	 *
-	 * @param string $column Current order column name.
+	 * @param string|mixed        $column Current order column name.
+	 * @param \WC_Order|int|mixed $wcOrder WC Order.
 	 */
-	public function fillCustomOrderListColumns( string $column ): void {
-		global $post;
+	public function fillCustomOrderListColumns( $column, $wcOrder ): void {
+		if ( false === is_string( $column ) ) {
+			return;
+		}
+
+		if ( $wcOrder instanceof WC_Order ) {
+			$orderId = $wcOrder->get_id();
+		} elseif ( is_numeric( $wcOrder ) ) {
+			$orderId = (int) $wcOrder;
+		} else {
+			return;
+		}
 
 		try {
-			$order = $this->getOrderByPostId( $post->ID );
+			$order = $this->getOrderByIdCached( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			if ( 'packetery' === $column ) {
 				Module\Helper::renderString( $exception->getMessage() );
@@ -367,16 +390,5 @@ class GridExtender {
 		}
 
 		return $new_columns;
-	}
-
-	/**
-	 * Checks if current admin page is order grid using WP globals.
-	 *
-	 * @return bool
-	 */
-	public function isOrderGridPage(): bool {
-		global $pagenow, $typenow;
-
-		return ( 'edit.php' === $pagenow && 'shop_order' === $typenow );
 	}
 }

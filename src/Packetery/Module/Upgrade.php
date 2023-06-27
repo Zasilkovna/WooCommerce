@@ -198,8 +198,19 @@ class Upgrade {
 		// Did not work when called from plugins_loaded hook.
 		$orders = wc_get_orders(
 			[
-				'packetery_all' => '1',
-				'nopaging'      => true,
+				'nopaging'   => true,
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+				'meta_query' => [
+					[
+						'key'     => self::META_CARRIER_ID,
+						'compare' => 'EXISTS',
+					],
+					[
+						'key'     => self::META_CARRIER_ID,
+						'compare' => '!=',
+						'value'   => '',
+					],
+				],
 			]
 		);
 
@@ -341,49 +352,6 @@ class Upgrade {
 	private function getMetaAsNullableFloat( \WC_Order $order, string $key ): ?float {
 		$value = $order->get_meta( $key, true );
 		return ( ( null !== $value && '' !== $value ) ? (float) $value : null );
-	}
-
-	/**
-	 * Transforms custom query variable to meta query.
-	 *
-	 * @param array $queryVars Query vars.
-	 * @param array $get Input values.
-	 *
-	 * @return array
-	 */
-	public function handleCustomQueryVar( array $queryVars, array $get ): array {
-		$metaQuery = $this->addQueryVars( ( $queryVars['meta_query'] ?? [] ), $get );
-		if ( $metaQuery ) {
-			// @codingStandardsIgnoreStart
-			$queryVars['meta_query'] = $metaQuery;
-			// @codingStandardsIgnoreEnd
-		}
-
-		return $queryVars;
-	}
-
-	/**
-	 * Adds query vars to fetch order list.
-	 *
-	 * @param array $queryVars Query vars.
-	 * @param array $get Get parameters.
-	 *
-	 * @return array
-	 */
-	private function addQueryVars( array $queryVars, array $get ): array {
-		if ( ! empty( $get['packetery_all'] ) ) {
-			$queryVars[] = [
-				'key'     => self::META_CARRIER_ID,
-				'compare' => 'EXISTS',
-			];
-			$queryVars[] = [
-				'key'     => self::META_CARRIER_ID,
-				'value'   => '',
-				'compare' => '!=',
-			];
-		}
-
-		return $queryVars;
 	}
 
 	/**

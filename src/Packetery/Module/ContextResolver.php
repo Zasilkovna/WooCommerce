@@ -10,6 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -41,7 +42,11 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderGridPage(): bool {
-		global $pagenow, $typenow;
+		global $pagenow, $typenow, $plugin_page;
+
+		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && false === in_array( $this->request->getQuery( 'action' ), [ 'edit', 'new' ], true );
+		}
 
 		return 'edit.php' === $pagenow && 'shop_order' === $typenow;
 	}
@@ -52,7 +57,11 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderDetailPage(): bool {
-		global $pagenow, $typenow;
+		global $pagenow, $typenow, $plugin_page;
+
+		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && 'edit' === $this->request->getQuery( 'action' );
+		}
 
 		return 'post.php' === $pagenow && 'shop_order' === $typenow;
 	}

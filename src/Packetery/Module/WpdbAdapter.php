@@ -22,6 +22,7 @@ use WC_Logger;
  * @property string $packetery_customs_declaration
  * @property string $packetery_customs_declaration_item
  * @property string $posts
+ * @property string $wc_orders
  * @property string $options
  * @property string $postmeta
  * @package Packetery
