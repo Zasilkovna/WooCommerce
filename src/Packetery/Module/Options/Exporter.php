@@ -12,8 +12,8 @@ namespace Packetery\Module\Options;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http;
 
 /**
  * Class Exporter

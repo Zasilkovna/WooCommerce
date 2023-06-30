@@ -16,8 +16,8 @@ use Packetery\Core\Entity\Order;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http;
 
 /**
  * Class LabelPrint.

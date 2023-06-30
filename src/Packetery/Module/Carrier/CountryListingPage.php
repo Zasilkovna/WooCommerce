@@ -13,8 +13,8 @@ use Packetery\Core\Log\Record;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
-use PacketeryLatte\Engine;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
 
 /**

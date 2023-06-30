@@ -20,7 +20,7 @@ use Packetery\Module\Carrier\Options;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
-use PacketeryNette\Http\Request;
+use Packetery\Nette\Http\Request;
 use WC_Order;
 use Packetery\Module;
 

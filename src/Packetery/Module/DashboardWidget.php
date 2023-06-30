@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use PacketeryLatte\Engine;
+use Packetery\Latte\Engine;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 

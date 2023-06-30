@@ -13,10 +13,10 @@ use DateTimeImmutable;
 use Exception;
 use Packetery\Core\Helper;
 use Packetery\Module\Plugin;
-use PacketeryGuzzleHttp\Client;
-use PacketeryGuzzleHttp\Exception\GuzzleException;
-use PacketeryGuzzleHttp\PacketeryPsr7\Response;
-use PacketeryLatte\Engine;
+use Packetery\GuzzleHttp\Client;
+use Packetery\GuzzleHttp\Exception\GuzzleException;
+use Packetery\GuzzleHttp\Psr7\Response;
+use Packetery\Latte\Engine;
 
 /**
  * Class FeatureFlagManager

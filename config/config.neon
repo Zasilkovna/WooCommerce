@@ -27,7 +27,7 @@ services:
 	- Packetery\Module\Carrier\Downloader
 	- Packetery\Module\Carrier\Updater
 	- Packetery\Module\Carrier\Repository
-	- PacketeryGuzzleHttp\Client
+	- Packetery\GuzzleHttp\Client
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
@@ -60,7 +60,7 @@ services:
 	- Packetery\Module\Order\CollectionPrint
 	- Packetery\Module\Order\PacketSynchronizer
 	- Packetery\Module\Order\PacketAutoSubmitter
-	requestFactory: PacketeryNette\Http\RequestFactory
+	requestFactory: Packetery\Nette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
 	- Packetery\Module\Upgrade
 	- Packetery\Module\Upgrade\Version_1_4_2

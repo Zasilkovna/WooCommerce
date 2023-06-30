@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use PacketeryTracy\Debugger;
+use Packetery\Tracy\Debugger;
 use WC_Logger;
 
 /**

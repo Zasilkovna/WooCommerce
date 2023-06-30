@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use PacketeryNette\Http\Request;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class ContextResolver.

@@ -13,8 +13,8 @@ use Packetery\Core\Helper;
 use Packetery\Module\Api;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
-use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Form;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Form;
 
 /**
  * Class Modal

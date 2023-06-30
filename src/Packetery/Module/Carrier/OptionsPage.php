@@ -16,10 +16,10 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FeatureFlagManager;
-use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Container;
-use PacketeryNette\Forms\Form;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Container;
+use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class OptionsPage
