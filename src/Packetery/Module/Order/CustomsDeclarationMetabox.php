@@ -18,12 +18,12 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\FormRules;
 use Packetery\Module\Message;
 use Packetery\Module\MessageManager;
-use PacketeryLatte\Engine;
-use PacketeryNette\Forms\Container;
-use PacketeryNette\Forms\Controls\BaseControl;
-use PacketeryNette\Forms\Form;
-use PacketeryNette\Http\FileUpload;
-use PacketeryNette\Http\Request;
+use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Container;
+use Packetery\Nette\Forms\Controls\BaseControl;
+use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Http\FileUpload;
+use Packetery\Nette\Http\Request;
 use Packetery\Module\CustomsDeclaration;
 
 /**
@@ -359,7 +359,7 @@ class CustomsDeclarationMetabox {
 	/**
 	 * On form error.
 	 *
-	 * @param \PacketeryNette\Forms\Form $form Form.
+	 * @param \Packetery\Nette\Forms\Form $form Form.
 	 * @return void
 	 */
 	public function onFormError( Form $form ): void {

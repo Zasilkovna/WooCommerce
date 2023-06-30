@@ -90,7 +90,7 @@ class Order {
 			self::ERROR_TRANSLATION_KEY_WEIGHT  => ! $this->validateFinalWeight( $order ),
 			self::ERROR_TRANSLATION_KEY_ADDRESS => ! $this->validateAddress( $order ),
 			self::ERROR_TRANSLATION_KEY_SIZE    => ! $this->validateSize( $order ),
-			self::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => ! $order->hasToFillCustomsDeclaration()
+			self::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => $order->hasToFillCustomsDeclaration(),
 		];
 
 		$errors = array_keys(
