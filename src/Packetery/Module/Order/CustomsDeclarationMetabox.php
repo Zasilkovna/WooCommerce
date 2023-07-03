@@ -257,12 +257,15 @@ class CustomsDeclarationMetabox {
 		$form = $this->createForm( $formData, $customsDeclaration );
 		$form->setDefaults( $formData );
 
+		$hasInvoiceFile = null !== $customsDeclaration && $customsDeclaration->hasInvoiceFileContent();
+		$hasEadFile     = null !== $customsDeclaration && $customsDeclaration->hasEadFileContent();
+
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
 			[
 				'form'           => $form,
-				'hasInvoiceFile' => null !== $customsDeclaration && $customsDeclaration->hasInvoiceFileContent(),
-				'hasEadFile'     => null !== $customsDeclaration && $customsDeclaration->hasEadFileContent(),
+				'hasInvoiceFile' => $hasInvoiceFile,
+				'hasEadFile'     => $hasEadFile,
 				'translations'   => [
 					'addCustomsDeclarationItem' => __( 'Add item', 'packeta' ),
 					'delete'                    => __( 'Delete', 'packeta' ),
