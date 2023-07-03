@@ -191,7 +191,6 @@ class Metabox {
 			}
 		);
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
-		add_action( 'save_post', array( $this, 'save_fields' ) );
 	}
 
 	/**
@@ -422,30 +421,25 @@ class Metabox {
 	/**
 	 * Saves added packetery form fields to order metas.
 	 *
-	 * @param mixed $orderId Order id.
+	 * @param Entity\Order $order Order.
 	 *
-	 * @return mixed Order id.
+	 * @return void
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function save_fields( $orderId ) {
-		try {
-			$order = $this->orderRepository->getById( $orderId );
-		} catch ( InvalidCarrierException $exception ) {
-			$order = null;
-		}
+	public function saveFields( Entity\Order $order ): void {
+		$orderId = (int) $order->getNumber();
 		if (
-			null === $order ||
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
 			null === $this->request->getPost( 'packetery_order_metabox_nonce' )
 		) {
-			return $orderId;
+			return;
 		}
 
 		if ( false === $this->order_form->isValid() ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
 			$this->message_manager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
-			return $orderId;
+			return;
 		}
 
 		$orderFormValues = $this->order_form->getValues( 'array' );
@@ -453,13 +447,13 @@ class Metabox {
 		if ( ! wp_verify_nonce( $orderFormValues['packetery_order_metabox_nonce'] ) ) {
 			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 
-			return $orderId;
+			return;
 		}
 
 		if ( ! current_user_can( 'edit_post', $orderId ) ) {
 			$this->message_manager->flash_message( __( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
 
-			return $orderId;
+			return;
 		}
 
 		$propsToSave = [
@@ -519,8 +513,6 @@ class Metabox {
 		$order->setPickupPoint( $pickupPoint );
 
 		$this->orderRepository->save( $order );
-
-		return $orderId;
 	}
 
 	/**

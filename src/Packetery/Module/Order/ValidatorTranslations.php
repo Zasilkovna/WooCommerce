@@ -33,6 +33,7 @@ class ValidatorTranslations {
 			Validator\Order::ERROR_TRANSLATION_KEY_WEIGHT  => __( 'Weight is not set or is zero.', 'packeta' ),
 			Validator\Order::ERROR_TRANSLATION_KEY_ADDRESS => __( 'Address is not set or is incomplete.', 'packeta' ),
 			Validator\Order::ERROR_TRANSLATION_KEY_SIZE    => __( 'Order dimensions are not set.', 'packeta' ),
+			Validator\Order::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => __( 'Customs declaration is not set.', 'packeta' ),
 		];
 	}
 

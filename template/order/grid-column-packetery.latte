@@ -25,6 +25,7 @@
        'packetery_deliver_on' => $packetDeliverOn,
        'packeteryDeliverOnClass' => $order->isPacketaInternalPickupPoint() ? '' : 'packetery-hidden ',
        'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',
+       'hasToFillCustomsDeclaration' => $order->hasToFillCustomsDeclaration(),
        ]
        )}"
        title="{$translations['setAdditionalPacketInfo']}"

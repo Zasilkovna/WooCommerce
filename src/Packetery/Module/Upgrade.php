@@ -74,6 +74,13 @@ class Upgrade {
 	private $carrierRepository;
 
 	/**
+	 * Customs declaration repository.
+	 *
+	 * @var CustomsDeclaration\Repository
+	 */
+	private $customsDeclarationRepository;
+
+	/**
 	 * WpdbAdapter.
 	 *
 	 * @var WpdbAdapter
@@ -83,12 +90,13 @@ class Upgrade {
 	/**
 	 * Constructor.
 	 *
-	 * @param Order\Repository   $orderRepository   Order repository.
-	 * @param MessageManager     $messageManager    Message manager.
-	 * @param ILogger            $logger            Logger.
-	 * @param Log\Repository     $logRepository     Log repository.
-	 * @param WpdbAdapter        $wpdbAdapter       WpdbAdapter.
-	 * @param Carrier\Repository $carrierRepository Carrier repository.
+	 * @param Order\Repository              $orderRepository              Order repository.
+	 * @param MessageManager                $messageManager               Message manager.
+	 * @param ILogger                       $logger                       Logger.
+	 * @param Log\Repository                $logRepository                Log repository.
+	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
+	 * @param Carrier\Repository            $carrierRepository            Carrier repository.
+	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
@@ -96,14 +104,16 @@ class Upgrade {
 		ILogger $logger,
 		Log\Repository $logRepository,
 		WpdbAdapter $wpdbAdapter,
-		Carrier\Repository $carrierRepository
+		Carrier\Repository $carrierRepository,
+		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
-		$this->orderRepository   = $orderRepository;
-		$this->messageManager    = $messageManager;
-		$this->logger            = $logger;
-		$this->logRepository     = $logRepository;
-		$this->wpdbAdapter       = $wpdbAdapter;
-		$this->carrierRepository = $carrierRepository;
+		$this->orderRepository              = $orderRepository;
+		$this->messageManager               = $messageManager;
+		$this->logger                       = $logger;
+		$this->logRepository                = $logRepository;
+		$this->wpdbAdapter                  = $wpdbAdapter;
+		$this->carrierRepository            = $carrierRepository;
+		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
 
 	/**
@@ -121,6 +131,7 @@ class Upgrade {
 		$this->createLogTable();
 		$this->createCarrierTable();
 		$this->createOrderTable();
+		$this->createCustomsDeclarationTables();
 
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
@@ -409,6 +420,21 @@ class Upgrade {
 	private function createOrderTable(): void {
 		if ( false === $this->orderRepository->createOrAlterTable() ) {
 			$this->flashAndLog( 'order', Record::ACTION_ORDER_TABLE_NOT_CREATED );
+		}
+	}
+
+	/**
+	 * Creates order table.
+	 *
+	 * @return void
+	 */
+	private function createCustomsDeclarationTables(): void {
+		if ( false === $this->customsDeclarationRepository->createOrAlterTable() ) {
+			$this->flashAndLog( 'customs_declaration', Record::ACTION_CUSTOMS_DECLARATION_TABLE_NOT_CREATED );
+		}
+
+		if ( false === $this->customsDeclarationRepository->createOrAlterItemTable() ) {
+			$this->flashAndLog( 'customs_declaration_item', Record::ACTION_CUSTOMS_DECLARATION_ITEM_TABLE_NOT_CREATED );
 		}
 	}
 

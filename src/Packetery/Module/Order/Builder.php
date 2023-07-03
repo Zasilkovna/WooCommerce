@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Helper;
 use Packetery\Module\WeightCalculator;
 use Packetery\Module\Options\Provider;
@@ -39,17 +40,27 @@ class Builder {
 	private $calculator;
 
 	/**
+	 * Customs declaration repository.
+	 *
+	 * @var CustomsDeclaration\Repository
+	 */
+	private $customsDeclarationRepository;
+
+	/**
 	 * Order constructor.
 	 *
-	 * @param Provider         $optionsProvider Options Provider.
-	 * @param WeightCalculator $calculator Weight calculator.
+	 * @param Provider                      $optionsProvider              Options Provider.
+	 * @param WeightCalculator              $calculator                   Weight calculator.
+	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
-		WeightCalculator $calculator
+		WeightCalculator $calculator,
+		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
-		$this->optionsProvider = $optionsProvider;
-		$this->calculator      = $calculator;
+		$this->optionsProvider              = $optionsProvider;
+		$this->calculator                   = $calculator;
+		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
 
 	/**
@@ -111,6 +122,8 @@ class Builder {
 
 		$order->setSize( $order->getSize() );
 		$order->setCurrency( $wcOrder->get_currency() );
+
+		$order->setCustomsDeclaration( $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() ) );
 
 		return $order;
 	}

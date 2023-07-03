@@ -19,6 +19,8 @@ use WC_Logger;
  * @property string $packetery_carrier
  * @property string $packetery_order
  * @property string $packetery_log
+ * @property string $packetery_customs_declaration
+ * @property string $packetery_customs_declaration_item
  * @property string $posts
  * @property string $options
  * @property string $postmeta
@@ -376,6 +378,19 @@ class WpdbAdapter {
 		}
 
 		return [ 'created_tables' => $createdTables ];
+	}
+
+	/**
+	 * Gets last insert ID.
+	 *
+	 * @return string|null
+	 */
+	public function getLastInsertId(): ?string {
+		if ( 0 === $this->wpdb->insert_id ) {
+			return null;
+		}
+
+		return (string) $this->wpdb->insert_id;
 	}
 
 }

@@ -20,7 +20,9 @@ use DateTimeImmutable;
 class Helper {
 	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
 	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+	public const MYSQL_DATE_FORMAT     = 'Y-m-d';
 	public const DATEPICKER_FORMAT     = 'Y-m-d';
+	public const DATEPICKER_FORMAT_JS  = 'yy-mm-dd';
 
 	/**
 	 * Simplifies weight.

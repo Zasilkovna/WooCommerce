@@ -137,6 +137,33 @@ class PickupPoint {
 	}
 
 	/**
+	 * Gets full address.
+	 *
+	 * @return string
+	 */
+	public function getFullAddress(): string {
+		$afterCommaSection = implode(
+			' ',
+			array_filter(
+				[
+					$this->city,
+					$this->zip,
+				]
+			)
+		);
+
+		return implode(
+			', ',
+			array_filter(
+				[
+					$this->street,
+					$afterCommaSection,
+				]
+			)
+		);
+	}
+
+	/**
 	 * Sets id.
 	 *
 	 * @param string|null $id Id.

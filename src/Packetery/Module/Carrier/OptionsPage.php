@@ -54,9 +54,9 @@ class OptionsPage {
 	private $formFactory;
 
 	/**
-	 * PacketeryNette Request.
+	 * Packetery\Nette Request.
 	 *
-	 * @var Request PacketeryNette Request.
+	 * @var Request Packetery\Nette Request.
 	 */
 	private $httpRequest;
 
@@ -94,7 +94,7 @@ class OptionsPage {
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
 	 * @param EntityRepository          $carrierRepository  Carrier repository.
 	 * @param FormFactory               $formFactory        Form factory.
-	 * @param Request                   $httpRequest        PacketeryNette Request.
+	 * @param Request                   $httpRequest        Packetery\Nette Request.
 	 * @param CountryListingPage        $countryListingPage CountryListingPage.
 	 * @param MessageManager            $messageManager     Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.

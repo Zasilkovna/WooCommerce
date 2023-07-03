@@ -12,6 +12,7 @@ namespace Packetery\Module\Api\Internal;
 use Packetery\Core;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Validator;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
 use Packetery\Module\Order\GridExtender;
@@ -73,12 +74,12 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter      $router          Router.
-	 * @param Order\Modal      $orderModal      Modal.
-	 * @param Order\Repository $orderRepository Order repository.
-	 * @param GridExtender     $gridExtender    Grid extender.
-	 * @param Validator\Order  $orderValidator  Order validator.
-	 * @param Core\Helper      $helper          Helper.
+	 * @param OrderRouter      $router                       Router.
+	 * @param Order\Modal      $orderModal                   Modal.
+	 * @param Order\Repository $orderRepository              Order repository.
+	 * @param GridExtender     $gridExtender                 Grid extender.
+	 * @param Validator\Order  $orderValidator               Order validator.
+	 * @param Core\Helper      $helper                       Helper.
 	 */
 	public function __construct(
 		OrderRouter $router,

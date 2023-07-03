@@ -6,6 +6,7 @@ parameters:
         url: https://forms.office.com/e/2YjCu9ZEt0
 
 services:
+	- Packetery\Module\Order\MetaboxesWrapper
 	- Packetery\Module\ContextResolver
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
@@ -19,6 +20,7 @@ services:
 	- Packetery\Core\Helper
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
+	- Packetery\Module\Order\CustomsDeclarationMetabox
 	- Packetery\Module\Plugin
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
@@ -44,12 +46,14 @@ services:
 	- Packetery\Module\Order\PacketActionsCommonLogic
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\EntityFactory\Carrier
+	- Packetery\Module\EntityFactory\CustomsDeclaration
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
 	validatorTranslations: Packetery\Module\Order\ValidatorTranslations
 	- Packetery\Core\Validator\Order(translations: @validatorTranslations::get())
 	- Packetery\Module\Options\Repository
+	- Packetery\Module\CustomsDeclaration\Repository
 	- Packetery\Module\Api\Internal\OrderController
 	- Packetery\Module\Api\Internal\OrderRouter
 	- Packetery\Module\Api\Internal\CheckoutController

@@ -17,6 +17,7 @@ use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Module\Carrier\Options;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
@@ -102,18 +103,26 @@ class PacketSubmitter {
 	private $optionsProvider;
 
 	/**
+	 * Customs declaration repository.
+	 *
+	 * @var CustomsDeclaration\Repository
+	 */
+	private $customsDeclarationRepository;
+
+	/**
 	 * OrderApi constructor.
 	 *
-	 * @param Soap\Client              $soapApiClient      SOAP API Client.
-	 * @param Validator\Order          $orderValidator     Order validator.
-	 * @param Log\ILogger              $logger             Logger.
-	 * @param Repository               $orderRepository    Order repository.
-	 * @param CreatePacketMapper       $createPacketMapper CreatePacketMapper.
-	 * @param Request                  $request            Request.
-	 * @param MessageManager           $messageManager     Message manager.
-	 * @param Module\Log\Page          $logPage            Log page.
-	 * @param PacketActionsCommonLogic $commonLogic        Common logic.
-	 * @param Module\Options\Provider  $optionsProvider    Options provider.
+	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
+	 * @param Validator\Order               $orderValidator               Order validator.
+	 * @param Log\ILogger                   $logger                       Logger.
+	 * @param Repository                    $orderRepository              Order repository.
+	 * @param CreatePacketMapper            $createPacketMapper           CreatePacketMapper.
+	 * @param Request                       $request                      Request.
+	 * @param MessageManager                $messageManager               Message manager.
+	 * @param Module\Log\Page               $logPage                      Log page.
+	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
+	 * @param Module\Options\Provider       $optionsProvider              Options provider.
+	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -125,18 +134,20 @@ class PacketSubmitter {
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
-		Module\Options\Provider $optionsProvider
+		Module\Options\Provider $optionsProvider,
+		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
-		$this->soapApiClient      = $soapApiClient;
-		$this->orderValidator     = $orderValidator;
-		$this->logger             = $logger;
-		$this->orderRepository    = $orderRepository;
-		$this->createPacketMapper = $createPacketMapper;
-		$this->request            = $request;
-		$this->messageManager     = $messageManager;
-		$this->logPage            = $logPage;
-		$this->commonLogic        = $commonLogic;
-		$this->optionsProvider    = $optionsProvider;
+		$this->soapApiClient                = $soapApiClient;
+		$this->orderValidator               = $orderValidator;
+		$this->logger                       = $logger;
+		$this->orderRepository              = $orderRepository;
+		$this->createPacketMapper           = $createPacketMapper;
+		$this->request                      = $request;
+		$this->messageManager               = $messageManager;
+		$this->logPage                      = $logPage;
+		$this->commonLogic                  = $commonLogic;
+		$this->optionsProvider              = $optionsProvider;
+		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
 
 	/**
@@ -242,6 +253,80 @@ class PacketSubmitter {
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
 		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $order->isExported() ) {
+
+			$customsDeclaration = $order->getCustomsDeclaration();
+			if (
+				null !== $customsDeclaration &&
+				null === $customsDeclaration->getInvoiceFileId() &&
+				$customsDeclaration->hasInvoiceFileContent()
+			) {
+				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
+					new Soap\Request\CreateStorageFile(
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+						base64_encode( $customsDeclaration->getInvoiceFile() ),
+						sprintf( 'invoice_%s.pdf', $customsDeclaration->getId() )
+					)
+				);
+
+				if ( $invoiceFileResponse->hasFault() ) {
+					$record          = new Log\Record();
+					$record->action  = Log\Record::ACTION_PACKET_SENDING;
+					$record->status  = Log\Record::STATUS_ERROR;
+					$record->title   = __( 'Packet invoice file could not be created.', 'packeta' );
+					$record->params  = [
+						'errorMessage' => $invoiceFileResponse->getFaultString(),
+					];
+					$record->orderId = $order->getNumber();
+					$this->logger->add( $record );
+					$submissionResult->increaseLogsCount();
+
+					$submissionResult->increaseErrorsCount();
+					$order->updateApiErrorMessage( $invoiceFileResponse->getFaultString() );
+					$this->orderRepository->save( $order );
+
+					return $submissionResult;
+				}
+
+				$customsDeclaration->setInvoiceFileId( $invoiceFileResponse->getId() );
+				$this->customsDeclarationRepository->save( $customsDeclaration );
+			}
+
+			if (
+				null !== $customsDeclaration &&
+				null === $customsDeclaration->getEadFileId() &&
+				$customsDeclaration->hasEadFileContent()
+			) {
+				$eadFileResponse = $this->soapApiClient->createStorageFile(
+					new Soap\Request\CreateStorageFile(
+						// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+						base64_encode( $customsDeclaration->getEadFile() ),
+						sprintf( 'ead_%s.pdf', $customsDeclaration->getId() )
+					)
+				);
+
+				if ( $eadFileResponse->hasFault() ) {
+					$record          = new Log\Record();
+					$record->action  = Log\Record::ACTION_PACKET_SENDING;
+					$record->status  = Log\Record::STATUS_ERROR;
+					$record->title   = __( 'Packet ead file could not be created.', 'packeta' );
+					$record->params  = [
+						'errorMessage' => $eadFileResponse->getFaultString(),
+					];
+					$record->orderId = $order->getNumber();
+					$this->logger->add( $record );
+					$submissionResult->increaseLogsCount();
+
+					$submissionResult->increaseErrorsCount();
+					$order->updateApiErrorMessage( $eadFileResponse->getFaultString() );
+					$this->orderRepository->save( $order );
+
+					return $submissionResult;
+				}
+
+				$customsDeclaration->setEadFileId( $eadFileResponse->getId() );
+				$this->customsDeclarationRepository->save( $customsDeclaration );
+			}
+
 			try {
 				$createPacketData = $this->preparePacketData( $order );
 			} catch ( InvalidRequestException $e ) {
@@ -313,7 +398,6 @@ class PacketSubmitter {
 	 * Prepares packet attributes.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 *
 	 * @return array
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */

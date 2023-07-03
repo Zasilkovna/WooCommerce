@@ -80,13 +80,13 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Core\Helper               $helper                Helper.
-	 * @param Carrier\EntityRepository  $carrierRepository     Carrier repository.
-	 * @param Engine                    $latteEngine           Latte Engine.
-	 * @param Request                   $httpRequest           Http Request.
-	 * @param Repository                $orderRepository       Order repository.
-	 * @param Core\Validator\Order      $orderValidator        Order validator.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
+	 * @param Core\Helper               $helper             Helper.
+	 * @param Carrier\EntityRepository  $carrierRepository  Carrier repository.
+	 * @param Engine                    $latteEngine        Latte Engine.
+	 * @param Request                   $httpRequest        Http Request.
+	 * @param Repository                $orderRepository    Order repository.
+	 * @param Core\Validator\Order      $orderValidator     Order validator.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 */
 	public function __construct(
 		Core\Helper $helper,

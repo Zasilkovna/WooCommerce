@@ -7,11 +7,7 @@
             <h2 class="packeta_carrier_title">{$carrier->getName()}</h2>
         </div>
 
-        {if $carrier->requiresCustomsDeclarations()}
-            <div class="notice notice-info">
-                <p>{$translations['cannotUseThisCarrierBecauseRequiresCustomsDeclaration']}</p>
-            </div>
-        {elseif isset($carrier_data['form'])}
+        {if isset($carrier_data['form'])}
 
             {if $carrier->supportsAgeVerification()}
                 <div class="notice notice-info">

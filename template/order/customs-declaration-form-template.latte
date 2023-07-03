@@ -1,0 +1,10 @@
+{varType Packetery\Nette\Forms\Form $formTemplate}
+
+{var $formContainer = $formTemplate[Packetery\Module\Order\CustomsDeclarationMetabox::FORM_CONTAINER_NAME]}
+<form id="{Packetery\Module\Order\CustomsDeclarationMetabox::FORM_ID}_template" n:name=$formTemplate hidden>
+    <div data-packetery-customs-declaration-item>
+        {foreach $formContainer['items']->getComponents() as $id => $item}
+            {include 'customs-declaration-item.latte' container => $formContainer['items'], id => $id}
+        {/foreach}
+    </div>
+</form>

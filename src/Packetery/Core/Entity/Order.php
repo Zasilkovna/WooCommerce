@@ -216,6 +216,13 @@ class Order {
 	private $deliverOn;
 
 	/**
+	 * Customs declaration.
+	 *
+	 * @var CustomsDeclaration|null
+	 */
+	private $customsDeclaration;
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string  $number  Order id.
@@ -230,6 +237,45 @@ class Order {
 		$this->isExported       = false;
 		$this->isLabelPrinted   = false;
 		$this->addressValidated = false;
+	}
+
+	/**
+	 * Sets custom declaration.
+	 *
+	 * @param CustomsDeclaration|null $customsDeclaration Customs declaration.
+	 *
+	 * @return void
+	 */
+	public function setCustomsDeclaration( ?CustomsDeclaration $customsDeclaration ): void {
+		$this->customsDeclaration = $customsDeclaration;
+	}
+
+	/**
+	 * Gets customs declaration.
+	 *
+	 * @return CustomsDeclaration|null
+	 */
+	public function getCustomsDeclaration(): ?CustomsDeclaration {
+		return $this->customsDeclaration;
+	}
+
+	/**
+	 * Has customs declaration items.
+	 *
+	 * @return bool
+	 */
+	public function hasCustomsDeclaration(): bool {
+		return null !== $this->customsDeclaration && [] !== $this->customsDeclaration->getItems();
+	}
+
+	/**
+	 * Tells if customs declaration has to be filled to submit packet.
+	 *
+	 * @return bool
+	 */
+	public function hasToFillCustomsDeclaration(): bool {
+		return $this->carrier->requiresCustomsDeclarations() &&
+			false === $this->hasCustomsDeclaration();
 	}
 
 	/**

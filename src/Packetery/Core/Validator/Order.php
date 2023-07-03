@@ -26,6 +26,7 @@ class Order {
 	public const ERROR_TRANSLATION_KEY_WEIGHT                     = 'validation_error_weight';
 	public const ERROR_TRANSLATION_KEY_ADDRESS                    = 'validation_error_address';
 	public const ERROR_TRANSLATION_KEY_SIZE                       = 'validation_error_size';
+	public const ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION        = 'validation_error_customs_declaration';
 
 	/**
 	 * Address validator.
@@ -89,6 +90,7 @@ class Order {
 			self::ERROR_TRANSLATION_KEY_WEIGHT  => ! $this->validateFinalWeight( $order ),
 			self::ERROR_TRANSLATION_KEY_ADDRESS => ! $this->validateAddress( $order ),
 			self::ERROR_TRANSLATION_KEY_SIZE    => ! $this->validateSize( $order ),
+			self::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => $order->hasToFillCustomsDeclaration(),
 		];
 
 		$errors = array_keys(

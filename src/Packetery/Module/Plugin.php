@@ -79,6 +79,13 @@ class Plugin {
 	private $order_metabox;
 
 	/**
+	 * Metaboxes wrapper.
+	 *
+	 * @var Order\MetaboxesWrapper
+	 */
+	private $metaboxesWrapper;
+
+	/**
 	 * Message manager.
 	 *
 	 * @var MessageManager
@@ -278,6 +285,7 @@ class Plugin {
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
 	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
+	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -308,7 +316,8 @@ class Plugin {
 		Order\PacketSubmitter $packetSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
-		Options\FeatureFlagManager $featureFlagManager
+		Options\FeatureFlagManager $featureFlagManager,
+		Order\MetaboxesWrapper $metaboxesWrapper
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -340,6 +349,7 @@ class Plugin {
 		$this->productCategoryFormFields = $productCategoryFormFields;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
 		$this->featureFlagManager        = $featureFlagManager;
+		$this->metaboxesWrapper          = $metaboxesWrapper;
 	}
 
 	/**
@@ -398,7 +408,7 @@ class Plugin {
 		add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
 		add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
 		$this->orderModal->register();
-		$this->order_metabox->register();
+		$this->metaboxesWrapper->register();
 
 		$this->checkout->register_hooks();
 		$this->productTab->register();
@@ -745,6 +755,7 @@ class Plugin {
 		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
 		$datePickerSettings    = [
 			'deliverOnMinDate' => wp_date( \Packetery\Core\Helper::DATEPICKER_FORMAT, strtotime( 'tomorrow' ) ),
+			'dateFormat'       => \Packetery\Core\Helper::DATEPICKER_FORMAT_JS,
 		];
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
@@ -754,7 +765,8 @@ class Plugin {
 		}
 
 		if ( Carrier\OptionsPage::SLUG === $page ) {
-			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery' ] );
+			$this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
+			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery', 'packetery-multiplier' ] );
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
@@ -784,15 +796,22 @@ class Plugin {
 		}
 
 		if ( $isOrderGridPage ) {
+			$orderGridPageSettings = [
+				'translations' => [
+					'hasToFillCustomsDeclaration' => __( 'Customs declaration has to be filled in order detail.', 'packeta' ),
+				],
+			];
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
+			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'settings', $orderGridPageSettings );
 		}
 
 		$pickupPointPickerSettings = null;
 		$addressPickerSettings     = null;
 
 		if ( $isOrderDetailPage ) {
-			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery' ] );
+			$this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
+			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery', 'packetery-multiplier', 'live-form-validation-extension' ] );
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
 			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();

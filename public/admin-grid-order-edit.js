@@ -9,6 +9,10 @@
 			} );
 		}
 
+		var flashMessage = function( $packeteryModal, type, message ) {
+			$packeteryModal.find( '.notice' ).removeClass( 'notice-success' ).removeClass( 'notice-error' ).addClass( 'notice-' + type ).removeClass( 'hidden' ).find( 'p' ).text( message );
+		};
+
 		$( 'body' ).on( 'wc_backbone_modal_loaded', function( e ) {
 			var $target = $( e.target );
 			var packeteryModal = $target.find( '[data-packetery-modal]' );
@@ -17,6 +21,10 @@
 				Nette.init();
 				$(document.body).trigger( 'wc-init-datepickers' );
 				$( 'input[name="packetery_deliver_on"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
+
+				if ( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
+					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
+				}
 			}
 		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
 			var $target = $( e.target );
@@ -46,10 +54,6 @@
 			var packeteryHeight = $packeteryModal.find( '[name="packetery_height"]' ).val();
 			var packeteryDeliverOn = $packeteryModal.find( '[name="packetery_deliver_on"]' ).val();
 
-			var flashMessage = function( type, message ) {
-				$packeteryModal.find( '.notice' ).removeClass( 'notice-success' ).removeClass( 'notice-error' ).addClass( 'notice-' + type ).removeClass( 'hidden' ).find( 'p' ).text( message );
-			};
-
 			$packeteryModal.find( '.spinner' ).addClass( 'is-active' );
 			$target.addClass( 'disabled' );
 			$.ajax( {
@@ -70,9 +74,9 @@
 				}
 			} ).fail( function( response ) {
 				var message = (response.responseJSON && response.responseJSON.message) || 'Error';
-				flashMessage( 'error', message );
+				flashMessage( $packeteryModal, 'error', message );
 			} ).done( function( response ) {
-				flashMessage( 'success', response.message );
+				flashMessage( $packeteryModal, 'success', response.message );
 				$packeteryModal.find( '[name="packetery_weight"]' ).val( response.data.packetery_weight );
 				$packeteryModal.find( '[name="packetery_original_weight"]' ).val( response.data.packetery_weight );
 				$packeteryModal.find( '[name="packetery_length"]' ).val( response.data.packetery_length );

@@ -39,7 +39,6 @@ class CreatePacketMapper {
 	 * Maps order data to CreatePacket structure.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 *
 	 * @return array
 	 */
 	public function fromOrderToArray( Entity\Order $order ): array {
@@ -89,6 +88,99 @@ class CreatePacketMapper {
 					'height' => $size->getHeight(),
 				];
 			}
+		}
+
+		if ( false === $carrier->requiresCustomsDeclarations() ) {
+			return $createPacketData;
+		}
+
+		$createPacketData['attributes'] = [];
+
+		$customsDeclaration = $order->getCustomsDeclaration();
+		if ( null === $customsDeclaration ) {
+			return $createPacketData;
+		}
+
+		$createPacketData['items'] = [];
+		foreach ( $customsDeclaration->getItems() as $customsDeclarationItem ) {
+			$createPacketData['items'][] = [
+				'attributes' => [
+					[
+						'key'   => 'countryOfOrigin',
+						'value' => $customsDeclarationItem->getCountryOfOrigin(),
+					],
+					[
+						'key'   => 'customsCode',
+						'value' => $customsDeclarationItem->getCustomsCode(),
+					],
+					[
+						'key'   => 'productName',
+						'value' => $customsDeclarationItem->getProductName(),
+					],
+					[
+						'key'   => 'productNameEn',
+						'value' => $customsDeclarationItem->getProductNameEn(),
+					],
+					[
+						'key'   => 'value',
+						'value' => $customsDeclarationItem->getValue(),
+					],
+					[
+						'key'   => 'unitsCount',
+						'value' => $customsDeclarationItem->getUnitsCount(),
+					],
+					[
+						'key'   => 'weight',
+						'value' => $customsDeclarationItem->getWeight(),
+					],
+					[
+						'key'   => 'isFoodBook',
+						'value' => $customsDeclarationItem->isFoodOrBook(),
+					],
+					[
+						'key'   => 'isVoc',
+						'value' => $customsDeclarationItem->isVoc(),
+					],
+				],
+			];
+		}
+
+		$createPacketData['attributes'][] = [
+			'key'   => 'ead',
+			'value' => $customsDeclaration->getEad(),
+		];
+		$createPacketData['attributes'][] = [
+			'key'   => 'deliveryCost',
+			'value' => $customsDeclaration->getDeliveryCost(),
+		];
+		$createPacketData['attributes'][] = [
+			'key'   => 'invoiceNumber',
+			'value' => $customsDeclaration->getInvoiceNumber(),
+		];
+		$createPacketData['attributes'][] = [
+			'key'   => 'invoiceIssueDate',
+			'value' => $customsDeclaration->getInvoiceIssueDate()->format( 'Y-m-d' ),
+		];
+
+		if ( null !== $customsDeclaration->getMrn() ) {
+			$createPacketData['attributes'][] = [
+				'key'   => 'mrn',
+				'value' => $customsDeclaration->getMrn(),
+			];
+		}
+
+		if ( null !== $customsDeclaration->getEadFileId() ) {
+			$createPacketData['attributes'][] = [
+				'key'   => 'eadFile',
+				'value' => $customsDeclaration->getEadFileId(),
+			];
+		}
+
+		if ( null !== $customsDeclaration->getInvoiceFileId() ) {
+			$createPacketData['attributes'][] = [
+				'key'   => 'invoiceFile',
+				'value' => $customsDeclaration->getInvoiceFileId(),
+			];
 		}
 
 		return $createPacketData;

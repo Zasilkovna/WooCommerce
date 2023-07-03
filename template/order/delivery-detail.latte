@@ -10,7 +10,7 @@
 		</h3>
 
 		<p><strong>{$translations['name']}</strong>: {$pickupPoint->getName()}</p>
-		<p><strong>{$translations['address']}</strong>: {$pickupPoint->getStreet()}, {$pickupPoint->getZip()} {$pickupPoint->getCity()}</p>
+		<p><strong>{$translations['address']}</strong>: {$pickupPoint->getFullAddress()}</p>
 		{if $pickupPoint->getUrl() && !$isExternalCarrier}
 			<p><a class="button" target="_blank"
 				  href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetailCaps']}</a></p>
