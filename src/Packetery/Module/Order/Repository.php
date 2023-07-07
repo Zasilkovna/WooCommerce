@@ -178,6 +178,8 @@ class Repository {
 			`carrier_id` varchar(255) NOT NULL,
 			`is_exported` tinyint(1) NOT NULL,
 			`packet_id` varchar(255) NULL,
+			`packet_claim_id` varchar(255) NULL,
+			`packet_claim_password` varchar(255) NULL,
 			`is_label_printed` tinyint(1) NOT NULL,
 			`point_id` varchar(255) NULL,
 			`point_name` varchar(255) NULL,
@@ -300,6 +302,8 @@ class Repository {
 			$partialOrder->setWeight( $orderWeight );
 		}
 		$partialOrder->setPacketId( $result->packet_id );
+		$partialOrder->setPacketClaimId( $result->packet_claim_id );
+		$partialOrder->setPacketClaimPassword( $result->packet_claim_password );
 		$partialOrder->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
 		$partialOrder->setIsExported( (bool) $result->is_exported );
 		$partialOrder->setIsLabelPrinted( (bool) $result->is_label_printed );
@@ -407,31 +411,33 @@ class Repository {
 		}
 
 		$data = [
-			'id'                => (int) $order->getNumber(),
-			'carrier_id'        => $order->getCarrier()->getId(),
-			'is_exported'       => (int) $order->isExported(),
-			'packet_id'         => $order->getPacketId(),
-			'packet_status'     => $order->getPacketStatus(),
-			'is_label_printed'  => (int) $order->isLabelPrinted(),
-			'carrier_number'    => $order->getCarrierNumber(),
-			'weight'            => $order->getWeight(),
-			'point_id'          => $point->getId(),
-			'point_name'        => $point->getName(),
-			'point_url'         => $point->getUrl(),
-			'point_street'      => $point->getStreet(),
-			'point_zip'         => $point->getZip(),
-			'point_city'        => $point->getCity(),
-			'address_validated' => (int) $order->isAddressValidated(),
-			'delivery_address'  => $deliveryAddress,
-			'length'            => $order->getLength(),
-			'width'             => $order->getWidth(),
-			'height'            => $order->getHeight(),
-			'adult_content'     => $order->containsAdultContent(),
-			'cod'               => $order->getCod(),
-			'value'             => $order->getValue(),
-			'api_error_message' => $order->getLastApiErrorMessage(),
-			'api_error_date'    => $apiErrorDateTime,
-			'deliver_on'        => $this->helper->getStringFromDateTime( $order->getDeliverOn(), $this->helper::DATEPICKER_FORMAT ),
+			'id'                    => (int) $order->getNumber(),
+			'carrier_id'            => $order->getCarrier()->getId(),
+			'is_exported'           => (int) $order->isExported(),
+			'packet_id'             => $order->getPacketId(),
+			'packet_claim_id'       => $order->getPacketClaimId(),
+			'packet_claim_password' => $order->getPacketClaimPassword(),
+			'packet_status'         => $order->getPacketStatus(),
+			'is_label_printed'      => (int) $order->isLabelPrinted(),
+			'carrier_number'        => $order->getCarrierNumber(),
+			'weight'                => $order->getWeight(),
+			'point_id'              => $point->getId(),
+			'point_name'            => $point->getName(),
+			'point_url'             => $point->getUrl(),
+			'point_street'          => $point->getStreet(),
+			'point_zip'             => $point->getZip(),
+			'point_city'            => $point->getCity(),
+			'address_validated'     => (int) $order->isAddressValidated(),
+			'delivery_address'      => $deliveryAddress,
+			'length'                => $order->getLength(),
+			'width'                 => $order->getWidth(),
+			'height'                => $order->getHeight(),
+			'adult_content'         => $order->containsAdultContent(),
+			'cod'                   => $order->getCod(),
+			'value'                 => $order->getValue(),
+			'api_error_message'     => $order->getLastApiErrorMessage(),
+			'api_error_date'        => $apiErrorDateTime,
+			'deliver_on'            => $this->helper->getStringFromDateTime( $order->getDeliverOn(), $this->helper::DATEPICKER_FORMAT ),
 		];
 
 		return $data;

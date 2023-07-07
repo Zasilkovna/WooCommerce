@@ -100,6 +100,29 @@ class Client {
 	}
 
 	/**
+	 * Create claim packet with password.
+	 *
+	 * @param Request\CreatePacketClaimWithPassword $request Request attributes.
+	 *
+	 * @return Response\CreatePacketClaimWithPassword
+	 */
+	public function createPacketClaimWithPassword( Request\CreatePacketClaimWithPassword $request ): Response\CreatePacketClaimWithPassword {
+		$response = new Response\CreatePacketClaimWithPassword();
+		try {
+			$soapClient              = new SoapClient( self::WSDL_URL );
+			$packetClaimWithPassword = $soapClient->createPacketClaimWithPassword( $this->apiPassword, $request->getSubmittableData() );
+			$response->setId( $packetClaimWithPassword->id );
+			$response->setPassword( $packetClaimWithPassword->password );
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+			$response->setValidationErrors( $this->getValidationErrors( $exception ) );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Submits packet data to Packeta API.
 	 *
 	 * @param Request\CancelPacket $request Packet attributes.

@@ -24,13 +24,15 @@ use Packetery\Nette\Http\Request;
  */
 class PacketActionsCommonLogic {
 
-	public const PARAM_ORDER_ID           = 'order_id';
-	public const PARAM_REDIRECT_TO        = 'packetery_redirect_to';
-	public const PARAM_ORDER_GRID_PARAMS  = 'packetery_order_grid_params';
-	public const REDIRECT_TO_ORDER_GRID   = 'order-grid';
-	public const REDIRECT_TO_ORDER_DETAIL = 'order-detail';
-	public const ACTION_CANCEL_PACKET     = 'cancel_packet';
-	public const ACTION_SUBMIT_PACKET     = 'submit_packet';
+	public const PARAM_ORDER_ID             = 'order_id';
+	public const PARAM_PACKET_ID            = 'packet_id';
+	public const PARAM_REDIRECT_TO          = 'packetery_redirect_to';
+	public const PARAM_ORDER_GRID_PARAMS    = 'packetery_order_grid_params';
+	public const REDIRECT_TO_ORDER_GRID     = 'order-grid';
+	public const REDIRECT_TO_ORDER_DETAIL   = 'order-detail';
+	public const ACTION_CANCEL_PACKET       = 'cancel_packet';
+	public const ACTION_SUBMIT_PACKET       = 'submit_packet';
+	public const ACTION_CREATE_PACKET_CLAIM = 'create_packet_claim';
 
 	/**
 	 * Order repository.

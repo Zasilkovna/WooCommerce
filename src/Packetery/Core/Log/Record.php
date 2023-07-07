@@ -19,6 +19,7 @@ class Record {
 
 	// Do not forget to add translation.
 	public const ACTION_PACKET_SENDING                             = 'packet-sending';
+	public const ACTION_PACKET_CLAIM_SENDING                       = 'packet-claim-sending';
 	public const ACTION_LABEL_PRINT                                = 'label-print';
 	public const ACTION_CARRIER_LIST_UPDATE                        = 'carrier-list-update';
 	public const ACTION_CARRIER_LABEL_PRINT                        = 'carrier-label-print';

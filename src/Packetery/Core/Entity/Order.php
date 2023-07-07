@@ -146,6 +146,20 @@ class Order {
 	private $packetId;
 
 	/**
+	 * Packet ID.
+	 *
+	 * @var string|null
+	 */
+	private $packetClaimId;
+
+	/**
+	 * Packet password.
+	 *
+	 * @var string|null
+	 */
+	private $packetClaimPassword;
+
+	/**
 	 * Packet ID
 	 *
 	 * @var string|null
@@ -521,6 +535,28 @@ class Order {
 	}
 
 	/**
+	 * Sets packet claim ID.
+	 *
+	 * @param string|null $packetClaimId Packet claim ID.
+	 *
+	 * @return void
+	 */
+	public function setPacketClaimId( ?string $packetClaimId ): void {
+		$this->packetClaimId = $packetClaimId;
+	}
+
+	/**
+	 * Packet claim password.
+	 *
+	 * @param string|null $packetClaimPassword Packet claim password.
+	 *
+	 * @return void
+	 */
+	public function setPacketClaimPassword( ?string $packetClaimPassword ): void {
+		$this->packetClaimPassword = $packetClaimPassword;
+	}
+
+	/**
 	 * Sets packet status.
 	 *
 	 * @param string|null $packetStatus Packet status.
@@ -674,12 +710,51 @@ class Order {
 	}
 
 	/**
+	 * Gets packet claim ID.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketClaimId(): ?string {
+		return $this->packetClaimId;
+	}
+
+	/**
+	 * Gets packet claim password.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketClaimPassword(): ?string {
+		return $this->packetClaimPassword;
+	}
+
+	/**
 	 * Packet status.
 	 *
 	 * @return string|null
 	 */
 	public function getPacketStatus(): ?string {
 		return $this->packetStatus;
+	}
+
+	/**
+	 * Tells if packet claim creation is possible.
+	 *
+	 * @return bool
+	 */
+	public function isPacketClaimCreationPossible(): bool {
+		return PacketStatus::DELIVERED === $this->packetStatus &&
+			null === $this->packetClaimId;
+	}
+
+	/**
+	 * Tells if packet claim label print is possible.
+	 *
+	 * @return bool
+	 */
+	public function isPacketClaimLabelPrintPossible(): bool {
+		return null !== $this->packetClaimId &&
+			false === $this->isExternalCarrier() &&
+			null !== $this->pickupPoint;
 	}
 
 	/**

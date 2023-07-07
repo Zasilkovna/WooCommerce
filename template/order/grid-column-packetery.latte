@@ -36,6 +36,27 @@
     ></a>
 {/if}
 
+<a
+    n:if="$createPacketClaimUrl"
+    class="button dashicons dashicons-undo"
+    title="{$translations['createPacketClaim']}"
+    href="{$createPacketClaimUrl}"
+></a>
+
+<a
+    n:if="$printPacketClaimLabelUrl"
+    class="button dashicons dashicons-media-spreadsheet"
+    title="{$translations['printPacketClaimLabel']}"
+    href="{$printPacketClaimLabelUrl}"
+></a>
+
+<a
+    n:if="$packetClaimCancelUrl"
+    class="button dashicons dashicons-trash"
+    title="{$translations['cancelPacketClaim']}"
+    href="{$packetClaimCancelUrl}"
+></a>
+
 {if null !== $order->getLastApiErrorMessage() && $order->getLastApiErrorDateTime() > $Helper::now()->modify( $logPurgerDatetimeModifier ) }
     <span class="dashicons dashicons-warning attention" title="{$translations['lastErrorFromApi']}:&#13;{$order->getLastApiErrorMessage()}"></span>
 {/if}

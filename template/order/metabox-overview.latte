@@ -1,6 +1,11 @@
+{varType Packetery\Core\Entity\Order $order}
+
 <ul>
     <li>
-        {$translations['packetTrackingOnline']}: <a href="{$packet_tracking_url}" target="_blank">Z{$packet_id}</a>
+        {$translations['packetTrackingOnline']}: <a href="{$packet_tracking_url}" target="_blank">Z{$order->getPacketId()}</a>
+    </li>
+    <li n:if="$packetClaimTrackingUrl">
+        {$translations['packetClaimTrackingOnline']}: <a href="{$packetClaimTrackingUrl}" target="_blank">Z{$order->getPacketClaimId()}</a> ({$order->getPacketClaimPassword()})
     </li>
     <li n:if="$showLogsLink">
         <a class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
@@ -13,6 +18,33 @@
             href="{$packetCancelLink}"
         >
             <span class="packetery-dashicons-button-fix-text">{$translations['cancelPacket']}</span>
+        </a>
+    </li>
+    <li>
+        <a
+            n:if="$packetClaimUrl"
+            class="button dashicons dashicons-undo packetery-dashicons-button-fix"
+            href="{$packetClaimUrl}"
+        >
+            <span class="packetery-dashicons-button-fix-text">{$translations['createPacketClaim']}</span>
+        </a>
+    </li>
+    <li>
+        <a
+            n:if="$packetClaimLabelPrintUrl"
+            class="button dashicons dashicons-media-default packetery-dashicons-button-fix"
+            href="{$packetClaimLabelPrintUrl}"
+        >
+            <span class="packetery-dashicons-button-fix-text">{$translations['printPacketClaimLabel']}</span>
+        </a>
+    </li>
+    <li>
+        <a
+            n:if="$packetClaimCancelUrl"
+            class="button dashicons dashicons-trash packetery-dashicons-button-fix"
+            href="{$packetClaimCancelUrl}"
+        >
+            <span class="packetery-dashicons-button-fix-text">{$translations['cancelPacketClaim']}</span>
         </a>
     </li>
 </ul>

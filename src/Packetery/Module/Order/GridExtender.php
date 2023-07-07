@@ -284,10 +284,26 @@ class GridExtender {
 				echo esc_html( $homeDeliveryCarrierOptions->getName() );
 				break;
 			case 'packetery_packet_id':
-				$packetId = $order->getPacketId();
+				$packetId      = $order->getPacketId();
+				$packetClaimId = $order->getPacketClaimId();
+				$latteParams   = [
+					'order'                    => $order,
+					'packetIdTrackingUrl'      => null,
+					'packetClaimIdTrackingUrl' => null,
+				];
+
 				if ( $packetId ) {
-					echo '<a href="' . esc_attr( $this->helper->get_tracking_url( $packetId ) ) . '" target="_blank">Z' . esc_html( $packetId ) . '</a>';
+					$latteParams['packetIdTrackingUrl'] = $this->helper->get_tracking_url( $packetId );
 				}
+
+				if ( $packetClaimId ) {
+					$latteParams['packetClaimIdTrackingUrl'] = $this->helper->get_tracking_url( $packetClaimId );
+				}
+
+				$this->latteEngine->render(
+					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-tracking.latte',
+					$latteParams
+				);
 				break;
 			case 'packetery':
 				$encodedOrderGridParams = rawurlencode( $this->httpRequest->getUrl()->getQuery() );
@@ -315,6 +331,7 @@ class GridExtender {
 				$packetCancelLink       = add_query_arg(
 					[
 						PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+						PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketId(),
 						Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
 						PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
 						Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
@@ -323,6 +340,51 @@ class GridExtender {
 					admin_url( 'admin.php' )
 				);
 
+				$createPacketClaimUrl = null;
+				if ( $order->isPacketClaimCreationPossible() ) {
+					$createPacketClaimUrl = add_query_arg(
+						[
+							PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+							Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CREATE_PACKET_CLAIM,
+							PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
+							Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CREATE_PACKET_CLAIM, $order->getNumber() ) ),
+							PacketActionsCommonLogic::PARAM_ORDER_GRID_PARAMS => $encodedOrderGridParams,
+						],
+						admin_url( 'admin.php' )
+					);
+				}
+
+				$printPacketClaimLabelUrl = null;
+				if ( $order->isPacketClaimLabelPrintPossible() ) {
+					$printPacketClaimLabelUrl = add_query_arg(
+						[
+							'page'                       => LabelPrint::MENU_SLUG,
+							LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
+							'id'                         => $order->getNumber(),
+							'packet_id'                  => $order->getPacketClaimId(),
+							'offset'                     => 0,
+							PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
+							PacketActionsCommonLogic::PARAM_ORDER_GRID_PARAMS => $encodedOrderGridParams,
+						],
+						admin_url( 'admin.php' )
+					);
+				}
+
+				$packetClaimCancelUrl = null;
+				if ( $order->getPacketClaimId() ) {
+					$packetClaimCancelUrl = add_query_arg(
+						[
+							PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
+							PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
+							Plugin::PARAM_PACKETERY_ACTION => PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+							PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID,
+							Plugin::PARAM_NONCE            => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order->getNumber() ) ),
+							PacketActionsCommonLogic::PARAM_ORDER_GRID_PARAMS => $encodedOrderGridParams,
+						],
+						admin_url( 'admin.php' )
+					);
+				}
+
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
@@ -330,6 +392,9 @@ class GridExtender {
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,
+						'createPacketClaimUrl'      => $createPacketClaimUrl,
+						'printPacketClaimLabelUrl'  => $printPacketClaimLabelUrl,
+						'packetClaimCancelUrl'      => $packetClaimCancelUrl,
 						'printLink'                 => $printLink,
 						'helper'                    => new Core\Helper(),
 						'datePickerFormat'          => Core\Helper::DATEPICKER_FORMAT,
@@ -344,6 +409,9 @@ class GridExtender {
 							// translators: %s: Packet number.
 							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
+							'createPacketClaim'         => __( 'Create packet claim', 'packeta' ),
+							'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
+							'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
 							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
 						],
 					]
