@@ -508,18 +508,17 @@ class Repository {
 	public function findStatusSyncingOrders( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
 		$dateLimit = Core\Helper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
-		$andWhere = [];
+		$andWhere    = [ '`o`.`packet_id` IS NOT NULL' ];
+		$hposEnabled = OrderUtil::custom_orders_table_usage_is_enabled();
 
-		$andWhere[] = 'o.`packet_id` IS NOT NULL';
-
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
-			$andWhere[] = $this->wpdbAdapter->prepare( 'wp_p.`date_created_gmt` >= %s', $dateLimit );
+		if ( $hposEnabled ) {
+			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_p`.`date_created_gmt` >= %s', $dateLimit );
 		} else {
-			$andWhere[] = $this->wpdbAdapter->prepare( 'wp_p.`post_date_gmt` >= %s', $dateLimit );
+			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_p`.`post_date_gmt` >= %s', $dateLimit );
 		}
 
 		$orPacketStatus   = [];
-		$orPacketStatus[] = 'o.`packet_status` IS NULL';
+		$orPacketStatus[] = '`o`.`packet_status` IS NULL';
 
 		if ( $allowedPacketStatuses ) {
 			$orPacketStatus[] = '`o`.`packet_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
@@ -529,9 +528,9 @@ class Repository {
 			$andWhere[] = '(' . implode( ' OR ', $orPacketStatus ) . ')';
 		}
 
-		if ( $allowedOrderStatuses && OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( $allowedOrderStatuses && $hposEnabled ) {
 			$andWhere[] = '`wp_p`.`status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
-		} elseif ( $allowedOrderStatuses && false === OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		} elseif ( $allowedOrderStatuses && false === $hposEnabled ) {
 			$andWhere[] = '`wp_p`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} else {
 			$andWhere[] = '1 = 0';
@@ -542,7 +541,7 @@ class Repository {
 			$where = ' WHERE ' . implode( ' AND ', $andWhere );
 		}
 
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( $hposEnabled ) {
 			$orderBy = ' ORDER BY `wp_p`.`date_created_gmt` ';
 		} else {
 			$orderBy = ' ORDER BY `wp_p`.`post_date_gmt` ';
@@ -550,7 +549,7 @@ class Repository {
 
 		$sql = $this->wpdbAdapter->prepare(
 			'
-			SELECT o.* FROM `' . $this->wpdbAdapter->packetery_order . '` o 
+			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` o 
 			' . $this->getWcOrderJoinClause() . '
 			' . $where . '
 			' . $orderBy . '

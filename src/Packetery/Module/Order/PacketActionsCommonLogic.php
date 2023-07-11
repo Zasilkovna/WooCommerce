@@ -108,9 +108,8 @@ class PacketActionsCommonLogic {
 	 * @return void
 	 */
 	public function redirectTo( string $redirectTo, ?Entity\Order $order = null ): void {
-		$queryVars = [];
-
 		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
+			$queryVars = [];
 			parse_str( $this->request->getQuery( self::PARAM_ORDER_GRID_PARAMS ) ?? '', $queryVars );
 
 			if ( wp_safe_redirect( self::getOrderGridUrl( $queryVars ) ) ) {

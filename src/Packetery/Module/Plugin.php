@@ -398,6 +398,7 @@ class Plugin {
 
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
+		// TODO: Figure out HPOS compatible alternative for order grid filters.
 		$this->queryProcessor->register();
 
 		$orderListScreenId = 'woocommerce_page_wc-orders';

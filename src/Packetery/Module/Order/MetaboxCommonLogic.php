@@ -15,7 +15,6 @@ use Packetery\Core\Entity\Order;
 use Packetery\Module;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Nette;
-use WP_Post;
 
 /**
  * Class MetaboxCommonLogic.

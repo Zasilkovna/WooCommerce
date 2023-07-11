@@ -12,7 +12,6 @@ namespace Packetery\Module\Order;
 use Packetery\Core;
 use Packetery\Module;
 use Packetery\Module\Carrier;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
@@ -73,13 +72,6 @@ class GridExtender {
 	private $orderValidator;
 
 	/**
-	 * Internal pickup points config.
-	 *
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointsConfig;
-
-	/**
 	 * Context resolver.
 	 *
 	 * @var ContextResolver
@@ -89,14 +81,13 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Core\Helper               $helper             Helper.
-	 * @param Carrier\EntityRepository  $carrierRepository  Carrier repository.
-	 * @param Engine                    $latteEngine        Latte Engine.
-	 * @param Request                   $httpRequest        Http Request.
-	 * @param Repository                $orderRepository    Order repository.
-	 * @param Core\Validator\Order      $orderValidator     Order validator.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param ContextResolver           $contextResolver    Context resolver.
+	 * @param Core\Helper              $helper             Helper.
+	 * @param Carrier\EntityRepository $carrierRepository  Carrier repository.
+	 * @param Engine                   $latteEngine        Latte Engine.
+	 * @param Request                  $httpRequest        Http Request.
+	 * @param Repository               $orderRepository    Order repository.
+	 * @param Core\Validator\Order     $orderValidator     Order validator.
+	 * @param ContextResolver          $contextResolver    Context resolver.
 	 */
 	public function __construct(
 		Core\Helper $helper,
@@ -105,17 +96,15 @@ class GridExtender {
 		Request $httpRequest,
 		Repository $orderRepository,
 		Core\Validator\Order $orderValidator,
-		PacketaPickupPointsConfig $pickupPointsConfig,
 		ContextResolver $contextResolver
 	) {
-		$this->helper             = $helper;
-		$this->carrierRepository  = $carrierRepository;
-		$this->latteEngine        = $latteEngine;
-		$this->httpRequest        = $httpRequest;
-		$this->orderRepository    = $orderRepository;
-		$this->orderValidator     = $orderValidator;
-		$this->pickupPointsConfig = $pickupPointsConfig;
-		$this->contextResolver    = $contextResolver;
+		$this->helper            = $helper;
+		$this->carrierRepository = $carrierRepository;
+		$this->latteEngine       = $latteEngine;
+		$this->httpRequest       = $httpRequest;
+		$this->orderRepository   = $orderRepository;
+		$this->orderValidator    = $orderValidator;
+		$this->contextResolver   = $contextResolver;
 	}
 
 	/**
