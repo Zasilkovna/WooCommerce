@@ -1021,7 +1021,7 @@ class Plugin {
 			$this->packetSubmitter->processAction();
 		}
 
-		if ( Order\PacketActionsCommonLogic::ACTION_CREATE_PACKET_CLAIM === $action ) {
+		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM === $action ) {
 			$this->packetClaimSubmitter->processAction();
 		}
 

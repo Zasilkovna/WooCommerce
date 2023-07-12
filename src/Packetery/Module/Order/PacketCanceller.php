@@ -218,6 +218,14 @@ class PacketCanceller {
 		if ( $packetId === $order->getPacketClaimId() && $this->shouldRevertSubmission( $result ) ) {
 			$order->setPacketClaimId( null );
 			$order->setPacketClaimPassword( null );
+
+			if ( $result->hasFault() ) {
+				$this->messageManager->flash_message( __( 'Packet claim could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packeta' ), MessageManager::TYPE_SUCCESS );
+			}
+
+			if ( ! $result->hasFault() ) {
+				$this->messageManager->flash_message( __( 'Packet claim has been successfully canceled both in the order list and the Packeta system.', 'packeta' ), MessageManager::TYPE_SUCCESS );
+			}
 		}
 
 		if ( ! $this->shouldRevertSubmission( $result ) ) {

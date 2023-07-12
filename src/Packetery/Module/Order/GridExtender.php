@@ -290,6 +290,9 @@ class GridExtender {
 					'order'                    => $order,
 					'packetIdTrackingUrl'      => null,
 					'packetClaimIdTrackingUrl' => null,
+					'translations'             => [
+						'packetClaimTracking' => __( 'Packet claim tracking', 'packeta' ),
+					],
 				];
 
 				if ( $packetId ) {

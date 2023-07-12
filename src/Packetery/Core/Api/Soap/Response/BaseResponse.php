@@ -31,13 +31,6 @@ class BaseResponse {
 	private $faultString;
 
 	/**
-	 * Validation errors.
-	 *
-	 * @var string[]
-	 */
-	private $validationErrors;
-
-	/**
 	 * Checks if is faulty.
 	 *
 	 * @return bool
@@ -109,21 +102,4 @@ class BaseResponse {
 		return $this->faultString;
 	}
 
-	/**
-	 * Sets errors.
-	 *
-	 * @param string[] $errors Errors.
-	 */
-	public function setValidationErrors( array $errors ): void {
-		$this->validationErrors = $errors;
-	}
-
-	/**
-	 * Gets validation errors.
-	 *
-	 * @return string[]
-	 */
-	public function getValidationErrors(): array {
-		return $this->validationErrors;
-	}
 }

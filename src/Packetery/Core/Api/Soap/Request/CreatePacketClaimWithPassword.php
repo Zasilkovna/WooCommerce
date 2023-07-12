@@ -1,8 +1,8 @@
 <?php
 /**
- * Class CreatePacket.
+ * Class CreatePacketClaimWithPassword.
  *
- * @package Packetery\Api\Soap\Request
+ * @package Packetery
  */
 
 declare( strict_types=1 );
@@ -12,17 +12,16 @@ namespace Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Entity;
 
 /**
- * Class CreatePacket.
- * We deliberately don't use this class to send data to the API, but we keep the class for possible later use.
+ * Class CreatePacketClaimWithPassword.
  *
- * @package Packetery\Api\Soap\Request
+ * @package Packetery
  */
 class CreatePacketClaimWithPassword {
 
 	/**
 	 * Number.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $number;
 
@@ -43,28 +42,28 @@ class CreatePacketClaimWithPassword {
 	/**
 	 * Value.
 	 *
-	 * @var float
+	 * @var float|null
 	 */
 	private $value;
 
 	/**
 	 * Currency.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $currency;
 
 	/**
 	 * Eshop.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $eshop;
 
 	/**
 	 * Consign country.
 	 *
-	 * @var string
+	 * @var string|null
 	 */
 	private $consignCountry;
 
@@ -76,7 +75,7 @@ class CreatePacketClaimWithPassword {
 	private $sendEmailToCustomer;
 
 	/**
-	 * CreatePacket constructor.
+	 * Constructor.
 	 *
 	 * @param Entity\Order $order Order entity.
 	 */

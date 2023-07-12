@@ -2,5 +2,12 @@
 {varType string $packetIdTrackingUrl}
 {varType string $packetClaimIdTrackingUrl}
 
-<a n:if="$order->getPacketId()" href="{$packetIdTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
-{* TODO: ikona pro RA ? *}
+<a n:if="$packetIdTrackingUrl" href="{$packetIdTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
+<span n:if="$packetClaimIdTrackingUrl"> | </span>
+<a
+    n:if="$packetClaimIdTrackingUrl"
+    class="dashicons dashicons-undo"
+    href="{$packetClaimIdTrackingUrl}"
+    title="{$translations['packetClaimTracking']}"
+    target="_blank"
+></a>

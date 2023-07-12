@@ -127,22 +127,34 @@ class PacketClaimSubmitter {
 			return;
 		}
 
-		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CREATE_PACKET_CLAIM, $order );
+		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM, $order );
 
 		if ( false === $order->isPacketClaimCreationPossible() ) {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_CLAIM_SENDING;
 			$record->status  = Log\Record::STATUS_ERROR;
-			$record->orderId = null;
+			$record->orderId = $order->getNumber();
 			$record->title   = __( 'Packet claim submission error', 'packeta' );
 			$record->params  = [
-				'origin'       => (string) $this->request->getOrigin(),
-				'errorMessage' => 'Packet claim creation is not possible',
+				'origin'        => (string) $this->request->getOrigin(),
+				'errorMessage'  => 'Packet claim creation is not possible',
+				'packetStatus'  => $order->getPacketStatus(),
+				'packetClaimId' => $order->getPacketClaimId(),
 			];
 
 			$this->logger->add( $record );
 
-			$this->messageManager->flash_message( __( 'Packet claim creation is not possible', 'packeta' ), MessageManager::TYPE_ERROR );
+			$faultFlashMessage = sprintf( // translators: 1: link start 2: link end.
+				esc_html__( 'Packet claim creation is not possible. %1$sShow logs%2$s', 'packeta' ),
+				...Module\Plugin::createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
+			);
+
+			$this->messageManager->flashMessageObject(
+				Module\Message::create()
+					->setType( MessageManager::TYPE_ERROR )
+					->setText( $faultFlashMessage )
+					->setEscape( false )
+			);
 			$this->commonLogic->redirectTo( $redirectTo, $order );
 
 			return;
@@ -154,13 +166,13 @@ class PacketClaimSubmitter {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_CLAIM_SENDING;
 			$record->status  = Log\Record::STATUS_ERROR;
+			$record->orderId = $order->getNumber();
 			$record->title   = __( 'Packet claim could not be created.', 'packeta' );
 			$record->params  = [
 				'request'      => $request->getSubmittableData(),
 				'errorMessage' => $response->getFaultString(),
 				'errors'       => $response->getValidationErrors(),
 			];
-			$record->orderId = $order->getNumber();
 
 			$faultFlashMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'Packet claim could not be created. %1$sShow logs%2$s', 'packeta' ),
@@ -178,20 +190,26 @@ class PacketClaimSubmitter {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_CLAIM_SENDING;
 			$record->status  = Log\Record::STATUS_SUCCESS;
+			$record->orderId = $order->getNumber();
 			$record->title   = __( 'Packet claim was successfully created.', 'packeta' );
 			$record->params  = [
 				'request'  => $request->getSubmittableData(),
 				'packetId' => $response->getId(),
 			];
-			$record->orderId = $order->getNumber();
 
 			$order->setPacketClaimId( $response->getId() );
 			$order->setPacketClaimPassword( $response->getPassword() );
 			$this->orderRepository->save( $order );
 
+			$flashMessage = sprintf( // translators: 1: link start 2: link end.
+				esc_html__( 'Packet claim submitted. %1$sShow logs%2$s', 'packeta' ),
+				...Module\Plugin::createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
+			);
+
 			$this->messageManager->flashMessageObject(
 				Module\Message::create()
-					->setText( __( 'Packet claim submitted', 'packeta' ) )
+					->setText( $flashMessage )
+					->setEscape( false )
 			);
 		}
 

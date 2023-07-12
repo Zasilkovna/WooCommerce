@@ -32,7 +32,7 @@ class PacketActionsCommonLogic {
 	public const REDIRECT_TO_ORDER_DETAIL   = 'order-detail';
 	public const ACTION_CANCEL_PACKET       = 'cancel_packet';
 	public const ACTION_SUBMIT_PACKET       = 'submit_packet';
-	public const ACTION_CREATE_PACKET_CLAIM = 'create_packet_claim';
+	public const ACTION_SUBMIT_PACKET_CLAIM = 'submit_packet_claim';
 
 	/**
 	 * Order repository.

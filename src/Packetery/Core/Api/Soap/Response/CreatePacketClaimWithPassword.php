@@ -2,7 +2,7 @@
 /**
  * Class CreatePacket.
  *
- * @package Packetery\Api\Soap\Response
+ * @package Packetery
  */
 
 declare( strict_types=1 );
@@ -12,7 +12,7 @@ namespace Packetery\Core\Api\Soap\Response;
 /**
  * Class CreatePacket.
  *
- * @package Packetery\Api\Soap\Response
+ * @package Packetery
  */
 class CreatePacketClaimWithPassword extends BaseResponse {
 
@@ -29,6 +29,13 @@ class CreatePacketClaimWithPassword extends BaseResponse {
 	 * @var string
 	 */
 	private $password;
+
+	/**
+	 * Validation errors.
+	 *
+	 * @var string[]
+	 */
+	private $validationErrors;
 
 	/**
 	 * Gets ID.
@@ -68,5 +75,23 @@ class CreatePacketClaimWithPassword extends BaseResponse {
 	 */
 	public function setPassword( string $password ): void {
 		$this->password = $password;
+	}
+
+	/**
+	 * Sets errors.
+	 *
+	 * @param string[] $errors Errors.
+	 */
+	public function setValidationErrors( array $errors ): void {
+		$this->validationErrors = $errors;
+	}
+
+	/**
+	 * Gets validation errors.
+	 *
+	 * @return string[]
+	 */
+	public function getValidationErrors(): array {
+		return $this->validationErrors;
 	}
 }

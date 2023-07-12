@@ -318,7 +318,7 @@ class Metabox {
 
 		$packetClaimUrl = null;
 		if ( $order->isPacketClaimCreationPossible() ) {
-			$packetClaimUrl = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_CREATE_PACKET_CLAIM );
+			$packetClaimUrl = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM );
 		}
 
 		$packetClaimLabelPrintUrl = null;
@@ -336,9 +336,9 @@ class Metabox {
 			$packetClaimLabelPrintUrl = add_query_arg(
 				[
 					'page'                       => LabelPrint::MENU_SLUG,
-					LabelPrint::LABEL_TYPE_PARAM => ( $order->isExternalCarrier() ? LabelPrint::ACTION_CARRIER_LABELS : LabelPrint::ACTION_PACKETA_LABELS ),
+					LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
 					'id'                         => $order->getNumber(),
-					'packet_id'                  => $order->getPacketClaimId(),
+					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
 				],
 				admin_url( 'admin.php' )
 			);
@@ -366,16 +366,20 @@ class Metabox {
 					'packetClaimCancelUrl'     => $packetClaimCancelUrl,
 					'translations'             => [
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
-						'packetClaimTrackingOnline' => __( 'Packet claim tracking online', 'packeta' ),
+						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 						'showLogs'                  => __( 'Show logs', 'packeta' ),
 						// translators: %s: Order number.
 						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 						// translators: %s: Packet number.
 						'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
+						// translators: %s: Packet claim number.
+						'reallyCancelPacketClaim'   => sprintf( __( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
 						'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
 						'createPacketClaim'         => __( 'Create packet claim', 'packeta' ),
 						'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
 						'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
+						'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
+						'submissionPassword'        => __( 'submission password', 'packeta' ),
 					],
 				]
 			);
