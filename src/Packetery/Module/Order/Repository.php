@@ -549,7 +549,7 @@ class Repository {
 
 		$sql = $this->wpdbAdapter->prepare(
 			'
-			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` o 
+			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` `o` 
 			' . $this->getWcOrderJoinClause() . '
 			' . $where . '
 			' . $orderBy . '
