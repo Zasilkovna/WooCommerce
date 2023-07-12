@@ -3,5 +3,4 @@
 {varType string $packetClaimIdTrackingUrl}
 
 <a n:if="$order->getPacketId()" href="{$packetIdTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
-<br n:if="$order->getPacketId() && $order->getPacketClaimId()">
-<a n:if="$order->getPacketClaimId()" href="{$packetClaimIdTrackingUrl}" target="_blank">Z{$order->getPacketClaimId()}</a>
+{* TODO: ikona pro RA ? *}
