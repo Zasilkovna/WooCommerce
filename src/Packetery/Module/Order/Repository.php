@@ -511,9 +511,9 @@ class Repository {
 		$hposEnabled = Module\Helper::isHposEnabled();
 
 		if ( $hposEnabled ) {
-			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_p`.`date_created_gmt` >= %s', $dateLimit );
+			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_o`.`date_created_gmt` >= %s', $dateLimit );
 		} else {
-			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_p`.`post_date_gmt` >= %s', $dateLimit );
+			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_o`.`post_date_gmt` >= %s', $dateLimit );
 		}
 
 		$orPacketStatus   = [];
@@ -528,9 +528,9 @@ class Repository {
 		}
 
 		if ( $allowedOrderStatuses && $hposEnabled ) {
-			$andWhere[] = '`wp_p`.`status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
+			$andWhere[] = '`wp_o`.`status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} elseif ( $allowedOrderStatuses && false === $hposEnabled ) {
-			$andWhere[] = '`wp_p`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
+			$andWhere[] = '`wp_o`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} else {
 			$andWhere[] = '1 = 0';
 		}
@@ -541,9 +541,9 @@ class Repository {
 		}
 
 		if ( $hposEnabled ) {
-			$orderBy = ' ORDER BY `wp_p`.`date_created_gmt` ';
+			$orderBy = ' ORDER BY `wp_o`.`date_created_gmt` ';
 		} else {
-			$orderBy = ' ORDER BY `wp_p`.`post_date_gmt` ';
+			$orderBy = ' ORDER BY `wp_o`.`post_date_gmt` ';
 		}
 
 		$sql = $this->wpdbAdapter->prepare(
@@ -606,7 +606,7 @@ class Repository {
 	 */
 	public function getWcOrderJoinClause(): string {
 		$packeteryTableAlias = 'o';
-		$sourceTableAlias    = 'wp_p';
+		$sourceTableAlias    = 'wp_o';
 
 		if ( Module\Helper::isHposEnabled() ) {
 			return sprintf(
