@@ -10,7 +10,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Core\Entity\Order;
 use Packetery\Module;
 use Packetery\Module\Exception\InvalidCarrierException;
@@ -103,7 +102,7 @@ class MetaboxCommonLogic {
 		}
 
 		$idParam = $this->request->getQuery( 'id' );
-		if ( null !== $idParam && OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( null !== $idParam && Module\Helper::isHposEnabled() ) {
 			return (int) $idParam;
 		}
 

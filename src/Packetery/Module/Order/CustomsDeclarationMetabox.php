@@ -9,10 +9,10 @@ declare(strict_types=1);
 
 namespace Packetery\Module\Order;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
+use Packetery\Module;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRules;
@@ -147,7 +147,7 @@ class CustomsDeclarationMetabox {
 			'packetery_customs_declaration_metabox',
 			__( 'Customs declaration', 'packeta' ),
 			[ $this, 'render' ],
-			OrderUtil::custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
+			Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
 			'advanced',
 			'high'
 		);

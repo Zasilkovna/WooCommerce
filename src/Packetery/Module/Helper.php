@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
+
 /**
  * Class Helper
  *
@@ -90,4 +92,20 @@ class Helper {
 		return strtolower( $country );
 	}
 
+	/**
+	 * Tells if High Performance Order Storage is enabled.
+	 *
+	 * @return bool
+	 */
+	public static function isHposEnabled(): bool {
+		if ( false === class_exists( 'Automattic\\WooCommerce\\Utilities\\OrderUtil' ) ) {
+			return false;
+		}
+
+		if ( false === method_exists( OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) ) {
+			return false;
+		}
+
+		return OrderUtil::custom_orders_table_usage_is_enabled();
+	}
 }

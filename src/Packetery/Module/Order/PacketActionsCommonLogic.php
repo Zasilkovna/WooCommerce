@@ -9,9 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Core\Entity;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
@@ -134,7 +134,7 @@ class PacketActionsCommonLogic {
 	 * @return string
 	 */
 	private static function getOrderGridUrl( array $queryVars = [] ): string {
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( Helper::isHposEnabled() ) {
 			$queryVars['page'] = 'wc-orders';
 			$path              = 'admin.php';
 		} else {
@@ -158,7 +158,7 @@ class PacketActionsCommonLogic {
 	private static function getOrderDetailUrl( int $orderId ): string {
 		$queryVars = [];
 
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( Helper::isHposEnabled() ) {
 			$queryVars['page'] = 'wc-orders';
 			$queryVars['id']   = $orderId;
 			$path              = 'admin.php';

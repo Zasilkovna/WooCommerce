@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Core;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
@@ -509,7 +508,7 @@ class Repository {
 		$dateLimit = Core\Helper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
 		$andWhere    = [ '`o`.`packet_id` IS NOT NULL' ];
-		$hposEnabled = OrderUtil::custom_orders_table_usage_is_enabled();
+		$hposEnabled = Module\Helper::isHposEnabled();
 
 		if ( $hposEnabled ) {
 			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_p`.`date_created_gmt` >= %s', $dateLimit );
@@ -609,7 +608,7 @@ class Repository {
 		$packeteryTableAlias = 'o';
 		$sourceTableAlias    = 'wp_p';
 
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( Module\Helper::isHposEnabled() ) {
 			return sprintf(
 				'JOIN `%s` `%s` ON `%s`.`id` = `%s`.`id`',
 				$this->wpdbAdapter->wc_orders,
@@ -634,7 +633,7 @@ class Repository {
 	 * @return void
 	 */
 	public function deleteOrphans(): void {
-		if ( OrderUtil::custom_orders_table_usage_is_enabled() ) {
+		if ( Module\Helper::isHposEnabled() ) {
 			$this->wpdbAdapter->query(
 				'DELETE `' . $this->wpdbAdapter->packetery_order . '` FROM `' . $this->wpdbAdapter->packetery_order . '`
 			LEFT JOIN `' . $this->wpdbAdapter->wc_orders . '` ON `' . $this->wpdbAdapter->wc_orders . '`.`id` = `' . $this->wpdbAdapter->packetery_order . '`.`id`

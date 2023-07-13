@@ -9,10 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator;
+use Packetery\Module;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
@@ -230,7 +230,7 @@ class Metabox {
 				$this,
 				'render_metabox',
 			),
-			OrderUtil::custom_orders_table_usage_is_enabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
+			Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
 			'side',
 			'high'
 		);
