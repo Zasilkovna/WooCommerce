@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
@@ -110,7 +109,6 @@ class PacketClaimSubmitter {
 
 		$record         = new Log\Record();
 		$record->action = Log\Record::ACTION_PACKET_CLAIM_SENDING;
-
 		if ( null === $order ) {
 			$record->status  = Log\Record::STATUS_ERROR;
 			$record->orderId = null;
@@ -131,7 +129,6 @@ class PacketClaimSubmitter {
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM, $order );
 
 		$record->orderId = $order->getNumber();
-
 		if ( false === $order->isPacketClaimCreationPossible() ) {
 			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Packet claim submission error', 'packeta' );
@@ -182,7 +179,6 @@ class PacketClaimSubmitter {
 					->setText( $faultFlashMessage )
 					->setEscape( false )
 			);
-
 		} else {
 			$record->status = Log\Record::STATUS_SUCCESS;
 			$record->title  = __( 'Packet claim was successfully created.', 'packeta' );
