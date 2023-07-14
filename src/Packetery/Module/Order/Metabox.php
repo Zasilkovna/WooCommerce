@@ -347,12 +347,24 @@ class Metabox {
 		$packetClaimCancelUrl   = null;
 		$packetClaimTrackingUrl = null;
 		if ( $order->getPacketClaimId() ) {
-			$packetClaimCancelUrl   = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_CANCEL_PACKET, [ PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId() ] );
+			$packetClaimCancelUrl   = $this->getOrderActionLink(
+				$order,
+				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+				[
+					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
+				]
+			);
 			$packetClaimTrackingUrl = $this->helper->get_tracking_url( $order->getPacketClaimId() );
 		}
 
 		if ( $packetId ) {
-			$packetCancelLink = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_CANCEL_PACKET, [ PacketActionsCommonLogic::PARAM_PACKET_ID => $packetId ] );
+			$packetCancelLink = $this->getOrderActionLink(
+				$order,
+				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+				[
+					PacketActionsCommonLogic::PARAM_PACKET_ID => $packetId,
+				]
+			);
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				[
@@ -633,13 +645,15 @@ class Metabox {
 	 * @return string
 	 */
 	private function getOrderActionLink( Entity\Order $order, string $action, array $extraParams = [] ): string {
+		$baseParams = [
+			PacketActionsCommonLogic::PARAM_ORDER_ID    => $order->getNumber(),
+			PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+			Plugin::PARAM_PACKETERY_ACTION              => $action,
+			Plugin::PARAM_NONCE                         => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( $action, $order->getNumber() ) ),
+		];
+
 		return add_query_arg(
-			$extraParams + [
-				PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
-				PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
-				Plugin::PARAM_PACKETERY_ACTION           => $action,
-				Plugin::PARAM_NONCE                      => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( $action, $order->getNumber() ) ),
-			],
+			array_merge( $baseParams, $extraParams ),
 			admin_url( 'admin.php' )
 		);
 	}

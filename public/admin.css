@@ -746,22 +746,13 @@ tbody .packetery-log-column-note {
     display: flex;
     flex-flow: row wrap;
     padding: 0;
-    margin-left: -5px;
-    margin-right: -5px;
-}
-
-.packetery-metabox-overview-buttons .button {
-    margin: 5px;
+    gap: 10px;
 }
 
 .packetery-metabox-overview-info {
     container-type: inline-size;
     margin-top: -5px;
     margin-bottom: 5px;
-}
-
-.packetery-metabox-overview-packet-claim-tracking {
-    container-type: inline-size;
 }
 
 @container (max-width: 499px) {

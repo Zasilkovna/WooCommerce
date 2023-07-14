@@ -108,9 +108,10 @@ class PacketClaimSubmitter {
 		$order      = $this->commonLogic->getOrder();
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 
+		$record         = new Log\Record();
+		$record->action = Log\Record::ACTION_PACKET_CLAIM_SENDING;
+
 		if ( null === $order ) {
-			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_PACKET_CLAIM_SENDING;
 			$record->status  = Log\Record::STATUS_ERROR;
 			$record->orderId = null;
 			$record->title   = __( 'Packet claim submission error', 'packeta' );
@@ -129,13 +130,12 @@ class PacketClaimSubmitter {
 
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM, $order );
 
+		$record->orderId = $order->getNumber();
+
 		if ( false === $order->isPacketClaimCreationPossible() ) {
-			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_PACKET_CLAIM_SENDING;
-			$record->status  = Log\Record::STATUS_ERROR;
-			$record->orderId = $order->getNumber();
-			$record->title   = __( 'Packet claim submission error', 'packeta' );
-			$record->params  = [
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = __( 'Packet claim submission error', 'packeta' );
+			$record->params = [
 				'origin'        => (string) $this->request->getOrigin(),
 				'errorMessage'  => 'Packet claim creation is not possible',
 				'packetStatus'  => $order->getPacketStatus(),
@@ -163,12 +163,9 @@ class PacketClaimSubmitter {
 		$request  = new Soap\Request\CreatePacketClaimWithPassword( $order );
 		$response = $this->soapApiClient->createPacketClaimWithPassword( $request );
 		if ( $response->hasFault() ) {
-			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_PACKET_CLAIM_SENDING;
-			$record->status  = Log\Record::STATUS_ERROR;
-			$record->orderId = $order->getNumber();
-			$record->title   = __( 'Packet claim could not be created.', 'packeta' );
-			$record->params  = [
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = __( 'Packet claim could not be created.', 'packeta' );
+			$record->params = [
 				'request'      => $request->getSubmittableData(),
 				'errorMessage' => $response->getFaultString(),
 				'errors'       => $response->getValidationErrors(),
@@ -187,12 +184,9 @@ class PacketClaimSubmitter {
 			);
 
 		} else {
-			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_PACKET_CLAIM_SENDING;
-			$record->status  = Log\Record::STATUS_SUCCESS;
-			$record->orderId = $order->getNumber();
-			$record->title   = __( 'Packet claim was successfully created.', 'packeta' );
-			$record->params  = [
+			$record->status = Log\Record::STATUS_SUCCESS;
+			$record->title  = __( 'Packet claim was successfully created.', 'packeta' );
+			$record->params = [
 				'request'  => $request->getSubmittableData(),
 				'packetId' => $response->getId(),
 			];
