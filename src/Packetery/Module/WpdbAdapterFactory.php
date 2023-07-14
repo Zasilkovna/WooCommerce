@@ -30,6 +30,7 @@ class WpdbAdapterFactory {
 		$instance->packetery_log                      = sprintf( '%slog', $instance->getPacketeryPrefix() );
 		$instance->packetery_customs_declaration      = sprintf( '%scustoms_declaration', $instance->getPacketeryPrefix() );
 		$instance->packetery_customs_declaration_item = sprintf( '%scustoms_declaration_item', $instance->getPacketeryPrefix() );
+		$instance->wc_orders                          = sprintf( '%swc_orders', $wpdb->prefix );
 		$instance->posts                              = $wpdb->posts;
 		$instance->options                            = $wpdb->options;
 		$instance->postmeta                           = $wpdb->postmeta;

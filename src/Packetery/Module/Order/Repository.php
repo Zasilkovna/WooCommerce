@@ -240,9 +240,9 @@ class Repository {
 		return $this->wpdbAdapter->get_row(
 			$this->wpdbAdapter->prepare(
 				'
-			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` `o`
-			JOIN `' . $this->wpdbAdapter->posts . '` AS `wp_p` ON `wp_p`.`ID` = `o`.`id` 
-			WHERE `o`.`id` = %d',
+				SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` `o`
+				' . $this->getWcOrderJoinClause() . '
+				WHERE `o`.`id` = %d',
 				$id
 			)
 		);
@@ -507,13 +507,17 @@ class Repository {
 	public function findStatusSyncingOrders( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
 		$dateLimit = Core\Helper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
-		$andWhere = [];
+		$andWhere    = [ '`o`.`packet_id` IS NOT NULL' ];
+		$hposEnabled = Module\Helper::isHposEnabled();
 
-		$andWhere[] = 'o.`packet_id` IS NOT NULL';
-		$andWhere[] = $this->wpdbAdapter->prepare( 'wp_p.`post_date_gmt` >= %s', $dateLimit );
+		if ( $hposEnabled ) {
+			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_o`.`date_created_gmt` >= %s', $dateLimit );
+		} else {
+			$andWhere[] = $this->wpdbAdapter->prepare( '`wp_o`.`post_date_gmt` >= %s', $dateLimit );
+		}
 
 		$orPacketStatus   = [];
-		$orPacketStatus[] = 'o.`packet_status` IS NULL';
+		$orPacketStatus[] = '`o`.`packet_status` IS NULL';
 
 		if ( $allowedPacketStatuses ) {
 			$orPacketStatus[] = '`o`.`packet_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
@@ -523,8 +527,10 @@ class Repository {
 			$andWhere[] = '(' . implode( ' OR ', $orPacketStatus ) . ')';
 		}
 
-		if ( $allowedOrderStatuses ) {
-			$andWhere[] = '`wp_p`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
+		if ( $allowedOrderStatuses && $hposEnabled ) {
+			$andWhere[] = '`wp_o`.`status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
+		} elseif ( $allowedOrderStatuses && false === $hposEnabled ) {
+			$andWhere[] = '`wp_o`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} else {
 			$andWhere[] = '1 = 0';
 		}
@@ -534,12 +540,18 @@ class Repository {
 			$where = ' WHERE ' . implode( ' AND ', $andWhere );
 		}
 
+		if ( $hposEnabled ) {
+			$orderBy = ' ORDER BY `wp_o`.`date_created_gmt` ';
+		} else {
+			$orderBy = ' ORDER BY `wp_o`.`post_date_gmt` ';
+		}
+
 		$sql = $this->wpdbAdapter->prepare(
 			'
-			SELECT o.* FROM `' . $this->wpdbAdapter->packetery_order . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` `o` 
+			' . $this->getWcOrderJoinClause() . '
 			' . $where . '
-			ORDER BY wp_p.`post_date` 
+			' . $orderBy . '
 			LIMIT %d',
 			$limit
 		);
@@ -569,7 +581,7 @@ class Repository {
 	public function countOrdersToSubmit(): int {
 		return (int) $this->wpdbAdapter->get_var(
 			'SELECT COUNT(DISTINCT o.id) FROM `' . $this->wpdbAdapter->packetery_order . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			' . $this->getWcOrderJoinClause() . '
 			WHERE o.`carrier_id` IS NOT NULL AND o.`is_exported` = false'
 		);
 	}
@@ -582,8 +594,36 @@ class Repository {
 	public function countOrdersToPrint(): int {
 		return (int) $this->wpdbAdapter->get_var(
 			'SELECT COUNT(DISTINCT o.id) FROM `' . $this->wpdbAdapter->packetery_order . '` o 
-			JOIN `' . $this->wpdbAdapter->posts . '` wp_p ON wp_p.`ID` = o.`id`
+			' . $this->getWcOrderJoinClause() . '
 			WHERE o.`packet_id` IS NOT NULL AND o.`is_label_printed` = false'
+		);
+	}
+
+	/**
+	 * Gets WC Order join clause.
+	 *
+	 * @return string
+	 */
+	public function getWcOrderJoinClause(): string {
+		$packeteryTableAlias = 'o';
+		$sourceTableAlias    = 'wp_o';
+
+		if ( Module\Helper::isHposEnabled() ) {
+			return sprintf(
+				'JOIN `%s` `%s` ON `%s`.`id` = `%s`.`id`',
+				$this->wpdbAdapter->wc_orders,
+				$sourceTableAlias,
+				$sourceTableAlias,
+				$packeteryTableAlias
+			);
+		}
+
+		return sprintf(
+			'JOIN `%s` `%s` ON `%s`.`ID` = `%s`.`id`',
+			$this->wpdbAdapter->posts,
+			$sourceTableAlias,
+			$sourceTableAlias,
+			$packeteryTableAlias
 		);
 	}
 
@@ -593,6 +633,15 @@ class Repository {
 	 * @return void
 	 */
 	public function deleteOrphans(): void {
+		if ( Module\Helper::isHposEnabled() ) {
+			$this->wpdbAdapter->query(
+				'DELETE `' . $this->wpdbAdapter->packetery_order . '` FROM `' . $this->wpdbAdapter->packetery_order . '`
+			LEFT JOIN `' . $this->wpdbAdapter->wc_orders . '` ON `' . $this->wpdbAdapter->wc_orders . '`.`id` = `' . $this->wpdbAdapter->packetery_order . '`.`id`
+			WHERE `' . $this->wpdbAdapter->wc_orders . '`.`id` IS NULL'
+			);
+			return;
+		}
+
 		$this->wpdbAdapter->query(
 			'DELETE `' . $this->wpdbAdapter->packetery_order . '` FROM `' . $this->wpdbAdapter->packetery_order . '`
 			LEFT JOIN `' . $this->wpdbAdapter->posts . '` ON `' . $this->wpdbAdapter->posts . '`.`ID` = `' . $this->wpdbAdapter->packetery_order . '`.`id`

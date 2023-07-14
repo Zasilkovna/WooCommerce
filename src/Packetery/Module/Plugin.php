@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Api;
 use Packetery\Module\Carrier\OptionsPage;
@@ -364,6 +365,7 @@ class Plugin {
 			return;
 		}
 
+		add_action( 'before_woocommerce_init', [ $this, 'declareCompability' ] );
 		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_action( 'init', [ $this->logger, 'register' ] );
 		add_action( 'init', [ $this->message_manager, 'init' ] );
@@ -396,12 +398,14 @@ class Plugin {
 
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
+		// TODO: Figure out HPOS compatible alternative for order grid filters.
 		$this->queryProcessor->register();
 
+		$orderListScreenId = 'woocommerce_page_wc-orders';
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
-		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ] );
-
-		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this->upgrade, 'handleCustomQueryVar' ], 10, 2 );
+		add_filter( sprintf( 'manage_%s_columns', $orderListScreenId ), [ $this->gridExtender, 'addOrderListColumns' ] );
+		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
+		add_action( sprintf( 'manage_%s_custom_column', $orderListScreenId ), [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
 		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
@@ -421,6 +425,7 @@ class Plugin {
 
 		// Adding custom actions to dropdown in admin order list.
 		add_filter( 'bulk_actions-edit-shop_order', [ $this->orderBulkActions, 'addActions' ], 20, 1 );
+		add_filter( sprintf( 'bulk_actions-%s', $orderListScreenId ), [ $this->orderBulkActions, 'addActions' ], 20, 1 );
 		// Execute the action for selected orders.
 		add_filter(
 			'handle_bulk_actions-edit-shop_order',
@@ -431,6 +436,7 @@ class Plugin {
 			10,
 			3
 		);
+		add_filter( sprintf( 'handle_bulk_actions-%s', $orderListScreenId ), [ $this->orderBulkActions, 'handleActions' ], 10, 3 );
 		// Print packets export result.
 		add_action( 'admin_notices', [ $this->orderBulkActions, 'renderPacketsExportResult' ], self::MIN_LISTENER_PRIORITY );
 
@@ -439,10 +445,22 @@ class Plugin {
 
 		add_action( 'admin_init', [ $this->exporter, 'outputExportTxt' ] );
 		add_action( 'admin_init', [ $this, 'handleActions' ] );
-		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', [ $this, 'transformGetOrdersQuery' ] );
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
 		$this->dashboardWidget->register();
+	}
+
+	/**
+	 * Declares plugin compability with features.
+	 *
+	 * @return void
+	 */
+	public function declareCompability(): void {
+		if ( false === class_exists( 'Automattic\\WooCommerce\\Utilities\\FeaturesUtil' ) ) {
+			return;
+		}
+
+		FeaturesUtil::declare_compatibility( 'custom_order_tables', $this->main_file_path );
 	}
 
 	/**
@@ -499,23 +517,6 @@ class Plugin {
 		}
 
 		return [ $link->startTag(), $link->endTag() ];
-	}
-
-	/**
-	 * Filter queries.
-	 *
-	 * @param array $query Query.
-	 *
-	 * @return array
-	 */
-	public function transformGetOrdersQuery( array $query ): array {
-		if ( ! empty( $query['packetery_meta_query'] ) ) {
-			// @codingStandardsIgnoreStart
-			$query['meta_query'] = $query['packetery_meta_query'];
-			// @codingStandardsIgnoreEnd
-		}
-
-		return $query;
 	}
 
 	/**

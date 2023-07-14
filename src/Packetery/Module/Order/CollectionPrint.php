@@ -71,14 +71,22 @@ class CollectionPrint {
 	private $addressFactory;
 
 	/**
+	 * Packet actions common logic.
+	 *
+	 * @var PacketActionsCommonLogic
+	 */
+	private $commonLogic;
+
+	/**
 	 * LabelPrint constructor.
 	 *
-	 * @param Engine                $latteEngine     Latte Engine.
-	 * @param Http\Request          $httpRequest     Http Request.
-	 * @param Client                $soapApiClient   SOAP API Client.
-	 * @param MessageManager        $messageManager  Message Manager.
-	 * @param EntityFactory\Address $addressFactory  Address factory.
-	 * @param Repository            $orderRepository Order repository.
+	 * @param Engine                   $latteEngine              Latte Engine.
+	 * @param Http\Request             $httpRequest              Http Request.
+	 * @param Client                   $soapApiClient            SOAP API Client.
+	 * @param MessageManager           $messageManager           Message Manager.
+	 * @param EntityFactory\Address    $addressFactory           Address factory.
+	 * @param Repository               $orderRepository          Order repository.
+	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Common logic.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -86,7 +94,8 @@ class CollectionPrint {
 		Client $soapApiClient,
 		MessageManager $messageManager,
 		EntityFactory\Address $addressFactory,
-		Repository $orderRepository
+		Repository $orderRepository,
+		PacketActionsCommonLogic $packetActionsCommonLogic
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
@@ -94,6 +103,7 @@ class CollectionPrint {
 		$this->messageManager  = $messageManager;
 		$this->addressFactory  = $addressFactory;
 		$this->orderRepository = $orderRepository;
+		$this->commonLogic     = $packetActionsCommonLogic;
 	}
 
 	/**
@@ -115,9 +125,7 @@ class CollectionPrint {
 
 		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
 			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), 'info' );
-			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
-				exit;
-			}
+			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
 
 		$orderIds  = get_transient( self::getOrderIdsTransientName() );
@@ -138,9 +146,7 @@ class CollectionPrint {
 		if ( ! $packetIds ) {
 			delete_transient( self::getOrderIdsTransientName() );
 			$this->messageManager->flash_message( __( 'Selected orders were not yet submitted to Packeta.', 'packeta' ), 'info' );
-			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
-				exit;
-			}
+			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
 
 		$shipmentResult = $this->requestShipment( $packetIds );
@@ -153,18 +159,14 @@ class CollectionPrint {
 		if ( $shipmentResult->hasFault() ) {
 			delete_transient( self::getOrderIdsTransientName() );
 			$this->messageManager->flash_message( __( 'Unexpected error', 'packeta' ), MessageManager::TYPE_ERROR );
-			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
-				exit;
-			}
+			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
 
 		$shipmentBarcodeResult = $this->requestBarcodePng( $shipmentResult->getBarcode() );
 		delete_transient( self::getOrderIdsTransientName() );
 		if ( $shipmentBarcodeResult->hasFault() ) {
 			$this->messageManager->flash_message( __( 'Unexpected error', 'packeta' ), MessageManager::TYPE_ERROR );
-			if ( wp_safe_redirect( 'edit.php?post_type=shop_order' ) ) {
-				exit;
-			}
+			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
 
 		$storeAddress = $this->addressFactory->fromWcStoreOptions();

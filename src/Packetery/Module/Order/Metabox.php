@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator;
+use Packetery\Module;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
@@ -136,6 +137,13 @@ class Metabox {
 	private $orderValidator;
 
 	/**
+	 * Common logic.
+	 *
+	 * @var MetaboxCommonLogic
+	 */
+	private $commonLogic;
+
+	/**
 	 * Metabox constructor.
 	 *
 	 * @param Engine               $latte_engine         PacketeryLatte engine.
@@ -150,6 +158,7 @@ class Metabox {
 	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
 	 * @param EntityRepository     $carrierRepository    Carrier repository.
 	 * @param Validator\Order      $orderValidator       Order validator.
+	 * @param MetaboxCommonLogic   $commonLogic          Common logic.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -163,7 +172,8 @@ class Metabox {
 		AttributeMapper $mapper,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		EntityRepository $carrierRepository,
-		Validator\Order $orderValidator
+		Validator\Order $orderValidator,
+		MetaboxCommonLogic $commonLogic
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
@@ -177,6 +187,7 @@ class Metabox {
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
 		$this->carrierRepository    = $carrierRepository;
 		$this->orderValidator       = $orderValidator;
+		$this->commonLogic          = $commonLogic;
 	}
 
 	/**
@@ -197,10 +208,13 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		global $post;
+		$orderId = $this->commonLogic->getOrderId();
+		if ( null === $orderId ) {
+			return;
+		}
 
 		try {
-			$order = $this->orderRepository->getById( (int) $post->ID );
+			$order = $this->orderRepository->getById( $orderId );
 			if ( null === $order ) {
 				return;
 			}
@@ -216,7 +230,7 @@ class Metabox {
 				$this,
 				'render_metabox',
 			),
-			'shop_order',
+			Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
 			'side',
 			'high'
 		);
@@ -270,9 +284,12 @@ class Metabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		global $post;
+		$orderId = $this->commonLogic->getOrderId();
+		if ( null === $orderId ) {
+			return;
+		}
 
-		$wcOrder = $this->orderRepository->getWcOrderById( (int) $post->ID );
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 		if ( null === $wcOrder ) {
 			return;
 		}
@@ -521,13 +538,7 @@ class Metabox {
 	 * @return array|null
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
-		global $post;
-
-		try {
-			$order = $this->orderRepository->getById( (int) $post->ID );
-		} catch ( InvalidCarrierException $exception ) {
-			$order = null;
-		}
+		$order = $this->commonLogic->getOrder();
 		if ( null === $order || false === $order->isPickupPointDelivery() || null === $order->getShippingCountry() ) {
 			return null;
 		}
@@ -547,13 +558,7 @@ class Metabox {
 	 * @return array|null
 	 */
 	public function getAddressWidgetSettings(): ?array {
-		global $post;
-
-		try {
-			$order = $this->orderRepository->getById( (int) $post->ID );
-		} catch ( InvalidCarrierException $exception ) {
-			$order = null;
-		}
+		$order = $this->commonLogic->getOrder();
 		if ( null === $order || false === $order->isHomeDelivery() ) {
 			return null;
 		}

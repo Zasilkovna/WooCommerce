@@ -286,25 +286,11 @@ class CountryListingPage {
 				$originalName = $carrier->getName();
 				$cartName     = $carrierOptions['name'];
 				unset( $carrierOptions['name'] );
-				$addition       = [
+				$addition                             = [
 					'original_name' => $originalName,
 					'cart_name'     => $cartName,
 				];
-				$carrierOptions = array_merge( $addition, $carrierOptions );
-
-				$carrierOptions['count_of_orders'] = 0;
-				if ( $carrierId ) {
-					$orders = wc_get_orders(
-						[
-							'packetery_carrier_id' => $carrierId,
-							'nopaging'             => true,
-						]
-					);
-					if ( $orders ) {
-						$carrierOptions['count_of_orders'] = count( $orders );
-					}
-				}
-
+				$carrierOptions                       = array_merge( $addition, $carrierOptions );
 				$carriersWithSomeOptions[ $optionId ] = $carrierOptions;
 			}
 		}

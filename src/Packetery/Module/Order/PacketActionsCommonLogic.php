@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
@@ -108,35 +109,71 @@ class PacketActionsCommonLogic {
 	 */
 	public function redirectTo( string $redirectTo, ?Entity\Order $order = null ): void {
 		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
-			$orderGridParams = [];
-			parse_str( $this->request->getQuery( self::PARAM_ORDER_GRID_PARAMS ) ?? '', $orderGridParams );
+			$queryVars = [];
+			parse_str( $this->request->getQuery( self::PARAM_ORDER_GRID_PARAMS ) ?? '', $queryVars );
 
-			$redirectLink = add_query_arg(
-				[
-					'post_type' => 'shop_order',
-				] + $orderGridParams,
-				admin_url( 'edit.php' )
-			);
-
-			if ( wp_safe_redirect( $redirectLink ) ) {
+			if ( wp_safe_redirect( self::getOrderGridUrl( $queryVars ) ) ) {
 				exit;
 			}
 		}
 
-		if ( self::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $order ) {
-			$redirectLink = add_query_arg(
-				[
-					'post_type' => 'shop_order',
-					'post'      => $order->getNumber(),
-					'action'    => 'edit',
-				],
-				admin_url( 'post.php' )
-			);
-
-			if ( wp_safe_redirect( $redirectLink ) ) {
-				exit;
-			}
+		if (
+			self::REDIRECT_TO_ORDER_DETAIL === $redirectTo &&
+			null !== $order &&
+			wp_safe_redirect( self::getOrderDetailUrl( (int) $order->getNumber() ) )
+		) {
+			exit;
 		}
+	}
+
+	/**
+	 * Gets order grid url.
+	 *
+	 * @param array $queryVars Query vars.
+	 *
+	 * @return string
+	 */
+	private static function getOrderGridUrl( array $queryVars = [] ): string {
+		if ( Helper::isHposEnabled() ) {
+			$queryVars['page'] = 'wc-orders';
+			$path              = 'admin.php';
+		} else {
+			$queryVars['post_type'] = 'shop_order';
+			$path                   = 'edit.php';
+		}
+
+		return add_query_arg(
+			$queryVars,
+			admin_url( $path )
+		);
+	}
+
+	/**
+	 * Gets order detail url.
+	 *
+	 * @param int $orderId Order ID.
+	 *
+	 * @return string
+	 */
+	private static function getOrderDetailUrl( int $orderId ): string {
+		$queryVars = [];
+
+		if ( Helper::isHposEnabled() ) {
+			$queryVars['page'] = 'wc-orders';
+			$queryVars['id']   = $orderId;
+			$path              = 'admin.php';
+		} else {
+			$queryVars['post_type'] = 'shop_order';
+			$queryVars['post']      = $orderId;
+			$path                   = 'post.php';
+		}
+
+		$queryVars['action'] = 'edit';
+
+		return add_query_arg(
+			$queryVars,
+			admin_url( $path )
+		);
 	}
 
 	/**
