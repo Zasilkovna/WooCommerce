@@ -109,6 +109,7 @@ class PacketCanceller {
 	public function processAction(): void {
 		$order      = $this->commonLogic->getOrder();
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+		$packetId   = $this->request->getQuery( PacketActionsCommonLogic::PARAM_PACKET_ID );
 
 		if ( null === $order ) {
 			$record          = new Log\Record();
@@ -130,7 +131,7 @@ class PacketCanceller {
 
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_CANCEL_PACKET, $order );
 
-		$this->cancelPacket( $order );
+		$this->cancelPacket( $order, $packetId );
 		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
 
@@ -138,11 +139,12 @@ class PacketCanceller {
 	 * Cancels single packet.
 	 *
 	 * @param Entity\Order $order Order ID.
+	 * @param string|null  $packetId Packet ID.
 	 *
 	 * @return void
 	 */
-	public function cancelPacket( Entity\Order $order ): void {
-		if ( null === $order->getPacketId() ) {
+	public function cancelPacket( Entity\Order $order, ?string $packetId ): void {
+		if ( null === $packetId ) {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status  = Log\Record::STATUS_ERROR;
@@ -150,7 +152,7 @@ class PacketCanceller {
 			$record->title   = __( 'Packet cancel error', 'packeta' );
 			$record->params  = [
 				'orderId'      => $order->getNumber(),
-				'packetId'     => $order->getPacketId(),
+				'packetId'     => $packetId,
 				'referer'      => (string) $this->request->getReferer(),
 				'errorMessage' => 'Packet could not be cancelled',
 			];
@@ -161,7 +163,7 @@ class PacketCanceller {
 			return;
 		}
 
-		$request = new Soap\Request\CancelPacket( $order->getPacketId() );
+		$request = new Soap\Request\CancelPacket( $packetId );
 		$result  = $this->soapApiClient->cancelPacket( $request );
 
 		if ( ! $result->hasFault() ) {
@@ -172,7 +174,7 @@ class PacketCanceller {
 			$record->title   = __( 'Packet cancel success', 'packeta' );
 			$record->params  = [
 				'orderId'  => $order->getNumber(),
-				'packetId' => $order->getPacketId(),
+				'packetId' => $packetId,
 			];
 
 			$this->logger->add( $record );
@@ -187,7 +189,7 @@ class PacketCanceller {
 			$record->title   = __( 'Packet cancel error', 'packeta' );
 			$record->params  = [
 				'orderId'      => $order->getNumber(),
-				'packetId'     => $order->getPacketId(),
+				'packetId'     => $packetId,
 				'errorMessage' => $result->getFaultString(),
 			];
 
@@ -197,7 +199,7 @@ class PacketCanceller {
 
 		$order->updateApiErrorMessage( $errorMessage );
 
-		if ( $this->shouldRevertSubmission( $result ) ) {
+		if ( $packetId === $order->getPacketId() && $this->shouldRevertSubmission( $result ) ) {
 			$order->setIsExported( false );
 			$order->setIsLabelPrinted( false );
 			$order->setCarrierNumber( null );
@@ -210,6 +212,19 @@ class PacketCanceller {
 
 			if ( ! $result->hasFault() ) {
 				$this->messageManager->flash_message( __( 'Packet has been successfully canceled both in the order list and the Packeta system.', 'packeta' ), MessageManager::TYPE_SUCCESS );
+			}
+		}
+
+		if ( $packetId === $order->getPacketClaimId() && $this->shouldRevertSubmission( $result ) ) {
+			$order->setPacketClaimId( null );
+			$order->setPacketClaimPassword( null );
+
+			if ( $result->hasFault() ) {
+				$this->messageManager->flash_message( __( 'Packet claim could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packeta' ), MessageManager::TYPE_SUCCESS );
+			}
+
+			if ( ! $result->hasFault() ) {
+				$this->messageManager->flash_message( __( 'Packet claim has been successfully canceled both in the order list and the Packeta system.', 'packeta' ), MessageManager::TYPE_SUCCESS );
 			}
 		}
 

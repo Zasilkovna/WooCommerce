@@ -46,6 +46,7 @@ services:
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
 	- Packetery\Module\Order\PacketActionsCommonLogic
 	- Packetery\Module\Order\PacketSubmitter
+	- Packetery\Module\Order\PacketClaimSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\CustomsDeclaration
 	- Packetery\Module\Order\Builder

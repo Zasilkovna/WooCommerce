@@ -234,6 +234,13 @@ class Plugin {
 	private $packetSubmitter;
 
 	/**
+	 * Packet claim submitter
+	 *
+	 * @var Order\PacketClaimSubmitter
+	 */
+	private $packetClaimSubmitter;
+
+	/**
 	 * Category form fields.
 	 *
 	 * @var ProductCategory\FormFields
@@ -283,6 +290,7 @@ class Plugin {
 	 * @param ContextResolver            $contextResolver           Context resolver.
 	 * @param DashboardWidget            $dashboardWidget           Dashboard widget.
 	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
+	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
 	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
@@ -315,6 +323,7 @@ class Plugin {
 		ContextResolver $contextResolver,
 		DashboardWidget $dashboardWidget,
 		Order\PacketSubmitter $packetSubmitter,
+		Order\PacketClaimSubmitter $packetClaimSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
 		Options\FeatureFlagManager $featureFlagManager,
@@ -347,6 +356,7 @@ class Plugin {
 		$this->contextResolver           = $contextResolver;
 		$this->dashboardWidget           = $dashboardWidget;
 		$this->packetSubmitter           = $packetSubmitter;
+		$this->packetClaimSubmitter      = $packetClaimSubmitter;
 		$this->productCategoryFormFields = $productCategoryFormFields;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
 		$this->featureFlagManager        = $featureFlagManager;
@@ -1009,6 +1019,10 @@ class Plugin {
 
 		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET === $action ) {
 			$this->packetSubmitter->processAction();
+		}
+
+		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM === $action ) {
+			$this->packetClaimSubmitter->processAction();
 		}
 
 		if ( Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET === $action ) {

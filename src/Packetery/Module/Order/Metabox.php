@@ -316,23 +316,82 @@ class Metabox {
 			$showLogsLink = $this->logPage->createLogListUrl( (int) $order->getNumber() );
 		}
 
+		$packetClaimUrl = null;
+		if ( $order->isPacketClaimCreationPossible() ) {
+			$packetClaimUrl = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM );
+		}
+
+		$packetClaimLabelPrintUrl = null;
+		if ( $order->isPacketClaimLabelPrintPossible() ) {
+			set_transient( LabelPrint::getOrderIdsTransientName(), [ $order->getNumber() ], 60 * 60 );
+			set_transient(
+				LabelPrint::getBackLinkTransientName(),
+				add_query_arg(
+					$this->request->getQuery(),
+					admin_url( $this->request->getUrl()->getRelativePath() )
+				),
+				60 * 60
+			);
+
+			$packetClaimLabelPrintUrl = add_query_arg(
+				[
+					'page'                       => LabelPrint::MENU_SLUG,
+					LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
+					'id'                         => $order->getNumber(),
+					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
+				],
+				admin_url( 'admin.php' )
+			);
+		}
+
+		$packetClaimCancelUrl   = null;
+		$packetClaimTrackingUrl = null;
+		if ( $order->getPacketClaimId() ) {
+			$packetClaimCancelUrl   = $this->getOrderActionLink(
+				$order,
+				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+				[
+					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
+				]
+			);
+			$packetClaimTrackingUrl = $this->helper->get_tracking_url( $order->getPacketClaimId() );
+		}
+
 		if ( $packetId ) {
-			$packetCancelLink = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_CANCEL_PACKET );
+			$packetCancelLink = $this->getOrderActionLink(
+				$order,
+				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
+				[
+					PacketActionsCommonLogic::PARAM_PACKET_ID => $packetId,
+				]
+			);
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				[
-					'packetCancelLink'    => $packetCancelLink,
-					'packet_id'           => $packetId,
-					'packet_tracking_url' => $this->helper->get_tracking_url( $packetId ),
-					'showLogsLink'        => $showLogsLink,
-					'translations'        => [
+					'order'                    => $order,
+					'packetCancelLink'         => $packetCancelLink,
+					'packet_tracking_url'      => $this->helper->get_tracking_url( $packetId ),
+					'packetClaimTrackingUrl'   => $packetClaimTrackingUrl,
+					'showLogsLink'             => $showLogsLink,
+					'packetClaimUrl'           => $packetClaimUrl,
+					'packetClaimLabelPrintUrl' => $packetClaimLabelPrintUrl,
+					'packetClaimCancelUrl'     => $packetClaimCancelUrl,
+					'translations'             => [
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
+						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 						'showLogs'                  => __( 'Show logs', 'packeta' ),
 						// translators: %s: Order number.
 						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 						// translators: %s: Packet number.
 						'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
+						// translators: %s: Packet claim number.
+						'reallyCancelPacketClaim'   => sprintf( __( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
 						'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
+						'createPacketClaim'         => __( 'Create packet claim', 'packeta' ),
+						'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
+						'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
+						'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
+						'submissionPassword'        => __( 'submission password', 'packeta' ),
 					],
 				]
 			);
@@ -581,17 +640,20 @@ class Metabox {
 	 *
 	 * @param Entity\Order $order  Order.
 	 * @param string       $action Action.
+	 * @param array        $extraParams Extra params.
 	 *
 	 * @return string
 	 */
-	private function getOrderActionLink( Entity\Order $order, string $action ): string {
+	private function getOrderActionLink( Entity\Order $order, string $action, array $extraParams = [] ): string {
+		$baseParams = [
+			PacketActionsCommonLogic::PARAM_ORDER_ID    => $order->getNumber(),
+			PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
+			Plugin::PARAM_PACKETERY_ACTION              => $action,
+			Plugin::PARAM_NONCE                         => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( $action, $order->getNumber() ) ),
+		];
+
 		return add_query_arg(
-			[
-				PacketActionsCommonLogic::PARAM_ORDER_ID => $order->getNumber(),
-				PacketActionsCommonLogic::PARAM_REDIRECT_TO => PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL,
-				Plugin::PARAM_PACKETERY_ACTION           => $action,
-				Plugin::PARAM_NONCE                      => wp_create_nonce( PacketActionsCommonLogic::createNonceAction( $action, $order->getNumber() ) ),
-			],
+			array_merge( $baseParams, $extraParams ),
 			admin_url( 'admin.php' )
 		);
 	}

@@ -742,6 +742,31 @@ tbody .packetery-log-column-note {
     font-weight: bold;
 }
 
+.packetery-metabox-overview-buttons {
+    display: flex;
+    flex-flow: row wrap;
+    padding: 0;
+    gap: 10px;
+}
+
+.packetery-metabox-overview-info {
+    container-type: inline-size;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+@container (max-width: 499px) {
+    .packetery-claim-password-short {
+        display: none;
+    }
+}
+
+@container (min-width: 500px) {
+    .packetery-claim-password-container {
+        display: none;
+    }
+}
+
 /* customs declaration */
 
 .packetery-flex-container {
