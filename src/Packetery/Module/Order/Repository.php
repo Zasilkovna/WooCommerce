@@ -614,7 +614,7 @@ class Repository {
 		$packeteryTableAlias = 'o';
 
 		if ( Module\Helper::isHposEnabled() ) {
-			$sourceTableAlias    = 'wc_o';
+			$sourceTableAlias = 'wc_o';
 			return sprintf(
 				'JOIN `%s` `%s` ON `%s`.`id` = `%s`.`id`',
 				$this->wpdbAdapter->wc_orders,
@@ -624,7 +624,7 @@ class Repository {
 			);
 		}
 
-		$sourceTableAlias    = 'wp_p';
+		$sourceTableAlias = 'wp_p';
 		return sprintf(
 			'JOIN `%s` `%s` ON `%s`.`ID` = `%s`.`id`',
 			$this->wpdbAdapter->posts,
