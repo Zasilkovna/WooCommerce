@@ -32,14 +32,23 @@ class QueryProcessor {
 	private $orderRepository;
 
 	/**
+	 * Context resolver.
+	 *
+	 * @var ContextResolver
+	 */
+	private $contextResolver;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Request          $httpRequest     HTTP request.
 	 * @param Order\Repository $orderRepository Order repository.
+	 * @param ContextResolver  $contextResolver Context resolver.
 	 */
-	public function __construct( Request $httpRequest, Order\Repository $orderRepository ) {
+	public function __construct( Request $httpRequest, Order\Repository $orderRepository, ContextResolver $contextResolver ) {
 		$this->httpRequest     = $httpRequest;
 		$this->orderRepository = $orderRepository;
+		$this->contextResolver = $contextResolver;
 	}
 
 	/**
@@ -48,7 +57,8 @@ class QueryProcessor {
 	 * @return void
 	 */
 	public function register(): void {
-		add_filter( 'posts_clauses', [ $this, 'processPostClauses' ], 10, 2 );
+		add_filter( 'posts_clauses', [ $this, 'processClauses' ], 10, 2 );
+		add_filter( 'woocommerce_orders_table_query_clauses', [ $this, 'processHposClauses' ] );
 	}
 
 	/**
@@ -61,7 +71,53 @@ class QueryProcessor {
 	 *
 	 * @return array
 	 */
-	public function processPostClauses( array $clauses, \WP_Query $queryObject ): array {
+	public function processClauses( array $clauses, \WP_Query $queryObject ): array {
+		if ( false === $this->contextResolver->isOrderGridPage() ) {
+			return $clauses;
+		}
+
+		$isOrderPostQueryCall =
+			isset( $queryObject->query['post_type'] ) &&
+			(
+				'shop_order' === $queryObject->query['post_type'] ||
+				( is_array( $queryObject->query['post_type'] ) && in_array( 'shop_order', $queryObject->query['post_type'], true ) )
+			);
+		if ( false === $isOrderPostQueryCall ) {
+			return $clauses;
+		}
+
+		return $this->orderRepository->processClauses(
+			$clauses,
+			$queryObject,
+			$this->getParamValues()
+		);
+	}
+
+	/**
+	 * Extends High-Performance order storage grid filters.
+	 *
+	 * @param array $clauses Clauses.
+	 *
+	 * @return array
+	 */
+	public function processHposClauses( array $clauses ): array {
+		if ( false === $this->contextResolver->isOrderGridPage() ) {
+			return $clauses;
+		}
+
+		return $this->orderRepository->processClauses(
+			$clauses,
+			null,
+			$this->getParamValues()
+		);
+	}
+
+	/**
+	 * Gets param values.
+	 *
+	 * @return null[]
+	 */
+	private function getParamValues(): array {
 		$paramValues = [
 			'packetery_carrier_id' => null,
 			'packetery_to_submit'  => null,
@@ -70,29 +126,9 @@ class QueryProcessor {
 		];
 
 		foreach ( $paramValues as $key => $value ) {
-			$paramValues[ $key ] = $this->getParamValue( $queryObject, $key );
+			$paramValues[ $key ] = $this->httpRequest->getQuery( $key );
 		}
 
-		return $this->orderRepository->processPostClauses( $clauses, $queryObject, $paramValues );
-	}
-
-	/**
-	 * Gets parameter value from GET data or WP_Query.
-	 *
-	 * @param \WP_Query $queryObject WP_Query.
-	 * @param string    $key Key.
-	 *
-	 * @return mixed|null
-	 */
-	private function getParamValue( \WP_Query $queryObject, string $key ) {
-		$get = $this->httpRequest->getQuery();
-		if ( isset( $get[ $key ] ) && '' !== (string) $get[ $key ] ) {
-			return $get[ $key ];
-		}
-		if ( isset( $queryObject->query[ $key ] ) && '' !== (string) $queryObject->query[ $key ] ) {
-			return $queryObject->query[ $key ];
-		}
-
-		return null;
+		return $paramValues;
 	}
 }

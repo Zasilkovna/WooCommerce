@@ -30,6 +30,7 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 - label printing, including direct labels
 - age verification for 18+, which can be setz up for every product. The order will then require the customer to verify his age during the parcel pickup
 - printing of the list of parcels
+- High-Performance order storage (since WooCommerce version 7.9.0)
 
 #### Filters
 
@@ -40,6 +41,7 @@ To register filter edit wc-includes/functions.php and add your PHP code after al
 ##### Order status filtering
 
 To filter additional orders from Packeta order list when applying Packeta filter, use following sample code.
+Parameter $queryObject is nullable since plugin version 1.5.5.
 
 ```
 add_filter( 'packetery_exclude_orders_with_status', function (array $statuses): array {

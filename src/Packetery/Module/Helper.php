@@ -20,6 +20,50 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
 class Helper {
 
 	/**
+	 * Gets order detail url.
+	 *
+	 * @param int $orderId Order ID.
+	 *
+	 * @return string
+	 */
+	public static function getOrderDetailUrl( int $orderId ): string {
+		$queryVars = [];
+
+		if ( self::isHposEnabled() ) {
+			$queryVars['page'] = 'wc-orders';
+			$queryVars['id']   = $orderId;
+			$path              = 'admin.php';
+		} else {
+			$queryVars['post_type'] = 'shop_order';
+			$queryVars['post']      = $orderId;
+			$path                   = 'post.php';
+		}
+
+		$queryVars['action'] = 'edit';
+
+		return add_query_arg( $queryVars, admin_url( $path ) );
+	}
+
+	/**
+	 * Gets order grid url.
+	 *
+	 * @param array $queryVars Query vars.
+	 *
+	 * @return string
+	 */
+	public static function getOrderGridUrl( array $queryVars = [] ): string {
+		if ( self::isHposEnabled() ) {
+			$queryVars['page'] = 'wc-orders';
+			$path              = 'admin.php';
+		} else {
+			$queryVars['post_type'] = 'shop_order';
+			$path                   = 'edit.php';
+		}
+
+		return add_query_arg( $queryVars, admin_url( $path ) );
+	}
+
+	/**
 	 * Tells if plugin is active.
 	 *
 	 * @param string $pluginRelativePath Relative path of plugin bootstrap file.

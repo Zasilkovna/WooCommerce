@@ -406,12 +406,13 @@ class Plugin {
 		add_action( 'woocommerce_email_footer', [ $this, 'renderEmailFooter' ] );
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
 
+		$orderListScreenId = 'woocommerce_page_wc-orders';
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
+		add_filter( "views_{$orderListScreenId}", [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
-		// TODO: Figure out HPOS compatible alternative for order grid filters.
+		add_action( 'woocommerce_order_list_table_restrict_manage_orders', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
 		$this->queryProcessor->register();
 
-		$orderListScreenId = 'woocommerce_page_wc-orders';
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_filter( sprintf( 'manage_%s_columns', $orderListScreenId ), [ $this->gridExtender, 'addOrderListColumns' ] );
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );

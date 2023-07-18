@@ -116,14 +116,12 @@ class GridExtender {
 	 */
 	public function addFilterLinks( array $var ): array {
 		$latteParams = [
-			'link'       => add_query_arg(
+			'link'       => Module\Helper::getOrderGridUrl(
 				[
-					'post_type'           => 'shop_order',
 					'filter_action'       => 'packetery_filter_link',
 					'packetery_to_submit' => '1',
 					'packetery_to_print'  => false,
-				],
-				admin_url( 'edit.php' )
+				]
 			),
 			'title'      => __( 'Packeta orders to submit', 'packeta' ),
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
@@ -132,14 +130,12 @@ class GridExtender {
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		$latteParams = [
-			'link'       => add_query_arg(
+			'link'       => Module\Helper::getOrderGridUrl(
 				[
-					'post_type'           => 'shop_order',
 					'filter_action'       => 'packetery_filter_link',
 					'packetery_to_submit' => false,
 					'packetery_to_print'  => '1',
-				],
-				admin_url( 'edit.php' )
+				]
 			),
 			'title'      => __( 'Packeta orders to print', 'packeta' ),
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
