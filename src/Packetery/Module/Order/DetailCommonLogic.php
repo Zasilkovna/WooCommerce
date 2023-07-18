@@ -1,6 +1,6 @@
 <?php
 /**
- * Class MetaboxCommonLogic.
+ * Class DetailCommonLogic.
  *
  * @package Packetery
  */
@@ -16,9 +16,9 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Nette;
 
 /**
- * Class MetaboxCommonLogic.
+ * Class DetailCommonLogic.
  */
-class MetaboxCommonLogic {
+class DetailCommonLogic {
 
 	/**
 	 * Order.

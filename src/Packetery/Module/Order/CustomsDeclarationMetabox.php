@@ -85,7 +85,7 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Common logic.
 	 *
-	 * @var MetaboxCommonLogic
+	 * @var DetailCommonLogic
 	 */
 	private $commonLogic;
 
@@ -98,7 +98,7 @@ class CustomsDeclarationMetabox {
 	 * @param EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
 	 * @param Request                          $request                         Request.
 	 * @param MessageManager                   $messageManager                  Message manager.
-	 * @param MetaboxCommonLogic               $commonLogic                     Common logic.
+	 * @param DetailCommonLogic                $commonLogic                     Common logic.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -107,7 +107,7 @@ class CustomsDeclarationMetabox {
 		EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
 		Request $request,
 		MessageManager $messageManager,
-		MetaboxCommonLogic $commonLogic
+		DetailCommonLogic $commonLogic
 	) {
 		$this->latteEngine                     = $latteEngine;
 		$this->formFactory                     = $formFactory;

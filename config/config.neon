@@ -19,7 +19,7 @@ services:
 	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Core\Helper
 	- Packetery\Module\MessageManager
-	- Packetery\Module\Order\MetaboxCommonLogic
+	- Packetery\Module\Order\DetailCommonLogic
 	- Packetery\Module\Order\Metabox
 	- Packetery\Module\Order\CustomsDeclarationMetabox
 	- Packetery\Module\Plugin

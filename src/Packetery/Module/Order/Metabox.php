@@ -139,7 +139,7 @@ class Metabox {
 	/**
 	 * Common logic.
 	 *
-	 * @var MetaboxCommonLogic
+	 * @var DetailCommonLogic
 	 */
 	private $commonLogic;
 
@@ -158,7 +158,7 @@ class Metabox {
 	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
 	 * @param EntityRepository     $carrierRepository    Carrier repository.
 	 * @param Validator\Order      $orderValidator       Order validator.
-	 * @param MetaboxCommonLogic   $commonLogic          Common logic.
+	 * @param DetailCommonLogic    $commonLogic          Common logic.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -173,7 +173,7 @@ class Metabox {
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		EntityRepository $carrierRepository,
 		Validator\Order $orderValidator,
-		MetaboxCommonLogic $commonLogic
+		DetailCommonLogic $commonLogic
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
