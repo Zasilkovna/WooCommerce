@@ -69,13 +69,6 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 	private $customsDeclarationEntityFactory;
 
 	/**
-	 * Request.
-	 *
-	 * @var Request
-	 */
-	private $request;
-
-	/**
 	 * Message manager.
 	 *
 	 * @var MessageManager
@@ -113,7 +106,6 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 		$this->formFactory                     = $formFactory;
 		$this->customsDeclarationRepository    = $customsDeclarationRepository;
 		$this->customsDeclarationEntityFactory = $customsDeclarationEntityFactory;
-		$this->request                         = $request;
 		$this->messageManager                  = $messageManager;
 	}
 

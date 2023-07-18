@@ -74,13 +74,6 @@ class Metabox extends BaseMetabox {
 	private $order_form;
 
 	/**
-	 * HTTP request.
-	 *
-	 * @var Request
-	 */
-	private $request;
-
-	/**
 	 * Options provider.
 	 *
 	 * @var Options\Provider
@@ -93,13 +86,6 @@ class Metabox extends BaseMetabox {
 	 * @var FormFactory
 	 */
 	private $formFactory;
-
-	/**
-	 * Order repository.
-	 *
-	 * @var Repository
-	 */
-	private $orderRepository;
 
 	/**
 	 * Log page.
@@ -176,10 +162,8 @@ class Metabox extends BaseMetabox {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
 		$this->helper               = $helper;
-		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
 		$this->formFactory          = $formFactory;
-		$this->orderRepository      = $orderRepository;
 		$this->logPage              = $logPage;
 		$this->mapper               = $mapper;
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;

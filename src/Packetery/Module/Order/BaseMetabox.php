@@ -39,14 +39,14 @@ abstract class BaseMetabox {
 	 *
 	 * @var Nette\Http\Request
 	 */
-	private $request;
+	protected $request;
 
 	/**
 	 * Order repository.
 	 *
 	 * @var Repository
 	 */
-	private $orderRepository;
+	protected $orderRepository;
 
 	/**
 	 * Constructor.
