@@ -33,7 +33,7 @@ use WC_Order;
  *
  * @package Packetery\Order
  */
-class Metabox {
+class Metabox extends BaseMetabox {
 
 	public const FIELD_WEIGHT           = 'packetery_weight';
 	private const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
@@ -137,28 +137,21 @@ class Metabox {
 	private $orderValidator;
 
 	/**
-	 * Common logic.
-	 *
-	 * @var DetailCommonLogic
-	 */
-	private $commonLogic;
-
-	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine               $latte_engine         PacketeryLatte engine.
-	 * @param MessageManager       $message_manager      Message manager.
-	 * @param Helper               $helper               Helper.
-	 * @param Request              $request              Http request.
-	 * @param Options\Provider     $optionsProvider      Options provider.
-	 * @param FormFactory          $formFactory          Form factory.
-	 * @param Repository           $orderRepository      Order repository.
-	 * @param Log\Page             $logPage              Log page.
-	 * @param AttributeMapper      $mapper               AttributeMapper.
-	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository     $carrierRepository    Carrier repository.
-	 * @param Validator\Order      $orderValidator       Order validator.
-	 * @param DetailCommonLogic    $commonLogic          Common logic.
+	 * @param Engine                 $latte_engine         PacketeryLatte engine.
+	 * @param MessageManager         $message_manager      Message manager.
+	 * @param Helper                 $helper               Helper.
+	 * @param Request                $request              Http request.
+	 * @param Options\Provider       $optionsProvider      Options provider.
+	 * @param FormFactory            $formFactory          Form factory.
+	 * @param Repository             $orderRepository      Order repository.
+	 * @param Log\Page               $logPage              Log page.
+	 * @param AttributeMapper        $mapper               AttributeMapper.
+	 * @param WidgetOptionsBuilder   $widgetOptionsBuilder Widget options builder.
+	 * @param EntityRepository       $carrierRepository    Carrier repository.
+	 * @param Validator\Order        $orderValidator       Order validator.
+	 * @param Module\ContextResolver $contextResolver      Context resolver.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -173,8 +166,13 @@ class Metabox {
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		EntityRepository $carrierRepository,
 		Validator\Order $orderValidator,
-		DetailCommonLogic $commonLogic
+		Module\ContextResolver $contextResolver
 	) {
+		parent::__construct(
+			$contextResolver,
+			$request,
+			$orderRepository
+		);
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
 		$this->helper               = $helper;
@@ -187,7 +185,6 @@ class Metabox {
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
 		$this->carrierRepository    = $carrierRepository;
 		$this->orderValidator       = $orderValidator;
-		$this->commonLogic          = $commonLogic;
 	}
 
 	/**
@@ -208,7 +205,7 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		$orderId = $this->commonLogic->getOrderId();
+		$orderId = $this->getOrderId();
 		if ( null === $orderId ) {
 			return;
 		}
@@ -284,7 +281,7 @@ class Metabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		$orderId = $this->commonLogic->getOrderId();
+		$orderId = $this->getOrderId();
 		if ( null === $orderId ) {
 			return;
 		}
@@ -597,7 +594,7 @@ class Metabox {
 	 * @return array|null
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
-		$order = $this->commonLogic->getOrder();
+		$order = $this->getOrder();
 		if ( null === $order || false === $order->isPickupPointDelivery() || null === $order->getShippingCountry() ) {
 			return null;
 		}
@@ -617,7 +614,7 @@ class Metabox {
 	 * @return array|null
 	 */
 	public function getAddressWidgetSettings(): ?array {
-		$order = $this->commonLogic->getOrder();
+		$order = $this->getOrder();
 		if ( null === $order || false === $order->isHomeDelivery() ) {
 			return null;
 		}

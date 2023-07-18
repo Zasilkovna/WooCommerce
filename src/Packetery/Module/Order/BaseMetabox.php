@@ -1,6 +1,6 @@
 <?php
 /**
- * Class DetailCommonLogic.
+ * Class BaseMetabox.
  *
  * @package Packetery
  */
@@ -16,9 +16,9 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Nette;
 
 /**
- * Class DetailCommonLogic.
+ * Class BaseMetabox.
  */
-class DetailCommonLogic {
+abstract class BaseMetabox {
 
 	/**
 	 * Order.
@@ -70,7 +70,7 @@ class DetailCommonLogic {
 	 *
 	 * @return Order|null
 	 */
-	public function getOrder(): ?Order {
+	protected function getOrder(): ?Order {
 		if ( null !== $this->order ) {
 			return $this->order;
 		}
@@ -94,7 +94,7 @@ class DetailCommonLogic {
 	 *
 	 * @return int|null
 	 */
-	public function getOrderId(): ?int {
+	protected function getOrderId(): ?int {
 		global $post;
 
 		if ( false === $this->contextResolver->isOrderDetailPage() ) {
