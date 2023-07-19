@@ -29,7 +29,7 @@ use Packetery\Module\CustomsDeclaration;
 /**
  * Class CustomsDeclarationMetabox.
  */
-class CustomsDeclarationMetabox {
+class CustomsDeclarationMetabox extends BaseMetabox {
 
 	private const MAX_UPLOAD_FILE_MEGABYTES = 16;
 
@@ -69,25 +69,11 @@ class CustomsDeclarationMetabox {
 	private $customsDeclarationEntityFactory;
 
 	/**
-	 * Request.
-	 *
-	 * @var Request
-	 */
-	private $request;
-
-	/**
 	 * Message manager.
 	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
-
-	/**
-	 * Common logic.
-	 *
-	 * @var MetaboxCommonLogic
-	 */
-	private $commonLogic;
 
 	/**
 	 * Constructor.
@@ -98,7 +84,8 @@ class CustomsDeclarationMetabox {
 	 * @param EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
 	 * @param Request                          $request                         Request.
 	 * @param MessageManager                   $messageManager                  Message manager.
-	 * @param MetaboxCommonLogic               $commonLogic                     Common logic.
+	 * @param Repository                       $orderRepository                 Order repository.
+	 * @param Module\ContextResolver           $contextResolver                 Context resolver.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -107,15 +94,19 @@ class CustomsDeclarationMetabox {
 		EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
 		Request $request,
 		MessageManager $messageManager,
-		MetaboxCommonLogic $commonLogic
+		Repository $orderRepository,
+		Module\ContextResolver $contextResolver
 	) {
+		parent::__construct(
+			$contextResolver,
+			$request,
+			$orderRepository
+		);
 		$this->latteEngine                     = $latteEngine;
 		$this->formFactory                     = $formFactory;
 		$this->customsDeclarationRepository    = $customsDeclarationRepository;
 		$this->customsDeclarationEntityFactory = $customsDeclarationEntityFactory;
-		$this->request                         = $request;
 		$this->messageManager                  = $messageManager;
-		$this->commonLogic                     = $commonLogic;
 	}
 
 	/**
@@ -134,7 +125,7 @@ class CustomsDeclarationMetabox {
 	 * @return void
 	 */
 	public function addMetaBoxes(): void {
-		$order = $this->commonLogic->getOrder();
+		$order = $this->getOrder();
 
 		if (
 			null === $order ||
@@ -205,7 +196,7 @@ class CustomsDeclarationMetabox {
 	 * @return void
 	 */
 	public function render(): void {
-		$order = $this->commonLogic->getOrder();
+		$order = $this->getOrder();
 		if ( null === $order ) {
 			return;
 		}
@@ -360,7 +351,7 @@ class CustomsDeclarationMetabox {
 	 * @return void
 	 */
 	public function onFormSuccess( Form $form ): void {
-		$order = $this->commonLogic->getOrder();
+		$order = $this->getOrder();
 		if ( null === $order ) {
 			return;
 		}

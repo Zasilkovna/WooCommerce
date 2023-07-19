@@ -1,6 +1,6 @@
 <?php
 /**
- * Class MetaboxCommonLogic.
+ * Class BaseMetabox.
  *
  * @package Packetery
  */
@@ -16,9 +16,9 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Nette;
 
 /**
- * Class MetaboxCommonLogic.
+ * Class BaseMetabox.
  */
-class MetaboxCommonLogic {
+abstract class BaseMetabox {
 
 	/**
 	 * Order.
@@ -39,14 +39,14 @@ class MetaboxCommonLogic {
 	 *
 	 * @var Nette\Http\Request
 	 */
-	private $request;
+	protected $request;
 
 	/**
 	 * Order repository.
 	 *
 	 * @var Repository
 	 */
-	private $orderRepository;
+	protected $orderRepository;
 
 	/**
 	 * Constructor.
@@ -70,7 +70,7 @@ class MetaboxCommonLogic {
 	 *
 	 * @return Order|null
 	 */
-	public function getOrder(): ?Order {
+	protected function getOrder(): ?Order {
 		if ( null !== $this->order ) {
 			return $this->order;
 		}
@@ -94,7 +94,7 @@ class MetaboxCommonLogic {
 	 *
 	 * @return int|null
 	 */
-	public function getOrderId(): ?int {
+	protected function getOrderId(): ?int {
 		global $post;
 
 		if ( false === $this->contextResolver->isOrderDetailPage() ) {

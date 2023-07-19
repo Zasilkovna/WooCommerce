@@ -375,7 +375,7 @@ class Plugin {
 			return;
 		}
 
-		add_action( 'before_woocommerce_init', [ $this, 'declareCompability' ] );
+		add_action( 'before_woocommerce_init', [ $this, 'declareWooCommerceCompability' ] );
 		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_action( 'init', [ $this->logger, 'register' ] );
 		add_action( 'init', [ $this->message_manager, 'init' ] );
@@ -465,11 +465,12 @@ class Plugin {
 	 *
 	 * @return void
 	 */
-	public function declareCompability(): void {
-		if ( false === class_exists( 'Automattic\\WooCommerce\\Utilities\\FeaturesUtil' ) ) {
+	public function declareWooCommerceCompability(): void {
+		if ( false === class_exists( FeaturesUtil::class ) ) {
 			return;
 		}
 
+		// High-Performance Order Storage.
 		FeaturesUtil::declare_compatibility( 'custom_order_tables', $this->main_file_path );
 	}
 
