@@ -8,6 +8,8 @@
 
         new PacketeryMultiplier('.js-weight-rules');
         new PacketeryMultiplier('.js-surcharge-rules');
+
+        $( '[data-packetery-select2]' ).select2();
     });
 
 })(jQuery);

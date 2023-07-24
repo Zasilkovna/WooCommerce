@@ -154,6 +154,26 @@ class Options {
 	}
 
 	/**
+	 * Tells if carrier has payment method disallowed.
+	 *
+	 * @param string $method Payment method.
+	 *
+	 * @return bool
+	 */
+	public function hasCheckoutPaymentMethodDisallowed( string $method ): bool {
+		return in_array( $method, $this->options['disallowed_checkout_payment_methods'] ?? [], true );
+	}
+
+	/**
+	 * Tells if carrier has any checkout payment method disallowed.
+	 *
+	 * @return bool
+	 */
+	public function hasAnyDisallowedCheckoutPaymentMethods(): bool {
+		return false === empty( $this->options['disallowed_checkout_payment_methods'] );
+	}
+
+	/**
 	 * Gets default COD surcharge.
 	 *
 	 * @return float|null

@@ -12,6 +12,7 @@ namespace Packetery\Module\Carrier;
 use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Helper;
 use Packetery\Core\Rounder;
+use Packetery\Module;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
@@ -235,6 +236,12 @@ class OptionsPage {
 				->addRule( Form::FLOAT )
 				->addRule( Form::MIN, null, 0 );
 		}
+
+		$form->addMultiSelect(
+			'disallowed_checkout_payment_methods',
+			__( 'Disallowed checkout payment methods', 'packeta' ),
+			Module\Helper::getAvailablePaymentGatewayChoices()
+		)->checkDefaultValue( false );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];

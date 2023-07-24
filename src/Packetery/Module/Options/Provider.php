@@ -33,7 +33,8 @@ class Provider {
 	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                             = false;
 	const AUTO_ORDER_STATUS_DEFAULT                                    = '';
 	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
-	const AUTO_ORDER_STATUS = 'auto_order_status';
+	const AUTO_ORDER_STATUS                   = 'auto_order_status';
+	const DISALLOWED_CHECKOUT_PAYMENT_METHODS = 'disallowed_checkout_payment_methods';
 
 	/**
 	 *  Options data.

@@ -344,7 +344,21 @@ class Checkout {
 		}
 
 		// Cannot be null because of previous condition.
-		$carrierId = $this->getCarrierId( $chosenShippingMethod );
+		$carrierId      = $this->getCarrierId( $chosenShippingMethod );
+		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
+		$paymentMethod  = $this->getChosenPaymentMethod();
+
+		if ( null === $paymentMethod ) {
+			wc_add_notice( __( 'Choose payment method.', 'packeta' ), 'error' );
+
+			return;
+		}
+
+		if ( $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
+			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
+
+			return;
+		}
 
 		if ( $this->isPickupPointOrder() ) {
 			$error = false;
@@ -525,6 +539,7 @@ class Checkout {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
+		add_filter( 'woocommerce_cart_shipping_packages', [ $this, 'transformShippingPackages' ] );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
 		add_action(
 			'init',
@@ -552,6 +567,21 @@ class Checkout {
 		foreach ( $packages as $i => $package ) {
 			WC()->session->set( 'shipping_for_package_' . $i, false );
 		}
+	}
+
+	/**
+	 * Transforms shipping packages.
+	 *
+	 * @param array $packages Packages.
+	 *
+	 * @return array
+	 */
+	public function transformShippingPackages( array $packages ): array {
+		foreach ( $packages as &$package ) {
+			$package['packetery_payment_method'] = $this->getChosenPaymentMethod();
+		}
+
+		return $packages;
 	}
 
 	/**
@@ -589,7 +619,7 @@ class Checkout {
 	 * @return void
 	 */
 	public function calculateFees(): void {
-		$chosenShippingMethod = $this->getChosenMethod();
+		$chosenShippingMethod = $this->calculateShipping();
 		if ( false === $this->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
 			return;
 		}
@@ -620,7 +650,7 @@ class Checkout {
 			);
 		}
 
-		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
+		$paymentMethod = $this->getChosenPaymentMethod();
 		if ( empty( $paymentMethod ) || false === $this->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
 		}
@@ -755,6 +785,20 @@ class Checkout {
 		}
 
 		return $this->calculateShipping();
+	}
+
+	/**
+	 * Gets chosen payment method.
+	 *
+	 * @return string|null
+	 */
+	private function getChosenPaymentMethod(): ?string {
+		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
+		if ( $paymentMethod ) {
+			return $paymentMethod;
+		}
+
+		return null;
 	}
 
 	/**
@@ -995,11 +1039,16 @@ class Checkout {
 			return $availableGateways;
 		}
 
+		$carrierOptions = Carrier\Options::createByCarrierId( $this->getCarrierId( $chosenMethod ) );
 		foreach ( $availableGateways as $key => $availableGateway ) {
 			if (
 				$this->isCodPaymentMethod( $availableGateway->id ) &&
 				! $carrier->supportsCod()
 			) {
+				unset( $availableGateways[ $key ] );
+			}
+
+			if ( $carrierOptions->hasCheckoutPaymentMethodDisallowed( $availableGateway->id ) ) {
 				unset( $availableGateways[ $key ] );
 			}
 		}

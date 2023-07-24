@@ -12,6 +12,7 @@ namespace Packetery\Module\Options;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
@@ -235,7 +236,7 @@ class Page {
 	 * @return Form
 	 */
 	public function createAutoSubmissionForm(): Form {
-		$gateways = $this->getAvailablePaymentGateways();
+		$gateways = Helper::getAvailablePaymentGateways();
 		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
 		$defaults = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
 
@@ -406,7 +407,7 @@ class Page {
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
-		$gateways        = $this->getAvailablePaymentGateways();
+		$gateways        = Helper::getAvailablePaymentGateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
 			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();
