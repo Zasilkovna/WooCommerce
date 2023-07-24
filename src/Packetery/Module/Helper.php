@@ -109,6 +109,24 @@ class Helper {
 	}
 
 	/**
+	 * Gets WooCommerce version.
+	 *
+	 * @return string|null
+	 */
+	public static function getWooCommerceVersion(): ?string {
+		if ( false === file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
+			return null;
+		}
+
+		$version = get_plugin_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' )['Version'];
+		if ( ! $version ) {
+			return null;
+		}
+
+		return $version;
+	}
+
+	/**
 	 * Renders string.
 	 *
 	 * @param string $string String to render.

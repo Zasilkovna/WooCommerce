@@ -408,9 +408,14 @@ class Plugin {
 
 		$orderListScreenId = 'woocommerce_page_wc-orders';
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
-		add_filter( "views_{$orderListScreenId}", [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
-		add_action( 'woocommerce_order_list_table_restrict_manage_orders', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
+
+		$wooCommerceVersion = Helper::getWooCommerceVersion();
+		if ( null !== $wooCommerceVersion && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
+			add_filter( sprintf( 'views_%s', $orderListScreenId ), [ $this->gridExtender, 'addFilterLinks' ] );
+			add_action( 'woocommerce_order_list_table_restrict_manage_orders', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
+		}
+
 		$this->queryProcessor->register();
 
 		add_filter( 'manage_edit-shop_order_columns', [ $this->gridExtender, 'addOrderListColumns' ] );
