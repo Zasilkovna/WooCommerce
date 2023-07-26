@@ -32,6 +32,15 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 - printing of the list of parcels
 - High-Performance order storage (since WooCommerce version 7.9.0)
 
+#### Installation
+
+* You can install the plugin either in your WordPress administration: Plugins->Plugin installation->Upload plugin or upload the "packetery" folder into the /wp-content/plugins/
+* Activate the plugin in the WordPress menu "Plugins"
+* Set up the plugin according to our user documentation
+* If you update the Packeta plugin manually, you first need to completely delete the "packeta" folder and then upload the folder with the new version of the plugin.
+  You should definitely not upgrade by copying the new version to the original folder.
+  This could cause the original version to merge with the new one, which can cause the plugin to become completely non-functional.
+
 #### Filters
 
 WP Filters are used to easily alter preselected system behaviors.
