@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.2
-Stable tag: 1.5.4
+Stable tag: 1.5.5
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 7.6.0
@@ -61,6 +61,19 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.5.5 =
+Added: High Performance Order Storage (Custom Order Table) feature support.
+Added: Claim assistant support.
+Added: Customs declarations support.
+Added: REST API support - Packeta specific information added to shop order object.
+Added: Selected pickup point or validated address is saved using AJAX, which increases compatibility with non-standard templates and plugins.
+Updated: Surname is no longer required to send a shipment to Packeta. If the order does not meet the conditions for sending shipment, specific validation errors are now listed in the Packeta log.
+Updated: Periodic tasks for deleting log records and synchronizing shipment states were implemented asynchronously using ActionScheduler.
+Updated: Carrier property in Order entity made non-nullable.
+Updated: Automatic prefixing of vendor dependencies.
+Fixed: Correct logging of errors that may occur when updating the table of orders or carriers.
+Fixed: Several minor bugs.
+
 = 1.5.4 =
 Fixed: An error that would occur when opening order detail for orders to external carriers pickup points after changing the delivery address.
 Added: The list of parameters, which are being logged into the console of the web browser now also contains the API key.

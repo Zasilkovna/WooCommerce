@@ -359,6 +359,7 @@ class GridExtender {
 							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 							// translators: %s: Packet number.
 							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
+
 							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
 							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
 						],

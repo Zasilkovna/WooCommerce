@@ -363,6 +363,7 @@ class Metabox {
 						'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
 						// translators: %s: Packet claim number.
 						'reallyCancelPacketClaim'   => sprintf( __( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
+
 						'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
 						'createPacketClaim'         => __( 'Create packet claim', 'packeta' ),
 						'printPacketLabel'          => __( 'Print packet label', 'packeta' ),
