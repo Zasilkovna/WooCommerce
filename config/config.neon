@@ -41,6 +41,7 @@ services:
 	- Packetery\Module\Order\BulkActions
 	- Packetery\Module\Order\Repository
 	- Packetery\Module\Order\LabelPrint
+	- Packetery\Module\Order\ApiExtender
 	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
 	- Packetery\Module\Order\PacketActionsCommonLogic

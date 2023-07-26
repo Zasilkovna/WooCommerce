@@ -262,6 +262,13 @@ class Plugin {
 	private $featureFlagManager;
 
 	/**
+	 * API extender.
+	 *
+	 * @var Order\ApiExtender
+	 */
+	private $apiExtender;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -295,6 +302,7 @@ class Plugin {
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
 	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
 	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
+	 * @param Order\ApiExtender          $apiExtender               API extender.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -327,7 +335,8 @@ class Plugin {
 		ProductCategory\FormFields $productCategoryFormFields,
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
 		Options\FeatureFlagManager $featureFlagManager,
-		Order\MetaboxesWrapper $metaboxesWrapper
+		Order\MetaboxesWrapper $metaboxesWrapper,
+		Order\ApiExtender $apiExtender
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -361,6 +370,7 @@ class Plugin {
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
 		$this->featureFlagManager        = $featureFlagManager;
 		$this->metaboxesWrapper          = $metaboxesWrapper;
+		$this->apiExtender               = $apiExtender;
 	}
 
 	/**
@@ -435,6 +445,7 @@ class Plugin {
 		$this->cronService->register();
 		$this->productCategoryFormFields->register();
 		$this->packetAutoSubmitter->register();
+		$this->apiExtender->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
