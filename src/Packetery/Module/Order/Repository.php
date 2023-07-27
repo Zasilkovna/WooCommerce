@@ -136,21 +136,21 @@ class Repository {
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdbAdapter->packetery_order . '` ON `' . $this->wpdbAdapter->packetery_order . '`.`id` = `' . $this->wpdbAdapter->posts . '`.`id`';
 		}
 
-		if ( $paramValues['packetery_carrier_id'] ) {
+		if ( $paramValues['packetery_carrier_id'] ?? false ) {
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` = "' . esc_sql( $paramValues['packetery_carrier_id'] ) . '"';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
-		if ( $paramValues['packetery_to_submit'] ) {
+		if ( $paramValues['packetery_to_submit'] ?? false ) {
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`carrier_id` IS NOT NULL ';
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`is_exported` = false ';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
-		if ( $paramValues['packetery_to_print'] ) {
+		if ( $paramValues['packetery_to_print'] ?? false ) {
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`packet_id` IS NOT NULL ';
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packetery_order . '`.`is_label_printed` = false ';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
-		if ( $paramValues['packetery_order_type'] ) {
+		if ( $paramValues['packetery_order_type'] ?? false ) {
 			if ( Entity\Carrier::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
 				$comparison = 'IN';
 			} else {
@@ -603,7 +603,7 @@ class Repository {
 	 * @return int
 	 */
 	private function countOrders( array $params ): int {
-		$clauses = [];
+		$clauses = [ 'join' => '' ];
 
 		if ( Module\Helper::isHposEnabled() ) {
 			$clauses['select'] = ' SELECT COUNT(DISTINCT `' . $this->wpdbAdapter->wc_orders . '`.`id`) ';

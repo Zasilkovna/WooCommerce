@@ -118,7 +118,7 @@ class Helper {
 			return null;
 		}
 
-		$version = get_plugin_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' )['Version'];
+		$version = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', [ 'Version' => 'Version' ], 'plugin' )['Version'];
 		if ( ! $version ) {
 			return null;
 		}
