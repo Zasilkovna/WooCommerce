@@ -71,7 +71,7 @@ Added: Customs declarations support.
 Added: REST API support - Packeta specific information added to shop order object.
 Added: Selected pickup point or validated address is saved using AJAX, which increases compatibility with non-standard templates and plugins.
 Updated: Surname is no longer required to send a shipment to Packeta. If the order does not meet the conditions for sending shipment, specific validation errors are now listed in the Packeta log.
-Updated: Periodic tasks for deleting log records and synchronizing shipment states were implemented asynchronously using ActionScheduler.
+Updated: Periodic tasks for deleting log records and synchronizing shipment states were implemented asynchronously using ActionScheduler. You can now find all scheduled actions in WooCommerce - Status - Scheduled Actions.
 Updated: Carrier property in Order entity made non-nullable.
 Updated: Automatic prefixing of vendor dependencies.
 Fixed: Correct logging of errors that may occur when updating the table of orders or carriers.
