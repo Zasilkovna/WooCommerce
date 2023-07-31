@@ -269,6 +269,13 @@ class Plugin {
 	private $apiExtender;
 
 	/**
+	 * Label print.
+	 *
+	 * @var Order\LabelPrintModal
+	 */
+	private $labelPrintModal;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -303,6 +310,7 @@ class Plugin {
 	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
 	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
 	 * @param Order\ApiExtender          $apiExtender               API extender.
+	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -336,7 +344,8 @@ class Plugin {
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
 		Options\FeatureFlagManager $featureFlagManager,
 		Order\MetaboxesWrapper $metaboxesWrapper,
-		Order\ApiExtender $apiExtender
+		Order\ApiExtender $apiExtender,
+		Order\LabelPrintModal $labelPrintModal
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -371,6 +380,7 @@ class Plugin {
 		$this->featureFlagManager        = $featureFlagManager;
 		$this->metaboxesWrapper          = $metaboxesWrapper;
 		$this->apiExtender               = $apiExtender;
+		$this->labelPrintModal           = $labelPrintModal;
 	}
 
 	/**
@@ -438,6 +448,7 @@ class Plugin {
 		add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
 		add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
 		$this->orderModal->register();
+		$this->labelPrintModal->register();
 		$this->metaboxesWrapper->register();
 
 		$this->checkout->register_hooks();

@@ -1,12 +1,11 @@
 <?php
 /**
- * Class BaseMetabox.
+ * Class DetailCommonLogic.
  *
  * @package Packetery
  */
 
 declare( strict_types=1 );
-
 
 namespace Packetery\Module\Order;
 
@@ -16,16 +15,18 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Nette;
 
 /**
- * Class BaseMetabox.
+ * Class DetailCommonLogic.
+ *
+ * @package Packetery
  */
-abstract class BaseMetabox {
+class DetailCommonLogic {
 
 	/**
 	 * Order.
 	 *
 	 * @var Order|null
 	 */
-	private $order = null;
+	private $order;
 
 	/**
 	 * Context resolver.
@@ -39,14 +40,14 @@ abstract class BaseMetabox {
 	 *
 	 * @var Nette\Http\Request
 	 */
-	protected $request;
+	private $request;
 
 	/**
 	 * Order repository.
 	 *
 	 * @var Repository
 	 */
-	protected $orderRepository;
+	private $orderRepository;
 
 	/**
 	 * Constructor.
@@ -70,7 +71,7 @@ abstract class BaseMetabox {
 	 *
 	 * @return Order|null
 	 */
-	protected function getOrder(): ?Order {
+	public function getOrder(): ?Order {
 		if ( null !== $this->order ) {
 			return $this->order;
 		}
@@ -94,7 +95,7 @@ abstract class BaseMetabox {
 	 *
 	 * @return int|null
 	 */
-	protected function getOrderId(): ?int {
+	public function getOrderId(): ?int {
 		global $post;
 
 		if ( false === $this->contextResolver->isOrderDetailPage() ) {

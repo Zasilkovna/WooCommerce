@@ -33,7 +33,7 @@ use WC_Order;
  *
  * @package Packetery\Order
  */
-class Metabox extends BaseMetabox {
+class Metabox {
 
 	public const FIELD_WEIGHT           = 'packetery_weight';
 	private const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
@@ -67,6 +67,13 @@ class Metabox extends BaseMetabox {
 	private $helper;
 
 	/**
+	 * HTTP request.
+	 *
+	 * @var Request
+	 */
+	private $request;
+
+	/**
 	 * Order form.
 	 *
 	 * @var Form
@@ -86,6 +93,13 @@ class Metabox extends BaseMetabox {
 	 * @var FormFactory
 	 */
 	private $formFactory;
+
+	/**
+	 * Repsitory.
+	 *
+	 * @var Repository
+	 */
+	private $orderRepository;
 
 	/**
 	 * Log page.
@@ -123,21 +137,28 @@ class Metabox extends BaseMetabox {
 	private $orderValidator;
 
 	/**
+	 * Order detail common logic.
+	 *
+	 * @var DetailCommonLogic
+	 */
+	private $detailCommonLogic;
+
+	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine                 $latte_engine         PacketeryLatte engine.
-	 * @param MessageManager         $message_manager      Message manager.
-	 * @param Helper                 $helper               Helper.
-	 * @param Request                $request              Http request.
-	 * @param Options\Provider       $optionsProvider      Options provider.
-	 * @param FormFactory            $formFactory          Form factory.
-	 * @param Repository             $orderRepository      Order repository.
-	 * @param Log\Page               $logPage              Log page.
-	 * @param AttributeMapper        $mapper               AttributeMapper.
-	 * @param WidgetOptionsBuilder   $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository       $carrierRepository    Carrier repository.
-	 * @param Validator\Order        $orderValidator       Order validator.
-	 * @param Module\ContextResolver $contextResolver      Context resolver.
+	 * @param Engine               $latte_engine         PacketeryLatte engine.
+	 * @param MessageManager       $message_manager      Message manager.
+	 * @param Helper               $helper               Helper.
+	 * @param Request              $request              Http request.
+	 * @param Options\Provider     $optionsProvider      Options provider.
+	 * @param FormFactory          $formFactory          Form factory.
+	 * @param Repository           $orderRepository      Order repository.
+	 * @param Log\Page             $logPage              Log page.
+	 * @param AttributeMapper      $mapper               AttributeMapper.
+	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
+	 * @param EntityRepository     $carrierRepository    Carrier repository.
+	 * @param Validator\Order      $orderValidator       Order validator.
+	 * @param DetailCommonLogic    $detailCommonLogic    Detail common logic.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -152,23 +173,21 @@ class Metabox extends BaseMetabox {
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		EntityRepository $carrierRepository,
 		Validator\Order $orderValidator,
-		Module\ContextResolver $contextResolver
+		DetailCommonLogic $detailCommonLogic
 	) {
-		parent::__construct(
-			$contextResolver,
-			$request,
-			$orderRepository
-		);
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
 		$this->helper               = $helper;
+		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
 		$this->formFactory          = $formFactory;
+		$this->orderRepository      = $orderRepository;
 		$this->logPage              = $logPage;
 		$this->mapper               = $mapper;
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
 		$this->carrierRepository    = $carrierRepository;
 		$this->orderValidator       = $orderValidator;
+		$this->detailCommonLogic    = $detailCommonLogic;
 	}
 
 	/**
@@ -189,7 +208,7 @@ class Metabox extends BaseMetabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		$orderId = $this->getOrderId();
+		$orderId = $this->detailCommonLogic->getOrderId();
 		if ( null === $orderId ) {
 			return;
 		}
@@ -265,7 +284,7 @@ class Metabox extends BaseMetabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		$orderId = $this->getOrderId();
+		$orderId = $this->detailCommonLogic->getOrderId();
 		if ( null === $orderId ) {
 			return;
 		}
@@ -302,29 +321,6 @@ class Metabox extends BaseMetabox {
 			$packetClaimUrl = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM );
 		}
 
-		$packetClaimLabelPrintUrl = null;
-		if ( $order->isPacketClaimLabelPrintPossible() ) {
-			set_transient( LabelPrint::getOrderIdsTransientName(), [ $order->getNumber() ], 60 * 60 );
-			set_transient(
-				LabelPrint::getBackLinkTransientName(),
-				add_query_arg(
-					$this->request->getQuery(),
-					admin_url( $this->request->getUrl()->getRelativePath() )
-				),
-				60 * 60
-			);
-
-			$packetClaimLabelPrintUrl = add_query_arg(
-				[
-					'page'                       => LabelPrint::MENU_SLUG,
-					LabelPrint::LABEL_TYPE_PARAM => LabelPrint::ACTION_PACKETA_LABELS,
-					'id'                         => $order->getNumber(),
-					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
-				],
-				admin_url( 'admin.php' )
-			);
-		}
-
 		$packetClaimCancelUrl   = null;
 		$packetClaimTrackingUrl = null;
 		if ( $order->getPacketClaimId() ) {
@@ -349,15 +345,14 @@ class Metabox extends BaseMetabox {
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
 				[
-					'order'                    => $order,
-					'packetCancelLink'         => $packetCancelLink,
-					'packet_tracking_url'      => $this->helper->get_tracking_url( $packetId ),
-					'packetClaimTrackingUrl'   => $packetClaimTrackingUrl,
-					'showLogsLink'             => $showLogsLink,
-					'packetClaimUrl'           => $packetClaimUrl,
-					'packetClaimLabelPrintUrl' => $packetClaimLabelPrintUrl,
-					'packetClaimCancelUrl'     => $packetClaimCancelUrl,
-					'translations'             => [
+					'order'                  => $order,
+					'packetCancelLink'       => $packetCancelLink,
+					'packet_tracking_url'    => $this->helper->get_tracking_url( $packetId ),
+					'packetClaimTrackingUrl' => $packetClaimTrackingUrl,
+					'showLogsLink'           => $showLogsLink,
+					'packetClaimUrl'         => $packetClaimUrl,
+					'packetClaimCancelUrl'   => $packetClaimCancelUrl,
+					'translations'           => [
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
 						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 						'showLogs'                  => __( 'Show logs', 'packeta' ),
@@ -369,6 +364,7 @@ class Metabox extends BaseMetabox {
 						'reallyCancelPacketClaim'   => sprintf( __( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
 						'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
 						'createPacketClaim'         => __( 'Create packet claim', 'packeta' ),
+						'printPacketLabel'          => __( 'Print packet label', 'packeta' ),
 						'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
 						'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
 						'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
@@ -578,7 +574,7 @@ class Metabox extends BaseMetabox {
 	 * @return array|null
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
-		$order = $this->getOrder();
+		$order = $this->detailCommonLogic->getOrder();
 		if ( null === $order || false === $order->isPickupPointDelivery() || null === $order->getShippingCountry() ) {
 			return null;
 		}
@@ -598,7 +594,7 @@ class Metabox extends BaseMetabox {
 	 * @return array|null
 	 */
 	public function getAddressWidgetSettings(): ?array {
-		$order = $this->getOrder();
+		$order = $this->detailCommonLogic->getOrder();
 		if ( null === $order || false === $order->isHomeDelivery() ) {
 			return null;
 		}

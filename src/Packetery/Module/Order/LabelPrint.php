@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Log;
+use Packetery\Core\Entity\Order;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
@@ -161,6 +162,21 @@ class LabelPrint {
 	}
 
 	/**
+	 * Gets label type.
+	 *
+	 * @param Order $order Order.
+	 *
+	 * @return string
+	 */
+	public function getLabelFormatByOrder( Order $order ) {
+		if ( $order->isExternalCarrier() ) {
+			return $this->optionsProvider->get_carrier_label_format();
+		}
+
+		return $this->optionsProvider->get_packeta_label_format();
+	}
+
+	/**
 	 * Prepares form and renders template.
 	 */
 	public function render(): void {
@@ -264,6 +280,11 @@ class LabelPrint {
 				__( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' ) :
 				__( 'You selected orders that were not submitted yet', 'packeta' );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
+
+			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+			if ( PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $idParam ) {
+				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->getById( (int) $idParam ) );
+			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 			return;
 		}
@@ -281,12 +302,13 @@ class LabelPrint {
 	/**
 	 * Creates offset setting form.
 	 *
-	 * @param int $maxOffset Maximal offset.
+	 * @param int         $maxOffset Maximal offset.
+	 * @param string|null $name      Form name.
 	 *
 	 * @return Form
 	 */
-	public function createForm( int $maxOffset ): Form {
-		$form = $this->formFactory->create();
+	public function createForm( int $maxOffset, string $name = null ): Form {
+		$form = $this->formFactory->create( $name );
 
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i ++ ) {

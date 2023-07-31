@@ -44,6 +44,7 @@ services:
 	- Packetery\Module\Order\ApiExtender
 	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
+	- Packetery\Module\Order\DetailCommonLogic
 	- Packetery\Module\Order\PacketActionsCommonLogic
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\Order\PacketClaimSubmitter
@@ -62,6 +63,7 @@ services:
 	- Packetery\Module\Api\Internal\CheckoutRouter
 	- Packetery\Module\Api\Registrar
 	- Packetery\Module\Order\Modal
+	- Packetery\Module\Order\LabelPrintModal
 	- Packetery\Module\Options\Exporter
 	- Packetery\Module\Order\CollectionPrint
 	- Packetery\Module\Order\PacketSynchronizer
