@@ -205,6 +205,7 @@ class PacketCanceller {
 			$order->setCarrierNumber( null );
 			$order->setPacketStatus( null );
 			$order->setPacketId( null );
+			$order->updateApiErrorMessage( null );
 
 			if ( $result->hasFault() ) {
 				$this->messageManager->flash_message( __( 'Packet could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packeta' ), MessageManager::TYPE_SUCCESS );
@@ -218,6 +219,7 @@ class PacketCanceller {
 		if ( $packetId === $order->getPacketClaimId() && $this->shouldRevertSubmission( $result ) ) {
 			$order->setPacketClaimId( null );
 			$order->setPacketClaimPassword( null );
+			$order->updateApiErrorMessage( null );
 
 			if ( $result->hasFault() ) {
 				$this->messageManager->flash_message( __( 'Packet claim could not be canceled in the Packeta system, packet was canceled only in the order list.', 'packeta' ), MessageManager::TYPE_SUCCESS );
