@@ -178,7 +178,6 @@ class Upgrade {
 			wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
 		}
 
-		// TODO: set target version.
 		if ( $oldVersion && version_compare( $oldVersion, '1.5.5', '<' ) ) {
 			wp_clear_scheduled_hook( CronService::CRON_LOG_AUTO_DELETION_HOOK );
 			wp_clear_scheduled_hook( CronService::CRON_PACKET_STATUS_SYNC_HOOK );
