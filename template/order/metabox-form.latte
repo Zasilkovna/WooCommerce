@@ -2,8 +2,8 @@
 {varType Packetery\Core\Entity\Order $order}
 {varType bool $isCodPayment}
 
+<div data-packetery-order-metabox>
 {formContext $form}
-    <div data-packetery-order-metabox>
         <div class="packetery-table">
             <input n:name=packetery_order_metabox_nonce />
             <input n:name=packetery_original_weight />
@@ -83,16 +83,7 @@
                 <span data-packetery-widget-info></span>
             </div>
         {/if}
-    </div>
 {/formContext}
 
-<ul>
-    <li n:if="$showSubmitPacketButton">
-        <a class="button dashicons dashicons-upload packetery-dashicons-button-fix" href="{$packetSubmitUrl}">
-            <span class="packetery-dashicons-button-fix-text">{$translations['submitPacket']}</span>
-        </a>
-    </li>
-    <li n:if="$showLogsLink">
-        <a class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
-    </li>
-</ul>
+{include 'metabox-common.latte'}
+</div>

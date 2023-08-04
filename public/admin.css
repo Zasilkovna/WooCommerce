@@ -749,9 +749,13 @@ tbody .packetery-log-column-note {
     gap: 10px;
 }
 
+[data-packetery-order-metabox] .packetery-metabox-overview-info {
+    margin-top: 10px;
+}
+
 .packetery-metabox-overview-info {
     container-type: inline-size;
-    margin-top: -5px;
+    margin-top: 0;
     margin-bottom: 5px;
 }
 
