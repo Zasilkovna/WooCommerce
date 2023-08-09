@@ -524,7 +524,7 @@ class Repository {
 		$orPacketStatus[] = '`o`.`packet_status` IS NULL';
 
 		if ( $allowedPacketStatuses ) {
-			$orPacketStatus[] = '`o`.`packet_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
+			$orPacketStatus[] = '`o`.`packet_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedPacketStatuses ) . ')';
 		}
 
 		if ( $orPacketStatus ) {
