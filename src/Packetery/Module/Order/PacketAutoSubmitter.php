@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module;
+use WC_Payment_Gateway;
 
 /**
  * Class PacketAutoSubmitter
@@ -125,7 +126,7 @@ class PacketAutoSubmitter {
 		assert( null !== $wcOrder, 'WC order has to be present' );
 
 		$paymentGateway = wc_get_payment_gateway_by_order( $wcOrder );
-		if ( false === $this->optionsPage->hasPaymentGateway( $paymentGateway ) ) {
+		if ( ! $paymentGateway instanceof WC_Payment_Gateway || false === $this->optionsPage->hasPaymentGateway( $paymentGateway ) ) {
 			return;
 		}
 
