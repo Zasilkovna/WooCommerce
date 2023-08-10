@@ -343,7 +343,7 @@ class Metabox {
 				]
 			);
 			$this->latte_engine->render(
-				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
+				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                  => $order,
 					'showSubmitPacketButton'   => false,
