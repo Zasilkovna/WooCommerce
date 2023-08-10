@@ -17,6 +17,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Latte\Engine;
+use Packetery\Module\PaymentHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
 
@@ -236,7 +237,7 @@ class Page {
 	 * @return Form
 	 */
 	public function createAutoSubmissionForm(): Form {
-		$gateways = Helper::getAvailablePaymentGateways();
+		$gateways = PaymentHelper::getAvailablePaymentGateways();
 		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
 		$defaults = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
 
@@ -407,7 +408,7 @@ class Page {
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
-		$gateways        = Helper::getAvailablePaymentGateways();
+		$gateways        = PaymentHelper::getAvailablePaymentGateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
 			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();

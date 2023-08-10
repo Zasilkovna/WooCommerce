@@ -805,8 +805,8 @@ class Plugin {
 		}
 
 		if ( Carrier\OptionsPage::SLUG === $page ) {
-			wp_enqueue_style( 'packetery-select2-css', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.css', false, '3.4.8' );
-			wp_enqueue_script( 'packetery-select2', '//cdnjs.cloudflare.com/ajax/libs/select2/3.4.8/select2.js', [ 'jquery' ], '3.4.8', true );
+			$this->enqueueStyle( 'packetery-select2-css', 'public/libs/select2-4.0.13/dist.min.css' );
+			$this->enqueueScript( 'packetery-select2', 'public/libs/select2-4.0.13/dist.min.js', true, [ 'jquery' ] );
 			$this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
 			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery', 'packetery-multiplier', 'packetery-select2' ] );
 		}

@@ -85,7 +85,7 @@
 }
 
 .packetery-carrier-options-page .select2-container {
-    width: 100%;
+    width: 100% !important;
     max-width: calc(100% - 200px);
 }
 
@@ -498,7 +498,7 @@ tbody .packetery-log-column-note {
     height: 20px;
 }
 
-.packeta_page .select2-choices,
+.packeta_page .select2 .select2-selection,
 .packeta_page input[type="text"],
 .packeta_page input[type="number"],
 .packeta_page select,
@@ -522,7 +522,7 @@ tbody .packetery-log-column-note {
 }
 
 .packeta_page input[type="text"].select2-input:focus {
-    box-shadow: 0 0 0 0;
+    box-shadow: none;
     border: 0;
 }
 

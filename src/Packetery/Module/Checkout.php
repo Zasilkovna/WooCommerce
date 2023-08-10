@@ -539,7 +539,7 @@ class Checkout {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
-		add_filter( 'woocommerce_cart_shipping_packages', [ $this, 'transformShippingPackages' ] );
+		add_filter( 'woocommerce_cart_shipping_packages', [ $this, 'updateShippingPackages' ] );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
 		add_action(
 			'init',
@@ -570,13 +570,13 @@ class Checkout {
 	}
 
 	/**
-	 * Transforms shipping packages.
+	 * Updates shipping packages to make WooCommerce caching system work correctly.
 	 *
 	 * @param array $packages Packages.
 	 *
 	 * @return array
 	 */
-	public function transformShippingPackages( array $packages ): array {
+	public function updateShippingPackages( array $packages ): array {
 		foreach ( $packages as &$package ) {
 			$package['packetery_payment_method'] = $this->getChosenPaymentMethod();
 		}
