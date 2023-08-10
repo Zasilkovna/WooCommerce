@@ -95,7 +95,7 @@ class Metabox {
 	private $formFactory;
 
 	/**
-	 * Repsitory.
+	 * Repository.
 	 *
 	 * @var Repository
 	 */

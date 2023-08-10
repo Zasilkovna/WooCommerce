@@ -283,7 +283,12 @@ class LabelPrint {
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 			if ( PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $idParam ) {
-				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->getById( (int) $idParam ) );
+				try {
+					$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->getById( (int) $idParam ) );
+					// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+				} catch ( InvalidCarrierException $e ) {
+					// Invalid order found. User will be redirected to order grid.
+				}
 			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 			return;

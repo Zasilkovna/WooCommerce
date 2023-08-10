@@ -9,15 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity\Order;
 use Packetery\Module;
-use Packetery\Module\Api;
-use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\FormFactory;
 use Packetery\Module\Options;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
-use Packetery\Nette;
 
 /**
  * Class LabelPrintModal.
@@ -158,6 +153,7 @@ class LabelPrintModal {
 				'translations' => [
 					// translators: %s is packet ID.
 					'header'          => sprintf( __( 'Label print of packet %s', 'packeta' ), $packetId ),
+
 					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
 				],
 			]

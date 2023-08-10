@@ -26,8 +26,8 @@
 		} );
 	});
 
-	$( window ).bind( 'beforeunload', function() {
-		$( '[data-packetery-label-print-modal] .modal-close:first' ).click();
+	$( window ).on( 'beforeunload', function() {
+		$( '[data-packetery-label-print-modal] .modal-close:visible:first' ).click();
 	} );
 
 	new PacketeryMultiplier('[data-packetery-customs-declaration-item]');
