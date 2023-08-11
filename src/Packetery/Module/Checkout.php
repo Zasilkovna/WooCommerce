@@ -1075,7 +1075,7 @@ class Checkout {
 	private function getPostDataIncludingStoredData( string $chosenShippingMethod ): array {
 		$checkoutData      = $this->httpRequest->getPost();
 		$savedCheckoutData = get_transient( $this->getTransientNamePacketaCheckoutData() );
-		if ( empty( $savedCheckoutData ) || ! is_array( $savedCheckoutData[ $chosenShippingMethod ] ?? false ) ) {
+		if ( ! is_array( $savedCheckoutData ) || ! is_array( $savedCheckoutData[ $chosenShippingMethod ] ) ) {
 			return $checkoutData;
 		}
 
