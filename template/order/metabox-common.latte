@@ -23,6 +23,13 @@
         <span class="packetery-dashicons-button-fix-text">{$translations['submitPacket']}</span>
     </a>
     <a
+            n:if="$order->getPacketId()"
+            class="button dashicons dashicons-media-default packetery-dashicons-button-fix"
+            data-packetery-open-modal="{Packetery\Module\Order\LabelPrintModal::MODAL_ID_PACKET}"
+    >
+        <span class="packetery-dashicons-button-fix-text">{$translations['printPacketLabel']}</span>
+    </a>
+    <a
             n:if="$packetCancelLink"
             class="button dashicons dashicons-trash packetery-dashicons-button-fix"
             data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
@@ -39,9 +46,9 @@
         <span class="packetery-dashicons-button-fix-text">{$translations['createPacketClaim']}</span>
     </a>
     <a
-            n:if="$packetClaimLabelPrintUrl"
+            n:if="$order->getPacketClaimId()"
             class="button dashicons dashicons-media-default packetery-dashicons-button-fix"
-            href="{$packetClaimLabelPrintUrl}"
+            data-packetery-open-modal="{Packetery\Module\Order\LabelPrintModal::MODAL_ID_PACKET_CLAIM}"
     >
         <span class="packetery-dashicons-button-fix-text">{$translations['printPacketClaimLabel']}</span>
     </a>
