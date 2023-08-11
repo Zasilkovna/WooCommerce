@@ -16,6 +16,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -518,32 +519,66 @@ class Page {
 	 *  Admin_init callback.
 	 */
 	public function admin_init(): void {
-		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, array( $this, 'options_validate' ) );
+		add_filter( 'pre_update_option_packetery', [ $this, 'validatePacketeryOptions' ] );
+		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, [ $this, 'sanitizePacketeryOptions' ] );
 		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), '', self::SLUG );
 	}
 
 	/**
-	 * Validates options.
+	 * Validates packetery options.
 	 *
-	 * @param array $options Packetery_options.
+	 * @param array $options Options to be validated.
 	 *
 	 * @return array
 	 */
-	public function options_validate( array $options ): array {
+	public function validatePacketeryOptions( array $options ): array {
 		$form = $this->create_form();
-		$form[ self::FORM_FIELDS_CONTAINER ]->setValues( $options );
+		/** Packetery container. @var Container $packeteryContainer */
+		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
+		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {
-			foreach ( $form[ self::FORM_FIELDS_CONTAINER ]->getControls() as $control ) {
+			foreach ( $packeteryContainer->getControls() as $control ) {
 				if ( $control->hasErrors() === false ) {
 					continue;
 				}
 
 				add_settings_error( $control->getCaption(), esc_attr( $control->getName() ), $control->getError() );
+			}
+		}
+
+		$apiPassword = $packeteryContainer['api_password'];
+		if ( $apiPassword->hasErrors() === false ) {
+			$this->packetaClient->setApiPassword( $apiPassword->getValue() );
+		}
+
+		$this->validateSender( $options['sender'] );
+
+		return $options;
+	}
+
+	/**
+	 * Sanitize options.
+	 *
+	 * @param array $options Options to be sanitized.
+	 *
+	 * @return array
+	 */
+	public function sanitizePacketeryOptions( array $options ): array {
+		$form = $this->create_form();
+		/** Packetery container. @var Container $packeteryContainer */
+		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
+		$packeteryContainer->setValues( $options );
+		if ( $form->isValid() === false ) {
+			foreach ( $packeteryContainer->getControls() as $control ) {
+				if ( $control->hasErrors() === false ) {
+					continue;
+				}
+
 				$options[ $control->getName() ] = '';
 			}
 		}
 
-		$api_password = $form[ self::FORM_FIELDS_CONTAINER ]['api_password'];
+		$api_password = $packeteryContainer['api_password'];
 		if ( $api_password->hasErrors() === false ) {
 			$api_pass           = $api_password->getValue();
 			$options['api_key'] = substr( $api_pass, 0, 16 );
@@ -552,8 +587,7 @@ class Page {
 			$options['api_key'] = '';
 		}
 
-		$this->validateSender( $options['sender'] );
-		$options['force_packet_cancel'] = (int) $form[ self::FORM_FIELDS_CONTAINER ]['force_packet_cancel']->getValue();
+		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 
 		return $options;
 	}
