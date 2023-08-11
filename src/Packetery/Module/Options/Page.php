@@ -16,6 +16,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -543,9 +544,11 @@ class Page {
 	 */
 	public function validatePacketeryOptions( array $options ): array {
 		$form = $this->create_form();
-		$form[ self::FORM_FIELDS_CONTAINER ]->setValues( $options );
+		/** @var Container $packeteryContainer */
+		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
+		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {
-			foreach ( $form[ self::FORM_FIELDS_CONTAINER ]->getControls() as $control ) {
+			foreach ( $packeteryContainer->getControls() as $control ) {
 				if ( $control->hasErrors() === false ) {
 					continue;
 				}
@@ -554,7 +557,7 @@ class Page {
 			}
 		}
 
-		$apiPassword = $form[ self::FORM_FIELDS_CONTAINER ]['api_password'];
+		$apiPassword = $packeteryContainer['api_password'];
 		if ( $apiPassword->hasErrors() === false ) {
 			$this->packetaClient->setApiPassword( $apiPassword->getValue() );
 		}
@@ -573,9 +576,11 @@ class Page {
 	 */
 	public function sanitizePacketeryOptions( array $options ): array {
 		$form = $this->create_form();
-		$form[ self::FORM_FIELDS_CONTAINER ]->setValues( $options );
+		/** @var Container $packeteryContainer */
+		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
+		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {
-			foreach ( $form[ self::FORM_FIELDS_CONTAINER ]->getControls() as $control ) {
+			foreach ( $packeteryContainer->getControls() as $control ) {
 				if ( $control->hasErrors() === false ) {
 					continue;
 				}
@@ -584,7 +589,7 @@ class Page {
 			}
 		}
 
-		$api_password = $form[ self::FORM_FIELDS_CONTAINER ]['api_password'];
+		$api_password = $packeteryContainer['api_password'];
 		if ( $api_password->hasErrors() === false ) {
 			$api_pass           = $api_password->getValue();
 			$options['api_key'] = substr( $api_pass, 0, 16 );
@@ -593,7 +598,7 @@ class Page {
 			$options['api_key'] = '';
 		}
 
-		$options['force_packet_cancel'] = (int) $form[ self::FORM_FIELDS_CONTAINER ]['force_packet_cancel']->getValue();
+		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 
 		return $options;
 	}
