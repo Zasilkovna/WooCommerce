@@ -126,7 +126,10 @@ class PacketAutoSubmitter {
 		assert( null !== $wcOrder, 'WC order has to be present' );
 
 		$paymentGateway = wc_get_payment_gateway_by_order( $wcOrder );
-		if ( ! $paymentGateway instanceof WC_Payment_Gateway || false === $this->optionsPage->hasPaymentGateway( $paymentGateway ) ) {
+		if (
+			! $paymentGateway instanceof WC_Payment_Gateway ||
+			false === array_key_exists( $paymentGateway->id, $this->optionsPage->getAvailablePaymentGateways() )
+		) {
 			return;
 		}
 

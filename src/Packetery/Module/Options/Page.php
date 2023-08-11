@@ -505,17 +505,6 @@ class Page {
 	}
 
 	/**
-	 * Tells if options page uses given payment gateway.
-	 *
-	 * @param \WC_Payment_Gateway $paymentGateway Payment gateway.
-	 *
-	 * @return bool
-	 */
-	public function hasPaymentGateway( \WC_Payment_Gateway $paymentGateway ): bool {
-		return array_key_exists( $paymentGateway->id, $this->getAvailablePaymentGateways() );
-	}
-
-	/**
 	 * Callback for array filter. Returns true if gateway is of correct type.
 	 *
 	 * @param object $gateway Gateway to check.
