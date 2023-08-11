@@ -18,7 +18,17 @@
 		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[invoice_file]"]')[0] );
 		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[ead_file]"]')[0] );
 		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[mrn]"]')[0] );
+	}).on( 'click', '[data-packetery-open-modal]', function( e ) {
+		var $target = $( e.target );
+
+		$target.WCBackboneModal( {
+			template: $target.closest( '[data-packetery-open-modal]' ).data( 'packetery-open-modal' )
+		} );
 	});
+
+	$( window ).on( 'beforeunload', function() {
+		$( '[data-packetery-label-print-modal] .modal-close:visible:first' ).click();
+	} );
 
 	new PacketeryMultiplier('[data-packetery-customs-declaration-item]');
 

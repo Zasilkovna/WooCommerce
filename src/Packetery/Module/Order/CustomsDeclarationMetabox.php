@@ -29,7 +29,7 @@ use Packetery\Module\CustomsDeclaration;
 /**
  * Class CustomsDeclarationMetabox.
  */
-class CustomsDeclarationMetabox extends BaseMetabox {
+class CustomsDeclarationMetabox {
 
 	private const MAX_UPLOAD_FILE_MEGABYTES = 16;
 
@@ -69,11 +69,25 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 	private $customsDeclarationEntityFactory;
 
 	/**
+	 * HTTP Request.
+	 *
+	 * @var Request
+	 */
+	private $request;
+
+	/**
 	 * Message manager.
 	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
+
+	/**
+	 * Order detail comon logic.
+	 *
+	 * @var DetailCommonLogic
+	 */
+	private $detailCommonLogic;
 
 	/**
 	 * Constructor.
@@ -84,8 +98,7 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 	 * @param EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory Customs declaration entity factory.
 	 * @param Request                          $request                         Request.
 	 * @param MessageManager                   $messageManager                  Message manager.
-	 * @param Repository                       $orderRepository                 Order repository.
-	 * @param Module\ContextResolver           $contextResolver                 Context resolver.
+	 * @param DetailCommonLogic                $detailCommonLogic               Detail common logic.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -94,19 +107,15 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 		EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
 		Request $request,
 		MessageManager $messageManager,
-		Repository $orderRepository,
-		Module\ContextResolver $contextResolver
+		DetailCommonLogic $detailCommonLogic
 	) {
-		parent::__construct(
-			$contextResolver,
-			$request,
-			$orderRepository
-		);
 		$this->latteEngine                     = $latteEngine;
 		$this->formFactory                     = $formFactory;
 		$this->customsDeclarationRepository    = $customsDeclarationRepository;
 		$this->customsDeclarationEntityFactory = $customsDeclarationEntityFactory;
+		$this->request                         = $request;
 		$this->messageManager                  = $messageManager;
+		$this->detailCommonLogic               = $detailCommonLogic;
 	}
 
 	/**
@@ -125,7 +134,7 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 	 * @return void
 	 */
 	public function addMetaBoxes(): void {
-		$order = $this->getOrder();
+		$order = $this->detailCommonLogic->getOrder();
 
 		if (
 			null === $order ||
@@ -196,7 +205,7 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 	 * @return void
 	 */
 	public function render(): void {
-		$order = $this->getOrder();
+		$order = $this->detailCommonLogic->getOrder();
 		if ( null === $order ) {
 			return;
 		}
@@ -351,7 +360,7 @@ class CustomsDeclarationMetabox extends BaseMetabox {
 	 * @return void
 	 */
 	public function onFormSuccess( Form $form ): void {
-		$order = $this->getOrder();
+		$order = $this->detailCommonLogic->getOrder();
 		if ( null === $order ) {
 			return;
 		}

@@ -215,18 +215,27 @@ class Repository {
 	/**
 	 * Gets order data.
 	 *
-	 * @param int $id Order id.
+	 * @param int  $id                              Order id.
+	 * @param bool $suppressInvalidCarrierException Tells if carrier exception should be ignored.
 	 *
 	 * @return Order|null
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
-	public function getById( int $id ): ?Order {
+	public function getById( int $id, bool $suppressInvalidCarrierException = false ): ?Order {
 		$wcOrder = $this->getWcOrderById( $id );
 		if ( null === $wcOrder ) {
 			return null;
 		}
 
-		return $this->getByWcOrder( $wcOrder );
+		try {
+			return $this->getByWcOrder( $wcOrder );
+		} catch ( InvalidCarrierException $invalidCarrierException ) {
+			if ( false === $suppressInvalidCarrierException ) {
+				throw $invalidCarrierException;
+			}
+		}
+
+		return null;
 	}
 
 	/**
