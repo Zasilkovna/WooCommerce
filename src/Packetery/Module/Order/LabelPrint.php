@@ -187,10 +187,7 @@ class LabelPrint {
 
 		$orderIdsTransient = $this->getOrderIdsTransient();
 		if ( $orderIdsTransient ) {
-			$orderIds = $this->getPacketIdsFromTransient(
-				$this->orderRepository->getByIds( $orderIdsTransient ),
-				$isCarrierLabels
-			);
+			$orderIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 			$count    = count( $orderIds );
 		} else {
 			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, self::MENU_SLUG );
@@ -239,25 +236,16 @@ class LabelPrint {
 		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
 		$idParam                = $this->httpRequest->getQuery( 'id' );
 		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
-		$orders                 = [];
-		$packetIds              = [];
 		if ( null !== $idParam && null !== $packetIdParam ) {
 			$fallbackToPacketaLabel = true;
-			try {
-				$orders[ $idParam ] = $this->orderRepository->getById( (int) $idParam );
-				$packetIds          = [ $idParam => $packetIdParam ];
-				// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			} catch ( InvalidCarrierException $e ) {
-				// Empty packet IDs are handled bellow.
-			}
+			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
 			$orderIdsTransient = $this->getOrderIdsTransient();
 			if ( ! $orderIdsTransient ) {
 				return;
 			}
 
-			$orders    = $this->orderRepository->getByIds( $orderIdsTransient );
-			$packetIds = $this->getPacketIdsFromTransient( $orders, $isCarrierLabels );
+			$packetIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 		}
 		if ( ! $packetIds ) {
 			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
@@ -279,23 +267,13 @@ class LabelPrint {
 			return;
 		}
 
-		$isClaimPrint = false;
-		foreach ( $orders as $orderId => $order ) {
-			if ( null === $order->getPacketClaimId() || $order->getPacketClaimId() !== $packetIds[ $orderId ] ) {
-				$isClaimPrint = false;
-				break;
-			}
-
-			$isClaimPrint = true;
-		}
-
 		if ( $isCarrierLabels ) {
 			$response = $this->requestCarrierLabels( $offset, $packetIds );
 			if ( $fallbackToPacketaLabel && $response->hasFault() ) {
-				$response = $this->requestPacketaLabels( $offset, $packetIds, $isClaimPrint );
+				$response = $this->requestPacketaLabels( $offset, $packetIds );
 			}
 		} else {
-			$response = $this->requestPacketaLabels( $offset, $packetIds, $isClaimPrint );
+			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
 		if ( ! $response || $response->hasFault() ) {
 			$message = ( null !== $response && $response->hasFault() ) ?
@@ -374,22 +352,19 @@ class LabelPrint {
 	/**
 	 * Prepares labels.
 	 *
-	 * @param int   $offset       Offset value.
-	 * @param array $packetIds    Packet ids.
-	 * @param bool  $isClaimPrint Tells if claim label is being printed.
+	 * @param int   $offset Offset value.
+	 * @param array $packetIds Packet ids.
 	 *
 	 * @return Response\PacketsLabelsPdf|null
 	 */
-	private function requestPacketaLabels( int $offset, array $packetIds, bool $isClaimPrint ): ?Response\PacketsLabelsPdf {
+	private function requestPacketaLabels( int $offset, array $packetIds ): ?Response\PacketsLabelsPdf {
 		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 
 		foreach ( $packetIds as $orderId => $packetId ) {
 			$record          = new Log\Record();
-			$record->action  = $isClaimPrint ?
-				Log\Record::ACTION_CLAIM_LABEL_PRINT :
-				Log\Record::ACTION_LABEL_PRINT;
+			$record->action  = Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
 			try {
 				$order = $this->orderRepository->getById( $orderId );
@@ -403,14 +378,10 @@ class LabelPrint {
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
-				$record->title  = $isClaimPrint ?
-					__( 'Claim assistant label has been printed successfully.', 'packeta' ) :
-					__( 'Label has been printed successfully.', 'packeta' );
+				$record->title  = __( 'Label has been printed successfully.', 'packeta' );
 			} else {
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = $isClaimPrint ?
-					__( 'Claim assistant label could not be printed.', 'packeta' ) :
-					__( 'Label could not be printed.', 'packeta' );
+				$record->title  = __( 'Label could not be printed.', 'packeta' );
 				$record->params = [
 					'packetId'          => $packetId,
 					'isPacketIdInvalid' => $response->hasInvalidPacketId( (string) $packetId ),
@@ -504,12 +475,13 @@ class LabelPrint {
 	/**
 	 * Gets saved packet ids.
 	 *
-	 * @param array $orders          Orders from transient.
+	 * @param array $orderIds Order IDs from transient.
 	 * @param bool  $isCarrierLabels Are carrier labels requested?.
 	 *
 	 * @return string[]
 	 */
-	private function getPacketIdsFromTransient( array $orders, bool $isCarrierLabels ): array {
+	private function getPacketIdsFromTransient( array $orderIds, bool $isCarrierLabels ): array {
+		$orders    = $this->orderRepository->getByIds( $orderIds );
 		$packetIds = [];
 		foreach ( $orders as $order ) {
 			if ( null === $order->getPacketId() ) {
