@@ -343,11 +343,12 @@ class Metabox {
 				]
 			);
 			$this->latte_engine->render(
-				PACKETERY_PLUGIN_DIR . '/template/order/metabox-overview.latte',
+				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                  => $order,
+					'showSubmitPacketButton' => false,
 					'packetCancelLink'       => $packetCancelLink,
-					'packet_tracking_url'    => $this->helper->get_tracking_url( $packetId ),
+					'packetTrackingUrl'      => $this->helper->get_tracking_url( $packetId ),
 					'packetClaimTrackingUrl' => $packetClaimTrackingUrl,
 					'showLogsLink'           => $showLogsLink,
 					'packetClaimUrl'         => $packetClaimUrl,
@@ -455,7 +456,12 @@ class Metabox {
 				'widgetButtonError'      => $widgetButtonError,
 				'showHdWidget'           => $showHdWidget,
 				'showSubmitPacketButton' => $showSubmitPacketButton,
+				'packetCancelLink'       => null,
+				'packetTrackingUrl'      => null,
 				'packetSubmitUrl'        => $packetSubmitUrl,
+				'packetClaimTrackingUrl' => $packetClaimTrackingUrl,
+				'packetClaimUrl'         => $packetClaimUrl,
+				'packetClaimCancelUrl'   => $packetClaimCancelUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'isCodPayment'           => $wcOrder->get_payment_method() === $this->optionsProvider->getCodPaymentMethod(),
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
@@ -463,9 +469,18 @@ class Metabox {
 				'hasOrderManualWeight'   => $order->hasManualWeight(),
 				'isPacketaPickupPoint'   => $order->isPacketaInternalPickupPoint(),
 				'translations'           => [
-					'showLogs'       => __( 'Show logs', 'packeta' ),
-					'weightIsManual' => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
-					'submitPacket'   => __( 'Submit to packeta', 'packeta' ),
+					'showLogs'                  => __( 'Show logs', 'packeta' ),
+					'weightIsManual'            => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
+					'submitPacket'              => __( 'Submit to packeta', 'packeta' ),
+					'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
+					'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
+					'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
+					'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
+					'submissionPassword'        => __( 'submission password', 'packeta' ),
+					// translators: %s: Order number.
+					'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
+					// translators: %s: Packet claim number.
+					'reallyCancelPacketClaim'   => sprintf( __( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
 				],
 			]
 		);

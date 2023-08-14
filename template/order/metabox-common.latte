@@ -1,8 +1,8 @@
 {varType Packetery\Core\Entity\Order $order}
 
 <ul class="packetery-metabox-overview-info">
-    <li>
-        {$translations['packetTrackingOnline']}: <a href="{$packet_tracking_url}" target="_blank">Z{$order->getPacketId()}</a>
+    <li n:if="$packetTrackingUrl">
+        {$translations['packetTrackingOnline']}: <a href="{$packetTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
     </li>
     <li n:if="$packetClaimTrackingUrl">
         {$translations['packetClaimTrackingOnline']}: <a href="{$packetClaimTrackingUrl}" target="_blank">Z{$order->getPacketClaimId()}</a>
@@ -16,6 +16,13 @@
 <div class="packetery-metabox-overview-buttons">
     <a n:if="$showLogsLink" class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
     <a
+            n:if="$showSubmitPacketButton"
+            class="button dashicons dashicons-upload packetery-dashicons-button-fix" href="{$packetSubmitUrl}"
+            href="{$packetSubmitUrl}"
+    >
+        <span class="packetery-dashicons-button-fix-text">{$translations['submitPacket']}</span>
+    </a>
+    <a
             n:if="$order->getPacketId()"
             class="button dashicons dashicons-media-default packetery-dashicons-button-fix"
             data-packetery-open-modal="{Packetery\Module\Order\LabelPrintModal::MODAL_ID_PACKET}"
@@ -23,6 +30,7 @@
         <span class="packetery-dashicons-button-fix-text">{$translations['printPacketLabel']}</span>
     </a>
     <a
+            n:if="$packetCancelLink"
             class="button dashicons dashicons-trash packetery-dashicons-button-fix"
             data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
             data-packetery-confirm="{$translations['reallyCancelPacket']}"

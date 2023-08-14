@@ -3,7 +3,7 @@
 {varType string $packetClaimIdTrackingUrl}
 
 <a n:if="$packetIdTrackingUrl" href="{$packetIdTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
-<span n:if="$packetClaimIdTrackingUrl"> | </span>
+<span n:if="$packetIdTrackingUrl && $packetClaimIdTrackingUrl"> | </span>
 <a
     n:if="$packetClaimIdTrackingUrl"
     class="dashicons dashicons-undo"
