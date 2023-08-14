@@ -1,8 +1,8 @@
 {varType Packetery\Core\Entity\Order $order}
 
 <ul class="packetery-metabox-overview-info">
-    <li n:if="$packet_tracking_url">
-        {$translations['packetTrackingOnline']}: <a href="{$packet_tracking_url}" target="_blank">Z{$order->getPacketId()}</a>
+    <li n:if="$packetTrackingUrl">
+        {$translations['packetTrackingOnline']}: <a href="{$packetTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
     </li>
     <li n:if="$packetClaimTrackingUrl">
         {$translations['packetClaimTrackingOnline']}: <a href="{$packetClaimTrackingUrl}" target="_blank">Z{$order->getPacketClaimId()}</a>
