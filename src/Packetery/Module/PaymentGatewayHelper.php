@@ -12,23 +12,12 @@ namespace Packetery\Module;
 /**
  * Class PaymentHelper
  */
-class PaymentHelper {
-
-	/**
-	 * Callback for array filter. Returns true if gateway is of correct type.
-	 *
-	 * @param object $gateway Gateway to check.
-	 *
-	 * @return bool
-	 */
-	private static function filterValidGatewayClass( object $gateway ): bool {
-		return $gateway instanceof \WC_Payment_Gateway;
-	}
+class PaymentGatewayHelper {
 
 	/**
 	 * Gets available payment gateway choices.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public static function getAvailablePaymentGatewayChoices(): array {
 		$items = [];
@@ -43,7 +32,7 @@ class PaymentHelper {
 	/**
 	 * Get available gateways.
 	 *
-	 * @return \WC_Payment_Gateway
+	 * @return \WC_Payment_Gateway[]
 	 */
 	public static function getAvailablePaymentGateways(): array {
 		$availableGateways = [];
@@ -54,6 +43,11 @@ class PaymentHelper {
 			}
 		}
 
-		return array_filter( $availableGateways, [ __CLASS__, 'filterValidGatewayClass' ] );
+		return array_filter(
+			$availableGateways,
+			static function ( $gateway ): bool {
+				return $gateway instanceof \WC_Payment_Gateway;
+			}
+		);
 	}
 }

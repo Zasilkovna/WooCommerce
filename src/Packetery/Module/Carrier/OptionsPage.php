@@ -240,7 +240,7 @@ class OptionsPage {
 		$form->addMultiSelect(
 			'disallowed_checkout_payment_methods',
 			__( 'Disallowed checkout payment methods', 'packeta' ),
-			Module\PaymentHelper::getAvailablePaymentGatewayChoices()
+			Module\PaymentGatewayHelper::getAvailablePaymentGatewayChoices()
 		)->checkDefaultValue( false );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];

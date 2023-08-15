@@ -1025,11 +1025,23 @@ class Checkout {
 	 * @return array
 	 */
 	public function filterPaymentGateways( array $availableGateways ): array {
+		global $wp;
+
 		if ( ! is_checkout() ) {
 			return $availableGateways;
 		}
 
-		$chosenMethod = $this->calculateShipping();
+		$order = null;
+		if ( isset( $wp->query_vars['order-pay'] ) && is_numeric( $wp->query_vars['order-pay'] ) ) {
+			$order = $this->orderRepository->getById( (int) $wp->query_vars['order-pay'], true );
+		}
+
+		if ( $order instanceof Entity\Order ) {
+			$chosenMethod = Carrier\OptionPrefixer::getOptionId( $order->getCarrier()->getId() );
+		} else {
+			$chosenMethod = $this->calculateShipping();
+		}
+
 		if ( ! $this->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return $availableGateways;
 		}

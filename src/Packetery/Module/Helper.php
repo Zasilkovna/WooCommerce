@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
-use WC_Payment_Gateway;
 
 /**
  * Class Helper
