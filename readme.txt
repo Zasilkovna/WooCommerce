@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
-Tested up to: 6.2
-Stable tag: 1.5.5
+Tested up to: 6.3
+Stable tag: 1.6.0
 Requires PHP: 7.2
 WC requires at least: 4.5
-WC tested up to: 7.6.0
+WC tested up to: 8.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,17 +64,24 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
-= 1.5.5 =
+= 1.6.0 =
 Added: High Performance Order Storage (Custom Order Table) feature support.
 Added: Claim assistant support.
 Added: Customs declarations support.
 Added: REST API support - Packeta specific information added to shop order object.
 Added: Selected pickup point or validated address is saved using AJAX, which increases compatibility with non-standard templates and plugins.
+Added: Ability to disallow checkout payment methods in carrier settings
+Added: Possibility to prepare packet labels on order detail.
 Updated: Surname is no longer required to send a shipment to Packeta. If the order does not meet the conditions for sending shipment, specific validation errors are now listed in the Packeta log.
 Updated: Periodic tasks for deleting log records and synchronizing shipment states were implemented asynchronously using ActionScheduler. You can now find all scheduled actions in WooCommerce - Status - Scheduled Actions.
 Updated: Carrier property in Order entity made non-nullable.
 Updated: Automatic prefixing of vendor dependencies.
 Fixed: Correct logging of errors that may occur when updating the table of orders or carriers.
+Fixed: Repeated packet synchronization now works correctly.
+Fixed: Packet auto submitter now correctly handles orders with empty payment methods.
+Fixed: API error on order grid no longer shows for forced packet cancellation.
+Fixed: Checkout validation no longer triggers warning for empty checkout data.
+Fixed: Sender validation error no longer triggers more than once during fresh plugin setup.
 Fixed: Several minor bugs.
 
 = 1.5.4 =

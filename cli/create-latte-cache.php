@@ -9,6 +9,8 @@ use Packetery\Latte\Engine;
 use Packetery\Nette\Utils\Finder;
 
 require_once __DIR__ . '/../../../../wp-includes/wp-db.php';
+require_once __DIR__ . '/../../../../wp-includes/rest-api/endpoints/class-wp-rest-controller.php';
+require_once __DIR__ . '/../../../../wp-includes/rest-api/class-wp-rest-server.php';
 
 $container    = require __DIR__ . '/../bootstrap-cli.php';
 $latte_engine = $container->getByType( Engine::class );
