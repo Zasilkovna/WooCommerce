@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module;
+use Packetery\Module\PaymentGatewayHelper;
 use WC_Payment_Gateway;
 
 /**
@@ -40,13 +41,6 @@ class PacketAutoSubmitter {
 	private $packetSubmitter;
 
 	/**
-	 * Options page.
-	 *
-	 * @var Module\Options\Page
-	 */
-	private $optionsPage;
-
-	/**
 	 * Order repository.
 	 *
 	 * @var Repository
@@ -58,18 +52,15 @@ class PacketAutoSubmitter {
 	 *
 	 * @param Module\Options\Provider $optionsProvider Options provider.
 	 * @param PacketSubmitter         $packetSubmitter Packet submitter.
-	 * @param Module\Options\Page     $optionsPage     Options page.
 	 * @param Repository              $orderRepository Order repository.
 	 */
 	public function __construct(
 		Module\Options\Provider $optionsProvider,
 		PacketSubmitter $packetSubmitter,
-		Module\Options\Page $optionsPage,
 		Repository $orderRepository
 	) {
 		$this->optionsProvider = $optionsProvider;
 		$this->packetSubmitter = $packetSubmitter;
-		$this->optionsPage     = $optionsPage;
 		$this->orderRepository = $orderRepository;
 	}
 
@@ -128,7 +119,7 @@ class PacketAutoSubmitter {
 		$paymentGateway = wc_get_payment_gateway_by_order( $wcOrder );
 		if (
 			! $paymentGateway instanceof WC_Payment_Gateway ||
-			false === array_key_exists( $paymentGateway->id, Module\PaymentGatewayHelper::getAvailablePaymentGateways() )
+			false === array_key_exists( $paymentGateway->id, PaymentGatewayHelper::getAvailablePaymentGateways() )
 		) {
 			return;
 		}
