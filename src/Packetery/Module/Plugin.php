@@ -805,8 +805,10 @@ class Plugin {
 		}
 
 		if ( Carrier\OptionsPage::SLUG === $page ) {
+			$this->enqueueStyle( 'packetery-select2-css', 'public/libs/select2-4.0.13/dist.min.css' );
+			$this->enqueueScript( 'packetery-select2', 'public/libs/select2-4.0.13/dist.min.js', true, [ 'jquery' ] );
 			$this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
-			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery', 'packetery-multiplier' ] );
+			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery', 'packetery-multiplier', 'packetery-select2' ] );
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();

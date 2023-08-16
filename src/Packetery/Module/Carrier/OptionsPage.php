@@ -17,6 +17,7 @@ use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FeatureFlagManager;
 use Packetery\Latte\Engine;
+use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
@@ -235,6 +236,12 @@ class OptionsPage {
 				->addRule( Form::FLOAT )
 				->addRule( Form::MIN, null, 0 );
 		}
+
+		$form->addMultiSelect(
+			'disallowed_checkout_payment_methods',
+			__( 'Disallowed checkout payment methods', 'packeta' ),
+			PaymentGatewayHelper::getAvailablePaymentGatewayChoices()
+		)->checkDefaultValue( false );
 
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];

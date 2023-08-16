@@ -12,10 +12,12 @@ namespace Packetery\Module\Options;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Latte\Engine;
+use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
 
@@ -235,7 +237,7 @@ class Page {
 	 * @return Form
 	 */
 	public function createAutoSubmissionForm(): Form {
-		$gateways = $this->getAvailablePaymentGateways();
+		$gateways = PaymentGatewayHelper::getAvailablePaymentGateways();
 		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
 		$defaults = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
 
@@ -406,7 +408,7 @@ class Page {
 			$carrierLabelFormats
 		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
-		$gateways        = $this->getAvailablePaymentGateways();
+		$gateways        = PaymentGatewayHelper::getAvailablePaymentGateways();
 		$enabledGateways = [];
 		foreach ( $gateways as $gateway ) {
 			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();
@@ -486,33 +488,6 @@ class Page {
 		}
 
 		return $form;
-	}
-
-	/**
-	 * Get available gateways.
-	 *
-	 * @return \WC_Payment_Gateway[]
-	 */
-	public function getAvailablePaymentGateways(): array {
-		$availableGateways = [];
-
-		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
-			if ( 'yes' === $gateway->enabled ) {
-				$availableGateways[ $gateway->id ] = $gateway;
-			}
-		}
-
-		return array_filter( $availableGateways, [ $this, 'filterValidGatewayClass' ] );
-	}
-
-	/**
-	 * Callback for array filter. Returns true if gateway is of correct type.
-	 *
-	 * @param object $gateway Gateway to check.
-	 * @return bool
-	 */
-	protected function filterValidGatewayClass( object $gateway ): bool {
-		return ( $gateway instanceof \WC_Payment_Gateway );
 	}
 
 	/**

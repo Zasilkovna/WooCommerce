@@ -84,6 +84,11 @@
     max-width: calc(100% - 200px);
 }
 
+.packetery-carrier-options-page .select2-container {
+    width: 100% !important;
+    max-width: calc(100% - 200px);
+}
+
 .packetery-carrier-options-page .form-table th.replication-section-label-container {
     padding-top: 22px;
     vertical-align: top;
@@ -493,6 +498,7 @@ tbody .packetery-log-column-note {
     height: 20px;
 }
 
+.packeta_page .select2 .select2-selection,
 .packeta_page input[type="text"],
 .packeta_page input[type="number"],
 .packeta_page select,
@@ -513,6 +519,11 @@ tbody .packetery-log-column-note {
     box-shadow: 0 0 15px rgb(0 0 0 / 10%);
     position: relative;
     border: 1px solid #d0d0d0;
+}
+
+.packeta_page input[type="text"].select2-input:focus {
+    box-shadow: none;
+    border: 0;
 }
 
 .packeta_page select:hover {
