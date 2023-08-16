@@ -571,6 +571,9 @@ class Checkout {
 
 	/**
 	 * Updates shipping packages to make WooCommerce caching system work correctly.
+	 * Package values are used in WooCommerce method \WC_Shipping::calculate_shipping_for_package().
+	 * In order to generate package cache hash correctly by WooCommerce
+	 * the package must contain all relevant information related to pricing.
 	 *
 	 * @param array $packages Packages.
 	 *
