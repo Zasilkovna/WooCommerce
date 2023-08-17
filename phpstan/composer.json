@@ -1,0 +1,19 @@
+{
+  "config": {
+    "platform": {
+      "php": "8.1"
+    },
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
+  },
+  "require-dev": {
+    "woocommerce/woocommerce-sniffs": "^0.1",
+    "phpstan/phpstan": "^1.9",
+    "phpstan/extension-installer": "^1.2",
+    "php-stubs/woocommerce-stubs": "^7.2",
+    "szepeviktor/phpstan-wordpress": "^1.1",
+    "symplify/phpstan-extensions": "^11.1"
+  }
+}
