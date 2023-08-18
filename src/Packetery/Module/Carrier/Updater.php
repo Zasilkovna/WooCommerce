@@ -137,6 +137,7 @@ class Updater {
 					$this->addLogEntry(
 						// translators: %s is carrier name.
 						sprintf( __( 'Carrier parameters changed for carrier "%s".', 'packeta' ), $carrier['name'] ) . ' ' .
+
 						__( 'New parameters', 'packeta' ) . ': ' . implode( ', ', $differences )
 					);
 				}

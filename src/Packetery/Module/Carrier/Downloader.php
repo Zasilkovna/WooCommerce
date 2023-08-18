@@ -77,10 +77,11 @@ class Downloader {
 			];
 		}
 		if ( ! $carriers ) {
+			// translators: keep %failReason placeholder intact.
+			$translatedMessage = __( 'Carrier download failed: %failReason Please try again later.', 'packeta' );
 			return [
 				strtr(
-				// translators: keep %failReason placeholder intact.
-					__( 'Carrier download failed: %failReason Please try again later.', 'packeta' ),
+					$translatedMessage,
 					array( '%failReason' => __( 'Failed to get the list.', 'packeta' ) )
 				),
 				'error',
@@ -88,10 +89,11 @@ class Downloader {
 		}
 		$validation_result = $this->carrier_updater->validate_carrier_data( $carriers );
 		if ( ! $validation_result ) {
+			// translators: keep %failReason placeholder intact.
+			$translatedMessage = __( 'Carrier download failed: %failReason Please try again later.', 'packeta' );
 			return [
 				strtr(
-				// translators: keep %failReason placeholder intact.
-					__( 'Carrier download failed: %failReason Please try again later.', 'packeta' ),
+					$translatedMessage,
 					array( '%failReason' => __( 'Invalid API response.', 'packeta' ) )
 				),
 				'error',
