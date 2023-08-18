@@ -12,7 +12,6 @@ namespace Packetery\Module\Options;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
-use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;

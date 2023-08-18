@@ -12,7 +12,6 @@ namespace Packetery\Module\Api\Internal;
 use Packetery\Core;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Validator;
-use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
 use Packetery\Module\Order\GridExtender;
