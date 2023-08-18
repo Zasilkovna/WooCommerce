@@ -348,13 +348,7 @@ class Checkout {
 		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
 		$paymentMethod  = $this->getChosenPaymentMethod();
 
-		if ( null === $paymentMethod ) {
-			wc_add_notice( __( 'Choose payment method.', 'packeta' ), 'error' );
-
-			return;
-		}
-
-		if ( $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
+		if ( null !== $paymentMethod && $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
 			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
 
 			return;
