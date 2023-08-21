@@ -97,7 +97,7 @@ class FeatureFlagManager {
 			$logger = new \WC_Logger();
 			$logger->warning( 'Packetery Feature flag API download error: ' . $exception->getMessage() );
 			$errorCount = get_option( self::FEATURE_FLAGS_ERROR_COUNTER_OPTION_ID, 0 );
-			update_option( self::FEATURE_FLAGS_ERROR_COUNTER_OPTION_ID, $errorCount+1 );
+			update_option( self::FEATURE_FLAGS_ERROR_COUNTER_OPTION_ID, $errorCount + 1 );
 			if ( $errorCount > 5 ) {
 				update_option( self::FEATURE_FLAGS_DISABLED_DUE_ERRORS_OPTION_ID, true );
 				$logger = new \WC_Logger();
