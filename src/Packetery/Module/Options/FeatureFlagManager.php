@@ -138,7 +138,7 @@ class FeatureFlagManager {
 		}
 
 		if ( true === get_option( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
-			return $flags;
+			return $flags ? $flags : [];
 		}
 
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
