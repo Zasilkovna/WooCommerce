@@ -11,6 +11,7 @@ namespace Packetery\Module\Options;
 
 use DateTimeImmutable;
 use Exception;
+use Packetery\GuzzleHttp\Exception\ConnectException;
 use Packetery\Core\Helper;
 use Packetery\Module\Plugin;
 use Packetery\GuzzleHttp\Client;
@@ -25,11 +26,13 @@ use Packetery\Latte\Engine;
  */
 class FeatureFlagManager {
 
-	private const ENDPOINT_URL                 = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
-	private const VALID_FOR_HOURS              = 4;
-	private const FLAGS_OPTION_ID              = 'packeta_feature_flags';
-	private const TRANSIENT_SHOW_SPLIT_MESSAGE = 'packeta_show_split_message';
-	public const ACTION_HIDE_SPLIT_MESSAGE     = 'dismiss_split_message';
+	private const ENDPOINT_URL                  = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
+	private const VALID_FOR_HOURS               = 4;
+	private const FLAGS_OPTION_ID               = 'packeta_feature_flags';
+	private const TRANSIENT_SHOW_SPLIT_MESSAGE  = 'packeta_show_split_message';
+	public const ACTION_HIDE_SPLIT_MESSAGE      = 'dismiss_split_message';
+	private const DISABLED_DUE_ERRORS_OPTION_ID = 'packeta_feature_flags_disabled_due_errors';
+	private const ERROR_COUNTER_OPTION_ID       = 'packeta_feature_flags_error_counter';
 
 	private const FLAG_LAST_DOWNLOAD = 'lastDownload';
 	private const FLAG_SPLIT_ACTIVE  = 'splitActive';
@@ -84,15 +87,28 @@ class FeatureFlagManager {
 			$response = $this->client->get(
 				self::ENDPOINT_URL,
 				[
-					'query' => [
+					'query'   => [
 						'api_key' => $this->optionsProvider->get_api_key(),
 					],
+					'timeout' => 20,
 				]
 			);
+		} catch ( ConnectException $exception ) {
+			$logger = new \WC_Logger();
+			$logger->warning( 'Packeta Feature flag API download error: ' . $exception->getMessage() );
+			$errorCount = get_option( self::ERROR_COUNTER_OPTION_ID, 0 );
+			update_option( self::ERROR_COUNTER_OPTION_ID, $errorCount + 1 );
+			if ( $errorCount > 5 ) {
+				update_option( self::DISABLED_DUE_ERRORS_OPTION_ID, true );
+				$logger->warning( 'Packeta Feature flag API download was disabled due to permanent connection errors.' );
+			}
+
+			return [];
 		} catch ( GuzzleException $exception ) {
 			// We need to not block the presentation. TODO: solve logging.
 			return [];
 		}
+
 		$responseJson    = $response->getBody()->getContents();
 		$responseDecoded = json_decode( $responseJson, true );
 
@@ -103,6 +119,7 @@ class FeatureFlagManager {
 		];
 
 		update_option( self::FLAGS_OPTION_ID, $flags );
+		update_option( self::ERROR_COUNTER_OPTION_ID, 0 );
 
 		return $flags;
 	}
@@ -118,6 +135,10 @@ class FeatureFlagManager {
 
 		if ( ! isset( $flags ) ) {
 			$flags = get_option( self::FLAGS_OPTION_ID );
+		}
+
+		if ( true === get_option( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
+			return $flags ? $flags : [];
 		}
 
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
