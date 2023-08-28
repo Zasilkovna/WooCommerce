@@ -805,10 +805,6 @@ tbody .packetery-log-column-note {
     border: 0;
 }
 
-.packetery-customs-declaration-activator.packetery-customs-declaration-fields label {
-    display: inline-block;
-}
-
 .packetery-customs-declaration-fields label {
     display: block;
 }
