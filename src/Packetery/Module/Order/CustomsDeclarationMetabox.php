@@ -264,7 +264,7 @@ class CustomsDeclarationMetabox {
 	private function createForm( array $structureData, ?Entity\CustomsDeclaration $customsDeclaration ): Form {
 		$form = $this->formFactory->create();
 
-		$activator = $form->addCheckbox( self::FORM_ACTIVATOR_NAME, __( 'View/Hide customs declaration form', 'packeta' ) );
+		$activator = $form->addCheckbox( self::FORM_ACTIVATOR_NAME, __( 'View/hide customs declaration form', 'packeta' ) );
 		$activator
 			->addCondition( Form::FILLED )
 				->toggle( 'customs-declaration-container' );
