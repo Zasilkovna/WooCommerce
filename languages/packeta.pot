@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2023-08-23T11:00:29+02:00\n"
+"POT-Creation-Date: 2023-08-29T09:46:54+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.5.0\n"
 "X-Domain: packeta\n"
@@ -244,8 +244,8 @@ msgid "This carrier cannot be used, because it requires a customs declaration."
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:417
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:172
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:245
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:174
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:247
 msgid "Delete"
 msgstr ""
 
@@ -1008,109 +1008,113 @@ msgstr ""
 msgid "END"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:148
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:150
 msgid "Customs declaration"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:244
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:246
 msgid "Add item"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:246
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:248
 msgid "Items"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:247
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:249
 msgid "File uploaded."
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:268
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:267
+msgid "View/hide customs declaration form"
+msgstr ""
+
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:276
 msgid "EAD"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:270
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:278
 msgid "Self-declaration (I have a EAD)"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:271
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:279
 msgid "Issuing a EAD via Packeta"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:272
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:280
 msgid "Postal clearance (no EAD and no fees)"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:277
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:287
 msgid "Delivery cost"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:282
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:293
 msgid "Invoice number"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:285
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:297
 msgid "Invoice issue date"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:288
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:301
 msgid "Invoice PDF file"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:300
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:314
 msgid "MRN"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:307
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:322
 msgid "EAD PDF file"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:440
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:462
 msgid "Customs code"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:444
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:467
 msgid "Value"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:449
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:473
 msgid "Product name (EN)"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:451
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:476
 msgid "Product name"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:453
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:478
 msgid "Units count"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:458
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:484
 msgid "Country of origin code"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:462
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:489
 #: src/Packetery/Module/Order/Metabox.php:244
 msgid "Weight (kg)"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:473
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:501
 msgid "Food or book?"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:474
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:502
 msgid "Is VOC?"
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:493
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:521
 msgid "Uploaded file is empty."
 msgstr ""
 
 #. translators: %d is numeric value.
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:499
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:527
 msgid "Uploaded file is too big for storage. Max size is %d MB."
 msgstr ""
 
-#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:513
+#: src/Packetery/Module/Order/CustomsDeclarationMetabox.php:541
 msgid "File failed to upload."
 msgstr ""
 
