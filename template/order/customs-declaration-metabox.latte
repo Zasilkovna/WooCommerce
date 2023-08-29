@@ -1,9 +1,20 @@
 {varType array $translations}
 {varType Packetery\Nette\Forms\Form $form}
 
+<div class="packetery-customs-declaration-activator">
+    <div class="packetery-flex-container">
+        <div class="packetery-customs-declaration-flex-item">
+            <div class="packetery-customs-declaration-flex-item-content">
+                <input n:name=$form[Packetery\Module\Order\CustomsDeclarationMetabox::FORM_ACTIVATOR_NAME]>
+                <label n:name=$form[Packetery\Module\Order\CustomsDeclarationMetabox::FORM_ACTIVATOR_NAME] />
+            </div>
+        </div>
+    </div>
+</div>
+
 {var $formContainer = $form[Packetery\Module\Order\CustomsDeclarationMetabox::FORM_CONTAINER_NAME]}
 {formContainer $formContainer}
-    <div class="packetery-customs-declaration-fields" data-replication-form-id="{Packetery\Module\Order\CustomsDeclarationMetabox::FORM_ID}">
+    <div id="customs-declaration-container" class="packetery-customs-declaration-fields" data-replication-form-id="{Packetery\Module\Order\CustomsDeclarationMetabox::FORM_ID}">
         <div class="packetery-flex-container">
             <div class="packetery-customs-declaration-flex-item">
                 <div class="packetery-customs-declaration-flex-item-content">

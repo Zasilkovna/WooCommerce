@@ -21,6 +21,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
+use Packetery\Nette\Forms\Controls\Checkbox;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\FileUpload;
 use Packetery\Nette\Http\Request;
@@ -39,6 +40,7 @@ class CustomsDeclarationMetabox {
 
 	public const FORM_ID             = 'packetery-customs-declaration-metabox-form';
 	public const FORM_CONTAINER_NAME = 'packetery_customs_declaration';
+	public const FORM_ACTIVATOR_NAME = 'fill_customs_declaration';
 
 	/**
 	 * Latte engine.
@@ -162,7 +164,7 @@ class CustomsDeclarationMetabox {
 		$formTemplate    = $this->formFactory->create();
 		$prefixContainer = $formTemplate->addContainer( self::FORM_CONTAINER_NAME );
 		$items           = $prefixContainer->addContainer( 'items' );
-		$this->addCustomsDeclarationItem( $items, '0' );
+		$this->addCustomsDeclarationItem( $formTemplate->addCheckbox( self::FORM_ACTIVATOR_NAME ), $items, '0' );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-form-template.latte',
@@ -260,7 +262,13 @@ class CustomsDeclarationMetabox {
 	 * @return Form
 	 */
 	private function createForm( array $structureData, ?Entity\CustomsDeclaration $customsDeclaration ): Form {
-		$form            = $this->formFactory->create();
+		$form = $this->formFactory->create();
+
+		$activator = $form->addCheckbox( self::FORM_ACTIVATOR_NAME, __( 'View/hide customs declaration form', 'packeta' ) );
+		$activator
+			->addCondition( Form::FILLED )
+				->toggle( 'customs-declaration-container' );
+
 		$prefixContainer = $form->addContainer( self::FORM_CONTAINER_NAME );
 
 		$ead = $prefixContainer->addSelect(
@@ -271,38 +279,45 @@ class CustomsDeclarationMetabox {
 				self::EAD_CREATE  => __( 'Issuing a EAD via Packeta', 'packeta' ),
 				self::EAD_CARRIER => __( 'Postal clearance (no EAD and no fees)', 'packeta' ),
 			]
-		)
-			->setRequired();
+		);
+		$ead
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired();
 
 		$prefixContainer->addText( 'delivery_cost', __( 'Delivery cost', 'packeta' ) )
-			->setRequired()
-			->addRule( Form::FLOAT )
-			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired()
+				->addRule( Form::FLOAT )
+				->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$prefixContainer->addText( 'invoice_number', __( 'Invoice number', 'packeta' ) )
-			->setRequired();
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired();
 
 		$prefixContainer->addText( 'invoice_issue_date', __( 'Invoice issue date', 'packeta' ) )
-			->setRequired();
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired();
 
 		$invoiceFile = $prefixContainer->addUpload( 'invoice_file', __( 'Invoice PDF file', 'packeta' ) )
 			->setRequired( false );
 
 		if ( null === $customsDeclaration || false === $customsDeclaration->hasInvoiceFileContent() ) {
 			$invoiceFile
-				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
-					->setRequired()
-				->endCondition()
-				->addConditionOn( $ead, Form::EQUAL, self::EAD_CREATE )
-					->setRequired();
+				->addConditionOn( $activator, Form::FILLED )
+					->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+						->setRequired()
+					->endCondition()
+					->addConditionOn( $ead, Form::EQUAL, self::EAD_CREATE )
+						->setRequired();
 		}
 
 		$prefixContainer->addText( 'mrn', __( 'MRN', 'packeta' ) )
 			->setRequired( false )
-			->addRule( Form::MAX_LENGTH, null, 32 )
-			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
-				->toggle( 'customs-declaration-own-field-mrn' )
-				->setRequired();
+			->addConditionOn( $activator, Form::FILLED )
+				->addRule( Form::MAX_LENGTH, null, 32 )
+				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+					->toggle( 'customs-declaration-own-field-mrn' )
+					->setRequired();
 
 		$eadFile = $prefixContainer->addUpload( 'ead_file', __( 'EAD PDF file', 'packeta' ) )
 			->setRequired( false )
@@ -311,8 +326,9 @@ class CustomsDeclarationMetabox {
 
 		if ( null === $customsDeclaration || false === $customsDeclaration->hasEadFileContent() ) {
 			$eadFile
-				->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
-				->setRequired();
+				->addConditionOn( $activator, Form::FILLED )
+					->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
+					->setRequired();
 		}
 
 		$form->addSubmit( 'save' );
@@ -320,10 +336,10 @@ class CustomsDeclarationMetabox {
 		$items = $prefixContainer->addContainer( 'items' );
 
 		if ( empty( $structureData[ self::FORM_CONTAINER_NAME ]['items'] ) ) {
-			$this->addCustomsDeclarationItem( $items, 'new_0' );
+			$this->addCustomsDeclarationItem( $activator, $items, 'new_0' );
 		} else {
 			foreach ( $structureData[ self::FORM_CONTAINER_NAME ]['items'] as $itemId => $itemDefaults ) {
-				$this->addCustomsDeclarationItem( $items, (string) $itemId );
+				$this->addCustomsDeclarationItem( $activator, $items, (string) $itemId );
 			}
 		}
 
@@ -372,6 +388,10 @@ class CustomsDeclarationMetabox {
 		$containerValues             = $prefixedValues[ self::FORM_CONTAINER_NAME ];
 		$items                       = $containerValues['items'];
 		unset( $containerValues['items'] );
+
+		if ( false === $prefixedValues[ self::FORM_ACTIVATOR_NAME ] ) {
+			return;
+		}
 
 		$this->processUploadedFile(
 			'invoice_file',
@@ -431,44 +451,52 @@ class CustomsDeclarationMetabox {
 	/**
 	 * Adds customs declaration item.
 	 *
+	 * @param Checkbox  $activator Activating checkbox.
 	 * @param Container $container Container.
-	 * @param string    $index Item index.
+	 * @param string    $index     Item index.
+	 *
 	 * @return void
 	 */
-	public function addCustomsDeclarationItem( Container $container, string $index ): void {
+	public function addCustomsDeclarationItem( Checkbox $activator, Container $container, string $index ): void {
 		$item = $container->addContainer( $index );
 		$item->addText( 'customs_code', __( 'Customs code', 'packeta' ) )
-			->setRequired()
-			->addRule( Form::MAX_LENGTH, null, 8 );
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired()
+				->addRule( Form::MAX_LENGTH, null, 8 );
 
 		$item->addText( 'value', __( 'Value', 'packeta' ) )
-			->setRequired()
-			->addRule( Form::FLOAT )
-			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired()
+				->addRule( Form::FLOAT )
+				->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$item->addText( 'product_name_en', __( 'Product name (EN)', 'packeta' ) )
-			->setRequired();
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired();
 		$item->addText( 'product_name', __( 'Product name', 'packeta' ) );
 
 		$item->addText( 'units_count', __( 'Units count', 'packeta' ) )
-			->setRequired()
-			->addRule( Form::INTEGER )
-			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired()
+				->addRule( Form::INTEGER )
+				->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$item->addText( 'country_of_origin', __( 'Country of origin code', 'packeta' ) )
-			->setRequired()
-			->addRule( Form::LENGTH, null, 2 );
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired()
+				->addRule( Form::LENGTH, null, 2 );
 
 		$item->addText( 'weight', __( 'Weight (kg)', 'packeta' ) )
-			->setRequired()
-			->addRule( Form::FLOAT )
-			->addRule( ...FormRules::getGreaterThanParameters( 0 ) )
-			->addFilter(
-				static function ( float $value ): float {
-					return Helper::simplifyWeight( $value );
-				}
-			)
-			->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
+			->addConditionOn( $activator, Form::FILLED )
+				->setRequired()
+				->addRule( Form::FLOAT )
+				->addRule( ...FormRules::getGreaterThanParameters( 0 ) )
+				->addFilter(
+					static function ( float $value ): float {
+						return Helper::simplifyWeight( $value );
+					}
+				)
+				->addRule( ...FormRules::getGreaterThanParameters( 0 ) );
 
 		$item->addCheckbox( 'is_food_or_book', __( 'Food or book?', 'packeta' ) );
 		$item->addCheckbox( 'is_voc', __( 'Is VOC?', 'packeta' ) );
