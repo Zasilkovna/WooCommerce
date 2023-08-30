@@ -292,8 +292,19 @@ class Repository {
 		if ( empty( $country ) ) {
 			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
 		}
+
 		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
-		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
+		if ( null === $carrierId ) {
+			throw new InvalidCarrierException(
+				sprintf(
+				// translators: %s is country code.
+					__( 'Selected carrier does not deliver to country "%s".', 'packeta' ),
+					$country
+				)
+			);
+		}
+
+		$carrier = $this->carrierRepository->getAnyById( $carrierId );
 		if ( null === $carrier ) {
 			throw new InvalidCarrierException(
 				sprintf(
@@ -303,6 +314,7 @@ class Repository {
 				)
 			);
 		}
+
 		$partialOrder = new Order( $result->id, $carrier );
 		$orderWeight  = $this->parseFloat( $result->weight );
 		if ( null !== $orderWeight ) {

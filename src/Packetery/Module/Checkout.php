@@ -816,6 +816,7 @@ class Checkout {
 
 	/**
 	 * Gets carrier id from chosen shipping method.
+	 * TODO: It's actually an alias of getCarrierIdFromShippingMethod, remove it later.
 	 *
 	 * @param string $chosenMethod Chosen shipping method.
 	 *
