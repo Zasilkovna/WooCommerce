@@ -11,7 +11,6 @@ namespace Packetery\Module\CustomsDeclaration;
 
 use Packetery\Core\Entity\CustomsDeclaration;
 use Packetery\Core\Entity\CustomsDeclarationItem;
-use Packetery\Core\Entity\Order;
 use Packetery\Core\Helper;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\WpdbAdapter;

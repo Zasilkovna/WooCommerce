@@ -205,6 +205,7 @@ class LabelPrint {
 					'labelPrinting'         => __( 'Print labels', 'packeta' ),
 					// translators: %s is count.
 					'numberOfLabelsToPrint' => __( 'Number of labels to print: %s', 'packeta' ),
+
 					'back'                  => __( 'Back', 'packeta' ),
 					'printLabels'           => __( 'Print labels', 'packeta' ),
 				],
@@ -312,8 +313,11 @@ class LabelPrint {
 
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
-			// translators: %s is offset.
-			$availableOffsets[ $i ] = ( 0 === $i ? __( "don't skip any field on a print sheet", 'packeta' ) : sprintf( __( 'skip %s fields on first sheet', 'packeta' ), $i ) );
+			$availableOffsets[ $i ] = ( 0 === $i ?
+				__( "don't skip any field on a print sheet", 'packeta' ) :
+				// translators: %s is offset.
+				sprintf( __( 'skip %s fields on first sheet', 'packeta' ), $i )
+			);
 		}
 		$form->addSelect(
 			'offset',

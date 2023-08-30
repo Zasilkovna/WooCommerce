@@ -12,7 +12,6 @@ namespace Packetery\Module\Options;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
-use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
@@ -711,8 +710,9 @@ class Page {
 			'general'                                => __( 'General', 'packeta' ),
 			'packetAutoSubmission'                   => __( 'Packet auto-submission', 'packeta' ),
 			'packetAutoSubmissionMappingDescription' => __( 'Choose events for payment methods that will trigger packet submission', 'packeta' ),
-			// translators: %s represents URL, keep intact.
+			// translators: %s represents URL.
 			'apiPasswordCanBeFoundAt%sUrl'           => __( 'API password can be found at %s', 'packeta' ),
+
 			'saveChanges'                            => __( 'Save changes', 'packeta' ),
 			'validateSender'                         => __( 'Validate sender', 'packeta' ),
 			'support'                                => __( 'Support', 'packeta' ),
