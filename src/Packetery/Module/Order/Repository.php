@@ -294,16 +294,6 @@ class Repository {
 		}
 
 		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
-		if ( null === $carrierId ) {
-			throw new InvalidCarrierException(
-				sprintf(
-				// translators: %s is country code.
-					__( 'Selected carrier does not deliver to country "%s".', 'packeta' ),
-					$country
-				)
-			);
-		}
-
 		$carrier = $this->carrierRepository->getAnyById( $carrierId );
 		if ( null === $carrier ) {
 			throw new InvalidCarrierException(
