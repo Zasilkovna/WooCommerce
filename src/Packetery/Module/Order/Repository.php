@@ -294,7 +294,7 @@ class Repository {
 		}
 
 		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
-		$carrier = $this->carrierRepository->getAnyById( $carrierId );
+		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
 		if ( null === $carrier ) {
 			throw new InvalidCarrierException(
 				sprintf(
