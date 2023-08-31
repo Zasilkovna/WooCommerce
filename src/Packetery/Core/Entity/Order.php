@@ -710,6 +710,24 @@ class Order {
 	}
 
 	/**
+	 * Packet barcode e.g Z123456789
+	 *
+	 * @return string|null
+	 */
+	public function getPacketBarcode(): ?string {
+		return $this->packetId ? 'Z' . $this->packetId : null;
+	}
+
+	/**
+	 * Get packet tracking url
+	 *
+	 * @return string|null
+	 */
+	public function getPacketTrackingUrl(): ?string {
+		return $this->packetId ? sprintf( Helper::TRACKING_URL, $this->packetId ) : null;
+	}
+
+	/**
 	 * Gets packet claim ID.
 	 *
 	 * @return string|null

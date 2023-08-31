@@ -33,6 +33,7 @@ class Provider {
 	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                             = false;
 	const AUTO_ORDER_STATUS_DEFAULT                                    = '';
 	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
+	public const EMAIL_HOOK_DEFAULT                                    = 'woocommerce_email_footer';
 	const AUTO_ORDER_STATUS = 'auto_order_status';
 
 	/**
@@ -543,6 +544,20 @@ class Provider {
 	 */
 	public function getAutoOrderStatus(): ?string {
 		return $this->get( self::AUTO_ORDER_STATUS );
+	}
+
+	/**
+	 * Gets email hook.
+	 *
+	 * @since 1.6.1
+	 * @return string
+	 */
+	public function getEmailHook(): string {
+		$emailHook = $this->get( 'email_hook' );
+		if ( null !== $emailHook ) {
+			return $this->get( 'email_hook' );
+		}
+		return self::EMAIL_HOOK_DEFAULT;
 	}
 
 	/**
