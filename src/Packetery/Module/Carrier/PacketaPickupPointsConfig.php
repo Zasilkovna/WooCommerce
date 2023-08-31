@@ -15,6 +15,7 @@ use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\CompoundProvider;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorProvider;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Options\FeatureFlagManager;
 
 /**
@@ -134,23 +135,6 @@ class PacketaPickupPointsConfig {
 	}
 
 	/**
-	 * Gets zpoint carrier id for given country.
-	 *
-	 * @param string $country Country ISO code.
-	 *
-	 * @return string|null
-	 */
-	public function getCompoundCarrierIdByCountry( string $country ): ?string {
-		$compoundCarriers = $this->getCompoundCarriers();
-
-		if ( ! isset( $compoundCarriers[ $country ] ) ) {
-			return null;
-		}
-
-		return $compoundCarriers[ $country ]->getId();
-	}
-
-	/**
 	 * Checks if id is compound carrier id.
 	 *
 	 * @param string $carrierId Carrier id.
@@ -221,10 +205,23 @@ class PacketaPickupPointsConfig {
 	 * @param string $country Lowercase country.
 	 *
 	 * @return string|null Null in case of split vendor when split is off.
+	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
-	public function getFixedCarrierId( string $carrierId, string $country ): ?string {
+	public function getFixedCarrierId( string $carrierId, string $country ): string {
 		if ( Entity\Carrier::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
-			return $this->getCompoundCarrierIdByCountry( $country );
+			$compoundCarriers = $this->getCompoundCarriers();
+
+			if ( ! isset( $compoundCarriers[ $country ] ) ) {
+				throw new InvalidCarrierException(
+					sprintf(
+					// translators: %s is country code.
+						__( 'Selected carrier does not deliver to country "%s".', 'packeta' ),
+						$country
+					)
+				);
+			}
+
+			return $compoundCarriers[ $country ]->getId();
 		}
 
 		return $carrierId;

@@ -185,6 +185,7 @@ class OptionsPage {
 			}
 		}
 
+		// We don't expect id to be empty in this situation. This would indicate a data save error.
 		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
 
 		if ( null !== $carrier && $carrier->supportsCod() ) {
