@@ -423,7 +423,8 @@ class Plugin {
 
 		register_uninstall_hook( $this->main_file_path, array( __CLASS__, 'uninstall' ) );
 
-		add_action( 'woocommerce_email_footer', [ $this, 'renderEmailFooter' ] );
+		$wcEmailHook = $this->optionsProvider->getEmailHook();
+		add_action( $wcEmailHook, [ $this, 'renderEmailFooter' ] );
 		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
 
 		$orderListScreenId = 'woocommerce_page_wc-orders';
@@ -617,26 +618,22 @@ class Plugin {
 			return;
 		}
 
-		$pickupPoint              = $order->getPickupPoint();
-		$validatedDeliveryAddress = $order->getValidatedDeliveryAddress();
-		if ( null === $pickupPoint && null === $validatedDeliveryAddress ) {
+		if ( null === $order->getPickupPoint() && null === $order->getValidatedDeliveryAddress() ) {
 			return;
 		}
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
 			[
-				'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
-				'pickupPoint'              => $pickupPoint,
-				'validatedDeliveryAddress' => $validatedDeliveryAddress,
-				'isExternalCarrier'        => $order->isExternalCarrier(),
-				'translations'             => [
-					'packeta'             => __( 'Packeta', 'packeta' ),
-					'selectedPickupPoint' => __( 'Selected pickup point', 'packeta' ),
-					'pickupPointName'     => __( 'Pickup Point Name', 'packeta' ),
-					'pickupPointDetail'   => __( 'Pickup Point Detail', 'packeta' ),
-					'validatedAddress'    => __( 'Validated address', 'packeta' ),
-					'address'             => __( 'Address', 'packeta' ),
+				'displayPickupPointInfo' => $this->shouldDisplayPickupPointInfo(),
+				'order'                  => $order,
+				'translations'           => [
+					'packeta'              => __( 'Packeta', 'packeta' ),
+					'pickupPointName'      => __( 'Pickup Point Name', 'packeta' ),
+					'pickupPointDetail'    => __( 'Pickup Point Detail', 'packeta' ),
+					'validatedAddress'     => __( 'Validated address', 'packeta' ),
+					'address'              => __( 'Address', 'packeta' ),
+					'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
 				],
 			]
 		);
@@ -648,12 +645,16 @@ class Plugin {
 	 * @param mixed $email Email data.
 	 */
 	public function renderEmailFooter( $email ): void {
-		if ( ! $email instanceof WC_Email || ! $email->object instanceof WC_Order ) {
+		if ( $email instanceof WC_Email || ( isset( $email->object ) && $email->object instanceof WC_Order ) ) {
+			$wcOrder = $email->object;
+		} elseif ( $email instanceof WC_Order ) {
+			$wcOrder = $email;
+		} else {
 			return;
 		}
 
 		try {
-			$packeteryOrder = $this->orderRepository->getByWcOrder( $email->object );
+			$packeteryOrder = $this->orderRepository->getByWcOrder( $wcOrder );
 		} catch ( InvalidCarrierException $exception ) {
 			$packeteryOrder = null;
 		}
@@ -661,15 +662,10 @@ class Plugin {
 			return;
 		}
 
-		$pickupPoint              = $packeteryOrder->getPickupPoint();
-		$validatedDeliveryAddress = $packeteryOrder->getValidatedDeliveryAddress();
-
 		$templateParams  = [
-			'displayPickupPointInfo'   => $this->shouldDisplayPickupPointInfo(),
-			'pickupPoint'              => $pickupPoint,
-			'validatedDeliveryAddress' => $validatedDeliveryAddress,
-			'isExternalCarrier'        => $packeteryOrder->isExternalCarrier(),
-			'translations'             => [
+			'displayPickupPointInfo' => $this->shouldDisplayPickupPointInfo(),
+			'order'                  => $packeteryOrder,
+			'translations'           => [
 				'packeta'                  => __( 'Packeta', 'packeta' ),
 				'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
 				'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
@@ -681,6 +677,7 @@ class Plugin {
 				'city'                     => __( 'City', 'packeta' ),
 				'zip'                      => __( 'Zip', 'packeta' ),
 				'county'                   => __( 'County', 'packeta' ),
+				'packetTrackingOnline'     => __( 'Packet tracking online', 'packeta' ),
 			],
 		];
 		$emailFooterHtml = $this->latte_engine->renderToString(

@@ -448,6 +448,17 @@ class Page {
 			]
 		);
 
+		$container->addSelect(
+			'email_hook',
+			__( 'Hook used to view information in email', 'packeta' ),
+			[
+				'woocommerce_email_footer'             => 'woocommerce_email_footer',
+				'woocommerce_email_before_order_table' => 'woocommerce_email_before_order_table',
+				'woocommerce_email_after_order_table'  => 'woocommerce_email_after_order_table',
+				'woocommerce_email_order_meta'         => 'woocommerce_email_order_meta',
+			]
+		);
+
 		$container->addCheckbox( 'force_packet_cancel', __( 'Force order cancellation', 'packeta' ) )
 					->setRequired( false )
 					->setDefaultValue( Provider::FORCE_PACKET_CANCEL_DEFAULT );

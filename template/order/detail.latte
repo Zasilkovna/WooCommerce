@@ -1,18 +1,19 @@
-{varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
+{varType Packetery\Core\Entity\Order $order}
 {varType bool $displayPickupPointInfo}
+{var $pickupPoint = $order->getPickupPoint()}
+{var $validatedDeliveryAddress = $order->getValidatedDeliveryAddress()}
 
 <section class="packetery-order-detail">
+	<h2 class="woocommerce-order-details__title">{$translations['packeta']}</h2>
 
-	{if $pickupPoint && $displayPickupPointInfo}
-		<h2 class="woocommerce-order-details__title">{$translations['packeta']} - {$translations['selectedPickupPoint']}</h2>
-
-		<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
-			<tbody>
+	<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
+		<tbody>
+		{if $pickupPoint && $displayPickupPointInfo}
 			<tr>
 				<th scope="row">{$translations['pickupPointName']}</th>
 				<td>
 					{$pickupPoint->getName()}
-					{if $pickupPoint->getUrl() && !$isExternalCarrier}
+					{if $pickupPoint->getUrl() && !$order->isExternalCarrier()}
 						<br>
 						<a class="button" target="_blank"
 						   href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetail']}</a>
@@ -25,24 +26,26 @@
 					{$pickupPoint->getFullAddress()}
 				</td>
 			</tr>
-			</tbody>
-		</table>
-	{/if}
+		{/if}
 
-    {if $validatedDeliveryAddress}
-		<h2 class="woocommerce-order-details__title">{$translations['packeta']} - {$translations['validatedAddress']}</h2>
-
-		<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
-			<tbody>
+		{if $validatedDeliveryAddress}
 			<tr>
-				<th scope="row">{$translations['address']}</th>
+				<th scope="row">{$translations['validatedAddress']}</th>
 				<td>
 					{$validatedDeliveryAddress->getStreet()} {$validatedDeliveryAddress->getHouseNumber()},
 					{$validatedDeliveryAddress->getZip()} {$validatedDeliveryAddress->getCity()}
 				</td>
 			</tr>
-			</tbody>
-		</table>
-	{/if}
+		{/if}
 
+		{if $order->isExported()}
+			<tr>
+				<th scope="row">{$translations['packetTrackingOnline']}</th>
+				<td>
+					<a href='{$order->getPacketTrackingUrl()}'>{$order->getPacketBarcode()}</a>
+				</td>
+			</tr>
+		{/if}
+		</tbody>
+	</table>
 </section>
