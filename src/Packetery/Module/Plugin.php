@@ -627,7 +627,6 @@ class Plugin {
 			[
 				'displayPickupPointInfo' => $this->shouldDisplayPickupPointInfo(),
 				'order'                  => $order,
-				'isExternalCarrier'      => $order->isExternalCarrier(),
 				'translations'           => [
 					'packeta'              => __( 'Packeta', 'packeta' ),
 					'pickupPointName'      => __( 'Pickup Point Name', 'packeta' ),
