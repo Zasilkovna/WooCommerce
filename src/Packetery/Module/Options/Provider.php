@@ -554,10 +554,8 @@ class Provider {
 	 */
 	public function getEmailHook(): string {
 		$emailHook = $this->get( 'email_hook' );
-		if ( null !== $emailHook ) {
-			return $this->get( 'email_hook' );
-		}
-		return self::EMAIL_HOOK_DEFAULT;
+
+		return ( null !== $emailHook ? $emailHook : self::EMAIL_HOOK_DEFAULT );
 	}
 
 	/**

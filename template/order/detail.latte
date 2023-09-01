@@ -1,5 +1,6 @@
 {varType Packetery\Core\Entity\Order $order}
 {varType bool $displayPickupPointInfo}
+{varType bool $isExternalCarrier}
 {var $pickupPoint = $order->getPickupPoint()}
 {var $validatedDeliveryAddress = $order->getValidatedDeliveryAddress()}
 
@@ -28,23 +29,24 @@
 			</tr>
 		{/if}
 
-    {if $validatedDeliveryAddress}
-		<tr>
-			<th scope="row">{$translations['validatedAddress']}</th>
-			<td>
-				{$validatedDeliveryAddress->getStreet()} {$validatedDeliveryAddress->getHouseNumber()},
-				{$validatedDeliveryAddress->getZip()} {$validatedDeliveryAddress->getCity()}
-			</td>
-		</tr>
-	{/if}
-	{if $order->isExported()}
-		<tr>
-			<th scope="row">{$translations['packetTrackingOnline']}</th>
-			<td>
-				<a href='{$order->getPacketTrackingUrl()}'>{$order->getPacketBarcode()}</a>
-			</td>
-		</tr>
-	{/if}
+		{if $validatedDeliveryAddress}
+			<tr>
+				<th scope="row">{$translations['validatedAddress']}</th>
+				<td>
+					{$validatedDeliveryAddress->getStreet()} {$validatedDeliveryAddress->getHouseNumber()},
+					{$validatedDeliveryAddress->getZip()} {$validatedDeliveryAddress->getCity()}
+				</td>
+			</tr>
+		{/if}
+
+		{if $order->isExported()}
+			<tr>
+				<th scope="row">{$translations['packetTrackingOnline']}</th>
+				<td>
+					<a href='{$order->getPacketTrackingUrl()}'>{$order->getPacketBarcode()}</a>
+				</td>
+			</tr>
+		{/if}
 		</tbody>
 	</table>
 </section>
