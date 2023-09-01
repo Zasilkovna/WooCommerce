@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.3
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 8.0.0
@@ -64,6 +64,10 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.6.1 =
+Added: New filters have been added to display information in e-mail. In the plugin settings, it is possible to select the filter that will be used. Emails now show a tracking number with a link to track your shipment online.
+Fixed: Treated the situation when a country where we do not have internal delivery points is selected for the order.
+
 = 1.6.0 =
 Added: High Performance Order Storage (Custom Order Table) feature support.
 Added: Claim assistant support.
