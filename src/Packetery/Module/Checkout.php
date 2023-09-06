@@ -310,7 +310,7 @@ class Checkout {
 	}
 
 	/**
-	 * Adds fields to checkout page to save the values later
+	 * Adds fields to the checkout page to save the values later
 	 */
 	public function renderHiddenInputFields(): void {
 		$this->latte_engine->render(
@@ -715,8 +715,9 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
+				$name                   = $this->getFormattedShippingMethodName( $options->getName(), $cost );
 				$rateId                 = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
-				$customRates[ $rateId ] = $this->createShippingRate( $options->getName(), $rateId, $cost );
+				$customRates[ $rateId ] = $this->createShippingRate( $name, $rateId, $cost );
 			}
 		}
 
@@ -734,6 +735,21 @@ class Checkout {
 	 */
 	private function getRateCost( Carrier\Options $options, float $cartPrice, $cartWeight ): ?float {
 		return $this->rateCalculator->getShippingRateCost( $options, $cartPrice, $cartWeight, $this->isFreeShippingCouponApplied() );
+	}
+
+	/**
+	 * Returns the shipping method name by price.
+	 *
+	 * @param string $name Shipping Rate Name.
+	 * @param float  $cost Shipping Rate Cost.
+	 * @return string
+	 */
+	private function getFormattedShippingMethodName( string $name, float $cost ): string {
+		if ( 0.0 === $cost ) {
+			return sprintf( '%s (%s)', $name, __( 'Free', 'packeta' ) );
+		}
+
+		return $name;
 	}
 
 	/**
