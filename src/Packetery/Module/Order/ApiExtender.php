@@ -9,7 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Entity\Order;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\ShippingMethod;
 use WC_Data;
 use WC_Order;
 use WP_REST_Response;
@@ -57,6 +59,11 @@ class ApiExtender {
 			return $response;
 		}
 
+		$responseData = $response->get_data();
+		if ( ! isset( $responseData['shipping_lines'] ) ) {
+			return $response;
+		}
+
 		try {
 			$order = $this->orderRepository->getByWcOrder( $object );
 		} catch ( InvalidCarrierException $invalidCarrierException ) {
@@ -67,33 +74,38 @@ class ApiExtender {
 			return $response;
 		}
 
-		$this->addMetaDataItem( $response, '_packetery_carrier_id', $order->getCarrier()->getId() );
-		if ( null !== $order->getPickupPoint() && null !== $order->getPickupPoint()->getId() ) {
-			$this->addMetaDataItem( $response, '_packetery_point_id', $order->getPickupPoint()->getId() );
-		}
-		if ( null !== $order->getCarrierNumber() ) {
-			$this->addMetaDataItem( $response, '_packetery_carrier_number', $order->getCarrierNumber() );
-		}
-		if ( null !== $order->getPacketId() ) {
-			$this->addMetaDataItem( $response, '_packetery_packet_id', $order->getPacketId() );
+		foreach ( $responseData['shipping_lines'] as $key => $shippingLine ) {
+			if ( ShippingMethod::PACKETERY_METHOD_ID !== $shippingLine['method_id'] ) {
+				continue;
+			}
+			$response->data['shipping_lines'][ $key ]['packeta'] = $this->getPacketaItemsToShippingLines( $order );
 		}
 
 		return $response;
 	}
 
 	/**
-	 * Adds metadata item to response.
+	 * Add Items to Shipping Lines.
 	 *
-	 * @param WP_REST_Response $response Response.
-	 * @param string           $key Key.
-	 * @param string           $value Value.
+	 * @param Order $order Packetery Order.
 	 *
-	 * @return void
+	 * @return array
 	 */
-	private function addMetaDataItem( WP_REST_Response $response, string $key, string $value ): void {
-		$response->data['meta_data'][] = [
-			'key'   => $key,
-			'value' => $value,
+	private function getPacketaItemsToShippingLines( Order $order ): array {
+		$items = [
+			'carrier_id' => $order->getCarrier()->getId(),
+			'point_id'   => null,
+			'point_name' => null,
 		];
+
+		if ( null !== $order->getPickupPoint() ) {
+			$items['point_id']   = $order->getPickupPoint()->getId();
+			$items['point_name'] = $order->getPickupPoint()->getName();
+		}
+
+		$items['carrier_number'] = $order->getCarrierNumber();
+		$items['packet_id']      = $order->getPacketId();
+
+		return $items;
 	}
 }

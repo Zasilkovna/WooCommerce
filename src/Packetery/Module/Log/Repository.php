@@ -211,7 +211,8 @@ class Repository {
 
 		$paramsString = '';
 		if ( $record->params ) {
-			$paramsString = wp_json_encode( $record->params );
+			$params       = \Packetery\Module\Helper::convertArrayFloatsToStrings( $record->params );
+			$paramsString = wp_json_encode( $params );
 		}
 
 		$orderId = $record->orderId;
