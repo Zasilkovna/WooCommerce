@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.3
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 8.0.0
@@ -64,6 +64,12 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.6.2 =
+Fixed: In some cases (depending on the hosting settings), the value of the shipment or COD for the sent shipment was incorrectly displayed in the API Log.
+Fixed: In order emails or on the thank-you page, the header "Packeta" is no longer displayed, if no information about pickup points is available.
+Fixed: When sending some types of emails (e.g. forgotten password), an error occurred while sending them.
+Update: Parameters passed to the Orders endpoint response were moved from order_meta directly to the shipping method. At the same time, a new parameter “point_name” was added.
+
 = 1.6.1 =
 Added: New filters have been added to display information in e-mail. In the plugin settings, it is possible to select the filter that will be used. Emails now show a tracking number with a link to track your shipment online.
 Fixed: Treated the situation when a country where we do not have internal delivery points is selected for the order.
