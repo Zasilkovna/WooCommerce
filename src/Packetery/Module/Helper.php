@@ -169,4 +169,26 @@ class Helper {
 
 		return OrderUtil::custom_orders_table_usage_is_enabled();
 	}
+
+
+	/**
+	 * Converts all float values within an array to strings.
+	 *
+	 * @param array $array Array with parameters.
+	 *
+	 * @return array
+	 */
+	public static function convertArrayFloatsToStrings( array $array ): array {
+		array_walk_recursive(
+			$array,
+			static function ( &$item ) {
+				if ( is_float( $item ) ) {
+					$item = (string) $item;
+				}
+			}
+		);
+
+		return $array;
+
+	}
 }

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Api;
 use Packetery\Module\Carrier\OptionsPage;
@@ -618,7 +619,7 @@ class Plugin {
 			return;
 		}
 
-		if ( null === $order->getPickupPoint() && null === $order->getValidatedDeliveryAddress() ) {
+		if ( $this->shouldHidePacketaInfo( $order ) ) {
 			return;
 		}
 
@@ -645,11 +646,16 @@ class Plugin {
 	 * @param mixed $email Email data.
 	 */
 	public function renderEmailFooter( $email ): void {
-		if ( $email instanceof WC_Email || ( isset( $email->object ) && $email->object instanceof WC_Order ) ) {
+		$wcOrder = null;
+		if ( ( $email instanceof WC_Email ) && ( $email->object instanceof WC_Order ) ) {
 			$wcOrder = $email->object;
-		} elseif ( $email instanceof WC_Order ) {
+		}
+
+		if ( $email instanceof WC_Order ) {
 			$wcOrder = $email;
-		} else {
+		}
+
+		if ( null === $wcOrder ) {
 			return;
 		}
 
@@ -662,7 +668,11 @@ class Plugin {
 			return;
 		}
 
-		$templateParams  = [
+		if ( $this->shouldHidePacketaInfo( $packeteryOrder ) ) {
+			return;
+		}
+
+		$templateParams = [
 			'displayPickupPointInfo' => $this->shouldDisplayPickupPointInfo(),
 			'order'                  => $packeteryOrder,
 			'translations'           => [
@@ -680,8 +690,8 @@ class Plugin {
 				'packetTrackingOnline'     => __( 'Packet tracking online', 'packeta' ),
 			],
 		];
-		$emailFooterHtml = $this->latte_engine->renderToString(
-			PACKETERY_PLUGIN_DIR . '/template/email/footer.latte',
+		$emailHtml      = $this->latte_engine->renderToString(
+			PACKETERY_PLUGIN_DIR . '/template/email/order.latte',
 			$templateParams
 		);
 		/**
@@ -689,7 +699,20 @@ class Plugin {
 		 *
 		 * @since 1.5.3
 		 */
-		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailFooterHtml, $templateParams ) );
+		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailHtml, $templateParams ) );
+	}
+
+	/**
+	 * Determines if a Packeta order should be displayed.
+	 *
+	 * @param PacketeryOrder $order Order.
+	 *
+	 * @return bool
+	 */
+	private function shouldHidePacketaInfo( PacketeryOrder $order ): bool {
+		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && $order->getPickupPoint();
+
+		return ( ! $isPickupPointInfoVisible ) && null === $order->getValidatedDeliveryAddress() && false === $order->isExported();
 	}
 
 	/**

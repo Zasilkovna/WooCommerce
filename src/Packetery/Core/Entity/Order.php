@@ -780,7 +780,7 @@ class Order {
 	 *
 	 * @return bool
 	 */
-	public function isExported(): ?bool {
+	public function isExported(): bool {
 		return $this->isExported;
 	}
 
