@@ -746,7 +746,7 @@ class Checkout {
 	 */
 	private function getFormattedShippingMethodName( string $name, float $cost ): string {
 		if ( 0.0 === $cost ) {
-			return sprintf( '%s (%s)', $name, __( 'Free', 'packeta' ) );
+			return sprintf( '%s: %s', $name, __( 'Free', 'packeta' ) );
 		}
 
 		return $name;
