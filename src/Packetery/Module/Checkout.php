@@ -275,6 +275,13 @@ class Checkout {
 			);
 		}
 
+		/**
+		 * Filter widget weight in checkout.
+		 *
+		 * @since 1.6.3
+		 */
+		$widgetWeight = (float) apply_filters( 'packeta_widget_weight', $this->getCartWeightKg() );
+
 		return [
 			/**
 			 * Filter widget language in checkout.
@@ -283,7 +290,7 @@ class Checkout {
 			 */
 			'language'                   => (string) apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
 			'country'                    => $this->getCustomerCountry(),
-			'weight'                     => $this->getCartWeightKg(),
+			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
 			// TODO: Settings are not updated on AJAX checkout update. Needs rework due to possible checkout solutions allowing cart update.
 			'isAgeVerificationRequired'  => $this->isAgeVerification18PlusRequired(),
