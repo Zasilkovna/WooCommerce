@@ -1194,13 +1194,11 @@ class Checkout {
 	 * Gets name of transient for selected pickup point.
 	 */
 	public function getTransientNamePacketaCheckoutData(): string {
-		if ( isset( $_COOKIE['packeta_checkout'] ) ) {
-			$token = sanitize_text_field( wp_unslash( $_COOKIE['packeta_checkout'] ) );
+		if ( is_user_logged_in() ) {
+			$token = wp_get_session_token();
 		} else {
-			$token = uniqid( 'id', true );
-			setcookie( 'packeta_checkout', $token, time() + DAY_IN_SECONDS, '/' );
+			$token = WC()->session->get_customer_id();
 		}
-
 		return 'packeta_checkout_data_' . $token;
 	}
 }
