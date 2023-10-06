@@ -107,8 +107,9 @@ final class CheckoutController extends WP_REST_Controller {
 			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
 		}
 
+		$transientName = $this->checkout->getTransientNamePacketaCheckoutData();
 		set_transient(
-			$this->checkout->getTransientNamePacketaCheckoutData(),
+			$transientName,
 			$savedData,
 			DAY_IN_SECONDS
 		);

@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.3
-Stable tag: 1.6.3
+Stable tag: 1.6.4
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 8.0.0
@@ -64,6 +64,8 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+== 1.6.4 =
+Fixed: A user, who was not logged in, could be shown information about a selected pickup point after loading into the checkout, even if the user had not yet selected a pickup point.
 = 1.6.3 =
 Added: packeta_widget_weight filter
 Added: In the case of free shipping, the information "Free" is now displayed after the name of the shipping method.

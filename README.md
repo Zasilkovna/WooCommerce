@@ -134,6 +134,17 @@ add_filter( 'packeta_widget_language', static function ( string $language ): str
 	return 'hu';
 } );
 ```
+##### Checkout widget weight filter
+
+Since 1.6.3. If you would like to set the weight passed to the checkout widget, you can use the following code by placing it into ```wp-includes/functions.php```.
+
+```
+function packeta_widget_weight($weight) {
+  return 1;
+}
+
+add_filter( ‘packeta_widget_weight’, ‘packeta_widget_weight’);
+```
 
 ##### Filter to modify information about Packeta pickup point or validated address in e-mail
 

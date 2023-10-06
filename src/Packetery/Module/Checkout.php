@@ -302,6 +302,7 @@ class Checkout {
 			'saveSelectedPickupPointUrl' => $this->apiRouter->getSaveSelectedPickupPointUrl(),
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
 			'removeSavedDataUrl'         => $this->apiRouter->getRemoveSavedDataUrl(),
+			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
 			'translations'               => [
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
@@ -1194,7 +1195,12 @@ class Checkout {
 	 * Gets name of transient for selected pickup point.
 	 */
 	public function getTransientNamePacketaCheckoutData(): string {
-		return 'packeta_checkout_data_' . wp_get_session_token();
+		if ( is_user_logged_in() ) {
+			$token = wp_get_session_token();
+		} else {
+			WC()->initialize_session();
+			$token = WC()->session->get_customer_id();
+		}
+		return 'packeta_checkout_data_' . $token;
 	}
-
 }

@@ -1,4 +1,18 @@
 var packeteryLoadCheckout = function( $, settings ) {
+	var postWithNonce = function ( url, data, errorMessage ) {
+		$.ajax( {
+			type: 'POST',
+			url: url,
+			data: data,
+			beforeSend: function ( xhr ) {
+				xhr.setRequestHeader( 'X-WP-Nonce', settings.nonce );
+			},
+		} )
+		.fail( function ( xhr, status, error ) {
+			console.log( 'Packeta: ' + errorMessage + error );
+		} );
+	}
+
 	var packeteryCheckout = function( settings ) {
 		var rateAttrValues = {};
 		if ( settings.savedData ) {
@@ -268,12 +282,11 @@ var packeteryLoadCheckout = function( $, settings ) {
 				clearInfo( settings.pickupPointAttrs );
 				clearInfo( settings.homeDeliveryAttrs );
 
-				$.post(
-					settings.removeSavedDataUrl, {}
-				).fail( function ( xhr, status, error ) {
-					console.log( 'Packeta: Failed to remove saved selected pickup point or validated address data: ' + error );
-				} );
-
+				postWithNonce(
+					settings.removeSavedDataUrl,
+					{},
+					'Failed to remove saved selected pickup point or validated address data: '
+				);
 				resetWidgetInfo();
 			}
 
@@ -380,12 +393,12 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					var addressDataToSave = rateAttrValues[ carrierRateId ];
 					addressDataToSave.packetery_rate_id = carrierRateId;
-					$.post(
+
+					postWithNonce(
 						settings.saveValidatedAddressUrl,
-						addressDataToSave
-					).fail( function ( xhr, status, error ) {
-						console.log( 'Packeta: Failed to save validated address data: ' + error );
-					} );
+						addressDataToSave,
+						'Failed to save validated address data: '
+					);
 				}, widgetOptions );
 			}
 
@@ -417,12 +430,12 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					var pickupPointDataToSave = rateAttrValues[ carrierRateId ];
 					pickupPointDataToSave.packetery_rate_id = carrierRateId;
-					$.post(
+
+					postWithNonce(
 						settings.saveSelectedPickupPointUrl,
-						pickupPointDataToSave
-					).fail( function ( xhr, status, error ) {
-						console.log( 'Packeta: Failed to save pickup point data: ' + error );
-					} );
+						pickupPointDataToSave,
+						'Failed to save pickup point data: '
+					);
 				}, widgetOptions );
 			}
 		} );
