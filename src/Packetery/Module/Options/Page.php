@@ -19,6 +19,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
+use function Packetery\bdump;
 
 /**
  * Class Page
@@ -30,7 +31,8 @@ class Page {
 	private const FORM_FIELDS_CONTAINER               = 'packetery';
 	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
 	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
-	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE = 'order_status_auto_change';
+    private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE = 'order_status_auto_change';
+    private const FORM_FIELD_FREE_SHIPPING_SHOWN = 'free_shipping_shown';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -491,6 +493,10 @@ class Page {
 			__( 'Change order status after automatic packet submit at checkout', 'packeta' )
 		);
 
+        $container->addCheckbox( self::FORM_FIELD_FREE_SHIPPING_SHOWN, __( 'Display the FREE shipping text in checkout', 'packeta' ) )
+            ->setRequired( false )
+            ->setDefaultValue( Provider::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT );
+
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
@@ -572,7 +578,9 @@ class Page {
 			$options['api_key'] = '';
 		}
 
-		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
+        $options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
+        $options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
+        bdump($options);
 
 		return $options;
 	}
