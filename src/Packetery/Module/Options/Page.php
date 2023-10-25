@@ -720,6 +720,7 @@ class Page {
 		}
 
 		$latteParams['forcePacketCancelDescription'] = __( 'Cancel the packet for an order even if the cancellation in the Packeta system will not be successful.', 'packeta' );
+		$latteParams['freeShippingTextDescription']  = __( 'Enable to display "FREE" next to the shipping method, if eligible.', 'packeta' );
 		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		$latteParams['translations']                 = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
