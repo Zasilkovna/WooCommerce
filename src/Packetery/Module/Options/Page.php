@@ -19,7 +19,6 @@ use Packetery\Latte\Engine;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
-use function Packetery\bdump;
 
 /**
  * Class Page
