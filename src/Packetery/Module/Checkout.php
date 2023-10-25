@@ -753,7 +753,6 @@ class Checkout {
 	 * @return string
 	 */
 	private function getFormattedShippingMethodName( string $name, float $cost ): string {
-        // TODO: Add another condition from plugin settings below:
 		if ( 0.0 === $cost && $this->options_provider->isFreeShippingShown() ) {
 			return sprintf( '%s: %s', $name, __( 'Free', 'packeta' ) );
 		}

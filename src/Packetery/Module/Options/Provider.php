@@ -32,10 +32,10 @@ class Provider {
 	const WIDGET_AUTO_OPEN_DEFAULT                                     = false;
 	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                             = false;
 	const AUTO_ORDER_STATUS_DEFAULT                                    = '';
-    const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
+	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
 	public const EMAIL_HOOK_DEFAULT                                    = 'woocommerce_email_footer';
-	const AUTO_ORDER_STATUS                                            = 'auto_order_status';
-    const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT                    = true;
+	const AUTO_ORDER_STATUS                         = 'auto_order_status';
+	const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
 
 	/**
 	 *  Options data.
@@ -330,19 +330,19 @@ class Provider {
 		return (bool) $this->get( 'replace_shipping_address_with_pickup_point_address' );
 	}
 
-    /**
-     * Turns on/off free shipping text in checkout.
-     *
-     * @return bool
-     */
-    public function isFreeShippingShown(): bool {
-        $freeShippingStatus = $this->get( 'free_shipping_shown' );
-        if ( null !== $freeShippingStatus ) {
-            return (bool) $freeShippingStatus;
-        }
+	/**
+	 * Turns on/off free shipping text in checkout.
+	 *
+	 * @return bool
+	 */
+	public function isFreeShippingShown(): bool {
+		$freeShippingStatus = $this->get( 'free_shipping_shown' );
+		if ( null !== $freeShippingStatus ) {
+			return (bool) $freeShippingStatus;
+		}
 
-        return self::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT;
-    }
+		return self::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT;
+	}
 
 	/**
 	 * Tells if packet cancellation should be forced.
