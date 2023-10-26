@@ -31,6 +31,7 @@ class Page {
 	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
 	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
 	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE = 'order_status_auto_change';
+	private const FORM_FIELD_FREE_SHIPPING_SHOWN      = 'free_shipping_shown';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -491,6 +492,10 @@ class Page {
 			__( 'Change order status after automatic packet submit at checkout', 'packeta' )
 		);
 
+		$container->addCheckbox( self::FORM_FIELD_FREE_SHIPPING_SHOWN, __( 'Display the FREE shipping text in checkout', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( Provider::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT );
+
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
@@ -573,6 +578,7 @@ class Page {
 		}
 
 		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
+		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
 
 		return $options;
 	}
@@ -756,6 +762,7 @@ class Page {
 			'numberOfDaysToCheckDescription'         => __( 'Number of days after the creation of an order, during which the order status will be checked.', 'packeta' ),
 			'widgetAutoOpenDescription'              => __( 'If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout.', 'packeta' ),
 			'autoOrderStatusChangeDescription'       => __( 'Change order status after data submission to Packeta.', 'packeta' ),
+			'freeShippingTextDescription'            => __( 'If enabled, "FREE" will be displayed after the name of the shipping method, if free shipping is applied.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
