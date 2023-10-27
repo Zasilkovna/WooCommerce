@@ -930,12 +930,8 @@ class Plugin {
 	 */
 	public function loadTranslation(): void {
 		$domain = self::DOMAIN;
-		$locale = self::getLocale();
-		$moFile = WP_LANG_DIR . "/plugins/$domain-$locale.mo";
 
-		if ( file_exists( $moFile ) ) {
-			load_plugin_textdomain( $domain, false, $moFile );
-		}
+		load_plugin_textdomain( $domain );
 	}
 
 	/**
