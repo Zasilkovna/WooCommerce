@@ -414,7 +414,6 @@ class Plugin {
 		);
 		add_action( 'init', array( $this, 'init' ) );
 
-		// TODO: deactivation_hook.
 		register_deactivation_hook(
 			$this->main_file_path,
 			static function () {
@@ -931,13 +930,13 @@ class Plugin {
 	public function loadTranslation(): void {
 		$domain = self::DOMAIN;
 		$locale = self::getLocale();
+		$moFile = WP_LANG_DIR . "/plugins/$domain-$locale.mo";
 
-		$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-$locale.mo";
-		$result = load_textdomain( $domain, $moFile );
+		$plugin = load_plugin_textdomain( $domain, false, $moFile );
 
-		if ( false === $result ) {
-			$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-en_US.mo";
-			load_textdomain( $domain, $moFile );
+		if ( false === $plugin ) {
+			$moFile = WP_LANG_DIR . "/plugins/$domain-en_US.mo";
+			load_plugin_textdomain( $domain, false, $moFile );
 		}
 	}
 
