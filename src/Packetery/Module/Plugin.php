@@ -933,7 +933,9 @@ class Plugin {
 		$locale = self::getLocale();
 		$moFile = WP_LANG_DIR . "/plugins/$domain-$locale.mo";
 
-		load_plugin_textdomain( $domain, false, $moFile );
+		if ( file_exists( $moFile ) ) {
+			load_plugin_textdomain( $domain, false, $moFile );
+		}
 	}
 
 	/**
