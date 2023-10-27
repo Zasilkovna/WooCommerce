@@ -414,6 +414,7 @@ class Plugin {
 		);
 		add_action( 'init', array( $this, 'init' ) );
 
+		// TODO: deactivation_hook.
 		register_deactivation_hook(
 			$this->main_file_path,
 			static function () {
