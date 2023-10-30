@@ -24,6 +24,7 @@ use Packetery\Nette\Http\Request;
 use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
+use function Packetery\bdump;
 
 /**
  * Class Plugin
@@ -388,12 +389,7 @@ class Plugin {
 	 * Method to register hooks
 	 */
 	public function run(): void {
-		add_action(
-			'init',
-			function (): void {
-				load_plugin_textdomain( self::DOMAIN );
-			}
-		);
+		add_action( 'init', [ $this, 'loadTranslation' ] );
 
 		if ( ! self::isWooCommercePluginActive() ) {
 			add_action( 'admin_notices', [ $this, 'echoInactiveWooCommerceNotice' ] );
@@ -928,6 +924,22 @@ class Plugin {
 			( is_admin() ? get_user_locale() : get_locale() ),
 			self::DOMAIN
 		);
+	}
+
+	/**
+	 * Loads plugin translation file by user locale.
+	 */
+	public function loadTranslation(): void {
+		$domain = self::DOMAIN;
+		$locale = self::getLocale();
+		$moFile = WP_LANG_DIR . "/plugins/$domain-$locale.mo";
+
+		if ( file_exists( $moFile ) ) {
+			load_textdomain( $domain, $moFile, $locale );
+		} else {
+			unload_textdomain( $domain );
+			load_default_textdomain();
+		}
 	}
 
 	/**
