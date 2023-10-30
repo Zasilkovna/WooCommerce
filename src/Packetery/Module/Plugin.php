@@ -24,7 +24,6 @@ use Packetery\Nette\Http\Request;
 use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
-use function Packetery\bdump;
 
 /**
  * Class Plugin
