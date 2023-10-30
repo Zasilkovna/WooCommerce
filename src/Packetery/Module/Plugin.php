@@ -937,7 +937,6 @@ class Plugin {
 			load_textdomain( $domain, $moFile, $locale );
 		} else {
 			unload_textdomain( $domain );
-			load_default_textdomain();
 		}
 	}
 
