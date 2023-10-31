@@ -930,14 +930,14 @@ class Plugin {
 	 */
 	public function loadTranslation(): void {
 		$domain = self::DOMAIN;
+		unload_textdomain( $domain );
 		$locale = self::getLocale();
+		$moFile = WP_LANG_DIR . "/plugins/$domain-$locale.mo";
 
-		$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-$locale.mo";
-		$result = load_textdomain( $domain, $moFile );
-
-		if ( false === $result ) {
-			$moFile = PACKETERY_PLUGIN_DIR . "/languages/$domain-en_US.mo";
-			load_textdomain( $domain, $moFile );
+		if ( file_exists( $moFile ) ) {
+			load_plugin_textdomain( $domain );
+		} else {
+			load_default_textdomain();
 		}
 	}
 
