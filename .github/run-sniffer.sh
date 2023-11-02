@@ -10,7 +10,7 @@ echo "ℹ︎ Composer version:"
 composer -V
 
 echo "➤ Installing woocommerce/woocommerce-sniffs:"
-composer -n -q require woocommerce/woocommerce-sniffs
+composer -n -q require woocommerce/woocommerce-sniffs:0.1.3
 
 echo "➤ Running sniffer:"
 ./vendor/bin/phpcs | tee /tmp/sniffer.log
