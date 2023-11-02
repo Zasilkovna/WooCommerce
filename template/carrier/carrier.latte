@@ -9,12 +9,6 @@
 
         {if isset($carrier_data['form'])}
 
-            {if $carrier->supportsAgeVerification()}
-                <div class="notice notice-info">
-                    <p>{$translations['ageVerificationSupportedNotification']}</p>
-                </div>
-            {/if}
-
             {define weightRules}
                 <tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
                     <td>
@@ -253,7 +247,9 @@
                                     <span> {$globalCurrency|noescape}</span>
                                 </div>
                                 <p class="packetery-input-validation-message help-block text-danger"
-                                   id="{$form[age_verification_fee]->getHtmlId() . '_message'}">{inputError age_verification_fee}</p>
+                                   id="{$form[age_verification_fee]->getHtmlId() . '_message'}">{inputError age_verification_fee}
+                                </p>
+                                <p>{$translations['ageVerificationSupportedNotification']}</p>
                             </td>
                         </tr>
                     {/if}
