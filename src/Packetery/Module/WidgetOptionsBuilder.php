@@ -112,17 +112,14 @@ class WidgetOptionsBuilder {
 	 * Gets carrier configuration for widgets in frontend.
 	 *
 	 * @param Entity\Carrier $carrier         Carrier configuration.
-	 * @param float|null     $defaultPrice    Default price.
 	 * @param string         $optionId        Option id.
 	 *
 	 * @return array
 	 */
-	public function getCarrierForCheckout( Entity\Carrier $carrier, ?float $defaultPrice, string $optionId ): array {
+	public function getCarrierForCheckout( Entity\Carrier $carrier, string $optionId ): array {
 		$carrierConfigForWidget = [
 			'id'               => $carrier->getId(),
 			'is_pickup_points' => (int) $carrier->hasPickupPoints(),
-			'defaultPrice'     => '', // Temporarily disabled.
-			'defaultCurrency'  => '', // get_woocommerce_currency() temporarily disabled.
 		];
 
 		$carrierOption = get_option( $optionId );

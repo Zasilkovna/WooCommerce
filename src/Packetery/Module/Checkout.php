@@ -261,16 +261,10 @@ class Checkout {
 		$carriers                = $this->carrierEntityRepository->getAllCarriersIncludingNonFeed();
 
 		foreach ( $carriers as $carrier ) {
-			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
-			$defaultPrice = $this->getRateCost(
-				Carrier\Options::createByCarrierId( $carrier->getId() ),
-				$this->getCartContentsTotalIncludingTax(),
-				$this->getCartWeightKg()
-			);
+			$optionId = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
 
 			$carriersConfigForWidget[ $optionId ] = $this->widgetOptionsBuilder->getCarrierForCheckout(
 				$carrier,
-				$defaultPrice,
 				$optionId
 			);
 		}
