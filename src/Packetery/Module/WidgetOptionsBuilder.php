@@ -121,8 +121,8 @@ class WidgetOptionsBuilder {
 		$carrierConfigForWidget = [
 			'id'               => $carrier->getId(),
 			'is_pickup_points' => (int) $carrier->hasPickupPoints(),
-			'defaultPrice'     => $defaultPrice,
-			'defaultCurrency'  => get_woocommerce_currency(),
+			'defaultPrice'     => '', // Temporarily disabled.
+			'defaultCurrency'  => '', // get_woocommerce_currency() temporarily disabled.
 		];
 
 		$carrierOption = get_option( $optionId );
