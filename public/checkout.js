@@ -405,8 +405,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 			if ( hasPickupPoints( carrierRateId ) ) {
 				widgetOptions.appIdentity = settings.appIdentity;
 				widgetOptions.weight = settings.weight;
-				widgetOptions.defaultPrice = settings.carrierConfig[ carrierRateId ].defaultPrice;
-				widgetOptions.defaultCurrency = settings.carrierConfig[ carrierRateId ].defaultCurrency;
 				if ( settings.carrierConfig[ carrierRateId ].carriers ) {
 					widgetOptions.carriers = settings.carrierConfig[ carrierRateId ].carriers;
 				}
