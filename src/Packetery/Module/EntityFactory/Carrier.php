@@ -20,6 +20,13 @@ use Packetery\Core\PickupPointProvider\BaseProvider;
 class Carrier {
 
 	/**
+	 * An array of IDs of Carriers we want to add age verification check for
+	 */
+	private const AGE_VERIFIED_CARRIERS = [
+		'106',
+	];
+
+	/**
 	 * Carrier factory.
 	 *
 	 * @param array $dbResult Data from db.
@@ -27,6 +34,8 @@ class Carrier {
 	 * @return Entity\Carrier
 	 */
 	public function fromDbResult( array $dbResult ): Entity\Carrier {
+		$ageVerified = in_array( $dbResult['id'], self::AGE_VERIFIED_CARRIERS, true ) ? true : false;
+
 		return new Entity\Carrier(
 			$dbResult['id'],
 			$dbResult['name'],
@@ -42,7 +51,7 @@ class Carrier {
 			$dbResult['currency'],
 			(float) $dbResult['max_weight'],
 			(bool) $dbResult['deleted'],
-			false
+			$ageVerified
 		);
 	}
 
