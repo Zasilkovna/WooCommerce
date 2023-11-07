@@ -11,6 +11,8 @@
     <!-- Configs -->
     <config name="minimum_supported_wp_version" value="5.0" />
 
+    <ini name="error_reporting" value="E_ALL &#38; ~E_DEPRECATED" />
+
     <!-- Rules -->
     <rule ref="WooCommerce-Core">
         <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>

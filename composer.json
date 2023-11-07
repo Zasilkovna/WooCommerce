@@ -1,7 +1,12 @@
 {
+    "require": {
+        "woocommerce/woocommerce-sniffs": "0.1.3"
+    },
     "require-dev": {
-        "wpify/scoper": "3.0.1",
-        "woocommerce/woocommerce-sniffs": "^0.1"
+        "wpify/scoper": "3.0.1"
+    },
+    "scripts": {
+        "build-deps": "bash build-deps.sh"
     },
     "scripts": {
         "phpstan-72": "phpstan/vendor/bin/phpstan -cphpstan/php72.neon",

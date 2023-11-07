@@ -4,16 +4,16 @@
 set -eo
 
 echo "ℹ︎ PHP version:"
-php -v | head -1
+php --version | head -1
 
 echo "ℹ︎ Composer version:"
-composer -V
+composer --version
 
 echo "➤ Installing woocommerce/woocommerce-sniffs:"
-composer -n -q require woocommerce/woocommerce-sniffs:0.1.3
+composer --no-interaction --quiet --no-dev install
 
 echo "➤ Running sniffer:"
-./vendor/bin/phpcs | tee /tmp/sniffer.log
+./vendor/bin/phpcs -s | tee /tmp/sniffer.log
 
 if grep -q '| ERROR' /tmp/sniffer.log; then
   echo "🛑 Sniffer found errors, fix them."
