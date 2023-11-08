@@ -62,6 +62,10 @@ class CronService {
 	 * @return void
 	 */
 	public function register(): void {
+		if ( ! function_exists( 'as_has_scheduled_action' ) ) {
+			return;
+		}
+
 		add_action(
 			'init',
 			function () {
