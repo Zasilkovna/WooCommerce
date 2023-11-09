@@ -3,6 +3,7 @@
         "woocommerce/woocommerce-sniffs": "0.1.3"
     },
     "require-dev": {
+        "composer/composer": "^2.6",
         "wpify/scoper": "3.0.1"
     },
     "scripts": {
@@ -28,7 +29,8 @@
             "folder": "deps",
             "temp": "temp/scoper-works",
             "composerjson": "composer-deps.json",
-            "composerlock": "composer-deps.lock"
+            "composerlock": "composer-deps.lock",
+            "autorun": false
         }
     }
 }
