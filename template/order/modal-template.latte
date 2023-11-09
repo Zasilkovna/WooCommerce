@@ -22,26 +22,52 @@
                             <tr>
                                 <td>{label packetery_weight /}<span title="{$translations['weightIsManual']}" class="{{ data.order.manualWeightIconExtraClass }}dashicons dashicons-lock"></span></td>
                                 <td>
-                                    {input packetery_weight}
-                                    {input packetery_original_weight}
+                                    {input packetery_weight value:'{{ data.order.packetery_weight }}'}
+                                    {input packetery_original_weight value:'{{ data.order.packetery_original_weight }}'}
                                 </td>
                             </tr>
+                            <# if (data.order.requiresSizeDimensions) { #>
+                                <tr>
+                                    <td>{label packetery_length}</td>
+                                    <td>{input packetery_length value:'{{ data.order.packetery_length }}'}</td>
+                                </tr>
+                                <tr>
+                                    <td>{label packetery_width}</td>
+                                    <td>{input packetery_width value:'{{ data.order.packetery_value }}'}</td>
+                                </tr>
+                                <tr>
+                                    <td>{label packetery_height}</td>
+                                    <td>{input packetery_height value:'{{ data.order.packetery_height }}'}</td>
+                                </tr>
+                            <# } #>
+                            <# if ( data.order.allowsAdultContent ) { #>
+                                <tr>
+                                    <td>{label packetery_adult_content: /}</td>
+                                    <td>
+                                        <input type="checkbox" name="packetery_adult_content"
+                                        <# if ( data.order.packetery_adult_content ) { #>
+                                            checked
+                                        <# } #>
+                                        >
+                                    </td>
+                                </tr>
+                            <# } #>
+                            <# if ( data.order.hasCod ) { #>
+                                <tr>
+                                    <td>{label packetery_COD}</td>
+                                    <td>{input packetery_COD value:'{{ data.order.packetery_COD }}'}</td>
+                                </tr>
+                           <# } #>
                             <tr>
-                                <td>{label packetery_length}</td>
-                                <td>{input packetery_length}</td>
+                                <td>{label packetery_value}</td>
+                                <td>{input packetery_value value:'{{ data.order.packetery_value }}'}</td>
                             </tr>
-                            <tr>
-                                <td>{label packetery_width}</td>
-                                <td>{input packetery_width}</td>
-                            </tr>
-                            <tr>
-                                <td>{label packetery_height}</td>
-                                <td>{input packetery_height}</td>
-                            </tr>
-                            <tr class="{{ data.order.packeteryDeliverOnClass }}">
-                                <td>{label packetery_deliver_on}</td>
-                                <td>{input packetery_deliver_on}</td>
-                            </tr>
+                            <# if ( data.order.hasDeliverOn ) { #>
+                                <tr class="{{ data.order.packeteryDeliverOnClass }}">
+                                    <td>{label packetery_deliver_on}</td>
+                                    <td>{input packetery_deliver_on value:'{{ data.order.packetery_deliver_on }}'}</td>
+                                </tr>
+                            <# } #>
                             </tbody>
                         </table>
                     </div>

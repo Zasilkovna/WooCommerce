@@ -5,3 +5,4 @@
 /temp/*
 !/temp/.gitignore
 /log/
+**/.DS_Store

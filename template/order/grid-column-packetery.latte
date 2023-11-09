@@ -1,5 +1,7 @@
 {varType \Packetery\Core\Entity\Order $order}
 {var $Helper = Packetery\Core\Helper::class}
+{varType bool $hasDeliverOn}
+{varType bool $allowsAdultContent}
 
 {if $order->getPacketId()}
     <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
@@ -22,6 +24,13 @@
        'packetery_length' => $order->getLength(),
        'packetery_width' => $order->getWidth(),
        'packetery_height' => $order->getHeight(),
+       'packetery_adult_content' => $order->containsAdultContent(),
+       'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
+       'hasCod' => $order->hasCod(),
+       'hasDeliverOn' => $hasDeliverOn,
+       'allowsAdultContent' => $allowsAdultContent,
+       'packetery_COD' => $order->getCod(),
+       'packetery_value' => $order->getValue(),
        'packetery_deliver_on' => $packetDeliverOn,
        'packeteryDeliverOnClass' => $order->isPacketaInternalPickupPoint() ? '' : 'packetery-hidden ',
        'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',

@@ -10,12 +10,17 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core;
+use Packetery\Core\Helper;
+use Packetery\Core\Validator\Order;
 use Packetery\Module;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Options;
 use Packetery\Module\Log\Purger;
 use Packetery\Latte\Engine;
+use Packetery\Module\Options\Provider;
 use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
 use WC_Order;
@@ -51,6 +56,13 @@ class GridExtender {
 	private $latteEngine;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Http Request.
 	 *
 	 * @var Request
@@ -81,22 +93,24 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Core\Helper              $helper             Helper.
-	 * @param Carrier\EntityRepository $carrierRepository  Carrier repository.
-	 * @param Engine                   $latteEngine        Latte Engine.
-	 * @param Request                  $httpRequest        Http Request.
-	 * @param Repository               $orderRepository    Order repository.
-	 * @param Core\Validator\Order     $orderValidator     Order validator.
-	 * @param ContextResolver          $contextResolver    Context resolver.
+	 * @param Helper           $helper Helper.
+	 * @param EntityRepository $carrierRepository Carrier repository.
+	 * @param Engine           $latteEngine Latte Engine.
+	 * @param Request          $httpRequest Http Request.
+	 * @param Repository       $orderRepository Order repository.
+	 * @param Order            $orderValidator Order validator.
+	 * @param ContextResolver  $contextResolver Context resolver.
+	 * @param Provider         $optionsProvider Options providor.
 	 */
 	public function __construct(
-		Core\Helper $helper,
-		Carrier\EntityRepository $carrierRepository,
+		Helper $helper,
+		EntityRepository $carrierRepository,
 		Engine $latteEngine,
 		Request $httpRequest,
 		Repository $orderRepository,
-		Core\Validator\Order $orderValidator,
-		ContextResolver $contextResolver
+		Order $orderValidator,
+		ContextResolver $contextResolver,
+		Provider $optionsProvider
 	) {
 		$this->helper            = $helper;
 		$this->carrierRepository = $carrierRepository;
@@ -105,6 +119,7 @@ class GridExtender {
 		$this->orderRepository   = $orderRepository;
 		$this->orderValidator    = $orderValidator;
 		$this->contextResolver   = $contextResolver;
+		$this->optionsProvider   = $optionsProvider;
 	}
 
 	/**
@@ -343,6 +358,8 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                     => $order,
+						'hasDeliverOn'              => $order->isPacketaInternalPickupPoint(),
+						'allowsAdultContent'        => $order->isPacketaInternalPickupPoint() || $order->getCarrier()->getId() === '106',
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,

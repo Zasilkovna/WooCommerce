@@ -1,6 +1,9 @@
 {varType Packetery\Nette\Forms\Form $form}
 {varType Packetery\Core\Entity\Order $order}
+{varType bool $showHdWidget}
 {varType bool $isCodPayment}
+{varType bool $allowsAdultContent}
+{varType bool $requiresSizeDimensions}
 
 <div data-packetery-order-metabox>
 {formContext $form}
@@ -8,22 +11,24 @@
             <input n:name=packetery_order_metabox_nonce />
             <input n:name=packetery_original_weight />
             {foreach [
-                Packetery\Module\Order\Metabox::FIELD_WEIGHT,
-                Packetery\Module\Order\Metabox::FIELD_LENGTH,
-                Packetery\Module\Order\Metabox::FIELD_WIDTH,
-                Packetery\Module\Order\Metabox::FIELD_HEIGHT,
-                Packetery\Module\Order\Metabox::FIELD_ADULT_CONTENT,
-                Packetery\Module\Order\Metabox::FIELD_COD,
-                Packetery\Module\Order\Metabox::FIELD_VALUE,
+                'packetery_weight',
+                'packetery_length',
+                'packetery_width',
+                'packetery_height',
+                'packetery_adult_content',
+                'packetery_COD',
+                'packetery_value'
             ] as $inputName}
-                {continueIf $inputName === Packetery\Module\Order\Metabox::FIELD_COD && false === $isCodPayment}
+                {continueIf $inputName === 'packetery_COD' && false === $isCodPayment}
+                {continueIf $inputName === 'packetery_adult_content' && false === $allowsAdultContent}
+                {continueIf in_array($inputName, ['packetery_length', 'packetery_width', 'packetery_height']) && false === $requiresSizeDimensions}
 
                 <div class="packetery-table-row">
-                    {if in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_COD, Packetery\Module\Order\Metabox::FIELD_VALUE ] ) }
+                    {if in_array( $inputName, [ 'packetery_COD', 'packetery_value' ] ) }
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">
                             <label n:name=$inputName /> ({$orderCurrency|noescape})
                         </div>
-                    {elseif in_array( $inputName, [ Packetery\Module\Order\Metabox::FIELD_WEIGHT ] ) }
+                    {elseif in_array( $inputName, [ 'packetery_weight' ] ) }
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">
                             <label n:name=$inputName />{if $hasOrderManualWeight}<span title="{$translations['weightIsManual']}" class="dashicons dashicons-lock"></span>{/if}
                         </div>
@@ -41,10 +46,10 @@
             {if $isPacketaPickupPoint}
                 <div class="packetery-table-row">
                     <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                        <label n:name=Packetery\Module\Order\Metabox::FIELD_DELIVER_ON />
+                        <label n:name='packetery_deliver_on' />
                     </div>
                     <div class="packetery-table-cell">
-                        <input n:name=Packetery\Module\Order\Metabox::FIELD_DELIVER_ON class="date-picker packetery-order-metabox-input">
+                        <input n:name='packetery_deliver_on' class="date-picker packetery-order-metabox-input">
                     </div>
                 </div>
             {/if}
