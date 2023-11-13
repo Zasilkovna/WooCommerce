@@ -3,6 +3,11 @@
         "wpify/scoper": "3.0.1",
         "woocommerce/woocommerce-sniffs": "^0.1"
     },
+    "scripts": {
+        "phpstan-72": "phpstan/vendor/bin/phpstan -cphpstan/php72.neon",
+        "phpstan-74": "phpstan/vendor/bin/phpstan -cphpstan/php74.neon",
+        "phpstan-80": "phpstan/vendor/bin/phpstan -cphpstan/php80.neon"
+    },
     "config": {
         "platform": {
             "php": "8.1"

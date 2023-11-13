@@ -3,10 +3,11 @@ parameters:
         - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
         - vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
         - ../constants.php
-    level: 1
+    level: 2
     fileExtensions:
         - php
     paths:
-        - ../src
+        - ../src/Packetery/Core
     scanDirectories:
         - ../deps
+        - ../src/Packetery/Module
