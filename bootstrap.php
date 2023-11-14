@@ -11,8 +11,7 @@ use Packetery\Module\WpdbTracyPanel;
 use Packetery\Nette\Bootstrap\Configurator;
 use Packetery\Tracy\Debugger;
 
-defined( 'PACKETERY_PLUGIN_DIR' ) || define( 'PACKETERY_PLUGIN_DIR', __DIR__ );
-defined( 'PACKETERY_DEBUG' ) || define( 'PACKETERY_DEBUG', false );
+require_once __DIR__ . '/constants.php';
 
 require_once __DIR__ . '/deps/scoper-autoload.php';
 
