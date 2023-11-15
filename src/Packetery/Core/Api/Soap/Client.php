@@ -344,11 +344,11 @@ class Client {
 	 *
 	 * @param SoapFault $exception Exception.
 	 *
-	 * @return int|string
+	 * @return string
 	 */
 	private function getFaultIdentifier( SoapFault $exception ): string {
 		if ( isset( $exception->detail ) ) {
-			return array_keys( get_object_vars( $exception->detail ) )[0];
+			return (string) array_keys( get_object_vars( $exception->detail ) )[0];
 		}
 
 		return $exception->faultstring;
