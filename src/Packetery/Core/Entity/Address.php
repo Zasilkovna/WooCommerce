@@ -201,7 +201,7 @@ class Address {
 	/**
 	 * Export.
 	 *
-	 * @return array
+	 * @return array<string, string|null>
 	 */
 	public function export(): array {
 		return get_object_vars( $this );

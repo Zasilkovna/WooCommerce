@@ -30,7 +30,7 @@ class PacketsCourierLabelsPdf extends BaseResponse {
 	/**
 	 * Invalid courier numbers.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $invalidCourierNumbers = [];
 
@@ -55,7 +55,7 @@ class PacketsCourierLabelsPdf extends BaseResponse {
 	/**
 	 * Sets invalid courier numbers.
 	 *
-	 * @param array $invalidCourierNumbers Invalid courier numbers.
+	 * @param string[] $invalidCourierNumbers Invalid courier numbers.
 	 *
 	 * @return void
 	 */
@@ -66,7 +66,7 @@ class PacketsCourierLabelsPdf extends BaseResponse {
 	/**
 	 * Gets invalid courier numbers.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getInvalidCourierNumbers(): array {
 		return $this->invalidCourierNumbers;

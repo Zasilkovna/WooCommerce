@@ -127,7 +127,7 @@ class PickupPointValidateRequest {
 	/**
 	 * Gets submittable data.
 	 *
-	 * @return array
+	 * @return array<string, string|bool|float|null>
 	 */
 	public function getSubmittableData(): array {
 		return array_filter( get_object_vars( $this ) );

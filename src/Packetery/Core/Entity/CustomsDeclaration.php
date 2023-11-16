@@ -331,7 +331,7 @@ class CustomsDeclaration {
 	/**
 	 * Sets items.
 	 *
-	 * @param array $items Items.
+	 * @param CustomsDeclarationItem[] $items Items.
 	 *
 	 * @return void
 	 */

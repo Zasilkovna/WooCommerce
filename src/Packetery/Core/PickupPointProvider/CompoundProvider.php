@@ -19,20 +19,20 @@ class CompoundProvider extends BaseProvider {
 	/**
 	 * TODO: consider vendorIds.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $vendorCodes;
 
 	/**
 	 * CompoundProvider constructor.
 	 *
-	 * @param string $id                      Id.
-	 * @param string $country                 Country.
-	 * @param bool   $supportsCod             Supports COD.
-	 * @param bool   $supportsAgeVerification Supports age verification.
-	 * @param string $currency                Currency.
-	 * @param bool   $hasPickupPoints         Is pickup points?.
-	 * @param array  $vendorCodes             Vendor codes.
+	 * @param string   $id                      Id.
+	 * @param string   $country                 Country.
+	 * @param bool     $supportsCod             Supports COD.
+	 * @param bool     $supportsAgeVerification Supports age verification.
+	 * @param string   $currency                Currency.
+	 * @param bool     $hasPickupPoints         Is pickup points?.
+	 * @param string[] $vendorCodes             Vendor codes.
 	 */
 	public function __construct(
 		string $id,
@@ -57,7 +57,7 @@ class CompoundProvider extends BaseProvider {
 	/**
 	 * Vendor codes getter.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getVendorCodes(): array {
 		return $this->vendorCodes;

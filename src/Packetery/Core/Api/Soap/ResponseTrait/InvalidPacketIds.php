@@ -27,7 +27,7 @@ trait InvalidPacketIds {
 	/**
 	 * Sets invalid packet IDs.
 	 *
-	 * @param array $invalidPacketIds Invalid packet IDs.
+	 * @param string[] $invalidPacketIds Invalid packet IDs.
 	 *
 	 * @return void
 	 */

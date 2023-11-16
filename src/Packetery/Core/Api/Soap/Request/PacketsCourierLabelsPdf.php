@@ -19,7 +19,7 @@ class PacketsCourierLabelsPdf {
 	/**
 	 * Packet id and carrier number pairs.
 	 *
-	 * @var array[]
+	 * @var array<array<string, string>>
 	 */
 	private $packetIdsWithCourierNumbers;
 
@@ -40,9 +40,9 @@ class PacketsCourierLabelsPdf {
 	/**
 	 * PacketsLabelsPdf constructor.
 	 *
-	 * @param array[] $packetIdsWithCourierNumbers Packet ids.
-	 * @param string  $labelFormat Label format.
-	 * @param int     $offset Offset.
+	 * @param array<array<string, string>> $packetIdsWithCourierNumbers Packet ids.
+	 * @param string                       $labelFormat                 Label format.
+	 * @param int                          $offset                      Offset.
 	 */
 	public function __construct( array $packetIdsWithCourierNumbers, string $labelFormat, int $offset ) {
 		$this->packetIdsWithCourierNumbers = $packetIdsWithCourierNumbers;
@@ -53,7 +53,7 @@ class PacketsCourierLabelsPdf {
 	/**
 	 * Gets packet ids.
 	 *
-	 * @return array
+	 * @return array<array<string, string>>
 	 */
 	public function getPacketIdsWithCourierNumbers(): array {
 		return $this->packetIdsWithCourierNumbers;

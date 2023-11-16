@@ -32,12 +32,12 @@ interface ILogger {
 	/**
 	 * Get logs.
 	 *
-	 * @param mixed       $orderId Order ID.
-	 * @param string|null $action  Action.
-	 * @param array       $sorting Sorting config.
-	 * @param int         $limit   Limit.
+	 * @param mixed                 $orderId Order ID.
+	 * @param string|null           $action  Action.
+	 * @param array<string, string> $sorting Sorting config.
+	 * @param int                   $limit   Limit.
 	 *
-	 * @return iterable
+	 * @return iterable<Record>
 	 */
 	public function getRecords( $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable;
 

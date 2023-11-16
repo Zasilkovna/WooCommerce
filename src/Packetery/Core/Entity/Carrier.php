@@ -181,7 +181,7 @@ class Carrier {
 	/**
 	 * Returns all properties as array.
 	 *
-	 * @return array
+	 * @return array<string, string|bool|float>
 	 */
 	public function __toArray(): array {
 		return get_object_vars( $this );

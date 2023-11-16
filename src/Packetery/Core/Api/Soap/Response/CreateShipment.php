@@ -148,7 +148,7 @@ class CreateShipment extends BaseResponse {
 	/**
 	 * Sets invalid packet IDs.
 	 *
-	 * @param array $invalidPacketIds Invalid packets.
+	 * @param string[] $invalidPacketIds Invalid packets.
 	 */
 	public function setInvalidPacketIds( array $invalidPacketIds ): void {
 		$this->invalidPacketIds = $invalidPacketIds;
