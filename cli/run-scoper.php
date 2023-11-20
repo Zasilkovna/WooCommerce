@@ -7,12 +7,27 @@ use Wpify\Scoper\Plugin;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+$command = null;
+if ( isset( $argv[1] ) && $argv[1] === 'install' ) {
+	$command = Plugin::SCOPER_INSTALL_CMD;
+}
+if ( isset( $argv[1] ) && $argv[1] === 'update' ) {
+	$command = Plugin::SCOPER_UPDATE_CMD;
+}
+if ( $command === null ) {
+	echo 'Usage: wpify-scoper [command]' . PHP_EOL;
+	echo '  commands:' . PHP_EOL;
+	echo '    update' . PHP_EOL;
+	echo '    install' . PHP_EOL . PHP_EOL;
+	exit;
+}
+
 echo "Constructing composer and event...\n";
 $factory    = new Factory();
 $ioInterace = new NullIO();
 $composer   = $factory->createComposer( $ioInterace );
 $fakeEvent  = new Event(
-	Plugin::SCOPER_UPDATE_CMD,
+	$command,
 	$composer,
 	$ioInterace
 );
