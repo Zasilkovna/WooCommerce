@@ -39,7 +39,7 @@ class CreatePacketMapper {
 	 * Maps order data to CreatePacket structure.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function fromOrderToArray( Entity\Order $order ): array {
 		$createPacketData = [

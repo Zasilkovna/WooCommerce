@@ -80,7 +80,7 @@ class Client {
 	 * Submits packet data to Packeta API.
 	 * We deliberately don't use Request\CreatePacket class to send data to the API, but we keep the class for possible later use.
 	 *
-	 * @param array $requestData Packet attributes.
+	 * @param array<string, mixed> $requestData Packet attributes.
 	 *
 	 * @return Response\CreatePacket
 	 */
@@ -323,7 +323,7 @@ class Client {
 	 *
 	 * @param SoapFault $exception Exception.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	protected function getValidationErrors( SoapFault $exception ): array {
 		$errors = [];

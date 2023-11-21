@@ -134,7 +134,7 @@ class CreatePacket {
 	/**
 	 * Package size.
 	 *
-	 * @var array
+	 * @var array<string, float>
 	 */
 	private $size;
 
@@ -207,7 +207,7 @@ class CreatePacket {
 	/**
 	 * Gets submittable data.
 	 *
-	 * @return array
+	 * @return array<string, string|int|float|null>
 	 */
 	public function getSubmittableData(): array {
 		return array_filter( get_object_vars( $this ) );

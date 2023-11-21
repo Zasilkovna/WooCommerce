@@ -19,7 +19,7 @@ class PacketsLabelsPdf {
 	/**
 	 * Packet ids.
 	 *
-	 * @var string[]
+	 * @var array<string, string>
 	 */
 	private $packetIds;
 
@@ -40,9 +40,9 @@ class PacketsLabelsPdf {
 	/**
 	 * PacketsLabelsPdf constructor.
 	 *
-	 * @param string[] $packetIds Packet ids.
-	 * @param string   $labelFormat Label format.
-	 * @param int      $offset Offset.
+	 * @param array<string, string> $packetIds   Packet ids.
+	 * @param string                $labelFormat Label format.
+	 * @param int                   $offset      Offset.
 	 */
 	public function __construct( array $packetIds, string $labelFormat, int $offset ) {
 		$this->packetIds   = $packetIds;
@@ -53,7 +53,7 @@ class PacketsLabelsPdf {
 	/**
 	 * Gets packet ids.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function getPacketIds(): array {
 		return $this->packetIds;

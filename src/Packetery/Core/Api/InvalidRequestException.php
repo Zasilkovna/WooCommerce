@@ -19,15 +19,15 @@ class InvalidRequestException extends \Exception {
 	/**
 	 * Error messages.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $messages;
 
 	/**
 	 * InvalidRequestException.
 	 *
-	 * @param string $mainMessage Main message.
-	 * @param array  $errorMessages Array of messages.
+	 * @param string   $mainMessage   Main message.
+	 * @param string[] $errorMessages Array of messages.
 	 */
 	public function __construct( string $mainMessage, array $errorMessages ) {
 		parent::__construct( $mainMessage );
@@ -37,7 +37,7 @@ class InvalidRequestException extends \Exception {
 	/**
 	 * Messages getter.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getMessages(): array {
 		return $this->messages;

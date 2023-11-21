@@ -33,7 +33,7 @@ class CreatePacket extends BaseResponse {
 	/**
 	 * Packet attributes errors.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $validationErrors;
 
@@ -58,7 +58,7 @@ class CreatePacket extends BaseResponse {
 	/**
 	 * Sets errors.
 	 *
-	 * @param array $errors Errors.
+	 * @param string[] $errors Errors.
 	 */
 	public function setValidationErrors( array $errors ): void {
 		$this->validationErrors = $errors;

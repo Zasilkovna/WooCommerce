@@ -45,16 +45,16 @@ class Order {
 	/**
 	 * Validation errors translations.
 	 *
-	 * @var array $translations
+	 * @var array<string, string> $translations
 	 */
 	private $translations;
 
 	/**
 	 * Order constructor.
 	 *
-	 * @param Address $addressValidator Address validator.
-	 * @param Size    $sizeValidator    Size validator.
-	 * @param array   $translations     Translations with specified keys.
+	 * @param Address               $addressValidator Address validator.
+	 * @param Size                  $sizeValidator    Size validator.
+	 * @param array<string, string> $translations     Translations with specified keys.
 	 */
 	public function __construct( Address $addressValidator, Size $sizeValidator, array $translations ) {
 		$this->addressValidator = $addressValidator;

@@ -67,7 +67,7 @@ class Record {
 	/**
 	 * Params.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	public $params;
 

@@ -19,8 +19,8 @@ interface IDownloader {
 	/**
 	 * Accepts parameters in Guzzle format.
 	 *
-	 * @param string $uri Target URI.
-	 * @param array  $options Options.
+	 * @param string               $uri     Target URI.
+	 * @param array<string, mixed> $options Options.
 	 *
 	 * @return string
 	 * @throws \Exception Thrown on failure.
