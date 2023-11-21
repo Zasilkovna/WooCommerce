@@ -162,9 +162,13 @@ class Rounder {
 	 */
 	private static function sanitizeFloat( float $number ): float {
 		$oldLocale = setlocale( LC_NUMERIC, '0' );
-		setlocale( LC_NUMERIC, 'C' );
+		if ( false !== $oldLocale ) {
+			setlocale( LC_NUMERIC, 'C' );
+		}
 		$newNumber = (float) ( (string) $number );
-		setlocale( LC_NUMERIC, $oldLocale );
+		if ( false !== $oldLocale ) {
+			setlocale( LC_NUMERIC, $oldLocale );
+		}
 
 		return $newNumber;
 	}
