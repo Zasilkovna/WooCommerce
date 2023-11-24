@@ -16,7 +16,7 @@ use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Repository;
-use Packetery\Module\Order\Shared\SharedOrderDetailsFormFactory;
+use Packetery\Module\Order\OrderForm;
 use Packetery\Module\Order\GridExtender;
 use WP_Error;
 use WP_REST_Controller;
@@ -41,9 +41,9 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Order modal.
 	 *
-	 * @var SharedOrderDetailsFormFactory
+	 * @var OrderForm
 	 */
-	private $orderDetailsFormFactory;
+	private $orderForm;
 
 	/**
 	 * Order repository.
@@ -76,12 +76,12 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter                   $router Router.
-	 * @param Repository                    $orderRepository Order repository.
-	 * @param GridExtender                  $gridExtender Grid extender.
-	 * @param Validator\Order               $orderValidator Order validator.
-	 * @param Helper                        $helper Helper.
-	 * @param SharedOrderDetailsFormFactory $orderDetailsFormFactory Form factory.
+	 * @param OrderRouter     $router Router.
+	 * @param Repository      $orderRepository Order repository.
+	 * @param GridExtender    $gridExtender Grid extender.
+	 * @param Validator\Order $orderValidator Order validator.
+	 * @param Helper          $helper Helper.
+	 * @param OrderForm       $orderForm Order form.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -89,14 +89,14 @@ final class OrderController extends WP_REST_Controller {
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
 		Helper $helper,
-		SharedOrderDetailsFormFactory $orderDetailsFormFactory
+		OrderForm $orderForm
 	) {
-		$this->orderDetailsFormFactory = $orderDetailsFormFactory;
-		$this->orderRepository         = $orderRepository;
-		$this->gridExtender            = $gridExtender;
-		$this->orderValidator          = $orderValidator;
-		$this->helper                  = $helper;
-		$this->router                  = $router;
+		$this->orderForm       = $orderForm;
+		$this->orderRepository = $orderRepository;
+		$this->gridExtender    = $gridExtender;
+		$this->orderValidator  = $orderValidator;
+		$this->helper          = $helper;
+		$this->router          = $router;
 	}
 
 	/**
@@ -132,18 +132,18 @@ final class OrderController extends WP_REST_Controller {
 		$packeteryDeliverOn = $parameters['packeteryDeliverOn'];
 		$orderId            = (int) $parameters['orderId'];
 
-		$form = $this->orderDetailsFormFactory->create();
+		$form = $this->orderForm->create();
 		$form->setValues(
 			[
-				SharedOrderDetailsFormFactory::FIELD_WEIGHT => $parameters['packeteryWeight'],
-				SharedOrderDetailsFormFactory::FIELD_ORIGINAL_WEIGHT => $parameters['packeteryOriginalWeight'],
-				SharedOrderDetailsFormFactory::FIELD_WIDTH => $parameters['packeteryWidth'] ?? null,
-				SharedOrderDetailsFormFactory::FIELD_LENGTH => $parameters['packeteryLength'] ?? null,
-				SharedOrderDetailsFormFactory::FIELD_HEIGHT => $parameters['packeteryHeight'] ?? null,
-				SharedOrderDetailsFormFactory::FIELD_ADULT_CONTENT => 'true' === $parameters['packeteryAdultContent'],
-				SharedOrderDetailsFormFactory::FIELD_COD   => $parameters['packeteryCOD'] ?? null,
-				SharedOrderDetailsFormFactory::FIELD_VALUE => $parameters['packeteryValue'],
-				SharedOrderDetailsFormFactory::FIELD_DELIVER_ON => $packeteryDeliverOn,
+				OrderForm::FIELD_WEIGHT          => $parameters['packeteryWeight'],
+				OrderForm::FIELD_ORIGINAL_WEIGHT => $parameters['packeteryOriginalWeight'],
+				OrderForm::FIELD_WIDTH           => $parameters['packeteryWidth'] ?? null,
+				OrderForm::FIELD_LENGTH          => $parameters['packeteryLength'] ?? null,
+				OrderForm::FIELD_HEIGHT          => $parameters['packeteryHeight'] ?? null,
+				OrderForm::FIELD_ADULT_CONTENT   => 'true' === $parameters['packeteryAdultContent'],
+				OrderForm::FIELD_COD             => $parameters['packeteryCOD'] ?? null,
+				OrderForm::FIELD_VALUE           => $parameters['packeteryValue'],
+				OrderForm::FIELD_DELIVER_ON      => $packeteryDeliverOn,
 			]
 		);
 
@@ -163,18 +163,18 @@ final class OrderController extends WP_REST_Controller {
 		$values = $form->getValues( 'array' );
 
 		$size = new Size(
-			$values[ SharedOrderDetailsFormFactory::FIELD_LENGTH ],
-			$values[ SharedOrderDetailsFormFactory::FIELD_WIDTH ],
-			$values[ SharedOrderDetailsFormFactory::FIELD_HEIGHT ]
+			$values[ OrderForm::FIELD_LENGTH ],
+			$values[ OrderForm::FIELD_WIDTH ],
+			$values[ OrderForm::FIELD_HEIGHT ]
 		);
 
-		if ( (float) $values[ SharedOrderDetailsFormFactory::FIELD_WEIGHT ] !== (float) $values['packetery_original_weight'] ) {
-			$order->setWeight( (float) $values[ SharedOrderDetailsFormFactory::FIELD_WEIGHT ] );
+		if ( (float) $values[ OrderForm::FIELD_WEIGHT ] !== (float) $values['packetery_original_weight'] ) {
+			$order->setWeight( (float) $values[ OrderForm::FIELD_WEIGHT ] );
 		}
 
-		$order->setCod( $values[ SharedOrderDetailsFormFactory::FIELD_COD ] );
-		$order->setAdultContent( $values[ SharedOrderDetailsFormFactory::FIELD_ADULT_CONTENT ] );
-		$order->setValue( $values[ SharedOrderDetailsFormFactory::FIELD_VALUE ] );
+		$order->setCod( $values[ OrderForm::FIELD_COD ] );
+		$order->setAdultContent( $values[ OrderForm::FIELD_ADULT_CONTENT ] );
+		$order->setValue( $values[ OrderForm::FIELD_VALUE ] );
 		$order->setSize( $size );
 		// TODO: Find out why are we using this variable and not form value.
 		$order->setDeliverOn( $this->helper->getDateTimeFromString( $packeteryDeliverOn ) );
@@ -183,19 +183,19 @@ final class OrderController extends WP_REST_Controller {
 
 		$data['message'] = __( 'Success', 'packeta' );
 		$data['data']    = [
-			'fragments'                                 => [
+			'fragments'                    => [
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
-			SharedOrderDetailsFormFactory::FIELD_WEIGHT => $order->getFinalWeight(),
-			SharedOrderDetailsFormFactory::FIELD_LENGTH => $order->getLength(),
-			SharedOrderDetailsFormFactory::FIELD_WIDTH  => $order->getWidth(),
-			SharedOrderDetailsFormFactory::FIELD_HEIGHT => $order->getHeight(),
-			SharedOrderDetailsFormFactory::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
-			SharedOrderDetailsFormFactory::FIELD_COD    => $order->getCod(),
-			SharedOrderDetailsFormFactory::FIELD_VALUE  => $order->getValue(),
-			SharedOrderDetailsFormFactory::FIELD_DELIVER_ON => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
-			'orderIsSubmittable'                        => $this->orderValidator->isValid( $order ),
-			'hasOrderManualWeight'                      => $order->hasManualWeight(),
+			OrderForm::FIELD_WEIGHT        => $order->getFinalWeight(),
+			OrderForm::FIELD_LENGTH        => $order->getLength(),
+			OrderForm::FIELD_WIDTH         => $order->getWidth(),
+			OrderForm::FIELD_HEIGHT        => $order->getHeight(),
+			OrderForm::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
+			OrderForm::FIELD_COD           => $order->getCod(),
+			OrderForm::FIELD_VALUE         => $order->getValue(),
+			OrderForm::FIELD_DELIVER_ON    => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
+			'orderIsSubmittable'           => $this->orderValidator->isValid( $order ),
+			'hasOrderManualWeight'         => $order->hasManualWeight(),
 		];
 
 		return new WP_REST_Response( $data, 200 );

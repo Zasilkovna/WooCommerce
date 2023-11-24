@@ -11,7 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Module\Api;
 use Packetery\Module\Api\Internal\OrderRouter;
-use Packetery\Module\Order\Shared\SharedOrderDetailsFormFactory;
+use Packetery\Module\Order\OrderForm;
 use Packetery\Latte\Engine;
 
 /**
@@ -31,9 +31,9 @@ class Modal {
 	/**
 	 * Order details form.
 	 *
-	 * @var SharedOrderDetailsFormFactory
+	 * @var OrderForm
 	 */
-	private $orderDetailsFormFactory;
+	private $orderForm;
 
 	/**
 	 * Order router.
@@ -45,14 +45,14 @@ class Modal {
 	/**
 	 * Modal constructor.
 	 *
-	 * @param Engine                        $latteEngine Latte engine.
-	 * @param SharedOrderDetailsFormFactory $orderDetailsFormFactory Form factory.
-	 * @param OrderRouter                   $apiRouter API router.
+	 * @param Engine      $latteEngine Latte engine.
+	 * @param OrderForm   $orderForm Order form.
+	 * @param OrderRouter $apiRouter API router.
 	 */
-	public function __construct( Engine $latteEngine, SharedOrderDetailsFormFactory $orderDetailsFormFactory, OrderRouter $apiRouter ) {
-		$this->latteEngine             = $latteEngine;
-		$this->orderDetailsFormFactory = $orderDetailsFormFactory;
-		$this->apiRouter               = $apiRouter;
+	public function __construct( Engine $latteEngine, OrderForm $orderForm, OrderRouter $apiRouter ) {
+		$this->latteEngine = $latteEngine;
+		$this->orderForm   = $orderForm;
+		$this->apiRouter   = $apiRouter;
 	}
 
 	/**
@@ -69,7 +69,7 @@ class Modal {
 		$nonce        = wp_create_nonce( 'wp_rest' );
 		$orderSaveUrl = $this->apiRouter->getSaveModalUrl();
 
-		$form = $this->orderDetailsFormFactory->create();
+		$form = $this->orderForm->create();
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );
 

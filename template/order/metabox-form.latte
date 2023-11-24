@@ -11,24 +11,24 @@
             <input n:name=packetery_order_metabox_nonce />
             <input n:name=packetery_original_weight />
             {foreach [
-                'packetery_weight',
-                'packetery_length',
-                'packetery_width',
-                'packetery_height',
-                'packetery_adult_content',
-                'packetery_COD',
-                'packetery_value'
+                Packetery\Module\Order\OrderForm::FIELD_WEIGHT,
+                Packetery\Module\Order\OrderForm::FIELD_LENGTH,
+                Packetery\Module\Order\OrderForm::FIELD_WIDTH,
+                Packetery\Module\Order\OrderForm::FIELD_HEIGHT,
+                Packetery\Module\Order\OrderForm::FIELD_ADULT_CONTENT,
+                Packetery\Module\Order\OrderForm::FIELD_COD,
+                Packetery\Module\Order\OrderForm::FIELD_VALUE
             ] as $inputName}
-                {continueIf $inputName === 'packetery_COD' && false === $isCodPayment}
-                {continueIf $inputName === 'packetery_adult_content' && false === $allowsAdultContent}
-                {continueIf in_array($inputName, ['packetery_length', 'packetery_width', 'packetery_height']) && false === $requiresSizeDimensions}
+                {continueIf $inputName === Packetery\Module\Order\OrderForm::FIELD_COD && false === $isCodPayment}
+                {continueIf $inputName === Packetery\Module\Order\OrderForm::FIELD_ADULT_CONTENT && false === $allowsAdultContent}
+                {continueIf in_array($inputName, [Packetery\Module\Order\OrderForm::FIELD_LENGTH, Packetery\Module\Order\OrderForm::FIELD_WIDTH, Packetery\Module\Order\OrderForm::FIELD_HEIGHT]) && false === $requiresSizeDimensions}
 
                 <div class="packetery-table-row">
-                    {if in_array( $inputName, [ 'packetery_COD', 'packetery_value' ] ) }
+                    {if in_array( $inputName, [ Packetery\Module\Order\OrderForm::FIELD_COD, Packetery\Module\Order\OrderForm::FIELD_VALUE ] ) }
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">
                             <label n:name=$inputName /> ({$orderCurrency|noescape})
                         </div>
-                    {elseif in_array( $inputName, [ 'packetery_weight' ] ) }
+                    {elseif in_array( $inputName, [ Packetery\Module\Order\OrderForm::FIELD_WEIGHT ] ) }
                         <div class="packetery-table-cell packetery-order-metabox-label-cell">
                             <label n:name=$inputName />{if $hasOrderManualWeight}<span title="{$translations['weightIsManual']}" class="dashicons dashicons-lock"></span>{/if}
                         </div>

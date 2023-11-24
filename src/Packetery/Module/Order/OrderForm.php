@@ -1,25 +1,27 @@
 <?php
 /**
- * Class SharedOrderDetailsForm.
+ * Class OrderForm.
  *
  * @package Packetery
  */
 
 declare( strict_types=1 );
 
-namespace Packetery\Module\Order\Shared;
+namespace Packetery\Module\Order;
 
+use DateTimeImmutable;
+use Packetery\Core\Entity\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
 use Packetery\Nette\Forms\Form;
 
 /**
- * Class SharedOrderDetailsForm.
+ * Class OrderForm.
  *
  * @package Packetery
  */
-class SharedOrderDetailsFormFactory {
+class OrderForm {
 
 	public const FIELD_COD             = 'packetery_COD';
 	public const FIELD_VALUE           = 'packetery_value';
@@ -93,29 +95,28 @@ class SharedOrderDetailsFormFactory {
 	/**
 	 * Setting default values
 	 *
-	 * @param Form              $form form.
-	 * @param string|float|null $weight weight.
-	 * @param string|float|null $originalWeight original weight.
-	 * @param string|float|null $length length.
-	 * @param string|float|null $width width.
-	 * @param string|float|null $height height.
-	 * @param string|float|null $COD Cash on delivery.
-	 * @param string|float|null $orderValue Order value.
-	 * @param string|bool|null  $adultContent Adult content.
-	 * @param string|null       $deliverOn Estimated delivery date.
-	 * @return void
+	 * @param Form                   $form form.
+	 * @param float|null             $weight weight.
+	 * @param float|null             $originalWeight Original weight.
+	 * @param float|null             $length length.
+	 * @param float|null             $width width.
+	 * @param float|null             $height height.
+	 * @param float|null             $cod Cash on delivery.
+	 * @param float|null             $orderValue Order value.
+	 * @param bool|null              $adultContent Allows adult content.
+	 * @param DateTimeImmutable|null $deliverOn Estimated date of delivery.
 	 */
 	public function setDefaults(
 		Form $form,
-		$weight,
-		$originalWeight,
-		$length,
-		$width,
-		$height,
-		$COD,
-		$orderValue,
-		$adultContent,
-		$deliverOn
+		?float $weight,
+		?float $originalWeight,
+		?float $length,
+		?float $width,
+		?float $height,
+		?float $cod,
+		?float $orderValue,
+		?bool $adultContent,
+		?DateTimeImmutable $deliverOn
 	): void {
 
 		$form->setDefaults(
@@ -125,11 +126,21 @@ class SharedOrderDetailsFormFactory {
 				self::FIELD_LENGTH          => $length,
 				self::FIELD_WIDTH           => $width,
 				self::FIELD_HEIGHT          => $height,
-				self::FIELD_COD             => $COD,
+				self::FIELD_COD             => $cod,
 				self::FIELD_VALUE           => $orderValue,
 				self::FIELD_ADULT_CONTENT   => $adultContent,
 				self::FIELD_DELIVER_ON      => $deliverOn,
 			]
 		);
+	}
+
+	/**
+	 * Allows Adult Content
+	 *
+	 * @param Order $order order.
+	 * @return bool
+	 */
+	public static function allowsAdultContent( Order $order ): bool {
+		return $order->isPacketaInternalPickupPoint() || $order->getCarrier()->getId() === '106';
 	}
 }

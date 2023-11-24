@@ -100,7 +100,7 @@ class GridExtender {
 	 * @param Repository       $orderRepository Order repository.
 	 * @param Order            $orderValidator Order validator.
 	 * @param ContextResolver  $contextResolver Context resolver.
-	 * @param Provider         $optionsProvider Options providor.
+	 * @param Provider         $optionsProvider Options provider.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -359,7 +359,7 @@ class GridExtender {
 					[
 						'order'                     => $order,
 						'hasDeliverOn'              => $order->isPacketaInternalPickupPoint(),
-						'allowsAdultContent'        => $order->isPacketaInternalPickupPoint() || $order->getCarrier()->getId() === '106',
+						'allowsAdultContent'        => Module\Order\Shared\OrderForm::allowsAdultContent( $order ),
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,
