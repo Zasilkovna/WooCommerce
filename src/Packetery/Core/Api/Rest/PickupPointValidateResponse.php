@@ -53,7 +53,7 @@ class PickupPointValidateResponse {
 	/**
 	 * Get array of errors.
 	 *
-	 * @return string[]
+	 * @return array[]
 	 */
 	public function getErrors(): array {
 		return $this->errors;

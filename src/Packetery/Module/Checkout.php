@@ -359,9 +359,42 @@ class Checkout {
 	}
 
 	/**
-	 * Checks if all pickup point attributes are set, sets an error otherwise.
+	 * Sets validation error message uses WP_Error if provided.
+	 *
+	 * @param string         $errorMessage Message.
+	 * @param \WP_Error|null $errors       WP_Error object.
+	 *
+	 * @return void
 	 */
-	public function validateCheckoutData(): void {
+	private function setValidationError( string $errorMessage, ?\WP_Error $errors ): void {
+		if ( $errors === null ) {
+			wc_add_notice( $errorMessage, 'error' );
+		} else {
+			$errors->add( 'validateCheckoutData', $errorMessage );
+		}
+	}
+
+	/**
+	 * Checks if all pickup point attributes are set, sets an error otherwise.
+	 *
+	 * @param \WP_Error|null $errors Null when Blocks not active.
+	 * @param \WC_Cart|null  $cart   Null when Blocks not active.
+	 *
+	 * @return void
+	 */
+	public function validateCheckoutData( ?\WP_Error $errors = null, ?\WC_Cart $cart = null ): void {
+		// todo 1803 POST data is empty, how to know when sent?
+		/*
+		$postData = $this->httpRequest->getPost();
+		if ( empty( $postData ) ) {
+			return;
+		}
+		*/
+
+		if ( ! is_checkout() ) {
+			return;
+		}
+
 		$chosenShippingMethod = $this->getChosenMethod();
 		WC()->session->set( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
@@ -372,7 +405,7 @@ class Checkout {
 		$checkoutData = $this->getPostDataIncludingStoredData( $chosenShippingMethod );
 
 		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, WC()->cart->get_cart_contents() ) ) {
-			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
+			$this->setValidationError( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), $errors );
 
 			return;
 		}
@@ -383,7 +416,7 @@ class Checkout {
 		$paymentMethod  = $this->getChosenPaymentMethod();
 
 		if ( null !== $paymentMethod && $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
-			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
+			$this->setValidationError( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), $errors );
 
 			return;
 		}
@@ -411,7 +444,7 @@ class Checkout {
 				}
 			}
 			if ( $error ) {
-				wc_add_notice( __( 'Pickup point is not chosen.', 'packeta' ), 'error' );
+				$this->setValidationError( __( 'Pickup point is not chosen.', 'packeta' ), $errors );
 			}
 
 			if (
@@ -421,7 +454,7 @@ class Checkout {
 					$this->getCustomerCountry()
 				)
 			) {
-				wc_add_notice( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
+				$this->setValidationError( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), $errors );
 				$error = true;
 			}
 
@@ -441,11 +474,11 @@ class Checkout {
 					)
 				);
 				if ( ! $pickupPointValidationResponse->isValid() ) {
-					wc_add_notice( __( 'The selected Packeta pickup point could not be validated. Please select another.', 'packeta' ), 'error' );
+					$this->setValidationError( __( 'The selected Packeta pickup point could not be validated. Please select another.', 'packeta' ), $errors );
 					foreach ( $pickupPointValidationResponse->getErrors() as $validationError ) {
 						$reason = $this->pickupPointValidator->getTranslatedError()[ $validationError['code'] ];
 						// translators: %s: Reason for validation failure.
-						wc_add_notice( sprintf( __( 'Reason: %s', 'packeta' ), $reason ), 'error' );
+						$this->setValidationError( sprintf( __( 'Reason: %s', 'packeta' ), $reason ), $errors );
 					}
 				}
 			}
@@ -467,7 +500,7 @@ class Checkout {
 					'1' !== $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ]
 				)
 			) {
-				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
+				$this->setValidationError( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), $errors );
 			}
 		}
 
@@ -479,11 +512,46 @@ class Checkout {
 	/**
 	 * Saves pickup point and other Packeta information to order.
 	 *
+	 * @param \WC_Order $order Order.
+	 *
+	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
+	 */
+	public function updateOrderMetaBlocks( \WC_Order $order ): void {
+		// todo 1803 It's already called at the checkout. When the order is sent, the POST data is empty. The status is checkout-draft in both cases.
+		// We're using a new action: To keep the interface focused (only pass $order, not passing request data).
+		// This also explicitly indicates these orders are from checkout block/StoreAPI.
+		// Throwing an exception from a callback attached to this action will make the Checkout Block render in a warning state, effectively preventing checkout.
+
+		/*
+		$orderData = $order->get_data();
+		if ( $orderData['status'] === 'checkout-draft' ) {
+			return;
+		}
+		*/
+
+		$this->updateOrderMeta( $order );
+	}
+
+	/**
+	 * Saves pickup point and other Packeta information to order.
+	 *
 	 * @param int $orderId Order id.
 	 *
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function updateOrderMeta( int $orderId ): void {
+	public function updateOrderMetaClassic( int $orderId ): void {
+		$this->updateOrderMeta( null, $orderId );
+	}
+
+	/**
+	 * Saves pickup point and other Packeta information to order.
+	 *
+	 * @param \WC_Order|null $order   Order.
+	 * @param int|null       $orderId Order id.
+	 *
+	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
+	 */
+	private function updateOrderMeta( ?\WC_Order $order = null, ?int $orderId = null ): void {
 		$chosenMethod = $this->getChosenMethod();
 		if ( false === $this->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return;
@@ -498,7 +566,7 @@ class Checkout {
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
-		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+		$wcOrder = ( $order ?? $this->orderRepository->getWcOrderById( $orderId ) );
 		if ( null === $wcOrder ) {
 			return;
 		}
@@ -538,6 +606,7 @@ class Checkout {
 			$wcOrder->save();
 		}
 
+		$orderId     = $wcOrder->get_id();
 		$orderEntity = new Core\Entity\Order( (string) $orderId, $this->carrierEntityRepository->getAnyById( $carrierId ) );
 		if (
 			isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
@@ -575,6 +644,7 @@ class Checkout {
 			$orderEntity->setSize( $size );
 		}
 
+		// TODO: Why doesn't it save for PP order only?
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $orderEntity, $propsToSave );
 		$orderEntity->setPickupPoint( $pickupPoint );
 
@@ -584,31 +654,54 @@ class Checkout {
 	}
 
 	/**
+	 * Checks if Blocks are used in checkout.
+	 *
+	 * @return bool
+	 */
+	private function areBlocksUsedInCheckout(): bool {
+		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {
 		// This action works for both classic and Divi templates.
+		// Is not called when Blocks used.
 		add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
-		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
+		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMetaClassic' ) );
 		if ( ! is_admin() ) {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
+		// Maybe is not called when Blocks used.
 		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
+
 		add_filter( 'woocommerce_cart_shipping_packages', [ $this, 'updateShippingPackages' ] );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
 		add_action(
 			'init',
 			function () {
+				if ( $this->areBlocksUsedInCheckout() ) {
+					add_action( 'woocommerce_store_api_cart_errors', array( $this, 'validateCheckoutData' ), 10, 2 );
+					add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'updateOrderMetaBlocks' ) );
+				}
+
 				/**
 				 * Tells if widget button table row should be used.
 				 *
 				 * @since 1.3.0
 				 */
 				if ( $this->options_provider->getCheckoutWidgetButtonLocation() === 'after_transport_methods' ) {
+					// Is not called when Blocks used.
 					add_action( 'woocommerce_review_order_after_shipping', [ $this, 'renderWidgetButtonTableRow' ] );
 				} else {
+					// Is not called when Blocks used.
 					add_action( 'woocommerce_after_shipping_rate', [ $this, 'renderWidgetButtonAfterShippingRate' ] );
 				}
 			}
