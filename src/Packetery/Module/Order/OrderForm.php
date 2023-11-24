@@ -95,16 +95,16 @@ class OrderForm {
 	/**
 	 * Setting default values
 	 *
-	 * @param Form                   $form form.
-	 * @param float|null             $weight weight.
-	 * @param float|null             $originalWeight Original weight.
-	 * @param float|null             $length length.
-	 * @param float|null             $width width.
-	 * @param float|null             $height height.
-	 * @param float|null             $cod Cash on delivery.
-	 * @param float|null             $orderValue Order value.
-	 * @param bool|null              $adultContent Allows adult content.
-	 * @param DateTimeImmutable|null $deliverOn Estimated date of delivery.
+	 * @param Form        $form form.
+	 * @param float|null  $weight weight.
+	 * @param float|null  $originalWeight Original weight.
+	 * @param float|null  $length length.
+	 * @param float|null  $width width.
+	 * @param float|null  $height height.
+	 * @param float|null  $cod Cash on delivery.
+	 * @param float|null  $orderValue Order value.
+	 * @param bool|null   $adultContent Allows adult content.
+	 * @param string|null $deliverOn Estimated date of delivery.
 	 */
 	public function setDefaults(
 		Form $form,
@@ -116,7 +116,7 @@ class OrderForm {
 		?float $cod,
 		?float $orderValue,
 		?bool $adultContent,
-		?DateTimeImmutable $deliverOn
+		?string $deliverOn
 	): void {
 
 		$form->setDefaults(
