@@ -1,4 +1,9 @@
 <?php
+/**
+ * Run scoper script.
+ *
+ * @package Packetery
+ */
 
 use Composer\Factory;
 use Composer\IO\NullIO;
@@ -8,13 +13,13 @@ use Wpify\Scoper\Plugin;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 $command = null;
-if ( isset( $argv[1] ) && $argv[1] === 'install' ) {
+if ( isset( $argv[1] ) && 'install' === $argv[1] ) {
 	$command = Plugin::SCOPER_INSTALL_CMD;
 }
-if ( isset( $argv[1] ) && $argv[1] === 'update' ) {
+if ( isset( $argv[1] ) && 'update' === $argv[1] ) {
 	$command = Plugin::SCOPER_UPDATE_CMD;
 }
-if ( $command === null ) {
+if ( null === $command ) {
 	echo 'Usage: wpify-scoper [command]' . PHP_EOL;
 	echo '  commands:' . PHP_EOL;
 	echo '    update' . PHP_EOL;
