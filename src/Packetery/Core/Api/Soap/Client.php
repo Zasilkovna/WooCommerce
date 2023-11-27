@@ -332,8 +332,10 @@ class Client {
 		if ( $faults && ! is_array( $faults ) ) {
 			$faults = [ $faults ];
 		}
-		foreach ( $faults as $fault ) {
-			$errors[] = sprintf( '%s: %s', $fault->name, $fault->fault );
+		if ( is_iterable( $faults ) ) {
+			foreach ( $faults as $fault ) {
+				$errors[] = sprintf( '%s: %s', $fault->name, $fault->fault );
+			}
 		}
 
 		return $errors;

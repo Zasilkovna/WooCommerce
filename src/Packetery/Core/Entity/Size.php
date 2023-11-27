@@ -18,21 +18,21 @@ class Size {
 	/**
 	 * Length.
 	 *
-	 * @var float
+	 * @var ?float
 	 */
 	private $length;
 
 	/**
 	 * Width.
 	 *
-	 * @var float
+	 * @var ?float
 	 */
 	private $width;
 
 	/**
 	 * Height.
 	 *
-	 * @var float
+	 * @var ?float
 	 */
 	private $height;
 

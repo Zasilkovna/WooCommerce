@@ -22,56 +22,56 @@ class CreatePacket {
 	/**
 	 * Order id.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $number;
 
 	/**
 	 * Customer name.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $name;
 
 	/**
 	 * Customer surname.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $surname;
 
 	/**
 	 * Customer e-mail.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $email;
 
 	/**
 	 * Customer phone.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $phone;
 
 	/**
 	 * Pickup point or carrier id.
 	 *
-	 * @var int
+	 * @var ?int
 	 */
 	private $addressId;
 
 	/**
 	 * Order value.
 	 *
-	 * @var float
+	 * @var ?float
 	 */
 	private $value;
 
 	/**
 	 * Sender label.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $eshop;
 
@@ -85,7 +85,7 @@ class CreatePacket {
 	/**
 	 * Customer street for address delivery.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $street;
 
@@ -99,21 +99,21 @@ class CreatePacket {
 	/**
 	 * Customer city for address delivery.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $city;
 
 	/**
 	 * Customer zip for address delivery.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $zip;
 
 	/**
 	 * Cash on delivery value.
 	 *
-	 * @var float
+	 * @var ?float
 	 */
 	private $cod;
 
@@ -127,21 +127,21 @@ class CreatePacket {
 	/**
 	 * Carrier pickup point.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $carrierPickupPoint;
 
 	/**
 	 * Package size.
 	 *
-	 * @var array<string, float>
+	 * @var array<string, float|null>
 	 */
 	private $size;
 
 	/**
 	 * Packet note.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $note;
 

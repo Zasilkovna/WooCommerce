@@ -17,7 +17,7 @@ class CustomsDeclaration {
 	/**
 	 * Unique identifier.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	private $id;
 
@@ -181,6 +181,10 @@ class CustomsDeclaration {
 	 * @return string|null
 	 */
 	public function getEadFile(): ?string {
+		if ( null === $this->eadFile ) {
+			return null;
+		}
+
 		return call_user_func( $this->eadFile );
 	}
 
@@ -243,6 +247,10 @@ class CustomsDeclaration {
 	 * @return string|null
 	 */
 	public function getInvoiceFile(): ?string {
+		if ( null === $this->invoiceFile ) {
+			return null;
+		}
+
 		return call_user_func( $this->invoiceFile );
 	}
 
