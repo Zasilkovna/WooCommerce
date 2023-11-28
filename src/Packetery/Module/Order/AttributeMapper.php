@@ -105,16 +105,16 @@ class AttributeMapper {
 		foreach ( $propsToSave as $attrName => $attrValue ) {
 			switch ( $attrName ) {
 				// TODO: Setting these values shouldn't be done here?
-				case OrderForm::FIELD_WEIGHT:
+				case Form::FIELD_WEIGHT:
 					$order->setWeight( $attrValue );
 					break;
-				case OrderForm::FIELD_WIDTH:
+				case Form::FIELD_WIDTH:
 					$orderSize->setWidth( $attrValue );
 					break;
-				case OrderForm::FIELD_LENGTH:
+				case Form::FIELD_LENGTH:
 					$orderSize->setLength( $attrValue );
 					break;
-				case OrderForm::FIELD_HEIGHT:
+				case Form::FIELD_HEIGHT:
 					$orderSize->setHeight( $attrValue );
 					break;
 			}

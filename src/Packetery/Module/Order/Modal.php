@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Module\Api;
 use Packetery\Module\Api\Internal\OrderRouter;
-use Packetery\Module\Order\OrderForm;
 use Packetery\Latte\Engine;
 
 /**
@@ -31,7 +30,7 @@ class Modal {
 	/**
 	 * Order details form.
 	 *
-	 * @var OrderForm
+	 * @var Form
 	 */
 	private $orderForm;
 
@@ -46,10 +45,10 @@ class Modal {
 	 * Modal constructor.
 	 *
 	 * @param Engine      $latteEngine Latte engine.
-	 * @param OrderForm   $orderForm Order form.
+	 * @param Form   $orderForm Order form.
 	 * @param OrderRouter $apiRouter API router.
 	 */
-	public function __construct( Engine $latteEngine, OrderForm $orderForm, OrderRouter $apiRouter ) {
+	public function __construct( Engine $latteEngine, Form $orderForm, OrderRouter $apiRouter ) {
 		$this->latteEngine = $latteEngine;
 		$this->orderForm   = $orderForm;
 		$this->apiRouter   = $apiRouter;

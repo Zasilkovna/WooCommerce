@@ -1,6 +1,6 @@
 <?php
 /**
- * Class OrderForm.
+ * Class Form.
  *
  * @package Packetery
  */
@@ -14,14 +14,14 @@ use Packetery\Module\EntityFactory\Carrier;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
-use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Forms;
 
 /**
- * Class OrderForm.
+ * Class Form.
  *
  * @package Packetery
  */
-class OrderForm {
+class Form {
 
 	public const FIELD_COD             = 'packetery_COD';
 	public const FIELD_VALUE           = 'packetery_value';
@@ -52,9 +52,9 @@ class OrderForm {
 	/**
 	 * Creating a form
 	 *
-	 * @return Form
+	 * @return Forms\Form
 	 */
-	public function create(): Form {
+	public function create(): Forms\Form {
 		$form = $this->formFactory->create();
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
@@ -86,6 +86,7 @@ class OrderForm {
 			->setHtmlAttribute( 'class', 'date-picker' )
 			->setHtmlAttribute( 'autocomplete', 'off' )
 			->setRequired( false )
+			->setNullable()
 			// translators: %s: Represents minimal date for delayed delivery.
 			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
 
@@ -95,19 +96,19 @@ class OrderForm {
 	/**
 	 * Setting default values
 	 *
-	 * @param Form        $form form.
-	 * @param float|null  $weight weight.
-	 * @param float|null  $originalWeight Original weight.
-	 * @param float|null  $length length.
-	 * @param float|null  $width width.
-	 * @param float|null  $height height.
-	 * @param float|null  $cod Cash on delivery.
-	 * @param float|null  $orderValue Order value.
-	 * @param bool|null   $adultContent Allows adult content.
+	 * @param Forms\Form $form form.
+	 * @param float|null $weight weight.
+	 * @param float|null $originalWeight Original weight.
+	 * @param float|null $length length.
+	 * @param float|null $width width.
+	 * @param float|null $height height.
+	 * @param float|null $cod Cash on delivery.
+	 * @param float|null $orderValue Order value.
+	 * @param bool|null $adultContent Allows adult content.
 	 * @param string|null $deliverOn Estimated date of delivery.
 	 */
 	public function setDefaults(
-		Form $form,
+		Forms\Form $form,
 		?float $weight,
 		?float $originalWeight,
 		?float $length,

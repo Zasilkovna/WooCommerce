@@ -24,7 +24,7 @@ use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Latte\Engine;
-use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Forms;
 use Packetery\Nette\Http\Request;
 use WC_Data_Exception;
 use WC_Order;
@@ -67,14 +67,14 @@ class Metabox {
 	/**
 	 * Order form.
 	 *
-	 * @var Form
+	 * @var Forms\Form
 	 */
 	private $form;
 
 	/**
 	 * OrderDetails
 	 *
-	 * @var OrderForm
+	 * @var Form
 	 */
 	private $orderForm;
 
@@ -137,19 +137,19 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine               $latte_engine PacketeryLatte engine.
-	 * @param MessageManager       $message_manager Message manager.
-	 * @param Helper               $helper Helper.
-	 * @param Request              $request Http request.
-	 * @param Provider             $optionsProvider Options provider.
-	 * @param Repository           $orderRepository Order repository.
-	 * @param Page                 $logPage Log page.
-	 * @param AttributeMapper      $mapper AttributeMapper.
-	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository     $carrierRepository Carrier repository.
-	 * @param Order                $orderValidator Order validator.
-	 * @param DetailCommonLogic    $detailCommonLogic Detail common logic.
-	 * @param OrderForm            $orderForm Order details.
+	 * @param Engine                        $latte_engine PacketeryLatte engine.
+	 * @param MessageManager                $message_manager Message manager.
+	 * @param Helper                        $helper Helper.
+	 * @param Request                       $request Http request.
+	 * @param Provider                      $optionsProvider Options provider.
+	 * @param Repository                    $orderRepository Order repository.
+	 * @param Page                          $logPage Log page.
+	 * @param AttributeMapper               $mapper AttributeMapper.
+	 * @param WidgetOptionsBuilder          $widgetOptionsBuilder Widget options builder.
+	 * @param EntityRepository              $carrierRepository Carrier repository.
+	 * @param Order                         $orderValidator Order validator.
+	 * @param DetailCommonLogic             $detailCommonLogic Detail common logic.
+	 * @param Form                          $orderForm Order details.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -164,7 +164,7 @@ class Metabox {
 		EntityRepository $carrierRepository,
 		Order $orderValidator,
 		DetailCommonLogic $detailCommonLogic,
-		OrderForm $orderForm
+		Form $orderForm
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
@@ -421,7 +421,7 @@ class Metabox {
 				'packetClaimCancelUrl'   => $packetClaimCancelUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'isCodPayment'           => $order->hasCod(),
-				'allowsAdultContent'     => OrderForm::allowsAdultContent( $order ),
+				'allowsAdultContent'     => Form::allowsAdultContent($order),
 				'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,
@@ -484,15 +484,15 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			OrderForm::FIELD_WIDTH  => ( is_numeric( $formValues[ OrderForm::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ OrderForm::FIELD_WIDTH ], 0, '.', '' ) : null ),
-			OrderForm::FIELD_LENGTH => ( is_numeric( $formValues[ OrderForm::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ OrderForm::FIELD_LENGTH ], 0, '.', '' ) : null ),
-			OrderForm::FIELD_HEIGHT => ( is_numeric( $formValues[ OrderForm::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ OrderForm::FIELD_HEIGHT ], 0, '.', '' ) : null ),
+			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], 0, '.', '' ) : null ),
+			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], 0, '.', '' ) : null ),
+			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], 0, '.', '' ) : null ),
 		];
 
-		if ( ! is_numeric( $formValues[ OrderForm::FIELD_WEIGHT ] ) ) {
-			$propsToSave[ OrderForm::FIELD_WEIGHT ] = null;
-		} elseif ( (float) $formValues[ OrderForm::FIELD_WEIGHT ] !== (float) $formValues[ OrderForm::FIELD_ORIGINAL_WEIGHT ] ) {
-			$propsToSave[ OrderForm::FIELD_WEIGHT ] = (float) $formValues[ OrderForm::FIELD_WEIGHT ];
+		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {
+			$propsToSave[ Form::FIELD_WEIGHT ] = null;
+		} elseif ( (float) $formValues[ Form::FIELD_WEIGHT ] !== (float) $formValues[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
+			$propsToSave[ Form::FIELD_WEIGHT ] = (float) $formValues[ Form::FIELD_WEIGHT ];
 		}
 
 		if ( $formValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
@@ -528,10 +528,10 @@ class Metabox {
 			$order->setAddressValidated( true );
 		}
 
-		$order->setAdultContent( $formValues[ OrderForm::FIELD_ADULT_CONTENT ] );
-		$order->setCod( is_numeric( $formValues[ OrderForm::FIELD_COD ] ) ? Helper::simplifyFloat( $formValues[ OrderForm::FIELD_COD ], 10 ) : null );
-		$order->setValue( is_numeric( $formValues[ OrderForm::FIELD_VALUE ] ) ? Helper::simplifyFloat( $formValues[ OrderForm::FIELD_VALUE ], 10 ) : null );
-		$order->setDeliverOn( $this->helper->getDateTimeFromString( $formValues[ OrderForm::FIELD_DELIVER_ON ] ) );
+		$order->setAdultContent( $formValues[ Form::FIELD_ADULT_CONTENT ] );
+		$order->setCod( is_numeric( $formValues[ Form::FIELD_COD ] ) ? Helper::simplifyFloat( $formValues[ Form::FIELD_COD ], 10 ) : null );
+		$order->setValue( is_numeric( $formValues[ Form::FIELD_VALUE ] ) ? Helper::simplifyFloat( $formValues[ Form::FIELD_VALUE ], 10 ) : null );
+		$order->setDeliverOn( $this->helper->getDateTimeFromString( $formValues[ Form::FIELD_DELIVER_ON ] ) );
 
 		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
 		$order->setSize( $orderSize );

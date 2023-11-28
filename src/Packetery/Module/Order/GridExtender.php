@@ -359,7 +359,7 @@ class GridExtender {
 					[
 						'order'                     => $order,
 						'hasDeliverOn'              => $order->isPacketaInternalPickupPoint(),
-						'allowsAdultContent'        => Module\Order\OrderForm::allowsAdultContent( $order ),
+						'allowsAdultContent'        => Form::allowsAdultContent( $order ),
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,
