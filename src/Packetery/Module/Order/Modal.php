@@ -45,7 +45,7 @@ class Modal {
 	 * Modal constructor.
 	 *
 	 * @param Engine      $latteEngine Latte engine.
-	 * @param Form   $orderForm Order form.
+	 * @param Form        $orderForm Order form.
 	 * @param OrderRouter $apiRouter API router.
 	 */
 	public function __construct( Engine $latteEngine, Form $orderForm, OrderRouter $apiRouter ) {

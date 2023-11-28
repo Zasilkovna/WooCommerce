@@ -81,7 +81,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param GridExtender    $gridExtender Grid extender.
 	 * @param Validator\Order $orderValidator Order validator.
 	 * @param Helper          $helper Helper.
-	 * @param Form       $orderForm Order form.
+	 * @param Form            $orderForm Order form.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -183,7 +183,7 @@ final class OrderController extends WP_REST_Controller {
 
 		$data['message'] = __( 'Success', 'packeta' );
 		$data['data']    = [
-			'fragments'                    => [
+			'fragments'               => [
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			Form::FIELD_WEIGHT        => $order->getFinalWeight(),
@@ -194,8 +194,8 @@ final class OrderController extends WP_REST_Controller {
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),
 			Form::FIELD_DELIVER_ON    => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
-			'orderIsSubmittable'           => $this->orderValidator->isValid( $order ),
-			'hasOrderManualWeight'         => $order->hasManualWeight(),
+			'orderIsSubmittable'      => $this->orderValidator->isValid( $order ),
+			'hasOrderManualWeight'    => $order->hasManualWeight(),
 		];
 
 		return new WP_REST_Response( $data, 200 );

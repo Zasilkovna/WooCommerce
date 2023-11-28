@@ -137,19 +137,19 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine                        $latte_engine PacketeryLatte engine.
-	 * @param MessageManager                $message_manager Message manager.
-	 * @param Helper                        $helper Helper.
-	 * @param Request                       $request Http request.
-	 * @param Provider                      $optionsProvider Options provider.
-	 * @param Repository                    $orderRepository Order repository.
-	 * @param Page                          $logPage Log page.
-	 * @param AttributeMapper               $mapper AttributeMapper.
-	 * @param WidgetOptionsBuilder          $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository              $carrierRepository Carrier repository.
-	 * @param Order                         $orderValidator Order validator.
-	 * @param DetailCommonLogic             $detailCommonLogic Detail common logic.
-	 * @param Form                          $orderForm Order details.
+	 * @param Engine               $latte_engine PacketeryLatte engine.
+	 * @param MessageManager       $message_manager Message manager.
+	 * @param Helper               $helper Helper.
+	 * @param Request              $request Http request.
+	 * @param Provider             $optionsProvider Options provider.
+	 * @param Repository           $orderRepository Order repository.
+	 * @param Page                 $logPage Log page.
+	 * @param AttributeMapper      $mapper AttributeMapper.
+	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
+	 * @param EntityRepository     $carrierRepository Carrier repository.
+	 * @param Order                $orderValidator Order validator.
+	 * @param DetailCommonLogic    $detailCommonLogic Detail common logic.
+	 * @param Form                 $orderForm Order details.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -421,7 +421,7 @@ class Metabox {
 				'packetClaimCancelUrl'   => $packetClaimCancelUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'isCodPayment'           => $order->hasCod(),
-				'allowsAdultContent'     => Form::allowsAdultContent($order),
+				'allowsAdultContent'     => Form::allowsAdultContent( $order ),
 				'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,

@@ -96,15 +96,15 @@ class Form {
 	/**
 	 * Setting default values
 	 *
-	 * @param Forms\Form $form form.
-	 * @param float|null $weight weight.
-	 * @param float|null $originalWeight Original weight.
-	 * @param float|null $length length.
-	 * @param float|null $width width.
-	 * @param float|null $height height.
-	 * @param float|null $cod Cash on delivery.
-	 * @param float|null $orderValue Order value.
-	 * @param bool|null $adultContent Allows adult content.
+	 * @param Forms\Form  $form form.
+	 * @param float|null  $weight weight.
+	 * @param float|null  $originalWeight Original weight.
+	 * @param float|null  $length length.
+	 * @param float|null  $width width.
+	 * @param float|null  $height height.
+	 * @param float|null  $cod Cash on delivery.
+	 * @param float|null  $orderValue Order value.
+	 * @param bool|null   $adultContent Allows adult content.
 	 * @param string|null $deliverOn Estimated date of delivery.
 	 */
 	public function setDefaults(
