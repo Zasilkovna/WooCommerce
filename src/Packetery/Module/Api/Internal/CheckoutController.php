@@ -97,7 +97,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	public function saveSelectedPickupPoint( WP_REST_Request $request ): WP_REST_Response {
 		$parameters = $request->get_body_params();
-		$savedData  = get_transient( $this->checkout-> getTransientNamePacketaCheckoutData() );
+		$savedData  = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 		if ( ! is_array( $savedData ) ) {
 			$savedData = [];
 		}
@@ -111,7 +111,7 @@ final class CheckoutController extends WP_REST_Controller {
 		set_transient(
 			$transientName,
 			$savedData,
-			120
+			DAY_IN_SECONDS
 		);
 
 		return new WP_REST_Response( [], 200 );
