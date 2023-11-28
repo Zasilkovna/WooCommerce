@@ -142,6 +142,6 @@ class Form {
 	 * @return bool
 	 */
 	public static function allowsAdultContent( Order $order ): bool {
-		return $order->isPacketaInternalPickupPoint() || Carrier::AGE_VERIFIED_CARRIERS;
+		return $order->isPacketaInternalPickupPoint() || in_array($order->getCarrier()->getId(), Carrier::AGE_VERIFIED_CARRIERS);
 	}
 }

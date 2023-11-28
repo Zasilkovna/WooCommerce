@@ -140,7 +140,7 @@ final class OrderController extends WP_REST_Controller {
 				Form::FIELD_WIDTH           => $parameters['packeteryWidth'] ?? null,
 				Form::FIELD_LENGTH          => $parameters['packeteryLength'] ?? null,
 				Form::FIELD_HEIGHT          => $parameters['packeteryHeight'] ?? null,
-				Form::FIELD_ADULT_CONTENT   => 'true' === $parameters['packeteryAdultContent'],
+				Form::FIELD_ADULT_CONTENT   => isset( $parameters['packeteryAdultContent'] ) && 'true' === $parameters['packeteryAdultContent'],
 				Form::FIELD_COD             => $parameters['packeteryCOD'] ?? null,
 				Form::FIELD_VALUE           => $parameters['packeteryValue'],
 				Form::FIELD_DELIVER_ON      => $packeteryDeliverOn,
