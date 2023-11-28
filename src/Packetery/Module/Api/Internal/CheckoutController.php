@@ -111,7 +111,7 @@ final class CheckoutController extends WP_REST_Controller {
 		set_transient(
 			$transientName,
 			$savedData,
-			DAY_IN_SECONDS
+			120
 		);
 
 		return new WP_REST_Response( [], 200 );
