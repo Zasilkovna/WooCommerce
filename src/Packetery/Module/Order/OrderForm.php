@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use DateTimeImmutable;
 use Packetery\Core\Entity\Order;
+use Packetery\Module\EntityFactory\Carrier;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
@@ -141,6 +141,6 @@ class OrderForm {
 	 * @return bool
 	 */
 	public static function allowsAdultContent( Order $order ): bool {
-		return $order->isPacketaInternalPickupPoint() || $order->getCarrier()->getId() === '106';
+		return $order->isPacketaInternalPickupPoint() || Carrier::AGE_VERIFIED_CARRIERS;
 	}
 }

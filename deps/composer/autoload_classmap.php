@@ -219,7 +219,7 @@ return array(
     'Packetery\\Nette\\Forms\\Controls\\TextBase' => $vendorDir . '/nette/forms/src/Forms/Controls/TextBase.php',
     'Packetery\\Nette\\Forms\\Controls\\TextInput' => $vendorDir . '/nette/forms/src/Forms/Controls/TextInput.php',
     'Packetery\\Nette\\Forms\\Controls\\UploadControl' => $vendorDir . '/nette/forms/src/Forms/Controls/UploadControl.php',
-    'Packetery\\Nette\\Forms\\Form' => $vendorDir . '/nette/forms/src/Forms/OrderForm.php',
+    'Packetery\\Nette\\Forms\\Form' => $vendorDir . '/nette/forms/src/Forms/Form.php',
     'Packetery\\Nette\\Forms\\FormFactory' => $vendorDir . '/nette/forms/src/Forms/FormFactory.php',
     'Packetery\\Nette\\Forms\\FormRenderer' => $vendorDir . '/nette/forms/src/Forms/FormRenderer.php',
     'Packetery\\Nette\\Forms\\Helpers' => $vendorDir . '/nette/forms/src/Forms/Helpers.php',

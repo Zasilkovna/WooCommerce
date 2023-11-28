@@ -22,7 +22,7 @@ class Carrier {
 	/**
 	 * An array of IDs of Carriers we want to add age verification check for
 	 */
-	private const AGE_VERIFIED_CARRIERS = [
+	public const AGE_VERIFIED_CARRIERS = [
 		'106',
 	];
 
