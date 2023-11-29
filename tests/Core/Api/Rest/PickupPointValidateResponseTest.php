@@ -2,17 +2,17 @@
 
 declare( strict_types=1 );
 
-namespace Core\Api\Rest;
+namespace Tests\Core\Api\Rest;
 
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use PHPUnit\Framework\TestCase;
 
 class PickupPointValidateResponseTest extends TestCase {
 
-	public function testGetters() {
+	public function testGetters(): void {
 		$response = new PickupPointValidateResponse( false, [ 'dummyError' ] );
-		$this->assertFalse( $response->isValid() );
-		$this->assertCount( 1, $response->getErrors() );
+		self::assertFalse( $response->isValid() );
+		self::assertCount( 1, $response->getErrors() );
 	}
 
 }

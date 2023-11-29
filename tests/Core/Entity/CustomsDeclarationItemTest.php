@@ -2,41 +2,38 @@
 
 declare( strict_types=1 );
 
-namespace Core\Entity;
+namespace Tests\Core\Entity;
 
-use Packetery\Core\Helper;
+use Tests\Core\DummyFactory;
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
 
 class CustomsDeclarationItemTest extends TestCase {
 
-	const DUMMY_FILE_CONTENT = 'Dummy file content';
-
-	public function testSettersAndGetters() {
+	public function testSettersAndGetters(): void {
 		$customsDeclarationItem = DummyFactory::createCustomsDeclarationItem();
 
 		$dummyId = 'dummyId';
 		$customsDeclarationItem->setId( $dummyId );
-		$this->assertSame( $dummyId, $customsDeclarationItem->getId() );
+		self::assertSame( $dummyId, $customsDeclarationItem->getId() );
 
 		$dummyProductName = 'dummyProductName';
 		$customsDeclarationItem->setProductName( $dummyProductName );
-		$this->assertSame( $dummyProductName, $customsDeclarationItem->getProductName() );
+		self::assertSame( $dummyProductName, $customsDeclarationItem->getProductName() );
 
 		$customsDeclarationItem->setIsFoodOrBook( true );
-		$this->assertTrue( $customsDeclarationItem->isFoodOrBook() );
+		self::assertTrue( $customsDeclarationItem->isFoodOrBook() );
 
 		$customsDeclarationItem->setIsVoc( true );
-		$this->assertTrue( $customsDeclarationItem->isVoc() );
+		self::assertTrue( $customsDeclarationItem->isVoc() );
 
-		$this->assertIsString($customsDeclarationItem->getCountryOfOrigin());
-		$this->assertIsString($customsDeclarationItem->getCustomsCode());
-		$this->assertIsString($customsDeclarationItem->getCustomsDeclarationId());
-		$this->assertIsString($customsDeclarationItem->getProductNameEn());
-		$this->assertIsString($customsDeclarationItem->getCountryOfOrigin());
-		$this->assertIsInt($customsDeclarationItem->getUnitsCount());
-		$this->assertIsFloat($customsDeclarationItem->getValue());
-		$this->assertIsFloat($customsDeclarationItem->getWeight());
+		self::assertIsString( $customsDeclarationItem->getCountryOfOrigin() );
+		self::assertIsString( $customsDeclarationItem->getCustomsCode() );
+		self::assertIsString( $customsDeclarationItem->getCustomsDeclarationId() );
+		self::assertIsString( $customsDeclarationItem->getProductNameEn() );
+		self::assertIsString( $customsDeclarationItem->getCountryOfOrigin() );
+		self::assertIsInt( $customsDeclarationItem->getUnitsCount() );
+		self::assertIsFloat( $customsDeclarationItem->getValue() );
+		self::assertIsFloat( $customsDeclarationItem->getWeight() );
 	}
 
 }

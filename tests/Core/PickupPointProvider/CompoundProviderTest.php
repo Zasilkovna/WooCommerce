@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 class CompoundProviderTest extends TestCase {
 
-	public function testGetVendorCodes() {
+	public function testGetVendorCodes(): void {
 		$vendor = new CompoundProvider(
 			'zpointcz',
 			'cz',
@@ -23,7 +23,7 @@ class CompoundProviderTest extends TestCase {
 				'czalzabox',
 			],
 		);
-		$this->assertCount( 3, $vendor->getVendorCodes() );
+		self::assertCount( 3, $vendor->getVendorCodes() );
 	}
 
 }

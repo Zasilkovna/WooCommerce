@@ -2,64 +2,64 @@
 
 declare( strict_types=1 );
 
-namespace Core\Entity;
+namespace Tests\Core\Entity;
 
 use Packetery\Core\Helper;
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
+use Tests\Core\DummyFactory;
 
 class CustomsDeclarationTest extends TestCase {
 
-	const DUMMY_FILE_CONTENT = 'Dummy file content';
+	private const DUMMY_FILE_CONTENT = 'Dummy file content';
 
-	public function testSettersAndGetters() {
+	public function testSettersAndGetters(): void {
 		$customsDeclaration = DummyFactory::createCustomsDeclaration();
 
 		$dummyId = 'dummyId';
 		$customsDeclaration->setId( $dummyId );
-		$this->assertSame( $dummyId, $customsDeclaration->getId() );
+		self::assertSame( $dummyId, $customsDeclaration->getId() );
 
 		$dummyDeliveryCost = 124.5;
 		$customsDeclaration->setDeliveryCost( $dummyDeliveryCost );
-		$this->assertSame( $dummyDeliveryCost, $customsDeclaration->getDeliveryCost() );
+		self::assertSame( $dummyDeliveryCost, $customsDeclaration->getDeliveryCost() );
 
 		$dummyEad = 'dummyEad';
 		$customsDeclaration->setEad( $dummyEad );
-		$this->assertSame( $dummyEad, $customsDeclaration->getEad() );
+		self::assertSame( $dummyEad, $customsDeclaration->getEad() );
 
-		$customsDeclaration->setEadFile( function() {
+		$customsDeclaration->setEadFile( function () {
 			return self::DUMMY_FILE_CONTENT;
 		}, true );
-		$this->assertSame( self::DUMMY_FILE_CONTENT, $customsDeclaration->getEadFile() );
-		$this->assertTrue( $customsDeclaration->hasEadFileContent() );
+		self::assertSame( self::DUMMY_FILE_CONTENT, $customsDeclaration->getEadFile() );
+		self::assertTrue( $customsDeclaration->hasEadFileContent() );
 
 		$dummyEadFileId = 'dummyEadFileId';
 		$customsDeclaration->setEadFileId( $dummyEadFileId );
-		$this->assertSame( $dummyEadFileId, $customsDeclaration->getEadFileId() );
+		self::assertSame( $dummyEadFileId, $customsDeclaration->getEadFileId() );
 
-		$customsDeclaration->setInvoiceFile( function() {
+		$customsDeclaration->setInvoiceFile( function () {
 			return self::DUMMY_FILE_CONTENT;
 		}, true );
-		$this->assertSame( self::DUMMY_FILE_CONTENT, $customsDeclaration->getInvoiceFile() );
-		$this->assertTrue( $customsDeclaration->hasInvoiceFileContent() );
+		self::assertSame( self::DUMMY_FILE_CONTENT, $customsDeclaration->getInvoiceFile() );
+		self::assertTrue( $customsDeclaration->hasInvoiceFileContent() );
 
 		$dummyInvoiceFileId = 'dummyInvoiceFileId';
 		$customsDeclaration->setInvoiceFileId( $dummyInvoiceFileId );
-		$this->assertSame( $dummyInvoiceFileId, $customsDeclaration->getInvoiceFileId() );
+		self::assertSame( $dummyInvoiceFileId, $customsDeclaration->getInvoiceFileId() );
 
 		$dummyInvoiceIssueDate = Helper::now();
 		$customsDeclaration->setInvoiceIssueDate( $dummyInvoiceIssueDate );
-		$this->assertSame( $dummyInvoiceIssueDate, $customsDeclaration->getInvoiceIssueDate() );
+		self::assertSame( $dummyInvoiceIssueDate, $customsDeclaration->getInvoiceIssueDate() );
 
 		$dummyInvoiceNumber = 'dummyInvoiceNumber';
 		$customsDeclaration->setInvoiceNumber( $dummyInvoiceNumber );
-		$this->assertSame( $dummyInvoiceNumber, $customsDeclaration->getInvoiceNumber() );
+		self::assertSame( $dummyInvoiceNumber, $customsDeclaration->getInvoiceNumber() );
 
 		$dummyMrn = 'dummyMrn';
 		$customsDeclaration->setMrn( $dummyMrn );
-		$this->assertSame( $dummyMrn, $customsDeclaration->getMrn() );
+		self::assertSame( $dummyMrn, $customsDeclaration->getMrn() );
 
-		$this->assertIsString( $customsDeclaration->getOrderId() );
+		self::assertIsString( $customsDeclaration->getOrderId() );
 	}
 
 }

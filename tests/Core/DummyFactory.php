@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Tests;
+namespace Tests\Core;
 
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Entity\Address;
@@ -121,12 +121,12 @@ class DummyFactory {
 			Helper::now(),
 		);
 
-		$customsDeclaration->setItems([self::createCustomsDeclarationItem()]);
+		$customsDeclaration->setItems( [ self::createCustomsDeclarationItem() ] );
 
 		return $customsDeclaration;
 	}
 
-	public static function createCustomsDeclarationItem() {
+	public static function createCustomsDeclarationItem(): CustomsDeclarationItem {
 		return new CustomsDeclarationItem(
 			'dummyId123',
 			'Dummy customs code',

@@ -6,20 +6,20 @@ namespace Tests\Core\Validator;
 
 use Packetery\Core\Validator\Size;
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
+use Tests\Core\DummyFactory;
 
 class SizeTest extends TestCase {
 
-	public function testValidate() {
+	public function testValidate(): void {
 		$validator = new Size();
 
 		$dummySize = DummyFactory::createSize();
-		$this->assertTrue( $validator->validate( $dummySize ) );
+		self::assertTrue( $validator->validate( $dummySize ) );
 
-		$dummySize->setLength(null);
-		$dummySize->setWidth(null);
-		$dummySize->setHeight(null);
-		$this->assertFalse( $validator->validate( $dummySize ) );
+		$dummySize->setLength( null );
+		$dummySize->setWidth( null );
+		$dummySize->setHeight( null );
+		self::assertFalse( $validator->validate( $dummySize ) );
 	}
 
 }

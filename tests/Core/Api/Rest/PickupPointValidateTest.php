@@ -2,20 +2,21 @@
 
 declare( strict_types=1 );
 
-namespace Core\Api\Rest;
+namespace Tests\Core\Api\Rest;
 
 use Exception;
 use Packetery\Core\Api\Rest\IDownloader;
 use Packetery\Core\Api\Rest\PickupPointValidate;
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
+use Tests\Core\DummyFactory;
 use function json_encode;
 
 class PickupPointValidateTest extends TestCase {
 
-	public function testValidateOk() {
+	public function testValidateOk(): void {
 		$downloaderMock = $this->getDownloaderMock();
 		$downloaderMock->method( 'post' )
 		               ->willReturn( json_encode( [
@@ -24,13 +25,13 @@ class PickupPointValidateTest extends TestCase {
 		               ] ) );
 		$validator = new PickupPointValidate( $downloaderMock, 'dummyApiKey' );
 
-		$this->assertInstanceOf(
+		self::assertInstanceOf(
 			PickupPointValidateResponse::class,
 			$validator->validate( DummyFactory::getEmptyPickupPointValidateRequest() )
 		);
 	}
 
-	public function testValidateFail() {
+	public function testValidateFail(): void {
 		$downloaderMock = $this->getDownloaderMock();
 		$downloaderMock->method( 'post' )
 		               ->willThrowException( new Exception( 'dummyException' ) );
@@ -40,7 +41,7 @@ class PickupPointValidateTest extends TestCase {
 		$validator->validate( DummyFactory::getEmptyPickupPointValidateRequest() );
 	}
 
-	private function getDownloaderMock() {
+	private function getDownloaderMock(): MockObject|IDownloader {
 		return $this->getMockBuilder( IDownloader::class )
 		            ->setMockClassName( 'DownloaderMock' )
 		            ->getMock();

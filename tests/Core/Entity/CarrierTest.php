@@ -5,27 +5,27 @@ declare( strict_types=1 );
 namespace Tests\Core\Entity;
 
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
+use Tests\Core\DummyFactory;
 
 class CarrierTest extends TestCase {
 
-	public function testGetters() {
+	public function testGetters(): void {
 		$carrier = DummyFactory::createCarrierCzechPp();
-		$this->assertIsArray($carrier->__toArray());
-		$this->assertIsString($carrier->getName());
-		$this->assertIsBool($carrier->hasPickupPoints());
-		$this->assertIsBool($carrier->hasDirectLabel());
-		$this->assertIsBool($carrier->requiresSeparateHouseNumber());
-		$this->assertIsBool($carrier->requiresCustomsDeclarations());
-		$this->assertIsBool($carrier->requiresEmail());
-		$this->assertIsBool($carrier->requiresPhone());
-		$this->assertIsBool($carrier->requiresSize());
-		$this->assertIsBool($carrier->supportsCod());
-		$this->assertIsString($carrier->getCountry());
-		$this->assertIsString($carrier->getCurrency());
-		$this->assertIsFloat($carrier->getMaxWeight());
-		$this->assertIsBool($carrier->isDeleted());
-		$this->assertIsBool($carrier->supportsAgeVerification());
+		self::assertIsArray( $carrier->__toArray() );
+		self::assertIsString( $carrier->getName() );
+		self::assertIsBool( $carrier->hasPickupPoints() );
+		self::assertIsBool( $carrier->hasDirectLabel() );
+		self::assertIsBool( $carrier->requiresSeparateHouseNumber() );
+		self::assertIsBool( $carrier->requiresCustomsDeclarations() );
+		self::assertIsBool( $carrier->requiresEmail() );
+		self::assertIsBool( $carrier->requiresPhone() );
+		self::assertIsBool( $carrier->requiresSize() );
+		self::assertIsBool( $carrier->supportsCod() );
+		self::assertIsString( $carrier->getCountry() );
+		self::assertIsString( $carrier->getCurrency() );
+		self::assertIsFloat( $carrier->getMaxWeight() );
+		self::assertIsBool( $carrier->isDeleted() );
+		self::assertIsBool( $carrier->supportsAgeVerification() );
 	}
 
 }

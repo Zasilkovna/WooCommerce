@@ -6,18 +6,18 @@ namespace Tests\Core\Validator;
 
 use Packetery\Core\Validator\Address;
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
+use Tests\Core\DummyFactory;
 
 class AddressTest extends TestCase {
 
-	public function testValidate() {
+	public function testValidate(): void {
 		$validator = new Address();
 
 		$dummyAddress = DummyFactory::createAddress();
-		$this->assertTrue( $validator->validate( $dummyAddress ) );
+		self::assertTrue( $validator->validate( $dummyAddress ) );
 
 		$dummyAddressInvalid = DummyFactory::createInvalidAddress();
-		$this->assertFalse( $validator->validate( $dummyAddressInvalid ) );
+		self::assertFalse( $validator->validate( $dummyAddressInvalid ) );
 	}
 
 }

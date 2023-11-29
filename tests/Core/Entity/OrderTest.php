@@ -7,132 +7,132 @@ namespace Tests\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Helper;
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
+use Tests\Core\DummyFactory;
 
 class OrderTest extends TestCase {
 
-	public function testSettersAndGetters() {
+	public function testSettersAndGetters(): void {
 		$order = DummyFactory::createOrderCzPp();
 
 		$dummyCustomsDeclaration = DummyFactory::createCustomsDeclaration();
 		$order->setCustomsDeclaration( $dummyCustomsDeclaration );
-		$this->assertSame( $dummyCustomsDeclaration, $order->getCustomsDeclaration() );
-		$this->assertTrue( $order->hasCustomsDeclaration() );
+		self::assertSame( $dummyCustomsDeclaration, $order->getCustomsDeclaration() );
+		self::assertTrue( $order->hasCustomsDeclaration() );
 
 		$dummyCustomNumber = 'dummyNumber';
 		$order->setCustomNumber( $dummyCustomNumber );
-		$this->assertSame( $dummyCustomNumber, $order->getCustomNumber() );
+		self::assertSame( $dummyCustomNumber, $order->getCustomNumber() );
 
 		$dummyAddress = DummyFactory::createAddress();
 		$order->setDeliveryAddress( $dummyAddress );
 		$order->setAddressValidated( true );
-		$this->assertTrue( $order->isAddressValidated() );
-		$this->assertSame( $dummyAddress, $order->getValidatedDeliveryAddress() );
+		self::assertTrue( $order->isAddressValidated() );
+		self::assertSame( $dummyAddress, $order->getValidatedDeliveryAddress() );
 
 		$order->setAdultContent( true );
-		$this->assertTrue( $order->containsAdultContent() );
+		self::assertTrue( $order->containsAdultContent() );
 
 		$order->setIsLabelPrinted( true );
-		$this->assertTrue( $order->isLabelPrinted() );
+		self::assertTrue( $order->isLabelPrinted() );
 
 		$order->setIsExported( true );
-		$this->assertTrue( $order->isExported() );
+		self::assertTrue( $order->isExported() );
 
 		$dummyCurrency = 'EUR';
 		$order->setCurrency( $dummyCurrency );
-		$this->assertSame( $dummyCurrency, $order->getCurrency() );
+		self::assertSame( $dummyCurrency, $order->getCurrency() );
 
-		$this->assertNull( $order->getPickupPointOrCarrierId() );
+		self::assertNull( $order->getPickupPointOrCarrierId() );
 
 		$dummyPickupPoint = DummyFactory::createPickupPoint();
 		$order->setPickupPoint( $dummyPickupPoint );
-		$this->assertSame( $dummyPickupPoint, $order->getPickupPoint() );
-		$this->assertTrue( $order->isPickupPointDelivery() );
-		$this->assertTrue( $order->isPacketaInternalPickupPoint() );
+		self::assertSame( $dummyPickupPoint, $order->getPickupPoint() );
+		self::assertTrue( $order->isPickupPointDelivery() );
+		self::assertTrue( $order->isPacketaInternalPickupPoint() );
 
 		$dummyPacketId = 'dummyPacketId';
 		$order->setPacketId( $dummyPacketId );
-		$this->assertSame( $dummyPacketId, $order->getPacketId() );
-		$this->assertSame( 'Z' . $dummyPacketId, $order->getPacketBarcode() );
-		$this->assertIsString( $order->getPacketTrackingUrl() );
+		self::assertSame( $dummyPacketId, $order->getPacketId() );
+		self::assertSame( 'Z' . $dummyPacketId, $order->getPacketBarcode() );
+		self::assertIsString( $order->getPacketTrackingUrl() );
 
 		$dummyPacketStatus = PacketStatus::DELIVERED;
 		$order->setPacketStatus( $dummyPacketStatus );
-		$this->assertSame( $dummyPacketStatus, $order->getPacketStatus() );
-		$this->assertTrue( $order->isPacketClaimCreationPossible() );
+		self::assertSame( $dummyPacketStatus, $order->getPacketStatus() );
+		self::assertTrue( $order->isPacketClaimCreationPossible() );
 
 		$dummyPacketClaimId = 'dummyPacketClaimId';
 		$order->setPacketClaimId( $dummyPacketClaimId );
-		$this->assertSame( $dummyPacketClaimId, $order->getPacketClaimId() );
-		$this->assertTrue( $order->isPacketClaimLabelPrintPossible() );
+		self::assertSame( $dummyPacketClaimId, $order->getPacketClaimId() );
+		self::assertTrue( $order->isPacketClaimLabelPrintPossible() );
 
 		$dummyPacketClaimPassword = 'dummyPassword';
 		$order->setPacketClaimPassword( $dummyPacketClaimPassword );
-		$this->assertSame( $dummyPacketClaimPassword, $order->getPacketClaimPassword() );
+		self::assertSame( $dummyPacketClaimPassword, $order->getPacketClaimPassword() );
 
 		$dummyWeight = 1.25;
 		$order->setWeight( $dummyWeight );
-		$this->assertSame( $dummyWeight, $order->getWeight() );
-		$this->assertTrue( $order->hasManualWeight() );
+		self::assertSame( $dummyWeight, $order->getWeight() );
+		self::assertTrue( $order->hasManualWeight() );
 
 		$dummyCalculatedWeight = 1.75;
 		$order->setCalculatedWeight( $dummyCalculatedWeight );
-		$this->assertSame( $dummyCalculatedWeight, $order->getCalculatedWeight() );
+		self::assertSame( $dummyCalculatedWeight, $order->getCalculatedWeight() );
 
 		$dummySurname = 'dummySurname';
 		$order->setSurname( $dummySurname );
-		$this->assertSame( $dummySurname, $order->getSurname() );
+		self::assertSame( $dummySurname, $order->getSurname() );
 
 		$dummyEmail = 'dummy@test.tld';
 		$order->setEmail( $dummyEmail );
-		$this->assertSame( $dummyEmail, $order->getEmail() );
+		self::assertSame( $dummyEmail, $order->getEmail() );
 
 		$dummyNote = 'dummyNote';
 		$order->setNote( $dummyNote );
-		$this->assertSame( $dummyNote, $order->getNote() );
+		self::assertSame( $dummyNote, $order->getNote() );
 
 		$dummyPhone = '123456789';
 		$order->setPhone( $dummyPhone );
-		$this->assertSame( $dummyPhone, $order->getPhone() );
+		self::assertSame( $dummyPhone, $order->getPhone() );
 
 		$dummyCarrierNumber = 'dummyCarrierNumber';
 		$order->setCarrierNumber( $dummyCarrierNumber );
-		$this->assertSame( $dummyCarrierNumber, $order->getCarrierNumber() );
+		self::assertSame( $dummyCarrierNumber, $order->getCarrierNumber() );
 
 		$dummyShippingCountry = '';
 		$order->setShippingCountry( $dummyShippingCountry );
-		$this->assertNull( $order->getShippingCountry() );
+		self::assertNull( $order->getShippingCountry() );
 
 		$dummyShippingCountry = 'de';
 		$order->setShippingCountry( $dummyShippingCountry );
-		$this->assertSame( $dummyShippingCountry, $order->getShippingCountry() );
+		self::assertSame( $dummyShippingCountry, $order->getShippingCountry() );
 
-		$this->assertFalse( $order->hasCod() );
+		self::assertFalse( $order->hasCod() );
 		$dummyCod = 1234.5;
 		$order->setCod( $dummyCod );
-		$this->assertSame( $dummyCod, $order->getCod() );
-		$this->assertTrue( $order->hasCod() );
+		self::assertSame( $dummyCod, $order->getCod() );
+		self::assertTrue( $order->hasCod() );
 
 		$dummyDateImmutable = Helper::now();
 		$order->setDeliverOn( $dummyDateImmutable );
-		$this->assertSame( $dummyDateImmutable, $order->getDeliverOn() );
+		self::assertSame( $dummyDateImmutable, $order->getDeliverOn() );
 
 		$dummyLastApiErrorMessage = 'dummyMessage';
 		$order->setLastApiErrorMessage( $dummyLastApiErrorMessage );
-		$this->assertSame( $dummyLastApiErrorMessage, $order->getLastApiErrorMessage() );
+		self::assertSame( $dummyLastApiErrorMessage, $order->getLastApiErrorMessage() );
 		$order->updateApiErrorMessage( $dummyLastApiErrorMessage );
-		$this->assertSame( $dummyLastApiErrorMessage, $order->getLastApiErrorMessage() );
+		self::assertSame( $dummyLastApiErrorMessage, $order->getLastApiErrorMessage() );
 
 		$order->setLastApiErrorDatetime( $dummyDateImmutable );
-		$this->assertSame( $dummyDateImmutable, $order->getLastApiErrorDatetime() );
+		self::assertSame( $dummyDateImmutable, $order->getLastApiErrorDatetime() );
 
-		$this->assertNull( $order->getLength() );
-		$this->assertNull( $order->getWidth() );
-		$this->assertNull( $order->getHeight() );
+		self::assertNull( $order->getLength() );
+		self::assertNull( $order->getWidth() );
+		self::assertNull( $order->getHeight() );
 		$order->setSize( DummyFactory::createSize() );
-		$this->assertIsFloat( $order->getLength() );
-		$this->assertIsFloat( $order->getWidth() );
-		$this->assertIsFloat( $order->getHeight() );
+		self::assertIsFloat( $order->getLength() );
+		self::assertIsFloat( $order->getWidth() );
+		self::assertIsFloat( $order->getHeight() );
 	}
 
 }

@@ -8,11 +8,11 @@ use Packetery\Core\Validator\Address;
 use Packetery\Core\Validator\Order;
 use Packetery\Core\Validator\Size;
 use PHPUnit\Framework\TestCase;
-use Tests\DummyFactory;
+use Tests\Core\DummyFactory;
 
 class OrderTest extends TestCase {
 
-	public function testValidation() {
+	public function testValidation(): void {
 		$addressValidator      = new Address();
 		$sizeValidator         = new Size();
 		$validatorTranslations = [
@@ -31,21 +31,21 @@ class OrderTest extends TestCase {
 
 		$dummyOrder = DummyFactory::createOrderCzPp();
 		$dummyOrder->setPickupPoint( DummyFactory::createPickupPoint() );
-		$this->assertSame([],  $validator->validate( $dummyOrder ) );
-		$this->assertTrue(  $validator->isValid( $dummyOrder ) );
+		self::assertSame( [], $validator->validate( $dummyOrder ) );
+		self::assertTrue( $validator->isValid( $dummyOrder ) );
 
 		$dummyOrder->setNumber( '' );
 		$dummyOrder->setName( '' );
-		$this->assertCount( 2, $validator->validate( $dummyOrder ) );
-		$this->assertFalse(  $validator->isValid( $dummyOrder ) );
+		self::assertCount( 2, $validator->validate( $dummyOrder ) );
+		self::assertFalse( $validator->isValid( $dummyOrder ) );
 
-		$dummyOrderHd = DummyFactory::createOrderCzHdIncomplete();
+		$dummyOrderHd        = DummyFactory::createOrderCzHdIncomplete();
 		$dummyOrderHdInvalid = clone $dummyOrderHd;
-		$dummyOrderHd->setSize(DummyFactory::createSize());
-		$dummyOrderHd->setDeliveryAddress(DummyFactory::createAddress());
-		$this->assertSame([],  $validator->validate( $dummyOrderHd ) );
+		$dummyOrderHd->setSize( DummyFactory::createSize() );
+		$dummyOrderHd->setDeliveryAddress( DummyFactory::createAddress() );
+		self::assertSame( [], $validator->validate( $dummyOrderHd ) );
 
-		$this->assertCount( 2, $validator->validate( $dummyOrderHdInvalid ) );
+		self::assertCount( 2, $validator->validate( $dummyOrderHdInvalid ) );
 	}
 
 }

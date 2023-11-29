@@ -9,9 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class VendorCollectionFactoryTest extends TestCase {
 
-	public function testCreate() {
+	public function testCreate(): void {
 		$factory = new VendorCollectionFactory();
-		$this->assertCount( 9, $factory->create() );
+		self::assertCount( 9, $factory->create() );
 	}
 
 }

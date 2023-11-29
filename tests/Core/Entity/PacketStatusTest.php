@@ -2,14 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Core\Entity;
+namespace Tests\Core\Entity;
 
 use Packetery\Core\Entity\PacketStatus;
 use PHPUnit\Framework\TestCase;
 
 class PacketStatusTest extends TestCase {
 
-	public function testGetters() {
+	public function testGetters(): void {
 		$dummyName           = 'Dummy name';
 		$dummyTranslatedName = 'Dummy translated name';
 		$packetStatus        = new PacketStatus(
@@ -17,9 +17,9 @@ class PacketStatusTest extends TestCase {
 			$dummyTranslatedName,
 			false,
 		);
-		$this->assertSame( $dummyName, $packetStatus->getName() );
-		$this->assertSame( $dummyTranslatedName, $packetStatus->getTranslatedName() );
-		$this->assertFalse( $packetStatus->hasDefaultSynchronization() );
+		self::assertSame( $dummyName, $packetStatus->getName() );
+		self::assertSame( $dummyTranslatedName, $packetStatus->getTranslatedName() );
+		self::assertFalse( $packetStatus->hasDefaultSynchronization() );
 	}
 
 }

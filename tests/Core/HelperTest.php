@@ -18,23 +18,23 @@ class HelperTest extends TestCase {
 	}
 
 	public function testGetTrackingUrl(): void {
-		$this->assertIsString( $this->helper->get_tracking_url( 'dummyPacketId' ) );
+		self::assertIsString( $this->helper->get_tracking_url( 'dummyPacketId' ) );
 	}
 
 	public function testGetStringFromDateTime(): void {
 		$dummyDateString = '2023-11-17';
 		$dummyDate       = $this->helper->getDateTimeFromString( $dummyDateString );
 
-		$this->assertSame(
+		self::assertSame(
 			$this->helper->getStringFromDateTime( $dummyDate, Helper::MYSQL_DATE_FORMAT ),
 			$dummyDateString
 		);
 	}
 
 	public function testStatic(): void {
-		$this->assertSame( 10.222, Helper::simplifyWeight( 10.2222 ) );
-		$this->assertNull( Helper::simplifyWeight( null ) );
-		$this->assertInstanceOf( DateTimeImmutable::class, Helper::now() );
+		self::assertSame( 10.222, Helper::simplifyWeight( 10.2222 ) );
+		self::assertNull( Helper::simplifyWeight( null ) );
+		self::assertInstanceOf( DateTimeImmutable::class, Helper::now() );
 	}
 
 }

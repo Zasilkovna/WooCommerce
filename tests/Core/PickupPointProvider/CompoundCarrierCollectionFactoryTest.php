@@ -9,9 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 class CompoundCarrierCollectionFactoryTest extends TestCase {
 
-	public function testCreate() {
+	public function testCreate(): void {
 		$factory = new CompoundCarrierCollectionFactory();
-		$this->assertCount( 4, $factory->create() );
+		self::assertCount( 4, $factory->create() );
 	}
 
 }
