@@ -12,14 +12,12 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Entity;
-use Packetery\Module\Api;
-use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\Provider;
-use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Http\Request;
+use WC_Logger;
 
 /**
  * Class Checkout
@@ -453,9 +451,12 @@ class Checkout {
 			return;
 		}
 
-		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod );
-		$propsToSave  = [];
-		$carrierId    = $this->getCarrierId( $chosenMethod );
+		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $orderId );
+		if ( empty( $checkoutData ) ) {
+			return;
+		}
+		$propsToSave = [];
+		$carrierId   = $this->getCarrierId( $chosenMethod );
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
@@ -1145,13 +1146,36 @@ class Checkout {
 	/**
 	 * Gets checkout POST data including stored pickup point if not present in the data.
 	 *
-	 * @param string $chosenShippingMethod Chosen shipping method id.
+	 * @param string   $chosenShippingMethod Chosen shipping method id.
+	 * @param int|null $orderId              Id of order to be updated.
 	 *
 	 * @return array
 	 */
-	private function getPostDataIncludingStoredData( string $chosenShippingMethod ): array {
+	private function getPostDataIncludingStoredData( string $chosenShippingMethod, int $orderId = null ): array {
 		$checkoutData      = $this->httpRequest->getPost();
 		$savedCheckoutData = get_transient( $this->getTransientNamePacketaCheckoutData() );
+
+		if ( empty( $checkoutData ) && empty( $savedCheckoutData[ $chosenShippingMethod ] ) ) {
+			/**
+			 * WC logger.
+			 *
+			 * @var WC_Logger $wcLogger
+			 */
+			$wcLogger = wc_get_logger();
+
+			$dataToLog = [
+				'chosenShippingMethod' => $chosenShippingMethod,
+				'checkoutData'         => $checkoutData,
+				'savedCheckoutData'    => $savedCheckoutData,
+			];
+			if ( null !== $orderId ) {
+				$dataToLog['orderId'] = $orderId;
+			}
+			$wcLogger->warning( sprintf( 'Data of the order to be validated or saved are not set: %s', wp_json_encode( $dataToLog ) ), [ 'source' => 'packeta' ] );
+
+			return [];
+		}
+
 		if ( ! is_array( $savedCheckoutData ) || ! is_array( $savedCheckoutData[ $chosenShippingMethod ] ) ) {
 			return $checkoutData;
 		}
