@@ -358,8 +358,6 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                     => $order,
-						'hasDeliverOn'              => $order->isPacketaInternalPickupPoint(),
-						'allowsAdultContent'        => Form::allowsAdultContent( $order ),
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,

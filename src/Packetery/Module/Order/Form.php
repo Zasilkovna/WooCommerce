@@ -9,8 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity\Order;
-use Packetery\Module\EntityFactory\Carrier;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
@@ -23,15 +21,15 @@ use Packetery\Nette\Forms;
  */
 class Form {
 
-	public const FIELD_COD             = 'packetery_COD';
+	public const FIELD_WEIGHT          = 'packetery_weight';
+	public const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
 	public const FIELD_VALUE           = 'packetery_value';
-	public const FIELD_DELIVER_ON      = 'packetery_deliver_on';
 	public const FIELD_LENGTH          = 'packetery_length';
 	public const FIELD_WIDTH           = 'packetery_width';
-	public const FIELD_WEIGHT          = 'packetery_weight';
-	public const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
-	public const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
 	public const FIELD_HEIGHT          = 'packetery_height';
+	public const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
+	public const FIELD_COD             = 'packetery_COD';
+	public const FIELD_DELIVER_ON      = 'packetery_deliver_on';
 
 	/**
 	 * Class FormFactory
@@ -133,15 +131,5 @@ class Form {
 				self::FIELD_DELIVER_ON      => $deliverOn,
 			]
 		);
-	}
-
-	/**
-	 * Allows Adult Content
-	 *
-	 * @param Order $order order.
-	 * @return bool
-	 */
-	public static function allowsAdultContent( Order $order ): bool {
-		return $order->isPacketaInternalPickupPoint() || in_array( $order->getCarrier()->getId(), Carrier::AGE_VERIFIED_CARRIERS, true );
 	}
 }

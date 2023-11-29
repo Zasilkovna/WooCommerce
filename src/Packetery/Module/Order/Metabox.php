@@ -421,7 +421,7 @@ class Metabox {
 				'packetClaimCancelUrl'   => $packetClaimCancelUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'isCodPayment'           => $order->hasCod(),
-				'allowsAdultContent'     => Form::allowsAdultContent( $order ),
+				'allowsAdultContent'     => $order->allowsAdultContent(),
 				'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,

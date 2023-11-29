@@ -11,6 +11,7 @@ namespace Packetery\Core\Entity;
 
 use Packetery\Core\Helper;
 use DateTimeImmutable;
+use Packetery\Module\EntityFactory;
 
 /**
  * Class Order
@@ -983,6 +984,15 @@ class Order {
 	 */
 	public function hasCod(): bool {
 		return ( null !== $this->getCod() );
+	}
+
+	/**
+	 * Allows Adult Content
+	 *
+	 * @return bool
+	 */
+	public function allowsAdultContent(): bool {
+		return $this->isPacketaInternalPickupPoint() || in_array( $this->getCarrier()->getId(), EntityFactory\Carrier::AGE_VERIFIED_CARRIERS, true );
 	}
 
 	/**
