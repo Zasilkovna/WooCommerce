@@ -168,10 +168,8 @@ final class OrderController extends WP_REST_Controller {
 			$values[ Form::FIELD_HEIGHT ]
 		);
 
-		if ( ! is_numeric( $values[ Form::FIELD_WEIGHT ] ) ) {
-			$order->setWeight( null );
-		} elseif ( (float) $values[ Form::FIELD_WEIGHT ] !== (float) $values['packetery_original_weight'] ) {
-			$order->setWeight( (float) $values[ Form::FIELD_WEIGHT ] );
+		if ( $values[ Form::FIELD_WEIGHT ] !== $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
+			$order->setWeight( $values[ Form::FIELD_WEIGHT ] );
 		}
 
 		$order->setCod( $values[ Form::FIELD_COD ] );
