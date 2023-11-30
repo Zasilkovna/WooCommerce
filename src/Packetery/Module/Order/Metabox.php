@@ -191,6 +191,7 @@ class Metabox {
 				$this->form = $this->orderForm->create();
 				$this->form->addHidden( 'packetery_order_metabox_nonce' );
 				$this->form->setDefaults( [ 'packetery_order_metabox_nonce' => wp_create_nonce() ] );
+
 				foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 					$this->form->addHidden( $pickupPointAttr['name'] );
 				}

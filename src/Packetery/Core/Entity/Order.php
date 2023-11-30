@@ -992,7 +992,7 @@ class Order {
 	 * @return bool
 	 */
 	public function allowsAdultContent(): bool {
-		return $this->isPacketaInternalPickupPoint() || in_array( $this->getCarrier()->getId(), EntityFactory\Carrier::AGE_VERIFIED_CARRIERS, true );
+		return $this->isPacketaInternalPickupPoint() || $this->getCarrier()->supportsAgeVerification();
 	}
 
 	/**

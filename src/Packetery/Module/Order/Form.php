@@ -57,6 +57,7 @@ class Form {
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
+			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
 		$form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
@@ -79,6 +80,7 @@ class Form {
 			->addRule( $form::FLOAT );
 		$form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
 			->setRequired( false )
+			->setNullable()
 			->addRule( $form::FLOAT );
 		$form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
 			->setHtmlAttribute( 'class', 'date-picker' )

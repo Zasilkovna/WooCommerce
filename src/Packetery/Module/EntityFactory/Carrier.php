@@ -22,7 +22,7 @@ class Carrier {
 	/**
 	 * An array of IDs of Carriers we want to add age verification check for
 	 */
-	public const AGE_VERIFIED_CARRIERS = [
+	private const AGE_VERIFIED_CARRIERS = [
 		'106',
 	];
 
@@ -34,7 +34,7 @@ class Carrier {
 	 * @return Entity\Carrier
 	 */
 	public function fromDbResult( array $dbResult ): Entity\Carrier {
-		$ageVerified = in_array( $dbResult['id'], self::AGE_VERIFIED_CARRIERS, true ) ? true : false;
+		$ageVerified = in_array( $dbResult['id'], self::AGE_VERIFIED_CARRIERS, true );
 
 		return new Entity\Carrier(
 			$dbResult['id'],

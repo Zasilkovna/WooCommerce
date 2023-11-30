@@ -55,7 +55,7 @@
 			var packeteryDeliverOn = $packeteryModal.find( '[name="packetery_deliver_on"]' ).val();
 			var packeteryCOD = $packeteryModal.find( '[name="packetery_COD"]' ).val();
 			var packeteryValue = $packeteryModal.find( '[name="packetery_value"]' ).val();
-			var packeteryAdultContent = $packeteryModal.find('[name="packetery_adult_content"]').prop('checked');
+			var hasPacketeryAdultContent = $packeteryModal.find('[name="packetery_adult_content"]').prop('checked');
 
 			$packeteryModal.find( '.spinner' ).addClass( 'is-active' );
 			$target.addClass( 'disabled' );
@@ -76,7 +76,7 @@
 					packeteryDeliverOn : packeteryDeliverOn,
 					packeteryCOD : packeteryCOD,
 					packeteryValue : packeteryValue,
-					packeteryAdultContent : packeteryAdultContent,
+					hasPacketeryAdultContent : hasPacketeryAdultContent,
 				}
 			} ).fail( function( response ) {
 				var message = (response.responseJSON && response.responseJSON.message) || 'Error';

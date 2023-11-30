@@ -140,7 +140,7 @@ final class OrderController extends WP_REST_Controller {
 				Form::FIELD_WIDTH           => $parameters['packeteryWidth'] ?? null,
 				Form::FIELD_LENGTH          => $parameters['packeteryLength'] ?? null,
 				Form::FIELD_HEIGHT          => $parameters['packeteryHeight'] ?? null,
-				Form::FIELD_ADULT_CONTENT   => isset( $parameters['packeteryAdultContent'] ) && 'true' === $parameters['packeteryAdultContent'],
+				Form::FIELD_ADULT_CONTENT   => isset( $parameters['hasPacketeryAdultContent'] ) && 'true' === $parameters['hasPacketeryAdultContent'],
 				Form::FIELD_COD             => $parameters['packeteryCOD'] ?? null,
 				Form::FIELD_VALUE           => $parameters['packeteryValue'],
 				Form::FIELD_DELIVER_ON      => $packeteryDeliverOn,
@@ -168,7 +168,9 @@ final class OrderController extends WP_REST_Controller {
 			$values[ Form::FIELD_HEIGHT ]
 		);
 
-		if ( (float) $values[ Form::FIELD_WEIGHT ] !== (float) $values['packetery_original_weight'] ) {
+		if ( ! is_numeric( $values[ Form::FIELD_WEIGHT ] ) ) {
+			$order->setWeight( null );
+		} elseif ( (float) $values[ Form::FIELD_WEIGHT ] !== (float) $values['packetery_original_weight'] ) {
 			$order->setWeight( (float) $values[ Form::FIELD_WEIGHT ] );
 		}
 
