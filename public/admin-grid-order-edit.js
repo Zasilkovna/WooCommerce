@@ -71,7 +71,7 @@
 					packeteryWeight: packeteryWeight,
 					packeteryOriginalWeight: packeteryOriginalWeight,
 					packeteryLength : packeteryLength,
-					packeteryWidth: packeteryWidth ,
+					packeteryWidth: packeteryWidth,
 					packeteryHeight : packeteryHeight,
 					packeteryDeliverOn : packeteryDeliverOn,
 					packeteryCOD : packeteryCOD,
