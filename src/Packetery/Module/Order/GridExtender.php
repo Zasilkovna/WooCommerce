@@ -10,6 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core;
+use Packetery\Core\Helper;
+use Packetery\Core\Validator\Order;
 use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\ContextResolver;
@@ -27,7 +29,7 @@ use WC_Order;
  */
 class GridExtender {
 
-	const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
+	private const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
 
 	/**
 	 * Generic Helper.
@@ -35,13 +37,6 @@ class GridExtender {
 	 * @var Core\Helper
 	 */
 	private $helper;
-
-	/**
-	 * Carrier repository.
-	 *
-	 * @var Carrier\EntityRepository
-	 */
-	private $carrierRepository;
 
 	/**
 	 * Latte Engine.
@@ -81,30 +76,27 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Core\Helper              $helper             Helper.
-	 * @param Carrier\EntityRepository $carrierRepository  Carrier repository.
-	 * @param Engine                   $latteEngine        Latte Engine.
-	 * @param Request                  $httpRequest        Http Request.
-	 * @param Repository               $orderRepository    Order repository.
-	 * @param Core\Validator\Order     $orderValidator     Order validator.
-	 * @param ContextResolver          $contextResolver    Context resolver.
+	 * @param Helper          $helper Helper.
+	 * @param Engine          $latteEngine Latte Engine.
+	 * @param Request         $httpRequest Http Request.
+	 * @param Repository      $orderRepository Order repository.
+	 * @param Order           $orderValidator Order validator.
+	 * @param ContextResolver $contextResolver Context resolver.
 	 */
 	public function __construct(
-		Core\Helper $helper,
-		Carrier\EntityRepository $carrierRepository,
+		Helper $helper,
 		Engine $latteEngine,
 		Request $httpRequest,
 		Repository $orderRepository,
-		Core\Validator\Order $orderValidator,
+		Order $orderValidator,
 		ContextResolver $contextResolver
 	) {
-		$this->helper            = $helper;
-		$this->carrierRepository = $carrierRepository;
-		$this->latteEngine       = $latteEngine;
-		$this->httpRequest       = $httpRequest;
-		$this->orderRepository   = $orderRepository;
-		$this->orderValidator    = $orderValidator;
-		$this->contextResolver   = $contextResolver;
+		$this->helper          = $helper;
+		$this->latteEngine     = $latteEngine;
+		$this->httpRequest     = $httpRequest;
+		$this->orderRepository = $orderRepository;
+		$this->orderValidator  = $orderValidator;
+		$this->contextResolver = $contextResolver;
 	}
 
 	/**
@@ -227,8 +219,8 @@ class GridExtender {
 	/**
 	 * Fills custom order list columns.
 	 *
-	 * @param string|mixed        $column Current order column name.
-	 * @param \WC_Order|int|mixed $wcOrder WC Order.
+	 * @param string|mixed       $column Current order column name.
+	 * @param WC_Order|int|mixed $wcOrder WC Order.
 	 */
 	public function fillCustomOrderListColumns( $column, $wcOrder ): void {
 		if ( false === is_string( $column ) ) {

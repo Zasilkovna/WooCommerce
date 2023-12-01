@@ -12,18 +12,19 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator;
+use Packetery\Core\Validator\Order;
 use Packetery\Module;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\FormFactory;
-use Packetery\Module\FormValidators;
 use Packetery\Module\Log;
+use Packetery\Module\Log\Page;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Latte\Engine;
-use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Forms;
 use Packetery\Nette\Http\Request;
 use WC_Data_Exception;
 use WC_Order;
@@ -34,16 +35,6 @@ use WC_Order;
  * @package Packetery\Order
  */
 class Metabox {
-
-	public const FIELD_WEIGHT           = 'packetery_weight';
-	private const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
-	public const FIELD_WIDTH            = 'packetery_width';
-	public const FIELD_LENGTH           = 'packetery_length';
-	public const FIELD_HEIGHT           = 'packetery_height';
-	public const FIELD_ADULT_CONTENT    = 'packetery_adult_content';
-	public const FIELD_COD              = 'packetery_COD';
-	public const FIELD_VALUE            = 'packetery_value';
-	public const FIELD_DELIVER_ON       = 'packetery_deliver_on';
 
 	/**
 	 * PacketeryLatte engine.
@@ -76,9 +67,16 @@ class Metabox {
 	/**
 	 * Order form.
 	 *
+	 * @var Forms\Form
+	 */
+	private $form;
+
+	/**
+	 * OrderDetails
+	 *
 	 * @var Form
 	 */
-	private $order_form;
+	private $orderForm;
 
 	/**
 	 * Options provider.
@@ -86,13 +84,6 @@ class Metabox {
 	 * @var Options\Provider
 	 */
 	private $optionsProvider;
-
-	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory
-	 */
-	private $formFactory;
 
 	/**
 	 * Repository.
@@ -146,41 +137,40 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine               $latte_engine         PacketeryLatte engine.
-	 * @param MessageManager       $message_manager      Message manager.
-	 * @param Helper               $helper               Helper.
-	 * @param Request              $request              Http request.
-	 * @param Options\Provider     $optionsProvider      Options provider.
-	 * @param FormFactory          $formFactory          Form factory.
-	 * @param Repository           $orderRepository      Order repository.
-	 * @param Log\Page             $logPage              Log page.
-	 * @param AttributeMapper      $mapper               AttributeMapper.
+	 * @param Engine               $latte_engine PacketeryLatte engine.
+	 * @param MessageManager       $message_manager Message manager.
+	 * @param Helper               $helper Helper.
+	 * @param Request              $request Http request.
+	 * @param Provider             $optionsProvider Options provider.
+	 * @param Repository           $orderRepository Order repository.
+	 * @param Page                 $logPage Log page.
+	 * @param AttributeMapper      $mapper AttributeMapper.
 	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository     $carrierRepository    Carrier repository.
-	 * @param Validator\Order      $orderValidator       Order validator.
-	 * @param DetailCommonLogic    $detailCommonLogic    Detail common logic.
+	 * @param EntityRepository     $carrierRepository Carrier repository.
+	 * @param Order                $orderValidator Order validator.
+	 * @param DetailCommonLogic    $detailCommonLogic Detail common logic.
+	 * @param Form                 $orderForm Order details.
 	 */
 	public function __construct(
 		Engine $latte_engine,
 		MessageManager $message_manager,
 		Helper $helper,
 		Request $request,
-		Options\Provider $optionsProvider,
-		FormFactory $formFactory,
+		Provider $optionsProvider,
 		Repository $orderRepository,
-		Log\Page $logPage,
+		Page $logPage,
 		AttributeMapper $mapper,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		EntityRepository $carrierRepository,
-		Validator\Order $orderValidator,
-		DetailCommonLogic $detailCommonLogic
+		Order $orderValidator,
+		DetailCommonLogic $detailCommonLogic,
+		Form $orderForm
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
 		$this->helper               = $helper;
 		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
-		$this->formFactory          = $formFactory;
 		$this->orderRepository      = $orderRepository;
 		$this->logPage              = $logPage;
 		$this->mapper               = $mapper;
@@ -188,6 +178,7 @@ class Metabox {
 		$this->carrierRepository    = $carrierRepository;
 		$this->orderValidator       = $orderValidator;
 		$this->detailCommonLogic    = $detailCommonLogic;
+		$this->orderForm            = $orderForm;
 	}
 
 	/**
@@ -197,8 +188,20 @@ class Metabox {
 		add_action(
 			'admin_init',
 			function () {
-				$this->order_form = $this->formFactory->create();
-				$this->add_fields();
+				$this->form = $this->orderForm->create();
+				$this->form->addHidden( 'packetery_order_metabox_nonce' );
+				$this->form->setDefaults( [ 'packetery_order_metabox_nonce' => wp_create_nonce() ] );
+
+				foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
+					$this->form->addHidden( $pickupPointAttr['name'] );
+				}
+
+				foreach ( Attribute::$homeDeliveryAttrs as $homeDeliveryAttr ) {
+					$this->form->addHidden( $homeDeliveryAttr['name'] );
+				}
+
+				$this->form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
+				$this->form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 			}
 		);
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
@@ -234,50 +237,6 @@ class Metabox {
 			'side',
 			'high'
 		);
-	}
-
-	/**
-	 *  Adds packetery fields to order form.
-	 */
-	public function add_fields(): void {
-		$this->order_form->addHidden( 'packetery_order_metabox_nonce' );
-		$this->order_form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$this->order_form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$this->order_form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$this->order_form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$this->order_form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$this->order_form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
-							->setRequired( false );
-		$this->order_form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT );
-		$this->order_form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
-							->setRequired( false )
-							->addRule( $this->order_form::FLOAT );
-		$this->order_form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
-							->setHtmlAttribute( 'autocomplete', 'off' )
-							->setRequired( false )
-							// translators: %s: Represents minimal date for delayed delivery.
-							->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
-
-		foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
-			$this->order_form->addHidden( $pickupPointAttr['name'] );
-		}
-
-		foreach ( Attribute::$homeDeliveryAttrs as $homeDeliveryAttr ) {
-			$this->order_form->addHidden( $homeDeliveryAttr['name'] );
-		}
-
-		$this->order_form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
-		$this->order_form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 	}
 
 	/**
@@ -378,25 +337,23 @@ class Metabox {
 			return;
 		}
 
-		$this->order_form->setDefaults(
-			[
-				'packetery_order_metabox_nonce' => wp_create_nonce(),
-				self::FIELD_WEIGHT              => $order->getFinalWeight(),
-				self::FIELD_ORIGINAL_WEIGHT     => $order->getFinalWeight(),
-				self::FIELD_WIDTH               => $order->getWidth(),
-				self::FIELD_LENGTH              => $order->getLength(),
-				self::FIELD_HEIGHT              => $order->getHeight(),
-				self::FIELD_ADULT_CONTENT       => $order->containsAdultContent(),
-				self::FIELD_COD                 => $order->getCod(),
-				self::FIELD_VALUE               => $order->getValue(),
-				self::FIELD_DELIVER_ON          => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
-			]
+		$this->orderForm->setDefaults(
+			$this->form,
+			$order->getFinalWeight(),
+			$order->getFinalWeight(),
+			$order->getLength(),
+			$order->getWidth(),
+			$order->getHeight(),
+			$order->getCod(),
+			$order->getValue(),
+			$order->containsAdultContent(),
+			$this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT )
 		);
 
 		$prev_invalid_values = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 		if ( $prev_invalid_values ) {
-			$this->order_form->setValues( $prev_invalid_values );
-			$this->order_form->validate();
+			$this->form->setValues( $prev_invalid_values );
+			$this->form->validate();
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
@@ -451,7 +408,7 @@ class Metabox {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form'                   => $this->order_form,
+				'form'                   => $this->form,
 				'order'                  => $order,
 				'showWidgetButton'       => $showWidgetButton,
 				'widgetButtonError'      => $widgetButtonError,
@@ -464,7 +421,9 @@ class Metabox {
 				'packetClaimUrl'         => $packetClaimUrl,
 				'packetClaimCancelUrl'   => $packetClaimCancelUrl,
 				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'isCodPayment'           => $wcOrder->get_payment_method() === $this->optionsProvider->getCodPaymentMethod(),
+				'isCodPayment'           => $order->hasCod(),
+				'allowsAdultContent'     => $order->allowsAdultContent(),
+				'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
 				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
 				'showLogsLink'           => $showLogsLink,
 				'hasOrderManualWeight'   => $order->hasManualWeight(),
@@ -504,16 +463,16 @@ class Metabox {
 			return;
 		}
 
-		if ( false === $this->order_form->isValid() ) {
-			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->order_form->getValues( true ) );
+		if ( false === $this->form->isValid() ) {
+			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( true ) );
 			$this->message_manager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
 
-		$orderFormValues = $this->order_form->getValues( 'array' );
+		$formValues = $this->form->getValues( 'array' );
 
-		if ( ! wp_verify_nonce( $orderFormValues['packetery_order_metabox_nonce'] ) ) {
+		if ( ! wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) ) {
 			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
@@ -526,18 +485,18 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			self::FIELD_WIDTH  => ( is_numeric( $orderFormValues[ self::FIELD_WIDTH ] ) ? (float) number_format( $orderFormValues[ self::FIELD_WIDTH ], 0, '.', '' ) : null ),
-			self::FIELD_LENGTH => ( is_numeric( $orderFormValues[ self::FIELD_LENGTH ] ) ? (float) number_format( $orderFormValues[ self::FIELD_LENGTH ], 0, '.', '' ) : null ),
-			self::FIELD_HEIGHT => ( is_numeric( $orderFormValues[ self::FIELD_HEIGHT ] ) ? (float) number_format( $orderFormValues[ self::FIELD_HEIGHT ], 0, '.', '' ) : null ),
+			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], 0, '.', '' ) : null ),
+			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], 0, '.', '' ) : null ),
+			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], 0, '.', '' ) : null ),
 		];
 
-		if ( ! is_numeric( $orderFormValues[ self::FIELD_WEIGHT ] ) ) {
-			$propsToSave[ self::FIELD_WEIGHT ] = null;
-		} elseif ( (float) $orderFormValues[ self::FIELD_WEIGHT ] !== (float) $orderFormValues[ self::FIELD_ORIGINAL_WEIGHT ] ) {
-			$propsToSave[ self::FIELD_WEIGHT ] = (float) $orderFormValues[ self::FIELD_WEIGHT ];
+		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {
+			$propsToSave[ Form::FIELD_WEIGHT ] = null;
+		} elseif ( (float) $formValues[ Form::FIELD_WEIGHT ] !== (float) $formValues[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
+			$propsToSave[ Form::FIELD_WEIGHT ] = (float) $formValues[ Form::FIELD_WEIGHT ];
 		}
 
-		if ( $orderFormValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
+		if ( $formValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
 			/**
 			 * Cannot be null due to the condition at the beginning of the method.
 			 *
@@ -545,11 +504,11 @@ class Metabox {
 			 */
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
 			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
-				$pickupPointValue = $orderFormValues[ $pickupPointAttr['name'] ];
+				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
 				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
-					if ( ! empty( $orderFormValues[ Attribute::CARRIER_ID ] ) ) {
-						$pickupPointValue = $orderFormValues[ Attribute::CARRIER_ID ];
+					if ( ! empty( $formValues[ Attribute::CARRIER_ID ] ) ) {
+						$pickupPointValue = $formValues[ Attribute::CARRIER_ID ];
 					} else {
 						$pickupPointValue = $order->getCarrier()->getId();
 					}
@@ -564,16 +523,16 @@ class Metabox {
 			$wcOrder->save();
 		}
 
-		if ( '1' === $orderFormValues[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
-			$address = $this->mapper->toValidatedAddress( $orderFormValues );
+		if ( '1' === $formValues[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+			$address = $this->mapper->toValidatedAddress( $formValues );
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );
 		}
 
-		$order->setAdultContent( $orderFormValues[ self::FIELD_ADULT_CONTENT ] );
-		$order->setCod( is_numeric( $orderFormValues[ self::FIELD_COD ] ) ? Helper::simplifyFloat( $orderFormValues[ self::FIELD_COD ], 10 ) : null );
-		$order->setValue( is_numeric( $orderFormValues[ self::FIELD_VALUE ] ) ? Helper::simplifyFloat( $orderFormValues[ self::FIELD_VALUE ], 10 ) : null );
-		$order->setDeliverOn( $this->helper->getDateTimeFromString( $orderFormValues[ self::FIELD_DELIVER_ON ] ) );
+		$order->setAdultContent( $formValues[ Form::FIELD_ADULT_CONTENT ] );
+		$order->setCod( is_numeric( $formValues[ Form::FIELD_COD ] ) ? Helper::simplifyFloat( $formValues[ Form::FIELD_COD ], 10 ) : null );
+		$order->setValue( is_numeric( $formValues[ Form::FIELD_VALUE ] ) ? Helper::simplifyFloat( $formValues[ Form::FIELD_VALUE ], 10 ) : null );
+		$order->setDeliverOn( $this->helper->getDateTimeFromString( $formValues[ Form::FIELD_DELIVER_ON ] ) );
 
 		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
 		$order->setSize( $orderSize );

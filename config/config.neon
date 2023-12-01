@@ -7,6 +7,7 @@ parameters:
 
 services:
 	- Packetery\Module\Order\MetaboxesWrapper
+	- Packetery\Module\Order\Form
 	- Packetery\Module\ContextResolver
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address

@@ -104,16 +104,17 @@ class AttributeMapper {
 
 		foreach ( $propsToSave as $attrName => $attrValue ) {
 			switch ( $attrName ) {
-				case Metabox::FIELD_WEIGHT:
+				// TODO: Setting these values shouldn't be done here?
+				case Form::FIELD_WEIGHT:
 					$order->setWeight( $attrValue );
 					break;
-				case Metabox::FIELD_WIDTH:
+				case Form::FIELD_WIDTH:
 					$orderSize->setWidth( $attrValue );
 					break;
-				case Metabox::FIELD_LENGTH:
+				case Form::FIELD_LENGTH:
 					$orderSize->setLength( $attrValue );
 					break;
-				case Metabox::FIELD_HEIGHT:
+				case Form::FIELD_HEIGHT:
 					$orderSize->setHeight( $attrValue );
 					break;
 			}
