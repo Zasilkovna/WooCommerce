@@ -168,7 +168,7 @@ final class OrderController extends WP_REST_Controller {
 			$values[ Form::FIELD_HEIGHT ]
 		);
 
-		if ( $values[ Form::FIELD_WEIGHT ] !== $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
+		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
 			$order->setWeight( $values[ Form::FIELD_WEIGHT ] );
 		}
 
