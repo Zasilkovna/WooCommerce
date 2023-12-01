@@ -27,7 +27,7 @@
                 {if in_array( $inputName, [ Packetery\Module\Order\Form::FIELD_COD, Packetery\Module\Order\Form::FIELD_VALUE ] )}
                     {var $suffix = "($orderCurrency)"}
                 {elseif $inputName === Packetery\Module\Order\Form::FIELD_WEIGHT && $hasOrderManualWeight}
-                    {var $suffix = sprintf('<span title="%s" class="dashicons dashicons=lock"></span>', $translations['weightIsManual'])}
+                    {var $suffix = sprintf('<span title="%s" class="dashicons dashicons-lock"></span>', $translations['weightIsManual'])}
                 {/if}
 
                 <div class="packetery-table-row">
