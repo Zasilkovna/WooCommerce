@@ -14,6 +14,7 @@ use Packetery\Nette\PhpGenerator as Php;
 use Packetery\Nette\Utils\Strings;
 /**
  * Container PHP code generator.
+ * @internal
  */
 class PhpGenerator
 {

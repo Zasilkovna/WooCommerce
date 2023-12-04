@@ -1,0 +1,10 @@
+<phpunit bootstrap="./test/bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>./test/PhproTest/SoapClient/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>./test/PhproTest/SoapClient/Integration</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

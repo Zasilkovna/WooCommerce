@@ -9,6 +9,7 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * This is a read-only stream decorator.
  *
  * @final
+ * @internal
  */
 class AppendStream implements StreamInterface
 {

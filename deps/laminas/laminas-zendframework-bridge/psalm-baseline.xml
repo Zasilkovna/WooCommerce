@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="5.16.0@2897ba636551a8cb61601cc26f6ccfbba6c36591">
+  <file src="config/replacements.php">
+    <DuplicateArrayKey>
+      <code><![CDATA['ZendAcl' => 'LaminasAcl']]></code>
+      <code><![CDATA['ZendRbac' => 'LaminasRbac']]></code>
+      <code><![CDATA['ZendRouter' => 'LaminasRouter']]></code>
+    </DuplicateArrayKey>
+  </file>
+  <file src="src/Autoloader.php">
+    <MixedArgumentTypeCoercion>
+      <code>RewriteRules::namespaceReverse()</code>
+      <code>RewriteRules::namespaceRewrite()</code>
+    </MixedArgumentTypeCoercion>
+    <UnusedPsalmSuppress>
+      <code>RedundantFunctionCall</code>
+    </UnusedPsalmSuppress>
+  </file>
+  <file src="src/ConfigPostProcessor.php">
+    <InvalidArgument>
+      <code>$keys</code>
+    </InvalidArgument>
+    <MissingClosureParamType>
+      <code>$value</code>
+      <code>$value</code>
+      <code>$value</code>
+      <code>$value</code>
+    </MissingClosureParamType>
+    <MissingClosureReturnType>
+      <code>function ($value) {</code>
+      <code>function ($value) {</code>
+      <code>function ($value, array $keys) {</code>
+      <code>function ($value, array $keys) {</code>
+    </MissingClosureReturnType>
+    <MissingReturnType>
+      <code>replaceDependencyConfiguration</code>
+      <code>replaceDependencyFactories</code>
+      <code>replaceDependencyServices</code>
+    </MissingReturnType>
+    <MixedArgument>
+      <code>$config</code>
+      <code>$newKey</code>
+      <code>$newKey</code>
+      <code>$newKey</code>
+      <code>$target</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code>[$key]</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAssignment>
+      <code>$config[$key]</code>
+      <code><![CDATA[$config['aliases'][$alias]]]></code>
+      <code><![CDATA[$config['aliases'][$service]]]></code>
+      <code><![CDATA[$config['aliases'][$service]]]></code>
+    </MixedArrayAssignment>
+    <MixedArrayOffset>
+      <code>$aliases[$name]</code>
+      <code>$config[$key]</code>
+      <code>$keys[$key]</code>
+      <code>$rewritten[$newKey]</code>
+      <code>$rewritten[$newKey]</code>
+      <code>$rewritten[$newKey]</code>
+      <code><![CDATA[$this->exactReplacements[$value]]]></code>
+    </MixedArrayOffset>
+    <MixedArrayTypeCoercion>
+      <code>$aliases[$name]</code>
+    </MixedArrayTypeCoercion>
+    <MixedAssignment>
+      <code>$a[$key]</code>
+      <code>$a[$key]</code>
+      <code>$a[]</code>
+      <code>$config</code>
+      <code>$config</code>
+      <code>$config[$key]</code>
+      <code><![CDATA[$config['factories'][$replacedService]]]></code>
+      <code><![CDATA[$config['services'][$replacedService]]]></code>
+      <code>$data</code>
+      <code>$factory</code>
+      <code>$factory</code>
+      <code>$key</code>
+      <code>$key</code>
+      <code>$name</code>
+      <code>$newKey</code>
+      <code>$notIn[]</code>
+      <code>$result</code>
+      <code>$rewritten[$key]</code>
+      <code>$rewritten[$key]</code>
+      <code>$rewritten[$newKey]</code>
+      <code>$rewritten[$newKey][]</code>
+      <code>$serviceInstance</code>
+      <code>$serviceInstance</code>
+      <code>$target</code>
+      <code>$value</code>
+      <code>$value</code>
+    </MixedAssignment>
+    <UnusedMethod>
+      <code>fallbackReplacement</code>
+      <code>noopReplacement</code>
+      <code>replaceDependencyConfiguration</code>
+      <code>replaceExactValue</code>
+    </UnusedMethod>
+  </file>
+  <file src="src/Module.php">
+    <MissingReturnType>
+      <code>init</code>
+      <code>onMergeConfig</code>
+    </MissingReturnType>
+    <PossiblyUnusedParam>
+      <code>$event</code>
+      <code>$moduleManager</code>
+    </PossiblyUnusedParam>
+    <UndefinedDocblockClass>
+      <code>ModuleEvent</code>
+      <code>ModuleManager</code>
+    </UndefinedDocblockClass>
+  </file>
+  <file src="src/Replacements.php">
+    <InvalidPropertyAssignmentValue>
+      <code><![CDATA[$this->replacements]]></code>
+      <code><![CDATA[$this->replacements]]></code>
+    </InvalidPropertyAssignmentValue>
+    <MixedArgument>
+      <code>$replacement</code>
+      <code>$replacement</code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code>$original</code>
+      <code>$original</code>
+      <code>$original</code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment>
+      <code>$replacement</code>
+    </MixedAssignment>
+    <MixedPropertyTypeCoercion>
+      <code><![CDATA[array_merge(
+            require __DIR__ . '/../config/replacements.php',
+            $additionalReplacements
+        )]]></code>
+    </MixedPropertyTypeCoercion>
+  </file>
+  <file src="test/AutoloaderTest.php">
+    <InvalidStringClass>
+      <code>new $legacy()</code>
+    </InvalidStringClass>
+  </file>
+  <file src="test/ConfigPostProcessorTest.php">
+    <MixedArgument>
+      <code>$config</code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code>$config</code>
+      <code>$expected</code>
+    </MixedAssignment>
+    <MixedInferredReturnType>
+      <code>iterable</code>
+      <code>iterable</code>
+    </MixedInferredReturnType>
+    <UnresolvableInclude>
+      <code>require $configLocation</code>
+      <code>require $expectedResultLocation</code>
+    </UnresolvableInclude>
+  </file>
+  <file src="test/ModuleTest.php">
+    <InvalidArgument>
+      <code>$event</code>
+      <code>$moduleManager</code>
+    </InvalidArgument>
+    <MixedArgument>
+      <code>$config</code>
+    </MixedArgument>
+    <MixedAssignment>
+      <code>$config</code>
+      <code>$expected</code>
+    </MixedAssignment>
+    <MixedInferredReturnType>
+      <code>iterable</code>
+    </MixedInferredReturnType>
+    <UnresolvableInclude>
+      <code>require $configFile</code>
+      <code>require $expectationsFile</code>
+    </UnresolvableInclude>
+  </file>
+  <file src="test/ReplacementsTest.php">
+    <MixedInferredReturnType>
+      <code>iterable</code>
+    </MixedInferredReturnType>
+  </file>
+  <file src="test/classes.php">
+    <UnusedClass>
+      <code>AbstractZendServer</code>
+      <code>ApiToolsModuleInterface</code>
+      <code>ApiToolsProviderInterface</code>
+      <code>ApiToolsVersionController</code>
+      <code>Application</code>
+      <code>Authentication</code>
+      <code>AuthenticationAdapter</code>
+      <code>Authorization</code>
+      <code>Autoloading</code>
+      <code>BaseModule</code>
+      <code>DevelopmentMode</code>
+      <code>LaminasAclFactory</code>
+      <code>LaminasAuthentication</code>
+      <code>LaminasBridge</code>
+      <code>LaminasBridge</code>
+      <code>LaminasRbac</code>
+      <code>LaminasRouter</code>
+      <code>LaminasViewRenderer</code>
+      <code>Main</code>
+      <code>Mezzio</code>
+      <code>MezzioUrlGenerator</code>
+      <code>MyClass</code>
+      <code>MyClass</code>
+      <code>OAuthService</code>
+      <code>ProblemDetails</code>
+      <code>Psr7Bridge</code>
+      <code>Psr7Bridge</code>
+      <code>Router</code>
+      <code>RouterAdapter</code>
+      <code>Service</code>
+      <code>Tools</code>
+      <code>Tools</code>
+      <code>XmlService</code>
+      <code>ZendMonitor</code>
+      <code>ZendServerDisk</code>
+      <code>ZendServerShm</code>
+    </UnusedClass>
+  </file>
+</files>

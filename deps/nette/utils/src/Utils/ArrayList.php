@@ -10,6 +10,7 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * Provides the base class for a generic list (items can be accessed by index).
+ * @internal
  */
 class ArrayList implements \ArrayAccess, \Countable, \IteratorAggregate
 {

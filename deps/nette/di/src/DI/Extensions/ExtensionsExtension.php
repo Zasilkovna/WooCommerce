@@ -10,6 +10,7 @@ namespace Packetery\Nette\DI\Extensions;
 use Packetery\Nette;
 /**
  * Enables registration of other extensions in $config file
+ * @internal
  */
 final class ExtensionsExtension extends \Packetery\Nette\DI\CompilerExtension
 {

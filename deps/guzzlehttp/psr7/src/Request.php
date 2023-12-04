@@ -8,6 +8,7 @@ use Packetery\Psr\Http\Message\StreamInterface;
 use Packetery\Psr\Http\Message\UriInterface;
 /**
  * PSR-7 request implementation.
+ * @internal
  */
 class Request implements RequestInterface
 {

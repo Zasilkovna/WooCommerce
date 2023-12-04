@@ -9,6 +9,7 @@ namespace Packetery\Nette\Forms;
 
 /**
  * Defines method that must implement form renderer.
+ * @internal
  */
 interface FormRenderer
 {

@@ -5,6 +5,7 @@ namespace Packetery\GuzzleHttp;
 use Packetery\GuzzleHttp\Exception\InvalidArgumentException;
 use Packetery\Psr\Http\Message\UriInterface;
 use Packetery\Symfony\Polyfill\Intl\Idn\Idn;
+/** @internal */
 final class Utils
 {
     /**

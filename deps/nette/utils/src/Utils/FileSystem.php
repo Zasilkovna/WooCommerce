@@ -10,6 +10,7 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * File system tool.
+ * @internal
  */
 final class FileSystem
 {
