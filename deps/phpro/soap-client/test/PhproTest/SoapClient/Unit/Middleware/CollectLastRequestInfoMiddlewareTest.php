@@ -1,0 +1,79 @@
+<?php
+
+namespace Packetery\PhproTest\SoapClient\Unit\Middleware;
+
+use Packetery\GuzzleHttp\Psr7\Request;
+use Packetery\GuzzleHttp\Psr7\Response;
+use Packetery\Http\Client\Common\PluginClient;
+use Packetery\Http\Message\MessageFactory\GuzzleMessageFactory;
+use Packetery\Http\Mock\Client;
+use Packetery\Phpro\SoapClient\Middleware\CollectLastRequestInfoMiddleware;
+use Packetery\Phpro\SoapClient\Middleware\MiddlewareInterface;
+use Packetery\Phpro\SoapClient\Soap\Handler\LastRequestInfoCollectorInterface;
+use Packetery\Phpro\SoapClient\Soap\HttpBinding\LastRequestInfo;
+use Packetery\PHPUnit\Framework\TestCase;
+/**
+ * Class CollectLastRequestInfoMiddleware
+ *
+ * @package PhproTest\SoapClient\Unit\Middleware
+ * @internal
+ */
+class CollectLastRequestInfoMiddlewareTest extends TestCase
+{
+    /**
+     * @var PluginClient
+     */
+    private $client;
+    /**
+     * @var Client
+     */
+    private $mockClient;
+    /**
+     * @var CollectLastRequestInfoMiddleware
+     */
+    private $middleware;
+    /***
+     * Initialize all basic objects
+     */
+    protected function setUp() : void
+    {
+        $this->middleware = new CollectLastRequestInfoMiddleware();
+        $this->mockClient = new Client(new GuzzleMessageFactory());
+        $this->client = new PluginClient($this->mockClient, [$this->middleware]);
+    }
+    /**
+     * @test
+     */
+    function it_is_a_middleware()
+    {
+        $this->assertInstanceOf(MiddlewareInterface::class, $this->middleware);
+    }
+    /**
+     * @test
+     */
+    function it_is_a_last_request_info_collector_middleware()
+    {
+        $this->assertInstanceOf(LastRequestInfoCollectorInterface::class, $this->middleware);
+    }
+    /**
+     * @test
+     */
+    function it_has_a_name()
+    {
+        $this->assertEquals('collect_last_request_info_middleware', $this->middleware->getName());
+    }
+    /**
+     * @test
+     */
+    function it_remembers_the_last_request_and_response()
+    {
+        $this->mockClient->addResponse($response = new Response(200, ['Content-Type' => 'text/plain'], 'response'));
+        $this->client->sendRequest($request = new Request('POST', '/', ['User-Agent' => 'no'], 'request'));
+        $result = $this->middleware->collectLastRequestInfo();
+        $this->assertInstanceOf(LastRequestInfo::class, $result);
+        $this->assertEquals('request', $result->getLastRequest());
+        $this->assertEquals('response', $result->getLastResponse());
+        $this->assertEquals('User-Agent: no', \trim($result->getLastRequestHeaders()));
+        $this->assertEquals('Content-Type: text/plain', \trim($result->getLastResponseHeaders()));
+    }
+}

@@ -8,6 +8,7 @@ if (!\class_exists('Phar') || \ini_get('phar.readonly')) {
     echo "Enable Phar extension and set directive 'phar.readonly=off'.\n";
     die(1);
 }
+/** @internal */
 function compressJs(string $s) : string
 {
     if (\function_exists('curl_init')) {
@@ -20,6 +21,7 @@ function compressJs(string $s) : string
     }
     return $s;
 }
+/** @internal */
 function compressCss(string $s) : string
 {
     $s = \preg_replace('#/\\*.*?\\*/#s', '', $s);

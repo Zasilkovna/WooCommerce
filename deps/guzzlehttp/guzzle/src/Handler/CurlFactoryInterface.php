@@ -3,6 +3,7 @@
 namespace Packetery\GuzzleHttp\Handler;
 
 use Packetery\Psr\Http\Message\RequestInterface;
+/** @internal */
 interface CurlFactoryInterface
 {
     /**

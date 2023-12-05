@@ -11,6 +11,7 @@ use Packetery\Nette;
 use Packetery\Nette\Application\UI\Presenter;
 /**
  * CSRF protection field.
+ * @internal
  */
 class CsrfProtection extends HiddenField
 {

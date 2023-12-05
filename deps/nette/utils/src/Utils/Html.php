@@ -226,6 +226,7 @@ use function is_array, is_float, is_object, is_string;
  * @method self value(?string $val)
  * @method self width(?int $val)
  * @method self wrap(?string $val)
+ * @internal
  */
 class Html implements \ArrayAccess, \Countable, \IteratorAggregate, HtmlStringable
 {

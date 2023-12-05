@@ -10,6 +10,7 @@ namespace Packetery\Nette\DI;
 use Packetery\Nette;
 /**
  * Configurator compiling extension.
+ * @internal
  */
 abstract class CompilerExtension
 {

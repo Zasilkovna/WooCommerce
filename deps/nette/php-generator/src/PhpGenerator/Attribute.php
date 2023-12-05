@@ -10,6 +10,7 @@ namespace Packetery\Nette\PhpGenerator;
 use Packetery\Nette;
 /**
  * PHP Attribute.
+ * @internal
  */
 final class Attribute
 {

@@ -9,6 +9,7 @@ namespace Packetery\Nette\ComponentModel;
 
 /**
  * Provides functionality required by all components.
+ * @internal
  */
 interface IComponent
 {

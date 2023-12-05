@@ -9,6 +9,7 @@ namespace Packetery\Latte;
 
 /**
  * Latte macro.
+ * @internal
  */
 interface Macro
 {

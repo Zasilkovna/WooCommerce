@@ -20,13 +20,13 @@ use Packetery\Nette;
  * @property-read int $error
  * @property-read bool $ok
  * @property-read string|null $contents
+ * @internal
  */
 final class FileUpload
 {
     use \Packetery\Nette\SmartObject;
-    public const ImageMimeTypes = ['image/gif', 'image/png', 'image/jpeg', 'image/webp'];
-    /** @deprecated use FileUpload::ImageMimeTypes */
-    public const IMAGE_MIME_TYPES = self::ImageMimeTypes;
+    /** @deprecated */
+    public const IMAGE_MIME_TYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/webp'];
     /** @var string */
     private $name;
     /** @var string|null */
@@ -109,7 +109,7 @@ final class FileUpload
         return $this->type ?: null;
     }
     /**
-     * Returns the path of the temporary location of the uploaded file.
+     * Returns the size of the uploaded file in bytes.
      */
     public function getSize() : int
     {
@@ -170,12 +170,14 @@ final class FileUpload
         return $this;
     }
     /**
-     * Returns true if the uploaded file is a JPEG, PNG, GIF, or WebP image.
+     * Returns true if the uploaded file is an image supported by PHP.
      * Detection is based on its signature, the integrity of the file is not checked. Requires PHP extension fileinfo.
      */
     public function isImage() : bool
     {
-        return \in_array($this->getContentType(), self::ImageMimeTypes, \true);
+        $flag = \imagetypes();
+        $types = \array_filter([$flag & \IMG_GIF ? 'image/gif' : null, $flag & \IMG_JPG ? 'image/jpeg' : null, $flag & \IMG_PNG ? 'image/png' : null, $flag & \IMG_WEBP ? 'image/webp' : null, $flag & 256 ? 'image/avif' : null]);
+        return \in_array($this->getContentType(), $types, \true);
     }
     /**
      * Loads an image.

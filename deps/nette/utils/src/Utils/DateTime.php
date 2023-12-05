@@ -10,6 +10,7 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * DateTime.
+ * @internal
  */
 class DateTime extends \DateTime implements \JsonSerializable
 {

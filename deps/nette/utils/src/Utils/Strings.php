@@ -11,6 +11,7 @@ use Packetery\Nette;
 use function is_array, is_object, strlen;
 /**
  * String tools library.
+ * @internal
  */
 class Strings
 {
