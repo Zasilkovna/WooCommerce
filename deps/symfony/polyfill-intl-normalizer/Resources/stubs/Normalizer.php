@@ -2,6 +2,7 @@
 
 namespace Packetery;
 
+/** @internal */
 class Normalizer extends Symfony\Polyfill\Intl\Normalizer\Normalizer
 {
     /**
@@ -17,4 +18,5 @@ class Normalizer extends Symfony\Polyfill\Intl\Normalizer\Normalizer
     public const NFC = 16;
     public const NFKC = 32;
 }
+/** @internal */
 \class_alias('Packetery\\Normalizer', 'Normalizer', \false);

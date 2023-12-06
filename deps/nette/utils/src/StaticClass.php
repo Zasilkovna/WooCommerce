@@ -9,6 +9,7 @@ namespace Packetery\Nette;
 
 /**
  * Static class.
+ * @internal
  */
 trait StaticClass
 {

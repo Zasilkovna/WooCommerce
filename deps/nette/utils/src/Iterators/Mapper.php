@@ -9,6 +9,7 @@ namespace Packetery\Nette\Iterators;
 
 /**
  * Applies the callback to the elements of the inner iterator.
+ * @internal
  */
 class Mapper extends \IteratorIterator
 {

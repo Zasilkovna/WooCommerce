@@ -14,6 +14,7 @@ use Packetery\Tracy\Debugger;
 use Packetery\Tracy\Dumper;
 Debugger::enable();
 // Define custom validator
+/** @internal */
 class MyValidators
 {
     public static function divisibilityValidator($item, $arg) : bool

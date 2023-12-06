@@ -1,6 +1,6 @@
 {
   "require": {
-    "php": ">=7.2",
+    "php": ">=8.0",
     "nette/di": "3.0.8",
     "nette/robot-loader": "3.4.0",
     "nette/php-generator": "3.5.4",
@@ -10,6 +10,12 @@
     "nette/bootstrap": "3.1.1",
     "latte/latte": "2.10.3",
     "guzzlehttp/guzzle": "6.5.5",
-    "tracy/tracy": "2.9.7"
+    "tracy/tracy": "2.9.7",
+    "phpro/soap-client": "1.7.4",
+    "symfony/event-dispatcher-contracts": "3.0.2"
+  },
+  "require-dev": {
+    "php": ">=8.0",
+    "laminas/laminas-code": "3.5.1"
   }
 }

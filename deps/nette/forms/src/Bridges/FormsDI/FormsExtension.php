@@ -10,6 +10,7 @@ namespace Packetery\Nette\Bridges\FormsDI;
 use Packetery\Nette;
 /**
  * Forms extension for Nette DI.
+ * @internal
  */
 class FormsExtension extends \Packetery\Nette\DI\CompilerExtension
 {

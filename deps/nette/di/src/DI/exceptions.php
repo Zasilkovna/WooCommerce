@@ -10,12 +10,14 @@ namespace Packetery\Nette\DI;
 use Packetery\Nette;
 /**
  * Service not found exception.
+ * @internal
  */
 class MissingServiceException extends \Packetery\Nette\InvalidStateException
 {
 }
 /**
  * Service creation exception.
+ * @internal
  */
 class ServiceCreationException extends \Packetery\Nette\InvalidStateException
 {
@@ -27,12 +29,14 @@ class ServiceCreationException extends \Packetery\Nette\InvalidStateException
 }
 /**
  * Not allowed when container is resolving.
+ * @internal
  */
 class NotAllowedDuringResolvingException extends \Packetery\Nette\InvalidStateException
 {
 }
 /**
  * Error in configuration.
+ * @internal
  */
 class InvalidConfigurationException extends \Packetery\Nette\InvalidStateException
 {

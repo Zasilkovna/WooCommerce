@@ -10,6 +10,7 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * Floating-point numbers comparison.
+ * @internal
  */
 class Floats
 {

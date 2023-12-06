@@ -1,0 +1,19 @@
+grumphp:
+    parallel:
+        enabled: false
+    tasks:
+        phpcs:
+            standard: "PSR2"
+            ignore_patterns:
+                - "spec/*Spec.php"
+                - "test/*.php"
+        phpspec: ~
+        phpunit: ~
+        phplint: ~
+        phpstan:
+            level: 5
+            configuration: "phpstan.neon"
+            ignore_patterns:
+                - "spec/"
+                - "vendor/"
+                - "test"

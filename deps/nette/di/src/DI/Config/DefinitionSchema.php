@@ -15,6 +15,7 @@ use Packetery\Nette\Schema\Expect;
 use Packetery\Nette\Schema\Schema;
 /**
  * Service configuration schema.
+ * @internal
  */
 class DefinitionSchema implements Schema
 {

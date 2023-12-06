@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Packetery\Psr\Http\Message\StreamInterface;
 use Packetery\Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
+/** @internal */
 class UploadedFile implements UploadedFileInterface
 {
     /**

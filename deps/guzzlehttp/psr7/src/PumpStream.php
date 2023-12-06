@@ -14,6 +14,7 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * false when there is no more data to read.
  *
  * @final
+ * @internal
  */
 class PumpStream implements StreamInterface
 {

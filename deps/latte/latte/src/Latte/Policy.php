@@ -7,6 +7,7 @@
 declare (strict_types=1);
 namespace Packetery\Latte;
 
+/** @internal */
 interface Policy
 {
     function isMacroAllowed(string $macro) : bool;

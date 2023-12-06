@@ -19,6 +19,7 @@ use Packetery\Nette;
  * @property-read int $counter
  * @property-read mixed $nextKey
  * @property-read mixed $nextValue
+ * @internal
  */
 class CachingIterator extends \CachingIterator implements \Countable
 {

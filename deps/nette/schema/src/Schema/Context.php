@@ -8,6 +8,7 @@ declare (strict_types=1);
 namespace Packetery\Nette\Schema;
 
 use Packetery\Nette;
+/** @internal */
 final class Context
 {
     use \Packetery\Nette\SmartObject;
@@ -31,5 +32,13 @@ final class Context
     public function addWarning(string $message, string $code, array $variables = []) : Message
     {
         return $this->warnings[] = new Message($message, $code, $this->path, $variables);
+    }
+    /** @return \Closure(): bool */
+    public function createChecker() : \Closure
+    {
+        $count = \count($this->errors);
+        return function () use($count) : bool {
+            return $count === \count($this->errors);
+        };
     }
 }

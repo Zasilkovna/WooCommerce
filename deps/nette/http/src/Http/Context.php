@@ -10,6 +10,7 @@ namespace Packetery\Nette\Http;
 use Packetery\Nette;
 /**
  * HTTP-specific tasks.
+ * @internal
  */
 class Context
 {

@@ -10,6 +10,7 @@ namespace Packetery\Nette\ComponentModel;
 use Packetery\Nette;
 /**
  * Containers are objects that logically contain zero or more IComponent components.
+ * @internal
  */
 interface IContainer extends IComponent
 {

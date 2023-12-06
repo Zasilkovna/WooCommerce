@@ -10,6 +10,7 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * Provides objects to work as array.
+ * @internal
  */
 class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \IteratorAggregate
 {

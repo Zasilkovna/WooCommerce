@@ -9,24 +9,28 @@ namespace Packetery\Nette\Utils;
 
 /**
  * The exception that is thrown when an image error occurs.
+ * @internal
  */
 class ImageException extends \Exception
 {
 }
 /**
  * The exception that indicates invalid image file.
+ * @internal
  */
 class UnknownImageFileException extends ImageException
 {
 }
 /**
  * The exception that indicates error of JSON encoding/decoding.
+ * @internal
  */
 class JsonException extends \Exception
 {
 }
 /**
  * The exception that indicates error of the last Regexp execution.
+ * @internal
  */
 class RegexpException extends \Exception
 {
@@ -34,6 +38,7 @@ class RegexpException extends \Exception
 }
 /**
  * The exception that indicates assertion error.
+ * @internal
  */
 class AssertionException extends \Exception
 {

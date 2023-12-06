@@ -12,6 +12,7 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * preferred size of the buffer.
  *
  * @final
+ * @internal
  */
 class BufferStream implements StreamInterface
 {

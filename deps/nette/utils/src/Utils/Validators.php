@@ -10,6 +10,7 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * Validation utilities.
+ * @internal
  */
 class Validators
 {
