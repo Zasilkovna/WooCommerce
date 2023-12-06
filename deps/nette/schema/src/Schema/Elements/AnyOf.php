@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Schema\Context;
 use Packetery\Nette\Schema\Helpers;
 use Packetery\Nette\Schema\Schema;
-/** @internal */
 final class AnyOf implements Schema
 {
     use Base;
@@ -50,20 +49,13 @@ final class AnyOf implements Schema
     }
     public function merge($value, $base)
     {
-        if (\is_array($value) && isset($value[Helpers::PreventMerging])) {
-            unset($value[Helpers::PreventMerging]);
+        if (\is_array($value) && isset($value[Helpers::PREVENT_MERGING])) {
+            unset($value[Helpers::PREVENT_MERGING]);
             return $value;
         }
         return Helpers::merge($value, $base);
     }
     public function complete($value, Context $context)
-    {
-        $isOk = $context->createChecker();
-        $value = $this->findAlternative($value, $context);
-        $isOk() && ($value = $this->doTransform($value, $context));
-        return $isOk() ? $value : null;
-    }
-    private function findAlternative($value, Context $context)
     {
         $expecteds = $innerErrors = [];
         foreach ($this->set as $item) {
@@ -73,7 +65,7 @@ final class AnyOf implements Schema
                 $res = $item->complete($item->normalize($value, $dolly), $dolly);
                 if (!$dolly->errors) {
                     $context->warnings = \array_merge($context->warnings, $dolly->warnings);
-                    return $res;
+                    return $this->doFinalize($res, $context);
                 }
                 foreach ($dolly->errors as $error) {
                     if ($error->path !== $context->path || empty($error->variables['expected'])) {
@@ -84,7 +76,7 @@ final class AnyOf implements Schema
                 }
             } else {
                 if ($item === $value) {
-                    return $value;
+                    return $this->doFinalize($value, $context);
                 }
                 $expecteds[] = \Packetery\Nette\Schema\Helpers::formatValue($item);
             }
@@ -92,13 +84,13 @@ final class AnyOf implements Schema
         if ($innerErrors) {
             $context->errors = \array_merge($context->errors, $innerErrors);
         } else {
-            $context->addError('The %label% %path% expects to be %expected%, %value% given.', \Packetery\Nette\Schema\Message::TypeMismatch, ['value' => $value, 'expected' => \implode('|', \array_unique($expecteds))]);
+            $context->addError('The %label% %path% expects to be %expected%, %value% given.', \Packetery\Nette\Schema\Message::TYPE_MISMATCH, ['value' => $value, 'expected' => \implode('|', \array_unique($expecteds))]);
         }
     }
     public function completeDefault(Context $context)
     {
         if ($this->required) {
-            $context->addError('The mandatory item %path% is missing.', \Packetery\Nette\Schema\Message::MissingItem);
+            $context->addError('The mandatory item %path% is missing.', \Packetery\Nette\Schema\Message::MISSING_ITEM);
             return null;
         }
         if ($this->default instanceof Schema) {

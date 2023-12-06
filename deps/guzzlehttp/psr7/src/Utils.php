@@ -6,7 +6,6 @@ use Packetery\Psr\Http\Message\RequestInterface;
 use Packetery\Psr\Http\Message\ServerRequestInterface;
 use Packetery\Psr\Http\Message\StreamInterface;
 use Packetery\Psr\Http\Message\UriInterface;
-/** @internal */
 final class Utils
 {
     /**

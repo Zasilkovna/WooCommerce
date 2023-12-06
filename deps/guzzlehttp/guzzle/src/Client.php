@@ -22,7 +22,6 @@ use Packetery\Psr\Http\Message\UriInterface;
  * @method Promise\PromiseInterface postAsync(string|UriInterface $uri, array $options = [])
  * @method Promise\PromiseInterface patchAsync(string|UriInterface $uri, array $options = [])
  * @method Promise\PromiseInterface deleteAsync(string|UriInterface $uri, array $options = [])
- * @internal
  */
 class Client implements ClientInterface
 {

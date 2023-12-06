@@ -127,14 +127,12 @@ if (!\defined('IDNA_ERROR_CONTEXTJ')) {
 }
 if (\PHP_VERSION_ID < 70400) {
     if (!\function_exists('idn_to_ascii')) {
-        /** @internal */
         function idn_to_ascii($domain, $flags = 0, $variant = \INTL_IDNA_VARIANT_2003, &$idna_info = null)
         {
             return p\Idn::idn_to_ascii($domain, $flags, $variant, $idna_info);
         }
     }
     if (!\function_exists('idn_to_utf8')) {
-        /** @internal */
         function idn_to_utf8($domain, $flags = 0, $variant = \INTL_IDNA_VARIANT_2003, &$idna_info = null)
         {
             return p\Idn::idn_to_utf8($domain, $flags, $variant, $idna_info);
@@ -142,14 +140,12 @@ if (\PHP_VERSION_ID < 70400) {
     }
 } else {
     if (!\function_exists('idn_to_ascii')) {
-        /** @internal */
         function idn_to_ascii($domain, $flags = 0, $variant = \INTL_IDNA_VARIANT_UTS46, &$idna_info = null)
         {
             return p\Idn::idn_to_ascii($domain, $flags, $variant, $idna_info);
         }
     }
     if (!\function_exists('idn_to_utf8')) {
-        /** @internal */
         function idn_to_utf8($domain, $flags = 0, $variant = \INTL_IDNA_VARIANT_UTS46, &$idna_info = null)
         {
             return p\Idn::idn_to_utf8($domain, $flags, $variant, $idna_info);

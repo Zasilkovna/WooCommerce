@@ -8,35 +8,25 @@ declare (strict_types=1);
 namespace Packetery\Nette\Schema;
 
 use Packetery\Nette;
-/** @internal */
 final class Message
 {
     use \Packetery\Nette\SmartObject;
     /** variables: {value: mixed, expected: string} */
-    public const TypeMismatch = 'schema.typeMismatch';
+    public const TYPE_MISMATCH = 'schema.typeMismatch';
     /** variables: {value: mixed, expected: string} */
-    public const ValueOutOfRange = 'schema.valueOutOfRange';
+    public const VALUE_OUT_OF_RANGE = 'schema.valueOutOfRange';
     /** variables: {value: mixed, length: int, expected: string} */
-    public const LengthOutOfRange = 'schema.lengthOutOfRange';
+    public const LENGTH_OUT_OF_RANGE = 'schema.lengthOutOfRange';
     /** variables: {value: string, pattern: string} */
-    public const PatternMismatch = 'schema.patternMismatch';
+    public const PATTERN_MISMATCH = 'schema.patternMismatch';
     /** variables: {value: mixed, assertion: string} */
-    public const FailedAssertion = 'schema.failedAssertion';
+    public const FAILED_ASSERTION = 'schema.failedAssertion';
     /** no variables */
-    public const MissingItem = 'schema.missingItem';
+    public const MISSING_ITEM = 'schema.missingItem';
     /** variables: {hint: string} */
-    public const UnexpectedItem = 'schema.unexpectedItem';
+    public const UNEXPECTED_ITEM = 'schema.unexpectedItem';
     /** no variables */
-    public const Deprecated = 'schema.deprecated';
-    /** Deprecated */
-    public const TYPE_MISMATCH = self::TypeMismatch;
-    public const VALUE_OUT_OF_RANGE = self::ValueOutOfRange;
-    public const LENGTH_OUT_OF_RANGE = self::LengthOutOfRange;
-    public const PATTERN_MISMATCH = self::PatternMismatch;
-    public const FAILED_ASSERTION = self::FailedAssertion;
-    public const MISSING_ITEM = self::MissingItem;
-    public const UNEXPECTED_ITEM = self::UnexpectedItem;
-    public const DEPRECATED = self::Deprecated;
+    public const DEPRECATED = 'schema.deprecated';
     /** @var string */
     public $message;
     /** @var string */

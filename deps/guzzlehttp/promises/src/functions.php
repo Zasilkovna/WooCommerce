@@ -20,7 +20,6 @@ namespace Packetery\GuzzleHttp\Promise;
  * @return TaskQueueInterface
  *
  * @deprecated queue will be removed in guzzlehttp/promises:2.0. Use Utils::queue instead.
- * @internal
  */
 function queue(TaskQueueInterface $assign = null)
 {
@@ -35,7 +34,6 @@ function queue(TaskQueueInterface $assign = null)
  * @return PromiseInterface
  *
  * @deprecated task will be removed in guzzlehttp/promises:2.0. Use Utils::task instead.
- * @internal
  */
 function task(callable $task)
 {
@@ -49,7 +47,6 @@ function task(callable $task)
  * @return PromiseInterface
  *
  * @deprecated promise_for will be removed in guzzlehttp/promises:2.0. Use Create::promiseFor instead.
- * @internal
  */
 function promise_for($value)
 {
@@ -64,7 +61,6 @@ function promise_for($value)
  * @return PromiseInterface
  *
  * @deprecated rejection_for will be removed in guzzlehttp/promises:2.0. Use Create::rejectionFor instead.
- * @internal
  */
 function rejection_for($reason)
 {
@@ -78,7 +74,6 @@ function rejection_for($reason)
  * @return \Exception|\Throwable
  *
  * @deprecated exception_for will be removed in guzzlehttp/promises:2.0. Use Create::exceptionFor instead.
- * @internal
  */
 function exception_for($reason)
 {
@@ -92,7 +87,6 @@ function exception_for($reason)
  * @return \Iterator
  *
  * @deprecated iter_for will be removed in guzzlehttp/promises:2.0. Use Create::iterFor instead.
- * @internal
  */
 function iter_for($value)
 {
@@ -113,7 +107,6 @@ function iter_for($value)
  * @return array
  *
  * @deprecated inspect will be removed in guzzlehttp/promises:2.0. Use Utils::inspect instead.
- * @internal
  */
 function inspect(PromiseInterface $promise)
 {
@@ -132,7 +125,6 @@ function inspect(PromiseInterface $promise)
  * @return array
  *
  * @deprecated inspect will be removed in guzzlehttp/promises:2.0. Use Utils::inspectAll instead.
- * @internal
  */
 function inspect_all($promises)
 {
@@ -153,7 +145,6 @@ function inspect_all($promises)
  * @throws \Throwable on error in PHP >=7
  *
  * @deprecated unwrap will be removed in guzzlehttp/promises:2.0. Use Utils::unwrap instead.
- * @internal
  */
 function unwrap($promises)
 {
@@ -173,7 +164,6 @@ function unwrap($promises)
  * @return PromiseInterface
  *
  * @deprecated all will be removed in guzzlehttp/promises:2.0. Use Utils::all instead.
- * @internal
  */
 function all($promises, $recursive = \false)
 {
@@ -196,7 +186,6 @@ function all($promises, $recursive = \false)
  * @return PromiseInterface
  *
  * @deprecated some will be removed in guzzlehttp/promises:2.0. Use Utils::some instead.
- * @internal
  */
 function some($count, $promises)
 {
@@ -211,7 +200,6 @@ function some($count, $promises)
  * @return PromiseInterface
  *
  * @deprecated any will be removed in guzzlehttp/promises:2.0. Use Utils::any instead.
- * @internal
  */
 function any($promises)
 {
@@ -230,7 +218,6 @@ function any($promises)
  * @return PromiseInterface
  *
  * @deprecated settle will be removed in guzzlehttp/promises:2.0. Use Utils::settle instead.
- * @internal
  */
 function settle($promises)
 {
@@ -256,7 +243,6 @@ function settle($promises)
  * @return PromiseInterface
  *
  * @deprecated each will be removed in guzzlehttp/promises:2.0. Use Each::of instead.
- * @internal
  */
 function each($iterable, callable $onFulfilled = null, callable $onRejected = null)
 {
@@ -278,7 +264,6 @@ function each($iterable, callable $onFulfilled = null, callable $onRejected = nu
  * @return PromiseInterface
  *
  * @deprecated each_limit will be removed in guzzlehttp/promises:2.0. Use Each::ofLimit instead.
- * @internal
  */
 function each_limit($iterable, $concurrency, callable $onFulfilled = null, callable $onRejected = null)
 {
@@ -296,7 +281,6 @@ function each_limit($iterable, $concurrency, callable $onFulfilled = null, calla
  * @return PromiseInterface
  *
  * @deprecated each_limit_all will be removed in guzzlehttp/promises:2.0. Use Each::ofLimitAll instead.
- * @internal
  */
 function each_limit_all($iterable, $concurrency, callable $onFulfilled = null)
 {
@@ -308,7 +292,6 @@ function each_limit_all($iterable, $concurrency, callable $onFulfilled = null)
  * @return bool
  *
  * @deprecated is_fulfilled will be removed in guzzlehttp/promises:2.0. Use Is::fulfilled instead.
- * @internal
  */
 function is_fulfilled(PromiseInterface $promise)
 {
@@ -320,7 +303,6 @@ function is_fulfilled(PromiseInterface $promise)
  * @return bool
  *
  * @deprecated is_rejected will be removed in guzzlehttp/promises:2.0. Use Is::rejected instead.
- * @internal
  */
 function is_rejected(PromiseInterface $promise)
 {
@@ -332,7 +314,6 @@ function is_rejected(PromiseInterface $promise)
  * @return bool
  *
  * @deprecated is_settled will be removed in guzzlehttp/promises:2.0. Use Is::settled instead.
- * @internal
  */
 function is_settled(PromiseInterface $promise)
 {
@@ -346,7 +327,6 @@ function is_settled(PromiseInterface $promise)
  * @return PromiseInterface
  *
  * @deprecated coroutine will be removed in guzzlehttp/promises:2.0. Use Coroutine::of instead.
- * @internal
  */
 function coroutine(callable $generatorFn)
 {

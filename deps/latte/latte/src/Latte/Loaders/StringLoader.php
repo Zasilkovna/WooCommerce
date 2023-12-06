@@ -10,7 +10,6 @@ namespace Packetery\Latte\Loaders;
 use Packetery\Latte;
 /**
  * Template loader.
- * @internal
  */
 class StringLoader implements \Packetery\Latte\Loader
 {

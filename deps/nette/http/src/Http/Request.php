@@ -24,7 +24,6 @@ use Packetery\Nette;
  * @property-read string|null $remoteAddress
  * @property-read string|null $remoteHost
  * @property-read string|null $rawBody
- * @internal
  */
 class Request implements IRequest
 {

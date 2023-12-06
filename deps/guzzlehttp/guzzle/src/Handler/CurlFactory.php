@@ -11,7 +11,6 @@ use Packetery\GuzzleHttp\TransferStats;
 use Packetery\Psr\Http\Message\RequestInterface;
 /**
  * Creates curl resources from a request
- * @internal
  */
 class CurlFactory implements CurlFactoryInterface
 {

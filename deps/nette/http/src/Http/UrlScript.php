@@ -27,7 +27,6 @@ use Packetery\Nette;
  * @property-read string $baseUrl
  * @property-read string $relativeUrl
  * @property-read string $pathInfo
- * @internal
  */
 class UrlScript extends UrlImmutable
 {

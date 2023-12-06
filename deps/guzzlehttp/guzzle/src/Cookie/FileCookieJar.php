@@ -4,7 +4,6 @@ namespace Packetery\GuzzleHttp\Cookie;
 
 /**
  * Persists non-session cookies using a JSON formatted file
- * @internal
  */
 class FileCookieJar extends CookieJar
 {

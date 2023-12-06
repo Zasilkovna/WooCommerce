@@ -8,7 +8,6 @@ use Packetery\Psr\Http\Message\RequestInterface;
 /**
  * Prepares requests that contain a body, adding the Content-Length,
  * Content-Type, and Expect headers.
- * @internal
  */
 class PrepareBodyMiddleware
 {

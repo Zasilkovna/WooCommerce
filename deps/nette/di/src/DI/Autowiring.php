@@ -10,7 +10,6 @@ namespace Packetery\Nette\DI;
 use Packetery\Nette;
 /**
  * Autowiring.
- * @internal
  */
 class Autowiring
 {

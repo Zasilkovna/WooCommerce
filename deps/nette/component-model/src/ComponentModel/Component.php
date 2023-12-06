@@ -15,7 +15,6 @@ use Packetery\Nette;
  *
  * @property-read string $name
  * @property-read IContainer|null $parent
- * @internal
  */
 abstract class Component implements IComponent
 {

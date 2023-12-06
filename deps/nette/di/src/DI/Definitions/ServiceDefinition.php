@@ -16,7 +16,6 @@ use Packetery\Nette\PhpGenerator\Helpers as PhpHelpers;
  * @property string|null $class
  * @property Statement $factory
  * @property Statement[] $setup
- * @internal
  */
 final class ServiceDefinition extends Definition
 {

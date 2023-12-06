@@ -13,7 +13,6 @@ use Packetery\PhpParser\Node;
 use Packetery\PhpParser\ParserFactory;
 /**
  * Creates a representation based on reflection.
- * @internal
  */
 final class Factory
 {

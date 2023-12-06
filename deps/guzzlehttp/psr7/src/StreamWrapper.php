@@ -7,7 +7,6 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * Converts Guzzle streams into PHP stream resources.
  *
  * @final
- * @internal
  */
 class StreamWrapper
 {

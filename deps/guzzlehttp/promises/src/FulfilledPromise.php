@@ -7,7 +7,6 @@ namespace Packetery\GuzzleHttp\Promise;
  *
  * Thenning off of this promise will invoke the onFulfilled callback
  * immediately and ignore other callbacks.
- * @internal
  */
 class FulfilledPromise implements PromiseInterface
 {

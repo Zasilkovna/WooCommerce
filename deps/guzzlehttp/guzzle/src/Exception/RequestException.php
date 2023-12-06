@@ -8,7 +8,6 @@ use Packetery\Psr\Http\Message\ResponseInterface;
 use Packetery\Psr\Http\Message\UriInterface;
 /**
  * HTTP Request exception
- * @internal
  */
 class RequestException extends TransferException
 {

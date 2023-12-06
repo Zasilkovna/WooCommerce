@@ -31,7 +31,6 @@ use Packetery\Psr\Http\Message\ResponseInterface;
  * - {res_headers}:    Response headers
  * - {req_body}:       Request body
  * - {res_body}:       Response body
- * @internal
  */
 class MessageFormatter
 {

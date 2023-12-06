@@ -10,7 +10,6 @@ namespace Packetery\Nette\DI\Extensions;
 use Packetery\Nette;
 /**
  * DI extension.
- * @internal
  */
 final class DIExtension extends \Packetery\Nette\DI\CompilerExtension
 {

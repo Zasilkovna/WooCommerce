@@ -2,7 +2,6 @@
 
 namespace Packetery\GuzzleHttp\Psr7;
 
-/** @internal */
 final class MimeType
 {
     /**

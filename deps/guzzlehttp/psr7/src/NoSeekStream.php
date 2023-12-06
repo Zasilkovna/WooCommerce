@@ -7,7 +7,6 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * Stream decorator that prevents a stream from being seeked.
  *
  * @final
- * @internal
  */
 class NoSeekStream implements StreamInterface
 {

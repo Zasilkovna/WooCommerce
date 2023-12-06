@@ -13,7 +13,6 @@ use Packetery\GuzzleHttp\Handler\StreamHandler;
  * @param array  $variables Template variables
  *
  * @return string
- * @internal
  */
 function uri_template($template, array $variables)
 {
@@ -35,7 +34,6 @@ function uri_template($template, array $variables)
  *
  * @return string Returns a string containing the type of the variable and
  *                if a class is provided, the class name.
- * @internal
  */
 function describe_type($input)
 {
@@ -57,7 +55,6 @@ function describe_type($input)
  * @param iterable $lines Header lines array of strings in the following
  *                     format: "Name: Value"
  * @return array
- * @internal
  */
 function headers_from_lines($lines)
 {
@@ -74,7 +71,6 @@ function headers_from_lines($lines)
  * @param mixed $value Optional value
  *
  * @return resource
- * @internal
  */
 function debug_resource($value = null)
 {
@@ -92,7 +88,6 @@ function debug_resource($value = null)
  *
  * @return callable Returns the best handler for the given system.
  * @throws \RuntimeException if no viable Handler is available.
- * @internal
  */
 function choose_handler()
 {
@@ -115,7 +110,6 @@ function choose_handler()
  * Get the default User-Agent string to use with Guzzle
  *
  * @return string
- * @internal
  */
 function default_user_agent()
 {
@@ -142,7 +136,6 @@ function default_user_agent()
  *
  * @return string
  * @throws \RuntimeException if no bundle can be found.
- * @internal
  */
 function default_ca_bundle()
 {
@@ -201,7 +194,6 @@ EOT
  * @param array $headers
  *
  * @return array
- * @internal
  */
 function normalize_header_keys(array $headers)
 {
@@ -229,7 +221,6 @@ function normalize_header_keys(array $headers)
  * @param array  $noProxyArray An array of host patterns.
  *
  * @return bool
- * @internal
  */
 function is_host_in_noproxy($host, array $noProxyArray)
 {
@@ -273,7 +264,6 @@ function is_host_in_noproxy($host, array $noProxyArray)
  * @return mixed
  * @throws Exception\InvalidArgumentException if the JSON cannot be decoded.
  * @link http://www.php.net/manual/en/function.json-decode.php
- * @internal
  */
 function json_decode($json, $assoc = \false, $depth = 512, $options = 0)
 {
@@ -293,7 +283,6 @@ function json_decode($json, $assoc = \false, $depth = 512, $options = 0)
  * @return string
  * @throws Exception\InvalidArgumentException if the JSON cannot be encoded.
  * @link http://www.php.net/manual/en/function.json-encode.php
- * @internal
  */
 function json_encode($value, $options = 0, $depth = 512)
 {
