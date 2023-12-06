@@ -10,7 +10,6 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * PHP reflection helpers.
- * @internal
  */
 final class Reflection
 {

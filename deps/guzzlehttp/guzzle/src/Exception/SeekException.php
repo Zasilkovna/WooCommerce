@@ -5,7 +5,6 @@ namespace Packetery\GuzzleHttp\Exception;
 use Packetery\Psr\Http\Message\StreamInterface;
 /**
  * Exception thrown when a seek fails on a stream.
- * @internal
  */
 class SeekException extends \RuntimeException implements GuzzleException
 {

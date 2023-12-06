@@ -8,7 +8,6 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * read stream.
  *
  * @final
- * @internal
  */
 class CachingStream implements StreamInterface
 {

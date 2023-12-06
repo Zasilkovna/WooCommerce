@@ -13,7 +13,6 @@ use Packetery\Nette\Utils\Strings;
  * Assignment or calling statement.
  *
  * @property string|array|Definition|Reference|null $entity
- * @internal
  */
 final class Statement implements \Packetery\Nette\Schema\DynamicParameter
 {

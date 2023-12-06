@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Schema\Context;
 use Packetery\Nette\Schema\Helpers;
 use Packetery\Nette\Schema\Schema;
-/** @internal */
 final class Structure implements Schema
 {
     use Base;
@@ -32,7 +31,7 @@ final class Structure implements Schema
         (function (Schema ...$items) {
         })(...\array_values($items));
         $this->items = $items;
-        $this->castTo('object');
+        $this->castTo = 'object';
         $this->required = \true;
     }
     public function default($value) : self
@@ -65,8 +64,8 @@ final class Structure implements Schema
     /********************* processing ****************d*g**/
     public function normalize($value, Context $context)
     {
-        if ($prevent = \is_array($value) && isset($value[Helpers::PreventMerging])) {
-            unset($value[Helpers::PreventMerging]);
+        if ($prevent = \is_array($value) && isset($value[Helpers::PREVENT_MERGING])) {
+            unset($value[Helpers::PREVENT_MERGING]);
         }
         $value = $this->doNormalize($value, $context);
         if (\is_object($value)) {
@@ -82,15 +81,15 @@ final class Structure implements Schema
                 }
             }
             if ($prevent) {
-                $value[Helpers::PreventMerging] = \true;
+                $value[Helpers::PREVENT_MERGING] = \true;
             }
         }
         return $value;
     }
     public function merge($value, $base)
     {
-        if (\is_array($value) && isset($value[Helpers::PreventMerging])) {
-            unset($value[Helpers::PreventMerging]);
+        if (\is_array($value) && isset($value[Helpers::PREVENT_MERGING])) {
+            unset($value[Helpers::PREVENT_MERGING]);
             $base = null;
         }
         if (\is_array($value) && \is_array($base)) {
@@ -117,15 +116,10 @@ final class Structure implements Schema
             // is unable to distinguish null from array in NEON
         }
         $this->doDeprecation($context);
-        $isOk = $context->createChecker();
-        Helpers::validateType($value, 'array', $context);
-        $isOk() && Helpers::validateRange($value, $this->range, $context);
-        $isOk() && $this->validateItems($value, $context);
-        $isOk() && ($value = $this->doTransform($value, $context));
-        return $isOk() ? $value : null;
-    }
-    private function validateItems(array &$value, Context $context) : void
-    {
+        if (!$this->doValidate($value, 'array', $context) || !$this->doValidateRange($value, $this->range, $context)) {
+            return;
+        }
+        $errCount = \count($context->errors);
         $items = $this->items;
         if ($extraKeys = \array_keys(\array_diff_key($value, $items))) {
             if ($this->otherItems) {
@@ -134,7 +128,7 @@ final class Structure implements Schema
                 $keys = \array_map('strval', \array_keys($items));
                 foreach ($extraKeys as $key) {
                     $hint = \Packetery\Nette\Utils\ObjectHelpers::getSuggestion($keys, (string) $key);
-                    $context->addError('Unexpected item %path%' . ($hint ? ", did you mean '%hint%'?" : '.'), \Packetery\Nette\Schema\Message::UnexpectedItem, ['hint' => $hint])->path[] = $key;
+                    $context->addError('Unexpected item %path%' . ($hint ? ", did you mean '%hint%'?" : '.'), \Packetery\Nette\Schema\Message::UNEXPECTED_ITEM, ['hint' => $hint])->path[] = $key;
                 }
             }
         }
@@ -151,6 +145,10 @@ final class Structure implements Schema
             }
             \array_pop($context->path);
         }
+        if (\count($context->errors) > $errCount) {
+            return;
+        }
+        return $this->doFinalize($value, $context);
     }
     public function completeDefault(Context $context)
     {

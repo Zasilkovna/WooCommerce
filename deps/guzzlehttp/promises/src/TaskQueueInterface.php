@@ -2,7 +2,6 @@
 
 namespace Packetery\GuzzleHttp\Promise;
 
-/** @internal */
 interface TaskQueueInterface
 {
     /**

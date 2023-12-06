@@ -8,7 +8,6 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * take place on the stream.
  *
  * @final
- * @internal
  */
 class LazyOpenStream implements StreamInterface
 {

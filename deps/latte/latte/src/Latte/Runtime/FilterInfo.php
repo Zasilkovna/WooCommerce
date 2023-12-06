@@ -10,7 +10,6 @@ namespace Packetery\Latte\Runtime;
 use Packetery\Latte;
 /**
  * Filter runtime info
- * @internal
  */
 class FilterInfo
 {

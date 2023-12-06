@@ -5,7 +5,6 @@ namespace Packetery\GuzzleHttp\Psr7;
 use Packetery\Psr\Http\Message\MessageInterface;
 use Packetery\Psr\Http\Message\RequestInterface;
 use Packetery\Psr\Http\Message\ResponseInterface;
-/** @internal */
 final class Message
 {
     /**

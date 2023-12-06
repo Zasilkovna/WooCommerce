@@ -9,7 +9,6 @@ use Packetery\Psr\Http\Message\ResponseInterface;
 use Packetery\Psr\Http\Message\UriInterface;
 /**
  * Client interface for sending HTTP requests.
- * @internal
  */
 interface ClientInterface
 {

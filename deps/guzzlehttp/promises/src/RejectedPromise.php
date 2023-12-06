@@ -7,7 +7,6 @@ namespace Packetery\GuzzleHttp\Promise;
  *
  * Thenning off of this promise will invoke the onRejected callback
  * immediately and ignore other callbacks.
- * @internal
  */
 class RejectedPromise implements PromiseInterface
 {

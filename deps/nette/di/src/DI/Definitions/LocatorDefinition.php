@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Utils\Reflection;
 /**
  * Multi accessor/factory definition.
- * @internal
  */
 final class LocatorDefinition extends Definition
 {

@@ -8,7 +8,6 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * multipart/form-data stream.
  *
  * @final
- * @internal
  */
 class MultipartStream implements StreamInterface
 {

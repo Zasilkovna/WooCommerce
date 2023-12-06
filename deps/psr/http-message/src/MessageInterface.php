@@ -14,7 +14,6 @@ namespace Packetery\Psr\Http\Message;
  *
  * @link http://www.ietf.org/rfc/rfc7230.txt
  * @link http://www.ietf.org/rfc/rfc7231.txt
- * @internal
  */
 interface MessageInterface
 {

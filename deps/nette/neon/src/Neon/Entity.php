@@ -9,7 +9,6 @@ namespace Packetery\Nette\Neon;
 
 /**
  * Representation of NEON entity 'foo(bar=1)'
- * @internal
  */
 final class Entity extends \stdClass
 {

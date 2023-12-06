@@ -9,7 +9,6 @@ use Packetery\Psr\Http\Message\UriInterface;
  * @author Tobias Schultze
  *
  * @link https://tools.ietf.org/html/rfc3986#section-5
- * @internal
  */
 final class UriResolver
 {

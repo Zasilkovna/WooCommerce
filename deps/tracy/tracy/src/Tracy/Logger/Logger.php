@@ -9,7 +9,6 @@ namespace Packetery\Tracy;
 
 /**
  * Logger.
- * @internal
  */
 class Logger implements ILogger
 {

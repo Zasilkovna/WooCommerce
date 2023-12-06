@@ -15,7 +15,6 @@ use Packetery\Nette\Utils\Html;
  * @property-read Html $separatorPrototype
  * @property-read Html $containerPrototype
  * @property-read Html $itemLabelPrototype
- * @internal
  */
 class CheckboxList extends MultiChoiceControl
 {

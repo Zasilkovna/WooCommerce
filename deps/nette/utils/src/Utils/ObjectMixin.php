@@ -11,7 +11,6 @@ use Packetery\Nette;
 /**
  * \Packetery\Nette\Object behaviour mixin.
  * @deprecated
- * @internal
  */
 final class ObjectMixin
 {

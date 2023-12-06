@@ -8,8 +8,6 @@ parameters:
         - php
     paths:
         - ../src/Packetery/Core
-    excludePaths:
-        - ../src/Packetery/Core/Api/GeneratedSoap
     scanDirectories:
         - ../deps
         - ../src/Packetery/Module

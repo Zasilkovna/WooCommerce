@@ -15,7 +15,6 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * @link http://php.net/manual/en/filters.compression.php
  *
  * @final
- * @internal
  */
 class InflateStream implements StreamInterface
 {

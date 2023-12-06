@@ -10,11 +10,6 @@
     "nette/bootstrap": "3.1.1",
     "latte/latte": "2.10.3",
     "guzzlehttp/guzzle": "6.5.5",
-    "tracy/tracy": "2.9.7",
-    "phpro/soap-client": "1.7.4"
-  },
-  "require-dev": {
-    "php": ">=7.2",
-    "laminas/laminas-code": "3.4.1"
+    "tracy/tracy": "2.9.7"
   }
 }

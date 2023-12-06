@@ -11,7 +11,6 @@ use Packetery\Nette;
 use function is_array, is_int, is_object, count;
 /**
  * Array tools library.
- * @internal
  */
 class Arrays
 {

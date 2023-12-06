@@ -12,7 +12,6 @@ use Packetery\Nette\DI\ServiceCreationException;
 use Packetery\Nette\Utils\Reflection;
 /**
  * Definition of standard service.
- * @internal
  */
 final class FactoryDefinition extends Definition
 {

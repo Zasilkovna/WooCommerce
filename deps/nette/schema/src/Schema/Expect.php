@@ -25,7 +25,6 @@ use Packetery\Nette\Schema\Elements\Type;
  * @method static Type mixed($default = null)
  * @method static Type email($default = null)
  * @method static Type unicode($default = null)
- * @internal
  */
 final class Expect
 {

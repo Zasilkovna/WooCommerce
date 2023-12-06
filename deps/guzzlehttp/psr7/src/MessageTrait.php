@@ -5,7 +5,6 @@ namespace Packetery\GuzzleHttp\Psr7;
 use Packetery\Psr\Http\Message\StreamInterface;
 /**
  * Trait implementing functionality common to requests and responses.
- * @internal
  */
 trait MessageTrait
 {

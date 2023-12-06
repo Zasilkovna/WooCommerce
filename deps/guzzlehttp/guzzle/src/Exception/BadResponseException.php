@@ -6,7 +6,6 @@ use Packetery\Psr\Http\Message\RequestInterface;
 use Packetery\Psr\Http\Message\ResponseInterface;
 /**
  * Exception when an HTTP error occurs (4xx or 5xx error)
- * @internal
  */
 class BadResponseException extends RequestException
 {

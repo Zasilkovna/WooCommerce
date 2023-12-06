@@ -4,7 +4,6 @@ namespace Packetery\GuzzleHttp\Exception;
 
 use Throwable;
 if (\interface_exists(Throwable::class)) {
-    /** @internal */
     interface GuzzleException extends Throwable
     {
     }
@@ -17,7 +16,6 @@ if (\interface_exists(Throwable::class)) {
      * @method int getLine()
      * @method array getTrace()
      * @method string getTraceAsString()
-     * @internal
      */
     interface GuzzleException
     {

@@ -8,7 +8,6 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * stream becomes too full.
  *
  * @final
- * @internal
  */
 class DroppingStream implements StreamInterface
 {
