@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\CustomsDeclaration;
 
 /**
  * Class MetaboxesWrapper.
@@ -41,9 +42,9 @@ class MetaboxesWrapper {
 	/**
 	 * Constructor.
 	 *
-	 * @param Metabox                   $generalMetabox           General metabox.
+	 * @param Metabox                   $generalMetabox General metabox.
 	 * @param CustomsDeclarationMetabox $customDeclarationMetabox Customs declaration metabox.
-	 * @param Repository                $orderRepository          Order repository.
+	 * @param Repository                $orderRepository Order repository.
 	 */
 	public function __construct(
 		Metabox $generalMetabox,

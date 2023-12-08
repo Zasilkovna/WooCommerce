@@ -13,13 +13,34 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Api;
+use Packetery\Module\Api\Registrar;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log;
 use Packetery\Module\Options;
+use Packetery\Module\Options\Exporter;
+use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\Page;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
+use Packetery\Module\Order\ApiExtender;
+use Packetery\Module\Order\BulkActions;
+use Packetery\Module\Order\CollectionPrint;
+use Packetery\Module\Order\GridExtender;
+use Packetery\Module\Order\LabelPrint;
+use Packetery\Module\Order\LabelPrintModal;
+use Packetery\Module\Order\Metabox;
+use Packetery\Module\Order\MetaboxesWrapper;
+use Packetery\Module\Order\Modal;
+use Packetery\Module\Order\PacketAutoSubmitter;
+use Packetery\Module\Order\PacketCanceller;
+use Packetery\Module\Order\PacketClaimSubmitter;
+use Packetery\Module\Order\PacketSubmitter;
+use Packetery\Module\Order\Repository;
 use Packetery\Module\Product;
 use Packetery\Latte\Engine;
+use Packetery\Module\Product\DataTab;
+use Packetery\Module\ProductCategory\FormFields;
 use Packetery\Nette\Http\Request;
 use Packetery\Nette\Utils\Html;
 use WC_Email;
@@ -277,76 +298,85 @@ class Plugin {
 	private $labelPrintModal;
 
 	/**
+	 * Hook handler.
+	 *
+	 * @var HookHandler
+	 */
+	private $hookHandler;
+
+	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox              $order_metabox             Order metabox.
-	 * @param MessageManager             $message_manager           Message manager.
-	 * @param Options\Page               $options_page              Options page.
-	 * @param Checkout                   $checkout                  Checkout class.
-	 * @param Engine                     $latte_engine              PacketeryLatte engine.
-	 * @param OptionsPage                $carrierOptionsPage        Carrier options page.
-	 * @param Order\BulkActions          $orderBulkActions          Order BulkActions.
-	 * @param Order\LabelPrint           $labelPrint                Label printing.
-	 * @param Order\GridExtender         $gridExtender              Order grid extender.
-	 * @param Product\DataTab            $productTab                Product tab.
-	 * @param Log\Page                   $logPage                   Log page.
-	 * @param ILogger                    $logger                    Log manager.
-	 * @param Api\Registrar              $apiRegistar               API endpoints registrar.
-	 * @param Order\Modal                $orderModal                Order modal.
-	 * @param Options\Exporter           $exporter                  Options exporter.
-	 * @param Order\CollectionPrint      $orderCollectionPrint      Order collection print.
-	 * @param Request                    $request                   HTTP request.
-	 * @param Order\Repository           $orderRepository           Order repository.
-	 * @param Upgrade                    $upgrade                   Plugin upgrade.
-	 * @param QueryProcessor             $queryProcessor            QueryProcessor.
-	 * @param Options\Provider           $optionsProvider           Options provider.
-	 * @param CronService                $cronService               Cron service.
-	 * @param Order\PacketCanceller      $packetCanceller           Packet canceller.
-	 * @param ContextResolver            $contextResolver           Context resolver.
-	 * @param DashboardWidget            $dashboardWidget           Dashboard widget.
-	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
-	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
-	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
-	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
-	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
-	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
-	 * @param Order\ApiExtender          $apiExtender               API extender.
-	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
+	 * @param Metabox              $order_metabox Order metabox.
+	 * @param MessageManager       $message_manager Message manager.
+	 * @param Page                 $options_page Options page.
+	 * @param Checkout             $checkout Checkout class.
+	 * @param Engine               $latte_engine PacketeryLatte engine.
+	 * @param OptionsPage          $carrierOptionsPage Carrier options page.
+	 * @param BulkActions          $orderBulkActions Order BulkActions.
+	 * @param LabelPrint           $labelPrint Label printing.
+	 * @param GridExtender         $gridExtender Order grid extender.
+	 * @param DataTab              $productTab Product tab.
+	 * @param Log\Page             $logPage Log page.
+	 * @param ILogger              $logger Log manager.
+	 * @param Registrar            $apiRegistar API endpoints registrar.
+	 * @param Modal                $orderModal Order modal.
+	 * @param Exporter             $exporter Options exporter.
+	 * @param CollectionPrint      $orderCollectionPrint Order collection print.
+	 * @param Request              $request HTTP request.
+	 * @param Repository           $orderRepository Order repository.
+	 * @param Upgrade              $upgrade Plugin upgrade.
+	 * @param QueryProcessor       $queryProcessor QueryProcessor.
+	 * @param Provider             $optionsProvider Options provider.
+	 * @param CronService          $cronService Cron service.
+	 * @param PacketCanceller      $packetCanceller Packet canceller.
+	 * @param ContextResolver      $contextResolver Context resolver.
+	 * @param DashboardWidget      $dashboardWidget Dashboard widget.
+	 * @param PacketSubmitter      $packetSubmitter Packet submitter.
+	 * @param PacketClaimSubmitter $packetClaimSubmitter Packet claim submitter.
+	 * @param FormFields           $productCategoryFormFields Product category form fields.
+	 * @param PacketAutoSubmitter  $packetAutoSubmitter Packet auto submitter.
+	 * @param FeatureFlagManager   $featureFlagManager Feature Flag Manager.
+	 * @param MetaboxesWrapper     $metaboxesWrapper Metaboxes wrapper.
+	 * @param ApiExtender          $apiExtender API extender.
+	 * @param LabelPrintModal      $labelPrintModal Label print modal.
+	 * @param HookHandler          $hookHandler Hook handler.
 	 */
 	public function __construct(
-		Order\Metabox $order_metabox,
+		Metabox $order_metabox,
 		MessageManager $message_manager,
-		Options\Page $options_page,
+		Page $options_page,
 		Checkout $checkout,
 		Engine $latte_engine,
 		OptionsPage $carrierOptionsPage,
-		Order\BulkActions $orderBulkActions,
-		Order\LabelPrint $labelPrint,
-		Order\GridExtender $gridExtender,
-		Product\DataTab $productTab,
+		BulkActions $orderBulkActions,
+		LabelPrint $labelPrint,
+		GridExtender $gridExtender,
+		DataTab $productTab,
 		Log\Page $logPage,
 		ILogger $logger,
-		Api\Registrar $apiRegistar,
-		Order\Modal $orderModal,
-		Options\Exporter $exporter,
-		Order\CollectionPrint $orderCollectionPrint,
+		Registrar $apiRegistar,
+		Modal $orderModal,
+		Exporter $exporter,
+		CollectionPrint $orderCollectionPrint,
 		Request $request,
-		Order\Repository $orderRepository,
+		Repository $orderRepository,
 		Upgrade $upgrade,
 		QueryProcessor $queryProcessor,
-		Options\Provider $optionsProvider,
+		Provider $optionsProvider,
 		CronService $cronService,
-		Order\PacketCanceller $packetCanceller,
+		PacketCanceller $packetCanceller,
 		ContextResolver $contextResolver,
 		DashboardWidget $dashboardWidget,
-		Order\PacketSubmitter $packetSubmitter,
-		Order\PacketClaimSubmitter $packetClaimSubmitter,
-		ProductCategory\FormFields $productCategoryFormFields,
-		Order\PacketAutoSubmitter $packetAutoSubmitter,
-		Options\FeatureFlagManager $featureFlagManager,
-		Order\MetaboxesWrapper $metaboxesWrapper,
-		Order\ApiExtender $apiExtender,
-		Order\LabelPrintModal $labelPrintModal
+		PacketSubmitter $packetSubmitter,
+		PacketClaimSubmitter $packetClaimSubmitter,
+		FormFields $productCategoryFormFields,
+		PacketAutoSubmitter $packetAutoSubmitter,
+		FeatureFlagManager $featureFlagManager,
+		MetaboxesWrapper $metaboxesWrapper,
+		ApiExtender $apiExtender,
+		LabelPrintModal $labelPrintModal,
+		HookHandler $hookHandler
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -382,6 +412,7 @@ class Plugin {
 		$this->metaboxesWrapper          = $metaboxesWrapper;
 		$this->apiExtender               = $apiExtender;
 		$this->labelPrintModal           = $labelPrintModal;
+		$this->hookHandler               = $hookHandler;
 	}
 
 	/**
@@ -459,6 +490,7 @@ class Plugin {
 		$this->productCategoryFormFields->register();
 		$this->packetAutoSubmitter->register();
 		$this->apiExtender->register();
+		$this->hookHandler->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );

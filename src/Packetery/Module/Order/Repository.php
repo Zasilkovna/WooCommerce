@@ -15,8 +15,9 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Entity\Address;
+use Packetery\Core\Helper;
 use Packetery\Module;
-use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ShippingMethod;
@@ -48,7 +49,7 @@ class Repository {
 	/**
 	 * Helper.
 	 *
-	 * @var Core\Helper
+	 * @var Helper
 	 */
 	private $helper;
 
@@ -62,25 +63,25 @@ class Repository {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Carrier\EntityRepository
+	 * @var EntityRepository
 	 */
 	private $carrierRepository;
 
 	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
-	 * @param Builder                   $orderFactory       Order factory.
-	 * @param Core\Helper               $helper             Helper.
+	 * @param WpdbAdapter               $wpdbAdapter WpdbAdapter.
+	 * @param Builder                   $orderFactory Order factory.
+	 * @param Helper                    $helper Helper.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param Carrier\EntityRepository  $carrierRepository  Carrier repository.
+	 * @param EntityRepository          $carrierRepository Carrier repository.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
 		Builder $orderFactory,
-		Core\Helper $helper,
+		Helper $helper,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		Carrier\EntityRepository $carrierRepository
+		EntityRepository $carrierRepository
 	) {
 		$this->wpdbAdapter        = $wpdbAdapter;
 		$this->builder            = $orderFactory;
@@ -693,7 +694,7 @@ class Repository {
 	 *
 	 * @return void
 	 */
-	private function delete( int $orderId ): void {
+	public function delete( int $orderId ): void {
 		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_order, [ 'id' => $orderId ], '%d' );
 	}
 
