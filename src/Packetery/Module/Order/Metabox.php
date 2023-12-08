@@ -22,6 +22,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
+use Packetery\Module\ShippingMethod;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Forms;
@@ -211,19 +212,19 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		$orderId = $this->detailCommonLogic->getOrderId();
-		if ( null === $orderId ) {
+		$wcOrder = $this->detailCommonLogic->getWcOrder();
+		if ( null === $wcOrder ) {
 			return;
 		}
 
-		try {
-			$order = $this->orderRepository->getById( $orderId );
-			if ( null === $order ) {
-				return;
-			}
-			// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-		} catch ( InvalidCarrierException $exception ) {
-			// Let's display message in the box.
+		// TODO: extract to method after PES-1812 merge.
+		$shipping = $wcOrder->get_items( 'shipping' );
+		if ( [] === $shipping ) {
+			return;
+		}
+		$shippingMethod = reset( $shipping )->get_method_id();
+		if ( ShippingMethod::PACKETERY_METHOD_ID !== $shippingMethod ) {
+			return;
 		}
 
 		add_meta_box(
@@ -243,12 +244,7 @@ class Metabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		$orderId = $this->detailCommonLogic->getOrderId();
-		if ( null === $orderId ) {
-			return;
-		}
-
-		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+		$wcOrder = $this->detailCommonLogic->getWcOrder();
 		if ( null === $wcOrder ) {
 			return;
 		}
@@ -265,10 +261,14 @@ class Metabox {
 
 			return;
 		}
+
 		if ( null === $order ) {
+			$this->latte_engine->render(
+				PACKETERY_PLUGIN_DIR . '/template/order/metabox-carrier-selection.latte'
+			);
+
 			return;
 		}
-		$packetId = $order->getPacketId();
 
 		$showLogsLink = null;
 		if ( $this->logPage->hasAnyRows( (int) $order->getNumber() ) ) {
@@ -293,6 +293,7 @@ class Metabox {
 			$packetClaimTrackingUrl = $this->helper->get_tracking_url( $order->getPacketClaimId() );
 		}
 
+		$packetId = $order->getPacketId();
 		if ( $packetId ) {
 			$packetCancelLink = $this->getOrderActionLink(
 				$order,

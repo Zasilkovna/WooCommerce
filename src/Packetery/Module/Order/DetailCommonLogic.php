@@ -13,6 +13,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Module;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Nette;
+use WC_Order;
 
 /**
  * Class DetailCommonLogic.
@@ -88,6 +89,20 @@ class DetailCommonLogic {
 		}
 
 		return $this->order;
+	}
+
+	/**
+	 * Gets WC_Order from context.
+	 *
+	 * @return WC_Order|null
+	 */
+	public function getWcOrder(): ?WC_Order {
+		$orderId = $this->getOrderId();
+		if ( null === $orderId ) {
+			return null;
+		}
+
+		return $this->orderRepository->getWcOrderById( $orderId );
 	}
 
 	/**
