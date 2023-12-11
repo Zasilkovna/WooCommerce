@@ -22,7 +22,6 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
-use Packetery\Module\ShippingMethod;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Forms;
