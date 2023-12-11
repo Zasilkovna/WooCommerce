@@ -49,7 +49,7 @@ class Repository {
 	 * Gets customs declaration ID by order ID.
 	 *
 	 * @param string $orderNumber Order ID.
-	 * @return int|null
+	 * @return string|null
 	 */
 	private function getIdByOrderNumber( string $orderNumber ): ?string {
 		return $this->wpdbAdapter->get_var(
