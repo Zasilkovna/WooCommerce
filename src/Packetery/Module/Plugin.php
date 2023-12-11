@@ -281,40 +281,40 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox              $order_metabox Order metabox.
-	 * @param MessageManager             $message_manager Message manager.
-	 * @param Options\Page               $options_page Options page.
-	 * @param Checkout                   $checkout Checkout class.
-	 * @param Engine                     $latte_engine PacketeryLatte engine.
-	 * @param OptionsPage                $carrierOptionsPage Carrier options page.
-	 * @param Order\BulkActions          $orderBulkActions Order BulkActions.
-	 * @param Order\LabelPrint           $labelPrint Label printing.
-	 * @param Order\GridExtender         $gridExtender Order grid extender.
-	 * @param Product\DataTab            $productTab Product tab.
-	 * @param Log\Page                   $logPage Log page.
-	 * @param ILogger                    $logger Log manager.
-	 * @param Api\Registrar              $apiRegistar API endpoints registrar.
-	 * @param Order\Modal                $orderModal Order modal.
-	 * @param Options\Exporter           $exporter Options exporter.
-	 * @param Order\CollectionPrint      $orderCollectionPrint Order collection print.
-	 * @param Request                    $request HTTP request.
-	 * @param Order\Repository           $orderRepository Order repository.
-	 * @param Upgrade                    $upgrade Plugin upgrade.
-	 * @param QueryProcessor             $queryProcessor QueryProcessor.
-	 * @param Options\Provider           $optionsProvider Options provider.
-	 * @param CronService                $cronService Cron service.
-	 * @param Order\PacketCanceller      $packetCanceller Packet canceller.
-	 * @param ContextResolver            $contextResolver Context resolver.
-	 * @param DashboardWidget            $dashboardWidget Dashboard widget.
-	 * @param Order\PacketSubmitter      $packetSubmitter Packet submitter.
-	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter Packet claim submitter.
+	 * @param Order\Metabox              $order_metabox             Order metabox.
+	 * @param MessageManager             $message_manager           Message manager.
+	 * @param Options\Page               $options_page              Options page.
+	 * @param Checkout                   $checkout                  Checkout class.
+	 * @param Engine                     $latte_engine              PacketeryLatte engine.
+	 * @param OptionsPage                $carrierOptionsPage        Carrier options page.
+	 * @param Order\BulkActions          $orderBulkActions          Order BulkActions.
+	 * @param Order\LabelPrint           $labelPrint                Label printing.
+	 * @param Order\GridExtender         $gridExtender              Order grid extender.
+	 * @param Product\DataTab            $productTab                Product tab.
+	 * @param Log\Page                   $logPage                   Log page.
+	 * @param ILogger                    $logger                    Log manager.
+	 * @param Api\Registrar              $apiRegistar               API endpoints registrar.
+	 * @param Order\Modal                $orderModal                Order modal.
+	 * @param Options\Exporter           $exporter                  Options exporter.
+	 * @param Order\CollectionPrint      $orderCollectionPrint      Order collection print.
+	 * @param Request                    $request                   HTTP request.
+	 * @param Order\Repository           $orderRepository           Order repository.
+	 * @param Upgrade                    $upgrade                   Plugin upgrade.
+	 * @param QueryProcessor             $queryProcessor            QueryProcessor.
+	 * @param Options\Provider           $optionsProvider           Options provider.
+	 * @param CronService                $cronService               Cron service.
+	 * @param Order\PacketCanceller      $packetCanceller           Packet canceller.
+	 * @param ContextResolver            $contextResolver           Context resolver.
+	 * @param DashboardWidget            $dashboardWidget           Dashboard widget.
+	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
+	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
-	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter Packet auto submitter.
-	 * @param Options\FeatureFlagManager $featureFlagManager Feature Flag Manager.
-	 * @param Order\MetaboxesWrapper     $metaboxesWrapper Metaboxes wrapper.
-	 * @param Order\ApiExtender          $apiExtender API extender.
-	 * @param Order\LabelPrintModal      $labelPrintModal Label print modal.
-	 * @param HookHandler                $hookHandler Hook handler.
+	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
+	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
+	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
+	 * @param Order\ApiExtender          $apiExtender               API extender.
+	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
+	 * @param HookHandler                $hookHandler               Hook handler.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,

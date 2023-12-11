@@ -41,9 +41,9 @@ class MetaboxesWrapper {
 	/**
 	 * Constructor.
 	 *
-	 * @param Metabox                   $generalMetabox General metabox.
+	 * @param Metabox                   $generalMetabox           General metabox.
 	 * @param CustomsDeclarationMetabox $customDeclarationMetabox Customs declaration metabox.
-	 * @param Repository                $orderRepository Order repository.
+	 * @param Repository                $orderRepository          Order repository.
 	 */
 	public function __construct(
 		Metabox $generalMetabox,

@@ -69,11 +69,11 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter               $wpdbAdapter WpdbAdapter.
-	 * @param Builder                   $orderFactory Order factory.
-	 * @param Core\Helper               $helper Helper.
+	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
+	 * @param Builder                   $orderFactory       Order factory.
+	 * @param Core\Helper               $helper             Helper.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param Carrier\EntityRepository  $carrierRepository Carrier repository.
+	 * @param Carrier\EntityRepository  $carrierRepository  Carrier repository.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
