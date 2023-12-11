@@ -256,8 +256,6 @@ class Metabox {
 		}
 
 		if ( null === $order ) {
-			// TODO: render template for carrier selection.
-
 			return;
 		}
 
