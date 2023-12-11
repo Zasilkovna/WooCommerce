@@ -185,29 +185,6 @@ class Metabox {
 	 *  Registers related hooks.
 	 */
 	public function register(): void {
-		add_action(
-			'admin_init',
-			function () {
-				if ( ! $this->detailCommonLogic->isPacketeryOrder() ) {
-					return;
-				}
-
-				$this->form = $this->orderForm->create();
-				$this->form->addHidden( 'packetery_order_metabox_nonce' );
-				$this->form->setDefaults( [ 'packetery_order_metabox_nonce' => wp_create_nonce() ] );
-
-				foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
-					$this->form->addHidden( $pickupPointAttr['name'] );
-				}
-
-				foreach ( Attribute::$homeDeliveryAttrs as $homeDeliveryAttr ) {
-					$this->form->addHidden( $homeDeliveryAttr['name'] );
-				}
-
-				$this->form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
-				$this->form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
-			}
-		);
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 
@@ -218,6 +195,8 @@ class Metabox {
 		if ( ! $this->detailCommonLogic->isPacketeryOrder() ) {
 			return;
 		}
+
+		$this->initializeForm();
 
 		add_meta_box(
 			'packetery_metabox',
@@ -444,6 +423,8 @@ class Metabox {
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function saveFields( Entity\Order $order ): void {
+		$this->initializeForm();
+
 		$orderId = (int) $order->getNumber();
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
@@ -597,6 +578,28 @@ class Metabox {
 			array_merge( $baseParams, $extraParams ),
 			admin_url( 'admin.php' )
 		);
+	}
+
+	/**
+	 * Initializes form to render or process.
+	 *
+	 * @return void
+	 */
+	private function initializeForm(): void {
+		$this->form = $this->orderForm->create();
+		$this->form->addHidden( 'packetery_order_metabox_nonce' );
+		$this->form->setDefaults( [ 'packetery_order_metabox_nonce' => wp_create_nonce() ] );
+
+		foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
+			$this->form->addHidden( $pickupPointAttr['name'] );
+		}
+
+		foreach ( Attribute::$homeDeliveryAttrs as $homeDeliveryAttr ) {
+			$this->form->addHidden( $homeDeliveryAttr['name'] );
+		}
+
+		$this->form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
+		$this->form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 	}
 
 }
