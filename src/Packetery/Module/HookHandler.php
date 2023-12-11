@@ -60,7 +60,7 @@ class HookHandler {
 	 * @return void
 	 */
 	public function updateOrder( $wcOrderId ): void {
-		$wcOrder = $this->orderRepository->getWcOrderById( $wcOrderId );
+		$wcOrder = $this->orderRepository->getWcOrderById( (int) $wcOrderId );
 
 		if ( null === $wcOrder ) {
 			return;
