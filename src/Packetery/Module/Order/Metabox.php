@@ -189,6 +189,10 @@ class Metabox {
 		add_action(
 			'admin_init',
 			function () {
+				if ( ! $this->detailCommonLogic->isPacketeryOrder() ) {
+					return;
+				}
+
 				$this->form = $this->orderForm->create();
 				$this->form->addHidden( 'packetery_order_metabox_nonce' );
 				$this->form->setDefaults( [ 'packetery_order_metabox_nonce' => wp_create_nonce() ] );
@@ -212,18 +216,7 @@ class Metabox {
 	 *  Add metaboxes
 	 */
 	public function add_meta_boxes(): void {
-		$wcOrder = $this->detailCommonLogic->getWcOrder();
-		if ( null === $wcOrder ) {
-			return;
-		}
-
-		// TODO: extract to method after PES-1812 merge.
-		$shipping = $wcOrder->get_items( 'shipping' );
-		if ( [] === $shipping ) {
-			return;
-		}
-		$shippingMethod = reset( $shipping )->get_method_id();
-		if ( ShippingMethod::PACKETERY_METHOD_ID !== $shippingMethod ) {
+		if ( ! $this->detailCommonLogic->isPacketeryOrder() ) {
 			return;
 		}
 
@@ -263,9 +256,7 @@ class Metabox {
 		}
 
 		if ( null === $order ) {
-			$this->latte_engine->render(
-				PACKETERY_PLUGIN_DIR . '/template/order/metabox-carrier-selection.latte'
-			);
+			// TODO: render template for carrier selection.
 
 			return;
 		}

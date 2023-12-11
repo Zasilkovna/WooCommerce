@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity\Order;
 use Packetery\Module;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\ShippingMethod;
 use Packetery\Nette;
 use WC_Order;
 
@@ -124,4 +125,23 @@ class DetailCommonLogic {
 
 		return $post->ID;
 	}
+
+	/**
+	 * Checks if Packeta order detail is displayed.
+	 *
+	 * @return bool
+	 */
+	public function isPacketeryOrder(): bool {
+		$wcOrder = $this->getWcOrder();
+		if ( null === $wcOrder ) {
+			return false;
+		}
+
+		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
 }
