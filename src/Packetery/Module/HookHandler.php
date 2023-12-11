@@ -66,7 +66,7 @@ class HookHandler {
 			return;
 		}
 
-		$this->customsDeclarationRepository->deleteWithItems( (string) $wcOrderId );
+		$this->customsDeclarationRepository->delete( (string) $wcOrderId );
 
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			$this->orderRepository->delete( $wcOrderId );

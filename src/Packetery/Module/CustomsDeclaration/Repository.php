@@ -37,7 +37,7 @@ class Repository {
 	/**
 	 * Constructor.
 	 *
-	 * @param WpdbAdapter                      $wpdbAdapter Wpdb adapter.
+	 * @param WpdbAdapter                      $wpdbAdapter   Wpdb adapter.
 	 * @param EntityFactory\CustomsDeclaration $entityFactory Entity factory.
 	 */
 	public function __construct( WpdbAdapter $wpdbAdapter, EntityFactory\CustomsDeclaration $entityFactory ) {
@@ -288,7 +288,7 @@ class Repository {
 	 * @param string $orderId Order ID.
 	 * @return void
 	 */
-	public function deleteWithItems( string $orderId ): void {
+	public function delete( string $orderId ): void {
 		$customsDeclarationId = $this->getIdByOrderNumber( $orderId );
 
 		if ( null === $customsDeclarationId ) {
@@ -296,16 +296,6 @@ class Repository {
 		}
 
 		$this->deleteItems( $customsDeclarationId );
-		$this->delete( $customsDeclarationId );
-	}
-
-	/**
-	 * Deletes data from customs table.
-	 *
-	 * @param string $customsDeclarationId Customs Declaration ID.
-	 * @return void
-	 */
-	public function delete( string $customsDeclarationId ): void {
 		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_customs_declaration, [ 'id' => $customsDeclarationId ], '%d' );
 	}
 
