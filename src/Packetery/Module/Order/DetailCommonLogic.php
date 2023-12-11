@@ -93,20 +93,6 @@ class DetailCommonLogic {
 	}
 
 	/**
-	 * Gets WC_Order from context.
-	 *
-	 * @return WC_Order|null
-	 */
-	public function getWcOrder(): ?WC_Order {
-		$orderId = $this->getOrderId();
-		if ( null === $orderId ) {
-			return null;
-		}
-
-		return $this->orderRepository->getWcOrderById( $orderId );
-	}
-
-	/**
 	 * Gets order ID.
 	 *
 	 * @return int|null
@@ -132,7 +118,12 @@ class DetailCommonLogic {
 	 * @return bool
 	 */
 	public function isPacketeryOrder(): bool {
-		$wcOrder = $this->getWcOrder();
+		$orderId = $this->getOrderId();
+		if ( null === $orderId ) {
+			return false;
+		}
+
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 		if ( null === $wcOrder ) {
 			return false;
 		}

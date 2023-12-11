@@ -215,13 +215,13 @@ class Metabox {
 	 *  Renders metabox
 	 */
 	public function render_metabox(): void {
-		$wcOrder = $this->detailCommonLogic->getWcOrder();
-		if ( null === $wcOrder ) {
+		$orderId = $this->detailCommonLogic->getOrderId();
+		if ( null === $orderId ) {
 			return;
 		}
 
 		try {
-			$order = $this->orderRepository->getByWcOrder( $wcOrder );
+			$order = $this->orderRepository->getById( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			$this->latte_engine->render(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
