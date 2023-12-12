@@ -7,5 +7,6 @@ Nette.validators['PacketeryModuleFormValidators_dateIsLater'] = (elem, args, val
 };
 
 Nette.validators['PacketeryModuleFormValidators_dateIsInMysqlFormat'] = (elem, args, val) => {
-    return !isNaN( new Date( val ).getTime() );
+    var testDate = new Date( val );
+    return ( !isNaN( testDate.getTime() ) && testDate.toISOString().startsWith( val ) );
 };
