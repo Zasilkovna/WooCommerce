@@ -46,6 +46,21 @@ class Repository {
 	}
 
 	/**
+	 * Gets customs declaration ID by order ID.
+	 *
+	 * @param string $orderNumber Order ID.
+	 * @return string|null
+	 */
+	private function getIdByOrderNumber( string $orderNumber ): ?string {
+		return $this->wpdbAdapter->get_var(
+			$this->wpdbAdapter->prepare(
+				'SELECT `id` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+				$orderNumber
+			)
+		);
+	}
+
+	/**
 	 * Gets customs declaration by order.
 	 *
 	 * @param string $orderNumber Order.
@@ -247,6 +262,41 @@ class Repository {
 	 */
 	public function deleteItem( int $itemId ): void {
 		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_customs_declaration_item, [ 'id' => $itemId ], '%d' );
+	}
+
+	/**
+	 * Deletes all items.
+	 *
+	 * @param string $customsDeclarationId Customs Declaration ID.
+	 * @return void
+	 */
+	private function deleteItems( string $customsDeclarationId ): void {
+		$items = $this->getItemsByCustomsDeclarationId( $customsDeclarationId );
+
+		if ( empty( $items ) ) {
+			return;
+		}
+
+		foreach ( $items as $item ) {
+			$this->deleteItem( (int) $item->getId() );
+		}
+	}
+
+	/**
+	 * Completely deletes Customs Declaration with all its items.
+	 *
+	 * @param string $orderId Order ID.
+	 * @return void
+	 */
+	public function delete( string $orderId ): void {
+		$customsDeclarationId = $this->getIdByOrderNumber( $orderId );
+
+		if ( null === $customsDeclarationId ) {
+			return;
+		}
+
+		$this->deleteItems( $customsDeclarationId );
+		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_customs_declaration, [ 'id' => $customsDeclarationId ], '%d' );
 	}
 
 	/**

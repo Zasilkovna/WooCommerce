@@ -693,7 +693,7 @@ class Repository {
 	 *
 	 * @return void
 	 */
-	private function delete( int $orderId ): void {
+	public function delete( int $orderId ): void {
 		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_order, [ 'id' => $orderId ], '%d' );
 	}
 

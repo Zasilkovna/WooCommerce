@@ -12,13 +12,8 @@ namespace Packetery\Module;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
-use Packetery\Module\Api;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\Log;
-use Packetery\Module\Options;
-use Packetery\Module\Order;
-use Packetery\Module\Product;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Http\Request;
 use Packetery\Nette\Utils\Html;
@@ -277,6 +272,13 @@ class Plugin {
 	private $labelPrintModal;
 
 	/**
+	 * Hook handler.
+	 *
+	 * @var HookHandler
+	 */
+	private $hookHandler;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -312,6 +314,7 @@ class Plugin {
 	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
 	 * @param Order\ApiExtender          $apiExtender               API extender.
 	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
+	 * @param HookHandler                $hookHandler               Hook handler.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -346,7 +349,8 @@ class Plugin {
 		Options\FeatureFlagManager $featureFlagManager,
 		Order\MetaboxesWrapper $metaboxesWrapper,
 		Order\ApiExtender $apiExtender,
-		Order\LabelPrintModal $labelPrintModal
+		Order\LabelPrintModal $labelPrintModal,
+		HookHandler $hookHandler
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -382,6 +386,7 @@ class Plugin {
 		$this->metaboxesWrapper          = $metaboxesWrapper;
 		$this->apiExtender               = $apiExtender;
 		$this->labelPrintModal           = $labelPrintModal;
+		$this->hookHandler               = $hookHandler;
 	}
 
 	/**
@@ -459,6 +464,7 @@ class Plugin {
 		$this->productCategoryFormFields->register();
 		$this->packetAutoSubmitter->register();
 		$this->apiExtender->register();
+		$this->hookHandler->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
