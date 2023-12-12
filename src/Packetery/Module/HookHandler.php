@@ -66,8 +66,6 @@ class HookHandler {
 			return;
 		}
 
-		$hasBeenRun = true;
-
 		$wcOrder = $this->orderRepository->getWcOrderById( (int) $wcOrderId );
 		if ( null === $wcOrder ) {
 			return;
@@ -77,5 +75,7 @@ class HookHandler {
 			$this->customsDeclarationRepository->delete( (string) $wcOrderId );
 			$this->orderRepository->delete( (int) $wcOrderId );
 		}
+
+		$hasBeenRun = true;
 	}
 }
