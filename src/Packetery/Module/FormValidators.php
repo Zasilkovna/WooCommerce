@@ -57,7 +57,11 @@ class FormValidators {
 			$input->getValue()
 		);
 
-		return ( false !== $date );
+		if ( false === $date ) {
+			return false;
+		}
+
+		return ( $input->getValue() === $date->format( Core\Helper::MYSQL_DATE_FORMAT ) );
 	}
 
 }
