@@ -13,6 +13,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
 use Packetery\Nette\Forms;
+use Packetery\Module\Carrier\EntityRepository;
 
 /**
  * Class Form.
@@ -39,12 +40,21 @@ class Form {
 	private $formFactory;
 
 	/**
+	 * Class CarrierRepository
+	 *
+	 * @var EntityRepository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * FormFactory constructor
 	 *
-	 * @param FormFactory $formFactory Form factory.
+	 * @param FormFactory      $formFactory Form factory.
+	 * @param EntityRepository $carrierRepository Carrier Repository.
 	 */
-	public function __construct( FormFactory $formFactory ) {
-		$this->formFactory = $formFactory;
+	public function __construct( FormFactory $formFactory, EntityRepository $carrierRepository ) {
+		$this->formFactory       = $formFactory;
+		$this->carrierRepository = $carrierRepository;
 	}
 
 	/**
@@ -133,5 +143,32 @@ class Form {
 				self::FIELD_DELIVER_ON      => $deliverOn,
 			]
 		);
+	}
+
+	/**
+	 * Creating a form
+	 *
+	 * @param string $orderShippingCountry Country of destination.
+	 * @return Forms\Form
+	 */
+	public function changeCarrier( string $orderShippingCountry ): Forms\Form {
+		$form = $this->formFactory->create();
+		$form->addHidden( 'packetery_carrier_metabox_nonce' );
+		$form->setDefaults( [ 'packetery_carrier_metabox_nonce' => wp_create_nonce() ] );
+
+		$carriers          = $this->carrierRepository->getByCountry( $orderShippingCountry );
+		$processedCarriers = [];
+		foreach ( $carriers as $carrier ) {
+			$processedCarriers[ $carrier->getId() ] = $carrier->getName();
+		}
+
+		$form->addSelect( 'carrierId', __( 'Carrier:', 'packeta' ), $processedCarriers )
+			->setRequired()
+			->setPrompt( 'Pick a carrier' );
+
+		$form->addSubmit( 'submit', __( 'Set carrier', 'packeta' ) );
+		$form->addSubmit( 'cancel', __( 'Cancel', 'packeta' ) );
+
+		return $form;
 	}
 }
