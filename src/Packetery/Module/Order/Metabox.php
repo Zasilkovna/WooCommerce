@@ -409,7 +409,6 @@ class Metabox {
 					'showLogs'                  => __( 'Show logs', 'packeta' ),
 					'weightIsManual'            => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
 					'submitPacket'              => __( 'Submit to packeta', 'packeta' ),
-					'changeCarrier'             => __( 'Change carrier', 'packeta' ),
 					'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 					'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
 					'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
