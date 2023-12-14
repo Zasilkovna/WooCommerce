@@ -166,7 +166,7 @@ class Form {
 			->setRequired()
 			->setPrompt( 'Pick a carrier' );
 
-		$form->addSubmit( 'submit', __( 'Set carrier', 'packeta' ) );
+		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addSubmit( 'cancel', __( 'Cancel', 'packeta' ) );
 
 		return $form;

@@ -12,7 +12,6 @@ namespace Packetery\Module\Order;
 use Packetery\Module;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Forms;
-use function Packetery\bdump;
 
 /**
  * Class CarrierModal.
@@ -124,7 +123,7 @@ class CarrierModal {
 				'id'           => self::MODAL_ID,
 				'form'         => $form,
 				'translations' => [
-					'header'          => __( 'Change carrier', 'packeta' ),
+					'header'          => __( 'Set Up a Carrier', 'packeta' ),
 					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
 				],
 			]

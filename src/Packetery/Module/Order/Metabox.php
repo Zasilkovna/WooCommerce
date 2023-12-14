@@ -237,7 +237,7 @@ class Metabox {
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-carrier.latte',
 			[
 				'translations' => [
-					'changeCarrier' => __( 'Change carrier', 'packeta' ),
+					'setCarrier' => __( 'Set carrier', 'packeta' ),
 				],
 			]
 		);
