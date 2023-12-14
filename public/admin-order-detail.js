@@ -30,6 +30,52 @@
 		$( '[data-packetery-label-print-modal] .modal-close:visible:first' ).click();
 	} );
 
-	new PacketeryMultiplier('[data-packetery-customs-declaration-item]');
+	$( 'body' ).on( 'wc_backbone_modal_loaded', function( e ) {
+		var $target = $( e.target );
+		var packeteryModal = $target.find( '[data-packetery-carrier-modal]' );
+		if ( packeteryModal.length > 0 ) {
+			Nette.init();
+		}
+	} ).on( 'submit', '#order-carrier-modal-form', function( e ) {
+		var $target = $( e.target );
+		if ( $target.hasClass( 'disabled' ) ) {
+			return false;
+		}
+
+		var nonce = $target.data( 'nonce' );
+		var $packeteryModal = $target.closest( '[data-packetery-carrier-modal]' );
+		var carrierId = $packeteryModal.find( '[name="carrierId"]' ).val();
+
+		$packeteryModal.find( '.spinner' ).addClass( 'is-active' );
+		$target.addClass( 'disabled' );
+		$.ajax( {
+			type: 'POST',
+			dataType: 'json',
+			url: orderSaveUrl,
+			beforeSend: function ( xhr ) {
+				xhr.setRequestHeader( 'X-WP-Nonce', nonce );
+			},
+			data: {
+				carrierId : carrierId,
+			}
+		} ).fail( function( response ) {
+			var message = (response.responseJSON && response.responseJSON.message) || 'Error';
+			flashMessage( $packeteryModal, 'error', message );
+		} ).done( function( response ) {
+			flashMessage( $packeteryModal, 'success', response.message );
+
+			var orderData = $lastModalButtonClicked.data( 'order-data' );
+			orderData.carrierId = response.data.carrierId;
+			$lastModalButtonClicked.data( 'order-data', orderData );
+
+			replaceFragmentsWith( response.data.fragments );
+			$( '[data-packetery-modal] .modal-close:first' ).trigger( 'click' );
+		} ).always( function() {
+			$target.removeClass( 'disabled' );
+			$packeteryModal.find( '.spinner' ).removeClass( 'is-active' );
+		} );
+
+		return false;
+	} );
 
 } )( jQuery );
