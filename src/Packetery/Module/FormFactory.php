@@ -67,24 +67,4 @@ class FormFactory {
 		$form->allowCrossOrigin();
 		return $form;
 	}
-
-	/**
-	 * Creating a form
-	 *
-	 * @param array $carrierOptions Carrier options.
-	 * @return Form
-	 */
-	public function createCarrierChange( array $carrierOptions ): Form {
-		$form = $this->create();
-		$form->addHidden( 'packetery_carrier_metabox_nonce' );
-		$form->setDefaults( [ 'packetery_carrier_metabox_nonce' => wp_create_nonce() ] );
-		$form->addSelect( 'carrierId', __( 'Carrier:', 'packeta' ), $carrierOptions )
-			->setRequired()
-			->setPrompt( 'Pick a carrier' );
-
-		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
-		$form->addSubmit( 'cancel', __( 'Cancel', 'packeta' ) );
-
-		return $form;
-	}
 }
