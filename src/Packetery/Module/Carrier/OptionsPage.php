@@ -50,7 +50,7 @@ class OptionsPage {
 	/**
 	 * Form factory.
 	 *
-	 * @var FormFactory Form factory.
+	 * @var CarrierModalFormFactory Form factory.
 	 */
 	private $formFactory;
 
@@ -94,7 +94,7 @@ class OptionsPage {
 	 *
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
 	 * @param EntityRepository          $carrierRepository  Carrier repository.
-	 * @param FormFactory               $formFactory        Form factory.
+	 * @param CarrierModalFormFactory   $formFactory        Form factory.
 	 * @param Request                   $httpRequest        Packetery\Nette Request.
 	 * @param CountryListingPage        $countryListingPage CountryListingPage.
 	 * @param MessageManager            $messageManager     Message manager.

@@ -13,7 +13,6 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
 use Packetery\Nette\Forms;
-use Packetery\Module\Carrier\EntityRepository;
 
 /**
  * Class Form.
@@ -40,21 +39,12 @@ class Form {
 	private $formFactory;
 
 	/**
-	 * Class CarrierRepository
-	 *
-	 * @var EntityRepository
-	 */
-	private $carrierRepository;
-
-	/**
 	 * FormFactory constructor
 	 *
-	 * @param FormFactory      $formFactory Form factory.
-	 * @param EntityRepository $carrierRepository Carrier Repository.
+	 * @param FormFactory $formFactory Form factory.
 	 */
-	public function __construct( FormFactory $formFactory, EntityRepository $carrierRepository ) {
-		$this->formFactory       = $formFactory;
-		$this->carrierRepository = $carrierRepository;
+	public function __construct( FormFactory $formFactory ) {
+		$this->formFactory = $formFactory;
 	}
 
 	/**

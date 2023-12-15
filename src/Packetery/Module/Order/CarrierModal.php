@@ -44,47 +44,30 @@ class CarrierModal {
 	private $detailCommonLogic;
 
 	/**
-	 * Carrier repository.
-	 *
-	 * @var Module\Carrier\EntityRepository
-	 */
-	private $carrierRepository;
-
-	/**
-	 * Form factory.
-	 *
-	 * @var Module\FormFactory
-	 */
-	private $formFactory;
-
-	/**
 	 * Order repository.
 	 *
-	 * @var Repository
+	 * @var CarrierModalFormFactory
 	 */
-	private $orderRepository;
+	private $carrierModalFormFactory;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Engine                          $latteEngine       Latte engine.
-	 * @param DetailCommonLogic               $detailCommonLogic Detail common logic.
-	 * @param Module\Carrier\EntityRepository $carrierRepository Carrier repository.
-	 * @param Module\FormFactory              $formFactory       Form factory.
-	 * @param Repository                      $orderRepository   Order repository.
+	 * @param Engine                  $latteEngine             Latte engine.
+	 * @param DetailCommonLogic       $detailCommonLogic       Detail common logic.
+	 * @param Module\ContextResolver  $contextResolver         Context resolver.
+	 * @param CarrierModalFormFactory $carrierModalFormFactory Carrier Modal form factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
-		Module\Carrier\EntityRepository $carrierRepository,
-		Module\FormFactory $formFactory,
-		Repository $orderRepository
+		Module\ContextResolver $contextResolver,
+		CarrierModalFormFactory $carrierModalFormFactory
 	) {
-		$this->latteEngine       = $latteEngine;
-		$this->detailCommonLogic = $detailCommonLogic;
-		$this->carrierRepository = $carrierRepository;
-		$this->formFactory       = $formFactory;
-		$this->orderRepository   = $orderRepository;
+		$this->latteEngine             = $latteEngine;
+		$this->contextResolver         = $contextResolver;
+		$this->detailCommonLogic       = $detailCommonLogic;
+		$this->carrierModalFormFactory = $carrierModalFormFactory;
 	}
 
 	/**
@@ -97,34 +80,18 @@ class CarrierModal {
 	}
 
 	/**
-	 * Available Carriers based on the country of destination.
-	 *
-	 * @return array|null
-	 */
-	public function availableCarriers(): ?array {
-		$wcOrderId = $this->detailCommonLogic->getOrderid();
-		$wcOrder   = $this->orderRepository->getWcOrderById( $wcOrderId );
-
-		if ( null === $wcOrder ) {
-			return null;
-		}
-
-		$carriers       = $this->carrierRepository->getByCountry( $wcOrder->get_shipping_country() );
-		$carrierOptions = [];
-		foreach ( $carriers as $carrier ) {
-			$carrierOptions[ $carrier->getId() ] = $carrier->getName();
-		}
-
-		return $carrierOptions;
-	}
-
-	/**
 	 * Renders modal.
 	 *
 	 * @return void
 	 */
 	public function renderCarrierModal(): void {
-		$form              = $this->formFactory->createCarrierChange( $this->availableCarriers() );
+		if ( false === $this->contextResolver->isOrderDetailPage()
+			&& false === $this->detailCommonLogic->isPacketeryOrder()
+		) {
+			return;
+		}
+
+		$form              = $this->carrierModalFormFactory->createCarrierChange();
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
 		if ( $form['submit']->isSubmittedBy() ) {
