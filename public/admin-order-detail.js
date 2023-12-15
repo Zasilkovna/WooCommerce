@@ -7,28 +7,30 @@
 			{
 				dateFormat: datePickerSettings.dateFormat,
 				onSelect: function() {
-					Nette.validateControl(this);
+					Nette.validateControl( this );
 				}
 			}
 		);
-		$invoiceIssueDate.closest('form').attr('enctype', 'multipart/form-data');
-	}).on('change', '.packetery-customs-declaration-fields [name="packetery_customs_declaration[ead]"]', function( e ) {
-		var $form = $(e.target).closest('form');
+		$invoiceIssueDate.closest( 'form' ).attr( 'enctype', 'multipart/form-data' );
+	} ).on('change', '.packetery-customs-declaration-fields [name="packetery_customs_declaration[ead]"]', function( e ) {
+		var $form = $( e.target ).closest( 'form' );
 
 		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[invoice_file]"]')[0] );
 		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[ead_file]"]')[0] );
 		Nette.validateControl( $form.find('input[name="packetery_customs_declaration[mrn]"]')[0] );
-	}).on( 'click', '[data-packetery-open-modal]', function( e ) {
+	} ).on( 'click', '[data-packetery-open-modal]', function( e ) {
 		var $target = $( e.target );
 
 		$target.WCBackboneModal( {
 			template: $target.closest( '[data-packetery-open-modal]' ).data( 'packetery-open-modal' )
 		} );
-	});
+	} );
 
 	$( window ).on( 'beforeunload', function() {
 		$( '[data-packetery-label-print-modal] .modal-close:visible:first' ).click();
 	} );
+
+	new PacketeryMultiplier( '[data-packetery-customs-declaration-item]' );
 
 	$( 'body' ).on( 'wc_backbone_modal_loaded', function( e ) {
 		var $target = $( e.target );

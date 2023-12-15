@@ -144,31 +144,4 @@ class Form {
 			]
 		);
 	}
-
-	/**
-	 * Creating a form
-	 *
-	 * @param string $orderShippingCountry Country of destination.
-	 * @return Forms\Form
-	 */
-	public function changeCarrier( string $orderShippingCountry ): Forms\Form {
-		$form = $this->formFactory->create();
-		$form->addHidden( 'packetery_carrier_metabox_nonce' );
-		$form->setDefaults( [ 'packetery_carrier_metabox_nonce' => wp_create_nonce() ] );
-
-		$carriers          = $this->carrierRepository->getByCountry( $orderShippingCountry );
-		$processedCarriers = [];
-		foreach ( $carriers as $carrier ) {
-			$processedCarriers[ $carrier->getId() ] = $carrier->getName();
-		}
-
-		$form->addSelect( 'carrierId', __( 'Carrier:', 'packeta' ), $processedCarriers )
-			->setRequired()
-			->setPrompt( 'Pick a carrier' );
-
-		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
-		$form->addSubmit( 'cancel', __( 'Cancel', 'packeta' ) );
-
-		return $form;
-	}
 }
