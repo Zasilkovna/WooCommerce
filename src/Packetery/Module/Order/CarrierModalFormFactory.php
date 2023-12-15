@@ -60,7 +60,7 @@ class CarrierModalFormFactory {
 	 * @param array $carriers An array of carrier data.
 	 * @return array|null
 	 */
-	public function getAvailableCarrierOptions(array $carriers ): ?array {
+	public function getAvailableCarrierOptions( array $carriers ): ?array {
 		$carrierOptions = [];
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions[ $carrier['id'] ] = $carrier['name'];
