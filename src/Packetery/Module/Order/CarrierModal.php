@@ -136,7 +136,7 @@ class CarrierModal {
 	/**
 	 * Gets Carriers by the country of destination.
 	 *
-	 * @return Carrier[]|null
+	 * @return array|null
 	 */
 	private function getCarriersByCountry(): ?array {
 		$wcOrderId = $this->detailCommonLogic->getOrderid();
@@ -154,8 +154,6 @@ class CarrierModal {
 			return null;
 		}
 
-		$carriers = $this->carrierRepository->getByCountry( $shippingCountry );
-
-		return $carriers ?? null;
+		return $this->carrierRepository->getByCountry( $shippingCountry );
 	}
 }
