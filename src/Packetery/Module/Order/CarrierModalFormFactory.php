@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Entity;
 use Packetery\Nette\Forms\Form;
 use Packetery\Module\FormFactory;
 
@@ -18,6 +19,10 @@ use Packetery\Module\FormFactory;
  * @package Packetery
  */
 class CarrierModalFormFactory {
+
+	public const FIELD_CARRIER_ID = 'carrierId';
+	private const FIELD_NONCE     = 'packetery_carrier_metabox_nonce';
+
 	/**
 	 * Class FormFactory
 	 *
@@ -37,16 +42,26 @@ class CarrierModalFormFactory {
 	/**
 	 * Creating a form
 	 *
-	 * @param array $carriers An array of carrier data.
+	 * @param Entity\Carrier[] $carriers       An array of carrier data.
+	 * @param string|null      $currentCarrier Current carrier.
+	 *
 	 * @return Form
 	 */
-	public function create( array $carriers ): Form {
+	public function create( array $carriers, ?string $currentCarrier ): Form {
 		$form = $this->formFactory->create();
-		$form->addHidden( 'packetery_carrier_metabox_nonce' );
-		$form->setDefaults( [ 'packetery_carrier_metabox_nonce' => wp_create_nonce() ] );
-		$form->addSelect( 'carrierId', __( 'Carrier:', 'packeta' ), $this->getAvailableCarrierOptions( $carriers ) )
+
+		$form->addSelect( self::FIELD_CARRIER_ID, __( 'Carrier:', 'packeta' ), $this->getAvailableCarrierOptions( $carriers ) )
 			->setRequired()
 			->setPrompt( 'Pick a carrier' );
+
+		$form->addHidden( self::FIELD_NONCE );
+
+		$form->setDefaults(
+			[
+				self::FIELD_NONCE      => wp_create_nonce(),
+				self::FIELD_CARRIER_ID => $currentCarrier,
+			]
+		);
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addSubmit( 'cancel', __( 'Cancel', 'packeta' ) );
@@ -57,13 +72,14 @@ class CarrierModalFormFactory {
 	/**
 	 * Available Carriers based on the country of destination.
 	 *
-	 * @param array $carriers An array of carrier data.
+	 * @param Entity\Carrier[] $carriers An array of carrier data.
+	 *
 	 * @return array|null
 	 */
 	public function getAvailableCarrierOptions( array $carriers ): ?array {
 		$carrierOptions = [];
 		foreach ( $carriers as $carrier ) {
-			$carrierOptions[ $carrier['id'] ] = $carrier['name'];
+			$carrierOptions[ $carrier->getId() ] = $carrier->getName();
 		}
 
 		return $carrierOptions;

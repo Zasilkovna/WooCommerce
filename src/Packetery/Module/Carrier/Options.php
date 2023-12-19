@@ -199,4 +199,14 @@ class Options {
 	public function getCodRoundingType(): int {
 		return $this->options['cod_rounding'] ?? Rounder::DONT_ROUND;
 	}
+
+	/**
+	 * Checks if carrier has saved options.
+	 *
+	 * @return bool
+	 */
+	public function hasOptions(): bool {
+		return ! empty( $this->options );
+	}
+
 }

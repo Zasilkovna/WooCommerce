@@ -9,10 +9,12 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity\Carrier;
-use Packetery\Module;
+use Packetery\Core\Entity;
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier;
+use Packetery\Module\Helper;
 use Packetery\Nette\Forms;
+use RuntimeException;
 
 /**
  * Class CarrierModal.
@@ -47,7 +49,7 @@ class CarrierModal {
 	/**
 	 * Carrier repository.
 	 *
-	 * @var Module\Carrier\Repository
+	 * @var Carrier\EntityRepository
 	 */
 	private $carrierRepository;
 
@@ -61,18 +63,18 @@ class CarrierModal {
 	/**
 	 * Constructor.
 	 *
-	 * @param Engine                    $latteEngine             Latte engine.
-	 * @param DetailCommonLogic         $detailCommonLogic       Detail common logic.
-	 * @param CarrierModalFormFactory   $carrierModalFormFactory Carrier Modal form factory.
-	 * @param Repository                $orderRepository         Order repository.
-	 * @param Module\Carrier\Repository $carrierRepository       Carrier repository.
+	 * @param Engine                   $latteEngine             Latte engine.
+	 * @param DetailCommonLogic        $detailCommonLogic       Detail common logic.
+	 * @param CarrierModalFormFactory  $carrierModalFormFactory Carrier Modal form factory.
+	 * @param Repository               $orderRepository         Order repository.
+	 * @param Carrier\EntityRepository $carrierRepository       Carrier repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
-		Module\Carrier\Repository $carrierRepository
+		Carrier\EntityRepository $carrierRepository
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->detailCommonLogic       = $detailCommonLogic;
@@ -96,12 +98,14 @@ class CarrierModal {
 	 * @return void
 	 */
 	public function renderCarrierModal(): void {
-		if ( false === $this->detailCommonLogic->isPacketeryOrder()
+		if (
+			false === $this->detailCommonLogic->isPacketeryOrder() ||
+			false === $this->canBeDisplayed()
 		) {
 			return;
 		}
 
-		$form              = $this->carrierModalFormFactory->create( $this->getCarriersByCountry() );
+		$form              = $this->carrierModalFormFactory->create( $this->getCarriersByCountry(), $this->getCurrentCarrier() );
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
 		if ( $form['submit']->isSubmittedBy() ) {
@@ -125,35 +129,149 @@ class CarrierModal {
 	 * On form success.
 	 *
 	 * @param Forms\Form $form Form.
+	 *
 	 * @return void
+	 *
+	 * @throws RuntimeException In case carrier id could not be obtained.
 	 */
 	public function onFormSuccess( Forms\Form $form ): void {
-		$values = $form->getValues();
+		$values       = $form->getValues();
+		$orderId      = $this->detailCommonLogic->getOrderId();
+		$newCarrierId = (string) $values[ CarrierModalFormFactory::FIELD_CARRIER_ID ];
+		if ( null === $orderId ) {
+			throw new RuntimeException( 'Packeta: Failed to process carrier change, new carrier id ' . $newCarrierId );
+		}
 
-		// TODO: Finish the logic to retain the data.
+		$order = $this->detailCommonLogic->getOrder();
+		if ( null === $order ) {
+			$this->createNewCarrierOrder( $orderId, $newCarrierId );
+		}
+
+		if ( $order->getCarrier()->getId() !== $newCarrierId ) {
+			$this->orderRepository->delete( (int) $order->getNumber() );
+			$this->createNewCarrierOrder( $orderId, $newCarrierId );
+		}
+	}
+
+	/**
+	 * Saves order stub with new Carrier, if instantiable.
+	 *
+	 * @param int    $orderId Order id.
+	 * @param string $newCarrierId Carrier id.
+	 *
+	 * @return void
+	 *
+	 * @throws RuntimeException In case carrier is not instantiable.
+	 */
+	private function createNewCarrierOrder( int $orderId, string $newCarrierId ): void {
+		$newCarrier = $this->carrierRepository->getAnyById( $newCarrierId );
+		if ( null === $newCarrier ) {
+			throw new RuntimeException( 'Packeta: Failed to get instance of carrier with id ' . $newCarrierId );
+		}
+		$this->orderRepository->saveData(
+			[
+				'id'         => $orderId,
+				'carrier_id' => $newCarrierId,
+			]
+		);
+		// TODO: check; Without it, widget cannot be opened.
+		if ( wp_safe_redirect(
+			add_query_arg(
+				[
+					'page'   => 'wc-orders',
+					'action' => 'edit',
+					'id'     => $orderId,
+				],
+				get_admin_url( null, 'admin.php' )
+			)
+		) ) {
+			exit;
+		}
 	}
 
 	/**
 	 * Gets Carriers by the country of destination.
 	 *
-	 * @return array|null
+	 * @return Entity\Carrier[]
 	 */
-	private function getCarriersByCountry(): ?array {
+	private function getCarriersByCountry(): array {
+		static $carriers;
+
+		if ( isset( $carriers ) ) {
+			return $carriers;
+		}
+
 		$wcOrderId = $this->detailCommonLogic->getOrderid();
 		if ( null === $wcOrderId ) {
-			return null;
+			return [];
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( $wcOrderId );
 		if ( null === $wcOrder ) {
-			return null;
+			return [];
 		}
 
-		$shippingCountry = $wcOrder->get_shipping_country();
-		if ( null === $shippingCountry ) {
-			return null;
+		$shippingCountry = Helper::getWcOrderCountry( $wcOrder );
+		if ( empty( $shippingCountry ) ) {
+			return [];
 		}
 
-		return $this->carrierRepository->getByCountry( $shippingCountry );
+		$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $shippingCountry );
+
+		foreach ( $carriers as $key => $carrier ) {
+			$options = Carrier\Options::createByCarrierId( $carrier->getId() );
+			if ( ! $options->hasOptions() ) {
+				unset( $carriers[ $key ] );
+			}
+		}
+
+		return $carriers;
 	}
+
+	/**
+	 * There must be two carriers at least and no packet id.
+	 *
+	 * @return bool
+	 */
+	public function canBeDisplayed(): bool {
+		$carriers = $this->getCarriersByCountry();
+		if ( count( $carriers ) < 2 ) {
+			return false;
+		}
+
+		$order = $this->detailCommonLogic->getOrder();
+
+		return ( null === $order || null === $order->getPacketId() );
+	}
+
+	/**
+	 * Renders metabox with carrier selection button.
+	 *
+	 * @return void
+	 */
+	public function renderInMetabox(): void {
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/order/metabox-carrier.latte',
+			[
+				'translations' => [
+					'setCarrier' => __( 'Set carrier', 'packeta' ),
+				],
+			]
+		);
+	}
+
+	/**
+	 * Get current order carrier.
+	 *
+	 * @return string|null
+	 */
+	private function getCurrentCarrier(): ?string {
+		$order = $this->detailCommonLogic->getOrder();
+		if ( null === $order ) {
+			return null;
+		}
+
+		return $order->getCarrier()->getId();
+	}
+
 }

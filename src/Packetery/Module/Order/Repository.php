@@ -464,6 +464,17 @@ class Repository {
 	}
 
 	/**
+	 * Saves order data.
+	 *
+	 * @param array $orderData Order data.
+	 *
+	 * @return void
+	 */
+	public function saveData( array $orderData ): void {
+		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_order, $orderData, null, 'REPLACE' );
+	}
+
+	/**
 	 * Loads order entities by list of ids.
 	 *
 	 * @param array $orderIds Order ids.

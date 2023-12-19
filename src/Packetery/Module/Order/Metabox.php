@@ -135,21 +135,29 @@ class Metabox {
 	private $detailCommonLogic;
 
 	/**
+	 * Carrier modal.
+	 *
+	 * @var CarrierModal
+	 */
+	private $carrierModal;
+
+	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine               $latte_engine PacketeryLatte engine.
-	 * @param MessageManager       $message_manager Message manager.
-	 * @param Helper               $helper Helper.
-	 * @param Request              $request Http request.
-	 * @param Provider             $optionsProvider Options provider.
-	 * @param Repository           $orderRepository Order repository.
-	 * @param Page                 $logPage Log page.
-	 * @param AttributeMapper      $mapper AttributeMapper.
+	 * @param Engine               $latte_engine         PacketeryLatte engine.
+	 * @param MessageManager       $message_manager      Message manager.
+	 * @param Helper               $helper               Helper.
+	 * @param Request              $request              Http request.
+	 * @param Provider             $optionsProvider      Options provider.
+	 * @param Repository           $orderRepository      Order repository.
+	 * @param Page                 $logPage              Log page.
+	 * @param AttributeMapper      $mapper               AttributeMapper.
 	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository     $carrierRepository Carrier repository.
-	 * @param Order                $orderValidator Order validator.
-	 * @param DetailCommonLogic    $detailCommonLogic Detail common logic.
-	 * @param Form                 $orderForm Order details.
+	 * @param EntityRepository     $carrierRepository    Carrier repository.
+	 * @param Order                $orderValidator       Order validator.
+	 * @param DetailCommonLogic    $detailCommonLogic    Detail common logic.
+	 * @param Form                 $orderForm            Order details.
+	 * @param CarrierModal         $carrierModal         Carrier change modal.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -164,7 +172,8 @@ class Metabox {
 		EntityRepository $carrierRepository,
 		Order $orderValidator,
 		DetailCommonLogic $detailCommonLogic,
-		Form $orderForm
+		Form $orderForm,
+		CarrierModal $carrierModal
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
@@ -179,6 +188,7 @@ class Metabox {
 		$this->orderValidator       = $orderValidator;
 		$this->detailCommonLogic    = $detailCommonLogic;
 		$this->orderForm            = $orderForm;
+		$this->carrierModal         = $carrierModal;
 	}
 
 	/**
@@ -233,14 +243,9 @@ class Metabox {
 			return;
 		}
 
-		$this->latte_engine->render(
-			PACKETERY_PLUGIN_DIR . '/template/order/metabox-carrier.latte',
-			[
-				'translations' => [
-					'setCarrier' => __( 'Set carrier', 'packeta' ),
-				],
-			]
-		);
+		if ( $this->carrierModal->canBeDisplayed() ) {
+			$this->carrierModal->renderInMetabox();
+		}
 
 		if ( null === $order ) {
 			return;

@@ -339,7 +339,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isHomeDelivery(): bool {
-		return ( null === $this->pickupPoint );
+		return ! $this->carrier->hasPickupPoints();
 	}
 
 	/**
@@ -348,7 +348,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isPickupPointDelivery(): bool {
-		return ( null !== $this->pickupPoint );
+		return $this->carrier->hasPickupPoints();
 	}
 
 	/**

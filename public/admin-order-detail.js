@@ -26,12 +26,11 @@
 		} );
 	});
 
-
 	$( window ).on( 'beforeunload', function() {
 		$( '[data-packetery-label-print-modal] .modal-close:visible:first' ).click();
 	} );
 
-	new PacketeryMultiplier( '[data-packetery-customs-declaration-item]' );
+	new PacketeryMultiplier('[data-packetery-customs-declaration-item]');
 
 	$( 'body' ).on( 'wc_backbone_modal_loaded', function( e ) {
 		var $target = $( e.target );
