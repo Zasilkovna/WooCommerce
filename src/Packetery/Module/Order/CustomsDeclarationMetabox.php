@@ -296,7 +296,8 @@ class CustomsDeclarationMetabox {
 
 		$prefixContainer->addText( 'invoice_issue_date', __( 'Invoice issue date', 'packeta' ) )
 			->addConditionOn( $activator, Form::FILLED )
-				->setRequired();
+				->setRequired()
+				->addRule( ...FormRules::getDateParameters() );
 
 		$invoiceFile = $prefixContainer->addUpload( 'invoice_file', __( 'Invoice PDF file', 'packeta' ) )
 			->setRequired( false );
@@ -352,7 +353,7 @@ class CustomsDeclarationMetabox {
 	/**
 	 * On form error.
 	 *
-	 * @param \Packetery\Nette\Forms\Form $form Form.
+	 * @param Form $form Form.
 	 * @return void
 	 */
 	public function onFormError( Form $form ): void {

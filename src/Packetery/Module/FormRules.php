@@ -28,4 +28,17 @@ class FormRules {
 			$threshold,
 		];
 	}
+
+	/**
+	 * Creates date validator parts for addRule form method.
+	 *
+	 * @return array
+	 */
+	public static function getDateParameters(): array {
+		return [
+			[ FormValidators::class, 'dateIsInMysqlFormat' ],
+			__( 'Please enter date in proper format.', 'packeta' ),
+		];
+	}
+
 }

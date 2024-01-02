@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Packetery\Module;
 
+use DateTimeImmutable;
+use Packetery\Core;
 use Packetery\Nette\Forms\Controls\BaseControl;
 
 /**
@@ -41,4 +43,25 @@ class FormValidators {
 	public static function dateIsLater( BaseControl $input, string $date ): bool {
 		return strtotime( $input->getValue() ) > strtotime( $date );
 	}
+
+	/**
+	 * Tests if input date is in proper format.
+	 *
+	 * @param BaseControl $input Form input.
+	 *
+	 * @return bool
+	 */
+	public static function dateIsInMysqlFormat( BaseControl $input ): bool {
+		$date = DateTimeImmutable::createFromFormat(
+			Core\Helper::MYSQL_DATE_FORMAT,
+			$input->getValue()
+		);
+
+		if ( false === $date ) {
+			return false;
+		}
+
+		return ( $input->getValue() === $date->format( Core\Helper::MYSQL_DATE_FORMAT ) );
+	}
+
 }

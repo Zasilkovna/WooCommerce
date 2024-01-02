@@ -75,6 +75,12 @@ class MetaboxesWrapper {
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function saveFields( $wcOrderId ): void {
+		static $hasBeenRun;
+
+		if ( isset( $hasBeenRun ) && true === $hasBeenRun ) {
+			return;
+		}
+
 		try {
 			$order = $this->orderRepository->getById( (int) $wcOrderId );
 		} catch ( InvalidCarrierException $invalidCarrierException ) {
@@ -87,5 +93,7 @@ class MetaboxesWrapper {
 
 		$this->generalMetabox->saveFields( $order );
 		$this->customDeclarationMetabox->saveFields( $order );
+
+		$hasBeenRun = true;
 	}
 }
