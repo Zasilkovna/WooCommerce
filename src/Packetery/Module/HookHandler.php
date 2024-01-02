@@ -30,27 +30,17 @@ class HookHandler {
 	private $orderRepository;
 
 	/**
-	 * Customs Declaration repository.
-	 *
-	 * @var CustomsDeclaration\Repository
-	 */
-	private $customsDeclarationRepository;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Order\MetaboxesWrapper        $metaboxesWrapper Metaboxes Wrapper.
-	 * @param Order\Repository              $orderRepository Order repository.
-	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs Declaration repository.
+	 * @param Order\Repository              $orderRepository  Order repository.
 	 */
 	public function __construct(
 		Order\MetaboxesWrapper $metaboxesWrapper,
-		Order\Repository $orderRepository,
-		CustomsDeclaration\Repository $customsDeclarationRepository
+		Order\Repository $orderRepository
 	) {
 		$this->metaboxesWrapper             = $metaboxesWrapper;
 		$this->orderRepository              = $orderRepository;
-		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
 
 	/**
