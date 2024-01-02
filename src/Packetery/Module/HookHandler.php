@@ -82,7 +82,6 @@ class HookHandler {
 		}
 
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
-			$this->customsDeclarationRepository->delete( (string) $wcOrderId );
 			$this->orderRepository->delete( (int) $wcOrderId );
 			$hasBeenRun = true;
 
