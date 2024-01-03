@@ -63,7 +63,7 @@ class MetaboxesWrapper {
 	public function register(): void {
 		$this->generalMetabox->register();
 		$this->customDeclarationMetabox->register();
-		add_action( 'save_post_shop_order', [ $this, 'saveFields' ] );
+		add_action( 'woocommerce_update_order', [ $this, 'saveFields' ] );
 	}
 
 	/**
