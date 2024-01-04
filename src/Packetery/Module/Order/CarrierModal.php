@@ -15,6 +15,9 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Helper;
 use Packetery\Nette\Forms;
 use RuntimeException;
+use function add_query_arg;
+use function get_admin_url;
+use function wp_safe_redirect;
 
 /**
  * Class CarrierModal.
@@ -151,6 +154,20 @@ class CarrierModal {
 			$this->orderRepository->delete( (int) $order->getNumber() );
 			$this->createNewCarrierOrder( $orderId, $newCarrierId );
 		}
+
+		// Without it, the widget cannot be opened and metabox has no values. Needed even in case no change was made.
+		if ( wp_safe_redirect(
+			add_query_arg(
+				[
+					'page'   => 'wc-orders',
+					'action' => 'edit',
+					'id'     => $orderId,
+				],
+				get_admin_url( null, 'admin.php' )
+			)
+		) ) {
+			exit;
+		}
 	}
 
 	/**
@@ -174,19 +191,6 @@ class CarrierModal {
 				'carrier_id' => $newCarrierId,
 			]
 		);
-		// TODO: check; Without it, widget cannot be opened.
-		if ( wp_safe_redirect(
-			add_query_arg(
-				[
-					'page'   => 'wc-orders',
-					'action' => 'edit',
-					'id'     => $orderId,
-				],
-				get_admin_url( null, 'admin.php' )
-			)
-		) ) {
-			exit;
-		}
 	}
 
 	/**
