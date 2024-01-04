@@ -16,6 +16,13 @@ namespace Packetery\Module;
 class HookHandler {
 
 	/**
+	 * Metabox Wrapper.
+	 *
+	 * @var Order\MetaboxesWrapper
+	 */
+	private $metaboxesWrapper;
+
+	/**
 	 * Order repository.
 	 *
 	 * @var Order\Repository
@@ -32,13 +39,16 @@ class HookHandler {
 	/**
 	 * Constructor.
 	 *
+	 * @param Order\MetaboxesWrapper        $metaboxesWrapper Metaboxes Wrapper.
 	 * @param Order\Repository              $orderRepository Order repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs Declaration repository.
 	 */
 	public function __construct(
+		Order\MetaboxesWrapper $metaboxesWrapper,
 		Order\Repository $orderRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
+		$this->metaboxesWrapper             = $metaboxesWrapper;
 		$this->orderRepository              = $orderRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
@@ -74,6 +84,12 @@ class HookHandler {
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			$this->customsDeclarationRepository->delete( (string) $wcOrderId );
 			$this->orderRepository->delete( (int) $wcOrderId );
+		}
+
+		try {
+			$this->metaboxesWrapper->saveFields( $wcOrderId );
+		} catch ( Exception\InvalidCarrierException | \WC_Data_Exception $e ) {
+			return;
 		}
 
 		$hasBeenRun = true;

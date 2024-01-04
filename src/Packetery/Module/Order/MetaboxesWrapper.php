@@ -63,29 +63,17 @@ class MetaboxesWrapper {
 	public function register(): void {
 		$this->generalMetabox->register();
 		$this->customDeclarationMetabox->register();
-		add_action( 'woocommerce_update_order', [ $this, 'saveFields' ] );
 	}
 
 	/**
 	 * Saves metabox fields.
 	 *
 	 * @param int|mixed $wcOrderId Order ID.
-	 *
-	 * @return void
+	 * @throws InvalidCarrierException When invalid Carrier is passed.
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function saveFields( $wcOrderId ): void {
-		static $hasBeenRun;
-
-		if ( isset( $hasBeenRun ) && true === $hasBeenRun ) {
-			return;
-		}
-
-		try {
-			$order = $this->orderRepository->getById( (int) $wcOrderId );
-		} catch ( InvalidCarrierException $invalidCarrierException ) {
-			return;
-		}
+		$order = $this->orderRepository->getById( (int) $wcOrderId );
 
 		if ( null === $order ) {
 			return;
@@ -93,7 +81,5 @@ class MetaboxesWrapper {
 
 		$this->generalMetabox->saveFields( $order );
 		$this->customDeclarationMetabox->saveFields( $order );
-
-		$hasBeenRun = true;
 	}
 }
