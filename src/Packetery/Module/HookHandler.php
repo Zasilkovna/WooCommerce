@@ -85,6 +85,7 @@ class HookHandler {
 			$this->customsDeclarationRepository->delete( (string) $wcOrderId );
 			$this->orderRepository->delete( (int) $wcOrderId );
 			$hasBeenRun = true;
+
 			return;
 		}
 
