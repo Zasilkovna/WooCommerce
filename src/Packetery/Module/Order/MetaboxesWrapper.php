@@ -69,11 +69,12 @@ class MetaboxesWrapper {
 	 * Saves metabox fields.
 	 *
 	 * @param int|mixed $wcOrderId Order ID.
-	 * @throws InvalidCarrierException When invalid Carrier is passed.
+	 *
+	 * @return void
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function saveFields( $wcOrderId ): void {
-		$order = $this->orderRepository->getById( (int) $wcOrderId );
+		$order = $this->orderRepository->getById( (int) $wcOrderId, true );
 
 		if ( null === $order ) {
 			return;

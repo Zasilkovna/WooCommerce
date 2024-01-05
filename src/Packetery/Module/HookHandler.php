@@ -84,13 +84,11 @@ class HookHandler {
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			$this->customsDeclarationRepository->delete( (string) $wcOrderId );
 			$this->orderRepository->delete( (int) $wcOrderId );
-		}
-
-		try {
-			$this->metaboxesWrapper->saveFields( $wcOrderId );
-		} catch ( Exception\InvalidCarrierException | \WC_Data_Exception $e ) {
+			$hasBeenRun = true;
 			return;
 		}
+
+		$this->metaboxesWrapper->saveFields( $wcOrderId );
 
 		$hasBeenRun = true;
 	}
