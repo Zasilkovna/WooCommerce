@@ -146,14 +146,12 @@ class CarrierModal {
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order ) {
-			$this->createNewCarrierOrder( $orderId, $newCarrierId );
+		if ( null !== $order && $order->getCarrier()->getId() !== $newCarrierId ) {
+			$this->orderRepository->delete( (int) $order->getNumber() );
 		}
 
-		if ( $order->getCarrier()->getId() !== $newCarrierId ) {
-			$this->orderRepository->delete( (int) $order->getNumber() );
-			$this->createNewCarrierOrder( $orderId, $newCarrierId );
-		}
+		$carrierTitle = $this->createNewCarrierOrder( $orderId, $newCarrierId );
+		$this->updateOrderDeliveryTitle( $orderId, $carrierTitle );
 
 		// Without it, the widget cannot be opened and metabox has no values. Needed even in case no change was made.
 		if ( wp_safe_redirect(
@@ -176,11 +174,11 @@ class CarrierModal {
 	 * @param int    $orderId Order id.
 	 * @param string $newCarrierId Carrier id.
 	 *
-	 * @return void
+	 * @return string
 	 *
 	 * @throws RuntimeException In case carrier is not instantiable.
 	 */
-	private function createNewCarrierOrder( int $orderId, string $newCarrierId ): void {
+	private function createNewCarrierOrder( int $orderId, string $newCarrierId ): string {
 		$newCarrier = $this->carrierRepository->getAnyById( $newCarrierId );
 		if ( null === $newCarrier ) {
 			throw new RuntimeException( 'Packeta: Failed to get instance of carrier with id ' . $newCarrierId );
@@ -191,6 +189,8 @@ class CarrierModal {
 				'carrier_id' => $newCarrierId,
 			]
 		);
+
+		return $newCarrier->getName();
 	}
 
 	/**
@@ -249,12 +249,12 @@ class CarrierModal {
 	}
 
 	/**
-	 * Renders metabox with carrier selection button.
+	 * Gets metabox HTML with carrier selection button.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	public function renderInMetabox(): void {
-		$this->latteEngine->render(
+	public function getMetaboxHtml(): string {
+		return $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-carrier.latte',
 			[
 				'translations' => [
@@ -276,6 +276,29 @@ class CarrierModal {
 		}
 
 		return $order->getCarrier()->getId();
+	}
+
+	/**
+	 * Update the delivery title of a specific order.
+	 *
+	 * @param int    $orderId      The ID of the order to update.
+	 * @param string $carrierTitle The new shipping title to set.
+	 *
+	 * @return void
+	 */
+	private function updateOrderDeliveryTitle( int $orderId, string $carrierTitle ): void {
+		$order = $this->orderRepository->getWcOrderById( $orderId );
+		if ( null === $order ) {
+			return;
+		}
+		$shippingItems = $order->get_items( 'shipping' );
+		if ( count( $shippingItems ) > 0 ) {
+			$firstItem = array_shift( $shippingItems );
+			$firstItem->set_method_title( $carrierTitle );
+			$firstItem->save();
+			$order->calculate_totals();
+			$order->save();
+		}
 	}
 
 }
