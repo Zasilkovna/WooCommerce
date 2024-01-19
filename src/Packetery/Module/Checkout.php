@@ -757,6 +757,10 @@ class Checkout {
 					 * @param array $rates            Rates.
 					 */
 					$taxes = apply_filters( 'woocommerce_calc_shipping_tax', $taxes, $taxExclusiveCost, $rates );
+					if ( ! is_array( $taxes ) ) {
+						$taxes = [];
+					}
+
 					$cost -= array_sum( $taxes );
 				}
 
