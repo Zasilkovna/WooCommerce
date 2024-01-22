@@ -32,15 +32,15 @@ class HookHandler {
 	/**
 	 * Constructor.
 	 *
-	 * @param Order\MetaboxesWrapper        $metaboxesWrapper Metaboxes Wrapper.
-	 * @param Order\Repository              $orderRepository  Order repository.
+	 * @param Order\MetaboxesWrapper $metaboxesWrapper Metaboxes Wrapper.
+	 * @param Order\Repository       $orderRepository  Order repository.
 	 */
 	public function __construct(
 		Order\MetaboxesWrapper $metaboxesWrapper,
 		Order\Repository $orderRepository
 	) {
-		$this->metaboxesWrapper             = $metaboxesWrapper;
-		$this->orderRepository              = $orderRepository;
+		$this->metaboxesWrapper = $metaboxesWrapper;
+		$this->orderRepository  = $orderRepository;
 	}
 
 	/**
