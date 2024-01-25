@@ -970,10 +970,10 @@ class Plugin {
 			return;
 		}
 
-		if ( ! function_exists( 'get_sites' ) ) {
-			self::cleanUpRepositories();
-		} else {
+		if ( is_multisite() ) {
 			self::cleanUpRepositoriesForMultisite();
+		} else {
+			self::cleanUpRepositories();
 		}
 	}
 
