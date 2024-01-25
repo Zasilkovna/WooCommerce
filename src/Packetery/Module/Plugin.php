@@ -970,10 +970,45 @@ class Plugin {
 			return;
 		}
 
+		if ( ! function_exists( 'get_sites' ) ) {
+			self::cleanUpRepositories();
+		} else {
+			self::cleanUpRepositoriesForMultisite();
+		}
+	}
+
+	/**
+	 * Drops all plugin tables when Multisite is enabled.
+	 *
+	 * @return void
+	 */
+	private static function cleanUpRepositoriesForMultisite(): void {
+		$blogs = get_sites(
+			[
+				'fields'            => 'ids',
+				'number'            => 0,
+				'update_site_cache' => false,
+			]
+		);
+
+		foreach ( $blogs as $blog ) {
+			switch_to_blog( $blog );
+			self::cleanUpRepositories();
+			restore_current_blog();
+		}
+	}
+
+	/**
+	 * Drops all plugin tables for a single site.
+	 *
+	 * @return void
+	 */
+	private static function cleanUpRepositories(): void {
 		$container = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
 
 		$optionsRepository = $container->getByType( Options\Repository::class );
 		$pluginOptions     = $optionsRepository->getPluginOptions();
+
 		foreach ( $pluginOptions as $option ) {
 			delete_option( $option->option_name );
 		}
@@ -986,6 +1021,12 @@ class Plugin {
 
 		$orderRepository = $container->getByType( Order\Repository::class );
 		$orderRepository->drop();
+
+		$customsDeclarationItemsRepository = $container->getByType( CustomsDeclaration\Repository::class );
+		$customsDeclarationItemsRepository->dropItems();
+
+		$customsDeclarationRepository = $container->getByType( CustomsDeclaration\Repository::class );
+		$customsDeclarationRepository->drop();
 	}
 
 	/**
