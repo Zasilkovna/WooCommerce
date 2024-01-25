@@ -983,7 +983,7 @@ class Plugin {
 	 * @return void
 	 */
 	private static function cleanUpRepositoriesForMultisite(): void {
-		$blogs = get_sites(
+		$sites = get_sites(
 			[
 				'fields'            => 'ids',
 				'number'            => 0,
@@ -991,8 +991,8 @@ class Plugin {
 			]
 		);
 
-		foreach ( $blogs as $blog ) {
-			switch_to_blog( $blog );
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site );
 			self::cleanUpRepositories();
 			restore_current_blog();
 		}
