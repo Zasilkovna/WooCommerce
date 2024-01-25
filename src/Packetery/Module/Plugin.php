@@ -1008,7 +1008,6 @@ class Plugin {
 
 		$optionsRepository = $container->getByType( Options\Repository::class );
 		$pluginOptions     = $optionsRepository->getPluginOptions();
-
 		foreach ( $pluginOptions as $option ) {
 			delete_option( $option->option_name );
 		}
