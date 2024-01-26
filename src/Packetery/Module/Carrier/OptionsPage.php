@@ -212,6 +212,21 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 
+		if ( in_array( $carrier->getId(), Carrier::CAR_DELIVERY_CARRIERS, true ) ) {
+			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
+			$daysUntilShipping->setRequired()
+				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )
+				->addRule( $form::MIN, null, 0 );
+
+			$shippingTimeCutOff = $form->addText( 'shipping_time_cut_off', __( 'Shipping time cut off', 'packeta' ) . ':' );
+			$shippingTimeCutOff->setHtmlAttribute( 'class', 'date-picker' )
+				->setHtmlType( 'time' )
+				->setRequired( false )
+				->setNullable()
+				// translators: %s: Represents the time we stop taking more orders for next shipment.
+				->addRule( [ FormValidators::class, 'hasClockTimeFormat' ], __( 'Time must be between %1$s and %2$s.', 'packeta' ), [ '00:00', '23:59' ] );
+		}
+
 		$couponFreeShipping = $form->addContainer( 'coupon_free_shipping' );
 		$couponFreeShipping->addCheckbox( 'active', __( 'Apply free shipping coupon', 'packeta' ) );
 		$couponFreeShipping->addCheckbox( 'allow_for_fees', __( 'Apply free shipping coupon for fees', 'packeta' ) )
@@ -409,11 +424,12 @@ class OptionsPage {
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
 				[
-					'forms'          => $carriersData,
-					'country_iso'    => $countryIso,
-					'globalCurrency' => get_woocommerce_currency_symbol(),
-					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
-					'translations'   => [
+					'forms'               => $carriersData,
+					'country_iso'         => $countryIso,
+					'carDeliveryCarriers' => Carrier::CAR_DELIVERY_CARRIERS,
+					'globalCurrency'      => get_woocommerce_currency_symbol(),
+					'flashMessages'       => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+					'translations'        => [
 						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
 						'delete'                       => __( 'Delete', 'packeta' ),
 						'weightRules'                  => __( 'Weight rules', 'packeta' ),
@@ -421,6 +437,8 @@ class OptionsPage {
 						'codSurchargeRules'            => __( 'COD surcharge rules', 'packeta' ),
 						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
 						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
+						'daysUntilShipping'            => __( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
+						'shippingTimeCutOff'           => __( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
 						'addressValidationDescription' => __( 'Customer address validation.', 'packeta' ),
 						'roundingDescription'          => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
 						'saveChanges'                  => __( 'Save changes', 'packeta' ),
