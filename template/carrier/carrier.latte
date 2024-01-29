@@ -222,6 +222,41 @@
                             </p>
                         </td>
                     </tr>
+
+                    {if in_array($carrier->getId(), $carDeliveryCarriers)}
+                        <tr>
+                            <th scope="row">
+                                <label n:name=days_until_shipping />
+                            </th>
+                            <td>
+                                <div>
+                                    <input n:name=days_until_shipping data-lfv-message-id="{$form[days_until_shipping]->getHtmlId() . '_message'}">
+                                </div>
+                                <p class="packetery-input-validation-message help-block text-danger"
+                                   id="{$form[days_until_shipping]->getHtmlId() . '_message'}">{inputError days_until_shipping}</p>
+                                <p>
+                                    {$translations['daysUntilShipping']}
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th scope="row">
+                                <label n:name=shipping_time_cut_off />
+                            </th>
+                            <td>
+                                <div>
+                                    <input n:name=shipping_time_cut_off data-lfv-message-id="{$form[shipping_time_cut_off]->getHtmlId() . '_message'}">
+                                </div>
+                                <p class="packetery-input-validation-message help-block text-danger"
+                                   id="{$form[shipping_time_cut_off]->getHtmlId() . '_message'}">{inputError shipping_time_cut_off}</p>
+                                <p>
+                                    {$translations['shippingTimeCutOff']}
+                                </p>
+                            </td>
+                        </tr>
+                    {/if}
+
                     {if isset($form['address_validation'])}
                         <tr>
                             <th scope="row">
