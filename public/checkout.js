@@ -89,7 +89,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			$widgetDiv.find( '.packeta-widget-selected-address' ).html('');
 		};
 
-		var showDeliveryAddress = function(carrierRateId) {
+		var showHomeDeliveryAddress = function(carrierRateId) {
 			resetWidgetInfoClasses();
 			if (getRateAttrValue( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '0' ) === '1') {
 				$widgetDiv.find( '.packeta-widget-selected-address' ).html(
@@ -106,6 +106,26 @@ var packeteryLoadCheckout = function( $, settings ) {
 				$widgetDiv.find( '.packeta-widget-info' ).addClass( 'packeta-widget-info-error' ).html( settings.translations.addressIsNotValidatedAndRequiredByCarrier );
 			} else {
 				$widgetDiv.find( '.packeta-widget-info' ).addClass( 'packeta-widget-info-error' ).html( settings.translations.addressIsNotValidated );
+			}
+		};
+
+		var showCarDeliveryAddress = function(carrierRateId) {
+			resetWidgetInfoClasses();
+			var isAddressSelected = getRateAttrValue( carrierRateId, 'packetery_car_delivery_id', false ) !== false;
+			if (isAddressSelected) {
+				$widgetDiv.find('.packeta-widget-selected-address').html(
+					getRateAttrValue(carrierRateId, 'packetery_address_street', '')
+					+ ' ' +
+					getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', '')
+					+ ', ' +
+					getRateAttrValue(carrierRateId, 'packetery_address_city', '')
+					+ ', ' +
+					getRateAttrValue(carrierRateId, 'packetery_address_postCode', '')
+					+ ' ' +
+					getRateAttrValue(carrierRateId, 'packetery_car_delivery_from', '')
+					+ ' - ' +
+					getRateAttrValue(carrierRateId, 'packetery_car_delivery_to', '')
+				);
 			}
 		};
 
@@ -174,7 +194,21 @@ var packeteryLoadCheckout = function( $, settings ) {
 				return false;
 			}
 
-			return !hasPickupPoints( carrierRateId );
+			return !hasPickupPoints( carrierRateId ) && !hasCarDelivery( carrierRateId);
+		};
+
+		var carDeliveryCarriers = [];
+		settings.carDeliveryCarriers.forEach(function(carrier) {
+			var prefixedCarrier = 'packetery_carrier_' + carrier;
+			carDeliveryCarriers.push(prefixedCarrier);
+		});
+
+		var hasCarDelivery = function( carrierRateId ) {
+			if ( !hasCarrierConfig( carrierRateId ) ) {
+				return false;
+			}
+
+			return carDeliveryCarriers.includes( carrierRateId );
 		};
 
 		var fillHiddenField = function( carrierRateId, name, addressFieldValue ) {
@@ -197,7 +231,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}
 
 			var _hasPickupPoints = hasPickupPoints( carrierRateId ),
-				_hasHomeDelivery = !_hasPickupPoints;
+				_hasHomeDelivery = hasHomeDelivery( carrierRateId ),
+				_hasCarDelivery = hasCarDelivery( carrierRateId );
 
 			if ( _hasPickupPoints ) {
 				loadInfoForCarrierRate( carrierRateId, settings.pickupPointAttrs );
@@ -223,8 +258,16 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 			if ( _hasHomeDelivery ) {
 				loadInfoForCarrierRate( carrierRateId, settings.homeDeliveryAttrs );
-				showDeliveryAddress( carrierRateId );
+				showHomeDeliveryAddress( carrierRateId );
 				$widgetDiv.find( 'button' ).html( settings.translations.chooseAddress );
+				$widgetButtonRow.removeClass( 'packetery-hidden' );
+				$widgetDiv.removeClass( 'packetery-hidden' );
+			}
+
+			if ( _hasCarDelivery ) {
+				loadInfoForCarrierRate( carrierRateId, settings.carDeliveryAttrs );
+				showCarDeliveryAddress( carrierRateId );
+				$widgetDiv.find( 'button' ).html( settings.translations.chooseCarAddress );
 				$widgetButtonRow.removeClass( 'packetery-hidden' );
 				$widgetDiv.removeClass( 'packetery-hidden' );
 			}
@@ -277,10 +320,16 @@ var packeteryLoadCheckout = function( $, settings ) {
 				) {
 					clearSavedData = true;
 				}
+			} else if ( hasCarDelivery( initialCarrierRateId ) ) {
+				if ( initialDestinationAddress.country !== destinationAddress.country ) {
+					clearSavedData = true;
+				}
 			}
+
 			if ( clearSavedData === true ) {
 				clearInfo( settings.pickupPointAttrs );
 				clearInfo( settings.homeDeliveryAttrs );
+				clearInfo( settings.carDeliveryAttrs );
 
 				postWithNonce(
 					settings.removeSavedDataUrl,
@@ -309,7 +358,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}, 1000 );
 		} );
 
-		var fillHiddenFields = function( carrierRateId, data, target ) {
+		var fillHiddenFields = function(carrierRateId, data, source ) {
 			for ( var attrKey in data ) {
 				if ( !data.hasOwnProperty( attrKey ) ) {
 					continue;
@@ -320,7 +369,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				}
 
 				var widgetField = data[ attrKey ].widgetResultField || attrKey;
-				var addressFieldValue = target[ widgetField ];
+				var addressFieldValue = source[ widgetField ];
 
 				fillHiddenField( carrierRateId, data[ attrKey ].name, addressFieldValue );
 			}
@@ -365,7 +414,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				console.log('Address widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 					resetWidgetInfo();
-					showDeliveryAddress( carrierRateId );
+					showHomeDeliveryAddress( carrierRateId );
 
 					if ( !result ) {
 						resetWidgetInfoClasses();
@@ -389,7 +438,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '1' );
 					fillHiddenFields( carrierRateId, settings.homeDeliveryAttrs, selectedAddress );
-					showDeliveryAddress( carrierRateId );
+					showHomeDeliveryAddress( carrierRateId );
 
 					var addressDataToSave = rateAttrValues[ carrierRateId ];
 					addressDataToSave.packetery_rate_id = carrierRateId;
@@ -398,6 +447,48 @@ var packeteryLoadCheckout = function( $, settings ) {
 						settings.saveValidatedAddressUrl,
 						addressDataToSave,
 						'Failed to save validated address data: '
+					);
+				}, widgetOptions );
+			}
+
+			if ( hasCarDelivery( carrierRateId ) ) {
+				widgetOptions.layout = 'cd';
+				widgetOptions.appIdentity = settings.appIdentity;
+				widgetOptions.expeditionDay = settings.expeditionDay;
+				widgetOptions.sample = true; // Delete before push!
+
+				console.log('Address widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
+				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
+					resetWidgetInfo();
+					showCarDeliveryAddress( carrierRateId );
+
+					if ( !result || !result.id ) {
+						return; // Widget was closed.
+					}
+
+					var selectedAddress = result.location.address;
+					var destinationAddress = getDestinationAddress();
+
+					if ( selectedAddress.country !== destinationAddress.country ) {
+						resetWidgetInfoClasses();
+						$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-error').html( settings.translations.invalidAddressCountrySelected );
+						return;
+					}
+
+					// fillHiddenFields( carrierRateId, settings.carDeliveryAttrs, result );
+					fillHiddenFields( carrierRateId, settings.carDeliveryAttrs, selectedAddress );
+					fillHiddenField( carrierRateId, settings.carDeliveryAttrs['carDeliveryId'].name, result.id );
+					fillHiddenField( carrierRateId, settings.carDeliveryAttrs['expectedDeliveryDayFrom'].name, result.expectedDeliveryDayFrom );
+					fillHiddenField( carrierRateId, settings.carDeliveryAttrs['expectedDeliveryDayTo'].name, result.expectedDeliveryDayTo );
+					showCarDeliveryAddress( carrierRateId );
+
+					var addressDataToSave = rateAttrValues[ carrierRateId ];
+					addressDataToSave.packetery_rate_id = carrierRateId;
+
+					postWithNonce(
+						settings.saveDeliveryAddressUrl,
+						addressDataToSave,
+						'Failed to save delivery address data: '
 					);
 				}, widgetOptions );
 			}

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use DateTime;
 use Packetery\Core;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Entity;
@@ -202,6 +203,18 @@ class Checkout {
 	}
 
 	/**
+	 * Check if chosen shipping rate is bound with Packeta home delivery
+	 *
+	 * @return bool
+	 */
+	public function isCarDeliveryOrder(): bool {
+		$chosenMethod = $this->getChosenMethod();
+		$carrierId    = $this->getCarrierId( $chosenMethod );
+
+		return $carrierId && $this->carrierRepository->isCarDeliveryCarrier( $carrierId );
+	}
+
+	/**
 	 * Render widget button table row.
 	 *
 	 * @return void
@@ -288,17 +301,22 @@ class Checkout {
 			'isAgeVerificationRequired'  => $this->isAgeVerification18PlusRequired(),
 			'pickupPointAttrs'           => Order\Attribute::$pickupPointAttrs,
 			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttrs,
+			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttrs,
+			'carDeliveryCarriers'        => Entity\Carrier::CAR_DELIVERY_CARRIERS,
+			'expeditionDay'              => $this->getExpeditionDay(),
 			'appIdentity'                => Plugin::getAppIdentity(),
 			'packeteryApiKey'            => $this->options_provider->get_api_key(),
 			'widgetAutoOpen'             => $this->options_provider->shouldWidgetOpenAutomatically(),
 			'saveSelectedPickupPointUrl' => $this->apiRouter->getSaveSelectedPickupPointUrl(),
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
+			'saveDeliveryAddressUrl'     => $this->apiRouter->getSaveDeliveryAddressUrl(),
 			'removeSavedDataUrl'         => $this->apiRouter->getRemoveSavedDataUrl(),
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
 			'translations'               => [
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
 				'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
+				'chooseCarAddress'              => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
 				'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
@@ -318,7 +336,8 @@ class Checkout {
 			[
 				'fields' => array_merge(
 					array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
-					array_column( Order\Attribute::$homeDeliveryAttrs, 'name' )
+					array_column( Order\Attribute::$homeDeliveryAttrs, 'name' ),
+					array_column( Order\Attribute::$carDeliveryAttrs, 'name' )
 				),
 			]
 		);
@@ -436,6 +455,10 @@ class Checkout {
 				wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 			}
 		}
+
+		if ( $this->isCarDeliveryOrder() && empty( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) ) {
+			wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
+		}
 	}
 
 	/**
@@ -510,6 +533,8 @@ class Checkout {
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
 		}
+
+		// TODO: if car delivery, save.
 
 		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
 			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
@@ -786,6 +811,47 @@ class Checkout {
 		}
 
 		return 0.0;
+	}
+
+	/**
+	 * Calculates and returns Expedition Day
+	 *
+	 * @return string
+	 */
+	private function getExpeditionDay(): ?string {
+		$chosenShippingMethod = $this->calculateShipping();
+		if ( false === $this->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
+			return null;
+		}
+
+		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod )->toArray();
+		$today          = new DateTime();
+		$processingDays = $carrierOptions['days_until_shipping'];
+		$cutoffTime     = $carrierOptions['shipping_time_cut_off'];
+
+		// Check if a cut-off time is provided and if the current time is after the cut-off time.
+		if ( null !== $cutoffTime ) {
+			$currentTime = $today->format( 'H:i' );
+			if ( $currentTime > $cutoffTime ) {
+				// If after cut-off time, move to the next day.
+				$today->modify( '+1 day' );
+			}
+		}
+
+		// Loop through each day to add processing days, skipping weekends.
+		for ( $i = 0; $i < $processingDays; $i++ ) {
+			// Add a day to the current date.
+			$today->modify( '+1 day' );
+
+			// Check if the current day is a weekend (Saturday or Sunday).
+			if ( $today->format( 'N' ) >= 6 ) {
+				// If it's a weekend, move to the next Monday.
+				$today->modify( 'next Monday' );
+			}
+		}
+
+		// Get the final expedition day.
+		return $today->format( 'Y-m-d' );
 	}
 
 	/**

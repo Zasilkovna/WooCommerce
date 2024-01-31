@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Entity\Carrier;
 use Packetery\Module\WpdbAdapter;
 
 /**
@@ -236,7 +237,17 @@ class Repository {
 			return false;
 		}
 
-		return false === $this->hasPickupPoints( (int) $carrierId );
+		return false === ( $this->hasPickupPoints( (int) $carrierId ) || $this->isCarDeliveryCarrier( $carrierId ) );
 	}
 
+	/**
+	 * Checks if carrier is car delivery carrier.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isCarDeliveryCarrier( string $carrierId ): bool {
+		return in_array( $carrierId, Carrier::CAR_DELIVERY_CARRIERS, true );
+	}
 }

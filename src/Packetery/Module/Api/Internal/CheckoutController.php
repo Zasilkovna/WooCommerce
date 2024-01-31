@@ -86,6 +86,16 @@ final class CheckoutController extends WP_REST_Controller {
 				],
 			]
 		);
+		$this->router->registerRoute(
+			CheckoutRouter::PATH_SAVE_DELIVERY_ADDRESS,
+			[
+				[
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => [ $this, 'saveDeliveryAddress' ],
+					'permission_callback' => '__return_true',
+				],
+			]
+		);
 	}
 
 	/**
@@ -133,6 +143,34 @@ final class CheckoutController extends WP_REST_Controller {
 
 		$rateId = $parameters[ self::RATE_ID ];
 		foreach ( Attribute::$homeDeliveryAttrs as $attribute ) {
+			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
+		}
+
+		set_transient(
+			$this->checkout->getTransientNamePacketaCheckoutData(),
+			$savedData,
+			DAY_IN_SECONDS
+		);
+
+		return new WP_REST_Response( [], 200 );
+	}
+
+	/**
+	 * Save delivery address.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function saveDeliveryAddress( WP_REST_Request $request ): WP_REST_Response {
+		$parameters = $request->get_body_params();
+		$savedData  = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+		if ( ! is_array( $savedData ) ) {
+			$savedData = [];
+		}
+
+		$rateId = $parameters[ self::RATE_ID ];
+		foreach ( Attribute::$carDeliveryAttrs as $attribute ) {
 			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
 		}
 
