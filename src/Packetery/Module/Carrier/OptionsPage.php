@@ -236,7 +236,10 @@ class OptionsPage {
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
-		if ( false === $carrier->hasPickupPoints() && in_array( $carrier->getCountry(), Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
+		if ( false === $carrier->hasPickupPoints()
+			&& in_array( $carrier->getCountry(), Carrier::ADDRESS_VALIDATION_COUNTRIES, true )
+			&& ! in_array( $carrier->getId(), Carrier::CAR_DELIVERY_CARRIERS, true )
+		) {
 			$addressValidationOptions = [
 				'none'     => __( 'No address validation', 'packeta' ),
 				'optional' => __( 'Optional address validation', 'packeta' ),
