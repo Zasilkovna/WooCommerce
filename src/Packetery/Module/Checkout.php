@@ -321,6 +321,7 @@ class Checkout {
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
 				'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
 				'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
+				'addressNotSet'                 => __( 'Address has not been set', 'packeta' ),
 				'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
 				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 			],
@@ -457,7 +458,7 @@ class Checkout {
 		}
 
 		if ( $this->isCarDeliveryOrder() && empty( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) ) {
-			wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
+			wc_add_notice( __( 'Delivery address has not been set.', 'packeta' ), 'error' );
 		}
 	}
 

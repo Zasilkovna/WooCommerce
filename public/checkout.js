@@ -126,6 +126,8 @@ var packeteryLoadCheckout = function( $, settings ) {
 					+ ' - ' +
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_to', '')
 				);
+			} else {
+				$widgetDiv.find( '.packeta-widget-info' ).addClass( 'packeta-widget-info-error' ).html( settings.translations.addressNotSet );
 			}
 		};
 
