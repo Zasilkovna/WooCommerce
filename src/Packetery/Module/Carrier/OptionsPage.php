@@ -45,7 +45,7 @@ class OptionsPage {
 	 *
 	 * @var EntityRepository Carrier repository.
 	 */
-	private $carrierEntityRepository;
+	private $carrierRepository;
 
 	/**
 	 * Form factory.
@@ -93,7 +93,7 @@ class OptionsPage {
 	 * Plugin constructor.
 	 *
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
-	 * @param EntityRepository          $carrierEntityRepository  Carrier repository.
+	 * @param EntityRepository          $carrierRepository  Carrier repository.
 	 * @param FormFactory               $formFactory        Form factory.
 	 * @param Request                   $httpRequest        Packetery\Nette Request.
 	 * @param CountryListingPage        $countryListingPage CountryListingPage.
@@ -103,7 +103,7 @@ class OptionsPage {
 	 */
 	public function __construct(
 		Engine $latteEngine,
-		EntityRepository $carrierEntityRepository,
+		EntityRepository $carrierRepository,
 		FormFactory $formFactory,
 		Request $httpRequest,
 		CountryListingPage $countryListingPage,
@@ -112,7 +112,7 @@ class OptionsPage {
 		FeatureFlagManager $featureFlag
 	) {
 		$this->latteEngine             = $latteEngine;
-		$this->carrierEntityRepository = $carrierEntityRepository;
+		$this->carrierRepository = $carrierRepository;
 		$this->formFactory             = $formFactory;
 		$this->httpRequest             = $httpRequest;
 		$this->countryListingPage      = $countryListingPage;
@@ -186,7 +186,7 @@ class OptionsPage {
 		}
 
 		// We don't expect id to be empty in this situation. This would indicate a data save error.
-		$carrier = $this->carrierEntityRepository->getAnyById( (string) $carrierData['id'] );
+		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
 
 		if ( null !== $carrier && $carrier->supportsCod() ) {
 			$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )
@@ -212,7 +212,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 
-		if ( $this->carrierEntityRepository->isCarDeliveryCarrier( $carrier->getId() ) ) {
+		if ( $this->carrierRepository->isCarDeliveryCarrier( $carrier->getId() ) ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )
@@ -393,7 +393,7 @@ class OptionsPage {
 	public function render(): void {
 		$countryIso = $this->httpRequest->getQuery( 'code' );
 		if ( $countryIso ) {
-			$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryIso );
+			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrier ) {

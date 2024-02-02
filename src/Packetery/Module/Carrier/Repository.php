@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Core\Entity\Carrier;
 use Packetery\Module\WpdbAdapter;
 
 /**

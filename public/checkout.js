@@ -487,7 +487,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					addressDataToSave.packetery_rate_id = carrierRateId;
 
 					postWithNonce(
-						settings.saveDeliveryAddressUrl,
+						settings.saveCarDeliveryDetailsUrl,
 						addressDataToSave,
 						'Failed to save delivery address data: '
 					);

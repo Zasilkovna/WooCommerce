@@ -125,7 +125,7 @@ final class CheckoutController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Save delivery address.
+	 * Save car delivery details.
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *

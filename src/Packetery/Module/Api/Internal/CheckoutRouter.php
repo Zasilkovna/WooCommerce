@@ -20,7 +20,7 @@ final class CheckoutRouter extends BaseRouter {
 
 	public const PATH_SAVE_SELECTED_PICKUP_POINT = '/save-selected-pickup-point';
 	public const PATH_SAVE_VALIDATED_ADDRESS     = '/save-validated-address';
-	public const PATH_SAVE_DELIVERY_ADDRESS      = '/save-delivery-address';
+	public const PATH_SAVE_DELIVERY_ADDRESS      = '/save-car-delivery-details';
 	public const PATH_REMOVE_SAVED_DATA          = '/remove-saved-data';
 
 	/**
