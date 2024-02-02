@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
+use Packetery\Core\Entity\Carrier;
 use Packetery\Module\EntityFactory;
 
 /**
@@ -220,6 +221,32 @@ class EntityRepository {
 		}
 
 		return Options::createByCarrierId( $carrier->getId() )->isActive();
+	}
+
+	/**
+	 * Checks if carrier is home delivery carrier.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isHomeDeliveryCarrier( string $carrierId ): bool {
+		if ( $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
+			return false;
+		}
+
+		return false === ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->isCarDeliveryCarrier( $carrierId ) );
+	}
+
+	/**
+	 * Checks if carrier is car delivery carrier.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isCarDeliveryCarrier( string $carrierId ): bool {
+		return in_array( $carrierId, Carrier::CAR_DELIVERY_CARRIERS, true );
 	}
 
 }

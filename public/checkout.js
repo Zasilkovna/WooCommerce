@@ -360,7 +360,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			}, 1000 );
 		} );
 
-		var fillHiddenFields = function(carrierRateId, data, source ) {
+		var fillHiddenFields = function( carrierRateId, data, source ) {
 			for ( var attrKey in data ) {
 				if ( !data.hasOwnProperty( attrKey ) ) {
 					continue;

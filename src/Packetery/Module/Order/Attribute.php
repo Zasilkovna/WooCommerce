@@ -90,7 +90,7 @@ class Attribute {
 			'isWidgetResultField' => false,
 			// Is attribute included in widget result address? By default, it is.
 		],
-		'houseNumber' => [ // post type address field called 'houseNumber'.
+		'houseNumber' => [
 			'name' => self::ADDRESS_HOUSE_NUMBER,
 		],
 		'street'      => [
@@ -130,7 +130,7 @@ class Attribute {
 		'street'                  => [
 			'name' => self::ADDRESS_STREET,
 		],
-		'houseNumber'             => [ // post type address field called 'houseNumber'.
+		'houseNumber'             => [
 			'name' => self::ADDRESS_HOUSE_NUMBER,
 		],
 		'city'                    => [

@@ -48,13 +48,6 @@ class OptionsPage {
 	private $carrierEntityRepository;
 
 	/**
-	 * Internal Carrier repository.
-	 *
-	 * @var Repository Internal Carrier repository.
-	 */
-	private $carrierRepository;
-
-	/**
 	 * Form factory.
 	 *
 	 * @var FormFactory Form factory.
@@ -101,7 +94,6 @@ class OptionsPage {
 	 *
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
 	 * @param EntityRepository          $carrierEntityRepository  Carrier repository.
-	 * @param Repository                $carrierRepository  Internal Carrier repository.
 	 * @param FormFactory               $formFactory        Form factory.
 	 * @param Request                   $httpRequest        Packetery\Nette Request.
 	 * @param CountryListingPage        $countryListingPage CountryListingPage.
@@ -112,7 +104,6 @@ class OptionsPage {
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierEntityRepository,
-		Repository $carrierRepository,
 		FormFactory $formFactory,
 		Request $httpRequest,
 		CountryListingPage $countryListingPage,
@@ -122,7 +113,6 @@ class OptionsPage {
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierEntityRepository = $carrierEntityRepository;
-		$this->carrierRepository       = $carrierRepository;
 		$this->formFactory             = $formFactory;
 		$this->httpRequest             = $httpRequest;
 		$this->countryListingPage      = $countryListingPage;
@@ -222,7 +212,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 
-		if ( $this->carrierRepository->isCarDeliveryCarrier( $carrier->getId() ) ) {
+		if ( $this->carrierEntityRepository->isCarDeliveryCarrier( $carrier->getId() ) ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )
@@ -455,6 +445,7 @@ class OptionsPage {
 						'packeta'                      => __( 'Packeta', 'packeta' ),
 						// translators: %s is country code.
 						'title'                        => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
+
 						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
 						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
 						'carrierDoesNotSupportCod'     => __( 'This carrier does not support COD payment.', 'packeta' ),

@@ -199,7 +199,7 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $carrierId && $this->carrierRepository->isHomeDeliveryCarrier( $carrierId );
+		return $carrierId && $this->carrierEntityRepository->isHomeDeliveryCarrier( $carrierId );
 	}
 
 	/**
@@ -211,7 +211,7 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $carrierId && $this->carrierRepository->isCarDeliveryCarrier( $carrierId );
+		return $carrierId && $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId );
 	}
 
 	/**
@@ -309,7 +309,7 @@ class Checkout {
 			'widgetAutoOpen'             => $this->options_provider->shouldWidgetOpenAutomatically(),
 			'saveSelectedPickupPointUrl' => $this->apiRouter->getSaveSelectedPickupPointUrl(),
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
-			'saveDeliveryAddressUrl'     => $this->apiRouter->getSaveDeliveryAddressUrl(),
+			'saveCarDeliveryDetailsUrl'  => $this->apiRouter->getSaveCarDeliveryDetailsUrl(),
 			'removeSavedDataUrl'         => $this->apiRouter->getRemoveSavedDataUrl(),
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
@@ -457,7 +457,7 @@ class Checkout {
 			}
 		}
 
-		if ( $this->isCarDeliveryOrder() && empty( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) ) {
+		if ( empty( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) && $this->isCarDeliveryOrder() ) {
 			wc_add_notice( __( 'Delivery address has not been set.', 'packeta' ), 'error' );
 		}
 	}

@@ -60,7 +60,7 @@ final class CheckoutRouter extends BaseRouter {
 	 *
 	 * @return string
 	 */
-	public function getSaveDeliveryAddressUrl(): string {
+	public function getSaveCarDeliveryDetailsUrl(): string {
 		return $this->getRouteUrl( self::PATH_SAVE_DELIVERY_ADDRESS );
 	}
 

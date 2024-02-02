@@ -224,30 +224,4 @@ class Repository {
 	public function update( array $data, int $carrier_id ): void {
 		$this->wpdbAdapter->update( $this->wpdbAdapter->packetery_carrier, $data, [ 'id' => $carrier_id ] );
 	}
-
-	/**
-	 * Checks if carrier is home delivery carrier.
-	 *
-	 * @param string $carrierId Carrier ID.
-	 *
-	 * @return bool
-	 */
-	public function isHomeDeliveryCarrier( string $carrierId ): bool {
-		if ( $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
-			return false;
-		}
-
-		return false === ( $this->hasPickupPoints( (int) $carrierId ) || $this->isCarDeliveryCarrier( $carrierId ) );
-	}
-
-	/**
-	 * Checks if carrier is car delivery carrier.
-	 *
-	 * @param string $carrierId Carrier ID.
-	 *
-	 * @return bool
-	 */
-	public function isCarDeliveryCarrier( string $carrierId ): bool {
-		return in_array( $carrierId, Carrier::CAR_DELIVERY_CARRIERS, true );
-	}
 }
