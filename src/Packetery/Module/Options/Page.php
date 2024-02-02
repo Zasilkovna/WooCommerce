@@ -496,6 +496,10 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( Provider::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT );
 
+		$container->addCheckbox( 'prices_include_tax', __( 'Prices include tax', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( Provider::PRICES_INCLUDE_TAX_DEFAULT );
+
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {

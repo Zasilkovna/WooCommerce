@@ -18,6 +18,7 @@ use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Http\Request;
 use WC_Logger;
+use WC_Tax;
 
 /**
  * Class Checkout
@@ -614,6 +615,18 @@ class Checkout {
 	}
 
 	/**
+	 * Calculates tax exclusive fee amount.
+	 *
+	 * @param float  $taxInclusiveFeeAmount Tax inclusive fee amount.
+	 * @param string $taxClass              Related tax class.
+	 *
+	 * @return float
+	 */
+	private function calcTaxExclusiveFeeAmount( float $taxInclusiveFeeAmount, string $taxClass ): float {
+		return $taxInclusiveFeeAmount - array_sum( WC_Tax::calc_tax( $taxInclusiveFeeAmount, WC_Tax::get_rates( $taxClass ), true ) );
+	}
+
+	/**
 	 * Calculates fees.
 	 *
 	 * @return void
@@ -639,6 +652,10 @@ class Checkout {
 			$this->isAgeVerification18PlusRequired()
 		) {
 			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
+			if ( false !== $maxTaxClass && $feeAmount > 0 && $this->options_provider->arePricesTaxInclusive() ) {
+				$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
+			}
+
 			WC()->cart->fees_api()->add_fee(
 				[
 					'id'        => 'packetery-age-verification-fee',
@@ -659,6 +676,10 @@ class Checkout {
 		$applicableSurcharge = $this->currencySwitcherFacade->getConvertedPrice( $applicableSurcharge );
 		if ( 0 >= $applicableSurcharge ) {
 			return;
+		}
+
+		if ( false !== $maxTaxClass && $this->options_provider->arePricesTaxInclusive() ) {
+			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
 		}
 
 		$fee = [
@@ -718,9 +739,32 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
-				$name                   = $this->getFormattedShippingMethodName( $options->getName(), $cost );
-				$rateId                 = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
-				$customRates[ $rateId ] = $this->createShippingRate( $name, $rateId, $cost );
+				$name   = $this->getFormattedShippingMethodName( $options->getName(), $cost );
+				$rateId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+				$taxes  = null;
+
+				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
+					$rates            = WC_Tax::get_shipping_tax_rates();
+					$taxes            = WC_Tax::calc_inclusive_tax( $cost, $rates );
+					$taxExclusiveCost = $cost - array_sum( $taxes );
+					/**
+					 * Filters shipping taxes.
+					 *
+					 * @since 1.6.5
+					 *
+					 * @param array $taxes            Taxes.
+					 * @param float $taxExclusiveCost Tax exclusive cost.
+					 * @param array $rates            Rates.
+					 */
+					$taxes = apply_filters( 'woocommerce_calc_shipping_tax', $taxes, $taxExclusiveCost, $rates );
+					if ( ! is_array( $taxes ) ) {
+						$taxes = [];
+					}
+
+					$cost -= array_sum( $taxes );
+				}
+
+				$customRates[ $rateId ] = $this->createShippingRate( $name, $rateId, $cost, $taxes );
 			}
 		}
 
@@ -892,18 +936,19 @@ class Checkout {
 	/**
 	 * Create shipping rate.
 	 *
-	 * @param string     $name     Name.
-	 * @param string     $optionId Option ID.
-	 * @param float|null $cost     Cost.
+	 * @param string            $name             Name.
+	 * @param string            $optionId         Option ID.
+	 * @param float             $taxExclusiveCost Cost.
+	 * @param array<float>|null $taxes            Taxes. If NULL than it is going to be calculated.
 	 *
 	 * @return array
 	 */
-	private function createShippingRate( string $name, string $optionId, ?float $cost ): array {
+	private function createShippingRate( string $name, string $optionId, float $taxExclusiveCost, ?array $taxes ): array {
 		return [
 			'label'    => $name,
 			'id'       => $optionId,
-			'cost'     => $cost,
-			'taxes'    => '',
+			'cost'     => $taxExclusiveCost,
+			'taxes'    => $taxes ?? '',
 			'calc_tax' => 'per_order',
 		];
 	}

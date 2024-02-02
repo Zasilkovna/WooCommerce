@@ -36,6 +36,7 @@ class Provider {
 	public const EMAIL_HOOK_DEFAULT                                    = 'woocommerce_email_footer';
 	const AUTO_ORDER_STATUS                         = 'auto_order_status';
 	const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
+	const PRICES_INCLUDE_TAX_DEFAULT                = false;
 
 	/**
 	 *  Options data.
@@ -342,6 +343,20 @@ class Provider {
 		}
 
 		return self::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT;
+	}
+
+	/**
+	 * Tells if prices include tax.
+	 *
+	 * @return bool
+	 */
+	public function arePricesTaxInclusive(): bool {
+		$pricesIncludeTax = $this->get( 'prices_include_tax' );
+		if ( null !== $pricesIncludeTax ) {
+			return (bool) $pricesIncludeTax;
+		}
+
+		return self::PRICES_INCLUDE_TAX_DEFAULT;
 	}
 
 	/**
