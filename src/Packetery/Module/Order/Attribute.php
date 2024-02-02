@@ -35,6 +35,10 @@ class Attribute {
 	public const ADDRESS_LATITUDE     = 'packetery_address_latitude';
 	public const ADDRESS_LONGITUDE    = 'packetery_address_longitude';
 
+	public const CAR_DELIVERY_ID        = 'packetery_car_delivery_id';
+	public const EXPECTED_DELIVERY_FROM = 'packetery_car_delivery_from';
+	public const EXPECTED_DELIVERY_TO   = 'packetery_car_delivery_to';
+
 	/**
 	 * Pickup point attributes configuration.
 	 *
@@ -86,7 +90,7 @@ class Attribute {
 			'isWidgetResultField' => false,
 			// Is attribute included in widget result address? By default, it is.
 		],
-		'houseNumber' => [ // post type address field called 'houseNumber'.
+		'houseNumber' => [
 			'name' => self::ADDRESS_HOUSE_NUMBER,
 		],
 		'street'      => [
@@ -111,6 +115,38 @@ class Attribute {
 		],
 		'longitude'   => [
 			'name' => self::ADDRESS_LONGITUDE,
+		],
+	];
+
+	/**
+	 * Car delivery attributes configuration.
+	 *
+	 * @var array[]
+	 */
+	public static $carDeliveryAttrs = [
+		'carDeliveryId'           => [
+			'name' => self::CAR_DELIVERY_ID,
+		],
+		'street'                  => [
+			'name' => self::ADDRESS_STREET,
+		],
+		'houseNumber'             => [
+			'name' => self::ADDRESS_HOUSE_NUMBER,
+		],
+		'city'                    => [
+			'name' => self::ADDRESS_CITY,
+		],
+		'postalCode'              => [
+			'name' => self::ADDRESS_POST_CODE,
+		],
+		'country'                 => [
+			'name' => self::ADDRESS_COUNTRY,
+		],
+		'expectedDeliveryDayFrom' => [
+			'name' => self::EXPECTED_DELIVERY_FROM,
+		],
+		'expectedDeliveryDayTo'   => [
+			'name' => self::EXPECTED_DELIVERY_TO,
 		],
 	];
 }

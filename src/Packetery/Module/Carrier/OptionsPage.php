@@ -111,14 +111,14 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagManager $featureFlag
 	) {
-		$this->latteEngine        = $latteEngine;
-		$this->carrierRepository  = $carrierRepository;
-		$this->formFactory        = $formFactory;
-		$this->httpRequest        = $httpRequest;
-		$this->countryListingPage = $countryListingPage;
-		$this->messageManager     = $messageManager;
-		$this->pickupPointsConfig = $pickupPointsConfig;
-		$this->featureFlag        = $featureFlag;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository = $carrierRepository;
+		$this->formFactory             = $formFactory;
+		$this->httpRequest             = $httpRequest;
+		$this->countryListingPage      = $countryListingPage;
+		$this->messageManager          = $messageManager;
+		$this->pickupPointsConfig      = $pickupPointsConfig;
+		$this->featureFlag             = $featureFlag;
 	}
 
 	/**
@@ -212,7 +212,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 
-		if ( in_array( $carrier->getId(), Carrier::CAR_DELIVERY_CARRIERS, true ) ) {
+		if ( $this->carrierRepository->isCarDeliveryCarrier( $carrier->getId() ) ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )

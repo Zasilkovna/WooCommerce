@@ -86,6 +86,16 @@ final class CheckoutController extends WP_REST_Controller {
 				],
 			]
 		);
+		$this->router->registerRoute(
+			CheckoutRouter::PATH_SAVE_DELIVERY_ADDRESS,
+			[
+				[
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => [ $this, 'saveCarDeliveryDetails' ],
+					'permission_callback' => '__return_true',
+				],
+			]
+		);
 	}
 
 	/**
@@ -96,23 +106,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function saveSelectedPickupPoint( WP_REST_Request $request ): WP_REST_Response {
-		$parameters = $request->get_body_params();
-		$savedData  = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
-		if ( ! is_array( $savedData ) ) {
-			$savedData = [];
-		}
-
-		$rateId = $parameters[ self::RATE_ID ];
-		foreach ( Attribute::$pickupPointAttrs as $attribute ) {
-			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
-		}
-
-		$transientName = $this->checkout->getTransientNamePacketaCheckoutData();
-		set_transient(
-			$transientName,
-			$savedData,
-			DAY_IN_SECONDS
-		);
+		$this->save( $request, Attribute::$pickupPointAttrs );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -125,22 +119,20 @@ final class CheckoutController extends WP_REST_Controller {
 	 * @return WP_REST_Response
 	 */
 	public function saveValidatedAddress( WP_REST_Request $request ): WP_REST_Response {
-		$parameters = $request->get_body_params();
-		$savedData  = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
-		if ( ! is_array( $savedData ) ) {
-			$savedData = [];
-		}
+		$this->save( $request, Attribute::$homeDeliveryAttrs );
 
-		$rateId = $parameters[ self::RATE_ID ];
-		foreach ( Attribute::$homeDeliveryAttrs as $attribute ) {
-			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
-		}
+		return new WP_REST_Response( [], 200 );
+	}
 
-		set_transient(
-			$this->checkout->getTransientNamePacketaCheckoutData(),
-			$savedData,
-			DAY_IN_SECONDS
-		);
+	/**
+	 * Save car delivery details.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function saveCarDeliveryDetails( WP_REST_Request $request ): WP_REST_Response {
+		$this->save( $request, Attribute::$carDeliveryAttrs );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -156,6 +148,33 @@ final class CheckoutController extends WP_REST_Controller {
 		delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 
 		return new WP_REST_Response( [], 200 );
+	}
+
+	/**
+	 * Saves carrier data.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @param array           $carrierAttrs Carrier attributes.
+	 *
+	 * @return void
+	 */
+	private function save( WP_REST_Request $request, array $carrierAttrs ): void {
+		$parameters = $request->get_body_params();
+		$savedData  = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+		if ( ! is_array( $savedData ) ) {
+			$savedData = [];
+		}
+
+		$rateId = $parameters[ self::RATE_ID ];
+		foreach ( $carrierAttrs as $attribute ) {
+			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
+		}
+
+		set_transient(
+			$this->checkout->getTransientNamePacketaCheckoutData(),
+			$savedData,
+			DAY_IN_SECONDS
+		);
 	}
 
 }
