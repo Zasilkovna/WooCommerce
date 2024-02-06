@@ -199,6 +199,7 @@ class Repository {
 			`carrier_number` varchar(255) NULL,
 			`packet_status` varchar(255) NULL,
 			`deliver_on` date NULL,
+			`car_delivery_id` varchar(255) NULL,
 			PRIMARY KEY  (`id`)
 		) ' . $this->wpdbAdapter->get_charset_collate();
 
@@ -350,6 +351,10 @@ class Repository {
 			$partialOrder->setDeliveryAddress( $deliveryAddress );
 		}
 
+		if ( $result->car_delivery_id ) {
+			$partialOrder->setCarDeliveryId( $result->car_delivery_id );
+		}
+
 		if ( null !== $result->point_id ) {
 			$pickUpPoint = new PickupPoint(
 				$result->point_id,
@@ -430,6 +435,7 @@ class Repository {
 			'is_label_printed'      => (int) $order->isLabelPrinted(),
 			'carrier_number'        => $order->getCarrierNumber(),
 			'weight'                => $order->getWeight(),
+			'car_delivery_id'       => $order->getCarDeliveryId(),
 			'point_id'              => $point->getId(),
 			'point_name'            => $point->getName(),
 			'point_url'             => $point->getUrl(),

@@ -131,17 +131,43 @@ class AttributeMapper {
 	 * @return Entity\Address
 	 */
 	public function toValidatedAddress( array $values ): Entity\Address {
-		$address = new Entity\Address(
-			$values[ Attribute::ADDRESS_STREET ],
-			$values[ Attribute::ADDRESS_CITY ],
-			$values[ Attribute::ADDRESS_POST_CODE ]
-		);
+		$address = $this->createAddress( $values );
 		$address->setHouseNumber( $values[ Attribute::ADDRESS_HOUSE_NUMBER ] );
 		$address->setCounty( $values[ Attribute::ADDRESS_COUNTY ] );
 		$address->setLatitude( $values[ Attribute::ADDRESS_LATITUDE ] );
 		$address->setLongitude( $values[ Attribute::ADDRESS_LONGITUDE ] );
 
 		return $address;
+	}
+
+	/**
+	 * From post data to validated address both in frontend and backend.
+	 *
+	 * @param array $values Data from form.
+	 *
+	 * @return Entity\Address
+	 */
+	public function toCarDeliveryAddress( array $values ): Entity\Address {
+		$address = $this->createAddress( $values );
+		$address->setHouseNumber( $values[ Attribute::ADDRESS_HOUSE_NUMBER ] );
+		$address->setCounty( $values[ Attribute::ADDRESS_COUNTY ] );
+
+		return $address;
+	}
+
+	/**
+	 * Creates new Address
+	 *
+	 * @param array $values
+	 *
+	 * @return Entity\Address
+	 */
+	private function createAddress(array $values ): Entity\Address {
+		return new Entity\Address(
+			$values[ Attribute::ADDRESS_STREET ],
+			$values[ Attribute::ADDRESS_CITY ],
+			$values[ Attribute::ADDRESS_POST_CODE ]
+		);
 	}
 
 }
