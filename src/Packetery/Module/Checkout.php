@@ -1311,7 +1311,7 @@ class Checkout {
 
 		if (
 			empty( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
-			! empty( $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ])
+			! empty( $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] )
 		) {
 			foreach ( Order\Attribute::$homeDeliveryAttrs as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
