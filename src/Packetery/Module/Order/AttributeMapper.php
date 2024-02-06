@@ -158,11 +158,11 @@ class AttributeMapper {
 	/**
 	 * Creates new Address
 	 *
-	 * @param array $values
+	 * @param array $values Data from form.
 	 *
 	 * @return Entity\Address
 	 */
-	private function createAddress(array $values ): Entity\Address {
+	private function createAddress( array $values ): Entity\Address {
 		return new Entity\Address(
 			$values[ Attribute::ADDRESS_STREET ],
 			$values[ Attribute::ADDRESS_CITY ],
