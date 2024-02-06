@@ -15,6 +15,7 @@ use Packetery\Core\Log\ILogger;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Latte\Engine;
+use Packetery\Module\Order\CarrierModal;
 use Packetery\Nette\Http\Request;
 use Packetery\Nette\Utils\Html;
 use WC_Email;
@@ -279,6 +280,13 @@ class Plugin {
 	private $hookHandler;
 
 	/**
+	 * Carrier Modal.
+	 *
+	 * @var CarrierModal
+	 */
+	private $carrierModal;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -315,6 +323,7 @@ class Plugin {
 	 * @param Order\ApiExtender          $apiExtender               API extender.
 	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
 	 * @param HookHandler                $hookHandler               Hook handler.
+	 * @param CarrierModal               $carrierModal              Carrier Modal.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -350,7 +359,8 @@ class Plugin {
 		Order\MetaboxesWrapper $metaboxesWrapper,
 		Order\ApiExtender $apiExtender,
 		Order\LabelPrintModal $labelPrintModal,
-		HookHandler $hookHandler
+		HookHandler $hookHandler,
+		CarrierModal $carrierModal
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -387,6 +397,7 @@ class Plugin {
 		$this->apiExtender               = $apiExtender;
 		$this->labelPrintModal           = $labelPrintModal;
 		$this->hookHandler               = $hookHandler;
+		$this->carrierModal              = $carrierModal;
 	}
 
 	/**
@@ -465,6 +476,7 @@ class Plugin {
 		$this->packetAutoSubmitter->register();
 		$this->apiExtender->register();
 		$this->hookHandler->register();
+		$this->carrierModal->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );

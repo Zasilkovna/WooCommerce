@@ -35,6 +35,9 @@ use WC_Order;
  * @package Packetery\Order
  */
 class Metabox {
+	private const PART_ERROR          = 'error';
+	private const PART_CARRIER_CHANGE = 'carrierChange';
+	private const PART_MAIN           = 'main';
 
 	/**
 	 * PacketeryLatte engine.
@@ -135,21 +138,29 @@ class Metabox {
 	private $detailCommonLogic;
 
 	/**
+	 * Carrier modal.
+	 *
+	 * @var CarrierModal
+	 */
+	private $carrierModal;
+
+	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine               $latte_engine PacketeryLatte engine.
-	 * @param MessageManager       $message_manager Message manager.
-	 * @param Helper               $helper Helper.
-	 * @param Request              $request Http request.
-	 * @param Provider             $optionsProvider Options provider.
-	 * @param Repository           $orderRepository Order repository.
-	 * @param Page                 $logPage Log page.
-	 * @param AttributeMapper      $mapper AttributeMapper.
+	 * @param Engine               $latte_engine         PacketeryLatte engine.
+	 * @param MessageManager       $message_manager      Message manager.
+	 * @param Helper               $helper               Helper.
+	 * @param Request              $request              Http request.
+	 * @param Provider             $optionsProvider      Options provider.
+	 * @param Repository           $orderRepository      Order repository.
+	 * @param Page                 $logPage              Log page.
+	 * @param AttributeMapper      $mapper               AttributeMapper.
 	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository     $carrierRepository Carrier repository.
-	 * @param Order                $orderValidator Order validator.
-	 * @param DetailCommonLogic    $detailCommonLogic Detail common logic.
-	 * @param Form                 $orderForm Order details.
+	 * @param EntityRepository     $carrierRepository    Carrier repository.
+	 * @param Order                $orderValidator       Order validator.
+	 * @param DetailCommonLogic    $detailCommonLogic    Detail common logic.
+	 * @param Form                 $orderForm            Order details.
+	 * @param CarrierModal         $carrierModal         Carrier change modal.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -164,7 +175,8 @@ class Metabox {
 		EntityRepository $carrierRepository,
 		Order $orderValidator,
 		DetailCommonLogic $detailCommonLogic,
-		Form $orderForm
+		Form $orderForm,
+		CarrierModal $carrierModal
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
@@ -179,6 +191,7 @@ class Metabox {
 		$this->orderValidator       = $orderValidator;
 		$this->detailCommonLogic    = $detailCommonLogic;
 		$this->orderForm            = $orderForm;
+		$this->carrierModal         = $carrierModal;
 	}
 
 	/**
@@ -197,44 +210,87 @@ class Metabox {
 		}
 
 		$this->initializeForm();
+		$parts = $this->prepareMetaboxParts();
 
-		add_meta_box(
-			'packetery_metabox',
-			__( 'Packeta', 'packeta' ),
-			array(
-				$this,
-				'render_metabox',
-			),
-			Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
-			'side',
-			'high'
-		);
+		if ( ! empty( $parts ) ) {
+			add_meta_box(
+				'packetery_metabox',
+				__( 'Packeta', 'packeta' ),
+				array(
+					$this,
+					'render_metabox',
+				),
+				Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
+				'side',
+				'high'
+			);
+		}
 	}
 
 	/**
-	 *  Renders metabox
+	 * Renders metabox content.
 	 */
 	public function render_metabox(): void {
+		$parts = $this->prepareMetaboxParts();
+
+		if ( isset( $parts[ self::PART_ERROR ] ) ) {
+			Module\Helper::renderString( $parts[ self::PART_ERROR ] );
+
+			return;
+		}
+
+		if ( isset( $parts[ self::PART_CARRIER_CHANGE ] ) ) {
+			Module\Helper::renderString( $parts[ self::PART_CARRIER_CHANGE ] );
+		}
+		if ( isset( $parts[ self::PART_CARRIER_CHANGE ], $parts[ self::PART_MAIN ] ) ) {
+			Module\Helper::renderString( '<hr>' );
+		}
+		if ( isset( $parts[ self::PART_MAIN ] ) ) {
+			Module\Helper::renderString( $parts[ self::PART_MAIN ] );
+		}
+	}
+
+	/**
+	 * Prepares metabox parts.
+	 */
+	private function prepareMetaboxParts(): array {
+		static $partsCache;
+
+		if ( isset( $partsCache ) ) {
+			return $partsCache;
+		}
+
 		$orderId = $this->detailCommonLogic->getOrderId();
 		if ( null === $orderId ) {
-			return;
+			$partsCache = [];
+
+			return $partsCache;
 		}
 
 		try {
 			$order = $this->orderRepository->getById( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
-			$this->latte_engine->render(
-				PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
-				[
-					'errorMessage' => $exception->getMessage(),
-				]
-			);
+			$partsCache = [
+				self::PART_ERROR => $this->latte_engine->renderToString(
+					PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
+					[
+						'errorMessage' => $exception->getMessage(),
+					]
+				),
+			];
 
-			return;
+			return $partsCache;
+		}
+
+		$parts = [];
+		if ( $this->carrierModal->canBeDisplayed() ) {
+			$parts[ self::PART_CARRIER_CHANGE ] = $this->carrierModal->getMetaboxHtml();
 		}
 
 		if ( null === $order ) {
-			return;
+			$partsCache = $parts;
+
+			return $partsCache;
 		}
 
 		$showLogsLink = null;
@@ -269,7 +325,8 @@ class Metabox {
 					PacketActionsCommonLogic::PARAM_PACKET_ID => $packetId,
 				]
 			);
-			$this->latte_engine->render(
+
+			$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                  => $order,
@@ -302,7 +359,9 @@ class Metabox {
 				]
 			);
 
-			return;
+			$partsCache = $parts;
+
+			return $partsCache;
 		}
 
 		$this->orderForm->setDefaults(
@@ -373,7 +432,7 @@ class Metabox {
 			}
 		}
 
-		$this->latte_engine->render(
+		$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
 				'form'                   => $this->form,
@@ -412,6 +471,10 @@ class Metabox {
 				],
 			]
 		);
+
+		$partsCache = $parts;
+
+		return $partsCache;
 	}
 
 	/**
