@@ -543,7 +543,7 @@ class Checkout {
 			$address = $this->mapper->toCarDeliveryAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $address );
 			$orderEntity->setAddressValidated( true );
-			$orderEntity->setCarDeliveryId($checkoutData[ Order\Attribute::CAR_DELIVERY_ID] );
+			$orderEntity->setCarDeliveryId( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] );
 		}
 
 		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
@@ -1312,8 +1312,10 @@ class Checkout {
 
 		if (
 			empty( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
-			! empty( $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] &&
-			! $this->isCarDeliveryOrder())
+			! empty(
+				$savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] &&
+				! $this->isCarDeliveryOrder()
+			)
 		) {
 			foreach ( Order\Attribute::$homeDeliveryAttrs as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
