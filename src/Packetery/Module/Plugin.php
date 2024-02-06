@@ -970,6 +970,40 @@ class Plugin {
 			return;
 		}
 
+		if ( is_multisite() ) {
+			self::cleanUpRepositoriesForMultisite();
+		} else {
+			self::cleanUpRepositories();
+		}
+	}
+
+	/**
+	 * Drops all plugin tables when Multisite is enabled.
+	 *
+	 * @return void
+	 */
+	private static function cleanUpRepositoriesForMultisite(): void {
+		$sites = get_sites(
+			[
+				'fields'            => 'ids',
+				'number'            => 0,
+				'update_site_cache' => false,
+			]
+		);
+
+		foreach ( $sites as $site ) {
+			switch_to_blog( $site );
+			self::cleanUpRepositories();
+			restore_current_blog();
+		}
+	}
+
+	/**
+	 * Drops all plugin tables for a single site.
+	 *
+	 * @return void
+	 */
+	private static function cleanUpRepositories(): void {
 		$container = require PACKETERY_PLUGIN_DIR . '/bootstrap.php';
 
 		$optionsRepository = $container->getByType( Options\Repository::class );
@@ -986,6 +1020,12 @@ class Plugin {
 
 		$orderRepository = $container->getByType( Order\Repository::class );
 		$orderRepository->drop();
+
+		$customsDeclarationItemsRepository = $container->getByType( CustomsDeclaration\Repository::class );
+		$customsDeclarationItemsRepository->dropItems();
+
+		$customsDeclarationRepository = $container->getByType( CustomsDeclaration\Repository::class );
+		$customsDeclarationRepository->drop();
 	}
 
 	/**
