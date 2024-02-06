@@ -247,7 +247,7 @@ class Order {
 	/**
 	 * Order entity constructor.
 	 *
-	 * @param string  $number Order id.
+	 * @param string  $number  Order id.
 	 * @param Carrier $carrier Carrier entity.
 	 */
 	public function __construct(
