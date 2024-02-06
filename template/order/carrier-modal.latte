@@ -1,6 +1,6 @@
 <script type="text/template" id="tmpl-{$id}">
-    <div class="wc-backbone-modal" data-packetery-label-print-modal>
-        {form $form}
+    <div class="wc-backbone-modal" data-packetery-carrier-modal>
+        {form $form, 'id' => 'order-carrier-modal-form'}
         <div class="wc-backbone-modal-content">
             <section class="wc-backbone-modal-main" role="main">
                 <header class="wc-backbone-modal-header">
@@ -14,11 +14,8 @@
                         <table>
                             <tbody>
                             <tr>
-                                <td>{label offset /}</td>
-                                <td>
-                                    {input offset}
-                                    {input packet_id}
-                                </td>
+                                <td>{label carrierId}</td>
+                                <td>{input carrierId}</td>
                             </tr>
                             </tbody>
                         </table>
@@ -28,8 +25,7 @@
                     <div class="inner">
                         <div id="publishing-action">
                             <span class="spinner"></span>
-                            {* TODO: button-sencondary doesn't exist, fixing the typo has no effect on code. Needs to be investigated. *}
-                            {input cancel, 'class' => 'button button-sencondary button-large modal-close modal-close-link'}
+                            {input cancel, 'class' => 'button button-secondary button-large modal-close modal-close-link'}
                             {input submit, 'class' => 'button button-primary button-large'}
                         </div>
                     </div>

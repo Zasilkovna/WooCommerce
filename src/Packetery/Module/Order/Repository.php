@@ -18,6 +18,7 @@ use Packetery\Core\Entity\Address;
 use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\WpdbAdapter;
@@ -67,26 +68,36 @@ class Repository {
 	private $carrierRepository;
 
 	/**
+	 * Customs declaration repository.
+	 *
+	 * @var CustomsDeclaration\Repository
+	 */
+	private $customsDeclarationRepository;
+
+	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
-	 * @param Builder                   $orderFactory       Order factory.
-	 * @param Core\Helper               $helper             Helper.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param Carrier\EntityRepository  $carrierRepository  Carrier repository.
+	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
+	 * @param Builder                       $orderFactory                 Order factory.
+	 * @param Core\Helper                   $helper                       Helper.
+	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
+	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
+	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
 		Builder $orderFactory,
 		Core\Helper $helper,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		Carrier\EntityRepository $carrierRepository
+		Carrier\EntityRepository $carrierRepository,
+		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
-		$this->wpdbAdapter        = $wpdbAdapter;
-		$this->builder            = $orderFactory;
-		$this->helper             = $helper;
-		$this->pickupPointsConfig = $pickupPointsConfig;
-		$this->carrierRepository  = $carrierRepository;
+		$this->wpdbAdapter                  = $wpdbAdapter;
+		$this->builder                      = $orderFactory;
+		$this->helper                       = $helper;
+		$this->pickupPointsConfig           = $pickupPointsConfig;
+		$this->carrierRepository            = $carrierRepository;
+		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
 
 	/**
@@ -470,6 +481,17 @@ class Repository {
 	}
 
 	/**
+	 * Saves order data.
+	 *
+	 * @param array $orderData Order data.
+	 *
+	 * @return void
+	 */
+	public function saveData( array $orderData ): void {
+		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_order, $orderData, null, 'REPLACE' );
+	}
+
+	/**
 	 * Loads order entities by list of ids.
 	 *
 	 * @param array $orderIds Order ids.
@@ -693,13 +715,14 @@ class Repository {
 	}
 
 	/**
-	 * Deletes data from custom table.
+	 * Deletes order data including customs declaration and its items from custom tables.
 	 *
 	 * @param int $orderId Order id.
 	 *
 	 * @return void
 	 */
 	public function delete( int $orderId ): void {
+		$this->customsDeclarationRepository->delete( (string) $orderId );
 		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_order, [ 'id' => $orderId ], '%d' );
 	}
 

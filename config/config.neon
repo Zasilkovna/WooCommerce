@@ -8,6 +8,8 @@ parameters:
 services:
 	- Packetery\Module\Order\MetaboxesWrapper
 	- Packetery\Module\Order\Form
+	- Packetery\Module\Order\CarrierModal
+	- Packetery\Module\Order\CarrierModalFormFactory
 	- Packetery\Module\ContextResolver
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
