@@ -28,6 +28,13 @@ class Order {
 	private $number;
 
 	/**
+	 * Car Delivery id.
+	 *
+	 * @var string
+	 */
+	private $carDeliveryId;
+
+	/**
 	 * Custom order number.
 	 *
 	 * @var string|null
@@ -240,7 +247,7 @@ class Order {
 	/**
 	 * Order entity constructor.
 	 *
-	 * @param string  $number  Order id.
+	 * @param string $number Order id.
 	 * @param Carrier $carrier Carrier entity.
 	 */
 	public function __construct(
@@ -252,6 +259,27 @@ class Order {
 		$this->isExported       = false;
 		$this->isLabelPrinted   = false;
 		$this->addressValidated = false;
+	}
+
+	/**
+	 * Gets Car Delivery id.
+	 *
+	 * @return string
+	 */
+	public function getCarDeliveryId(): ?string
+	{
+		return $this->carDeliveryId;
+	}
+
+	/**
+	 * Sets Car Delivery id.
+	 *
+	 * @param string $carDeliveryId
+	 * @return void
+	 */
+	public function setCarDeliveryId(string $carDeliveryId): void
+	{
+		$this->carDeliveryId = $carDeliveryId;
 	}
 
 	/**
