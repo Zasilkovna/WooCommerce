@@ -874,7 +874,6 @@ class Checkout {
 		$chosenShippingMethod = $this->calculateShipping();
 		$carrierId            = substr( $chosenShippingMethod, strlen( 'packetery_carrier_' ) );
 		if (
-			false === $this->isPacketeryShippingMethod( $chosenShippingMethod ) ||
 			false === $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId )
 		) {
 			return null;
