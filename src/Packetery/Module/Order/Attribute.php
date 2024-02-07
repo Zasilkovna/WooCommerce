@@ -125,7 +125,8 @@ class Attribute {
 	 */
 	public static $carDeliveryAttrs = [
 		'carDeliveryId'           => [
-			'name' => self::CAR_DELIVERY_ID,
+			'name'                => self::CAR_DELIVERY_ID,
+			'isWidgetResultField' => false,
 		],
 		'street'                  => [
 			'name' => self::ADDRESS_STREET,
@@ -143,10 +144,12 @@ class Attribute {
 			'name' => self::ADDRESS_COUNTRY,
 		],
 		'expectedDeliveryDayFrom' => [
-			'name' => self::EXPECTED_DELIVERY_FROM,
+			'name'                => self::EXPECTED_DELIVERY_FROM,
+			'isWidgetResultField' => false,
 		],
 		'expectedDeliveryDayTo'   => [
-			'name' => self::EXPECTED_DELIVERY_TO,
+			'name'                => self::EXPECTED_DELIVERY_TO,
+			'isWidgetResultField' => false,
 		],
 	];
 }
