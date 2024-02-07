@@ -219,7 +219,6 @@ class OptionsPage {
 				->addRule( $form::MIN, null, 0 )
 				->setDefaultValue( 0 );
 
-
 			$shippingTimeCutOff = $form->addText( 'shipping_time_cut_off', __( 'Shipping time cut off', 'packeta' ) . ':' );
 			$shippingTimeCutOff->setHtmlAttribute( 'class', 'date-picker' )
 				->setHtmlType( 'time' )
