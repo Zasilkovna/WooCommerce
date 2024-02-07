@@ -13,6 +13,7 @@ use DateTime;
 use Packetery\Core;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Entity;
+use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
@@ -872,7 +873,7 @@ class Checkout {
 	 */
 	private function getExpeditionDay(): ?string {
 		$chosenShippingMethod = $this->calculateShipping();
-		$carrierId            = substr( $chosenShippingMethod, strlen( 'packetery_carrier_' ) );
+		$carrierId            = OptionPrefixer::removePrefix( $chosenShippingMethod );
 		if ( false === $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId ) ) {
 			return null;
 		}
