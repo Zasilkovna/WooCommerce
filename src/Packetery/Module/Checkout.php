@@ -204,7 +204,7 @@ class Checkout {
 	}
 
 	/**
-	 * Check if chosen shipping rate is bound with Packeta home delivery
+	 * Check if chosen shipping rate is bound with Packeta car delivery
 	 *
 	 * @return bool
 	 */
@@ -336,10 +336,12 @@ class Checkout {
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
 			[
-				'fields' => array_merge(
-					array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
-					array_column( Order\Attribute::$homeDeliveryAttrs, 'name' ),
-					array_column( Order\Attribute::$carDeliveryAttrs, 'name' )
+				'fields' => array_unique(
+					array_merge(
+						array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
+						array_column( Order\Attribute::$homeDeliveryAttrs, 'name' ),
+						array_column( Order\Attribute::$carDeliveryAttrs, 'name' )
+					)
 				),
 			]
 		);
@@ -536,7 +538,12 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
-		// TODO: if car delivery, save.
+		if ( $this->isCarDeliveryOrder() ) {
+			$address = $this->mapper->toCarDeliveryAddress( $checkoutData );
+			$orderEntity->setDeliveryAddress( $address );
+			$orderEntity->setAddressValidated( true );
+			$orderEntity->setCarDeliveryId( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] );
+		}
 
 		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
 			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
@@ -1307,6 +1314,15 @@ class Checkout {
 			! empty( $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] )
 		) {
 			foreach ( Order\Attribute::$homeDeliveryAttrs as $attribute ) {
+				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
+			}
+		}
+
+		if (
+			empty( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) &&
+			! empty( $savedCarrierData[ Order\Attribute::CAR_DELIVERY_ID ] )
+		) {
+			foreach ( Order\Attribute::$carDeliveryAttrs as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
 			}
 		}

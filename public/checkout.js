@@ -476,7 +476,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 						return;
 					}
 
-					// fillHiddenFields( carrierRateId, settings.carDeliveryAttrs, result );
 					fillHiddenFields( carrierRateId, settings.carDeliveryAttrs, selectedAddress );
 					fillHiddenField( carrierRateId, settings.carDeliveryAttrs['carDeliveryId'].name, result.id );
 					fillHiddenField( carrierRateId, settings.carDeliveryAttrs['expectedDeliveryDayFrom'].name, result.expectedDeliveryDayFrom );

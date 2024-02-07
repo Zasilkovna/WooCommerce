@@ -111,14 +111,14 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagManager $featureFlag
 	) {
-		$this->latteEngine             = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
-		$this->formFactory             = $formFactory;
-		$this->httpRequest             = $httpRequest;
-		$this->countryListingPage      = $countryListingPage;
-		$this->messageManager          = $messageManager;
-		$this->pickupPointsConfig      = $pickupPointsConfig;
-		$this->featureFlag             = $featureFlag;
+		$this->latteEngine        = $latteEngine;
+		$this->carrierRepository  = $carrierRepository;
+		$this->formFactory        = $formFactory;
+		$this->httpRequest        = $httpRequest;
+		$this->countryListingPage = $countryListingPage;
+		$this->messageManager     = $messageManager;
+		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->featureFlag        = $featureFlag;
 	}
 
 	/**

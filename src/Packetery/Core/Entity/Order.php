@@ -28,6 +28,13 @@ class Order {
 	private $number;
 
 	/**
+	 * Car Delivery id.
+	 *
+	 * @var string
+	 */
+	private $carDeliveryId;
+
+	/**
 	 * Custom order number.
 	 *
 	 * @var string|null
@@ -252,6 +259,25 @@ class Order {
 		$this->isExported       = false;
 		$this->isLabelPrinted   = false;
 		$this->addressValidated = false;
+	}
+
+	/**
+	 * Gets Car Delivery id.
+	 *
+	 * @return string
+	 */
+	public function getCarDeliveryId(): ?string {
+		return $this->carDeliveryId;
+	}
+
+	/**
+	 * Sets Car Delivery id.
+	 *
+	 * @param string $carDeliveryId Car delivery ID.
+	 * @return void
+	 */
+	public function setCarDeliveryId( string $carDeliveryId ): void {
+		$this->carDeliveryId = $carDeliveryId;
 	}
 
 	/**
