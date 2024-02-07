@@ -872,7 +872,11 @@ class Checkout {
 	 */
 	private function getExpeditionDay(): ?string {
 		$chosenShippingMethod = $this->calculateShipping();
-		if ( false === $this->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
+		$carrierId = substr($chosenShippingMethod, strlen('packetery_carrier_'));
+		if (
+			false === $this->isPacketeryShippingMethod( $chosenShippingMethod ) ||
+		    false === $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId )
+		) {
 			return null;
 		}
 
