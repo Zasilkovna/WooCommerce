@@ -28,6 +28,12 @@ if ( PACKETERY_DEBUG && false === wp_doing_cron() ) {
 }
 
 $configurator->addConfig( __DIR__ . '/config/config.neon' );
+
+$localConfigFile = __DIR__ . '/config/config.local.neon';
+if ( file_exists( $localConfigFile ) ) {
+	$configurator->addConfig( $localConfigFile ); // Local Development ENV only!
+}
+
 $configurator->setTempDirectory( __DIR__ . '/temp' );
 $configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->setAutoRefresh( false )->register();
 

@@ -1,0 +1,3 @@
+parameters:
+    carDeliveryConfig:
+        sample: false // Change to true in order to enable testing sample cars for Packeta Car Delivery

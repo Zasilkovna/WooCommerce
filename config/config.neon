@@ -4,6 +4,8 @@ parameters:
         active: true
         validTo: 2023-03-31 23:59:59
         url: https://forms.office.com/e/2YjCu9ZEt0
+    carDeliveryConfig:
+        sample: false
 
 services:
 	- Packetery\Module\Order\MetaboxesWrapper
@@ -37,6 +39,7 @@ services:
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
+	- Packetery\Module\CarDeliveryConfig(%carDeliveryConfig%)
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
