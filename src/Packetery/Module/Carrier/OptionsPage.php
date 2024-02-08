@@ -216,8 +216,7 @@ class OptionsPage {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )
-				->addRule( $form::MIN, null, 0 )
-				->setDefaultValue( 0 );
+				->addRule( $form::MIN, null, 0 );
 
 			$shippingTimeCutOff = $form->addText( 'shipping_time_cut_off', __( 'Shipping time cut off', 'packeta' ) . ':' );
 			$shippingTimeCutOff->setHtmlAttribute( 'class', 'date-picker' )
