@@ -470,6 +470,7 @@ class Plugin {
 		$this->metaboxesWrapper->register();
 
 		$this->checkout->register_hooks();
+		add_action( 'init', [ $this->checkout, 'transientCleanup' ] );
 		$this->productTab->register();
 		$this->cronService->register();
 		$this->productCategoryFormFields->register();
