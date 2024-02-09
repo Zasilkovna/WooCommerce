@@ -369,6 +369,15 @@ class Order {
 	}
 
 	/**
+	 * Checks if is home delivery. In that case pointId is not set.
+	 *
+	 * @return bool
+	 */
+	public function isCarDelivery(): bool {
+		return in_array( $this->carrier->getId(), Carrier::CAR_DELIVERY_CARRIERS, true );
+	}
+
+	/**
 	 * Tells if order has to be shipped to pickup point, run by Packeta or an external carrier.
 	 *
 	 * @return bool

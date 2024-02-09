@@ -179,7 +179,7 @@ class CreatePacket {
 			$this->carrierPickupPoint = $pickupPoint->getId();
 		}
 
-		if ( $order->isHomeDelivery() ) {
+		if ( $order->isHomeDelivery() || $order->isCarDelivery() ) {
 			$address = $order->getDeliveryAddress();
 			if ( null !== $address ) {
 				$this->street = $address->getStreet();

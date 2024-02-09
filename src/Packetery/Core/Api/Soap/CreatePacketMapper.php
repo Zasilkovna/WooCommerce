@@ -66,7 +66,7 @@ class CreatePacketMapper {
 			$createPacketData['carrierPickupPoint'] = $pickupPoint->getId();
 		}
 
-		if ( $order->isHomeDelivery() ) {
+		if ( $order->isHomeDelivery() || $order->isCarDelivery() ) {
 			$address = $order->getDeliveryAddress();
 			if ( null !== $address ) {
 				$createPacketData['street'] = $address->getStreet();
@@ -90,11 +90,18 @@ class CreatePacketMapper {
 			}
 		}
 
+		$createPacketData['attributes'] = [];
+
+		if ( $order->isCarDelivery() ) {
+			$createPacketData['attributes']['attribute'] = [
+				'key'   => 'carDeliveryId',
+				'value' => $order->getCarDeliveryId(),
+			];
+		}
+
 		if ( false === $carrier->requiresCustomsDeclarations() ) {
 			return $createPacketData;
 		}
-
-		$createPacketData['attributes'] = [];
 
 		$customsDeclaration = $order->getCustomsDeclaration();
 		if ( null === $customsDeclaration ) {
