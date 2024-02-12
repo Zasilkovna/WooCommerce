@@ -89,3 +89,4 @@ services:
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
 	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
 	- Packetery\Module\Options\FeatureFlagManager
+	- Packetery\Module\Options\TransientPurger

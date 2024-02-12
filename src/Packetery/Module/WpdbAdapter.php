@@ -394,4 +394,15 @@ class WpdbAdapter {
 		return (string) $this->wpdb->insert_id;
 	}
 
+	/**
+	 * Wpdb esc_like method proxy.
+	 *
+	 * @param string $text Text to escape.
+	 *
+	 * @return string
+	 */
+	public function escLike( string $text ): string {
+		return $this->wpdb->esc_like( $text );
+	}
+
 }
