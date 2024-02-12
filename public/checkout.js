@@ -105,6 +105,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var showHomeDeliveryAddress = function(carrierRateId) {
 			resetWidgetInfoClasses();
+
 			var destinationAddress = getCheckoutAddress();
 			if (getRateAttrValue( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '0' ) === '1') {
 				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', ''));
@@ -121,14 +122,24 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var showCarDeliveryAddress = function(carrierRateId) {
 			resetWidgetInfoClasses();
+
+
 			var destinationAddress = getCheckoutAddress();
 			var isAddressSelected = getRateAttrValue( carrierRateId, 'packetery_car_delivery_id', false ) !== false;
 			if (isAddressSelected) {
-				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', ''));
-				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_address_city', ''));
-				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_address_postCode', ''));
+				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_car_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_car_address_houseNumber', ''));
+				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_car_address_city', ''));
+				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_car_address_postCode', ''));
 
 				$widgetDiv.find('.packeta-widget-selected-address').html(
+					getRateAttrValue(carrierRateId, 'packetery_car_address_street', '')
+					+ ' ' +
+					getRateAttrValue(carrierRateId, 'packetery_car_address_houseNumber', '')
+					+ ', ' +
+					getRateAttrValue(carrierRateId, 'packetery_car_address_city', '')
+					+ ', ' +
+					getRateAttrValue(carrierRateId, 'packetery_car_address_postCode', '')
+					+ ' ' +
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_from', '')
 					+ ' - ' +
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_to', '')
@@ -464,6 +475,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.layout = 'cd';
 				widgetOptions.appIdentity = settings.appIdentity;
 				widgetOptions.expeditionDay = settings.expeditionDay;
+				widgetOptions.sample = true;
 
 				console.log('Address widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
