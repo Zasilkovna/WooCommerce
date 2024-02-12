@@ -591,15 +591,6 @@ class Checkout {
 	}
 
 	/**
-	 * This ensures that an expired transient is deleted without waiting for it to be used.
-	 *
-	 * @return void
-	 */
-	public function transientCleanup(): void {
-		get_transient( $this->getTransientNamePacketaCheckoutData() );
-	}
-
-	/**
 	 * Updates shipping rates cost based on cart properties.
 	 * To test, change the shipping price during the transition from the first to the second step of the cart.
 	 */
