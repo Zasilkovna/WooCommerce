@@ -36,11 +36,6 @@ class Attribute {
 	public const ADDRESS_LONGITUDE    = 'packetery_address_longitude';
 
 	public const CAR_DELIVERY_ID        = 'packetery_car_delivery_id';
-	public const CAR_ADDRESS_HOUSE_NUMBER = 'packetery_car_address_houseNumber';
-	public const CAR_ADDRESS_STREET       = 'packetery_car_address_street';
-	public const CAR_ADDRESS_CITY         = 'packetery_car_address_city';
-	public const CAR_ADDRESS_POST_CODE    = 'packetery_car_address_postCode';
-	public const CAR_ADDRESS_COUNTRY      = 'packetery_car_address_country';
 	public const EXPECTED_DELIVERY_FROM = 'packetery_car_delivery_from';
 	public const EXPECTED_DELIVERY_TO   = 'packetery_car_delivery_to';
 
@@ -134,19 +129,19 @@ class Attribute {
 			'isWidgetResultField' => false,
 		],
 		'street'                  => [
-			'name' => self::CAR_ADDRESS_STREET,
+			'name' => self::ADDRESS_STREET,
 		],
 		'houseNumber'             => [
-			'name' => self::CAR_ADDRESS_HOUSE_NUMBER,
+			'name' => self::ADDRESS_HOUSE_NUMBER,
 		],
 		'city'                    => [
-			'name' => self::CAR_ADDRESS_CITY,
+			'name' => self::ADDRESS_CITY,
 		],
 		'postalCode'              => [
-			'name' => self::CAR_ADDRESS_POST_CODE,
+			'name' => self::ADDRESS_POST_CODE,
 		],
 		'country'                 => [
-			'name' => self::CAR_ADDRESS_COUNTRY,
+			'name' => self::ADDRESS_COUNTRY,
 		],
 		'expectedDeliveryDayFrom' => [
 			'name'                => self::EXPECTED_DELIVERY_FROM,
