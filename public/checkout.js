@@ -13,6 +13,20 @@ var packeteryLoadCheckout = function( $, settings ) {
 		} );
 	}
 
+	var getCheckoutAddress = function () {
+		var section = '';
+		if ( $( '#shipping_country:visible' ).length === 1 ) {
+			section = 'shipping';
+		} else {
+			section = 'billing';
+		}
+		return {
+			street: $( '#' + section + '_address_1' ),
+			city: $( '#' + section + '_city' ),
+			postCode: $( '#' + section + '_postcode' )
+		}
+	}
+
 	var packeteryCheckout = function( settings ) {
 		var rateAttrValues = {};
 		if ( settings.savedData ) {
@@ -91,16 +105,12 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var showHomeDeliveryAddress = function(carrierRateId) {
 			resetWidgetInfoClasses();
+			var destinationAddress = getCheckoutAddress();
 			if (getRateAttrValue( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '0' ) === '1') {
-				$widgetDiv.find( '.packeta-widget-selected-address' ).html(
-					getRateAttrValue( carrierRateId, 'packetery_address_street', '' )
-					+ ' ' +
-					getRateAttrValue( carrierRateId, 'packetery_address_houseNumber', '' )
-					+ ', ' +
-					getRateAttrValue( carrierRateId, 'packetery_address_city', '' )
-					+ ', ' +
-					getRateAttrValue( carrierRateId, 'packetery_address_postCode', '' )
-				);
+				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', ''));
+				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_address_city', ''));
+				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_address_postCode', ''));
+
 				$widgetDiv.find( '.packeta-widget-info' ).addClass('packeta-widget-info-success').html(settings.translations.addressIsValidated);
 			} else if ( 'required' === getAddressValidation( carrierRateId ) ) {
 				$widgetDiv.find( '.packeta-widget-info' ).addClass( 'packeta-widget-info-error' ).html( settings.translations.addressIsNotValidatedAndRequiredByCarrier );
@@ -111,17 +121,14 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 		var showCarDeliveryAddress = function(carrierRateId) {
 			resetWidgetInfoClasses();
+			var destinationAddress = getCheckoutAddress();
 			var isAddressSelected = getRateAttrValue( carrierRateId, 'packetery_car_delivery_id', false ) !== false;
 			if (isAddressSelected) {
+				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', ''));
+				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_address_city', ''));
+				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_address_postCode', ''));
+
 				$widgetDiv.find('.packeta-widget-selected-address').html(
-					getRateAttrValue(carrierRateId, 'packetery_address_street', '')
-					+ ' ' +
-					getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', '')
-					+ ', ' +
-					getRateAttrValue(carrierRateId, 'packetery_address_city', '')
-					+ ', ' +
-					getRateAttrValue(carrierRateId, 'packetery_address_postCode', '')
-					+ ' ' +
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_from', '')
 					+ ' - ' +
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_to', '')
