@@ -8,3 +8,4 @@
 **/.DS_Store
 /tests-coverage/
 /.phpunit.result.cache
+/config/config.local.neon
