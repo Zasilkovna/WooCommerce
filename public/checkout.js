@@ -15,7 +15,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 	var getCheckoutAddress = function () {
 		var section = '';
-		if ( $( '#shipping_country:visible' ).length === 1 ) {
+		if ( $( '#ship-to-different-address-checkbox:checked' ) ) {
 			section = 'shipping';
 		} else {
 			section = 'billing';
@@ -124,10 +124,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 			resetWidgetInfoClasses();
 
 			var destinationAddress = getCheckoutAddress();
-			console.log(carrierRateId);
 			var isAddressSelected = getRateAttrValue( carrierRateId, 'packetery_car_delivery_id', false ) !== false;
-			console.log(isAddressSelected);
-			console.log(getRateAttrValue(carrierRateId, 'packetery_address_street', ''));
 			if (isAddressSelected) {
 				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', ''));
 				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_address_city', ''));
