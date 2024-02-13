@@ -1,7 +1,6 @@
 {varType Packetery\Core\Entity\Order $order}
 {varType bool $displayPickupPointInfo}
 {var $pickupPoint = $order->getPickupPoint()}
-{var $validatedDeliveryAddress = $order->getValidatedDeliveryAddress()}
 
 <section class="packetery-order-detail">
 	<h2 class="woocommerce-order-details__title">{$translations['packeta']}</h2>
@@ -24,16 +23,6 @@
 				<th scope="row">{$translations['address']}</th>
 				<td>
 					{$pickupPoint->getFullAddress()}
-				</td>
-			</tr>
-		{/if}
-
-		{if $validatedDeliveryAddress}
-			<tr>
-				<th scope="row">{$translations['validatedAddress']}</th>
-				<td>
-					{$validatedDeliveryAddress->getStreet()} {$validatedDeliveryAddress->getHouseNumber()},
-					{$validatedDeliveryAddress->getZip()} {$validatedDeliveryAddress->getCity()}
 				</td>
 			</tr>
 		{/if}
