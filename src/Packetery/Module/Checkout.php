@@ -29,8 +29,9 @@ use WC_Tax;
  */
 class Checkout {
 
-	private const BUTTON_RENDERER_TABLE_ROW  = 'table-row';
-	private const BUTTON_RENDERER_AFTER_RATE = 'after-rate';
+	private const BUTTON_RENDERER_TABLE_ROW     = 'table-row';
+	private const BUTTON_RENDERER_AFTER_RATE    = 'after-rate';
+	public const TRANSIENT_CHECKOUT_DATA_PREFIX = 'packeta_checkout_data_';
 
 	/**
 	 * PacketeryLatte engine
@@ -1349,6 +1350,6 @@ class Checkout {
 			WC()->initialize_session();
 			$token = WC()->session->get_customer_id();
 		}
-		return 'packeta_checkout_data_' . $token;
+		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
 	}
 }

@@ -401,6 +401,21 @@ class Plugin {
 	}
 
 	/**
+	 * Gets list of multisite sites.
+	 *
+	 * @return array
+	 */
+	public static function getSites(): array {
+		return get_sites(
+			[
+				'fields'            => 'ids',
+				'number'            => 0,
+				'update_site_cache' => false,
+			]
+		);
+	}
+
+	/**
 	 * Method to register hooks
 	 */
 	public function run(): void {
@@ -995,13 +1010,7 @@ class Plugin {
 	 * @return void
 	 */
 	private static function cleanUpRepositoriesForMultisite(): void {
-		$sites = get_sites(
-			[
-				'fields'            => 'ids',
-				'number'            => 0,
-				'update_site_cache' => false,
-			]
-		);
+		$sites = self::getSites();
 
 		foreach ( $sites as $site ) {
 			switch_to_blog( $site );

@@ -43,4 +43,29 @@ class Repository {
 		return $this->wpdbAdapter->get_results( 'SELECT `option_name` FROM `' . $this->wpdbAdapter->options . "` WHERE `option_name` LIKE 'packetery%'" );
 	}
 
+	/**
+	 * Fork of delete_expired_transients.
+	 *
+	 * @param string $prefix Custom transient prefix.
+	 *
+	 * @return int|bool
+	 */
+	public function deleteExpiredTransientsByPrefix( string $prefix ) {
+		$transientPrefix        = sprintf( '_transient_%s', $prefix );
+		$transientTimeoutPrefix = sprintf( '_transient_timeout_%s', $prefix );
+
+		return $this->wpdbAdapter->query(
+			$this->wpdbAdapter->prepare(
+				"DELETE a, b FROM {$this->wpdbAdapter->options} a, {$this->wpdbAdapter->options} b
+				WHERE a.option_name LIKE %s
+				AND a.option_name NOT LIKE %s
+				AND b.option_name = CONCAT( '_transient_timeout_', SUBSTRING( a.option_name, 12 ) )
+				AND b.option_value < %d",
+				$this->wpdbAdapter->escLike( $transientPrefix ) . '%',
+				$this->wpdbAdapter->escLike( $transientTimeoutPrefix ) . '%',
+				time()
+			)
+		);
+	}
+
 }
