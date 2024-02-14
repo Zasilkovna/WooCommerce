@@ -134,7 +134,9 @@ class BulkActions {
 				if ( null !== $wcOrder ) {
 					$submissionResult = $this->packetSubmitter->submitPacket(
 						$wcOrder,
-						$this->optionsProvider->isOrderStatusAutoChangeEnabled()
+						$this->optionsProvider->isOrderStatusAutoChangeEnabled(),
+						null,
+						true
 					);
 					$finalSubmissionResult->merge( $submissionResult );
 				}

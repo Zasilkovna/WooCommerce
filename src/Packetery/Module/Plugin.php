@@ -521,6 +521,8 @@ class Plugin {
 
 		add_action( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
 		$this->dashboardWidget->register();
+
+		$this->packetSubmitter->registerCronAction();
 	}
 
 	/**

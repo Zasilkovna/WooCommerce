@@ -31,6 +31,7 @@ use Packetery\Module;
  * @package Packetery\Module\Order
  */
 class PacketSubmitter {
+	const HOOK_PACKET_STATUS_SYNC = 'packetery_packet_status_sync_hook';
 
 	/**
 	 * SOAP API Client.
@@ -110,6 +111,13 @@ class PacketSubmitter {
 	private $customsDeclarationRepository;
 
 	/**
+	 * Packet synchronizer.
+	 *
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
@@ -123,6 +131,7 @@ class PacketSubmitter {
 	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
 	 * @param Module\Options\Provider       $optionsProvider              Options provider.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
+	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -135,7 +144,8 @@ class PacketSubmitter {
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
 		Module\Options\Provider $optionsProvider,
-		CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository,
+		PacketSynchronizer $packetSynchronizer
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidator;
@@ -148,6 +158,7 @@ class PacketSubmitter {
 		$this->commonLogic                  = $commonLogic;
 		$this->optionsProvider              = $optionsProvider;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
+		$this->packetSynchronizer           = $packetSynchronizer;
 	}
 
 	/**
@@ -183,7 +194,8 @@ class PacketSubmitter {
 		$submissionResult         = $this->submitPacket(
 			$this->orderRepository->getWcOrderById( (int) $order->getNumber() ),
 			$this->optionsProvider->isOrderStatusAutoChangeEnabled(),
-			$order
+			$order,
+			true
 		);
 		$resultsCounter           = $submissionResult->getCounter();
 		$submissionResultMessages = $this->getTranslatedSubmissionMessages( $resultsCounter, (int) $order->getNumber() );
@@ -221,16 +233,18 @@ class PacketSubmitter {
 	/**
 	 * Submits packet data to Packeta API.
 	 *
-	 * @param WC_Order          $wcOrder           WC order.
-	 * @param bool              $updateOrderStatus Updates WC order status if packet was successfully created. Value is based on plugin settings.
-	 * @param Entity\Order|null $order             Order.
+	 * @param WC_Order          $wcOrder                    WC order.
+	 * @param bool              $updateOrderStatus          Updates WC order status if packet was successfully created. Value is based on plugin settings.
+	 * @param Entity\Order|null $order                      Order.
+	 * @param bool              $immediatePacketStatusCheck Whether to sync status immediately.
 	 *
 	 * @return PacketSubmissionResult
 	 */
 	public function submitPacket(
 		WC_Order $wcOrder,
 		bool $updateOrderStatus,
-		?Entity\Order $order = null
+		?Entity\Order $order = null,
+		bool $immediatePacketStatusCheck = false
 	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
 		if ( null === $order ) {
@@ -377,6 +391,12 @@ class PacketSubmitter {
 				$errorMessage    = null;
 
 				$submissionResult->increaseSuccessCount();
+
+				if ( $immediatePacketStatusCheck || ! function_exists( 'as_enqueue_async_action' ) ) {
+					$this->packetSynchronizer->syncStatus( $order );
+				} else {
+					as_enqueue_async_action( self::HOOK_PACKET_STATUS_SYNC, [ $order->getNumber() ] );
+				}
 			}
 
 			$submissionResult->increaseLogsCount();
@@ -518,6 +538,26 @@ class PacketSubmitter {
 		} else {
 			$order->update_status( $autoOrderStatus );
 		}
+	}
+
+	/**
+	 * Registers action for cron.
+	 *
+	 * @return void
+	 */
+	public function registerCronAction(): void {
+		add_action(
+			self::HOOK_PACKET_STATUS_SYNC,
+			function ( string $orderId ): void {
+				$order = $this->orderRepository->getById( (int) $orderId, true );
+				if ( null === $order ) {
+					return;
+				}
+				$this->packetSynchronizer->syncStatus( $order );
+			},
+			10,
+			1
+		);
 	}
 
 }
