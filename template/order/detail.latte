@@ -3,40 +3,38 @@
 {var $pickupPoint = $order->getPickupPoint()}
 
 <section class="packetery-order-detail">
-    {if ($pickupPoint && $displayPickupPointInfo) || $order->isExported()}
-        <h2 class="woocommerce-order-details__title">{$translations['packeta']}</h2>
+    <h2 class="woocommerce-order-details__title">{$translations['packeta']}</h2>
 
-        <table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
-            <tbody>
-            {if $pickupPoint && $displayPickupPointInfo}
-                <tr>
-                    <th scope="row">{$translations['pickupPointName']}</th>
-                    <td>
-                        {$pickupPoint->getName()}
-                        {if $pickupPoint->getUrl() && !$order->isExternalCarrier()}
-                            <br>
-                            <a class="button" target="_blank"
-                               href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetail']}</a>
-                        {/if}
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row">{$translations['address']}</th>
-                    <td>
-                        {$pickupPoint->getFullAddress()}
-                    </td>
-                </tr>
-            {/if}
+    <table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
+        <tbody>
+        {if $pickupPoint && $displayPickupPointInfo}
+            <tr>
+                <th scope="row">{$translations['pickupPointName']}</th>
+                <td>
+                    {$pickupPoint->getName()}
+                    {if $pickupPoint->getUrl() && !$order->isExternalCarrier()}
+                        <br>
+                        <a class="button" target="_blank"
+                           href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetail']}</a>
+                    {/if}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">{$translations['address']}</th>
+                <td>
+                    {$pickupPoint->getFullAddress()}
+                </td>
+            </tr>
+        {/if}
 
-            {if $order->isExported()}
-                <tr>
-                    <th scope="row">{$translations['packetTrackingOnline']}</th>
-                    <td>
-                        <a href='{$order->getPacketTrackingUrl()}'>{$order->getPacketBarcode()}</a>
-                    </td>
-                </tr>
-            {/if}
-            </tbody>
-        </table>
-    {/if}
+        {if $order->isExported()}
+            <tr>
+                <th scope="row">{$translations['packetTrackingOnline']}</th>
+                <td>
+                    <a href='{$order->getPacketTrackingUrl()}'>{$order->getPacketBarcode()}</a>
+                </td>
+            </tr>
+        {/if}
+        </tbody>
+    </table>
 </section>

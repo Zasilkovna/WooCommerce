@@ -738,7 +738,7 @@ class Plugin {
 	private function shouldHidePacketaInfo( PacketeryOrder $order ): bool {
 		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && $order->getPickupPoint();
 
-		return ( ! $isPickupPointInfoVisible ) && null === $order->getValidatedDeliveryAddress() && false === $order->isExported();
+		return ( ! $isPickupPointInfoVisible ) && false === $order->isExported();
 	}
 
 	/**
