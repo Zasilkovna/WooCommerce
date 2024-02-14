@@ -665,7 +665,6 @@ class Plugin {
 					'packeta'              => __( 'Packeta', 'packeta' ),
 					'pickupPointName'      => __( 'Pickup Point Name', 'packeta' ),
 					'pickupPointDetail'    => __( 'Pickup Point Detail', 'packeta' ),
-					'validatedAddress'     => __( 'Validated address', 'packeta' ),
 					'address'              => __( 'Address', 'packeta' ),
 					'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
 				],
@@ -709,18 +708,12 @@ class Plugin {
 			'displayPickupPointInfo' => $this->shouldDisplayPickupPointInfo(),
 			'order'                  => $packeteryOrder,
 			'translations'           => [
-				'packeta'                  => __( 'Packeta', 'packeta' ),
-				'pickupPointDetail'        => __( 'Pickup Point Detail', 'packeta' ),
-				'pickupPointName'          => __( 'Pickup Point Name', 'packeta' ),
-				'link'                     => __( 'Link', 'packeta' ),
-				'pickupPointAddress'       => __( 'Pickup Point Address', 'packeta' ),
-				'validatedDeliveryAddress' => __( 'validated delivery address', 'packeta' ),
-				'street'                   => __( 'Street', 'packeta' ),
-				'houseNumber'              => __( 'House number', 'packeta' ),
-				'city'                     => __( 'City', 'packeta' ),
-				'zip'                      => __( 'Zip', 'packeta' ),
-				'county'                   => __( 'County', 'packeta' ),
-				'packetTrackingOnline'     => __( 'Packet tracking online', 'packeta' ),
+				'packeta'              => __( 'Packeta', 'packeta' ),
+				'pickupPointDetail'    => __( 'Pickup Point Detail', 'packeta' ),
+				'pickupPointName'      => __( 'Pickup Point Name', 'packeta' ),
+				'link'                 => __( 'Link', 'packeta' ),
+				'pickupPointAddress'   => __( 'Pickup Point Address', 'packeta' ),
+				'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
 			],
 		];
 		$emailHtml      = $this->latte_engine->renderToString(
@@ -745,7 +738,7 @@ class Plugin {
 	private function shouldHidePacketaInfo( PacketeryOrder $order ): bool {
 		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && $order->getPickupPoint();
 
-		return ( ! $isPickupPointInfoVisible ) && null === $order->getValidatedDeliveryAddress() && false === $order->isExported();
+		return ( ! $isPickupPointInfoVisible ) && false === $order->isExported();
 	}
 
 	/**
