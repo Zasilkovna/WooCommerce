@@ -79,24 +79,23 @@ class CronService {
 	 * @return void
 	 */
 	public function register(): void {
-		if ( ! function_exists( 'as_has_scheduled_action' ) ) {
-			return;
-		}
+		// Hooks have to be initialised before init.
+		add_action( self::CRON_LOG_AUTO_DELETION_HOOK, [ $this->logPurger, 'autoDeleteHook' ] );
+		add_action( self::CRON_PURGE_TRANSIENTS, [ $this->transientPurger, 'purge' ] );
+		add_action( self::CRON_CARRIERS_HOOK, [ $this->carrierDownloader, 'runAndRender' ] );
+		add_action( self::CRON_PACKET_STATUS_SYNC_HOOK, [ $this->packetSynchronizer, 'syncStatuses' ] );
+		add_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND, [ $this->packetSynchronizer, 'syncStatuses' ] );
 
 		add_action(
 			'init',
 			function () {
-				add_action( self::CRON_LOG_AUTO_DELETION_HOOK, [ $this->logPurger, 'autoDeleteHook' ] );
+				if ( ! function_exists( 'as_has_scheduled_action' ) ) {
+					return;
+				}
+
 				if ( false === as_has_scheduled_action( self::CRON_LOG_AUTO_DELETION_HOOK ) ) {
 					as_schedule_recurring_action( ( new \DateTime( 'next day 02:00', wp_timezone() ) )->getTimestamp(), DAY_IN_SECONDS, self::CRON_LOG_AUTO_DELETION_HOOK );
 				}
-			}
-		);
-
-		add_action(
-			'init',
-			function () {
-				add_action( self::CRON_PURGE_TRANSIENTS, [ $this->transientPurger, 'purge' ] );
 				if ( false === as_has_scheduled_action( self::CRON_PURGE_TRANSIENTS ) ) {
 					as_schedule_recurring_action(
 						( new \DateTime( 'next day 02:10', wp_timezone() ) )->getTimestamp(),
@@ -104,35 +103,14 @@ class CronService {
 						self::CRON_PURGE_TRANSIENTS
 					);
 				}
-			}
-		);
-
-		add_action(
-			'init',
-			function () {
-				add_action( self::CRON_CARRIERS_HOOK, [ $this->carrierDownloader, 'runAndRender' ] );
 				if ( false === as_has_scheduled_action( self::CRON_CARRIERS_HOOK ) ) {
 					as_schedule_recurring_action( ( new \DateTime( 'next day 09:10', wp_timezone() ) )->getTimestamp(), DAY_IN_SECONDS, self::CRON_CARRIERS_HOOK );
 				}
-			}
-		);
-
-		add_action(
-			'init',
-			function () {
-				add_action( self::CRON_PACKET_STATUS_SYNC_HOOK, [ $this->packetSynchronizer, 'syncStatuses' ] );
 				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK ) ) {
 					// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 					// Monday to Friday at 02:10, 06:10, 10:10, 14:10, 18:10, 22:10.
 					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 2,6,10,14,18,22 * * 1-5', self::CRON_PACKET_STATUS_SYNC_HOOK );
 				}
-			}
-		);
-
-		add_action(
-			'init',
-			function () {
-				add_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND, [ $this->packetSynchronizer, 'syncStatuses' ] );
 				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND ) ) {
 					// Saturday, Sunday at 03:10.
 					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 3 * * 6,0', self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND );

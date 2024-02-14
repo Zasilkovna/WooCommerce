@@ -11,8 +11,10 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api;
+use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
+use Packetery\Module\Exception\InvalidPasswordException;
 use Packetery\Module\Options;
 
 /**
@@ -84,38 +86,54 @@ class PacketSynchronizer {
 		);
 
 		foreach ( $results as $order ) {
-			$packetId = $order->getPacketId();
-
-			$request  = new Api\Soap\Request\PacketStatus( $packetId );
-			$response = $this->apiSoapClient->packetStatus( $request );
-
-			if ( $response->hasFault() ) {
-				$record          = new Log\Record();
-				$record->action  = Log\Record::ACTION_PACKET_STATUS_SYNC;
-				$record->status  = Log\Record::STATUS_ERROR;
-				$record->title   = __( 'Packet status could not be synchronized.', 'packeta' );
-				$record->params  = [
-					'orderId'      => $order->getNumber(),
-					'packetId'     => $request->getPacketId(),
-					'errorMessage' => $response->getFaultString(),
-				];
-				$record->orderId = $order->getNumber();
-				$this->logger->add( $record );
-
-				if ( $response->hasWrongPassword() ) {
-					break;
-				}
-
-				continue;
+			try {
+				$this->syncStatus( $order );
+			} catch ( InvalidPasswordException $exception ) {
+				break;
 			}
-
-			if ( $response->getCodeText() === $order->getPacketStatus() ) {
-				continue;
-			}
-
-			$order->setPacketStatus( $response->getCodeText() );
-			$this->orderRepository->save( $order );
 		}
+	}
+
+	/**
+	 * Synchronizes status for one order.
+	 *
+	 * @param Order $order Order.
+	 *
+	 * @return void
+	 * @throws InvalidPasswordException InvalidPasswordException.
+	 */
+	public function syncStatus( Order $order ): void {
+		$packetId = $order->getPacketId();
+
+		$request  = new Api\Soap\Request\PacketStatus( $packetId );
+		$response = $this->apiSoapClient->packetStatus( $request );
+
+		if ( $response->hasFault() ) {
+			$record          = new Log\Record();
+			$record->action  = Log\Record::ACTION_PACKET_STATUS_SYNC;
+			$record->status  = Log\Record::STATUS_ERROR;
+			$record->title   = __( 'Packet status could not be synchronized.', 'packeta' );
+			$record->params  = [
+				'orderId'      => $order->getNumber(),
+				'packetId'     => $request->getPacketId(),
+				'errorMessage' => $response->getFaultString(),
+			];
+			$record->orderId = $order->getNumber();
+			$this->logger->add( $record );
+
+			if ( $response->hasWrongPassword() ) {
+				throw new InvalidPasswordException( 'Wrong password.' );
+			}
+
+			return;
+		}
+
+		if ( $response->getCodeText() === $order->getPacketStatus() ) {
+			return;
+		}
+
+		$order->setPacketStatus( $response->getCodeText() );
+		$this->orderRepository->save( $order );
 	}
 
 	/**
