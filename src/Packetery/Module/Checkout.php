@@ -318,13 +318,10 @@ class Checkout {
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
 			'translations'               => [
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
-				'chooseAddress'                 => __( 'Check shipping address', 'packeta' ),
-				'chooseCarAddress'              => __( 'Choose delivery address', 'packeta' ),
+				'chooseAddress'                 => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
-				'selectedShippingAddress'       => __( 'Selected shipping address', 'packeta' ),
 				'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
-				'addressNotSet'                 => __( 'Delivery address has not been set', 'packeta' ),
 				'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
 				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 			],
@@ -463,7 +460,7 @@ class Checkout {
 		}
 
 		if ( empty( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) && $this->isCarDeliveryOrder() ) {
-			wc_add_notice( __( 'Delivery address has not been set.', 'packeta' ), 'error' );
+			wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 		}
 	}
 
@@ -588,6 +585,27 @@ class Checkout {
 					add_action( 'woocommerce_after_shipping_rate', [ $this, 'renderWidgetButtonAfterShippingRate' ] );
 				}
 			}
+		);
+
+		add_action( 'woocommerce_review_order_after_shipping', [ $this, 'renderEstimatedDeliveryDateSection' ] );
+	}
+
+	/**
+	 * Shows an estimated delivery date for Car Delivery.
+	 *
+	 * @return void
+	 */
+	public function renderEstimatedDeliveryDateSection(): void {
+		if ( ! is_checkout() ) {
+			return;
+		}
+
+		if ( ! $this->isCarDeliveryOrder() ) {
+			return;
+		}
+
+		$this->latte_engine->render(
+			PACKETERY_PLUGIN_DIR . '/template/checkout/car-delivery-estimated-delivery-date.latte'
 		);
 	}
 
