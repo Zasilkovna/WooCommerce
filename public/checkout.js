@@ -124,13 +124,13 @@ var packeteryLoadCheckout = function( $, settings ) {
 				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_address_city', ''));
 				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_address_postCode', ''));
 
-				var $estDeliveryDateSection = $('.estimated-delivery-date');
+				var $estimatedDeliveryDateSection = $('.estimated-delivery-date');
 
 				if ( typeof getRateAttrValue( carrierRateId, 'packetery_car_delivery_id', false ) !== 'undefined' ) {
-					$estDeliveryDateSection.removeClass('packetery-hidden');
+					$estimatedDeliveryDateSection.removeClass('packetery-hidden');
 				}
 
-				$estDeliveryDateSection.find('.packetery-cd-est-date').html(
+				$estimatedDeliveryDateSection.find('.packetery-cd-est-date').html(
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_from', '')
 					+ ' - ' +
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_to', '')
@@ -229,7 +229,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 		var updateWidgetButtonVisibility = function( carrierRateId, useAutoOpen ) {
 			$widgetDiv = getPacketaWidget();
 			$( '.packeta-widget' ).addClass( 'packetery-hidden' );
-			$('.estimated-delivery-date').addClass( 'packetery-hidden' );
+			$( '.estimated-delivery-date' ).addClass( 'packetery-hidden' );
 			var $widgetButtonRow = $( '.packetery-widget-button-table-row' );
 			$widgetButtonRow.addClass( 'packetery-hidden' );
 			resetInfo( settings.pickupPointAttrs ); // clear active hidden field values
