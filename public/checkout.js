@@ -15,7 +15,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 	var getCheckoutAddress = function () {
 		var section = '';
-		if ( $( '#ship-to-different-address-checkbox:checked' ) ) {
+		if ( $( '#ship-to-different-address-checkbox:checked' ).length === 1 ) {
 			section = 'shipping';
 		} else {
 			section = 'billing';
