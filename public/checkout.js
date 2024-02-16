@@ -349,6 +349,37 @@ var packeteryLoadCheckout = function( $, settings ) {
 				resetWidgetInfo();
 			}
 
+			var clearSavedDataForCurrentCarrier = false;
+			if ( (
+					hasHomeDelivery( initialCarrierRateId ) ||
+					hasCarDelivery( initialCarrierRateId )
+				) && (
+					initialDestinationAddress.street !== destinationAddress.street ||
+					initialDestinationAddress.city !== destinationAddress.city ||
+					initialDestinationAddress.postCode !== destinationAddress.postCode
+				) &&
+				initialCarrierRateId === carrierRateId
+			) {
+				clearSavedDataForCurrentCarrier = true;
+			}
+			if ( clearSavedDataForCurrentCarrier === true ) {
+				if ( hasHomeDelivery( initialCarrierRateId ) ) {
+					clearInfo( settings.homeDeliveryAttrs );
+				}
+				if ( hasCarDelivery( initialCarrierRateId ) ) {
+					clearInfo( settings.carDeliveryAttrs );
+				}
+
+				postWithNonce(
+					settings.removeSavedDataUrl,
+					{
+						'carrierId': initialCarrierRateId,
+					},
+					'Failed to remove saved selected pickup point or validated address data: '
+				);
+				resetWidgetInfo();
+			}
+
 			initialDestinationAddress = destinationAddress;
 			initialCarrierRateId = carrierRateId;
 			settings.country = destinationAddress.country;
@@ -466,7 +497,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.appIdentity = settings.appIdentity;
 				widgetOptions.expeditionDay = settings.expeditionDay;
 
-				console.log('Address widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
+				console.log('Car delivery widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {
 					resetWidgetInfo();
 					showCarDeliveryAddress( carrierRateId );
