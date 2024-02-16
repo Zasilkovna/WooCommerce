@@ -39,7 +39,7 @@ services:
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
-	- Packetery\Module\CarDeliveryConfig(%carDeliveryConfig%)
+	- Packetery\Module\CarDeliveryConfig(sample: %carDeliveryConfig.sample%)
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
