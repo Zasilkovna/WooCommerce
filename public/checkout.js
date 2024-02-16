@@ -130,7 +130,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					$estimatedDeliveryDateSection.removeClass('packetery-hidden');
 				}
 
-				$estimatedDeliveryDateSection.find('.packetery-cd-est-date').html(
+				$estimatedDeliveryDateSection.find('.packetery-car-delivery-estimated-date').html(
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_from', '')
 					+ ' - ' +
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_to', '')
