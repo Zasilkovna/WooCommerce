@@ -132,6 +132,13 @@ class Checkout {
 	private $apiRouter;
 
 	/**
+	 *  Car delivery config.
+	 *
+	 * @var CarDeliveryConfig
+	 */
+	private $carDeliveryConfig;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                      $latte_engine            PacketeryLatte engine.
@@ -148,6 +155,7 @@ class Checkout {
 	 * @param WidgetOptionsBuilder        $widgetOptionsBuilder    Widget options builder.
 	 * @param Carrier\EntityRepository    $carrierEntityRepository Carrier repository.
 	 * @param Api\Internal\CheckoutRouter $apiRouter               API router.
+	 * @param CarDeliveryConfig           $carDeliveryConfig       Car delivery config.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -163,7 +171,8 @@ class Checkout {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		Carrier\EntityRepository $carrierEntityRepository,
-		Api\Internal\CheckoutRouter $apiRouter
+		Api\Internal\CheckoutRouter $apiRouter,
+		CarDeliveryConfig $carDeliveryConfig
 	) {
 		$this->latte_engine            = $latte_engine;
 		$this->options_provider        = $options_provider;
@@ -179,6 +188,7 @@ class Checkout {
 		$this->widgetOptionsBuilder    = $widgetOptionsBuilder;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->apiRouter               = $apiRouter;
+		$this->carDeliveryConfig       = $carDeliveryConfig;
 	}
 
 	/**
@@ -300,6 +310,7 @@ class Checkout {
 			'country'                    => $this->getCustomerCountry(),
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
+			'isCarDeliverySampleEnabled' => $this->carDeliveryConfig->isSampleEnabled(),
 			// TODO: Settings are not updated on AJAX checkout update. Needs rework due to possible checkout solutions allowing cart update.
 			'isAgeVerificationRequired'  => $this->isAgeVerification18PlusRequired(),
 			'pickupPointAttrs'           => Order\Attribute::$pickupPointAttrs,
