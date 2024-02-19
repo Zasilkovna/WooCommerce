@@ -617,8 +617,6 @@ class Plugin {
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
 			[
 				'pickupPoint'              => $orderEntity->getPickupPoint(),
-				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
-				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
 				'isExternalCarrier'        => $orderEntity->isExternalCarrier(),
 				'translations'             => [
 					'packeta'                => __( 'Packeta', 'packeta' ),
@@ -626,14 +624,6 @@ class Plugin {
 					'name'                   => __( 'Name', 'packeta' ),
 					'address'                => __( 'Address', 'packeta' ),
 					'pickupPointDetailCaps'  => __( 'Pickup Point Detail', 'packeta' ),
-					'addressWasNotValidated' => __( 'Address was not validated', 'packeta' ),
-					'validatedAddress'       => __( 'Validated address', 'packeta' ),
-					'street'                 => __( 'Street', 'packeta' ),
-					'houseNumber'            => __( 'House number', 'packeta' ),
-					'city'                   => __( 'City', 'packeta' ),
-					'zip'                    => __( 'Zip', 'packeta' ),
-					'county'                 => __( 'County', 'packeta' ),
-					'gps'                    => __( 'GPS', 'packeta' ),
 				],
 			]
 		);

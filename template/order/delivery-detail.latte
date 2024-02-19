@@ -1,6 +1,4 @@
 {varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
-{varType \Packetery\Core\Entity\Address $validatedDeliveryAddress}
-{varType string $carrierAddressValidation}
 
 <div class="clear"></div>
 <div>
@@ -15,24 +13,5 @@
 			<p><a class="button" target="_blank"
 				  href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetailCaps']}</a></p>
 		{/if}
-	{/if}
-
-	{if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
-		<p><strong>{$translations['addressWasNotValidated']}</strong></p>
-	{/if}
-
-	{if $validatedDeliveryAddress}
-		<h3>
-			{$translations['packeta']} - {$translations['validatedAddress']}
-		</h3>
-
-		<p>
-			<strong>{$translations['street']}</strong>: {$validatedDeliveryAddress->getStreet()}<br>
-			<strong>{$translations['houseNumber']}</strong>: {$validatedDeliveryAddress->getHouseNumber()}<br>
-			<strong>{$translations['city']}</strong>: {$validatedDeliveryAddress->getCity()}<br>
-			<strong>{$translations['zip']}</strong>: {$validatedDeliveryAddress->getZip()}<br>
-			<strong>{$translations['county']}</strong>: {$validatedDeliveryAddress->getCounty()}<br>
-			<strong>{$translations['gps']}</strong>: {$validatedDeliveryAddress->getLatitude()}, {$validatedDeliveryAddress->getLongitude()}<br>
-		</p>
 	{/if}
 </div>
