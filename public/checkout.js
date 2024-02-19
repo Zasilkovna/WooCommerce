@@ -125,11 +125,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_address_postCode', ''));
 
 				var $estimatedDeliveryDateSection = $('.estimated-delivery-date');
-
-				if ( typeof getRateAttrValue( carrierRateId, 'packetery_car_delivery_id', false ) !== 'undefined' ) {
-					$estimatedDeliveryDateSection.removeClass('packetery-hidden');
-				}
-
+				$estimatedDeliveryDateSection.removeClass('packetery-hidden');
 				$estimatedDeliveryDateSection.find('.packetery-car-delivery-estimated-date').html(
 					getRateAttrValue(carrierRateId, 'packetery_car_delivery_from', '')
 					+ ' - ' +
