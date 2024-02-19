@@ -457,7 +457,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 				widgetOptions.layout = 'cd';
 				widgetOptions.appIdentity = settings.appIdentity;
 				widgetOptions.expeditionDay = settings.expeditionDay;
-				widgetOptions.sample = !!settings.isCarDeliverySampleEnabled;
+				widgetOptions.sample = settings.isCarDeliverySampleEnabled === '1';
 
 				console.log('Address widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( result ) {

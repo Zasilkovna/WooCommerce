@@ -4,4 +4,3 @@
 /.gitignore export-ignore
 /LICENSE export-ignore
 /README.md export-ignore
-/config/config.local.neon

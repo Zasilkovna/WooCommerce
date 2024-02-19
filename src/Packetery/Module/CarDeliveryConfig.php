@@ -8,7 +8,7 @@
 namespace Packetery\Module;
 
 /**
- * Class SurveyConfig
+ * Class CarDeliveryConfig
  *
  * @property bool $sample
  * @package Packetery
