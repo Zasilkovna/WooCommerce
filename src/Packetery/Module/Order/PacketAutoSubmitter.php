@@ -82,7 +82,7 @@ class PacketAutoSubmitter {
 				add_action(
 					'woocommerce_order_status_completed',
 					function ( int $orderId ): void {
-						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId, is_admin() === false );
+						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId );
 					}
 				);
 				continue;
@@ -92,7 +92,7 @@ class PacketAutoSubmitter {
 				add_action(
 					'woocommerce_order_status_processing',
 					function ( int $orderId ): void {
-						$this->handleEvent( self::EVENT_ON_ORDER_PROCESSING, $orderId, is_admin() === false );
+						$this->handleEvent( self::EVENT_ON_ORDER_PROCESSING, $orderId );
 					}
 				);
 			}
@@ -102,13 +102,12 @@ class PacketAutoSubmitter {
 	/**
 	 * Handle event.
 	 *
-	 * @param string    $event               Event.
-	 * @param int       $orderId             WC Order.
-	 * @param bool|null $triggeredByFrontend Tells if event is triggered by frontend logic. NULL is passed when data from previous versions are being processed.
+	 * @param string $event               Event.
+	 * @param int    $orderId             WC Order.
 	 *
 	 * @return void
 	 */
-	public function handleEvent( string $event, int $orderId, ?bool $triggeredByFrontend = null ): void {
+	public function handleEvent( string $event, int $orderId ): void {
 		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
 			return;
 		}
@@ -131,22 +130,7 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		$this->packetSubmitter->submitPacket(
-			$wcOrder,
-			$this->shouldUpdateOrderStatus( $triggeredByFrontend )
-		);
-	}
-
-	/**
-	 * Tells if WC order status should be updated.
-	 *
-	 * @param bool|null $triggeredByFrontend Tells if submission is triggered by frontend action.
-	 *
-	 * @return bool
-	 */
-	private function shouldUpdateOrderStatus( ?bool $triggeredByFrontend ): bool {
-		return ( false === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeEnabled() ) ||
-			( true === $triggeredByFrontend && $this->optionsProvider->isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled() );
+		$this->packetSubmitter->submitPacket( $wcOrder );
 	}
 
 	/**

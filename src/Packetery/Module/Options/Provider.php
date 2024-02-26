@@ -23,17 +23,15 @@ class Provider {
 	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
 	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 
-	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT                           = 'A6 on A4';
-	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT                           = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT                           = 100;
-	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT                    = 14;
-	const FORCE_PACKET_CANCEL_DEFAULT                                  = true;
-	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT                       = false;
-	const WIDGET_AUTO_OPEN_DEFAULT                                     = false;
-	const ORDER_STATUS_AUTO_CHANGE_DEFAULT                             = false;
-	const AUTO_ORDER_STATUS_DEFAULT                                    = '';
-	const ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT = false;
-	public const EMAIL_HOOK_DEFAULT                                    = 'woocommerce_email_footer';
+	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
+	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
+	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
+	const FORCE_PACKET_CANCEL_DEFAULT               = true;
+	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
+	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
+	const AUTO_ORDER_STATUS_DEFAULT                 = '';
+	public const EMAIL_HOOK_DEFAULT                 = 'woocommerce_email_footer';
 	const AUTO_ORDER_STATUS                         = 'auto_order_status';
 	const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
 	const PRICES_INCLUDE_TAX_DEFAULT                = false;
@@ -522,7 +520,7 @@ class Provider {
 	}
 
 	/**
-	 * Auto order status change on packet submit enabled.
+	 * Auto order status change on packet submit enabled. Used in upgrade only.
 	 *
 	 * @return bool
 	 */
@@ -532,34 +530,32 @@ class Provider {
 			return (bool) $orderStatusAutoChange;
 		}
 
-		return self::ORDER_STATUS_AUTO_CHANGE_DEFAULT;
+		return false;
 	}
 
 	/**
-	 * Auto order status change on packet auto submit at frontend enabled.
+	 * Auto order status change.
 	 *
 	 * @return bool
 	 */
-	public function isOrderStatusAutoChangeForAutoSubmitAtFrontendEnabled(): bool {
-		if ( false === $this->isOrderStatusAutoChangeEnabled() ) {
-			return false;
+	public function isOrderStatusChangeAllowed(): bool {
+		$allowOrderStatusChange = ( $this->syncData['allow_order_status_change'] ?? null );
+		if ( null !== $allowOrderStatusChange ) {
+			return (bool) $allowOrderStatusChange;
 		}
 
-		$orderStatusAutoChnageForAutoSubmitAtFrontend = $this->get( 'order_status_auto_change_for_auto_submit_at_frontend' );
-		if ( null !== $orderStatusAutoChnageForAutoSubmitAtFrontend ) {
-			return (bool) $orderStatusAutoChnageForAutoSubmitAtFrontend;
-		}
-
-		return self::ORDER_STATUS_AUTO_CHANGE_FOR_AUTO_SUBMIT_AT_FRONTEND_DEFAULT;
+		return false;
 	}
 
 	/**
 	 * Tells auto order status, if it is valid, otherwise empty string.
 	 *
+	 * @param string $packetStatus Packet status.
+	 *
 	 * @return string
 	 */
-	public function getValidAutoOrderStatus(): string {
-		$autoOrderStatus = $this->getAutoOrderStatus();
+	public function getValidAutoOrderStatusFromMapping( string $packetStatus ): string {
+		$autoOrderStatus = $this->getAutoOrderStatusFromMapping( $packetStatus );
 		if ( wc_is_order_status( $autoOrderStatus ) ) {
 			return $autoOrderStatus;
 		}
@@ -569,6 +565,17 @@ class Provider {
 
 	/**
 	 * Tells auto order status.
+	 *
+	 * @param string $packetStatus Packet status.
+	 *
+	 * @return string|null
+	 */
+	public function getAutoOrderStatusFromMapping( string $packetStatus ): ?string {
+		return $this->syncData['order_status_change_packet_statuses'][ $packetStatus ] ?? null;
+	}
+
+	/**
+	 * Tells auto order status. Used in upgrade only.
 	 *
 	 * @return string|null
 	 */

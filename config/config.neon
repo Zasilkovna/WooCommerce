@@ -93,3 +93,4 @@ services:
 	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
 	- Packetery\Module\Options\FeatureFlagManager
 	- Packetery\Module\Options\TransientPurger
+	- Packetery\Module\Order\WcOrderActions

@@ -53,23 +53,33 @@ class PacketSynchronizer {
 	private $orderRepository;
 
 	/**
+	 * WC order actions.
+	 *
+	 * @var WcOrderActions
+	 */
+	private $wcOrderActions;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Api\Soap\Client  $apiSoapClient   API soap client.
 	 * @param Log\ILogger      $logger          Logger.
 	 * @param Options\Provider $optionsProvider Options provider.
 	 * @param Repository       $orderRepository Order repository.
+	 * @param WcOrderActions   $wcOrderActions  WC order actions.
 	 */
 	public function __construct(
 		Api\Soap\Client $apiSoapClient,
 		Log\ILogger $logger,
 		Options\Provider $optionsProvider,
-		Repository $orderRepository
+		Repository $orderRepository,
+		WcOrderActions $wcOrderActions
 	) {
 		$this->apiSoapClient   = $apiSoapClient;
 		$this->logger          = $logger;
 		$this->optionsProvider = $optionsProvider;
 		$this->orderRepository = $orderRepository;
+		$this->wcOrderActions  = $wcOrderActions;
 	}
 
 	/**
@@ -133,6 +143,7 @@ class PacketSynchronizer {
 		}
 
 		$order->setPacketStatus( $response->getCodeText() );
+		$this->wcOrderActions->updateOrderStatus( $order->getNumber(), $response->getCodeText() );
 		$this->orderRepository->save( $order );
 	}
 

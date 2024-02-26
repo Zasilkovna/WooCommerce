@@ -782,6 +782,15 @@ tbody .packetery-log-column-note {
     }
 }
 
+.packetery-order-status-block {
+    margin-bottom: 0.5em;
+}
+
+.packetery-order-status-block label {
+    display: inline-block;
+    width: 14em;
+}
+
 /* customs declaration */
 
 .packetery-flex-container {

@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
+use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
@@ -73,6 +74,13 @@ class PacketCanceller {
 	private $commonLogic;
 
 	/**
+	 * WC order actions.
+	 *
+	 * @var WcOrderActions
+	 */
+	private $wcOrderActions;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient   Soap client API.
@@ -82,6 +90,7 @@ class PacketCanceller {
 	 * @param Options\Provider         $optionsProvider Options provider.
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
+	 * @param WcOrderActions           $wcOrderActions  WC order actions.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -90,7 +99,8 @@ class PacketCanceller {
 		Request $request,
 		Options\Provider $optionsProvider,
 		MessageManager $messageManager,
-		PacketActionsCommonLogic $commonLogic
+		PacketActionsCommonLogic $commonLogic,
+		WcOrderActions $wcOrderActions
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -99,6 +109,7 @@ class PacketCanceller {
 		$this->optionsProvider = $optionsProvider;
 		$this->messageManager  = $messageManager;
 		$this->commonLogic     = $commonLogic;
+		$this->wcOrderActions  = $wcOrderActions;
 	}
 
 	/**
@@ -204,6 +215,7 @@ class PacketCanceller {
 			$order->setIsLabelPrinted( false );
 			$order->setCarrierNumber( null );
 			$order->setPacketStatus( null );
+			$this->wcOrderActions->updateOrderStatus( $order->getNumber(), PacketStatus::CANCELLED );
 			$order->setPacketId( null );
 			$order->updateApiErrorMessage( null );
 
