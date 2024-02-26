@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Options;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Http\Request;
 
@@ -41,13 +40,6 @@ class BulkActions {
 	private $packetSubmitter;
 
 	/**
-	 * Options provider.
-	 *
-	 * @var Options\Provider
-	 */
-	private $optionsProvider;
-
-	/**
 	 * Order repository.
 	 *
 	 * @var Repository
@@ -57,23 +49,20 @@ class BulkActions {
 	/**
 	 * BulkActions constructor.
 	 *
-	 * @param Engine           $latteEngine     Latte engine.
-	 * @param Request          $httpRequest     HTTP request.
-	 * @param PacketSubmitter  $packetSubmitter Order API Client.
-	 * @param Options\Provider $optionsProvider Options provider.
-	 * @param Repository       $orderRepository Order repository.
+	 * @param Engine          $latteEngine     Latte engine.
+	 * @param Request         $httpRequest     HTTP request.
+	 * @param PacketSubmitter $packetSubmitter Order API Client.
+	 * @param Repository      $orderRepository Order repository.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Request $httpRequest,
 		PacketSubmitter $packetSubmitter,
-		Options\Provider $optionsProvider,
 		Repository $orderRepository
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
 		$this->packetSubmitter = $packetSubmitter;
-		$this->optionsProvider = $optionsProvider;
 		$this->orderRepository = $orderRepository;
 	}
 
@@ -134,7 +123,6 @@ class BulkActions {
 				if ( null !== $wcOrder ) {
 					$submissionResult = $this->packetSubmitter->submitPacket(
 						$wcOrder,
-						$this->optionsProvider->isOrderStatusAutoChangeEnabled(),
 						null,
 						true
 					);

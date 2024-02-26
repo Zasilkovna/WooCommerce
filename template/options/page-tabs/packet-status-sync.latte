@@ -49,6 +49,29 @@
                 </div>
             </td>
         </tr>
+
+        <tr>
+            <th scope="row">
+                <label n:name=allow_order_status_change />
+            </th>
+            <td>
+                <input n:name=allow_order_status_change>
+            </td>
+        </tr>
+        <tr class="order_status_change_content">
+            <th scope="row">
+                <label>{$translations['orderStatusChangeSettings']}</label>
+            </th>
+            <td>
+                {foreach $form[ 'order_status_change_packet_statuses' ]->getControls() as $control}
+                <div class="packetery-order-status-block">
+                    <label n:name=$control />
+                    <select n:name=$control></select>
+                </div>
+                {/foreach}
+            </td>
+        </tr>
+
     </table>
     <p class="submit">
         <button n:name=save class="button button-primary">{$translations['saveChanges']}</button>

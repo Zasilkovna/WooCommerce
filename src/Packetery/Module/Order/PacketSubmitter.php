@@ -97,13 +97,6 @@ class PacketSubmitter {
 	private $commonLogic;
 
 	/**
-	 * Options provider.
-	 *
-	 * @var Module\Options\Provider
-	 */
-	private $optionsProvider;
-
-	/**
 	 * Customs declaration repository.
 	 *
 	 * @var CustomsDeclaration\Repository
@@ -129,7 +122,6 @@ class PacketSubmitter {
 	 * @param MessageManager                $messageManager               Message manager.
 	 * @param Module\Log\Page               $logPage                      Log page.
 	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
-	 * @param Module\Options\Provider       $optionsProvider              Options provider.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
 	 */
@@ -143,7 +135,6 @@ class PacketSubmitter {
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
-		Module\Options\Provider $optionsProvider,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketSynchronizer $packetSynchronizer
 	) {
@@ -156,7 +147,6 @@ class PacketSubmitter {
 		$this->messageManager               = $messageManager;
 		$this->logPage                      = $logPage;
 		$this->commonLogic                  = $commonLogic;
-		$this->optionsProvider              = $optionsProvider;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
 	}
@@ -193,7 +183,6 @@ class PacketSubmitter {
 
 		$submissionResult         = $this->submitPacket(
 			$this->orderRepository->getWcOrderById( (int) $order->getNumber() ),
-			$this->optionsProvider->isOrderStatusAutoChangeEnabled(),
 			$order,
 			true
 		);
@@ -234,7 +223,6 @@ class PacketSubmitter {
 	 * Submits packet data to Packeta API.
 	 *
 	 * @param WC_Order          $wcOrder                    WC order.
-	 * @param bool              $updateOrderStatus          Updates WC order status if packet was successfully created. Value is based on plugin settings.
 	 * @param Entity\Order|null $order                      Order.
 	 * @param bool              $immediatePacketStatusCheck Whether to sync status immediately.
 	 *
@@ -242,7 +230,6 @@ class PacketSubmitter {
 	 */
 	public function submitPacket(
 		WC_Order $wcOrder,
-		bool $updateOrderStatus,
 		?Entity\Order $order = null,
 		bool $immediatePacketStatusCheck = false
 	): PacketSubmissionResult {
@@ -403,10 +390,6 @@ class PacketSubmitter {
 			$this->logger->add( $record );
 			$order->updateApiErrorMessage( $errorMessage );
 			$this->orderRepository->save( $order );
-
-			if ( $updateOrderStatus && false === $response->hasFault() ) {
-				$this->updateOrderStatusOrLogError( $wcOrder, $order->getNumber(), $submissionResult );
-			}
 		} else {
 			$submissionResult->increaseIgnoredCount();
 		}
@@ -509,35 +492,6 @@ class PacketSubmitter {
 			'ignored' => $ignored,
 			'errors'  => $errors,
 		];
-	}
-
-	/**
-	 * Updates order status or logs error.
-	 *
-	 * @param WC_Order               $order WC Order.
-	 * @param string                 $orderId  Order ID.
-	 * @param PacketSubmissionResult $submissionResult Packet submission result.
-	 *
-	 * @return void
-	 */
-	private function updateOrderStatusOrLogError( WC_Order $order, string $orderId, PacketSubmissionResult $submissionResult ):void {
-		$autoOrderStatus = $this->optionsProvider->getValidAutoOrderStatus();
-		if ( '' === $autoOrderStatus ) {
-			$record         = new Log\Record();
-			$record->action = Log\Record::ACTION_PACKET_SENDING;
-			$record->status = Log\Record::STATUS_ERROR;
-
-			$record->title = sprintf(
-			// translators: %s represents unknown order status.
-				__( 'Order status has not been changed, status "%s" doesn\'t exist.', 'packeta' ),
-				$this->optionsProvider->getAutoOrderStatus()
-			);
-			$record->orderId = $orderId;
-			$this->logger->add( $record );
-			$submissionResult->increaseStatusUnchangedCount();
-		} else {
-			$order->update_status( $autoOrderStatus );
-		}
 	}
 
 	/**

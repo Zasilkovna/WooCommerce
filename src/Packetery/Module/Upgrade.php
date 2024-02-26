@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\Upgrade\Version_1_4_2;
 
 /**
@@ -88,6 +89,13 @@ class Upgrade {
 	private $wpdbAdapter;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Order\Repository              $orderRepository              Order repository.
@@ -97,6 +105,7 @@ class Upgrade {
 	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
 	 * @param Carrier\Repository            $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
+	 * @param Options\Provider              $optionsProvider              Options provider.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
@@ -105,7 +114,8 @@ class Upgrade {
 		Log\Repository $logRepository,
 		WpdbAdapter $wpdbAdapter,
 		Carrier\Repository $carrierRepository,
-		CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository,
+		Options\Provider $optionsProvider
 	) {
 		$this->orderRepository              = $orderRepository;
 		$this->messageManager               = $messageManager;
@@ -114,6 +124,7 @@ class Upgrade {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
+		$this->optionsProvider              = $optionsProvider;
 	}
 
 	/**
@@ -181,6 +192,22 @@ class Upgrade {
 		if ( $oldVersion && version_compare( $oldVersion, '1.6.0', '<' ) ) {
 			wp_clear_scheduled_hook( CronService::CRON_LOG_AUTO_DELETION_HOOK );
 			wp_clear_scheduled_hook( CronService::CRON_PACKET_STATUS_SYNC_HOOK );
+		}
+
+		if ( $oldVersion && version_compare( $oldVersion, '1.7.0', '<' ) ) {
+			$orderStatusAutoChange = $this->optionsProvider->isOrderStatusAutoChangeEnabled();
+			$autoOrderStatus       = $this->optionsProvider->getAutoOrderStatus();
+			$syncSettings          = $this->optionsProvider->getOptionsByName( Options\Provider::OPTION_NAME_PACKETERY_SYNC );
+			if ( $orderStatusAutoChange ) {
+				$syncSettings['allow_order_status_change'] = true;
+			}
+			if ( null !== $autoOrderStatus ) {
+				$syncSettings['order_status_change_packet_statuses'] = [
+					Core\Entity\PacketStatus::RECEIVED_DATA => $autoOrderStatus,
+				];
+			}
+
+			update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );

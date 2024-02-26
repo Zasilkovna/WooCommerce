@@ -192,6 +192,25 @@ class Page {
 	}
 
 	/**
+	 * Translate hashes to packet status keys.
+	 *
+	 * @param array $choiceData Choice data.
+	 * @param array $formData   Picked items.
+	 *
+	 * @return array
+	 */
+	private function translateStatuses( array $choiceData, array $formData ): array {
+		$statuses = [];
+		foreach ( $formData as $hash => $value ) {
+			if ( $value ) {
+				$statuses[ $choiceData[ $hash ]['key'] ] = $value;
+			}
+		}
+
+		return $statuses;
+	}
+
+	/**
 	 * Gets all packet statuses.
 	 *
 	 * @return array
@@ -333,6 +352,23 @@ class Page {
 		}
 		unset( $settings['status_syncing_packet_statuses'] );
 
+		$form->addCheckbox( 'allow_order_status_change', __( 'Allow order status change', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( false )
+			->addCondition( Form::EQUAL, true )
+			->toggle( '.order_status_change_content' );
+
+		$orderStatusChangePacketStatuses = $form->addContainer( 'order_status_change_packet_statuses' );
+		$orderStatuses                   = wc_get_order_statuses();
+		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
+			$item = $orderStatusChangePacketStatuses->addSelect( $packetStatusHash, $packetStatusData['label'], $orderStatuses )
+													->setPrompt( __( 'Order status', 'packeta' ) );
+			if ( isset( $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] ) ) {
+				$item->setDefaultValue( $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] );
+			}
+		}
+		unset( $settings['order_status_change_packet_statuses'] );
+
 		$form->setDefaults( $settings );
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
@@ -352,13 +388,17 @@ class Page {
 	 */
 	public function onPacketStatusSyncFormSuccess( Form $form, array $values ): void {
 
-		$values['status_syncing_order_statuses']  = $this->getChosenKeys(
+		$values['status_syncing_order_statuses']       = $this->getChosenKeys(
 			self::getOrderStatusesChoiceData(),
 			$values['status_syncing_order_statuses']
 		);
-		$values['status_syncing_packet_statuses'] = $this->getChosenKeys(
+		$values['status_syncing_packet_statuses']      = $this->getChosenKeys(
 			$this->getPacketStatusesChoiceData(),
 			$values['status_syncing_packet_statuses']
+		);
+		$values['order_status_change_packet_statuses'] = $this->translateStatuses(
+			$this->getPacketStatusesChoiceData(),
+			$values['order_status_change_packet_statuses']
 		);
 
 		if ( '' === $values['max_status_syncing_packets'] ) {
@@ -467,30 +507,6 @@ class Page {
 		$container->addCheckbox( 'widget_auto_open', __( 'Automatically open widget when shipping was selected', 'packeta' ) )
 					->setRequired( false )
 					->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
-
-		$container->addCheckbox( self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE, __( 'Order status change after parcel creation', 'packeta' ) )
-					->setRequired( false )
-					->setDefaultValue( Provider::ORDER_STATUS_AUTO_CHANGE_DEFAULT )
-					->addCondition( Form::EQUAL, true )
-						->toggle( '.packetery-order-status-auto-change-row' );
-
-		$orderStatuses = wc_get_order_statuses();
-		$container->addSelect(
-			Provider::AUTO_ORDER_STATUS,
-			__( 'New order status', 'packeta' ),
-			$orderStatuses
-		)
-				->checkDefaultValue( false )
-				->setDefaultValue( Provider::AUTO_ORDER_STATUS_DEFAULT )
-				->setPrompt( __( 'Select new order status', 'packeta' ) )
-				->addRule( Form::IS_IN, __( 'Select valid order status', 'packeta' ), array_keys( $orderStatuses ) )
-				->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ][ self::FORM_FIELD_ORDER_STATUS_AUTO_CHANGE ], Form::EQUAL, true )
-					->setRequired();
-
-		$container->addCheckbox(
-			'order_status_auto_change_for_auto_submit_at_frontend',
-			__( 'Change order status after automatic packet submit at checkout', 'packeta' )
-		);
 
 		$container->addCheckbox( self::FORM_FIELD_FREE_SHIPPING_SHOWN, __( 'Display the FREE shipping text in checkout', 'packeta' ) )
 			->setRequired( false )
@@ -767,6 +783,7 @@ class Page {
 			'widgetAutoOpenDescription'              => __( 'If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout.', 'packeta' ),
 			'autoOrderStatusChangeDescription'       => __( 'Change order status after data submission to Packeta.', 'packeta' ),
 			'freeShippingTextDescription'            => __( 'If enabled, "FREE" will be displayed after the name of the shipping method, if free shipping is applied.', 'packeta' ),
+			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
