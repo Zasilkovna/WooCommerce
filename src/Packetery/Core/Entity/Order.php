@@ -365,7 +365,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isHomeDelivery(): bool {
-		return ! $this->carrier->hasPickupPoints();
+		return ( ! $this->carrier->hasPickupPoints() && ! $this->isCarDelivery() );
 	}
 
 	/**
