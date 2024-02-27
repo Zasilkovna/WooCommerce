@@ -1327,7 +1327,11 @@ class Checkout {
 			return [];
 		}
 
-		if ( ! is_array( $savedCheckoutData ) || ! is_array( $savedCheckoutData[ $chosenShippingMethod ] ) ) {
+		if (
+			! is_array( $savedCheckoutData ) ||
+			! isset( $savedCheckoutData[ $chosenShippingMethod ] ) ||
+			! is_array( $savedCheckoutData[ $chosenShippingMethod ] )
+		) {
 			return $checkoutData;
 		}
 
