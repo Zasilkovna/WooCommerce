@@ -610,17 +610,23 @@ class Plugin {
 			return;
 		}
 
+		$carrierId      = $orderEntity->getCarrier()->getId();
+		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
+
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
 			[
-				'pickupPoint'       => $orderEntity->getPickupPoint(),
-				'isExternalCarrier' => $orderEntity->isExternalCarrier(),
-				'translations'      => [
-					'packeta'               => __( 'Packeta', 'packeta' ),
-					'pickupPointDetail'     => __( 'Pickup Point Detail', 'packeta' ),
-					'name'                  => __( 'Name', 'packeta' ),
-					'address'               => __( 'Address', 'packeta' ),
-					'pickupPointDetailCaps' => __( 'Pickup Point Detail', 'packeta' ),
+				'pickupPoint'              => $orderEntity->getPickupPoint(),
+				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
+				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
+				'isExternalCarrier'        => $orderEntity->isExternalCarrier(),
+				'translations'             => [
+					'packeta'                => __( 'Packeta', 'packeta' ),
+					'pickupPointDetail'      => __( 'Pickup Point Detail', 'packeta' ),
+					'name'                   => __( 'Name', 'packeta' ),
+					'address'                => __( 'Address', 'packeta' ),
+					'pickupPointDetailCaps'  => __( 'Pickup Point Detail', 'packeta' ),
+					'addressWasNotValidated' => __( 'Address was not validated', 'packeta' ),
 				],
 			]
 		);

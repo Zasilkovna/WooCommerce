@@ -1,4 +1,6 @@
 {varType \Packetery\Core\Entity\PickupPoint $pickupPoint}
+{varType \Packetery\Core\Entity\Address $validatedDeliveryAddress}
+{varType string $carrierAddressValidation}
 
 <div class="clear"></div>
 <div>
@@ -13,5 +15,9 @@
 			<p><a class="button" target="_blank"
 				  href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetailCaps']}</a></p>
 		{/if}
+	{/if}
+
+	{if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
+		<p><strong>{$translations['addressWasNotValidated']}</strong></p>
 	{/if}
 </div>
