@@ -793,6 +793,10 @@ class Checkout {
 				continue;
 			}
 
+			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+				continue;
+			}
+
 			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
 				continue;
 			}
