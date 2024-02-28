@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Order;
 use Packetery\Module;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette;
 use WC_Order;
@@ -83,11 +82,7 @@ class DetailCommonLogic {
 			return null;
 		}
 
-		try {
-			$this->order = $this->orderRepository->getById( $orderId );
-		} catch ( InvalidCarrierException $invalidCarrierException ) {
-			return null;
-		}
+		$this->order = $this->orderRepository->getById( $orderId, true );
 
 		return $this->order;
 	}
