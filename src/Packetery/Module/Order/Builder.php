@@ -1,27 +1,37 @@
 <?php
 /**
- * Class Order
+ * Class Builder
  *
- * @package Packetery\Module\EntityFactory
+ * @package Packetery
  */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use DateTimeImmutable;
+use DateTimeZone;
+use Packetery\Core;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
+use Packetery\Core\Entity\Order;
+use Packetery\Core\Entity\PickupPoint;
+use Packetery\Core\Entity\Size;
+use Packetery\Module;
+use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
-use Packetery\Module\Helper;
+use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\WeightCalculator;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Product;
+use stdClass;
 use WC_Order;
 
 /**
- * Class Order
+ * Class Builder
  *
- * @package Packetery\Module\EntityFactory
+ * @package Packetery
  */
 class Builder {
 
@@ -47,38 +57,148 @@ class Builder {
 	private $customsDeclarationRepository;
 
 	/**
-	 * Order constructor.
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
+
+	/**
+	 * Helper.
+	 *
+	 * @var Core\Helper
+	 */
+	private $helper;
+
+	/**
+	 * Carrier repository.
+	 *
+	 * @var Carrier\EntityRepository
+	 */
+	private $carrierRepository;
+
+	/**
+	 * Builder constructor.
 	 *
 	 * @param Provider                      $optionsProvider              Options Provider.
 	 * @param WeightCalculator              $calculator                   Weight calculator.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
+	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
+	 * @param Core\Helper                   $helper                       Helper.
+	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
 		WeightCalculator $calculator,
-		CustomsDeclaration\Repository $customsDeclarationRepository
+		CustomsDeclaration\Repository $customsDeclarationRepository,
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		Core\Helper $helper,
+		Carrier\EntityRepository $carrierRepository
 	) {
 		$this->optionsProvider              = $optionsProvider;
 		$this->calculator                   = $calculator;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
+		$this->pickupPointsConfig           = $pickupPointsConfig;
+		$this->helper                       = $helper;
+		$this->carrierRepository            = $carrierRepository;
 	}
 
 	/**
-	 * Creates common order entity from WC_Order.
+	 * Creates order entity from WC_Order and plugin data.
 	 *
-	 * @param WC_Order     $wcOrder WC_Order.
-	 * @param Entity\Order $order   Partial order.
+	 * @param WC_Order $wcOrder WC_Order.
+	 * @param stdClass $result Db result, plugin specific data.
 	 *
 	 * @return Entity\Order
+	 * @throws InvalidCarrierException In case Carrier entity could not be created.
 	 */
-	public function finalize( WC_Order $wcOrder, Entity\Order $order ): Entity\Order {
+	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
+		$country = Module\Helper::getWcOrderCountry( $wcOrder );
+		if ( empty( $country ) ) {
+			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
+		}
+
+		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
+		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
+		if ( null === $carrier ) {
+			throw new InvalidCarrierException(
+				sprintf(
+				// translators: %s is carrier id.
+					__( 'Order carrier is invalid (%s). Please contact Packeta support.', 'packeta' ),
+					$carrierId
+				)
+			);
+		}
+
+		$order       = new Order( $result->id, $carrier );
+		$orderWeight = $this->parseFloat( $result->weight );
+		if ( null !== $orderWeight ) {
+			$order->setWeight( $orderWeight );
+		}
+		$order->setPacketId( $result->packet_id );
+		$order->setPacketClaimId( $result->packet_claim_id );
+		$order->setPacketClaimPassword( $result->packet_claim_password );
+		$order->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
+		$order->setIsExported( (bool) $result->is_exported );
+		$order->setIsLabelPrinted( (bool) $result->is_label_printed );
+		$order->setCarrierNumber( $result->carrier_number );
+		$order->setPacketStatus( $result->packet_status );
+		$order->setAddressValidated( (bool) $result->address_validated );
+		$order->setAdultContent( $this->parseBool( $result->adult_content ) );
+		$order->setValue( $this->parseFloat( $result->value ) );
+		$order->setCod( $this->parseFloat( $result->cod ) );
+		$order->setDeliverOn( $this->helper->getDateTimeFromString( $result->deliver_on ) );
+		$order->setLastApiErrorMessage( $result->api_error_message );
+		$order->setLastApiErrorDateTime(
+			( null === $result->api_error_date )
+				? null
+				: DateTimeImmutable::createFromFormat(
+					Core\Helper::MYSQL_DATETIME_FORMAT,
+					$result->api_error_date,
+					new DateTimeZone( 'UTC' )
+				)->setTimezone( wp_timezone() )
+		);
+
+		if ( $result->delivery_address ) {
+			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
+			$deliveryAddress        = new Address(
+				$deliveryAddressDecoded->street,
+				$deliveryAddressDecoded->city,
+				$deliveryAddressDecoded->zip
+			);
+
+			$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
+			$deliveryAddress->setLongitude( $deliveryAddressDecoded->longitude );
+			$deliveryAddress->setLatitude( $deliveryAddressDecoded->latitude );
+			$deliveryAddress->setCounty( $deliveryAddressDecoded->county );
+
+			$order->setDeliveryAddress( $deliveryAddress );
+		}
+
+		if ( $result->car_delivery_id ) {
+			$order->setCarDeliveryId( $result->car_delivery_id );
+		}
+
+		if ( null !== $result->point_id ) {
+			$pickUpPoint = new PickupPoint(
+				$result->point_id,
+				$result->point_name,
+				$result->point_city,
+				$result->point_zip,
+				$result->point_street,
+				$result->point_url
+			);
+
+			$order->setPickupPoint( $pickUpPoint );
+		}
+
 		$order->setCalculatedWeight( $this->calculator->calculateOrderWeight( $wcOrder ) );
 
 		if ( null === $order->containsAdultContent() ) {
 			$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		}
 
-		$order->setShippingCountry( Helper::getWcOrderCountry( $wcOrder ) );
+		$order->setShippingCountry( Module\Helper::getWcOrderCountry( $wcOrder ) );
 
 		$orderData   = $wcOrder->get_data();
 		$contactInfo = ( $wcOrder->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );
@@ -112,7 +232,7 @@ class Builder {
 
 		$order->setEmail( $orderData['billing']['email'] );
 		$codMethod = $this->optionsProvider->getCodPaymentMethod();
-		if ( null === $order->getCod() && $orderData['payment_method'] === $codMethod ) {
+		if ( $orderData['payment_method'] === $codMethod && null === $order->getCod() ) {
 			$order->setCod( $order->getValue() );
 		}
 
@@ -147,6 +267,36 @@ class Builder {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Parses string value as float.
+	 *
+	 * @param string|float|null $value Value.
+	 *
+	 * @return float|null
+	 */
+	private function parseFloat( $value ): ?float {
+		if ( null === $value || '' === $value ) {
+			return null;
+		}
+
+		return (float) $value;
+	}
+
+	/**
+	 * Parses string value as float.
+	 *
+	 * @param string|int|null $value Value.
+	 *
+	 * @return bool|null
+	 */
+	private function parseBool( $value ): ?bool {
+		if ( null === $value || '' === $value ) {
+			return null;
+		}
+
+		return (bool) $value;
 	}
 
 }

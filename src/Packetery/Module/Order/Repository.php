@@ -13,11 +13,8 @@ use Packetery\Core;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
-use Packetery\Core\Entity\Size;
-use Packetery\Core\Entity\Address;
 use Packetery\Module;
 use Packetery\Module\Carrier;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ShippingMethod;
@@ -54,13 +51,6 @@ class Repository {
 	private $helper;
 
 	/**
-	 * Internal pickup points config.
-	 *
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointsConfig;
-
-	/**
 	 * Carrier repository.
 	 *
 	 * @var Carrier\EntityRepository
@@ -80,7 +70,6 @@ class Repository {
 	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
 	 * @param Builder                       $orderFactory                 Order factory.
 	 * @param Core\Helper                   $helper                       Helper.
-	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
@@ -88,14 +77,12 @@ class Repository {
 		WpdbAdapter $wpdbAdapter,
 		Builder $orderFactory,
 		Core\Helper $helper,
-		PacketaPickupPointsConfig $pickupPointsConfig,
 		Carrier\EntityRepository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->builder                      = $orderFactory;
 		$this->helper                       = $helper;
-		$this->pickupPointsConfig           = $pickupPointsConfig;
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
@@ -287,129 +274,7 @@ class Repository {
 			return null;
 		}
 
-		$partialOrder = $this->createPartialOrder( $result, Module\Helper::getWcOrderCountry( $wcOrder ) );
-		return $this->builder->finalize( $wcOrder, $partialOrder );
-	}
-
-	/**
-	 * Creates partial order.
-	 *
-	 * @param \stdClass $result  DB result.
-	 * @param string    $country Lowercase country.
-	 *
-	 * @return Order
-	 * @throws InvalidCarrierException InvalidCarrierException.
-	 */
-	private function createPartialOrder( \stdClass $result, string $country ): Order {
-		if ( empty( $country ) ) {
-			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
-		}
-
-		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
-		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
-		if ( null === $carrier ) {
-			throw new InvalidCarrierException(
-				sprintf(
-				// translators: %s is carrier id.
-					__( 'Order carrier is invalid (%s). Please contact Packeta support.', 'packeta' ),
-					$carrierId
-				)
-			);
-		}
-
-		$partialOrder = new Order( $result->id, $carrier );
-		$orderWeight  = $this->parseFloat( $result->weight );
-		if ( null !== $orderWeight ) {
-			$partialOrder->setWeight( $orderWeight );
-		}
-		$partialOrder->setPacketId( $result->packet_id );
-		$partialOrder->setPacketClaimId( $result->packet_claim_id );
-		$partialOrder->setPacketClaimPassword( $result->packet_claim_password );
-		$partialOrder->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
-		$partialOrder->setIsExported( (bool) $result->is_exported );
-		$partialOrder->setIsLabelPrinted( (bool) $result->is_label_printed );
-		$partialOrder->setCarrierNumber( $result->carrier_number );
-		$partialOrder->setPacketStatus( $result->packet_status );
-		$partialOrder->setAddressValidated( (bool) $result->address_validated );
-		$partialOrder->setAdultContent( $this->parseBool( $result->adult_content ) );
-		$partialOrder->setValue( $this->parseFloat( $result->value ) );
-		$partialOrder->setCod( $this->parseFloat( $result->cod ) );
-		$partialOrder->setDeliverOn( $this->helper->getDateTimeFromString( $result->deliver_on ) );
-		$partialOrder->setLastApiErrorMessage( $result->api_error_message );
-		$partialOrder->setLastApiErrorDateTime(
-			( null === $result->api_error_date )
-				? null
-				: \DateTimeImmutable::createFromFormat(
-					Core\Helper::MYSQL_DATETIME_FORMAT,
-					$result->api_error_date,
-					new \DateTimeZone( 'UTC' )
-				)->setTimezone( wp_timezone() )
-		);
-
-		if ( $result->delivery_address ) {
-			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
-			$deliveryAddress        = new Address(
-				$deliveryAddressDecoded->street,
-				$deliveryAddressDecoded->city,
-				$deliveryAddressDecoded->zip
-			);
-
-			$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
-			$deliveryAddress->setLongitude( $deliveryAddressDecoded->longitude );
-			$deliveryAddress->setLatitude( $deliveryAddressDecoded->latitude );
-			$deliveryAddress->setCounty( $deliveryAddressDecoded->county );
-
-			$partialOrder->setDeliveryAddress( $deliveryAddress );
-		}
-
-		if ( $result->car_delivery_id ) {
-			$partialOrder->setCarDeliveryId( $result->car_delivery_id );
-		}
-
-		if ( null !== $result->point_id ) {
-			$pickUpPoint = new PickupPoint(
-				$result->point_id,
-				$result->point_name,
-				$result->point_city,
-				$result->point_zip,
-				$result->point_street,
-				$result->point_url
-			);
-
-			$partialOrder->setPickupPoint( $pickUpPoint );
-		}
-
-		return $partialOrder;
-	}
-
-	/**
-	 * Parses string value as float.
-	 *
-	 * @param string|float|null $value Value.
-	 *
-	 * @return float|null
-	 */
-	private function parseFloat( $value ): ?float {
-		if ( null === $value || '' === $value ) {
-			return null;
-		}
-
-		return (float) $value;
-	}
-
-	/**
-	 * Parses string value as float.
-	 *
-	 * @param string|int|null $value Value.
-	 *
-	 * @return bool|null
-	 */
-	private function parseBool( $value ): ?bool {
-		if ( null === $value || '' === $value ) {
-			return null;
-		}
-
-		return (bool) $value;
+		return $this->builder->build( $wcOrder, $result );
 	}
 
 	/**
@@ -524,11 +389,7 @@ class Repository {
 			assert( null !== $wcOrder, 'WC order has to be present' );
 
 			try {
-				$partialOrder              = $this->createPartialOrder(
-					$packeteryOrdersResult[ $orderId ],
-					Module\Helper::getWcOrderCountry( $wcOrder )
-				);
-				$orderEntities[ $orderId ] = $this->builder->finalize( $wcOrder, $partialOrder );
+				$orderEntities[ $orderId ] = $this->builder->build( $wcOrder, $packeteryOrdersResult[ $orderId ] );
 			} catch ( InvalidCarrierException $exception ) {
 				continue;
 			}
@@ -608,8 +469,7 @@ class Repository {
 			}
 
 			try {
-				$partial = $this->createPartialOrder( $row, Module\Helper::getWcOrderCountry( $wcOrder ) );
-				yield $this->builder->finalize( $wcOrder, $partial );
+				yield $this->builder->build( $wcOrder, $row );
 			} catch ( InvalidCarrierException $exception ) {
 				continue;
 			}
