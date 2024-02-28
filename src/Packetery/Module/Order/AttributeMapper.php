@@ -150,7 +150,6 @@ class AttributeMapper {
 	public function toCarDeliveryAddress( array $values ): Entity\Address {
 		$address = $this->createAddress( $values );
 		$address->setHouseNumber( $values[ Attribute::ADDRESS_HOUSE_NUMBER ] );
-		$address->setCounty( $values[ Attribute::ADDRESS_COUNTY ] );
 
 		return $address;
 	}
