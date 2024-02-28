@@ -103,27 +103,24 @@ var packeteryLoadCheckout = function( $, settings ) {
 			$widgetDiv.find( '.packeta-widget-selected-address' ).html('');
 		};
 
+		var rewriteDestinationAddress = function ( carrierRateId ) {
+			var destinationAddress = getCheckoutAddress();
+			destinationAddress.street.val( getRateAttrValue( carrierRateId, 'packetery_address_street', '' ) + ' ' + getRateAttrValue( carrierRateId, 'packetery_address_houseNumber', '' ) );
+			destinationAddress.city.val( getRateAttrValue( carrierRateId, 'packetery_address_city', '' ) );
+			destinationAddress.postCode.val( getRateAttrValue( carrierRateId, 'packetery_address_postCode', '' ) );
+		};
+
 		var showHomeDeliveryAddress = function(carrierRateId) {
 			resetWidgetInfoClasses();
-
-			var destinationAddress = getCheckoutAddress();
 			if (getRateAttrValue( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '0' ) === '1') {
-				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', ''));
-				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_address_city', ''));
-				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_address_postCode', ''));
+				rewriteDestinationAddress( carrierRateId );
 			}
 		};
 
 		var showCarDeliveryAddress = function(carrierRateId) {
 			resetWidgetInfoClasses();
-
-			var destinationAddress = getCheckoutAddress();
-			var isAddressSelected = getRateAttrValue( carrierRateId, 'packetery_car_delivery_id', false ) !== false;
-			if (isAddressSelected) {
-				destinationAddress.street.val(getRateAttrValue(carrierRateId, 'packetery_address_street', '') + ' ' + getRateAttrValue(carrierRateId, 'packetery_address_houseNumber', ''));
-				destinationAddress.city.val(getRateAttrValue(carrierRateId, 'packetery_address_city', ''));
-				destinationAddress.postCode.val(getRateAttrValue(carrierRateId, 'packetery_address_postCode', ''));
-
+			if ( getRateAttrValue( carrierRateId, settings.carDeliveryAttrs[ 'carDeliveryId' ].name, '' ) !== '' ) {
+				rewriteDestinationAddress( carrierRateId );
 				var $estimatedDeliveryDateSection = $('.estimated-delivery-date');
 				$estimatedDeliveryDateSection.removeClass('packetery-hidden');
 				$estimatedDeliveryDateSection.find('.packetery-car-delivery-estimated-date').html(
