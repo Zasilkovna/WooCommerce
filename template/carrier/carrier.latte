@@ -223,7 +223,7 @@
                         </td>
                     </tr>
 
-                    {if in_array($carrier->getId(), $carDeliveryCarriers)}
+                    {if $carrier->isCarDelivery()}
                         <tr>
                             <th scope="row">
                                 <label n:name=days_until_shipping />

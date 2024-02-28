@@ -12,6 +12,7 @@ namespace Packetery\Module\Carrier;
 use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Helper;
 use Packetery\Core\Rounder;
+use Packetery\Module\CarDeliveryConfig;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
@@ -90,7 +91,14 @@ class OptionsPage {
 	private $featureFlag;
 
 	/**
-	 * Plugin constructor.
+	 * Car delivery config.
+	 *
+	 * @var CarDeliveryConfig
+	 */
+	private $carDeliveryConfig;
+
+	/**
+	 * OptionsPage constructor.
 	 *
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
 	 * @param EntityRepository          $carrierRepository  Carrier repository.
@@ -100,6 +108,7 @@ class OptionsPage {
 	 * @param MessageManager            $messageManager     Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 * @param FeatureFlagManager        $featureFlag        Feature flag.
+	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -109,7 +118,8 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag
+		FeatureFlagManager $featureFlag,
+		CarDeliveryConfig $carDeliveryConfig
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
@@ -119,6 +129,7 @@ class OptionsPage {
 		$this->messageManager     = $messageManager;
 		$this->pickupPointsConfig = $pickupPointsConfig;
 		$this->featureFlag        = $featureFlag;
+		$this->carDeliveryConfig  = $carDeliveryConfig;
 	}
 
 	/**
@@ -212,7 +223,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 
-		if ( $this->carrierRepository->isCarDeliveryCarrier( $carrier->getId() ) ) {
+		if ( $carrier->isCarDelivery() ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )
@@ -237,9 +248,9 @@ class OptionsPage {
 		$form->addSubmit( 'save' );
 
 		if (
+			false === $carrier->isCarDelivery() &&
 			false === $carrier->hasPickupPoints() &&
-			in_array( $carrier->getCountry(), Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) &&
-			! in_array( $carrier->getId(), Carrier::CAR_DELIVERY_CARRIERS, true )
+			in_array( $carrier->getCountry(), Carrier::ADDRESS_VALIDATION_COUNTRIES, true )
 		) {
 			$addressValidationOptions = [
 				'none'     => __( 'No address validation', 'packeta' ),
@@ -401,6 +412,10 @@ class OptionsPage {
 			$carriersData    = [];
 			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrier ) {
+				if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+					continue;
+				}
+
 				if ( ! empty( $post ) && $post['id'] === $carrier->getId() ) {
 					$formTemplate = $this->createFormTemplate( $post );
 					$form         = $this->createForm( $post );
@@ -428,12 +443,11 @@ class OptionsPage {
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
 				[
-					'forms'               => $carriersData,
-					'country_iso'         => $countryIso,
-					'carDeliveryCarriers' => Carrier::CAR_DELIVERY_CARRIERS,
-					'globalCurrency'      => get_woocommerce_currency_symbol(),
-					'flashMessages'       => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
-					'translations'        => [
+					'forms'          => $carriersData,
+					'country_iso'    => $countryIso,
+					'globalCurrency' => get_woocommerce_currency_symbol(),
+					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+					'translations'   => [
 						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
 						'delete'                       => __( 'Delete', 'packeta' ),
 						'weightRules'                  => __( 'Weight rules', 'packeta' ),

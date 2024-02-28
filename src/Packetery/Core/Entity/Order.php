@@ -374,7 +374,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isCarDelivery(): bool {
-		return in_array( $this->carrier->getId(), Carrier::CAR_DELIVERY_CARRIERS, true );
+		return $this->carrier->isCarDelivery();
 	}
 
 	/**

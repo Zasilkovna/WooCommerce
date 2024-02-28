@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Log\Record;
+use Packetery\Module\CarDeliveryConfig;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
@@ -83,6 +84,13 @@ class CountryListingPage {
 	private $carrierEntityRepository;
 
 	/**
+	 * Car delivery config.
+	 *
+	 * @var CarDeliveryConfig
+	 */
+	private $carDeliveryConfig;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine                    $latteEngine             PacketeryLatte engine.
@@ -93,6 +101,7 @@ class CountryListingPage {
 	 * @param Log\Page                  $logPage                 Log page.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig      Internal pickup points config.
 	 * @param EntityRepository          $carrierEntityRepository Carrier repository.
+	 * @param CarDeliveryConfig         $carDeliveryConfig       Car delivery config.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -102,7 +111,8 @@ class CountryListingPage {
 		Provider $optionsProvider,
 		Log\Page $logPage,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		EntityRepository $carrierEntityRepository
+		EntityRepository $carrierEntityRepository,
+		CarDeliveryConfig $carDeliveryConfig
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -112,6 +122,7 @@ class CountryListingPage {
 		$this->logPage                 = $logPage;
 		$this->pickupPointsConfig      = $pickupPointsConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
+		$this->carDeliveryConfig       = $carDeliveryConfig;
 	}
 
 	/**
@@ -309,6 +320,10 @@ class CountryListingPage {
 		$activeCarriers  = [];
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
+			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+				continue;
+			}
+
 			$optionId       = OptionPrefixer::getOptionId( $carrier->getId() );
 			$carrierOptions = get_option( $optionId );
 			if ( false !== $carrierOptions && $carrierOptions['active'] ) {

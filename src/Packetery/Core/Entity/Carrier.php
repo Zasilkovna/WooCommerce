@@ -322,4 +322,14 @@ class Carrier {
 	public function supportsAgeVerification(): bool {
 		return $this->ageVerification;
 	}
+
+	/**
+	 * Tells if is car delivery carrier.
+	 *
+	 * @return bool
+	 */
+	public function isCarDelivery(): bool {
+		return in_array( $this->id, self::CAR_DELIVERY_CARRIERS, true );
+	}
+
 }

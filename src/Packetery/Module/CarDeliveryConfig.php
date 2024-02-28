@@ -11,23 +11,20 @@ namespace Packetery\Module;
  * Class CarDeliveryConfig
  *
  * @property bool $sample
+ * @property bool $enabled
  * @package Packetery
  */
 class CarDeliveryConfig {
-	/**
-	 * Car Delivery sample settings.
-	 *
-	 * @var bool
-	 */
-	private $sample;
 
 	/**
 	 * CarDeliveryConfig constructor.
 	 *
 	 * @param bool $sample Sample.
+	 * @param bool $enabled Enabled.
 	 */
-	public function __construct( bool $sample ) {
-		$this->sample = $sample;
+	public function __construct( bool $sample, bool $enabled ) {
+		$this->sample  = $sample;
+		$this->enabled = $enabled;
 	}
 
 	/**
@@ -37,6 +34,15 @@ class CarDeliveryConfig {
 	 */
 	public function isSampleEnabled(): bool {
 		return $this->sample;
+	}
+
+	/**
+	 * Tells whether the car delivery is enabled.
+	 *
+	 * @return bool
+	 */
+	public function isEnabled(): bool {
+		return $this->enabled;
 	}
 
 }
