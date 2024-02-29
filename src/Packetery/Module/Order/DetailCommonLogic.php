@@ -109,7 +109,7 @@ class DetailCommonLogic {
 			return (int) $idParam;
 		}
 
-		return $post->ID;
+		return (int) $post->ID;
 	}
 
 	/**
