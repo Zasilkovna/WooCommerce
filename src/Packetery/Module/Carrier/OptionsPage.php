@@ -32,8 +32,8 @@ class OptionsPage {
 
 	public const FORM_FIELD_NAME         = 'name';
 	public const SLUG                    = 'packeta-country';
+	public const PARAMETER_COUNTRY_CODE  = 'country_code';
 	public const MINIMUM_CHECKED_VENDORS = 2;
-	public const PARAMETER_NAME_CODE     = 'country-code';
 
 	/**
 	 * PacketeryLatte_engine.
@@ -392,8 +392,8 @@ class OptionsPage {
 		if ( wp_safe_redirect(
 			add_query_arg(
 				[
-					'page'                    => self::SLUG,
-					self::PARAMETER_NAME_CODE => $this->httpRequest->getQuery( self::PARAMETER_NAME_CODE ),
+					'page'                       => self::SLUG,
+					self::PARAMETER_COUNTRY_CODE => $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE ),
 				],
 				get_admin_url( null, 'admin.php' )
 			),
@@ -407,7 +407,7 @@ class OptionsPage {
 	 *  Renders page.
 	 */
 	public function render(): void {
-		$countryIso = $this->httpRequest->getQuery( self::PARAMETER_NAME_CODE );
+		$countryIso = $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE );
 		if ( $countryIso ) {
 			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
@@ -606,7 +606,7 @@ class OptionsPage {
 		];
 
 		if ( null !== $countryCode ) {
-			$params[ self::PARAMETER_NAME_CODE ] = $countryCode;
+			$params[ self::PARAMETER_COUNTRY_CODE ] = $countryCode;
 		}
 
 		return add_query_arg(

@@ -164,9 +164,9 @@ class DashboardWidget {
 
 			if ( ! isset( $activeCountries[ $country ] ) ) {
 				$activeCountries[ $country ] = [
-					CountryListingPage::DATA_KEY_CODE => $country,
-					'name'                            => $wcCountries[ strtoupper( $country ) ],
-					'url'                             => $this->carrierOptionsPage->createUrl( $country ),
+					CountryListingPage::DATA_KEY_COUNTRY_CODE => $country,
+					'name' => $wcCountries[ strtoupper( $country ) ],
+					'url'  => $this->carrierOptionsPage->createUrl( $country ),
 				];
 			}
 		}
