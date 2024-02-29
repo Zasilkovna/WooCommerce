@@ -239,15 +239,7 @@ class Repository {
 			return null;
 		}
 
-		try {
-			return $this->getByWcOrder( $wcOrder );
-		} catch ( InvalidCarrierException $invalidCarrierException ) {
-			if ( false === $suppressInvalidCarrierException ) {
-				throw $invalidCarrierException;
-			}
-		}
-
-		return null;
+		return $this->getByWcOrder( $wcOrder, $suppressInvalidCarrierException );
 	}
 
 	/**
@@ -272,12 +264,13 @@ class Repository {
 	/**
 	 * Gets order by wc order.
 	 *
-	 * @param WC_Order $wcOrder WC Order.
+	 * @param WC_Order $wcOrder                         WC Order.
+	 * @param bool     $suppressInvalidCarrierException Tells if carrier exception should be ignored.
 	 *
 	 * @return Order|null
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
-	public function getByWcOrder( WC_Order $wcOrder ): ?Order {
+	public function getByWcOrder( WC_Order $wcOrder, bool $suppressInvalidCarrierException = false ): ?Order {
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			return null;
 		}
@@ -287,8 +280,17 @@ class Repository {
 			return null;
 		}
 
-		$partialOrder = $this->createPartialOrder( $result, Module\Helper::getWcOrderCountry( $wcOrder ) );
-		return $this->builder->finalize( $wcOrder, $partialOrder );
+		try {
+			$partialOrder = $this->createPartialOrder( $result, Module\Helper::getWcOrderCountry( $wcOrder ) );
+
+			return $this->builder->finalize( $wcOrder, $partialOrder );
+		} catch ( InvalidCarrierException $invalidCarrierException ) {
+			if ( false === $suppressInvalidCarrierException ) {
+				throw $invalidCarrierException;
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -10,8 +10,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Exception\InvalidCarrierException;
-
 /**
  * Class MetaboxesWrapper.
  */
