@@ -26,6 +26,7 @@ use Packetery\Module\Plugin;
 class CountryListingPage {
 
 	public const TRANSIENT_CARRIER_CHANGES = 'packetery_carrier_changes';
+	public const DATA_KEY_COUNTRY_CODE     = 'countryCode';
 
 	/**
 	 * PacketeryLatteEngine.
@@ -224,33 +225,33 @@ class CountryListingPage {
 			$activeCarriers   = $this->getActiveCarriersNamesByCountry( $country );
 			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
-				'code'           => $country,
-				'name'           => $wcCountries[ strtoupper( $country ) ],
-				'url'            => add_query_arg(
+				self::DATA_KEY_COUNTRY_CODE => $country,
+				'name'                      => $wcCountries[ strtoupper( $country ) ],
+				'url'                       => add_query_arg(
 					[
 						'page' => OptionsPage::SLUG,
-						'code' => $country,
+						OptionsPage::PARAMETER_COUNTRY_CODE => $country,
 					],
 					get_admin_url( null, 'admin.php' )
 				),
-				'activeCarriers' => $activeCarriers,
-				'flag'           => Plugin::buildAssetUrl( sprintf( 'public/images/flags/%s.png', $country ) ),
+				'activeCarriers'            => $activeCarriers,
+				'flag'                      => Plugin::buildAssetUrl( sprintf( 'public/images/flags/%s.png', $country ) ),
 			];
 		}
 
 		usort(
 			$countriesFinal,
 			static function ( $a, $b ) {
-				if ( 'cz' === $a['code'] ) {
+				if ( 'cz' === $a[ self::DATA_KEY_COUNTRY_CODE ] ) {
 					return - 1;
 				}
-				if ( 'cz' === $b['code'] ) {
+				if ( 'cz' === $b[ self::DATA_KEY_COUNTRY_CODE ] ) {
 					return 1;
 				}
-				if ( 'sk' === $a['code'] ) {
+				if ( 'sk' === $a[ self::DATA_KEY_COUNTRY_CODE ] ) {
 					return - 1;
 				}
-				if ( 'sk' === $b['code'] ) {
+				if ( 'sk' === $b[ self::DATA_KEY_COUNTRY_CODE ] ) {
 					return 1;
 				}
 
