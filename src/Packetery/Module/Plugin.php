@@ -680,7 +680,7 @@ class Plugin {
 	 * @param WC_Order $wcOrder WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $wcOrder ): void {
-		$order = $this->orderRepository->getById( $wcOrder->get_id(), true );
+		$order = $this->orderRepository->getByWcOrder( $wcOrder, true );
 		if ( null === $order ) {
 			return;
 		}
