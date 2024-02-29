@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CountryListingPage;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 
@@ -163,9 +164,9 @@ class DashboardWidget {
 
 			if ( ! isset( $activeCountries[ $country ] ) ) {
 				$activeCountries[ $country ] = [
-					'code' => $country,
-					'name' => $wcCountries[ strtoupper( $country ) ],
-					'url'  => $this->carrierOptionsPage->createUrl( $country ),
+					CountryListingPage::DATA_KEY_CODE => $country,
+					'name'                            => $wcCountries[ strtoupper( $country ) ],
+					'url'                             => $this->carrierOptionsPage->createUrl( $country ),
 				];
 			}
 		}
