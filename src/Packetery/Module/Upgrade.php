@@ -217,8 +217,8 @@ class Upgrade {
 				'' === $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ]
 			) {
 				unset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] );
+				update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
 			}
-			update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );
