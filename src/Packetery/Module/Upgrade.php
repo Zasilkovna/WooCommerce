@@ -201,7 +201,7 @@ class Upgrade {
 			if ( $orderStatusAutoChange ) {
 				$syncSettings['allow_order_status_change'] = true;
 			}
-			if ( null !== $autoOrderStatus ) {
+			if ( ! empty( $autoOrderStatus ) ) {
 				$syncSettings['order_status_change_packet_statuses'] = [
 					Core\Entity\PacketStatus::RECEIVED_DATA => $autoOrderStatus,
 				];
