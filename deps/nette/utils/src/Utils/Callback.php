@@ -11,6 +11,7 @@ use Packetery\Nette;
 use function is_array, is_object, is_string;
 /**
  * PHP callable tools.
+ * @internal
  */
 final class Callback
 {
@@ -19,7 +20,7 @@ final class Callback
      * @param  string|object|callable  $callable  class, object, callable
      * @deprecated use Closure::fromCallable()
      */
-    public static function closure($callable, string $method = null) : \Closure
+    public static function closure($callable, ?string $method = null) : \Closure
     {
         \trigger_error(__METHOD__ . '() is deprecated, use Closure::fromCallable().', \E_USER_DEPRECATED);
         try {
@@ -128,19 +129,21 @@ final class Callback
      */
     public static function isStatic(callable $callable) : bool
     {
-        return is_array($callable) ? is_string($callable[0]) : is_string($callable);
+        return is_string(is_array($callable) ? $callable[0] : $callable);
     }
     /**
      * Unwraps closure created by Closure::fromCallable().
+     * @return callable|array
      */
-    public static function unwrap(\Closure $closure) : callable
+    public static function unwrap(\Closure $closure)
     {
         $r = new \ReflectionFunction($closure);
+        $class = $r->getClosureScopeClass();
         if (\substr($r->name, -1) === '}') {
             return $closure;
-        } elseif ($obj = $r->getClosureThis()) {
+        } elseif (($obj = $r->getClosureThis()) && $class && \get_class($obj) === $class->name) {
             return [$obj, $r->name];
-        } elseif ($class = $r->getClosureScopeClass()) {
+        } elseif ($class) {
             return [$class->name, $r->name];
         } else {
             return $r->name;

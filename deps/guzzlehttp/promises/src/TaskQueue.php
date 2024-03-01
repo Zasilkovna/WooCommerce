@@ -10,6 +10,7 @@ namespace Packetery\GuzzleHttp\Promise;
  * by calling the `run()` function of the global task queue in an event loop.
  *
  *     GuzzleHttp\Promise\Utils::queue()->run();
+ * @internal
  */
 class TaskQueue implements TaskQueueInterface
 {

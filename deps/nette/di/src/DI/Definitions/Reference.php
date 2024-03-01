@@ -10,6 +10,7 @@ namespace Packetery\Nette\DI\Definitions;
 use Packetery\Nette;
 /**
  * Reference to service. Either by name or by type or reference to the 'self' service.
+ * @internal
  */
 final class Reference
 {

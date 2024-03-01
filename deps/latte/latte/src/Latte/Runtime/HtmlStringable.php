@@ -7,6 +7,7 @@
 declare (strict_types=1);
 namespace Packetery\Latte\Runtime;
 
+/** @internal */
 interface HtmlStringable
 {
     /** @return string in HTML format */

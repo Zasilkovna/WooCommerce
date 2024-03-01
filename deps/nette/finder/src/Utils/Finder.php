@@ -21,6 +21,7 @@ use RecursiveIteratorIterator;
  * </code>
  *
  * @implements \IteratorAggregate<string, \SplFileInfo>
+ * @internal
  */
 class Finder implements \IteratorAggregate, \Countable
 {

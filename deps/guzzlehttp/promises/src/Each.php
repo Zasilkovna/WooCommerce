@@ -2,6 +2,7 @@
 
 namespace Packetery\GuzzleHttp\Promise;
 
+/** @internal */
 final class Each
 {
     /**

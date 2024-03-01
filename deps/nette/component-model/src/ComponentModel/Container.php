@@ -12,6 +12,7 @@ use Packetery\Nette;
  * ComponentContainer is default implementation of IContainer.
  *
  * @property-read \Iterator $components
+ * @internal
  */
 class Container extends Component implements IContainer
 {

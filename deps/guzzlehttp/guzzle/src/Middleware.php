@@ -10,6 +10,7 @@ use Packetery\Psr\Http\Message\ResponseInterface;
 use Packetery\Psr\Log\LoggerInterface;
 /**
  * Functions used to create and wrap handlers with handler middleware.
+ * @internal
  */
 final class Middleware
 {

@@ -11,6 +11,7 @@ use Packetery\Nette;
 use Packetery\Nette\Security\IIdentity;
 /**
  * @deprecated by \Packetery\Nette\Bridges\SecurityHttp\SessionStorage
+ * @internal
  */
 class UserStorage implements \Packetery\Nette\Security\IUserStorage
 {

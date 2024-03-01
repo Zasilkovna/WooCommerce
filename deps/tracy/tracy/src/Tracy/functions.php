@@ -11,6 +11,7 @@ if (!\function_exists('Packetery\\dump')) {
     /**
      * \Packetery\Tracy\Debugger::dump() shortcut.
      * @tracySkipLocation
+     * @internal
      */
     function dump($var)
     {
@@ -22,6 +23,7 @@ if (!\function_exists('Packetery\\dumpe')) {
     /**
      * \Packetery\Tracy\Debugger::dump() & exit shortcut.
      * @tracySkipLocation
+     * @internal
      */
     function dumpe($var) : void
     {
@@ -35,6 +37,7 @@ if (!\function_exists('Packetery\\bdump')) {
     /**
      * \Packetery\Tracy\Debugger::barDump() shortcut.
      * @tracySkipLocation
+     * @internal
      */
     function bdump($var)
     {

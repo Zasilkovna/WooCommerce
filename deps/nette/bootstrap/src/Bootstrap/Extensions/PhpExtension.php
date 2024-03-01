@@ -10,6 +10,7 @@ namespace Packetery\Nette\Bootstrap\Extensions;
 use Packetery\Nette;
 /**
  * PHP directives definition.
+ * @internal
  */
 final class PhpExtension extends \Packetery\Nette\DI\CompilerExtension
 {

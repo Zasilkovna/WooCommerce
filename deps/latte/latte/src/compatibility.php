@@ -8,7 +8,9 @@ declare (strict_types=1);
 namespace Packetery\Latte;
 
 if (\false) {
-    /** @deprecated use \Packetery\Latte\Loader */
+    /** @deprecated use \Packetery\Latte\Loader
+     * @internal
+     */
     interface ILoader extends Loader
     {
     }
@@ -16,7 +18,9 @@ if (\false) {
     \class_alias(Loader::class, ILoader::class);
 }
 if (\false) {
-    /** @deprecated use \Packetery\Latte\Macro */
+    /** @deprecated use \Packetery\Latte\Macro
+     * @internal
+     */
     interface IMacro extends Macro
     {
     }
@@ -26,7 +30,9 @@ if (\false) {
 namespace Packetery\Latte\Runtime;
 
 if (\false) {
-    /** @deprecated use \Packetery\Latte\Runtime\HtmlStringable */
+    /** @deprecated use \Packetery\Latte\Runtime\HtmlStringable
+     * @internal
+     */
     interface IHtmlString extends HtmlStringable
     {
     }
@@ -34,7 +40,9 @@ if (\false) {
     \class_alias(HtmlStringable::class, IHtmlString::class);
 }
 if (\false) {
-    /** @deprecated use \Packetery\Latte\Runtime\SnippetBridge */
+    /** @deprecated use \Packetery\Latte\Runtime\SnippetBridge
+     * @internal
+     */
     interface ISnippetBridge extends SnippetBridge
     {
     }

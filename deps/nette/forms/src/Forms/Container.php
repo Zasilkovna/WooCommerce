@@ -15,6 +15,7 @@ use Packetery\Nette\Utils\ArrayHash;
  * @property   ArrayHash $values
  * @property-read \Iterator $controls
  * @property-read Form|null $form
+ * @internal
  */
 class Container extends \Packetery\Nette\ComponentModel\Container implements \ArrayAccess
 {

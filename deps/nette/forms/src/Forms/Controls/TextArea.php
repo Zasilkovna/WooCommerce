@@ -10,6 +10,7 @@ namespace Packetery\Nette\Forms\Controls;
 use Packetery\Nette;
 /**
  * Multiline text input control.
+ * @internal
  */
 class TextArea extends TextBase
 {

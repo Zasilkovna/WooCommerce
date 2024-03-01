@@ -10,6 +10,7 @@ namespace Packetery\Psr\Http\Message;
  * might change state MUST be implemented such that they retain the internal
  * state of the current instance and return an instance that contains the
  * changed state.
+ * @internal
  */
 interface UploadedFileInterface
 {

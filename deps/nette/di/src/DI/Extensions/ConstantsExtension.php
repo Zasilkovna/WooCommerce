@@ -10,6 +10,7 @@ namespace Packetery\Nette\DI\Extensions;
 use Packetery\Nette;
 /**
  * Constant definitions.
+ * @internal
  */
 final class ConstantsExtension extends \Packetery\Nette\DI\CompilerExtension
 {

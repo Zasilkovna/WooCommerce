@@ -14,6 +14,7 @@ use Packetery\Psr\Http\Message\ResponseInterface;
 use Packetery\Psr\Http\Message\StreamInterface;
 /**
  * HTTP handler that uses PHP's HTTP stream wrapper.
+ * @internal
  */
 class StreamHandler
 {

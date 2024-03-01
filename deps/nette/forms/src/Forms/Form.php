@@ -19,6 +19,7 @@ use Packetery\Nette\Utils\Html;
  * @property-read FormRenderer $renderer
  * @property string $action
  * @property string $method
+ * @internal
  */
 class Form extends Container implements \Packetery\Nette\HtmlStringable
 {

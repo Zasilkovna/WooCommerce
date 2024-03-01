@@ -30,48 +30,56 @@ if (!\defined('PHP_OS_FAMILY')) {
     \define('PHP_OS_FAMILY', p\Php72::php_os_family());
 }
 if ('\\' === \DIRECTORY_SEPARATOR && !\function_exists('sapi_windows_vt100_support')) {
+    /** @internal */
     function sapi_windows_vt100_support($stream, $enable = null)
     {
         return p\Php72::sapi_windows_vt100_support($stream, $enable);
     }
 }
 if (!\function_exists('stream_isatty')) {
+    /** @internal */
     function stream_isatty($stream)
     {
         return p\Php72::stream_isatty($stream);
     }
 }
 if (!\function_exists('utf8_encode')) {
+    /** @internal */
     function utf8_encode($string)
     {
         return p\Php72::utf8_encode($string);
     }
 }
 if (!\function_exists('utf8_decode')) {
+    /** @internal */
     function utf8_decode($string)
     {
         return p\Php72::utf8_decode($string);
     }
 }
 if (!\function_exists('spl_object_id')) {
+    /** @internal */
     function spl_object_id($object)
     {
         return p\Php72::spl_object_id($object);
     }
 }
 if (!\function_exists('mb_ord')) {
+    /** @internal */
     function mb_ord($string, $encoding = null)
     {
         return p\Php72::mb_ord($string, $encoding);
     }
 }
 if (!\function_exists('mb_chr')) {
+    /** @internal */
     function mb_chr($codepoint, $encoding = null)
     {
         return p\Php72::mb_chr($codepoint, $encoding);
     }
 }
 if (!\function_exists('mb_scrub')) {
+    /** @internal */
     function mb_scrub($string, $encoding = null)
     {
         $encoding = null === $encoding ? \mb_internal_encoding() : $encoding;

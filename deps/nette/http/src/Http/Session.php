@@ -10,6 +10,7 @@ namespace Packetery\Nette\Http;
 use Packetery\Nette;
 /**
  * Provides access to session sections as well as session settings and management methods.
+ * @internal
  */
 class Session
 {

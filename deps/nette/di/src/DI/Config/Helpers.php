@@ -11,6 +11,7 @@ use Packetery\Nette;
 /**
  * Configuration helpers.
  * @deprecated
+ * @internal
  */
 final class Helpers
 {

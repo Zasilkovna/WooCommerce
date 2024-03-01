@@ -13,6 +13,7 @@ use Packetery\Psr\Http\Message\ResponseInterface;
  * cookies from a file, database, etc.
  *
  * @link http://docs.python.org/2/library/cookielib.html Inspiration
+ * @internal
  */
 interface CookieJarInterface extends \Countable, \IteratorAggregate
 {

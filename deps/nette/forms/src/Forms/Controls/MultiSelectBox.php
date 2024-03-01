@@ -10,6 +10,7 @@ namespace Packetery\Nette\Forms\Controls;
 use Packetery\Nette;
 /**
  * Select box control that allows multiple items selection.
+ * @internal
  */
 class MultiSelectBox extends MultiChoiceControl
 {

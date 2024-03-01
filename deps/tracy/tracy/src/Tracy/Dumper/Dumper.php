@@ -13,6 +13,7 @@ use Packetery\Tracy\Dumper\Exposer;
 use Packetery\Tracy\Dumper\Renderer;
 /**
  * Dumps a variable.
+ * @internal
  */
 class Dumper
 {

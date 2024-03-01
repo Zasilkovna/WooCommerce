@@ -4,6 +4,7 @@ namespace Packetery\GuzzleHttp\Cookie;
 
 /**
  * Set-Cookie object
+ * @internal
  */
 class SetCookie
 {

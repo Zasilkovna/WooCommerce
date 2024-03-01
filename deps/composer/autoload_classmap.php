@@ -325,6 +325,7 @@ return array(
     'Packetery\\Nette\\Utils\\Reflection' => $vendorDir . '/nette/utils/src/Utils/Reflection.php',
     'Packetery\\Nette\\Utils\\RegexpException' => $vendorDir . '/nette/utils/src/Utils/exceptions.php',
     'Packetery\\Nette\\Utils\\Strings' => $vendorDir . '/nette/utils/src/Utils/Strings.php',
+    'Packetery\\Nette\\Utils\\Type' => $vendorDir . '/nette/utils/src/Utils/Type.php',
     'Packetery\\Nette\\Utils\\UnknownImageFileException' => $vendorDir . '/nette/utils/src/Utils/exceptions.php',
     'Packetery\\Nette\\Utils\\Validators' => $vendorDir . '/nette/utils/src/Utils/Validators.php',
     'Packetery\\Normalizer' => $vendorDir . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',

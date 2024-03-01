@@ -11,6 +11,7 @@ use Packetery\Psr;
 use Packetery\Tracy;
 /**
  * \Packetery\Tracy\ILogger to Psr\Log\LoggerInterface adapter.
+ * @internal
  */
 class TracyToPsrLoggerAdapter extends Psr\Log\AbstractLogger
 {

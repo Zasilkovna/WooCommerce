@@ -9,6 +9,7 @@ namespace Packetery\Latte;
 
 /**
  * Macro element node.
+ * @internal
  */
 class MacroNode
 {

@@ -9,6 +9,7 @@ namespace Packetery\Nette\PhpGenerator;
 
 /**
  * PHP literal value.
+ * @internal
  */
 class Literal
 {
