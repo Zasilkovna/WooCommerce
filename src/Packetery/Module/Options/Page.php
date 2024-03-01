@@ -27,11 +27,10 @@ use Packetery\Nette\Forms\Form;
  */
 class Page {
 
-	private const FORM_FIELDS_CONTAINER               = 'packetery';
-	private const FORM_FIELD_PACKETA_LABEL_FORMAT     = 'packeta_label_format';
-	private const FORM_FIELD_CARRIER_LABEL_FORMAT     = 'carrier_label_format';
-	private const FORM_FIELD_ORDER_STATUS_AUTO_CHANGE = 'order_status_auto_change';
-	private const FORM_FIELD_FREE_SHIPPING_SHOWN      = 'free_shipping_shown';
+	private const FORM_FIELDS_CONTAINER           = 'packetery';
+	private const FORM_FIELD_PACKETA_LABEL_FORMAT = 'packeta_label_format';
+	private const FORM_FIELD_CARRIER_LABEL_FORMAT = 'carrier_label_format';
+	private const FORM_FIELD_FREE_SHIPPING_SHOWN  = 'free_shipping_shown';
 
 	public const ACTION_VALIDATE_SENDER = 'validate-sender';
 
@@ -363,7 +362,7 @@ class Page {
 		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
 			$item = $orderStatusChangePacketStatuses->addSelect( $packetStatusHash, $packetStatusData['label'], $orderStatuses )
 													->setPrompt( __( 'Order status', 'packeta' ) );
-			if ( isset( $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] ) ) {
+			if ( ! empty( $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] ) ) {
 				$item->setDefaultValue( $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] );
 			}
 		}
