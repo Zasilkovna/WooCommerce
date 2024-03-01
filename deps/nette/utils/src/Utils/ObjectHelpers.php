@@ -11,11 +11,15 @@ use Packetery\Nette;
 use Packetery\Nette\MemberAccessException;
 /**
  * \Packetery\Nette\SmartObject helpers.
+ * @internal
  */
 final class ObjectHelpers
 {
     use \Packetery\Nette\StaticClass;
-    /** @throws MemberAccessException */
+    /**
+     * @return never
+     * @throws MemberAccessException
+     */
     public static function strictGet(string $class, string $name) : void
     {
         $rc = new \ReflectionClass($class);
@@ -24,7 +28,10 @@ final class ObjectHelpers
         }), self::parseFullDoc($rc, '~^[ \\t*]*@property(?:-read)?[ \\t]+(?:\\S+[ \\t]+)??\\$(\\w+)~m')), $name);
         throw new MemberAccessException("Cannot read an undeclared property {$class}::\${$name}" . ($hint ? ", did you mean \${$hint}?" : '.'));
     }
-    /** @throws MemberAccessException */
+    /**
+     * @return never
+     * @throws MemberAccessException
+     */
     public static function strictSet(string $class, string $name) : void
     {
         $rc = new \ReflectionClass($class);
@@ -33,7 +40,10 @@ final class ObjectHelpers
         }), self::parseFullDoc($rc, '~^[ \\t*]*@property(?:-write)?[ \\t]+(?:\\S+[ \\t]+)??\\$(\\w+)~m')), $name);
         throw new MemberAccessException("Cannot write to an undeclared property {$class}::\${$name}" . ($hint ? ", did you mean \${$hint}?" : '.'));
     }
-    /** @throws MemberAccessException */
+    /**
+     * @return never
+     * @throws MemberAccessException
+     */
     public static function strictCall(string $class, string $method, array $additionalMethods = []) : void
     {
         $trace = \debug_backtrace(0, 3);
@@ -49,11 +59,14 @@ final class ObjectHelpers
             $visibility = $rm->isPrivate() ? 'private ' : ($rm->isProtected() ? 'protected ' : '');
             throw new MemberAccessException("Call to {$visibility}method {$class}::{$method}() from " . ($context ? "scope {$context}." : 'global scope.'));
         } else {
-            $hint = self::getSuggestion(\array_merge(\get_class_methods($class), self::parseFullDoc(new \ReflectionClass($class), '~^[ \\t*]*@method[ \\t]+(?:\\S+[ \\t]+)??(\\w+)\\(~m'), $additionalMethods), $method);
+            $hint = self::getSuggestion(\array_merge(\get_class_methods($class), self::parseFullDoc(new \ReflectionClass($class), '~^[ \\t*]*@method[ \\t]+(?:static[ \\t]+)?(?:\\S+[ \\t]+)??(\\w+)\\(~m'), $additionalMethods), $method);
             throw new MemberAccessException("Call to undefined method {$class}::{$method}()" . ($hint ? ", did you mean {$hint}()?" : '.'));
         }
     }
-    /** @throws MemberAccessException */
+    /**
+     * @return never
+     * @throws MemberAccessException
+     */
     public static function strictStaticCall(string $class, string $method) : void
     {
         $trace = \debug_backtrace(0, 3);
@@ -88,14 +101,14 @@ final class ObjectHelpers
             return $props;
         }
         $rc = new \ReflectionClass($class);
-        \preg_match_all('~^  [ \\t*]*  @property(|-read|-write)  [ \\t]+  [^\\s$]+  [ \\t]+  \\$  (\\w+)  ()~mx', (string) $rc->getDocComment(), $matches, \PREG_SET_ORDER);
+        \preg_match_all('~^  [ \\t*]*  @property(|-read|-write|-deprecated)  [ \\t]+  [^\\s$]+  [ \\t]+  \\$  (\\w+)  ()~mx', (string) $rc->getDocComment(), $matches, \PREG_SET_ORDER);
         $props = [];
         foreach ($matches as [, $type, $name]) {
             $uname = \ucfirst($name);
             $write = $type !== '-read' && $rc->hasMethod($nm = 'set' . $uname) && ($rm = $rc->getMethod($nm))->name === $nm && !$rm->isPrivate() && !$rm->isStatic();
             $read = $type !== '-write' && ($rc->hasMethod($nm = 'get' . $uname) || $rc->hasMethod($nm = 'is' . $uname)) && ($rm = $rc->getMethod($nm))->name === $nm && !$rm->isPrivate() && !$rm->isStatic();
             if ($read || $write) {
-                $props[$name] = $read << 0 | ($nm[0] === 'g') << 1 | $rm->returnsReference() << 2 | $write << 3;
+                $props[$name] = $read << 0 | ($nm[0] === 'g') << 1 | $rm->returnsReference() << 2 | $write << 3 | ($type === '-deprecated') << 4;
             }
         }
         foreach ($rc->getTraits() as $trait) {

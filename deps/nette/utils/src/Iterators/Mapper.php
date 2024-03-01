@@ -9,6 +9,7 @@ namespace Packetery\Nette\Iterators;
 
 /**
  * Applies the callback to the elements of the inner iterator.
+ * @internal
  */
 class Mapper extends \IteratorIterator
 {
@@ -19,6 +20,7 @@ class Mapper extends \IteratorIterator
         parent::__construct($iterator);
         $this->callback = $callback;
     }
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return ($this->callback)(parent::current(), parent::key());

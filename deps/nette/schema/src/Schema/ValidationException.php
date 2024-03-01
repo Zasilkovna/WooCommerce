@@ -10,6 +10,7 @@ namespace Packetery\Nette\Schema;
 use Packetery\Nette;
 /**
  * Validation error.
+ * @internal
  */
 class ValidationException extends \Packetery\Nette\InvalidStateException
 {

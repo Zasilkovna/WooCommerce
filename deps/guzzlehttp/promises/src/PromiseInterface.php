@@ -10,6 +10,7 @@ namespace Packetery\GuzzleHttp\Promise;
  * the reason why the promise cannot be fulfilled.
  *
  * @link https://promisesaplus.com/
+ * @internal
  */
 interface PromiseInterface
 {

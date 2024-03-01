@@ -14,6 +14,7 @@ use Packetery\Psr\Http\Message\UriInterface;
  *
  * Apply this middleware like other middleware using
  * {@see \GuzzleHttp\Middleware::redirect()}.
+ * @internal
  */
 class RedirectMiddleware
 {

@@ -12,6 +12,7 @@ use Packetery\Nette\Http\IResponse;
 use Packetery\Nette\Schema\Expect;
 /**
  * Session extension for Nette DI.
+ * @internal
  */
 class SessionExtension extends \Packetery\Nette\DI\CompilerExtension
 {

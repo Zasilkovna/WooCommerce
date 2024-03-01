@@ -10,6 +10,7 @@ namespace Packetery\Nette\DI;
 use Packetery\Nette;
 /**
  * DI container loader.
+ * @internal
  */
 class ContainerLoader
 {

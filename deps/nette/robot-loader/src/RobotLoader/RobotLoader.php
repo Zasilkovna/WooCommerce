@@ -19,6 +19,7 @@ use SplFileInfo;
  * $loader->setTempDirectory('temp');
  * $loader->register();
  * </code>
+ * @internal
  */
 class RobotLoader
 {

@@ -20,19 +20,21 @@ use Packetery\Nette;
  * @property-read int $error
  * @property-read bool $ok
  * @property-read string|null $contents
+ * @internal
  */
 final class FileUpload
 {
     use \Packetery\Nette\SmartObject;
-    public const ImageMimeTypes = ['image/gif', 'image/png', 'image/jpeg', 'image/webp'];
-    /** @deprecated use FileUpload::ImageMimeTypes */
-    public const IMAGE_MIME_TYPES = self::ImageMimeTypes;
+    /** @deprecated */
+    public const IMAGE_MIME_TYPES = ['image/gif', 'image/png', 'image/jpeg', 'image/webp'];
     /** @var string */
     private $name;
     /** @var string|null */
     private $fullPath;
     /** @var string|false|null */
     private $type;
+    /** @var string|false|null */
+    private $extension;
     /** @var int */
     private $size;
     /** @var string */
@@ -80,9 +82,9 @@ final class FileUpload
         $name = \str_replace(['-.', '.-'], '.', $name);
         $name = \trim($name, '.-');
         $name = $name === '' ? 'unknown' : $name;
-        if ($this->isImage()) {
+        if ($ext = $this->getSuggestedExtension()) {
             $name = \preg_replace('#\\.[^.]+$#D', '', $name);
-            $name .= '.' . ($this->getImageFileExtension() ?? 'unknown');
+            $name .= '.' . $ext;
         }
         return $name;
     }
@@ -109,7 +111,26 @@ final class FileUpload
         return $this->type ?: null;
     }
     /**
-     * Returns the path of the temporary location of the uploaded file.
+     * Returns the appropriate file extension (without the period) corresponding to the detected MIME type. Requires the PHP extension fileinfo.
+     */
+    public function getSuggestedExtension() : ?string
+    {
+        if ($this->isOk() && $this->extension === null) {
+            $exts = \finfo_file(\finfo_open(\FILEINFO_EXTENSION), $this->tmpName);
+            if ($exts && $exts !== '???') {
+                return $this->extension = \preg_replace('~[/,].*~', '', $exts);
+            }
+            [, , $type] = @\getimagesize($this->tmpName);
+            // @ - files smaller than 12 bytes causes read error
+            if ($type) {
+                return $this->extension = \image_type_to_extension($type, \false);
+            }
+            $this->extension = \false;
+        }
+        return $this->extension ?: null;
+    }
+    /**
+     * Returns the size of the uploaded file in bytes.
      */
     public function getSize() : int
     {
@@ -170,15 +191,17 @@ final class FileUpload
         return $this;
     }
     /**
-     * Returns true if the uploaded file is a JPEG, PNG, GIF, or WebP image.
-     * Detection is based on its signature, the integrity of the file is not checked. Requires PHP extension fileinfo.
+     * Returns true if the uploaded file is an image and the format is supported by PHP, so it can be loaded using the toImage() method.
+     * Detection is based on its signature, the integrity of the file is not checked. Requires PHP extensions fileinfo & gd.
      */
     public function isImage() : bool
     {
-        return \in_array($this->getContentType(), self::ImageMimeTypes, \true);
+        $flag = \imagetypes();
+        $types = \array_filter([$flag & \IMG_GIF ? 'image/gif' : null, $flag & \IMG_JPG ? 'image/jpeg' : null, $flag & \IMG_PNG ? 'image/png' : null, $flag & \IMG_WEBP ? 'image/webp' : null, $flag & 256 ? 'image/avif' : null]);
+        return \in_array($this->getContentType(), $types, \true);
     }
     /**
-     * Loads an image.
+     * Converts uploaded image to \Packetery\Nette\Utils\Image object.
      * @throws \Packetery\Nette\Utils\ImageException  If the upload was not successful or is not a valid image
      */
     public function toImage() : \Packetery\Nette\Utils\Image
@@ -194,10 +217,11 @@ final class FileUpload
     }
     /**
      * Returns image file extension based on detected content type (without dot).
+     * @deprecated use getSuggestedExtension()
      */
     public function getImageFileExtension() : ?string
     {
-        return $this->isImage() ? \explode('/', $this->getContentType())[1] : null;
+        return $this->getSuggestedExtension();
     }
     /**
      * Returns the contents of the uploaded file. If the upload was not successful, it returns null.

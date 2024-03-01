@@ -7,10 +7,12 @@
 declare (strict_types=1);
 namespace Packetery\Nette\Utils;
 
+use Packetery\JetBrains\PhpStorm\Language;
 use Packetery\Nette;
 use function is_array, is_object, strlen;
 /**
  * String tools library.
+ * @internal
  */
 class Strings
 {
@@ -69,7 +71,7 @@ class Strings
      * Returns a part of UTF-8 string specified by starting position and length. If start is negative,
      * the returned string will start at the start'th character from the end of string.
      */
-    public static function substring(string $s, int $start, int $length = null) : string
+    public static function substring(string $s, int $start, ?int $length = null) : string
     {
         if (\function_exists('mb_substr')) {
             return \mb_substr($s, $start, $length, 'UTF-8');
@@ -175,7 +177,7 @@ class Strings
      * Modifies the UTF-8 string to the form used in the URL, ie removes diacritics and replaces all characters
      * except letters of the English alphabet and numbers with a hyphens.
      */
-    public static function webalize(string $s, string $charlist = null, bool $lower = \true) : string
+    public static function webalize(string $s, ?string $charlist = null, bool $lower = \true) : string
     {
         $s = self::toAscii($s);
         if ($lower) {
@@ -254,7 +256,7 @@ class Strings
      * if it is negative, the corresponding number of characters from the end of the strings is compared,
      * otherwise the appropriate number of characters from the beginning is compared.
      */
-    public static function compare(string $left, string $right, int $length = null) : bool
+    public static function compare(string $left, string $right, ?int $length = null) : bool
     {
         if (\class_exists('Normalizer', \false)) {
             $left = \Normalizer::normalize($left, \Normalizer::FORM_D);
@@ -308,6 +310,7 @@ class Strings
     }
     /**
      * Pads a UTF-8 string to given length by prepending the $pad string to the beginning.
+     * @param  non-empty-string  $pad
      */
     public static function padLeft(string $s, int $length, string $pad = ' ') : string
     {
@@ -317,6 +320,7 @@ class Strings
     }
     /**
      * Pads UTF-8 string to given length by appending the $pad string to the end.
+     * @param  non-empty-string  $pad
      */
     public static function padRight(string $s, int $length, string $pad = ' ') : string
     {
@@ -380,6 +384,8 @@ class Strings
             $len = strlen($haystack);
             if ($needle === '') {
                 return $len;
+            } elseif ($len === 0) {
+                return null;
             }
             $pos = $len - 1;
             while (($pos = \strrpos($haystack, $needle, $pos - $len)) !== \false && ++$nth) {
@@ -389,18 +395,18 @@ class Strings
         return Helpers::falseToNull($pos);
     }
     /**
-     * Splits a string into array by the regular expression.
-     * Argument $flag takes same arguments as preg_split(), but PREG_SPLIT_DELIM_CAPTURE is set by default.
+     * Splits a string into array by the regular expression. Parenthesized expression in the delimiter are captured.
+     * Parameter $flags can be any combination of PREG_SPLIT_NO_EMPTY and PREG_OFFSET_CAPTURE flags.
      */
-    public static function split(string $subject, string $pattern, int $flags = 0) : array
+    public static function split(string $subject, #[Language('RegExp')] string $pattern, int $flags = 0) : array
     {
         return self::pcre('preg_split', [$pattern, $subject, -1, $flags | \PREG_SPLIT_DELIM_CAPTURE]);
     }
     /**
      * Checks if given string matches a regular expression pattern and returns an array with first found match and each subpattern.
-     * Argument $flag takes same arguments as function preg_match().
+     * Parameter $flags can be any combination of PREG_OFFSET_CAPTURE and PREG_UNMATCHED_AS_NULL flags.
      */
-    public static function match(string $subject, string $pattern, int $flags = 0, int $offset = 0) : ?array
+    public static function match(string $subject, #[Language('RegExp')] string $pattern, int $flags = 0, int $offset = 0) : ?array
     {
         if ($offset > strlen($subject)) {
             return null;
@@ -408,10 +414,10 @@ class Strings
         return self::pcre('preg_match', [$pattern, $subject, &$m, $flags, $offset]) ? $m : null;
     }
     /**
-     * Finds all occurrences matching regular expression pattern and returns a two-dimensional array.
-     * Argument $flag takes same arguments as function preg_match_all(), but PREG_SET_ORDER is set by default.
+     * Finds all occurrences matching regular expression pattern and returns a two-dimensional array. Result is array of matches (ie uses by default PREG_SET_ORDER).
+     * Parameter $flags can be any combination of PREG_OFFSET_CAPTURE, PREG_UNMATCHED_AS_NULL and PREG_PATTERN_ORDER flags.
      */
-    public static function matchAll(string $subject, string $pattern, int $flags = 0, int $offset = 0) : array
+    public static function matchAll(string $subject, #[Language('RegExp')] string $pattern, int $flags = 0, int $offset = 0) : array
     {
         if ($offset > strlen($subject)) {
             return [];
@@ -424,7 +430,7 @@ class Strings
      * @param  string|array  $pattern
      * @param  string|callable  $replacement
      */
-    public static function replace(string $subject, $pattern, $replacement = '', int $limit = -1) : string
+    public static function replace(string $subject, #[Language('RegExp')] $pattern, $replacement = '', int $limit = -1) : string
     {
         if (is_object($replacement) || is_array($replacement)) {
             if (!\is_callable($replacement, \false, $textual)) {

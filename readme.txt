@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
-Tested up to: 6.3
+Tested up to: 6.4.3
 Stable tag: 1.7.2
 Requires PHP: 7.2
 WC requires at least: 4.5
-WC tested up to: 8.0.0
+WC tested up to: 8.4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 

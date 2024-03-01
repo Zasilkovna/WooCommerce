@@ -10,6 +10,7 @@ namespace Packetery\Latte\Loaders;
 use Packetery\Latte;
 /**
  * Template loader.
+ * @internal
  */
 class FileLoader implements \Packetery\Latte\Loader
 {

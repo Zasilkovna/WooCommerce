@@ -9,6 +9,7 @@ namespace Packetery\Nette\Forms\Controls;
 
 /**
  * Submittable image button form control.
+ * @internal
  */
 class ImageButton extends SubmitButton
 {

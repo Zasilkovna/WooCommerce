@@ -6,6 +6,7 @@ namespace Packetery\GuzzleHttp\Promise;
  * A special exception that is thrown when waiting on a rejected promise.
  *
  * The reason value is available via the getReason() method.
+ * @internal
  */
 class RejectionException extends \RuntimeException
 {

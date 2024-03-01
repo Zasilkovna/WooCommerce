@@ -9,6 +9,7 @@ namespace Packetery\Tracy;
 
 /**
  * Debugger for outputs.
+ * @internal
  */
 final class OutputDebugger
 {

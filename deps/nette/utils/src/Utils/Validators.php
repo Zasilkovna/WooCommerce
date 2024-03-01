@@ -10,10 +10,12 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * Validation utilities.
+ * @internal
  */
 class Validators
 {
     use \Packetery\Nette\StaticClass;
+    private const BuiltinTypes = ['string' => 1, 'int' => 1, 'float' => 1, 'bool' => 1, 'array' => 1, 'object' => 1, 'callable' => 1, 'iterable' => 1, 'void' => 1, 'null' => 1, 'mixed' => 1, 'false' => 1, 'never' => 1, 'true' => 1];
     /** @var array<string,?callable> */
     protected static $validators = [
         // PHP types
@@ -70,7 +72,7 @@ class Validators
     {
         if (!static::is($value, $expected)) {
             $expected = \str_replace(['|', ':'], [' or ', ' in range '], $expected);
-            static $translate = ['boolean' => 'bool', 'integer' => 'int', 'double' => 'float', 'NULL' => 'null'];
+            $translate = ['boolean' => 'bool', 'integer' => 'int', 'double' => 'float', 'NULL' => 'null'];
             $type = $translate[\gettype($value)] ?? \gettype($value);
             if (\is_int($value) || \is_float($value) || \is_string($value) && \strlen($value) < 40) {
                 $type .= ' ' . \var_export($value, \true);
@@ -86,7 +88,7 @@ class Validators
      * @param  int|string  $key
      * @throws AssertionException
      */
-    public static function assertField(array $array, $key, string $expected = null, string $label = "item '%' in array") : void
+    public static function assertField(array $array, $key, ?string $expected = null, string $label = "item '%' in array") : void
     {
         if (!\array_key_exists($key, $array)) {
             throw new AssertionException('Missing ' . \str_replace('%', $key, $label) . '.');
@@ -181,7 +183,7 @@ class Validators
      */
     public static function isNumeric($value) : bool
     {
-        return \is_float($value) || \is_int($value) || \is_string($value) && \preg_match('#^[+-]?[0-9]*[.]?[0-9]+$#D', $value);
+        return \is_float($value) || \is_int($value) || \is_string($value) && \preg_match('#^[+-]?([0-9]++\\.?[0-9]*|\\.[0-9]+)$#D', $value);
     }
     /**
      * Checks if the value is a syntactically correct callback.
@@ -217,6 +219,7 @@ class Validators
      * Checks if a variable is a zero-based integer indexed array.
      * @param  mixed  $value
      * @deprecated  use \Packetery\Nette\Utils\Arrays::isList
+     * @return ($value is list ? true : false)
      */
     public static function isList($value) : bool
     {
@@ -306,6 +309,34 @@ XX
      */
     public static function isPhpIdentifier(string $value) : bool
     {
-        return \is_string($value) && \preg_match('#^[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*$#D', $value);
+        return \preg_match('#^[a-zA-Z_\\x7f-\\xff][a-zA-Z0-9_\\x7f-\\xff]*$#D', $value) === 1;
+    }
+    /**
+     * Determines if type is PHP built-in type. Otherwise, it is the class name.
+     */
+    public static function isBuiltinType(string $type) : bool
+    {
+        return isset(self::BuiltinTypes[\strtolower($type)]);
+    }
+    /**
+     * Determines if type is special class name self/parent/static.
+     */
+    public static function isClassKeyword(string $name) : bool
+    {
+        return (bool) \preg_match('#^(self|parent|static)$#Di', $name);
+    }
+    /**
+     * Checks whether the given type declaration is syntactically valid.
+     */
+    public static function isTypeDeclaration(string $type) : bool
+    {
+        return (bool) \preg_match(<<<'XX'
+		~(
+			\?? (?<type> \\? (?<name> [a-zA-Z_\x7f-\xff][\w\x7f-\xff]*) (\\ (?&name))* ) |
+			(?<intersection> (?&type) (& (?&type))+ ) |
+			(?<upart> (?&type) | \( (?&intersection) \) )  (\| (?&upart))+
+		)$~xAD
+XX
+, $type);
     }
 }
