@@ -67,6 +67,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 = 1.7.2 =
 Changed: Instead of Guzzle client, we're using WordPress function to fetch feature flags from external API.
 Fixed: Filtering payment gateways without shipping calculation.
+Added: PHP 8.1-8.2 support.
 
 = 1.7.1 =
 Fixed: Malfunctioning import of previous version's settings.
