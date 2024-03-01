@@ -16,7 +16,7 @@ final class FileSystem
 {
     use \Packetery\Nette\StaticClass;
     /**
-     * Creates a directory if it does not exist, including parent directories.
+     * Creates a directory if it doesn't exist.
      * @throws \Packetery\Nette\IOException  on error occurred
      */
     public static function createDir(string $dir, int $mode = 0777) : void
@@ -27,7 +27,7 @@ final class FileSystem
         }
     }
     /**
-     * Copies a file or an entire directory. Overwrites existing files and directories by default.
+     * Copies a file or a directory. Overwrites existing files and directories by default.
      * @throws \Packetery\Nette\IOException  on error occurred
      * @throws \Packetery\Nette\InvalidStateException  if $overwrite is set to false and destination already exists
      */
@@ -58,7 +58,7 @@ final class FileSystem
         }
     }
     /**
-     * Deletes a file or an entire directory if exists. If the directory is not empty, it deletes its contents first.
+     * Deletes a file or directory if exists.
      * @throws \Packetery\Nette\IOException  on error occurred
      */
     public static function delete(string $path) : void
@@ -131,8 +131,7 @@ final class FileSystem
         }
     }
     /**
-     * Sets file permissions to `$fileMode` or directory permissions to `$dirMode`.
-     * Recursively traverses and sets permissions on the entire contents of the directory as well.
+     * Fixes permissions to a specific file or directory. Directories can be fixed recursively.
      * @throws \Packetery\Nette\IOException  on error occurred
      */
     public static function makeWritable(string $path, int $dirMode = 0777, int $fileMode = 0666) : void
