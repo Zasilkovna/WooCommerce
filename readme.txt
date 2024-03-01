@@ -66,6 +66,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.7.1 =
 Fixed: Malfunctioning import of previous version's settings.
+Fixed: Warnings and/or missing country codes in country list.
 
 = 1.7.0 =
 Added: Option to set shipping prices including VAT.
