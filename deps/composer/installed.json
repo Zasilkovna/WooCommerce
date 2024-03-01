@@ -1083,27 +1083,26 @@
         },
         {
             "name": "nette\/utils",
-            "version": "v3.2.10",
-            "version_normalized": "3.2.10.0",
+            "version": "v3.2.8",
+            "version_normalized": "3.2.8.0",
             "source": {
                 "type": "git",
                 "url": "https:\/\/github.com\/nette\/utils.git",
-                "reference": "a4175c62652f2300c8017fb7e640f9ccb11648d2"
+                "reference": "02a54c4c872b99e4ec05c4aec54b5a06eb0f6368"
             },
             "dist": {
                 "type": "zip",
-                "url": "https:\/\/api.github.com\/repos\/nette\/utils\/zipball\/a4175c62652f2300c8017fb7e640f9ccb11648d2",
-                "reference": "a4175c62652f2300c8017fb7e640f9ccb11648d2",
+                "url": "https:\/\/api.github.com\/repos\/nette\/utils\/zipball\/02a54c4c872b99e4ec05c4aec54b5a06eb0f6368",
+                "reference": "02a54c4c872b99e4ec05c4aec54b5a06eb0f6368",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.2 <8.4"
+                "php": ">=7.2 <8.3"
             },
             "conflict": {
                 "nette\/di": "<3.0.6"
             },
             "require-dev": {
-                "jetbrains\/phpstorm-attributes": "dev-master",
                 "nette\/tester": "~2.0",
                 "phpstan\/phpstan": "^1.0",
                 "tracy\/tracy": "^2.3"
@@ -1117,7 +1116,7 @@
                 "ext-tokenizer": "to use Nette\\Utils\\Reflection::getUseStatements()",
                 "ext-xml": "to use Strings::length() etc. when mbstring is not available"
             },
-            "time": "2023-07-30T15:38:18+00:00",
+            "time": "2022-09-12T23:36:20+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1166,7 +1165,7 @@
             ],
             "support": {
                 "issues": "https:\/\/github.com\/nette\/utils\/issues",
-                "source": "https:\/\/github.com\/nette\/utils\/tree\/v3.2.10"
+                "source": "https:\/\/github.com\/nette\/utils\/tree\/v3.2.8"
             },
             "install-path": "..\/nette\/utils"
         },

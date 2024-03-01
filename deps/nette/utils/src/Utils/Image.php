@@ -86,23 +86,23 @@ use Packetery\Nette;
  * @method void stringUp($font, $x, $y, string $s, $col)
  * @method void trueColorToPalette(bool $dither, $ncolors)
  * @method array ttfText($size, $angle, $x, $y, $color, string $fontfile, string $text)
- * @property-read positive-int $width
- * @property-read positive-int $height
+ * @property-read int $width
+ * @property-read int $height
  * @property-read resource|\GdImage $imageResource
  * @internal
  */
 class Image
 {
     use \Packetery\Nette\SmartObject;
-    /** Prevent from getting resized to a bigger size than the original */
+    /** {@link resize()} only shrinks images */
     public const SHRINK_ONLY = 0b1;
-    /** Resizes to a specified width and height without keeping aspect ratio */
+    /** {@link resize()} will ignore aspect ratio */
     public const STRETCH = 0b10;
-    /** Resizes to fit into a specified width and height and preserves aspect ratio */
+    /** {@link resize()} fits in given area so its dimensions are less than or equal to the required dimensions */
     public const FIT = 0b0;
-    /** Resizes while bounding the smaller dimension to the specified width or height and preserves aspect ratio */
+    /** {@link resize()} fills given area so its dimensions are greater than or equal to the required dimensions */
     public const FILL = 0b100;
-    /** Resizes to the smallest possible size to completely cover specified width and height and reserves aspect ratio */
+    /** {@link resize()} fills given area exactly */
     public const EXACT = 0b1000;
     /** image types */
     public const JPEG = \IMAGETYPE_JPEG, PNG = \IMAGETYPE_PNG, GIF = \IMAGETYPE_GIF, WEBP = \IMAGETYPE_WEBP, AVIF = 19, BMP = \IMAGETYPE_BMP;
@@ -166,8 +166,6 @@ class Image
     }
     /**
      * Creates a new true color image of the given dimensions. The default color is black.
-     * @param  positive-int  $width
-     * @param  positive-int  $height
      * @return static
      * @throws \Packetery\Nette\NotSupportedException if gd extension is not loaded
      */
@@ -247,7 +245,6 @@ class Image
     }
     /**
      * Returns image width.
-     * @return positive-int
      */
     public function getWidth() : int
     {
@@ -255,7 +252,6 @@ class Image
     }
     /**
      * Returns image height.
-     * @return positive-int
      */
     public function getHeight() : int
     {
@@ -433,7 +429,7 @@ class Image
      * Puts another image into this image.
      * @param  int|string  $left in pixels or percent
      * @param  int|string  $top in pixels or percent
-     * @param  int<0, 100>  $opacity 0..100
+     * @param  int  $opacity 0..100
      * @return static
      */
     public function place(self $image, $left = 0, $top = 0, int $opacity = 100)
