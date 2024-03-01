@@ -10,6 +10,7 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * to create a concrete class for a simple extension point.
  *
  * @final
+ * @internal
  */
 class FnStream implements StreamInterface
 {

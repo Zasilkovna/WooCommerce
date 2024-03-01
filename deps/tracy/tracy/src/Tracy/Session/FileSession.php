@@ -7,6 +7,7 @@
 declare (strict_types=1);
 namespace Packetery\Tracy;
 
+/** @internal */
 class FileSession implements SessionStorage
 {
     private const FilePrefix = 'tracy-';

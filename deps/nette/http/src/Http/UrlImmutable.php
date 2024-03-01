@@ -33,6 +33,7 @@ use Packetery\Nette;
  * @property-read string $authority
  * @property-read string $hostUrl
  * @property-read array $queryParameters
+ * @internal
  */
 class UrlImmutable implements \JsonSerializable
 {

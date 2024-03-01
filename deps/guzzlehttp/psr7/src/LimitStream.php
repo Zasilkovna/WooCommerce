@@ -7,6 +7,7 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * Decorator used to return only a subset of a stream.
  *
  * @final
+ * @internal
  */
 class LimitStream implements StreamInterface
 {

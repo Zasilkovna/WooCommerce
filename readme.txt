@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
-Tested up to: 6.3
-Stable tag: 1.7.1
+Tested up to: 6.4.3
+Stable tag: 1.7.2
 Requires PHP: 7.2
 WC requires at least: 4.5
-WC tested up to: 8.0.0
+WC tested up to: 8.4.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.7.2 =
+Added: PHP 8.1-8.2 support.
+
 = 1.7.1 =
 Fixed: Malfunctioning import of previous version's settings.
 Fixed: Warnings and/or missing country codes in country list.

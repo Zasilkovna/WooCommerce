@@ -7,6 +7,7 @@
 declare (strict_types=1);
 namespace Packetery\Nette\PhpGenerator;
 
+/** @internal */
 class PhpLiteral extends Literal
 {
 }

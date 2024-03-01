@@ -13,6 +13,7 @@ use Packetery\Nette\Schema\Expect;
 use Packetery\Tracy;
 /**
  * Tracy extension for Nette DI.
+ * @internal
  */
 class TracyExtension extends Nette\DI\CompilerExtension
 {

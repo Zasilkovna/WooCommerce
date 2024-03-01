@@ -12,6 +12,7 @@ if (@(!(include __DIR__ . '/../vendor/autoload.php'))) {
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Forms\Helpers;
 use Packetery\Nette\Utils\Html;
+/** @internal */
 class DateInput extends \Packetery\Nette\Forms\Controls\BaseControl
 {
     /** @var string */

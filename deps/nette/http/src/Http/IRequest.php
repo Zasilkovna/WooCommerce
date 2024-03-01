@@ -11,6 +11,7 @@ namespace Packetery\Nette\Http;
  * HTTP request provides access scheme for request sent via HTTP.
  * @method UrlImmutable|null getReferer() Returns referrer.
  * @method bool isSameSite() Is the request sent from the same origin?
+ * @internal
  */
 interface IRequest
 {

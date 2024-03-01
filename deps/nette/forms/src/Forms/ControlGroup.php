@@ -10,6 +10,7 @@ namespace Packetery\Nette\Forms;
 use Packetery\Nette;
 /**
  * A user group of form controls.
+ * @internal
  */
 class ControlGroup
 {

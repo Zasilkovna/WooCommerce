@@ -13,6 +13,7 @@ use Packetery\Tracy\BlueScreen;
 use Packetery\Tracy\Helpers;
 /**
  * BlueScreen panels for Tracy 2.x
+ * @internal
  */
 class BlueScreenPanel
 {

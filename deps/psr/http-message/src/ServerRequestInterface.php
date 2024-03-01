@@ -40,6 +40,7 @@ namespace Packetery\Psr\Http\Message;
  * Requests are considered immutable; all methods that might change state MUST
  * be implemented such that they retain the internal state of the current
  * message and return an instance that contains the changed state.
+ * @internal
  */
 interface ServerRequestInterface extends RequestInterface
 {

@@ -13,6 +13,7 @@ use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\FileUpload;
 /**
  * Text box and browse button that allow users to select a file to upload to the server.
+ * @internal
  */
 class UploadControl extends BaseControl
 {

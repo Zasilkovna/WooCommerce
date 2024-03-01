@@ -13,6 +13,7 @@ use Packetery\Nette\Schema\Expect;
 use Packetery\Nette\Utils\Arrays;
 /**
  * Services auto-discovery.
+ * @internal
  */
 final class SearchExtension extends \Packetery\Nette\DI\CompilerExtension
 {

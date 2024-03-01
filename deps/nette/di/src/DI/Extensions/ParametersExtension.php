@@ -11,6 +11,7 @@ use Packetery\Nette;
 use Packetery\Nette\DI\DynamicParameter;
 /**
  * Parameters.
+ * @internal
  */
 final class ParametersExtension extends \Packetery\Nette\DI\CompilerExtension
 {

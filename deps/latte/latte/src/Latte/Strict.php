@@ -10,6 +10,7 @@ namespace Packetery\Latte;
 use LogicException;
 /**
  * Better OOP experience.
+ * @internal
  */
 trait Strict
 {

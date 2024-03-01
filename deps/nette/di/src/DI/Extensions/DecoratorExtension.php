@@ -12,6 +12,7 @@ use Packetery\Nette\DI\Definitions;
 use Packetery\Nette\Schema\Expect;
 /**
  * Decorators for services.
+ * @internal
  */
 final class DecoratorExtension extends \Packetery\Nette\DI\CompilerExtension
 {

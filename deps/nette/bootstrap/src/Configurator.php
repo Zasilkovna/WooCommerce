@@ -8,7 +8,9 @@ declare (strict_types=1);
 namespace Packetery\Nette;
 
 if (\false) {
-    /** alias for \Packetery\Nette\Bootstrap\Configurator */
+    /** alias for \Packetery\Nette\Bootstrap\Configurator
+     * @internal
+     */
     class Configurator extends Bootstrap\Configurator
     {
     }

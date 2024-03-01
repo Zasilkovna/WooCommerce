@@ -36,6 +36,7 @@ use Packetery\Nette;
  * @property-read string $baseUrl
  * @property-read string $relativeUrl
  * @property-read array $queryParameters
+ * @internal
  */
 class Url implements \JsonSerializable
 {
@@ -302,7 +303,7 @@ class Url implements \JsonSerializable
         if (\function_exists('idn_to_utf8') && \defined('INTL_IDNA_VARIANT_UTS46')) {
             return \idn_to_utf8($host, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46) ?: $host;
         }
-        \trigger_error('PHP extension idn is not loaded or is too old', \E_USER_WARNING);
+        \trigger_error('PHP extension intl is not loaded or is too old', \E_USER_WARNING);
     }
     /**
      * Similar to rawurldecode, but preserves reserved chars encoded.

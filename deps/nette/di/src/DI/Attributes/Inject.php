@@ -8,6 +8,7 @@ declare (strict_types=1);
 namespace Packetery\Nette\DI\Attributes;
 
 use Attribute;
+/** @internal */
 #[Attribute(Attribute::TARGET_PROPERTY)]
 class Inject
 {

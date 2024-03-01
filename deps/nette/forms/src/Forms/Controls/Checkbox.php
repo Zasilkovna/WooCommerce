@@ -11,6 +11,7 @@ use Packetery\Nette;
 use Packetery\Nette\Utils\Html;
 /**
  * Check box control. Allows the user to select a true or false condition.
+ * @internal
  */
 class Checkbox extends BaseControl
 {

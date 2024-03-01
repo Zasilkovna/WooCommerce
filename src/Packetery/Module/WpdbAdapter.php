@@ -16,18 +16,72 @@ use WC_Logger;
 /**
  * Class WpdbAdapter
  *
- * @property string $packetery_carrier
- * @property string $packetery_order
- * @property string $packetery_log
- * @property string $packetery_customs_declaration
- * @property string $packetery_customs_declaration_item
- * @property string $posts
- * @property string $wc_orders
- * @property string $options
- * @property string $postmeta
  * @package Packetery
  */
 class WpdbAdapter {
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $packetery_carrier;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $packetery_order;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $packetery_log;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $packetery_customs_declaration;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $packetery_customs_declaration_item;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $wc_orders;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $posts;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $options;
+
+	/**
+	 * Table name.
+	 *
+	 * @var string
+	 */
+	public $postmeta;
 
 	/**
 	 * Wpdb.

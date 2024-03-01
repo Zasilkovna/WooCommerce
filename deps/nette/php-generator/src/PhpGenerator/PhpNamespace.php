@@ -17,6 +17,7 @@ use Packetery\Nette\Utils\Strings;
  * - namespace statement
  * - variable amount of use statements
  * - one or more class declarations
+ * @internal
  */
 final class PhpNamespace
 {

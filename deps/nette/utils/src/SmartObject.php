@@ -14,6 +14,7 @@ use Packetery\Nette\Utils\ObjectHelpers;
  * - access to undeclared members throws exceptions
  * - support for @property annotations
  * - support for calling event handlers stored in $onEvent via onEvent()
+ * @internal
  */
 trait SmartObject
 {
@@ -56,7 +57,13 @@ trait SmartObject
             if (!($prop & 0b1)) {
                 throw new MemberAccessException("Cannot read a write-only property {$class}::\${$name}.");
             }
-            $m = ($prop & 0b10 ? 'get' : 'is') . $name;
+            $m = ($prop & 0b10 ? 'get' : 'is') . \ucfirst($name);
+            if ($prop & 0b10000) {
+                $trace = \debug_backtrace(0, 1)[0];
+                // suppose this method is called from __call()
+                $loc = isset($trace['file'], $trace['line']) ? " in {$trace['file']} on line {$trace['line']}" : '';
+                \trigger_error("Property {$class}::\${$name} is deprecated, use {$class}::{$m}() method{$loc}.", \E_USER_DEPRECATED);
+            }
             if ($prop & 0b100) {
                 // return by reference
                 return $this->{$m}();
@@ -84,7 +91,14 @@ trait SmartObject
             if (!($prop & 0b1000)) {
                 throw new MemberAccessException("Cannot write to a read-only property {$class}::\${$name}.");
             }
-            $this->{'set' . $name}($value);
+            $m = 'set' . \ucfirst($name);
+            if ($prop & 0b10000) {
+                $trace = \debug_backtrace(0, 1)[0];
+                // suppose this method is called from __call()
+                $loc = isset($trace['file'], $trace['line']) ? " in {$trace['file']} on line {$trace['line']}" : '';
+                \trigger_error("Property {$class}::\${$name} is deprecated, use {$class}::{$m}() method{$loc}.", \E_USER_DEPRECATED);
+            }
+            $this->{$m}($value);
         } else {
             ObjectHelpers::strictSet($class, $name);
         }

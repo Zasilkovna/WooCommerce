@@ -11,6 +11,7 @@ use Packetery\Psr\Http\Message\RequestInterface;
 use Packetery\Psr\Http\Message\ResponseInterface;
 /**
  * Handler that returns responses or throw exceptions from a queue.
+ * @internal
  */
 class MockHandler implements \Countable
 {

@@ -11,6 +11,7 @@ use Packetery\Nette;
 use Packetery\Tracy;
 /**
  * Tracy logger bridge for Nette Mail.
+ * @internal
  */
 class MailSender
 {
