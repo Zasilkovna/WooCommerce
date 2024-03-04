@@ -287,6 +287,13 @@ class Plugin {
 	private $carrierModal;
 
 	/**
+	 * Order details page.
+	 *
+	 * @var EshopOrderDetails
+	 */
+	private $eshopOrderDetails;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -324,6 +331,7 @@ class Plugin {
 	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
+	 * @param EshopOrderDetails          $eshopOrderDetails         Eshop order details page.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -360,7 +368,8 @@ class Plugin {
 		Order\ApiExtender $apiExtender,
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
-		CarrierModal $carrierModal
+		CarrierModal $carrierModal,
+		EshopOrderDetails $eshopOrderDetails
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -398,6 +407,7 @@ class Plugin {
 		$this->labelPrintModal           = $labelPrintModal;
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
+		$this->eshopOrderDetails         = $eshopOrderDetails;
 	}
 
 	/**
@@ -647,21 +657,34 @@ class Plugin {
 			return;
 		}
 
-		if ( $this->shouldHidePacketaInfo( $order ) ) {
+		if ( $this->shouldHidePacketaInfo( $order ) || ( ! is_view_order_page() && $order->isCarDelivery() ) ) {
 			return;
 		}
+
+		/**
+		 * $wcOrder date_created is never null at this point.
+		 */
+		$carDeliveryWidgetSettings = $this->eshopOrderDetails->createSettings( $order, $wcOrder->get_date_created() );
+
+		wp_enqueue_script( 'packetery-widget-library', 'https://widget.packeta.com/v6/www/js/library.js', [], self::VERSION, true );
+		$this->enqueueScript( 'packetery-eshop-view-delivery', 'public/eshopViewDelivery.js', true, [ 'jquery' ] );
+		wp_localize_script( 'packetery-eshop-view-delivery', 'packeteryCarDeliverySettings', $carDeliveryWidgetSettings );
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
 			[
 				'displayPickupPointInfo' => $this->shouldDisplayPickupPointInfo(),
 				'order'                  => $order,
+				'logo'                   => self::buildAssetUrl( 'public/packeta-symbol.png' ),
 				'translations'           => [
-					'packeta'              => __( 'Packeta', 'packeta' ),
-					'pickupPointName'      => __( 'Pickup Point Name', 'packeta' ),
-					'pickupPointDetail'    => __( 'Pickup Point Detail', 'packeta' ),
-					'address'              => __( 'Address', 'packeta' ),
-					'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
+					'packeta'               => __( 'Packeta', 'packeta' ),
+					'pickupPointName'       => __( 'Pickup Point Name', 'packeta' ),
+					'pickupPointDetail'     => __( 'Pickup Point Detail', 'packeta' ),
+					'address'               => __( 'Address', 'packeta' ),
+					'packetTrackingOnline'  => __( 'Packet tracking online', 'packeta' ),
+					'changeDeliveryAddress' => __( 'Change delivery address', 'packeta' ),
+					'changeAddressDenied'   => __( 'No longer possible', 'packeta' ),
+					'chooseDeliveryAddress' => __( 'Choose delivery address', 'packeta' ),
 				],
 			]
 		);
@@ -733,7 +756,7 @@ class Plugin {
 	private function shouldHidePacketaInfo( PacketeryOrder $order ): bool {
 		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && $order->getPickupPoint();
 
-		return ( ! $isPickupPointInfoVisible ) && false === $order->isExported();
+		return ( ! $isPickupPointInfoVisible ) && false === $order->isCarDelivery() && false === $order->isExported();
 	}
 
 	/**
