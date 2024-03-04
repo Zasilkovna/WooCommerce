@@ -606,6 +606,7 @@ class Metabox {
 		return [
 			'packeteryApiKey'   => $this->optionsProvider->get_api_key(),
 			'homeDeliveryAttrs' => Attribute::$homeDeliveryAttrs,
+			'carDeliveryAttrs'  => Attribute::$carDeliveryAttrs,
 			'widgetOptions'     => $widgetOptions,
 			'translations'      => [
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order.', 'packeta' ),

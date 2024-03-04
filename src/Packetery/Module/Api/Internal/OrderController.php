@@ -15,9 +15,11 @@ use Packetery\Core\Helper;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
+use Packetery\Module\Order\Attribute;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\Repository;
 use Packetery\Module\Order\GridExtender;
+use Packetery\Module\Order\AttributeMapper;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -74,6 +76,13 @@ final class OrderController extends WP_REST_Controller {
 	private $helper;
 
 	/**
+	 * Order attribute mapper.
+	 *
+	 * @var AttributeMapper
+	 */
+	private $mapper;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param OrderRouter     $router Router.
@@ -82,6 +91,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param Validator\Order $orderValidator Order validator.
 	 * @param Helper          $helper Helper.
 	 * @param Form            $orderForm Order form.
+	 * @param AttributeMapper $mapper Attribute mapper.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -89,7 +99,8 @@ final class OrderController extends WP_REST_Controller {
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
 		Helper $helper,
-		Form $orderForm
+		Form $orderForm,
+		AttributeMapper $mapper
 	) {
 		$this->orderForm       = $orderForm;
 		$this->orderRepository = $orderRepository;
@@ -97,6 +108,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->orderValidator  = $orderValidator;
 		$this->helper          = $helper;
 		$this->router          = $router;
+		$this->mapper          = $mapper;
 	}
 
 	/**
@@ -111,6 +123,18 @@ final class OrderController extends WP_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => [ $this, 'saveModal' ],
+					'permission_callback' => function () {
+						return current_user_can( 'edit_posts' );
+					},
+				],
+			]
+		);
+		$this->router->registerRoute(
+			OrderRouter::PATH_SAVE_DELIVERY_ADDRESS,
+			[
+				[
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => [ $this, 'updateOrderDeliveryAddress' ],
 					'permission_callback' => function () {
 						return current_user_can( 'edit_posts' );
 					},
@@ -201,4 +225,61 @@ final class OrderController extends WP_REST_Controller {
 		return new WP_REST_Response( $data, 200 );
 	}
 
+	/**
+	 * Update one item from the collection
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function updateOrderDeliveryAddress( WP_REST_Request $request ) {
+		$data       = [];
+		$parameters = $request->get_body_params();
+		$orderId    = (int) $parameters['orderId'];
+
+		try {
+			$order = $this->orderRepository->getById( $orderId );
+		} catch ( InvalidCarrierException $exception ) { // New exception needed?
+			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
+		}
+		if ( null === $order ) {
+			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 ); // Display an error message to the user.
+		}
+
+//		if (is_user_logged_in() && (int)wp_get_current_user()->ID === $order->nejakzjistituser_id) {
+//			//your stuff only for legged in user 123
+//			return new WP_REST_Response('ok', 200);
+//		}
+//
+//		return new WP_Error('unauthorized', __('You shall not pass'), [ 'status' => 401 ]); //can also use WP_REST_Response
+
+
+		if ( $order->getPacketId() ) {
+			$data['message'] = __( 'This action is no longer available. The packet has been submitted to Packeta.', 'packeta' );
+			$data['type']    = 'error';
+
+			return new WP_REST_Response( $data, 200 );
+		}
+
+		$delivery_address = [];
+		foreach ( Attribute::$carDeliveryAttrs as $addressField ) {
+			$fieldName = $addressField['name'];
+			if ( isset( $addressField['isWidgetResultField'] ) ) {
+				continue;
+			}
+			if ( isset( $parameters[ $fieldName ] ) ) {
+				$delivery_address[ $fieldName ] = $parameters[ $fieldName ];
+			}
+		}
+
+		$address = $this->mapper->toCarDeliveryAddress( $delivery_address );
+		$order->setDeliveryAddress( $address );
+		$order->setCarDeliveryId( $parameters['packetery_car_delivery_id'] );
+		$this->orderRepository->save( $order );
+
+		$data['message'] = __( 'The delivery address has been changed', 'packeta' );
+		$data['type']    = 'success';
+
+		return new WP_REST_Response( $data, 200 );
+	}
 }

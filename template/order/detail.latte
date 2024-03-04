@@ -1,9 +1,13 @@
 {varType Packetery\Core\Entity\Order $order}
 {varType bool $displayPickupPointInfo}
 {var $pickupPoint = $order->getPickupPoint()}
+{var $isCarDelivery = $order->isCarDelivery()}
+{var $isSubmittedToPacketa = $order->isExported()}
 
 <section class="packetery-order-detail">
     <h2 class="woocommerce-order-details__title">{$translations['packeta']}</h2>
+
+    <div class="packeta-widget-info" hidden="hidden"></div>
 
     <table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
         <tbody>
@@ -27,7 +31,26 @@
             </tr>
         {/if}
 
-        {if $order->isExported()}
+        {if $isCarDelivery}
+            <tr>
+                <th scope="row">{$translations['changeDeliveryAddress']}:</th>
+                <td>
+                    {if !$isSubmittedToPacketa}
+
+                    <div id="packetery-widget-button-wrapper packetery-widget">
+                        <div class="packetery-widget-button-row">
+                            <button class="packeta-widget-button button button-secondary">{$translations['chooseDeliveryAddress']}</button>
+                        </div>
+                    </div>
+
+                    {else}
+                        {$translations['changeAddressDenied']}
+                    {/if}
+                </td>
+            </tr>
+        {/if}
+
+        {if $isSubmittedToPacketa}
             <tr>
                 <th scope="row">{$translations['packetTrackingOnline']}</th>
                 <td>

@@ -30,6 +30,7 @@ services:
 	- Packetery\Module\Order\Metabox
 	- Packetery\Module\Order\CustomsDeclarationMetabox
 	- Packetery\Module\Plugin
+	- Packetery\Module\EshopOrderDetails
 	- Packetery\Module\HookHandler
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
