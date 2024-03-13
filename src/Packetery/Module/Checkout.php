@@ -483,12 +483,28 @@ class Checkout {
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function updateOrderMeta( int $orderId ): void {
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+		if ( null === $wcOrder ) {
+			return;
+		}
+
+		$this->updateOrderMetaBlocks( $wcOrder );
+	}
+
+	/**
+	 * Saves pickup point and other Packeta information to order.
+	 *
+	 * @param \WC_Order $wcOrder Order id.
+	 *
+	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
+	 */
+	public function updateOrderMetaBlocks( \WC_Order $wcOrder ): void {
 		$chosenMethod = $this->getChosenMethod();
 		if ( false === $this->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return;
 		}
 
-		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $orderId );
+		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
 		if ( empty( $checkoutData ) ) {
 			return;
 		}
@@ -496,11 +512,6 @@ class Checkout {
 		$carrierId   = $this->getCarrierId( $chosenMethod );
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
-
-		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-		if ( null === $wcOrder ) {
-			return;
-		}
 
 		if ( $this->isPickupPointOrder() ) {
 			if ( PickupPointValidator::IS_ACTIVE ) {
@@ -537,7 +548,7 @@ class Checkout {
 			$wcOrder->save();
 		}
 
-		$orderEntity = new Core\Entity\Order( (string) $orderId, $this->carrierEntityRepository->getAnyById( $carrierId ) );
+		$orderEntity = new Core\Entity\Order( (string) $wcOrder->get_id(), $this->carrierEntityRepository->getAnyById( $carrierId ) );
 		if (
 			isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
 			'1' === $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] &&
@@ -564,7 +575,7 @@ class Checkout {
 
 		delete_transient( $this->getTransientNamePacketaCheckoutData() );
 		$this->orderRepository->save( $orderEntity );
-		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $orderId );
+		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $wcOrder->get_id() );
 	}
 
 	/**
@@ -576,6 +587,7 @@ class Checkout {
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
+		add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'updateOrderMetaBlocks' ) );
 		if ( ! is_admin() ) {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
