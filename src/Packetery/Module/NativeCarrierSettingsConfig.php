@@ -18,7 +18,7 @@ class NativeCarrierSettingsConfig {
 	/**
 	 * NativeCarrierSettingsConfig constructor.
 	 *
-	 * @param bool $active Sample.
+	 * @param bool $active Active.
 	 */
 	public function __construct( bool $active ) {
 		$this->active = $active;
