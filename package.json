@@ -1,0 +1,29 @@
+{
+  "name": "packeta-woocommerce-plugin",
+  "version": "0.1.0",
+  "description": "Plugin to WooCommerce with the Packeta provided shipping functionality",
+  "author": "Packeta",
+  "keywords": [
+    "packeta",
+    "woocommerce",
+    "wordpress"
+  ],
+  "scripts": {
+    "build": "wp-scripts build --webpack-src-dir=src/PacketaWidget",
+    "format": "wp-scripts format",
+    "lint:css": "wp-scripts lint-style",
+    "lint:js": "wp-scripts lint-js",
+    "packages-update": "wp-scripts packages-update",
+    "plugin-zip": "wp-scripts plugin-zip",
+    "start": "wp-scripts start --webpack-src-dir=src/PacketaWidget"
+  },
+  "dependencies": {
+    "@wordpress/blocks": "^12.30.0",
+    "@wordpress/components": "^27.1.0",
+    "@wordpress/i18n": "^4.53.0"
+  },
+  "devDependencies": {
+    "@woocommerce/dependency-extraction-webpack-plugin": "^2.3.0",
+    "@wordpress/scripts": "^27.4.0"
+  }
+}

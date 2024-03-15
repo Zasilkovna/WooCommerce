@@ -308,6 +308,7 @@ class Checkout {
 			 * @since 1.4.2
 			 */
 			'language'                   => (string) apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
+            'logo'                       => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
 			'country'                    => $this->getCustomerCountry(),
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
