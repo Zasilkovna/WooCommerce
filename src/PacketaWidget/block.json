@@ -1,0 +1,11 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/block.json",
+    "apiVersion": 3,
+    "name": "packeta/packeta-widget",
+    "version": "0.1.0",
+    "title": "Packeta Widget",
+    "category": "woocommerce",
+    "parent": [ "woocommerce/checkout-shipping-address-block" ],
+    "textdomain": "packeta-widget",
+    "viewScript": "file:./index.js"
+}
