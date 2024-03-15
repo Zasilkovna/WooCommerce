@@ -15,7 +15,7 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Helper;
 use Packetery\Nette\Forms;
 use RuntimeException;
-use Packetery\Module\NativeCarrierSettingsConfig;
+use Packetery\Module\WCNativeCarrierSettingsConfig;
 
 /**
  * Class CarrierModal.
@@ -64,19 +64,19 @@ class CarrierModal {
 	/**
 	 * Native Carrier settings.
 	 *
-	 * @var NativeCarrierSettingsConfig
+	 * @var WCNativeCarrierSettingsConfig
 	 */
-	private $nativeCarrierSettings;
+	private $wcNativeCarrierSettings;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Engine                      $latteEngine              Latte engine.
-	 * @param DetailCommonLogic           $detailCommonLogic        Detail common logic.
-	 * @param CarrierModalFormFactory     $carrierModalFormFactory  Carrier Modal form factory.
-	 * @param Repository                  $orderRepository          Order repository.
-	 * @param Carrier\EntityRepository    $carrierRepository        Carrier repository.
-	 * @param NativeCarrierSettingsConfig $nativeCarrierSettings    Native Carrier settings.
+	 * @param Engine                        $latteEngine              Latte engine.
+	 * @param DetailCommonLogic             $detailCommonLogic        Detail common logic.
+	 * @param CarrierModalFormFactory       $carrierModalFormFactory  Carrier Modal form factory.
+	 * @param Repository                    $orderRepository          Order repository.
+	 * @param Carrier\EntityRepository      $carrierRepository        Carrier repository.
+	 * @param WCNativeCarrierSettingsConfig $wcNativeCarrierSettings    Native Carrier settings.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -84,14 +84,14 @@ class CarrierModal {
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		NativeCarrierSettingsConfig $nativeCarrierSettings
+		WCNativeCarrierSettingsConfig $wcNativeCarrierSettings
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->detailCommonLogic       = $detailCommonLogic;
 		$this->carrierModalFormFactory = $carrierModalFormFactory;
 		$this->orderRepository         = $orderRepository;
 		$this->carrierRepository       = $carrierRepository;
-		$this->nativeCarrierSettings   = $nativeCarrierSettings;
+		$this->wcNativeCarrierSettings = $wcNativeCarrierSettings;
 	}
 
 	/**
@@ -242,7 +242,7 @@ class CarrierModal {
 			return false;
 		}
 
-		if ( $this->nativeCarrierSettings->isSettingsActive() ) {
+		if ( $this->wcNativeCarrierSettings->isSettingsActive() ) {
 			return false;
 		}
 
