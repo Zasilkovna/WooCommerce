@@ -95,3 +95,6 @@ services:
 	- Packetery\Module\Options\FeatureFlagManager
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
+	- Packetery\Module\PacketaPluginAssets
+	- Packetery\Module\PacketaPluginIntegration
+	- Packetery\Module\PacketaExtendStoreEndpoint

@@ -523,6 +523,22 @@ class Plugin {
 		$this->dashboardWidget->register();
 
 		$this->packetSubmitter->registerCronAction();
+
+		add_action(
+			'woocommerce_blocks_checkout_block_registration',
+			function( $integration_registry ) {
+                // almost same scripts as from enqueFrontAssets
+                $scripts = ['public/checkout_blocks.js'];
+                $styles = ['public/front.css', 'public/custom-front.css'];
+                foreach($scripts as $key => $script) {
+                    $scripts[$key] = self::buildAssetUrl($script);
+                }
+
+                $packetaPluginAssets = new \Packetery\Module\PacketaPluginAssets($scripts, $styles);
+                $integration_registry->register( new \Packetery\Module\PacketaPluginIntegration($packetaPluginAssets) );
+            }
+		);
+
 	}
 
 	/**

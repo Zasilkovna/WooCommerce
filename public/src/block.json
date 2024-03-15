@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 2,
+  "name": "checkout-block-example/gift-message",
+  "version": "1.0.0",
+  "title": "Gift Message",
+  "category": "woocommerce",
+  "parent": [ "woocommerce/checkout-shipping-address-block" ],
+  "attributes": {
+    "lock": {
+      "type": "object",
+      "default": {
+        "remove": true,
+        "move": true
+      }
+    }
+  },
+  "textdomain": "checkout-block-example",
+  "editorScript": "file:./build/index.js"
+}
