@@ -10,3 +10,4 @@
 /.phpunit.result.cache
 /config/config.local.neon
 ./public/node_modules
+/node_modules
