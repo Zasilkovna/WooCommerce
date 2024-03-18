@@ -15,6 +15,7 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Helper;
 use Packetery\Nette\Forms;
 use RuntimeException;
+use Packetery\Module\WCNativeCarrierSettingsConfig;
 
 /**
  * Class CarrierModal.
@@ -61,26 +62,36 @@ class CarrierModal {
 	private $orderRepository;
 
 	/**
+	 * Native Carrier settings.
+	 *
+	 * @var WCNativeCarrierSettingsConfig
+	 */
+	private $wcNativeCarrierSettings;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Engine                   $latteEngine             Latte engine.
-	 * @param DetailCommonLogic        $detailCommonLogic       Detail common logic.
-	 * @param CarrierModalFormFactory  $carrierModalFormFactory Carrier Modal form factory.
-	 * @param Repository               $orderRepository         Order repository.
-	 * @param Carrier\EntityRepository $carrierRepository       Carrier repository.
+	 * @param Engine                        $latteEngine              Latte engine.
+	 * @param DetailCommonLogic             $detailCommonLogic        Detail common logic.
+	 * @param CarrierModalFormFactory       $carrierModalFormFactory  Carrier Modal form factory.
+	 * @param Repository                    $orderRepository          Order repository.
+	 * @param Carrier\EntityRepository      $carrierRepository        Carrier repository.
+	 * @param WCNativeCarrierSettingsConfig $wcNativeCarrierSettings    Native Carrier settings.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
-		Carrier\EntityRepository $carrierRepository
+		Carrier\EntityRepository $carrierRepository,
+		WCNativeCarrierSettingsConfig $wcNativeCarrierSettings
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->detailCommonLogic       = $detailCommonLogic;
 		$this->carrierModalFormFactory = $carrierModalFormFactory;
 		$this->orderRepository         = $orderRepository;
 		$this->carrierRepository       = $carrierRepository;
+		$this->wcNativeCarrierSettings = $wcNativeCarrierSettings;
 	}
 
 	/**
@@ -228,6 +239,10 @@ class CarrierModal {
 	public function canBeDisplayed(): bool {
 		$carriers = $this->getCarriersByCountry();
 		if ( count( $carriers ) < 2 ) {
+			return false;
+		}
+
+		if ( $this->wcNativeCarrierSettings->isSettingsActive() ) {
 			return false;
 		}
 

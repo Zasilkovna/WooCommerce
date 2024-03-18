@@ -1,6 +1,6 @@
 <?php
 /**
- * Class NativeCarrierSettingsConfig
+ * Class WCNativeCarrierSettingsConfig
  *
  * @package Packetery
  */
@@ -8,15 +8,15 @@
 namespace Packetery\Module;
 
 /**
- * Class NativeCarrierSettingsConfig
+ * Class WCNativeCarrierSettingsConfig
  *
  * @property bool $active
  * @package Packetery
  */
-class NativeCarrierSettingsConfig {
+class WCNativeCarrierSettingsConfig {
 
 	/**
-	 * NativeCarrierSettingsConfig constructor.
+	 * WCNativeCarrierSettingsConfig constructor.
 	 *
 	 * @param bool $active Active.
 	 */
