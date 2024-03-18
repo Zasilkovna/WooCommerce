@@ -11,12 +11,8 @@ namespace Packetery\Module\Options;
 
 use DateTimeImmutable;
 use Exception;
-use Packetery\GuzzleHttp\Exception\ConnectException;
 use Packetery\Core\Helper;
 use Packetery\Module\Plugin;
-use Packetery\GuzzleHttp\Client;
-use Packetery\GuzzleHttp\Exception\GuzzleException;
-use Packetery\GuzzleHttp\Psr7\Response;
 use Packetery\Latte\Engine;
 
 /**
@@ -38,13 +34,6 @@ class FeatureFlagManager {
 	private const FLAG_SPLIT_ACTIVE  = 'splitActive';
 
 	/**
-	 * Guzzle client.
-	 *
-	 * @var Client Guzzle client.
-	 */
-	private $client;
-
-	/**
 	 * Latte engine.
 	 *
 	 * @var Engine
@@ -61,12 +50,10 @@ class FeatureFlagManager {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param Client   $guzzleClient Guzzle client.
 	 * @param Engine   $latteEngine Latte engine.
 	 * @param Provider $optionsProvider Options provider.
 	 */
-	public function __construct( Client $guzzleClient, Engine $latteEngine, Provider $optionsProvider ) {
-		$this->client          = $guzzleClient;
+	public function __construct( Engine $latteEngine, Provider $optionsProvider ) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
 	}
@@ -78,24 +65,19 @@ class FeatureFlagManager {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function fetchFlags(): array {
-		/**
-		 * Guzzle response.
-		 *
-		 * @var Response $response Guzzle response.
-		 */
-		try {
-			$response = $this->client->get(
-				self::ENDPOINT_URL,
-				[
-					'query'   => [
-						'api_key' => $this->optionsProvider->get_api_key(),
-					],
-					'timeout' => 20,
-				]
-			);
-		} catch ( ConnectException $exception ) {
+		$response = wp_remote_post(
+			self::ENDPOINT_URL,
+			[
+				'query'   => [
+					'api_key' => $this->optionsProvider->get_api_key(),
+				],
+				'timeout' => 20,
+			]
+		);
+
+		if ( is_wp_error( $response ) ) {
 			$logger = new \WC_Logger();
-			$logger->warning( 'Packeta Feature flag API download error: ' . $exception->getMessage() );
+			$logger->warning( 'Packeta Feature flag API download error: ' . $response->get_error_message() );
 			$errorCount = get_option( self::ERROR_COUNTER_OPTION_ID, 0 );
 			update_option( self::ERROR_COUNTER_OPTION_ID, $errorCount + 1 );
 			if ( $errorCount > 5 ) {
@@ -104,14 +86,9 @@ class FeatureFlagManager {
 			}
 
 			return [];
-		} catch ( GuzzleException $exception ) {
-			// We need to not block the presentation. TODO: solve logging.
-			return [];
 		}
 
-		$responseJson    = $response->getBody()->getContents();
-		$responseDecoded = json_decode( $responseJson, true );
-
+		$responseDecoded = json_decode( wp_remote_retrieve_body( $response ), true );
 		$lastDownload = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 		$flags        = [
 			self::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
