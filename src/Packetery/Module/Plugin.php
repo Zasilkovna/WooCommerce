@@ -524,16 +524,13 @@ class Plugin {
 
 		$this->packetSubmitter->registerCronAction();
 
-        /*
 		add_action(
 			'woocommerce_blocks_checkout_block_registration',
 			function( $integration_registry ) {
-                $integration_registry->register( new \Packetery\Module\PacketaWidgetIntegration(
-                    plugin_dir_url( $this->main_file_path )
-                ));
+                $integration_registry->register( new \Packetery\Module\PacketaWidgetIntegration());
             }
 		);
-        */
+
 	}
 
 	/**
@@ -833,7 +830,6 @@ class Plugin {
 			$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
 			$this->enqueueStyle( 'packetery-custom-front-styles', 'public/custom-front.css' );
 			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
-            $this->enqueueScript( 'packeta-widget', 'public/js/index.js', true, [] );
 			wp_localize_script( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkout->createSettings() );
 		}
 	}
