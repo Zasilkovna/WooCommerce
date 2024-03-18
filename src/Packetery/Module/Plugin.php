@@ -523,6 +523,8 @@ class Plugin {
 		$this->dashboardWidget->register();
 
 		$this->packetSubmitter->registerCronAction();
+        \Packetery\bdump($this->request->getRemoteAddress());
+
 	}
 
 	/**

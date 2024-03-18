@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
+use Packetery\Nette\Utils\FileSystem;
 
 /**
  * Class Helper
@@ -191,4 +192,14 @@ class Helper {
 		return $array;
 
 	}
+
+    /**
+     * @param string $cacheDir path to Nette cache directory
+     * @return void
+     */
+    public static function deleteOldVersionCache(string $cacheDir): void {
+        $oldCacheDir = $cacheDir . '-old';
+        FileSystem::rename($cacheDir, $oldCacheDir);
+        FileSystem::delete($oldCacheDir);
+    }
 }

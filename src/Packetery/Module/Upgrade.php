@@ -38,6 +38,7 @@ class Upgrade {
 	const META_POINT_ZIP        = 'packetery_point_zip';
 	const META_POINT_STREET     = 'packetery_point_street';
 	const META_POINT_URL        = 'packetery_point_url';
+    const VERSION_OPTION_NAME = 'packetery_version';
 
 	/**
 	 * Order repository.
@@ -134,7 +135,7 @@ class Upgrade {
 	 * @return void
 	 */
 	public function check(): void {
-		$oldVersion = get_option( 'packetery_version' );
+		$oldVersion = get_option( self::VERSION_OPTION_NAME );
 		if ( Plugin::VERSION === $oldVersion ) {
 			return;
 		}
@@ -221,7 +222,7 @@ class Upgrade {
 			}
 		}
 
-		update_option( 'packetery_version', Plugin::VERSION );
+		update_option( self::VERSION_OPTION_NAME, Plugin::VERSION );
 	}
 
 	/**

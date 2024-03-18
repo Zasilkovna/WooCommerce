@@ -1,5 +1,5 @@
 parameters:
-    latteTempFolder: %tempDir%/cache/view
+    latteTempFolder: %cacheDir%/view
     surveyConfig:
         active: true
         validTo: 2023-03-31 23:59:59

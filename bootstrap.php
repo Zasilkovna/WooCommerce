@@ -7,6 +7,7 @@
 
 use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\Helper;
+use Packetery\Module\Plugin;
 use Packetery\Module\WpdbTracyPanel;
 use Packetery\Nette\Bootstrap\Configurator;
 use Packetery\Tracy\Debugger;
@@ -18,26 +19,36 @@ require_once __DIR__ . '/deps/scoper-autoload.php';
 require_once __DIR__ . '/src/Packetery/Module/Helper.php';
 Helper::transformGlobalCookies();
 
+$tempDir = __DIR__ . '/temp';
+$cacheDir = $tempDir . '/cache';
+
+$oldVersion = get_option( Packetery\Module\Upgrade::VERSION_OPTION_NAME );
+if ( Plugin::VERSION !== $oldVersion ) {
+    Helper::deleteOldVersionCache($cacheDir);
+}
+
 $configurator = new Configurator();
 $configurator->setDebugMode( PACKETERY_DEBUG );
 
 Debugger::$logDirectory = PACKETERY_PLUGIN_DIR . '/log';
 if ( PACKETERY_DEBUG && false === wp_doing_cron() ) {
-	$configurator->enableDebugger( Debugger::$logDirectory );
-	Debugger::$strictMode = false;
+    $configurator->enableDebugger( Debugger::$logDirectory );
+    Debugger::$strictMode = false;
 }
 
 $configurator->addConfig( __DIR__ . '/config/config.neon' );
 
 $localConfigFile = __DIR__ . '/config/config.local.neon';
 if ( file_exists( $localConfigFile ) ) {
-	$configurator->addConfig( $localConfigFile ); // Local Development ENV only!
+    $configurator->addConfig( $localConfigFile ); // Local Development ENV only!
 }
 
-$configurator->setTempDirectory( __DIR__ . '/temp' );
+$configurator->setTempDirectory($tempDir);
 $configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->setAutoRefresh( false )->register();
 
 $configurator->defaultExtensions = [];
+
+$configurator->addStaticParameters(['cacheDir' => $cacheDir]);
 
 $container = $configurator->createContainer();
 CompatibilityBridge::setContainer( $container );
