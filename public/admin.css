@@ -569,6 +569,26 @@ tbody .packetery-log-column-note {
     transform: rotate(190deg);
 }
 
+.packetery-wc-native-carrier-settings h1 {
+    margin: 50px 0;
+}
+
+.packetery-wc-native-carrier-settings .packeta_country_list {
+    min-width: 800px;
+}
+
+.packetery-wc-native-carrier-settings .packeta_country_list tr:last-child td {
+    border-bottom: none;
+}
+
+.packetery-wc-native-carrier-settings .packeta_country_list th:last-child {
+    width: 100px;
+}
+
+.packetery-wc-native-carrier-settings .packeta_country_list_item td:last-child {
+    text-align: center;
+}
+
 .packeta_page .form-table tr th label {
     font-family: Ubuntu, Helvetica, Arial, sans-serif;
     font-weight: 500;

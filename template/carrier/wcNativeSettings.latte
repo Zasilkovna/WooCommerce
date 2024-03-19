@@ -1,0 +1,34 @@
+{include '../packeta-header.latte'}
+
+<div class="packetery-options-page packeta_page packetery-wc-native-carrier-settings">
+	{include 'carriersUpdater.latte'}
+
+<h1>{$translations['packeta']} - {$translations['countries']}</h1>
+
+	{if $countries}
+
+		{foreach $countries as $country}
+			<h3>
+				{if null !== $country['flag']}
+					<img src="{$country['flag']}" alt="{$country['name']}">
+				{/if}
+				{$country['name']}
+			</h3>
+			<table class="packeta_country_list">
+				<tr>
+					<th>{$translations['carrier']}</th>
+					<th>{$translations['action']}</th>
+				</tr>
+				{foreach $country['allCarriers'] as $key => $carrier}
+					<tr class="packeta_country_list_item">
+						<td>{$carrier->getName()}</td>
+						<td><a class="button button-small" href="">{$translations['setUp']}</a></td>
+					</tr>
+				{/foreach}
+			</table>
+		{/foreach}
+
+	{else}
+		{$translations['noActiveCountries']}
+	{/if}
+</div>

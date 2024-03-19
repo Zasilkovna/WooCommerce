@@ -1,0 +1,43 @@
+{if isset($carriersUpdate['result'])}
+	<div class="notice notice-{$carriersUpdate['resultClass']} is-dismissible">
+		<p>
+			{$carriersUpdate['result']}
+		</p>
+	</div>
+{/if}
+
+<div class="card">
+	<h2>{$translations['packeta']} - {$translations['carriersUpdate']}</h2>
+
+	{if $settingsChangedMessage}
+		<div class="notice notice-info packetery-no-side-margin">
+			<p>
+				{$settingsChangedMessage|noescape}
+			</p>
+		</div>
+	{/if}
+
+	{if $isApiPasswordSet}
+		<p>
+			{if isset($carriersUpdate['lastUpdate'])}
+				{$translations['lastCarrierUpdateDatetime']}: {$carriersUpdate['lastUpdate']}
+			{else}
+				{$translations['carrierListNeverDownloaded']}
+			{/if}
+		</p>
+
+		{if $nextScheduledRun}
+			<p>
+				{$translations['nextScheduledRunPlannedAt']}: {$nextScheduledRun}
+			</p>
+		{/if}
+
+		<p>
+			<a href="{$carriersUpdate['link']}" class="button button-primary">{$translations['runCarrierUpdate']}</a>
+		</p>
+	{else}
+		<p>
+			{$translations['pleaseCompleteSetupFirst']}
+		</p>
+	{/if}
+</div>
