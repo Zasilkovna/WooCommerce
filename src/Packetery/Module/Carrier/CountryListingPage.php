@@ -190,63 +190,44 @@ class CountryListingPage {
 			);
 		}
 
-		$countries = $this->getActiveCountries();
+		$countries      = $this->getActiveCountries();
+		$templateParams = [
+			'carriersUpdate'         => $carriersUpdateParams,
+			'countries'              => $countries,
+			'isApiPasswordSet'       => $isApiPasswordSet,
+			'nextScheduledRun'       => $nextScheduledRun,
+			'settingsChangedMessage' => $settingsChangedMessage,
+			'translations'           => [
+				'packeta'                    => __( 'Packeta', 'packeta' ),
+				'title'                      => __( 'Carriers', 'packeta' ),
+				'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
+				'countries'                  => __( 'Countries', 'packeta' ),
+				'activeCarrier'              => __( 'Active carrier', 'packeta' ),
+				'action'                     => __( 'Action', 'packeta' ),
+				'countryName'                => __( 'Country name', 'packeta' ),
+				'carrier'                    => __( 'Carrier', 'packeta' ),
+				'countryCode'                => __( 'Country code', 'packeta' ),
+				'setUp'                      => __( 'Set up', 'packeta' ),
+				'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
+				'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
+				'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
+				'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
+				'pleaseCompleteSetupFirst'   => __( 'Before updating the carriers, please complete the plugin setup first.', 'packeta' ),
+				'nextScheduledRunPlannedAt'  => __( 'The next automatic update will occur at', 'packeta' ),
+			],
+		];
+
 		if ( $this->wcNativeCarrierSettingsConfig->isSettingsActive() ) {
-			$this->latteEngine->render(
-				PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte',
-				[
-					'carriersUpdate'         => $carriersUpdateParams,
-					'countries'              => $countries,
-					'isApiPasswordSet'       => $isApiPasswordSet,
-					'nextScheduledRun'       => $nextScheduledRun,
-					'settingsChangedMessage' => $settingsChangedMessage,
-					'translations'           => [
-						'packeta'                    => __( 'Packeta', 'packeta' ),
-						'title'                      => __( 'Carriers', 'packeta' ),
-						'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
-						'countries'                  => __( 'Countries', 'packeta' ),
-						'action'                     => __( 'Action', 'packeta' ),
-						'countryName'                => __( 'Country name', 'packeta' ),
-						'carrier'                    => __( 'Carrier', 'packeta' ),
-						'setUp'                      => __( 'Set up', 'packeta' ),
-						'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
-						'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
-						'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
-						'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
-						'pleaseCompleteSetupFirst'   => __( 'Before updating the carriers, please complete the plugin setup first.', 'packeta' ),
-						'nextScheduledRunPlannedAt'  => __( 'The next automatic update will occur at', 'packeta' ),
-					],
-				]
-			);
+			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte';
 		} else {
-			$this->latteEngine->render(
-				PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte',
-				[
-					'carriersUpdate'         => $carriersUpdateParams,
-					'countries'              => $countries,
-					'isApiPasswordSet'       => $isApiPasswordSet,
-					'nextScheduledRun'       => $nextScheduledRun,
-					'settingsChangedMessage' => $settingsChangedMessage,
-					'translations'           => [
-						'packeta'                    => __( 'Packeta', 'packeta' ),
-						'title'                      => __( 'Carriers', 'packeta' ),
-						'carriersUpdate'             => __( 'Carriers update', 'packeta' ),
-						'countries'                  => __( 'Countries', 'packeta' ),
-						'activeCarrier'              => __( 'Active carrier', 'packeta' ),
-						'action'                     => __( 'Action', 'packeta' ),
-						'countryName'                => __( 'Country name', 'packeta' ),
-						'countryCode'                => __( 'Country code', 'packeta' ),
-						'setUp'                      => __( 'Set up', 'packeta' ),
-						'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
-						'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
-						'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
-						'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
-						'pleaseCompleteSetupFirst'   => __( 'Before updating the carriers, please complete the plugin setup first.', 'packeta' ),
-						'nextScheduledRunPlannedAt'  => __( 'The next automatic update will occur at', 'packeta' ),
-					],
-				]
-			);
+			$settingsTemplate                = PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte';
+			$templateParams['translations'] += [
+				'countryCode'       => __( 'Country code', 'packeta' ),
+				'noActiveCountries' => __( 'No active countries.', 'packeta' ),
+			];
 		}
+
+		$this->latteEngine->render( $settingsTemplate, $templateParams );
 	}
 
 	/**
@@ -262,8 +243,8 @@ class CountryListingPage {
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			$activeCarriers   = $this->getActiveCarriersNamesByCountry( $country );
-			$allCarriers      = $this->carrierEntityRepository->getByCountry( $country );
+			$activeCarriers   = $this->getCarrierNamesByCountry( $country, true );
+			$allCarriers      = $this->getCarrierNamesByCountry( $country, false );
 			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
 				self::DATA_KEY_COUNTRY_CODE => $country,
@@ -353,27 +334,32 @@ class CountryListingPage {
 	}
 
 	/**
-	 * Gets array of active carriers names by country code.
+	 * Gets array of carrier names by country code.
 	 *
-	 * @param string $countryCode Country code.
+	 * @param string $countryCode        Country code.
+	 * @param bool   $activeCarriersOnly Active carriers only.
 	 *
 	 * @return array
 	 */
-	private function getActiveCarriersNamesByCountry( string $countryCode ): array {
-		$activeCarriers  = [];
+	private function getCarrierNamesByCountry( string $countryCode, bool $activeCarriersOnly ): array {
+		$carrierNames    = [];
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
 			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
 				continue;
 			}
 
-			$optionId       = OptionPrefixer::getOptionId( $carrier->getId() );
-			$carrierOptions = get_option( $optionId );
-			if ( false !== $carrierOptions && $carrierOptions['active'] ) {
-				$activeCarriers[] = $carrier->getName();
+			if ( $activeCarriersOnly ) {
+				$optionId       = OptionPrefixer::getOptionId( $carrier->getId() );
+				$carrierOptions = get_option( $optionId );
+				if ( false !== $carrierOptions && $carrierOptions['active'] ) {
+					$carrierNames[] = $carrier->getName();
+				}
+			} else {
+				$carrierNames[] = $carrier->getName();
 			}
 		}
 
-		return $activeCarriers;
+		return $carrierNames;
 	}
 }
