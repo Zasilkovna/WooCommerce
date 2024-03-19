@@ -191,7 +191,7 @@ class CountryListingPage {
 		}
 
 		$countries = $this->getActiveCountries();
- 		if ( $this->wcNativeCarrierSettingsConfig->isSettingsActive() ) {
+		if ( $this->wcNativeCarrierSettingsConfig->isSettingsActive() ) {
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte',
 				[
@@ -263,7 +263,7 @@ class CountryListingPage {
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
 			$activeCarriers   = $this->getActiveCarriersNamesByCountry( $country );
-			$allCarriers = $this->carrierEntityRepository->getByCountry( $country );
+			$allCarriers      = $this->carrierEntityRepository->getByCountry( $country );
 			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
 				self::DATA_KEY_COUNTRY_CODE => $country,
