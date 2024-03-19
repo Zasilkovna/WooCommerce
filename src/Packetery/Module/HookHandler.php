@@ -60,9 +60,9 @@ class HookHandler {
 	 * @return void
 	 */
 	public function updateOrder( $wcOrderId ): void {
-		static $hasBeenRun;
+		static $hasBeenRun = false;
 
-		if ( isset( $hasBeenRun ) && true === $hasBeenRun ) {
+		if (true === $hasBeenRun ) {
 			return;
 		}
 

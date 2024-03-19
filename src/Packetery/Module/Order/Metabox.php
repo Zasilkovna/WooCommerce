@@ -216,10 +216,9 @@ class Metabox {
 			add_meta_box(
 				'packetery_metabox',
 				__( 'Packeta', 'packeta' ),
-				array(
-					$this,
-					'render_metabox',
-				),
+				function() use ($parts) {
+					$this->render_metabox($parts);
+				},
 				Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
 				'side',
 				'high'
@@ -230,8 +229,7 @@ class Metabox {
 	/**
 	 * Renders metabox content.
 	 */
-	public function render_metabox(): void {
-		$parts = $this->prepareMetaboxParts();
+	public function render_metabox(array $parts): void {
 
 		if ( isset( $parts[ self::PART_ERROR ] ) ) {
 			Module\Helper::renderString( $parts[ self::PART_ERROR ] );
@@ -254,23 +252,18 @@ class Metabox {
 	 * Prepares metabox parts.
 	 */
 	private function prepareMetaboxParts(): array {
-		static $partsCache;
 
-		if ( isset( $partsCache ) ) {
-			return $partsCache;
-		}
 
+		// ----------------------------------------------------------------
 		$orderId = $this->detailCommonLogic->getOrderId();
 		if ( null === $orderId ) {
-			$partsCache = [];
-
-			return $partsCache;
+			return [];
 		}
 
 		try {
 			$order = $this->orderRepository->getById( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
-			$partsCache = [
+			return [
 				self::PART_ERROR => $this->latte_engine->renderToString(
 					PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
 					[
@@ -278,9 +271,10 @@ class Metabox {
 					]
 				),
 			];
-
-			return $partsCache;
 		}
+
+		// ----------------------------------------------------------------
+
 
 		$parts = [];
 		if ( $this->carrierModal->canBeDisplayed() ) {
@@ -288,10 +282,11 @@ class Metabox {
 		}
 
 		if ( null === $order ) {
-			$partsCache = $parts;
-
-			return $partsCache;
+			return $parts;
 		}
+
+		// ----------------------------------------------------------------
+
 
 		$showLogsLink = null;
 		if ( $this->logPage->hasAnyRows( (int) $order->getNumber() ) ) {
@@ -359,9 +354,7 @@ class Metabox {
 				]
 			);
 
-			$partsCache = $parts;
-
-			return $partsCache;
+			return $parts;
 		}
 
 		$this->orderForm->setDefaults(
@@ -472,9 +465,7 @@ class Metabox {
 			]
 		);
 
-		$partsCache = $parts;
-
-		return $partsCache;
+		return $parts;
 	}
 
 	/**
