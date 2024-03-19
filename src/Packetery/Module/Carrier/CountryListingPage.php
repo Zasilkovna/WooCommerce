@@ -221,10 +221,10 @@ class CountryListingPage {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte';
 		} else {
 			$settingsTemplate                = PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte';
-			$templateParams['translations'] += [
+			array_merge($templateParams['translations'], [
 				'countryCode'       => __( 'Country code', 'packeta' ),
 				'noActiveCountries' => __( 'No active countries.', 'packeta' ),
-			];
+			] );
 		}
 
 		$this->latteEngine->render( $settingsTemplate, $templateParams );
