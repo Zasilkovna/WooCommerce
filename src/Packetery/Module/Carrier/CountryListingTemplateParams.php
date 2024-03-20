@@ -31,7 +31,7 @@ class CountryListingTemplateParams {
 	public $countries;
 
 	/**
-	 * API password.
+	 * Tells whether API password is set, or not.
 	 *
 	 * @var bool
 	 */
@@ -63,7 +63,7 @@ class CountryListingTemplateParams {
 	 *
 	 * @param array       $carriersUpdate         Carriers update params.
 	 * @param array       $countries              Countries.
-	 * @param bool        $isApiPasswordSet       API password.
+	 * @param bool        $isApiPasswordSet       Tells whether API password is set, or not.
 	 * @param string|null $nextScheduledRun       Next update run.
 	 * @param string|null $settingsChangedMessage Settings changed message.
 	 * @param array       $translations           Translations.

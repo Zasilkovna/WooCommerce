@@ -4,7 +4,7 @@
 	{include 'carriersUpdater.latte'}
 
 	<h1>{$translations['packeta']} - {$translations['countries']}</h1>
-	{foreach $countries as $country}
+	<div n:foreach="$countries as $country">
 		<h3>
 			<img n:if="null !== $country['flag']" src="{$country['flag']}" alt="{$country['name']}">
 			{$country['name']}
@@ -16,8 +16,10 @@
 			</tr>
 			<tr n:foreach="$country['allCarriers'] as $carrier" class="packeta_country_list_item">
 				<td>{$carrier}</td>
-				<td><a class="button button-small" href="#">{$translations['setUp']}</a></td>
+				<td>
+					<a class="button button-small" href="#">{$translations['setUp']}</a>
+				</td>
 			</tr>
 		</table>
-	{/foreach}
+	</div>
 </div>

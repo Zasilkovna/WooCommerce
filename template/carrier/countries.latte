@@ -21,7 +21,9 @@
 
 				<td>{$country[Packetery\Module\Carrier\CountryListingPage::DATA_KEY_COUNTRY_CODE]|upper}</td>
 				<td class="packeta_active_carriers_column">{implode(', ', $country['activeCarriers'])}</td>
-				<td><a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a></td>
+				<td>
+					<a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a>
+				</td>
 			</tr>
 		</table>
 	{else}
