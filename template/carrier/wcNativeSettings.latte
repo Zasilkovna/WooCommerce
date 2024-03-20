@@ -6,9 +6,7 @@
 	<h1>{$translations['packeta']} - {$translations['countries']}</h1>
 	{foreach $countries as $country}
 		<h3>
-			{if null !== $country['flag']}
-				<img src="{$country['flag']}" alt="{$country['name']}">
-			{/if}
+			<img n:if="null !== $country['flag']" src="{$country['flag']}" alt="{$country['name']}">
 			{$country['name']}
 		</h3>
 		<table class="packeta_country_list">
@@ -16,12 +14,10 @@
 				<th>{$translations['carrier']}</th>
 				<th>{$translations['action']}</th>
 			</tr>
-			{foreach $country['allCarriers'] as $carrier}
-				<tr class="packeta_country_list_item">
-					<td>{$carrier}</td>
-					<td><a class="button button-small" href="#">{$translations['setUp']}</a></td>
-				</tr>
-			{/foreach}
+			<tr n:foreach="$country['allCarriers'] as $carrier" class="packeta_country_list_item">
+				<td>{$carrier}</td>
+				<td><a class="button button-small" href="#">{$translations['setUp']}</a></td>
+			</tr>
 		</table>
 	{/foreach}
 </div>

@@ -13,20 +13,16 @@
 				<th>{$translations['activeCarrier']}</th>
 				<th>{$translations['action']}</th>
 			</tr>
-			{foreach $countries as $country}
-				<tr class="packeta_country_list_item">
-					<td>
-						{if null !== $country['flag']}
-							<img src="{$country['flag']}" alt="{$country['name']}">
-						{/if}
-						{$country['name']}
-					</td>
+			<tr n:foreach="$countries as $country" class="packeta_country_list_item">
+				<td>
+					<img n:if="null !== $country['flag']" src="{$country['flag']}" alt="{$country['name']}">
+					{$country['name']}
+				</td>
 
-					<td>{$country[Packetery\Module\Carrier\CountryListingPage::DATA_KEY_COUNTRY_CODE]|upper}</td>
-					<td class="packeta_active_carriers_column">{implode(', ', $country['activeCarriers'])}</td>
-					<td><a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a></td>
-				</tr>
-			{/foreach}
+				<td>{$country[Packetery\Module\Carrier\CountryListingPage::DATA_KEY_COUNTRY_CODE]|upper}</td>
+				<td class="packeta_active_carriers_column">{implode(', ', $country['activeCarriers'])}</td>
+				<td><a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a></td>
+			</tr>
 		</table>
 	{else}
 		{$translations['noActiveCountries']}

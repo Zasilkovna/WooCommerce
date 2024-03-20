@@ -49,6 +49,7 @@ services:
 	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
 	- Packetery\Module\Carrier\CountryListingPage
+	- Packetery\Module\Carrier\CountryListingTemplateParams
 	- Packetery\Module\Order\BulkActions
 	- Packetery\Module\Order\Repository
 	- Packetery\Module\Order\LabelPrint
