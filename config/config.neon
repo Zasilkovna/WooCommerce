@@ -10,91 +10,20 @@ parameters:
     wcNativePacketaCarrierSettingsConfig:
         active: false
 
+search:
+	- in: %appDir%/src/Packetery
+
 services:
-	- Packetery\Module\Order\MetaboxesWrapper
-	- Packetery\Module\Order\Form
-	- Packetery\Module\Order\CarrierModal
-	- Packetery\Module\Order\CarrierModalFormFactory
-	- Packetery\Module\ContextResolver
-	- Packetery\Module\Order\PacketCanceller
-	- Packetery\Module\EntityFactory\Address
-	- Packetery\Module\Log\Purger
-	- Packetery\Module\Log\Repository
-	- Packetery\Module\Log\DbLogger
-	- Packetery\Module\Log\Page
-	- Packetery\Module\CronService
-	- Packetery\Module\Product\DataTab
-	- Packetery\Module\ProductCategory\FormFields
-	- Packetery\Core\Helper
-	- Packetery\Module\MessageManager
-	- Packetery\Module\Order\Metabox
-	- Packetery\Module\Order\CustomsDeclarationMetabox
-	- Packetery\Module\Plugin
-	- Packetery\Module\HookHandler
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
-	- Packetery\Module\Options\Page
 	optionsProvider: Packetery\Module\Options\Provider
-	- Packetery\Module\Carrier\Downloader
-	- Packetery\Module\Carrier\Updater
-	- Packetery\Module\Carrier\Repository
-	- Packetery\GuzzleHttp\Client
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
-	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
 	- Packetery\Module\WCNativeCarrierSettingsConfig(active: %wcNativePacketaCarrierSettingsConfig.active%)
-	- Packetery\Module\Checkout
-	- Packetery\Module\Carrier\OptionsPage
-	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
-	- Packetery\Module\Carrier\CountryListingPage
-	- Packetery\Module\Order\BulkActions
-	- Packetery\Module\Order\Repository
-	- Packetery\Module\Order\LabelPrint
-	- Packetery\Module\Order\ApiExtender
-	- Packetery\Module\Order\GridExtender
 	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
-	- Packetery\Module\Order\DetailCommonLogic
-	- Packetery\Module\Order\PacketActionsCommonLogic
-	- Packetery\Module\Order\PacketSubmitter
-	- Packetery\Module\Order\PacketClaimSubmitter
-	- Packetery\Module\EntityFactory\Carrier
-	- Packetery\Module\EntityFactory\CustomsDeclaration
-	- Packetery\Module\Order\Builder
-	- Packetery\Core\Validator\Address
-	- Packetery\Core\Validator\Size
 	validatorTranslations: Packetery\Module\Order\ValidatorTranslations
 	- Packetery\Core\Validator\Order(translations: @validatorTranslations::get())
-	- Packetery\Module\Options\Repository
-	- Packetery\Module\CustomsDeclaration\Repository
-	- Packetery\Module\Api\Internal\OrderController
-	- Packetery\Module\Api\Internal\OrderRouter
-	- Packetery\Module\Api\Internal\CheckoutController
-	- Packetery\Module\Api\Internal\CheckoutRouter
-	- Packetery\Module\Api\Registrar
-	- Packetery\Module\Order\Modal
-	- Packetery\Module\Order\LabelPrintModal
-	- Packetery\Module\Options\Exporter
-	- Packetery\Module\Order\CollectionPrint
-	- Packetery\Module\Order\PacketSynchronizer
-	- Packetery\Module\Order\PacketAutoSubmitter
 	requestFactory: Packetery\Nette\Http\RequestFactory
 	- @requestFactory::fromGlobals()
-	- Packetery\Module\Upgrade
-	- Packetery\Module\Upgrade\Version_1_4_2
-	- Packetery\Module\QueryProcessor
-	- Packetery\Module\WeightCalculator
-	- Packetery\Module\CurrencySwitcherFacade
-	- Packetery\Core\Api\Soap\CreatePacketMapper
-	- Packetery\Module\Order\PickupPointValidator
-	- Packetery\Module\RateCalculator
-	- Packetery\Module\Carrier\PacketaPickupPointsConfig
-	- Packetery\Module\Carrier\EntityRepository
-	- Packetery\Module\Order\AttributeMapper
-	- Packetery\Module\WidgetOptionsBuilder
-	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
-	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
-	- Packetery\Module\Options\FeatureFlagManager
-	- Packetery\Module\Options\TransientPurger
-	- Packetery\Module\Order\WcOrderActions

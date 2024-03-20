@@ -37,7 +37,9 @@ if ( file_exists( $localConfigFile ) ) {
 $configurator->setTempDirectory( __DIR__ . '/temp' );
 $configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->setAutoRefresh( false )->register();
 
-$configurator->defaultExtensions = [];
+$configurator->defaultExtensions = [
+    'search'    => $configurator->defaultExtensions = ['search'],
+];
 
 $container = $configurator->createContainer();
 CompatibilityBridge::setContainer( $container );
