@@ -69,12 +69,12 @@ class CountryListingTemplateParams {
 	 * @param array       $translations           Translations.
 	 */
 	public function __construct(
-		array $carriersUpdate = [],
-		array $countries = [],
-		bool $isApiPasswordSet = false,
-		?string $nextScheduledRun = null,
-		?string $settingsChangedMessage = null,
-		array $translations = []
+		array $carriersUpdate,
+		array $countries,
+		bool $isApiPasswordSet,
+		?string $nextScheduledRun,
+		?string $settingsChangedMessage,
+		array $translations
 	) {
 		$this->carriersUpdate         = $carriersUpdate;
 		$this->countries              = $countries;

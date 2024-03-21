@@ -574,7 +574,13 @@ tbody .packetery-log-column-note {
 }
 
 .packetery-wc-native-carrier-settings .packeta_country_list {
-    min-width: 800px;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .packetery-wc-native-carrier-settings .packeta_country_list {
+        width: 800px; /* Set fixed width for all elements */
+    }
 }
 
 .packetery-wc-native-carrier-settings .packeta_country_list tr:last-child td {
