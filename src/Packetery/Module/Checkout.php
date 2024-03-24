@@ -906,7 +906,7 @@ class Checkout {
 	 * @return string
 	 */
 	private function getExpeditionDay(): ?string {
-		$chosenShippingMethod = $this->calculateShipping();
+		$chosenShippingMethod = $this->getChosenMethodFromSession();
 		$carrierId            = OptionPrefixer::removePrefix( $chosenShippingMethod );
 		if ( false === $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId ) ) {
 			return null;
@@ -985,6 +985,23 @@ class Checkout {
 		}
 
 		return '';
+	}
+
+	/**
+	 * Gets shipping method from session without calculation.
+	 *
+	 * @return string
+	 */
+	private function getChosenMethodFromSession(): string {
+		$chosenShippingRate = null;
+		if ( WC()->session ) {
+			$chosenShippingRates = WC()->session->get( 'chosen_shipping_methods' );
+			if ( is_array( $chosenShippingRates ) && ! empty( $chosenShippingRates ) ) {
+				$chosenShippingRate = $chosenShippingRates[0];
+			}
+		}
+
+		return ( $chosenShippingRate ? $chosenShippingRate : '' );
 	}
 
 	/**
@@ -1211,7 +1228,7 @@ class Checkout {
 		if ( $order instanceof Entity\Order ) {
 			$chosenMethod = Carrier\OptionPrefixer::getOptionId( $order->getCarrier()->getId() );
 		} else {
-			$chosenMethod = $this->calculateShipping();
+			$chosenMethod = $this->getChosenMethodFromSession();
 		}
 
 		if ( ! $this->isPacketeryShippingMethod( $chosenMethod ) ) {
