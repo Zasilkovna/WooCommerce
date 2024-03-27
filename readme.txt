@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.3
-Stable tag: 1.7.1
+Stable tag: 1.7.2
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 8.0.0
@@ -64,6 +64,10 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.7.2 =
+Changed: Instead of Guzzle client, we're using WordPress function to fetch feature flags from external API.
+Fixed: Filtering payment gateways without shipping calculation.
+
 = 1.7.1 =
 Fixed: Malfunctioning import of previous version's settings.
 Fixed: Warnings and/or missing country codes in country list.
