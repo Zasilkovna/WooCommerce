@@ -89,8 +89,8 @@ class FeatureFlagManager {
 		}
 
 		$responseDecoded = json_decode( wp_remote_retrieve_body( $response ), true );
-		$lastDownload = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
-		$flags        = [
+		$lastDownload    = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+		$flags           = [
 			self::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
 			self::FLAG_LAST_DOWNLOAD => $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT ),
 		];
