@@ -249,8 +249,8 @@ class CountryListingPage {
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			$activeCarriers   = $this->getCarrierNamesByCountry( $country, true );
-			$allCarriers      = $this->getCarrierNamesByCountry( $country, false );
+			$activeCarriers   = $this->getCarriersDataByCountry( $country, true );
+			$allCarriers      = $this->getCarriersDataByCountry( $country, false );
 			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
 				self::DATA_KEY_COUNTRY_CODE => $country,
@@ -340,14 +340,14 @@ class CountryListingPage {
 	}
 
 	/**
-	 * Gets array of carrier names by country code.
+	 * Gets array of carriers data by country code.
 	 *
 	 * @param string $countryCode        Country code.
 	 * @param bool   $activeCarriersOnly Active carriers only.
 	 *
 	 * @return array
 	 */
-	private function getCarrierNamesByCountry( string $countryCode, bool $activeCarriersOnly ): array {
+	private function getCarriersDataByCountry( string $countryCode, bool $activeCarriersOnly ): array {
 		$carrierNames    = [];
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
@@ -355,15 +355,24 @@ class CountryListingPage {
 				continue;
 			}
 
+			$carrierId = $carrier->getId();
 			if ( $activeCarriersOnly ) {
-				$optionId       = OptionPrefixer::getOptionId( $carrier->getId() );
-				$carrierOptions = get_option( $optionId );
-				if ( false !== $carrierOptions && $carrierOptions['active'] ) {
-					$carrierNames[] = $carrier->getName();
+				$carrierOptions = Options::createByCarrierId( $carrierId );
+				if ( false === $carrierOptions->isActive() ) {
+					continue;
 				}
-			} else {
-				$carrierNames[] = $carrier->getName();
 			}
+
+			$carrierNames[ $carrierId ] = [
+				'name'      => $carrier->getName(),
+				'detailUrl' => add_query_arg(
+					[
+						'page'                           => DetailPage::SLUG,
+						DetailPage::PARAMETER_CARRIER_ID => $carrierId,
+					],
+					get_admin_url( null, 'admin.php' )
+				),
+			];
 		}
 
 		return $carrierNames;

@@ -15,9 +15,9 @@
 				<th>{$translations['action']}</th>
 			</tr>
 			<tr n:foreach="$country['allCarriers'] as $carrier" class="packeta_country_list_item">
-				<td>{$carrier}</td>
+				<td>{$carrier['name']}</td>
 				<td>
-					<a class="button button-small" href="#">{$translations['setUp']}</a>
+					<a class="button button-small" href="{$carrier['detailUrl']}">{$translations['setUp']}</a>
 				</td>
 			</tr>
 		</table>

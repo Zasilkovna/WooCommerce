@@ -35,6 +35,13 @@ class Plugin {
 	public const PARAM_NONCE            = '_wpnonce';
 
 	/**
+	 * Carrier detail page.
+	 *
+	 * @var Carrier\DetailPage Carrier detail page,
+	 */
+	private $carrierDetailPage;
+
+	/**
 	 * Options page.
 	 *
 	 * @var Options\Page Options page,
@@ -294,6 +301,7 @@ class Plugin {
 	 * @param Options\Page               $options_page              Options page.
 	 * @param Checkout                   $checkout                  Checkout class.
 	 * @param Engine                     $latte_engine              PacketeryLatte engine.
+	 * @param Carrier\DetailPage         $carrierDetailPage         Carrier detail page.
 	 * @param OptionsPage                $carrierOptionsPage        Carrier options page.
 	 * @param Order\BulkActions          $orderBulkActions          Order BulkActions.
 	 * @param Order\LabelPrint           $labelPrint                Label printing.
@@ -331,6 +339,7 @@ class Plugin {
 		Options\Page $options_page,
 		Checkout $checkout,
 		Engine $latte_engine,
+		Carrier\DetailPage $carrierDetailPage,
 		OptionsPage $carrierOptionsPage,
 		Order\BulkActions $orderBulkActions,
 		Order\LabelPrint $labelPrint,
@@ -368,6 +377,7 @@ class Plugin {
 		$this->order_metabox             = $order_metabox;
 		$this->message_manager           = $message_manager;
 		$this->checkout                  = $checkout;
+		$this->carrierDetailPage         = $carrierDetailPage;
 		$this->carrierOptionsPage        = $carrierOptionsPage;
 		$this->orderBulkActions          = $orderBulkActions;
 		$this->labelPrint                = $labelPrint;
@@ -839,13 +849,13 @@ class Plugin {
 			'dateFormat'       => \Packetery\Core\Helper::DATEPICKER_FORMAT_JS,
 		];
 
-		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
+		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG, Carrier\DetailPage::SLUG ], true ) ) {
 			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
 			$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
 			$this->enqueueScript( 'live-form-validation-extension', 'public/live-form-validation-extension.js', false, [ 'live-form-validation' ] );
 		}
 
-		if ( Carrier\OptionsPage::SLUG === $page ) {
+		if ( in_array( $page, [ Carrier\OptionsPage::SLUG, Carrier\DetailPage::SLUG ], true ) ) {
 			$this->enqueueStyle( 'packetery-select2-css', 'public/libs/select2-4.0.13/dist.min.css' );
 			$this->enqueueScript( 'packetery-select2', 'public/libs/select2-4.0.13/dist.min.js', true, [ 'jquery' ] );
 			$this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
@@ -862,6 +872,7 @@ class Plugin {
 				$page,
 				[
 					Options\Page::SLUG,
+					Carrier\DetailPage::SLUG,
 					Carrier\OptionsPage::SLUG,
 					Log\Page::SLUG,
 					Order\labelPrint::MENU_SLUG,
@@ -924,6 +935,7 @@ class Plugin {
 	 */
 	public function add_menu_pages(): void {
 		$this->options_page->register();
+		$this->carrierDetailPage->register();
 		$this->carrierOptionsPage->register();
 		$this->labelPrint->register();
 		$this->orderCollectionPrint->register();
