@@ -12,6 +12,7 @@ namespace Packetery\Module\Carrier;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Carrier;
 use Packetery\Module\EntityFactory;
+use Packetery\Module\ShippingZoneRepository;
 
 /**
  * Class EntityRepository
@@ -247,6 +248,26 @@ class EntityRepository {
 	 */
 	public function isCarDeliveryCarrier( string $carrierId ): bool {
 		return in_array( $carrierId, Carrier::CAR_DELIVERY_CARRIERS, true );
+	}
+
+	/**
+	 * Gets carriers available for specific shipping rate.
+	 *
+	 * @param string $rateId Rate id.
+	 *
+	 * @return Carrier[]
+	 */
+	public function getCarriersForShippingRate( string $rateId ): array {
+		$shippingZoneRepository   = new ShippingZoneRepository();
+		$countries                = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
+		$availableCarriersToMerge = [];
+		if ( ! empty( $countries ) ) {
+			foreach ( $countries as $countryCode ) {
+				$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
+			}
+		}
+
+		return array_merge( ...$availableCarriersToMerge );
 	}
 
 }

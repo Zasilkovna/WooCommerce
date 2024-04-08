@@ -1,0 +1,42 @@
+{varType Packetery\Core\Entity\Carrier $carrier}
+
+<table class="form-table">
+
+	{$settingsHtml|noescape}
+
+	<tr>
+		<th scope="row" class="titledesc">
+			<label for="{Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID}">
+				{$translations['selectedShippingMethod']}
+			</label>
+		</th>
+		<td class="forminp">
+			<fieldset>
+				<legend class="screen-reader-text"><span>{$translations['selectedShippingMethod']}</span></legend>
+				<select name="{Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID}" id="{Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID}">
+					<option value="">{$translations['pleaseSelect']}</option>
+					{varType Packetery\Core\Entity\Carrier $carrier}
+					{foreach $availableCarriers as $carrier}
+						<option value="{$carrier->getId()}"{$options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID] == $carrier->getId() ? ' selected="selected"' : ''}>{$carrier->getName()}</option>
+					{/foreach}
+				</select>
+			</fieldset>
+		</td>
+	</tr>
+
+	<tr>
+		<th scope="row" class="titledesc">
+			&nbsp;
+		</th>
+		<td class="packetery-carrier-link-container">
+			<a href="{$carrierSettingsLinkBase}{$options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID]}"
+			   class="button button-primary" target="_blank" data-base="{$carrierSettingsLinkBase}">
+				{$translations['carrierSettingsLinkText']}
+			</a>
+			<p>{$translations['carrierSettingsLinkPlaceholder']}</p>
+		</td>
+	</tr>
+
+</table>
+
+<script type="text/javascript" src="{$jsUrl}"></script>

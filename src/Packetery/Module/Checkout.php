@@ -17,6 +17,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Carrier\WcCarrierSettingsConfig;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Nette\Http\Request;
@@ -140,6 +141,13 @@ class Checkout {
 	private $carDeliveryConfig;
 
 	/**
+	 * Wc carrier settings config.
+	 *
+	 * @var WcCarrierSettingsConfig
+	 */
+	private $wcCarrierSettingsConfig;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                      $latte_engine            PacketeryLatte engine.
@@ -157,6 +165,7 @@ class Checkout {
 	 * @param Carrier\EntityRepository    $carrierEntityRepository Carrier repository.
 	 * @param Api\Internal\CheckoutRouter $apiRouter               API router.
 	 * @param CarDeliveryConfig           $carDeliveryConfig       Car delivery config.
+	 * @param WcCarrierSettingsConfig     $wcCarrierSettingsConfig Wc carrier settings config.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -173,7 +182,8 @@ class Checkout {
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		Carrier\EntityRepository $carrierEntityRepository,
 		Api\Internal\CheckoutRouter $apiRouter,
-		CarDeliveryConfig $carDeliveryConfig
+		CarDeliveryConfig $carDeliveryConfig,
+		WcCarrierSettingsConfig $wcCarrierSettingsConfig
 	) {
 		$this->latte_engine            = $latte_engine;
 		$this->options_provider        = $options_provider;
@@ -190,6 +200,7 @@ class Checkout {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->apiRouter               = $apiRouter;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->wcCarrierSettingsConfig = $wcCarrierSettingsConfig;
 	}
 
 	/**
@@ -785,9 +796,11 @@ class Checkout {
 	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
+	 * @param array|null $allowedCarrierNames List of allowed carrier names.
+	 *
 	 * @return array
 	 */
-	public function getShippingRates(): array {
+	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
 		$cartProducts              = WC()->cart->get_cart_contents();
@@ -802,9 +815,18 @@ class Checkout {
 				continue;
 			}
 
-			$optionId = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
-			$options  = Carrier\Options::createByOptionId( $optionId );
+			if ( null !== $allowedCarrierNames && ! array_key_exists( $carrier->getId(), $allowedCarrierNames ) ) {
+				continue;
+			}
 
+			$optionId    = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
+			$options     = Carrier\Options::createByOptionId( $optionId );
+			$carrierName = $options->getName();
+			if ( null !== $allowedCarrierNames ) {
+				$carrierName = $allowedCarrierNames[ $carrier->getId() ];
+			}
+
+			// TODO: replace with carrier config validation.
 			if ( false === $options->isActive() ) {
 				continue;
 			}
@@ -823,9 +845,9 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
-				$name   = $this->getFormattedShippingMethodName( $options->getName(), $cost );
-				$rateId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
-				$taxes  = null;
+				$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
+				$rateId      = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+				$taxes       = null;
 
 				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
 					$rates            = WC_Tax::get_shipping_tax_rates();
@@ -848,7 +870,7 @@ class Checkout {
 					$cost -= array_sum( $taxes );
 				}
 
-				$customRates[ $rateId ] = $this->createShippingRate( $name, $rateId, $cost, $taxes );
+				$customRates[ $rateId ] = $this->createShippingRate( $carrierName, $rateId, $cost, $taxes );
 			}
 		}
 
