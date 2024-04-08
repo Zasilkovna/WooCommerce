@@ -252,9 +252,6 @@ class Metabox {
 	 * Prepares metabox parts.
 	 */
 	private function prepareMetaboxParts(): array {
-
-
-		// ----------------------------------------------------------------
 		$orderId = $this->detailCommonLogic->getOrderId();
 		if ( null === $orderId ) {
 			return [];
@@ -273,9 +270,6 @@ class Metabox {
 			];
 		}
 
-		// ----------------------------------------------------------------
-
-
 		$parts = [];
 		if ( $this->carrierModal->canBeDisplayed() ) {
 			$parts[ self::PART_CARRIER_CHANGE ] = $this->carrierModal->getMetaboxHtml();
@@ -284,9 +278,6 @@ class Metabox {
 		if ( null === $order ) {
 			return $parts;
 		}
-
-		// ----------------------------------------------------------------
-
 
 		$showLogsLink = null;
 		if ( $this->logPage->hasAnyRows( (int) $order->getNumber() ) ) {

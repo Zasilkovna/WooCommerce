@@ -94,7 +94,7 @@ class EshopOrderDetails {
 			'expeditionDay'               => $this->calculateExpeditionDay( $order, $orderDateCreated ),
 			'packeteryApiKey'             => $this->options_provider->get_api_key(),
 			'updateCarDeliveryAddressUrl' => $this->apiRouter->getSaveDeliveryAddressUrl(),
-			'isSubmittedToPacketa'        => (bool) $order->getPacketId(),
+			'isSubmittedToPacketa'        => $order->isExported(),
 			'nonce'                       => wp_create_nonce( 'wp_rest' ),
 			'translations'                => [
 				'chooseAddress' => __( 'Choose delivery address', 'packeta' ),

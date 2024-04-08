@@ -246,13 +246,11 @@ final class OrderController extends WP_REST_Controller {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 ); // Display an error message to the user.
 		}
 
-//		if (is_user_logged_in() && (int)wp_get_current_user()->ID === $order->nejakzjistituser_id) {
-//			//your stuff only for legged in user 123
-//			return new WP_REST_Response('ok', 200);
+		// TODO: Validate the order is being updated by the user it belongs to only!
+//		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+//		if (is_user_logged_in() && wp_get_current_user()->ID !== $wcOrder->get_user_id()) {
+//			return new WP_Error('unauthorized', __('You shall not pass', 'packeta'), 401 );
 //		}
-//
-//		return new WP_Error('unauthorized', __('You shall not pass'), [ 'status' => 401 ]); //can also use WP_REST_Response
-
 
 		if ( $order->getPacketId() ) {
 			$data['message'] = __( 'This action is no longer available. The packet has been submitted to Packeta.', 'packeta' );
