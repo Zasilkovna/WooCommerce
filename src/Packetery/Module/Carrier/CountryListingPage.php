@@ -367,8 +367,8 @@ class CountryListingPage {
 				'name'      => $carrier->getName(),
 				'detailUrl' => add_query_arg(
 					[
-						'page'                           => DetailPage::SLUG,
-						DetailPage::PARAMETER_CARRIER_ID => $carrierId,
+						'page'                            => OptionsPage::SLUG,
+						OptionsPage::PARAMETER_CARRIER_ID => $carrierId,
 					],
 					get_admin_url( null, 'admin.php' )
 				),
