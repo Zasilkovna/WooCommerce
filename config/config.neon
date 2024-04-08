@@ -46,6 +46,7 @@ services:
 	- Packetery\Module\WCNativeCarrierSettingsConfig(active: %wcCarrierSettingsConfig.active%)
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\DetailPage
+	- Packetery\Module\Carrier\DetailPageCommonLogic
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
