@@ -596,6 +596,10 @@ class Page {
 			$options['api_key'] = '';
 		}
 
+		$defaultWeight = str_replace( ',', '.', (string) $packeteryContainer['default_weight']->getValue() );
+		$roundedValue = round( (float) $defaultWeight, 3 );
+		$options['default_weight'] = rtrim( number_format( $roundedValue, 3, '.', '' ), '0.' );
+
 		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
 
