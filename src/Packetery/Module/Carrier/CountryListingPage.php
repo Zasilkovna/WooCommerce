@@ -249,8 +249,13 @@ class CountryListingPage {
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			$activeCarriers   = $this->getCarriersDataByCountry( $country, true );
-			$allCarriers      = $this->getCarriersDataByCountry( $country, false );
+			$allCarriers      = $this->getCarriersDataByCountry( $country );
+			$activeCarriers   = array_filter(
+				$allCarriers,
+				static function ( array $carrierData ): bool {
+					return $carrierData['isActive'];
+				}
+			);
 			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
 				self::DATA_KEY_COUNTRY_CODE => $country,
@@ -342,12 +347,11 @@ class CountryListingPage {
 	/**
 	 * Gets array of carriers data by country code.
 	 *
-	 * @param string $countryCode        Country code.
-	 * @param bool   $activeCarriersOnly Active carriers only.
+	 * @param string $countryCode Country code.
 	 *
 	 * @return array
 	 */
-	private function getCarriersDataByCountry( string $countryCode, bool $activeCarriersOnly ): array {
+	private function getCarriersDataByCountry( string $countryCode ): array {
 		$carrierNames    = [];
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
@@ -355,16 +359,12 @@ class CountryListingPage {
 				continue;
 			}
 
-			$carrierId = $carrier->getId();
-			if ( $activeCarriersOnly ) {
-				$carrierOptions = Options::createByCarrierId( $carrierId );
-				if ( false === $carrierOptions->isActive() ) {
-					continue;
-				}
-			}
+			$carrierId      = $carrier->getId();
+			$carrierOptions = Options::createByCarrierId( $carrierId );
 
 			$carrierNames[ $carrierId ] = [
 				'name'      => $carrier->getName(),
+				'isActive'  => $carrierOptions->isActive(),
 				'detailUrl' => add_query_arg(
 					[
 						'page'                            => OptionsPage::SLUG,
