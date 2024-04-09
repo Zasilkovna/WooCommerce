@@ -1,4 +1,8 @@
 {varType Packetery\Core\Entity\Carrier $carrier}
+{var string $carrierId = ''}
+{if is_array($options)}
+	{var string $carrierId = $options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID]}
+{/if}
 
 <table class="form-table">
 
@@ -17,7 +21,7 @@
 					<option value="">{$translations['pleaseSelect']}</option>
 					{varType Packetery\Core\Entity\Carrier $carrier}
 					{foreach $availableCarriers as $carrier}
-						<option value="{$carrier->getId()}"{$options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID] == $carrier->getId() ? ' selected="selected"' : ''}>{$carrier->getName()}</option>
+						<option value="{$carrier->getId()}"{$carrierId == $carrier->getId() ? ' selected="selected"' : ''}>{$carrier->getName()}</option>
 					{/foreach}
 				</select>
 			</fieldset>
@@ -29,7 +33,7 @@
 			&nbsp;
 		</th>
 		<td class="packetery-carrier-link-container">
-			<a href="{$carrierSettingsLinkBase}{$options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID]}"
+			<a href="{$carrierSettingsLinkBase}{$carrierId}"
 			   class="button button-primary" target="_blank" data-base="{$carrierSettingsLinkBase}">
 				{$translations['carrierSettingsLinkText']}
 			</a>
