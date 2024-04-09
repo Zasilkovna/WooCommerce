@@ -1,0 +1,10 @@
+{include '../packeta-header.latte'}
+
+<div class="packetery-options-page packeta_page">
+	{$flashMessages|noescape}
+	{php settings_errors()}
+
+	<div class="packeta_carrier_list">
+		{include 'carrier.latte', carrier_data: $carrierTemplateData, displayCarrierTitle: false}
+	</div>
+</div>
