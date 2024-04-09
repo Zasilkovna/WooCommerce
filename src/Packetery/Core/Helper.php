@@ -52,6 +52,18 @@ class Helper {
 	}
 
 	/**
+	 * Trims the decimals to a desired format.
+	 *
+	 * @param float $value Value.
+	 * @param int   $position Position of a decimal.
+	 *
+	 * @return string
+	 */
+	public static function trimDecimalPlaces( float $value, int $position ): string {
+		return rtrim( number_format( $value, $position, '.', '' ), '0.' );
+	}
+
+	/**
 	 * Returns tracking URL.
 	 *
 	 * @param string $packet_id Packet ID.
