@@ -3,7 +3,7 @@
 
 <div class="packetery-carrier-options-page packeta_carrier_detail_wrapper">
     <div class="card packeta packeta_carrier_detail">
-        <div>
+        <div n:if="$displayCarrierTitle ?? true">
             <h2 class="packeta_carrier_title">{$carrier->getName()}</h2>
         </div>
 

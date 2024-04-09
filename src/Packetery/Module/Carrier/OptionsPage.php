@@ -33,6 +33,7 @@ class OptionsPage {
 	public const FORM_FIELD_NAME         = 'name';
 	public const SLUG                    = 'packeta-country';
 	public const PARAMETER_COUNTRY_CODE  = 'country_code';
+	public const PARAMETER_CARRIER_ID    = 'carrier_id';
 	public const MINIMUM_CHECKED_VENDORS = 2;
 
 	/**
@@ -390,12 +391,9 @@ class OptionsPage {
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(
-			add_query_arg(
-				[
-					'page'                       => self::SLUG,
-					self::PARAMETER_COUNTRY_CODE => $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE ),
-				],
-				get_admin_url( null, 'admin.php' )
+			$this->createUrl(
+				$this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE ),
+				$this->httpRequest->getQuery( self::PARAMETER_CARRIER_ID )
 			),
 			303
 		) ) {
@@ -404,74 +402,123 @@ class OptionsPage {
 	}
 
 	/**
+	 * Gets carrier template params.
+	 *
+	 * @param Carrier|null $carrier Carrier.
+	 *
+	 * @return array|null
+	 */
+	private function getCarrierTemplateData( ?Carrier $carrier ): ?array {
+		if ( null === $carrier ) {
+			return null;
+		}
+
+		if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+			return null;
+		}
+
+		$post = $this->httpRequest->getPost();
+		if ( ! empty( $post ) && $post['id'] === $carrier->getId() ) {
+			$formTemplate = $this->createFormTemplate( $post );
+			$form         = $this->createForm( $post );
+			if ( $form->isSubmitted() ) {
+				$form->fireEvents();
+			}
+		} else {
+			$carrierData = $carrier->__toArray();
+			$options     = get_option( OptionPrefixer::getOptionId( $carrier->getId() ) );
+			if ( false !== $options ) {
+				$carrierData += $options;
+			}
+			$formTemplate = $this->createFormTemplate( $carrierData );
+			$form         = $this->createForm( $carrierData );
+		}
+
+		return [
+			'form'                                 => $form,
+			'formTemplate'                         => $formTemplate,
+			'carrier'                              => $carrier,
+			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
+		];
+	}
+
+	/**
 	 *  Renders page.
 	 */
 	public function render(): void {
-		$countryIso = $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE );
-		if ( $countryIso ) {
+		$countryIso           = $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE );
+		$carrierId            = $this->httpRequest->getQuery( self::PARAMETER_CARRIER_ID );
+		$commonTemplateParams = [
+			'globalCurrency' => get_woocommerce_currency_symbol(),
+			'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+			'translations'   => [
+				'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
+				'delete'                                 => __( 'Delete', 'packeta' ),
+				'weightRules'                            => __( 'Weight rules', 'packeta' ),
+				'addWeightRule'                          => __( 'Add weight rule', 'packeta' ),
+				'codSurchargeRules'                      => __( 'COD surcharge rules', 'packeta' ),
+				'addCodSurchargeRule'                    => __( 'Add COD surcharge rule', 'packeta' ),
+				'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
+				'daysUntilShipping'                      => __( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
+				'shippingTimeCutOff'                     => __( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
+				'addressValidationDescription'           => __( 'Customer address validation.', 'packeta' ),
+				'roundingDescription'                    => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
+				'saveChanges'                            => __( 'Save changes', 'packeta' ),
+				'packeta'                                => __( 'Packeta', 'packeta' ),
+				'noKnownCarrierForThisCountry'           => __( 'No carriers available for this country.', 'packeta' ),
+				'ageVerificationSupportedNotification'   => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
+				'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
+				'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
+				'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+			],
+		];
+
+		if ( $carrierId ) {
+			$carrier             = $this->carrierRepository->getAnyById( $carrierId );
+			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
+			if ( null === $carrier || null === $carrierTemplateData ) {
+				$this->countryListingPage->render();
+
+				return;
+			}
+
+			$this->latteEngine->render(
+				PACKETERY_PLUGIN_DIR . '/template/carrier/detail.latte',
+				array_merge_recursive(
+					$commonTemplateParams,
+					[
+						'carrierTemplateData' => $carrierTemplateData,
+						'translations'        => [
+							'title' => $carrier->getName(),
+						],
+					]
+				)
+			);
+
+		} elseif ( $countryIso ) {
 			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
-			$post            = $this->httpRequest->getPost();
 			foreach ( $countryCarriers as $carrier ) {
-				if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
-					continue;
+				$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
+				if ( null !== $carrierTemplateData ) {
+					$carriersData[] = $carrierTemplateData;
 				}
-
-				if ( ! empty( $post ) && $post['id'] === $carrier->getId() ) {
-					$formTemplate = $this->createFormTemplate( $post );
-					$form         = $this->createForm( $post );
-					if ( $form->isSubmitted() ) {
-						$form->fireEvents();
-					}
-				} else {
-					$carrierData = $carrier->__toArray();
-					$options     = get_option( OptionPrefixer::getOptionId( $carrier->getId() ) );
-					if ( false !== $options ) {
-						$carrierData += $options;
-					}
-					$formTemplate = $this->createFormTemplate( $carrierData );
-					$form         = $this->createForm( $carrierData );
-				}
-
-				$carriersData[] = [
-					'form'                                 => $form,
-					'formTemplate'                         => $formTemplate,
-					'carrier'                              => $carrier,
-					'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
-				];
 			}
 
 			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
-				[
-					'forms'          => $carriersData,
-					'country_iso'    => $countryIso,
-					'globalCurrency' => get_woocommerce_currency_symbol(),
-					'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
-					'translations'   => [
-						'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
-						'delete'                       => __( 'Delete', 'packeta' ),
-						'weightRules'                  => __( 'Weight rules', 'packeta' ),
-						'addWeightRule'                => __( 'Add weight rule', 'packeta' ),
-						'codSurchargeRules'            => __( 'COD surcharge rules', 'packeta' ),
-						'addCodSurchargeRule'          => __( 'Add COD surcharge rule', 'packeta' ),
-						'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
-						'daysUntilShipping'            => __( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
-						'shippingTimeCutOff'           => __( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
-						'addressValidationDescription' => __( 'Customer address validation.', 'packeta' ),
-						'roundingDescription'          => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
-						'saveChanges'                  => __( 'Save changes', 'packeta' ),
-						'packeta'                      => __( 'Packeta', 'packeta' ),
-						// translators: %s is country code.
-						'title'                        => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
+				array_merge_recursive(
+					$commonTemplateParams,
+					[
+						'forms'        => $carriersData,
+						'country_iso'  => $countryIso,
+						'translations' => [
+							// translators: %s is country code.
+							'title' => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
 
-						'noKnownCarrierForThisCountry' => __( 'No carriers available for this country.', 'packeta' ),
-						'ageVerificationSupportedNotification' => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
-						'carrierDoesNotSupportCod'     => __( 'This carrier does not support COD payment.', 'packeta' ),
-						'allowedPickupPointTypes'      => __( 'Pickup point types.', 'packeta' ),
-						'checkAtLeastTwo'              => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
-					],
-				]
+						],
+					]
+				)
 			);
 		} else {
 			$this->countryListingPage->render();
@@ -597,16 +644,21 @@ class OptionsPage {
 	 * Creates link to page.
 	 *
 	 * @param string|null $countryCode Country code.
+	 * @param string|null $carrierId   Carrier ID.
 	 *
 	 * @return string
 	 */
-	public function createUrl( ?string $countryCode = null ): string {
+	public function createUrl( ?string $countryCode = null, ?string $carrierId = null ): string {
 		$params = [
 			'page' => self::SLUG,
 		];
 
 		if ( null !== $countryCode ) {
 			$params[ self::PARAMETER_COUNTRY_CODE ] = $countryCode;
+		}
+
+		if ( null !== $carrierId ) {
+			$params[ self::PARAMETER_CARRIER_ID ] = $carrierId;
 		}
 
 		return add_query_arg(

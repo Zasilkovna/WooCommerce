@@ -249,8 +249,13 @@ class CountryListingPage {
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			$activeCarriers   = $this->getCarrierNamesByCountry( $country, true );
-			$allCarriers      = $this->getCarrierNamesByCountry( $country, false );
+			$allCarriers      = $this->getCarriersDataByCountry( $country );
+			$activeCarriers   = array_filter(
+				$allCarriers,
+				static function ( array $carrierData ): bool {
+					return $carrierData['isActive'];
+				}
+			);
 			$wcCountries      = \WC()->countries->get_countries();
 			$countriesFinal[] = [
 				self::DATA_KEY_COUNTRY_CODE => $country,
@@ -340,14 +345,13 @@ class CountryListingPage {
 	}
 
 	/**
-	 * Gets array of carrier names by country code.
+	 * Gets array of carriers data by country code.
 	 *
-	 * @param string $countryCode        Country code.
-	 * @param bool   $activeCarriersOnly Active carriers only.
+	 * @param string $countryCode Country code.
 	 *
 	 * @return array
 	 */
-	private function getCarrierNamesByCountry( string $countryCode, bool $activeCarriersOnly ): array {
+	private function getCarriersDataByCountry( string $countryCode ): array {
 		$carrierNames    = [];
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
@@ -355,15 +359,20 @@ class CountryListingPage {
 				continue;
 			}
 
-			if ( $activeCarriersOnly ) {
-				$optionId       = OptionPrefixer::getOptionId( $carrier->getId() );
-				$carrierOptions = get_option( $optionId );
-				if ( false !== $carrierOptions && $carrierOptions['active'] ) {
-					$carrierNames[] = $carrier->getName();
-				}
-			} else {
-				$carrierNames[] = $carrier->getName();
-			}
+			$carrierId      = $carrier->getId();
+			$carrierOptions = Options::createByCarrierId( $carrierId );
+
+			$carrierNames[ $carrierId ] = [
+				'name'      => $carrier->getName(),
+				'isActive'  => $carrierOptions->isActive(),
+				'detailUrl' => add_query_arg(
+					[
+						'page'                            => OptionsPage::SLUG,
+						OptionsPage::PARAMETER_CARRIER_ID => $carrierId,
+					],
+					get_admin_url( null, 'admin.php' )
+				),
+			];
 		}
 
 		return $carrierNames;
