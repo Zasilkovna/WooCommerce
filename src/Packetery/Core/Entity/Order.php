@@ -645,6 +645,8 @@ class Order {
 		$this->weight = Helper::simplifyWeight( $weight );
 	}
 
+
+
 	/**
 	 * Sets calculated weight.
 	 *

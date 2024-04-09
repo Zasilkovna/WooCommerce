@@ -559,6 +559,12 @@ class Checkout {
 			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
 		}
 
+		$carrierEntity = $this->carrierEntityRepository->getAnyById( $carrierId );
+		if ( isset( $carrierEntity ) && true === $carrierEntity->requiresSize() && true === $this->options_provider->isDefaultDimensionsEnabled() ) {
+			$size = new Entity\Size( $this->options_provider->getDefaultLength(), $this->options_provider->getDefaultHeight(), $this->options_provider->getDefaultWidth() );
+			$orderEntity->setSize( $size );
+		}
+
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $orderEntity, $propsToSave );
 		$orderEntity->setPickupPoint( $pickupPoint );
 

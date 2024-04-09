@@ -477,19 +477,19 @@ class Page {
 			->addCondition( Form::EQUAL, true )
 			->toggle( '#packetery-default-dimensions-value' );
 
-		$container->addText( 'length', __( 'Length', 'packeta' ) . ' (mm)' )
+		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
 			->addRule( Form::INTEGER )
 			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 			->setRequired();
 
-		$container->addText( 'height', __( 'Height', 'packeta' ) . ' (mm)' )
+		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
 			->addRule( Form::INTEGER )
 			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 			->setRequired();
 
-		$container->addText( 'width', __( 'Width', 'packeta' ) . ' (mm)' )
+		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
 			->addRule( Form::INTEGER )
 			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
