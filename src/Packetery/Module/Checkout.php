@@ -561,7 +561,7 @@ class Checkout {
 
 		$carrierEntity = $this->carrierEntityRepository->getAnyById( $carrierId );
 		if ( isset( $carrierEntity ) && true === $carrierEntity->requiresSize() && true === $this->options_provider->isDefaultDimensionsEnabled() ) {
-			$size = new Entity\Size( $this->options_provider->getDefaultLength(), $this->options_provider->getDefaultHeight(), $this->options_provider->getDefaultWidth() );
+			$size = new Entity\Size( $this->options_provider->getDefaultLength(), $this->options_provider->getDefaultWidth(), $this->options_provider->getDefaultHeight() );
 			$orderEntity->setSize( $size );
 		}
 
