@@ -25,19 +25,11 @@
 					{/foreach}
 				</select>
 			</fieldset>
-		</td>
-	</tr>
-
-	<tr>
-		<th scope="row" class="titledesc">
-			&nbsp;
-		</th>
-		<td class="packetery-carrier-link-container">
-			<a href="{$carrierSettingsLinkBase}{$carrierId}"
-			   class="button button-primary" target="_blank" data-base="{$carrierSettingsLinkBase}">
-				{$translations['carrierSettingsLinkText']}
-			</a>
-			<p>{$translations['carrierSettingsLinkPlaceholder']}</p>
+			<p class="packetery-carrier-link-container">
+				<a href="{$carrierSettingsLinkBase}{$carrierId}" target="_blank" data-base="{$carrierSettingsLinkBase}">
+					{$translations['carrierSettingsLinkText']}
+				</a>
+			</p>
 		</td>
 	</tr>
 

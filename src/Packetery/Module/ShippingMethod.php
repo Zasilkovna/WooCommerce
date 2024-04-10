@@ -157,24 +157,24 @@ class ShippingMethod extends \WC_Shipping_Method {
 			$settingsHtml = $this->generate_settings_html( $this->get_form_fields(), false );
 		}
 
+		$carrierSettingsLinkBase = add_query_arg(
+			[
+				'page'                                    => Carrier\OptionsPage::SLUG,
+				Carrier\OptionsPage::PARAMETER_CARRIER_ID => '',
+			],
+			get_admin_url( null, 'admin.php' )
+		);
+
 		$latteParams = [
 			'settingsHtml'            => $settingsHtml,
 			'availableCarriers'       => $availableCarriers,
 			'options'                 => $this->options,
 			'jsUrl'                   => Plugin::buildAssetUrl( 'public/admin-carrier-modal.js' ),
-			// TODO: fix later.
-			'carrierSettingsLinkBase' => add_query_arg(
-				[
-					'page'                             => 'DetailPage::SLUG',
-					'DetailPage::PARAMETER_CARRIER_ID' => '',
-				],
-				get_admin_url( null, 'admin.php' )
-			),
+			'carrierSettingsLinkBase' => $carrierSettingsLinkBase . '=',
 			'translations'            => [
-				'selectedShippingMethod'         => __( 'Selected shipping method', 'packeta' ),
-				'pleaseSelect'                   => __( 'please select', 'packeta' ),
-				'carrierSettingsLinkText'        => __( 'Configure selected carrier', 'packeta' ),
-				'carrierSettingsLinkPlaceholder' => __( 'Choose a carrier to display a link to carrier settings', 'packeta' ),
+				'selectedShippingMethod'  => __( 'Selected shipping method', 'packeta' ),
+				'pleaseSelect'            => __( 'please select', 'packeta' ),
+				'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
 			],
 		];
 

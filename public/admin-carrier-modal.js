@@ -9,14 +9,11 @@
 		var toggleCarrierSettingsButton = function ( $carrierSelect ) {
 			var carrierId = $carrierSelect.val();
 			var $link = $( '.packetery-carrier-link-container a' );
-			var $placeholder = $( '.packetery-carrier-link-container p' );
 			if ( carrierId === '' ) {
 				$link.hide();
-				$placeholder.show();
 			} else {
 				$link.attr( 'href', $link.data( 'base' ) + carrierId );
 				$link.show();
-				$placeholder.hide();
 			}
 		};
 
