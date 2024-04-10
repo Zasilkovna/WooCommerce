@@ -5,7 +5,7 @@
  * @package Packetery
  */
 
-namespace Packetery\Module;
+namespace Packetery\Module\Carrier;
 
 /**
  * Class CarDeliveryConfig
