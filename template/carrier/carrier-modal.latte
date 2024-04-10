@@ -1,6 +1,6 @@
 {varType Packetery\Core\Entity\Carrier $carrier}
 {var string $carrierId = ''}
-{if is_array($options)}
+{if isset($options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID])}
 	{var string $carrierId = $options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID]}
 {/if}
 
