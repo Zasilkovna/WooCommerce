@@ -10,14 +10,12 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Log\Record;
-use Packetery\Module\CarDeliveryConfig;
+use Packetery\Latte\Engine;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
-use Packetery\Latte\Engine;
-use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
-use Packetery\Module\WCNativeCarrierSettingsConfig;
+use Packetery\Nette\Http\Request;
 
 /**
  * Class CountryListingPage
@@ -95,23 +93,23 @@ class CountryListingPage {
 	/**
 	 * WC native carrier settings config.
 	 *
-	 * @var WCNativeCarrierSettingsConfig
+	 * @var WcSettingsConfig
 	 */
 	private $wcNativeCarrierSettingsConfig;
 
 	/**
 	 * CountryListingPage constructor.
 	 *
-	 * @param Engine                        $latteEngine                   PacketeryLatte engine.
-	 * @param Repository                    $carrierRepository             Carrier repository.
-	 * @param Downloader                    $downloader                    Carrier downloader.
-	 * @param Request                       $httpRequest                   Http request.
-	 * @param Provider                      $optionsProvider               Options provider.
-	 * @param Log\Page                      $logPage                       Log page.
-	 * @param PacketaPickupPointsConfig     $pickupPointsConfig            Internal pickup points config.
-	 * @param EntityRepository              $carrierEntityRepository       Carrier repository.
-	 * @param CarDeliveryConfig             $carDeliveryConfig             Car delivery config.
-	 * @param WCNativeCarrierSettingsConfig $wcNativeCarrierSettingsConfig WC native carrier settings config.
+	 * @param Engine                    $latteEngine                   PacketeryLatte engine.
+	 * @param Repository                $carrierRepository             Carrier repository.
+	 * @param Downloader                $downloader                    Carrier downloader.
+	 * @param Request                   $httpRequest                   Http request.
+	 * @param Provider                  $optionsProvider               Options provider.
+	 * @param Log\Page                  $logPage                       Log page.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig            Internal pickup points config.
+	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
+	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
+	 * @param WcSettingsConfig          $wcNativeCarrierSettingsConfig WC native carrier settings config.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -123,7 +121,7 @@ class CountryListingPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		WCNativeCarrierSettingsConfig $wcNativeCarrierSettingsConfig
+		WcSettingsConfig $wcNativeCarrierSettingsConfig
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->carrierRepository             = $carrierRepository;
@@ -210,7 +208,7 @@ class CountryListingPage {
 			'nextScheduledRunPlannedAt'  => __( 'The next automatic update will occur at', 'packeta' ),
 		];
 
-		if ( $this->wcNativeCarrierSettingsConfig->isSettingsActive() ) {
+		if ( $this->wcNativeCarrierSettingsConfig->isActive() ) {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte';
 		} else {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte';

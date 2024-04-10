@@ -42,8 +42,8 @@ services:
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
-	- Packetery\Module\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
-	- Packetery\Module\WCNativeCarrierSettingsConfig(active: %wcCarrierSettingsConfig.active%)
+	- Packetery\Module\Carrier\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
+	- Packetery\Module\Carrier\WcSettingsConfig(active: %wcCarrierSettingsConfig.active%)
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory

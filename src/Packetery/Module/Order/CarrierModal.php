@@ -12,10 +12,10 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Entity;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\Helper;
 use Packetery\Nette\Forms;
 use RuntimeException;
-use Packetery\Module\WCNativeCarrierSettingsConfig;
 
 /**
  * Class CarrierModal.
@@ -64,19 +64,19 @@ class CarrierModal {
 	/**
 	 * Native Carrier settings.
 	 *
-	 * @var WCNativeCarrierSettingsConfig
+	 * @var WcSettingsConfig
 	 */
 	private $wcNativeCarrierSettings;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Engine                        $latteEngine              Latte engine.
-	 * @param DetailCommonLogic             $detailCommonLogic        Detail common logic.
-	 * @param CarrierModalFormFactory       $carrierModalFormFactory  Carrier Modal form factory.
-	 * @param Repository                    $orderRepository          Order repository.
-	 * @param Carrier\EntityRepository      $carrierRepository        Carrier repository.
-	 * @param WCNativeCarrierSettingsConfig $wcNativeCarrierSettings    Native Carrier settings.
+	 * @param Engine                   $latteEngine              Latte engine.
+	 * @param DetailCommonLogic        $detailCommonLogic        Detail common logic.
+	 * @param CarrierModalFormFactory  $carrierModalFormFactory  Carrier Modal form factory.
+	 * @param Repository               $orderRepository          Order repository.
+	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
+	 * @param WcSettingsConfig         $wcNativeCarrierSettings  Native Carrier settings.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -84,7 +84,7 @@ class CarrierModal {
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		WCNativeCarrierSettingsConfig $wcNativeCarrierSettings
+		WcSettingsConfig $wcNativeCarrierSettings
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->detailCommonLogic       = $detailCommonLogic;
@@ -242,7 +242,7 @@ class CarrierModal {
 			return false;
 		}
 
-		if ( $this->wcNativeCarrierSettings->isSettingsActive() ) {
+		if ( $this->wcNativeCarrierSettings->isActive() ) {
 			return false;
 		}
 
