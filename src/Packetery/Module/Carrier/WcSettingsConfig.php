@@ -10,7 +10,6 @@ namespace Packetery\Module\Carrier;
 /**
  * Class WcSettingsConfig
  *
- * @property bool $active
  * @package Packetery
  */
 class WcSettingsConfig {

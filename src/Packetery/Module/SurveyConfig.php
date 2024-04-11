@@ -10,12 +10,30 @@ namespace Packetery\Module;
 /**
  * Class SurveyConfig
  *
- * @property bool $active
- * @property string $url
- * @property string $image
  * @package Packetery
  */
 class SurveyConfig {
+
+	/**
+	 * Tells whether to display.
+	 *
+	 * @var bool
+	 */
+	private $active;
+
+	/**
+	 * Survey URL.
+	 *
+	 * @var string
+	 */
+	private $url;
+
+	/**
+	 * Survey visual.
+	 *
+	 * @var string
+	 */
+	private $image;
 
 	/**
 	 * SurveyConfig constructor.
