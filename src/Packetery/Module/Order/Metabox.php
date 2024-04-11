@@ -548,12 +548,7 @@ class Metabox {
 				}
 
 				$propsToSave[ $pickupPointAttr['name'] ] = $pickupPointValue;
-
-				if ( $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
-					$this->mapper->toWcOrderShippingAddress( $wcOrder, $pickupPointAttr['name'], (string) $pickupPointValue );
-				}
 			}
-			$wcOrder->save();
 		}
 
 		if ( '1' === $formValues[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {

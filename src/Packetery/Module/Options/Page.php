@@ -787,6 +787,7 @@ class Page {
 			'autoOrderStatusChangeDescription'       => __( 'Change order status after data submission to Packeta.', 'packeta' ),
 			'freeShippingTextDescription'            => __( 'If enabled, "FREE" will be displayed after the name of the shipping method, if free shipping is applied.', 'packeta' ),
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
+			'replaceShippingAddressDescription'      => __( 'After completing the order at checkout, the shipping address will be automatically replaced by the address of the pickup point.', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
