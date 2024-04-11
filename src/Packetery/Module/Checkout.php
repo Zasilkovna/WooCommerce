@@ -17,7 +17,6 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Carrier\WcCarrierSettingsConfig;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Nette\Http\Request;
@@ -141,13 +140,6 @@ class Checkout {
 	private $carDeliveryConfig;
 
 	/**
-	 * Wc carrier settings config.
-	 *
-	 * @var WcCarrierSettingsConfig
-	 */
-	private $wcCarrierSettingsConfig;
-
-	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                      $latte_engine            PacketeryLatte engine.
@@ -165,7 +157,6 @@ class Checkout {
 	 * @param Carrier\EntityRepository    $carrierEntityRepository Carrier repository.
 	 * @param Api\Internal\CheckoutRouter $apiRouter               API router.
 	 * @param CarDeliveryConfig           $carDeliveryConfig       Car delivery config.
-	 * @param WcCarrierSettingsConfig     $wcCarrierSettingsConfig Wc carrier settings config.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -182,8 +173,7 @@ class Checkout {
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		Carrier\EntityRepository $carrierEntityRepository,
 		Api\Internal\CheckoutRouter $apiRouter,
-		CarDeliveryConfig $carDeliveryConfig,
-		WcCarrierSettingsConfig $wcCarrierSettingsConfig
+		CarDeliveryConfig $carDeliveryConfig
 	) {
 		$this->latte_engine            = $latte_engine;
 		$this->options_provider        = $options_provider;
@@ -200,7 +190,6 @@ class Checkout {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->apiRouter               = $apiRouter;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
-		$this->wcCarrierSettingsConfig = $wcCarrierSettingsConfig;
 	}
 
 	/**

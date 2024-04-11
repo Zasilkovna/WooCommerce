@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
-use Packetery\Module\Carrier\WcCarrierSettingsConfig;
+use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Nette\DI\Container;
 use Packetery\Nette\Http\Request;
 
@@ -66,7 +66,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	/**
 	 * Are we using carrier settings native for WooCommerce?
 	 *
-	 * @var WcCarrierSettingsConfig
+	 * @var WcSettingsConfig
 	 */
 	private $wcCarrierSettingsConfig;
 
@@ -79,7 +79,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 		parent::__construct();
 
 		$this->container               = CompatibilityBridge::getContainer();
-		$this->wcCarrierSettingsConfig = $this->container->getByType( WcCarrierSettingsConfig::class );
+		$this->wcCarrierSettingsConfig = $this->container->getByType( WcSettingsConfig::class );
 
 		$this->id           = self::PACKETERY_METHOD_ID;
 		$this->instance_id  = absint( $instance_id );
