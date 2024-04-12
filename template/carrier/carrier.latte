@@ -130,7 +130,7 @@
         {var $form = $carrier_data['form']}
             <form n:name=$form>
                 <table class="form-table" role="presentation">
-                    <tr>
+                    <tr n:ifset="$form['active']">
                         <th scope="row">
                             <label n:name=active />
                         </th>
