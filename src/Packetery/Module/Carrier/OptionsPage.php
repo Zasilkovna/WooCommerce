@@ -18,7 +18,6 @@ use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FeatureFlagManager;
 use Packetery\Module\PaymentGatewayHelper;
-use Packetery\Module\WCNativeCarrierSettingsConfig;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
@@ -104,23 +103,23 @@ class OptionsPage {
 	/**
 	 * WC Native carrier settings config.
 	 *
-	 * @var WCNativeCarrierSettingsConfig
+	 * @var WcSettingsConfig
 	 */
-	private $wcNativeCarrierSettingsConfig;
+	private $wcSettingsConfig;
 
 	/**
 	 * OptionsPage constructor.
 	 *
-	 * @param Engine                        $latteEngine                   PacketeryLatte_engine.
-	 * @param EntityRepository              $carrierRepository             Carrier repository.
-	 * @param FormFactory                   $formFactory                   Form factory.
-	 * @param Request                       $httpRequest                   Packetery\Nette Request.
-	 * @param CountryListingPage            $countryListingPage            CountryListingPage.
-	 * @param MessageManager                $messageManager                Message manager.
-	 * @param PacketaPickupPointsConfig     $pickupPointsConfig            Internal pickup points config.
-	 * @param FeatureFlagManager            $featureFlag                   Feature flag.
-	 * @param CarDeliveryConfig             $carDeliveryConfig             Car delivery config.
-	 * @param WCNativeCarrierSettingsConfig $wcNativeCarrierSettingsConfig WC Native carrier settings config.
+	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
+	 * @param EntityRepository          $carrierRepository  Carrier repository.
+	 * @param FormFactory               $formFactory        Form factory.
+	 * @param Request                   $httpRequest        Packetery\Nette Request.
+	 * @param CountryListingPage        $countryListingPage CountryListingPage.
+	 * @param MessageManager            $messageManager     Message manager.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param FeatureFlagManager        $featureFlag        Feature flag.
+	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
+	 * @param WcSettingsConfig          $wcSettingsConfig   WC Native carrier settings config.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -132,18 +131,18 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagManager $featureFlag,
 		CarDeliveryConfig $carDeliveryConfig,
-		WCNativeCarrierSettingsConfig $wcNativeCarrierSettingsConfig
+		WcSettingsConfig $wcSettingsConfig
 	) {
-		$this->latteEngine                   = $latteEngine;
-		$this->carrierRepository             = $carrierRepository;
-		$this->formFactory                   = $formFactory;
-		$this->httpRequest                   = $httpRequest;
-		$this->countryListingPage            = $countryListingPage;
-		$this->messageManager                = $messageManager;
-		$this->pickupPointsConfig            = $pickupPointsConfig;
-		$this->featureFlag                   = $featureFlag;
-		$this->carDeliveryConfig             = $carDeliveryConfig;
-		$this->wcNativeCarrierSettingsConfig = $wcNativeCarrierSettingsConfig;
+		$this->latteEngine        = $latteEngine;
+		$this->carrierRepository  = $carrierRepository;
+		$this->formFactory        = $formFactory;
+		$this->httpRequest        = $httpRequest;
+		$this->countryListingPage = $countryListingPage;
+		$this->messageManager     = $messageManager;
+		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->featureFlag        = $featureFlag;
+		$this->carDeliveryConfig  = $carDeliveryConfig;
+		$this->wcSettingsConfig   = $wcSettingsConfig;
 	}
 
 	/**
@@ -176,7 +175,7 @@ class OptionsPage {
 
 		$form = $this->formFactory->create( $optionId );
 
-		if ( false === $this->wcNativeCarrierSettingsConfig->isSettingsActive() ) {
+		if ( false === $this->wcSettingsConfig->isActive() ) {
 			$form->addCheckbox(
 				self::FORM_FIELD_ACTIVE,
 				__( 'Active carrier', 'packeta' ) . ':'
@@ -394,7 +393,7 @@ class OptionsPage {
 			$options['vendor_groups'] = $newVendors;
 		}
 
-		if ( $this->wcNativeCarrierSettingsConfig->isSettingsActive() ) {
+		if ( $this->wcSettingsConfig->isActive() ) {
 			$persistedOptions                   = Options::createByCarrierId( $options['id'] );
 			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();
 		}
