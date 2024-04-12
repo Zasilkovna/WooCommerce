@@ -18,7 +18,6 @@ use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FeatureFlagManager;
 use Packetery\Module\PaymentGatewayHelper;
-use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
