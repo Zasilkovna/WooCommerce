@@ -246,6 +246,51 @@ class Provider {
 	}
 
 	/**
+	 * Consignment's default dimensions enabled.
+	 *
+	 * @return bool
+	 */
+	public function isDefaultDimensionsEnabled(): bool {
+		return (bool) $this->get( 'default_dimensions_enabled' );
+	}
+
+	/**
+	 * Consignment's default length.
+	 *
+	 * @return float
+	 */
+	public function getDefaultLength(): float {
+		if ( $this->get( 'default_length' ) === null ) {
+			return 0.0;
+		}
+		return (float) $this->get( 'default_length' );
+	}
+
+	/**
+	 * Consignment's default height.
+	 *
+	 * @return float
+	 */
+	public function getDefaultHeight(): float {
+		if ( $this->get( 'default_height' ) === null ) {
+			return 0.0;
+		}
+		return (float) $this->get( 'default_height' );
+	}
+
+	/**
+	 * Consignment's default width.
+	 *
+	 * @return float
+	 */
+	public function getDefaultWidth(): float {
+		if ( $this->get( 'default_width' ) === null ) {
+			return 0.0;
+		}
+		return (float) $this->get( 'default_width' );
+	}
+
+	/**
 	 * Max syncing packets.
 	 *
 	 * @return int

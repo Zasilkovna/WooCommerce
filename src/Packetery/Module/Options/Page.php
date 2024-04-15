@@ -474,6 +474,27 @@ class Page {
 					->addRule( Form::MIN, null, 0.1 )
 					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
 						->setRequired();
+		$container->addCheckbox( 'default_dimensions_enabled', __( 'Enable default dimensions', 'packeta' ) )
+			->addCondition( Form::EQUAL, true )
+			->toggle( '#packetery-default-dimensions-value' );
+
+		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 )
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
+			->setRequired();
+
+		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 )
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
+			->setRequired();
+
+		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 )
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
+			->setRequired();
 
 		// TODO: Packet status sync.
 
@@ -777,6 +798,7 @@ class Page {
 			),
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
+			'defaultDimensionsDescription'           => __( 'These dimensions will be applied to the packet by default, if required by the carrier.', 'packeta' ),
 			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
 			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which cron will check the packet status', 'packeta' ),
 			'statusSyncingOrderStatusesDescription'  => __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),
@@ -787,6 +809,7 @@ class Page {
 			'autoOrderStatusChangeDescription'       => __( 'Change order status after data submission to Packeta.', 'packeta' ),
 			'freeShippingTextDescription'            => __( 'If enabled, "FREE" will be displayed after the name of the shipping method, if free shipping is applied.', 'packeta' ),
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
+			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 		];
 
 		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
