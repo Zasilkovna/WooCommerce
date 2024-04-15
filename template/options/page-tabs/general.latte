@@ -91,6 +91,33 @@
         </tr>
         <tr>
             <th scope="row">
+                <label n:name=packetery-default_dimensions_enabled />
+            </th>
+            <td>
+                <input n:name=packetery-default_dimensions_enabled>
+            </td>
+        </tr>
+        <tr id="packetery-default-dimensions-value">
+            <th scope="row">
+                <label>{$translations['dimensionsLabel']}</label>
+            </th>
+            <td class="packetery-dimensions-block" >
+                <label n:name=packetery-default_length />
+                <input type="number" step="0"  n:name=packetery-default_length>
+                <br>
+                <label n:name=packetery-default_width />
+                <input type="number" step="0"  n:name=packetery-default_width>
+                <br>
+                <label n:name=packetery-default_height />
+                <input type="number" step="0"  n:name=packetery-default_height>
+                <br>
+                <div class="packetery-help-block">
+                    <p>{$translations['defaultDimensionsDescription']}</p>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">
                 <label n:name=packetery-replace_shipping_address_with_pickup_point_address />
             </th>
             <td>
