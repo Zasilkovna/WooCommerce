@@ -480,12 +480,13 @@ class Metabox {
 	/**
 	 * Saves added packetery form fields to order metas.
 	 *
-	 * @param Entity\Order $order Order.
+	 * @param Entity\Order $order   Order.
+	 * @param WC_Order     $wcOrder WC Order.
 	 *
 	 * @return void
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function saveFields( Entity\Order $order ): void {
+	public function saveFields( Entity\Order $order, WC_Order $wcOrder ): void {
 		$this->initializeForm();
 
 		$orderId = (int) $order->getNumber();
@@ -530,12 +531,6 @@ class Metabox {
 		}
 
 		if ( $formValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
-			/**
-			 * Cannot be null due to the condition at the beginning of the method.
-			 *
-			 * @var WC_Order $wcOrder
-			 */
-			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
 			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
@@ -553,7 +548,6 @@ class Metabox {
 					$this->mapper->toWcOrderShippingAddress( $wcOrder, $pickupPointAttr['name'], (string) $pickupPointValue );
 				}
 			}
-			$wcOrder->save();
 		}
 
 		if ( '1' === $formValues[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
