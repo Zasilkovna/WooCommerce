@@ -17,10 +17,10 @@
 			}
 		};
 
-		$( 'fieldset' ).on( 'change', 'select[name="packetery_shipping_method"]', function () {
+		$( 'fieldset' ).on( 'change', 'select[name="woocommerce_packetery_shipping_method_carrier_id"]', function () {
 			toggleCarrierSettingsButton( $( this ) );
 		} );
-		toggleCarrierSettingsButton( $( 'select[name="packetery_shipping_method"]' ) );
+		toggleCarrierSettingsButton( $( 'select[name="woocommerce_packetery_shipping_method_carrier_id"]' ) );
 	} );
 
 } )( jQuery );

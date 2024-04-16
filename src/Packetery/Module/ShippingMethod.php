@@ -12,7 +12,6 @@ namespace Packetery\Module;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Nette\DI\Container;
-use Packetery\Nette\Http\Request;
 
 /**
  * Packeta shipping method class.
@@ -20,6 +19,7 @@ use Packetery\Nette\Http\Request;
 class ShippingMethod extends \WC_Shipping_Method {
 
 	public const PACKETERY_METHOD_ID = 'packetery_shipping_method';
+	public const OPTION_CARRIER_ID   = 'carrier_id';
 
 	/**
 	 * Options.
@@ -57,13 +57,6 @@ class ShippingMethod extends \WC_Shipping_Method {
 	private $latteEngine;
 
 	/**
-	 * Http request.
-	 *
-	 * @var Request|null
-	 */
-	private $httpRequest;
-
-	/**
 	 * Are we using carrier settings native for WooCommerce?
 	 *
 	 * @var WcSettingsConfig
@@ -94,27 +87,12 @@ class ShippingMethod extends \WC_Shipping_Method {
 			$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
 			$this->supports[]         = 'instance-settings';
 			$this->supports[]         = 'instance-settings-modal';
+			$this->carrierRepository  = $this->container->getByType( Carrier\EntityRepository::class );
+			$this->options            = get_option( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
 		}
 
 		$this->init();
 		$this->checkout = $this->container->getByType( Checkout::class );
-
-		if ( $this->wcCarrierSettingsConfig->isActive() ) {
-			$this->httpRequest       = $this->container->getByType( Request::class );
-			$this->carrierRepository = $this->container->getByType( Carrier\EntityRepository::class );
-
-			// Called in WC_Shipping_Method during update_option.
-			add_filter(
-				'woocommerce_shipping_' . $this->id . '_instance_settings_values',
-				[
-					$this,
-					'saveCustomSettings',
-				],
-				10,
-				2
-			);
-			$this->options = get_option( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
-		}
 	}
 
 	/**
@@ -133,7 +111,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 			return;
 		}
 
-		$this->instance_form_fields = $this->getInstanceFormFields();
+		$this->instance_form_fields = $this->get_instance_form_fields();
 		$this->title                = $this->get_option( 'title' );
 	}
 
@@ -147,38 +125,10 @@ class ShippingMethod extends \WC_Shipping_Method {
 			return '';
 		}
 
-		$this->latteEngine = $this->container->getByType( Engine::class );
-		$availableCarriers = $this->carrierRepository->getCarriersForShippingRate( $this->get_rate_id() );
+		$settingsHtml = $this->generate_settings_html( $this->get_instance_form_fields(), false );
 
-		// We don't want to add default fields.
-		if ( $this->instance_id ) {
-			$settingsHtml = $this->generate_settings_html( $this->get_instance_form_fields(), false );
-		} else {
-			$settingsHtml = $this->generate_settings_html( $this->get_form_fields(), false );
-		}
-
-		$carrierSettingsLinkBase = add_query_arg(
-			[
-				'page'                                    => Carrier\OptionsPage::SLUG,
-				Carrier\OptionsPage::PARAMETER_CARRIER_ID => '',
-			],
-			get_admin_url( null, 'admin.php' )
-		);
-
-		$latteParams = [
-			'settingsHtml'            => $settingsHtml,
-			'availableCarriers'       => $availableCarriers,
-			'options'                 => $this->options,
-			'jsUrl'                   => Plugin::buildAssetUrl( 'public/admin-carrier-modal.js' ),
-			'carrierSettingsLinkBase' => $carrierSettingsLinkBase . '=',
-			'translations'            => [
-				'selectedShippingMethod'  => __( 'Selected shipping method', 'packeta' ),
-				'pleaseSelect'            => __( 'please select', 'packeta' ),
-				'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
-			],
-		];
-
-		return $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/carrier/carrier-modal.latte', $latteParams );
+		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		return '<table class="form-table">' . $settingsHtml . "</table>\n" . '<script type="text/javascript" src="' . Plugin::buildAssetUrl( 'public/admin-carrier-modal.js' ) . '"></script>';
 	}
 
 	/**
@@ -198,8 +148,8 @@ class ShippingMethod extends \WC_Shipping_Method {
 			$shippingMethods     = $zone->get_shipping_methods( true );
 			if ( $shippingMethods ) {
 				foreach ( $shippingMethods as $shippingMethod ) {
-					if ( isset( $shippingMethod->options[ self::PACKETERY_METHOD_ID ] ) ) {
-						$allowedCarrierNames[ $shippingMethod->options[ self::PACKETERY_METHOD_ID ] ] = $shippingMethod->options['title'];
+					if ( isset( $shippingMethod->options[ self::OPTION_CARRIER_ID ] ) ) {
+						$allowedCarrierNames[ $shippingMethod->options[ self::OPTION_CARRIER_ID ] ] = $shippingMethod->options['title'];
 					}
 				}
 			}
@@ -212,34 +162,58 @@ class ShippingMethod extends \WC_Shipping_Method {
 	}
 
 	/**
-	 * Saves method's settings.
-	 *
-	 * @param mixed $settings Settings.
-	 *
-	 * @return mixed
-	 */
-	public function saveCustomSettings( $settings ) {
-		$post = $this->httpRequest->getPost();
-		if ( isset( $post['data'] ) ) {
-			$settings[ self::PACKETERY_METHOD_ID ] = $post['data'][ self::PACKETERY_METHOD_ID ];
-		}
-
-		return $settings;
-	}
-
-	/**
 	 * Derived from settings-flat-rate.php.
 	 *
 	 * @return array
 	 */
-	private function getInstanceFormFields(): array {
+	public function get_instance_form_fields(): array {
+		$this->latteEngine = $this->container->getByType( Engine::class );
+		$availableCarriers = $this->carrierRepository->getCarriersForShippingRate( $this->get_rate_id() );
+
+		$availableCarriersOptions = [
+			'' => __( 'please select', 'packeta' ),
+		];
+		foreach ( $availableCarriers as $carrier ) {
+			$availableCarriersOptions[ $carrier->getId() ] = $carrier->getName();
+		}
+
+		$carrierSettingsLinkBase = add_query_arg(
+			[
+				'page'                                    => Carrier\OptionsPage::SLUG,
+				Carrier\OptionsPage::PARAMETER_CARRIER_ID => '',
+			],
+			get_admin_url( null, 'admin.php' )
+		);
+
+		$latteParams = [
+			'options'                 => $this->options,
+			'carrierSettingsLinkBase' => $carrierSettingsLinkBase . '=',
+			'translations'            => [
+				'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
+			],
+		];
+
 		$settings = [
-			'title' => [
+			'title'                 => [
 				'title'       => __( 'Method title', 'packeta' ),
 				'type'        => 'text',
 				'description' => __( 'This controls the title which the user sees during checkout.', 'packeta' ),
 				'default'     => __( 'Packeta', 'packeta' ),
 				'desc_tip'    => true,
+			],
+			self::OPTION_CARRIER_ID => [
+				'title'   => __( 'Selected shipping method', 'packeta' ),
+				'type'    => 'select',
+				'default' => '',
+				'options' => $availableCarriersOptions,
+			],
+			'custom_html'           => [
+				'title'       => '',
+				'type'        => 'title',
+				'description' => $this->latteEngine->renderToString(
+					PACKETERY_PLUGIN_DIR . '/template/carrier/carrier-modal-fragment.latte',
+					$latteParams
+				),
 			],
 		];
 
