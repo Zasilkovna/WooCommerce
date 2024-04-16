@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Exception\InvalidCarrierException;
+use WC_Order;
 
 /**
  * Class MetaboxesWrapper.
@@ -63,6 +63,23 @@ class MetaboxesWrapper {
 	public function register(): void {
 		$this->generalMetabox->register();
 		$this->customDeclarationMetabox->register();
+		add_action( 'woocommerce_before_order_object_save', [ $this, 'beforeOrderSave' ], PHP_INT_MAX );
+	}
+
+	/**
+	 * Updates order object before persisting its new data to DB.
+	 *
+	 * @param WC_Order $wcOrder WC Order.
+	 *
+	 * @return void
+	 */
+	public function beforeOrderSave( WC_Order $wcOrder ): void {
+		$order = $this->orderRepository->getById( $wcOrder->get_id(), true );
+		if ( null === $order ) {
+			return;
+		}
+
+		$this->generalMetabox->saveFields( $order, $wcOrder );
 	}
 
 	/**
@@ -80,7 +97,6 @@ class MetaboxesWrapper {
 			return;
 		}
 
-		$this->generalMetabox->saveFields( $order );
 		$this->customDeclarationMetabox->saveFields( $order );
 	}
 }
