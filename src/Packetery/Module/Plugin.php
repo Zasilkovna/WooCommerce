@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
+use Automattic\WooCommerce\StoreApi\Schemas\V1\CheckoutSchema;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
@@ -524,13 +526,13 @@ class Plugin {
 
 		$this->packetSubmitter->registerCronAction();
 
-		add_action(
-			'woocommerce_blocks_checkout_block_registration',
-			function ( $integration_registry ) {
-				$integration_registry->register( new \Packetery\Module\PacketaWidgetIntegration() );
-			}
-		);
+		add_action( 'woocommerce_blocks_checkout_block_registration', [ $this, 'registerCheckoutBlock'] );
 
+		add_action( 'init', function () {
+			register_block_type(
+			    PACKETERY_PLUGIN_DIR . '/public/js/'
+			);
+		});
 	}
 
 	/**
@@ -984,6 +986,16 @@ class Plugin {
 			]
 		);
 		add_filter( 'plugin_row_meta', [ $this, 'addPluginRowMeta' ], 10, 2 );
+
+		add_filter(
+			'__experimental_woocommerce_blocks_add_data_attributes_to_block',
+			function ( $allowed_blocks ) {
+			    $allowed_blocks[] = 'packeta/packeta-widget';
+			    return $allowed_blocks;
+			},
+			10,
+			1
+		);
 	}
 
 	/**
@@ -1148,5 +1160,11 @@ class Plugin {
 		if ( Options\FeatureFlagManager::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
 			$this->featureFlagManager->dismissSplitActivationNotice();
 		}
+	}
+
+	public function registerCheckoutBlock(IntegrationRegistry $integrationRegistry ): void {
+		$integrationRegistry->register( new \Packetery\Module\PacketaWidgetIntegration(
+			$this->checkout->createSettings()
+		));
 	}
 }
