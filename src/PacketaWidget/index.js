@@ -1,19 +1,18 @@
-import { __ } from "@wordpress/i18n";
-import { registerPlugin } from "@wordpress/plugins";
-import { ExperimentalOrderShippingPackages } from "@woocommerce/blocks-checkout";
+import { registerBlockType } from "@wordpress/blocks";
+import { registerCheckoutBlock } from "@woocommerce/blocks-checkout";
 
-import {PacketaWidget} from "./PacketaWidget";
+import metadata from "./block.json";
+import {Edit} from "./Edit";
+import {View} from "./View";
+import {__} from "@wordpress/i18n";
 
-const render = () => {
-    console.log('render');
-    return (
-        <ExperimentalOrderShippingPackages>
-            <PacketaWidget />
-        </ExperimentalOrderShippingPackages>
-    );
-}
+registerBlockType(metadata, {
+    title: __('title', 'packeta-widget'),
+    description: __('description', 'packeta-widget'),
+    edit: Edit,
+});
 
-registerPlugin('packeta-widget', {
-    render,
-    scope: 'woocommerce-checkout',
+registerCheckoutBlock({
+    metadata,
+    component: View,
 });

@@ -9,7 +9,8 @@ module.exports = {
         path: resolve( process.cwd(), 'public/js' ),
     },
     plugins: [
-        ...defaultConfig.plugins,
+        // slice off the last plugin to avoid duplicate WP DependencyExtractionWebpackPlugin
+        ...defaultConfig.plugins.slice(0, -1),
         new WooCommerceDependencyExtractionWebpackPlugin(),
     ],
 };

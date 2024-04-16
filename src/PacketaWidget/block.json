@@ -5,7 +5,18 @@
     "version": "0.1.0",
     "title": "Packeta Widget",
     "category": "woocommerce",
-    "parent": [ "woocommerce/checkout-shipping-address-block" ],
+    "parent": ["woocommerce/checkout-shipping-methods-block"],
+    "attributes": {
+        "lock": {
+            "type": "object",
+            "default": {
+                "remove": true,
+                "move": true
+            }
+        }
+    },
+    "icon": "cart",
+    "description": "Packeta Widget Block",
     "textdomain": "packeta-widget",
     "viewScript": "file:./index.js"
 }

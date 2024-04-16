@@ -10,6 +10,12 @@ class PacketaWidgetIntegration implements IntegrationInterface {
 	const VERSION = '0.1.0';
 	const INTEGRATION_NAME = 'packeta-widget';
 
+	public array $settings;
+
+	public function __construct(array $settings) {
+		$this->settings = $settings;
+	}
+
 	public function get_name(): string {
 		return self::INTEGRATION_NAME;
 	}
@@ -50,9 +56,7 @@ class PacketaWidgetIntegration implements IntegrationInterface {
 	}
 
 	public function get_script_data(): array {
-		return [
-			'test_key' => '1',
-		];
+		return $this->settings;
 	}
 
 	protected function get_file_version( $file ): bool|int|string {

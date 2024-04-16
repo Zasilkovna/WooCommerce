@@ -1,31 +1,26 @@
-import {Fragment} from "react";
+import {__} from "@wordpress/i18n";
+import classNames from "classnames";
 
-export const PacketaWidget = (props) => {
-    const {renderOption} = props;
-    console.log(props);
+export const PacketaWidget = ({
+    buttonTranslationKey,
+    hasError,
+    logoSrc,
+    message,
+    onClick,
+    show,
+}) => {
 
-    const option = renderOption({});
-    console.log(option);
+    if (!show) {
+        return null;
+    }
 
-    return <Fragment>
-        <tr>
-            <th>
-                <img className="packetery-widget-button-logo" src={packeteryCheckoutSettings.logo}
-                     alt="{$translations['packeta']}"/>
-            </th>
-            <td>
-                <div className="packetery-widget-button-wrapper">
-                    <div className="form-row packeta-widget packetery-hidden">
-                        <div className="packetery-widget-button-row packeta-widget-button">
-                            <img className="packetery-widget-button-logo" src={packeteryCheckoutSettings.logo}
-                                 alt="{$translations['packeta']}"/>
-                            <button className="button alt"> . . .</button>
-                        </div>
-                        <p className="packeta-widget-selected-address"></p>
-                        <p className="packeta-widget-info"></p>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </Fragment>
+    return <div className="packeta-widget">
+        <div className="packeta-widget__button">
+            <img className="packetery-widget__button-logo" src={logoSrc} alt={__('packeta-widget:packeta')}/>
+            <button onClick={onClick}>{__(buttonTranslationKey)}</button>
+        </div>
+        <p className={classNames('packeta-widget__info', hasError && 'packeta-widget__info_error')}>
+            {message}
+        </p>
+    </div>
 }
