@@ -236,27 +236,27 @@ final class OrderController extends WP_REST_Controller {
 		$data       = [];
 		$parameters = $request->get_body_params();
 		$orderId    = (int) $parameters['orderId'];
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 
 		try {
-			$order = $this->orderRepository->getById( $orderId );
+			$order = $wcOrder ? $this->orderRepository->getByWcOrder( $wcOrder ) : null;
 		} catch ( InvalidCarrierException $exception ) { // New exception needed?
 			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
 		}
+
 		if ( null === $order ) {
-			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 ); // Display an error message to the user.
+			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
-		// TODO: Validate the order is being updated by the user it belongs to only!
-//		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-//		if (is_user_logged_in() && wp_get_current_user()->ID !== $wcOrder->get_user_id()) {
-//			return new WP_Error('unauthorized', __('You shall not pass', 'packeta'), 401 );
-//		}
+		if ( wp_get_current_user()->ID !== $wcOrder->get_user_id() ) {
+			return new WP_Error('unauthorized', __('You are not authorized to make changes to this order', 'packeta'), 401 );
+		}
 
 		if ( $order->getPacketId() ) {
 			$data['message'] = __( 'This action is no longer available. The packet has been submitted to Packeta.', 'packeta' );
 			$data['type']    = 'error';
 
-			return new WP_REST_Response( $data, 200 );
+			return new WP_REST_Response( $data, 200 ); // Maybe use WP_Error for all error messages?
 		}
 
 		$delivery_address = [];

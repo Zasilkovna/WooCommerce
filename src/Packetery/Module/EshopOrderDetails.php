@@ -95,6 +95,7 @@ class EshopOrderDetails {
 			'packeteryApiKey'             => $this->options_provider->get_api_key(),
 			'updateCarDeliveryAddressUrl' => $this->apiRouter->getSaveDeliveryAddressUrl(),
 			'isSubmittedToPacketa'        => $order->isExported(),
+			'appIdentity'                 => Plugin::getAppIdentity(),
 			'nonce'                       => wp_create_nonce( 'wp_rest' ),
 			'translations'                => [
 				'chooseAddress' => __( 'Choose delivery address', 'packeta' ),

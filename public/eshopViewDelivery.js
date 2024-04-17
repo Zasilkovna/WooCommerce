@@ -11,24 +11,29 @@ var packeteryChangeDeliveryAddressDetails = function( $, settings ) {
 			},
 		} )
 		.done( function ( responseData ) {
-			var message = responseData.message;
-			var responseType = responseData.type;
-
-			$infoDiv.text( message );
-			if ( responseType === 'success' ) {
-				$infoDiv.addClass( 'success' ).removeClass( 'error' );
-				$infoDiv.css( 'color', 'green' );
-			} else if ( responseType === 'error' ) {
-				$infoDiv.addClass( 'error' ).removeClass( 'success' );
-				$infoDiv.css( 'color', 'rgb( 186,27,1 )' );
-			}
-
-			$infoDiv.removeAttr( 'hidden' );
+			showMessage( responseData.type, responseData.message );
 		} )
 		.fail( function ( xhr, status, error ) {
-			console.log( 'Packeta: ' + errorMessage + error );
+			if (typeof xhr.responseJSON !== 'undefined') {
+				showMessage( 'error', xhr.responseJSON.message );
+			} else {
+				console.log( 'Packeta: ' + errorMessage + error );
+			}
 		} );
 	}
+
+	var showMessage = function ( responseType, message ) {
+		$infoDiv.text( message );
+		if ( responseType === 'success' ) {
+			$infoDiv.addClass( 'success' ).removeClass( 'error' );
+			$infoDiv.css( 'color', 'green' );
+		} else if ( responseType === 'error' ) {
+			$infoDiv.addClass( 'error' ).removeClass( 'success' );
+			$infoDiv.css( 'color', 'rgb( 186,27,1 )' );
+		}
+
+		$infoDiv.removeAttr( 'hidden' );
+	};
 	var stringifyOptions = function ( widgetOptions ) {
 		var widgetOptionsArray = [];
 		for ( const property in widgetOptions ) {
@@ -46,6 +51,7 @@ var packeteryChangeDeliveryAddressDetails = function( $, settings ) {
 		return widgetOptionsArray.join( ', ' );
 	};
 
+	var addressDataToSave = {};
 	var mapAddressFields = function(data, source ) {
 		for ( var attrKey in data ) {
 			if ( !data.hasOwnProperty( attrKey ) ) {
@@ -59,10 +65,9 @@ var packeteryChangeDeliveryAddressDetails = function( $, settings ) {
 			var widgetField = data[ attrKey ].widgetResultField || attrKey;
 			var addressFieldValue = source[ widgetField ];
 
-			addressDataToSave[ data[ attrKey ].name = addressFieldValue ];
+			addressDataToSave[ data[ attrKey ].name ] = addressFieldValue;
 		}
 	};
-	var addressDataToSave = {};
 
 
 	var resetWidgetInfoClasses = function() {
@@ -77,6 +82,7 @@ var packeteryChangeDeliveryAddressDetails = function( $, settings ) {
 			language: settings.language,
 			layout: 'cd',
 			expeditionDay: settings.expeditionDay,
+			appIdentity: settings.appIdentity,
 			sample: settings.isCarDeliverySampleEnabled === '1'
 		};
 
@@ -90,7 +96,7 @@ var packeteryChangeDeliveryAddressDetails = function( $, settings ) {
 			var selectedAddress = result.location.address;
 			mapAddressFields( settings.carDeliveryAttrs, selectedAddress );
 			addressDataToSave[ settings.carDeliveryAttrs[ 'carDeliveryId' ].name ] = result.id;
-			addressDataToSave[ 'orderId' ] = settings.orderId; // Potential security risk!
+			addressDataToSave[ 'orderId' ] = settings.orderId;
 
 			postWithNonce(
 				settings.updateCarDeliveryAddressUrl,

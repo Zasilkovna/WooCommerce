@@ -649,7 +649,7 @@ class Plugin {
 	 */
 	public function renderOrderDetail( WC_Order $wcOrder ): void {
 		try {
-			$order = $this->orderRepository->getById( $wcOrder->get_id() );
+			$order = $this->orderRepository->getByWcOrder( $wcOrder );
 		} catch ( InvalidCarrierException $exception ) {
 			$order = null;
 		}
