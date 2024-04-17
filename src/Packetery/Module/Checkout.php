@@ -15,7 +15,6 @@ use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Entity;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
-use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
@@ -318,7 +317,7 @@ class Checkout {
 			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttrs,
 			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttrs,
 			'carDeliveryCarriers'        => Entity\Carrier::CAR_DELIVERY_CARRIERS,
-			'expeditionDay'              => $this->getExpeditionDay(),
+			'expeditionDay'              => $this->widgetOptionsBuilder->calculateExpeditionDay( null, null, $this->getChosenMethodFromSession() ),
 			'appIdentity'                => Plugin::getAppIdentity(),
 			'packeteryApiKey'            => $this->options_provider->get_api_key(),
 			'widgetAutoOpen'             => $this->options_provider->shouldWidgetOpenAutomatically(),
@@ -914,48 +913,6 @@ class Checkout {
 		}
 
 		return 0.0;
-	}
-
-	/**
-	 * Calculates and returns Expedition Day
-	 *
-	 * @return string
-	 */
-	private function getExpeditionDay(): ?string {
-		$chosenShippingMethod = $this->getChosenMethodFromSession();
-		$carrierId            = OptionPrefixer::removePrefix( $chosenShippingMethod );
-		if ( false === $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId ) ) {
-			return null;
-		}
-
-		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod )->toArray();
-		$today          = new DateTime();
-		$processingDays = $carrierOptions['days_until_shipping'];
-		$cutoffTime     = $carrierOptions['shipping_time_cut_off'];
-
-		// Check if a cut-off time is provided and if the current time is after the cut-off time.
-		if ( null !== $cutoffTime ) {
-			$currentTime = $today->format( 'H:i' );
-			if ( $currentTime > $cutoffTime ) {
-				// If after cut-off time, move to the next day.
-				$today->modify( '+1 day' );
-			}
-		}
-
-		// Loop through each day to add processing days, skipping weekends.
-		for ( $i = 0; $i < $processingDays; $i++ ) {
-			// Add a day to the current date.
-			$today->modify( '+1 day' );
-
-			// Check if the current day is a weekend (Saturday or Sunday).
-			if ( $today->format( 'N' ) >= 6 ) {
-				// If it's a weekend, move to the next Monday.
-				$today->modify( 'next Monday' );
-			}
-		}
-
-		// Get the final expedition day.
-		return $today->format( 'Y-m-d' );
 	}
 
 	/**

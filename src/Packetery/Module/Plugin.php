@@ -286,12 +286,7 @@ class Plugin {
 	 */
 	private $carrierModal;
 
-	/**
-	 * Order details page.
-	 *
-	 * @var EshopOrderDetails
-	 */
-	private $eshopOrderDetails;
+	private $widgetOptionsBuilder;
 
 	/**
 	 * Plugin constructor.
@@ -331,7 +326,6 @@ class Plugin {
 	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
-	 * @param EshopOrderDetails          $eshopOrderDetails         Eshop order details page.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -369,7 +363,7 @@ class Plugin {
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
 		CarrierModal $carrierModal,
-		EshopOrderDetails $eshopOrderDetails
+		WidgetOptionsBuilder $widgetOptionsBuilder
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -407,7 +401,7 @@ class Plugin {
 		$this->labelPrintModal           = $labelPrintModal;
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
-		$this->eshopOrderDetails         = $eshopOrderDetails;
+		$this->widgetOptionsBuilder      = $widgetOptionsBuilder;
 	}
 
 	/**
@@ -664,7 +658,7 @@ class Plugin {
 		/**
 		 * $wcOrder date_created is never null at this point.
 		 */
-		$carDeliveryWidgetSettings = $this->eshopOrderDetails->createSettings( $order, $wcOrder->get_date_created() );
+		$carDeliveryWidgetSettings = $this->widgetOptionsBuilder->createCarDeliverySettings( $order, $wcOrder->get_date_created() );
 
 		wp_enqueue_script( 'packetery-widget-library', 'https://widget.packeta.com/v6/www/js/library.js', [], self::VERSION, true );
 		$this->enqueueScript( 'packetery-eshop-view-delivery', 'public/eshopViewDelivery.js', true, [ 'jquery' ] );
