@@ -10,6 +10,7 @@ namespace Packetery\Nette\DI\Definitions;
 use Packetery\Nette;
 /**
  * Definition used by ContainerBuilder.
+ * @internal
  */
 abstract class Definition
 {

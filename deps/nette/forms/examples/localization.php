@@ -13,6 +13,7 @@ use Packetery\Nette\Forms\Form;
 use Packetery\Tracy\Debugger;
 use Packetery\Tracy\Dumper;
 Debugger::enable();
+/** @internal */
 class MyTranslator implements \Packetery\Nette\Localization\Translator
 {
     private $table;

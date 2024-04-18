@@ -117,12 +117,14 @@ if (!\defined('IDNA_ERROR_CONTEXTJ')) {
     \define('IDNA_ERROR_CONTEXTJ', 4096);
 }
 if (!\function_exists('idn_to_ascii')) {
+    /** @internal */
     function idn_to_ascii(?string $domain, ?int $flags = \IDNA_DEFAULT, ?int $variant = \INTL_IDNA_VARIANT_UTS46, &$idna_info = null) : string|false
     {
         return p\Idn::idn_to_ascii((string) $domain, (int) $flags, (int) $variant, $idna_info);
     }
 }
 if (!\function_exists('idn_to_utf8')) {
+    /** @internal */
     function idn_to_utf8(?string $domain, ?int $flags = \IDNA_DEFAULT, ?int $variant = \INTL_IDNA_VARIANT_UTS46, &$idna_info = null) : string|false
     {
         return p\Idn::idn_to_utf8((string) $domain, (int) $flags, (int) $variant, $idna_info);

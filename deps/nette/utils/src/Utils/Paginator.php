@@ -25,6 +25,7 @@ use Packetery\Nette;
  * @property-read int $offset
  * @property-read int|null $countdownOffset
  * @property-read int $length
+ * @internal
  */
 class Paginator
 {
@@ -146,7 +147,7 @@ class Paginator
      * Sets the total number of items.
      * @return static
      */
-    public function setItemCount(int $itemCount = null)
+    public function setItemCount(?int $itemCount = null)
     {
         $this->itemCount = $itemCount === null ? null : \max(0, $itemCount);
         return $this;

@@ -14,6 +14,7 @@ use Packetery\Nette\DI\Definitions\Statement;
 use Packetery\Nette\Neon;
 /**
  * Reading and generating NEON files.
+ * @internal
  */
 final class NeonAdapter implements \Packetery\Nette\DI\Config\Adapter
 {

@@ -12,6 +12,7 @@ use Packetery\Nette\Utils\Html;
 use Packetery\Nette\Utils\Strings;
 /**
  * Forms helpers.
+ * @internal
  */
 class Helpers
 {

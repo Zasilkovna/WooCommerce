@@ -9,6 +9,7 @@ namespace Packetery\Nette\Neon;
 
 /**
  * The exception that indicates error of NEON processing.
+ * @internal
  */
 class Exception extends \Exception
 {

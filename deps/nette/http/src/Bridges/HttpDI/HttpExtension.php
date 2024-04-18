@@ -11,6 +11,7 @@ use Packetery\Nette;
 use Packetery\Nette\Schema\Expect;
 /**
  * HTTP extension for Nette DI.
+ * @internal
  */
 class HttpExtension extends \Packetery\Nette\DI\CompilerExtension
 {

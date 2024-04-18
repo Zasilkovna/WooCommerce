@@ -14,6 +14,7 @@ use Packetery\Tracy\BlueScreen;
 use Packetery\Tracy\Helpers;
 /**
  * Bridge for NEON & Latte.
+ * @internal
  */
 class Bridge
 {

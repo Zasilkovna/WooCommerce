@@ -12,6 +12,7 @@ use Packetery\Nette;
  * Global function.
  *
  * @property string $body
+ * @internal
  */
 final class GlobalFunction
 {

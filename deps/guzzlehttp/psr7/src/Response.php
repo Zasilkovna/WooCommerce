@@ -6,6 +6,7 @@ use Packetery\Psr\Http\Message\ResponseInterface;
 use Packetery\Psr\Http\Message\StreamInterface;
 /**
  * PSR-7 response implementation.
+ * @internal
  */
 class Response implements ResponseInterface
 {

@@ -8,10 +8,12 @@ declare (strict_types=1);
 namespace Packetery\Latte\Attributes;
 
 use Attribute;
+/** @internal */
 #[Attribute(Attribute::TARGET_METHOD)]
 class TemplateFunction
 {
 }
+/** @internal */
 #[Attribute(Attribute::TARGET_METHOD)]
 class TemplateFilter
 {

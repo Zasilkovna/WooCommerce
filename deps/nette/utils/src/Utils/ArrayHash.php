@@ -10,11 +10,14 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * Provides objects to work as array.
+ * @template T
+ * @internal
  */
 class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
      * Transforms array to ArrayHash.
+     * @param  array<T>  $array
      * @return static
      */
     public static function from(array $array, bool $recursive = \true)
@@ -27,6 +30,7 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
     }
     /**
      * Returns an iterator over all items.
+     * @return \RecursiveArrayIterator<array-key, T>
      */
     public function getIterator() : \RecursiveArrayIterator
     {
@@ -42,7 +46,7 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
     /**
      * Replaces or appends a item.
      * @param  string|int  $key
-     * @param  mixed  $value
+     * @param  T  $value
      */
     public function offsetSet($key, $value) : void
     {
@@ -55,8 +59,9 @@ class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \Iterator
     /**
      * Returns a item.
      * @param  string|int  $key
-     * @return mixed
+     * @return T
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return $this->{$key};

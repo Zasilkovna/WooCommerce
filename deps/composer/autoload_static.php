@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit488189fbf5d2d48f25732110909c9f1b
+class ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c
 {
     public static $files = array (
         'packetery7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -381,6 +381,7 @@ class ComposerStaticInit488189fbf5d2d48f25732110909c9f1b
         'Packetery\\Nette\\Utils\\Reflection' => __DIR__ . '/..' . '/nette/utils/src/Utils/Reflection.php',
         'Packetery\\Nette\\Utils\\RegexpException' => __DIR__ . '/..' . '/nette/utils/src/Utils/exceptions.php',
         'Packetery\\Nette\\Utils\\Strings' => __DIR__ . '/..' . '/nette/utils/src/Utils/Strings.php',
+        'Packetery\\Nette\\Utils\\Type' => __DIR__ . '/..' . '/nette/utils/src/Utils/Type.php',
         'Packetery\\Nette\\Utils\\UnknownImageFileException' => __DIR__ . '/..' . '/nette/utils/src/Utils/exceptions.php',
         'Packetery\\Nette\\Utils\\Validators' => __DIR__ . '/..' . '/nette/utils/src/Utils/Validators.php',
         'Packetery\\Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
@@ -428,9 +429,9 @@ class ComposerStaticInit488189fbf5d2d48f25732110909c9f1b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit488189fbf5d2d48f25732110909c9f1b::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit488189fbf5d2d48f25732110909c9f1b::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit488189fbf5d2d48f25732110909c9f1b::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c::$classMap;
 
         }, null, ClassLoader::class);
     }

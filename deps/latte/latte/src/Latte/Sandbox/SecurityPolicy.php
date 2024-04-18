@@ -10,6 +10,7 @@ namespace Packetery\Latte\Sandbox;
 use Packetery\Latte;
 /**
  * Default-deny policy.
+ * @internal
  */
 class SecurityPolicy implements \Packetery\Latte\Policy
 {

@@ -29,7 +29,7 @@
         }
     ],
     "require": {
-        "php": ">=7.2 <8.3",
+        "php": "7.2 - 8.3",
         "nette\/utils": "^3.2.1 || ~4.0.0"
     },
     "require-dev": {
@@ -44,7 +44,10 @@
         "nette\/schema": "<1.2"
     },
     "suggest": {
-        "ext-fileinfo": "to detect type of uploaded files"
+        "ext-fileinfo": "to detect MIME type of uploaded files by \\Packetery\\Nette\\Http\\FileUpload",
+        "ext-gd": "to use image function in \\Packetery\\Nette\\Http\\FileUpload",
+        "ext-session": "to use \\Packetery\\Nette\\Http\\Session",
+        "ext-intl": "to support punycode by \\Packetery\\Nette\\Http\\Url"
     },
     "autoload": {
         "classmap": [

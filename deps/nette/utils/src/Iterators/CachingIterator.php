@@ -19,6 +19,7 @@ use Packetery\Nette;
  * @property-read int $counter
  * @property-read mixed $nextKey
  * @property-read mixed $nextValue
+ * @internal
  */
 class CachingIterator extends \CachingIterator implements \Countable
 {
@@ -45,14 +46,14 @@ class CachingIterator extends \CachingIterator implements \Countable
     /**
      * Is the current element the first one?
      */
-    public function isFirst(int $gridWidth = null) : bool
+    public function isFirst(?int $gridWidth = null) : bool
     {
         return $this->counter === 1 || $gridWidth && $this->counter !== 0 && ($this->counter - 1) % $gridWidth === 0;
     }
     /**
      * Is the current element the last one?
      */
-    public function isLast(int $gridWidth = null) : bool
+    public function isLast(?int $gridWidth = null) : bool
     {
         return !$this->hasNext() || $gridWidth && $this->counter % $gridWidth === 0;
     }
