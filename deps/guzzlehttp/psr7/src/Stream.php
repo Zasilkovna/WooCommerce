@@ -7,6 +7,7 @@ use Packetery\Psr\Http\Message\StreamInterface;
  * PHP stream implementation.
  *
  * @var $stream
+ * @internal
  */
 class Stream implements StreamInterface
 {

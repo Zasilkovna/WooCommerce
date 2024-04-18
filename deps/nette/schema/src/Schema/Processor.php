@@ -10,6 +10,7 @@ namespace Packetery\Nette\Schema;
 use Packetery\Nette;
 /**
  * Schema validator.
+ * @internal
  */
 final class Processor
 {

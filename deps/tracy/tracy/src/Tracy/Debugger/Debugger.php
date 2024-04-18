@@ -10,6 +10,7 @@ namespace Packetery\Tracy;
 use ErrorException;
 /**
  * Debugger: displays and logs errors.
+ * @internal
  */
 class Debugger
 {

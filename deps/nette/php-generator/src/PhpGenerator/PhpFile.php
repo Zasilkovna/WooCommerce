@@ -15,6 +15,7 @@ use Packetery\Nette;
  * - opening tag (<?php)
  * - doc comments
  * - one or more namespaces
+ * @internal
  */
 final class PhpFile
 {

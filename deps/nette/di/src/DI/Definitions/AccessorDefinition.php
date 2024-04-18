@@ -12,6 +12,7 @@ use Packetery\Nette\DI\ServiceCreationException;
 use Packetery\Nette\Utils\Reflection;
 /**
  * Accessor definition.
+ * @internal
  */
 final class AccessorDefinition extends Definition
 {

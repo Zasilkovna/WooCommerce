@@ -9,6 +9,7 @@ namespace Packetery\Nette\PhpGenerator;
 
 /**
  * Promoted parameter in constructor.
+ * @internal
  */
 final class PromotedParameter extends Parameter
 {

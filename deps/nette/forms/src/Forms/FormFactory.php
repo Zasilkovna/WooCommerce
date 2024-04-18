@@ -10,6 +10,7 @@ namespace Packetery\Nette\Forms;
 use Packetery\Nette;
 /**
  * Creates form.
+ * @internal
  */
 final class FormFactory
 {

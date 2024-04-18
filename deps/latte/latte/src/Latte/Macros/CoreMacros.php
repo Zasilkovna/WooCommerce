@@ -16,6 +16,7 @@ use Packetery\Latte\PhpHelpers;
 use Packetery\Latte\PhpWriter;
 /**
  * Basic macros for Latte.
+ * @internal
  */
 class CoreMacros extends MacroSet
 {

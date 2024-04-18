@@ -18,6 +18,7 @@ use Packetery\Latte\Runtime\SnippetDriver;
 use Packetery\Latte\Runtime\Template;
 /**
  * Block macros.
+ * @internal
  */
 class BlockMacros extends MacroSet
 {

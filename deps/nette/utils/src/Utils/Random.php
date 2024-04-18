@@ -10,6 +10,7 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * Secure random string generator.
+ * @internal
  */
 final class Random
 {

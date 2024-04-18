@@ -12,6 +12,7 @@ use Packetery\Nette\Utils\Strings;
 use Packetery\Nette\Utils\Validators;
 /**
  * Common validators.
+ * @internal
  */
 class Validator
 {

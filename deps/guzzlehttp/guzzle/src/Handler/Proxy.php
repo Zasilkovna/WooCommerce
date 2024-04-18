@@ -6,6 +6,7 @@ use Packetery\GuzzleHttp\RequestOptions;
 use Packetery\Psr\Http\Message\RequestInterface;
 /**
  * Provides basic proxies for handlers.
+ * @internal
  */
 class Proxy
 {

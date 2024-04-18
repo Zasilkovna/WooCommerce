@@ -10,11 +10,23 @@ namespace Packetery\Module\Carrier;
 /**
  * Class CarDeliveryConfig
  *
- * @property bool $sample
- * @property bool $enabled
  * @package Packetery
  */
 class CarDeliveryConfig {
+
+	/**
+	 * True if sample mode enabled.
+	 *
+	 * @var bool
+	 */
+	private $sample;
+
+	/**
+	 * True if enabled.
+	 *
+	 * @var bool
+	 */
+	private $enabled;
 
 	/**
 	 * CarDeliveryConfig constructor.
