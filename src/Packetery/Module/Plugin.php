@@ -1163,8 +1163,10 @@ class Plugin {
 	}
 
 	public function registerCheckoutBlock(IntegrationRegistry $integrationRegistry ): void {
-		$integrationRegistry->register( new \Packetery\Module\PacketaWidgetIntegration(
-			$this->checkout->createSettings()
-		));
+		if ( is_checkout() ) {
+			$integrationRegistry->register( new \Packetery\Module\PacketaWidgetIntegration(
+				$this->checkout->createSettings()
+			) );
+		}
 	}
 }

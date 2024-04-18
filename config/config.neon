@@ -99,4 +99,3 @@ services:
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
-	- Packetery\Module\PacketaWidgetIntegration
