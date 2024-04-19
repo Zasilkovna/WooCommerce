@@ -19,21 +19,21 @@ class SurveyConfig {
 	 *
 	 * @var bool
 	 */
-	private $active;
+	public $active;
 
 	/**
 	 * Survey URL.
 	 *
 	 * @var string
 	 */
-	private $url;
+	public $url;
 
 	/**
 	 * Survey visual.
 	 *
 	 * @var string
 	 */
-	private $image;
+	public $image;
 
 	/**
 	 * SurveyConfig constructor.
