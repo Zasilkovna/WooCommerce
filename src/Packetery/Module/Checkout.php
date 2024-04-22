@@ -282,6 +282,10 @@ class Checkout {
 	 * @return array
 	 */
 	public function createSettings(): array {
+		if ( ! ( WC()->cart instanceof \WC_Cart ) ) {
+			return [];
+		}
+
 		$carriersConfigForWidget = [];
 		$carriers                = $this->carrierEntityRepository->getAllCarriersIncludingNonFeed();
 
@@ -308,7 +312,7 @@ class Checkout {
 			 * @since 1.4.2
 			 */
 			'language'                   => (string) apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
-            'logo'                       => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
+			'logo'                       => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
 			'country'                    => $this->getCustomerCountry(),
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
@@ -698,6 +702,10 @@ class Checkout {
 	 * @return float
 	 */
 	public function getCartWeightKg(): float {
+		if ( ! did_action( 'wp_loaded' ) ) {
+			return 0.0;
+		}
+
 		$weight   = WC()->cart->cart_contents_weight;
 		$weightKg = (float) wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
@@ -1016,6 +1024,10 @@ class Checkout {
 	 * @return string
 	 */
 	private function calculateShipping(): string {
+		if ( ! did_action( 'wp_loaded' ) ) {
+			return '';
+		}
+
 		$chosenShippingRates = WC()->cart->calculate_shipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
@@ -1147,6 +1159,10 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isAgeVerification18PlusRequired(): bool {
+		if ( ! did_action( 'wp_loaded' ) ) {
+			return false;
+		}
+
 		$products = WC()->cart->get_cart();
 
 		foreach ( $products as $product ) {

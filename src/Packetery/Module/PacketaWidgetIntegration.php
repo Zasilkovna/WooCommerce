@@ -2,7 +2,13 @@
 
 namespace Packetery\Module;
 
-require_once( WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php' );
+if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php' ) ) {
+    require_once WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php';
+}
+
+if ( file_exists(WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/Integrations/IntegrationInterface.php') ) {
+    require_once WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/Integrations/IntegrationInterface.php';
+}
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
