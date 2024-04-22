@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
-use Automattic\WooCommerce\StoreApi\Schemas\V1\CheckoutSchema;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
@@ -1163,10 +1162,8 @@ class Plugin {
 	}
 
 	public function registerCheckoutBlock(IntegrationRegistry $integrationRegistry ): void {
-		if ( is_checkout() ) {
-			$integrationRegistry->register( new \Packetery\Module\PacketaWidgetIntegration(
-				$this->checkout->createSettings()
-			) );
-		}
+		$integrationRegistry->register( new \Packetery\Module\PacketaWidgetIntegration(
+			$this->checkout->createSettings()
+		) );
 	}
 }

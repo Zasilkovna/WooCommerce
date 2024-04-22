@@ -3,7 +3,15 @@ import { getSetting } from '@woocommerce/settings';
 
 export const View = ({cart}) => {
     const {shippingRates} = cart;
-    const {carrierConfig: packetaWidgetCarrierConfig, packeteryApiKey} = getSetting('packeta-widget_data');
+    const {
+        carrierConfig: packetaWidgetCarrierConfig,
+        country,
+        language,
+        packeteryApiKey,
+        appIdentity,
+        weight,
+        isAgeVerificationRequired,
+    } = getSetting( 'packeta-widget_data' );
 
     console.log('initial', shippingRates);
     if (!shippingRates || shippingRates.length === 0) {
@@ -30,17 +38,40 @@ export const View = ({cart}) => {
     }
 
     const onWidgetButtonClicked = () => {
-        // TODO: properly load Packeta object
-        Packeta.Widget.pick( packeteryApiKey, ( result ) => {
-            console.log(result);
-        });
+        const rateId = packetaShippingRate.rate_id.split(':').pop();
+
+        let widgetOptions = {
+            country: country,
+            language: language,
+            appIdentity: appIdentity,
+            weight: weight,
+        };
+        if ( packetaWidgetCarrierConfig[ rateId ].carriers ) {
+            widgetOptions.carriers = packetaWidgetCarrierConfig[ rateId ].carriers;
+        }
+        if ( packetaWidgetCarrierConfig[ rateId ].vendors ) {
+            widgetOptions.vendors = packetaWidgetCarrierConfig[ rateId ].vendors;
+        }
+        if ( isAgeVerificationRequired ) {
+            widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+        }
+
+        // TODO: properly load Packeta object (widget.js)
+        Packeta.Widget.pick( packeteryApiKey, ( pickupPoint ) => {
+            console.log( pickupPoint );
+
+            if ( pickupPoint == null ) {
+                return;
+            }
+
+        }, widgetOptions );
     };
 
     console.log('rendered');
     return <tr className="packetery-widget-button-table-row">
         <th>
             <img className="packetery-widget-button-logo" src="/wp-content/plugins/packeta/public/packeta-symbol.png" alt="packeta" width="100" />
-            <button onClick={onWidgetButtonClicked}>{__('Select pickup point')}</button>
+            <a onClick={onWidgetButtonClicked}>{__('Select pickup point')}</a>
         </th>
     </tr>
 }
