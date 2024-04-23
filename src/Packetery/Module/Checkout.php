@@ -600,6 +600,19 @@ class Checkout {
 	}
 
 	/**
+	 * Checks if Blocks are used in checkout.
+	 *
+	 * @return bool
+	 */
+	public function areBlocksUsedInCheckout(): bool {
+		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Registers Packeta checkout hooks
 	 */
 	public function register_hooks(): void {

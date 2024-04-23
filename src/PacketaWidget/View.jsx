@@ -1,7 +1,10 @@
-import {__} from "@wordpress/i18n";
+import { __ } from "@wordpress/i18n";
 import { getSetting } from '@woocommerce/settings';
 
 export const View = ({cart}) => {
+    // TODO: properly load
+    jQuery.getScript( "https://widget.packeta.com/v6/www/js/library.js" )
+
     const {shippingRates} = cart;
     const {
         carrierConfig: packetaWidgetCarrierConfig,
@@ -56,7 +59,6 @@ export const View = ({cart}) => {
             widgetOptions.livePickupPoint = true; // Pickup points with real person only.
         }
 
-        // TODO: properly load Packeta object (widget.js)
         Packeta.Widget.pick( packeteryApiKey, ( pickupPoint ) => {
             console.log( pickupPoint );
 
@@ -71,7 +73,7 @@ export const View = ({cart}) => {
     return <tr className="packetery-widget-button-table-row">
         <th>
             <img className="packetery-widget-button-logo" src="/wp-content/plugins/packeta/public/packeta-symbol.png" alt="packeta" width="100" />
-            <a onClick={onWidgetButtonClicked}>{__('Select pickup point')}</a>
+            <a onClick={ onWidgetButtonClicked }>{ __( 'Choose pickup point', 'packeta' ) }</a>
         </th>
     </tr>
 }
