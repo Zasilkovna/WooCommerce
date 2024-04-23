@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Exception;
 use Packetery\Core;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
@@ -477,7 +478,7 @@ class Repository {
 	 * @return void
 	 */
 	public function save( Order $order ): void {
-		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_order, $this->orderToDbArray( $order ), null, 'REPLACE' );
+		$this->saveData( $this->orderToDbArray( $order ) );
 	}
 
 	/**
@@ -488,7 +489,48 @@ class Repository {
 	 * @return void
 	 */
 	public function saveData( array $orderData ): void {
+		$this->onBeforeDataInsertion( $orderData );
 		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_order, $orderData, null, 'REPLACE' );
+	}
+
+	/**
+	 * Calls logic before order data replace/insert.
+	 *
+	 * @param array $orderData Order data.
+	 * @return void
+	 */
+	private function onBeforeDataInsertion( array $orderData ): void {
+		$pointId   = $orderData['point_id'] ?? null;
+		$carrierId = $orderData['carrier_id'] ?? null;
+		/**
+		 * Tells if packeta debug logs are enabled.
+		 *
+		 * @since 1.7.2
+		 */
+		$isLoggingActive = (bool) apply_filters( 'packeta_enable_debug_logs', false );
+
+		if ( $isLoggingActive && empty( $pointId ) && $this->pickupPointsConfig->isInternalPickupPointCarrier( (string) $carrierId ) ) {
+			$wcLogger  = wc_get_logger();
+			$dataToLog = [
+				'orderId' => $orderData['id'] ?? null,
+				'trace'   => array_map(
+					static function ( array $item ): array {
+						return [
+							'file'   => sprintf( '%s(%s)', $item['file'], $item['line'] ),
+							'method' => sprintf( '%s%s%s(...)', $item['class'] ?? '', $item['type'] ?? '', $item['function'] ),
+						];
+					},
+					( new Exception() )->getTrace()
+				),
+			];
+			$wcLogger->warning(
+				sprintf(
+					'Required value for the pickup point order is not set: %s',
+					wp_json_encode( $dataToLog, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+				),
+				[ 'source' => 'packeta' ]
+			);
+		}
 	}
 
 	/**
