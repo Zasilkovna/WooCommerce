@@ -525,13 +525,16 @@ class Plugin {
 
 		$this->packetSubmitter->registerCronAction();
 
-		add_action( 'woocommerce_blocks_checkout_block_registration', [ $this, 'registerCheckoutBlock'] );
+		add_action( 'woocommerce_blocks_checkout_block_registration', [ $this, 'registerCheckoutBlock' ] );
 
-		add_action( 'init', function () {
-			register_block_type(
-			    PACKETERY_PLUGIN_DIR . '/public/js/'
-			);
-		});
+		add_action(
+			'init',
+			function () {
+				register_block_type(
+					PACKETERY_PLUGIN_DIR . '/public/js/'
+				);
+			}
+		);
 	}
 
 	/**
@@ -833,8 +836,8 @@ class Plugin {
 			if ( ! $this->checkout->areBlocksUsedInCheckout() ) {
 				$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
 			}
-			// this works, but we prefer PacketaWidgetIntegration
-			//$this->enqueueScript( 'packeta-widget', 'public/js/index.js', true, [] );
+			// this works, but we prefer PacketaWidgetIntegration TODO: remove
+			// $this->enqueueScript( 'packeta-widget', 'public/js/index.js', true, [] );
 			wp_localize_script( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkout->createSettings() );
 		}
 	}
@@ -988,11 +991,12 @@ class Plugin {
 		);
 		add_filter( 'plugin_row_meta', [ $this, 'addPluginRowMeta' ], 10, 2 );
 
+		// TODO: look for experimental hook replacement.
 		add_filter(
 			'__experimental_woocommerce_blocks_add_data_attributes_to_block',
 			function ( $allowed_blocks ) {
-			    $allowed_blocks[] = 'packeta/packeta-widget';
-			    return $allowed_blocks;
+				$allowed_blocks[] = 'packeta/packeta-widget';
+				return $allowed_blocks;
 			},
 			10,
 			1
@@ -1163,9 +1167,11 @@ class Plugin {
 		}
 	}
 
-	public function registerCheckoutBlock(IntegrationRegistry $integrationRegistry ): void {
-		$integrationRegistry->register( new \Packetery\Module\PacketaWidgetIntegration(
-			$this->checkout->createSettings()
-		) );
+	public function registerCheckoutBlock( IntegrationRegistry $integrationRegistry ): void {
+		$integrationRegistry->register(
+			new \Packetery\Module\PacketaWidgetIntegration(
+				$this->checkout->createSettings()
+			)
+		);
 	}
 }

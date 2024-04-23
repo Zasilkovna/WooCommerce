@@ -334,6 +334,7 @@ class Checkout {
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
 			'translations'               => [
+				'packeta'                       => __( 'Packeta', 'packeta' ),
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
 				'chooseAddress'                 => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
@@ -1037,10 +1038,6 @@ class Checkout {
 	 * @return string
 	 */
 	private function calculateShipping(): string {
-		if ( ! did_action( 'wp_loaded' ) ) {
-			return '';
-		}
-
 		$chosenShippingRates = WC()->cart->calculate_shipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 

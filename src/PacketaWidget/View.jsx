@@ -8,6 +8,8 @@ export const View = ({cart}) => {
     const {shippingRates} = cart;
     const {
         carrierConfig: packetaWidgetCarrierConfig,
+        translations,
+        logo,
         country,
         language,
         packeteryApiKey,
@@ -69,11 +71,18 @@ export const View = ({cart}) => {
         }, widgetOptions );
     };
 
-    console.log('rendered');
-    return <tr className="packetery-widget-button-table-row">
-        <th>
-            <img className="packetery-widget-button-logo" src="/wp-content/plugins/packeta/public/packeta-symbol.png" alt="packeta" width="100" />
-            <a onClick={ onWidgetButtonClicked }>{ __( 'Choose pickup point', 'packeta' ) }</a>
-        </th>
-    </tr>
+    // TODO: use widgetAutoOpen
+
+    // renderer, packetery-hidden removed
+    return <div className="packetery-widget-button-wrapper">
+        <div className="form-row packeta-widget">
+            <div className="packetery-widget-button-row packeta-widget-button">
+                <img className="packetery-widget-button-logo" src={ logo } alt={ translations.packeta }/>
+                <a onClick={ onWidgetButtonClicked }
+                   className="button alt">{ translations.choosePickupPoint }</a>
+            </div>
+            <p className="packeta-widget-selected-address"></p>
+            <p className="packeta-widget-info"></p>
+        </div>
+    </div>
 }

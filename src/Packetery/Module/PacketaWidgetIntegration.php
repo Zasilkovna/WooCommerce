@@ -3,17 +3,17 @@
 namespace Packetery\Module;
 
 if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php' ) ) {
-    require_once WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php';
+	require_once WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php';
 }
 
-if ( file_exists(WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/Integrations/IntegrationInterface.php') ) {
-    require_once WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/Integrations/IntegrationInterface.php';
+if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/Integrations/IntegrationInterface.php' ) ) {
+	require_once WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/Integrations/IntegrationInterface.php';
 }
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
 class PacketaWidgetIntegration implements IntegrationInterface {
-	const VERSION = '0.1.0';
+	const VERSION          = '0.1.0';
 	const INTEGRATION_NAME = 'packeta-widget';
 
 	/**
@@ -21,7 +21,7 @@ class PacketaWidgetIntegration implements IntegrationInterface {
 	 */
 	public $settings;
 
-	public function __construct(array $settings) {
+	public function __construct( array $settings ) {
 		$this->settings = $settings;
 	}
 
@@ -47,12 +47,12 @@ class PacketaWidgetIntegration implements IntegrationInterface {
 			true
 		);
 
-		/* todo?
+		/* TODO: how to use __ in jsx?
 		wp_set_script_translations(
 			'packeta-widget',
 			'packeta',
-			PACKETERY_PLUGIN_DIR . '/languages',
-			);
+			PACKETERY_PLUGIN_DIR . '/languages'
+		);
 		*/
 	}
 
