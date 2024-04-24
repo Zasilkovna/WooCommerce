@@ -9,7 +9,6 @@ namespace Packetery\Latte\Bridges\Tracy;
 
 use Packetery\Latte\Engine;
 use Packetery\Latte\Runtime\Template;
-use Packetery\Nette;
 use Packetery\Tracy;
 /**
  * Bar panel for Tracy 2.x
@@ -17,7 +16,6 @@ use Packetery\Tracy;
  */
 class LattePanel implements Tracy\IBarPanel
 {
-    use Nette\SmartObject;
     /** @var bool */
     public $dumpParameters = \true;
     /** @var Template[] */
@@ -26,12 +24,12 @@ class LattePanel implements Tracy\IBarPanel
     private $list;
     /** @var string|null */
     private $name;
-    public static function initialize(Engine $latte, string $name = null, Tracy\Bar $bar = null) : void
+    public static function initialize(Engine $latte, ?string $name = null, ?Tracy\Bar $bar = null) : void
     {
         $bar = $bar ?? Tracy\Debugger::getBar();
         $bar->addPanel(new self($latte, $name));
     }
-    public function __construct(Engine $latte, string $name = null)
+    public function __construct(Engine $latte, ?string $name = null)
     {
         $this->name = $name;
         $latte->probe = function (Template $template) : void {
@@ -46,7 +44,7 @@ class LattePanel implements Tracy\IBarPanel
         if (!$this->templates) {
             return null;
         }
-        return Nette\Utils\Helpers::capture(function () {
+        return Tracy\Helpers::capture(function () {
             $name = $this->name ?? \basename(\reset($this->templates)->getName());
             require __DIR__ . '/templates/LattePanel.tab.phtml';
         });
@@ -58,7 +56,7 @@ class LattePanel implements Tracy\IBarPanel
     {
         $this->list = [];
         $this->buildList($this->templates[0]);
-        return Nette\Utils\Helpers::capture(function () {
+        return Tracy\Helpers::capture(function () {
             $list = $this->list;
             $dumpParameters = $this->dumpParameters;
             require __DIR__ . '/templates/LattePanel.panel.phtml';

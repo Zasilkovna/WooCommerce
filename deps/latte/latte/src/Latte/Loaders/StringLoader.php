@@ -20,7 +20,7 @@ class StringLoader implements \Packetery\Latte\Loader
     /**
      * @param  string[]  $templates
      */
-    public function __construct(array $templates = null)
+    public function __construct(?array $templates = null)
     {
         $this->templates = $templates;
     }

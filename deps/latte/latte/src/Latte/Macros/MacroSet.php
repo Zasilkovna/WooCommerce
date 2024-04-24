@@ -30,7 +30,7 @@ class MacroSet implements \Packetery\Latte\Macro
      * @param  string|callable|null  $end
      * @param  string|callable|null  $attr
      */
-    public function addMacro(string $name, $begin, $end = null, $attr = null, int $flags = null) : self
+    public function addMacro(string $name, $begin, $end = null, $attr = null, ?int $flags = null) : self
     {
         if (!$begin && !$end && !$attr) {
             throw new \InvalidArgumentException("At least one argument must be specified for tag '{$name}'.");
@@ -127,7 +127,7 @@ class MacroSet implements \Packetery\Latte\Macro
     /** @internal */
     protected function checkExtraArgs(MacroNode $node) : void
     {
-        if ($node->tokenizer->isNext()) {
+        if ($node->tokenizer->isNext(...$node->tokenizer::SIGNIFICANT)) {
             $args = \Packetery\Latte\Runtime\Filters::truncate($node->tokenizer->joinAll(), 20);
             throw new CompileException("Unexpected arguments '{$args}' in " . $node->getNotation());
         }

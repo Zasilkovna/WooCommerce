@@ -150,6 +150,14 @@ final class CheckoutController extends WP_REST_Controller {
 			delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 		} else {
 			$savedData = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+			// False when does not exist, empty string when improperly saved.
+			if ( ! is_array( $savedData ) ) {
+				if ( '' === $savedData ) {
+					delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+				}
+				return new WP_REST_Response( [], 200 );
+			}
+
 			unset( $savedData[ $params['carrierId'] ] );
 			set_transient(
 				$this->checkout->getTransientNamePacketaCheckoutData(),

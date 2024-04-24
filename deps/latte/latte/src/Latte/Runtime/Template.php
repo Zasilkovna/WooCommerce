@@ -76,12 +76,10 @@ class Template
     {
         return $this->params;
     }
-    /**
-     * Returns parameter.
-     * @return mixed
-     */
+    /** @deprecated */
     public function getParameter(string $name)
     {
+        \trigger_error(__METHOD__ . '() is deprecated, use getParameters()', \E_USER_DEPRECATED);
         if (!\array_key_exists($name, $this->params)) {
             \trigger_error("The variable '{$name}' does not exist in template.", \E_USER_NOTICE);
         }
@@ -115,7 +113,7 @@ class Template
      * Renders template.
      * @internal
      */
-    public function render(string $block = null) : void
+    public function render(?string $block = null) : void
     {
         $level = \ob_get_level();
         try {
@@ -130,7 +128,7 @@ class Template
             throw $e;
         }
     }
-    private function doRender(string $block = null) : bool
+    private function doRender(?string $block = null) : bool
     {
         if ($this->parentName === null && isset($this->global->coreParentFinder)) {
             $this->parentName = ($this->global->coreParentFinder)($this);
@@ -139,9 +137,6 @@ class Template
             $this->global->snippetDriver = new SnippetDriver($this->global->snippetBridge);
         }
         Filters::$xhtml = (bool) \preg_match('#xml|xhtml#', static::CONTENT_TYPE);
-        $this->params['_l'] = new \stdClass();
-        // old accumulators for back compatibility
-        $this->params['_g'] = $this->global;
         if ($this->referenceType === 'import') {
             if ($this->parentName) {
                 throw new \Packetery\Latte\RuntimeException('Imported template cannot use {extends} or {layout}, use {import}');
@@ -190,7 +185,7 @@ class Template
      * @param  string|\Closure|null  $mod  content-type name or modifier closure
      * @internal
      */
-    public function renderToContentType($mod, string $block = null) : void
+    public function renderToContentType($mod, ?string $block = null) : void
     {
         $this->filter(function () use($block) {
             $this->render($block);
@@ -293,7 +288,7 @@ class Template
     /**
      * @param  int|string  $staticId
      */
-    private function initBlockLayer($staticId, int $destId = null) : void
+    private function initBlockLayer($staticId, ?int $destId = null) : void
     {
         $destId = $destId ?? $staticId;
         $this->blocks[$destId] = [];
