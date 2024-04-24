@@ -1,5 +1,7 @@
 import { __ } from "@wordpress/i18n";
 import { getSetting } from '@woocommerce/settings';
+import {Fragment, useEffect} from "react";
+import {useSessionStorageState} from "./useSessionStorageState";
 
 export const View = ({cart}) => {
     // TODO: properly load
@@ -18,6 +20,8 @@ export const View = ({cart}) => {
         isAgeVerificationRequired,
         widgetAutoOpen,
     } = getSetting( 'packeta-widget_data' );
+
+    const [viewState, setViewState] = useSessionStorageState('packeta-widget-view', null);
 
     console.log('initial', shippingRates);
     if (!shippingRates || shippingRates.length === 0) {
@@ -63,15 +67,13 @@ export const View = ({cart}) => {
         }
 
         Packeta.Widget.pick( packeteryApiKey, ( pickupPoint ) => {
-            console.log( pickupPoint );
-
-            if ( pickupPoint == null ) {
-                return;
-            }
-
+            setViewState({
+                pickupPoint,
+            });
         }, widgetOptions );
     };
 
+    /*
     useEffect( () => {
         if ( widgetAutoOpen ) {
             onWidgetButtonClicked();
@@ -81,6 +83,10 @@ export const View = ({cart}) => {
         onWidgetButtonClicked,
     ] );
 
+     */
+
+    console.log('state', viewState);
+
     // renderer, packetery-hidden removed
     return <div className="packetery-widget-button-wrapper">
         <div className="form-row packeta-widget">
@@ -89,8 +95,10 @@ export const View = ({cart}) => {
                 <a onClick={ onWidgetButtonClicked }
                    className="button alt">{ translations.choosePickupPoint }</a>
             </div>
-            <p className="packeta-widget-selected-address"></p>
-            <p className="packeta-widget-info"></p>
+            {viewState && viewState.pickupPoint && <Fragment>
+                <p className="packeta-widget-selected-address">{ viewState.pickupPoint.place }</p>
+                <p className="packeta-widget-info">{ viewState.pickupPoint.name }</p>
+            </Fragment>}
         </div>
     </div>
 }
