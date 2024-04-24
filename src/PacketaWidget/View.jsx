@@ -16,6 +16,7 @@ export const View = ({cart}) => {
         appIdentity,
         weight,
         isAgeVerificationRequired,
+        widgetAutoOpen,
     } = getSetting( 'packeta-widget_data' );
 
     console.log('initial', shippingRates);
@@ -71,7 +72,14 @@ export const View = ({cart}) => {
         }, widgetOptions );
     };
 
-    // TODO: use widgetAutoOpen
+    useEffect( () => {
+        if ( widgetAutoOpen ) {
+            onWidgetButtonClicked();
+        }
+    }, [
+        widgetAutoOpen,
+        onWidgetButtonClicked,
+    ] );
 
     // renderer, packetery-hidden removed
     return <div className="packetery-widget-button-wrapper">
