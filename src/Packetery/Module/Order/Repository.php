@@ -509,28 +509,30 @@ class Repository {
 		 */
 		$isLoggingActive = (bool) apply_filters( 'packeta_enable_debug_logs', false );
 
-		if ( $isLoggingActive && empty( $pointId ) && $this->pickupPointsConfig->isInternalPickupPointCarrier( (string) $carrierId ) ) {
-			$wcLogger  = wc_get_logger();
-			$dataToLog = [
-				'orderId' => $orderData['id'] ?? null,
-				'trace'   => array_map(
-					static function ( array $item ): array {
-						return [
-							'file'   => sprintf( '%s(%s)', $item['file'], $item['line'] ),
-							'method' => sprintf( '%s%s%s(...)', $item['class'] ?? '', $item['type'] ?? '', $item['function'] ),
-						];
-					},
-					( new Exception() )->getTrace()
-				),
-			];
-			$wcLogger->warning(
-				sprintf(
-					'Required value for the pickup point order is not set: %s',
-					wp_json_encode( $dataToLog, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
-				),
-				[ 'source' => 'packeta' ]
-			);
+		if ( ! $isLoggingActive || ! empty( $pointId ) || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( (string) $carrierId ) ) {
+			return;
 		}
+
+		$wcLogger  = wc_get_logger();
+		$dataToLog = [
+			'orderId' => $orderData['id'] ?? null,
+			'trace'   => array_map(
+				static function ( array $item ): array {
+					return [
+						'file'   => sprintf( '%s(%s)', $item['file'], $item['line'] ),
+						'method' => sprintf( '%s%s%s(...)', $item['class'] ?? '', $item['type'] ?? '', $item['function'] ),
+					];
+				},
+				( new Exception() )->getTrace()
+			),
+		];
+		$wcLogger->warning(
+			sprintf(
+				'Required value for the pickup point order is not set: %s',
+				wp_json_encode( $dataToLog, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
+			),
+			[ 'source' => 'packeta' ]
+		);
 	}
 
 	/**
