@@ -833,7 +833,9 @@ class Plugin {
 		if ( is_checkout() ) {
 			$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
 			$this->enqueueStyle( 'packetery-custom-front-styles', 'public/custom-front.css' );
-			if ( ! $this->checkout->areBlocksUsedInCheckout() ) {
+			if ( $this->checkout->areBlocksUsedInCheckout() ) {
+				$this->enqueueScript( 'packetery-widget', 'https://widget.packeta.com/v6/www/js/library.js', false );
+			} else {
 				$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
 			}
 			// this works, but we prefer PacketaWidgetIntegration TODO: remove

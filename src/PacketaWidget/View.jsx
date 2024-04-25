@@ -4,9 +4,6 @@ import {Fragment, useEffect} from "react";
 import {useSessionStorageState} from "./useSessionStorageState";
 
 export const View = ({cart}) => {
-    // TODO: properly load
-    jQuery.getScript( "https://widget.packeta.com/v6/www/js/library.js" )
-
     const {shippingRates} = cart;
     const {
         carrierConfig: packetaWidgetCarrierConfig,
