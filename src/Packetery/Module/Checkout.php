@@ -606,6 +606,9 @@ class Checkout {
 	 * @return bool
 	 */
 	public function areBlocksUsedInCheckout(): bool {
+		// TODO: Which is better?
+		//return \Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::is_checkout_block_default();
+
 		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
 			return true;
 		}

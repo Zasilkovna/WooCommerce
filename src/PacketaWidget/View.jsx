@@ -16,6 +16,9 @@ export const View = ({cart}) => {
         weight,
         isAgeVerificationRequired,
         widgetAutoOpen,
+        nonce,
+        saveSelectedPickupPointUrl,
+        pickupPointAttrs,
     } = getSetting( 'packeta-widget_data' );
 
     const [viewState, setViewState] = useSessionStorageState('packeta-widget-view', null);
@@ -63,10 +66,57 @@ export const View = ({cart}) => {
             widgetOptions.livePickupPoint = true; // Pickup points with real person only.
         }
 
+        const encodeFormData = function ( data ) {
+            return Object.keys( data )
+                .map( key => encodeURIComponent( key ) + '=' + encodeURIComponent( data[ key ] ) )
+                .join( '&' );
+        }
+
+        const fillRateAttrValues = function ( carrierRateId, data, source ) {
+            for ( let attrKey in data ) {
+                if ( !data.hasOwnProperty( attrKey ) ) {
+                    continue;
+                }
+
+                if ( false === data[ attrKey ].isWidgetResultField ) {
+                    continue;
+                }
+
+                let widgetField = data[ attrKey ].widgetResultField || attrKey;
+                let addressFieldValue = source[ widgetField ];
+
+                rateAttrValues[ carrierRateId ] = rateAttrValues[ carrierRateId ] || {};
+                rateAttrValues[ carrierRateId ][ data[ attrKey ].name ] = addressFieldValue;
+            }
+        };
+
+        // Storage to store settings of all Packeta shipping methods displayed at checkout.
+        let rateAttrValues = {};
+
         Packeta.Widget.pick( packeteryApiKey, ( pickupPoint ) => {
             setViewState({
                 pickupPoint,
             });
+
+            fillRateAttrValues( rateId, pickupPointAttrs, pickupPoint );
+            let pickupPointDataToSave = rateAttrValues[ rateId ];
+            pickupPointDataToSave.packetery_rate_id = rateId;
+            fetch( saveSelectedPickupPointUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-WP-Nonce': nonce,
+                },
+                body: encodeFormData( pickupPointDataToSave ),
+            } )
+                .then( response => {
+                    if ( !response.ok ) {
+                        throw new Error( 'HTTP error ' + response.status );
+                    }
+                } )
+                .catch( ( error ) => {
+                    console.error( 'Failed to save pickup point data:', error );
+                } );
         }, widgetOptions );
     };
 
