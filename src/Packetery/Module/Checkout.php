@@ -377,12 +377,12 @@ class Checkout {
 	/**
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
 	 *
-	 * @param \WP_Error|null $errors Null when Blocks not active.
-	 * @param \WC_Cart|null  $cart   Null when Blocks not active.
+	 * @param \WP_Error|null|string $errors Null when Blocks not active. Can be empty string.
+	 * @param \WC_Cart|null         $cart   Null when Blocks not active.
 	 *
 	 * @return void
 	 */
-	public function validateCheckoutData( ?\WP_Error $errors = null, ?\WC_Cart $cart = null ): void {
+	public function validateCheckoutData( $errors, ?\WC_Cart $cart = null ): void {
 		// todo 1803 POST data is empty, how to know when sent?
 		/*
 		$postData = $this->httpRequest->getPost();
@@ -688,7 +688,9 @@ class Checkout {
 			'init',
 			function () {
 				if ( $this->areBlocksUsedInCheckout() ) {
+					// Does not prevent finishing order.
 					add_action( 'woocommerce_store_api_cart_errors', array( $this, 'validateCheckoutData' ), 10, 2 );
+
 					add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'updateOrderMetaBlocks' ) );
 				}
 
