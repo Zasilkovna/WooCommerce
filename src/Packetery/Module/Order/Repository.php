@@ -515,8 +515,8 @@ class Repository {
 
 		$wcLogger  = wc_get_logger();
 		$dataToLog = [
-			'orderId' => $orderData['id'] ?? null,
-			'trace'   => array_map(
+			'order' => $orderData,
+			'trace' => array_map(
 				static function ( array $item ): array {
 					return [
 						'file'   => sprintf( '%s(%s)', $item['file'], $item['line'] ),
