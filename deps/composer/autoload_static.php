@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c
+class ComposerStaticInite233ead381059f1a9346ba4cbfcd9515
 {
     public static $files = array (
         'packetery7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
@@ -192,6 +192,7 @@ class ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c
         'Packetery\\Latte\\Token' => __DIR__ . '/..' . '/latte/latte/src/Latte/Compiler/Token.php',
         'Packetery\\Latte\\TokenIterator' => __DIR__ . '/..' . '/latte/latte/src/Latte/Compiler/TokenIterator.php',
         'Packetery\\Latte\\Tokenizer' => __DIR__ . '/..' . '/latte/latte/src/Latte/Compiler/Tokenizer.php',
+        'Packetery\\Latte\\Tools\\Linter' => __DIR__ . '/..' . '/latte/latte/src/Tools/Linter.php',
         'Packetery\\Nette\\ArgumentOutOfRangeException' => __DIR__ . '/..' . '/nette/utils/src/exceptions.php',
         'Packetery\\Nette\\Bootstrap\\Configurator' => __DIR__ . '/..' . '/nette/bootstrap/src/Bootstrap/Configurator.php',
         'Packetery\\Nette\\Bootstrap\\Extensions\\ConstantsExtension' => __DIR__ . '/..' . '/nette/bootstrap/src/Bootstrap/Extensions/ConstantsExtension.php',
@@ -429,9 +430,9 @@ class ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInitc18c3d888cd87c4b4de7115506d5883c::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInite233ead381059f1a9346ba4cbfcd9515::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInite233ead381059f1a9346ba4cbfcd9515::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInite233ead381059f1a9346ba4cbfcd9515::$classMap;
 
         }, null, ClassLoader::class);
     }

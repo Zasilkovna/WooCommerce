@@ -136,6 +136,7 @@ return array(
     'Packetery\\Latte\\Token' => $vendorDir . '/latte/latte/src/Latte/Compiler/Token.php',
     'Packetery\\Latte\\TokenIterator' => $vendorDir . '/latte/latte/src/Latte/Compiler/TokenIterator.php',
     'Packetery\\Latte\\Tokenizer' => $vendorDir . '/latte/latte/src/Latte/Compiler/Tokenizer.php',
+    'Packetery\\Latte\\Tools\\Linter' => $vendorDir . '/latte/latte/src/Tools/Linter.php',
     'Packetery\\Nette\\ArgumentOutOfRangeException' => $vendorDir . '/nette/utils/src/exceptions.php',
     'Packetery\\Nette\\Bootstrap\\Configurator' => $vendorDir . '/nette/bootstrap/src/Bootstrap/Configurator.php',
     'Packetery\\Nette\\Bootstrap\\Extensions\\ConstantsExtension' => $vendorDir . '/nette/bootstrap/src/Bootstrap/Extensions/ConstantsExtension.php',

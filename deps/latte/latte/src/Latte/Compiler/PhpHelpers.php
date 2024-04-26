@@ -25,6 +25,7 @@ class PhpHelpers
         $lineLength = 100;
         $specialBrace = \false;
         foreach ($tokens as $n => $token) {
+            $next = $tokens[$n + 1] ?? [null, ''];
             if (\is_array($token)) {
                 [$name, $token] = $tmp = $token;
                 if ($name === \T_INLINE_HTML) {
@@ -32,8 +33,7 @@ class PhpHelpers
                 } elseif ($name === \T_OPEN_TAG) {
                     $openLevel = $level;
                 } elseif ($name === \T_CLOSE_TAG) {
-                    $next = $tokens[$n + 1] ?? null;
-                    if (\is_array($next) && $next[0] === \T_OPEN_TAG) {
+                    if ($next[0] === \T_OPEN_TAG) {
                         // remove ?)<?php
                         if (!\strspn($lastChar, ';{:/' . ($specialBrace ? '' : '}'))) {
                             $php = \rtrim($php) . ($lastChar = ';') . "\n" . \str_repeat("\t", $level);
@@ -46,7 +46,7 @@ class PhpHelpers
                             // skip <?php ?) but preserve <<?php
                             $inline = \strpos($php, "\n") === \false && \strlen($res) - \strrpos($res, "\n") < $lineLength;
                             $res .= '<?php' . ($inline ? ' ' : "\n" . \str_repeat("\t", $openLevel));
-                            if (\is_array($next) && \strpos($next[1], "\n") === \false) {
+                            if (\strpos($next[1], "\n") === \false) {
                                 $token = \rtrim($token, "\n");
                             } else {
                                 $php = \rtrim($php, "\t");
@@ -57,7 +57,7 @@ class PhpHelpers
                         $lastChar = ';';
                     }
                 } elseif ($name === \T_ELSE || $name === \T_ELSEIF) {
-                    if ($tokens[$n + 1] === ':' && $lastChar === '}') {
+                    if ($next === ':' && $lastChar === '}') {
                         $php .= ';';
                         // semicolon needed in if(): ... if() ... else:
                     }
@@ -68,7 +68,9 @@ class PhpHelpers
                 } elseif ($name === \T_WHITESPACE) {
                     $prev = $tokens[$n - 1];
                     $lines = \substr_count($token, "\n");
-                    if ($prev === '{' || $prev === '}' || $prev === ';' || $lines) {
+                    if ($prev === '}' && \in_array($next[0], [\T_ELSE, \T_ELSEIF, \T_CATCH, \T_FINALLY], \true)) {
+                        $token = ' ';
+                    } elseif ($prev === '{' || $prev === '}' || $prev === ';' || $lines) {
                         $token = \str_repeat("\n", \max(1, $lines)) . \str_repeat("\t", $level);
                         // indent last line
                     } elseif ($prev[0] === \T_OPEN_TAG) {
@@ -96,7 +98,7 @@ class PhpHelpers
                     $php .= "\x08";
                 } elseif ($token === ';') {
                     $specialBrace = \false;
-                    if (($tokens[$n + 1][0] ?? null) !== \T_WHITESPACE) {
+                    if ($next[0] !== \T_WHITESPACE) {
                         $token .= "\n" . \str_repeat("\t", $level);
                         // indent last line
                     }
