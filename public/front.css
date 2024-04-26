@@ -21,7 +21,8 @@
 	margin-bottom: 0;
 }
 
-.woocommerce #order_review table .packetery-widget-button-table-row td {
+.woocommerce #order_review table .packetery-widget-button-table-row td,
+.woocommerce #order_review table .packetery-widget-button-table-row th {
 	vertical-align: top;
 }
 
@@ -29,7 +30,7 @@
 	padding: 0;
 }
 
-.woocommerce #order_review table .packetery-widget-button-table-row .packeta-widget[packetery-renderer="table-row"] img {
+.woocommerce #order_review table .packetery-widget-button-table-row .packeta-widget.table-row img {
 	display: none;
 }
 
@@ -40,41 +41,37 @@
 	margin-left: auto;
 }
 
-.woocommerce .form-row[packetery-renderer="after-rate"] {
+.woocommerce .form-row.packeta-widget.after-rate {
 	display: inline-grid;
 }
 
-.woocommerce .form-row[packetery-renderer="after-rate"] packetery-widget-button-wrapper {
-	text-align: left;
-}
-
-.woocommerce [packetery-renderer="after-rate"] .packeta-widget-button {
+.woocommerce .packeta-widget.after-rate .packeta-widget-button {
 	display: inline-grid;
 }
 
-.woocommerce [packetery-renderer="after-rate"] .packeta-widget-button img {
+.woocommerce .packeta-widget.after-rate .packeta-widget-button img {
 	width: 150px;
 	margin: 0;
 }
 
-.woocommerce [packetery-renderer="table-row"] .packeta-widget-button img {
+.woocommerce .packeta-widget.table-row .packeta-widget-button img {
 	width: 45px;
 	height: 45px;
 }
 
-.woocommerce [packetery-renderer="after-rate"] .packeta-widget-button button {
+.woocommerce .packeta-widget.after-rate .packeta-widget-button button {
 	width: 150px;
 }
 
-body .woocommerce [packetery-renderer] div.packeta-widget-button.packetery-widget-button-row button.button.alt {
+body .woocommerce .packeta-widget div.packeta-widget-button.packetery-widget-button-row button.button.alt {
 	text-align: center;
 }
 
-.shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row [packetery-renderer="table-row"] .packeta-widget-info {
+.shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row .packeta-widget.table-row .packeta-widget-info {
 	text-align: left;
 }
 
-.shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row [packetery-renderer="table-row"] .packeta-widget-selected-address {
+.shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row .packeta-widget.table-row .packeta-widget-selected-address {
 	text-align: left;
 }
 

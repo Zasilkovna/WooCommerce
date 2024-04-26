@@ -1,10 +1,10 @@
-.woocommerce [packetery-renderer="after-rate"] .packeta-widget-button .packetery-widget-button-logo {
+.woocommerce .packeta-widget.after-rate .packeta-widget-button .packetery-widget-button-logo {
 	width: 45px;
 	height: 45px;
 	margin: 0 auto;
 	margin-bottom: 5px;
 }
 
-.woocommerce [packetery-renderer="after-rate"] .packetery-widget-button-row {
+.woocommerce .packeta-widget.after-rate .packetery-widget-button-row {
 	width: 150px;
 }
