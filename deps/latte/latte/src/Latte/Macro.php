@@ -13,7 +13,7 @@ namespace Packetery\Latte;
  */
 interface Macro
 {
-    const AUTO_EMPTY = 4, AUTO_CLOSE = 64, ALLOWED_IN_HEAD = 128, DEFAULT_FLAGS = 0;
+    public const AUTO_EMPTY = 4, AUTO_CLOSE = 64, ALLOWED_IN_HEAD = 128, DEFAULT_FLAGS = 0;
     /**
      * Initializes before template parsing.
      * @return void

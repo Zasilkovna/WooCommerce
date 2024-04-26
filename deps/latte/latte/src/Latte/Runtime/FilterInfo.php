@@ -17,11 +17,11 @@ class FilterInfo
     use \Packetery\Latte\Strict;
     /** @var string|null */
     public $contentType;
-    public function __construct(string $contentType = null)
+    public function __construct(?string $contentType = null)
     {
         $this->contentType = $contentType;
     }
-    public function validate(array $contentTypes, string $name = null) : void
+    public function validate(array $contentTypes, ?string $name = null) : void
     {
         if (!\in_array($this->contentType, $contentTypes, \true)) {
             $name = $name ? " |{$name}" : $name;
