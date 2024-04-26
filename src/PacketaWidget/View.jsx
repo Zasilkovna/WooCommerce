@@ -134,18 +134,18 @@ export const View = ({cart}) => {
 
     console.log('state', viewState);
 
-    // renderer, packetery-hidden removed
+    // same as latte, different renderer, packetery-hidden removed
     return <div className="packetery-widget-button-wrapper">
-        <div className="form-row packeta-widget">
+        <div className="form-row packeta-widget blocks">
             <div className="packetery-widget-button-row packeta-widget-button">
                 <img className="packetery-widget-button-logo" src={ logo } alt={ translations.packeta }/>
                 <a onClick={ onWidgetButtonClicked }
-                   className="button alt">{ translations.choosePickupPoint }</a>
+                   className="button alt components-button wc-block-components-button wp-element-button contained">{ translations.choosePickupPoint }</a>
             </div>
-            {viewState && viewState.pickupPoint && <Fragment>
-                <p className="packeta-widget-selected-address">{ viewState.pickupPoint.place }</p>
+            <p className="packeta-widget-selected-address"></p>
+            { viewState && viewState.pickupPoint && <Fragment>
                 <p className="packeta-widget-info">{ viewState.pickupPoint.name }</p>
-            </Fragment>}
+            </Fragment> }
         </div>
     </div>
 }

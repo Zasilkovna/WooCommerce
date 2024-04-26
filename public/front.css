@@ -9,6 +9,12 @@
 	margin-right: 5px;
 }
 
+.blocks .packeta-widget-button img {
+	width: auto;
+	max-width: 3em;
+	margin-right: 1em;
+}
+
 .packetery-widget-button-wrapper .packeta-widget-info-error {
 	color: red;
 }
@@ -21,49 +27,51 @@
 	margin-bottom: 0;
 }
 
-.woocommerce #order_review table .packetery-widget-button-table-row td,
-.woocommerce #order_review table .packetery-widget-button-table-row th {
+.packetery-widget-button-table-row td,
+.packetery-widget-button-table-row th {
 	vertical-align: top;
 }
 
-.woocommerce #order_review table .packetery-widget-button-table-row td .form-row {
+.packetery-widget-button-table-row td .form-row {
 	padding: 0;
 }
 
-.woocommerce #order_review table .packetery-widget-button-table-row .packeta-widget.table-row img {
+.packetery-widget-button-table-row .packeta-widget.table-row img {
 	display: none;
 }
 
-.woocommerce #order_review table .packetery-widget-button-table-row th img {
+.packetery-widget-button-table-row th img {
 	width: 45px;
 	height: 45px;
 	display: block;
 	margin-left: auto;
 }
 
-.woocommerce .form-row.packeta-widget.after-rate {
+.form-row.packeta-widget.after-rate {
 	display: inline-grid;
 }
 
-.woocommerce .packeta-widget.after-rate .packeta-widget-button {
+.packeta-widget.after-rate .packeta-widget-button {
 	display: inline-grid;
 }
 
-.woocommerce .packeta-widget.after-rate .packeta-widget-button img {
+.packeta-widget.after-rate .packeta-widget-button img {
 	width: 150px;
 	margin: 0;
 }
 
-.woocommerce .packeta-widget.table-row .packeta-widget-button img {
+.packeta-widget.table-row .packeta-widget-button img {
 	width: 45px;
 	height: 45px;
 }
 
-.woocommerce .packeta-widget.after-rate .packeta-widget-button button {
+.packeta-widget.after-rate .packeta-widget-button button,
+.packeta-widget.after-rate .packeta-widget-button a.button {
 	width: 150px;
 }
 
-body .woocommerce .packeta-widget div.packeta-widget-button.packetery-widget-button-row button.button.alt {
+body .packeta-widget div.packeta-widget-button.packetery-widget-button-row button.button.alt,
+body .packeta-widget div.packeta-widget-button.packetery-widget-button-row a.button.alt {
 	text-align: center;
 }
 
