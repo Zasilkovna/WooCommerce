@@ -785,9 +785,11 @@ class Checkout {
 	/**
 	 * Prepare shipping rates based on cart properties.
 	 *
+	 * @param array|null $allowedCarrierNames List of allowed carrier names.
+	 *
 	 * @return array
 	 */
-	public function getShippingRates(): array {
+	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
 		$cartProducts              = WC()->cart->get_cart_contents();
@@ -802,9 +804,18 @@ class Checkout {
 				continue;
 			}
 
-			$optionId = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
-			$options  = Carrier\Options::createByOptionId( $optionId );
+			if ( null !== $allowedCarrierNames && ! array_key_exists( $carrier->getId(), $allowedCarrierNames ) ) {
+				continue;
+			}
 
+			$optionId    = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
+			$options     = Carrier\Options::createByOptionId( $optionId );
+			$carrierName = $options->getName();
+			if ( null !== $allowedCarrierNames ) {
+				$carrierName = $allowedCarrierNames[ $carrier->getId() ];
+			}
+
+			// TODO: replace with carrier config validation.
 			if ( false === $options->isActive() ) {
 				continue;
 			}
@@ -823,9 +834,9 @@ class Checkout {
 
 			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
 			if ( null !== $cost ) {
-				$name   = $this->getFormattedShippingMethodName( $options->getName(), $cost );
-				$rateId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
-				$taxes  = null;
+				$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
+				$rateId      = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+				$taxes       = null;
 
 				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
 					$rates            = WC_Tax::get_shipping_tax_rates();
@@ -848,7 +859,7 @@ class Checkout {
 					$cost -= array_sum( $taxes );
 				}
 
-				$customRates[ $rateId ] = $this->createShippingRate( $name, $rateId, $cost, $taxes );
+				$customRates[ $rateId ] = $this->createShippingRate( $carrierName, $rateId, $cost, $taxes );
 			}
 		}
 

@@ -1,0 +1,10 @@
+{var string $carrierId = ''}
+{if isset($options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID])}
+	{var string $carrierId = $options[Packetery\Module\ShippingMethod::PACKETERY_METHOD_ID]}
+{/if}
+
+<p class="packetery-carrier-link-container">
+	<a href="{$carrierSettingsLinkBase}{$carrierId}" target="_blank" data-base="{$carrierSettingsLinkBase}">
+		{$translations['carrierSettingsLinkText']}
+	</a>
+</p>
