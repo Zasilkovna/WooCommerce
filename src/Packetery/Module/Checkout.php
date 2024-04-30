@@ -815,8 +815,7 @@ class Checkout {
 				$carrierName = $allowedCarrierNames[ $carrier->getId() ];
 			}
 
-			// TODO: replace with carrier config validation.
-			if ( false === $options->isActive() ) {
+			if ( null === $allowedCarrierNames && false === $options->isActive() ) {
 				continue;
 			}
 
