@@ -2,6 +2,7 @@ import { __ } from "@wordpress/i18n";
 import { getSetting } from '@woocommerce/settings';
 import {Fragment, useEffect} from "react";
 import {useSessionStorageState} from "./useSessionStorageState";
+import { ValidatedTextInput } from '@woocommerce/blocks-components';
 
 export const View = ({cart}) => {
     const {shippingRates} = cart;
@@ -143,6 +144,15 @@ export const View = ({cart}) => {
                    className="button alt components-button wc-block-components-button wp-element-button contained">{ translations.choosePickupPoint }</a>
             </div>
             <p className="packeta-widget-selected-address"></p>
+            <ValidatedTextInput
+                style={ {
+                    opacity: 0,
+                    width: 0,
+                    padding: 0,
+                    float: 'left',
+                } }
+                required={ true }
+            />
             { viewState && viewState.pickupPoint && <Fragment>
                 <p className="packeta-widget-info">{ viewState.pickupPoint.name }</p>
             </Fragment> }
