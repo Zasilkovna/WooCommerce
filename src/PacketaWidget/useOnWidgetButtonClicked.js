@@ -1,7 +1,7 @@
 import { getSetting } from '@woocommerce/settings';
 import {useCallback} from "react";
 
-export const useOnWidgetButtonClicked = (setViewState) => {
+export const useOnWidgetButtonClicked = (packetaShippingRate, setViewState) => {
     const {
         carrierConfig: packetaWidgetCarrierConfig,
         country,
@@ -15,7 +15,7 @@ export const useOnWidgetButtonClicked = (setViewState) => {
         pickupPointAttrs,
     } = getSetting( 'packeta-widget_data' );
 
-    return useCallback((packetaShippingRate) => {
+    return useCallback(() => {
         const rateId = packetaShippingRate.rate_id.split(':').pop();
 
         let widgetOptions = { country, language, appIdentity, weight };

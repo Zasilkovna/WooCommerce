@@ -1,9 +1,9 @@
-import {Fragment, useEffect, useState} from "react";
+import {Fragment, useEffect, useState} from 'react';
 import { getSetting } from '@woocommerce/settings';
 import { ValidatedTextInput } from '@woocommerce/blocks-components';
 
-import {usePacketaShippingRate} from "./usePacketaShippingRate";
-import {useOnWidgetButtonClicked} from "./useOnWidgetButtonClicked";
+import { usePacketaShippingRate } from './usePacketaShippingRate';
+import { useOnWidgetButtonClicked } from './useOnWidgetButtonClicked';
 
 export const View = ({cart}) => {
     const [viewState, setViewState] = useState(null);
@@ -20,11 +20,11 @@ export const View = ({cart}) => {
 
 
     const packetaShippingRate = usePacketaShippingRate(shippingRates, carrierConfig);
-    const onWidgetButtonClicked = useOnWidgetButtonClicked(setViewState);
+    const onWidgetButtonClicked = useOnWidgetButtonClicked(packetaShippingRate, setViewState);
 
     useEffect( () => {
         if (packetaShippingRate && !viewState && widgetAutoOpen ) {
-            onWidgetButtonClicked(packetaShippingRate);
+            onWidgetButtonClicked();
         }
     }, [ packetaShippingRate, widgetAutoOpen, onWidgetButtonClicked ] );
 
