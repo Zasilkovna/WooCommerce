@@ -32,7 +32,15 @@ export const View = ({cart}) => {
         return null;
     }
 
-    // same as latte, different renderer, packetery-hidden removed
+    const getErrorMessage = function ( viewState ) {
+        if ( viewState && viewState.pickupPoint ) {
+            return null;
+        } else {
+            return translations.pickupPointNotChosen;
+        }
+    }
+
+    // fork of latte version, different renderer, packetery-hidden removed
     return <div className="packetery-widget-button-wrapper">
         <div className="form-row packeta-widget blocks">
             <div className="packetery-widget-button-row packeta-widget-button">
@@ -48,7 +56,9 @@ export const View = ({cart}) => {
                     padding: 0,
                     float: 'left',
                 } }
+                value={ viewState && viewState.pickupPoint && viewState.pickupPoint.name }
                 required={ true }
+                errorMessage={ getErrorMessage( viewState ) }
             />
             { viewState && viewState.pickupPoint && <Fragment>
                 <p className="packeta-widget-info">{ viewState.pickupPoint.name }</p>

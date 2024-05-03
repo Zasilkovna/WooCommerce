@@ -16,7 +16,9 @@ export const useOnWidgetButtonClicked = (packetaShippingRate, setViewState) => {
     } = getSetting( 'packeta-widget_data' );
 
     return useCallback(() => {
-        const rateId = packetaShippingRate.rate_id.split(':').pop();
+        const rateId = 'packetery_carrier_zpointcz';
+        // TODO: fix packetaShippingRate is null
+        //const rateId = packetaShippingRate.rate_id.split(':').pop();
 
         let widgetOptions = { country, language, appIdentity, weight };
 
