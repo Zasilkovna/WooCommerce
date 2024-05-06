@@ -65,9 +65,11 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
 = 1.7.2 =
-Changed: Instead of Guzzle client, we're using WordPress function to fetch feature flags from external API.
-Fixed: Filtering payment gateways without shipping calculation.
 Added: PHP 8.1-8.2 support.
+Added: It is possible to set the default packet dimensions in the settings
+Changed: Instead of Guzzle client, we're using WordPress function to fetch feature flags from external API.
+Changed: Settings - default weight now accepts up to 3 decimal places
+Fixed: Filtering payment gateways without shipping calculation.
 
 = 1.7.1 =
 Fixed: Malfunctioning import of previous version's settings.
