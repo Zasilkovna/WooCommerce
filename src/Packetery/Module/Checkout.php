@@ -331,6 +331,7 @@ class Checkout {
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
 			'saveCarDeliveryDetailsUrl'  => $this->apiRouter->getSaveCarDeliveryDetailsUrl(),
 			'removeSavedDataUrl'         => $this->apiRouter->getRemoveSavedDataUrl(),
+			'getSettingsUrl'             => admin_url( 'admin-ajax.php' ),
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
 			'translations'               => [
@@ -345,6 +346,15 @@ class Checkout {
 				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 			],
 		];
+	}
+
+	/**
+	 * Encodes, prints, dies.
+	 *
+	 * @return void
+	 */
+	public function createSettingsAjax(): void {
+		wp_send_json( $this->createSettings() );
 	}
 
 	/**
@@ -607,9 +617,7 @@ class Checkout {
 	 * @return bool
 	 */
 	public function areBlocksUsedInCheckout(): bool {
-		// TODO: Which is better?
-		//return \Automattic\WooCommerce\Blocks\Utils\CartCheckoutUtils::is_checkout_block_default();
-
+		// It is possible to use CartCheckoutUtils::is_checkout_block_default .
 		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
 			return true;
 		}

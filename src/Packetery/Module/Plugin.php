@@ -535,6 +535,9 @@ class Plugin {
 				);
 			}
 		);
+
+		add_action( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
+		add_action( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 	}
 
 	/**
@@ -838,8 +841,6 @@ class Plugin {
 			} else {
 				$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
 			}
-			// this works, but we prefer PacketaWidgetIntegration TODO: remove
-			// $this->enqueueScript( 'packeta-widget', 'public/js/index.js', true, [] );
 			wp_localize_script( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkout->createSettings() );
 		}
 	}
@@ -1169,6 +1170,13 @@ class Plugin {
 		}
 	}
 
+	/**
+	 * Registers checkout block.
+	 *
+	 * @param IntegrationRegistry $integrationRegistry Integration registry.
+	 *
+	 * @return void
+	 */
 	public function registerCheckoutBlock( IntegrationRegistry $integrationRegistry ): void {
 		$integrationRegistry->register(
 			new \Packetery\Module\PacketaWidgetIntegration(
