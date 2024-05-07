@@ -15,8 +15,8 @@ import { __ } from "@wordpress/i18n";
 registerBlockType(
 	metadata,
 	{
-		title: __( 'title', 'packeta-widget' ),
-		description: __( 'description', 'packeta-widget' ),
+		title: __( 'title', 'packeta' ),
+		description: __( 'description', 'packeta' ),
 		edit: Edit,
 	}
 );

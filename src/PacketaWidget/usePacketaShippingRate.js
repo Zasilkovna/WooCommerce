@@ -1,3 +1,9 @@
+/**
+ * Shipping rate getter.
+ *
+ * @package Packetery
+ */
+
 export const usePacketaShippingRate = ( shippingRates, carrierConfig ) => {
 	if ( !shippingRates || shippingRates.length === 0 ) {
 		return null;

@@ -338,6 +338,7 @@ class Checkout {
 				'packeta'                       => __( 'Packeta', 'packeta' ),
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
 				'pickupPointNotChosen'          => __( 'Pickup point is not chosen.', 'packeta' ),
+				'placeholderText'               => __( 'Loading Packeta widget button...', 'packeta' ),
 				'chooseAddress'                 => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
@@ -349,12 +350,25 @@ class Checkout {
 	}
 
 	/**
-	 * Encodes, prints, dies.
+	 * Used to provide additional settings for blocks checkout.
 	 *
 	 * @return void
 	 */
 	public function createSettingsAjax(): void {
-		wp_send_json( $this->createSettings() );
+		$settings = [];
+		if ( WC()->cart instanceof \WC_Cart ) {
+			/**
+			 * Filter widget weight in checkout.
+			 *
+			 * @since 1.6.3
+			 */
+			$widgetWeight = (float) apply_filters( 'packeta_widget_weight', $this->getCartWeightKg() );
+
+			$settings['weight']                    = $widgetWeight;
+			$settings['isAgeVerificationRequired'] = $this->isAgeVerification18PlusRequired();
+		}
+
+		wp_send_json( $settings );
 	}
 
 	/**

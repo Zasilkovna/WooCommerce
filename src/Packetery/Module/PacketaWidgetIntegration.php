@@ -1,6 +1,13 @@
 <?php
+/**
+ * PacketaWidgetIntegration.
+ *
+ * @package Packetery
+ */
 
 namespace Packetery\Module;
+
+use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
 if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php' ) ) {
 	require_once WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php';
@@ -10,25 +17,45 @@ if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/
 	require_once WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/Integrations/IntegrationInterface.php';
 }
 
-use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
-
+/**
+ * PacketaWidgetIntegration.
+ *
+ * @package Packetery
+ */
 class PacketaWidgetIntegration implements IntegrationInterface {
 	const VERSION          = '0.1.0';
 	const INTEGRATION_NAME = 'packeta-widget';
 
 	/**
+	 * Settings.
+	 *
 	 * @var array
 	 */
 	public $settings;
 
+	/**
+	 * Constructor.
+	 *
+	 * @param array $settings Settings.
+	 */
 	public function __construct( array $settings ) {
 		$this->settings = $settings;
 	}
 
+	/**
+	 * Gets name.
+	 *
+	 * @return string
+	 */
 	public function get_name(): string {
 		return self::INTEGRATION_NAME;
 	}
 
+	/**
+	 * Initializes.
+	 *
+	 * @return void
+	 */
 	public function initialize(): void {
 		$scriptPath      = '/packeta/public/js/index.js';
 		$scriptAssetPath = PACKETERY_PLUGIN_DIR . '/public/js/index.asset.php';
@@ -46,36 +73,45 @@ class PacketaWidgetIntegration implements IntegrationInterface {
 			$scriptAsset['version'],
 			true
 		);
-
-		/* TODO: how to use __ in jsx?
-		wp_set_script_translations(
-			'packeta-widget',
-			'packeta',
-			PACKETERY_PLUGIN_DIR . '/languages'
-		);
-		*/
 	}
 
+	/**
+	 * Gets script handles.
+	 *
+	 * @return string[]
+	 */
 	public function get_script_handles() {
 		return [ self::INTEGRATION_NAME ];
 	}
 
+	/**
+	 * Gets editor script handles.
+	 *
+	 * @return string[]
+	 */
 	public function get_editor_script_handles(): array {
 		return [ self::INTEGRATION_NAME ];
 	}
 
+	/**
+	 * Gets script data.
+	 *
+	 * @return array
+	 */
 	public function get_script_data(): array {
 		return $this->settings;
 	}
 
 	/**
-	 * @param $file
+	 * Gets file version.
+	 *
+	 * @param string $filePath File path.
 	 *
 	 * @return bool|int|string
 	 */
-	protected function get_file_version( $file ) {
-		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG && file_exists( $file ) ) {
-			return filemtime( $file );
+	protected function get_file_version( string $filePath ) {
+		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG && file_exists( $filePath ) ) {
+			return filemtime( $filePath );
 		}
 
 		return self::VERSION;

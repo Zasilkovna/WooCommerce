@@ -1,4 +1,10 @@
-import {useCallback, useState} from "react";
+/**
+ * Widget button callback.
+ *
+ * @package Packetery
+ */
+
+import { useCallback, useState } from "react";
 
 export const useOnWidgetButtonClicked = ( packetaShippingRate, settings, dynamicSettings ) => {
 	const {
@@ -12,7 +18,7 @@ export const useOnWidgetButtonClicked = ( packetaShippingRate, settings, dynamic
 		pickupPointAttrs,
 	} = settings;
 
-    const [ viewState, setViewState ] = useState( null );
+	const [ viewState, setViewState ] = useState( null );
 
 	const onWidgetButtonClicked = useCallback( () => {
 		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
@@ -86,5 +92,5 @@ export const useOnWidgetButtonClicked = ( packetaShippingRate, settings, dynamic
 		}, widgetOptions );
 	}, [ packetaShippingRate, dynamicSettings ] );
 
-    return [ onWidgetButtonClicked, viewState ];
+	return [ onWidgetButtonClicked, viewState ];
 }

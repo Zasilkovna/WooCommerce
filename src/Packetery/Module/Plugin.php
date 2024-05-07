@@ -527,17 +527,6 @@ class Plugin {
 
 		add_action( 'woocommerce_blocks_checkout_block_registration', [ $this, 'registerCheckoutBlock' ] );
 
-        /*
-		add_action(
-			'init',
-			function () {
-				register_block_type(
-					PACKETERY_PLUGIN_DIR . '/public/js/'
-				);
-			}
-		);
-        */
-
 		add_action( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 		add_action( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 	}
