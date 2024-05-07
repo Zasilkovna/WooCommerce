@@ -1059,7 +1059,9 @@ class Checkout {
 			return null;
 		}
 
-		return Carrier\OptionPrefixer::removePrefix( $chosenMethod );
+		$optionId = $this->removeShippingMethodPrefix( $chosenMethod );
+
+		return Carrier\OptionPrefixer::removePrefix( $optionId );
 	}
 
 	/**
