@@ -6,10 +6,10 @@ export const Edit = () => {
 
 	return <div { ...blockProps }>
 		<PacketaWidget
-			show={ true }
-			buttonTranslationKey="example"
+			buttonLabel="Choose pickup point"
 			logoSrc="/wp-content/plugins/packeta/public/packeta-symbol.png"
-			message="Pickup Point Name"
+			logoAlt="Packeta"
+			info="Pickup Point Name"
 		/>
 	</div>
 

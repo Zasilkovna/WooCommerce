@@ -14,6 +14,10 @@ export const usePacketaShippingRate = ( shippingRates, carrierConfig ) => {
 
 		const rateId = rate_id.split( ':' ).pop();
 		const rateCarrierConfig = carrierConfig[ rateId ];
+		if ( !rateCarrierConfig ) {
+			return false;
+		}
+
 		const { is_pickup_points: isPickupPoints } = rateCarrierConfig;
 
 		return rateCarrierConfig && isPickupPoints;

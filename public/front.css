@@ -27,6 +27,13 @@
 	margin-bottom: 0;
 }
 
+.packetery-widget-button-wrapper .wc-block-components-text-input input {
+    opacity: 0;
+    width: 0 !important;
+    padding: 0 !important;
+    float: left;
+}
+
 .packetery-widget-button-table-row td,
 .packetery-widget-button-table-row th {
 	vertical-align: top;

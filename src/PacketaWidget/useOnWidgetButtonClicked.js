@@ -1,9 +1,8 @@
-import { getSetting } from '@woocommerce/settings';
-import { useCallback } from "react";
+import {useCallback, useState} from "react";
 
-export const useOnWidgetButtonClicked = ( packetaShippingRate, setViewState, dynamicSettings ) => {
+export const useOnWidgetButtonClicked = ( packetaShippingRate, settings, dynamicSettings ) => {
 	const {
-		carrierConfig: packetaWidgetCarrierConfig,
+		carrierConfig,
 		country,
 		language,
 		packeteryApiKey,
@@ -11,9 +10,11 @@ export const useOnWidgetButtonClicked = ( packetaShippingRate, setViewState, dyn
 		nonce,
 		saveSelectedPickupPointUrl,
 		pickupPointAttrs,
-	} = getSetting( 'packeta-widget_data' );
+	} = settings;
 
-	return useCallback( () => {
+    const [ viewState, setViewState ] = useState( null );
+
+	const onWidgetButtonClicked = useCallback( () => {
 		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
 
 		let weight = 0.0;
@@ -22,11 +23,11 @@ export const useOnWidgetButtonClicked = ( packetaShippingRate, setViewState, dyn
 		}
 		let widgetOptions = { country, language, appIdentity, weight };
 
-		if ( packetaWidgetCarrierConfig[ rateId ].carriers ) {
-			widgetOptions.carriers = packetaWidgetCarrierConfig[ rateId ].carriers;
+		if ( carrierConfig[ rateId ].carriers ) {
+			widgetOptions.carriers = carrierConfig[ rateId ].carriers;
 		}
-		if ( packetaWidgetCarrierConfig[ rateId ].vendors ) {
-			widgetOptions.vendors = packetaWidgetCarrierConfig[ rateId ].vendors;
+		if ( carrierConfig[ rateId ].vendors ) {
+			widgetOptions.vendors = carrierConfig[ rateId ].vendors;
 		}
 		if ( dynamicSettings && dynamicSettings.isAgeVerificationRequired ) {
 			widgetOptions.livePickupPoint = true; // Pickup points with real person only.
@@ -84,4 +85,6 @@ export const useOnWidgetButtonClicked = ( packetaShippingRate, setViewState, dyn
 				} );
 		}, widgetOptions );
 	}, [ packetaShippingRate, dynamicSettings ] );
+
+    return [ onWidgetButtonClicked, viewState ];
 }

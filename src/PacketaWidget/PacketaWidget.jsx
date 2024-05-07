@@ -1,26 +1,26 @@
-import { __ } from "@wordpress/i18n";
-import classNames from "classnames";
-
 export const PacketaWidget = ( {
-								   buttonTranslationKey,
-								   hasError,
-								   logoSrc,
-								   message,
-								   onClick,
-								   show,
-							   } ) => {
+    children,
+    buttonLabel,
+    logoSrc,
+    logoAlt,
+    info,
+    onClick,
+    loading,
+} ) => {
 
-	if ( !show ) {
-		return null;
-	}
-
-	return <div className="packeta-widget">
-		<div className="packeta-widget__button">
-			<img className="packetery-widget__button-logo" src={ logoSrc } alt={ __( 'packeta-widget:packeta' ) }/>
-			<button onClick={ onClick }>{ __( buttonTranslationKey ) }</button>
-		</div>
-		<p className={ classNames( 'packeta-widget__info', hasError && 'packeta-widget__info_error' ) }>
-			{ message }
-		</p>
-	</div>
+    return <div className="packetery-widget-button-wrapper">
+        {loading && <div className="packeta-widget-loading">TODO</div>}
+        {!loading && <div className="form-row packeta-widget blocks">
+            <div className="packetery-widget-button-row packeta-widget-button">
+                <img className="packetery-widget-button-logo" src={ logoSrc } alt={ logoAlt }/>
+                <a onClick={ onClick }
+                   className="button alt components-button wc-block-components-button wp-element-button contained"
+                >
+                    { buttonLabel }
+                </a>
+            </div>
+            {children}
+            { info && <p className="packeta-widget-info">{ info }</p> }
+        </div>}
+    </div>
 }

@@ -527,6 +527,7 @@ class Plugin {
 
 		add_action( 'woocommerce_blocks_checkout_block_registration', [ $this, 'registerCheckoutBlock' ] );
 
+        /*
 		add_action(
 			'init',
 			function () {
@@ -535,6 +536,7 @@ class Plugin {
 				);
 			}
 		);
+        */
 
 		add_action( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 		add_action( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
