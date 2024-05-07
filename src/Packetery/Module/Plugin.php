@@ -863,11 +863,12 @@ class Plugin {
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
+		$isPageDetail  = $this->contextResolver->isPageDetail();
 		$screen        = get_current_screen();
 		$isDashboard   = ( $screen && 'dashboard' === $screen->id );
 
 		if (
-			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard ||
+			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard || $isPageDetail ||
 			in_array(
 				$page,
 				[
