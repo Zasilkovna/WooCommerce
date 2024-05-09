@@ -367,7 +367,6 @@ class Metabox {
 					'packetClaimUrl'         => $packetClaimUrl,
 					'packetClaimCancelUrl'   => $packetClaimCancelUrl,
 					'translations'           => [
-						'packetStatus'              => __( 'Status', 'packeta'),
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
 						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 						'showLogs'                  => __( 'Show logs', 'packeta' ),

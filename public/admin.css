@@ -975,6 +975,7 @@ tbody .packetery-log-column-note {
     cursor: inherit !important;
     white-space: nowrap;
     max-width: 100%;
+    padding: 0 5px 0 5px;
 }
 
 .order-status.data-received {
