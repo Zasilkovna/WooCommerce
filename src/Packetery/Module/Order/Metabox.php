@@ -330,6 +330,7 @@ class Metabox {
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                  => $order,
+					'orderStatus'            => $orderStatus,
 					'showSubmitPacketButton' => false,
 					'packetCancelLink'       => $packetCancelLink,
 					'packetTrackingUrl'      => $this->helper->get_tracking_url( $packetId ),
@@ -338,6 +339,7 @@ class Metabox {
 					'packetClaimUrl'         => $packetClaimUrl,
 					'packetClaimCancelUrl'   => $packetClaimCancelUrl,
 					'translations'           => [
+						'packetStatus'              => __( 'Status', 'packeta'),
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
 						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 						'showLogs'                  => __( 'Show logs', 'packeta' ),
@@ -443,6 +445,7 @@ class Metabox {
 				'showSubmitPacketButton' => $showSubmitPacketButton,
 				'packetCancelLink'       => null,
 				'packetTrackingUrl'      => null,
+				'orderStatus'            => null,
 				'packetSubmitUrl'        => $packetSubmitUrl,
 				'packetClaimTrackingUrl' => $packetClaimTrackingUrl,
 				'packetClaimUrl'         => $packetClaimUrl,
