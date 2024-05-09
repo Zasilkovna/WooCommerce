@@ -4,8 +4,8 @@ import { ValidatedTextInput } from '@woocommerce/blocks-components';
 
 import { usePacketaShippingRate } from './usePacketaShippingRate';
 import { useOnWidgetButtonClicked } from './useOnWidgetButtonClicked';
-import { useDynamicSettings } from "./useDynamicSettings";
-import { PacketaWidget } from "./PacketaWidget";
+import { useDynamicSettings } from './useDynamicSettings';
+import { PacketaWidget } from './PacketaWidget';
 
 export const View = ( { cart } ) => {
 	const { shippingRates } = cart;
@@ -19,16 +19,24 @@ export const View = ( { cart } ) => {
 		getSettingsUrl,
 	} = settings;
 
-	const packetaShippingRate = usePacketaShippingRate( shippingRates, carrierConfig );
+	const packetaShippingRate = usePacketaShippingRate(
+		shippingRates,
+		carrierConfig
+	);
 	const [ dynamicSettings, loading ] = useDynamicSettings( getSettingsUrl );
 	const [ onWidgetButtonClicked, viewState ] = useOnWidgetButtonClicked(
 		packetaShippingRate,
 		settings,
-		dynamicSettings,
+		dynamicSettings
 	);
 
 	useEffect( () => {
-		if ( packetaShippingRate && dynamicSettings && !viewState && widgetAutoOpen ) {
+		if (
+			packetaShippingRate &&
+			dynamicSettings &&
+			! viewState &&
+			widgetAutoOpen
+		) {
 			onWidgetButtonClicked();
 		}
 	}, [ packetaShippingRate, widgetAutoOpen, onWidgetButtonClicked ] );
@@ -39,30 +47,35 @@ export const View = ( { cart } ) => {
 		} else {
 			return translations.pickupPointNotChosen;
 		}
-	}
+	};
 
-	const {
-		choosePickupPoint,
-		packeta,
-	} = translations;
+	const { choosePickupPoint, packeta } = translations;
 
-	if ( !packetaShippingRate ) {
+	if ( ! packetaShippingRate ) {
 		return null;
 	}
 
-	return <PacketaWidget
-		onClick={ onWidgetButtonClicked }
-		buttonLabel={ choosePickupPoint }
-		logoSrc={ logo }
-		logoAlt={ packeta }
-		info={ viewState && viewState.pickupPoint && viewState.pickupPoint.name }
-		loading={ loading }
-		placeholderText={ translations.placeholderText }
-	>
-		<ValidatedTextInput
-			value={ viewState && viewState.pickupPoint && viewState.pickupPoint.name }
-			required={ true }
-			errorMessage={ getErrorMessage( viewState ) }
-		/>
-	</PacketaWidget>
-}
+	return (
+		<PacketaWidget
+			onClick={ onWidgetButtonClicked }
+			buttonLabel={ choosePickupPoint }
+			logoSrc={ logo }
+			logoAlt={ packeta }
+			info={
+				viewState && viewState.pickupPoint && viewState.pickupPoint.name
+			}
+			loading={ loading }
+			placeholderText={ translations.placeholderText }
+		>
+			<ValidatedTextInput
+				value={
+					viewState &&
+					viewState.pickupPoint &&
+					viewState.pickupPoint.name
+				}
+				required={ true }
+				errorMessage={ getErrorMessage( viewState ) }
+			/>
+		</PacketaWidget>
+	);
+};

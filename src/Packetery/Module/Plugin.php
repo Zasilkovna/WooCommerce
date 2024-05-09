@@ -986,9 +986,19 @@ class Plugin {
 		);
 		add_filter( 'plugin_row_meta', [ $this, 'addPluginRowMeta' ], 10, 2 );
 
-		// TODO: look for experimental hook replacement.
+		// This hook is tested.
 		add_filter(
 			'__experimental_woocommerce_blocks_add_data_attributes_to_block',
+			function ( $allowed_blocks ) {
+				$allowed_blocks[] = 'packeta/packeta-widget';
+				return $allowed_blocks;
+			},
+			10,
+			1
+		);
+		// This hook is expected replacement in the future.
+		add_filter(
+			'woocommerce_blocks_add_data_attributes_to_block',
 			function ( $allowed_blocks ) {
 				$allowed_blocks[] = 'packeta/packeta-widget';
 				return $allowed_blocks;

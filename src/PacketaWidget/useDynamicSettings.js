@@ -4,14 +4,14 @@
  * @package Packetery
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export const useDynamicSettings = ( getSettingsUrl ) => {
 	const [ dynamicSettings, setDynamicSettings ] = useState( null );
 	const [ loading, setLoading ] = useState( false );
 
 	useEffect( () => {
-		if ( !loading && dynamicSettings === null ) {
+		if ( ! loading && dynamicSettings === null ) {
 			setLoading( true );
 			fetch( getSettingsUrl, {
 				method: 'POST',
@@ -22,15 +22,11 @@ export const useDynamicSettings = ( getSettingsUrl ) => {
 					action: 'get_settings',
 				} ),
 			} )
-				.then( response => response.json() )
-				.then( data => {
-						const {
-							weight,
-							isAgeVerificationRequired,
-						} = data;
-						setDynamicSettings( { weight, isAgeVerificationRequired } );
-					}
-				)
+				.then( ( response ) => response.json() )
+				.then( ( data ) => {
+					const { weight, isAgeVerificationRequired } = data;
+					setDynamicSettings( { weight, isAgeVerificationRequired } );
+				} )
 				.catch( ( error ) => {
 					console.error( 'Error:', error );
 					setDynamicSettings( false );
@@ -42,4 +38,4 @@ export const useDynamicSettings = ( getSettingsUrl ) => {
 	}, [ dynamicSettings, getSettingsUrl, loading ] );
 
 	return [ dynamicSettings, loading ];
-}
+};

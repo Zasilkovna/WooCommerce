@@ -631,7 +631,7 @@ class Checkout {
 	 * @return bool
 	 */
 	public function areBlocksUsedInCheckout(): bool {
-		// It is possible to use CartCheckoutUtils::is_checkout_block_default .
+		// It is possible to use CartCheckoutUtils::is_checkout_block_default as alternative.
 		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
 			return true;
 		}
