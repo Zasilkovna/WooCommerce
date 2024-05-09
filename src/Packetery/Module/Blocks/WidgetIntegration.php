@@ -1,13 +1,14 @@
 <?php
 /**
- * PacketaWidgetIntegration.
+ * WidgetIntegration.
  *
  * @package Packetery
  */
 
-namespace Packetery\Module;
+namespace Packetery\Module\Blocks;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
+use Packetery\Module\Plugin;
 
 if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php' ) ) {
 	require_once WP_PLUGIN_DIR . '/woocommerce/src/Blocks/Integrations/IntegrationInterface.php';
@@ -18,12 +19,11 @@ if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/packages/woocommerce-blocks/src/
 }
 
 /**
- * PacketaWidgetIntegration.
+ * WidgetIntegration.
  *
  * @package Packetery
  */
-class PacketaWidgetIntegration implements IntegrationInterface {
-	const VERSION          = '0.1.0';
+class WidgetIntegration implements IntegrationInterface {
 	const INTEGRATION_NAME = 'packeta-widget';
 
 	/**
@@ -114,6 +114,6 @@ class PacketaWidgetIntegration implements IntegrationInterface {
 			return filemtime( $filePath );
 		}
 
-		return self::VERSION;
+		return Plugin::VERSION;
 	}
 }

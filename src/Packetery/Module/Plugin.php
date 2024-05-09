@@ -13,9 +13,9 @@ use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Latte\Engine;
 use Packetery\Module\Order\CarrierModal;
 use Packetery\Nette\Http\Request;
 use Packetery\Nette\Utils\Html;
@@ -1181,7 +1181,7 @@ class Plugin {
 	 */
 	public function registerCheckoutBlock( IntegrationRegistry $integrationRegistry ): void {
 		$integrationRegistry->register(
-			new \Packetery\Module\PacketaWidgetIntegration(
+			new Blocks\WidgetIntegration(
 				$this->checkout->createSettings()
 			)
 		);
