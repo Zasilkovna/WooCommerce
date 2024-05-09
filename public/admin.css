@@ -360,13 +360,17 @@ tbody .packetery-log-column-note {
 }
 
 .packeta_carriers_filter {
-    margin-top: 32px;
+    margin-top: 16px;
     margin-bottom: 32px;
     background: #ffffff;
     filter: drop-shadow(7px 5px 35px rgba(0, 0, 0, .05));
     max-height: 65px;
     width: 768px;
     padding: 16px;
+}
+
+.packeta-countries-header {
+    margin-top: 32px;
 }
 
 .packeta_filter_items {
