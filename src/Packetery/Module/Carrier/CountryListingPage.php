@@ -28,7 +28,7 @@ class CountryListingPage {
 
 	public const TRANSIENT_CARRIER_CHANGES = 'packetery_carrier_changes';
 	public const DATA_KEY_COUNTRY_CODE     = 'countryCode';
-	public const CARRIER_FILTER            = 'carrier_query_filter';
+	public const PARAM_CARRIER_FILTER      = 'carrier_query_filter';
 
 	/**
 	 * PacketeryLatteEngine.
@@ -180,7 +180,7 @@ class CountryListingPage {
 		$form = $this->formFactory->create();
 		$form->setAction( 'admin.php?page=' . OptionsPage::SLUG );
 		$form->setMethod( Form::GET );
-		$form->addText( self::CARRIER_FILTER );
+		$form->addText( self::PARAM_CARRIER_FILTER );
 		$form->addSubmit( 'filter', __( 'Filter', 'packeta' ) );
 
 		$isApiPasswordSet = false;
@@ -229,7 +229,7 @@ class CountryListingPage {
 			'setUp'                      => __( 'Set up', 'packeta' ),
 			'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
 			'noCarriersFound'            => __( 'No results found!', 'packeta' ),
-			'carrierSearch'              => __( 'Search', 'packeta' ),
+			'searchPlaceholder'          => __( 'Search...', 'packeta' ),
 			'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
 			'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
 			'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
@@ -382,7 +382,7 @@ class CountryListingPage {
 	 */
 	private function getCarriersDataByCountry( string $countryCode ): array {
 		$carrierNames    = [];
-		$keyword         = $this->httpRequest->getQuery( self::CARRIER_FILTER ) ?? '';
+		$keyword         = $this->httpRequest->getQuery( self::PARAM_CARRIER_FILTER ) ?? '';
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
 			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
