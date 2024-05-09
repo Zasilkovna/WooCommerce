@@ -326,11 +326,39 @@ class Metabox {
 				]
 			);
 
+			$statuses = PacketSynchronizer::getPacketStatuses();
+			$orderStatus = $statuses[ $order->getPacketStatus() ]->getTranslatedName();
+
+			$statusType = $statuses[$order->getPacketStatus()]->getName();
+			switch ($statusType) {
+				case "received data":
+					$statusClass =  "data-received";
+					break;
+				case "unknown":
+					$statusClass =  "unknown";
+					break;
+				case "delivered":
+					$statusClass =  "delivered";
+					break;
+				case "cancelled":
+					$statusClass =  "cancelled";
+					break;
+				case "returned":
+					$statusClass =  "returned";
+					break;
+				case "rejected by recipient":
+					$statusClass =  "rejected";
+					break;
+				default:
+					$statusClass =  "delivery-status";
+			}
+
 			$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                  => $order,
 					'orderStatus'            => $orderStatus,
+					'statusClass'            => $statusClass,
 					'showSubmitPacketButton' => false,
 					'packetCancelLink'       => $packetCancelLink,
 					'packetTrackingUrl'      => $this->helper->get_tracking_url( $packetId ),
