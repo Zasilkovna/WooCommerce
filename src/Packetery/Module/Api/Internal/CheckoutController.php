@@ -43,7 +43,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 * Constructor.
 	 *
 	 * @param CheckoutRouter $router   Router.
-	 * @param Checkout       $checkout Router.
+	 * @param Checkout       $checkout Checkout.
 	 */
 	public function __construct( CheckoutRouter $router, Checkout $checkout ) {
 		$this->router   = $router;
