@@ -537,11 +537,8 @@ class Checkout {
 		}
 
 		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
-		if ( empty( $checkoutData ) ) {
-			return;
-		}
-		$propsToSave = [];
-		$carrierId   = $this->getCarrierId( $chosenMethod );
+		$propsToSave  = [];
+		$carrierId    = $this->getCarrierId( $chosenMethod );
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
@@ -555,6 +552,9 @@ class Checkout {
 				}
 			}
 
+			if ( empty( $checkoutData ) ) {
+				return;
+			}
 			foreach ( Order\Attribute::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
 				if ( ! isset( $checkoutData[ $attrName ] ) ) {
@@ -591,7 +591,7 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
-		if ( $this->isCarDeliveryOrder() ) {
+		if ( ! empty( $checkoutData ) && $this->isCarDeliveryOrder() ) {
 			$address = $this->mapper->toCarDeliveryAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $address );
 			$orderEntity->setAddressValidated( true );
