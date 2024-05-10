@@ -229,7 +229,7 @@ class CountryListingPage {
 			'setUp'                      => __( 'Set up', 'packeta' ),
 			'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
 			'noCarriersFound'            => __( 'No results found!', 'packeta' ),
-			'searchPlaceholder'          => __( 'Search...', 'packeta' ),
+			'searchPlaceholder'          => __( 'Search carriers', 'packeta' ),
 			'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
 			'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
 			'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
