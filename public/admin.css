@@ -978,7 +978,7 @@ tbody .packetery-log-column-note {
     padding: 0 5px 0 5px;
 }
 
-.order-status.data-received {
+.order-status.received-data {
     background: #f8dda7;
     color: #94660c;
 }

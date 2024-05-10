@@ -326,31 +326,31 @@ class Metabox {
 				]
 			);
 
-			$statuses = PacketSynchronizer::getPacketStatuses();
+			$statuses    = PacketSynchronizer::getPacketStatuses();
 			$orderStatus = $statuses[ $order->getPacketStatus() ]->getTranslatedName();
 
-			$statusType = $statuses[$order->getPacketStatus()]->getName();
-			switch ($statusType) {
-				case "received data":
-					$statusClass =  "data-received";
+			$statusType = $statuses[ $order->getPacketStatus() ]->getName();
+			switch ( $statusType ) {
+				case 'received data':
+					$statusClass = 'received-data';
 					break;
-				case "unknown":
-					$statusClass =  "unknown";
+				case 'unknown':
+					$statusClass = 'unknown';
 					break;
-				case "delivered":
-					$statusClass =  "delivered";
+				case 'delivered':
+					$statusClass = 'delivered';
 					break;
-				case "cancelled":
-					$statusClass =  "cancelled";
+				case 'cancelled':
+					$statusClass = 'cancelled';
 					break;
-				case "returned":
-					$statusClass =  "returned";
+				case 'returned':
+					$statusClass = 'returned';
 					break;
-				case "rejected by recipient":
-					$statusClass =  "rejected";
+				case 'rejected by recipient':
+					$statusClass = 'rejected';
 					break;
 				default:
-					$statusClass =  "delivery-status";
+					$statusClass = 'delivery-status';
 			}
 
 			$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
