@@ -10,7 +10,7 @@
     </p>
 {/if}
 
-{if $isOptionsFormValid && false === $hasExternalCarrier}
+{if $isOptionsFormValid && false === $hasExternalCarrier && false === $isWcSettingsEnabled}
     <p>
         <span class="dashicons dashicons-warning"></span> {$translations['noExternalCarrier']|noescape}
     </p>
@@ -22,7 +22,7 @@
     </p>
 {/if}
 
-{if $isOptionsFormValid}
+{if $isOptionsFormValid && false === $isWcSettingsEnabled}
     {if $activeCountries}
         <p>
             {$translations['activeCountriesNotice']}:

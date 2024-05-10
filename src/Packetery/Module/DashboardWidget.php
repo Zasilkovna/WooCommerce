@@ -12,6 +12,7 @@ namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Carrier\WcSettingsConfig;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 
@@ -72,6 +73,13 @@ class DashboardWidget {
 	private $carrierEntityRepository;
 
 	/**
+	 * New carrier settings config.
+	 *
+	 * @var WcSettingsConfig
+	 */
+	private $wcSettingsConfig;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Engine                   $latteEngine             Latte engine.
@@ -81,6 +89,7 @@ class DashboardWidget {
 	 * @param Options\Page             $optionsPage             Options page.
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
+	 * @param WcSettingsConfig         $wcSettingsConfig        WC carrier settings.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -89,7 +98,8 @@ class DashboardWidget {
 		Carrier\OptionsPage $carrierOptionsPage,
 		Options\Page $optionsPage,
 		array $surveyConfig,
-		Carrier\EntityRepository $carrierEntityRepository
+		Carrier\EntityRepository $carrierEntityRepository,
+		WcSettingsConfig $wcSettingsConfig
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -98,6 +108,7 @@ class DashboardWidget {
 		$this->optionsPage             = $optionsPage;
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
+		$this->wcSettingsConfig        = $wcSettingsConfig;
 	}
 
 	/**
@@ -174,17 +185,18 @@ class DashboardWidget {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/dashboard-widget.latte',
 			[
-				'activeCountries'    => $activeCountries,
-				'isCodSettingNeeded' => $isCodSettingNeeded,
-				'isOptionsFormValid' => $this->optionsPage->create_form()->isValid(),
-				'hasExternalCarrier' => $this->carrierRepository->hasAnyActiveFeedCarrier(),
-				'hasPacketaShipping' => $this->isPacketaShippingMethodActive(),
-				'survey'             => new SurveyConfig(
+				'activeCountries'     => $activeCountries,
+				'isCodSettingNeeded'  => $isCodSettingNeeded,
+				'isOptionsFormValid'  => $this->optionsPage->create_form()->isValid(),
+				'hasExternalCarrier'  => $this->carrierRepository->hasAnyActiveFeedCarrier(),
+				'hasPacketaShipping'  => $this->isPacketaShippingMethodActive(),
+				'isWcSettingsEnabled' => $this->wcSettingsConfig->isActive(),
+				'survey'              => new SurveyConfig(
 					( $this->surveyConfig['active'] && new \DateTimeImmutable( 'now' ) <= $this->surveyConfig['validTo'] ),
 					$this->surveyConfig['url'],
 					Plugin::buildAssetUrl( 'public/survey-illustration.png' )
 				),
-				'translations'       => [
+				'translations'        => [
 					'packeta'                => __( 'Packeta', 'packeta' ),
 					'activeCountriesNotice'  => __( 'You have set up Packeta carriers for the following countries', 'packeta' ),
 					'noGlobalSettings'       => sprintf(
