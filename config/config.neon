@@ -7,8 +7,6 @@ parameters:
     carDeliveryConfig:
         sample: false
         enabled: false
-    wcCarrierSettingsConfig:
-        active: false
 
 services:
 	- Packetery\Module\Order\MetaboxesWrapper
@@ -43,7 +41,6 @@ services:
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\Carrier\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
-	- Packetery\Module\Carrier\WcSettingsConfig(active: %wcCarrierSettingsConfig.active%)
 	- Packetery\Module\Checkout
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
