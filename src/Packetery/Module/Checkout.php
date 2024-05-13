@@ -140,6 +140,13 @@ class Checkout {
 	private $carDeliveryConfig;
 
 	/**
+	 * Carrier activity checker.
+	 *
+	 * @var Carrier\ActivityBridge
+	 */
+	private $carrierActivityBridge;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param Engine                      $latte_engine            PacketeryLatte engine.
@@ -157,6 +164,7 @@ class Checkout {
 	 * @param Carrier\EntityRepository    $carrierEntityRepository Carrier repository.
 	 * @param Api\Internal\CheckoutRouter $apiRouter               API router.
 	 * @param CarDeliveryConfig           $carDeliveryConfig       Car delivery config.
+	 * @param Carrier\ActivityBridge      $activityBridge          Carrier activity checker.
 	 */
 	public function __construct(
 		Engine $latte_engine,
@@ -173,7 +181,8 @@ class Checkout {
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		Carrier\EntityRepository $carrierEntityRepository,
 		Api\Internal\CheckoutRouter $apiRouter,
-		CarDeliveryConfig $carDeliveryConfig
+		CarDeliveryConfig $carDeliveryConfig,
+		Carrier\ActivityBridge $activityBridge
 	) {
 		$this->latte_engine            = $latte_engine;
 		$this->options_provider        = $options_provider;
@@ -190,6 +199,7 @@ class Checkout {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->apiRouter               = $apiRouter;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->carrierActivityBridge   = $activityBridge;
 	}
 
 	/**
@@ -876,7 +886,7 @@ class Checkout {
 				$carrierName = $allowedCarrierNames[ $carrier->getId() ];
 			}
 
-			if ( null === $allowedCarrierNames && false === $options->isActive() ) {
+			if ( false === $this->carrierActivityBridge->isActive( $carrier->getId(), $options ) ) {
 				continue;
 			}
 
