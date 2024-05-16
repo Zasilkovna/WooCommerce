@@ -126,16 +126,4 @@ class ContextResolver {
 
 		return 'term.php' === $pagenow && ProductCategory\Entity::TAXONOMY_NAME === $this->request->getQuery( 'taxonomy' );
 	}
-
-	/**
-	 * Tells if user is at page detail.
-	 *
-	 * @return bool
-	 */
-	public function isPageDetail(): bool {
-		global $pagenow, $typenow;
-
-		return 'post.php' === $pagenow && 'page' === $typenow;
-	}
-
 }
