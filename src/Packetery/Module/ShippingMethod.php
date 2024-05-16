@@ -167,6 +167,10 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 * @return array
 	 */
 	public function get_instance_form_fields(): array {
+		if ( ! $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+			return [];
+		}
+
 		$this->latteEngine = $this->container->getByType( Engine::class );
 		$availableCarriers = $this->carrierRepository->getCarriersForShippingRate( $this->get_rate_id() );
 
