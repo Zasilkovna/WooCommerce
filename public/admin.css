@@ -397,6 +397,10 @@ tbody .packetery-log-column-note {
     margin-right: 32px;
 }
 
+.packetery_settings th {
+    min-width: 300px;
+}
+
 .packeta_logo.packeta_logo-cs {
     width: 130px;
     height: 36px;
