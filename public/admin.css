@@ -911,3 +911,20 @@ tbody .packetery-log-column-note {
 .packetery-customs-declaration-fields [data-replication-delete] {
     margin-top: 10px;
 }
+
+/* part from front.css */
+
+.packeta-widget-button {
+    display: flex;
+    cursor: pointer;
+}
+
+.blocks .packeta-widget-button img {
+    width: auto;
+    max-width: 3em;
+    margin-right: 1em;
+}
+
+body .packeta-widget div.packeta-widget-button.packetery-widget-button-row a.button.alt {
+    text-align: center;
+}
