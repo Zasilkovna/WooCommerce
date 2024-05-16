@@ -17,6 +17,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Control;
@@ -107,9 +108,9 @@ class OptionsPage {
 	/**
 	 * WC Native carrier settings config.
 	 *
-	 * @var WcSettingsConfig
+	 * @var Provider
 	 */
-	private $wcSettingsConfig;
+	private $optionsProvider;
 
 	/**
 	 * OptionsPage constructor.
@@ -123,7 +124,7 @@ class OptionsPage {
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
 	 * @param FeatureFlagManager        $featureFlag        Feature flag.
 	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
-	 * @param WcSettingsConfig          $wcSettingsConfig   WC Native carrier settings config.
+	 * @param Provider                  $optionsProvider    Options provider.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -135,7 +136,7 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagManager $featureFlag,
 		CarDeliveryConfig $carDeliveryConfig,
-		WcSettingsConfig $wcSettingsConfig
+		Provider $optionsProvider
 	) {
 		$this->latteEngine        = $latteEngine;
 		$this->carrierRepository  = $carrierRepository;
@@ -146,7 +147,7 @@ class OptionsPage {
 		$this->pickupPointsConfig = $pickupPointsConfig;
 		$this->featureFlag        = $featureFlag;
 		$this->carDeliveryConfig  = $carDeliveryConfig;
-		$this->wcSettingsConfig   = $wcSettingsConfig;
+		$this->optionsProvider    = $optionsProvider;
 	}
 
 	/**
@@ -179,7 +180,7 @@ class OptionsPage {
 
 		$form = $this->formFactory->create( $optionId );
 
-		if ( false === $this->wcSettingsConfig->isActive() ) {
+		if ( false === $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			$form->addCheckbox(
 				self::FORM_FIELD_ACTIVE,
 				__( 'Active carrier', 'packeta' ) . ':'
@@ -453,7 +454,7 @@ class OptionsPage {
 
 		$persistedOptions      = Options::createByCarrierId( $options['id'] );
 		$persistedOptionsArray = $persistedOptions->toArray();
-		if ( $this->wcSettingsConfig->isActive() ) {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();
 		}
 

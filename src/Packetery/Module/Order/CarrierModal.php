@@ -11,9 +11,9 @@ namespace Packetery\Module\Order;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
-use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\Helper;
 use Packetery\Nette\Forms;
+use Packetery\Module\Options\Provider;
 use RuntimeException;
 
 /**
@@ -61,11 +61,11 @@ class CarrierModal {
 	private $orderRepository;
 
 	/**
-	 * Native Carrier settings.
+	 * Options provider.
 	 *
-	 * @var WcSettingsConfig
+	 * @var Provider
 	 */
-	private $wcNativeCarrierSettings;
+	private $optionsProvider;
 
 	/**
 	 * Constructor.
@@ -75,7 +75,7 @@ class CarrierModal {
 	 * @param CarrierModalFormFactory  $carrierModalFormFactory  Carrier Modal form factory.
 	 * @param Repository               $orderRepository          Order repository.
 	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
-	 * @param WcSettingsConfig         $wcNativeCarrierSettings  Native Carrier settings.
+	 * @param Provider                 $optionsProvider          Options provider.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -83,14 +83,14 @@ class CarrierModal {
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		WcSettingsConfig $wcNativeCarrierSettings
+		Provider $optionsProvider
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->detailCommonLogic       = $detailCommonLogic;
 		$this->carrierModalFormFactory = $carrierModalFormFactory;
 		$this->orderRepository         = $orderRepository;
 		$this->carrierRepository       = $carrierRepository;
-		$this->wcNativeCarrierSettings = $wcNativeCarrierSettings;
+		$this->optionsProvider         = $optionsProvider;
 	}
 
 	/**
@@ -250,7 +250,7 @@ class CarrierModal {
 			return false;
 		}
 
-		if ( $this->wcNativeCarrierSettings->isActive() ) {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			return false;
 		}
 
