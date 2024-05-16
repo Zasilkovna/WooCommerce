@@ -9,12 +9,13 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Latte\Engine;
 use Packetery\Module\Order\CarrierModal;
 use Packetery\Nette\Http\Request;
 use Packetery\Nette\Utils\Html;
@@ -523,6 +524,11 @@ class Plugin {
 		$this->dashboardWidget->register();
 
 		$this->packetSubmitter->registerCronAction();
+
+		add_action( 'woocommerce_blocks_checkout_block_registration', [ $this, 'registerCheckoutBlock' ] );
+
+		add_action( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
+		add_action( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 	}
 
 	/**
@@ -821,7 +827,11 @@ class Plugin {
 		if ( is_checkout() ) {
 			$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
 			$this->enqueueStyle( 'packetery-custom-front-styles', 'public/custom-front.css' );
-			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
+			if ( $this->checkout->areBlocksUsedInCheckout() ) {
+				wp_enqueue_script( 'packetery-widget-library', 'https://widget.packeta.com/v6/www/js/library.js', [], self::VERSION, false );
+			} else {
+				$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
+			}
 			wp_localize_script( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkout->createSettings() );
 		}
 	}
@@ -853,11 +863,12 @@ class Plugin {
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
+		$isPageDetail  = $this->contextResolver->isPageDetail();
 		$screen        = get_current_screen();
 		$isDashboard   = ( $screen && 'dashboard' === $screen->id );
 
 		if (
-			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard ||
+			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard || $isPageDetail ||
 			in_array(
 				$page,
 				[
@@ -974,6 +985,27 @@ class Plugin {
 			]
 		);
 		add_filter( 'plugin_row_meta', [ $this, 'addPluginRowMeta' ], 10, 2 );
+
+		// This hook is tested.
+		add_filter(
+			'__experimental_woocommerce_blocks_add_data_attributes_to_block',
+			function ( $allowed_blocks ) {
+				$allowed_blocks[] = 'packeta/packeta-widget';
+				return $allowed_blocks;
+			},
+			10,
+			1
+		);
+		// This hook is expected replacement in the future.
+		add_filter(
+			'woocommerce_blocks_add_data_attributes_to_block',
+			function ( $allowed_blocks ) {
+				$allowed_blocks[] = 'packeta/packeta-widget';
+				return $allowed_blocks;
+			},
+			10,
+			1
+		);
 	}
 
 	/**
@@ -1138,5 +1170,20 @@ class Plugin {
 		if ( Options\FeatureFlagManager::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
 			$this->featureFlagManager->dismissSplitActivationNotice();
 		}
+	}
+
+	/**
+	 * Registers checkout block.
+	 *
+	 * @param IntegrationRegistry $integrationRegistry Integration registry.
+	 *
+	 * @return void
+	 */
+	public function registerCheckoutBlock( IntegrationRegistry $integrationRegistry ): void {
+		$integrationRegistry->register(
+			new Blocks\WidgetIntegration(
+				$this->checkout->createSettings()
+			)
+		);
 	}
 }
