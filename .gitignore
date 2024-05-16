@@ -9,5 +9,3 @@
 /tests-coverage/
 /.phpunit.result.cache
 /config/config.local.neon
-/node_modules
-/public/js
