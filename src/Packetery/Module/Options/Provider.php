@@ -614,7 +614,7 @@ class Provider {
 	 * @return bool
 	 */
 	public function isWcCarrierConfigEnabled(): bool {
-		$isEnabled = ( $this->advancedData['new_carrier_settings_enabled'] ?? null );
+		$isEnabled = $this->advancedData['new_carrier_settings_enabled'];
 		if ( null !== $isEnabled ) {
 			return (bool) $isEnabled;
 		}
