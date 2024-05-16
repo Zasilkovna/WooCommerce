@@ -359,6 +359,26 @@ tbody .packetery-log-column-note {
     max-height: 65px;
 }
 
+.packeta_carriers_filter {
+    margin-top: 16px;
+    margin-bottom: 32px;
+    background: #ffffff;
+    filter: drop-shadow(7px 5px 35px rgba(0, 0, 0, .05));
+    max-height: 65px;
+    width: 768px;
+    padding: 16px;
+}
+
+.packeta-countries-header {
+    margin-top: 32px;
+}
+
+.packeta_filter_items {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .packeta_header h1 {
     color: #ba1b02;
     font-family: Ubuntu, Helvetica, Arial, sans-serif;
