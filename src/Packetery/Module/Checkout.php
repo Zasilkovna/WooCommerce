@@ -282,6 +282,10 @@ class Checkout {
 	 * @return array
 	 */
 	public function createSettings(): array {
+		if ( ! ( WC()->cart instanceof \WC_Cart ) ) {
+			return [];
+		}
+
 		$carriersConfigForWidget = [];
 		$carriers                = $this->carrierEntityRepository->getAllCarriersIncludingNonFeed();
 
@@ -308,6 +312,7 @@ class Checkout {
 			 * @since 1.4.2
 			 */
 			'language'                   => (string) apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
+			'logo'                       => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
 			'country'                    => $this->getCustomerCountry(),
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
@@ -326,10 +331,14 @@ class Checkout {
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
 			'saveCarDeliveryDetailsUrl'  => $this->apiRouter->getSaveCarDeliveryDetailsUrl(),
 			'removeSavedDataUrl'         => $this->apiRouter->getRemoveSavedDataUrl(),
+			'getSettingsUrl'             => admin_url( 'admin-ajax.php' ),
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
 			'translations'               => [
+				'packeta'                       => __( 'Packeta', 'packeta' ),
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
+				'pickupPointNotChosen'          => __( 'Pickup point is not chosen.', 'packeta' ),
+				'placeholderText'               => __( 'Loading Packeta widget button...', 'packeta' ),
 				'chooseAddress'                 => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
@@ -338,6 +347,28 @@ class Checkout {
 				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 			],
 		];
+	}
+
+	/**
+	 * Used to provide additional settings for blocks checkout.
+	 *
+	 * @return void
+	 */
+	public function createSettingsAjax(): void {
+		$settings = [];
+		if ( WC()->cart instanceof \WC_Cart ) {
+			/**
+			 * Filter widget weight in checkout.
+			 *
+			 * @since 1.6.3
+			 */
+			$widgetWeight = (float) apply_filters( 'packeta_widget_weight', $this->getCartWeightKg() );
+
+			$settings['weight']                    = $widgetWeight;
+			$settings['isAgeVerificationRequired'] = $this->isAgeVerification18PlusRequired();
+		}
+
+		wp_send_json( $settings );
 	}
 
 	/**
@@ -484,24 +515,32 @@ class Checkout {
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function updateOrderMeta( int $orderId ): void {
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+		if ( null === $wcOrder ) {
+			return;
+		}
+
+		$this->updateOrderMetaBlocks( $wcOrder );
+	}
+
+	/**
+	 * Saves pickup point and other Packeta information to order.
+	 *
+	 * @param \WC_Order $wcOrder Order id.
+	 *
+	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
+	 */
+	public function updateOrderMetaBlocks( \WC_Order $wcOrder ): void {
 		$chosenMethod = $this->getChosenMethod();
 		if ( false === $this->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return;
 		}
 
-		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $orderId );
-		if ( empty( $checkoutData ) ) {
-			return;
-		}
-		$propsToSave = [];
-		$carrierId   = $this->getCarrierId( $chosenMethod );
+		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
+		$propsToSave  = [];
+		$carrierId    = $this->getCarrierId( $chosenMethod );
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
-
-		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-		if ( null === $wcOrder ) {
-			return;
-		}
 
 		if ( $this->isPickupPointOrder() ) {
 			if ( PickupPointValidator::IS_ACTIVE ) {
@@ -513,6 +552,9 @@ class Checkout {
 				}
 			}
 
+			if ( empty( $checkoutData ) ) {
+				return;
+			}
 			foreach ( Order\Attribute::$pickupPointAttrs as $attr ) {
 				$attrName = $attr['name'];
 				if ( ! isset( $checkoutData[ $attrName ] ) ) {
@@ -538,7 +580,7 @@ class Checkout {
 			$wcOrder->save();
 		}
 
-		$orderEntity = new Core\Entity\Order( (string) $orderId, $this->carrierEntityRepository->getAnyById( $carrierId ) );
+		$orderEntity = new Core\Entity\Order( (string) $wcOrder->get_id(), $this->carrierEntityRepository->getAnyById( $carrierId ) );
 		if (
 			isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
 			'1' === $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] &&
@@ -549,7 +591,7 @@ class Checkout {
 			$orderEntity->setAddressValidated( true );
 		}
 
-		if ( $this->isCarDeliveryOrder() ) {
+		if ( ! empty( $checkoutData ) && $this->isCarDeliveryOrder() ) {
 			$address = $this->mapper->toCarDeliveryAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $address );
 			$orderEntity->setAddressValidated( true );
@@ -580,7 +622,21 @@ class Checkout {
 
 		delete_transient( $this->getTransientNamePacketaCheckoutData() );
 		$this->orderRepository->save( $orderEntity );
-		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $orderId );
+		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $wcOrder->get_id() );
+	}
+
+	/**
+	 * Checks if Blocks are used in checkout.
+	 *
+	 * @return bool
+	 */
+	public function areBlocksUsedInCheckout(): bool {
+		// It is possible to use CartCheckoutUtils::is_checkout_block_default as alternative.
+		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -592,6 +648,7 @@ class Checkout {
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
+		add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'updateOrderMetaBlocks' ) );
 		if ( ! is_admin() ) {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
@@ -685,6 +742,10 @@ class Checkout {
 	 * @return float
 	 */
 	public function getCartWeightKg(): float {
+		if ( ! did_action( 'wp_loaded' ) ) {
+			return 0.0;
+		}
+
 		$weight   = WC()->cart->cart_contents_weight;
 		$weightKg = (float) wc_get_weight( $weight, 'kg' );
 		if ( $weightKg ) {
@@ -1153,6 +1214,10 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isAgeVerification18PlusRequired(): bool {
+		if ( ! did_action( 'wp_loaded' ) ) {
+			return false;
+		}
+
 		$products = WC()->cart->get_cart();
 
 		foreach ( $products as $product ) {
