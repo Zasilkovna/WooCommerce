@@ -267,6 +267,10 @@ class EntityRepository {
 			}
 		}
 
+		if ( [] === $availableCarriersToMerge ) {
+			return $this->getActiveCarriers();
+		}
+
 		return array_merge( ...$availableCarriersToMerge );
 	}
 
