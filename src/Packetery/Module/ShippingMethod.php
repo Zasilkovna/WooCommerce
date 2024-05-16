@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Nette\DI\Container;
 
 /**
@@ -56,11 +57,11 @@ class ShippingMethod extends \WC_Shipping_Method {
 	private $latteEngine;
 
 	/**
-	 * Options provider.
+	 * Are we using carrier settings native for WooCommerce?
 	 *
-	 * @var Options\Provider
+	 * @var WcSettingsConfig
 	 */
-	private $optionsProvider;
+	private $wcCarrierSettingsConfig;
 
 	/**
 	 * Constructor for Packeta shipping class
@@ -70,8 +71,8 @@ class ShippingMethod extends \WC_Shipping_Method {
 	public function __construct( int $instance_id = 0 ) {
 		parent::__construct();
 
-		$this->container       = CompatibilityBridge::getContainer();
-		$this->optionsProvider = $this->container->getByType( Options\Provider::class );
+		$this->container               = CompatibilityBridge::getContainer();
+		$this->wcCarrierSettingsConfig = $this->container->getByType( WcSettingsConfig::class );
 
 		$this->id           = self::PACKETERY_METHOD_ID;
 		$this->instance_id  = absint( $instance_id );
@@ -82,7 +83,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 			'shipping-zones',
 		];
 
-		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+		if ( $this->wcCarrierSettingsConfig->isActive() ) {
 			$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
 			$this->supports[]         = 'instance-settings';
 			$this->supports[]         = 'instance-settings-modal';
@@ -98,7 +99,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 * Init user set variables. Derived from WC_Shipping_Flat_Rate.
 	 */
 	public function init(): void {
-		if ( ! $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+		if ( ! $this->wcCarrierSettingsConfig->isActive() ) {
 			add_action(
 				'woocommerce_update_options_shipping_' . $this->id,
 				[
@@ -120,7 +121,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 * @return string
 	 */
 	public function get_admin_options_html(): string {
-		if ( ! $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+		if ( ! $this->wcCarrierSettingsConfig->isActive() ) {
 			return '';
 		}
 
@@ -141,7 +142,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	public function calculate_shipping( $package = [] ): void {
 		$allowedCarrierNames = null;
 
-		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+		if ( $this->wcCarrierSettingsConfig->isActive() ) {
 			$allowedCarrierNames = [];
 			$zone                = \WC_Shipping_Zones::get_zone_matching_package( $package );
 			$shippingMethods     = $zone->get_shipping_methods( true );
