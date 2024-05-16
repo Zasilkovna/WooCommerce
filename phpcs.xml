@@ -3,7 +3,7 @@
     <description>Packetery WP plugin coding standards ruleset.</description>
 
     <file>cli</file>
-    <file>src/Packetery</file>
+    <file>src</file>
     <file>bootstrap.php</file>
     <file>bootstrap-cli.php</file>
     <file>packeta.php</file>
