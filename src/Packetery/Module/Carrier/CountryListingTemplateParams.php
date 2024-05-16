@@ -9,8 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Nette\Forms\Form;
-
 /**
  * Class CountryListingTemplateParams
  *
@@ -61,20 +59,6 @@ class CountryListingTemplateParams {
 	public $translations;
 
 	/**
-	 * Tells if countries contain any carriers.
-	 *
-	 * @var bool
-	 */
-	public $hasCarriers;
-
-	/**
-	 * Form.
-	 *
-	 * @var Form
-	 */
-	public $form;
-
-	/**
 	 * CountryListingTemplateParams constructor.
 	 *
 	 * @param array       $carriersUpdate         Carriers update params.
@@ -83,8 +67,6 @@ class CountryListingTemplateParams {
 	 * @param string|null $nextScheduledRun       Next update run.
 	 * @param string|null $settingsChangedMessage Settings changed message.
 	 * @param array       $translations           Translations.
-	 * @param bool        $hasCarriers            Tells if any country has carriers.
-	 * @param Form        $form                   Filter form.
 	 */
 	public function __construct(
 		array $carriersUpdate,
@@ -92,9 +74,7 @@ class CountryListingTemplateParams {
 		bool $isApiPasswordSet,
 		?string $nextScheduledRun,
 		?string $settingsChangedMessage,
-		array $translations,
-		bool $hasCarriers,
-		Form $form
+		array $translations
 	) {
 		$this->carriersUpdate         = $carriersUpdate;
 		$this->countries              = $countries;
@@ -102,7 +82,5 @@ class CountryListingTemplateParams {
 		$this->nextScheduledRun       = $nextScheduledRun;
 		$this->settingsChangedMessage = $settingsChangedMessage;
 		$this->translations           = $translations;
-		$this->hasCarriers            = $hasCarriers;
-		$this->form                   = $form;
 	}
 }
