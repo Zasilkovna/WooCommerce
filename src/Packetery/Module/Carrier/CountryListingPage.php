@@ -12,11 +12,9 @@ namespace Packetery\Module\Carrier;
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
 use Packetery\Module\CronService;
-use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
-use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -28,7 +26,6 @@ class CountryListingPage {
 
 	public const TRANSIENT_CARRIER_CHANGES = 'packetery_carrier_changes';
 	public const DATA_KEY_COUNTRY_CODE     = 'countryCode';
-	public const PARAM_CARRIER_FILTER      = 'carrier_query_filter';
 
 	/**
 	 * PacketeryLatteEngine.
@@ -101,13 +98,6 @@ class CountryListingPage {
 	private $wcNativeCarrierSettingsConfig;
 
 	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory
-	 */
-	private $formFactory;
-
-	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine                    $latteEngine                   PacketeryLatte engine.
@@ -120,7 +110,6 @@ class CountryListingPage {
 	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
 	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
 	 * @param WcSettingsConfig          $wcNativeCarrierSettingsConfig WC native carrier settings config.
-	 * @param FormFactory               $formFactory                   Form Factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -132,8 +121,7 @@ class CountryListingPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		WcSettingsConfig $wcNativeCarrierSettingsConfig,
-		FormFactory $formFactory
+		WcSettingsConfig $wcNativeCarrierSettingsConfig
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->carrierRepository             = $carrierRepository;
@@ -145,7 +133,6 @@ class CountryListingPage {
 		$this->carrierEntityRepository       = $carrierEntityRepository;
 		$this->carDeliveryConfig             = $carDeliveryConfig;
 		$this->wcNativeCarrierSettingsConfig = $wcNativeCarrierSettingsConfig;
-		$this->formFactory                   = $formFactory;
 	}
 
 	/**
@@ -177,12 +164,6 @@ class CountryListingPage {
 		);
 		$carriersUpdateParams['lastUpdate'] = $this->getLastUpdate();
 
-		$form = $this->formFactory->create();
-		$form->setAction( 'admin.php?page=' . OptionsPage::SLUG );
-		$form->setMethod( Form::GET );
-		$form->addText( self::PARAM_CARRIER_FILTER );
-		$form->addSubmit( 'filter', __( 'Filter', 'packeta' ) );
-
 		$isApiPasswordSet = false;
 		if ( null !== $this->optionsProvider->get_api_password() ) {
 			$isApiPasswordSet = true;
@@ -207,15 +188,7 @@ class CountryListingPage {
 			);
 		}
 
-		$hasCarriers = false;
-		$countries   = $this->getActiveCountries();
-		foreach ( $countries as $country ) {
-			if ( ! empty( $country['allCarriers'] ) ) {
-				$hasCarriers = true;
-				break;
-			}
-		}
-
+		$countries    = $this->getActiveCountries();
 		$translations = [
 			'packeta'                    => __( 'Packeta', 'packeta' ),
 			'title'                      => __( 'Carriers', 'packeta' ),
@@ -228,8 +201,6 @@ class CountryListingPage {
 			'countryCode'                => __( 'Country code', 'packeta' ),
 			'setUp'                      => __( 'Set up', 'packeta' ),
 			'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
-			'noCarriersFound'            => __( 'No results found!', 'packeta' ),
-			'searchPlaceholder'          => __( 'Search carriers', 'packeta' ),
 			'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
 			'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
 			'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
@@ -258,9 +229,7 @@ class CountryListingPage {
 				$isApiPasswordSet,
 				$nextScheduledRun,
 				$settingsChangedMessage,
-				$translations,
-				$hasCarriers,
-				$form
+				$translations
 			)
 		);
 	}
@@ -382,14 +351,9 @@ class CountryListingPage {
 	 */
 	private function getCarriersDataByCountry( string $countryCode ): array {
 		$carrierNames    = [];
-		$keyword         = $this->httpRequest->getQuery( self::PARAM_CARRIER_FILTER ) ?? '';
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
 			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
-				continue;
-			}
-
-			if ( '' !== $keyword && false === stripos( $carrier->getName(), $keyword ) ) {
 				continue;
 			}
 
