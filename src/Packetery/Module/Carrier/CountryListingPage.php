@@ -94,6 +94,13 @@ class CountryListingPage {
 	private $carDeliveryConfig;
 
 	/**
+	 * WC native carrier settings config.
+	 *
+	 * @var WcSettingsConfig
+	 */
+	private $wcNativeCarrierSettingsConfig;
+
+	/**
 	 * Form factory.
 	 *
 	 * @var FormFactory
@@ -112,6 +119,7 @@ class CountryListingPage {
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig            Internal pickup points config.
 	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
 	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
+	 * @param WcSettingsConfig          $wcNativeCarrierSettingsConfig WC native carrier settings config.
 	 * @param FormFactory               $formFactory                   Form Factory.
 	 */
 	public function __construct(
@@ -124,18 +132,20 @@ class CountryListingPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
+		WcSettingsConfig $wcNativeCarrierSettingsConfig,
 		FormFactory $formFactory
 	) {
-		$this->latteEngine             = $latteEngine;
-		$this->carrierRepository       = $carrierRepository;
-		$this->downloader              = $downloader;
-		$this->httpRequest             = $httpRequest;
-		$this->optionsProvider         = $optionsProvider;
-		$this->logPage                 = $logPage;
-		$this->pickupPointsConfig      = $pickupPointsConfig;
-		$this->carrierEntityRepository = $carrierEntityRepository;
-		$this->carDeliveryConfig       = $carDeliveryConfig;
-		$this->formFactory             = $formFactory;
+		$this->latteEngine                   = $latteEngine;
+		$this->carrierRepository             = $carrierRepository;
+		$this->downloader                    = $downloader;
+		$this->httpRequest                   = $httpRequest;
+		$this->optionsProvider               = $optionsProvider;
+		$this->logPage                       = $logPage;
+		$this->pickupPointsConfig            = $pickupPointsConfig;
+		$this->carrierEntityRepository       = $carrierEntityRepository;
+		$this->carDeliveryConfig             = $carDeliveryConfig;
+		$this->wcNativeCarrierSettingsConfig = $wcNativeCarrierSettingsConfig;
+		$this->formFactory                   = $formFactory;
 	}
 
 	/**
@@ -227,7 +237,7 @@ class CountryListingPage {
 			'nextScheduledRunPlannedAt'  => __( 'The next automatic update will occur at', 'packeta' ),
 		];
 
-		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+		if ( $this->wcNativeCarrierSettingsConfig->isActive() ) {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte';
 		} else {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte';
