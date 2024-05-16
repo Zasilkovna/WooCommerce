@@ -3,23 +3,38 @@
 <div class="packetery-options-page packeta_page packetery-wc-native-carrier-settings">
 	{include 'carriersUpdater.latte'}
 
-	<h1>{$translations['packeta']} - {$translations['countries']}</h1>
-	<div n:foreach="$countries as $country">
-		<h3>
-			<img n:if="null !== $country['flag']" src="{$country['flag']}" alt="{$country['name']}">
-			{$country['name']}
-		</h3>
-		<table class="packeta_country_list">
-			<tr>
-				<th>{$translations['carrier']}</th>
-				<th>{$translations['action']}</th>
-			</tr>
-			<tr n:foreach="$country['allCarriers'] as $carrier" class="packeta_country_list_item">
-				<td>{$carrier['name']}</td>
-				<td>
-					<a class="button button-small" href="{$carrier['detailUrl']}">{$translations['setUp']}</a>
-				</td>
-			</tr>
-		</table>
+	<h2 class="packeta-countries-header">{$translations['packeta']} - {$translations['countries']}</h2>
+
+	<div class="packeta_carriers_filter">
+		{form $form}
+			<div class="row packeta_filter_items">
+				<input n:name=Packetery\Module\Carrier\CountryListingPage::PARAM_CARRIER_FILTER placeholder="{$translations['searchPlaceholder']}">
+				<button class="button button-primary">{$form[filter]->getCaption()}</button>
+			</div>
+		{/form}
 	</div>
+
+	<div n:foreach="$countries as $country">
+		{if !empty($country['allCarriers'])}
+			<h3>
+				<img n:if="null !== $country['flag']" src="{$country['flag']}" alt="{$country['name']}">
+				{$country['name']}
+			</h3>
+			<table class="packeta_country_list">
+				<tr>
+					<th>{$translations['carrier']}</th>
+					<th>{$translations['action']}</th>
+				</tr>
+				<tr n:foreach="$country['allCarriers'] as $carrier" class="packeta_country_list_item">
+					<td>{$carrier['name']}</td>
+					<td>
+						<a class="button button-small" href="{$carrier['detailUrl']}">{$translations['setUp']}</a>
+					</td>
+				</tr>
+			</table>
+		{/if}
+	</div>
+
+	<h3 n:if="!$hasCarriers">{$translations['noCarriersFound']}</h3>
+
 </div>
