@@ -94,6 +94,8 @@ class ShippingZoneRepository {
 		$countries     = [];
 		$zoneLocations = $this->getLocationsForShippingRate( $rateId );
 		if ( ! empty( $zoneLocations ) ) {
+			$continents = WC()->countries->get_continents();
+
 			/**
 			 * Zone location.
 			 *
@@ -102,6 +104,12 @@ class ShippingZoneRepository {
 			foreach ( $zoneLocations as $zoneLocation ) {
 				if ( 'country' === $zoneLocation->type ) {
 					$countries[] = strtolower( $zoneLocation->code );
+				}
+
+				if ( 'continent' === $zoneLocation->type && isset( $continents[ $zoneLocation->code ]['countries'] ) ) {
+					foreach ( $continents[ $zoneLocation->code ]['countries'] as $countryCode ) {
+						$countries[] = strtolower( $countryCode );
+					}
 				}
 			}
 		}
