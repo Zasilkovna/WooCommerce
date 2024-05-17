@@ -101,6 +101,13 @@ class CountryListingPage {
 	private $formFactory;
 
 	/**
+	 * Carrier activity checker.
+	 *
+	 * @var ActivityBridge
+	 */
+	private $carrierActivityBridge;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine                    $latteEngine                   PacketeryLatte engine.
@@ -113,6 +120,7 @@ class CountryListingPage {
 	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
 	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
 	 * @param FormFactory               $formFactory                   Form Factory.
+	 * @param ActivityBridge            $carrierActivityBridge         Carrier activity checker.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -124,7 +132,8 @@ class CountryListingPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		FormFactory $formFactory
+		FormFactory $formFactory,
+		ActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -136,6 +145,7 @@ class CountryListingPage {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
 		$this->formFactory             = $formFactory;
+		$this->carrierActivityBridge   = $carrierActivityBridge;
 	}
 
 	/**
@@ -388,7 +398,7 @@ class CountryListingPage {
 
 			$carrierNames[ $carrierId ] = [
 				'name'      => $carrier->getName(),
-				'isActive'  => $carrierOptions->isActive(),
+				'isActive'  => $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ),
 				'detailUrl' => add_query_arg(
 					[
 						'page'                            => OptionsPage::SLUG,
