@@ -49,6 +49,13 @@ class EntityRepository {
 	 */
 	private $carDeliveryConfig;
 
+    /**
+     * Carrier activity checker.
+     *
+     * @var ActivityBridge
+     */
+    private $activityBridge;
+
 	/**
 	 * Constructor.
 	 *
@@ -56,17 +63,20 @@ class EntityRepository {
 	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
 	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
+     * @param ActivityBridge            $activityBridge       Carrier activity checker.
 	 */
 	public function __construct(
 		Repository $repository,
 		EntityFactory\Carrier $carrierEntityFactory,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		CarDeliveryConfig $carDeliveryConfig
+		CarDeliveryConfig $carDeliveryConfig,
+        ActivityBridge $activityBridge
 	) {
 		$this->repository           = $repository;
 		$this->carrierEntityFactory = $carrierEntityFactory;
 		$this->pickupPointsConfig   = $pickupPointsConfig;
 		$this->carDeliveryConfig    = $carDeliveryConfig;
+        $this->activityBridge       = $activityBridge;
 	}
 
 	/**
@@ -199,7 +209,7 @@ class EntityRepository {
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = Options::createByCarrierId( $carrier->getId() );
-			if ( $carrierOptions->isActive() ) {
+			if ( $this->activityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
 					'label'     => $carrierOptions->getName(),
@@ -231,7 +241,9 @@ class EntityRepository {
 			return false;
 		}
 
-		return Options::createByCarrierId( $carrier->getId() )->isActive();
+		$carrierOptions = Options::createByCarrierId( $carrier->getId() );
+
+		return $this->activityBridge->isActive( $carrier->getId(), $carrierOptions );
 	}
 
 	/**

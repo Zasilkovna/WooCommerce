@@ -78,6 +78,13 @@ class DashboardWidget {
 	 */
 	private $helper;
 
+    /**
+     * Carrier activity checker.
+     *
+     * @var Carrier\ActivityBridge
+     */
+    private $carrierActivityBridge;
+
 	/**
 	 * Constructor.
 	 *
@@ -89,6 +96,7 @@ class DashboardWidget {
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
 	 * @param Helper                   $helper                  Helper.
+     * @param Carrier\ActivityBridge   $carrierActivityBridge   Carrier activity checker.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -98,7 +106,8 @@ class DashboardWidget {
 		Options\Page $optionsPage,
 		array $surveyConfig,
 		Carrier\EntityRepository $carrierEntityRepository,
-		Helper $helper
+		Helper $helper,
+        Carrier\ActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -108,6 +117,7 @@ class DashboardWidget {
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->helper                  = $helper;
+        $this->carrierActivityBridge   = $carrierActivityBridge;
 	}
 
 	/**
@@ -164,7 +174,7 @@ class DashboardWidget {
 			$country        = $carrier->getCountry();
 			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
 
-			if ( false === $carrierOptions->isActive() ) {
+			if ( false === $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
 				continue;
 			}
 
