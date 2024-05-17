@@ -16,14 +16,19 @@ export const View = ( { cart } ) => {
 		translations,
 		logo,
 		widgetAutoOpen,
-		getSettingsUrl,
+		adminAjaxUrl,
 	} = settings;
 
 	const packetaShippingRate = usePacketaShippingRate(
 		shippingRates,
 		carrierConfig
 	);
-	const [ dynamicSettings, loading ] = useDynamicSettings( getSettingsUrl );
+	if ( ! packetaShippingRate ) {
+		return null;
+	}
+
+	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
+
 	const [ onWidgetButtonClicked, viewState ] = useOnWidgetButtonClicked(
 		packetaShippingRate,
 		settings,
@@ -50,10 +55,6 @@ export const View = ( { cart } ) => {
 	};
 
 	const { choosePickupPoint, packeta } = translations;
-
-	if ( ! packetaShippingRate ) {
-		return null;
-	}
 
 	return (
 		<PacketaWidget
