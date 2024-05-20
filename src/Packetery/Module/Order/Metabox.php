@@ -341,7 +341,7 @@ class Metabox {
 			$statusClass = 'delivery-status';
 			$statusType  = $statuses[ $order->getPacketStatus() ]->getName();
 
-			if ( $statusClasses[ $statusType ] ) {
+			if ( isset( $statusClasses[ $statusType ] ) ) {
 				$statusClass = $statusClasses[ $statusType ];
 			}
 
