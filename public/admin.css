@@ -912,63 +912,10 @@ tbody .packetery-log-column-note {
     margin-top: 10px;
 }
 
-/*Packet order status*/
-.order-status {
-    display: -webkit-inline-box;
-    display: -webkit-inline-flex;
-    display: -ms-inline-flexbox;
+/* Packet order status */
+.packetery-order-status {
     display: inline-flex;
     line-height: 2.5em;
-    color: #777;
-    background: #e5e5e5;
-    border-radius: 4px;
-    border-bottom: 1px solid rgba( 0, 0, 0, 0.05 );
-    margin: -0.25em 0;
-    cursor: inherit !important;
-    white-space: nowrap;
-    max-width: 100%;
-}
-
-.order-status.status-completed {
-    background: #c8d7e1;
-    color: #2e4453;
-}
-
-.order-status.status-on-hold {
-    background: #f8dda7;
-    color: #94660c;
-}
-
-.order-status.status-failed {
-    background: #eba3a3;
-    color: #761919;
-}
-
-.order-status.status-processing {
-    background: #c6e1c6;
-    color: #5b841b;
-}
-
-.order-status.status-trash {
-    background: #eba3a3;
-    color: #761919;
-}
-
-.order-status > span {
-    margin: 0 1em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/*Packet order status*/
-.order-status {
-    display: -webkit-inline-box;
-    display: -webkit-inline-flex;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    line-height: 2.5em;
-    color: #777;
-    background: #e5e5e5;
     border-radius: 4px;
     border-bottom: 1px solid rgba( 0, 0, 0, 0.05 );
     margin: -0.25em 0;
@@ -978,42 +925,32 @@ tbody .packetery-log-column-note {
     padding: 0 5px 0 5px;
 }
 
-.order-status.received-data {
+.packetery-order-status.received-data {
     background: #f8dda7;
     color: #94660c;
 }
 
-.order-status.unknown {
+.packetery-order-status.unknown {
     background: #eba3a3;
     color: #761919;
 }
 
-.order-status.delivered {
+.packetery-order-status.delivered {
     background: #c8d7e1;
     color: #2e4453;
 }
 
-.order-status.cancelled .returned .rejected {
+.packetery-order-status.cancelled, .packetery-order-status.returned, .packetery-order-status.rejected {
     background: #e5e5e5;
     color: #777;
 }
 
-/*.order-status.returned {*/
-/*    background: #eba3a3;*/
-/*    color: #761919;*/
-/*}*/
-
-/*.order-status.rejected {*/
-/*    background: #eba3a3;*/
-/*    color: #761919;*/
-/*}*/
-
-.order-status.delivery-status {
+.packetery-order-status.delivery-status {
     background: #c6e1c6;
     color: #5b841b;
 }
 
-.order-status > span {
+.packetery-order-status > span {
     margin: 0 1em;
     overflow: hidden;
     text-overflow: ellipsis;
