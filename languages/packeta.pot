@@ -3,18 +3,19 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Packeta 1.7.3\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/app\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-05-20T14:27:36+02:00\n"
+"POT-Creation-Date: 2024-05-20T15:30:18+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.8.1\n"
+"X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: packeta\n"
 
 #. Plugin Name of the plugin
+#: packeta.php
 #: src/Packetery/Module/Carrier/CountryListingPage.php:193
 #: src/Packetery/Module/Carrier/OptionsPage.php:485
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:106
@@ -43,14 +44,17 @@ msgid "Packeta"
 msgstr ""
 
 #. Description of the plugin
+#: packeta.php
 msgid "This is the official plugin, that allows you to choose pickup points of Packeta and its external carriers in all of Europe, or utilize address delivery to 25 countries in the European Union, straight from the cart in your e-shop. Furthermore, you can also submit all your orders to Packeta with just one click."
 msgstr ""
 
 #. Author of the plugin
+#: packeta.php
 msgid "Zásilkovna s.r.o."
 msgstr ""
 
 #. Author URI of the plugin
+#: packeta.php
 msgid "https://www.zasilkovna.cz/"
 msgstr ""
 
