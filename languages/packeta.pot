@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.7.2\n"
+"Project-Id-Version: Packeta 1.7.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-05-06T08:58:23+02:00\n"
+"POT-Creation-Date: 2024-05-21T07:33:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: packeta\n"
@@ -39,7 +39,7 @@ msgstr ""
 #: src/Packetery/Module/Product/DataTab.php:82
 #: src/Packetery/Module/ShippingMethod.php:79
 #: src/Packetery/Module/ShippingMethod.php:80
-#: src/Packetery/Module/ShippingMethod.php:201
+#: src/Packetery/Module/ShippingMethod.php:205
 msgid "Packeta"
 msgstr ""
 
@@ -1860,23 +1860,23 @@ msgstr ""
 msgid "Allows to choose one of Packeta delivery methods"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:174
+#: src/Packetery/Module/ShippingMethod.php:178
 msgid "please select"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:192
+#: src/Packetery/Module/ShippingMethod.php:196
 msgid "Configure selected carrier"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:198
+#: src/Packetery/Module/ShippingMethod.php:202
 msgid "Method title"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:200
+#: src/Packetery/Module/ShippingMethod.php:204
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:205
+#: src/Packetery/Module/ShippingMethod.php:209
 msgid "Selected shipping method"
 msgstr ""
 
