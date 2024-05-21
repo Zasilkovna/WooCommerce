@@ -17,8 +17,7 @@ class OrderTest extends TestCase {
 		$sizeValidator         = new Size();
 		$validatorTranslations = [
 			Order::ERROR_TRANSLATION_KEY_NUMBER                     => 'Order number is not set.',
-			// To test missing translation.
-			//Order::ERROR_TRANSLATION_KEY_NAME                       => 'Customer name is not set.',
+			Order::ERROR_TRANSLATION_KEY_NAME                       => 'Customer name is not set.',
 			Order::ERROR_TRANSLATION_KEY_VALUE                      => 'Order value is not set.',
 			Order::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => 'Pickup point or carrier id is not set.',
 			Order::ERROR_TRANSLATION_KEY_ESHOP                      => 'Sender label is not set.',

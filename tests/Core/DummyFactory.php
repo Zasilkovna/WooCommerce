@@ -49,6 +49,16 @@ class DummyFactory {
 		return $order;
 	}
 
+	public static function createOrderCzCdIncomplete(): Order {
+		$order = new Order( 'dummyNumber123', self::createCarrierCarDelivery() );
+		$order->setName( 'Customer name' );
+		$order->setValue( 123.5 );
+		$order->setEshop( 'Sender label' );
+		$order->setWeight( 1.25 );
+
+		return $order;
+	}
+
 	public static function createCarrierCzechPp(): Carrier {
 		return new Carrier(
 			'zpoint-cz',
@@ -66,6 +76,26 @@ class DummyFactory {
 			5.0,
 			false,
 			true,
+		);
+	}
+
+	public static function createCarrierCarDelivery(): Carrier {
+		return new Carrier(
+			'25061',
+			'CZ Zásilkovna do auta',
+			false,
+			false,
+			true,
+			false,
+			true,
+			true,
+			true,
+			false,
+			'cz',
+			'CZK',
+			5.0,
+			false,
+			false,
 		);
 	}
 

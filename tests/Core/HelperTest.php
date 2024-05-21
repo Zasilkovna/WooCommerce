@@ -7,6 +7,7 @@ namespace Tests\Core;
 use DateTimeImmutable;
 use Packetery\Core\Helper;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Helper\HelperSet;
 
 class HelperTest extends TestCase {
 
@@ -35,6 +36,7 @@ class HelperTest extends TestCase {
 		self::assertSame( 10.222, Helper::simplifyWeight( 10.2222 ) );
 		self::assertNull( Helper::simplifyWeight( null ) );
 		self::assertInstanceOf( DateTimeImmutable::class, Helper::now() );
+		self::assertSame( '4.123', Helper::trimDecimalPlaces( 4.1234566778, 3 ) );
 	}
 
 }

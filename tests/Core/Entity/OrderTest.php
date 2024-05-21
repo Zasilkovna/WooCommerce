@@ -12,7 +12,12 @@ use Tests\Core\DummyFactory;
 class OrderTest extends TestCase {
 
 	public function testSettersAndGetters(): void {
-		$order = DummyFactory::createOrderCzPp();
+		$order   = DummyFactory::createOrderCzPp();
+		$orderCD = DummyFactory::createOrderCzCdIncomplete();
+		$orderHD = DummyFactory::createOrderCzHdIncomplete();
+
+		self::assertTrue( $orderCD->isCarDelivery() );
+		self::assertTrue( $orderHD->isHomeDelivery() );
 
 		$dummyCustomsDeclaration = DummyFactory::createCustomsDeclaration();
 		$order->setCustomsDeclaration( $dummyCustomsDeclaration );
