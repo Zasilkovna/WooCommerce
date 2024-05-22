@@ -139,6 +139,10 @@ class OrderTest extends TestCase {
 		self::assertNull( $order->getLength() );
 		self::assertNull( $order->getWidth() );
 		self::assertNull( $order->getHeight() );
+		$order->setSize( DummyFactory::createSize() );
+		self::assertIsFloat( $order->getLength() );
+		self::assertIsFloat( $order->getWidth() );
+		self::assertIsFloat( $order->getHeight() );
 	}
 
 }

@@ -11,7 +11,7 @@ class CarrierTest extends TestCase {
 
 	public function testGetters(): void {
 		$carrier = DummyFactory::createCarrierCzechPp();
-		$carDeliveryCarrier = DummyFactory::carDeliveryCarrier();
+		$carDeliveryCarrier = DummyFactory::createCarDeliveryCarrier();
 		self::assertIsArray( $carrier->__toArray() );
 		self::assertIsString( $carrier->getName() );
 		self::assertIsBool( $carrier->hasPickupPoints() );
