@@ -50,7 +50,7 @@ class DummyFactory {
 	}
 
 	public static function createOrderCzCdIncomplete(): Order {
-		$order = new Order( 'dummyNumber123', self::createCarrierCarDelivery() );
+		$order = new Order( 'dummyNumber123', self::carDeliveryCarrier() );
 		$order->setName( 'Customer name' );
 		$order->setValue( 123.5 );
 		$order->setEshop( 'Sender label' );
@@ -79,7 +79,7 @@ class DummyFactory {
 		);
 	}
 
-	public static function createCarrierCarDelivery(): Carrier {
+	public static function carDeliveryCarrier(): Carrier {
 		return new Carrier(
 			'25061',
 			'CZ Zásilkovna do auta',

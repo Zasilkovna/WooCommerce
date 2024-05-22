@@ -11,7 +11,7 @@ class CarrierTest extends TestCase {
 
 	public function testGetters(): void {
 		$carrier = DummyFactory::createCarrierCzechPp();
-		$carrierCD = DummyFactory::createCarrierCarDelivery();
+		$carDeliveryCarrier = DummyFactory::carDeliveryCarrier();
 		self::assertIsArray( $carrier->__toArray() );
 		self::assertIsString( $carrier->getName() );
 		self::assertIsBool( $carrier->hasPickupPoints() );
@@ -27,7 +27,7 @@ class CarrierTest extends TestCase {
 		self::assertIsFloat( $carrier->getMaxWeight() );
 		self::assertIsBool( $carrier->isDeleted() );
 		self::assertIsBool( $carrier->supportsAgeVerification() );
-		self::assertIsBool( $carrierCD->isCarDelivery() );
+		self::assertIsBool( $carDeliveryCarrier->isCarDelivery() );
 	}
 
 }

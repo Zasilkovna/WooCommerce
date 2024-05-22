@@ -7,7 +7,6 @@ namespace Tests\Core;
 use DateTimeImmutable;
 use Packetery\Core\Helper;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Helper\HelperSet;
 
 class HelperTest extends TestCase {
 

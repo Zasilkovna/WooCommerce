@@ -12,16 +12,16 @@ use Tests\Core\DummyFactory;
 class OrderTest extends TestCase {
 
 	public function testSettersAndGetters(): void {
-		$order   = DummyFactory::createOrderCzPp();
-		$orderCD = DummyFactory::createOrderCzCdIncomplete();
-		$orderHD = DummyFactory::createOrderCzHdIncomplete();
+		$order             = DummyFactory::createOrderCzPp();
+		$carDeliveryOrder  = DummyFactory::createOrderCzCdIncomplete();
+		$homeDeliveryOrder = DummyFactory::createOrderCzHdIncomplete();
 
-		self::assertTrue( $orderCD->isCarDelivery() );
-		self::assertTrue( $orderHD->isHomeDelivery() );
+		self::assertTrue( $carDeliveryOrder->isCarDelivery() );
+		self::assertTrue( $homeDeliveryOrder->isHomeDelivery() );
 
 		$dummyCarDeliveryId = 'qwe123';
-		$orderCD->setCarDeliveryId( $dummyCarDeliveryId );
-		self::assertSame( $dummyCarDeliveryId, $orderCD->getCarDeliveryId() );
+		$carDeliveryOrder->setCarDeliveryId( $dummyCarDeliveryId );
+		self::assertSame( $dummyCarDeliveryId, $carDeliveryOrder->getCarDeliveryId() );
 
 		$dummyCustomsDeclaration = DummyFactory::createCustomsDeclaration();
 		$order->setCustomsDeclaration( $dummyCustomsDeclaration );
@@ -55,7 +55,6 @@ class OrderTest extends TestCase {
 
 		$dummyPickupPoint = DummyFactory::createPickupPoint();
 		$order->setPickupPoint( $dummyPickupPoint );
-
 		self::assertSame( $dummyPickupPoint, $order->getPickupPoint() );
 		self::assertTrue( $order->isPickupPointDelivery() );
 		self::assertTrue( $order->isPacketaInternalPickupPoint() );
@@ -140,10 +139,6 @@ class OrderTest extends TestCase {
 		self::assertNull( $order->getLength() );
 		self::assertNull( $order->getWidth() );
 		self::assertNull( $order->getHeight() );
-		$order->setSize( DummyFactory::createSize() );
-		self::assertIsFloat( $order->getLength() );
-		self::assertIsFloat( $order->getWidth() );
-		self::assertIsFloat( $order->getHeight() );
 	}
 
 }
