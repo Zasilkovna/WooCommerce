@@ -19,6 +19,10 @@ class OrderTest extends TestCase {
 		self::assertTrue( $orderCD->isCarDelivery() );
 		self::assertTrue( $orderHD->isHomeDelivery() );
 
+		$dummyCarDeliveryId = 'qwe123';
+		$orderCD->setCarDeliveryId( $dummyCarDeliveryId );
+		self::assertSame( $dummyCarDeliveryId, $orderCD->getCarDeliveryId() );
+
 		$dummyCustomsDeclaration = DummyFactory::createCustomsDeclaration();
 		$order->setCustomsDeclaration( $dummyCustomsDeclaration );
 		self::assertSame( $dummyCustomsDeclaration, $order->getCustomsDeclaration() );
@@ -51,9 +55,11 @@ class OrderTest extends TestCase {
 
 		$dummyPickupPoint = DummyFactory::createPickupPoint();
 		$order->setPickupPoint( $dummyPickupPoint );
+
 		self::assertSame( $dummyPickupPoint, $order->getPickupPoint() );
 		self::assertTrue( $order->isPickupPointDelivery() );
 		self::assertTrue( $order->isPacketaInternalPickupPoint() );
+		self::assertTrue( $order->allowsAdultContent() );
 
 		$dummyPacketId = 'dummyPacketId';
 		$order->setPacketId( $dummyPacketId );

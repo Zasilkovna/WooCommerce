@@ -26,7 +26,7 @@ class OrderTest extends TestCase {
 			Order::ERROR_TRANSLATION_KEY_SIZE                       => 'Order dimensions are not set.',
 			Order::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION        => 'Customs declaration is not set.',
 		];
-		$validator             = new Order( $addressValidator, $sizeValidator, $validatorTranslations );
+		$validator = new Order( $addressValidator, $sizeValidator, $validatorTranslations );
 
 		$dummyOrder = DummyFactory::createOrderCzPp();
 		$dummyOrder->setPickupPoint( DummyFactory::createPickupPoint() );
@@ -45,6 +45,9 @@ class OrderTest extends TestCase {
 		self::assertSame( [], $validator->validate( $dummyOrderHd ) );
 
 		self::assertCount( 2, $validator->validate( $dummyOrderHdInvalid ) );
+
+		$validator = new Order( $addressValidator, $sizeValidator, [ Order::ERROR_TRANSLATION_KEY_NAME => ''] );
+		self::assertFalse( $validator->isValid( $dummyOrder ) );
 	}
 
 }
