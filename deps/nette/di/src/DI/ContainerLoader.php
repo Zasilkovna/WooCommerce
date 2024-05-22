@@ -16,7 +16,7 @@ class ContainerLoader
 {
     use \Packetery\Nette\SmartObject;
     /** @var bool */
-    private $autoRebuild = \false;
+    private $autoRebuild;
     /** @var string */
     private $tempDirectory;
     public function __construct(string $tempDirectory, bool $autoRebuild = \false)
@@ -54,10 +54,10 @@ class ContainerLoader
         $handle = @\fopen("{$file}.lock", 'c+');
         // @ is escalated to exception
         if (!$handle) {
-            throw new \Packetery\Nette\IOException("Unable to create file '{$file}.lock'. " . \Packetery\Nette\Utils\Helpers::getLastError());
+            throw new \Packetery\Nette\IOException(\sprintf("Unable to create file '%s.lock'. %s", $file, \Packetery\Nette\Utils\Helpers::getLastError()));
         } elseif (!@\flock($handle, \LOCK_EX)) {
             // @ is escalated to exception
-            throw new \Packetery\Nette\IOException("Unable to acquire exclusive lock on '{$file}.lock'. " . \Packetery\Nette\Utils\Helpers::getLastError());
+            throw new \Packetery\Nette\IOException(\sprintf("Unable to acquire exclusive lock on '%s.lock'. %s", $file, \Packetery\Nette\Utils\Helpers::getLastError()));
         }
         if (!\is_file($file) || $this->isExpired($file, $updatedMeta)) {
             if (isset($updatedMeta)) {
@@ -69,7 +69,7 @@ class ContainerLoader
                 if (\file_put_contents("{$name}.tmp", $content) !== \strlen($content) || !\rename("{$name}.tmp", $name)) {
                     @\unlink("{$name}.tmp");
                     // @ - file may not exist
-                    throw new \Packetery\Nette\IOException("Unable to create file '{$name}'.");
+                    throw new \Packetery\Nette\IOException(\sprintf("Unable to create file '%s'.", $name));
                 } elseif (\function_exists('opcache_invalidate')) {
                     @\opcache_invalidate($name, \true);
                     // @ can be restricted
@@ -78,11 +78,11 @@ class ContainerLoader
         }
         if (@(include $file) === \false) {
             // @ - error escalated to exception
-            throw new \Packetery\Nette\IOException("Unable to include '{$file}'.");
+            throw new \Packetery\Nette\IOException(\sprintf("Unable to include '%s'.", $file));
         }
         \flock($handle, \LOCK_UN);
     }
-    private function isExpired(string $file, string &$updatedMeta = null) : bool
+    private function isExpired(string $file, ?string &$updatedMeta = null) : bool
     {
         if ($this->autoRebuild) {
             $meta = @\unserialize((string) \file_get_contents("{$file}.meta"));

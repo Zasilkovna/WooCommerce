@@ -16,7 +16,7 @@ use Packetery\Nette\Utils\Validators;
 class Loader
 {
     use \Packetery\Nette\SmartObject;
-    private const INCLUDES_KEY = 'includes';
+    private const IncludesKey = 'includes';
     private $adapters = ['php' => Adapters\PhpAdapter::class, 'neon' => Adapters\NeonAdapter::class];
     private $dependencies = [];
     private $loadedFiles = [];
@@ -27,24 +27,24 @@ class Loader
     public function load(string $file, ?bool $merge = \true) : array
     {
         if (!\is_file($file) || !\is_readable($file)) {
-            throw new \Packetery\Nette\FileNotFoundException("File '{$file}' is missing or is not readable.");
+            throw new \Packetery\Nette\FileNotFoundException(\sprintf("File '%s' is missing or is not readable.", $file));
         }
         if (isset($this->loadedFiles[$file])) {
-            throw new \Packetery\Nette\InvalidStateException("Recursive included file '{$file}'");
+            throw new \Packetery\Nette\InvalidStateException(\sprintf("Recursive included file '%s'", $file));
         }
         $this->loadedFiles[$file] = \true;
         $this->dependencies[] = $file;
         $data = $this->getAdapter($file)->load($file);
         $res = [];
-        if (isset($data[self::INCLUDES_KEY])) {
-            Validators::assert($data[self::INCLUDES_KEY], 'list', "section 'includes' in file '{$file}'");
-            $includes = \Packetery\Nette\DI\Helpers::expand($data[self::INCLUDES_KEY], $this->parameters);
+        if (isset($data[self::IncludesKey])) {
+            Validators::assert($data[self::IncludesKey], 'list', "section 'includes' in file '{$file}'");
+            $includes = \Packetery\Nette\DI\Helpers::expand($data[self::IncludesKey], $this->parameters);
             foreach ($includes as $include) {
                 $include = $this->expandIncludedFile($include, $file);
                 $res = \Packetery\Nette\Schema\Helpers::merge($this->load($include, $merge), $res);
             }
         }
-        unset($data[self::INCLUDES_KEY], $this->loadedFiles[$file]);
+        unset($data[self::IncludesKey], $this->loadedFiles[$file]);
         if ($merge === \false) {
             $res[] = $data;
         } else {
@@ -52,13 +52,12 @@ class Loader
         }
         return $res;
     }
-    /**
-     * Save configuration to file.
-     */
+    /** @deprecated */
     public function save(array $data, string $file) : void
     {
+        \trigger_error(__METHOD__ . "() is deprecated, use adapter's dump() method.", \E_USER_DEPRECATED);
         if (\file_put_contents($file, $this->getAdapter($file)->dump($data)) === \false) {
-            throw new \Packetery\Nette\IOException("Cannot write file '{$file}'.");
+            throw new \Packetery\Nette\IOException(\sprintf("Cannot write file '%s'.", $file));
         }
     }
     /**
@@ -89,7 +88,7 @@ class Loader
     {
         $extension = \strtolower(\pathinfo($file, \PATHINFO_EXTENSION));
         if (!isset($this->adapters[$extension])) {
-            throw new \Packetery\Nette\InvalidArgumentException("Unknown file extension '{$file}'.");
+            throw new \Packetery\Nette\InvalidArgumentException(\sprintf("Unknown file extension '%s'.", $file));
         }
         return \is_object($this->adapters[$extension]) ? $this->adapters[$extension] : new $this->adapters[$extension]();
     }
