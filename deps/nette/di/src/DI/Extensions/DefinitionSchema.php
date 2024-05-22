@@ -5,9 +5,10 @@
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 declare (strict_types=1);
-namespace Packetery\Nette\DI\Config;
+namespace Packetery\Nette\DI\Extensions;
 
 use Packetery\Nette;
+use Packetery\Nette\DI\Config\Helpers;
 use Packetery\Nette\DI\Definitions;
 use Packetery\Nette\DI\Definitions\Statement;
 use Packetery\Nette\Schema\Context;
@@ -67,38 +68,35 @@ class DefinitionSchema implements Schema
             $res = ['implement' => $def->getEntity()];
             if (\array_keys($def->arguments) === ['tagged']) {
                 $res += $def->arguments;
-            } elseif (\count($def->arguments) > 1) {
+            } elseif (\array_keys($def->arguments) === [0]) {
+                $res['create'] = $def->arguments[0];
+            } elseif ($def->arguments) {
                 $res['references'] = $def->arguments;
-            } elseif ($factory = \array_shift($def->arguments)) {
-                $res['factory'] = $factory;
             }
             return $res;
         } elseif (!\is_array($def) || isset($def[0], $def[1])) {
-            return ['factory' => $def];
-        } elseif (\is_array($def)) {
-            if (isset($def['class']) && !isset($def['type'])) {
-                if ($def['class'] instanceof Statement) {
-                    $key = \end($context->path);
-                    \trigger_error("Service '{$key}': option 'class' should be changed to 'factory'.", \E_USER_DEPRECATED);
-                    $def['factory'] = $def['class'];
-                    unset($def['class']);
-                } elseif (!isset($def['factory']) && !isset($def['dynamic']) && !isset($def['imported'])) {
-                    $def['factory'] = $def['class'];
-                    unset($def['class']);
-                }
+            return ['create' => $def];
+        } else {
+            // back compatibility
+            if (isset($def['factory']) && !isset($def['create'])) {
+                $def['create'] = $def['factory'];
+                unset($def['factory']);
+            }
+            if (isset($def['class']) && !isset($def['type']) && !isset($def['dynamic']) && !isset($def['imported'])) {
+                $def[isset($def['create']) ? 'type' : 'create'] = $def['class'];
+                unset($def['class']);
             }
             foreach (['class' => 'type', 'dynamic' => 'imported'] as $alias => $original) {
                 if (\array_key_exists($alias, $def)) {
                     if (\array_key_exists($original, $def)) {
-                        throw new \Packetery\Nette\DI\InvalidConfigurationException("Options '{$alias}' and '{$original}' are aliases, use only '{$original}'.");
+                        throw new \Packetery\Nette\DI\InvalidConfigurationException(\sprintf("Options '%s' and '%s' are aliases, use only '%s'.", $alias, $original, $original));
                     }
+                    \trigger_error(\sprintf("Service '%s': option '{$alias}' should be changed to '{$original}'.", \end($context->path)), \E_USER_DEPRECATED);
                     $def[$original] = $def[$alias];
                     unset($def[$alias]);
                 }
             }
             return $def;
-        } else {
-            throw new \Packetery\Nette\DI\InvalidConfigurationException('Unexpected format of service definition');
         }
     }
     public function completeDefault(Context $context)
@@ -107,7 +105,7 @@ class DefinitionSchema implements Schema
     private function sniffType($key, array $def) : string
     {
         if (\is_string($key)) {
-            $name = \preg_match('#^@[\\w\\\\]+$#D', $key) ? $this->builder->getByType(\substr($key, 1), \false) : $key;
+            $name = \preg_match('#^@[\\w\\\\]+$#D', $key) ? $this->builder->getByType(\substr($key, 1)) : $key;
             if ($name && $this->builder->hasDefinition($name)) {
                 return \get_class($this->builder->getDefinition($name));
             }
@@ -118,6 +116,8 @@ class DefinitionSchema implements Schema
             return \method_exists($def['implement'], 'create') ? Definitions\FactoryDefinition::class : Definitions\AccessorDefinition::class;
         } elseif (isset($def['imported'])) {
             return Definitions\ImportedDefinition::class;
+        } elseif (!$def) {
+            throw new \Packetery\Nette\DI\InvalidConfigurationException("Service '{$key}': Empty definition.");
         } else {
             return Definitions\ServiceDefinition::class;
         }
@@ -141,15 +141,15 @@ class DefinitionSchema implements Schema
     }
     private static function getServiceSchema() : Schema
     {
-        return Expect::structure(['type' => Expect::type('string'), 'factory' => Expect::type('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement'), 'arguments' => Expect::array(), 'setup' => Expect::listOf('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement|array:1'), 'inject' => Expect::bool(), 'autowired' => Expect::type('bool|string|array'), 'tags' => Expect::array(), 'reset' => Expect::array(), 'alteration' => Expect::bool()]);
+        return Expect::structure(['type' => Expect::type('string'), 'create' => Expect::type('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement'), 'arguments' => Expect::array(), 'setup' => Expect::listOf('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement|array:1'), 'inject' => Expect::bool(), 'autowired' => Expect::type('bool|string|array'), 'tags' => Expect::array(), 'reset' => Expect::array(), 'alteration' => Expect::bool()]);
     }
     private static function getAccessorSchema() : Schema
     {
-        return Expect::structure(['type' => Expect::string(), 'implement' => Expect::string(), 'factory' => Expect::type('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement'), 'autowired' => Expect::type('bool|string|array'), 'tags' => Expect::array()]);
+        return Expect::structure(['type' => Expect::string(), 'implement' => Expect::string(), 'create' => Expect::type('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement'), 'autowired' => Expect::type('bool|string|array'), 'tags' => Expect::array()]);
     }
     private static function getFactorySchema() : Schema
     {
-        return Expect::structure(['type' => Expect::string(), 'factory' => Expect::type('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement'), 'implement' => Expect::string(), 'arguments' => Expect::array(), 'setup' => Expect::listOf('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement|array:1'), 'parameters' => Expect::array(), 'references' => Expect::array(), 'tagged' => Expect::string(), 'inject' => Expect::bool(), 'autowired' => Expect::type('bool|string|array'), 'tags' => Expect::array(), 'reset' => Expect::array()]);
+        return Expect::structure(['type' => Expect::string(), 'create' => Expect::type('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement'), 'implement' => Expect::string(), 'arguments' => Expect::array(), 'setup' => Expect::listOf('callable|\\Packetery\\Nette\\DI\\Definitions\\Statement|array:1'), 'parameters' => Expect::array(), 'references' => Expect::array(), 'tagged' => Expect::string(), 'inject' => Expect::bool(), 'autowired' => Expect::type('bool|string|array'), 'tags' => Expect::array(), 'reset' => Expect::array()]);
     }
     private static function getLocatorSchema() : Schema
     {

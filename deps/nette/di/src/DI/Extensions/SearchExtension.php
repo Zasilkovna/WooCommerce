@@ -35,7 +35,7 @@ final class SearchExtension extends \Packetery\Nette\DI\CompilerExtension
     {
         foreach (\array_filter($this->config) as $name => $batch) {
             if (!\is_dir($batch->in)) {
-                throw new \Packetery\Nette\DI\InvalidConfigurationException("Option '{$this->name} › {$name} › in' must be valid directory name, '{$batch->in}' given.");
+                throw new \Packetery\Nette\DI\InvalidConfigurationException(\sprintf("Option '%s › %s › in' must be valid directory name, '%s' given.", $this->name, $name, $batch->in));
             }
             foreach ($this->findClasses($batch) as $class) {
                 $this->classes[$class] = \array_merge($this->classes[$class] ?? [], $batch->tags);
@@ -59,10 +59,10 @@ final class SearchExtension extends \Packetery\Nette\DI\CompilerExtension
         $found = [];
         foreach ($classes as $class) {
             if (!\class_exists($class) && !\interface_exists($class) && !\trait_exists($class)) {
-                throw new \Packetery\Nette\InvalidStateException("Class {$class} was found, but it cannot be loaded by autoloading.");
+                throw new \Packetery\Nette\InvalidStateException(\sprintf('Class %s was found, but it cannot be loaded by autoloading.', $class));
             }
             $rc = new \ReflectionClass($class);
-            if (($rc->isInstantiable() || $rc->isInterface() && \count($methods = $rc->getMethods()) === 1 && $methods[0]->name === 'create') && (!$acceptRE || \preg_match($acceptRE, $rc->name)) && (!$rejectRE || !\preg_match($rejectRE, $rc->name)) && (!$acceptParent || Arrays::some($acceptParent, function ($nm) use($rc) {
+            if (($rc->isInstantiable() || $rc->isInterface() && \count($methods = $rc->getMethods()) === 1 && \in_array($methods[0]->name, ['get', 'create'], \true)) && (!$acceptRE || \preg_match($acceptRE, $rc->name)) && (!$rejectRE || !\preg_match($rejectRE, $rc->name)) && (!$acceptParent || Arrays::some($acceptParent, function ($nm) use($rc) {
                 return $rc->isSubclassOf($nm);
             })) && (!$rejectParent || Arrays::every($rejectParent, function ($nm) use($rc) {
                 return !$rc->isSubclassOf($nm);
@@ -81,14 +81,20 @@ final class SearchExtension extends \Packetery\Nette\DI\CompilerExtension
             }
         }
         foreach ($this->classes as $class => $tags) {
-            $def = \class_exists($class) ? $builder->addDefinition(null)->setType($class) : $builder->addFactoryDefinition(null)->setImplement($class);
+            if (\class_exists($class)) {
+                $def = $builder->addDefinition(null)->setType($class);
+            } elseif (\method_exists($class, 'create')) {
+                $def = $builder->addFactoryDefinition(null)->setImplement($class);
+            } else {
+                $def = $builder->addAccessorDefinition(null)->setImplement($class);
+            }
             $def->setTags(Arrays::normalize($tags, \true));
         }
     }
     private static function buildNameRegexp(array $masks) : ?string
     {
         $res = [];
-        foreach ((array) $masks as $mask) {
+        foreach ($masks as $mask) {
             $mask = (\strpos($mask, '\\') === \false ? '**\\' : '') . $mask;
             $mask = \preg_quote($mask, '#');
             $mask = \str_replace('\\*\\*\\\\', '(.*\\\\)?', $mask);
