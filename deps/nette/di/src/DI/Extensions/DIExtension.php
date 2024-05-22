@@ -8,6 +8,7 @@ declare (strict_types=1);
 namespace Packetery\Nette\DI\Extensions;
 
 use Packetery\Nette;
+use Packetery\Tracy;
 /**
  * DI extension.
  * @internal
@@ -52,23 +53,24 @@ final class DIExtension extends \Packetery\Nette\DI\CompilerExtension
         $builder = $this->getContainerBuilder();
         $builder->addExcludedClasses($this->config->excluded);
     }
-    public function beforeCompile()
-    {
-        if (!$this->config->export->parameters) {
-            $this->getContainerBuilder()->parameters = [];
-        }
-    }
     public function afterCompile(\Packetery\Nette\PhpGenerator\ClassType $class)
     {
         if ($this->config->parentClass) {
             $class->setExtends($this->config->parentClass);
         }
+        $this->restrictParameters($class);
         $this->restrictTags($class);
         $this->restrictTypes($class);
-        if ($this->debugMode && ($this->config->debugger ?? $this->getContainerBuilder()->getByType(\Packetery\Tracy\Bar::class))) {
+        if ($this->debugMode && ($this->config->debugger ?? $this->getContainerBuilder()->getByType(Tracy\Bar::class))) {
             $this->enableTracyIntegration();
         }
-        $this->initializeTaggedServices();
+    }
+    private function restrictParameters(\Packetery\Nette\PhpGenerator\ClassType $class) : void
+    {
+        if (!$this->config->export->parameters) {
+            $class->removeMethod('getParameters');
+            $class->removeMethod('getStaticParameters');
+        }
     }
     private function restrictTags(\Packetery\Nette\PhpGenerator\ClassType $class) : void
     {
@@ -77,7 +79,7 @@ final class DIExtension extends \Packetery\Nette\DI\CompilerExtension
         } elseif ($option === \false) {
             $class->removeProperty('tags');
         } elseif ($prop = $class->getProperties()['tags'] ?? null) {
-            $prop->value = \array_intersect_key($prop->value, $this->exportedTags + \array_flip((array) $option));
+            $prop->setValue(\array_intersect_key($prop->getValue(), $this->exportedTags + \array_flip((array) $option)));
         }
     }
     private function restrictTypes(\Packetery\Nette\PhpGenerator\ClassType $class) : void
@@ -87,14 +89,7 @@ final class DIExtension extends \Packetery\Nette\DI\CompilerExtension
             return;
         }
         $prop = $class->getProperty('wiring');
-        $prop->value = \array_intersect_key($prop->value, $this->exportedTypes + (\is_array($option) ? \array_flip($option) : []));
-    }
-    private function initializeTaggedServices() : void
-    {
-        foreach (\array_filter($this->getContainerBuilder()->findByTag('run')) as $name => $on) {
-            \trigger_error("Tag 'run' used in service '{$name}' definition is deprecated.", \E_USER_DEPRECATED);
-            $this->initialization->addBody('$this->getService(?);', [$name]);
-        }
+        $prop->setValue(\array_intersect_key($prop->getValue(), $this->exportedTypes + (\is_array($option) ? \array_flip($option) : [])));
     }
     private function enableTracyIntegration() : void
     {

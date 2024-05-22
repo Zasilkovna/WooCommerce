@@ -161,8 +161,9 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
     }
     /**
      * Adds fieldset group to the form.
+     * @param  string|object  $caption
      */
-    public function addGroup(string $caption = null, bool $setAsCurrent = \true) : ControlGroup
+    public function addGroup($caption = null, bool $setAsCurrent = \true) : ControlGroup
     {
         $group = new ControlGroup();
         $group->setOption('label', $caption);
@@ -289,7 +290,9 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
         } elseif (!$this->getErrors()) {
             $this->validate();
         }
+        $handled = \count($this->onSuccess ?? []) || \count($this->onSubmit ?? []);
         if ($this->submittedBy instanceof Controls\SubmitButton) {
+            $handled = $handled || \count($this->submittedBy->onClick ?? []);
             if ($this->isValid()) {
                 $this->invokeHandlers($this->submittedBy->onClick, $this->submittedBy);
             } else {
@@ -303,6 +306,9 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
             Arrays::invoke($this->onError, $this);
         }
         Arrays::invoke($this->onSubmit, $this);
+        if (!$handled) {
+            \trigger_error('Form was submitted but there are no associated handlers.', \E_USER_WARNING);
+        }
     }
     private function invokeHandlers(iterable $handlers, $button = null) : void
     {
