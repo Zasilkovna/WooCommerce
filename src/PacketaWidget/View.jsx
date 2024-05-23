@@ -23,9 +23,6 @@ export const View = ( { cart } ) => {
 		shippingRates,
 		carrierConfig
 	);
-	if ( ! packetaShippingRate ) {
-		return null;
-	}
 
 	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 
@@ -55,6 +52,10 @@ export const View = ( { cart } ) => {
 	};
 
 	const { choosePickupPoint, packeta } = translations;
+
+	if ( ! packetaShippingRate ) {
+		return null;
+	}
 
 	return (
 		<PacketaWidget
