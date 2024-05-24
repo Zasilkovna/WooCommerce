@@ -1,0 +1,11 @@
+{
+  "name": "packetery",
+  "version": "1.0.0",
+  "scripts": {
+    "compile-scss": "sass public/scss:public/css --no-source-map --style compressed",
+    "watch:sass": "sass --watch public/scss:public/css --no-source-map --style compressed"
+  },
+  "devDependencies": {
+    "sass": "^1.77.2"
+  }
+}

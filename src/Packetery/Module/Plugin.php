@@ -821,9 +821,9 @@ class Plugin {
 	 */
 	public function enqueueFrontAssets(): void {
 		if ( is_checkout() ) {
-			$this->enqueueStyle( 'packetery-front-styles', 'public/front.css' );
-			$this->enqueueStyle( 'packetery-custom-front-styles', 'public/custom-front.css' );
-			$this->enqueueScript( 'packetery-checkout', 'public/checkout.js', true, [ 'jquery' ] );
+			$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
+			$this->enqueueStyle( 'packetery-custom-front-styles', 'public/css/custom-front.css' );
+			$this->enqueueScript( 'packetery-checkout', 'public/js/checkout.js', true, [ 'jquery' ] );
 			wp_localize_script( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkout->createSettings() );
 		}
 	}
@@ -842,16 +842,16 @@ class Plugin {
 		];
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
-			$this->enqueueScript( 'live-form-validation-options', 'public/live-form-validation-options.js', false );
+			$this->enqueueScript( 'live-form-validation-options', 'public/js/live-form-validation-options.js', false );
 			$this->enqueueScript( 'live-form-validation', 'public/libs/live-form-validation/live-form-validation.js', false, [ 'live-form-validation-options' ] );
-			$this->enqueueScript( 'live-form-validation-extension', 'public/live-form-validation-extension.js', false, [ 'live-form-validation' ] );
+			$this->enqueueScript( 'live-form-validation-extension', 'public/js/live-form-validation-extension.js', false, [ 'live-form-validation' ] );
 		}
 
 		if ( Carrier\OptionsPage::SLUG === $page ) {
 			$this->enqueueStyle( 'packetery-select2-css', 'public/libs/select2-4.0.13/dist.min.css' );
 			$this->enqueueScript( 'packetery-select2', 'public/libs/select2-4.0.13/dist.min.js', true, [ 'jquery' ] );
 			$this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
-			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/admin-country-carrier.js', true, [ 'jquery', 'packetery-multiplier', 'packetery-select2' ] );
+			$this->enqueueScript( 'packetery-admin-country-carrier', 'public/js/admin-country-carrier.js', true, [ 'jquery', 'packetery-multiplier', 'packetery-select2' ] );
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
@@ -871,7 +871,7 @@ class Plugin {
 				true
 			)
 		) {
-			$this->enqueueStyle( 'packetery-admin-styles', 'public/admin.css' );
+			$this->enqueueStyle( 'packetery-admin-styles', 'public/css/admin.css' );
 			// We want to trigger the message on all pages and show it on first request.
 			$this->featureFlagManager->isSplitActive();
 			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
@@ -887,7 +887,7 @@ class Plugin {
 					'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
 				],
 			];
-			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/js/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'settings', $orderGridPageSettings );
 		}
@@ -896,8 +896,8 @@ class Plugin {
 		$addressPickerSettings     = null;
 
 		if ( $isOrderDetailPage ) {
-			$this->enqueueScript( 'packetery-multiplier', 'public/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
-			$this->enqueueScript( 'admin-order-detail', 'public/admin-order-detail.js', true, [ 'jquery', 'packetery-multiplier', 'live-form-validation-extension' ] );
+			$this->enqueueScript( 'packetery-multiplier', 'public/js/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
+			$this->enqueueScript( 'admin-order-detail', 'public/js/admin-order-detail.js', true, [ 'jquery', 'packetery-multiplier', 'live-form-validation-extension' ] );
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
 			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();
@@ -908,17 +908,17 @@ class Plugin {
 		}
 
 		if ( null !== $pickupPointPickerSettings ) {
-			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/admin-pickup-point-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
+			$this->enqueueScript( 'packetery-admin-pickup-point-picker', 'public/js/admin-pickup-point-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
 			wp_localize_script( 'packetery-admin-pickup-point-picker', 'packeteryPickupPointPickerSettings', $pickupPointPickerSettings );
 		}
 
 		if ( null !== $addressPickerSettings ) {
-			$this->enqueueScript( 'packetery-admin-address-picker', 'public/admin-address-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
+			$this->enqueueScript( 'packetery-admin-address-picker', 'public/js/admin-address-picker.js', true, [ 'jquery', 'packetery-widget-library' ] );
 			wp_localize_script( 'packetery-admin-address-picker', 'packeteryAddressPickerSettings', $addressPickerSettings );
 		}
 
 		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
-			$this->enqueueScript( 'packetery-confirm', 'public/confirm.js', true, [ 'jquery', 'backbone' ] );
+			$this->enqueueScript( 'packetery-confirm', 'public/js/confirm.js', true, [ 'jquery', 'backbone' ] );
 		}
 	}
 
