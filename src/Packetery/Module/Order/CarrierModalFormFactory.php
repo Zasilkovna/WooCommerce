@@ -56,12 +56,21 @@ class CarrierModalFormFactory {
 
 		$form->addHidden( self::FIELD_NONCE );
 
-		$form->setDefaults(
-			[
-				self::FIELD_NONCE      => wp_create_nonce(),
-				self::FIELD_CARRIER_ID => $currentCarrier,
-			]
-		);
+		$isCarrierAvailable = false;
+		foreach ( $carriers as $carrier ) {
+			if ( $carrier->getId() === $currentCarrier ) {
+				$isCarrierAvailable = true;
+				break;
+			}
+		}
+		if ( $isCarrierAvailable ) {
+			$form->setDefaults(
+				[
+					self::FIELD_NONCE      => wp_create_nonce(),
+					self::FIELD_CARRIER_ID => $currentCarrier,
+				]
+			);
+		}
 
 		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
 		$form->addSubmit( 'cancel', __( 'Cancel', 'packeta' ) );
