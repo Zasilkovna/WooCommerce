@@ -453,7 +453,7 @@ class Metabox {
 				'isCodPayment'               => $order->hasCod(),
 				'allowsAdultContent'         => $order->allowsAdultContent(),
 				'requiresSizeDimensions'     => $order->getCarrier()->requiresSize(),
-				'logo'                       => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'logo'                       => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/images/packeta-symbol.png',
 				'showLogsLink'               => $showLogsLink,
 				'hasOrderManualWeight'       => $order->hasManualWeight(),
 				'isPacketaPickupPoint'       => $order->isPacketaInternalPickupPoint(),
