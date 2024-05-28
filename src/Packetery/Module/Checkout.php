@@ -331,7 +331,7 @@ class Checkout {
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
 			'saveCarDeliveryDetailsUrl'  => $this->apiRouter->getSaveCarDeliveryDetailsUrl(),
 			'removeSavedDataUrl'         => $this->apiRouter->getRemoveSavedDataUrl(),
-			'getSettingsUrl'             => admin_url( 'admin-ajax.php' ),
+			'adminAjaxUrl'               => admin_url( 'admin-ajax.php' ),
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
 			'translations'               => [
@@ -365,6 +365,7 @@ class Checkout {
 			$widgetWeight = (float) apply_filters( 'packeta_widget_weight', $this->getCartWeightKg() );
 
 			$settings['weight']                    = $widgetWeight;
+			$settings['country']                   = $this->getCustomerCountry();
 			$settings['isAgeVerificationRequired'] = $this->isAgeVerification18PlusRequired();
 		}
 
@@ -1499,4 +1500,18 @@ class Checkout {
 		}
 		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
 	}
+
+	/**
+	 * Translates country name to lowercase two-letter ISO code.
+	 *
+	 * @return void
+	 */
+	public function translateCountryNameToCode(): void {
+		$countryName = $this->httpRequest->getPost( 'countryName' );
+		$countries   = WC()->countries->get_countries();
+		$countryCode = array_search( $countryName, $countries, true );
+
+		wp_send_json( $countryCode ? strtolower( $countryCode ) : null );
+	}
+
 }

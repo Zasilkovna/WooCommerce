@@ -13,7 +13,7 @@ export const useOnWidgetButtonClicked = (
 ) => {
 	const {
 		carrierConfig,
-		country,
+		country : customerCountry,
 		language,
 		packeteryApiKey,
 		appIdentity,
@@ -30,6 +30,10 @@ export const useOnWidgetButtonClicked = (
 		let weight = 0.0;
 		if ( dynamicSettings && dynamicSettings.weight ) {
 			weight = dynamicSettings.weight;
+		}
+		let country = customerCountry;
+		if ( dynamicSettings && dynamicSettings.country ) {
+			country = dynamicSettings.country;
 		}
 		let widgetOptions = { country, language, appIdentity, weight };
 
