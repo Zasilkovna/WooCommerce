@@ -238,7 +238,7 @@ class CarrierModal {
 	 */
 	public function canBeDisplayed(): bool {
 		$carriers = $this->getCarriersByCountry();
-		if ( count( $carriers ) < 2 ) {
+		if ( [] === $carriers ) {
 			return false;
 		}
 

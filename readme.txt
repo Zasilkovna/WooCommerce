@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.5.2
-Stable tag: 1.7.3
+Stable tag: 1.7.4
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 8.8.2
@@ -64,6 +64,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.7.4 =
+Fixed: Fixed carrier change when switching delivery country.
+
 = 1.7.3 =
 Fixed: Improved compatibility with third party plugins.
 Fixed: checkout payment filter
