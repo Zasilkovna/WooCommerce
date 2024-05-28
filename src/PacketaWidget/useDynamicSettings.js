@@ -5,15 +5,24 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useTranslateCountry } from "./useTranslateCountry";
 
-export const useDynamicSettings = ( getSettingsUrl ) => {
-	const [ dynamicSettings, setDynamicSettings ] = useState( null );
-	const [ loading, setLoading ] = useState( false );
+export const useDynamicSettings = ( adminAjaxUrl ) => {
+	let [ dynamicSettings, setDynamicSettings ] = useState( null );
+	let [ loading, setLoading ] = useState( false );
+
+	[ dynamicSettings, loading ] = useTranslateCountry(
+		adminAjaxUrl,
+		dynamicSettings,
+		setDynamicSettings,
+		loading,
+		setLoading,
+	);
 
 	useEffect( () => {
 		if ( ! loading && dynamicSettings === null ) {
 			setLoading( true );
-			fetch( getSettingsUrl, {
+			fetch( adminAjaxUrl, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
@@ -25,7 +34,11 @@ export const useDynamicSettings = ( getSettingsUrl ) => {
 				.then( ( response ) => response.json() )
 				.then( ( data ) => {
 					const { weight, isAgeVerificationRequired } = data;
-					setDynamicSettings( { weight, isAgeVerificationRequired } );
+					setDynamicSettings( prevState => ( {
+						...prevState,
+						weight,
+						isAgeVerificationRequired,
+					} ) );
 				} )
 				.catch( ( error ) => {
 					console.error( 'Error:', error );
@@ -35,7 +48,7 @@ export const useDynamicSettings = ( getSettingsUrl ) => {
 					setLoading( false );
 				} );
 		}
-	}, [ dynamicSettings, getSettingsUrl, loading ] );
+	}, [ dynamicSettings, adminAjaxUrl, loading ] );
 
 	return [ dynamicSettings, loading ];
 };
