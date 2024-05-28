@@ -16,14 +16,16 @@ export const View = ( { cart } ) => {
 		translations,
 		logo,
 		widgetAutoOpen,
-		getSettingsUrl,
+		adminAjaxUrl,
 	} = settings;
 
 	const packetaShippingRate = usePacketaShippingRate(
 		shippingRates,
 		carrierConfig
 	);
-	const [ dynamicSettings, loading ] = useDynamicSettings( getSettingsUrl );
+
+	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
+
 	const [ onWidgetButtonClicked, viewState ] = useOnWidgetButtonClicked(
 		packetaShippingRate,
 		settings,
