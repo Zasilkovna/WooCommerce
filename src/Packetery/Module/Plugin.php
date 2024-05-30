@@ -477,9 +477,9 @@ class Plugin {
 		add_action( sprintf( 'manage_%s_custom_column', $orderListScreenId ), [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 
 		if ( ! wp_doing_ajax() ) {
-			add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
-			add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
-			add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
+			add_action( 'admin_menu', [ $this, 'add_menu_pages' ] );
+			add_action( 'admin_head', [ $this->labelPrint, 'hideFromMenus' ] );
+			add_action( 'admin_head', [ $this->orderCollectionPrint, 'hideFromMenus' ] );
 			add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
 			$this->orderModal->register();
 			$this->labelPrintModal->register();
