@@ -17,9 +17,18 @@ require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/deps/scoper-autoload.php';
 
 require_once __DIR__ . '/src/Packetery/Module/Helper.php';
+require_once __DIR__ . '/src/Packetery/Module/Upgrade.php';
+require_once __DIR__ . '/src/Packetery/Module/Plugin.php';
 Helper::transformGlobalCookies();
 
-$tempDir = __DIR__ . '/temp';
+$cacheBasePathConstantName = 'PACKETERY_CACHE_BASE_PATH';
+
+if (defined($cacheBasePathConstantName)) {
+    $tempDir = constant($cacheBasePathConstantName);
+} else {
+    $tempDir = __DIR__ . '/temp';
+}
+
 $cacheDir = $tempDir . '/cache';
 
 $oldVersion = get_option( Packetery\Module\Upgrade::VERSION_OPTION_NAME );
