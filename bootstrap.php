@@ -13,33 +13,39 @@ use Packetery\Nette\Bootstrap\Configurator;
 use Packetery\Tracy\Debugger;
 
 require_once __DIR__ . '/constants.php';
-
 require_once __DIR__ . '/deps/scoper-autoload.php';
-
-require_once __DIR__ . '/src/Packetery/Module/Helper.php';
-require_once __DIR__ . '/src/Packetery/Module/Upgrade.php';
-require_once __DIR__ . '/src/Packetery/Module/Plugin.php';
-Helper::transformGlobalCookies();
 
 $cacheBasePathConstantName = 'PACKETERY_CACHE_BASE_PATH';
 
-if (defined($cacheBasePathConstantName)) {
+if (defined( $cacheBasePathConstantName )) {
     $tempDir = constant($cacheBasePathConstantName);
+    $logBaseDir = $tempDir;
+
 } else {
     $tempDir = __DIR__ . '/temp';
+    $logBaseDir = PACKETERY_PLUGIN_DIR;
 }
+
+$configurator = new Configurator();
+
+$configurator->defaultExtensions = [];
+$configurator->setDebugMode( PACKETERY_DEBUG );
+$configurator->setTempDirectory($tempDir);
+$configurator->createRobotLoader()
+    ->addDirectory( __DIR__ . '/src' )
+    ->setAutoRefresh( false )
+    ->register();
+
+Helper::transformGlobalCookies();
 
 $cacheDir = $tempDir . '/cache';
 
 $oldVersion = get_option( Packetery\Module\Upgrade::VERSION_OPTION_NAME );
 if ( Plugin::VERSION !== $oldVersion ) {
-    Helper::deleteOldVersionCache($cacheDir);
+    Helper::instantDelete($cacheDir);
 }
 
-$configurator = new Configurator();
-$configurator->setDebugMode( PACKETERY_DEBUG );
-
-Debugger::$logDirectory = PACKETERY_PLUGIN_DIR . '/log';
+Debugger::$logDirectory = $logBaseDir . '/log';
 if ( PACKETERY_DEBUG && false === wp_doing_cron() ) {
     $configurator->enableDebugger( Debugger::$logDirectory );
     Debugger::$strictMode = false;
@@ -51,11 +57,6 @@ $localConfigFile = __DIR__ . '/config/config.local.neon';
 if ( file_exists( $localConfigFile ) ) {
     $configurator->addConfig( $localConfigFile ); // Local Development ENV only!
 }
-
-$configurator->setTempDirectory($tempDir);
-$configurator->createRobotLoader()->addDirectory( __DIR__ . '/src' )->setAutoRefresh( false )->register();
-
-$configurator->defaultExtensions = [];
 
 $configurator->addStaticParameters(['cacheDir' => $cacheDir]);
 

@@ -194,12 +194,12 @@ class Helper {
 	}
 
     /**
-     * @param string $cacheDir path to Nette cache directory
+     * @param string $path directory or file path
      * @return void
      */
-    public static function deleteOldVersionCache(string $cacheDir): void {
-        $oldCacheDir = $cacheDir . '-old';
-        FileSystem::rename($cacheDir, $oldCacheDir);
-        FileSystem::delete($oldCacheDir);
+    public static function instantDelete(string $path): void {
+        $tempOldPath = $path . '-old';
+        FileSystem::rename($path, $tempOldPath);
+        FileSystem::delete($tempOldPath);
     }
 }
