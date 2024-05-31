@@ -48,6 +48,11 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 	You should definitely not upgrade by copying the new version to the original folder.
 	This could cause the original version to merge with the new one, which can cause the plugin to become completely non-functional.
 
+##### Customization
+
+By default, the cache directory is located in the `wp-content/packeta/temp` directory.
+You can change the path to the cache directory by setting `PACKETERY_CACHE_BASE_PATH` constant in `wp-config.php`.
+
 #### Filters
 
 WP Filters are used to easily alter preselected system behaviors.
