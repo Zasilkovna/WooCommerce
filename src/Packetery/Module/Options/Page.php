@@ -361,10 +361,11 @@ class Page {
 		$orderStatusChangePacketStatuses = $form->addContainer( 'order_status_change_packet_statuses' );
 		$orderStatuses                   = wc_get_order_statuses();
 		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
-			$item = $orderStatusChangePacketStatuses->addSelect( $packetStatusHash, $packetStatusData['label'], $orderStatuses )
+			$item         = $orderStatusChangePacketStatuses->addSelect( $packetStatusHash, $packetStatusData['label'], $orderStatuses )
 													->setPrompt( __( 'Order status', 'packeta' ) );
-			if ( ! empty( $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] ) ) {
-				$item->setDefaultValue( $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] );
+			$targetStatus = $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] ?? null;
+			if ( null !== $targetStatus && array_key_exists( $targetStatus, $orderStatuses ) ) {
+				$item->setDefaultValue( $targetStatus );
 			}
 		}
 		unset( $settings['order_status_change_packet_statuses'] );

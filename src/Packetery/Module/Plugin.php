@@ -28,7 +28,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION                = '1.7.4';
+	public const VERSION                = '1.7.5';
 	public const DOMAIN                 = 'packeta';
 	public const MIN_LISTENER_PRIORITY  = - 9998;
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';
@@ -476,13 +476,15 @@ class Plugin {
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 		add_action( sprintf( 'manage_%s_custom_column', $orderListScreenId ), [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 
-		add_action( 'admin_menu', array( $this, 'add_menu_pages' ) );
-		add_action( 'admin_head', array( $this->labelPrint, 'hideFromMenus' ) );
-		add_action( 'admin_head', array( $this->orderCollectionPrint, 'hideFromMenus' ) );
-		add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
-		$this->orderModal->register();
-		$this->labelPrintModal->register();
-		$this->metaboxesWrapper->register();
+		if ( ! wp_doing_ajax() ) {
+			add_action( 'admin_menu', [ $this, 'add_menu_pages' ] );
+			add_action( 'admin_head', [ $this->labelPrint, 'hideFromMenus' ] );
+			add_action( 'admin_head', [ $this->orderCollectionPrint, 'hideFromMenus' ] );
+			add_action( 'admin_head', [ $this, 'renderConfirmModalTemplate' ] );
+			$this->orderModal->register();
+			$this->labelPrintModal->register();
+			$this->metaboxesWrapper->register();
+		}
 
 		$this->checkout->register_hooks();
 		$this->productTab->register();
