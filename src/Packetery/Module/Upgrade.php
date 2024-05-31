@@ -40,6 +40,7 @@ class Upgrade {
 	const META_POINT_ZIP        = 'packetery_point_zip';
 	const META_POINT_STREET     = 'packetery_point_street';
 	const META_POINT_URL        = 'packetery_point_url';
+	const VERSION_OPTION_NAME   = 'packetery_version';
 
 	/**
 	 * Order repository.
