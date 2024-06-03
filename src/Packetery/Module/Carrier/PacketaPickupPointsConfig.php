@@ -72,7 +72,7 @@ class PacketaPickupPointsConfig {
 	 */
 	public function getCompoundCarriers(): array {
 		$translatedNames = [
-			'zpointcz' => 'CZ ' . __( 'Packeta Pick-up Point (Z-Point, Z-Box, AlzaBox)', 'packeta' ),
+			'zpointcz' => 'CZ ' . __( 'Packeta Pick-up Point (Z-Point, Z-Box)', 'packeta' ),
 			'zpointsk' => 'SK ' . __( 'Packeta Pick-up Point (Z-Point, Z-Box)', 'packeta' ),
 			'zpointhu' => 'HU ' . __( 'Packeta Pick-up Point (Z-Point, Z-Box)', 'packeta' ),
 			'zpointro' => 'RO ' . __( 'Packeta Pick-up Point (Z-Point, Z-Box)', 'packeta' ),
@@ -102,15 +102,14 @@ class PacketaPickupPointsConfig {
 		}
 
 		$translatedNames = [
-			'czzpoint'  => 'CZ ' . __( 'Packeta Pick-up Point', 'packeta' ),
-			'czzbox'    => 'CZ ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-			'czalzabox' => 'CZ ' . __( 'AlzaBox via Packeta', 'packeta' ),
-			'skzpoint'  => 'SK ' . __( 'Packeta Pick-up Point', 'packeta' ),
-			'skzbox'    => 'SK ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-			'huzpoint'  => 'HU ' . __( 'Packeta Pick-up Point', 'packeta' ),
-			'huzbox'    => 'HU ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
-			'rozpoint'  => 'RO ' . __( 'Packeta Pick-up Point', 'packeta' ),
-			'rozbox'    => 'RO ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+			'czzpoint' => 'CZ ' . __( 'Packeta Pick-up Point', 'packeta' ),
+			'czzbox'   => 'CZ ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+			'skzpoint' => 'SK ' . __( 'Packeta Pick-up Point', 'packeta' ),
+			'skzbox'   => 'SK ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+			'huzpoint' => 'HU ' . __( 'Packeta Pick-up Point', 'packeta' ),
+			'huzbox'   => 'HU ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
+			'rozpoint' => 'RO ' . __( 'Packeta Pick-up Point', 'packeta' ),
+			'rozbox'   => 'RO ' . __( 'Packeta', 'packeta' ) . ' Z-BOX',
 		];
 
 		$indexedCollection = [];

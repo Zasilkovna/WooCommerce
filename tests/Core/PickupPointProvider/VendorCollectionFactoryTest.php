@@ -11,7 +11,7 @@ class VendorCollectionFactoryTest extends TestCase {
 
 	public function testCreate(): void {
 		$factory = new VendorCollectionFactory();
-		self::assertCount( 9, $factory->create() );
+		self::assertCount( 8, $factory->create() );
 	}
 
 }

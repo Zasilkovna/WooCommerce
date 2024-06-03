@@ -20,10 +20,9 @@ class CompoundProviderTest extends TestCase {
 			[
 				'czzpoint',
 				'czzbox',
-				'czalzabox',
 			],
 		);
-		self::assertCount( 3, $vendor->getVendorCodes() );
+		self::assertCount( 2, $vendor->getVendorCodes() );
 	}
 
 }
