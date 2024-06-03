@@ -41,6 +41,12 @@ class ActivityBridge {
 	 * @return array
 	 */
 	private function getActiveCarrierIds(): array {
+		static $activeMethods;
+
+		if ( isset( $activeMethods ) ) {
+			return $activeMethods;
+		}
+
 		$activeMethods = [];
 		$shippingZones = WC_Shipping_Zones::get_zones();
 
