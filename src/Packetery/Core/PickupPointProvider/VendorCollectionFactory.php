@@ -45,16 +45,6 @@ class VendorCollectionFactory {
 				true,
 				'zbox'
 			),
-			// CZ AlzaBox.
-			new VendorProvider(
-				'czalzabox',
-				'cz',
-				true,
-				true,
-				'CZK',
-				true,
-				'alzabox'
-			),
 
 			// SK Packeta internal pickup points.
 			new VendorProvider(

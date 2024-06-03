@@ -36,7 +36,6 @@ class CompoundCarrierCollectionFactory {
 				[
 					'czzpoint',
 					'czzbox',
-					'czalzabox',
 				]
 			),
 			// SK Packeta pickup points.
