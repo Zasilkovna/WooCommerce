@@ -166,7 +166,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 * @return array
 	 */
 	public function get_instance_form_fields(): array {
-		if ( ! $this->wcCarrierSettingsConfig->isActive() ) {
+		if ( ! $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			return [];
 		}
 
