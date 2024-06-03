@@ -458,7 +458,7 @@ class Metabox {
 				'translations'           => [
 					'showLogs'                  => __( 'Show logs', 'packeta' ),
 					'weightIsManual'            => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
-					'submitPacket'              => __( 'Submit to packeta', 'packeta' ),
+					'submitPacket'              => __( 'Submit to Packeta', 'packeta' ),
 					'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 					'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
 					'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
