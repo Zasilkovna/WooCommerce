@@ -163,7 +163,7 @@ class WidgetOptionsBuilder {
 		];
 
 		if ( $this->featureFlag->isSplitActive() ) {
-			// In backend, we want all pickup points in that country for packeta carrier.
+			// In backend, we want all pickup points in that country for Packeta carrier.
 			if ( $order->getCarrier()->getId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 				$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
 					$order->getCarrier()->getId(),

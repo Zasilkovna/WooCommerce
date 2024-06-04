@@ -76,7 +76,7 @@ class EntityRepository {
 	}
 
 	/**
-	 * Gets feed carrier or packeta carrier by id.
+	 * Gets feed carrier or Packeta carrier by id.
 	 *
 	 * @param string $carrierId Extended branch service id.
 	 *

@@ -346,7 +346,7 @@ class GridExtender {
 						'translations'              => [
 							'printLabel'                => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
-							'submitToPacketa'           => __( 'Submit to packeta', 'packeta' ),
+							'submitToPacketa'           => __( 'Submit to Packeta', 'packeta' ),
 							// translators: %s: Order number.
 							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 							// translators: %s: Packet number.
