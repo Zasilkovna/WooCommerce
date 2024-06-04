@@ -182,7 +182,7 @@ class DashboardWidget {
 				'survey'             => new SurveyConfig(
 					( $this->surveyConfig['active'] && new \DateTimeImmutable( 'now' ) <= $this->surveyConfig['validTo'] ),
 					$this->surveyConfig['url'],
-					Plugin::buildAssetUrl( 'public/survey-illustration.png' )
+					Plugin::buildAssetUrl( 'public/images/survey-illustration.png' )
 				),
 				'translations'       => [
 					'packeta'                => __( 'Packeta', 'packeta' ),

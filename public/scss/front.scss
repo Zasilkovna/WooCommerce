@@ -1,191 +1,111 @@
 
 .packeta-widget-button {
-	display: flex;
-	cursor: pointer;
-}
+  display: flex;
+  cursor: pointer;
 
-.packeta-widget-button {
-	img {
-		width: 45px;
-		margin-right: 5px;
-	}
-}
-
-.packetery-widget-button-wrapper {
-	.packeta-widget-info-error {
-		color: red;
-	}
+  img {
+    width: 45px;
+    margin-right: 5px;
+  }
 }
 
 .packetery-widget-button-wrapper {
-	.packeta-widget-info-success {
-		color: green;
-	}
-}
+  .packeta-widget-info-error {
+    color: red;
+  }
 
-.packetery-widget-button-wrapper {
-	p {
-		margin-bottom: 0;
-	}
-}
+  .packeta-widget-info-success {
+    color: green;
+  }
 
-.woocommerce {
-	#order_review {
-		table {
-			.packetery-widget-button-table-row td {
-				vertical-align: top;
-			}
-		}
-	}
+  p {
+    margin-bottom: 0;
+  }
 }
 
 .woocommerce {
-	#order_review {
-		table {
-			.packetery-widget-button-table-row td {
-				.form-row {
-					padding: 0;
-				}
-			}
-		}
-	}
+  #order_review {
+    table {
+      .packetery-widget-button-table-row {
+        td {
+          vertical-align: top;
+
+          .form-row {
+            padding: 0;
+          }
+        }
+
+        .packeta-widget[packetery-renderer="table-row"] img {
+          display: none;
+        }
+
+        th img {
+          width: 45px;
+          height: 45px;
+          display: block;
+          margin-left: auto;
+        }
+      }
+    }
+  }
+
+  .form-row[packetery-renderer="after-rate"] {
+    display: inline-grid;
+  }
+
+  [packetery-renderer="after-rate"] {
+    .packeta-widget-button {
+      display: inline-grid;
+
+      img {
+        width: 150px;
+        margin: 0;
+      }
+
+      button {
+        width: 150px;
+      }
+    }
+  }
+
+  [packetery-renderer="table-row"] {
+    .packeta-widget-button {
+      img {
+        width: 45px;
+        height: 45px;
+      }
+    }
+  }
 }
 
-.woocommerce {
-	#order_review {
-		table {
-			.packetery-widget-button-table-row {
-				.packeta-widget[packetery-renderer="table-row"] img {
-					display: none;
-				}
-			}
-		}
-	}
-}
-
-.woocommerce {
-	#order_review {
-		table {
-			.packetery-widget-button-table-row th img {
-				width: 45px;
-				height: 45px;
-				display: block;
-				margin-left: auto;
-			}
-		}
-	}
-}
-
-.woocommerce {
-	.form-row[packetery-renderer="after-rate"] {
-		display: inline-grid;
-	}
-}
-
-.woocommerce {
-	.form-row[packetery-renderer="after-rate"] {
-		packetery-widget-button-wrapper {
-			text-align: left;
-		}
-	}
-}
-
-.woocommerce {
-	[packetery-renderer="after-rate"] {
-		.packeta-widget-button {
-			display: inline-grid;
-		}
-	}
-}
-
-.woocommerce {
-	[packetery-renderer="after-rate"] {
-		.packeta-widget-button img {
-			width: 150px;
-			margin: 0;
-		}
-	}
-}
-
-.woocommerce {
-	[packetery-renderer="table-row"] {
-		.packeta-widget-button img {
-			width: 45px;
-			height: 45px;
-		}
-	}
-}
-
-.woocommerce {
-	[packetery-renderer="after-rate"] {
-		.packeta-widget-button button {
-			width: 150px;
-		}
-	}
-}
-
-body {
-	.woocommerce {
-		[packetery-renderer] {
-			div.packeta-widget-button.packetery-widget-button-row {
-				button.button.alt {
-					text-align: center;
-				}
-			}
-		}
-	}
+body .woocommerce [packetery-renderer] div.packeta-widget-button.packetery-widget-button-row button.button.alt {
+  text-align: center;
 }
 
 .shopengine-widget {
-	.shopengine-checkout-review-order {
-		.woocommerce-checkout-review-order-table {
-			tr.packetery-widget-button-table-row {
-				[packetery-renderer="table-row"] {
-					.packeta-widget-info {
-						text-align: left;
-					}
-				}
-			}
-		}
-	}
-}
+  .shopengine-checkout-review-order {
+    .woocommerce-checkout-review-order-table {
+      tr.packetery-widget-button-table-row {
+        justify-content: left;
 
-.shopengine-widget {
-	.shopengine-checkout-review-order {
-		.woocommerce-checkout-review-order-table {
-			tr.packetery-widget-button-table-row {
-				[packetery-renderer="table-row"] {
-					.packeta-widget-selected-address {
-						text-align: left;
-					}
-				}
-			}
-		}
-	}
-}
+        [packetery-renderer="table-row"] {
+          .packeta-widget-info {
+            text-align: left;
+          }
 
-.shopengine-widget {
-	.shopengine-checkout-review-order {
-		.woocommerce-checkout-review-order-table {
-			tr.packetery-widget-button-table-row {
-				img {
-					margin-right: 5px;
-				}
-			}
-		}
-	}
-}
+          .packeta-widget-selected-address {
+            text-align: left;
+          }
+        }
 
-.shopengine-widget {
-	.shopengine-checkout-review-order {
-		.woocommerce-checkout-review-order-table {
-			tr.packetery-widget-button-table-row {
-				justify-content: left;
-			}
-		}
-	}
+        img {
+          margin-right: 5px;
+        }
+      }
+    }
+  }
 }
 
 .packetery-hidden {
-	display: none !important;
+  display: none !important;
 }
