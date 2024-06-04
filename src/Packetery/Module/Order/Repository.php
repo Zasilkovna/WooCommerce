@@ -503,7 +503,7 @@ class Repository {
 		$pointId   = $orderData['point_id'] ?? null;
 		$carrierId = $orderData['carrier_id'] ?? null;
 		/**
-		 * Tells if packeta debug logs are enabled.
+		 * Tells if Packeta debug logs are enabled.
 		 *
 		 * @since 1.7.2
 		 */

@@ -224,7 +224,7 @@ class Client {
 	}
 
 	/**
-	 * Asks for packeta labels.
+	 * Asks for Packeta labels.
 	 *
 	 * @param Request\PacketsLabelsPdf $request Label request.
 	 *

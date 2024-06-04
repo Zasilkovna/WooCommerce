@@ -72,13 +72,13 @@ Fixed: Fixed carrier change when switching delivery country.
 
 = 1.7.3 =
 Fixed: Improved compatibility with third party plugins.
-Fixed: checkout payment filter
+Fixed: Checkout payment filter fixed.
 
 = 1.7.2 =
 Added: PHP 8.1-8.2 support.
-Added: It is possible to set the default packet dimensions in the settings
+Added: It is possible to set the default packet dimensions in the settings.
 Changed: Instead of Guzzle client, we're using WordPress function to fetch feature flags from external API.
-Changed: Settings - default weight now accepts up to 3 decimal places
+Changed: Settings - default weight now accepts up to 3 decimal places.
 Fixed: Filtering payment gateways without shipping calculation.
 
 = 1.7.1 =
@@ -200,5 +200,5 @@ Fixed: Product-carrier limitation.
 Fixed: Checkout widget button visibility handling on no customer address filled.
 Updated: Filter packeta_create_packet updated to accept array of packet attributes instead of order entity.
 Updated: Packet status tracking interface and default values.
-Updated: Refactor of function that gets all available packeta shipping methods.
+Updated: Refactor of function that gets all available Packeta shipping methods.
 Updated: small edit of translation strings.

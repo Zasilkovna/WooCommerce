@@ -86,7 +86,7 @@ You can find description of the attributes in the [official documentation](https
 
 ##### Filter shipping rate cost
 
-To update packeta shipping rate cost in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
+To update Packeta shipping rate cost in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
 
 ```
 add_filter( 'packeta_shipping_price', function ( $price, $filterParameters ) {

@@ -507,7 +507,7 @@ class Provider {
 	}
 
 	/**
-	 * Gets maximum offset for selected packeta labels format.
+	 * Gets maximum offset for selected Packeta labels format.
 	 *
 	 * @param string $format Selected format.
 	 *
@@ -523,7 +523,7 @@ class Provider {
 	}
 
 	/**
-	 * Gets list of packeta labels for select creation.
+	 * Gets list of Packeta labels for select creation.
 	 *
 	 * @return array
 	 */
