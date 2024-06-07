@@ -121,7 +121,6 @@ ij_twig_spaces_inside_variable_delimiters = true
 [*.vue]
 indent_size = 2
 tab_width = 2
-ij_continuation_indent_size = 4
 ij_vue_indent_children_of_top_level = template
 ij_vue_interpolation_new_line_after_start_delimiter = true
 ij_vue_interpolation_new_line_before_end_delimiter = true
@@ -157,11 +156,10 @@ ij_xml_space_inside_empty_tag = false
 ij_xml_text_wrap = normal
 
 [{*.ats,*.cts,*.mts,*.ts}]
-ij_continuation_indent_size = 4
 ij_typescript_align_imports = false
 ij_typescript_align_multiline_array_initializer_expression = false
 ij_typescript_align_multiline_binary_operation = false
-ij_typescript_align_multiline_chained_methods = false
+ij_typescript_align_multiline_chained_methods = true
 ij_typescript_align_multiline_extends_list = false
 ij_typescript_align_multiline_for = true
 ij_typescript_align_multiline_parameters = true
@@ -191,7 +189,7 @@ ij_typescript_call_parameters_new_line_after_left_paren = false
 ij_typescript_call_parameters_right_paren_on_new_line = false
 ij_typescript_call_parameters_wrap = off
 ij_typescript_catch_on_new_line = false
-ij_typescript_chained_call_dot_on_new_line = true
+ij_typescript_chained_call_dot_on_new_line = false
 ij_typescript_class_brace_style = end_of_line
 ij_typescript_comma_on_new_line = false
 ij_typescript_do_while_brace_force = never
@@ -341,11 +339,10 @@ ij_shell_switch_cases_indented = false
 ij_shell_use_unix_line_separator = true
 
 [{*.cjs,*.js}]
-ij_continuation_indent_size = 4
 ij_javascript_align_imports = false
 ij_javascript_align_multiline_array_initializer_expression = false
 ij_javascript_align_multiline_binary_operation = false
-ij_javascript_align_multiline_chained_methods = false
+ij_javascript_align_multiline_chained_methods = true
 ij_javascript_align_multiline_extends_list = false
 ij_javascript_align_multiline_for = true
 ij_javascript_align_multiline_parameters = true
@@ -373,7 +370,7 @@ ij_javascript_call_parameters_new_line_after_left_paren = false
 ij_javascript_call_parameters_right_paren_on_new_line = false
 ij_javascript_call_parameters_wrap = off
 ij_javascript_catch_on_new_line = false
-ij_javascript_chained_call_dot_on_new_line = true
+ij_javascript_chained_call_dot_on_new_line = false
 ij_javascript_class_brace_style = end_of_line
 ij_javascript_comma_on_new_line = false
 ij_javascript_do_while_brace_force = never
@@ -511,7 +508,6 @@ ij_javascript_while_on_new_line = false
 ij_javascript_wrap_comments = false
 
 [{*.ctp,*.hphp,*.inc,*.module,*.php,*.php4,*.php5,*.phtml}]
-ij_continuation_indent_size = 4
 ij_smart_tabs = true
 ij_php_align_assignments = true
 ij_php_align_class_constants = false
@@ -785,7 +781,6 @@ ij_html_text_wrap = normal
 
 [{*.http,*.rest}]
 indent_size = 0
-ij_continuation_indent_size = 4
 ij_http-request_call_parameters_wrap = normal
 ij_http-request_method_parameters_wrap = split_into_lines
 ij_http-request_space_before_comma = true
