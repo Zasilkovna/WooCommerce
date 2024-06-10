@@ -1,0 +1,63 @@
+#packetery-order-collection-print .packetery-end {
+  margin: 3px 0;
+  height: 20px;
+  border: 2px solid black;
+  text-align: center;
+  overflow: hidden;
+}
+#packetery-order-collection-print thead {
+  display: table-header-group;
+}
+#packetery-order-collection-print thead table {
+  width: 100%;
+}
+#packetery-order-collection-print thead table .packetery-shipment-barcode {
+  text-align: center;
+}
+#packetery-order-collection-print thead td {
+  border: 0 none;
+  font-size: 9pt;
+  font-weight: normal;
+}
+#packetery-order-collection-print .collection-print-table-body tr {
+  text-decoration: none;
+}
+#packetery-order-collection-print .collection-print-table-body td {
+  text-align: center;
+}
+#packetery-order-collection-print .collection-print-table-body td.cod-column {
+  text-align: right;
+}
+#packetery-order-collection-print .collection-print-table-body td.order-number-column {
+  text-align: left;
+}
+#packetery-order-collection-print .packetery-no-wrap {
+  white-space: nowrap;
+}
+#packetery-order-collection-print body, #packetery-order-collection-print table {
+  background: white;
+  color: black;
+}
+#packetery-order-collection-print table {
+  border-collapse: collapse;
+}
+#packetery-order-collection-print th {
+  background: #aaa;
+  padding: 4px;
+  font-size: 9pt;
+  border: 1px solid black;
+}
+#packetery-order-collection-print tbody td {
+  padding: 1px 4px;
+  font-size: 9pt;
+  border: 1px solid black;
+}
+#packetery-order-collection-print tr.even td {
+  background: #ddd;
+}
+
+.packetery-order-collection-print-table {
+  width: 100%;
+}
+
+/*# sourceMappingURL=order-collection-print.css.map */

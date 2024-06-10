@@ -182,7 +182,7 @@ class CollectionPrint {
 				'wpOrders'            => $wpOrders,
 				'orderCount'          => count( $packetIds ),
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
-				'stylesheet'          => Plugin::buildAssetUrl( 'public/order-collection-print.css' ),
+				'stylesheet'          => Plugin::buildAssetUrl( 'public/css/order-collection-print.css' ),
 				'translations'        => [
 					'handoverPacketsHeading' => __( 'Handover packets', 'packeta' ),
 					'packetCount'            => __( 'Packet count', 'packeta' ),
