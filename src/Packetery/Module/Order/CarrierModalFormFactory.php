@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity;
 use Packetery\Nette\Forms\Form;
 use Packetery\Module\FormFactory;
 
@@ -52,7 +51,7 @@ class CarrierModalFormFactory {
 
 		$form->addSelect( self::FIELD_CARRIER_ID, __( 'Carrier:', 'packeta' ), $carrierOptions )
 			->setRequired()
-			->setPrompt( 'Pick a carrier' );
+			->setPrompt( __( 'Pick a carrier', 'packeta' ) );
 
 		$form->addHidden( self::FIELD_NONCE );
 
