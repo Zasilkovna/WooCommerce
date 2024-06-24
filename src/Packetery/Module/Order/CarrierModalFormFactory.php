@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity;
 use Packetery\Nette\Forms\Form;
 use Packetery\Module\FormFactory;
 
@@ -42,22 +41,22 @@ class CarrierModalFormFactory {
 	/**
 	 * Creating a form
 	 *
-	 * @param Entity\Carrier[] $carriers       An array of carrier data.
-	 * @param string|null      $currentCarrier Current carrier.
+	 * @param string[]    $carrierOptions An array of carrier names.
+	 * @param string|null $currentCarrier Current carrier.
 	 *
 	 * @return Form
 	 */
-	public function create( array $carriers, ?string $currentCarrier ): Form {
+	public function create( array $carrierOptions, ?string $currentCarrier ): Form {
 		$form = $this->formFactory->create();
 
-		$form->addSelect( self::FIELD_CARRIER_ID, __( 'Carrier:', 'packeta' ), $this->getAvailableCarrierOptions( $carriers ) )
+		$form->addSelect( self::FIELD_CARRIER_ID, __( 'Carrier:', 'packeta' ), $carrierOptions )
 			->setRequired()
-			->setPrompt( 'Pick a carrier' );
+			->setPrompt( __( 'Pick a carrier', 'packeta' ) );
 
 		$form->addHidden( self::FIELD_NONCE );
 
-		foreach ( $carriers as $carrier ) {
-			if ( $carrier->getId() === $currentCarrier ) {
+		foreach ( $carrierOptions as $carrierId => $carrierName ) {
+			if ( $carrierId === $currentCarrier ) {
 				$form->setDefaults(
 					[
 						self::FIELD_NONCE      => wp_create_nonce(),
@@ -74,19 +73,4 @@ class CarrierModalFormFactory {
 		return $form;
 	}
 
-	/**
-	 * Available Carriers based on the country of destination.
-	 *
-	 * @param Entity\Carrier[] $carriers An array of carrier data.
-	 *
-	 * @return array|null
-	 */
-	public function getAvailableCarrierOptions( array $carriers ): ?array {
-		$carrierOptions = [];
-		foreach ( $carriers as $carrier ) {
-			$carrierOptions[ $carrier->getId() ] = $carrier->getName();
-		}
-
-		return $carrierOptions;
-	}
 }

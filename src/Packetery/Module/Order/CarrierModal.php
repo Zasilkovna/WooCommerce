@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\WcSettingsConfig;
@@ -116,7 +115,10 @@ class CarrierModal {
 			return;
 		}
 
-		$form              = $this->carrierModalFormFactory->create( $this->getCarriersByCountry(), $this->getCurrentCarrier() );
+		$form              = $this->carrierModalFormFactory->create(
+			$this->getCarrierOptionsByCountry(),
+			$this->getCurrentCarrier()
+		);
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
 		if ( $form['submit']->isSubmittedBy() ) {
@@ -170,7 +172,7 @@ class CarrierModal {
 	/**
 	 * Saves order stub with new Carrier, if instantiable.
 	 *
-	 * @param int    $orderId Order id.
+	 * @param int    $orderId      Order id.
 	 * @param string $newCarrierId Carrier id.
 	 *
 	 * @return string
@@ -189,19 +191,24 @@ class CarrierModal {
 			]
 		);
 
-		return $newCarrier->getName();
+		$options = Carrier\Options::createByCarrierId( $newCarrier->getId() );
+		if ( ! $options->hasOptions() ) {
+			throw new RuntimeException( 'Missing options for carrier ' . $newCarrier->getId() );
+		}
+
+		return $options->getName();
 	}
 
 	/**
-	 * Gets Carriers by the country of destination.
+	 * Gets carrier names by the country of destination.
 	 *
-	 * @return Entity\Carrier[]
+	 * @return string[]
 	 */
-	private function getCarriersByCountry(): array {
-		static $carriers;
+	private function getCarrierOptionsByCountry(): array {
+		static $carrierOptions;
 
-		if ( isset( $carriers ) ) {
-			return $carriers;
+		if ( isset( $carrierOptions ) ) {
+			return $carrierOptions;
 		}
 
 		$wcOrderId = $this->detailCommonLogic->getOrderId();
@@ -221,14 +228,15 @@ class CarrierModal {
 
 		$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $shippingCountry );
 
-		foreach ( $carriers as $key => $carrier ) {
+		$carrierOptions = [];
+		foreach ( $carriers as $carrier ) {
 			$options = Carrier\Options::createByCarrierId( $carrier->getId() );
-			if ( ! $options->hasOptions() ) {
-				unset( $carriers[ $key ] );
+			if ( $options->hasOptions() ) {
+				$carrierOptions[ $carrier->getId() ] = $options->getName();
 			}
 		}
 
-		return $carriers;
+		return $carrierOptions;
 	}
 
 	/**
@@ -237,8 +245,8 @@ class CarrierModal {
 	 * @return bool
 	 */
 	public function canBeDisplayed(): bool {
-		$carriers = $this->getCarriersByCountry();
-		if ( [] === $carriers ) {
+		$carrierOptions = $this->getCarrierOptionsByCountry();
+		if ( [] === $carrierOptions ) {
 			return false;
 		}
 
