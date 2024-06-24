@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.7.5\n"
+"Project-Id-Version: Packeta 1.7.6\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-05-30T13:18:06+02:00\n"
+"POT-Creation-Date: 2024-06-24T09:09:11+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: packeta\n"
@@ -19,9 +19,9 @@ msgstr ""
 #: src/Packetery/Module/Carrier/CountryListingPage.php:193
 #: src/Packetery/Module/Carrier/OptionsPage.php:485
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:106
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:109
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:111
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:113
+#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:108
+#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:110
+#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:112
 #: src/Packetery/Module/Checkout.php:247
 #: src/Packetery/Module/Checkout.php:273
 #: src/Packetery/Module/DashboardWidget.php:118
@@ -371,9 +371,6 @@ msgid "Surcharge"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:75
-msgid "Packeta Pick-up Point (Z-Point, Z-Box, AlzaBox)"
-msgstr ""
-
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:76
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:77
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:78
@@ -381,18 +378,14 @@ msgid "Packeta Pick-up Point (Z-Point, Z-Box)"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:105
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:108
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:110
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:112
+#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:107
+#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:109
+#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:111
 msgid "Packeta Pick-up Point"
 msgstr ""
 
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:107
-msgid "AlzaBox via Packeta"
-msgstr ""
-
 #. translators: %s is country code.
-#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:218
+#: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:217
 msgid "Selected carrier does not deliver to country \"%s\"."
 msgstr ""
 
@@ -1030,28 +1023,32 @@ msgstr ""
 msgid "Print AWB"
 msgstr ""
 
-#: src/Packetery/Module/Order/CarrierModal.php:132
-#: src/Packetery/Module/Order/CarrierModal.php:264
+#: src/Packetery/Module/Order/CarrierModal.php:134
+#: src/Packetery/Module/Order/CarrierModal.php:272
 msgid "Set carrier"
 msgstr ""
 
-#: src/Packetery/Module/Order/CarrierModal.php:133
+#: src/Packetery/Module/Order/CarrierModal.php:135
 #: src/Packetery/Module/Order/LabelPrintModal.php:157
 #: src/Packetery/Module/Order/Modal.php:85
 #: src/Packetery/Module/Plugin.php:759
 msgid "Close modal panel"
 msgstr ""
 
-#: src/Packetery/Module/Order/CarrierModalFormFactory.php:53
+#: src/Packetery/Module/Order/CarrierModalFormFactory.php:52
 msgid "Carrier:"
 msgstr ""
 
-#: src/Packetery/Module/Order/CarrierModalFormFactory.php:71
+#: src/Packetery/Module/Order/CarrierModalFormFactory.php:54
+msgid "Pick a carrier"
+msgstr ""
+
+#: src/Packetery/Module/Order/CarrierModalFormFactory.php:70
 #: src/Packetery/Module/Order/Modal.php:72
 msgid "Save"
 msgstr ""
 
-#: src/Packetery/Module/Order/CarrierModalFormFactory.php:72
+#: src/Packetery/Module/Order/CarrierModalFormFactory.php:71
 #: src/Packetery/Module/Order/LabelPrintModal.php:176
 #: src/Packetery/Module/Order/Modal.php:73
 msgid "Cancel"
@@ -1303,7 +1300,7 @@ msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:349
 #: src/Packetery/Module/Order/Metabox.php:461
-msgid "Submit to packeta"
+msgid "Submit to Packeta"
 msgstr ""
 
 #. translators: %s: Order number.
