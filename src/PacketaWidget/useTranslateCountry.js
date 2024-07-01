@@ -16,7 +16,10 @@ export const useTranslateCountry = (
 
 	useEffect( () => {
 		const getShippingCountryName = function () {
-			const inputElement = document.querySelector( '#shipping-country input' );
+			let inputElement = document.querySelector( '#shipping-country input' );
+			if ( ! inputElement ) {
+				inputElement = document.querySelector( '#billing-country input' );
+			}
 			if ( inputElement ) {
 				return inputElement.value;
 			}
