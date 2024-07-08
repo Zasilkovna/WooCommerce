@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslateCountry } from "./useTranslateCountry";
 
-export const useDynamicSettings = ( adminAjaxUrl ) => {
+export const useDynamicSettings = ( adminAjaxUrl, setViewState ) => {
 	let [ dynamicSettings, setDynamicSettings ] = useState( null );
 	let [ loading, setLoading ] = useState( false );
 
@@ -17,6 +17,7 @@ export const useDynamicSettings = ( adminAjaxUrl ) => {
 		setDynamicSettings,
 		loading,
 		setLoading,
+		setViewState,
 	);
 
 	useEffect( () => {

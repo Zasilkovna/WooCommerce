@@ -4,12 +4,14 @@
  * @package Packetery
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 
 export const useOnWidgetButtonClicked = (
 	packetaShippingRate,
 	settings,
 	dynamicSettings,
+	viewState,
+	setViewState,
 	cartItemsWeight,
 ) => {
 	const {
@@ -22,8 +24,6 @@ export const useOnWidgetButtonClicked = (
 		saveSelectedPickupPointUrl,
 		pickupPointAttrs,
 	} = settings;
-
-	const [ viewState, setViewState ] = useState( null );
 
 	const onWidgetButtonClicked = useCallback( () => {
 		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
@@ -107,5 +107,5 @@ export const useOnWidgetButtonClicked = (
 		);
 	}, [ packetaShippingRate, dynamicSettings ] );
 
-	return [ onWidgetButtonClicked, viewState ];
+	return onWidgetButtonClicked;
 };

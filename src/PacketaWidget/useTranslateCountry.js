@@ -12,6 +12,7 @@ export const useTranslateCountry = (
 	setDynamicSettings,
 	loading,
 	setLoading,
+	setViewState,
 ) => {
 
 	useEffect( () => {
@@ -37,6 +38,17 @@ export const useTranslateCountry = (
 			} else {
 				const previousCountryName = dynamicSettings.countryName;
 				if ( previousCountryName !== countryName ) {
+					const updateSettings = function ( key, value ) {
+						setDynamicSettings( prevState => ( {
+							...prevState,
+							[ key ]: value,
+						} ) );
+
+						setViewState( null );
+					}
+
+					updateSettings('countryName', countryName);
+
 					if ( ! loading ) {
 						setLoading( true );
 						fetch( adminAjaxUrl, {
@@ -52,10 +64,7 @@ export const useTranslateCountry = (
 							.then( ( response ) => response.json() )
 							.then( ( data ) => {
 								if ( data !== null ) {
-									setDynamicSettings( prevState => ( {
-										...prevState,
-										country: data,
-									} ) );
+									updateSettings('country', data);
 								}
 							} )
 							.catch( ( error ) => {
@@ -66,11 +75,6 @@ export const useTranslateCountry = (
 								setLoading( false );
 							} );
 					}
-
-					setDynamicSettings( prevState => ( {
-						...prevState,
-						countryName,
-					} ) );
 				}
 			}
 		}

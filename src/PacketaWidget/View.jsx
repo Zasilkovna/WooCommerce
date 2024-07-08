@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getSetting } from '@woocommerce/settings';
 import { ValidatedTextInput } from '@woocommerce/blocks-components';
 
@@ -8,6 +8,7 @@ import { useDynamicSettings } from './useDynamicSettings';
 import { PacketaWidget } from './PacketaWidget';
 
 export const View = ( { cart } ) => {
+	const [ viewState, setViewState ] = useState( null );
 	const { shippingRates, cartItemsWeight } = cart;
 
 	const settings = getSetting( 'packeta-widget_data' );
@@ -24,12 +25,14 @@ export const View = ( { cart } ) => {
 		carrierConfig
 	);
 
-	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
+	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl, setViewState );
 
-	const [ onWidgetButtonClicked, viewState ] = useOnWidgetButtonClicked(
+	const onWidgetButtonClicked = useOnWidgetButtonClicked(
 		packetaShippingRate,
 		settings,
 		dynamicSettings,
+		viewState,
+		setViewState,
 		cartItemsWeight,
 	);
 
