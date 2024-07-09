@@ -31,7 +31,6 @@ export const View = ( { cart } ) => {
 		packetaShippingRate,
 		settings,
 		dynamicSettings,
-		viewState,
 		setViewState,
 		cartItemsWeight,
 	);

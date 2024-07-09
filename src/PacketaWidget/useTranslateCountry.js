@@ -38,16 +38,8 @@ export const useTranslateCountry = (
 			} else {
 				const previousCountryName = dynamicSettings.countryName;
 				if ( previousCountryName !== countryName ) {
-					const updateSettings = function ( key, value ) {
-						setDynamicSettings( prevState => ( {
-							...prevState,
-							[ key ]: value,
-						} ) );
-
-						setViewState( null );
-					}
-
-					updateSettings('countryName', countryName);
+					setDynamicSettings( { ...dynamicSettings, countryName } );
+					setViewState( null );
 
 					if ( ! loading ) {
 						setLoading( true );
@@ -61,19 +53,19 @@ export const useTranslateCountry = (
 								countryName: countryName,
 							} ),
 						} )
-							.then( ( response ) => response.json() )
-							.then( ( data ) => {
-								if ( data !== null ) {
-									updateSettings('country', data);
-								}
-							} )
-							.catch( ( error ) => {
-								console.error( 'Error:', error );
-								// keep previous country
-							} )
-							.finally( () => {
-								setLoading( false );
-							} );
+						.then( ( response ) => response.json() )
+						.then( ( country ) => {
+							if ( country !== null ) {
+								setDynamicSettings( prevState => ( { ...prevState, country } ) );
+							}
+						} )
+						.catch( ( error ) => {
+							console.error( 'Error:', error );
+							// keep previous country
+						} )
+						.finally( () => {
+							setLoading( false );
+						} );
 					}
 				}
 			}

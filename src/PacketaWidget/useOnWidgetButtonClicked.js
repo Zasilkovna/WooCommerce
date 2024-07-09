@@ -10,7 +10,6 @@ export const useOnWidgetButtonClicked = (
 	packetaShippingRate,
 	settings,
 	dynamicSettings,
-	viewState,
 	setViewState,
 	cartItemsWeight,
 ) => {
