@@ -17,6 +17,9 @@ use Packetery\Core\Rounder;
  */
 class Options {
 
+	public const PRICING_TYPE_BY_WEIGHT        = 'byWeight';
+	public const PRICING_TYPE_BY_PRODUCT_VALUE = 'byProductValue';
+
 	/**
 	 * Option ID.
 	 *
@@ -198,6 +201,15 @@ class Options {
 	 */
 	public function getCodRoundingType(): int {
 		return $this->options['cod_rounding'] ?? Rounder::DONT_ROUND;
+	}
+
+	/**
+	 * Gets pricing type.
+	 *
+	 * @return string
+	 */
+	public function getPricingType(): string {
+		return $this->options[ OptionsPage::FORM_FIELD_PRICING_TYPE ] ?? self::PRICING_TYPE_BY_WEIGHT;
 	}
 
 	/**

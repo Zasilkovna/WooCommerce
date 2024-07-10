@@ -43,9 +43,43 @@
                 </tr>
             {/define}
 
+            {define productValueRules}
+                <tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
+                    <td>
+                        <div class="packetery-rule">
+                            <div class="packetery-label">
+                                <label n:name=value />
+                            </div>
+                            <div class="packetery-input">
+                                <div class="packetery-input-with-unit">
+                                    <input n:name=value
+                                            data-lfv-message-id="{$container[$id][value]->getHtmlId() . '_message'}">
+                                    <span> {$globalCurrency|noescape}</span>
+                                </div>
+                                <p class="packetery-input-validation-message help-block text-danger"
+                                   id="{$container[$id][value]->getHtmlId() . '_message'}">{inputError value}</p>
+                            </div>
+                            <div class="packetery-label">
+                                <label n:name=price />
+                            </div>
+                            <div class="packetery-input">
+                                <div class="packetery-input-with-unit">
+                                    <input n:name=price
+                                            data-lfv-message-id="{$container[$id][price]->getHtmlId() . '_message'}">
+                                    <span> {$globalCurrency|noescape}</span>
+                                </div>
+                                <p class="packetery-input-validation-message help-block text-danger"
+                                   id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
+                            </div>
+                        </div>
+                        <button type="button" data-replication-delete class="button button-small">{$translations['delete']}</button>
+                    </td>
+                </tr>
+            {/define}
+
             {define weightRulesSection}
                 {var $container = $form['weight_limits']}
-                <tr>
+                <tr id="{$carrier_data['weightLimitsContainerId']}">
                     <th scope="row">
                         <label>{$translations['weightRules']}:</label>
                     </th>
@@ -60,6 +94,27 @@
 
                         <button type="button" data-replication-add
                                 class="button button-small">{$translations['addWeightRule']}</button>
+                    </td>
+                </tr>
+            {/define}
+
+            {define productValueRulesSection}
+                {var $container = $form['product_value_limits']}
+                <tr id="{$carrier_data['productValueLimitsContainerId']}">
+                    <th scope="row">
+                        <label>{$translations['productValueRules']}:</label>
+                    </th>
+                    <td class="js-product-value-rules">
+                        <table>
+                            <tbody data-replication-item-container data-replication-min-items="1">
+                            {foreach $container->getComponents() as $valueId => $component}
+                                {include productValueRules id => $valueId, container => $container}
+                            {/foreach}
+                            </tbody>
+                        </table>
+
+                        <button type="button" data-replication-add
+                                class="button button-small">{$translations['addProductValueRule']}</button>
                     </td>
                 </tr>
             {/define}
@@ -123,7 +178,8 @@
             <form n:name=$form class="packetery-hidden">
                 <table class="form-table" role="presentation">
                     {include weightRulesSection form => $form}
-				{include surchargeRulesSection form => $form}
+                    {include productValueRulesSection form => $form}
+                    {include surchargeRulesSection form => $form}
                 </table>
             </form>
 
@@ -178,7 +234,21 @@
                         </tr>
                     {/if}
 
-					{include weightRulesSection form => $form}
+                    <tr>
+                        <th scope="row">
+                            <label n:name=pricing_type />
+                        </th>
+                        <td>
+                            <div>
+                                <select n:name=pricing_type></select>
+                            </div>
+                            <p class="packetery-input-validation-message help-block text-danger"
+                               id="{$form[pricing_type]->getHtmlId() . '_message'}">{inputError pricing_type}</p>
+                        </td>
+                    </tr>
+
+                    {include weightRulesSection form => $form}
+                    {include productValueRulesSection form => $form}
 
                     {if $carrier->supportsCod()}
                         <tr>
