@@ -37,36 +37,39 @@ export const useTranslateCountry = (
 				} ) );
 			} else {
 				const previousCountryName = dynamicSettings.countryName;
-				if ( previousCountryName !== countryName ) {
-					setDynamicSettings( { ...dynamicSettings, countryName } );
-					setViewState( null );
-
-					if ( ! loading ) {
-						setLoading( true );
-						fetch( adminAjaxUrl, {
-							method: 'POST',
-							headers: {
-								'Content-Type': 'application/x-www-form-urlencoded',
-							},
-							body: new URLSearchParams( {
-								action: 'translate_country_name',
-								countryName: countryName,
-							} ),
-						} )
-						.then( ( response ) => response.json() )
-						.then( ( country ) => {
-							if ( country !== null ) {
-								setDynamicSettings( prevState => ( { ...prevState, country } ) );
-							}
-						} )
-						.catch( ( error ) => {
-							console.error( 'Error:', error );
-							// keep previous country
-						} )
-						.finally( () => {
-							setLoading( false );
-						} );
-					}
+				// nonTranslatableCountryName is to not make the same call repeatedly
+				if ( dynamicSettings.nonTranslatableCountryName !== countryName && previousCountryName !== countryName && ! loading ) {
+					setLoading( true );
+					fetch( adminAjaxUrl, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/x-www-form-urlencoded',
+						},
+						body: new URLSearchParams( {
+							action: 'translate_country_name',
+							countryName: countryName,
+						} ),
+					} ).then( ( response ) => response.json() ).then( ( country ) => {
+						if ( country !== null ) {
+							setDynamicSettings( prevState => ( {
+								...prevState,
+								country,
+								countryName,
+							} ) );
+							// clears pickup point info
+							setViewState( null );
+						} else {
+							setDynamicSettings( prevState => ( {
+								...prevState,
+								nonTranslatableCountryName: countryName
+							} ) );
+						}
+					} ).catch( ( error ) => {
+						console.error( 'Error:', error );
+						// keep previous country
+					} ).finally( () => {
+						setLoading( false );
+					} );
 				}
 			}
 		}
