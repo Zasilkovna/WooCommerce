@@ -9,7 +9,7 @@ import { PacketaWidget } from './PacketaWidget';
 
 export const View = ( { cart } ) => {
 	const [ viewState, setViewState ] = useState( null );
-	const { shippingRates, cartItemsWeight } = cart;
+	const { shippingRates, shippingAddress, cartItemsWeight } = cart;
 
 	const settings = getSetting( 'packeta-widget_data' );
 	const {
@@ -25,13 +25,14 @@ export const View = ( { cart } ) => {
 		carrierConfig
 	);
 
-	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl, setViewState );
+	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 
 	const onWidgetButtonClicked = useOnWidgetButtonClicked(
 		packetaShippingRate,
 		settings,
 		dynamicSettings,
 		setViewState,
+		shippingAddress,
 		cartItemsWeight,
 	);
 

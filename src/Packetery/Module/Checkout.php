@@ -1493,17 +1493,4 @@ class Checkout {
 		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
 	}
 
-	/**
-	 * Translates country name to lowercase two-letter ISO code.
-	 *
-	 * @return void
-	 */
-	public function translateCountryNameToCode(): void {
-		$countryName = $this->httpRequest->getPost( 'countryName' );
-		$countries   = WC()->countries->get_countries();
-		$countryCode = array_search( $countryName, $countries, true );
-
-		wp_send_json( $countryCode ? strtolower( $countryCode ) : null );
-	}
-
 }

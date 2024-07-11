@@ -11,11 +11,11 @@ export const useOnWidgetButtonClicked = (
 	settings,
 	dynamicSettings,
 	setViewState,
+	shippingAddress,
 	cartItemsWeight,
 ) => {
 	const {
 		carrierConfig,
-		country : customerCountry,
 		language,
 		packeteryApiKey,
 		appIdentity,
@@ -28,12 +28,8 @@ export const useOnWidgetButtonClicked = (
 		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
 
 		let weight = +( cartItemsWeight / 1000 ).toFixed( 2 );
-		let country = customerCountry;
-		if ( dynamicSettings && dynamicSettings.country ) {
-			country = dynamicSettings.country;
-		}
-		let widgetOptions = { country, language, appIdentity, weight };
-
+		let widgetOptions = { language, appIdentity, weight };
+		widgetOptions.country = shippingAddress.country.toLowerCase();
 		if ( carrierConfig[ rateId ].carriers ) {
 			widgetOptions.carriers = carrierConfig[ rateId ].carriers;
 		}

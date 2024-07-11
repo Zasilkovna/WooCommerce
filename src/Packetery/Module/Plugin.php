@@ -531,8 +531,6 @@ class Plugin {
 
 		add_action( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 		add_action( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
-		add_action( 'wp_ajax_translate_country_name', [ $this->checkout, 'translateCountryNameToCode' ] );
-		add_action( 'wp_ajax_nopriv_translate_country_name', [ $this->checkout, 'translateCountryNameToCode' ] );
 	}
 
 	/**
