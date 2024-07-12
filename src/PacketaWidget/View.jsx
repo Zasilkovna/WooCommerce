@@ -25,7 +25,29 @@ export const View = ( { cart } ) => {
 		carrierConfig
 	);
 
-	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
+	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
+
+	useEffect( () => {
+		const shippingCountry = shippingAddress.country.toLowerCase()
+		if ( dynamicSettings ) {
+			if ( ! dynamicSettings.lastCountry ) {
+				setDynamicSettings( {
+					...dynamicSettings,
+					lastCountry: shippingCountry,
+				} );
+			}
+			if ( dynamicSettings.lastCountry && dynamicSettings.lastCountry !== shippingCountry ) {
+				if ( viewState && setViewState ) {
+					setViewState( null );
+					console.log( 'setViewState null done' );
+				}
+				setDynamicSettings( {
+					...dynamicSettings,
+					lastCountry: shippingCountry,
+				} );
+			}
+		}
+	}, [ dynamicSettings, setDynamicSettings, viewState, setViewState, shippingAddress ] );
 
 	const onWidgetButtonClicked = useOnWidgetButtonClicked(
 		packetaShippingRate,

@@ -40,5 +40,5 @@ export const useDynamicSettings = ( adminAjaxUrl ) => {
 		}
 	}, [ dynamicSettings, adminAjaxUrl, loading ] );
 
-	return [ dynamicSettings, loading ];
+	return [ dynamicSettings, setDynamicSettings, loading ];
 };
