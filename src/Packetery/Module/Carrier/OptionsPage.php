@@ -460,12 +460,14 @@ class OptionsPage {
 		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );
 			$options = $this->sortLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS, 'weight' );
+
 			$options[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ?? [];
 		}
 
 		if ( Options::PRICING_TYPE_BY_PRODUCT_VALUE === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
-			$options                                   = $this->mergeNewLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
-			$options                                   = $this->sortLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS, 'value' );
+			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
+			$options = $this->sortLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS, 'value' );
+
 			$options[ self::FORM_FIELD_WEIGHT_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_WEIGHT_LIMITS ] ?? [];
 		}
 
