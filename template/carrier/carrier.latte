@@ -9,55 +9,21 @@
 
         {if isset($carrier_data['form'])}
 
-            {define weightRules}
+            {define pricingRule}
                 <tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
                     <td>
                         <div class="packetery-rule">
                             <div class="packetery-label">
-                                <label n:name=weight />
+                                <label n:name=$fieldName />
                             </div>
                             <div class="packetery-input">
                                 <div class="packetery-input-with-unit">
-                                    <input n:name=weight
-                                            data-lfv-message-id="{$container[$id][weight]->getHtmlId() . '_message'}">
-                                    <span> kg</span>
+                                    <input n:name=$fieldName
+                                            data-lfv-message-id="{$container[$id][$fieldName]->getHtmlId() . '_message'}">
+                                    <span> {$fieldUnit|noescape}</span>
                                 </div>
                                 <p class="packetery-input-validation-message help-block text-danger"
-                                   id="{$container[$id][weight]->getHtmlId() . '_message'}">{inputError weight}</p>
-                            </div>
-                            <div class="packetery-label">
-                                <label n:name=price />
-                            </div>
-                            <div class="packetery-input">
-                                <div class="packetery-input-with-unit">
-                                    <input n:name=price
-                                            data-lfv-message-id="{$container[$id][price]->getHtmlId() . '_message'}">
-                                    <span> {$globalCurrency|noescape}</span>
-                                </div>
-                                <p class="packetery-input-validation-message help-block text-danger"
-                                   id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
-                            </div>
-                        </div>
-                        <button type="button" data-replication-delete class="button button-small">{$translations['delete']}</button>
-                    </td>
-                </tr>
-            {/define}
-
-            {define productValueRules}
-                <tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
-                    <td>
-                        <div class="packetery-rule">
-                            <div class="packetery-label">
-                                <label n:name=value />
-                            </div>
-                            <div class="packetery-input">
-                                <div class="packetery-input-with-unit">
-                                    <input n:name=value
-                                            data-lfv-message-id="{$container[$id][value]->getHtmlId() . '_message'}">
-                                    <span> {$globalCurrency|noescape}</span>
-                                </div>
-                                <p class="packetery-input-validation-message help-block text-danger"
-                                   id="{$container[$id][value]->getHtmlId() . '_message'}">{inputError value}</p>
+                                   id="{$container[$id][$fieldName]->getHtmlId() . '_message'}">{inputError $fieldName}</p>
                             </div>
                             <div class="packetery-label">
                                 <label n:name=price />
@@ -87,7 +53,7 @@
                         <table>
                             <tbody data-replication-item-container data-replication-min-items="1">
                             {foreach $container->getComponents() as $weightId => $tmp}
-                                {include weightRules id => $weightId, container => $container}
+                                {include pricingRule fieldName => 'weight', fieldUnit => 'kg', id => $weightId, container => $container}
                             {/foreach}
                             </tbody>
                         </table>
@@ -108,7 +74,7 @@
                         <table>
                             <tbody data-replication-item-container data-replication-min-items="1">
                             {foreach $container->getComponents() as $valueId => $component}
-                                {include productValueRules id => $valueId, container => $container}
+                                {include pricingRule fieldName => 'value', fieldUnit => $globalCurrency, id => $valueId, container => $container}
                             {/foreach}
                             </tbody>
                         </table>
