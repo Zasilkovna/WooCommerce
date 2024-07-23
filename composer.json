@@ -12,6 +12,8 @@
         "phpstan-72": "phpstan/vendor/bin/phpstan -cphpstan/php72.neon",
         "phpstan-74": "phpstan/vendor/bin/phpstan -cphpstan/php74.neon",
         "phpstan-80": "phpstan/vendor/bin/phpstan -cphpstan/php80.neon",
+        "phpstan-81": "phpstan/vendor/bin/phpstan -cphpstan/php81.neon",
+        "phpstan-82": "phpstan/vendor/bin/phpstan -cphpstan/php82.neon",
         "tests-unit": "./vendor/bin/phpunit tests",
         "tests-coverage": "php -d xdebug.mode=coverage -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage"
     },
