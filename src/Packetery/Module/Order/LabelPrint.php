@@ -290,6 +290,19 @@ class LabelPrint {
 			return;
 		}
 
+		foreach ( $packetIds as $orderId => $packetId ) {
+			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
+			if ( $response instanceof Response\PacketsLabelsPdf ) {
+				$wcOrder->add_order_note( __( 'Packeta label has been generated.', 'packeta' ) );
+			}
+
+			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
+				$wcOrder->add_order_note( __( 'Carrier label has been generated.', 'packeta' ) );
+			}
+
+			$wcOrder->save();
+		}
+
 		header( 'Content-Type: application/pdf' );
 		header( 'Content-Transfer-Encoding: Binary' );
 		header( 'Content-Length: ' . strlen( $response->getPdfContents() ) );
