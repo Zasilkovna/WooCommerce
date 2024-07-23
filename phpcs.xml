@@ -26,6 +26,8 @@
         <exclude name="PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore"/>
         <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodDoubleUnderscore"/>
         <exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber"/>
+        <!-- Personal -->
+        <exclude name="Generic.Files.LineEndings.InvalidEOLChar"/>
     </rule>
 
     <rule ref="WordPress.WP.I18n">

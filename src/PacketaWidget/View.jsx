@@ -28,24 +28,25 @@ export const View = ( { cart } ) => {
 	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 
 	useEffect( () => {
+		if ( ! dynamicSettings ) {
+			return;
+		}
+
 		const shippingCountry = shippingAddress.country.toLowerCase()
-		if ( dynamicSettings ) {
-			if ( ! dynamicSettings.lastCountry ) {
-				setDynamicSettings( {
-					...dynamicSettings,
-					lastCountry: shippingCountry,
-				} );
+
+		if ( ! dynamicSettings.lastCountry ) {
+			setDynamicSettings( {
+				...dynamicSettings,
+				lastCountry: shippingCountry,
+			} );
+		} else if ( dynamicSettings.lastCountry !== shippingCountry ) {
+			if ( viewState ) {
+				setViewState( null );
 			}
-			if ( dynamicSettings.lastCountry && dynamicSettings.lastCountry !== shippingCountry ) {
-				if ( viewState && setViewState ) {
-					setViewState( null );
-					console.log( 'setViewState null done' );
-				}
-				setDynamicSettings( {
-					...dynamicSettings,
-					lastCountry: shippingCountry,
-				} );
-			}
+			setDynamicSettings( {
+				...dynamicSettings,
+				lastCountry: shippingCountry,
+			} );
 		}
 	}, [ dynamicSettings, setDynamicSettings, viewState, setViewState, shippingAddress ] );
 
@@ -97,9 +98,7 @@ export const View = ( { cart } ) => {
 		>
 			<ValidatedTextInput
 				value={
-					viewState &&
-					viewState.pickupPoint &&
-					viewState.pickupPoint.name
+					viewState && viewState.pickupPoint ? viewState.pickupPoint.name : ''
 				}
 				required={ true }
 				errorMessage={ getErrorMessage( viewState ) }
