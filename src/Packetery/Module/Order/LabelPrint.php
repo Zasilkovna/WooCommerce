@@ -297,11 +297,11 @@ class LabelPrint {
 			}
 
 			if ( $response instanceof Response\PacketsLabelsPdf ) {
-				$wcOrder->add_order_note( __( 'Packeta label has been generated.', 'packeta' ) );
+				$wcOrder->add_order_note( __( 'Packeta: Label has been created.', 'packeta' ) );
 			}
 
 			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
-				$wcOrder->add_order_note( __( 'Carrier label has been generated.', 'packeta' ) );
+				$wcOrder->add_order_note( __( 'Packeta: Carrier label has been created.', 'packeta' ) );
 			}
 
 			$wcOrder->save();

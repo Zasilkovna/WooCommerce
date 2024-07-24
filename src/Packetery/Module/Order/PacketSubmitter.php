@@ -380,7 +380,7 @@ class PacketSubmitter {
 				$submissionResult->increaseSuccessCount();
 
 				// translators: %s: Packet tracking URL.
-				$wcOrder->add_order_note( sprintf( __( 'Packet has been created. Tracking URL: %s', 'packeta' ), $order->getPacketTrackingUrl() ) );
+				$wcOrder->add_order_note( sprintf( __( 'Packeta: Packet has been created. Tracking URL: %s', 'packeta' ), $order->getPacketTrackingUrl() ) );
 				$wcOrder->save();
 
 				if ( $immediatePacketStatusCheck || ! function_exists( 'as_enqueue_async_action' ) ) {
