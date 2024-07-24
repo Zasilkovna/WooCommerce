@@ -292,6 +292,10 @@ class LabelPrint {
 
 		foreach ( $packetIds as $orderId => $packetId ) {
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
+			if ( null === $wcOrder ) {
+				continue;
+			}
+
 			if ( $response instanceof Response\PacketsLabelsPdf ) {
 				$wcOrder->add_order_note( __( 'Packeta label has been generated.', 'packeta' ) );
 			}
