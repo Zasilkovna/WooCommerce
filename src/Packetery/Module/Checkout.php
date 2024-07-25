@@ -357,14 +357,6 @@ class Checkout {
 	public function createSettingsAjax(): void {
 		$settings = [];
 		if ( WC()->cart instanceof \WC_Cart ) {
-			/**
-			 * Filter widget weight in checkout.
-			 *
-			 * @since 1.6.3
-			 */
-			$widgetWeight = (float) apply_filters( 'packeta_widget_weight', $this->getCartWeightKg() );
-
-			$settings['weight']                    = $widgetWeight;
 			$settings['country']                   = $this->getCustomerCountry();
 			$settings['isAgeVerificationRequired'] = $this->isAgeVerification18PlusRequired();
 		}
