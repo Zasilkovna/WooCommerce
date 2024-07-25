@@ -11,9 +11,6 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Module\Exception\DownloadException;
 use Packetery\Module\Options\Provider;
-use Packetery\GuzzleHttp\Client;
-use Packetery\GuzzleHttp\Exception\GuzzleException;
-use Packetery\GuzzleHttp\Psr7\Response;
 
 /**
  * Class Downloader
@@ -23,13 +20,6 @@ use Packetery\GuzzleHttp\Psr7\Response;
 class Downloader {
 	private const API_URL                   = 'https://www.zasilkovna.cz/api/v4/%s/branch.json?address-delivery';
 	public const OPTION_LAST_CARRIER_UPDATE = 'packetery_last_carrier_update';
-
-	/**
-	 * Guzzle client.
-	 *
-	 * @var Client Guzzle client.
-	 */
-	private $client;
 
 	/**
 	 * Carrier updater.
@@ -48,12 +38,10 @@ class Downloader {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param Client   $guzzle_client Guzzle client.
 	 * @param Updater  $carrier_updater Carrier updater.
 	 * @param Provider $options_provider Options provider.
 	 */
-	public function __construct( Client $guzzle_client, Updater $carrier_updater, Provider $options_provider ) {
-		$this->client           = $guzzle_client;
+	public function __construct( Updater $carrier_updater, Provider $options_provider ) {
 		$this->carrier_updater  = $carrier_updater;
 		$this->options_provider = $options_provider;
 	}
@@ -135,19 +123,13 @@ class Downloader {
 	 * @throws DownloadException DownloadException.
 	 */
 	private function download_json(): string {
-		$url = sprintf( self::API_URL, $this->options_provider->get_api_key() );
-		/**
-		 * Guzzle response.
-		 *
-		 * @var Response $result Guzzle response.
-		 */
-		try {
-			$result = $this->client->get( $url );
-		} catch ( GuzzleException $exception ) {
-			throw new DownloadException( $exception->getMessage() );
+		$url    = sprintf( self::API_URL, $this->options_provider->get_api_key() );
+		$result = wp_remote_get( $url, [ 'timeout' => 30 ] );
+		if ( is_wp_error( $result ) ) {
+			throw new DownloadException( $result->get_error_message() );
 		}
 
-		return $result->getBody()->getContents();
+		return wp_remote_retrieve_body( $result );
 	}
 
 	/**

@@ -38,7 +38,6 @@ services:
 	- Packetery\Module\Carrier\Downloader
 	- Packetery\Module\Carrier\Updater
 	- Packetery\Module\Carrier\Repository
-	- Packetery\GuzzleHttp\Client
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel

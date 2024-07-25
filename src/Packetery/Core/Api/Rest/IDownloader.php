@@ -17,13 +17,10 @@ namespace Packetery\Core\Api\Rest;
 interface IDownloader {
 
 	/**
-	 * Accepts parameters in Guzzle format.
+	 * Accepts parameters in WP format.
 	 *
 	 * @param string               $uri     Target URI.
 	 * @param array<string, mixed> $options Options.
-	 *
-	 * @return string
-	 * @throws \Exception Thrown on failure.
 	 */
 	public function post( string $uri, array $options ): string;
 

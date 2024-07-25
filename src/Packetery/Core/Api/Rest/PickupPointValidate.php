@@ -54,9 +54,15 @@ class PickupPointValidate {
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
 		$postData           = $request->getSubmittableData();
 		$postData['apiKey'] = $this->apiKey;
+		$options            = [
+			'body'    => wp_json_encode( $postData ),
+			'headers' => [
+				'Content-Type' => 'application/json',
+			],
+		];
 
 		try {
-			$result      = $this->downloader->post( self::URL_VALIDATE_ENDPOINT, [ 'json' => $postData ] );
+			$result      = $this->downloader->post( self::URL_VALIDATE_ENDPOINT, $options );
 			$resultArray = json_decode( $result, true );
 
 			return new PickupPointValidateResponse( $resultArray['isValid'], $resultArray['errors'] );

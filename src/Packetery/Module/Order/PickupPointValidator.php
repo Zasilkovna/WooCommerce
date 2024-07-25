@@ -17,9 +17,6 @@ use Packetery\Core\Api\Rest\RestException;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Options\Provider;
-use Packetery\GuzzleHttp\Client;
-use Packetery\GuzzleHttp\Exception\GuzzleException;
-use Packetery\GuzzleHttp\Psr7\Response;
 
 /**
  * Class PickupPointValidator
@@ -32,13 +29,6 @@ class PickupPointValidator implements IDownloader {
 	public const IS_ACTIVE = false;
 
 	public const VALIDATION_HTTP_ERROR_SESSION_KEY = 'packetery_validation_http_error';
-
-	/**
-	 * Guzzle client.
-	 *
-	 * @var Client
-	 */
-	private $guzzleClient;
 
 	/**
 	 * Options provider.
@@ -57,12 +47,10 @@ class PickupPointValidator implements IDownloader {
 	/**
 	 * PickupPointValidator constructor.
 	 *
-	 * @param Client   $guzzleClient Guzzle client.
 	 * @param Provider $optionsProvider Options provider.
 	 * @param ILogger  $logger Logger.
 	 */
-	public function __construct( Client $guzzleClient, Provider $optionsProvider, ILogger $logger ) {
-		$this->guzzleClient    = $guzzleClient;
+	public function __construct( Provider $optionsProvider, ILogger $logger ) {
 		$this->optionsProvider = $optionsProvider;
 		$this->logger          = $logger;
 	}
@@ -97,23 +85,15 @@ class PickupPointValidator implements IDownloader {
 	}
 
 	/**
-	 * Accepts parameters in Guzzle format.
+	 * Accepts parameters in WP format.
 	 *
 	 * @param string $uri Target URI.
 	 * @param array  $options Options.
-	 *
-	 * @return string
-	 * @throws GuzzleException Thrown on failure.
 	 */
 	public function post( string $uri, array $options ): string {
-		/**
-		 * Guzzle response.
-		 *
-		 * @var Response $result Guzzle response.
-		 */
-		$resultResponse = $this->guzzleClient->post( $uri, $options );
+		$resultResponse = wp_remote_post( $uri, $options );
 
-		return $resultResponse->getBody()->getContents();
+		return wp_remote_retrieve_body( $resultResponse );
 	}
 
 	/**
