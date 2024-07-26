@@ -13,6 +13,7 @@ use Packetery\Core\Validator\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
+use Packetery\Module\Options\Provider;
 use Packetery\Nette\Forms;
 
 /**
@@ -40,12 +41,21 @@ class Form {
 	private $formFactory;
 
 	/**
+	 * Class Provider
+	 *
+	 * @var Provider
+	 */
+	private $options;
+
+	/**
 	 * FormFactory constructor
 	 *
 	 * @param FormFactory $formFactory Form factory.
+	 * @param Provider    $options Options provider.
 	 */
-	public function __construct( FormFactory $formFactory ) {
+	public function __construct( FormFactory $formFactory, Provider $options ) {
 		$this->formFactory = $formFactory;
+		$this->options     = $options;
 	}
 
 	/**
@@ -55,21 +65,25 @@ class Form {
 	 */
 	public function create(): Forms\Form {
 		$form = $this->formFactory->create();
+		$unit = $this->options->getDimensionsUnit();
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
+		// translators: %s: Dimension unit.
+		$form->addText( self::FIELD_WIDTH, sprintf( __( 'Width (%s)', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
+		// translators: %s: Dimension unit.
+		$form->addText( self::FIELD_LENGTH, sprintf( __( 'Length (%s)', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
+		// translators: %s: Dimension unit.
+		$form->addText( self::FIELD_HEIGHT, sprintf( __( 'Height (%s)', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
