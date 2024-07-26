@@ -99,8 +99,8 @@ class CreatePacketMapper {
 				];
 			}
 			if ( isset( $createPacketData['size'] ) && $this->options->getDimensionsUnit() === 'cm' ) {
-				foreach ( $createPacketData['size'] as $dimension => $val ) {
-					$createPacketData['size'][ $dimension ] = $val * 10;
+				foreach ( $createPacketData['size'] as $dimension => $measurementValue ) {
+					$createPacketData['size'][ $dimension ] = $measurementValue * 10;
 				}
 			}
 		}
