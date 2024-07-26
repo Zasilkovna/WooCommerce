@@ -225,6 +225,20 @@ class Provider {
 	}
 
 	/**
+	 * Dimensions Unit.
+	 *
+	 * @return string
+	 */
+	public function getDimensionsUnit(): string {
+		$value = $this->get( 'dimensions_unit' );
+		if ( ! $value ) {
+			return 'mm';
+		}
+
+		return $value;
+	}
+
+	/**
 	 * Order default weight enabled.
 	 *
 	 * @return bool

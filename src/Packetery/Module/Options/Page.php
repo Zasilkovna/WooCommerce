@@ -475,24 +475,35 @@ class Page {
 					->addRule( Form::MIN, null, 0.1 )
 					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
 						->setRequired();
+
+		$container->addSelect(
+			'dimensions_unit',
+			__( 'Units used for dimensions', 'packeta' ),
+			[
+				'cm' => __( 'cm', 'packeta' ),
+				'mm' => __( 'mm', 'packeta' ),
+			]
+		)
+		->setDefaultValue( 'mm' );
+
 		$container->addCheckbox( 'default_dimensions_enabled', __( 'Enable default dimensions', 'packeta' ) )
 			->addCondition( Form::EQUAL, true )
 			->toggle( '#packetery-default-dimensions-value' );
 
-		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
+		$container->addText( 'default_length', __( 'Length', 'packeta' ) )
+			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 			->setRequired();
 
-		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
+		$container->addText( 'default_height', __( 'Height', 'packeta' ) )
+			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 			->setRequired();
 
-		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
+		$container->addText( 'default_width', __( 'Width', 'packeta' ) )
+			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 			->setRequired();
