@@ -72,18 +72,15 @@ class Form {
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		// translators: %s: Dimension unit.
-		$form->addText( self::FIELD_WIDTH, sprintf( __( 'Width (%s)', 'packeta' ), $unit ) )
+		$form->addText( self::FIELD_WIDTH, __( 'Width', 'packeta' ) . " ($unit)" )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		// translators: %s: Dimension unit.
-		$form->addText( self::FIELD_LENGTH, sprintf( __( 'Length (%s)', 'packeta' ), $unit ) )
+		$form->addText( self::FIELD_LENGTH, __( 'Length', 'packeta' ) . " ($unit)" )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		// translators: %s: Dimension unit.
-		$form->addText( self::FIELD_HEIGHT, sprintf( __( 'Height (%s)', 'packeta' ), $unit ) )
+		$form->addText( self::FIELD_HEIGHT, __( 'Height', 'packeta' ) . " ($unit)" )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );

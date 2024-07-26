@@ -480,8 +480,8 @@ class Page {
 			'dimensions_unit',
 			__( 'Units used for dimensions', 'packeta' ),
 			[
-				'cm' => __( 'cm', 'packeta' ),
-				'mm' => __( 'mm', 'packeta' ),
+				'cm' => 'cm',
+				'mm' => 'mm',
 			]
 		)
 		->setDefaultValue( 'mm' );
