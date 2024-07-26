@@ -475,27 +475,53 @@ class Page {
 					->addRule( Form::MIN, null, 0.1 )
 					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
 						->setRequired();
+
+		$container->addSelect(
+			'dimensions_unit',
+			__( 'Units used for dimensions', 'packeta' ),
+			[
+				Provider::DIMENSIONS_UNIT_CM         => 'cm',
+				Provider::DEFAULT_DIMENSIONS_UNIT_MM => 'mm',
+			]
+		)
+		->setDefaultValue( $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM );
+
 		$container->addCheckbox( 'default_dimensions_enabled', __( 'Enable default dimensions', 'packeta' ) )
 			->addCondition( Form::EQUAL, true )
 			->toggle( '#packetery-default-dimensions-value' );
 
-		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
+		$container->addText( 'default_length', __( 'Length', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( Form::INTEGER, __( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 )
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a decimal value!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 0.1 )
+			->endCondition();
 
-		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
+		$container->addText( 'default_height', __( 'Height', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( Form::INTEGER, __( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 )
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a decimal value!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 0.1 )
+			->endCondition();
 
-		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
+		$container->addText( 'default_width', __( 'Width', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired( 'Width is required when default dimensions are enabled.' )
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( Form::INTEGER, __( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 )
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a decimal value!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 0.1 )
+			->endCondition();
 
 		// TODO: Packet status sync.
 
@@ -627,6 +653,12 @@ class Page {
 			$this->packetaClient->setApiPassword( $api_pass );
 		} else {
 			$options['api_key'] = '';
+		}
+
+		foreach ( [ 'default_length', 'default_width', 'default_height' ] as $dimension ) {
+			$options[ $dimension ] = is_numeric( $packeteryContainer[ $dimension ]->getValue() )
+				? Helper::trimDecimalPlaces( (float) $packeteryContainer[ $dimension ]->getValue(), 1 )
+				: $packeteryContainer[ $dimension ]->getValue();
 		}
 
 		$defaultWeight                  = $packeteryContainer['default_weight']->getValue();

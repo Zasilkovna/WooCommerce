@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\Helper;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -39,6 +40,9 @@ class OptionsProvider {
 	public const AUTOMATIC_CHECKOUT_DETECTION = 'automatic_checkout_detection';
 	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
 	public const CLASSIC_CHECKOUT_DETECTION   = 'classic_checkout_detection';
+
+	public const DEFAULT_DIMENSIONS_UNIT_MM = 'mm';
+	public const DIMENSIONS_UNIT_CM         = 'cm';
 
 	/**
 	 *  Options data.
@@ -240,6 +244,50 @@ class OptionsProvider {
 	 */
 	public function getPackagingWeight(): float {
 		return (float) $this->get( 'packaging_weight' );
+	}
+
+	/**
+	 * Dimensions Unit.
+	 *
+	 * @return string
+	 */
+	public function getDimensionsUnit(): string {
+		$value = $this->get( 'dimensions_unit' );
+
+		return $value ?? self::DEFAULT_DIMENSIONS_UNIT_MM;
+	}
+
+	/**
+	 * Dimensions' number of decimals.
+	 *
+	 * @return int
+	 */
+	public function getDimensionsNumberOfDecimals(): int {
+		if ( self::DIMENSIONS_UNIT_CM === $this->getDimensionsUnit() ) {
+			return 1;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Sanitises and formats a dimension value.
+	 *
+	 * @param string|float $value Dimension value.
+	 *
+	 * @return float|null
+	 */
+	public function getSanitizedDimensionValueInMm( $value ): ?float {
+		if ( ! is_numeric( $value ) ) {
+			return null;
+		}
+
+		$sanitizedValue = (float) number_format( (float) $value, $this->getDimensionsNumberOfDecimals(), '.', '' );
+		if ( self::DIMENSIONS_UNIT_CM === $this->getDimensionsUnit() ) {
+			return Helper::convertToMillimeters( $sanitizedValue );
+		}
+
+		return $sanitizedValue;
 	}
 
 	/**

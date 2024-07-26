@@ -11,15 +11,17 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\Size;
 use Packetery\Core\Validator\Order;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
-use Packetery\Latte\Engine;
 use Packetery\Module\ModuleHelper;
-use Packetery\Nette\Http\Request;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
+use Packetery\Nette\Http\Request;
 use WC_Order;
 
 /**
@@ -81,6 +83,13 @@ class GridExtender {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Settings provider.
+	 *
+	 * @var Module\Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -90,6 +99,7 @@ class GridExtender {
 	 * @param Order                 $orderValidator        Order validator.
 	 * @param ContextResolver       $contextResolver       Context resolver.
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
+	 * @param Provider              $optionsProvider       Settings provider.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -98,7 +108,8 @@ class GridExtender {
 		Repository $orderRepository,
 		Order $orderValidator,
 		ContextResolver $contextResolver,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		Provider $optionsProvider
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -107,6 +118,7 @@ class GridExtender {
 		$this->orderValidator        = $orderValidator;
 		$this->contextResolver       = $contextResolver;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->optionsProvider       = $optionsProvider;
 	}
 
 	/**
@@ -345,6 +357,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                     => $order,
+						'dimensions'                => $this->getSizeInSetDimensionUnit( $order ),
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'orderWarningFields'        => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
@@ -401,4 +414,27 @@ class GridExtender {
 
 		return $new_columns;
 	}
+
+	/**
+	 * Gets the size in the configured dimension unit.
+	 *
+	 * @param Core\Entity\Order $order Order entity.
+	 *
+	 * @return Size
+	 */
+	public function getSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
+		$length = $order->getLength();
+		$width  = $order->getWidth();
+		$height = $order->getHeight();
+		foreach ( [ $length, $width, $height ] as $dimension ) {
+			if ( null !== $dimension && Module\Options\Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
+				$size[] = Module\Helper::convertToCentimeters( (int) $dimension );
+			} else {
+				$size[] = $dimension;
+			}
+		}
+
+		return new Size( ...$size );
+	}
+
 }

@@ -171,7 +171,6 @@ class ModuleHelper {
 		return OrderUtil::custom_orders_table_usage_is_enabled();
 	}
 
-
 	/**
 	 * Converts all float values within an array to strings.
 	 *
@@ -193,6 +192,17 @@ class ModuleHelper {
 	}
 
 	/**
+	 * Converts a number to centimeters
+	 *
+	 * @param int $number Number.
+	 *
+	 * @return float|null
+	 */
+	public static function convertToCentimeters( int $number ): ?float {
+		return 1 > $number ? null : ( $number * 0.1 );
+	}
+
+	/**
 	 * Creates a named tracking URL for packet.
 	 *
 	 * @param string $trackingUrl Tracking URL.
@@ -206,6 +216,17 @@ class ModuleHelper {
 			->href( $trackingUrl )
 			->setText( $text )
 			->setAttribute( 'target', $target );
+	}
+
+	/**
+	 * Converts a number to millimeters
+	 *
+	 * @param float $number Number.
+	 *
+	 * @return float|null
+	 */
+	public static function convertToMillimeters( float $number ): ?float {
+		return 0.1 > $number ? null : ( $number * 10 );
 	}
 
 	/**
