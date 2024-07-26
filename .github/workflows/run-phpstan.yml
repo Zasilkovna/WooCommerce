@@ -1,0 +1,50 @@
+name: PHPStan Analysis
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['8.1', '8.2', '8.3']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl
+          coverage: none
+
+      - name: php version
+        run: php -v
+
+      - name: Install Composer dependencies
+        working-directory: phpstan
+        run: composer install
+
+      - name: Run PHPStan with phpversion 7.2
+        run: composer run phpstan-72
+
+      - name: Run PHPStan with phpversion 7.4
+        run: composer run phpstan-74
+
+      - name: Run PHPStan with phpversion 8.0
+        run: composer run phpstan-80
+
+      - name: Run PHPStan with phpversion 8.1
+        run: composer run phpstan-81
+
+      - name: Run PHPStan with phpversion 8.2
+        run: composer run phpstan-82
+
+      - name: Run PHPStan with phpversion 8.3
+        run: composer run phpstan-83

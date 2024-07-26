@@ -1,5 +1,6 @@
 {
     "require": {
+        "php": "~8.1.0",
         "woocommerce/woocommerce-sniffs": "0.1.3"
     },
     "require-dev": {
@@ -9,9 +10,12 @@
     },
     "scripts": {
         "build-deps": "bash build-deps.sh",
-        "phpstan-72": "phpstan/vendor/bin/phpstan -cphpstan/php72.neon",
-        "phpstan-74": "phpstan/vendor/bin/phpstan -cphpstan/php74.neon",
-        "phpstan-80": "phpstan/vendor/bin/phpstan -cphpstan/php80.neon",
+        "phpstan-72": "phpstan/vendor/bin/phpstan -cphpstan/php72.neon analyse",
+        "phpstan-74": "phpstan/vendor/bin/phpstan -cphpstan/php74.neon analyse",
+        "phpstan-80": "phpstan/vendor/bin/phpstan -cphpstan/php80.neon analyse",
+        "phpstan-81": "phpstan/vendor/bin/phpstan -cphpstan/php81.neon analyse",
+        "phpstan-82": "phpstan/vendor/bin/phpstan -cphpstan/php82.neon analyse",
+        "phpstan-83": "phpstan/vendor/bin/phpstan -cphpstan/php83.neon analyse",
         "tests-unit": "./vendor/bin/phpunit tests",
         "tests-coverage": "php -d xdebug.mode=coverage -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage"
     },
