@@ -484,7 +484,7 @@ class Page {
 				'mm' => 'mm',
 			]
 		)
-		->setDefaultValue( 'mm' );
+		->setDefaultValue( $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT );
 
 		$container->addCheckbox( 'default_dimensions_enabled', __( 'Enable default dimensions', 'packeta' ) )
 			->addCondition( Form::EQUAL, true )
