@@ -8,7 +8,7 @@ import { useDynamicSettings } from './useDynamicSettings';
 import { PacketaWidget } from './PacketaWidget';
 
 export const View = ( { cart } ) => {
-	const { shippingRates } = cart;
+	const { shippingRates, cartItemsWeight } = cart;
 
 	const settings = getSetting( 'packeta-widget_data' );
 	const {
@@ -29,7 +29,8 @@ export const View = ( { cart } ) => {
 	const [ onWidgetButtonClicked, viewState ] = useOnWidgetButtonClicked(
 		packetaShippingRate,
 		settings,
-		dynamicSettings
+		dynamicSettings,
+		cartItemsWeight,
 	);
 
 	useEffect( () => {
