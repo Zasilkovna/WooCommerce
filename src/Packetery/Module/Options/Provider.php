@@ -35,6 +35,7 @@ class Provider {
 	const AUTO_ORDER_STATUS                         = 'auto_order_status';
 	const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
 	const PRICES_INCLUDE_TAX_DEFAULT                = false;
+	const DEFAULT_DIMENSIONS_UNIT                   = 'mm';
 
 	/**
 	 *  Options data.
@@ -231,11 +232,8 @@ class Provider {
 	 */
 	public function getDimensionsUnit(): string {
 		$value = $this->get( 'dimensions_unit' );
-		if ( ! $value ) {
-			return 'mm';
-		}
 
-		return $value;
+		return $value ?? self::DEFAULT_DIMENSIONS_UNIT;
 	}
 
 	/**
