@@ -544,9 +544,9 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], 3, '.', '' ) : null ),
-			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], 3, '.', '' ) : null ),
-			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], 3, '.', '' ) : null ),
+			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], 1, '.', '' ) : null ),
+			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], 1, '.', '' ) : null ),
+			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], 1, '.', '' ) : null ),
 		];
 
 		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {
