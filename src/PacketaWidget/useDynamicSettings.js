@@ -33,10 +33,9 @@ export const useDynamicSettings = ( adminAjaxUrl ) => {
 			} )
 				.then( ( response ) => response.json() )
 				.then( ( data ) => {
-					const { weight, isAgeVerificationRequired } = data;
+					const { isAgeVerificationRequired } = data;
 					setDynamicSettings( prevState => ( {
 						...prevState,
-						weight,
 						isAgeVerificationRequired,
 					} ) );
 				} )

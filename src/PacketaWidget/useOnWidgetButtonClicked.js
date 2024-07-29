@@ -9,7 +9,8 @@ import { useCallback, useState } from 'react';
 export const useOnWidgetButtonClicked = (
 	packetaShippingRate,
 	settings,
-	dynamicSettings
+	dynamicSettings,
+	cartItemsWeight,
 ) => {
 	const {
 		carrierConfig,
@@ -27,10 +28,7 @@ export const useOnWidgetButtonClicked = (
 	const onWidgetButtonClicked = useCallback( () => {
 		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
 
-		let weight = 0.0;
-		if ( dynamicSettings && dynamicSettings.weight ) {
-			weight = dynamicSettings.weight;
-		}
+		let weight = +( cartItemsWeight / 1000 ).toFixed( 2 );
 		let country = customerCountry;
 		if ( dynamicSettings && dynamicSettings.country ) {
 			country = dynamicSettings.country;
