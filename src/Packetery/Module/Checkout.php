@@ -357,7 +357,6 @@ class Checkout {
 	public function createSettingsAjax(): void {
 		$settings = [];
 		if ( WC()->cart instanceof \WC_Cart ) {
-			$settings['country']                   = $this->getCustomerCountry();
 			$settings['isAgeVerificationRequired'] = $this->isAgeVerification18PlusRequired();
 		}
 
