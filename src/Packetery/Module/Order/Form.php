@@ -64,26 +64,38 @@ class Form {
 	 * @return Forms\Form
 	 */
 	public function create(): Forms\Form {
-		$form = $this->formFactory->create();
-		$unit = $this->options->getDimensionsUnit();
+		$form         = $this->formFactory->create();
+		$unit         = $this->options->getDimensionsUnit();
+		$floatPattern = '^\d+(\.\d+)?$';
+
+		if ( 'mm' === $unit ) {
+			$floatPattern = '^\d+$';
+		}
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$form->addText( self::FIELD_WIDTH, sprintf( __( 'Width', 'packeta' ) . ' (%s)', $unit ) )
+		// translators: %s: Represents a dimension with its appropriate unit of measurement.
+
+		$form->addText( self::FIELD_WIDTH, sprintf( '%s (%s)', __( 'Width', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_LENGTH, sprintf( __( 'Length', 'packeta' ) . ' (%s)', $unit ) )
+			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) )
+			->addRule( $form::PATTERN, __( 'Provided wrong numeric format', 'packeta' ), $floatPattern );
+		// translators: %s: Represents dimension with its appropriate unit of measurement.
+		$form->addText( self::FIELD_LENGTH, sprintf( '%s (%s)', __( 'Length', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_HEIGHT, sprintf( __( 'Height', 'packeta' ) . ' (%s)', $unit ) )
+			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) )
+			->addRule( $form::PATTERN, __( 'Provided wrong numeric format', 'packeta' ), $floatPattern );
+		// translators: %s: Represents dimension with its appropriate unit of measurement.
+		$form->addText( self::FIELD_HEIGHT, sprintf( '%s (%s)', __( 'Height', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) )
+			->addRule( $form::PATTERN, __( 'Provided wrong numeric format', 'packeta' ), $floatPattern );
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )

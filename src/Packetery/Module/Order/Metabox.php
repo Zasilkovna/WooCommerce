@@ -543,10 +543,15 @@ class Metabox {
 			return;
 		}
 
+		$numberOfDecimals = 0;
+		if ( 'cm' === $this->optionsProvider->getDimensionsUnit() ) {
+			$numberOfDecimals = 1;
+		}
+
 		$propsToSave = [
-			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], 1, '.', '' ) : null ),
-			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], 1, '.', '' ) : null ),
-			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], 1, '.', '' ) : null ),
+			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], $numberOfDecimals, '.', '' ) : null ),
+			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], $numberOfDecimals, '.', '' ) : null ),
+			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], $numberOfDecimals, '.', '' ) : null ),
 		];
 
 		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {
