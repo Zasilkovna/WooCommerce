@@ -14,6 +14,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\Repository;
@@ -74,6 +75,13 @@ final class OrderController extends WP_REST_Controller {
 	private $helper;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param OrderRouter     $router Router.
@@ -82,6 +90,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param Validator\Order $orderValidator Order validator.
 	 * @param Helper          $helper Helper.
 	 * @param Form            $orderForm Order form.
+	 * @param Provider        $optionsProvider Options provider.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -89,7 +98,8 @@ final class OrderController extends WP_REST_Controller {
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
 		Helper $helper,
-		Form $orderForm
+		Form $orderForm,
+		Provider $optionsProvider
 	) {
 		$this->orderForm       = $orderForm;
 		$this->orderRepository = $orderRepository;
@@ -97,6 +107,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->orderValidator  = $orderValidator;
 		$this->helper          = $helper;
 		$this->router          = $router;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -160,12 +171,16 @@ final class OrderController extends WP_REST_Controller {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
-		$values = $form->getValues( 'array' );
+		$values           = $form->getValues( 'array' );
+		$numberOfDecimals = 0;
+		if ( 'cm' === $this->optionsProvider->getDimensionsUnit() ) {
+			$numberOfDecimals = 1;
+		}
 
 		$size = new Size(
-			$values[ Form::FIELD_LENGTH ],
-			$values[ Form::FIELD_WIDTH ],
-			$values[ Form::FIELD_HEIGHT ]
+			(float) number_format( $values[ Form::FIELD_LENGTH ], $numberOfDecimals, '.', '' ),
+			(float) number_format( $values[ Form::FIELD_WIDTH ], $numberOfDecimals, '.', '' ),
+			(float) number_format( $values[ Form::FIELD_HEIGHT ], $numberOfDecimals, '.', '' )
 		);
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
@@ -187,9 +202,9 @@ final class OrderController extends WP_REST_Controller {
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			Form::FIELD_WEIGHT        => $order->getFinalWeight(),
-			Form::FIELD_LENGTH        => $this->helper::simplifyFloat( $order->getLength(), 1 ),
-			Form::FIELD_WIDTH         => $this->helper::simplifyFloat( $order->getWidth(), 1 ),
-			Form::FIELD_HEIGHT        => $this->helper::simplifyFloat( $order->getHeight(), 1 ),
+			Form::FIELD_LENGTH        => $order->getLength(),
+			Form::FIELD_WIDTH         => $order->getWidth(),
+			Form::FIELD_HEIGHT        => $order->getHeight(),
 			Form::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),
