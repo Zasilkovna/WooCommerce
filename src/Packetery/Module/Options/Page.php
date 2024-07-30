@@ -495,7 +495,6 @@ class Page {
 			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 			->setRequired();
-
 		$container->addText( 'default_height', __( 'Height', 'packeta' ) )
 			->addRule( Form::FLOAT )
 			->addRule( Form::MIN, null, 0 )
