@@ -171,16 +171,11 @@ final class OrderController extends WP_REST_Controller {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
-		$values           = $form->getValues( 'array' );
-		$numberOfDecimals = 0;
-		if ( 'cm' === $this->optionsProvider->getDimensionsUnit() ) {
-			$numberOfDecimals = 1;
-		}
-
-		$size = new Size(
-			(float) number_format( $values[ Form::FIELD_LENGTH ], $numberOfDecimals, '.', '' ),
-			(float) number_format( $values[ Form::FIELD_WIDTH ], $numberOfDecimals, '.', '' ),
-			(float) number_format( $values[ Form::FIELD_HEIGHT ], $numberOfDecimals, '.', '' )
+		$values = $form->getValues( 'array' );
+		$size   = new Size(
+			(float) number_format( $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ),
+			(float) number_format( $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ),
+			(float) number_format( $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' )
 		);
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {

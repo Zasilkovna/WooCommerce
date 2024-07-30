@@ -237,6 +237,19 @@ class Provider {
 	}
 
 	/**
+	 * Dimensions number format.
+	 *
+	 * @return int
+	 */
+	public function getDimensionsNumberOfDecimals(): int {
+		if ( 'cm' === $this->getDimensionsUnit() ) {
+			return 1;
+		}
+
+		return 0;
+	}
+
+	/**
 	 * Order default weight enabled.
 	 *
 	 * @return bool
