@@ -26,6 +26,7 @@ services:
 	- Packetery\Module\Product\DataTab
 	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Core\Helper
+	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
 	- Packetery\Module\Order\CustomsDeclarationMetabox

@@ -14,5 +14,5 @@ namespace Packetery\Module\Exception;
  *
  * @package Packetery
  */
-class DownloadException extends \Exception {
+class WebRequestException extends \Exception {
 }

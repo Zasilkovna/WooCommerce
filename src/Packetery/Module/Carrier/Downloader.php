@@ -9,8 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Module\Exception\DownloadException;
+use Packetery\Module\Exception\WebRequestException;
 use Packetery\Module\Options\Provider;
+use Packetery\Module\WebRequestClient;
 
 /**
  * Class Downloader
@@ -36,14 +37,23 @@ class Downloader {
 	private $options_provider;
 
 	/**
+	 * HTTP client.
+	 *
+	 * @var WebRequestClient
+	 */
+	private $webRequestClient;
+
+	/**
 	 * Downloader constructor.
 	 *
-	 * @param Updater  $carrier_updater Carrier updater.
-	 * @param Provider $options_provider Options provider.
+	 * @param Updater          $carrier_updater Carrier updater.
+	 * @param Provider         $options_provider Options provider.
+	 * @param WebRequestClient $webRequestClient HTTP client.
 	 */
-	public function __construct( Updater $carrier_updater, Provider $options_provider ) {
+	public function __construct( Updater $carrier_updater, Provider $options_provider, WebRequestClient $webRequestClient ) {
 		$this->carrier_updater  = $carrier_updater;
 		$this->options_provider = $options_provider;
+		$this->webRequestClient = $webRequestClient;
 	}
 
 	/**
@@ -108,7 +118,7 @@ class Downloader {
 	 * Downloads carriers and returns in array.
 	 *
 	 * @return array|null
-	 * @throws DownloadException DownloadException.
+	 * @throws WebRequestException DownloadException.
 	 */
 	private function fetch_as_array(): ?array {
 		$json = $this->download_json();
@@ -120,16 +130,10 @@ class Downloader {
 	 * Downloads carriers in JSON.
 	 *
 	 * @return string
-	 * @throws DownloadException DownloadException.
+	 * @throws WebRequestException DownloadException.
 	 */
 	private function download_json(): string {
-		$url    = sprintf( self::API_URL, $this->options_provider->get_api_key() );
-		$result = wp_remote_get( $url, [ 'timeout' => 30 ] );
-		if ( is_wp_error( $result ) ) {
-			throw new DownloadException( $result->get_error_message() );
-		}
-
-		return wp_remote_retrieve_body( $result );
+		return $this->webRequestClient->get( self::API_URL, $this->options_provider->get_api_key() );
 	}
 
 	/**

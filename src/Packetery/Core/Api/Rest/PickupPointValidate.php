@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Rest;
 
+use Packetery\Module\WebRequestClient;
+
 /**
  * Class PickupPointValidate
  *
@@ -19,11 +21,11 @@ class PickupPointValidate {
 	private const URL_VALIDATE_ENDPOINT = 'https://widget.packeta.com/v6/api/pps/api/widget/validate';
 
 	/**
-	 * Downloader.
+	 * HTTP client.
 	 *
-	 * @var IDownloader
+	 * @var WebRequestClient
 	 */
-	private $downloader;
+	private $webRequestClient;
 
 	/**
 	 * API key.
@@ -35,12 +37,12 @@ class PickupPointValidate {
 	/**
 	 * PickupPointValidate constructor.
 	 *
-	 * @param IDownloader $downloader Downloader.
-	 * @param string      $apiKey API key.
+	 * @param WebRequestClient $webRequestClient Downloader.
+	 * @param string           $apiKey API key.
 	 */
-	public function __construct( IDownloader $downloader, string $apiKey ) {
-		$this->downloader = $downloader;
-		$this->apiKey     = $apiKey;
+	public function __construct( WebRequestClient $webRequestClient, string $apiKey ) {
+		$this->webRequestClient = $webRequestClient;
+		$this->apiKey           = $apiKey;
 	}
 
 	/**
@@ -62,7 +64,7 @@ class PickupPointValidate {
 		];
 
 		try {
-			$result      = $this->downloader->post( self::URL_VALIDATE_ENDPOINT, $options );
+			$result      = $this->webRequestClient->post( self::URL_VALIDATE_ENDPOINT, $options );
 			$resultArray = json_decode( $result, true );
 
 			return new PickupPointValidateResponse( $resultArray['isValid'], $resultArray['errors'] );
