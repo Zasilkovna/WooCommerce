@@ -491,22 +491,31 @@ class Page {
 			->toggle( '#packetery-default-dimensions-value' );
 
 		$container->addText( 'default_length', __( 'Length', 'packeta' ) )
-			->addRule( Form::FLOAT )
-			->addRule( Form::MIN, null, 0 )
-			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, 'mm' )
+				->addRule( $form::INTEGER, __( 'Provide a full number', 'packeta' ) )
+				->setRequired()
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a number', 'packeta' ) )
+				->setRequired()
+			->endCondition();
 
 		$container->addText( 'default_height', __( 'Height', 'packeta' ) )
-			->addRule( Form::FLOAT )
-			->addRule( Form::MIN, null, 0 )
-			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, 'mm' )
+				->addRule( $form::INTEGER, __( 'Provide a full number', 'packeta' ) )
+				->setRequired()
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a number', 'packeta' ) )
+				->setRequired()
+			->endCondition();
 
 		$container->addText( 'default_width', __( 'Width', 'packeta' ) )
-			->addRule( Form::FLOAT )
-			->addRule( Form::MIN, null, 0 )
-			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, 'mm' )
+				->addRule( $form::INTEGER, __( 'Provide a full number', 'packeta' ) )
+				->setRequired()
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a number', 'packeta' ) )
+				->setRequired()
+			->endCondition();
 
 		// TODO: Packet status sync.
 
