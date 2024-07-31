@@ -250,6 +250,19 @@ class Provider {
 	}
 
 	/**
+	 * Dimensions float pattern.
+	 *
+	 * @return string
+	 */
+	public function getDimensionsFloatPattern(): string {
+		if ( 'mm' === $this->getDimensionsUnit() ) {
+			return '^\d+$';
+		}
+
+		return '^\d+(\.\d+)?$';
+	}
+
+	/**
 	 * Order default weight enabled.
 	 *
 	 * @return bool

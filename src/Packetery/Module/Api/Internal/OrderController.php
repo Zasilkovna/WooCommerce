@@ -173,9 +173,9 @@ final class OrderController extends WP_REST_Controller {
 
 		$values = $form->getValues( 'array' );
 		$size   = new Size(
-			(float) number_format( $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ),
-			(float) number_format( $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ),
-			(float) number_format( $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' )
+			is_numeric( $values[ Form::FIELD_WIDTH ] ) ? (float) number_format( $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null,
+			is_numeric( $values[ Form::FIELD_LENGTH ] ) ? (float) number_format( $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null,
+			is_numeric( $values[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null
 		);
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
