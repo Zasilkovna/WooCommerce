@@ -42,9 +42,7 @@ class PickupPointValidateTest extends TestCase {
 	}
 
 	private function getWebRequestClientMock(): MockObject|WebRequestClient {
-		return $this->getMockBuilder( WebRequestClient::class )
-		            ->setMockClassName( 'WebRequestClientMock' )
-		            ->getMock();
+		return $this->createMock( WebRequestClient::class );
 	}
 
 }
