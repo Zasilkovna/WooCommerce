@@ -64,12 +64,8 @@ class Form {
 	 * @return Forms\Form
 	 */
 	public function create(): Forms\Form {
-		$form    = $this->formFactory->create();
-		$unit    = $this->options->getDimensionsUnit();
-		$numType = $form::FLOAT;
-		if ( 'mm' === $unit ) {
-			$numType = $form::INTEGER;
-		}
+		$form = $this->formFactory->create();
+		$unit = $this->options->getDimensionsUnit();
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
@@ -80,17 +76,20 @@ class Form {
 		$form->addText( self::FIELD_WIDTH, sprintf( '%s (%s)', __( 'Width', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $numType, __( 'Provide numeric value in a correct format!', 'packeta' ) );
+			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) )
+			->addRule( $form::PATTERN, __( 'Provide a full number', 'packeta' ), $this->options->getDimensionsFloatPattern() );
 		// translators: %s: Represents dimension with its appropriate unit of measurement.
 		$form->addText( self::FIELD_LENGTH, sprintf( '%s (%s)', __( 'Length', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $numType, __( 'Provide numeric value in a correct format!', 'packeta' ) );
+			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) )
+			->addRule( $form::PATTERN, __( 'Provide a full number', 'packeta' ), $this->options->getDimensionsFloatPattern() );
 		// translators: %s: Represents dimension with its appropriate unit of measurement.
 		$form->addText( self::FIELD_HEIGHT, sprintf( '%s (%s)', __( 'Height', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $numType, __( 'Provide numeric value in a correct format!', 'packeta' ) );
+			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) )
+			->addRule( $form::PATTERN, __( 'Provide a full number', 'packeta' ), $this->options->getDimensionsFloatPattern() );
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
