@@ -35,7 +35,8 @@ class Provider {
 	const AUTO_ORDER_STATUS                         = 'auto_order_status';
 	const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
 	const PRICES_INCLUDE_TAX_DEFAULT                = false;
-	const DEFAULT_DIMENSIONS_UNIT                   = 'mm';
+	const DEFAULT_DIMENSIONS_UNIT_MM                = 'mm';
+	const DIMENSIONS_UNIT_CM                        = 'cm';
 
 	/**
 	 *  Options data.
@@ -233,7 +234,7 @@ class Provider {
 	public function getDimensionsUnit(): string {
 		$value = $this->get( 'dimensions_unit' );
 
-		return $value ?? self::DEFAULT_DIMENSIONS_UNIT;
+		return $value ?? self::DEFAULT_DIMENSIONS_UNIT_MM;
 	}
 
 	/**
@@ -242,24 +243,11 @@ class Provider {
 	 * @return int
 	 */
 	public function getDimensionsNumberOfDecimals(): int {
-		if ( 'cm' === $this->getDimensionsUnit() ) {
-			return 1;
+		if ( self::DEFAULT_DIMENSIONS_UNIT_MM === $this->getDimensionsUnit() ) {
+			return 0;
 		}
 
-		return 0;
-	}
-
-	/**
-	 * Dimensions float pattern.
-	 *
-	 * @return string
-	 */
-	public function getDimensionsFloatPattern(): string {
-		if ( 'mm' === $this->getDimensionsUnit() ) {
-			return '^\d+$';
-		}
-
-		return '^\d+(\.\d+)?$';
+		return 1;
 	}
 
 	/**
