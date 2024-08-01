@@ -6,7 +6,8 @@
     "require-dev": {
         "composer/composer": "^2.6",
         "wpify/scoper": "3.2.3",
-        "phpunit/phpunit": "10.4.2"
+        "phpunit/phpunit": "10.4.2",
+        "brain/monkey": "^2.6"
     },
     "scripts": {
         "build-deps": "bash build-deps.sh",

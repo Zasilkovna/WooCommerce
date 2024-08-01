@@ -12,17 +12,29 @@ use Packetery\Module\WebRequestClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
-use function json_encode;
+use Brain\Monkey;
+use Brain\Monkey\Functions;
 
 class PickupPointValidateTest extends TestCase {
+	protected function setUp(): void {
+		parent::setUp();
+		Monkey\setUp();
+	}
+
+	protected function tearDown(): void {
+		Monkey\tearDown();
+		parent::tearDown();
+	}
 
 	public function testValidateOk(): void {
+		Functions\when('wp_json_encode')->alias('json_encode');
 		$webRequestClientMock = $this->getWebRequestClientMock();
+		$expectedResponse = wp_json_encode([
+			'isValid' => true,
+			'errors'  => [],
+		]);
 		$webRequestClientMock->method( 'post' )
-		               ->willReturn( json_encode( [
-			               'isValid' => true,
-			               'errors'  => [],
-		               ] ) );
+			->willReturn($expectedResponse);
 		$validator = new PickupPointValidate( $webRequestClientMock, 'dummyApiKey' );
 
 		self::assertInstanceOf(
@@ -44,5 +56,4 @@ class PickupPointValidateTest extends TestCase {
 	private function getWebRequestClientMock(): MockObject|WebRequestClient {
 		return $this->createMock( WebRequestClient::class );
 	}
-
 }
