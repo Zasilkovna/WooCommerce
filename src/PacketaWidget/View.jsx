@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getSetting } from '@woocommerce/settings';
 import { ValidatedTextInput } from '@woocommerce/blocks-components';
 
@@ -8,7 +8,8 @@ import { useDynamicSettings } from './useDynamicSettings';
 import { PacketaWidget } from './PacketaWidget';
 
 export const View = ( { cart } ) => {
-	const { shippingRates, cartItemsWeight } = cart;
+	const [ viewState, setViewState ] = useState( null );
+	const { shippingRates, shippingAddress, cartItemsWeight } = cart;
 
 	const settings = getSetting( 'packeta-widget_data' );
 	const {
@@ -24,12 +25,37 @@ export const View = ( { cart } ) => {
 		carrierConfig
 	);
 
-	const [ dynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
+	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 
-	const [ onWidgetButtonClicked, viewState ] = useOnWidgetButtonClicked(
+	useEffect( () => {
+		if ( ! dynamicSettings ) {
+			return;
+		}
+
+		const shippingCountry = shippingAddress.country.toLowerCase()
+
+		if ( ! dynamicSettings.lastCountry ) {
+			setDynamicSettings( {
+				...dynamicSettings,
+				lastCountry: shippingCountry,
+			} );
+		} else if ( dynamicSettings.lastCountry !== shippingCountry ) {
+			if ( viewState ) {
+				setViewState( null );
+			}
+			setDynamicSettings( {
+				...dynamicSettings,
+				lastCountry: shippingCountry,
+			} );
+		}
+	}, [ dynamicSettings, setDynamicSettings, viewState, setViewState, shippingAddress ] );
+
+	const onWidgetButtonClicked = useOnWidgetButtonClicked(
 		packetaShippingRate,
 		settings,
 		dynamicSettings,
+		setViewState,
+		shippingAddress,
 		cartItemsWeight,
 	);
 
@@ -72,9 +98,7 @@ export const View = ( { cart } ) => {
 		>
 			<ValidatedTextInput
 				value={
-					viewState &&
-					viewState.pickupPoint &&
-					viewState.pickupPoint.name
+					viewState && viewState.pickupPoint ? viewState.pickupPoint.name : ''
 				}
 				required={ true }
 				errorMessage={ getErrorMessage( viewState ) }

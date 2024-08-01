@@ -5,19 +5,10 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useTranslateCountry } from "./useTranslateCountry";
 
 export const useDynamicSettings = ( adminAjaxUrl ) => {
 	let [ dynamicSettings, setDynamicSettings ] = useState( null );
 	let [ loading, setLoading ] = useState( false );
-
-	[ dynamicSettings, loading ] = useTranslateCountry(
-		adminAjaxUrl,
-		dynamicSettings,
-		setDynamicSettings,
-		loading,
-		setLoading,
-	);
 
 	useEffect( () => {
 		if ( ! loading && dynamicSettings === null ) {
@@ -49,5 +40,5 @@ export const useDynamicSettings = ( adminAjaxUrl ) => {
 		}
 	}, [ dynamicSettings, adminAjaxUrl, loading ] );
 
-	return [ dynamicSettings, loading ];
+	return [ dynamicSettings, setDynamicSettings, loading ];
 };
