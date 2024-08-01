@@ -11,6 +11,7 @@ namespace Packetery\Module;
 
 use DateTimeImmutable;
 use Packetery\Core;
+use Packetery\Module\Options\Provider;
 use Packetery\Nette\Forms\Controls\BaseControl;
 
 /**
@@ -79,6 +80,20 @@ class FormValidators {
 		}
 
 		return true;
+	}
+
+	public static function dimensionValidate(BaseControl $input, string $unit): bool {
+		$value = str_replace(',', '.', $input->getValue());
+
+		if ( $value < 0 ) {
+			return false;
+		}
+
+		if ( $unit === Provider::DEFAULT_DIMENSIONS_UNIT_MM ) {
+			return filter_var($value, FILTER_VALIDATE_INT) !== false;
+		}
+
+		return filter_var( $value, FILTER_VALIDATE_FLOAT ) !== false;
 	}
 
 }

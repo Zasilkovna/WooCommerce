@@ -544,9 +544,9 @@ class Metabox {
 		}
 
 		$propsToSave = [
-			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
-			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
-			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
+			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( (float) $formValues[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
+			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( (float) $formValues[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
+			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( (float) $formValues[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
 		];
 
 		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {
