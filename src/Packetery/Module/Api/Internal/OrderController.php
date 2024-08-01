@@ -195,6 +195,7 @@ final class OrderController extends WP_REST_Controller {
 			Form::FIELD_VALUE         => $order->getValue(),
 			Form::FIELD_DELIVER_ON    => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
 			'orderIsSubmittable'      => $this->orderValidator->isValid( $order ),
+			'orderWarningFields'      => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 			'hasOrderManualWeight'    => $order->hasManualWeight(),
 		];
 

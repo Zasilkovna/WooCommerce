@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Validator\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
@@ -133,5 +134,33 @@ class Form {
 				self::FIELD_DELIVER_ON      => $deliverOn,
 			]
 		);
+	}
+
+	/**
+	 * Gets invalid fields from validation result.
+	 *
+	 * @param array<string, string> $validationResult Validation result.
+	 *
+	 * @return array
+	 */
+	public static function getInvalidFieldsFromValidationResult( array $validationResult ): array {
+		$validationFormInputMapping = [
+			self::FIELD_VALUE  => Order::ERROR_TRANSLATION_KEY_VALUE,
+			self::FIELD_WEIGHT => Order::ERROR_TRANSLATION_KEY_WEIGHT,
+			self::FIELD_HEIGHT => Order::ERROR_TRANSLATION_KEY_SIZE,
+			self::FIELD_WIDTH  => Order::ERROR_TRANSLATION_KEY_SIZE,
+			self::FIELD_LENGTH => Order::ERROR_TRANSLATION_KEY_SIZE,
+		];
+
+		$fields = [];
+		foreach ( $validationFormInputMapping as $fieldName => $value ) {
+			if ( ! isset( $validationResult[ $value ] ) ) {
+				continue;
+			}
+
+			$fields[ $fieldName ] = $fieldName;
+		}
+
+		return $fields;
 	}
 }

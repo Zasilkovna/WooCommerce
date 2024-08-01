@@ -93,20 +93,16 @@ class Order {
 			self::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => $order->hasToFillCustomsDeclaration(),
 		];
 
-		$errors = array_keys(
-			array_filter(
-				$errors,
-				static function( $value ) {
-					return false !== $value;
-				}
-			)
-		);
+		$result = [];
+		foreach ( $errors as $key => $hasError ) {
+			if ( ! $hasError ) {
+				continue;
+			}
 
-		foreach ( $errors as &$error ) {
-			$error = $this->getTranslation( $error );
+			$result[ $key ] = $this->getTranslation( $key );
 		}
 
-		return $errors;
+		return $result;
 	}
 
 	/**

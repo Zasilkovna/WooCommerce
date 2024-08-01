@@ -911,3 +911,20 @@ tbody .packetery-log-column-note {
 .packetery-customs-declaration-fields [data-replication-delete] {
     margin-top: 10px;
 }
+
+.packetery-metabox-button-wrapper {
+	display: inline-block;
+}
+
+.packetery [data-packetery-order-inline-edit].woocommerce-help-tip {
+	font-size: 13px;
+}
+
+[data-packetery-order-inline-edit].woocommerce-help-tip:after {
+	content: none !important;
+}
+
+.packetery-has-warning[name],
+.packetery-has-warning[name]:focus {
+	border: 1px solid #FF8C00;
+}

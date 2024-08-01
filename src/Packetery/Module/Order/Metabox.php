@@ -329,15 +329,16 @@ class Metabox {
 			$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
-					'order'                  => $order,
-					'showSubmitPacketButton' => false,
-					'packetCancelLink'       => $packetCancelLink,
-					'packetTrackingUrl'      => $this->helper->get_tracking_url( $packetId ),
-					'packetClaimTrackingUrl' => $packetClaimTrackingUrl,
-					'showLogsLink'           => $showLogsLink,
-					'packetClaimUrl'         => $packetClaimUrl,
-					'packetClaimCancelUrl'   => $packetClaimCancelUrl,
-					'translations'           => [
+					'order'                      => $order,
+					'isPacketSubmissionPossible' => false,
+					'orderWarningFields'         => [],
+					'packetCancelLink'           => $packetCancelLink,
+					'packetTrackingUrl'          => $this->helper->get_tracking_url( $packetId ),
+					'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
+					'showLogsLink'               => $showLogsLink,
+					'packetClaimUrl'             => $packetClaimUrl,
+					'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+					'translations'               => [
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
 						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
 						'showLogs'                  => __( 'Show logs', 'packeta' ),
@@ -384,8 +385,8 @@ class Metabox {
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
 
-		$showSubmitPacketButton = $this->orderValidator->isValid( $order );
-		$packetSubmitUrl        = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
+		$isPacketSubmissionPossible = $this->orderValidator->isValid( $order );
+		$packetSubmitUrl            = $this->getOrderActionLink( $order, PacketActionsCommonLogic::ACTION_SUBMIT_PACKET );
 
 		$showWidgetButton  = $order->isPickupPointDelivery();
 		$widgetButtonError = null;
@@ -435,27 +436,29 @@ class Metabox {
 		$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
-				'form'                   => $this->form,
-				'order'                  => $order,
-				'showWidgetButton'       => $showWidgetButton,
-				'widgetButtonError'      => $widgetButtonError,
-				'showHdWidget'           => $showHdWidget,
-				'showSubmitPacketButton' => $showSubmitPacketButton,
-				'packetCancelLink'       => null,
-				'packetTrackingUrl'      => null,
-				'packetSubmitUrl'        => $packetSubmitUrl,
-				'packetClaimTrackingUrl' => $packetClaimTrackingUrl,
-				'packetClaimUrl'         => $packetClaimUrl,
-				'packetClaimCancelUrl'   => $packetClaimCancelUrl,
-				'orderCurrency'          => get_woocommerce_currency_symbol( $order->getCurrency() ),
-				'isCodPayment'           => $order->hasCod(),
-				'allowsAdultContent'     => $order->allowsAdultContent(),
-				'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
-				'logo'                   => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
-				'showLogsLink'           => $showLogsLink,
-				'hasOrderManualWeight'   => $order->hasManualWeight(),
-				'isPacketaPickupPoint'   => $order->isPacketaInternalPickupPoint(),
-				'translations'           => [
+				'form'                       => $this->form,
+				'order'                      => $order,
+				'showWidgetButton'           => $showWidgetButton,
+				'widgetButtonError'          => $widgetButtonError,
+				'showHdWidget'               => $showHdWidget,
+				'isPacketSubmissionPossible' => $isPacketSubmissionPossible,
+				'orderWarningFields'         => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+				'packetCancelLink'           => null,
+				'packetTrackingUrl'          => null,
+				'packetSubmitUrl'            => $packetSubmitUrl,
+				'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
+				'packetClaimUrl'             => $packetClaimUrl,
+				'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+				'orderCurrency'              => get_woocommerce_currency_symbol( $order->getCurrency() ),
+				'isCodPayment'               => $order->hasCod(),
+				'allowsAdultContent'         => $order->allowsAdultContent(),
+				'requiresSizeDimensions'     => $order->getCarrier()->requiresSize(),
+				'logo'                       => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/packeta-symbol.png',
+				'showLogsLink'               => $showLogsLink,
+				'hasOrderManualWeight'       => $order->hasManualWeight(),
+				'isPacketaPickupPoint'       => $order->isPacketaInternalPickupPoint(),
+				'translations'               => [
+					'packetSubmissionValidationErrorTooltip' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
 					'showLogs'                  => __( 'Show logs', 'packeta' ),
 					'weightIsManual'            => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
 					'submitPacket'              => __( 'Submit to Packeta', 'packeta' ),

@@ -35,7 +35,10 @@ class OrderTest extends TestCase {
 
 		$dummyOrder->setNumber( '' );
 		$dummyOrder->setName( '' );
-		self::assertCount( 2, $validator->validate( $dummyOrder ) );
+		$validationResult = $validator->validate( $dummyOrder );
+		self::assertArrayHasKey( Order::ERROR_TRANSLATION_KEY_NUMBER, $validationResult );
+		self::assertArrayHasKey( Order::ERROR_TRANSLATION_KEY_NAME, $validationResult );
+		self::assertCount( 2, $validationResult );
 		self::assertFalse( $validator->isValid( $dummyOrder ) );
 
 		$dummyOrderHd        = DummyFactory::createOrderCzHdIncomplete();
