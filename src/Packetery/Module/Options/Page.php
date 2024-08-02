@@ -640,11 +640,15 @@ class Page {
 			$options['api_key'] = '';
 		}
 
+		$defaultLength = str_replace( ',', '.', $packeteryContainer['default_length']->getValue() );
+		$defaultWidth  = str_replace( ',', '.', $packeteryContainer['default_width']->getValue() );
+		$defaultHeight = str_replace( ',', '.', $packeteryContainer['default_height']->getValue() );
+
 		$defaultWeight                  = $packeteryContainer['default_weight']->getValue();
 		$options['default_weight']      = is_numeric( $defaultWeight ) ? Helper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
-		$options['default_length']      = str_replace( ',', '.', $packeteryContainer['default_length']->getValue() );
-		$options['default_width']       = str_replace( ',', '.', $packeteryContainer['default_width']->getValue() );
-		$options['default_height']      = str_replace( ',', '.', $packeteryContainer['default_height']->getValue() );
+		$options['default_length']      = Helper::trimDecimalPlaces( (float) $defaultLength, 1 );
+		$options['default_width']       = Helper::trimDecimalPlaces( (float) $defaultWidth, 1 );
+		$options['default_height']      = Helper::trimDecimalPlaces( (float) $defaultHeight, 1 );
 		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
 
