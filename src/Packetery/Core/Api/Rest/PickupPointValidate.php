@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Rest;
 
-use Packetery\Module\WebRequestClient;
+use Packetery\Core\Interfaces\IWebRequestClient;
 
 /**
  * Class PickupPointValidate
@@ -23,7 +23,7 @@ class PickupPointValidate {
 	/**
 	 * HTTP client.
 	 *
-	 * @var WebRequestClient
+	 * @var IWebRequestClient
 	 */
 	private $webRequestClient;
 
@@ -37,10 +37,10 @@ class PickupPointValidate {
 	/**
 	 * PickupPointValidate constructor.
 	 *
-	 * @param WebRequestClient $webRequestClient Downloader.
-	 * @param string           $apiKey API key.
+	 * @param IWebRequestClient $webRequestClient HTTP Client.
+	 * @param string            $apiKey           API key.
 	 */
-	public function __construct( WebRequestClient $webRequestClient, string $apiKey ) {
+	public function __construct( IWebRequestClient $webRequestClient, string $apiKey ) {
 		$this->webRequestClient = $webRequestClient;
 		$this->apiKey           = $apiKey;
 	}
@@ -57,7 +57,8 @@ class PickupPointValidate {
 		$postData           = $request->getSubmittableData();
 		$postData['apiKey'] = $this->apiKey;
 		$options            = [
-			'body'    => wp_json_encode( $postData ),
+//			phpcs:ignore
+			'body'    => json_encode( $postData ),
 			'headers' => [
 				'Content-Type' => 'application/json',
 			],

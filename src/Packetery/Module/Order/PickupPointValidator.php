@@ -13,6 +13,7 @@ use Packetery\Core\Api\Rest\PickupPointValidate;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
+use Packetery\Core\Api\WebRequestException;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Options\Provider;
@@ -98,6 +99,8 @@ class PickupPointValidator {
 	 *
 	 * @param string $uri Target URI.
 	 * @param array  $options Options.
+	 *
+	 * @throws WebRequestException WebRequestException.
 	 */
 	public function post( string $uri, array $options ): string {
 		return $this->webRequestClient->post( $uri, $options );

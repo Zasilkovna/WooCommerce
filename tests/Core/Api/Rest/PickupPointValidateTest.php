@@ -8,28 +8,16 @@ use Exception;
 use Packetery\Core\Api\Rest\PickupPointValidate;
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
-use Packetery\Module\WebRequestClient;
+use Packetery\Core\Interfaces\IWebRequestClient;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
-use Brain\Monkey;
-use Brain\Monkey\Functions;
 
 class PickupPointValidateTest extends TestCase {
-	protected function setUp(): void {
-		parent::setUp();
-		Monkey\setUp();
-	}
-
-	protected function tearDown(): void {
-		Monkey\tearDown();
-		parent::tearDown();
-	}
 
 	public function testValidateOk(): void {
-		Functions\when('wp_json_encode')->alias('json_encode');
 		$webRequestClientMock = $this->getWebRequestClientMock();
-		$expectedResponse = wp_json_encode([
+		$expectedResponse = json_encode([
 			'isValid' => true,
 			'errors'  => [],
 		]);
@@ -53,7 +41,8 @@ class PickupPointValidateTest extends TestCase {
 		$validator->validate( DummyFactory::getEmptyPickupPointValidateRequest() );
 	}
 
-	private function getWebRequestClientMock(): MockObject|WebRequestClient {
-		return $this->createMock( WebRequestClient::class );
+	private function getWebRequestClientMock(): MockObject|IWebRequestClient {
+		return $this->createMock( IWebRequestClient::class );
 	}
+
 }

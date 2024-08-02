@@ -26,10 +26,10 @@ interface IWebRequestClient {
 	/**
 	 * Accepts parameters in WP format.
 	 *
-	 * @param string $apiUrl API url.
-	 * @param string $apiKey API key.
+	 * @param string               $url     API url.
+	 * @param array<string, mixed> $options Options.
 	 *
 	 * @return string
 	 */
-	public function get( string $apiUrl, string $apiKey ): string;
+	public function get( string $url, array $options ): string;
 }

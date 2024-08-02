@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Core\Api\WebRequestException;
 use Packetery\Core\Interfaces\IWebRequestClient;
-use Packetery\Module\Exception\WebRequestException;
 
 /**
  * Class WebRequestClient
@@ -26,9 +26,14 @@ class WebRequestClient implements IWebRequestClient {
 	 *
 	 * @param string               $uri Target URI.
 	 * @param array<string, mixed> $options Options.
+	 *
+	 * @throws WebRequestException WebRequestException.
 	 */
 	public function post( string $uri, array $options ): string {
 		$resultResponse = wp_remote_post( $uri, $options );
+		if ( is_wp_error( $resultResponse ) ) {
+			throw new WebRequestException( $resultResponse->get_error_message() );
+		}
 
 		return wp_remote_retrieve_body( $resultResponse );
 	}
@@ -36,19 +41,37 @@ class WebRequestClient implements IWebRequestClient {
 	/**
 	 * GET.
 	 *
-	 * @param string $apiUrl Target URL.
-	 * @param string $apiKey API key.
+	 * @param string               $url     Target URL.
+	 * @param array<string, mixed> $options Options.
 	 *
 	 * @return string
 	 * @throws WebRequestException WebRequestException.
 	 */
-	public function get( string $apiUrl, string $apiKey ): string {
-		$url    = sprintf( $apiUrl, $apiKey );
-		$result = wp_remote_get( $url, [ 'timeout' => self::TIMEOUT ] );
-		if ( is_wp_error( $result ) ) {
-			throw new WebRequestException( $result->get_error_message() );
+	public function get( string $url, array $options = [] ): string {
+		$options[]      = [
+			'timeout' => self::TIMEOUT,
+		];
+		$resultResponse = wp_remote_get( $url, $options );
+		if ( is_wp_error( $resultResponse ) ) {
+			throw new WebRequestException( $resultResponse->get_error_message() );
 		}
 
-		return wp_remote_retrieve_body( $result );
+		return wp_remote_retrieve_body( $resultResponse );
+	}
+
+	/**
+	 * Fetches data.
+	 *
+	 * @param string               $apiUrl  API url.
+	 * @param string               $apiKey  API key.
+	 * @param array<string, mixed> $options Options.
+	 *
+	 * @return string
+	 * @throws WebRequestException WebRequestException.
+	 */
+	public function fetchData( string $apiUrl, string $apiKey, array $options = [] ): string {
+		$url = sprintf( $apiUrl, $apiKey );
+
+		return $this->get( $url, $options );
 	}
 }

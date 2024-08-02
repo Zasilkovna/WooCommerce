@@ -7,7 +7,7 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Module\Exception;
+namespace Packetery\Core\Api;
 
 /**
  * Class DownloadException.

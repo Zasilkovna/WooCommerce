@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Module\Exception\WebRequestException;
+use Packetery\Core\Api\WebRequestException;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\WebRequestClient;
 
@@ -133,7 +133,7 @@ class Downloader {
 	 * @throws WebRequestException DownloadException.
 	 */
 	private function download_json(): string {
-		return $this->webRequestClient->get( self::API_URL, $this->options_provider->get_api_key() );
+		return $this->webRequestClient->fetchData( self::API_URL, $this->options_provider->get_api_key() );
 	}
 
 	/**

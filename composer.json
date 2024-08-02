@@ -36,8 +36,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/",
-            "Packetery\\Module\\": "src/Packetery/Module"
+            "Tests\\": "tests/"
         }
     },
     "extra": {
