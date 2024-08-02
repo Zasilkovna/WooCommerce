@@ -76,17 +76,17 @@ class Form {
 		$form->addText( self::FIELD_WIDTH, sprintf( '%s (%s)', __( 'Width', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( [FormValidators::class, 'dimensionValidate'], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
 		// translators: %s: Represents dimension with its appropriate unit of measurement.
 		$form->addText( self::FIELD_LENGTH, sprintf( '%s (%s)', __( 'Length', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( [FormValidators::class, 'dimensionValidate'], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
 		// translators: %s: Represents dimension with its appropriate unit of measurement.
 		$form->addText( self::FIELD_HEIGHT, sprintf( '%s (%s)', __( 'Height', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( [FormValidators::class, 'dimensionValidate'], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
