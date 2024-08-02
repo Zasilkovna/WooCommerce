@@ -82,15 +82,23 @@ class FormValidators {
 		return true;
 	}
 
-	public static function dimensionValidate(BaseControl $input, string $unit): bool {
-		$value = str_replace(',', '.', $input->getValue());
+	/**
+	 * Validates dimensions.
+	 *
+	 * @param BaseControl $input Value.
+	 * @param string      $unit  Unit of measurement.
+	 *
+	 * @return bool
+	 */
+	public static function dimensionValidate( BaseControl $input, string $unit ): bool {
+		$value = str_replace( ',', '.', $input->getValue() );
 
 		if ( $value < 0 ) {
 			return false;
 		}
 
-		if ( $unit === Provider::DEFAULT_DIMENSIONS_UNIT_MM ) {
-			return filter_var($value, FILTER_VALIDATE_INT) !== false;
+		if ( Provider::DEFAULT_DIMENSIONS_UNIT_MM === $unit ) {
+			return filter_var( $value, FILTER_VALIDATE_INT ) !== false;
 		}
 
 		return filter_var( $value, FILTER_VALIDATE_FLOAT ) !== false;
