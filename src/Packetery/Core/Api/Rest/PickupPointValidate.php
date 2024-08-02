@@ -57,7 +57,7 @@ class PickupPointValidate {
 		$postData           = $request->getSubmittableData();
 		$postData['apiKey'] = $this->apiKey;
 		$options            = [
-//			phpcs:ignore
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 			'body'    => json_encode( $postData ),
 			'headers' => [
 				'Content-Type' => 'application/json',

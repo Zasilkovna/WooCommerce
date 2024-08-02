@@ -24,13 +24,13 @@ class WebRequestClient implements IWebRequestClient {
 	/**
 	 * POST.
 	 *
-	 * @param string               $uri Target URI.
+	 * @param string               $url     Target URL.
 	 * @param array<string, mixed> $options Options.
 	 *
 	 * @throws WebRequestException WebRequestException.
 	 */
-	public function post( string $uri, array $options ): string {
-		$resultResponse = wp_remote_post( $uri, $options );
+	public function post( string $url, array $options ): string {
+		$resultResponse = wp_remote_post( $url, $options );
 		if ( is_wp_error( $resultResponse ) ) {
 			throw new WebRequestException( $resultResponse->get_error_message() );
 		}

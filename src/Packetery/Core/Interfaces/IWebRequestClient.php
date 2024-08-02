@@ -18,15 +18,15 @@ interface IWebRequestClient {
 	/**
 	 * Accepts parameters in WP format.
 	 *
-	 * @param string               $uri     Target URI.
+	 * @param string               $url     Target URL.
 	 * @param array<string, mixed> $options Options.
 	 */
-	public function post( string $uri, array $options ): string;
+	public function post( string $url, array $options ): string;
 
 	/**
 	 * Accepts parameters in WP format.
 	 *
-	 * @param string               $url     API url.
+	 * @param string               $url     Target url.
 	 * @param array<string, mixed> $options Options.
 	 *
 	 * @return string

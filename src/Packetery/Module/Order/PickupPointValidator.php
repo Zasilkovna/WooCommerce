@@ -95,18 +95,6 @@ class PickupPointValidator {
 	}
 
 	/**
-	 * Accepts parameters in WP format.
-	 *
-	 * @param string $uri Target URI.
-	 * @param array  $options Options.
-	 *
-	 * @throws WebRequestException WebRequestException.
-	 */
-	public function post( string $uri, array $options ): string {
-		return $this->webRequestClient->post( $uri, $options );
-	}
-
-	/**
 	 * Returns translated validation errors.
 	 *
 	 * @return array
