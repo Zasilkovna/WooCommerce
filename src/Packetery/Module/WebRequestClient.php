@@ -59,19 +59,4 @@ class WebRequestClient implements IWebRequestClient {
 		return wp_remote_retrieve_body( $resultResponse );
 	}
 
-	/**
-	 * Fetches data.
-	 *
-	 * @param string               $apiUrl  API url.
-	 * @param string               $apiKey  API key.
-	 * @param array<string, mixed> $options Options.
-	 *
-	 * @return string
-	 * @throws WebRequestException WebRequestException.
-	 */
-	public function fetchData( string $apiUrl, string $apiKey, array $options = [] ): string {
-		$url = sprintf( $apiUrl, $apiKey );
-
-		return $this->get( $url, $options );
-	}
 }

@@ -133,7 +133,7 @@ class Downloader {
 	 * @throws WebRequestException DownloadException.
 	 */
 	private function download_json(): string {
-		return $this->webRequestClient->fetchData( self::API_URL, $this->options_provider->get_api_key() );
+		return $this->webRequestClient->get( sprintf( self::API_URL, $this->options_provider->get_api_key() ) );
 	}
 
 	/**
