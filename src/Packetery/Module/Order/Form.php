@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Core\Helper;
+use Packetery\Module\Options\Provider;
 use Packetery\Nette\Forms;
 
 /**
@@ -39,12 +40,21 @@ class Form {
 	private $formFactory;
 
 	/**
+	 * Class Provider
+	 *
+	 * @var Provider
+	 */
+	private $options;
+
+	/**
 	 * FormFactory constructor
 	 *
 	 * @param FormFactory $formFactory Form factory.
+	 * @param Provider    $options Options provider.
 	 */
-	public function __construct( FormFactory $formFactory ) {
+	public function __construct( FormFactory $formFactory, Provider $options ) {
 		$this->formFactory = $formFactory;
+		$this->options     = $options;
 	}
 
 	/**
@@ -54,24 +64,28 @@ class Form {
 	 */
 	public function create(): Forms\Form {
 		$form = $this->formFactory->create();
+		$unit = $this->options->getDimensionsUnit();
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
+		$form->addText( self::FIELD_WIDTH, sprintf( '%s (%s)', __( 'Width', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
+			->addRule( $form::FLOAT, __( 'Provide numeric value, greater than 0!', 'packeta' ) )
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value, greater than 0, in a correct format!', 'packeta' ), $unit );
+		$form->addText( self::FIELD_LENGTH, sprintf( '%s (%s)', __( 'Length', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
+			->addRule( $form::FLOAT, __( 'Provide numeric value, greater than 0!', 'packeta' ) )
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value, greater than 0, in a correct format!', 'packeta' ), $unit );
+		$form->addText( self::FIELD_HEIGHT, sprintf( '%s (%s)', __( 'Height', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+			->addRule( $form::FLOAT, __( 'Provide numeric value, greater than 0!', 'packeta' ) )
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value, greater than 0, in a correct format!', 'packeta' ), $unit );
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )

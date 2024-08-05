@@ -12,6 +12,7 @@ namespace Packetery\Module\Options;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\Log;
 use Packetery\Module\FormFactory;
+use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
@@ -475,27 +476,47 @@ class Page {
 					->addRule( Form::MIN, null, 0.1 )
 					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
 						->setRequired();
+
+		$container->addSelect(
+			'dimensions_unit',
+			__( 'Units used for dimensions', 'packeta' ),
+			[
+				'cm' => 'cm',
+				'mm' => 'mm',
+			]
+		)
+		->setDefaultValue( $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM );
+
 		$container->addCheckbox( 'default_dimensions_enabled', __( 'Enable default dimensions', 'packeta' ) )
 			->addCondition( Form::EQUAL, true )
 			->toggle( '#packetery-default-dimensions-value' );
 
-		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
+		$container->addText( 'default_length', __( 'Length', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+			->elseCondition()
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
+			->endCondition();
 
-		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
+		$container->addText( 'default_height', __( 'Height', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+			->elseCondition()
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
+			->endCondition();
 
-		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
+		$container->addText( 'default_width', __( 'Width', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+			->elseCondition()
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
+			->endCondition();
 
 		// TODO: Packet status sync.
 
@@ -619,8 +640,15 @@ class Page {
 			$options['api_key'] = '';
 		}
 
+		$defaultLength = str_replace( ',', '.', $packeteryContainer['default_length']->getValue() );
+		$defaultWidth  = str_replace( ',', '.', $packeteryContainer['default_width']->getValue() );
+		$defaultHeight = str_replace( ',', '.', $packeteryContainer['default_height']->getValue() );
+
 		$defaultWeight                  = $packeteryContainer['default_weight']->getValue();
 		$options['default_weight']      = is_numeric( $defaultWeight ) ? Helper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
+		$options['default_length']      = Helper::trimDecimalPlaces( (float) $defaultLength, 1 );
+		$options['default_width']       = Helper::trimDecimalPlaces( (float) $defaultWidth, 1 );
+		$options['default_height']      = Helper::trimDecimalPlaces( (float) $defaultHeight, 1 );
 		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
 

@@ -14,6 +14,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\Repository;
@@ -74,6 +75,13 @@ final class OrderController extends WP_REST_Controller {
 	private $helper;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param OrderRouter     $router Router.
@@ -82,6 +90,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param Validator\Order $orderValidator Order validator.
 	 * @param Helper          $helper Helper.
 	 * @param Form            $orderForm Order form.
+	 * @param Provider        $optionsProvider Options provider.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -89,7 +98,8 @@ final class OrderController extends WP_REST_Controller {
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
 		Helper $helper,
-		Form $orderForm
+		Form $orderForm,
+		Provider $optionsProvider
 	) {
 		$this->orderForm       = $orderForm;
 		$this->orderRepository = $orderRepository;
@@ -97,6 +107,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->orderValidator  = $orderValidator;
 		$this->helper          = $helper;
 		$this->router          = $router;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -161,11 +172,10 @@ final class OrderController extends WP_REST_Controller {
 		}
 
 		$values = $form->getValues( 'array' );
-
-		$size = new Size(
-			$values[ Form::FIELD_LENGTH ],
-			$values[ Form::FIELD_WIDTH ],
-			$values[ Form::FIELD_HEIGHT ]
+		$size   = new Size(
+			is_numeric( $values[ Form::FIELD_LENGTH ] ) ? (float) number_format( (float) $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null,
+			is_numeric( $values[ Form::FIELD_WIDTH ] ) ? (float) number_format( (float) $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null,
+			is_numeric( $values[ Form::FIELD_HEIGHT ] ) ? (float) number_format( (float) $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null
 		);
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
