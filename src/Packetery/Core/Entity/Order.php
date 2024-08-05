@@ -764,6 +764,15 @@ class Order {
 	}
 
 	/**
+	 * Get packet claim tracking url.
+	 *
+	 * @return string|null
+	 */
+	public function getPacketClaimTrackingUrl(): ?string {
+		return $this->packetClaimId ? sprintf( Helper::TRACKING_URL, $this->packetClaimId ) : null;
+	}
+
+	/**
 	 * Gets packet claim ID.
 	 *
 	 * @return string|null

@@ -191,6 +191,13 @@ class PacketClaimSubmitter {
 			$order->setPacketClaimPassword( $response->getPassword() );
 			$this->orderRepository->save( $order );
 
+			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
+			if ( null !== $wcOrder ) {
+				// translators: %s: Packet claim tracking URL.
+				$wcOrder->add_order_note( sprintf( __( 'Packeta: Packet claim has been created. Tracking URL: %s', 'packeta' ), $order->getPacketClaimTrackingUrl() ) );
+				$wcOrder->save();
+			}
+
 			$flashMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'Packet claim submitted. %1$sShow logs%2$s', 'packeta' ),
 				...Module\Plugin::createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )

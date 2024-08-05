@@ -190,6 +190,12 @@ class PacketCanceller {
 
 			$this->logger->add( $record );
 			$errorMessage = null;
+
+			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
+			if ( null !== $wcOrder ) {
+				$wcOrder->add_order_note( __( 'Packeta: Packet has been cancelled.', 'packeta' ) );
+				$wcOrder->save();
+			}
 		}
 
 		if ( $result->hasFault() ) {
