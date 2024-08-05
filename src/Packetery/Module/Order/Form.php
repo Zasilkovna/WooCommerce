@@ -72,21 +72,21 @@ class Form {
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		// translators: %s: Represents a dimension with its appropriate unit of measurement.
 		$form->addText( self::FIELD_WIDTH, sprintf( '%s (%s)', __( 'Width', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
-		// translators: %s: Represents dimension with its appropriate unit of measurement.
+			->addRule( $form::FLOAT, __( 'Provide numeric value, greater than 0!', 'packeta' ) )
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value, greater than 0, in a correct format!', 'packeta' ), $unit );
 		$form->addText( self::FIELD_LENGTH, sprintf( '%s (%s)', __( 'Length', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
-		// translators: %s: Represents dimension with its appropriate unit of measurement.
+			->addRule( $form::FLOAT, __( 'Provide numeric value, greater than 0!', 'packeta' ) )
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value, greater than 0, in a correct format!', 'packeta' ), $unit );
 		$form->addText( self::FIELD_HEIGHT, sprintf( '%s (%s)', __( 'Height', 'packeta' ), $unit ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value in a correct format!', 'packeta' ), $unit );
+			->addRule( $form::FLOAT, __( 'Provide numeric value, greater than 0!', 'packeta' ) )
+			->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a numeric value, greater than 0, in a correct format!', 'packeta' ), $unit );
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )

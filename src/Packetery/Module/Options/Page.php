@@ -495,27 +495,27 @@ class Page {
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 				->setRequired()
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
-				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
 			->elseCondition()
-				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
 			->endCondition();
 
 		$container->addText( 'default_height', __( 'Height', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 				->setRequired()
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
-				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
 			->elseCondition()
-				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
 			->endCondition();
 
 		$container->addText( 'default_width', __( 'Width', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 				->setRequired()
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
-				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a full number, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
 			->elseCondition()
-				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
+				->addRule( [ FormValidators::class, 'dimensionValidate' ], __( 'Provide a decimal value, greater than 0, in a correct format!', 'packeta' ), $this->optionsProvider::DIMENSIONS_UNIT_CM )
 			->endCondition();
 
 		// TODO: Packet status sync.

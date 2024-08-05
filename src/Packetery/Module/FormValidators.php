@@ -91,9 +91,9 @@ class FormValidators {
 	 * @return bool
 	 */
 	public static function dimensionValidate( BaseControl $input, string $unit ): bool {
-		$value = str_replace( ',', '.', $input->getValue() );
+		$value = $input->getValue();
 
-		if ( $value < 0 ) {
+		if ( $input->getValue() <= 0 ) {
 			return false;
 		}
 
