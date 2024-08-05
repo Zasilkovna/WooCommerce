@@ -7,6 +7,7 @@
         }
 
         new PacketeryMultiplier('.js-weight-rules');
+        new PacketeryMultiplier('.js-product-value-rules');
         new PacketeryMultiplier('.js-surcharge-rules');
 
         $( '[data-packetery-select2]' ).select2();

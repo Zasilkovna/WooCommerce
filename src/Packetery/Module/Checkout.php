@@ -695,6 +695,21 @@ class Checkout {
 	}
 
 	/**
+	 * Gets total cart product value.
+	 *
+	 * @return float
+	 */
+	public function getTotalCartProductValue(): float {
+		$totalProductPrice = 0.0;
+
+		foreach ( WC()->cart->get_cart() as $cartItem ) {
+			$totalProductPrice += (float) $cartItem['data']->get_price( 'raw' ) * $cartItem['quantity'];
+		}
+
+		return $totalProductPrice;
+	}
+
+	/**
 	 * Calculates tax exclusive fee amount.
 	 *
 	 * @param float  $taxInclusiveFeeAmount Tax inclusive fee amount.
@@ -795,6 +810,7 @@ class Checkout {
 		$cartProducts              = WC()->cart->get_cart_contents();
 		$cartPrice                 = $this->getCartContentsTotalIncludingTax();
 		$cartWeight                = $this->getCartWeightKg();
+		$totalCartProductValue     = $this->getTotalCartProductValue();
 		$disallowedShippingRateIds = $this->getDisallowedShippingRateIds();
 		$isAgeVerificationRequired = $this->isAgeVerification18PlusRequired();
 
@@ -831,7 +847,7 @@ class Checkout {
 				continue;
 			}
 
-			$cost = $this->getRateCost( $options, $cartPrice, $cartWeight );
+			$cost = $this->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
 			if ( null !== $cost ) {
 				$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
 				$rateId      = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
@@ -870,12 +886,13 @@ class Checkout {
 	 *
 	 * @param Carrier\Options $options    Carrier options.
 	 * @param float           $cartPrice  Price.
+	 * @param float           $totalCartProductValue Total cart product value.
 	 * @param float|int       $cartWeight Weight.
 	 *
 	 * @return ?float
 	 */
-	private function getRateCost( Carrier\Options $options, float $cartPrice, $cartWeight ): ?float {
-		return $this->rateCalculator->getShippingRateCost( $options, $cartPrice, $cartWeight, $this->isFreeShippingCouponApplied() );
+	private function getRateCost( Carrier\Options $options, float $cartPrice, float $totalCartProductValue, $cartWeight ): ?float {
+		return $this->rateCalculator->getShippingRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight, $this->isFreeShippingCouponApplied() );
 	}
 
 	/**

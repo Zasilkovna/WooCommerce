@@ -123,7 +123,9 @@ add_filter( 'packeta_shipping_price', function ( $price, $filterParameters ) {
 In the `$filterParameters` variable, there are available following keys:
 * `carrier_id` - Either numeric carrier id from the official feed, `zpointxx` for all Packeta pickup points, `xxzpoint` for internal Packeta pickup points, or `xxzbox` for Z-BOXes, where `xx` is lowercase two-letter country code of country with Packeta pickup points.
 * `free_shipping_limit` - Free shipping limit.
+* `pricing_type` - Tells what limits are used to calculate checkout shipping method price. It is calculated either by weight or by product value.
 * `weight_limits` - Array of weight limits used by internal method to compute the price.
+* `product_value_limits` - Array of product value limits used by internal method to compute the price.
 
 ##### Checkout widget language filter
 
