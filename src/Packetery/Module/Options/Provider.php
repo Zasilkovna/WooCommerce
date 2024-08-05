@@ -238,16 +238,16 @@ class Provider {
 	}
 
 	/**
-	 * Dimensions number format.
+	 * Dimensions' number of decimals.
 	 *
 	 * @return int
 	 */
 	public function getDimensionsNumberOfDecimals(): int {
-		if ( self::DEFAULT_DIMENSIONS_UNIT_MM === $this->getDimensionsUnit() ) {
-			return 0;
+		if ( self::DIMENSIONS_UNIT_CM === $this->getDimensionsUnit() ) {
+			return 1;
 		}
 
-		return 1;
+		return 0;
 	}
 
 	/**
