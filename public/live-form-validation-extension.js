@@ -13,7 +13,7 @@ Nette.validators['PacketeryModuleFormValidators_dateIsInMysqlFormat'] = (elem, a
 
 Nette.validators[ 'PacketeryModuleFormValidators_dimensionValidate' ] = ( elem, args, val ) => {
     var dimension = parseFloat( val.replace( ',', '.' ) );
-	if ( dimension < 0 ) {
+	if ( dimension <= 0 ) {
 		return false;
 	}
 
