@@ -531,6 +531,40 @@ class Plugin {
 
 		add_action( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 		add_action( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
+
+		add_action(
+			'woocommerce_blocks_loaded',
+			function () {
+				if ( function_exists( 'woocommerce_store_api_register_update_callback' ) ) {
+					woocommerce_store_api_register_update_callback(
+						[
+							'namespace' => 'packetery-js-hooks',
+							'callback'  => [ $this, 'saveShippingAndPaymentMethodsToSession' ],
+						]
+					);
+				}
+			}
+		);
+		add_action( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurgarche' ], 20, 1 );
+	}
+
+	/**
+	 * Saves selected methods to session.
+	 *
+	 * @param array $data Provided data.
+	 *
+	 * @return void
+	 */
+	public function saveShippingAndPaymentMethodsToSession( array $data ): void {
+		if ( isset( $data['shipping_method'] ) ) {
+			WC()->session->set( 'packetery_checkout_shipping_method', $data['shipping_method'] );
+		}
+
+		if ( isset( $data['payment_method'] ) ) {
+			WC()->session->set( 'packetery_checkout_payment_method', $data['payment_method'] );
+		}
+
+		WC()->cart->calculate_totals();
 	}
 
 	/**

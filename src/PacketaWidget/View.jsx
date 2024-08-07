@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+
+import { useSelect } from '@wordpress/data';
 import { getSetting } from '@woocommerce/settings';
 import { ValidatedTextInput } from '@woocommerce/blocks-components';
 
@@ -7,9 +9,18 @@ import { useOnWidgetButtonClicked } from './useOnWidgetButtonClicked';
 import { useDynamicSettings } from './useDynamicSettings';
 import { PacketaWidget } from './PacketaWidget';
 
+const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
+
+export const usePaymentStore = () => {
+	return useSelect( ( select ) => {
+		return select( PAYMENT_STORE_KEY );
+	}, [] );
+};
+
 export const View = ( { cart } ) => {
 	const [ viewState, setViewState ] = useState( null );
 	const { shippingRates, shippingAddress, cartItemsWeight } = cart;
+	const paymentStore = usePaymentStore();
 
 	const settings = getSetting( 'packeta-widget_data' );
 	const {
@@ -20,12 +31,48 @@ export const View = ( { cart } ) => {
 		adminAjaxUrl,
 	} = settings;
 
-	const packetaShippingRate = usePacketaShippingRate(
+	const filteredShippingRates = usePacketaShippingRate(
 		shippingRates,
 		carrierConfig
 	);
+	let packetaShippingRate = null;
+	let chosenShippingRate = null;
+	if (filteredShippingRates !== null) {
+		({ packetaShippingRate, chosenShippingRate } = filteredShippingRates);
+	}
 
 	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
+
+	useEffect( () => {
+		if ( ! dynamicSettings ) {
+			return;
+		}
+
+		const activePaymentMethod = paymentStore.getActivePaymentMethod();
+		const rateId = chosenShippingRate?.rate_id || null;
+
+		let shippingSaved = false;
+		let paymentSaved = false;
+		if (
+			( ! dynamicSettings.shippingSaved && rateId ) ||
+			( ! dynamicSettings.paymentSaved && activePaymentMethod !== '' )
+		) {
+			if ( rateId ) {
+				shippingSaved = true;
+			}
+			if ( activePaymentMethod !== '' ) {
+				paymentSaved = true;
+			}
+
+			wp.hooks.doAction( 'packetery_save_shipping_and_payment_methods', rateId, activePaymentMethod );
+
+			setDynamicSettings( {
+				...dynamicSettings,
+				shippingSaved,
+				paymentSaved,
+			} );
+		}
+	}, [ paymentStore, chosenShippingRate, dynamicSettings, setDynamicSettings, wp ] );
 
 	useEffect( () => {
 		if ( ! dynamicSettings ) {
