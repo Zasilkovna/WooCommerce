@@ -31,5 +31,14 @@ export const usePacketaShippingRate = ( shippingRates, carrierConfig ) => {
 		}
 	);
 
-	return packetaShippingRate || null;
+	const chosenShippingRate = shipping_rates.find(
+		( { selected } ) => {
+			return selected;
+		}
+	);
+
+	return {
+		packetaShippingRate: packetaShippingRate || null,
+		chosenShippingRate: chosenShippingRate || null,
+	};
 };
