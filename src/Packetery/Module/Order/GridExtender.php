@@ -336,6 +336,7 @@ class GridExtender {
 					[
 						'order'                     => $order,
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
+						'orderWarningFields'        => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,
 						'printLink'                 => $printLink,
@@ -344,16 +345,17 @@ class GridExtender {
 						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
 						'packetDeliverOn'           => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
 						'translations'              => [
-							'printLabel'                => __( 'Print label', 'packeta' ),
-							'setAdditionalPacketInfo'   => __( 'Set additional packet information', 'packeta' ),
-							'submitToPacketa'           => __( 'Submit to Packeta', 'packeta' ),
+							'printLabel'                  => __( 'Print label', 'packeta' ),
+							'setAdditionalPacketInfo'     => __( 'Set additional packet information', 'packeta' ),
+							'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
+							'submitToPacketa'             => __( 'Submit to Packeta', 'packeta' ),
 							// translators: %s: Order number.
-							'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
+							'reallyCancelPacketHeading'   => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 							// translators: %s: Packet number.
-							'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
+							'reallyCancelPacket'          => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), (string) $order->getPacketId() ),
 
-							'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
-							'lastErrorFromApi'          => __( 'Last error from Packeta API', 'packeta' ),
+							'cancelPacket'                => __( 'Cancel packet', 'packeta' ),
+							'lastErrorFromApi'            => __( 'Last error from Packeta API', 'packeta' ),
 						],
 					]
 				);

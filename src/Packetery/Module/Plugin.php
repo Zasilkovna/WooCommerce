@@ -884,6 +884,7 @@ class Plugin {
 			$orderGridPageSettings = [
 				'translations' => [
 					'hasToFillCustomsDeclaration' => __( 'Customs declaration has to be filled in order detail.', 'packeta' ),
+					'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
 				],
 			];
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );

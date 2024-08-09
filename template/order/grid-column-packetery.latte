@@ -12,7 +12,7 @@
     ></a>
 {else}
     <a data-packetery-order-inline-edit
-       class="button dashicons {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
+       class="button woocommerce-help-tip dashicons {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
        data-order-data="{= json_encode(
        [
        'id' => $order->getNumber(),
@@ -33,9 +33,11 @@
        'packeteryDeliverOnClass' => $order->isPacketaInternalPickupPoint() ? '' : 'packetery-hidden ',
        'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',
        'hasToFillCustomsDeclaration' => $order->hasToFillCustomsDeclaration(),
+       'orderIsSubmittable' => $orderIsSubmittable,
+       'orderWarningFields' => $orderWarningFields,
        ]
        )}"
-       title="{$translations['setAdditionalPacketInfo']}"
+       data-tip="{if ! $orderIsSubmittable}{$translations['packetSubmissionNotPossible']}{else}{$translations['setAdditionalPacketInfo']}{/if}"
     ></a>
     <a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable }hidden{/if}"
        title="{$translations['submitToPacketa']}"
