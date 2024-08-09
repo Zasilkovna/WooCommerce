@@ -23,10 +23,14 @@ class Size {
 	 *
 	 * @param Entity\Size $size Size entity.
 	 *
-	 * @return bool
+	 * @return SizeReport
 	 */
-	public function validate( Entity\Size $size ): bool {
-		return ( $size->getLength() && $size->getWidth() && $size->getHeight() );
+	public function validate( Entity\Size $size ): SizeReport {
+		return new SizeReport(
+			(bool) $size->getHeight(),
+			(bool) $size->getWidth(),
+			(bool) $size->getLength()
+		);
 	}
 
 }

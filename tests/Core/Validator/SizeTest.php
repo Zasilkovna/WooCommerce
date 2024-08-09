@@ -14,12 +14,28 @@ class SizeTest extends TestCase {
 		$validator = new Size();
 
 		$dummySize = DummyFactory::createSize();
-		self::assertTrue( $validator->validate( $dummySize ) );
+		$validationReport = $validator->validate( $dummySize );
+		self::assertTrue( $validationReport->isHeightValid() );
+		self::assertTrue( $validationReport->isWidthValid() );
+		self::assertTrue( $validationReport->isLengthValid() );
 
 		$dummySize->setLength( null );
+		$validationReport = $validator->validate( $dummySize );
+		self::assertTrue( $validationReport->isHeightValid() );
+		self::assertTrue( $validationReport->isWidthValid() );
+		self::assertFalse( $validationReport->isLengthValid() );
+
 		$dummySize->setWidth( null );
+		$validationReport = $validator->validate( $dummySize );
+		self::assertTrue( $validationReport->isHeightValid() );
+		self::assertFalse( $validationReport->isWidthValid() );
+		self::assertFalse( $validationReport->isLengthValid() );
+
 		$dummySize->setHeight( null );
-		self::assertFalse( $validator->validate( $dummySize ) );
+		$validationReport = $validator->validate( $dummySize );
+		self::assertFalse( $validationReport->isHeightValid() );
+		self::assertFalse( $validationReport->isWidthValid() );
+		self::assertFalse( $validationReport->isLengthValid() );
 	}
 
 }
