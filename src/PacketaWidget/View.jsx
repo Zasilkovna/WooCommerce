@@ -11,16 +11,12 @@ import { PacketaWidget } from './PacketaWidget';
 
 const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
 
-export const usePaymentStore = () => {
-	return useSelect( ( select ) => {
-		return select( PAYMENT_STORE_KEY );
-	}, [] );
-};
-
 export const View = ( { cart } ) => {
 	const [ viewState, setViewState ] = useState( null );
 	const { shippingRates, shippingAddress, cartItemsWeight } = cart;
-	const paymentStore = usePaymentStore();
+	const paymentStore = useSelect( ( select ) => {
+		return select( PAYMENT_STORE_KEY );
+	}, [] );
 
 	const settings = getSetting( 'packeta-widget_data' );
 	const {
@@ -35,11 +31,7 @@ export const View = ( { cart } ) => {
 		shippingRates,
 		carrierConfig
 	);
-	let packetaShippingRate = null;
-	let chosenShippingRate = null;
-	if (filteredShippingRates !== null) {
-		({ packetaShippingRate, chosenShippingRate } = filteredShippingRates);
-	}
+	const { packetaShippingRate = null, chosenShippingRate = null } = filteredShippingRates || {};
 
 	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 

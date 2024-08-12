@@ -11,6 +11,7 @@ import metadata from './block.json';
 import { Edit } from './Edit';
 import { View } from './View';
 import { __ } from '@wordpress/i18n';
+import { saveShippingAndPaymentMethods } from './saveShippingAndPaymentMethods';
 
 registerBlockType( metadata, {
 	title: __( 'title', 'packeta' ),
@@ -24,46 +25,6 @@ registerCheckoutBlock( {
 } );
 
 const { extensionCartUpdate } = wc.blocksCheckout;
-
-const saveShippingAndPaymentMethods = function ( shipping, payment ) {
-	let paymentId = null;
-	if ( payment ) {
-		paymentId = payment.value;
-	} else {
-		const paymentMethodInput = document.querySelector( 'input[name="radio-control-wc-payment-method-options"]:checked' );
-		if ( paymentMethodInput !== null ) {
-			paymentId = paymentMethodInput.value;
-		}
-	}
-
-	let shippingId = null;
-	if ( shipping ) {
-		shippingId = shipping.shippingRateId;
-	} else {
-		let radioInputs = document.querySelectorAll( '.wc-block-components-shipping-rates-control input[type="radio"]' );
-		for ( let i = 0; i < radioInputs.length; i++ ) {
-			if ( radioInputs[ i ].checked ) {
-				shippingId = radioInputs[ i ].value;
-				break;
-			}
-		}
-	}
-
-	let data = {};
-	if ( shippingId ) {
-		data.shipping_method = shippingId;
-	}
-	if ( paymentId ) {
-		data.payment_method = paymentId;
-	}
-
-	if ( JSON.stringify( data ) !== '{}' ) {
-		extensionCartUpdate( {
-			namespace: 'packetery-js-hooks',
-			data: data,
-		} );
-	}
-}
 
 wp.hooks.addAction( 'experimental__woocommerce_blocks-checkout-set-selected-shipping-rate', 'packetery-js-hooks', function ( shipping ) {
 	saveShippingAndPaymentMethods( shipping, null );
