@@ -270,13 +270,16 @@ class EntityRepository {
 	 * @return Carrier[]
 	 */
 	public function getCarriersForShippingRate( string $rateId ): array {
-		$shippingZoneRepository   = new ShippingZoneRepository();
-		$countries                = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
+		$shippingZoneRepository = new ShippingZoneRepository();
+		$countries              = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
+
+		if ( empty( $countries ) ) {
+			return [];
+		}
+
 		$availableCarriersToMerge = [];
-		if ( ! empty( $countries ) ) {
-			foreach ( $countries as $countryCode ) {
-				$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
-			}
+		foreach ( $countries as $countryCode ) {
+			$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
 		}
 
 		return array_merge( ...$availableCarriersToMerge );
