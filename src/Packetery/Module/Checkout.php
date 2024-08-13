@@ -1509,4 +1509,36 @@ class Checkout {
 		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
 	}
 
+	/**
+	 * Applies surcharge if needed.
+	 *
+	 * @param \WC_Cart $cart WC cart.
+	 *
+	 * @return void
+	 */
+	public function applyCodSurgarche( \WC_Cart $cart ): void {
+		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
+			return;
+		}
+		$chosenPaymentMethod = WC()->session->get( 'packetery_checkout_payment_method' );
+		if ( $chosenPaymentMethod !== $this->options_provider->getCodPaymentMethod() ) {
+			return;
+		}
+		$chosenShippingRate = WC()->session->get( 'packetery_checkout_shipping_method' );
+		if ( null === $chosenShippingRate ) {
+			return;
+		}
+		$chosenShippingMethod = $this->removeShippingMethodPrefix( $chosenShippingRate );
+		if ( ! $this->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
+			return;
+		}
+		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
+		$surcharge      = $this->getCODSurcharge( $carrierOptions->toArray(), $this->getCartPrice() );
+
+		$maxTaxClass = $this->getTaxClassWithMaxRate();
+		$taxable     = ! ( false === $maxTaxClass );
+
+		$cart->add_fee( __( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
+	}
+
 }
