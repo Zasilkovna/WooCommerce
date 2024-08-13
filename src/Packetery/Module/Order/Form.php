@@ -158,7 +158,7 @@ class Form {
 				continue;
 			}
 
-			$fields[ $fieldName ] = $fieldName;
+			$fields[] = $fieldName;
 		}
 
 		return $fields;

@@ -28,12 +28,12 @@
 
 				if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
 					var orderWarningFields = $lastModalButtonClicked.data( 'order-data' ).orderWarningFields;
-					for ( var invalidFieldName in orderWarningFields ) {
-						if ( ! orderWarningFields.hasOwnProperty( invalidFieldName) ) {
+					for ( var invalidFieldNameKey in orderWarningFields ) {
+						if ( ! orderWarningFields.hasOwnProperty( invalidFieldNameKey ) ) {
 							continue;
 						}
 
-						packeteryModal.find( '[name="' + invalidFieldName + '"]' ).addClass('packetery-has-warning');
+						packeteryModal.find( '[name="' + orderWarningFields[ invalidFieldNameKey ] + '"]' ).addClass('packetery-has-warning');
 					}
 
 					flashMessage( packeteryModal, 'warning', settings.translations.packetSubmissionNotPossible );
