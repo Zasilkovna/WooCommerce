@@ -57,8 +57,8 @@ class WidgetIntegration implements IntegrationInterface {
 	 * @return void
 	 */
 	public function initialize(): void {
-		$scriptPath      = '/packeta/public/js/index.js';
-		$scriptAssetPath = PACKETERY_PLUGIN_DIR . '/public/js/index.asset.php';
+		$scriptPath      = '/packeta/public/block/index.js';
+		$scriptAssetPath = PACKETERY_PLUGIN_DIR . '/public/block/index.asset.php';
 		$scriptAsset     = file_exists( $scriptAssetPath )
 			? require $scriptAssetPath
 			: [
