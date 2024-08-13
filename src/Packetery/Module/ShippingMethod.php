@@ -213,6 +213,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 			'custom_html'           => [
 				'title'       => '',
 				'type'        => 'title',
+				'default'     => '',
 				'description' => $this->latteEngine->renderToString(
 					PACKETERY_PLUGIN_DIR . '/template/carrier/carrier-modal-fragment.latte',
 					$latteParams
