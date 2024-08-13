@@ -25,7 +25,9 @@ class Order {
 	public const ERROR_TRANSLATION_KEY_ESHOP                      = 'validation_error_eshop';
 	public const ERROR_TRANSLATION_KEY_WEIGHT                     = 'validation_error_weight';
 	public const ERROR_TRANSLATION_KEY_ADDRESS                    = 'validation_error_address';
-	public const ERROR_TRANSLATION_KEY_SIZE                       = 'validation_error_size';
+	public const ERROR_TRANSLATION_KEY_HEIGHT                     = 'validation_error_height';
+	public const ERROR_TRANSLATION_KEY_WIDTH                      = 'validation_error_width';
+	public const ERROR_TRANSLATION_KEY_LENGTH                     = 'validation_error_length';
 	public const ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION        = 'validation_error_customs_declaration';
 
 	/**
@@ -81,7 +83,8 @@ class Order {
 	 * @return string[]
 	 */
 	public function validate( Entity\Order $order ): array {
-		$errors = [
+		$sizeReport = $this->validateSize( $order );
+		$errors     = [
 			self::ERROR_TRANSLATION_KEY_NUMBER  => ! $order->getNumber(),
 			self::ERROR_TRANSLATION_KEY_NAME    => ! $order->getName(),
 			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->getValue(),
@@ -89,24 +92,22 @@ class Order {
 			self::ERROR_TRANSLATION_KEY_ESHOP   => ! $order->getEshop(),
 			self::ERROR_TRANSLATION_KEY_WEIGHT  => ! $this->validateFinalWeight( $order ),
 			self::ERROR_TRANSLATION_KEY_ADDRESS => ! $this->validateAddress( $order ),
-			self::ERROR_TRANSLATION_KEY_SIZE    => ! $this->validateSize( $order ),
+			self::ERROR_TRANSLATION_KEY_HEIGHT  => ! $sizeReport->isHeightValid(),
+			self::ERROR_TRANSLATION_KEY_WIDTH   => ! $sizeReport->isWidthValid(),
+			self::ERROR_TRANSLATION_KEY_LENGTH  => ! $sizeReport->isLengthValid(),
 			self::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => $order->hasToFillCustomsDeclaration(),
 		];
 
-		$errors = array_keys(
-			array_filter(
-				$errors,
-				static function( $value ) {
-					return false !== $value;
-				}
-			)
-		);
+		$result = [];
+		foreach ( $errors as $key => $hasError ) {
+			if ( ! $hasError ) {
+				continue;
+			}
 
-		foreach ( $errors as &$error ) {
-			$error = $this->getTranslation( $error );
+			$result[ $key ] = $this->getTranslation( $key );
 		}
 
-		return $errors;
+		return $result;
 	}
 
 	/**
@@ -158,19 +159,19 @@ class Order {
 	 *
 	 * @param Entity\Order $order Order entity.
 	 *
-	 * @return bool
+	 * @return SizeReport
 	 */
-	private function validateSize( Entity\Order $order ): bool {
+	private function validateSize( Entity\Order $order ): SizeReport {
 		if ( $order->getCarrier()->requiresSize() ) {
 			$size = $order->getSize();
 			if ( null === $size ) {
-				return false;
+				return new SizeReport( false, false, false );
 			}
 
 			return $this->sizeValidator->validate( $size );
 		}
 
-		return true;
+		return new SizeReport( true, true, true );
 	}
 
 }

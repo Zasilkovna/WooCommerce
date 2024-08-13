@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="packetery-table-cell">
-                        <input class="packetery-order-metabox-input" n:name=$inputName />
+                        <input class="packetery-order-metabox-input{if in_array($inputName, $orderWarningFields, true)} packetery-has-warning{/if}" n:name=$inputName />
                     </div>
                 </div>
             {/foreach}

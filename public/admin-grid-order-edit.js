@@ -25,6 +25,19 @@
 				if ( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
 					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
 				}
+
+				if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
+					var orderWarningFields = $lastModalButtonClicked.data( 'order-data' ).orderWarningFields;
+					for ( var invalidFieldNameKey in orderWarningFields ) {
+						if ( ! orderWarningFields.hasOwnProperty( invalidFieldNameKey ) ) {
+							continue;
+						}
+
+						packeteryModal.find( '[name="' + orderWarningFields[ invalidFieldNameKey ] + '"]' ).addClass('packetery-has-warning');
+					}
+
+					flashMessage( packeteryModal, 'warning', settings.translations.packetSubmissionNotPossible );
+				}
 			}
 		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
 			var $target = $( e.target );
@@ -94,6 +107,8 @@
 				orderData.packetery_COD = response.data.packetery_COD;
 				orderData.packetery_value = response.data.packetery_value;
 				orderData.packetery_adult_content = response.data.packetery_adult_content;
+				orderData.orderIsSubmittable = response.data.orderIsSubmittable;
+				orderData.orderWarningFields = response.data.orderWarningFields;
 				orderData.manualWeightIconExtraClass = response.data.hasOrderManualWeight === true ? '' : 'packetery-hidden ';
 				$lastModalButtonClicked.data( 'order-data', orderData );
 
