@@ -28,13 +28,23 @@ class RateCalculator {
 	private $currencySwitcherFacade;
 
 	/**
+	 * ENvironment bridge.
+	 *
+	 * @var Bridge
+	 */
+	private $bridge;
+
+	/**
 	 * RateCalculator constructor.
 	 *
+	 * @param Bridge                 $envBridge Environment bridge.
 	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
 	 */
 	public function __construct(
+		Bridge $envBridge,
 		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
+		$this->bridge                 = $envBridge;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
 	}
 
@@ -106,7 +116,7 @@ class RateCalculator {
 		 *
 		 * @since 1.4.1
 		 */
-		return (float) apply_filters( 'packeta_shipping_price', (float) $cost, $filterParameters );
+		return (float) $this->bridge->applyFilters( 'packeta_shipping_price', (float) $cost, $filterParameters );
 	}
 
 	/**

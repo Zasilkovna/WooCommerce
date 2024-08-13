@@ -16,7 +16,7 @@ use Packetery\Module\Api\BaseRouter;
  *
  * @package Packetery
  */
-final class CheckoutRouter extends BaseRouter {
+class CheckoutRouter extends BaseRouter {
 
 	public const PATH_SAVE_SELECTED_PICKUP_POINT = '/save-selected-pickup-point';
 	public const PATH_SAVE_VALIDATED_ADDRESS     = '/save-validated-address';

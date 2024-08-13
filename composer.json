@@ -6,7 +6,8 @@
     "require-dev": {
         "composer/composer": "^2.6",
         "wpify/scoper": "3.2.13",
-        "phpunit/phpunit": "10.4.2"
+        "phpunit/phpunit": "10.4.2",
+        "php-stubs/woocommerce-stubs": "^9.1"
     },
     "scripts": {
         "build-deps": "bash build-deps.sh",
@@ -31,7 +32,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Packetery\\Core\\": "src/Packetery/Core"
+            "Packetery\\": "src/Packetery"
         }
     },
     "autoload-dev": {
