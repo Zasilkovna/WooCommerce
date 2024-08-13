@@ -9,6 +9,12 @@
 	}
 }
 
+.blocks .packeta-widget-button img {
+	width: auto;
+	max-width: 3em;
+	margin-right: 1em;
+}
+
 .packetery-widget-button-wrapper {
 	.packeta-widget-info-error {
 		color: red;
@@ -21,65 +27,67 @@
 	p {
 		margin-bottom: 0;
 	}
+
+	.wc-block-components-text-input input {
+		opacity: 0;
+		width: 0 !important;
+		padding: 0 !important;
+		float: left;
+	}
 }
 
-.woocommerce {
-	#order_review {
-		table {
-			.packetery-widget-button-table-row {
-				td {
-					vertical-align: top;
+.packetery-widget-button-table-row {
+	td, th {
+		vertical-align: top;
+	}
 
-					.form-row {
-						padding: 0;
-					}
-				}
+	td {
+		vertical-align: top;
 
-				.packeta-widget[packetery-renderer="table-row"] img {
-					display: none;
-				}
-
-				th img {
-					width: 45px;
-					height: 45px;
-					display: block;
-					margin-left: auto;
-				}
-			}
+		.form-row {
+			padding: 0;
 		}
 	}
 
-	.form-row[packetery-renderer="after-rate"] {
+	.packeta-widget.table-row img {
+		display: none;
+	}
+
+	th img {
+		width: 45px;
+		height: 45px;
+		display: block;
+		margin-left: auto;
+	}
+}
+
+.packeta-widget.after-rate {
+	.packeta-widget-button {
 		display: inline-grid;
-	}
 
-	[packetery-renderer="after-rate"] {
-		.packeta-widget-button {
-			display: inline-grid;
-
-			img {
-				width: 150px;
-				margin: 0;
-			}
-
-			button {
-				width: 150px;
-			}
+		img, button, a.button {
+			width: 150px;
 		}
-	}
 
-	[packetery-renderer="table-row"] {
-		.packeta-widget-button {
-			img {
-				width: 45px;
-				height: 45px;
-			}
+		img {
+			margin: 0;
 		}
 	}
 }
 
-body .woocommerce [packetery-renderer] div.packeta-widget-button.packetery-widget-button-row button.button.alt {
-	text-align: center;
+.packeta-widget.table-row {
+	.packeta-widget-button {
+		img {
+			width: 45px;
+			height: 45px;
+		}
+	}
+}
+
+body .packeta-widget div.packeta-widget-button.packetery-widget-button-row {
+	button.button.alt, a.button.alt {
+		text-align: center;
+	}
 }
 
 .shopengine-widget {
@@ -88,7 +96,7 @@ body .woocommerce [packetery-renderer] div.packeta-widget-button.packetery-widge
 			tr.packetery-widget-button-table-row {
 				justify-content: left;
 
-				[packetery-renderer="table-row"] {
+				.packeta-widget.table-row {
 					.packeta-widget-info {
 						text-align: left;
 					}

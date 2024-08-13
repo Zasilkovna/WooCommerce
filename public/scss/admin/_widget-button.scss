@@ -1,0 +1,15 @@
+/* styles derived from frontend to display widget button in checkout block editor */
+.packeta-widget-button {
+	display: flex;
+	cursor: pointer;
+}
+
+.blocks .packeta-widget-button img {
+	width: auto;
+	max-width: 3em;
+	margin-right: 1em;
+}
+
+body .packeta-widget div.packeta-widget-button.packetery-widget-button-row a.button.alt {
+	text-align: center;
+}
