@@ -635,6 +635,11 @@ tbody .packetery-log-column-note {
 			font-weight: 500;
 		}
 	}
+
+	select {
+		padding-right: 24px;
+	}
+
 }
 
 .packeta_page .card,
@@ -848,6 +853,23 @@ tbody .packetery-log-column-note {
 		display: inline-block;
 		width: 7em;
 	}
+}
+
+.packetery-metabox-button-wrapper {
+	display: inline-block;
+}
+
+.packetery [data-packetery-order-inline-edit].woocommerce-help-tip {
+	font-size: 13px;
+}
+
+[data-packetery-order-inline-edit].woocommerce-help-tip:after {
+	content: none !important;
+}
+
+.packetery-has-warning[name],
+.packetery-has-warning[name]:focus {
+	border: 1px solid #FF8C00;
 }
 
 @import 'admin/custom-declaration.scss';
