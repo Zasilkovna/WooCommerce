@@ -128,7 +128,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 		$settingsHtml = $this->generate_settings_html( $this->get_instance_form_fields(), false );
 
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-		return '<table class="form-table">' . $settingsHtml . "</table>\n" . '<script type="text/javascript" src="' . Plugin::buildAssetUrl( 'public/admin-carrier-modal.js' ) . '"></script>';
+		return '<table class="form-table">' . $settingsHtml . "</table>\n" . '<script type="text/javascript" src="' . Plugin::buildAssetUrl( 'public/js/admin-carrier-modal.js' ) . '"></script>';
 	}
 
 	/**

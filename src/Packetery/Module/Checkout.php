@@ -242,7 +242,7 @@ class Checkout {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
-				'logo'         => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
+				'logo'         => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
 				'translations' => [
 					'packeta' => __( 'Packeta', 'packeta' ),
 				],
@@ -268,7 +268,7 @@ class Checkout {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
-				'logo'         => Plugin::buildAssetUrl( 'public/packeta-symbol.png' ),
+				'logo'         => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
 				'translations' => [
 					'packeta' => __( 'Packeta', 'packeta' ),
 				],
