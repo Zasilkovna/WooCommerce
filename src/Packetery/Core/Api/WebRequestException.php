@@ -7,12 +7,12 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Module\Exception;
+namespace Packetery\Core\Api;
 
 /**
  * Class DownloadException.
  *
  * @package Packetery
  */
-class DownloadException extends \Exception {
+class WebRequestException extends \Exception {
 }

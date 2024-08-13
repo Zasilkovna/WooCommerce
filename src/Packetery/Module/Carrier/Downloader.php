@@ -9,11 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Module\Exception\DownloadException;
+use Packetery\Core\Api\WebRequestException;
 use Packetery\Module\Options\Provider;
-use Packetery\GuzzleHttp\Client;
-use Packetery\GuzzleHttp\Exception\GuzzleException;
-use Packetery\GuzzleHttp\Psr7\Response;
+use Packetery\Module\WebRequestClient;
 
 /**
  * Class Downloader
@@ -23,13 +21,6 @@ use Packetery\GuzzleHttp\Psr7\Response;
 class Downloader {
 	private const API_URL                   = 'https://www.zasilkovna.cz/api/v4/%s/branch.json?address-delivery';
 	public const OPTION_LAST_CARRIER_UPDATE = 'packetery_last_carrier_update';
-
-	/**
-	 * Guzzle client.
-	 *
-	 * @var Client Guzzle client.
-	 */
-	private $client;
 
 	/**
 	 * Carrier updater.
@@ -46,16 +37,23 @@ class Downloader {
 	private $options_provider;
 
 	/**
+	 * HTTP client.
+	 *
+	 * @var WebRequestClient
+	 */
+	private $webRequestClient;
+
+	/**
 	 * Downloader constructor.
 	 *
-	 * @param Client   $guzzle_client Guzzle client.
-	 * @param Updater  $carrier_updater Carrier updater.
-	 * @param Provider $options_provider Options provider.
+	 * @param Updater          $carrier_updater Carrier updater.
+	 * @param Provider         $options_provider Options provider.
+	 * @param WebRequestClient $webRequestClient HTTP client.
 	 */
-	public function __construct( Client $guzzle_client, Updater $carrier_updater, Provider $options_provider ) {
-		$this->client           = $guzzle_client;
+	public function __construct( Updater $carrier_updater, Provider $options_provider, WebRequestClient $webRequestClient ) {
 		$this->carrier_updater  = $carrier_updater;
 		$this->options_provider = $options_provider;
+		$this->webRequestClient = $webRequestClient;
 	}
 
 	/**
@@ -120,7 +118,7 @@ class Downloader {
 	 * Downloads carriers and returns in array.
 	 *
 	 * @return array|null
-	 * @throws DownloadException DownloadException.
+	 * @throws WebRequestException DownloadException.
 	 */
 	private function fetch_as_array(): ?array {
 		$json = $this->download_json();
@@ -132,22 +130,10 @@ class Downloader {
 	 * Downloads carriers in JSON.
 	 *
 	 * @return string
-	 * @throws DownloadException DownloadException.
+	 * @throws WebRequestException DownloadException.
 	 */
 	private function download_json(): string {
-		$url = sprintf( self::API_URL, $this->options_provider->get_api_key() );
-		/**
-		 * Guzzle response.
-		 *
-		 * @var Response $result Guzzle response.
-		 */
-		try {
-			$result = $this->client->get( $url );
-		} catch ( GuzzleException $exception ) {
-			throw new DownloadException( $exception->getMessage() );
-		}
-
-		return $result->getBody()->getContents();
+		return $this->webRequestClient->get( sprintf( self::API_URL, $this->options_provider->get_api_key() ) );
 	}
 
 	/**

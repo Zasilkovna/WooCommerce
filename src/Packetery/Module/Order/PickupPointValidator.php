@@ -9,36 +9,27 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Api\Rest\IDownloader;
 use Packetery\Core\Api\Rest\PickupPointValidate;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
+use Packetery\Core\Api\WebRequestException;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Options\Provider;
-use Packetery\GuzzleHttp\Client;
-use Packetery\GuzzleHttp\Exception\GuzzleException;
-use Packetery\GuzzleHttp\Psr7\Response;
+use Packetery\Module\WebRequestClient;
 
 /**
  * Class PickupPointValidator
  *
  * @package Packetery\Module
  */
-class PickupPointValidator implements IDownloader {
+class PickupPointValidator {
 
 	// TODO: It needs to be thoroughly tested.
 	public const IS_ACTIVE = false;
 
 	public const VALIDATION_HTTP_ERROR_SESSION_KEY = 'packetery_validation_http_error';
-
-	/**
-	 * Guzzle client.
-	 *
-	 * @var Client
-	 */
-	private $guzzleClient;
 
 	/**
 	 * Options provider.
@@ -55,16 +46,23 @@ class PickupPointValidator implements IDownloader {
 	private $logger;
 
 	/**
+	 * HTTP Client.
+	 *
+	 * @var WebRequestClient
+	 */
+	private $webRequestClient;
+
+	/**
 	 * PickupPointValidator constructor.
 	 *
-	 * @param Client   $guzzleClient Guzzle client.
-	 * @param Provider $optionsProvider Options provider.
-	 * @param ILogger  $logger Logger.
+	 * @param Provider         $optionsProvider Options provider.
+	 * @param ILogger          $logger Logger.
+	 * @param WebRequestClient $webRequestClient HTTP client.
 	 */
-	public function __construct( Client $guzzleClient, Provider $optionsProvider, ILogger $logger ) {
-		$this->guzzleClient    = $guzzleClient;
-		$this->optionsProvider = $optionsProvider;
-		$this->logger          = $logger;
+	public function __construct( Provider $optionsProvider, ILogger $logger, WebRequestClient $webRequestClient ) {
+		$this->optionsProvider  = $optionsProvider;
+		$this->logger           = $logger;
+		$this->webRequestClient = $webRequestClient;
 	}
 
 	/**
@@ -75,7 +73,7 @@ class PickupPointValidator implements IDownloader {
 	 * @return PickupPointValidateResponse
 	 */
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
-		$pickupPointValidate = new PickupPointValidate( $this, $this->optionsProvider->get_api_key() );
+		$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $this->optionsProvider->get_api_key() );
 
 		try {
 			// We do not log successful requests.
@@ -94,26 +92,6 @@ class PickupPointValidator implements IDownloader {
 
 			return new PickupPointValidateResponse( true, [] );
 		}
-	}
-
-	/**
-	 * Accepts parameters in Guzzle format.
-	 *
-	 * @param string $uri Target URI.
-	 * @param array  $options Options.
-	 *
-	 * @return string
-	 * @throws GuzzleException Thrown on failure.
-	 */
-	public function post( string $uri, array $options ): string {
-		/**
-		 * Guzzle response.
-		 *
-		 * @var Response $result Guzzle response.
-		 */
-		$resultResponse = $this->guzzleClient->post( $uri, $options );
-
-		return $resultResponse->getBody()->getContents();
 	}
 
 	/**
@@ -138,5 +116,4 @@ class PickupPointValidator implements IDownloader {
 			'PickupPointTechnicalReason'  => __( 'The pick-up point cannot be chosen as a final destination of your packet due to technical reasons.', 'packeta' ),
 		];
 	}
-
 }
