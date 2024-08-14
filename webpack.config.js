@@ -6,7 +6,7 @@ module.exports = {
 	...defaultConfig,
 	output: {
 		...defaultConfig.output,
-		path: resolve( process.cwd(), 'public/js' ),
+		path: resolve( process.cwd(), 'public/block' ),
 	},
 	plugins: [
 		...defaultConfig.plugins.filter(

@@ -11,7 +11,7 @@
 	"scripts": {
 		"compile-scss": "sass public/scss:public/css --style expanded",
 		"watch:sass": "sass --watch public/scss:public/css --style expanded",
-		"build": "wp-scripts build --webpack-src-dir=src/PacketaWidget",
+		"build": "wp-scripts build --webpack-src-dir=src/PacketaWidget --output-path=public/block",
 		"format": "wp-scripts format",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
