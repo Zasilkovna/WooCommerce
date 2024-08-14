@@ -1,0 +1,43 @@
+/* Packet order status */
+.packetery-order-status {
+	display: inline-flex;
+	line-height: 2.5em;
+	border-radius: 4px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	margin: -0.25em 0;
+	cursor: inherit !important;
+	white-space: nowrap;
+	max-width: 100%;
+	padding: 0 5px 0 5px;
+}
+
+.packetery-order-status.received-data {
+	background: #f8dda7;
+	color: #94660c;
+}
+
+.packetery-order-status.unknown {
+	background: #eba3a3;
+	color: #761919;
+}
+
+.packetery-order-status.delivered {
+	background: #c8d7e1;
+	color: #2e4453;
+}
+
+.packetery-order-status.cancelled, .packetery-order-status.returned, .packetery-order-status.rejected {
+	background: #e5e5e5;
+	color: #777;
+}
+
+.packetery-order-status.delivery-status {
+	background: #c6e1c6;
+	color: #5b841b;
+}
+
+.packetery-order-status > span {
+	margin: 0 1em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
