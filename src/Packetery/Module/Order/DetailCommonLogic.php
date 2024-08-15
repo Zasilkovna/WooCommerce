@@ -13,7 +13,6 @@ use Packetery\Core\Entity\Order;
 use Packetery\Module;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette;
-use WC_Order;
 
 /**
  * Class DetailCommonLogic.

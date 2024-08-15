@@ -7,10 +7,7 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
-
-use Packetery\Module\Options;
 
 /**
  * Class WeightCalculator
