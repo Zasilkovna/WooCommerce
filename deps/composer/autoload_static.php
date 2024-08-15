@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInita2dc441c663a16742cb1a45b9fe2542b
+class ComposerStaticInit4285938469ce75db63c8949632e19570
 {
     public static $files = array (
         'packeteryd507e002f7fce7f0c6dbf1f22edcb902' => __DIR__ . '/..' . '/tracy/tracy/src/Tracy/functions.php',
@@ -86,7 +86,6 @@ class ComposerStaticInita2dc441c663a16742cb1a45b9fe2542b
         'Packetery\\Nette\\DI\\Config\\Adapter' => __DIR__ . '/..' . '/nette/di/src/DI/Config/Adapter.php',
         'Packetery\\Nette\\DI\\Config\\Adapters\\NeonAdapter' => __DIR__ . '/..' . '/nette/di/src/DI/Config/Adapters/NeonAdapter.php',
         'Packetery\\Nette\\DI\\Config\\Adapters\\PhpAdapter' => __DIR__ . '/..' . '/nette/di/src/DI/Config/Adapters/PhpAdapter.php',
-        'Packetery\\Nette\\DI\\Config\\DefinitionSchema' => __DIR__ . '/..' . '/nette/di/src/DI/Config/DefinitionSchema.php',
         'Packetery\\Nette\\DI\\Config\\Helpers' => __DIR__ . '/..' . '/nette/di/src/DI/Config/Helpers.php',
         'Packetery\\Nette\\DI\\Config\\IAdapter' => __DIR__ . '/..' . '/nette/di/src/compatibility.php',
         'Packetery\\Nette\\DI\\Config\\Loader' => __DIR__ . '/..' . '/nette/di/src/DI/Config/Loader.php',
@@ -106,6 +105,7 @@ class ComposerStaticInita2dc441c663a16742cb1a45b9fe2542b
         'Packetery\\Nette\\DI\\Extensions\\ConstantsExtension' => __DIR__ . '/..' . '/nette/di/src/DI/Extensions/ConstantsExtension.php',
         'Packetery\\Nette\\DI\\Extensions\\DIExtension' => __DIR__ . '/..' . '/nette/di/src/DI/Extensions/DIExtension.php',
         'Packetery\\Nette\\DI\\Extensions\\DecoratorExtension' => __DIR__ . '/..' . '/nette/di/src/DI/Extensions/DecoratorExtension.php',
+        'Packetery\\Nette\\DI\\Extensions\\DefinitionSchema' => __DIR__ . '/..' . '/nette/di/src/DI/Extensions/DefinitionSchema.php',
         'Packetery\\Nette\\DI\\Extensions\\ExtensionsExtension' => __DIR__ . '/..' . '/nette/di/src/DI/Extensions/ExtensionsExtension.php',
         'Packetery\\Nette\\DI\\Extensions\\InjectExtension' => __DIR__ . '/..' . '/nette/di/src/DI/Extensions/InjectExtension.php',
         'Packetery\\Nette\\DI\\Extensions\\ParametersExtension' => __DIR__ . '/..' . '/nette/di/src/DI/Extensions/ParametersExtension.php',
@@ -184,7 +184,21 @@ class ComposerStaticInita2dc441c663a16742cb1a45b9fe2542b
         'Packetery\\Nette\\Neon\\Encoder' => __DIR__ . '/..' . '/nette/neon/src/Neon/Encoder.php',
         'Packetery\\Nette\\Neon\\Entity' => __DIR__ . '/..' . '/nette/neon/src/Neon/Entity.php',
         'Packetery\\Nette\\Neon\\Exception' => __DIR__ . '/..' . '/nette/neon/src/Neon/Exception.php',
+        'Packetery\\Nette\\Neon\\Lexer' => __DIR__ . '/..' . '/nette/neon/src/Neon/Lexer.php',
         'Packetery\\Nette\\Neon\\Neon' => __DIR__ . '/..' . '/nette/neon/src/Neon/Neon.php',
+        'Packetery\\Nette\\Neon\\Node' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node.php',
+        'Packetery\\Nette\\Neon\\Node\\ArrayItemNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/ArrayItemNode.php',
+        'Packetery\\Nette\\Neon\\Node\\ArrayNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/ArrayNode.php',
+        'Packetery\\Nette\\Neon\\Node\\BlockArrayNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/BlockArrayNode.php',
+        'Packetery\\Nette\\Neon\\Node\\EntityChainNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/EntityChainNode.php',
+        'Packetery\\Nette\\Neon\\Node\\EntityNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/EntityNode.php',
+        'Packetery\\Nette\\Neon\\Node\\InlineArrayNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/InlineArrayNode.php',
+        'Packetery\\Nette\\Neon\\Node\\LiteralNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/LiteralNode.php',
+        'Packetery\\Nette\\Neon\\Node\\StringNode' => __DIR__ . '/..' . '/nette/neon/src/Neon/Node/StringNode.php',
+        'Packetery\\Nette\\Neon\\Parser' => __DIR__ . '/..' . '/nette/neon/src/Neon/Parser.php',
+        'Packetery\\Nette\\Neon\\Token' => __DIR__ . '/..' . '/nette/neon/src/Neon/Token.php',
+        'Packetery\\Nette\\Neon\\TokenStream' => __DIR__ . '/..' . '/nette/neon/src/Neon/TokenStream.php',
+        'Packetery\\Nette\\Neon\\Traverser' => __DIR__ . '/..' . '/nette/neon/src/Neon/Traverser.php',
         'Packetery\\Nette\\NotImplementedException' => __DIR__ . '/..' . '/nette/utils/src/exceptions.php',
         'Packetery\\Nette\\NotSupportedException' => __DIR__ . '/..' . '/nette/utils/src/exceptions.php',
         'Packetery\\Nette\\OutOfRangeException' => __DIR__ . '/..' . '/nette/utils/src/exceptions.php',
@@ -284,7 +298,7 @@ class ComposerStaticInita2dc441c663a16742cb1a45b9fe2542b
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInita2dc441c663a16742cb1a45b9fe2542b::$classMap;
+            $loader->classMap = ComposerStaticInit4285938469ce75db63c8949632e19570::$classMap;
 
         }, null, ClassLoader::class);
     }
