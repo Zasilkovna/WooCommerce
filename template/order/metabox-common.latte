@@ -4,6 +4,9 @@
     <li n:if="$packetTrackingUrl">
         {$translations['packetTrackingOnline']}: <a href="{$packetTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
     </li>
+    <li n:if="$orderStatus">
+        <p class="packetery-order-status {$statusClass}">{$orderStatus}</p>
+    </li>
     <li n:if="$packetClaimTrackingUrl">
         {$translations['packetClaimTrackingOnline']}: <a href="{$packetClaimTrackingUrl}" target="_blank">Z{$order->getPacketClaimId()}</a>
         <span class="packetery-claim-password-short" n:if="$order->getPacketClaimId() && $order->getPacketClaimPassword()"> ({$translations['submissionPassword']}: {$order->getPacketClaimPassword()})</span>
