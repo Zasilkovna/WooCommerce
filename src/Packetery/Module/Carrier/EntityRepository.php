@@ -281,6 +281,10 @@ class EntityRepository {
 			$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
 		}
 
+		if ( [] === $availableCarriersToMerge ) {
+			return $this->getActiveCarriers();
+		}
+
 		return array_merge( ...$availableCarriersToMerge );
 	}
 
