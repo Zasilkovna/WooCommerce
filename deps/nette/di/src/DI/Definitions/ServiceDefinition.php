@@ -9,7 +9,6 @@ namespace Packetery\Nette\DI\Definitions;
 
 use Packetery\Nette;
 use Packetery\Nette\DI\ServiceCreationException;
-use Packetery\Nette\PhpGenerator\Helpers as PhpHelpers;
 /**
  * Definition of standard service.
  *
@@ -21,24 +20,12 @@ use Packetery\Nette\PhpGenerator\Helpers as PhpHelpers;
 final class ServiceDefinition extends Definition
 {
     /** @var Statement */
-    private $factory;
+    private $creator;
     /** @var Statement[] */
     private $setup = [];
     public function __construct()
     {
-        $this->factory = new Statement(null);
-    }
-    /** @deprecated Use setType() */
-    public function setClass(?string $type)
-    {
-        $this->setType($type);
-        if (\func_num_args() > 1) {
-            \trigger_error(\sprintf('Service %s: %s() second parameter $args is deprecated, use setFactory()', $this->getName(), __METHOD__), \E_USER_DEPRECATED);
-            if ($args = \func_get_arg(1)) {
-                $this->setFactory($type, $args);
-            }
-        }
-        return $this;
+        $this->creator = new Statement(null);
     }
     /** @return static */
     public function setType(?string $type)
@@ -46,33 +33,49 @@ final class ServiceDefinition extends Definition
         return parent::setType($type);
     }
     /**
+     * Alias for setCreator()
      * @param  string|array|Definition|Reference|Statement  $factory
      * @return static
      */
     public function setFactory($factory, array $args = [])
     {
-        $this->factory = $factory instanceof Statement ? $factory : new Statement($factory, $args);
-        return $this;
+        return $this->setCreator($factory, $args);
     }
+    /**
+     * Alias for getCreator()
+     */
     public function getFactory() : Statement
     {
-        return $this->factory;
+        return $this->getCreator();
+    }
+    /**
+     * @param  string|array|Definition|Reference|Statement  $creator
+     * @return static
+     */
+    public function setCreator($creator, array $args = [])
+    {
+        $this->creator = $creator instanceof Statement ? $creator : new Statement($creator, $args);
+        return $this;
+    }
+    public function getCreator() : Statement
+    {
+        return $this->creator;
     }
     /** @return string|array|Definition|Reference|null */
     public function getEntity()
     {
-        return $this->factory->getEntity();
+        return $this->creator->getEntity();
     }
     /** @return static */
     public function setArguments(array $args = [])
     {
-        $this->factory->arguments = $args;
+        $this->creator->arguments = $args;
         return $this;
     }
     /** @return static */
     public function setArgument($key, $value)
     {
-        $this->factory->arguments[$key] = $value;
+        $this->creator->arguments[$key] = $value;
         return $this;
     }
     /**
@@ -81,10 +84,11 @@ final class ServiceDefinition extends Definition
      */
     public function setSetup(array $setup)
     {
-        foreach ($setup as $v) {
-            if (!$v instanceof Statement) {
+        foreach ($setup as &$entity) {
+            if (!$entity instanceof Statement) {
                 throw new \Packetery\Nette\InvalidArgumentException('Argument must be \\Packetery\\Nette\\DI\\Definitions\\Statement[].');
             }
+            $entity = $this->prependSelf($entity);
         }
         $this->setup = $setup;
         return $this;
@@ -100,35 +104,9 @@ final class ServiceDefinition extends Definition
      */
     public function addSetup($entity, array $args = [])
     {
-        $this->setup[] = $entity instanceof Statement ? $entity : new Statement($entity, $args);
+        $entity = $entity instanceof Statement ? $entity : new Statement($entity, $args);
+        $this->setup[] = $this->prependSelf($entity);
         return $this;
-    }
-    /** @deprecated */
-    public function setParameters(array $params)
-    {
-        throw new \Packetery\Nette\DeprecatedException(\sprintf('Service %s: %s() is deprecated.', $this->getName(), __METHOD__));
-    }
-    /** @deprecated */
-    public function getParameters() : array
-    {
-        \trigger_error(\sprintf('Service %s: %s() is deprecated.', $this->getName(), __METHOD__), \E_USER_DEPRECATED);
-        return [];
-    }
-    /** @deprecated use $builder->addImportedDefinition(...) */
-    public function setDynamic() : void
-    {
-        throw new \Packetery\Nette\DeprecatedException(\sprintf('Service %s: %s() is deprecated, use $builder->addImportedDefinition(...)', $this->getName(), __METHOD__));
-    }
-    /** @deprecated use $builder->addFactoryDefinition(...) or addAccessorDefinition(...) */
-    public function setImplement() : void
-    {
-        throw new \Packetery\Nette\DeprecatedException(\sprintf('Service %s: %s() is deprecated, use $builder->addFactoryDefinition(...)', $this->getName(), __METHOD__));
-    }
-    /** @deprecated use addTag('nette.inject') */
-    public function setInject(bool $state = \true)
-    {
-        \trigger_error(\sprintf('Service %s: %s() is deprecated, use addTag(\\Packetery\\Nette\\DI\\Extensions\\InjectExtension::TAG_INJECT)', $this->getName(), __METHOD__), \E_USER_DEPRECATED);
-        return $this->addTag(\Packetery\Nette\DI\Extensions\InjectExtension::TAG_INJECT, $state);
     }
     public function resolveType(\Packetery\Nette\DI\Resolver $resolver) : void
     {
@@ -136,11 +114,11 @@ final class ServiceDefinition extends Definition
             if (!$this->getType()) {
                 throw new ServiceCreationException('Factory and type are missing in definition of service.');
             }
-            $this->setFactory($this->getType(), $this->factory->arguments ?? []);
+            $this->setCreator($this->getType(), $this->creator->arguments ?? []);
         } elseif (!$this->getType()) {
-            $type = $resolver->resolveEntityType($this->factory);
+            $type = $resolver->resolveEntityType($this->creator);
             if (!$type) {
-                throw new ServiceCreationException('Unknown service type, specify it or declare return type of factory.');
+                throw new ServiceCreationException('Unknown service type, specify it or declare return type of factory method.');
             }
             $this->setType($type);
             $resolver->addDependency(new \ReflectionClass($type));
@@ -152,33 +130,28 @@ final class ServiceDefinition extends Definition
     }
     public function complete(\Packetery\Nette\DI\Resolver $resolver) : void
     {
-        $entity = $this->factory->getEntity();
-        if ($entity instanceof Reference && !$this->factory->arguments && !$this->setup) {
+        $entity = $this->creator->getEntity();
+        if ($entity instanceof Reference && !$this->creator->arguments && !$this->setup) {
             $ref = $resolver->normalizeReference($entity);
-            $this->setFactory([new Reference(\Packetery\Nette\DI\ContainerBuilder::THIS_CONTAINER), 'getService'], [$ref->getValue()]);
+            $this->setCreator([new Reference(\Packetery\Nette\DI\ContainerBuilder::ThisContainer), 'getService'], [$ref->getValue()]);
         }
-        $this->factory = $resolver->completeStatement($this->factory);
+        $this->creator = $resolver->completeStatement($this->creator);
         foreach ($this->setup as &$setup) {
-            if (\is_string($setup->getEntity()) && \strpbrk($setup->getEntity(), ':@?\\') === \false) {
-                // auto-prepend @self
-                $setup = new Statement([new Reference(Reference::SELF), $setup->getEntity()], $setup->arguments);
-            }
             $setup = $resolver->completeStatement($setup, \true);
         }
     }
+    private function prependSelf(Statement $setup) : Statement
+    {
+        return \is_string($setup->getEntity()) && \strpbrk($setup->getEntity(), ':@?\\') === \false ? new Statement([new Reference(Reference::Self), $setup->getEntity()], $setup->arguments) : $setup;
+    }
     public function generateMethod(\Packetery\Nette\PhpGenerator\Method $method, \Packetery\Nette\DI\PhpGenerator $generator) : void
     {
-        $entity = $this->factory->getEntity();
-        $code = $generator->formatStatement($this->factory) . ";\n";
+        $code = $generator->formatStatement($this->creator) . ";\n";
         if (!$this->setup) {
             $method->setBody('return ' . $code);
             return;
         }
         $code = '$service = ' . $code;
-        $type = $this->getType();
-        if ($type !== $entity && !(\is_array($entity) && $entity[0] instanceof Reference && $entity[0]->getValue() === \Packetery\Nette\DI\ContainerBuilder::THIS_CONTAINER) && !(\is_string($entity) && \preg_match('#^[\\w\\\\]+$#D', $entity) && \is_subclass_of($entity, $type))) {
-            $code .= PhpHelpers::formatArgs("if (!\$service instanceof {$type}) {\n" . "\tthrow new \\Packetery\\Nette\\UnexpectedValueException(?);\n}\n", ["Unable to create service '{$this->getName()}', value returned by factory is not {$type} type."]);
-        }
         foreach ($this->setup as $setup) {
             $code .= $generator->formatStatement($setup) . ";\n";
         }
@@ -188,7 +161,7 @@ final class ServiceDefinition extends Definition
     public function __clone()
     {
         parent::__clone();
-        $this->factory = \unserialize(\serialize($this->factory));
+        $this->creator = \unserialize(\serialize($this->creator));
         $this->setup = \unserialize(\serialize($this->setup));
     }
 }
