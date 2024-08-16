@@ -65,7 +65,7 @@ trait WcCartTrait {
 	/**
 	 * Gets cart instance.
 	 *
-	 * @return \WC_Cart
+	 * @return \WC_Cart|null
 	 */
 	public function getCart() {
 		return WC()->cart;

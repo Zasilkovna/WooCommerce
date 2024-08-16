@@ -19,24 +19,7 @@ class Bridge {
 	use WcCustomerTrait;
 	use WcCartTrait;
 	use WcTaxTrait;
-
-	/**
-	 * Applies filters.
-	 *
-	 * @param string $hookName Hook name.
-	 * @param mixed  $value Value.
-	 * @param mixed  ...$args Arguments.
-	 *
-	 * @return mixed
-	 */
-	public function applyFilters( string $hookName, $value, ...$args ) {
-		/**
-		 * Bridged function call.
-		 *
-		 * @since 1.7.7
-		 */
-		return apply_filters( $hookName, $value, ...$args );
-	}
+	use HookTrait;
 
 	/**
 	 * Converts weight from global unit to kg.
@@ -44,7 +27,7 @@ class Bridge {
 	 * @param int|float $weight Weight.
 	 * @param string    $toUnit To unit.
 	 *
-	 * @return string
+	 * @return float
 	 */
 	public function getWcGetWeight( $weight, $toUnit ) {
 		return wc_get_weight( $weight, $toUnit );
@@ -59,16 +42,5 @@ class Bridge {
 	 */
 	public function getProduct( $product_id ) {
 		return WC()->product_factory->get_product( $product_id );
-	}
-
-	/**
-	 * Tells if action was performed.
-	 *
-	 * @param string $hookName Name of hook.
-	 *
-	 * @return int
-	 */
-	public function didAction( $hookName ) {
-		return did_action( $hookName );
 	}
 }
