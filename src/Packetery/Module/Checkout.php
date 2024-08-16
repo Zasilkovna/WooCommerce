@@ -19,6 +19,7 @@ use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
+use Packetery\Module\Solution\Bridge;
 use Packetery\Nette\Http\Request;
 use WC_Logger;
 use WC_Tax;

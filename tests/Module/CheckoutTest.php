@@ -6,7 +6,6 @@ namespace Tests\Module;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Api;
-use Packetery\Module\Bridge;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
@@ -17,6 +16,7 @@ use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Product;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\RateCalculator;
+use Packetery\Module\Solution\Bridge;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;

@@ -11,7 +11,7 @@ parameters:
         active: false
 
 services:
-	- Packetery\Module\Bridge
+	- Packetery\Module\Solution\Bridge
 	- Packetery\Module\Order\MetaboxesWrapper
 	- Packetery\Module\Order\Form
 	- Packetery\Module\Order\CarrierModal

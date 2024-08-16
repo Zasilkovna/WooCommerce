@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use Packetery\Module\Carrier;
+use Packetery\Module\Solution\Bridge;
 use WC_Cart;
 use WC_Order;
 
@@ -37,14 +37,14 @@ class RateCalculator {
 	/**
 	 * RateCalculator constructor.
 	 *
-	 * @param Bridge                 $envBridge Environment bridge.
+	 * @param Bridge                 $bridge Environment bridge.
 	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
 	 */
 	public function __construct(
-		Bridge $envBridge,
+		Bridge $bridge,
 		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
-		$this->bridge                 = $envBridge;
+		$this->bridge                 = $bridge;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
 	}
 

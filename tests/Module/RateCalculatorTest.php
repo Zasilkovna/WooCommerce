@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Tests\Module;
 
-use Packetery\Module\Bridge;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\RateCalculator;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -13,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 class RateCalculatorTest extends TestCase {
 	use WithMockFactory;
 
-	private MockObject|Bridge $bridge;
+	private MockObject|\Packetery\Module\Solution\Bridge $bridge;
 
 	private RateCalculator $rateCalculator;
 
