@@ -779,7 +779,7 @@ class Checkout {
 		}
 
 		$weight   = $this->bridge->getCartContentsWeight();
-		$weightKg = (float) $this->bridge->getWcGetWeight( $weight );
+		$weightKg = (float) $this->bridge->getWcGetWeight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}

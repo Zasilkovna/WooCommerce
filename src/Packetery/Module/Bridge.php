@@ -39,7 +39,7 @@ class Bridge {
 	/**
 	 * Gets customer shipping country.
 	 *
-	 * @return mixed
+	 * @return string
 	 */
 	public function getCustomerShippingCountry() {
 		return WC()->customer->get_shipping_country();
@@ -48,7 +48,7 @@ class Bridge {
 	/**
 	 * Gets customer billing country.
 	 *
-	 * @return mixed
+	 * @return string
 	 */
 	public function getCustomerBillingCountry() {
 		return WC()->customer->get_billing_country();
@@ -57,70 +57,71 @@ class Bridge {
 	/**
 	 * Gets cart contents.
 	 *
-	 * @return mixed
+	 * @return array of cart items
 	 */
 	public function getCartContents() {
 		return WC()->cart->get_cart_contents();
 	}
 
 	/**
-	 * Gets cart contents total.
+	 * Gets cart total. This is the total of items in the cart, but after discounts. Subtotal is before discounts.
 	 *
-	 * @return mixed
+	 * @return float
 	 */
 	public function getCartContentsTotal() {
 		return WC()->cart->get_cart_contents_total();
 	}
 
 	/**
-	 * Gets cart contents tax.
+	 * Gets cart tax amount.
 	 *
-	 * @return mixed
+	 * @return float
 	 */
 	public function getCartContentsTax() {
 		return WC()->cart->get_cart_contents_tax();
 	}
 
 	/**
-	 * Gets cart contents weight.
+	 * Get weight of items in the cart.
 	 *
-	 * @return mixed
+	 * @return float
 	 */
 	public function getCartContentsWeight() {
-		return WC()->cart->cart_contents_weight;
+		return WC()->cart->get_cart_contents_weight();
 	}
 
 	/**
 	 * Converts weight from global unit to kg.
 	 *
-	 * @param mixed $weight Weight.
+	 * @param int|float $weight Weight.
+	 * @param string $toUnit To unit.
 	 *
-	 * @return mixed
+	 * @return string
 	 */
-	public function getWcGetWeight( $weight ) {
-		return wc_get_weight( $weight, 'kg' );
+	public function getWcGetWeight( $weight, $toUnit ) {
+		return wc_get_weight( $weight, $toUnit );
 	}
 
 	/**
-	 * Gets cart content.
+	 * Returns the contents of the cart in an array.
 	 *
-	 * @return mixed
+	 * @return array contents of the cart
 	 */
 	public function getCartContent() {
 		return WC()->cart->get_cart();
 	}
 
 	/**
-	 * Gets cart.
+	 * Gets cart instance.
 	 *
-	 * @return mixed
+	 * @return \WC_Cart
 	 */
 	public function getCart() {
 		return WC()->cart;
 	}
 
 	/**
-	 * Gets shipping tax rates.
+	 * Gets an array of matching shipping tax rates for a given class.
 	 *
 	 * @return mixed
 	 */
@@ -132,9 +133,9 @@ class Bridge {
 	 * Calculates inclusive tax.
 	 *
 	 * @param float $cost Cost.
-	 * @param mixed $rates Rates.
+	 * @param array $rates Rates.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
 	public function calcInclusiveTax( float $cost, $rates ) {
 		return WC_Tax::calc_inclusive_tax( $cost, $rates );
