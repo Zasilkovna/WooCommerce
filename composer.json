@@ -6,7 +6,8 @@
     "require-dev": {
         "composer/composer": "^2.6",
         "wpify/scoper": "3.2.13",
-        "phpunit/phpunit": "10.4.2"
+        "phpunit/phpunit": "10.4.2",
+        "php-stubs/woocommerce-stubs": "^9.1"
     },
     "scripts": {
         "build-deps": "bash build-deps.sh",
@@ -18,7 +19,7 @@
         "phpstan-82": "phpstan/vendor/bin/phpstan -cphpstan/php82.neon analyse",
         "phpstan-83": "phpstan/vendor/bin/phpstan -cphpstan/php83.neon analyse",
         "tests-unit": "./vendor/bin/phpunit tests",
-        "tests-coverage": "php -d xdebug.mode=coverage -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage"
+        "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage"
     },
     "config": {
         "platform": {
@@ -31,7 +32,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Packetery\\Core\\": "src/Packetery/Core"
+            "Packetery\\": "src/Packetery"
         }
     },
     "autoload-dev": {

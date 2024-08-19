@@ -5,6 +5,7 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
          backupGlobals="false"
          colors="true"
+		 displayDetailsOnTestsThatTriggerWarnings="true"
          bootstrap="tests/bootstrap.php"
 >
     <php>
@@ -22,7 +23,7 @@
 
     <source>
         <include>
-            <directory>src/Packetery/Core</directory>
+            <directory>src/Packetery</directory>
         </include>
     </source>
 </phpunit>
