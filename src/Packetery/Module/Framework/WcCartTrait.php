@@ -21,7 +21,7 @@ trait WcCartTrait {
 	 *
 	 * @return array of cart items
 	 */
-	public function getCartContents(): array {
+	public function cartGetCartContents(): array {
 		return WC()->cart->get_cart_contents();
 	}
 
@@ -30,7 +30,7 @@ trait WcCartTrait {
 	 *
 	 * @return float
 	 */
-	public function getCartContentsTotal(): float {
+	public function cartGetCartContentsTotal(): float {
 		return WC()->cart->get_cart_contents_total();
 	}
 
@@ -39,7 +39,7 @@ trait WcCartTrait {
 	 *
 	 * @return float
 	 */
-	public function getCartContentsTax(): float {
+	public function cartGetCartContentsTax(): float {
 		return WC()->cart->get_cart_contents_tax();
 	}
 
@@ -48,7 +48,7 @@ trait WcCartTrait {
 	 *
 	 * @return float
 	 */
-	public function getCartContentsWeight(): float {
+	public function cartGetCartContentsWeight(): float {
 		return WC()->cart->get_cart_contents_weight();
 	}
 
@@ -57,7 +57,7 @@ trait WcCartTrait {
 	 *
 	 * @return array contents of the cart
 	 */
-	public function getCartContent(): array {
+	public function cartGetCartContent(): array {
 		return WC()->cart->get_cart();
 	}
 
@@ -66,7 +66,7 @@ trait WcCartTrait {
 	 *
 	 * @return \WC_Cart|null
 	 */
-	public function getCart(): ?\WC_Cart {
+	public function cart(): ?\WC_Cart {
 		return WC()->cart;
 	}
 

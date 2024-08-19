@@ -449,7 +449,7 @@ class Checkout {
 
 		$checkoutData = $this->getPostDataIncludingStoredData( $chosenShippingMethod );
 
-		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, $this->wcAdapter->getCartContents() ) ) {
+		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, $this->wcAdapter->cartGetCartContents() ) ) {
 			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
 
 			return;
@@ -775,9 +775,9 @@ class Checkout {
 	 * @return string
 	 */
 	public function getCustomerCountry(): string {
-		$country = strtolower( $this->wcAdapter->getCustomerShippingCountry() );
+		$country = strtolower( $this->wcAdapter->customerGetShippingCountry() );
 		if ( ! $country ) {
-			$country = strtolower( $this->wcAdapter->getCustomerBillingCountry() );
+			$country = strtolower( $this->wcAdapter->customerGetBillingCountry() );
 		}
 
 		return $country;
@@ -793,8 +793,8 @@ class Checkout {
 			return 0.0;
 		}
 
-		$weight   = $this->wcAdapter->getCartContentsWeight();
-		$weightKg = (float) $this->wcAdapter->getWcGetWeight( $weight, 'kg' );
+		$weight   = $this->wcAdapter->cartGetCartContentsWeight();
+		$weightKg = (float) $this->wcAdapter->getWeight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}
@@ -810,7 +810,7 @@ class Checkout {
 	public function getTotalCartProductValue(): float {
 		$totalProductPrice = 0.0;
 
-		foreach ( $this->wcAdapter->getCartContent() as $cartItem ) {
+		foreach ( $this->wcAdapter->cartGetCartContent() as $cartItem ) {
 			$totalProductPrice += (float) $cartItem['data']->get_price( 'raw' ) * $cartItem['quantity'];
 		}
 
@@ -915,7 +915,7 @@ class Checkout {
 	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
-		$cartProducts              = $this->wcAdapter->getCartContents();
+		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 		$cartPrice                 = $this->getCartContentsTotalIncludingTax();
 		$cartWeight                = $this->getCartWeightKg();
 		$totalCartProductValue     = $this->getTotalCartProductValue();
@@ -962,8 +962,8 @@ class Checkout {
 				$taxes       = null;
 
 				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
-					$rates            = $this->wcAdapter->getShippingTaxRates();
-					$taxes            = $this->wcAdapter->calcInclusiveTax( $cost, $rates );
+					$rates            = $this->wcAdapter->taxGetShippingTaxRates();
+					$taxes            = $this->wcAdapter->taxCalcInclusiveTax( $cost, $rates );
 					$taxExclusiveCost = $cost - array_sum( $taxes );
 					/**
 					 * Filters shipping taxes.
@@ -1024,7 +1024,7 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isFreeShippingCouponApplied(): bool {
-		return $this->rateCalculator->isFreeShippingCouponApplied( $this->wcAdapter->getCart() );
+		return $this->rateCalculator->isFreeShippingCouponApplied( $this->wcAdapter->cart() );
 	}
 
 	/**
@@ -1239,7 +1239,7 @@ class Checkout {
 	 * @return array
 	 */
 	private function getDisallowedShippingRateIds(): array {
-		$cartProducts = $this->wcAdapter->getCartContent();
+		$cartProducts = $this->wcAdapter->cartGetCartContent();
 
 		$arraysToMerge = [];
 		foreach ( $cartProducts as $cartProduct ) {
@@ -1265,7 +1265,7 @@ class Checkout {
 			return false;
 		}
 
-		$products = $this->wcAdapter->getCartContent();
+		$products = $this->wcAdapter->cartGetCartContent();
 
 		foreach ( $products as $product ) {
 			$productEntity = $this->productEntiyFactory->fromPostId( $product['product_id'] );
@@ -1283,11 +1283,11 @@ class Checkout {
 	 * @return false|string
 	 */
 	private function getTaxClassWithMaxRate() {
-		$products   = $this->wcAdapter->getCartContent();
+		$products   = $this->wcAdapter->cartGetCartContent();
 		$taxClasses = [];
 
 		foreach ( $products as $cartProduct ) {
-			$product = $this->wcAdapter->getProduct( $cartProduct['product_id'] );
+			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
 			if ( $product->is_taxable() ) {
 				$taxClasses[] = $product->get_tax_class();
 			}
@@ -1328,7 +1328,7 @@ class Checkout {
 	 * @return float
 	 */
 	private function getCartContentsTotalIncludingTax(): float {
-		return (float) $this->wcAdapter->getCartContentsTotal() + (float) $this->wcAdapter->getCartContentsTax();
+		return (float) $this->wcAdapter->cartGetCartContentsTotal() + (float) $this->wcAdapter->cartGetCartContentsTax();
 	}
 
 	/**
@@ -1348,7 +1348,7 @@ class Checkout {
 			if ( ! isset( $cartProduct['product_id'] ) ) {
 				continue;
 			}
-			$product            = $this->wcAdapter->getProduct( $cartProduct['product_id'] );
+			$product            = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {
