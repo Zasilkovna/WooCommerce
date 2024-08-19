@@ -32,7 +32,7 @@ class RateCalculator {
 	 *
 	 * @var FrameworkAdapter
 	 */
-	private $bridge;
+	private $frameworkAdapter;
 
 	/**
 	 * RateCalculator constructor.
@@ -44,7 +44,7 @@ class RateCalculator {
 		FrameworkAdapter $frameworkAdapter,
 		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
-		$this->bridge                 = $frameworkAdapter;
+		$this->frameworkAdapter       = $frameworkAdapter;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
 	}
 
@@ -116,7 +116,7 @@ class RateCalculator {
 		 *
 		 * @since 1.4.1
 		 */
-		return (float) $this->bridge->applyFilters( 'packeta_shipping_price', (float) $cost, $filterParameters );
+		return (float) $this->frameworkAdapter->applyFilters( 'packeta_shipping_price', (float) $cost, $filterParameters );
 	}
 
 	/**
