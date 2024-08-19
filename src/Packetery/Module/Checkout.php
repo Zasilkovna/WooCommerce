@@ -17,9 +17,9 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Framework\FrameworkAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
-use Packetery\Module\Solution\Bridge;
 use Packetery\Nette\Http\Request;
 use WC_Logger;
 use WC_Tax;
@@ -36,11 +36,11 @@ class Checkout {
 	public const TRANSIENT_CHECKOUT_DATA_PREFIX = 'packeta_checkout_data_';
 
 	/**
-	 * Bridge.
+	 * FrameworkAdapter.
 	 *
-	 * @var Bridge
+	 * @var FrameworkAdapter
 	 */
-	private $bridge;
+	private $frameworkAdapter;
 
 	/**
 	 * Product entity factory.
@@ -171,7 +171,7 @@ class Checkout {
 	/**
 	 * Checkout constructor.
 	 *
-	 * @param Bridge                        $bridge                  Bridge.
+	 * @param FrameworkAdapter              $frameworkAdapter        FrameworkAdapter.
 	 * @param Product\EntityFactory         $productEntityFactory    Product entity factory.
 	 * @param ProductCategory\EntityFactory $productCategoryEntityFactory    Product category entity factory.
 	 * @param Carrier\OptionsFactory        $carrierOptionsFactory   Carrier options factory.
@@ -192,7 +192,7 @@ class Checkout {
 	 * @param CarDeliveryConfig             $carDeliveryConfig       Car delivery config.
 	 */
 	public function __construct(
-		Bridge $bridge,
+		FrameworkAdapter $frameworkAdapter,
 		Product\EntityFactory $productEntityFactory,
 		ProductCategory\EntityFactory $productCategoryEntityFactory,
 		Carrier\OptionsFactory $carrierOptionsFactory,
@@ -212,7 +212,7 @@ class Checkout {
 		Api\Internal\CheckoutRouter $apiRouter,
 		CarDeliveryConfig $carDeliveryConfig
 	) {
-		$this->bridge                      = $bridge;
+		$this->frameworkAdapter            = $frameworkAdapter;
 		$this->productEntiyFactory         = $productEntityFactory;
 		$this->productCategoryEntiyFactory = $productCategoryEntityFactory;
 		$this->carrierOptionsFactory       = $carrierOptionsFactory;
@@ -435,7 +435,7 @@ class Checkout {
 
 		$checkoutData = $this->getPostDataIncludingStoredData( $chosenShippingMethod );
 
-		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, $this->bridge->getCartContents() ) ) {
+		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, $this->frameworkAdapter->getCartContents() ) ) {
 			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
 
 			return;
@@ -761,9 +761,9 @@ class Checkout {
 	 * @return string
 	 */
 	public function getCustomerCountry(): string {
-		$country = strtolower( $this->bridge->getCustomerShippingCountry() );
+		$country = strtolower( $this->frameworkAdapter->getCustomerShippingCountry() );
 		if ( ! $country ) {
-			$country = strtolower( $this->bridge->getCustomerBillingCountry() );
+			$country = strtolower( $this->frameworkAdapter->getCustomerBillingCountry() );
 		}
 
 		return $country;
@@ -775,12 +775,12 @@ class Checkout {
 	 * @return float
 	 */
 	public function getCartWeightKg(): float {
-		if ( ! $this->bridge->didAction( 'wp_loaded' ) ) {
+		if ( ! $this->frameworkAdapter->didAction( 'wp_loaded' ) ) {
 			return 0.0;
 		}
 
-		$weight   = $this->bridge->getCartContentsWeight();
-		$weightKg = (float) $this->bridge->getWcGetWeight( $weight, 'kg' );
+		$weight   = $this->frameworkAdapter->getCartContentsWeight();
+		$weightKg = (float) $this->frameworkAdapter->getWcGetWeight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}
@@ -796,7 +796,7 @@ class Checkout {
 	public function getTotalCartProductValue(): float {
 		$totalProductPrice = 0.0;
 
-		foreach ( $this->bridge->getCartContent() as $cartItem ) {
+		foreach ( $this->frameworkAdapter->getCartContent() as $cartItem ) {
 			$totalProductPrice += (float) $cartItem['data']->get_price( 'raw' ) * $cartItem['quantity'];
 		}
 
@@ -901,7 +901,7 @@ class Checkout {
 	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
-		$cartProducts              = $this->bridge->getCartContents();
+		$cartProducts              = $this->frameworkAdapter->getCartContents();
 		$cartPrice                 = $this->getCartContentsTotalIncludingTax();
 		$cartWeight                = $this->getCartWeightKg();
 		$totalCartProductValue     = $this->getTotalCartProductValue();
@@ -948,8 +948,8 @@ class Checkout {
 				$taxes       = null;
 
 				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
-					$rates            = $this->bridge->getShippingTaxRates();
-					$taxes            = $this->bridge->calcInclusiveTax( $cost, $rates );
+					$rates            = $this->frameworkAdapter->getShippingTaxRates();
+					$taxes            = $this->frameworkAdapter->calcInclusiveTax( $cost, $rates );
 					$taxExclusiveCost = $cost - array_sum( $taxes );
 					/**
 					 * Filters shipping taxes.
@@ -960,7 +960,7 @@ class Checkout {
 					 * @param float $taxExclusiveCost Tax exclusive cost.
 					 * @param array $rates            Rates.
 					 */
-					$taxes = $this->bridge->applyFilters( 'woocommerce_calc_shipping_tax', $taxes, $taxExclusiveCost, $rates );
+					$taxes = $this->frameworkAdapter->applyFilters( 'woocommerce_calc_shipping_tax', $taxes, $taxExclusiveCost, $rates );
 					if ( ! is_array( $taxes ) ) {
 						$taxes = [];
 					}
@@ -1010,7 +1010,7 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isFreeShippingCouponApplied(): bool {
-		return $this->rateCalculator->isFreeShippingCouponApplied( $this->bridge->getCart() );
+		return $this->rateCalculator->isFreeShippingCouponApplied( $this->frameworkAdapter->getCart() );
 	}
 
 	/**
@@ -1225,7 +1225,7 @@ class Checkout {
 	 * @return array
 	 */
 	private function getDisallowedShippingRateIds(): array {
-		$cartProducts = $this->bridge->getCartContent();
+		$cartProducts = $this->frameworkAdapter->getCartContent();
 
 		$arraysToMerge = [];
 		foreach ( $cartProducts as $cartProduct ) {
@@ -1247,11 +1247,11 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isAgeVerification18PlusRequired(): bool {
-		if ( ! $this->bridge->didAction( 'wp_loaded' ) ) {
+		if ( ! $this->frameworkAdapter->didAction( 'wp_loaded' ) ) {
 			return false;
 		}
 
-		$products = $this->bridge->getCartContent();
+		$products = $this->frameworkAdapter->getCartContent();
 
 		foreach ( $products as $product ) {
 			$productEntity = $this->productEntiyFactory->fromPostId( $product['product_id'] );
@@ -1269,11 +1269,11 @@ class Checkout {
 	 * @return false|string
 	 */
 	private function getTaxClassWithMaxRate() {
-		$products   = $this->bridge->getCartContent();
+		$products   = $this->frameworkAdapter->getCartContent();
 		$taxClasses = [];
 
 		foreach ( $products as $cartProduct ) {
-			$product = $this->bridge->getProduct( $cartProduct['product_id'] );
+			$product = $this->frameworkAdapter->getProduct( $cartProduct['product_id'] );
 			if ( $product->is_taxable() ) {
 				$taxClasses[] = $product->get_tax_class();
 			}
@@ -1314,7 +1314,7 @@ class Checkout {
 	 * @return float
 	 */
 	private function getCartContentsTotalIncludingTax(): float {
-		return (float) $this->bridge->getCartContentsTotal() + (float) $this->bridge->getCartContentsTax();
+		return (float) $this->frameworkAdapter->getCartContentsTotal() + (float) $this->frameworkAdapter->getCartContentsTax();
 	}
 
 	/**
@@ -1334,7 +1334,7 @@ class Checkout {
 			if ( ! isset( $cartProduct['product_id'] ) ) {
 				continue;
 			}
-			$product            = $this->bridge->getProduct( $cartProduct['product_id'] );
+			$product            = $this->frameworkAdapter->getProduct( $cartProduct['product_id'] );
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {

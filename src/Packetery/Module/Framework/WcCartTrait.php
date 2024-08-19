@@ -7,8 +7,7 @@
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Module\Solution;
+namespace Packetery\Module\Framework;
 
 /**
  * Trait WcCartTrait.
@@ -22,7 +21,7 @@ trait WcCartTrait {
 	 *
 	 * @return array of cart items
 	 */
-	public function getCartContents() {
+	public function getCartContents(): array {
 		return WC()->cart->get_cart_contents();
 	}
 
@@ -31,7 +30,7 @@ trait WcCartTrait {
 	 *
 	 * @return float
 	 */
-	public function getCartContentsTotal() {
+	public function getCartContentsTotal(): float {
 		return WC()->cart->get_cart_contents_total();
 	}
 
@@ -40,7 +39,7 @@ trait WcCartTrait {
 	 *
 	 * @return float
 	 */
-	public function getCartContentsTax() {
+	public function getCartContentsTax(): float {
 		return WC()->cart->get_cart_contents_tax();
 	}
 
@@ -49,7 +48,7 @@ trait WcCartTrait {
 	 *
 	 * @return float
 	 */
-	public function getCartContentsWeight() {
+	public function getCartContentsWeight(): float {
 		return WC()->cart->get_cart_contents_weight();
 	}
 
@@ -58,7 +57,7 @@ trait WcCartTrait {
 	 *
 	 * @return array contents of the cart
 	 */
-	public function getCartContent() {
+	public function getCartContent(): array {
 		return WC()->cart->get_cart();
 	}
 
@@ -67,7 +66,8 @@ trait WcCartTrait {
 	 *
 	 * @return \WC_Cart|null
 	 */
-	public function getCart() {
+	public function getCart(): ?\WC_Cart {
 		return WC()->cart;
 	}
+
 }

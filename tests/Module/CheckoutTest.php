@@ -10,68 +10,22 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout;
+use Packetery\Module\CurrencySwitcherFacade;
+use Packetery\Module\Framework\FrameworkAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Product;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\RateCalculator;
-use Packetery\Module\Solution\Bridge;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Tests\Core\DummyFactory;
 
 class CheckoutTest extends TestCase {
 	use WithMockFactory;
-
-	private MockObject|Bridge $bridge;
-
-	private MockObject|Product\EntityFactory $productEntityFactory;
-
-	private MockObject|ProductCategory\EntityFactory $productCategoryEntityFactory;
-
-	private MockObject|Carrier\OptionsFactory $carrierOptionsFactory;
-
-	private MockObject|Carrier\EntityRepository $carrierEntityRepository;
-
-	private MockObject|CarDeliveryConfig $carDeliveryConfig;
-
-	private Checkout $checkout;
-
-	public function setUp(): void {
-		parent::setUp();
-
-		$this->bridge                       = $this->getPacketeryMockFactory()->createBridge();
-		$this->productEntityFactory         = $this->createMock( Product\EntityFactory::class );
-		$this->productCategoryEntityFactory = $this->createMock( ProductCategory\EntityFactory::class );
-		$this->carrierOptionsFactory        = $this->createMock( Carrier\OptionsFactory::class );
-		$this->carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
-		$currencySwitcherFacade             = $this->getPacketeryMockFactory()->createCurrencySwitcherFacade();
-		$this->carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
-
-		$this->checkout = new Checkout(
-			$this->bridge,
-			$this->productEntityFactory,
-			$this->productCategoryEntityFactory,
-			$this->carrierOptionsFactory,
-			$this->createMock( Engine::class ),
-			$this->createMock( Provider::class ),
-			$this->createMock( Carrier\Repository::class ),
-			$this->createMock( Request::class ),
-			$this->createMock( Order\Repository::class ),
-			$currencySwitcherFacade,
-			$this->createMock( Order\PacketAutoSubmitter::class ),
-			$this->createMock( PickupPointValidator::class ),
-			$this->createMock( Order\AttributeMapper::class ),
-			new RateCalculator( $this->bridge, $currencySwitcherFacade ),
-			$this->createMock( PacketaPickupPointsConfig::class ),
-			$this->createMock( WidgetOptionsBuilder::class ),
-			$this->carrierEntityRepository,
-			$this->createMock( Api\Internal\CheckoutRouter::class ),
-			$this->carDeliveryConfig
-		);
-	}
 
 	public static function rateCreationDataProvider(): array {
 		$carrierInputsFactory = static function ( array $inputConfigs, bool $nullifyAllowedCarrierNames = false ): array {
@@ -123,26 +77,26 @@ class CheckoutTest extends TestCase {
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarrierCzechPp(),
+							'carrier' => DummyFactory::createCarrierCzechPp(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
+										'weight' => 20.0,
 										'price'  => 234.34,
 									],
 								],
 							],
 						],
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarrierCzechHdRequiresSize(),
+							'carrier' => DummyFactory::createCarrierCzechHdRequiresSize(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 5,
+										'weight' => 5.0,
 										'price'  => 444.34,
 									],
 								],
@@ -152,33 +106,33 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				5
+				5.0
 			],
 			'car delivery carrier must not be present in rates'       => [
 				1,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarrierCzechPp(),
+							'carrier' => DummyFactory::createCarrierCzechPp(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
+										'weight' => 20.0,
 										'price'  => 234.34,
 									],
 								],
 							],
 						],
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarDeliveryCarrier(),
+							'carrier' => DummyFactory::createCarDeliveryCarrier(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 5,
+										'weight' => 5.0,
 										'price'  => 444.34,
 									],
 								],
@@ -189,33 +143,33 @@ class CheckoutTest extends TestCase {
 				),
 				false,
 				false,
-				1
+				1.0
 			],
 			'only one carrier is active'                              => [
 				1,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarrierCzechPp(),
+							'carrier' => DummyFactory::createCarrierCzechPp(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
+										'weight' => 20.0,
 										'price'  => 234.34,
 									],
 								],
 							],
 						],
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarrierCzechHdRequiresSize(),
+							'carrier' => DummyFactory::createCarrierCzechHdRequiresSize(),
 							'options' => [
 								'active'              => false,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 5,
+										'weight' => 5.0,
 										'price'  => 444.34,
 									],
 								],
@@ -226,21 +180,21 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				1
+				1.0
 			],
 			'carrier not supporting over-weight cart must be omitted' => [
 				0,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarrierCzechPp(),
+							'carrier' => DummyFactory::createCarrierCzechPp(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
-										'price'  => 100,
+										'weight' => 20.0,
+										'price'  => 100.0,
 									],
 								],
 							],
@@ -249,22 +203,22 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				21
+				21.0
 			],
 			'inactive carrier must be omitted'                        => [
 				0,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier'                       => \Tests\Core\DummyFactory::createCarrierCzechPp(),
+							'carrier'                       => DummyFactory::createCarrierCzechPp(),
 							'isActivatedByWcShippingConfig' => false,
 							'options'                       => [
 								'active'              => false,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
-										'price'  => 100,
+										'weight' => 20.0,
+										'price'  => 100.0,
 									],
 								],
 							],
@@ -273,14 +227,14 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				1
+				1.0
 			],
 			'carrier disallowed by product must be omitted'           => [
 				0,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier'               => \Tests\Core\DummyFactory::createCarrierCzechPp(),
+							'carrier'               => DummyFactory::createCarrierCzechPp(),
 							'isDisallowedByProduct' => true,
 							'options'               => [
 								'active' => true,
@@ -290,14 +244,14 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				1
+				1.0
 			],
 			'carrier disallowed by product category must be omitted'  => [
 				0,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier'                       => \Tests\Core\DummyFactory::createCarrierCzechPp(),
+							'carrier'                       => DummyFactory::createCarrierCzechPp(),
 							'isDisallowedByProductCategory' => true,
 							'options'                       => [
 								'active' => true,
@@ -307,20 +261,20 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				1
+				1.0
 			],
 			'car delivery carriers must be supported'                 => [
 				1,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarDeliveryCarrier(),
+							'carrier' => DummyFactory::createCarDeliveryCarrier(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
+										'weight' => 20.0,
 										'price'  => 234.34,
 									],
 								],
@@ -330,20 +284,20 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				1
+				1.0
 			],
 			'carrier not supporting age verification must be omitted' => [
 				0,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarDeliveryCarrier(),
+							'carrier' => DummyFactory::createCarDeliveryCarrier(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
+										'weight' => 20.0,
 										'price'  => 234.34,
 									],
 								],
@@ -353,20 +307,20 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				true,
-				1
+				1.0
 			],
 			'allowed carrier names argument must support null'        => [
 				1,
 				...$carrierInputsFactory(
 					[
 						[
-							'carrier' => \Tests\Core\DummyFactory::createCarDeliveryCarrier(),
+							'carrier' => DummyFactory::createCarDeliveryCarrier(),
 							'options' => [
 								'active'              => true,
 								'free_shipping_limit' => null,
 								'weight_limits'       => [
 									[
-										'weight' => 20,
+										'weight' => 20.0,
 										'price'  => 234.34,
 									],
 								],
@@ -377,13 +331,14 @@ class CheckoutTest extends TestCase {
 				),
 				true,
 				false,
-				1
+				1.0
 			],
 		];
 	}
 
 	/**
 	 * @dataProvider rateCreationDataProvider
+	 * @throws \PHPUnit\Framework\MockObject\Exception
 	 */
 	public function testRateCreation(
 		int $expectedRateCount,
@@ -399,7 +354,7 @@ class CheckoutTest extends TestCase {
 		$wcProduct = $this->createMock( \WC_Product::class );
 		$wcProduct
 			->method( 'get_price' )
-			->willReturn( 100 );
+			->willReturn( '100.00' );
 		$wcProduct
 			->method( 'get_category_ids' )
 			->willReturn( [ 1 ] );
@@ -425,39 +380,58 @@ class CheckoutTest extends TestCase {
 		$cart
 			->method( 'get_coupons' )
 			->willReturn( [] );
-		$this->bridge
+
+		$bridge                       = $this->getPacketeryMockFactory()->createFrameworkAdapter();
+		$productEntityFactory         = $this->createMock( Product\EntityFactory::class );
+		$productCategoryEntityFactory = $this->createMock( ProductCategory\EntityFactory::class );
+		$carrierOptionsFactory        = $this->createMock( Carrier\OptionsFactory::class );
+		$carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
+		$currencySwitcherFacade       = $this->getPacketeryMockFactory()->createCurrencySwitcherFacade();
+		$carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
+
+		$checkout = $this->createCheckoutMock(
+			$bridge,
+			$productEntityFactory,
+			$productCategoryEntityFactory,
+			$carrierOptionsFactory,
+			$currencySwitcherFacade,
+			$carrierEntityRepository,
+			$carDeliveryConfig,
+		);
+
+		$bridge
 			->method( 'getCart' )
 			->willReturn( $cart );
-		$this->bridge
+		$bridge
 			->method( 'getCustomerShippingCountry' )
 			->willReturn( 'cz' );
-		$this->bridge
+		$bridge
 			->method( 'getCartContents' )
 			->willReturn( [ $cartItem ] );
-		$this->bridge
+		$bridge
 			->method( 'getCartContentsTotal' )
-			->willReturn( 100 );
-		$this->bridge
+			->willReturn( 100.0 );
+		$bridge
 			->method( 'getCartContentsTax' )
-			->willReturn( 21 );
-		$this->bridge
+			->willReturn( 21.0 );
+		$bridge
 			->method( 'getCartContentsWeight' )
 			->willReturn( $cartWeight );
-		$this->bridge
+		$bridge
 			->method( 'getWcGetWeight' )
 			->willReturn( $cartWeight );
-		$this->bridge
+		$bridge
 			->method( 'getCartContent' )
 			->willReturn( [ $cartItem ] );
 
-		$this->carrierEntityRepository
+		$carrierEntityRepository
 			->method( 'getByCountryIncludingNonFeed' )
 			->willReturn( $carriers );
-		$this->productEntityFactory
+		$productEntityFactory
 			->method( 'fromPostId' )
 			->willReturn( $product );
 
-		$this->carrierOptionsFactory
+		$carrierOptionsFactory
 			->method( 'createByOptionId' )
 			->willReturnCallback( function ( $optionId ) use ( $carriersOptions ) {
 				$carrierOptions = $carriersOptions[ $optionId ];
@@ -468,7 +442,7 @@ class CheckoutTest extends TestCase {
 				);
 			} );
 
-		$this->bridge
+		$bridge
 			->method( 'getProduct' )
 			->willReturn( $wcProduct );
 
@@ -477,24 +451,60 @@ class CheckoutTest extends TestCase {
 			->method( 'getDisallowedShippingRateIds' )
 			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedByProductCategory' ) ], $productCategoryDisallowedRateIds ) );
 
-		$this->productCategoryEntityFactory
+		$productCategoryEntityFactory
 			->method( 'fromTermId' )
 			->willReturn( $productCategory );
 
-		$this->carDeliveryConfig
+		$carDeliveryConfig
 			->method( 'isEnabled' )
 			->willReturn( $isCarDeliveryEnabled );
 
-		$this->bridge
+		$bridge
 			->expects( self::atLeast( $expectedRateCount ) )
 			->method( 'applyFilters' );
 
-		$this->bridge
+		$bridge
 			->method( 'didAction' )
-			->willReturn( true );
+			->willReturn( 1 );
 
-		$rates = $this->checkout->getShippingRates( $allowedCarrierNames );
+		$rates = $checkout->getShippingRates( $allowedCarrierNames );
 
 		self::assertCount( $expectedRateCount, $rates );
 	}
+
+	/**
+	 * @throws \PHPUnit\Framework\MockObject\Exception
+	 */
+	private function createCheckoutMock(
+		MockObject|FrameworkAdapter $bridge,
+		MockObject|Product\EntityFactory $productEntityFactory,
+		MockObject|ProductCategory\EntityFactory $productCategoryEntityFactory,
+		MockObject|Carrier\OptionsFactory $carrierOptionsFactory,
+		MockObject|CurrencySwitcherFacade $currencySwitcherFacade,
+		MockObject|Carrier\EntityRepository $carrierEntityRepository,
+		MockObject|CarDeliveryConfig $carDeliveryConfig,
+	): Checkout {
+		return new Checkout(
+			$bridge,
+			$productEntityFactory,
+			$productCategoryEntityFactory,
+			$carrierOptionsFactory,
+			$this->createMock( Engine::class ),
+			$this->createMock( Provider::class ),
+			$this->createMock( Carrier\Repository::class ),
+			$this->createMock( Request::class ),
+			$this->createMock( Order\Repository::class ),
+			$currencySwitcherFacade,
+			$this->createMock( Order\PacketAutoSubmitter::class ),
+			$this->createMock( PickupPointValidator::class ),
+			$this->createMock( Order\AttributeMapper::class ),
+			new RateCalculator( $bridge, $currencySwitcherFacade ),
+			$this->createMock( PacketaPickupPointsConfig::class ),
+			$this->createMock( WidgetOptionsBuilder::class ),
+			$carrierEntityRepository,
+			$this->createMock( Api\Internal\CheckoutRouter::class ),
+			$carDeliveryConfig
+		);
+	}
+
 }

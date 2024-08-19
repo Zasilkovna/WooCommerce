@@ -7,10 +7,7 @@
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Module\Solution;
-
-use WC_Tax;
+namespace Packetery\Module\Framework;
 
 /**
  * Trait WcTaxTrait.
@@ -25,7 +22,7 @@ trait WcTaxTrait {
 	 * @return mixed
 	 */
 	public function getShippingTaxRates() {
-		return WC_Tax::get_shipping_tax_rates();
+		return \WC_Tax::get_shipping_tax_rates();
 	}
 
 	/**
@@ -36,7 +33,8 @@ trait WcTaxTrait {
 	 *
 	 * @return array
 	 */
-	public function calcInclusiveTax( float $cost, $rates ) {
-		return WC_Tax::calc_inclusive_tax( $cost, $rates );
+	public function calcInclusiveTax( float $cost, array $rates ): array {
+		return \WC_Tax::calc_inclusive_tax( $cost, $rates );
 	}
+
 }

@@ -1,21 +1,20 @@
 <?php
 /**
- * Class Bridge.
+ * Class FrameworkAdapter.
  *
  * @package Packetery
  */
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Module\Solution;
+namespace Packetery\Module\Framework;
 
 /**
- * Class Bridge.
+ * Class FrameworkAdapter.
  *
  * @package Packetery
  */
-class Bridge {
+class FrameworkAdapter {
 	use WcCustomerTrait;
 	use WcCartTrait;
 	use WcTaxTrait;
@@ -29,7 +28,7 @@ class Bridge {
 	 *
 	 * @return float
 	 */
-	public function getWcGetWeight( $weight, $toUnit ) {
+	public function getWcGetWeight( $weight, string $toUnit ): float {
 		return wc_get_weight( $weight, $toUnit );
 	}
 
@@ -38,9 +37,10 @@ class Bridge {
 	 *
 	 * @param mixed $product_id Product ID.
 	 *
-	 * @return bool|\WC_Product
+	 * @return false|\WC_Product
 	 */
 	public function getProduct( $product_id ) {
 		return WC()->product_factory->get_product( $product_id );
 	}
+
 }

@@ -7,8 +7,7 @@
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Module\Solution;
+namespace Packetery\Module\Framework;
 
 /**
  * Trait HookTrait.
@@ -16,6 +15,7 @@ namespace Packetery\Module\Solution;
  * @package Packetery
  */
 trait HookTrait {
+
 	/**
 	 * Applies filters.
 	 *
@@ -41,7 +41,8 @@ trait HookTrait {
 	 *
 	 * @return int
 	 */
-	public function didAction( $hookName ) {
+	public function didAction( string $hookName ): int {
 		return did_action( $hookName );
 	}
+
 }

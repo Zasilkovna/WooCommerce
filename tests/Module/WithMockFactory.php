@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Module;
 
 trait WithMockFactory {
+
 	public function getPacketeryMockFactory(): MockFactory {
 		static $mockFactory = null;
 
@@ -14,4 +15,5 @@ trait WithMockFactory {
 
 		return $mockFactory;
 	}
+
 }

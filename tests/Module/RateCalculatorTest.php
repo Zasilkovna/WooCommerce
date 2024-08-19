@@ -6,28 +6,13 @@ namespace Tests\Module;
 
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\RateCalculator;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class RateCalculatorTest extends TestCase {
 	use WithMockFactory;
 
-	private MockObject|\Packetery\Module\Solution\Bridge $bridge;
-
-	private RateCalculator $rateCalculator;
-
-	public function setUp(): void {
-		parent::setUp();
-
-		$this->bridge         = $this->getPacketeryMockFactory()->createBridge();
-		$this->rateCalculator = new RateCalculator(
-			$this->bridge,
-			$this->getPacketeryMockFactory()->createCurrencySwitcherFacade()
-		);
-	}
-
 	/**
-	 * @return mixed[]
+	 * @return array
 	 */
 	public static function calculationDataProvider(): array {
 		$defaultCarrierOptionsArray = [
@@ -145,12 +130,19 @@ class RateCalculatorTest extends TestCase {
 	 * @dataProvider calculationDataProvider
 	 */
 	public function testCalculation( ?float $expectedCost, Options $carrierOptions, float $totalProductValue, float $cartWeight, bool $isCouponApplied ): void {
-		$this->bridge
+		$frameworkAdapter = $this->getPacketeryMockFactory()->createFrameworkAdapter();
+
+		$rateCalculator = new RateCalculator(
+			$frameworkAdapter,
+			$this->getPacketeryMockFactory()->createCurrencySwitcherFacade()
+		);
+
+		$frameworkAdapter
 			->expects( self::once() )
 			->method( 'applyFilters' )
 			->with( 'packeta_shipping_price', self::anything(), self::anything() );
 
-		$cost = $this->rateCalculator->getShippingRateCost(
+		$cost = $rateCalculator->getShippingRateCost(
 			$carrierOptions,
 			$totalProductValue,
 			$totalProductValue,
@@ -160,4 +152,5 @@ class RateCalculatorTest extends TestCase {
 
 		self::assertEquals( $expectedCost, $cost );
 	}
+
 }

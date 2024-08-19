@@ -7,8 +7,7 @@
 
 declare( strict_types=1 );
 
-
-namespace Packetery\Module\Solution;
+namespace Packetery\Module\Framework;
 
 /**
  * Trait WcCustomerTrait.
@@ -22,7 +21,7 @@ trait WcCustomerTrait {
 	 *
 	 * @return string
 	 */
-	public function getCustomerShippingCountry() {
+	public function getCustomerShippingCountry(): string {
 		return WC()->customer->get_shipping_country();
 	}
 
@@ -31,7 +30,8 @@ trait WcCustomerTrait {
 	 *
 	 * @return string
 	 */
-	public function getCustomerBillingCountry() {
+	public function getCustomerBillingCountry(): string {
 		return WC()->customer->get_billing_country();
 	}
+
 }

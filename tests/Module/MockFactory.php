@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Module;
 
 use Packetery\Module\CurrencySwitcherFacade;
-use Packetery\Module\Solution\Bridge;
+use Packetery\Module\Framework\FrameworkAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -16,11 +16,11 @@ class MockFactory {
 		$this->testCase = $testCase;
 	}
 
-	public function createBridge(): \Packetery\Module\Solution\Bridge|MockObject {
-		$mock = $this->testCase->getMockBuilder( Bridge::class )->getMock();
+	public function createFrameworkAdapter(): FrameworkAdapter|MockObject {
+		$mock = $this->testCase->getMockBuilder( FrameworkAdapter::class )->getMock();
 		$mock
 			->method( 'applyFilters' )
-			->willReturnCallback( static function ( $hookName, $value ) {
+			->willReturnCallback( static function ( string $hookName, $value ) {
 				return $value;
 			} );
 
@@ -37,4 +37,5 @@ class MockFactory {
 
 		return $mock;
 	}
+
 }
