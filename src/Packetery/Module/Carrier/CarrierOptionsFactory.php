@@ -1,19 +1,18 @@
 <?php
 /**
- * OptionsFactory class.
+ * CarrierOptionsFactory class.
  *
  * @package Packetery
  */
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Carrier;
 
 /**
- * OptionsFactory class.
+ * CarrierOptionsFactory class.
  */
-class OptionsFactory {
+class CarrierOptionsFactory {
 
 	/**
 	 * Creates carrier options by option id.
@@ -25,4 +24,5 @@ class OptionsFactory {
 	public function createByOptionId( string $optionId ): Options {
 		return Options::createByOptionId( $optionId );
 	}
+
 }

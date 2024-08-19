@@ -1,21 +1,20 @@
 <?php
 /**
- * Class Product\EntityFactory.
+ * Class Product\ProductEntityFactory.
  *
  * @package Packetery\Module\Product
  */
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Product;
 
 /**
- * Class Product\EntityFactory.
+ * Class Product\ProductEntityFactory.
  *
  * @package Packetery\Module\Product
  */
-class EntityFactory {
+class ProductEntityFactory {
 
 	/**
 	 * Create instance from post ID.

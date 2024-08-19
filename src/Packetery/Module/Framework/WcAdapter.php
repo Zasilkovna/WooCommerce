@@ -1,6 +1,6 @@
 <?php
 /**
- * Class FrameworkAdapter.
+ * Class WcAdapter.
  *
  * @package Packetery
  */
@@ -10,15 +10,14 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 /**
- * Class FrameworkAdapter.
+ * Class WcAdapter.
  *
  * @package Packetery
  */
-class FrameworkAdapter {
+class WcAdapter {
 	use WcCustomerTrait;
 	use WcCartTrait;
 	use WcTaxTrait;
-	use HookTrait;
 
 	/**
 	 * Converts weight from global unit to kg.

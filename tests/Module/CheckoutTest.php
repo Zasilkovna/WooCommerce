@@ -8,15 +8,19 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Api;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout;
 use Packetery\Module\CurrencySwitcherFacade;
-use Packetery\Module\Framework\FrameworkAdapter;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Product;
+use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory;
+use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
 use Packetery\Module\RateCalculator;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Nette\Http\Request;
@@ -340,7 +344,7 @@ class CheckoutTest extends TestCase {
 	 * @dataProvider rateCreationDataProvider
 	 * @throws \PHPUnit\Framework\MockObject\Exception
 	 */
-	public function testRateCreation(
+	public function testGetShippingRates(
 		int $expectedRateCount,
 		array $carriers,
 		array $carriersOptions,
@@ -381,16 +385,18 @@ class CheckoutTest extends TestCase {
 			->method( 'get_coupons' )
 			->willReturn( [] );
 
-		$bridge                       = $this->getPacketeryMockFactory()->createFrameworkAdapter();
-		$productEntityFactory         = $this->createMock( Product\EntityFactory::class );
-		$productCategoryEntityFactory = $this->createMock( ProductCategory\EntityFactory::class );
-		$carrierOptionsFactory        = $this->createMock( Carrier\OptionsFactory::class );
+		$wpAdapter                    = $this->getPacketeryMockFactory()->createWpAdapter();
+		$wcAdapter                    = $this->createMock( WcAdapter::class );
+		$productEntityFactory         = $this->createMock( ProductEntityFactory::class );
+		$productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
+		$carrierOptionsFactory        = $this->createMock( CarrierOptionsFactory::class );
 		$carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
 		$currencySwitcherFacade       = $this->getPacketeryMockFactory()->createCurrencySwitcherFacade();
 		$carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
 
 		$checkout = $this->createCheckoutMock(
-			$bridge,
+			$wpAdapter,
+			$wcAdapter,
 			$productEntityFactory,
 			$productCategoryEntityFactory,
 			$carrierOptionsFactory,
@@ -399,28 +405,28 @@ class CheckoutTest extends TestCase {
 			$carDeliveryConfig,
 		);
 
-		$bridge
+		$wcAdapter
 			->method( 'getCart' )
 			->willReturn( $cart );
-		$bridge
+		$wcAdapter
 			->method( 'getCustomerShippingCountry' )
 			->willReturn( 'cz' );
-		$bridge
+		$wcAdapter
 			->method( 'getCartContents' )
 			->willReturn( [ $cartItem ] );
-		$bridge
+		$wcAdapter
 			->method( 'getCartContentsTotal' )
 			->willReturn( 100.0 );
-		$bridge
+		$wcAdapter
 			->method( 'getCartContentsTax' )
 			->willReturn( 21.0 );
-		$bridge
+		$wcAdapter
 			->method( 'getCartContentsWeight' )
 			->willReturn( $cartWeight );
-		$bridge
+		$wcAdapter
 			->method( 'getWcGetWeight' )
 			->willReturn( $cartWeight );
-		$bridge
+		$wcAdapter
 			->method( 'getCartContent' )
 			->willReturn( [ $cartItem ] );
 
@@ -442,7 +448,7 @@ class CheckoutTest extends TestCase {
 				);
 			} );
 
-		$bridge
+		$wcAdapter
 			->method( 'getProduct' )
 			->willReturn( $wcProduct );
 
@@ -459,11 +465,11 @@ class CheckoutTest extends TestCase {
 			->method( 'isEnabled' )
 			->willReturn( $isCarDeliveryEnabled );
 
-		$bridge
+		$wpAdapter
 			->expects( self::atLeast( $expectedRateCount ) )
 			->method( 'applyFilters' );
 
-		$bridge
+		$wpAdapter
 			->method( 'didAction' )
 			->willReturn( 1 );
 
@@ -476,16 +482,18 @@ class CheckoutTest extends TestCase {
 	 * @throws \PHPUnit\Framework\MockObject\Exception
 	 */
 	private function createCheckoutMock(
-		MockObject|FrameworkAdapter $bridge,
-		MockObject|Product\EntityFactory $productEntityFactory,
-		MockObject|ProductCategory\EntityFactory $productCategoryEntityFactory,
-		MockObject|Carrier\OptionsFactory $carrierOptionsFactory,
+		MockObject|WpAdapter $wpAdapter,
+		MockObject|WcAdapter $wcAdapter,
+		MockObject|ProductEntityFactory $productEntityFactory,
+		MockObject|ProductCategoryEntityFactory $productCategoryEntityFactory,
+		MockObject|CarrierOptionsFactory $carrierOptionsFactory,
 		MockObject|CurrencySwitcherFacade $currencySwitcherFacade,
 		MockObject|Carrier\EntityRepository $carrierEntityRepository,
 		MockObject|CarDeliveryConfig $carDeliveryConfig,
 	): Checkout {
 		return new Checkout(
-			$bridge,
+			$wpAdapter,
+			$wcAdapter,
 			$productEntityFactory,
 			$productCategoryEntityFactory,
 			$carrierOptionsFactory,
@@ -498,12 +506,12 @@ class CheckoutTest extends TestCase {
 			$this->createMock( Order\PacketAutoSubmitter::class ),
 			$this->createMock( PickupPointValidator::class ),
 			$this->createMock( Order\AttributeMapper::class ),
-			new RateCalculator( $bridge, $currencySwitcherFacade ),
+			new RateCalculator( $wpAdapter, $currencySwitcherFacade ),
 			$this->createMock( PacketaPickupPointsConfig::class ),
 			$this->createMock( WidgetOptionsBuilder::class ),
 			$carrierEntityRepository,
 			$this->createMock( Api\Internal\CheckoutRouter::class ),
-			$carDeliveryConfig
+			$carDeliveryConfig,
 		);
 	}
 

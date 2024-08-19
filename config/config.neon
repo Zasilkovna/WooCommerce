@@ -11,7 +11,8 @@ parameters:
         active: false
 
 services:
-	- Packetery\Module\Framework\FrameworkAdapter
+	- Packetery\Module\Framework\WpAdapter
+	- Packetery\Module\Framework\WcAdapter
 	- Packetery\Module\Order\MetaboxesWrapper
 	- Packetery\Module\Order\Form
 	- Packetery\Module\Order\CarrierModal
@@ -25,8 +26,8 @@ services:
 	- Packetery\Module\Log\Page
 	- Packetery\Module\CronService
 	- Packetery\Module\Product\DataTab
-	- Packetery\Module\Product\EntityFactory
-	- Packetery\Module\ProductCategory\EntityFactory
+	- Packetery\Module\Product\ProductEntityFactory
+	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
 	- Packetery\Core\Helper
 	- Packetery\Module\WebRequestClient
@@ -42,7 +43,7 @@ services:
 	- Packetery\Module\Carrier\Downloader
 	- Packetery\Module\Carrier\Updater
 	- Packetery\Module\Carrier\Repository
-	- Packetery\Module\Carrier\OptionsFactory
+	- Packetery\Module\Carrier\CarrierOptionsFactory
 	wpdbAdapterFactory: Packetery\Module\WpdbAdapterFactory
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel

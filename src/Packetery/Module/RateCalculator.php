@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use Packetery\Module\Framework\FrameworkAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use WC_Cart;
 use WC_Order;
 
@@ -30,21 +30,21 @@ class RateCalculator {
 	/**
 	 * Framework adapter.
 	 *
-	 * @var FrameworkAdapter
+	 * @var WpAdapter
 	 */
-	private $frameworkAdapter;
+	private $wpAdapter;
 
 	/**
 	 * RateCalculator constructor.
 	 *
-	 * @param FrameworkAdapter       $frameworkAdapter       Framework adapter.
+	 * @param WpAdapter              $wpAdapter       Framework adapter.
 	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
 	 */
 	public function __construct(
-		FrameworkAdapter $frameworkAdapter,
+		WpAdapter $wpAdapter,
 		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
-		$this->frameworkAdapter       = $frameworkAdapter;
+		$this->wpAdapter              = $wpAdapter;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
 	}
 
@@ -116,7 +116,7 @@ class RateCalculator {
 		 *
 		 * @since 1.4.1
 		 */
-		return (float) $this->frameworkAdapter->applyFilters( 'packeta_shipping_price', (float) $cost, $filterParameters );
+		return (float) $this->wpAdapter->applyFilters( 'packeta_shipping_price', (float) $cost, $filterParameters );
 	}
 
 	/**

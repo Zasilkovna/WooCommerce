@@ -129,15 +129,15 @@ class RateCalculatorTest extends TestCase {
 	/**
 	 * @dataProvider calculationDataProvider
 	 */
-	public function testCalculation( ?float $expectedCost, Options $carrierOptions, float $totalProductValue, float $cartWeight, bool $isCouponApplied ): void {
-		$frameworkAdapter = $this->getPacketeryMockFactory()->createFrameworkAdapter();
+	public function testGetShippingRateCost( ?float $expectedCost, Options $carrierOptions, float $totalProductValue, float $cartWeight, bool $isCouponApplied ): void {
+		$wpAdapter = $this->getPacketeryMockFactory()->createWpAdapter();
 
 		$rateCalculator = new RateCalculator(
-			$frameworkAdapter,
+			$wpAdapter,
 			$this->getPacketeryMockFactory()->createCurrencySwitcherFacade()
 		);
 
-		$frameworkAdapter
+		$wpAdapter
 			->expects( self::once() )
 			->method( 'applyFilters' )
 			->with( 'packeta_shipping_price', self::anything(), self::anything() );

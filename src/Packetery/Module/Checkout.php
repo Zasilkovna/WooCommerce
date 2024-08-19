@@ -15,11 +15,15 @@ use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Entity;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Framework\FrameworkAdapter;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
+use Packetery\Module\Product\ProductEntityFactory;
+use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
 use Packetery\Nette\Http\Request;
 use WC_Logger;
 use WC_Tax;
@@ -36,30 +40,37 @@ class Checkout {
 	public const TRANSIENT_CHECKOUT_DATA_PREFIX = 'packeta_checkout_data_';
 
 	/**
-	 * FrameworkAdapter.
+	 * WpAdapter.
 	 *
-	 * @var FrameworkAdapter
+	 * @var WpAdapter
 	 */
-	private $frameworkAdapter;
+	private $wpAdapter;
+
+	/**
+	 * WcAdapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
 
 	/**
 	 * Product entity factory.
 	 *
-	 * @var Product\EntityFactory
+	 * @var ProductEntityFactory
 	 */
 	private $productEntiyFactory;
 
 	/**
 	 * Product category entity factory.
 	 *
-	 * @var ProductCategory\EntityFactory
+	 * @var ProductCategoryEntityFactory
 	 */
 	private $productCategoryEntiyFactory;
 
 	/**
 	 * Carrier options factory.
 	 *
-	 * @var Carrier\OptionsFactory
+	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
 
@@ -171,31 +182,33 @@ class Checkout {
 	/**
 	 * Checkout constructor.
 	 *
-	 * @param FrameworkAdapter              $frameworkAdapter        FrameworkAdapter.
-	 * @param Product\EntityFactory         $productEntityFactory    Product entity factory.
-	 * @param ProductCategory\EntityFactory $productCategoryEntityFactory    Product category entity factory.
-	 * @param Carrier\OptionsFactory        $carrierOptionsFactory   Carrier options factory.
-	 * @param Engine                        $latte_engine            PacketeryLatte engine.
-	 * @param Provider                      $options_provider        Options provider.
-	 * @param Carrier\Repository            $carrierRepository       Carrier repository.
-	 * @param Request                       $httpRequest             Http request.
-	 * @param Order\Repository              $orderRepository         Order repository.
-	 * @param CurrencySwitcherFacade        $currencySwitcherFacade  Currency switcher facade.
-	 * @param Order\PacketAutoSubmitter     $packetAutoSubmitter     Packet auto submitter.
-	 * @param PickupPointValidator          $pickupPointValidator    Pickup point validation API.
-	 * @param Order\AttributeMapper         $mapper                  OrderFacade.
-	 * @param RateCalculator                $rateCalculator          RateCalculator.
-	 * @param PacketaPickupPointsConfig     $pickupPointsConfig      Internal pickup points config.
-	 * @param WidgetOptionsBuilder          $widgetOptionsBuilder    Widget options builder.
-	 * @param Carrier\EntityRepository      $carrierEntityRepository Carrier repository.
-	 * @param Api\Internal\CheckoutRouter   $apiRouter               API router.
-	 * @param CarDeliveryConfig             $carDeliveryConfig       Car delivery config.
+	 * @param WpAdapter                    $wpAdapter               WpAdapter.
+	 * @param WcAdapter                    $wcAdapter               WcAdapter.
+	 * @param ProductEntityFactory         $productEntityFactory    Product entity factory.
+	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory    Product category entity factory.
+	 * @param CarrierOptionsFactory        $carrierOptionsFactory   Carrier options factory.
+	 * @param Engine                       $latte_engine            PacketeryLatte engine.
+	 * @param Provider                     $options_provider        Options provider.
+	 * @param Carrier\Repository           $carrierRepository       Carrier repository.
+	 * @param Request                      $httpRequest             Http request.
+	 * @param Order\Repository             $orderRepository         Order repository.
+	 * @param CurrencySwitcherFacade       $currencySwitcherFacade  Currency switcher facade.
+	 * @param Order\PacketAutoSubmitter    $packetAutoSubmitter     Packet auto submitter.
+	 * @param PickupPointValidator         $pickupPointValidator    Pickup point validation API.
+	 * @param Order\AttributeMapper        $mapper                  OrderFacade.
+	 * @param RateCalculator               $rateCalculator          RateCalculator.
+	 * @param PacketaPickupPointsConfig    $pickupPointsConfig      Internal pickup points config.
+	 * @param WidgetOptionsBuilder         $widgetOptionsBuilder    Widget options builder.
+	 * @param Carrier\EntityRepository     $carrierEntityRepository Carrier repository.
+	 * @param Api\Internal\CheckoutRouter  $apiRouter               API router.
+	 * @param CarDeliveryConfig            $carDeliveryConfig       Car delivery config.
 	 */
 	public function __construct(
-		FrameworkAdapter $frameworkAdapter,
-		Product\EntityFactory $productEntityFactory,
-		ProductCategory\EntityFactory $productCategoryEntityFactory,
-		Carrier\OptionsFactory $carrierOptionsFactory,
+		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
+		ProductEntityFactory $productEntityFactory,
+		ProductCategoryEntityFactory $productCategoryEntityFactory,
+		CarrierOptionsFactory $carrierOptionsFactory,
 		Engine $latte_engine,
 		Provider $options_provider,
 		Carrier\Repository $carrierRepository,
@@ -212,7 +225,8 @@ class Checkout {
 		Api\Internal\CheckoutRouter $apiRouter,
 		CarDeliveryConfig $carDeliveryConfig
 	) {
-		$this->frameworkAdapter            = $frameworkAdapter;
+		$this->wpAdapter                   = $wpAdapter;
+		$this->wcAdapter                   = $wcAdapter;
 		$this->productEntiyFactory         = $productEntityFactory;
 		$this->productCategoryEntiyFactory = $productCategoryEntityFactory;
 		$this->carrierOptionsFactory       = $carrierOptionsFactory;
@@ -435,7 +449,7 @@ class Checkout {
 
 		$checkoutData = $this->getPostDataIncludingStoredData( $chosenShippingMethod );
 
-		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, $this->frameworkAdapter->getCartContents() ) ) {
+		if ( $this->isShippingRateRestrictedByProductsCategory( $chosenShippingMethod, $this->wcAdapter->getCartContents() ) ) {
 			wc_add_notice( __( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
 
 			return;
@@ -761,9 +775,9 @@ class Checkout {
 	 * @return string
 	 */
 	public function getCustomerCountry(): string {
-		$country = strtolower( $this->frameworkAdapter->getCustomerShippingCountry() );
+		$country = strtolower( $this->wcAdapter->getCustomerShippingCountry() );
 		if ( ! $country ) {
-			$country = strtolower( $this->frameworkAdapter->getCustomerBillingCountry() );
+			$country = strtolower( $this->wcAdapter->getCustomerBillingCountry() );
 		}
 
 		return $country;
@@ -775,12 +789,12 @@ class Checkout {
 	 * @return float
 	 */
 	public function getCartWeightKg(): float {
-		if ( ! $this->frameworkAdapter->didAction( 'wp_loaded' ) ) {
+		if ( ! $this->wpAdapter->didAction( 'wp_loaded' ) ) {
 			return 0.0;
 		}
 
-		$weight   = $this->frameworkAdapter->getCartContentsWeight();
-		$weightKg = (float) $this->frameworkAdapter->getWcGetWeight( $weight, 'kg' );
+		$weight   = $this->wcAdapter->getCartContentsWeight();
+		$weightKg = (float) $this->wcAdapter->getWcGetWeight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}
@@ -796,7 +810,7 @@ class Checkout {
 	public function getTotalCartProductValue(): float {
 		$totalProductPrice = 0.0;
 
-		foreach ( $this->frameworkAdapter->getCartContent() as $cartItem ) {
+		foreach ( $this->wcAdapter->getCartContent() as $cartItem ) {
 			$totalProductPrice += (float) $cartItem['data']->get_price( 'raw' ) * $cartItem['quantity'];
 		}
 
@@ -901,7 +915,7 @@ class Checkout {
 	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
-		$cartProducts              = $this->frameworkAdapter->getCartContents();
+		$cartProducts              = $this->wcAdapter->getCartContents();
 		$cartPrice                 = $this->getCartContentsTotalIncludingTax();
 		$cartWeight                = $this->getCartWeightKg();
 		$totalCartProductValue     = $this->getTotalCartProductValue();
@@ -948,8 +962,8 @@ class Checkout {
 				$taxes       = null;
 
 				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
-					$rates            = $this->frameworkAdapter->getShippingTaxRates();
-					$taxes            = $this->frameworkAdapter->calcInclusiveTax( $cost, $rates );
+					$rates            = $this->wcAdapter->getShippingTaxRates();
+					$taxes            = $this->wcAdapter->calcInclusiveTax( $cost, $rates );
 					$taxExclusiveCost = $cost - array_sum( $taxes );
 					/**
 					 * Filters shipping taxes.
@@ -960,7 +974,7 @@ class Checkout {
 					 * @param float $taxExclusiveCost Tax exclusive cost.
 					 * @param array $rates            Rates.
 					 */
-					$taxes = $this->frameworkAdapter->applyFilters( 'woocommerce_calc_shipping_tax', $taxes, $taxExclusiveCost, $rates );
+					$taxes = $this->wpAdapter->applyFilters( 'woocommerce_calc_shipping_tax', $taxes, $taxExclusiveCost, $rates );
 					if ( ! is_array( $taxes ) ) {
 						$taxes = [];
 					}
@@ -1010,7 +1024,7 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isFreeShippingCouponApplied(): bool {
-		return $this->rateCalculator->isFreeShippingCouponApplied( $this->frameworkAdapter->getCart() );
+		return $this->rateCalculator->isFreeShippingCouponApplied( $this->wcAdapter->getCart() );
 	}
 
 	/**
@@ -1225,7 +1239,7 @@ class Checkout {
 	 * @return array
 	 */
 	private function getDisallowedShippingRateIds(): array {
-		$cartProducts = $this->frameworkAdapter->getCartContent();
+		$cartProducts = $this->wcAdapter->getCartContent();
 
 		$arraysToMerge = [];
 		foreach ( $cartProducts as $cartProduct ) {
@@ -1247,11 +1261,11 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isAgeVerification18PlusRequired(): bool {
-		if ( ! $this->frameworkAdapter->didAction( 'wp_loaded' ) ) {
+		if ( ! $this->wpAdapter->didAction( 'wp_loaded' ) ) {
 			return false;
 		}
 
-		$products = $this->frameworkAdapter->getCartContent();
+		$products = $this->wcAdapter->getCartContent();
 
 		foreach ( $products as $product ) {
 			$productEntity = $this->productEntiyFactory->fromPostId( $product['product_id'] );
@@ -1269,11 +1283,11 @@ class Checkout {
 	 * @return false|string
 	 */
 	private function getTaxClassWithMaxRate() {
-		$products   = $this->frameworkAdapter->getCartContent();
+		$products   = $this->wcAdapter->getCartContent();
 		$taxClasses = [];
 
 		foreach ( $products as $cartProduct ) {
-			$product = $this->frameworkAdapter->getProduct( $cartProduct['product_id'] );
+			$product = $this->wcAdapter->getProduct( $cartProduct['product_id'] );
 			if ( $product->is_taxable() ) {
 				$taxClasses[] = $product->get_tax_class();
 			}
@@ -1314,7 +1328,7 @@ class Checkout {
 	 * @return float
 	 */
 	private function getCartContentsTotalIncludingTax(): float {
-		return (float) $this->frameworkAdapter->getCartContentsTotal() + (float) $this->frameworkAdapter->getCartContentsTax();
+		return (float) $this->wcAdapter->getCartContentsTotal() + (float) $this->wcAdapter->getCartContentsTax();
 	}
 
 	/**
@@ -1334,7 +1348,7 @@ class Checkout {
 			if ( ! isset( $cartProduct['product_id'] ) ) {
 				continue;
 			}
-			$product            = $this->frameworkAdapter->getProduct( $cartProduct['product_id'] );
+			$product            = $this->wcAdapter->getProduct( $cartProduct['product_id'] );
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {

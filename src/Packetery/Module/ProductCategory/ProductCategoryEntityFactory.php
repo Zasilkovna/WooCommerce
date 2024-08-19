@@ -7,15 +7,14 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\ProductCategory;
 
 /**
- * Class EntityFactory
+ * Class ProductCategoryEntityFactory
  *
  * @package Packetery
  */
-class EntityFactory {
+class ProductCategoryEntityFactory {
 
 	/**
 	 * Create instance from term ID.
@@ -27,4 +26,5 @@ class EntityFactory {
 	public function fromTermId( int $termId ): Entity {
 		return Entity::fromTermId( $termId );
 	}
+
 }
