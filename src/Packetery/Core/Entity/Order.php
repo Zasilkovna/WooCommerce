@@ -11,7 +11,6 @@ namespace Packetery\Core\Entity;
 
 use Packetery\Core\Helper;
 use DateTimeImmutable;
-use Packetery\Module\EntityFactory;
 
 /**
  * Class Order

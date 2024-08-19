@@ -680,11 +680,7 @@ class Plugin {
 	 * @param WC_Order $wcOrder WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $wcOrder ): void {
-		try {
-			$order = $this->orderRepository->getById( $wcOrder->get_id() );
-		} catch ( InvalidCarrierException $exception ) {
-			$order = null;
-		}
+		$order = $this->orderRepository->getByWcOrder( $wcOrder, true );
 		if ( null === $order ) {
 			return;
 		}
