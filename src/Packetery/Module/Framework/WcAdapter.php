@@ -27,7 +27,7 @@ class WcAdapter {
 	 *
 	 * @return float
 	 */
-	public function getWcGetWeight( $weight, string $toUnit ): float {
+	public function getWeight( $weight, string $toUnit ): float {
 		return wc_get_weight( $weight, $toUnit );
 	}
 
@@ -38,7 +38,7 @@ class WcAdapter {
 	 *
 	 * @return false|\WC_Product
 	 */
-	public function getProduct( $product_id ) {
+	public function productFactoryGetProduct( $product_id ) {
 		return WC()->product_factory->get_product( $product_id );
 	}
 

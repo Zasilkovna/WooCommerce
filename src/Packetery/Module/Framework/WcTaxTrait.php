@@ -21,7 +21,7 @@ trait WcTaxTrait {
 	 *
 	 * @return mixed
 	 */
-	public function getShippingTaxRates() {
+	public function taxGetShippingTaxRates() {
 		return \WC_Tax::get_shipping_tax_rates();
 	}
 
@@ -33,7 +33,7 @@ trait WcTaxTrait {
 	 *
 	 * @return array
 	 */
-	public function calcInclusiveTax( float $cost, array $rates ): array {
+	public function taxCalcInclusiveTax( float $cost, array $rates ): array {
 		return \WC_Tax::calc_inclusive_tax( $cost, $rates );
 	}
 

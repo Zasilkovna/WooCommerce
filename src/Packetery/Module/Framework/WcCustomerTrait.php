@@ -21,7 +21,7 @@ trait WcCustomerTrait {
 	 *
 	 * @return string
 	 */
-	public function getCustomerShippingCountry(): string {
+	public function customerGetShippingCountry(): string {
 		return WC()->customer->get_shipping_country();
 	}
 
@@ -30,7 +30,7 @@ trait WcCustomerTrait {
 	 *
 	 * @return string
 	 */
-	public function getCustomerBillingCountry(): string {
+	public function customerGetBillingCountry(): string {
 		return WC()->customer->get_billing_country();
 	}
 
