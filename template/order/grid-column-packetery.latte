@@ -1,4 +1,5 @@
 {varType \Packetery\Core\Entity\Order $order}
+{varType \Packetery\Core\Entity\Size $dimensions}
 {var $Helper = Packetery\Core\Helper::class}
 
 {if $order->getPacketId()}
@@ -19,9 +20,9 @@
        'custom_number' => $order->getCustomNumber(),
        'packetery_weight' => $order->getFinalWeight(),
        'packetery_original_weight' => $order->getFinalWeight(),
-       'packetery_length' => $order->getLength(),
-       'packetery_width' => $order->getWidth(),
-       'packetery_height' => $order->getHeight(),
+       'packetery_length' => $dimensions->getLength(),
+       'packetery_width' => $dimensions->getWidth(),
+       'packetery_height' => $dimensions->getHeight(),
        'packetery_adult_content' => $order->containsAdultContent(),
        'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
        'hasCod' => $order->hasCod(),

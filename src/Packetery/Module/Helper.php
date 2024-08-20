@@ -191,4 +191,26 @@ class Helper {
 		return $array;
 
 	}
+
+	/**
+	 * Converts a number to centimeters
+	 *
+	 * @param int $number Number.
+	 *
+	 * @return float
+	 */
+	public static function convertToCentimeters( int $number ): ?float {
+		return 1 > $number ? null : ( $number * 0.1 );
+	}
+
+	/**
+	 * Converts a number to millimeters
+	 *
+	 * @param float $number Number.
+	 *
+	 * @return float
+	 */
+	public static function convertToMillimeters( float $number ): ?float {
+		return 0.1 > $number ? null : ( $number * 10 );
+	}
 }

@@ -11,7 +11,6 @@ namespace Packetery\Core\Api\Soap;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Helper;
-use Packetery\Module\Options\Provider;
 
 /**
  * Class CreatePacketMapper.
@@ -28,21 +27,12 @@ class CreatePacketMapper {
 	private $helper;
 
 	/**
-	 * Options provider.
-	 *
-	 * @var Provider
-	 */
-	private $options;
-
-	/**
 	 * CreatePacketMapper constructor.
 	 *
-	 * @param Helper   $helper Helper.
-	 * @param Provider $options Options provider.
+	 * @param Helper $helper Helper.
 	 */
-	public function __construct( Helper $helper, Provider $options ) {
-		$this->helper  = $helper;
-		$this->options = $options;
+	public function __construct( Helper $helper ) {
+		$this->helper = $helper;
 	}
 
 	/**
@@ -97,11 +87,6 @@ class CreatePacketMapper {
 					'width'  => $size->getWidth(),
 					'height' => $size->getHeight(),
 				];
-			}
-			if ( isset( $createPacketData['size'] ) && $this->options->getDimensionsUnit() === 'cm' ) {
-				foreach ( $createPacketData['size'] as $dimension => $measurementValue ) {
-					$createPacketData['size'][ $dimension ] = $measurementValue * 10;
-				}
 			}
 		}
 
