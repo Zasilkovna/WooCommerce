@@ -50,23 +50,33 @@ class EntityRepository {
 	private $carDeliveryConfig;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Repository                $repository           Carrier repository.
 	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
 	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
+	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
 	 */
 	public function __construct(
 		Repository $repository,
 		EntityFactory\Carrier $carrierEntityFactory,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		CarDeliveryConfig $carDeliveryConfig
+		CarDeliveryConfig $carDeliveryConfig,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->repository           = $repository;
 		$this->carrierEntityFactory = $carrierEntityFactory;
 		$this->pickupPointsConfig   = $pickupPointsConfig;
 		$this->carDeliveryConfig    = $carDeliveryConfig;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
@@ -198,7 +208,7 @@ class EntityRepository {
 		$activeCarriers = [];
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
-			$carrierOptions = Options::createByCarrierId( $carrier->getId() );
+			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 			if ( $carrierOptions->isActive() ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
@@ -231,7 +241,7 @@ class EntityRepository {
 			return false;
 		}
 
-		return Options::createByCarrierId( $carrier->getId() )->isActive();
+		return $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() )->isActive();
 	}
 
 	/**

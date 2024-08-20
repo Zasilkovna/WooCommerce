@@ -13,7 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator\Order;
 use Packetery\Module;
-use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
@@ -74,14 +74,22 @@ class GridExtender {
 	private $contextResolver;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper          $helper Helper.
-	 * @param Engine          $latteEngine Latte Engine.
-	 * @param Request         $httpRequest Http Request.
-	 * @param Repository      $orderRepository Order repository.
-	 * @param Order           $orderValidator Order validator.
-	 * @param ContextResolver $contextResolver Context resolver.
+	 * @param Helper                $helper                Helper.
+	 * @param Engine                $latteEngine           Latte Engine.
+	 * @param Request               $httpRequest           Http Request.
+	 * @param Repository            $orderRepository       Order repository.
+	 * @param Order                 $orderValidator        Order validator.
+	 * @param ContextResolver       $contextResolver       Context resolver.
+	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -89,14 +97,16 @@ class GridExtender {
 		Request $httpRequest,
 		Repository $orderRepository,
 		Order $orderValidator,
-		ContextResolver $contextResolver
+		ContextResolver $contextResolver,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->helper          = $helper;
-		$this->latteEngine     = $latteEngine;
-		$this->httpRequest     = $httpRequest;
-		$this->orderRepository = $orderRepository;
-		$this->orderValidator  = $orderValidator;
-		$this->contextResolver = $contextResolver;
+		$this->helper                = $helper;
+		$this->latteEngine           = $latteEngine;
+		$this->httpRequest           = $httpRequest;
+		$this->orderRepository       = $orderRepository;
+		$this->orderValidator        = $orderValidator;
+		$this->contextResolver       = $contextResolver;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
@@ -268,7 +278,7 @@ class GridExtender {
 					break;
 				}
 
-				$homeDeliveryCarrierOptions = Carrier\Options::createByCarrierId( $order->getCarrier()->getId() );
+				$homeDeliveryCarrierOptions = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() );
 				echo esc_html( $homeDeliveryCarrierOptions->getName() );
 				break;
 			case 'packetery_packet_id':

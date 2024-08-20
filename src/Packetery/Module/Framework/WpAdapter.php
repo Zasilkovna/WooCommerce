@@ -16,4 +16,27 @@ namespace Packetery\Module\Framework;
  */
 class WpAdapter {
 	use HookTrait;
+
+	/**
+	 * WP get_option adapter.
+	 *
+	 * @param string $optionId Option id.
+	 *
+	 * @return mixed
+	 */
+	public function getOption( string $optionId ) {
+		return get_option( $optionId );
+	}
+
+	/**
+	 * Gets WP term.
+	 *
+	 * @param int $termId Term id.
+	 *
+	 * @return \WP_Term|\WP_Error|null
+	 */
+	public function getTerm( int $termId ) {
+		return get_term( $termId );
+	}
+
 }

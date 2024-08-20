@@ -37,30 +37,6 @@ class Entity {
 	}
 
 	/**
-	 * Creates instance using global variables.
-	 *
-	 * @return static
-	 */
-	public static function fromGlobals(): self {
-		global $post;
-
-		return self::fromPostId( $post->ID );
-	}
-
-	/**
-	 * Create instance from post ID.
-	 *
-	 * @param int|string $postId Post ID.
-	 *
-	 * @return static
-	 */
-	public static function fromPostId( $postId ): self {
-		$product = wc_get_product( $postId );
-
-		return new self( $product );
-	}
-
-	/**
 	 * Is product relevant for Packeta processing?
 	 *
 	 * @return bool

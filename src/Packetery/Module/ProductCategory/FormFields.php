@@ -54,18 +54,33 @@ class FormFields {
 	private $carDeliveryConfig;
 
 	/**
+	 * Product category entity factory.
+	 *
+	 * @var ProductCategoryEntityFactory
+	 */
+	private $productCategoryEntityFactory;
+
+	/**
 	 * Tab constructor.
 	 *
 	 * @param FormFactory       $formFactory       Factory engine.
 	 * @param Engine            $latteEngine       Latte engine.
 	 * @param EntityRepository  $carrierRepository Carrier repository.
 	 * @param CarDeliveryConfig $carDeliveryConfig Car delivery config.
+	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory Product category entity factory.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, EntityRepository $carrierRepository, CarDeliveryConfig $carDeliveryConfig ) {
-		$this->formFactory       = $formFactory;
-		$this->latteEngine       = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
+	public function __construct(
+		FormFactory $formFactory,
+		Engine $latteEngine,
+		EntityRepository $carrierRepository,
+		CarDeliveryConfig $carDeliveryConfig,
+		ProductCategoryEntityFactory $productCategoryEntityFactory
+	) {
+		$this->formFactory                  = $formFactory;
+		$this->latteEngine                  = $latteEngine;
+		$this->carrierRepository            = $carrierRepository;
 		$this->carDeliveryConfig = $carDeliveryConfig;
+		$this->productCategoryEntityFactory = $productCategoryEntityFactory;
 	}
 
 	/**
@@ -119,7 +134,7 @@ class FormFields {
 	 */
 	public function render( $term ): void {
 		$isProductCategoryObject = ( is_object( $term ) && get_class( $term ) === \WP_Term::class );
-		$productCategory         = $isProductCategoryObject ? ProductCategory\Entity::fromTermId( $term->term_id ) : null;
+		$productCategory         = $isProductCategoryObject ? $this->productCategoryEntityFactory->fromTermId( $term->term_id ) : null;
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[
@@ -144,7 +159,7 @@ class FormFields {
 		if ( ProductCategory\Entity::TAXONOMY_NAME !== $taxonomy ) {
 			return;
 		}
-		$productCategory = ProductCategory\Entity::fromTermId( $termId );
+		$productCategory = $this->productCategoryEntityFactory->fromTermId( $termId );
 		$form            = $this->createForm( $productCategory );
 
 		$form->onSuccess[] = function ( Form $form, array $shippingRates ) use ( $productCategory ): void {

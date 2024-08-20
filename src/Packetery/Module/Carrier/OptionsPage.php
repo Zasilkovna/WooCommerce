@@ -112,6 +112,13 @@ class OptionsPage {
 	private $wcSettingsConfig;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * OptionsPage constructor.
 	 *
 	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
@@ -124,6 +131,7 @@ class OptionsPage {
 	 * @param FeatureFlagManager        $featureFlag        Feature flag.
 	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
 	 * @param WcSettingsConfig          $wcSettingsConfig   WC Native carrier settings config.
+	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -135,18 +143,20 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagManager $featureFlag,
 		CarDeliveryConfig $carDeliveryConfig,
-		WcSettingsConfig $wcSettingsConfig
+		WcSettingsConfig $wcSettingsConfig,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->latteEngine        = $latteEngine;
-		$this->carrierRepository  = $carrierRepository;
-		$this->formFactory        = $formFactory;
-		$this->httpRequest        = $httpRequest;
-		$this->countryListingPage = $countryListingPage;
-		$this->messageManager     = $messageManager;
-		$this->pickupPointsConfig = $pickupPointsConfig;
-		$this->featureFlag        = $featureFlag;
-		$this->carDeliveryConfig  = $carDeliveryConfig;
-		$this->wcSettingsConfig   = $wcSettingsConfig;
+		$this->latteEngine           = $latteEngine;
+		$this->carrierRepository     = $carrierRepository;
+		$this->formFactory           = $formFactory;
+		$this->httpRequest           = $httpRequest;
+		$this->countryListingPage    = $countryListingPage;
+		$this->messageManager        = $messageManager;
+		$this->pickupPointsConfig    = $pickupPointsConfig;
+		$this->featureFlag           = $featureFlag;
+		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->wcSettingsConfig      = $wcSettingsConfig;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
@@ -451,7 +461,7 @@ class OptionsPage {
 			$options['vendor_groups'] = $newVendors;
 		}
 
-		$persistedOptions      = Options::createByCarrierId( $options['id'] );
+		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
 		$persistedOptionsArray = $persistedOptions->toArray();
 		if ( $this->wcSettingsConfig->isActive() ) {
 			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();

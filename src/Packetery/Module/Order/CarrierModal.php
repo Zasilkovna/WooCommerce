@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\Helper;
 use Packetery\Nette\Forms;
@@ -68,6 +69,13 @@ class CarrierModal {
 	private $wcNativeCarrierSettings;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Engine                   $latteEngine              Latte engine.
@@ -76,6 +84,7 @@ class CarrierModal {
 	 * @param Repository               $orderRepository          Order repository.
 	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
 	 * @param WcSettingsConfig         $wcNativeCarrierSettings  Native Carrier settings.
+	 * @param CarrierOptionsFactory    $carrierOptionsFactory    Carrier options factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -83,7 +92,8 @@ class CarrierModal {
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		WcSettingsConfig $wcNativeCarrierSettings
+		WcSettingsConfig $wcNativeCarrierSettings,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->detailCommonLogic       = $detailCommonLogic;
@@ -91,6 +101,7 @@ class CarrierModal {
 		$this->orderRepository         = $orderRepository;
 		$this->carrierRepository       = $carrierRepository;
 		$this->wcNativeCarrierSettings = $wcNativeCarrierSettings;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 	}
 
 	/**
@@ -191,7 +202,7 @@ class CarrierModal {
 			]
 		);
 
-		$options = Carrier\Options::createByCarrierId( $newCarrier->getId() );
+		$options = $this->carrierOptionsFactory->createByCarrierId( $newCarrier->getId() );
 		if ( ! $options->hasOptions() ) {
 			throw new RuntimeException( 'Missing options for carrier ' . $newCarrier->getId() );
 		}
@@ -230,7 +241,7 @@ class CarrierModal {
 
 		$carrierOptions = [];
 		foreach ( $carriers as $carrier ) {
-			$options = Carrier\Options::createByCarrierId( $carrier->getId() );
+			$options = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 			if ( $options->hasOptions() ) {
 				$carrierOptions[ $carrier->getId() ] = $options->getName();
 			}

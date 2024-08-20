@@ -37,19 +37,6 @@ class Entity {
 	}
 
 	/**
-	 * Create instance from term ID.
-	 *
-	 * @param int $termId Term ID.
-	 *
-	 * @return static
-	 */
-	public static function fromTermId( int $termId ): self {
-		$product = get_term( $termId );
-
-		return new self( $product );
-	}
-
-	/**
 	 * Disallowed carrier choices.
 	 *
 	 * @return array

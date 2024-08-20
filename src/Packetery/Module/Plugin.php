@@ -14,6 +14,7 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order\CarrierModal;
@@ -288,6 +289,13 @@ class Plugin {
 	private $carrierModal;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -325,6 +333,7 @@ class Plugin {
 	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
+	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -361,7 +370,8 @@ class Plugin {
 		Order\ApiExtender $apiExtender,
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
-		CarrierModal $carrierModal
+		CarrierModal $carrierModal,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -399,6 +409,7 @@ class Plugin {
 		$this->labelPrintModal           = $labelPrintModal;
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
+		$this->carrierOptionsFactory     = $carrierOptionsFactory;
 	}
 
 	/**
@@ -630,7 +641,7 @@ class Plugin {
 		}
 
 		$carrierId      = $orderEntity->getCarrier()->getId();
-		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 
 		$this->latte_engine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
