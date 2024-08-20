@@ -32,311 +32,371 @@ class CheckoutTest extends TestCase {
 	use WithMockFactory;
 
 	public static function rateCreationDataProvider(): array {
-		$carrierInputsFactory = static function ( array $inputConfigs, bool $nullifyAllowedCarrierNames = false ): array {
-			$carriers                    = [];
-			$carriersOptions             = [];
-			$disallowedByProduct         = [];
-			$disallowedByProductCategory = [];
-			$allowedCarrierNames         = [];
-
-			foreach ( $inputConfigs as $inputConfig ) {
-				$carrier = $inputConfig['carrier'];
-
-				$carrierOptionId                     = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
-				$carriers[]                          = $carrier;
-				$carriersOptions[ $carrierOptionId ] = array_merge( [
-					'id'   => $carrier->getId(),
-					'name' => $carrier->getName(),
-				], $inputConfig['options'] );
-
-				if ( $inputConfig['isDisallowedByProduct'] ?? false ) {
-					$disallowedByProduct[] = $carrierOptionId;
-				}
-
-				if ( $inputConfig['isDisallowedByProductCategory'] ?? false ) {
-					$disallowedByProductCategory[] = $carrierOptionId;
-				}
-
-				if ( $inputConfig['isActivatedByWcShippingConfig'] ?? true ) {
-					$allowedCarrierNames[ $carrier->getId() ] = $carrier->getName();
-				}
-			}
-
-			if ( $nullifyAllowedCarrierNames ) {
-				$allowedCarrierNames = null;
-			}
-
-			return [
-				$carriers,
-				$carriersOptions,
-				$disallowedByProduct,
-				$disallowedByProductCategory,
-				$allowedCarrierNames
-			];
-		};
-
 		return [
-			'configured carriers must be present in rates'            => [
-				2,
-				...$carrierInputsFactory(
-					[
+			'configured carriers must be present in rates'            =>
+				[
+					'expectedRateCount'                  => 2,
+					'carriers'                           =>
 						[
-							'carrier' => DummyFactory::createCarrierCzechPp(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 234.34,
-									],
-								],
-							],
+							DummyFactory::createCarrierCzechPp(),
+							DummyFactory::createCarrierCzechHdRequiresSize(),
 						],
+					'carriersOptions'                    =>
 						[
-							'carrier' => DummyFactory::createCarrierCzechHdRequiresSize(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 5.0,
-										'price'  => 444.34,
-									],
+							'packetery_carrier_zpoint-cz' =>
+								[
+									'id'                  => 'zpoint-cz',
+									'name'                => 'zpoint-cz',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 234.34,
+											],
+										],
 								],
-							],
-						]
-					]
-				),
-				true,
-				false,
-				5.0
-			],
-			'car delivery carrier must not be present in rates'       => [
-				1,
-				...$carrierInputsFactory(
-					[
-						[
-							'carrier' => DummyFactory::createCarrierCzechPp(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 234.34,
-									],
+							'packetery_carrier_106'       =>
+								[
+									'id'                  => '106',
+									'name'                => 'hd-cz',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 5.0,
+												'price'  => 444.34,
+											],
+										],
 								],
-							],
 						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                =>
 						[
-							'carrier' => DummyFactory::createCarDeliveryCarrier(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 5.0,
-										'price'  => 444.34,
-									],
-								],
-							],
-						]
-					],
-					true
-				),
-				false,
-				false,
-				1.0
-			],
-			'only one carrier is active'                              => [
-				1,
-				...$carrierInputsFactory(
-					[
-						[
-							'carrier' => DummyFactory::createCarrierCzechPp(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 234.34,
-									],
-								],
-							],
+							'zpoint-cz' => 'zpoint-cz',
+							106         => 'hd-cz',
 						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 5.0,
+				],
+			'car delivery carrier must not be present in rates'       =>
+				[
+					'expectedRateCount'                  => 1,
+					'carriers'                           =>
 						[
-							'carrier' => DummyFactory::createCarrierCzechHdRequiresSize(),
-							'options' => [
-								'active'              => false,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 5.0,
-										'price'  => 444.34,
-									],
-								],
-							],
+							DummyFactory::createCarrierCzechPp(),
+							DummyFactory::createCarDeliveryCarrier(),
 						],
-					],
-					true
-				),
-				true,
-				false,
-				1.0
-			],
-			'carrier not supporting over-weight cart must be omitted' => [
-				0,
-				...$carrierInputsFactory(
-					[
+					'carriersOptions'                    =>
 						[
-							'carrier' => DummyFactory::createCarrierCzechPp(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 100.0,
-									],
+							'packetery_carrier_zpoint-cz' =>
+								[
+									'id'                  => 'zpoint-cz',
+									'name'                => 'zpoint-cz',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 234.34,
+											],
+										],
 								],
-							],
-						]
-					]
-				),
-				true,
-				false,
-				21.0
-			],
-			'inactive carrier must be omitted'                        => [
-				0,
-				...$carrierInputsFactory(
-					[
-						[
-							'carrier'                       => DummyFactory::createCarrierCzechPp(),
-							'isActivatedByWcShippingConfig' => false,
-							'options'                       => [
-								'active'              => false,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 100.0,
-									],
+							'packetery_carrier_25061'     =>
+								[
+									'id'                  => '25061',
+									'name'                => 'CZ Zásilkovna do auta',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 5.0,
+												'price'  => 444.34,
+											],
+										],
 								],
-							],
-						]
-					],
-				),
-				true,
-				false,
-				1.0
-			],
-			'carrier disallowed by product must be omitted'           => [
-				0,
-				...$carrierInputsFactory(
-					[
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                => null,
+					'isCarDeliveryEnabled'               => false,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 1.0,
+				],
+			'only one carrier is active'                              =>
+				[
+					'expectedRateCount'                  => 1,
+					'carriers'                           =>
 						[
-							'carrier'               => DummyFactory::createCarrierCzechPp(),
-							'isDisallowedByProduct' => true,
-							'options'               => [
-								'active' => true,
-							],
-						]
-					]
-				),
-				true,
-				false,
-				1.0
-			],
-			'carrier disallowed by product category must be omitted'  => [
-				0,
-				...$carrierInputsFactory(
-					[
+							DummyFactory::createCarrierCzechPp(),
+							DummyFactory::createCarrierCzechHdRequiresSize(),
+						],
+					'carriersOptions'                    =>
 						[
-							'carrier'                       => DummyFactory::createCarrierCzechPp(),
-							'isDisallowedByProductCategory' => true,
-							'options'                       => [
-								'active' => true,
-							],
-						]
-					]
-				),
-				true,
-				false,
-				1.0
-			],
-			'car delivery carriers must be supported'                 => [
-				1,
-				...$carrierInputsFactory(
-					[
-						[
-							'carrier' => DummyFactory::createCarDeliveryCarrier(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 234.34,
-									],
+							'packetery_carrier_zpoint-cz' =>
+								[
+									'id'                  => 'zpoint-cz',
+									'name'                => 'zpoint-cz',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 234.34,
+											],
+										],
 								],
-							],
-						]
-					]
-				),
-				true,
-				false,
-				1.0
-			],
-			'carrier not supporting age verification must be omitted' => [
-				0,
-				...$carrierInputsFactory(
-					[
-						[
-							'carrier' => DummyFactory::createCarDeliveryCarrier(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 234.34,
-									],
+							'packetery_carrier_106'       =>
+								[
+									'id'                  => '106',
+									'name'                => 'hd-cz',
+									'active'              => false,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 5.0,
+												'price'  => 444.34,
+											],
+										],
 								],
-							],
-						]
-					]
-				),
-				true,
-				true,
-				1.0
-			],
-			'allowed carrier names argument must support null'        => [
-				1,
-				...$carrierInputsFactory(
-					[
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                => null,
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 1.0,
+				],
+			'carrier not supporting over-weight cart must be omitted' =>
+				[
+					'expectedRateCount'                  => 0,
+					'carriers'                           =>
 						[
-							'carrier' => DummyFactory::createCarDeliveryCarrier(),
-							'options' => [
-								'active'              => true,
-								'free_shipping_limit' => null,
-								'weight_limits'       => [
-									[
-										'weight' => 20.0,
-										'price'  => 234.34,
-									],
+							DummyFactory::createCarrierCzechPp(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_zpoint-cz' =>
+								[
+									'id'                  => 'zpoint-cz',
+									'name'                => 'zpoint-cz',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 100.0,
+											],
+										],
 								],
-							],
-						]
-					],
-					true
-				),
-				true,
-				false,
-				1.0
-			],
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                =>
+						[
+							'zpoint-cz' => 'zpoint-cz',
+						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 21.0,
+				],
+			'inactive carrier must be omitted'                        =>
+				[
+					'expectedRateCount'                  => 0,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarrierCzechPp(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_zpoint-cz' =>
+								[
+									'id'                  => 'zpoint-cz',
+									'name'                => 'zpoint-cz',
+									'active'              => false,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 100.0,
+											],
+										],
+								],
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                => [],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 1.0,
+				],
+			'carrier disallowed by product must be omitted'           =>
+				[
+					'expectedRateCount'                  => 0,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarrierCzechPp(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_zpoint-cz' =>
+								[
+									'id'     => 'zpoint-cz',
+									'name'   => 'zpoint-cz',
+									'active' => true,
+								],
+						],
+					'productDisallowedRateIds'           =>
+						[
+							0 => 'packetery_carrier_zpoint-cz',
+						],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                =>
+						[
+							'zpoint-cz' => 'zpoint-cz',
+						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 1.0,
+				],
+			'carrier disallowed by product category must be omitted'  =>
+				[
+					'expectedRateCount'                  => 0,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarrierCzechPp(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_zpoint-cz' =>
+								[
+									'id'     => 'zpoint-cz',
+									'name'   => 'zpoint-cz',
+									'active' => true,
+								],
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   =>
+						[
+							0 => 'packetery_carrier_zpoint-cz',
+						],
+					'allowedCarrierNames'                =>
+						[
+							'zpoint-cz' => 'zpoint-cz',
+						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 1.0,
+				],
+			'car delivery carriers must be supported'                 =>
+				[
+					'expectedRateCount'                  => 1,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarDeliveryCarrier(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_25061' =>
+								[
+									'id'                  => '25061',
+									'name'                => 'CZ Zásilkovna do auta',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 234.34,
+											],
+										],
+								],
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                =>
+						[
+							25061 => 'CZ Zásilkovna do auta',
+						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 1.0,
+				],
+			'carrier not supporting age verification must be omitted' =>
+				[
+					'expectedRateCount'                  => 0,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarDeliveryCarrier(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_25061' =>
+								[
+									'id'                  => '25061',
+									'name'                => 'CZ Zásilkovna do auta',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 234.34,
+											],
+										],
+								],
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                =>
+						[
+							25061 => 'CZ Zásilkovna do auta',
+						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => true,
+					'cartWeight'                         => 1.0,
+				],
+			'allowed carrier names argument must support null'        =>
+				[
+					'expectedRateCount'                  => 1,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarDeliveryCarrier(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_25061' =>
+								[
+									'id'                  => '25061',
+									'name'                => 'CZ Zásilkovna do auta',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 234.34,
+											],
+										],
+								],
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                => null,
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeight'                         => 1.0,
+				],
 		];
 	}
 
