@@ -171,12 +171,24 @@ final class OrderController extends WP_REST_Controller {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
-		$values = $form->getValues( 'array' );
-		$size   = new Size(
-			is_numeric( $values[ Form::FIELD_LENGTH ] ) ? (float) number_format( (float) $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null,
-			is_numeric( $values[ Form::FIELD_WIDTH ] ) ? (float) number_format( (float) $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null,
-			is_numeric( $values[ Form::FIELD_HEIGHT ] ) ? (float) number_format( (float) $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null
-		);
+		$values     = $form->getValues( 'array' );
+		$unit       = $this->optionsProvider->getDimensionsUnit();
+		$dimensions = [];
+
+		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
+			$rawValue                  = $values[ $dimension ];
+			$sanitisedDimension        = ( is_numeric( $rawValue ) && '' !== $rawValue ) ?
+				(float) number_format( (float) $rawValue, $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' )
+				: null;
+			$inputValues[ $dimension ] = $sanitisedDimension;
+
+			if ( null !== $sanitisedDimension && Provider::DIMENSIONS_UNIT_CM === $unit ) {
+				$sanitisedDimension = \Packetery\Module\Helper::convertToMillimeters( $sanitisedDimension );
+			}
+
+			$dimensions[] = $sanitisedDimension;
+		}
+		$size = new Size( ...$dimensions );
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
 			$order->setWeight( $values[ Form::FIELD_WEIGHT ] );
@@ -188,7 +200,6 @@ final class OrderController extends WP_REST_Controller {
 		$order->setSize( $size );
 		// TODO: Find out why are we using this variable and not form value.
 		$order->setDeliverOn( $this->helper->getDateTimeFromString( $packeteryDeliverOn ) );
-
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -197,9 +208,9 @@ final class OrderController extends WP_REST_Controller {
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			Form::FIELD_WEIGHT        => $order->getFinalWeight(),
-			Form::FIELD_LENGTH        => $order->getLength(),
-			Form::FIELD_WIDTH         => $order->getWidth(),
-			Form::FIELD_HEIGHT        => $order->getHeight(),
+			Form::FIELD_LENGTH        => $inputValues[ Form::FIELD_LENGTH ],
+			Form::FIELD_WIDTH         => $inputValues[ Form::FIELD_WIDTH ],
+			Form::FIELD_HEIGHT        => $inputValues[ Form::FIELD_HEIGHT ],
 			Form::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),

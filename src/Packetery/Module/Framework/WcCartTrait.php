@@ -27,8 +27,9 @@ trait WcCartTrait {
 
 	/**
 	 * Gets cart total. This is the total of items in the cart, but after discounts. Subtotal is before discounts.
+	 * Really returns string, at least sometimes.
 	 *
-	 * @return float
+	 * @return float|string
 	 */
 	public function cartGetCartContentsTotal(): float {
 		return (float) WC()->cart->get_cart_contents_total();

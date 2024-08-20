@@ -10,16 +10,3 @@ Nette.validators['PacketeryModuleFormValidators_dateIsInMysqlFormat'] = (elem, a
     var testDate = new Date( val );
     return ( val.length === 10 && !isNaN( testDate.getTime() ) && testDate.toISOString().startsWith( val ) );
 };
-
-Nette.validators[ 'PacketeryModuleFormValidators_dimensionValidate' ] = ( elem, args, val ) => {
-    var dimension = parseFloat( val.replace( ',', '.' ) );
-	if ( dimension <= 0 ) {
-		return false;
-	}
-
-    if ( args === 'mm' ) {
-        return Number.isInteger( dimension );
-    }
-
-	return !isNaN( dimension );
-};

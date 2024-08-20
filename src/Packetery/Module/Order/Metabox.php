@@ -386,13 +386,14 @@ class Metabox {
 			return $partsCache;
 		}
 
+		$unit = $this->optionsProvider->getDimensionsUnit();
 		$this->orderForm->setDefaults(
 			$this->form,
 			$order->getFinalWeight(),
 			$order->getFinalWeight(),
-			$order->getLength(),
-			$order->getWidth(),
-			$order->getHeight(),
+			Provider::DIMENSIONS_UNIT_CM === $unit ? Module\Helper::convertToCentimeters( (int) $order->getLength() ) : $order->getLength(),
+			Provider::DIMENSIONS_UNIT_CM === $unit ? Module\Helper::convertToCentimeters( (int) $order->getWidth() ) : $order->getWidth(),
+			Provider::DIMENSIONS_UNIT_CM === $unit ? Module\Helper::convertToCentimeters( (int) $order->getHeight() ) : $order->getHeight(),
 			$order->getCod(),
 			$order->getValue(),
 			$order->containsAdultContent(),
@@ -543,15 +544,19 @@ class Metabox {
 			return;
 		}
 
-		$length = str_replace( ',', '.', $formValues[ Form::FIELD_LENGTH ] );
-		$width  = str_replace( ',', '.', $formValues[ Form::FIELD_WIDTH ] );
-		$height = str_replace( ',', '.', $formValues[ Form::FIELD_HEIGHT ] );
+		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
+			$rawValue           = $formValues[ $dimension ];
+			$sanitisedDimension = ( is_numeric( $rawValue ) && '' !== $rawValue ) ?
+				(float) number_format( (float) $rawValue, $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' )
+				: null;
+			if ( null !== $sanitisedDimension && Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
+				$formValues[ $dimension ] = Module\Helper::convertToMillimeters( $sanitisedDimension );
+			} else {
+				$formValues[ $dimension ] = $sanitisedDimension;
+			}
 
-		$propsToSave = [
-			Form::FIELD_LENGTH => ( is_numeric( $length ) ? (float) number_format( (float) $length, $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
-			Form::FIELD_WIDTH  => ( is_numeric( $width ) ? (float) number_format( (float) $width, $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
-			Form::FIELD_HEIGHT => ( is_numeric( $height ) ? (float) number_format( (float) $width, $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' ) : null ),
-		];
+			$propsToSave[ $dimension ] = $formValues[ $dimension ];
+		}
 
 		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {
 			$propsToSave[ Form::FIELD_WEIGHT ] = null;
