@@ -188,9 +188,9 @@ final class OrderController extends WP_REST_Controller {
 		}
 
 		$size = new Size(
-			$dimensions[Form::FIELD_LENGTH],
-			$dimensions[Form::FIELD_WIDTH],
-			$dimensions[Form::FIELD_HEIGHT]
+			$dimensions[ Form::FIELD_LENGTH ],
+			$dimensions[ Form::FIELD_WIDTH ],
+			$dimensions[ Form::FIELD_HEIGHT ]
 		);
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
