@@ -7,24 +7,6 @@ use Packetery\Module\Helper;
 
 class HelperTest extends TestCase
 {
-	/**
-	* @dataProvider convertToCentimetersProvider
-	*/
-	public function testConvertToCentimeters(int $input, ?float $expected): void
-	{
-		$result = Helper::convertToCentimeters($input);
-		$this->assertSame($expected, $result);
-	}
-
-	/**
-	* @dataProvider convertToMillimetersProvider
-	*/
-	public function testConvertToMillimeters(float $input, ?float $expected): void
-	{
-		$result = Helper::convertToMillimeters($input);
-		$this->assertSame($expected, $result);
-	}
-
 	public static function convertToCentimetersProvider(): array
 	{
 		return [
@@ -35,6 +17,15 @@ class HelperTest extends TestCase
 			[-1, null],
 			[1000, 100.0],
 		];
+	}
+
+	/**
+	* @dataProvider convertToCentimetersProvider
+	*/
+	public function testConvertToCentimeters(int $input, ?float $expected): void
+	{
+		$result = Helper::convertToCentimeters($input);
+		$this->assertSame($expected, $result);
 	}
 
 	public static function convertToMillimetersProvider(): array
@@ -48,4 +39,14 @@ class HelperTest extends TestCase
 			[100.0, 1000.0],
 		];
 	}
+
+	/**
+	* @dataProvider convertToMillimetersProvider
+	*/
+	public function testConvertToMillimeters(float $input, ?float $expected): void
+	{
+		$result = Helper::convertToMillimeters($input);
+		$this->assertSame($expected, $result);
+	}
+
 }

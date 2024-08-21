@@ -348,7 +348,7 @@ class GridExtender {
 				$height = $order->getHeight();
 				foreach ( [ $length, $width, $height ] as $dimension ) {
 					if ( null !== $dimension && Module\Options\Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
-						$size[ $dimension ] = Module\Helper::convertToCentimeters( (int) $dimension );
+						$size[] = Module\Helper::convertToCentimeters( (int) $dimension );
 					} else {
 						$size[] = $dimension;
 					}

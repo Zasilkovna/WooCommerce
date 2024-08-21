@@ -11,7 +11,6 @@ namespace Packetery\Module;
 
 use DateTimeImmutable;
 use Packetery\Core;
-use Packetery\Module\Options\Provider;
 use Packetery\Nette\Forms\Controls\BaseControl;
 
 /**

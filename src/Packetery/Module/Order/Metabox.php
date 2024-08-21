@@ -546,9 +546,8 @@ class Metabox {
 
 		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
 			$rawValue           = $formValues[ $dimension ];
-			$sanitisedDimension = ( is_numeric( $rawValue ) && '' !== $rawValue ) ?
-				(float) number_format( (float) $rawValue, $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' )
-				: null;
+			$sanitisedDimension = $this->optionsProvider->sanitiseDimension( $rawValue );
+
 			if ( null !== $sanitisedDimension && Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
 				$formValues[ $dimension ] = Module\Helper::convertToMillimeters( $sanitisedDimension );
 			} else {
