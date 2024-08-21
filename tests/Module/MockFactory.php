@@ -10,14 +10,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class MockFactory {
-	private TestCase $testCase;
 
-	public function __construct( TestCase $testCase ) {
-		$this->testCase = $testCase;
-	}
-
-	public function createWpAdapter(): WpAdapter|MockObject {
-		$mock = $this->testCase->getMockBuilder( WpAdapter::class )->getMock();
+	public function createWpAdapter( TestCase $testCase ): WpAdapter|MockObject {
+		$mock = $testCase->getMockBuilder( WpAdapter::class )->getMock();
 		$mock
 			->method( 'applyFilters' )
 			->willReturnCallback( static function ( string $hookName, $value ) {
@@ -27,8 +22,8 @@ class MockFactory {
 		return $mock;
 	}
 
-	public function createCurrencySwitcherFacade(): CurrencySwitcherFacade|MockObject {
-		$mock = $this->testCase->getMockBuilder( CurrencySwitcherFacade::class )->getMock();
+	public function createCurrencySwitcherFacade( TestCase $testCase ): CurrencySwitcherFacade|MockObject {
+		$mock = $testCase->getMockBuilder( CurrencySwitcherFacade::class )->getMock();
 		$mock
 			->method( 'getConvertedPrice' )
 			->willReturnCallback( static function ( $value ) {

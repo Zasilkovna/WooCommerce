@@ -29,7 +29,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class CheckoutTest extends TestCase {
-	use WithMockFactory;
 
 	public static function rateCreationDataProvider(): array {
 		return [
@@ -415,6 +414,24 @@ class CheckoutTest extends TestCase {
 		bool $isAgeVerificationRequiredByProduct,
 		float $cartWeight
 	): void {
+		$mockFactory = new MockFactory();
+		$wpAdapter   = $mockFactory->createWpAdapter( $this );
+		$wpAdapter
+			->expects( self::atLeast( $expectedRateCount ) )
+			->method( 'applyFilters' );
+		$wpAdapter
+			->method( 'didAction' )
+			->willReturn( 1 );
+
+		$cart = $this->createMock( \WC_Cart::class );
+		$cart
+			->method( 'get_coupons' )
+			->willReturn( [] );
+		$wcAdapter = $this->createMock( WcAdapter::class );
+		$wcAdapter
+			->method( 'cart' )
+			->willReturn( $cart );
+
 		$wcProduct = $this->createMock( \WC_Product::class );
 		$wcProduct
 			->method( 'get_price' )
@@ -422,58 +439,25 @@ class CheckoutTest extends TestCase {
 		$wcProduct
 			->method( 'get_category_ids' )
 			->willReturn( [ 1 ] );
+		$wcAdapter
+			->method( 'productFactoryGetProduct' )
+			->willReturn( $wcProduct );
 
 		$cartItem = [
 			'product_id' => 1,
 			'quantity'   => 1,
 			'data'       => $wcProduct,
 		];
-
-		$product = $this->createMock( Product\Entity::class );
-		$product
-			->method( 'isPhysical' )
-			->willReturn( true );
-		$product
-			->method( 'isAgeVerification18PlusRequired' )
-			->willReturn( $isAgeVerificationRequiredByProduct );
-		$product
-			->method( 'getDisallowedShippingRateIds' )
-			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedOnProduct' ) ], $productDisallowedRateIds ) );
-
-		$cart = $this->createMock( \WC_Cart::class );
-		$cart
-			->method( 'get_coupons' )
-			->willReturn( [] );
-
-		$wpAdapter                    = $this->getPacketeryMockFactory()->createWpAdapter();
-		$wcAdapter                    = $this->createMock( WcAdapter::class );
-		$productEntityFactory         = $this->createMock( ProductEntityFactory::class );
-		$productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
-		$carrierOptionsFactory        = $this->createMock( CarrierOptionsFactory::class );
-		$carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
-		$currencySwitcherFacade       = $this->getPacketeryMockFactory()->createCurrencySwitcherFacade();
-		$carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
-
-		$checkout = $this->createCheckoutMock(
-			$wpAdapter,
-			$wcAdapter,
-			$productEntityFactory,
-			$productCategoryEntityFactory,
-			$carrierOptionsFactory,
-			$currencySwitcherFacade,
-			$carrierEntityRepository,
-			$carDeliveryConfig,
-		);
-
-		$wcAdapter
-			->method( 'cart' )
-			->willReturn( $cart );
-		$wcAdapter
-			->method( 'customerGetShippingCountry' )
-			->willReturn( 'cz' );
 		$wcAdapter
 			->method( 'cartGetCartContents' )
 			->willReturn( [ $cartItem ] );
+		$wcAdapter
+			->method( 'cartGetCartContent' )
+			->willReturn( [ $cartItem ] );
+
+		$wcAdapter
+			->method( 'customerGetShippingCountry' )
+			->willReturn( 'cz' );
 		$wcAdapter
 			->method( 'cartGetCartContentsTotal' )
 			->willReturn( 100.0 );
@@ -486,17 +470,32 @@ class CheckoutTest extends TestCase {
 		$wcAdapter
 			->method( 'getWeight' )
 			->willReturn( $cartWeight );
-		$wcAdapter
-			->method( 'cartGetCartContent' )
-			->willReturn( [ $cartItem ] );
 
-		$carrierEntityRepository
-			->method( 'getByCountryIncludingNonFeed' )
-			->willReturn( $carriers );
+		$productEntity = $this->createMock( Product\Entity::class );
+		$productEntity
+			->method( 'isPhysical' )
+			->willReturn( true );
+		$productEntity
+			->method( 'isAgeVerification18PlusRequired' )
+			->willReturn( $isAgeVerificationRequiredByProduct );
+		$productEntity
+			->method( 'getDisallowedShippingRateIds' )
+			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedOnProduct' ) ], $productDisallowedRateIds ) );
+		$productEntityFactory = $this->createMock( ProductEntityFactory::class );
 		$productEntityFactory
 			->method( 'fromPostId' )
-			->willReturn( $product );
+			->willReturn( $productEntity );
 
+		$productCategory = $this->createMock( ProductCategory\Entity::class );
+		$productCategory
+			->method( 'getDisallowedShippingRateIds' )
+			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedByProductCategory' ) ], $productCategoryDisallowedRateIds ) );
+		$productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
+		$productCategoryEntityFactory
+			->method( 'fromTermId' )
+			->willReturn( $productCategory );
+
+		$carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
 		$carrierOptionsFactory
 			->method( 'createByOptionId' )
 			->willReturnCallback( function ( $optionId ) use ( $carriersOptions ) {
@@ -508,30 +507,28 @@ class CheckoutTest extends TestCase {
 				);
 			} );
 
-		$wcAdapter
-			->method( 'productFactoryGetProduct' )
-			->willReturn( $wcProduct );
+		$currencySwitcherFacade = $mockFactory->createCurrencySwitcherFacade( $this );
 
-		$productCategory = $this->createMock( ProductCategory\Entity::class );
-		$productCategory
-			->method( 'getDisallowedShippingRateIds' )
-			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedByProductCategory' ) ], $productCategoryDisallowedRateIds ) );
+		$carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
+		$carrierEntityRepository
+			->method( 'getByCountryIncludingNonFeed' )
+			->willReturn( $carriers );
 
-		$productCategoryEntityFactory
-			->method( 'fromTermId' )
-			->willReturn( $productCategory );
-
+		$carDeliveryConfig = $this->createMock( CarDeliveryConfig::class );
 		$carDeliveryConfig
 			->method( 'isEnabled' )
 			->willReturn( $isCarDeliveryEnabled );
 
-		$wpAdapter
-			->expects( self::atLeast( $expectedRateCount ) )
-			->method( 'applyFilters' );
-
-		$wpAdapter
-			->method( 'didAction' )
-			->willReturn( 1 );
+		$checkout = $this->createCheckoutMock(
+			$wpAdapter,
+			$wcAdapter,
+			$productEntityFactory,
+			$productCategoryEntityFactory,
+			$carrierOptionsFactory,
+			$currencySwitcherFacade,
+			$carrierEntityRepository,
+			$carDeliveryConfig,
+		);
 
 		$rates = $checkout->getShippingRates( $allowedCarrierNames );
 
