@@ -412,10 +412,9 @@ class CheckoutTest extends TestCase {
 		?array $allowedCarrierNames,
 		bool $isCarDeliveryEnabled,
 		bool $isAgeVerificationRequiredByProduct,
-		float $cartWeight
+		float $cartWeightKg
 	): void {
-		$mockFactory = new MockFactory();
-		$wpAdapter   = $mockFactory->createWpAdapter( $this );
+		$wpAdapter = MockFactory::createWpAdapter( $this );
 		$wpAdapter
 			->expects( self::atLeast( $expectedRateCount ) )
 			->method( 'applyFilters' );
@@ -466,10 +465,10 @@ class CheckoutTest extends TestCase {
 			->willReturn( 21.0 );
 		$wcAdapter
 			->method( 'cartGetCartContentsWeight' )
-			->willReturn( $cartWeight );
+			->willReturn( $cartWeightKg );
 		$wcAdapter
 			->method( 'getWeight' )
-			->willReturn( $cartWeight );
+			->willReturn( $cartWeightKg );
 
 		$productEntity = $this->createMock( Product\Entity::class );
 		$productEntity
@@ -507,7 +506,7 @@ class CheckoutTest extends TestCase {
 				);
 			} );
 
-		$currencySwitcherFacade = $mockFactory->createCurrencySwitcherFacade( $this );
+		$currencySwitcherFacade = MockFactory::createCurrencySwitcherFacade( $this );
 
 		$carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
 		$carrierEntityRepository

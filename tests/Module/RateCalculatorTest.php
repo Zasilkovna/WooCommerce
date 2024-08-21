@@ -120,12 +120,11 @@ class RateCalculatorTest extends TestCase {
 	 * @dataProvider calculationDataProvider
 	 */
 	public function testGetShippingRateCost( ?float $expectedCost, Options $carrierOptions, float $totalProductValue, float $cartWeight, bool $isCouponApplied ): void {
-		$mockFactory = new MockFactory();
-		$wpAdapter   = $mockFactory->createWpAdapter( $this );
+		$wpAdapter = MockFactory::createWpAdapter( $this );
 
 		$rateCalculator = new RateCalculator(
 			$wpAdapter,
-			$mockFactory->createCurrencySwitcherFacade( $this )
+			MockFactory::createCurrencySwitcherFacade( $this )
 		);
 
 		$cost = $rateCalculator->getShippingRateCost(
