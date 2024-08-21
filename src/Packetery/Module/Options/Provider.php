@@ -10,6 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\Helper;
+use Packetery\Module\Order\Form;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -248,6 +250,19 @@ class Provider {
 		}
 
 		return 0;
+	}
+
+	/**
+	 * Sanitises and formats a dimension value.
+	 *
+	 * @param string|float $dimensionValue Dimension value.
+	 *
+	 * @return float|null
+	 */
+	public function sanitiseDimension( $dimensionValue ): ?float {
+		return ( is_numeric( $dimensionValue ) ) ?
+			(float) number_format( (float) $dimensionValue, $this->getDimensionsNumberOfDecimals(), '.', '' )
+			: null;
 	}
 
 	/**

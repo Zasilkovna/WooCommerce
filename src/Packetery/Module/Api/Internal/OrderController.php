@@ -177,18 +177,21 @@ final class OrderController extends WP_REST_Controller {
 
 		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
 			$rawValue                  = $values[ $dimension ];
-			$sanitisedDimension        = ( is_numeric( $rawValue ) && '' !== $rawValue ) ?
-				(float) number_format( (float) $rawValue, $this->optionsProvider->getDimensionsNumberOfDecimals(), '.', '' )
-				: null;
+			$sanitisedDimension        = $this->optionsProvider->sanitiseDimension( $rawValue );
 			$inputValues[ $dimension ] = $sanitisedDimension;
 
 			if ( null !== $sanitisedDimension && Provider::DIMENSIONS_UNIT_CM === $unit ) {
 				$sanitisedDimension = \Packetery\Module\Helper::convertToMillimeters( $sanitisedDimension );
 			}
 
-			$dimensions[] = $sanitisedDimension;
+			$dimensions[ $dimension ] = $sanitisedDimension;
 		}
-		$size = new Size( ...$dimensions );
+
+		$size = new Size(
+			$dimensions[Form::FIELD_LENGTH],
+			$dimensions[Form::FIELD_WIDTH],
+			$dimensions[Form::FIELD_HEIGHT]
+		);
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
 			$order->setWeight( $values[ Form::FIELD_WEIGHT ] );
