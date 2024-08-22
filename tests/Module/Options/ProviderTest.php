@@ -33,21 +33,23 @@ class ProviderTest extends TestCase {
 	public static function sanitiseDimensionProvider(): array {
 		return [
 			[ '', null, 1, 'cm' ],
-			[ 23.3567, 23.4, 1, 'cm' ],
-			[ 10.0, 10.0, 1, 'cm' ],
-			[ 0.100000000, 0.1, 1, 'cm' ],
+			[ 23.3567, 234, 1, 'cm' ],
+			[ 10.0, 100, 1, 'cm' ],
+			[ 0.100000000, 1, 1, 'cm' ],
 			[ 200, 200, 0, 'mm' ],
 			[ 200, 200, 0, 'mm' ],
 		];
 	}
 
 	/**
-	 * @param string|float $dimensionValue
-	 * @param string|float $expectedValue
-	 *
 	 * @dataProvider sanitiseDimensionProvider
 	 */
-	public function testSanitiseDimension( $dimensionValue , $expectedValue, int $numberOfDecimals, string $unit ): void {
+	public function testGetSanitizedDimensionValueInMm(
+		float|int|string $dimensionValue,
+		?int $expectedValue,
+		int $numberOfDecimals,
+		string $unit
+	): void {
 		$provider = $this->getMockBuilder( Provider::class )
 						->onlyMethods( [ 'getDimensionsNumberOfDecimals', 'getDimensionsUnit' ] )
 						->getMock();
@@ -58,7 +60,7 @@ class ProviderTest extends TestCase {
 		$provider->method( 'getDimensionsUnit' )
 				->willReturn( $unit );
 
-		$result = $provider->sanitiseDimension( $dimensionValue );
+		$result = $provider->getSanitizedDimensionValueInMm( $dimensionValue );
 		$this->assertEquals( $expectedValue, $result );
 	}
 

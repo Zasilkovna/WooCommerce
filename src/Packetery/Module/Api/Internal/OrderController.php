@@ -171,22 +171,12 @@ final class OrderController extends WP_REST_Controller {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
-		$values     = $form->getValues( 'array' );
-		$unit       = $this->optionsProvider->getDimensionsUnit();
+		$values = $form->getValues( 'array' );
+
 		$dimensions = [];
-
 		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
-			$rawValue                  = $values[ $dimension ];
-			$sanitisedDimension        = $this->optionsProvider->sanitiseDimension( $rawValue );
-			$inputValues[ $dimension ] = $sanitisedDimension;
-
-			if ( null !== $sanitisedDimension && Provider::DIMENSIONS_UNIT_CM === $unit ) {
-				$sanitisedDimension = \Packetery\Module\Helper::convertToMillimeters( $sanitisedDimension );
-			}
-
-			$dimensions[ $dimension ] = $sanitisedDimension;
+			$dimensions[ $dimension ] = $this->optionsProvider->getSanitizedDimensionValueInMm( $values[ $dimension ] );
 		}
-
 		$size = new Size(
 			$dimensions[ Form::FIELD_LENGTH ],
 			$dimensions[ Form::FIELD_WIDTH ],
@@ -211,9 +201,9 @@ final class OrderController extends WP_REST_Controller {
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			Form::FIELD_WEIGHT        => $order->getFinalWeight(),
-			Form::FIELD_LENGTH        => $inputValues[ Form::FIELD_LENGTH ],
-			Form::FIELD_WIDTH         => $inputValues[ Form::FIELD_WIDTH ],
-			Form::FIELD_HEIGHT        => $inputValues[ Form::FIELD_HEIGHT ],
+			Form::FIELD_LENGTH        => $values[ Form::FIELD_LENGTH ],
+			Form::FIELD_WIDTH         => $values[ Form::FIELD_WIDTH ],
+			Form::FIELD_HEIGHT        => $values[ Form::FIELD_HEIGHT ],
 			Form::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),

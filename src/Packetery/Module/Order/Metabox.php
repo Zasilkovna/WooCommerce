@@ -545,16 +545,7 @@ class Metabox {
 		}
 
 		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
-			$rawValue           = $formValues[ $dimension ];
-			$sanitisedDimension = $this->optionsProvider->sanitiseDimension( $rawValue );
-
-			if ( null !== $sanitisedDimension && Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
-				$formValues[ $dimension ] = Module\Helper::convertToMillimeters( $sanitisedDimension );
-			} else {
-				$formValues[ $dimension ] = $sanitisedDimension;
-			}
-
-			$propsToSave[ $dimension ] = $formValues[ $dimension ];
+			$propsToSave[ $dimension ] = $this->optionsProvider->getSanitizedDimensionValueInMm( $formValues[ $dimension ] );
 		}
 
 		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {

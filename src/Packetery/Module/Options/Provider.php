@@ -11,7 +11,6 @@ namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Module\Helper;
-use Packetery\Module\Order\Form;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -255,14 +254,21 @@ class Provider {
 	/**
 	 * Sanitises and formats a dimension value.
 	 *
-	 * @param string|float $dimensionValue Dimension value.
+	 * @param string|float $value Dimension value.
 	 *
 	 * @return float|null
 	 */
-	public function sanitiseDimension( $dimensionValue ): ?float {
-		return ( is_numeric( $dimensionValue ) ) ?
-			(float) number_format( (float) $dimensionValue, $this->getDimensionsNumberOfDecimals(), '.', '' )
-			: null;
+	public function getSanitizedDimensionValueInMm( $value ): ?float {
+		if ( ! is_numeric( $value ) ) {
+			return null;
+		}
+
+		$sanitizedValue = (float) number_format( (float) $value, $this->getDimensionsNumberOfDecimals(), '.', '' );
+		if ( self::DIMENSIONS_UNIT_CM === $this->getDimensionsUnit() ) {
+			return Helper::convertToMillimeters( $sanitizedValue );
+		}
+
+		return $sanitizedValue;
 	}
 
 	/**
