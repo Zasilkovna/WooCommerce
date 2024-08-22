@@ -19,10 +19,10 @@ trait WcTaxTrait {
 	/**
 	 * Gets an array of matching shipping tax rates for a given class.
 	 *
-	 * @return mixed
+	 * @return array
 	 */
-	public function taxGetShippingTaxRates() {
-		return \WC_Tax::get_shipping_tax_rates();
+	public function taxGetShippingTaxRates(): array {
+		return (array) \WC_Tax::get_shipping_tax_rates();
 	}
 
 	/**
