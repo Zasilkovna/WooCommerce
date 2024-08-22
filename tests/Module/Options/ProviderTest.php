@@ -9,10 +9,22 @@ class ProviderTest extends TestCase {
 
 	public static function dimensionsUnitProvider(): array {
 		return [
-			[ 'cm', 1 ],
-			[ 'mm', 0 ],
-			[ 'in', 0 ],
-			[ 'l', 0 ],
+			[
+				'unit'             => 'cm',
+				'expectedDecimals' => 1
+			],
+			[
+				'unit'             => 'mm',
+				'expectedDecimals' => 0
+			],
+			[
+				'unit'             => 'in',
+				'expectedDecimals' => 0
+			],
+			[
+				'unit'             => 'l',
+				'expectedDecimals' => 0
+			],
 		];
 	}
 
@@ -33,12 +45,42 @@ class ProviderTest extends TestCase {
 
 	public static function sanitiseDimensionProvider(): array {
 		return [
-			[ '', null, 1, 'cm' ],
-			[ 23.3567, 234, 1, 'cm' ],
-			[ 10.0, 100, 1, 'cm' ],
-			[ 0.100000000, 1, 1, 'cm' ],
-			[ 200, 200, 0, 'mm' ],
-			[ 200, 200, 0, 'mm' ],
+			[
+				'dimensionValue'   => '',
+				'expectedValue'    => null,
+				'numberOfDecimals' => 1,
+				'unit'             => 'cm'
+			],
+			[
+				'dimensionValue'   => 23.3567,
+				'expectedValue'    => 234,
+				'numberOfDecimals' => 1,
+				'unit'             => 'cm'
+			],
+			[
+				'dimensionValue'   => 10.0,
+				'expectedValue'    => 100,
+				'numberOfDecimals' => 1,
+				'unit'             => 'cm'
+			],
+			[
+				'dimensionValue'   => 0.100000000,
+				'expectedValue'    => 1,
+				'numberOfDecimals' => 1,
+				'unit'             => 'cm'
+			],
+			[
+				'dimensionValue'   => 200,
+				'expectedValue'    => 200,
+				'numberOfDecimals' => 0,
+				'unit'             => 'mm'
+			],
+			[
+				'dimensionValue'   => 200,
+				'expectedValue'    => 200,
+				'numberOfDecimals' => 0,
+				'unit'             => 'mm'
+			],
 		];
 	}
 

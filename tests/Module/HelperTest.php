@@ -9,12 +9,30 @@ class HelperTest extends TestCase {
 
 	public static function convertToCentimetersProvider(): array {
 		return [
-			[ 0, null ],
-			[ 1, 0.1 ],
-			[ 10, 1.0 ],
-			[ 100, 10.0 ],
-			[ - 1, null ],
-			[ 1000, 100.0 ],
+			[
+				'input'    => 0,
+				'expected' => null
+			],
+			[
+				'input'    => 1,
+				'expected' => 0.1
+			],
+			[
+				'input'    => 10,
+				'expected' => 1.0
+			],
+			[
+				'input'    => 100,
+				'expected' => 10.0
+			],
+			[
+				'input' => - 1,
+				'expected' => null
+			],
+			[
+				'input'    => 1000,
+				'expected' => 100.0
+			],
 		];
 	}
 
@@ -28,12 +46,30 @@ class HelperTest extends TestCase {
 
 	public static function convertToMillimetersProvider(): array {
 		return [
-			[ 0.0, null ],
-			[ 0.1, 1.0 ],
-			[ 1.0, 10.0 ],
-			[ 10.0, 100.0 ],
-			[ - 0.1, null ],
-			[ 100.0, 1000.0 ],
+			[
+				'input'    => 0.0,
+				'expected' => null
+			],
+			[
+				'input'    => 0.1,
+				'expected' => 1.0
+			],
+			[
+				'input'    => 1.0,
+				'expected' => 10.0
+			],
+			[
+				'input'    => 10.0,
+				'expected' => 100.0
+			],
+			[
+				'input'    => - 0.1,
+				'expected' => null
+			],
+			[
+				'input'    => 100.0,
+				'expected' => 1000.0
+			],
 		];
 	}
 
