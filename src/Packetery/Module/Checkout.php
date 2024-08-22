@@ -794,7 +794,7 @@ class Checkout {
 		}
 
 		$weight   = $this->wcAdapter->cartGetCartContentsWeight();
-		$weightKg = (float) $this->wcAdapter->getWeight( $weight, 'kg' );
+		$weightKg = $this->wcAdapter->getWeight( $weight, 'kg' );
 		if ( $weightKg ) {
 			$weightKg += $this->options_provider->getPackagingWeight();
 		}
@@ -1328,7 +1328,7 @@ class Checkout {
 	 * @return float
 	 */
 	private function getCartContentsTotalIncludingTax(): float {
-		return (float) $this->wcAdapter->cartGetCartContentsTotal() + (float) $this->wcAdapter->cartGetCartContentsTax();
+		return $this->wcAdapter->cartGetCartContentsTotal() + $this->wcAdapter->cartGetCartContentsTax();
 	}
 
 	/**

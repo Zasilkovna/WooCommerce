@@ -31,7 +31,7 @@ trait WcCartTrait {
 	 * @return float
 	 */
 	public function cartGetCartContentsTotal(): float {
-		return WC()->cart->get_cart_contents_total();
+		return (float) WC()->cart->get_cart_contents_total();
 	}
 
 	/**
@@ -40,7 +40,7 @@ trait WcCartTrait {
 	 * @return float
 	 */
 	public function cartGetCartContentsTax(): float {
-		return WC()->cart->get_cart_contents_tax();
+		return (float) WC()->cart->get_cart_contents_tax();
 	}
 
 	/**
