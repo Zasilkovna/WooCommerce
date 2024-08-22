@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare( strict_types=1 );
 
 use Packetery\Module\Options\Provider;
 use PHPUnit\Framework\TestCase;
 
 class ProviderTest extends TestCase {
+
 	public static function dimensionsUnitProvider(): array {
 		return [
 			[ 'cm', 1 ],
@@ -20,11 +21,11 @@ class ProviderTest extends TestCase {
 	 */
 	public function testGetDimensionsNumberOfDecimals( string $unit, int $expectedDecimals ): void {
 		$provider = $this->getMockBuilder( Provider::class )
-						->onlyMethods( [ 'getDimensionsUnit' ] )
-						->getMock();
+		                 ->onlyMethods( [ 'getDimensionsUnit' ] )
+		                 ->getMock();
 
 		$provider->method( 'getDimensionsUnit' )
-				->willReturn( $unit );
+		         ->willReturn( $unit );
 
 		$result = $provider->getDimensionsNumberOfDecimals();
 		$this->assertSame( $expectedDecimals, $result );
@@ -51,14 +52,14 @@ class ProviderTest extends TestCase {
 		string $unit
 	): void {
 		$provider = $this->getMockBuilder( Provider::class )
-						->onlyMethods( [ 'getDimensionsNumberOfDecimals', 'getDimensionsUnit' ] )
-						->getMock();
+		                 ->onlyMethods( [ 'getDimensionsNumberOfDecimals', 'getDimensionsUnit' ] )
+		                 ->getMock();
 
 		$provider->method( 'getDimensionsNumberOfDecimals' )
-				->willReturn( $numberOfDecimals );
+		         ->willReturn( $numberOfDecimals );
 
 		$provider->method( 'getDimensionsUnit' )
-				->willReturn( $unit );
+		         ->willReturn( $unit );
 
 		$result = $provider->getSanitizedDimensionValueInMm( $dimensionValue );
 		$this->assertEquals( $expectedValue, $result );
