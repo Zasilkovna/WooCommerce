@@ -18,7 +18,7 @@
 
 <div class="packetery-metabox-overview-buttons">
     <a n:if="$showLogsLink" class="button" href="{$showLogsLink}">{$translations['showLogs']}</a>
-    <div n:if="$packetSubmitUrl" class="packetery-metabox-button-wrapper">
+    <div n:if="isset($packetSubmitUrl)" class="packetery-metabox-button-wrapper">
         <a
                 {if !$isPacketSubmissionPossible}disabled{/if}
                 class="button dashicons {if !$isPacketSubmissionPossible}dashicons-warning{else}dashicons-upload{/if} packetery-dashicons-button-fix"
