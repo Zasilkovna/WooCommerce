@@ -2,6 +2,8 @@
 
 declare( strict_types=1 );
 
+namespace Tests\Module\Options;
+
 use Packetery\Module\Options\Provider;
 use PHPUnit\Framework\TestCase;
 

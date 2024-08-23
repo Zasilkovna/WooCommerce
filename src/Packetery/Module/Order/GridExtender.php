@@ -343,22 +343,11 @@ class GridExtender {
 					admin_url( 'admin.php' )
 				);
 
-				$length = $order->getLength();
-				$width  = $order->getWidth();
-				$height = $order->getHeight();
-				foreach ( [ $length, $width, $height ] as $dimension ) {
-					if ( null !== $dimension && Module\Options\Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
-						$size[] = Module\Helper::convertToCentimeters( (int) $dimension );
-					} else {
-						$size[] = $dimension;
-					}
-				}
-
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                     => $order,
-						'dimensions'                => new Size( ...$size ),
+						'dimensions'                => $this->getSizeInSetDimensionUnit( $order ),
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'orderWarningFields'        => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
@@ -415,4 +404,27 @@ class GridExtender {
 
 		return $new_columns;
 	}
+
+	/**
+	 * Gets the size in the configured dimension unit.
+	 *
+	 * @param Core\Entity\Order $order Order entity.
+	 *
+	 * @return Size
+	 */
+	public function getSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
+		$length = $order->getLength();
+		$width  = $order->getWidth();
+		$height = $order->getHeight();
+		foreach ( [ $length, $width, $height ] as $dimension ) {
+			if ( null !== $dimension && Module\Options\Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
+				$size[] = Module\Helper::convertToCentimeters( (int) $dimension );
+			} else {
+				$size[] = $dimension;
+			}
+		}
+
+		return new Size( ...$size );
+	}
+
 }

@@ -2,6 +2,8 @@
 
 declare( strict_types=1 );
 
+namespace Tests\Module;
+
 use PHPUnit\Framework\TestCase;
 use Packetery\Module\Helper;
 
