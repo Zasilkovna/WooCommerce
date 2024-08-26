@@ -290,17 +290,29 @@ class LabelPrint {
 		}
 
 		foreach ( $packetIds as $orderId => $packetId ) {
+			$order   = $this->orderRepository->getById( (int) $orderId );
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
-			if ( null === $wcOrder ) {
+			if ( null === $wcOrder && null === $order ) {
 				continue;
 			}
 
 			if ( $response instanceof Response\PacketsLabelsPdf ) {
-				$wcOrder->add_order_note( __( 'Packeta: Label has been created.', 'packeta' ) );
+				$wcOrder->add_order_note(
+					sprintf(
+						__( "Packeta: Label for packet <a href='%1\$s' target='_blank'>Z%2\$s</a> has been created.", 'packeta' ),
+						$order->getPacketTrackingUrl(),
+						$order->getPacketId()
+					)
+				);
 			}
-
 			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
-				$wcOrder->add_order_note( __( 'Packeta: Carrier label has been created.', 'packeta' ) );
+				$wcOrder->add_order_note(
+					sprintf(
+						__( "Packeta: Carrier label for packet <a href='%1\$s' target='_blank'>Z%2\$s</a> has been created.", 'packeta' ),
+						$order->getPacketTrackingUrl(),
+						$order->getPacketId()
+					)
+				);
 			}
 
 			$wcOrder->save();
