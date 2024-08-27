@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
 use Packetery\Core\Log;
-use Packetery\Latte\Engine;
 use Packetery\Module\MessageManager;
 use Packetery\Nette\Http\Request;
 use Packetery\Module;
