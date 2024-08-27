@@ -95,7 +95,7 @@ class FormFields {
 		$carriersList           = $this->carrierRepository->getAllActiveCarriersList();
 
 		foreach ( $carriersList as $carrier ) {
-			if ( false === $this->carDeliveryConfig->isEnabled() && in_array( OptionPrefixer::removePrefix( $carrier['option_id'] ), Carrier::CAR_DELIVERY_CARRIERS ) ) {
+			if ( false === $this->carDeliveryConfig->isEnabled() && in_array( OptionPrefixer::removePrefix( $carrier['option_id'] ), Carrier::CAR_DELIVERY_CARRIERS, true ) ) {
 				continue;
 			}
 
