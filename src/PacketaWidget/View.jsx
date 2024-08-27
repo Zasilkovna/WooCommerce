@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSelect } from '@wordpress/data';
 import { getSetting } from '@woocommerce/settings';
 import { ValidatedTextInput } from '@woocommerce/blocks-components';
+import { registerPaymentMethodExtensionCallbacks } from '@woocommerce/blocks-registry';
 
 import { usePacketaShippingRate } from './usePacketaShippingRate';
 import { useOnWidgetButtonClicked } from './useOnWidgetButtonClicked';
@@ -25,6 +26,7 @@ export const View = ( { cart } ) => {
 		logo,
 		widgetAutoOpen,
 		adminAjaxUrl,
+		codPaymentMethod,
 	} = settings;
 
 	const filteredShippingRates = usePacketaShippingRate(
@@ -55,6 +57,60 @@ export const View = ( { cart } ) => {
 			if ( activePaymentMethod !== '' ) {
 				paymentSaved = true;
 			}
+
+			const useDisablePaymentMethods = () => {
+				// todo respond properly to rate change
+				console.log('rateId', rateId);
+				const chosenRateId = rateId.split( ':' ).pop();
+				const rateCarrierConfig = carrierConfig[ chosenRateId ] || null;
+
+				const paymentMethods = paymentStore.getAvailablePaymentMethods();
+				if (!paymentMethods) {
+					return [];
+				}
+				const paymentMethodsArray = Object.entries( paymentMethods );
+				return paymentMethodsArray.filter( ( method ) => {
+					/* todo fix, filters out HD methods
+					if(!packetaShippingRate) {
+						return true;
+					}
+					 */
+					console.log('rateCarrierConfig', rateCarrierConfig);
+
+					if ( method[0] === codPaymentMethod && ! rateCarrierConfig.supports_cod ) {
+						console.log('! rateCarrierConfig.supports_cod');
+						return false;
+					}
+
+					if (
+						rateCarrierConfig.hasOwnProperty( 'disallowed_checkout_payment_methods' ) &&
+						rateCarrierConfig.disallowed_checkout_payment_methods.includes( method[0] )
+					) {
+						console.log('disallowed_checkout_payment_methods', rateCarrierConfig.disallowed_checkout_payment_methods);
+
+						return false;
+					}
+
+					return true;
+				} );
+			};
+
+
+			registerPaymentMethodExtensionCallbacks( 'packetery-js-hooks', {
+				cod: (arg) => {
+					const filteredPaymentMethods = useDisablePaymentMethods();
+					return filteredPaymentMethods.some((method) => method[0] === 'cod');
+				},
+				bacs: (arg) => {
+					const filteredPaymentMethods = useDisablePaymentMethods();
+					return filteredPaymentMethods.some((method) => method[0] === 'bacs');
+				},
+				/* todo how to do it without list of methods, using useDisablePaymentMethods only?
+				'packetery-js-hooks': ( arg ) => {
+					return useDisablePaymentMethods();
+				},
+				 */
+			} );
 
 			wp.hooks.doAction( 'packetery_save_shipping_and_payment_methods', rateId, activePaymentMethod );
 

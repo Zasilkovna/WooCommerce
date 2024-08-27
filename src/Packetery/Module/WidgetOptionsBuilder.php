@@ -120,6 +120,7 @@ class WidgetOptionsBuilder {
 		$carrierConfigForWidget = [
 			'id'               => $carrier->getId(),
 			'is_pickup_points' => (int) $carrier->hasPickupPoints(),
+			'supports_cod'     => (int) $carrier->supportsCod(),
 		];
 
 		$carrierOption = get_option( $optionId );
@@ -142,6 +143,10 @@ class WidgetOptionsBuilder {
 			}
 
 			$carrierConfigForWidget['address_validation'] = $addressValidation;
+		}
+
+		if ( !empty($carrierOption['disallowed_checkout_payment_methods']) ) {
+			$carrierConfigForWidget['disallowed_checkout_payment_methods'] = $carrierOption['disallowed_checkout_payment_methods'];
 		}
 
 		return $carrierConfigForWidget;

@@ -389,6 +389,7 @@ class Checkout {
 			'adminAjaxUrl'               => admin_url( 'admin-ajax.php' ),
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
+			'codPaymentMethod'           => $this->options_provider->getCodPaymentMethod(),
 			'translations'               => [
 				'packeta'                       => __( 'Packeta', 'packeta' ),
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
@@ -1571,7 +1572,7 @@ class Checkout {
 	 *
 	 * @return void
 	 */
-	public function applyCodSurgarche( \WC_Cart $cart ): void {
+	public function applyCodSurcharge( \WC_Cart $cart ): void {
 		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
 			return;
 		}

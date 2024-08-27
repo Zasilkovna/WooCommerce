@@ -545,7 +545,7 @@ class Plugin {
 				}
 			}
 		);
-		add_action( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurgarche' ], 20, 1 );
+		add_action( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurcharge' ], 20, 1 );
 	}
 
 	/**
