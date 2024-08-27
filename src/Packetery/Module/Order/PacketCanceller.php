@@ -13,7 +13,6 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
-use Packetery\Latte\Engine;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Nette\Http\Request;
@@ -83,13 +82,6 @@ class PacketCanceller {
 	private $wcOrderActions;
 
 	/**
-	 * PacketeryLatte Engine.
-	 *
-	 * @var Engine PacketeryLatte engine.
-	 */
-	private $latteEngine;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient   Soap client API.
@@ -100,7 +92,6 @@ class PacketCanceller {
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 * @param WcOrderActions           $wcOrderActions  WC order actions.
-	 * @param Engine                   $latteEngine     Latte engine.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -110,8 +101,7 @@ class PacketCanceller {
 		Options\Provider $optionsProvider,
 		MessageManager $messageManager,
 		PacketActionsCommonLogic $commonLogic,
-		WcOrderActions $wcOrderActions,
-		Engine $latteEngine
+		WcOrderActions $wcOrderActions
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -121,7 +111,6 @@ class PacketCanceller {
 		$this->messageManager  = $messageManager;
 		$this->commonLogic     = $commonLogic;
 		$this->wcOrderActions  = $wcOrderActions;
-		$this->latteEngine     = $latteEngine;
 	}
 
 	/**

@@ -16,7 +16,6 @@ use Packetery\Core\Log;
 use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
-use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
@@ -113,13 +112,6 @@ class PacketSubmitter {
 	private $packetSynchronizer;
 
 	/**
-	 * PacketeryLatte Engine.
-	 *
-	 * @var Engine PacketeryLatte engine.
-	 */
-	private $latteEngine;
-
-	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
@@ -133,7 +125,6 @@ class PacketSubmitter {
 	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
-	 * @param Engine                        $latteEngine                  Latte engine.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -146,8 +137,7 @@ class PacketSubmitter {
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
-		PacketSynchronizer $packetSynchronizer,
-		Engine $latteEngine
+		PacketSynchronizer $packetSynchronizer
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidator;
@@ -160,7 +150,6 @@ class PacketSubmitter {
 		$this->commonLogic                  = $commonLogic;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
-		$this->latteEngine                  = $latteEngine;
 	}
 
 	/**

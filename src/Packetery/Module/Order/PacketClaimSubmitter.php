@@ -72,13 +72,6 @@ class PacketClaimSubmitter {
 	private $commonLogic;
 
 	/**
-	 * PacketeryLatte Engine.
-	 *
-	 * @var Engine PacketeryLatte engine.
-	 */
-	private $latteEngine;
-
-	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient   SOAP API Client.
@@ -88,7 +81,6 @@ class PacketClaimSubmitter {
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param Module\Log\Page          $logPage         Log page.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
-	 * @param Engine                   $latteEngine     Latte engine.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -97,8 +89,7 @@ class PacketClaimSubmitter {
 		Request $request,
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
-		PacketActionsCommonLogic $commonLogic,
-		Engine $latteEngine
+		PacketActionsCommonLogic $commonLogic
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -107,7 +98,6 @@ class PacketClaimSubmitter {
 		$this->messageManager  = $messageManager;
 		$this->logPage         = $logPage;
 		$this->commonLogic     = $commonLogic;
-		$this->latteEngine     = $latteEngine;
 	}
 
 	/**
