@@ -210,7 +210,7 @@ class PacketClaimSubmitter {
 						__( 'Packeta: Packet claim %s has been created', 'packeta' ),
 						trim(
 							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
 								[
 									'href' => $order->getPacketClaimTrackingUrl(),
 									'name' => 'Z' . $order->getPacketClaimId(),

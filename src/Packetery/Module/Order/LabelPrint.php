@@ -292,7 +292,7 @@ class LabelPrint {
 		foreach ( $packetIds as $orderId => $packetId ) {
 			$order   = $this->orderRepository->getById( (int) $orderId, true );
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
-			if ( null === $wcOrder && null === $order ) {
+			if ( null === $wcOrder || null === $order ) {
 				continue;
 			}
 
@@ -303,7 +303,7 @@ class LabelPrint {
 						__( 'Packeta: Label for packet %s has been created', 'packeta' ),
 						trim(
 							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
 								[
 									'href' => $order->getPacketTrackingUrl(),
 									'name' => 'Z' . $order->getPacketId(),
@@ -320,7 +320,7 @@ class LabelPrint {
 						__( 'Packeta: Carrier label for packet %s has been created', 'packeta' ),
 						trim(
 							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
 								[
 									'href' => $order->getPacketTrackingUrl(),
 									'name' => 'Z' . $order->getPacketId(),

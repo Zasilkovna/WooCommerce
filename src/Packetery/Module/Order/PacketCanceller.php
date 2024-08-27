@@ -211,7 +211,7 @@ class PacketCanceller {
 							__( 'Packeta: Packet claim %s has been cancelled', 'packeta' ),
 							trim(
 								$this->latteEngine->renderToString(
-									PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+									PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
 									[
 										'href' => $order->getPacketClaimTrackingUrl(),
 										'name' => 'Z' . $order->getPacketClaimId(),
@@ -227,7 +227,7 @@ class PacketCanceller {
 							__( 'Packeta: Packet %s has been cancelled', 'packeta' ),
 							trim(
 								$this->latteEngine->renderToString(
-									PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+									PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
 									[
 										'href' => $order->getPacketTrackingUrl(),
 										'name' => 'Z' . $order->getPacketId(),

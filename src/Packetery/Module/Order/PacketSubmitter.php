@@ -396,7 +396,7 @@ class PacketSubmitter {
 						__( 'Packeta: Packet %s has been created', 'packeta' ),
 						trim(
 							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
 								[
 									'href' => $order->getPacketTrackingUrl(),
 									'name' => 'Z' . $order->getPacketId(),
