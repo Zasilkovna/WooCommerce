@@ -809,6 +809,15 @@ class Order {
 	}
 
 	/**
+	 * Determines whether a packet is a claim, or otherwise.
+	 *
+	 * @return bool
+	 */
+	public function isPacketClaim(): bool {
+		return $this->getPacketClaimId() !== null;
+	}
+
+	/**
 	 * Tells if packet claim label print is possible.
 	 *
 	 * @return bool

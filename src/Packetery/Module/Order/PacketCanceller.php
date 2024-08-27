@@ -17,6 +17,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Nette\Http\Request;
+use Packetery\Nette\Utils\Html;
 
 /**
  * Class PacketCanceller
@@ -204,37 +205,21 @@ class PacketCanceller {
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( null !== $wcOrder ) {
-				if ( $packetId === $order->getPacketClaimId() ) {
+				$link = Html::el( 'a' )
+					->setText( $order->getPacketBarcode() )
+					->setAttribute( 'target', '_blank' );
+
+				if ( $order->isPacketClaim() ) {
+					$link->href( $order->getPacketClaimTrackingUrl() );
 					$wcOrder->add_order_note(
-						sprintf(
-							// translators: %s represents a packet tracking link.
-							__( 'Packeta: Packet claim %s has been cancelled', 'packeta' ),
-							trim(
-								$this->latteEngine->renderToString(
-									PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
-									[
-										'href' => $order->getPacketClaimTrackingUrl(),
-										'name' => 'Z' . $order->getPacketClaimId(),
-									]
-								)
-							)
-						)
+						// translators: %s represents a packet tracking link.
+						sprintf( __( 'Packeta: Packet claim %s has been cancelled', 'packeta' ), $link )
 					);
 				} else {
+					$link->href( $order->getPacketTrackingUrl() );
 					$wcOrder->add_order_note(
-						sprintf(
-							// translators: %s represents a packet tracking link.
-							__( 'Packeta: Packet %s has been cancelled', 'packeta' ),
-							trim(
-								$this->latteEngine->renderToString(
-									PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
-									[
-										'href' => $order->getPacketTrackingUrl(),
-										'name' => 'Z' . $order->getPacketId(),
-									]
-								)
-							)
-						)
+						// translators: %s represents a packet tracking link.
+						sprintf( __( 'Packeta: Packet %s has been cancelled', 'packeta' ), $link )
 					);
 				}
 				$wcOrder->save();

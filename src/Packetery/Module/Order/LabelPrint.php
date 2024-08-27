@@ -22,6 +22,7 @@ use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
 use Packetery\Module;
+use Packetery\Nette\Utils\Html;
 
 /**
  * Class LabelPrint.
@@ -234,7 +235,7 @@ class LabelPrint {
 
 		$fallbackToPacketaLabel = false;
 		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$idParam                = $this->httpRequest->getQuery( 'id' );
+		$idParam                = $this->httpRequest->getQuery( 'id' ) ? (int) $this->httpRequest->getQuery( 'id' ) : null;
 		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
 		if ( null !== $idParam && null !== $packetIdParam ) {
 			$fallbackToPacketaLabel = true;
@@ -283,51 +284,39 @@ class LabelPrint {
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 			if ( PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $idParam ) {
-				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->getById( (int) $idParam, true ) );
+				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->getById( $idParam, true ) );
 			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 			return;
 		}
 
 		foreach ( $packetIds as $orderId => $packetId ) {
-			$order   = $this->orderRepository->getById( (int) $orderId, true );
-			$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
+			try {
+				$order = $this->orderRepository->getById( $orderId );
+			} catch ( Module\Exception\InvalidCarrierException $exception ) {
+				continue;
+			}
+
+			$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 			if ( null === $wcOrder || null === $order ) {
 				continue;
 			}
 
+			$link = Html::el( 'a' )
+				->href( $order->getPacketTrackingUrl() )
+				->setText( $order->getPacketBarcode() )
+				->setAttribute( 'target', '_blank' );
+
 			if ( $response instanceof Response\PacketsLabelsPdf ) {
 				$wcOrder->add_order_note(
-					sprintf(
-						// translators: %s represents a packet tracking link.
-						__( 'Packeta: Label for packet %s has been created', 'packeta' ),
-						trim(
-							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
-								[
-									'href' => $order->getPacketTrackingUrl(),
-									'name' => 'Z' . $order->getPacketId(),
-								]
-							)
-						)
-					)
+					// translators: %s represents a packet tracking link.
+					sprintf( __( 'Packeta: Label for packet %s has been created', 'packeta' ), $link )
 				);
 			}
 			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
 				$wcOrder->add_order_note(
-					sprintf(
-						// translators: %s represents a packet tracking link.
-						__( 'Packeta: Carrier label for packet %s has been created', 'packeta' ),
-						trim(
-							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
-								[
-									'href' => $order->getPacketTrackingUrl(),
-									'name' => 'Z' . $order->getPacketId(),
-								]
-							)
-						)
-					)
+					// translators: %s represents a packet tracking link.
+					sprintf( __( 'Packeta: Carrier label for packet %s has been created', 'packeta' ), $link )
 				);
 			}
 
@@ -528,7 +517,7 @@ class LabelPrint {
 				continue;
 			}
 			if ( ! $isCarrierLabels || $order->isExternalCarrier() ) {
-				$packetIds[ $order->getNumber() ] = $order->getPacketId();
+				$packetIds[ $order->getNumber() ] = (int) $order->getPacketId();
 			}
 		}
 

@@ -15,6 +15,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\MessageManager;
 use Packetery\Nette\Http\Request;
 use Packetery\Module;
+use Packetery\Nette\Utils\Html;
 
 /**
  * Class PacketClaimSubmitter.
@@ -204,20 +205,13 @@ class PacketClaimSubmitter {
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( null !== $wcOrder ) {
+				$link = Html::el( 'a' )
+					->href( $order->getPacketClaimTrackingUrl() )
+					->setText( $order->getPacketBarcode() )
+					->setAttribute( 'target', '_blank' );
 				$wcOrder->add_order_note(
-					sprintf(
-						// translators: %s represents a packet tracking link.
-						__( 'Packeta: Packet claim %s has been created', 'packeta' ),
-						trim(
-							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
-								[
-									'href' => $order->getPacketClaimTrackingUrl(),
-									'name' => 'Z' . $order->getPacketClaimId(),
-								]
-							)
-						)
-					)
+					// translators: %s represents a packet tracking link.
+					sprintf( __( 'Packeta: Packet claim %s has been created', 'packeta' ), $link )
 				);
 				$wcOrder->save();
 			}

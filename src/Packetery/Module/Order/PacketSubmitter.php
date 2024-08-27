@@ -23,6 +23,7 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
+use Packetery\Nette\Utils\Html;
 use WC_Order;
 use Packetery\Module;
 
@@ -390,20 +391,13 @@ class PacketSubmitter {
 
 				$submissionResult->increaseSuccessCount();
 
+				$link = Html::el( 'a' )
+					->href( $order->getPacketTrackingUrl() )
+					->setText( $order->getPacketBarcode() )
+					->setAttribute( 'target', '_blank' );
 				$wcOrder->add_order_note(
-					sprintf(
-						// translators: %s represents a packet tracking link.
-						__( 'Packeta: Packet %s has been created', 'packeta' ),
-						trim(
-							$this->latteEngine->renderToString(
-								PACKETERY_PLUGIN_DIR . '/template/named-hypertext-link.latte',
-								[
-									'href' => $order->getPacketTrackingUrl(),
-									'name' => 'Z' . $order->getPacketId(),
-								]
-							)
-						)
-					)
+					// translators: %s represents a packet tracking link.
+					sprintf( __( 'Packeta: Packet %s has been created', 'packeta' ), $link )
 				);
 				$wcOrder->save();
 
