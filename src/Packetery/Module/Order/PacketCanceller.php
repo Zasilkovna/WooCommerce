@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
+use Packetery\Latte\Engine;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Nette\Http\Request;
@@ -81,6 +82,13 @@ class PacketCanceller {
 	private $wcOrderActions;
 
 	/**
+	 * PacketeryLatte Engine.
+	 *
+	 * @var Engine PacketeryLatte engine.
+	 */
+	private $latteEngine;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient   Soap client API.
@@ -91,6 +99,7 @@ class PacketCanceller {
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 * @param WcOrderActions           $wcOrderActions  WC order actions.
+	 * @param Engine                   $latteEngine     Latte engine.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -100,7 +109,8 @@ class PacketCanceller {
 		Options\Provider $optionsProvider,
 		MessageManager $messageManager,
 		PacketActionsCommonLogic $commonLogic,
-		WcOrderActions $wcOrderActions
+		WcOrderActions $wcOrderActions,
+		Engine $latteEngine
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -110,6 +120,7 @@ class PacketCanceller {
 		$this->messageManager  = $messageManager;
 		$this->commonLogic     = $commonLogic;
 		$this->wcOrderActions  = $wcOrderActions;
+		$this->latteEngine     = $latteEngine;
 	}
 
 	/**
@@ -196,17 +207,33 @@ class PacketCanceller {
 				if ( $packetId === $order->getPacketClaimId() ) {
 					$wcOrder->add_order_note(
 						sprintf(
-							__( "Packetery: Packet claim <a href='%1\$s' target='_blank'>Z%2\$s</a> has been cancelled.", 'packeta' ),
-							$order->getPacketClaimTrackingUrl(),
-							$order->getPacketClaimId()
+							// translators: %s represents a packet tracking link.
+							__( 'Packeta: Packet claim %s has been cancelled', 'packeta' ),
+							trim(
+								$this->latteEngine->renderToString(
+									PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+									[
+										'href' => $order->getPacketClaimTrackingUrl(),
+										'name' => 'Z' . $order->getPacketClaimId(),
+									]
+								)
+							)
 						)
 					);
 				} else {
 					$wcOrder->add_order_note(
 						sprintf(
-							__( "Packetery: Packet <a href='%1\$s' target='_blank'>Z%2\$s</a> has been cancelled.", 'packeta' ),
-							$order->getPacketTrackingUrl(),
-							$order->getPacketId()
+							// translators: %s represents a packet tracking link.
+							__( 'Packeta: Packet %s has been cancelled', 'packeta' ),
+							trim(
+								$this->latteEngine->renderToString(
+									PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+									[
+										'href' => $order->getPacketTrackingUrl(),
+										'name' => 'Z' . $order->getPacketId(),
+									]
+								)
+							)
 						)
 					);
 				}

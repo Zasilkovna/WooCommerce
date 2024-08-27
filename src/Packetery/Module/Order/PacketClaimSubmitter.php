@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
 use Packetery\Core\Log;
+use Packetery\Latte\Engine;
 use Packetery\Module\MessageManager;
 use Packetery\Nette\Http\Request;
 use Packetery\Module;
@@ -70,6 +71,13 @@ class PacketClaimSubmitter {
 	private $commonLogic;
 
 	/**
+	 * PacketeryLatte Engine.
+	 *
+	 * @var Engine PacketeryLatte engine.
+	 */
+	private $latteEngine;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient   SOAP API Client.
@@ -79,6 +87,7 @@ class PacketClaimSubmitter {
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param Module\Log\Page          $logPage         Log page.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
+	 * @param Engine                   $latteEngine     Latte engine.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -87,7 +96,8 @@ class PacketClaimSubmitter {
 		Request $request,
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
-		PacketActionsCommonLogic $commonLogic
+		PacketActionsCommonLogic $commonLogic,
+		Engine $latteEngine
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -96,6 +106,7 @@ class PacketClaimSubmitter {
 		$this->messageManager  = $messageManager;
 		$this->logPage         = $logPage;
 		$this->commonLogic     = $commonLogic;
+		$this->latteEngine     = $latteEngine;
 	}
 
 	/**
@@ -195,9 +206,17 @@ class PacketClaimSubmitter {
 			if ( null !== $wcOrder ) {
 				$wcOrder->add_order_note(
 					sprintf(
-						__( "Packetery: Packet claim <a href='%1\$s' target='_blank'>Z%2\$s</a> has been created.", 'packeta' ),
-						$order->getPacketClaimTrackingUrl(),
-						$order->getPacketClaimId()
+						// translators: %s represents a packet tracking link.
+						__( 'Packeta: Packet claim %s has been created', 'packeta' ),
+						trim(
+							$this->latteEngine->renderToString(
+								PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+								[
+									'href' => $order->getPacketClaimTrackingUrl(),
+									'name' => 'Z' . $order->getPacketClaimId(),
+								]
+							)
+						)
 					)
 				);
 				$wcOrder->save();

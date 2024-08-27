@@ -16,6 +16,7 @@ use Packetery\Core\Log;
 use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
@@ -111,6 +112,13 @@ class PacketSubmitter {
 	private $packetSynchronizer;
 
 	/**
+	 * PacketeryLatte Engine.
+	 *
+	 * @var Engine PacketeryLatte engine.
+	 */
+	private $latteEngine;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
@@ -124,6 +132,7 @@ class PacketSubmitter {
 	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
+	 * @param Engine                        $latteEngine                  Latte engine.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -136,7 +145,8 @@ class PacketSubmitter {
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
-		PacketSynchronizer $packetSynchronizer
+		PacketSynchronizer $packetSynchronizer,
+		Engine $latteEngine
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidator;
@@ -149,6 +159,7 @@ class PacketSubmitter {
 		$this->commonLogic                  = $commonLogic;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
+		$this->latteEngine                  = $latteEngine;
 	}
 
 	/**
@@ -381,9 +392,17 @@ class PacketSubmitter {
 
 				$wcOrder->add_order_note(
 					sprintf(
-						__( "Packetery: Packet <a href='%1\$s' target='_blank'>Z%2\$s</a> has been created.", 'packeta' ),
-						$order->getPacketTrackingUrl(),
-						$order->getPacketId()
+						// translators: %s represents a packet tracking link.
+						__( 'Packeta: Packet %s has been created', 'packeta' ),
+						trim(
+							$this->latteEngine->renderToString(
+								PACKETERY_PLUGIN_DIR . '/template/help-block-link-with-name.latte',
+								[
+									'href' => $order->getPacketTrackingUrl(),
+									'name' => 'Z' . $order->getPacketId(),
+								]
+							)
+						)
 					)
 				);
 				$wcOrder->save();
