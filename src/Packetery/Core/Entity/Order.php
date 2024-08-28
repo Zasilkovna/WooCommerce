@@ -11,6 +11,7 @@ namespace Packetery\Core\Entity;
 
 use Packetery\Core\Helper;
 use DateTimeImmutable;
+use Packetery\Nette\Utils\Html;
 
 /**
  * Class Order
@@ -815,6 +816,19 @@ class Order {
 	 */
 	public function isPacketClaim(): bool {
 		return $this->getPacketClaimId() !== null;
+	}
+
+	/**
+	 * Creates a named tracking URL for packet.
+	 *
+	 * @return Html
+	 */
+	public function getPacketHtmlTrackingLink(): Html {
+		$trackingUrl = $this->isPacketClaim() ? $this->getPacketClaimTrackingUrl() : $this->getPacketTrackingUrl();
+		return Html::el( 'a' )
+			->href( $trackingUrl )
+			->setText( $this->getPacketBarcode() )
+			->setAttribute( 'target', '_blank' );
 	}
 
 	/**

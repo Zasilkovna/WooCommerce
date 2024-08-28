@@ -194,21 +194,15 @@ class PacketCanceller {
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( null !== $wcOrder ) {
-				$link = Html::el( 'a' )
-					->setText( $order->getPacketBarcode() )
-					->setAttribute( 'target', '_blank' );
-
 				if ( $order->isPacketClaim() ) {
-					$link->href( $order->getPacketClaimTrackingUrl() );
 					$wcOrder->add_order_note(
 						// translators: %s represents a packet tracking link.
-						sprintf( __( 'Packeta: Packet claim %s has been cancelled', 'packeta' ), $link )
+						sprintf( __( 'Packeta: Packet claim %s has been cancelled', 'packeta' ), $order->getPacketHtmlTrackingLink() )
 					);
 				} else {
-					$link->href( $order->getPacketTrackingUrl() );
 					$wcOrder->add_order_note(
 						// translators: %s represents a packet tracking link.
-						sprintf( __( 'Packeta: Packet %s has been cancelled', 'packeta' ), $link )
+						sprintf( __( 'Packeta: Packet %s has been cancelled', 'packeta' ), $order->getPacketHtmlTrackingLink() )
 					);
 				}
 				$wcOrder->save();

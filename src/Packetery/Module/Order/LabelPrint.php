@@ -291,32 +291,22 @@ class LabelPrint {
 		}
 
 		foreach ( $packetIds as $orderId => $packetId ) {
-			try {
-				$order = $this->orderRepository->getById( $orderId );
-			} catch ( Module\Exception\InvalidCarrierException $exception ) {
-				continue;
-			}
-
+			$order   = $this->orderRepository->findById( $orderId );
 			$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 			if ( null === $wcOrder || null === $order ) {
 				continue;
 			}
 
-			$link = Html::el( 'a' )
-				->href( $order->getPacketTrackingUrl() )
-				->setText( $order->getPacketBarcode() )
-				->setAttribute( 'target', '_blank' );
-
 			if ( $response instanceof Response\PacketsLabelsPdf ) {
 				$wcOrder->add_order_note(
 					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Label for packet %s has been created', 'packeta' ), $link )
+					sprintf( __( 'Packeta: Label for packet %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
 				);
 			}
 			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
 				$wcOrder->add_order_note(
 					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Carrier label for packet %s has been created', 'packeta' ), $link )
+					sprintf( __( 'Packeta: Carrier label for packet %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
 				);
 			}
 

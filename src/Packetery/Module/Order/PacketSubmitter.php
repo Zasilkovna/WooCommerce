@@ -380,13 +380,9 @@ class PacketSubmitter {
 
 				$submissionResult->increaseSuccessCount();
 
-				$link = Html::el( 'a' )
-					->href( $order->getPacketTrackingUrl() )
-					->setText( $order->getPacketBarcode() )
-					->setAttribute( 'target', '_blank' );
 				$wcOrder->add_order_note(
 					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Packet %s has been created', 'packeta' ), $link )
+					sprintf( __( 'Packeta: Packet %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
 				);
 				$wcOrder->save();
 

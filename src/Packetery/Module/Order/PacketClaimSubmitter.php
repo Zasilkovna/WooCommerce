@@ -194,13 +194,9 @@ class PacketClaimSubmitter {
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( null !== $wcOrder ) {
-				$link = Html::el( 'a' )
-					->href( $order->getPacketClaimTrackingUrl() )
-					->setText( $order->getPacketBarcode() )
-					->setAttribute( 'target', '_blank' );
 				$wcOrder->add_order_note(
 					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Packet claim %s has been created', 'packeta' ), $link )
+					sprintf( __( 'Packeta: Packet claim %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
 				);
 				$wcOrder->save();
 			}
