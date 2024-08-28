@@ -113,7 +113,7 @@ class DataTab {
 		$carriersContainer = $form->addContainer( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
 		$carriersList      = $this->carrierRepository->getAllActiveCarriersList();
 		foreach ( $carriersList as $carrier ) {
-			if ( false === $this->carDeliveryConfig->isEnabled() && in_array( OptionPrefixer::removePrefix( $carrier['option_id'] ), Carrier::CAR_DELIVERY_CARRIERS, true ) ) {
+			if ( $this->carDeliveryConfig->isDisabled() && in_array( OptionPrefixer::removePrefix( $carrier['option_id'] ), Carrier::CAR_DELIVERY_CARRIERS, true ) ) {
 				continue;
 			}
 			$carriersContainer->addCheckbox( $carrier['option_id'], $carrier['label'] );

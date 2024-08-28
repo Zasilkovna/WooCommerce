@@ -502,7 +502,7 @@ class OptionsPage {
 			return null;
 		}
 
-		if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+		if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
 			return null;
 		}
 

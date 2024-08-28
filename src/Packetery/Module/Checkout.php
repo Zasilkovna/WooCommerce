@@ -943,7 +943,7 @@ class Checkout {
 				continue;
 			}
 
-			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+			if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
 				continue;
 			}
 

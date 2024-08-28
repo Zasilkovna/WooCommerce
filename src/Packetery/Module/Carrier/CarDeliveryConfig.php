@@ -49,12 +49,12 @@ class CarDeliveryConfig {
 	}
 
 	/**
-	 * Tells whether the car delivery is enabled.
+	 * Tells whether the car delivery is disabled, or otherwise.
 	 *
 	 * @return bool
 	 */
-	public function isEnabled(): bool {
-		return $this->enabled;
+	public function isDisabled(): bool {
+		return ! $this->enabled;
 	}
 
 }
