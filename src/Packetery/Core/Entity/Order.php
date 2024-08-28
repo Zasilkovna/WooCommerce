@@ -839,7 +839,7 @@ class Order {
 
 		return Html::el( 'a' )
 			->href( $trackingUrl )
-			->setText( $this->getPacketBarcode() )
+			->setText( $barcode )
 			->setAttribute( 'target', '_blank' );
 	}
 
