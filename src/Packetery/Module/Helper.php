@@ -170,7 +170,6 @@ class Helper {
 		return OrderUtil::custom_orders_table_usage_is_enabled();
 	}
 
-
 	/**
 	 * Converts all float values within an array to strings.
 	 *
@@ -189,7 +188,6 @@ class Helper {
 		);
 
 		return $array;
-
 	}
 
 	/**
@@ -197,7 +195,7 @@ class Helper {
 	 *
 	 * @param int $number Number.
 	 *
-	 * @return float
+	 * @return float|null
 	 */
 	public static function convertToCentimeters( int $number ): ?float {
 		return 1 > $number ? null : ( $number * 0.1 );
@@ -208,9 +206,10 @@ class Helper {
 	 *
 	 * @param float $number Number.
 	 *
-	 * @return float
+	 * @return float|null
 	 */
 	public static function convertToMillimeters( float $number ): ?float {
 		return 0.1 > $number ? null : ( $number * 10 );
 	}
+
 }
