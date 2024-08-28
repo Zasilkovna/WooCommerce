@@ -825,6 +825,15 @@ class Order {
 	 */
 	public function getPacketHtmlTrackingLink(): Html {
 		$trackingUrl = $this->isPacketClaim() ? $this->getPacketClaimTrackingUrl() : $this->getPacketTrackingUrl();
+		if ($trackingUrl === null) {
+			throw new \UnexpectedValueException();
+		}
+
+		$barcode = $this->getPacketBarcode();
+		if ($barcode === null) {
+			throw new \UnexpectedValueException();
+		}
+
 		return Html::el( 'a' )
 			->href( $trackingUrl )
 			->setText( $this->getPacketBarcode() )
