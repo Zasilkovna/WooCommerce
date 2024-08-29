@@ -15,8 +15,8 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
+use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 
 /**
  * Class PacketCanceller
@@ -194,17 +194,13 @@ class PacketCanceller {
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( null !== $wcOrder ) {
-				if ( $order->isPacketClaim() ) {
-					$wcOrder->add_order_note(
-						// translators: %s represents a packet tracking link.
-						sprintf( __( 'Packeta: Packet claim %s has been cancelled', 'packeta' ), $order->getPacketHtmlTrackingLink() )
-					);
-				} else {
-					$wcOrder->add_order_note(
-						// translators: %s represents a packet tracking link.
-						sprintf( __( 'Packeta: Packet %s has been cancelled', 'packeta' ), $order->getPacketHtmlTrackingLink() )
-					);
-				}
+				$trackingUrl = $order->isPacketClaim() ? $order->getPacketClaimTrackingUrl() : $order->getPacketTrackingUrl();
+				// translators: %s represents a packet tracking link.
+				$message = $order->isPacketClaim() ? __( 'Packeta: Packet claim %s has been cancelled', 'packeta' ) : __( 'Packeta: Packet %s has been cancelled', 'packeta' );
+
+				$wcOrder->add_order_note(
+					sprintf( $message, $this->commonLogic->createPacketHtmlTrackingLink( $trackingUrl, $order->getPacketBarcode() ) )
+				);
 				$wcOrder->save();
 			}
 		}

@@ -11,8 +11,6 @@ namespace Packetery\Core\Entity;
 
 use Packetery\Core\Helper;
 use DateTimeImmutable;
-use Packetery\Nette\Utils\Html;
-use WPForms\Vendor\Stripe\Exception\UnexpectedValueException;
 
 /**
  * Class Order
@@ -817,30 +815,6 @@ class Order {
 	 */
 	public function isPacketClaim(): bool {
 		return $this->getPacketClaimId() !== null;
-	}
-
-	/**
-	 * Creates a named tracking URL for packet.
-	 *
-	 * @return Html
-	 *
-	 * @throws \UnexpectedValueException Exception for null values.
-	 */
-	public function getPacketHtmlTrackingLink(): Html {
-		$trackingUrl = $this->isPacketClaim() ? $this->getPacketClaimTrackingUrl() : $this->getPacketTrackingUrl();
-		if ( null === $trackingUrl ) {
-			throw new \UnexpectedValueException();
-		}
-
-		$barcode = $this->getPacketBarcode();
-		if ( null === $barcode ) {
-			throw new \UnexpectedValueException();
-		}
-
-		return Html::el( 'a' )
-			->href( $trackingUrl )
-			->setText( $barcode )
-			->setAttribute( 'target', '_blank' );
 	}
 
 	/**

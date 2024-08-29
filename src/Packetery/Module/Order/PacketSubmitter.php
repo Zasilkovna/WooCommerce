@@ -22,7 +22,6 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 use WC_Order;
 use Packetery\Module;
 
@@ -381,8 +380,11 @@ class PacketSubmitter {
 				$submissionResult->increaseSuccessCount();
 
 				$wcOrder->add_order_note(
-					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Packet %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
+					sprintf(
+						// translators: %s represents a packet tracking link.
+						__( 'Packeta: Packet %s has been created', 'packeta' ),
+						$this->commonLogic->createPacketHtmlTrackingLink( $order->getPacketTrackingUrl(), $order->getPacketBarcode() )
+					)
 				);
 				$wcOrder->save();
 

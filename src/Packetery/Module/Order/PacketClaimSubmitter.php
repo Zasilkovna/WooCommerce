@@ -14,7 +14,6 @@ use Packetery\Core\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Nette\Http\Request;
 use Packetery\Module;
-use Packetery\Nette\Utils\Html;
 
 /**
  * Class PacketClaimSubmitter.
@@ -195,8 +194,11 @@ class PacketClaimSubmitter {
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( null !== $wcOrder ) {
 				$wcOrder->add_order_note(
-					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Packet claim %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
+					sprintf(
+						// translators: %s represents a packet tracking link.
+						__( 'Packeta: Packet claim %s has been created', 'packeta' ),
+						$this->commonLogic->createPacketHtmlTrackingLink( $order->getPacketClaimTrackingUrl(), $order->getPacketBarcode() )
+					)
 				);
 				$wcOrder->save();
 			}

@@ -14,6 +14,7 @@ use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
+use Packetery\Nette\Utils\Html;
 
 
 /**
@@ -153,5 +154,31 @@ class PacketActionsCommonLogic {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Creates a named tracking URL for packet.
+	 *
+	 * @param string|null $trackingUrl Tracking URL.
+	 * @param string|null $text        Text.
+	 * @param string      $target      Target attribute.
+	 *
+	 * @return Html
+	 *
+	 * @throws \UnexpectedValueException Exception for null value.
+	 */
+	public function createPacketHtmlTrackingLink( ?string $trackingUrl, ?string $text, string $target = '_blank' ): Html {
+		if ( null === $trackingUrl ) {
+			throw new \UnexpectedValueException();
+		}
+
+		if ( null === $text ) {
+			throw new \UnexpectedValueException();
+		}
+
+		return Html::el( 'a' )
+			->href( $trackingUrl )
+			->setText( $text )
+			->setAttribute( 'target', $target );
 	}
 }

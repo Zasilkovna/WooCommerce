@@ -22,7 +22,6 @@ use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
 use Packetery\Module;
-use Packetery\Nette\Utils\Html;
 
 /**
  * Class LabelPrint.
@@ -297,16 +296,16 @@ class LabelPrint {
 				continue;
 			}
 
-			if ( $response instanceof Response\PacketsLabelsPdf ) {
+			if ( $response instanceof Response\PacketsLabelsPdf || $response instanceof Response\PacketsCourierLabelsPdf ) {
+				$labelType = $response instanceof Response\PacketsLabelsPdf ? __( 'Label', 'packeta' ) : __( 'Carrier label', 'packeta' );
+
 				$wcOrder->add_order_note(
-					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Label for packet %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
-				);
-			}
-			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
-				$wcOrder->add_order_note(
-					// translators: %s represents a packet tracking link.
-					sprintf( __( 'Packeta: Carrier label for packet %s has been created', 'packeta' ), $order->getPacketHtmlTrackingLink() )
+					sprintf(
+						// translators: %s represents a packet tracking link.
+						__( 'Packeta: %1$s for packet %2$s has been created', 'packeta' ),
+						$labelType,
+						$this->packetActionsCommonLogic->createPacketHtmlTrackingLink( $order->getPacketTrackingUrl(), $order->getPacketBarcode() )
+					)
 				);
 			}
 
