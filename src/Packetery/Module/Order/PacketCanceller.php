@@ -15,7 +15,6 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
-use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
 
 /**
