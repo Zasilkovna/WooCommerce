@@ -43,20 +43,30 @@ class EntityRepository {
 	private $pickupPointsConfig;
 
 	/**
+	 * Car delivery config.
+	 *
+	 * @var CarDeliveryConfig
+	 */
+	private $carDeliveryConfig;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Repository                $repository           Carrier repository.
 	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
+	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
 	 */
 	public function __construct(
 		Repository $repository,
 		EntityFactory\Carrier $carrierEntityFactory,
-		PacketaPickupPointsConfig $pickupPointsConfig
+		PacketaPickupPointsConfig $pickupPointsConfig,
+		CarDeliveryConfig $carDeliveryConfig
 	) {
 		$this->repository           = $repository;
 		$this->carrierEntityFactory = $carrierEntityFactory;
 		$this->pickupPointsConfig   = $pickupPointsConfig;
+		$this->carDeliveryConfig    = $carDeliveryConfig;
 	}
 
 	/**
@@ -248,6 +258,17 @@ class EntityRepository {
 	 */
 	public function isCarDeliveryCarrier( string $carrierId ): bool {
 		return in_array( $carrierId, Carrier::CAR_DELIVERY_CARRIERS, true );
+	}
+
+	/**
+	 * Checks if car delivery is disabled.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isCarDeliveryCarrierDisabled( string $carrierId ): bool {
+		return $this->isCarDeliveryCarrier( $carrierId ) && $this->carDeliveryConfig->isDisabled();
 	}
 
 	/**
