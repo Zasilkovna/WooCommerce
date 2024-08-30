@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
+use Packetery\Nette\Utils\Html;
 
 /**
  * Class Helper
@@ -190,5 +191,44 @@ class Helper {
 
 		return $array;
 
+	}
+
+	/**
+	 * Creates a named tracking URL for packet.
+	 *
+	 * @param string|null $trackingUrl Tracking URL.
+	 * @param string|null $text        Text.
+	 * @param string      $target      Target attribute.
+	 *
+	 * @return Html
+	 */
+	public function createHtmlLink( string $trackingUrl, string $text, string $target = '_blank' ): Html {
+		return Html::el( 'a' )
+			->href( $trackingUrl )
+			->setText( $text )
+			->setAttribute( 'target', $target );
+	}
+
+	/**
+	 * Creates HTML link parts in array.
+	 *
+	 * @param string      $href Href.
+	 * @param string|null $target Target.
+	 * @param string|null $class Class.
+	 *
+	 * @return string[]
+	 */
+	public function createLinkParts( string $href, string $target = null, string $class = null ): array {
+		$link = Html::el( 'a' )->href( $href );
+
+		if ( null !== $target ) {
+			$link->target( $target );
+		}
+
+		if ( null !== $class ) {
+			$link->class( $class );
+		}
+
+		return [ $link->startTag(), $link->endTag() ];
 	}
 }

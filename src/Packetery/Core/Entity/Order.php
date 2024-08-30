@@ -754,6 +754,15 @@ class Order {
 	}
 
 	/**
+	 * Packet Claim barcode e.g Z123456789
+	 *
+	 * @return string|null
+	 */
+	public function getPacketClaimBarcode(): ?string {
+		return $this->packetId ? 'Z' . $this->packetClaimId : null;
+	}
+
+	/**
 	 * Get packet tracking url
 	 *
 	 * @return string|null

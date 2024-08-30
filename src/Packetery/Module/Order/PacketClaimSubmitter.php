@@ -70,6 +70,13 @@ class PacketClaimSubmitter {
 	private $commonLogic;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Module\Helper
+	 */
+	private $helper;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient   SOAP API Client.
@@ -79,6 +86,7 @@ class PacketClaimSubmitter {
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param Module\Log\Page          $logPage         Log page.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
+	 * @param Module\Helper            $helper          Helper.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -87,7 +95,8 @@ class PacketClaimSubmitter {
 		Request $request,
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
-		PacketActionsCommonLogic $commonLogic
+		PacketActionsCommonLogic $commonLogic,
+		Module\Helper $helper
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -96,6 +105,7 @@ class PacketClaimSubmitter {
 		$this->messageManager  = $messageManager;
 		$this->logPage         = $logPage;
 		$this->commonLogic     = $commonLogic;
+		$this->helper          = $helper;
 	}
 
 	/**
@@ -143,7 +153,7 @@ class PacketClaimSubmitter {
 
 			$faultFlashMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'Packet claim creation is not possible. %1$sShow logs%2$s', 'packeta' ),
-				...Module\Plugin::createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
+				...$this->helper->createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
 			);
 
 			$this->messageManager->flashMessageObject(
@@ -170,7 +180,7 @@ class PacketClaimSubmitter {
 
 			$faultFlashMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'Packet claim could not be created. %1$sShow logs%2$s', 'packeta' ),
-				...Module\Plugin::createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
+				...$this->helper->createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
 			);
 
 			$this->messageManager->flashMessageObject(
@@ -197,7 +207,7 @@ class PacketClaimSubmitter {
 					sprintf(
 						// translators: %s represents a packet tracking link.
 						__( 'Packeta: Packet claim %s has been created', 'packeta' ),
-						$this->commonLogic->createPacketHtmlTrackingLink( $order->getPacketClaimTrackingUrl(), $order->getPacketBarcode() )
+						$this->helper->createHtmlLink( $order->getPacketClaimTrackingUrl(), $order->getPacketClaimBarcode() )
 					)
 				);
 				$wcOrder->save();
@@ -205,7 +215,7 @@ class PacketClaimSubmitter {
 
 			$flashMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'Packet claim submitted. %1$sShow logs%2$s', 'packeta' ),
-				...Module\Plugin::createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
+				...$this->helper->createLinkParts( $this->logPage->createLogListUrl( (int) $order->getNumber() ) )
 			);
 
 			$this->messageManager->flashMessageObject(

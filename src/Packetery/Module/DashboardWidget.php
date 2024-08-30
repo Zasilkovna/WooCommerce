@@ -72,6 +72,13 @@ class DashboardWidget {
 	private $carrierEntityRepository;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Helper
+	 */
+	private $helper;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Engine                   $latteEngine             Latte engine.
@@ -81,6 +88,7 @@ class DashboardWidget {
 	 * @param Options\Page             $optionsPage             Options page.
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
+	 * @param Helper                   $helper                  Helper.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -89,7 +97,8 @@ class DashboardWidget {
 		Carrier\OptionsPage $carrierOptionsPage,
 		Options\Page $optionsPage,
 		array $surveyConfig,
-		Carrier\EntityRepository $carrierEntityRepository
+		Carrier\EntityRepository $carrierEntityRepository,
+		Helper $helper
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -98,6 +107,7 @@ class DashboardWidget {
 		$this->optionsPage             = $optionsPage;
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
+		$this->helper                  = $helper;
 	}
 
 	/**
@@ -190,27 +200,27 @@ class DashboardWidget {
 					'noGlobalSettings'       => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Global plugin settings have not been made, you can make the settings %1$shere%2$s.', 'packeta' ),
-						...Plugin::createLinkParts( $this->optionsPage->createLink() )
+						...$this->helper->createLinkParts( $this->optionsPage->createLink() )
 					),
 					'noActiveCountry'        => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Now you do not send parcels to any country via Packeta. The settings can be made %1$shere%2$s.', 'packeta' ),
-						...Plugin::createLinkParts( $this->carrierOptionsPage->createUrl() )
+						...$this->helper->createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
 					'noCodPaymentConfigured' => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No COD payment configured. The settings can be made %1$shere%2$s.', 'packeta' ),
-						...Plugin::createLinkParts( $this->optionsPage->createLink() )
+						...$this->helper->createLinkParts( $this->optionsPage->createLink() )
 					),
 					'noExternalCarrier'      => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No external carrier was found. Carriers can be downloaded %1$shere%2$s.', 'packeta' ),
-						...Plugin::createLinkParts( $this->carrierOptionsPage->createUrl() )
+						...$this->helper->createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
 					'noPacketaShipping'      => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No Packeta shipping method was configured. Configure shipping zone with Packeta shipping method %1$shere%2$s.', 'packeta' ),
-						...Plugin::createLinkParts(
+						...$this->helper->createLinkParts(
 							add_query_arg(
 								[
 									'page' => 'wc-settings',

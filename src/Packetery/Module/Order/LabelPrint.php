@@ -105,6 +105,13 @@ class LabelPrint {
 	private $packetActionsCommonLogic;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Module\Helper
+	 */
+	private $helper;
+
+	/**
 	 * LabelPrint constructor.
 	 *
 	 * @param Engine                   $latteEngine              Latte Engine.
@@ -117,6 +124,7 @@ class LabelPrint {
 	 * @param Repository               $orderRepository          Order repository.
 	 * @param Module\Log\Page          $logPage                  Log page.
 	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Packet actions common logic.
+	 * @param Module\Helper            $helper                   Helper.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -128,7 +136,8 @@ class LabelPrint {
 		Log\ILogger $logger,
 		Repository $orderRepository,
 		Module\Log\Page $logPage,
-		PacketActionsCommonLogic $packetActionsCommonLogic
+		PacketActionsCommonLogic $packetActionsCommonLogic,
+		Module\Helper $helper
 	) {
 		$this->latteEngine              = $latteEngine;
 		$this->optionsProvider          = $optionsProvider;
@@ -140,6 +149,7 @@ class LabelPrint {
 		$this->orderRepository          = $orderRepository;
 		$this->logPage                  = $logPage;
 		$this->packetActionsCommonLogic = $packetActionsCommonLogic;
+		$this->helper                   = $helper;
 	}
 
 	/**
@@ -296,15 +306,38 @@ class LabelPrint {
 				continue;
 			}
 
-			if ( $response instanceof Response\PacketsLabelsPdf || $response instanceof Response\PacketsCourierLabelsPdf ) {
-				$labelType = $response instanceof Response\PacketsLabelsPdf ? __( 'Label', 'packeta' ) : __( 'Carrier label', 'packeta' );
+			$text        = $order->getPacketBarcode();
+			$trackingUrl = $order->getPacketTrackingUrl();
+			if ( $order->isPacketClaim() ) {
+				$text        = $order->getPacketClaimBarcode();
+				$trackingUrl = $order->getPacketClaimTrackingUrl();
+			}
 
+			if ( $response instanceof Response\PacketsLabelsPdf ) {
+				// translators: %s represents a packet tracking link.
+				$message = __( 'Packeta: Label for packet %s has been created', 'packeta' );
+				if ( $order->isPacketClaim() ) {
+					// translators: %s represents a packet tracking link.
+					$message = __( 'Packeta: Label for packet claim %s has been created', 'packeta' );
+				}
 				$wcOrder->add_order_note(
 					sprintf(
-						// translators: %s represents a packet tracking link.
-						__( 'Packeta: %1$s for packet %2$s has been created', 'packeta' ),
-						$labelType,
-						$this->packetActionsCommonLogic->createPacketHtmlTrackingLink( $order->getPacketTrackingUrl(), $order->getPacketBarcode() )
+						$message,
+						$this->helper->createHtmlLink( $trackingUrl, $text )
+					)
+				);
+			}
+			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
+				// translators: %s represents a packet tracking link.
+				$message = __( 'Packeta: Carrier label for packet %s has been created', 'packeta' );
+				if ( $order->isPacketClaim() ) {
+					// translators: %s represents a packet tracking link.
+					$message = __( 'Packeta: Carrier label for packet claim %s has been created', 'packeta' );
+				}
+				$wcOrder->add_order_note(
+					sprintf(
+						$message,
+						$this->helper->createHtmlLink( $trackingUrl, $text )
 					)
 				);
 			}

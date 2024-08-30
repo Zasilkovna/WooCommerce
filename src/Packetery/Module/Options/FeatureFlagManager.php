@@ -14,6 +14,7 @@ use Exception;
 use Packetery\Core\Helper;
 use Packetery\Module\Plugin;
 use Packetery\Latte\Engine;
+use Packetery\Module\Helper as ModuleHelper;
 
 /**
  * Class FeatureFlagManager
@@ -48,14 +49,23 @@ class FeatureFlagManager {
 	private $optionsProvider;
 
 	/**
+	 * Helper.
+	 *
+	 * @var ModuleHelper
+	 */
+	private $helper;
+
+	/**
 	 * Downloader constructor.
 	 *
-	 * @param Engine   $latteEngine Latte engine.
-	 * @param Provider $optionsProvider Options provider.
+	 * @param Engine       $latteEngine Latte engine.
+	 * @param Provider     $optionsProvider Options provider.
+	 * @param ModuleHelper $helper Helper.
 	 */
-	public function __construct( Engine $latteEngine, Provider $optionsProvider ) {
+	public function __construct( Engine $latteEngine, Provider $optionsProvider, ModuleHelper $helper ) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
+		$this->helper          = $helper;
 	}
 
 	/**
@@ -203,8 +213,8 @@ class FeatureFlagManager {
 							'We have just enabled new options for setting Packeta pickup points. You can now choose a different price for Z-Box and pickup points in the carrier settings. More information can be found in %1$sthe plugin documentation%2$s. %3$sDismiss this message%4$s',
 							'packeta'
 						),
-						...Plugin::createLinkParts( 'https://github.com/Zasilkovna/WooCommerce/wiki', '_blank' ),
-						...Plugin::createLinkParts( $dismissUrl, null, 'button button-primary' )
+						...$this->helper->createLinkParts( 'https://github.com/Zasilkovna/WooCommerce/wiki', '_blank' ),
+						...$this->helper->createLinkParts( $dismissUrl, null, 'button button-primary' )
 					),
 				],
 			]

@@ -74,6 +74,7 @@ class OrderTest extends TestCase {
 		$dummyPacketClaimId = 'dummyPacketClaimId';
 		$order->setPacketClaimId( $dummyPacketClaimId );
 		self::assertSame( $dummyPacketClaimId, $order->getPacketClaimId() );
+		self::assertSame( 'Z' . $dummyPacketClaimId, $order->getPacketClaimBarcode() );
 		self::assertTrue( $order->isPacketClaimLabelPrintPossible() );
 
 		$dummyPacketClaimPassword = 'dummyPassword';

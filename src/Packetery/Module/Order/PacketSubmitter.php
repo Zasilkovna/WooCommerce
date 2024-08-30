@@ -111,6 +111,13 @@ class PacketSubmitter {
 	private $packetSynchronizer;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Module\Helper
+	 */
+	private $helper;
+
+	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
@@ -124,6 +131,7 @@ class PacketSubmitter {
 	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
+	 * @param Module\Helper                 $helper                       Helper.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -136,7 +144,8 @@ class PacketSubmitter {
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
-		PacketSynchronizer $packetSynchronizer
+		PacketSynchronizer $packetSynchronizer,
+		Module\Helper $helper
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidator;
@@ -149,6 +158,7 @@ class PacketSubmitter {
 		$this->commonLogic                  = $commonLogic;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
+		$this->helper                       = $helper;
 	}
 
 	/**
@@ -383,7 +393,7 @@ class PacketSubmitter {
 					sprintf(
 						// translators: %s represents a packet tracking link.
 						__( 'Packeta: Packet %s has been created', 'packeta' ),
-						$this->commonLogic->createPacketHtmlTrackingLink( $order->getPacketTrackingUrl(), $order->getPacketBarcode() )
+						$this->helper->createHtmlLink( $order->getPacketTrackingUrl(), $order->getPacketBarcode() )
 					)
 				);
 				$wcOrder->save();

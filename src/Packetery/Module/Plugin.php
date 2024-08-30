@@ -615,29 +615,6 @@ class Plugin {
 	}
 
 	/**
-	 * Creates HTML link parts in array.
-	 *
-	 * @param string      $href Href.
-	 * @param string|null $target Target.
-	 * @param string|null $class Class.
-	 *
-	 * @return string[]
-	 */
-	public static function createLinkParts( string $href, ?string $target = null, ?string $class = null ): array {
-		$link = Html::el( 'a' )->href( $href );
-
-		if ( null !== $target ) {
-			$link->target( $target );
-		}
-
-		if ( null !== $class ) {
-			$link->class( $class );
-		}
-
-		return [ $link->startTag(), $link->endTag() ];
-	}
-
-	/**
 	 * Renders delivery detail for packetery orders.
 	 *
 	 * @param WC_Order $order WordPress order.

@@ -244,7 +244,7 @@ class Repository {
 		}
 
 		$result = $this->getDataById( $wcOrder->get_id() );
-		if ( ! $result ) {
+		if ( null === $result ) {
 			return null;
 		}
 
