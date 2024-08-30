@@ -759,7 +759,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketClaimBarcode(): ?string {
-		return $this->packetId ? 'Z' . $this->packetClaimId : null;
+		return $this->packetClaimId ? 'Z' . $this->packetClaimId : null;
 	}
 
 	/**

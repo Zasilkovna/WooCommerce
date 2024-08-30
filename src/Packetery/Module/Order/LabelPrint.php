@@ -293,7 +293,7 @@ class LabelPrint {
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 			if ( PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $idParam ) {
-				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->getById( $idParam, true ) );
+				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
 			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 			return;
@@ -306,13 +306,14 @@ class LabelPrint {
 				continue;
 			}
 
-			$text        = $order->getPacketBarcode();
+			$linkText    = $order->getPacketBarcode();
 			$trackingUrl = $order->getPacketTrackingUrl();
 			if ( $order->isPacketClaim() ) {
-				$text        = $order->getPacketClaimBarcode();
+				$linkText    = $order->getPacketClaimBarcode();
 				$trackingUrl = $order->getPacketClaimTrackingUrl();
 			}
 
+			$message = null;
 			if ( $response instanceof Response\PacketsLabelsPdf ) {
 				// translators: %s represents a packet tracking link.
 				$message = __( 'Packeta: Label for packet %s has been created', 'packeta' );
@@ -320,12 +321,6 @@ class LabelPrint {
 					// translators: %s represents a packet tracking link.
 					$message = __( 'Packeta: Label for packet claim %s has been created', 'packeta' );
 				}
-				$wcOrder->add_order_note(
-					sprintf(
-						$message,
-						$this->helper->createHtmlLink( $trackingUrl, $text )
-					)
-				);
 			}
 			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
 				// translators: %s represents a packet tracking link.
@@ -334,14 +329,14 @@ class LabelPrint {
 					// translators: %s represents a packet tracking link.
 					$message = __( 'Packeta: Carrier label for packet claim %s has been created', 'packeta' );
 				}
-				$wcOrder->add_order_note(
-					sprintf(
-						$message,
-						$this->helper->createHtmlLink( $trackingUrl, $text )
-					)
-				);
 			}
 
+			$wcOrder->add_order_note(
+				sprintf(
+					$message,
+					$this->helper->createHtmlLink( $trackingUrl, $linkText )
+				)
+			);
 			$wcOrder->save();
 		}
 

@@ -190,15 +190,14 @@ class Helper {
 		);
 
 		return $array;
-
 	}
 
 	/**
 	 * Creates a named tracking URL for packet.
 	 *
-	 * @param string|null $trackingUrl Tracking URL.
-	 * @param string|null $text        Text.
-	 * @param string      $target      Target attribute.
+	 * @param string $trackingUrl Tracking URL.
+	 * @param string $text        Text.
+	 * @param string $target      Target attribute.
 	 *
 	 * @return Html
 	 */
@@ -231,4 +230,5 @@ class Helper {
 
 		return [ $link->startTag(), $link->endTag() ];
 	}
+
 }
