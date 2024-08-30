@@ -9,8 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap;
 
-use Packetery\Core\Api\Soap\Request;
-use Packetery\Core\Api\Soap\Response;
 use SoapClient;
 use SoapFault;
 

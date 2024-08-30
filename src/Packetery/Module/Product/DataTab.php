@@ -10,7 +10,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
-use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
@@ -113,7 +112,7 @@ class DataTab {
 		$carriersContainer = $form->addContainer( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
 		$carriersList      = $this->carrierRepository->getAllActiveCarriersList();
 		foreach ( $carriersList as $carrier ) {
-			if ( $this->carrierRepository->isCarDeliveryCarrierDisabled( OptionPrefixer::removePrefix( $carrier['option_id'] ) ) ) {
+			if ( $this->carDeliveryConfig->isCarDeliveryCarrierDisabled( OptionPrefixer::removePrefix( $carrier['option_id'] ) ) ) {
 				continue;
 			}
 			$carriersContainer->addCheckbox( $carrier['option_id'], $carrier['label'] );

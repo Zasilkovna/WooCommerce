@@ -246,29 +246,7 @@ class EntityRepository {
 			return false;
 		}
 
-		return false === ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->isCarDeliveryCarrier( $carrierId ) );
-	}
-
-	/**
-	 * Checks if carrier is car delivery carrier.
-	 *
-	 * @param string $carrierId Carrier ID.
-	 *
-	 * @return bool
-	 */
-	public function isCarDeliveryCarrier( string $carrierId ): bool {
-		return in_array( $carrierId, Carrier::CAR_DELIVERY_CARRIERS, true );
-	}
-
-	/**
-	 * Checks if car delivery is disabled.
-	 *
-	 * @param string $carrierId Carrier ID.
-	 *
-	 * @return bool
-	 */
-	public function isCarDeliveryCarrierDisabled( string $carrierId ): bool {
-		return $this->isCarDeliveryCarrier( $carrierId ) && $this->carDeliveryConfig->isDisabled();
+		return false === ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) );
 	}
 
 	/**
