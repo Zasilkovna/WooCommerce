@@ -280,7 +280,7 @@ class Checkout {
 		$chosenMethod = $this->getChosenMethod();
 		$carrierId    = $this->getCarrierId( $chosenMethod );
 
-		return $carrierId && $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId );
+		return $carrierId && $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId );
 	}
 
 	/**
@@ -943,7 +943,7 @@ class Checkout {
 				continue;
 			}
 
-			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+			if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
 				continue;
 			}
 
@@ -1059,7 +1059,7 @@ class Checkout {
 	private function getExpeditionDay(): ?string {
 		$chosenShippingMethod = $this->getChosenMethodFromSession();
 		$carrierId            = OptionPrefixer::removePrefix( $chosenShippingMethod );
-		if ( false === $this->carrierEntityRepository->isCarDeliveryCarrier( $carrierId ) ) {
+		if ( false === $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) {
 			return null;
 		}
 

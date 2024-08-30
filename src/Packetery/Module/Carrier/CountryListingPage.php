@@ -353,7 +353,7 @@ class CountryListingPage {
 		$carrierNames    = [];
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
-			if ( $carrier->isCarDelivery() && ! $this->carDeliveryConfig->isEnabled() ) {
+			if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
 				continue;
 			}
 

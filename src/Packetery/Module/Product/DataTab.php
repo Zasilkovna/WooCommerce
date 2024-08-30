@@ -10,7 +10,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
+use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
 use Packetery\Latte\Engine;
@@ -47,16 +49,25 @@ class DataTab {
 	private $carrierRepository;
 
 	/**
+	 * Car delivery config.
+	 *
+	 * @var CarDeliveryConfig
+	 */
+	private $carDeliveryConfig;
+
+	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory      $formFactory       Factory engine.
-	 * @param Engine           $latteEngine       Latte engine.
-	 * @param EntityRepository $carrierRepository Carrier repository.
+	 * @param FormFactory       $formFactory        Factory engine.
+	 * @param Engine            $latteEngine        Latte engine.
+	 * @param EntityRepository  $carrierRepository  Carrier repository.
+	 * @param CarDeliveryConfig $carDeliveryConfig Car Delivery config.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, EntityRepository $carrierRepository ) {
+	public function __construct( FormFactory $formFactory, Engine $latteEngine, EntityRepository $carrierRepository, CarDeliveryConfig $carDeliveryConfig ) {
 		$this->formFactory       = $formFactory;
 		$this->latteEngine       = $latteEngine;
 		$this->carrierRepository = $carrierRepository;
+		$this->carDeliveryConfig = $carDeliveryConfig;
 	}
 
 	/**
@@ -101,6 +112,9 @@ class DataTab {
 		$carriersContainer = $form->addContainer( Product\Entity::META_DISALLOWED_SHIPPING_RATES );
 		$carriersList      = $this->carrierRepository->getAllActiveCarriersList();
 		foreach ( $carriersList as $carrier ) {
+			if ( $this->carDeliveryConfig->isCarDeliveryCarrierDisabled( OptionPrefixer::removePrefix( $carrier['option_id'] ) ) ) {
+				continue;
+			}
 			$carriersContainer->addCheckbox( $carrier['option_id'], $carrier['label'] );
 		}
 

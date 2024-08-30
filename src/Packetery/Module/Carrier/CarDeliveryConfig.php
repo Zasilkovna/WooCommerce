@@ -7,6 +7,8 @@
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Entity\Carrier;
+
 /**
  * Class CarDeliveryConfig
  *
@@ -49,12 +51,34 @@ class CarDeliveryConfig {
 	}
 
 	/**
-	 * Tells whether the car delivery is enabled.
+	 * Tells whether the car delivery is disabled, or otherwise.
 	 *
 	 * @return bool
 	 */
-	public function isEnabled(): bool {
-		return $this->enabled;
+	public function isDisabled(): bool {
+		return ! $this->enabled;
+	}
+
+	/**
+	 * Checks if carrier is car delivery carrier.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isCarDeliveryCarrier( string $carrierId ): bool {
+		return in_array( $carrierId, Carrier::CAR_DELIVERY_CARRIERS, true );
+	}
+
+	/**
+	 * Checks if car delivery is disabled.
+	 *
+	 * @param string $carrierId Carrier ID.
+	 *
+	 * @return bool
+	 */
+	public function isCarDeliveryCarrierDisabled( string $carrierId ): bool {
+		return $this->isCarDeliveryCarrier( $carrierId ) && $this->isDisabled();
 	}
 
 }
