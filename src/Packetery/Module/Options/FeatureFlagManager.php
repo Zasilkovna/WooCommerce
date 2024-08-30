@@ -65,14 +65,9 @@ class FeatureFlagManager {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function fetchFlags(): array {
-		$response = wp_remote_post(
-			self::ENDPOINT_URL,
-			[
-				'query'   => [
-					'api_key' => $this->optionsProvider->get_api_key(),
-				],
-				'timeout' => 20,
-			]
+		$response = wp_remote_get(
+			add_query_arg( [ 'api_key' => $this->optionsProvider->get_api_key() ], self::ENDPOINT_URL ),
+			[ 'timeout' => 20 ]
 		);
 
 		if ( is_wp_error( $response ) ) {
