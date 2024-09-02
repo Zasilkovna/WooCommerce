@@ -91,13 +91,6 @@ class LabelPrint {
 	private $orderRepository;
 
 	/**
-	 * Log page.
-	 *
-	 * @var Module\Log\Page
-	 */
-	private $logPage;
-
-	/**
 	 * Packet actions common logic.
 	 *
 	 * @var PacketActionsCommonLogic
@@ -122,7 +115,6 @@ class LabelPrint {
 	 * @param MessageManager           $messageManager           Message Manager.
 	 * @param Log\ILogger              $logger                   Logger.
 	 * @param Repository               $orderRepository          Order repository.
-	 * @param Module\Log\Page          $logPage                  Log page.
 	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Packet actions common logic.
 	 * @param Module\Helper            $helper                   Helper.
 	 */
@@ -135,7 +127,6 @@ class LabelPrint {
 		MessageManager $messageManager,
 		Log\ILogger $logger,
 		Repository $orderRepository,
-		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $packetActionsCommonLogic,
 		Module\Helper $helper
 	) {
@@ -147,7 +138,6 @@ class LabelPrint {
 		$this->messageManager           = $messageManager;
 		$this->logger                   = $logger;
 		$this->orderRepository          = $orderRepository;
-		$this->logPage                  = $logPage;
 		$this->packetActionsCommonLogic = $packetActionsCommonLogic;
 		$this->helper                   = $helper;
 	}
@@ -177,7 +167,7 @@ class LabelPrint {
 	 *
 	 * @return string
 	 */
-	public function getLabelFormatByOrder( Order $order ) {
+	public function getLabelFormatByOrder( Order $order ): string {
 		if ( $order->isExternalCarrier() ) {
 			return $this->optionsProvider->get_carrier_label_format();
 		}
