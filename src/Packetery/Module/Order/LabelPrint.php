@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap\Client;
+use Packetery\Core\Api\Soap\ILabelResponse;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Log;
@@ -290,7 +291,7 @@ class LabelPrint {
 		}
 
 		foreach ( $packetIds as $orderId => $packetId ) {
-			$this->addLabelCreationInfoToOrderNote( $orderId, $packetId, $response );
+			$this->addLabelCreationInfoToWcOrderNote( $orderId, $packetId, $response );
 		}
 
 		header( 'Content-Type: application/pdf' );
@@ -556,13 +557,13 @@ class LabelPrint {
 	/**
 	 * Saves information about the creation of the label in the order note.
 	 *
-	 * @param int                                                        $orderId  Order id.
-	 * @param string                                                     $packetId Packet.
-	 * @param Response\PacketsLabelsPdf|Response\PacketsCourierLabelsPdf $response Response.
+	 * @param int            $orderId  Order id.
+	 * @param string         $packetId Packet.
+	 * @param ILabelResponse $response Response.
 	 *
 	 * @return void
 	 */
-	private function addLabelCreationInfoToOrderNote( int $orderId, string $packetId, $response ): void {
+	private function addLabelCreationInfoToWcOrderNote( int $orderId, string $packetId, ILabelResponse $response ): void {
 		$order   = $this->orderRepository->findById( $orderId );
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 		if ( null === $wcOrder || null === $order ) {

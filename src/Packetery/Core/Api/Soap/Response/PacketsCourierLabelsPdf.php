@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Response;
 
+use Packetery\Core\Api\Soap\ILabelResponse;
 use Packetery\Core\Api\Soap\ResponseTrait;
 
 /**
@@ -16,7 +17,7 @@ use Packetery\Core\Api\Soap\ResponseTrait;
  *
  * @package Packetery\Api\Soap\Response
  */
-class PacketsCourierLabelsPdf extends BaseResponse {
+class PacketsCourierLabelsPdf extends BaseResponse implements ILabelResponse {
 
 	use ResponseTrait\InvalidPacketIds;
 
