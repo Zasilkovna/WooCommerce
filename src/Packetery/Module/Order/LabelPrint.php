@@ -306,29 +306,22 @@ class LabelPrint {
 				continue;
 			}
 
+			$message     = null;
 			$linkText    = $order->getPacketBarcode();
 			$trackingUrl = $order->getPacketTrackingUrl();
-			if ( $order->isPacketClaim() ) {
-				$linkText    = $order->getPacketClaimBarcode();
-				$trackingUrl = $order->getPacketClaimTrackingUrl();
-			}
-
-			$message = null;
 			if ( $response instanceof Response\PacketsLabelsPdf ) {
-				// translators: %s represents a packet tracking link.
-				$message = __( 'Packeta: Label for packet %s has been created', 'packeta' );
 				if ( $order->isPacketClaim() ) {
 					// translators: %s represents a packet tracking link.
-					$message = __( 'Packeta: Label for packet claim %s has been created', 'packeta' );
+					$message     = __( 'Packeta: Label for packet claim %s has been created', 'packeta' );
+					$linkText    = $order->getPacketClaimBarcode();
+					$trackingUrl = $order->getPacketClaimTrackingUrl();
+				} else {
+					// translators: %s represents a packet tracking link.
+					$message = __( 'Packeta: Label for packet %s has been created', 'packeta' );
 				}
-			}
-			if ( $response instanceof Response\PacketsCourierLabelsPdf ) {
+			} elseif ( $response instanceof Response\PacketsCourierLabelsPdf ) {
 				// translators: %s represents a packet tracking link.
 				$message = __( 'Packeta: Carrier label for packet %s has been created', 'packeta' );
-				if ( $order->isPacketClaim() ) {
-					// translators: %s represents a packet tracking link.
-					$message = __( 'Packeta: Carrier label for packet claim %s has been created', 'packeta' );
-				}
 			}
 
 			$wcOrder->add_order_note(
