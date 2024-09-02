@@ -208,7 +208,7 @@ class PacketCanceller {
 				$message     = __( 'Packeta: Packet %s has been cancelled', 'packeta' );
 				$trackingUrl = $order->getPacketTrackingUrl();
 				$text        = $order->getPacketBarcode();
-				if ( $order->isPacketClaim() ) {
+				if ( $order->isPacketClaim( $packetId ) ) {
 					// translators: %s represents a packet tracking link.
 					$message     = __( 'Packeta: Packet claim %s has been cancelled', 'packeta' );
 					$trackingUrl = $order->getPacketClaimTrackingUrl();

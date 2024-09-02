@@ -820,10 +820,12 @@ class Order {
 	/**
 	 * Determines whether a packet is a claim, or otherwise.
 	 *
+	 * @param string $packetId Packet id.
+	 *
 	 * @return bool
 	 */
-	public function isPacketClaim(): bool {
-		return $this->getPacketClaimId() !== null;
+	public function isPacketClaim( string $packetId ): bool {
+		return $this->getPacketClaimId() === $packetId;
 	}
 
 	/**

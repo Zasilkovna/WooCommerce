@@ -300,37 +300,7 @@ class LabelPrint {
 		}
 
 		foreach ( $packetIds as $orderId => $packetId ) {
-			$order   = $this->orderRepository->findById( $orderId );
-			$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-			if ( null === $wcOrder || null === $order ) {
-				continue;
-			}
-
-			$message     = null;
-			$linkText    = $order->getPacketBarcode();
-			$trackingUrl = $order->getPacketTrackingUrl();
-			if ( $response instanceof Response\PacketsLabelsPdf ) {
-				if ( $order->isPacketClaim() ) {
-					// translators: %s represents a packet tracking link.
-					$message     = __( 'Packeta: Label for packet claim %s has been created', 'packeta' );
-					$linkText    = $order->getPacketClaimBarcode();
-					$trackingUrl = $order->getPacketClaimTrackingUrl();
-				} else {
-					// translators: %s represents a packet tracking link.
-					$message = __( 'Packeta: Label for packet %s has been created', 'packeta' );
-				}
-			} elseif ( $response instanceof Response\PacketsCourierLabelsPdf ) {
-				// translators: %s represents a packet tracking link.
-				$message = __( 'Packeta: Carrier label for packet %s has been created', 'packeta' );
-			}
-
-			$wcOrder->add_order_note(
-				sprintf(
-					$message,
-					$this->helper->createHtmlLink( $trackingUrl, $linkText )
-				)
-			);
-			$wcOrder->save();
+			$this->addLabelCreationInfoToOrderNote( $orderId, $packetId, $response );
 		}
 
 		header( 'Content-Type: application/pdf' );
@@ -591,6 +561,49 @@ class LabelPrint {
 		}
 
 		return $pairs;
+	}
+
+	/**
+	 * Saves information about the creation of the label in the order note.
+	 *
+	 * @param int                                                        $orderId  Order id.
+	 * @param string                                                     $packetId Packet.
+	 * @param Response\PacketsLabelsPdf|Response\PacketsCourierLabelsPdf $response Response.
+	 *
+	 * @return void
+	 */
+	private function addLabelCreationInfoToOrderNote( int $orderId, string $packetId, $response ): void {
+		$order   = $this->orderRepository->findById( $orderId );
+		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+		if ( null === $wcOrder || null === $order ) {
+			return;
+		}
+
+		$linkText    = $order->getPacketBarcode();
+		$trackingUrl = $order->getPacketTrackingUrl();
+		if ( $response instanceof Response\PacketsLabelsPdf ) {
+			if ( $order->isPacketClaim( $packetId ) ) {
+				// translators: %s represents a packet tracking link.
+				$message     = __( 'Packeta: Label for packet claim %s has been created', 'packeta' );
+				$linkText    = $order->getPacketClaimBarcode();
+				$trackingUrl = $order->getPacketClaimTrackingUrl();
+			} else {
+				// translators: %s represents a packet tracking link.
+				$message = __( 'Packeta: Label for packet %s has been created', 'packeta' );
+			}
+		} else {
+			// Response is of type Response\PacketsCourierLabelsPdf.
+			// translators: %s represents a packet tracking link.
+			$message = __( 'Packeta: Carrier label for packet %s has been created', 'packeta' );
+		}
+
+		$wcOrder->add_order_note(
+			sprintf(
+				$message,
+				$this->helper->createHtmlLink( $trackingUrl, $linkText )
+			)
+		);
+		$wcOrder->save();
 	}
 
 }
