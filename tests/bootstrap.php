@@ -7,3 +7,4 @@ require_once __DIR__ . '/../vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
 require_once __DIR__ . '/../vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php';
 require_once __DIR__ . '/../vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php';
 require_once __DIR__ . '/../deps/scoper-autoload.php';
+require_once __DIR__ . '/../constants.php';

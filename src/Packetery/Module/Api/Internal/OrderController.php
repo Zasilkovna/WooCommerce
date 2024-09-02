@@ -14,6 +14,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\Repository;
@@ -74,6 +75,13 @@ final class OrderController extends WP_REST_Controller {
 	private $helper;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param OrderRouter     $router Router.
@@ -82,6 +90,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param Validator\Order $orderValidator Order validator.
 	 * @param Helper          $helper Helper.
 	 * @param Form            $orderForm Order form.
+	 * @param Provider        $optionsProvider Options provider.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -89,7 +98,8 @@ final class OrderController extends WP_REST_Controller {
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
 		Helper $helper,
-		Form $orderForm
+		Form $orderForm,
+		Provider $optionsProvider
 	) {
 		$this->orderForm       = $orderForm;
 		$this->orderRepository = $orderRepository;
@@ -97,6 +107,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->orderValidator  = $orderValidator;
 		$this->helper          = $helper;
 		$this->router          = $router;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -162,10 +173,14 @@ final class OrderController extends WP_REST_Controller {
 
 		$values = $form->getValues( 'array' );
 
+		$dimensions = [];
+		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
+			$dimensions[ $dimension ] = $this->optionsProvider->getSanitizedDimensionValueInMm( $values[ $dimension ] );
+		}
 		$size = new Size(
-			$values[ Form::FIELD_LENGTH ],
-			$values[ Form::FIELD_WIDTH ],
-			$values[ Form::FIELD_HEIGHT ]
+			$dimensions[ Form::FIELD_LENGTH ],
+			$dimensions[ Form::FIELD_WIDTH ],
+			$dimensions[ Form::FIELD_HEIGHT ]
 		);
 
 		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
@@ -178,7 +193,6 @@ final class OrderController extends WP_REST_Controller {
 		$order->setSize( $size );
 		// TODO: Find out why are we using this variable and not form value.
 		$order->setDeliverOn( $this->helper->getDateTimeFromString( $packeteryDeliverOn ) );
-
 		$this->orderRepository->save( $order );
 
 		$data['message'] = __( 'Success', 'packeta' );
@@ -187,9 +201,9 @@ final class OrderController extends WP_REST_Controller {
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			Form::FIELD_WEIGHT        => $order->getFinalWeight(),
-			Form::FIELD_LENGTH        => $order->getLength(),
-			Form::FIELD_WIDTH         => $order->getWidth(),
-			Form::FIELD_HEIGHT        => $order->getHeight(),
+			Form::FIELD_LENGTH        => Helper::trimDecimalPlaces( $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
+			Form::FIELD_WIDTH         => Helper::trimDecimalPlaces( $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
+			Form::FIELD_HEIGHT        => Helper::trimDecimalPlaces( $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
 			Form::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),

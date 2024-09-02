@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core;
+use Packetery\Core\Entity\Size;
 use Packetery\Core\Helper;
 use Packetery\Core\Validator\Order;
 use Packetery\Module;
@@ -18,6 +19,7 @@ use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
 use Packetery\Latte\Engine;
+use Packetery\Module\Options\Provider;
 use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
 use WC_Order;
@@ -74,6 +76,13 @@ class GridExtender {
 	private $contextResolver;
 
 	/**
+	 * Settings provider.
+	 *
+	 * @var Module\Options\Provider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param Helper          $helper Helper.
@@ -82,6 +91,7 @@ class GridExtender {
 	 * @param Repository      $orderRepository Order repository.
 	 * @param Order           $orderValidator Order validator.
 	 * @param ContextResolver $contextResolver Context resolver.
+	 * @param Provider        $optionsProvider Settings provider.
 	 */
 	public function __construct(
 		Helper $helper,
@@ -89,7 +99,8 @@ class GridExtender {
 		Request $httpRequest,
 		Repository $orderRepository,
 		Order $orderValidator,
-		ContextResolver $contextResolver
+		ContextResolver $contextResolver,
+		Provider $optionsProvider
 	) {
 		$this->helper          = $helper;
 		$this->latteEngine     = $latteEngine;
@@ -97,6 +108,7 @@ class GridExtender {
 		$this->orderRepository = $orderRepository;
 		$this->orderValidator  = $orderValidator;
 		$this->contextResolver = $contextResolver;
+		$this->optionsProvider = $optionsProvider;
 	}
 
 	/**
@@ -335,6 +347,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                     => $order,
+						'dimensions'                => $this->getSizeInSetDimensionUnit( $order ),
 						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
 						'orderWarningFields'        => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 						'packetSubmitUrl'           => $packetSubmitUrl,
@@ -391,4 +404,27 @@ class GridExtender {
 
 		return $new_columns;
 	}
+
+	/**
+	 * Gets the size in the configured dimension unit.
+	 *
+	 * @param Core\Entity\Order $order Order entity.
+	 *
+	 * @return Size
+	 */
+	public function getSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
+		$length = $order->getLength();
+		$width  = $order->getWidth();
+		$height = $order->getHeight();
+		foreach ( [ $length, $width, $height ] as $dimension ) {
+			if ( null !== $dimension && Module\Options\Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
+				$size[] = Module\Helper::convertToCentimeters( (int) $dimension );
+			} else {
+				$size[] = $dimension;
+			}
+		}
+
+		return new Size( ...$size );
+	}
+
 }
