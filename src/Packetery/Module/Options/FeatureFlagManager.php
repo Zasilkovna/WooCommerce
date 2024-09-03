@@ -23,13 +23,13 @@ use Packetery\Module\Plugin;
  */
 class FeatureFlagManager {
 
-	private const ENDPOINT_URL                  = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
-	private const VALID_FOR_HOURS               = 4;
-	private const FLAGS_OPTION_ID               = 'packeta_feature_flags';
-	private const TRANSIENT_SHOW_SPLIT_MESSAGE  = 'packeta_show_split_message';
-	public const ACTION_HIDE_SPLIT_MESSAGE      = 'dismiss_split_message';
-	private const DISABLED_DUE_ERRORS_OPTION_ID = 'packeta_feature_flags_disabled_due_errors';
-	private const ERROR_COUNTER_OPTION_ID       = 'packeta_feature_flags_error_counter';
+	private const ENDPOINT_URL                      = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
+	private const VALID_FOR_HOURS                   = 4;
+	private const FLAGS_OPTION_ID                   = 'packeta_feature_flags';
+	private const TRANSIENT_SPLIT_MESSAGE_DISMISSED = 'packeta_split_message_dismissed';
+	public const ACTION_HIDE_SPLIT_MESSAGE          = 'dismiss_split_message';
+	private const DISABLED_DUE_ERRORS_OPTION_ID     = 'packeta_feature_flags_disabled_due_errors';
+	private const ERROR_COUNTER_OPTION_ID           = 'packeta_feature_flags_error_counter';
 
 	private const FLAG_LAST_DOWNLOAD = 'lastDownload';
 	private const FLAG_SPLIT_ACTIVE  = 'splitActive';
@@ -148,14 +148,6 @@ class FeatureFlagManager {
 				$oldFlags = $flags;
 				$flags    = $this->fetchFlags();
 			}
-
-			if (
-				isset( $oldFlags, $flags[ self::FLAG_SPLIT_ACTIVE ] ) &&
-				false === $oldFlags[ self::FLAG_SPLIT_ACTIVE ] &&
-				true === $flags[ self::FLAG_SPLIT_ACTIVE ]
-			) {
-				set_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE, 'yes' );
-			}
 		}
 
 		return $flags;
@@ -182,7 +174,7 @@ class FeatureFlagManager {
 	 * @return void
 	 */
 	public function dismissSplitActivationNotice(): void {
-		delete_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE );
+		set_transient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED, 'yes' );
 	}
 
 	/**
@@ -190,8 +182,11 @@ class FeatureFlagManager {
 	 *
 	 * @return bool
 	 */
-	public function hasSplitActivationNotice(): bool {
-		return ( 'yes' === get_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE ) );
+	public function shouldShowSplitActivationNotice(): bool {
+		return (
+			$this->isSplitActive() &&
+			'yes' !== get_transient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED )
+		);
 	}
 
 	/**
