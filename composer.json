@@ -8,7 +8,8 @@
         "wpify/scoper": "3.2.13",
         "phpunit/phpunit": "10.4.2",
         "php-stubs/woocommerce-stubs": "^9.1",
-        "editorconfig-checker/editorconfig-checker": "^10.6"
+        "editorconfig-checker/editorconfig-checker": "^10.6",
+        "slevomat/coding-standard": "^8.15"
     },
     "scripts": {
         "build-deps": "bash build-deps.sh",
