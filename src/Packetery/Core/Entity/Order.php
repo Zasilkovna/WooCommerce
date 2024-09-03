@@ -754,6 +754,15 @@ class Order {
 	}
 
 	/**
+	 * Packet Claim barcode e.g Z123456789
+	 *
+	 * @return string|null
+	 */
+	public function getPacketClaimBarcode(): ?string {
+		return $this->packetClaimId ? 'Z' . $this->packetClaimId : null;
+	}
+
+	/**
 	 * Get packet tracking url
 	 *
 	 * @return string|null
@@ -806,6 +815,17 @@ class Order {
 	public function isPacketClaimCreationPossible(): bool {
 		return PacketStatus::DELIVERED === $this->packetStatus &&
 			null === $this->packetClaimId;
+	}
+
+	/**
+	 * Determines whether a packet is a claim, or otherwise.
+	 *
+	 * @param string $packetId Packet id.
+	 *
+	 * @return bool
+	 */
+	public function isPacketClaim( string $packetId ): bool {
+		return $this->getPacketClaimId() === $packetId;
 	}
 
 	/**

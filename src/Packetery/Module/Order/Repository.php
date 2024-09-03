@@ -231,6 +231,31 @@ class Repository {
 	}
 
 	/**
+	 * Returns Packeta order, or null.
+	 *
+	 * @param int $id Order ID.
+	 *
+	 * @return object|null
+	 */
+	public function findById( int $id ): ?Order {
+		$wcOrder = $this->getWcOrderById( $id );
+		if ( null === $wcOrder ) {
+			return null;
+		}
+
+		$result = $this->getDataById( $wcOrder->get_id() );
+		if ( null === $result ) {
+			return null;
+		}
+
+		try {
+			return $this->builder->build( $wcOrder, $result );
+		} catch ( InvalidCarrierException $invalidCarrierException ) {
+			return null;
+		}
+	}
+
+	/**
 	 * Gets Packeta order data by id.
 	 *
 	 * @param int $id Order id.

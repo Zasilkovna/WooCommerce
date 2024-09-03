@@ -11,9 +11,10 @@ namespace Packetery\Module\Options;
 
 use DateTimeImmutable;
 use Exception;
-use Packetery\Core\Helper;
-use Packetery\Module\Plugin;
+use Packetery\Core;
 use Packetery\Latte\Engine;
+use Packetery\Module;
+use Packetery\Module\Plugin;
 
 /**
  * Class FeatureFlagManager
@@ -48,14 +49,23 @@ class FeatureFlagManager {
 	private $optionsProvider;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Module\Helper
+	 */
+	private $helper;
+
+	/**
 	 * Downloader constructor.
 	 *
-	 * @param Engine   $latteEngine Latte engine.
-	 * @param Provider $optionsProvider Options provider.
+	 * @param Engine        $latteEngine Latte engine.
+	 * @param Provider      $optionsProvider Options provider.
+	 * @param Module\Helper $helper Helper.
 	 */
-	public function __construct( Engine $latteEngine, Provider $optionsProvider ) {
+	public function __construct( Engine $latteEngine, Provider $optionsProvider, Module\Helper $helper ) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
+		$this->helper          = $helper;
 	}
 
 	/**
@@ -87,7 +97,7 @@ class FeatureFlagManager {
 		$lastDownload    = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 		$flags           = [
 			self::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
-			self::FLAG_LAST_DOWNLOAD => $lastDownload->format( Helper::MYSQL_DATETIME_FORMAT ),
+			self::FLAG_LAST_DOWNLOAD => $lastDownload->format( Core\Helper::MYSQL_DATETIME_FORMAT ),
 		];
 
 		update_option( self::FLAGS_OPTION_ID, $flags );
@@ -129,7 +139,7 @@ class FeatureFlagManager {
 		if ( $hasApiKey && isset( $flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
 			$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 			$lastUpdate = DateTimeImmutable::createFromFormat(
-				Helper::MYSQL_DATETIME_FORMAT,
+				Core\Helper::MYSQL_DATETIME_FORMAT,
 				$flags[ self::FLAG_LAST_DOWNLOAD ],
 				new \DateTimeZone( 'UTC' )
 			);
@@ -203,8 +213,8 @@ class FeatureFlagManager {
 							'We have just enabled new options for setting Packeta pickup points. You can now choose a different price for Z-Box and pickup points in the carrier settings. More information can be found in %1$sthe plugin documentation%2$s. %3$sDismiss this message%4$s',
 							'packeta'
 						),
-						...Plugin::createLinkParts( 'https://github.com/Zasilkovna/WooCommerce/wiki', '_blank' ),
-						...Plugin::createLinkParts( $dismissUrl, null, 'button button-primary' )
+						...$this->helper->createLinkParts( 'https://github.com/Zasilkovna/WooCommerce/wiki', '_blank' ),
+						...$this->helper->createLinkParts( $dismissUrl, null, 'button button-primary' )
 					),
 				],
 			]

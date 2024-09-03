@@ -13,6 +13,7 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
+use Packetery\Module\Helper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Nette\Http\Request;
@@ -81,6 +82,13 @@ class PacketCanceller {
 	private $wcOrderActions;
 
 	/**
+	 * Helper.
+	 *
+	 * @var Helper
+	 */
+	private $helper;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Soap\Client              $soapApiClient   Soap client API.
@@ -91,6 +99,7 @@ class PacketCanceller {
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 * @param WcOrderActions           $wcOrderActions  WC order actions.
+	 * @param Helper                   $helper          Helper.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -100,7 +109,8 @@ class PacketCanceller {
 		Options\Provider $optionsProvider,
 		MessageManager $messageManager,
 		PacketActionsCommonLogic $commonLogic,
-		WcOrderActions $wcOrderActions
+		WcOrderActions $wcOrderActions,
+		Helper $helper
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -110,6 +120,7 @@ class PacketCanceller {
 		$this->messageManager  = $messageManager;
 		$this->commonLogic     = $commonLogic;
 		$this->wcOrderActions  = $wcOrderActions;
+		$this->helper          = $helper;
 	}
 
 	/**
@@ -193,7 +204,20 @@ class PacketCanceller {
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
 			if ( null !== $wcOrder ) {
-				$wcOrder->add_order_note( __( 'Packeta: Packet has been cancelled.', 'packeta' ) );
+				// translators: %s represents a packet tracking link.
+				$message     = __( 'Packeta: Packet %s has been cancelled', 'packeta' );
+				$trackingUrl = $order->getPacketTrackingUrl();
+				$text        = $order->getPacketBarcode();
+				if ( $order->isPacketClaim( $packetId ) ) {
+					// translators: %s represents a packet tracking link.
+					$message     = __( 'Packeta: Packet claim %s has been cancelled', 'packeta' );
+					$trackingUrl = $order->getPacketClaimTrackingUrl();
+					$text        = $order->getPacketClaimBarcode();
+				}
+
+				$wcOrder->add_order_note(
+					sprintf( $message, $this->helper->createHtmlLink( $trackingUrl, $text ) )
+				);
 				$wcOrder->save();
 			}
 		}
