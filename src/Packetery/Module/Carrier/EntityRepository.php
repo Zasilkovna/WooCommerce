@@ -49,12 +49,12 @@ class EntityRepository {
 	 */
 	private $carDeliveryConfig;
 
-    /**
-     * Carrier activity checker.
-     *
-     * @var ActivityBridge
-     */
-    private $activityBridge;
+	/**
+	 * Carrier activity checker.
+	 *
+	 * @var ActivityBridge
+	 */
+	private $activityBridge;
 
 	/**
 	 * Constructor.
@@ -63,20 +63,20 @@ class EntityRepository {
 	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
 	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
-     * @param ActivityBridge            $activityBridge       Carrier activity checker.
+	 * @param ActivityBridge            $activityBridge Carrier activity checker.
 	 */
 	public function __construct(
 		Repository $repository,
 		EntityFactory\Carrier $carrierEntityFactory,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CarDeliveryConfig $carDeliveryConfig,
-        ActivityBridge $activityBridge
+		ActivityBridge $activityBridge
 	) {
 		$this->repository           = $repository;
 		$this->carrierEntityFactory = $carrierEntityFactory;
 		$this->pickupPointsConfig   = $pickupPointsConfig;
 		$this->carDeliveryConfig    = $carDeliveryConfig;
-        $this->activityBridge       = $activityBridge;
+		$this->activityBridge       = $activityBridge;
 	}
 
 	/**
@@ -269,20 +269,13 @@ class EntityRepository {
 	 * @return Carrier[]
 	 */
 	public function getCarriersForShippingRate( string $rateId ): array {
-		$shippingZoneRepository = new ShippingZoneRepository();
-		$countries              = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
-
-		if ( empty( $countries ) ) {
-			return [];
-		}
-
+		$shippingZoneRepository   = new ShippingZoneRepository();
+		$countries                = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
 		$availableCarriersToMerge = [];
-		foreach ( $countries as $countryCode ) {
-			$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
-		}
-
-		if ( [] === $availableCarriersToMerge ) {
-			return $this->getActiveCarriers();
+		if ( ! empty( $countries ) ) {
+			foreach ( $countries as $countryCode ) {
+				$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
+			}
 		}
 
 		return array_merge( ...$availableCarriersToMerge );

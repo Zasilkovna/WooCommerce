@@ -78,12 +78,12 @@ class DashboardWidget {
 	 */
 	private $helper;
 
-    /**
-     * Carrier activity checker.
-     *
-     * @var Carrier\ActivityBridge
-     */
-    private $carrierActivityBridge;
+	/**
+	 * Carrier activity checker.
+	 *
+	 * @var Carrier\ActivityBridge
+	 */
+	private $carrierActivityBridge;
 
 	/**
 	 * Constructor.
@@ -95,8 +95,8 @@ class DashboardWidget {
 	 * @param Options\Page             $optionsPage             Options page.
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
-	 * @param Helper                   $helper                  Helper.
-     * @param Carrier\ActivityBridge   $carrierActivityBridge   Carrier activity checker.
+	 * @param Helper                   $helper Helper.
+	 * @param Carrier\ActivityBridge   $carrierActivityBridge Carrier activity checker.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -107,7 +107,7 @@ class DashboardWidget {
 		array $surveyConfig,
 		Carrier\EntityRepository $carrierEntityRepository,
 		Helper $helper,
-        Carrier\ActivityBridge $carrierActivityBridge
+		Carrier\ActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -117,7 +117,7 @@ class DashboardWidget {
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->helper                  = $helper;
-        $this->carrierActivityBridge   = $carrierActivityBridge;
+		$this->carrierActivityBridge   = $carrierActivityBridge;
 	}
 
 	/**
