@@ -95,8 +95,8 @@ class DashboardWidget {
 	 * @param Options\Page             $optionsPage             Options page.
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
-	 * @param Helper                   $helper Helper.
-	 * @param Carrier\ActivityBridge   $carrierActivityBridge Carrier activity checker.
+	 * @param Helper                   $helper                  Helper.
+	 * @param Carrier\ActivityBridge   $carrierActivityBridge   Carrier activity checker.
 	 */
 	public function __construct(
 		Engine $latteEngine,

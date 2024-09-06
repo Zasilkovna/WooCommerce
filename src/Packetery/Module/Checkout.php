@@ -209,7 +209,7 @@ class Checkout {
 	 * @param Carrier\EntityRepository     $carrierEntityRepository Carrier repository.
 	 * @param Api\Internal\CheckoutRouter  $apiRouter               API router.
 	 * @param CarDeliveryConfig            $carDeliveryConfig       Car delivery config.
-	 * @param Carrier\ActivityBridge       $activityBridge Carrier activity checker.
+	 * @param Carrier\ActivityBridge       $activityBridge          Carrier activity checker.
 	 */
 	public function __construct(
 		WpAdapter $wpAdapter,

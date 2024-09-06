@@ -63,7 +63,7 @@ class EntityRepository {
 	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
 	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
-	 * @param ActivityBridge            $activityBridge Carrier activity checker.
+	 * @param ActivityBridge            $activityBridge       Carrier activity checker.
 	 */
 	public function __construct(
 		Repository $repository,
@@ -269,13 +269,20 @@ class EntityRepository {
 	 * @return Carrier[]
 	 */
 	public function getCarriersForShippingRate( string $rateId ): array {
-		$shippingZoneRepository   = new ShippingZoneRepository();
-		$countries                = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
+		$shippingZoneRepository = new ShippingZoneRepository();
+		$countries              = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
+
+		if ( empty( $countries ) ) {
+			return [];
+		}
+
 		$availableCarriersToMerge = [];
-		if ( ! empty( $countries ) ) {
-			foreach ( $countries as $countryCode ) {
-				$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
-			}
+		foreach ( $countries as $countryCode ) {
+			$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
+		}
+
+		if ( [] === $availableCarriersToMerge ) {
+			return $this->getActiveCarriers();
 		}
 
 		return array_merge( ...$availableCarriersToMerge );
