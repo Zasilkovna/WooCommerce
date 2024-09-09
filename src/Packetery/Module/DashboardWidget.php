@@ -168,7 +168,7 @@ class DashboardWidget {
 				continue;
 			}
 
-			if ( false === $isCodSettingNeeded && $this->optionsProvider->getCodPaymentMethod() === null && $carrierOptions->hasAnyCodSurchargeSetting() ) {
+			if ( false === $isCodSettingNeeded && $this->optionsProvider->getCodPaymentMethods() === [] && $carrierOptions->hasAnyCodSurchargeSetting() ) {
 				$isCodSettingNeeded = true;
 			}
 

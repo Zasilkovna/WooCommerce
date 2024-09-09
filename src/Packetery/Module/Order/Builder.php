@@ -231,12 +231,12 @@ class Builder {
 		}
 
 		$order->setEmail( $orderData['billing']['email'] );
-		$codMethod = $this->optionsProvider->getCodPaymentMethod();
-		if ( $orderData['payment_method'] === $codMethod && null === $order->getCod() ) {
+		$codMethods = $this->optionsProvider->getCodPaymentMethods();
+		if ( in_array( $orderData['payment_method'], $codMethods, true ) && null === $order->getCod() ) {
 			$order->setCod( $order->getValue() );
 		}
 
-		if ( $orderData['payment_method'] !== $codMethod ) {
+		if ( ! in_array( $orderData['payment_method'], $codMethods, true ) ) {
 			$order->setCod( null );
 		}
 

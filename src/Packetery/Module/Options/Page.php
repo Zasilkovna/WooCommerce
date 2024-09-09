@@ -454,11 +454,11 @@ class Page {
 		foreach ( $gateways as $gateway ) {
 			$enabledGateways[ $gateway->id ] = $gateway->get_method_title();
 		}
-		$container->addSelect(
-			'cod_payment_method',
-			__( 'Payment method that represents cash on delivery', 'packeta' ),
+		$container->addMultiSelect(
+			'cod_payment_methods',
+			__( 'Payment methods that represents cash on delivery', 'packeta' ),
 			$enabledGateways
-		)->setPrompt( '--' )->checkDefaultValue( false );
+		)->checkDefaultValue( false );
 
 		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
 					->setRequired( true )

@@ -1422,9 +1422,9 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isCodPaymentMethod( string $paymentMethod ): bool {
-		$codPaymentMethod = $this->options_provider->getCodPaymentMethod();
+		$codPaymentMethods = $this->options_provider->getCodPaymentMethods();
 
-		return ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod );
+		return ! empty( $paymentMethod ) && in_array( $paymentMethod, $codPaymentMethods, true );
 	}
 
 	/**
@@ -1576,7 +1576,7 @@ class Checkout {
 			return;
 		}
 		$chosenPaymentMethod = WC()->session->get( 'packetery_checkout_payment_method' );
-		if ( $chosenPaymentMethod !== $this->options_provider->getCodPaymentMethod() ) {
+		if ( ! in_array( $chosenPaymentMethod, $this->options_provider->getCodPaymentMethods(), true ) ) {
 			return;
 		}
 		$chosenShippingRate = WC()->session->get( 'packetery_checkout_shipping_method' );
