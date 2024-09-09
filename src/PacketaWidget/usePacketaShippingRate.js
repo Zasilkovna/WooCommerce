@@ -13,23 +13,33 @@ export const usePacketaShippingRate = ( shippingRates, carrierConfig ) => {
 		return null;
 	}
 
-	const packetaShippingRate = shipping_rates.find(
-		( { rate_id, selected } ) => {
-			if ( ! selected ) {
-				return false;
+	const findShippingRate = ( callback ) => {
+		return shipping_rates.find(
+			( { rate_id, selected } ) => {
+				if ( ! selected ) {
+					return false;
+				}
+
+				const rateId = rate_id.split( ':' ).pop();
+				const rateCarrierConfig = carrierConfig[ rateId ];
+				if ( ! rateCarrierConfig ) {
+					return false;
+				}
+
+				return callback( rateCarrierConfig );
 			}
+		);
+	};
 
-			const rateId = rate_id.split( ':' ).pop();
-			const rateCarrierConfig = carrierConfig[ rateId ];
-			if ( ! rateCarrierConfig ) {
-				return false;
-			}
+	const packetaPickupPointShippingRate = findShippingRate( rateCarrierConfig => {
+		const { is_pickup_points: isPickupPoints } = rateCarrierConfig;
+		return rateCarrierConfig && isPickupPoints;
+	} );
 
-			const { is_pickup_points: isPickupPoints } = rateCarrierConfig;
-
-			return rateCarrierConfig && isPickupPoints;
-		}
-	);
+	const packetaHomeDeliveryShippingRate = findShippingRate( rateCarrierConfig => {
+		const { is_pickup_points: isPickupPoints } = rateCarrierConfig;
+		return rateCarrierConfig && ! isPickupPoints;
+	} );
 
 	const chosenShippingRate = shipping_rates.find(
 		( { selected } ) => {
@@ -38,7 +48,8 @@ export const usePacketaShippingRate = ( shippingRates, carrierConfig ) => {
 	);
 
 	return {
-		packetaShippingRate: packetaShippingRate || null,
+		packetaPickupPointShippingRate: packetaPickupPointShippingRate || null,
+		packetaHomeDeliveryShippingRate: packetaHomeDeliveryShippingRate || null,
 		chosenShippingRate: chosenShippingRate || null,
 	};
 };

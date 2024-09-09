@@ -408,7 +408,6 @@ class Checkout {
 				'chooseAddress'                 => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
-				'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
 				'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
 				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 			],
