@@ -14,6 +14,7 @@ use Exception;
 use Packetery\Core;
 use Packetery\Latte\Engine;
 use Packetery\Module;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Plugin;
 
 /**
@@ -56,16 +57,30 @@ class FeatureFlagManager {
 	private $helper;
 
 	/**
+	 * WP adapter;
+	 *
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * Downloader constructor.
 	 *
 	 * @param Engine        $latteEngine Latte engine.
 	 * @param Provider      $optionsProvider Options provider.
 	 * @param Module\Helper $helper Helper.
+	 * @param WpAdapter     $wpAdapter WP adapter.
 	 */
-	public function __construct( Engine $latteEngine, Provider $optionsProvider, Module\Helper $helper ) {
+	public function __construct(
+		Engine $latteEngine,
+		Provider $optionsProvider,
+		Module\Helper $helper,
+		WpAdapter $wpAdapter
+	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
 		$this->helper          = $helper;
+		$this->wpAdapter       = $wpAdapter;
 	}
 
 	/**
@@ -145,8 +160,7 @@ class FeatureFlagManager {
 			);
 			$ageHours   = ( ( $now->getTimestamp() - $lastUpdate->getTimestamp() ) / HOUR_IN_SECONDS );
 			if ( $ageHours >= self::VALID_FOR_HOURS ) {
-				$oldFlags = $flags;
-				$flags    = $this->fetchFlags();
+				$flags = $this->fetchFlags();
 			}
 		}
 
@@ -174,7 +188,7 @@ class FeatureFlagManager {
 	 * @return void
 	 */
 	public function dismissSplitActivationNotice(): void {
-		set_transient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED, 'yes' );
+		$this->wpAdapter->setTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED, 'yes' );
 	}
 
 	/**
@@ -185,7 +199,7 @@ class FeatureFlagManager {
 	public function shouldShowSplitActivationNotice(): bool {
 		return (
 			$this->isSplitActive() &&
-			'yes' !== get_transient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED )
+			'yes' !== $this->wpAdapter->getTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED )
 		);
 	}
 

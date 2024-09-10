@@ -16,6 +16,7 @@ namespace Packetery\Module\Framework;
  */
 class WpAdapter {
 	use HookTrait;
+	use TransientTrait;
 
 	/**
 	 * WP get_option adapter.
