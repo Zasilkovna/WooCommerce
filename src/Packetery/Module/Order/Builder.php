@@ -71,6 +71,13 @@ class Builder {
 	private $helper;
 
 	/**
+	 * Module helper.
+	 *
+	 * @var Module\Helper
+	 */
+	private $moduleHelper;
+
+	/**
 	 * Carrier repository.
 	 *
 	 * @var Carrier\EntityRepository
@@ -85,6 +92,7 @@ class Builder {
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
 	 * @param Core\Helper                   $helper                       Helper.
+	 * @param Module\Helper                 $moduleHelper                 Module helper.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 */
 	public function __construct(
@@ -93,6 +101,7 @@ class Builder {
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		Core\Helper $helper,
+		Module\Helper $moduleHelper,
 		Carrier\EntityRepository $carrierRepository
 	) {
 		$this->optionsProvider              = $optionsProvider;
@@ -100,6 +109,7 @@ class Builder {
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->pickupPointsConfig           = $pickupPointsConfig;
 		$this->helper                       = $helper;
+		$this->moduleHelper                 = $moduleHelper;
 		$this->carrierRepository            = $carrierRepository;
 	}
 
@@ -231,12 +241,12 @@ class Builder {
 		}
 
 		$order->setEmail( $orderData['billing']['email'] );
-		$codMethods = $this->optionsProvider->getCodPaymentMethods();
-		if ( in_array( $orderData['payment_method'], $codMethods, true ) && null === $order->getCod() ) {
+		$hasCodPaymentMethod = $this->moduleHelper->isCodPaymentMethod( $orderData['payment_method'] );
+		if ( $hasCodPaymentMethod && null === $order->getCod() ) {
 			$order->setCod( $order->getValue() );
 		}
 
-		if ( ! in_array( $orderData['payment_method'], $codMethods, true ) ) {
+		if ( ! $hasCodPaymentMethod ) {
 			$order->setCod( null );
 		}
 

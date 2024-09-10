@@ -456,7 +456,7 @@ class Page {
 		}
 		$container->addMultiSelect(
 			'cod_payment_methods',
-			__( 'Payment methods that represents cash on delivery', 'packeta' ),
+			__( 'Payment methods that represent cash on delivery', 'packeta' ),
 			$enabledGateways
 		)->checkDefaultValue( false );
 
