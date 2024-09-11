@@ -63,10 +63,10 @@ class FormFields {
 	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory       $formFactory       Factory engine.
-	 * @param Engine            $latteEngine       Latte engine.
-	 * @param EntityRepository  $carrierRepository Carrier repository.
-	 * @param CarDeliveryConfig $carDeliveryConfig Car delivery config.
+	 * @param FormFactory                  $formFactory       Factory engine.
+	 * @param Engine                       $latteEngine       Latte engine.
+	 * @param EntityRepository             $carrierRepository Carrier repository.
+	 * @param CarDeliveryConfig            $carDeliveryConfig Car delivery config.
 	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory Product category entity factory.
 	 */
 	public function __construct(
@@ -79,7 +79,7 @@ class FormFields {
 		$this->formFactory                  = $formFactory;
 		$this->latteEngine                  = $latteEngine;
 		$this->carrierRepository            = $carrierRepository;
-		$this->carDeliveryConfig = $carDeliveryConfig;
+		$this->carDeliveryConfig            = $carDeliveryConfig;
 		$this->productCategoryEntityFactory = $productCategoryEntityFactory;
 	}
 

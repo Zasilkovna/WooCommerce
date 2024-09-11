@@ -72,10 +72,10 @@ class EntityRepository {
 		CarDeliveryConfig $carDeliveryConfig,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->repository           = $repository;
-		$this->carrierEntityFactory = $carrierEntityFactory;
-		$this->pickupPointsConfig   = $pickupPointsConfig;
-		$this->carDeliveryConfig    = $carDeliveryConfig;
+		$this->repository            = $repository;
+		$this->carrierEntityFactory  = $carrierEntityFactory;
+		$this->pickupPointsConfig    = $pickupPointsConfig;
+		$this->carDeliveryConfig     = $carDeliveryConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
