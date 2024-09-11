@@ -38,15 +38,11 @@ class Helper {
 	/**
 	 * Tells if given payment method is COD payment method.
 	 *
-	 * @param string|mixed $paymentMethod Payment method.
+	 * @param string $paymentMethod Payment method.
 	 *
 	 * @return bool
 	 */
-	public function isCodPaymentMethod( $paymentMethod ): bool {
-		if ( ! is_string( $paymentMethod ) ) {
-			return false;
-		}
-
+	public function isCodPaymentMethod( string $paymentMethod ): bool {
 		if ( empty( $paymentMethod ) ) {
 			return false;
 		}

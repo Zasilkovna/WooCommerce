@@ -1573,7 +1573,7 @@ class Checkout {
 			return;
 		}
 		$chosenPaymentMethod = WC()->session->get( 'packetery_checkout_payment_method' );
-		if ( ! $this->moduleHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
+		if ( null !== $chosenPaymentMethod && ! $this->moduleHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
 			return;
 		}
 		$chosenShippingRate = WC()->session->get( 'packetery_checkout_shipping_method' );
