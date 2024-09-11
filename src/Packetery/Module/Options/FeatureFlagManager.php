@@ -26,14 +26,21 @@ class FeatureFlagManager {
 
 	private const ENDPOINT_URL                      = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
 	private const VALID_FOR_HOURS                   = 4;
-	private const FLAGS_OPTION_ID                   = 'packeta_feature_flags';
+	public const FLAGS_OPTION_ID                    = 'packeta_feature_flags';
 	private const TRANSIENT_SPLIT_MESSAGE_DISMISSED = 'packeta_split_message_dismissed';
 	public const ACTION_HIDE_SPLIT_MESSAGE          = 'dismiss_split_message';
-	private const DISABLED_DUE_ERRORS_OPTION_ID     = 'packeta_feature_flags_disabled_due_errors';
+	public const DISABLED_DUE_ERRORS_OPTION_ID      = 'packeta_feature_flags_disabled_due_errors';
 	private const ERROR_COUNTER_OPTION_ID           = 'packeta_feature_flags_error_counter';
 
 	private const FLAG_LAST_DOWNLOAD = 'lastDownload';
 	private const FLAG_SPLIT_ACTIVE  = 'splitActive';
+
+	/**
+	 * Static cache.
+	 *
+	 * @var array|false|null
+	 */
+	private static $flags;
 
 	/**
 	 * Latte engine.
@@ -90,15 +97,15 @@ class FeatureFlagManager {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function fetchFlags(): array {
-		$response = wp_remote_get(
-			add_query_arg( [ 'api_key' => $this->optionsProvider->get_api_key() ], self::ENDPOINT_URL ),
+		$response = $this->wpAdapter->remoteGet(
+			$this->wpAdapter->addQueryArg( [ 'api_key' => $this->optionsProvider->get_api_key() ], self::ENDPOINT_URL ),
 			[ 'timeout' => 20 ]
 		);
 
-		if ( is_wp_error( $response ) ) {
+		if ( $this->wpAdapter->isWpError( $response ) ) {
 			$logger = new \WC_Logger();
 			$logger->warning( 'Packeta Feature flag API download error: ' . $response->get_error_message() );
-			$errorCount = get_option( self::ERROR_COUNTER_OPTION_ID, 0 );
+			$errorCount = $this->wpAdapter->getOption( self::ERROR_COUNTER_OPTION_ID, 0 );
 			update_option( self::ERROR_COUNTER_OPTION_ID, $errorCount + 1 );
 			if ( $errorCount > 5 ) {
 				update_option( self::DISABLED_DUE_ERRORS_OPTION_ID, true );
@@ -108,7 +115,7 @@ class FeatureFlagManager {
 			return [];
 		}
 
-		$responseDecoded = json_decode( wp_remote_retrieve_body( $response ), true );
+		$responseDecoded = json_decode( $this->wpAdapter->remoteRetrieveBody( $response ), true );
 		$lastDownload    = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 		$flags           = [
 			self::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
@@ -128,43 +135,41 @@ class FeatureFlagManager {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function getFlags(): array {
-		static $flags;
-
-		if ( ! isset( $flags ) ) {
-			$flags = get_option( self::FLAGS_OPTION_ID );
+		if ( ! isset( self::$flags ) || null === self::$flags ) {
+			self::$flags = $this->wpAdapter->getOption( self::FLAGS_OPTION_ID );
 		}
 
-		if ( true === get_option( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
-			return $flags ? $flags : [];
+		if ( true === $this->wpAdapter->getOption( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
+			return self::$flags ? self::$flags : [];
 		}
 
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
-		if ( false === $flags ) {
+		if ( false === self::$flags ) {
 			if ( ! $hasApiKey ) {
-				$flags = [];
+				self::$flags = [];
 
-				return $flags;
+				return self::$flags;
 			}
 
-			$flags = $this->fetchFlags();
+			self::$flags = $this->fetchFlags();
 
-			return $flags;
+			return self::$flags;
 		}
 
-		if ( $hasApiKey && isset( $flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
+		if ( $hasApiKey && isset( self::$flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
 			$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 			$lastUpdate = DateTimeImmutable::createFromFormat(
 				Core\Helper::MYSQL_DATETIME_FORMAT,
-				$flags[ self::FLAG_LAST_DOWNLOAD ],
+				self::$flags[ self::FLAG_LAST_DOWNLOAD ],
 				new \DateTimeZone( 'UTC' )
 			);
 			$ageHours   = ( ( $now->getTimestamp() - $lastUpdate->getTimestamp() ) / HOUR_IN_SECONDS );
 			if ( $ageHours >= self::VALID_FOR_HOURS ) {
-				$flags = $this->fetchFlags();
+				self::$flags = $this->fetchFlags();
 			}
 		}
 
-		return $flags;
+		return self::$flags;
 	}
 
 	/**
@@ -228,6 +233,15 @@ class FeatureFlagManager {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Resets static cache. Used in tests.
+	 *
+	 * @return void
+	 */
+	public static function resetCache(): void {
+		self::$flags = null;
 	}
 
 }
