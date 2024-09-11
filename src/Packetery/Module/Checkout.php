@@ -457,7 +457,7 @@ class Checkout {
 
 		// Cannot be null because of previous condition.
 		$carrierId      = $this->getCarrierId( $chosenShippingMethod );
-		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		$paymentMethod  = $this->getChosenPaymentMethod();
 
 		if ( null !== $paymentMethod && $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
@@ -840,7 +840,7 @@ class Checkout {
 			return;
 		}
 
-		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
 		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->getCarrierIdFromShippingMethod( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->getTaxClassWithMaxRate();
 
@@ -1063,7 +1063,7 @@ class Checkout {
 			return null;
 		}
 
-		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod )->toArray();
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod )->toArray();
 		$today          = new DateTime();
 		$processingDays = $carrierOptions['days_until_shipping'];
 		$cutoffTime     = $carrierOptions['shipping_time_cut_off'];
@@ -1397,7 +1397,7 @@ class Checkout {
 			return $availableGateways;
 		}
 
-		$carrierOptions = Carrier\Options::createByCarrierId( $this->getCarrierId( $chosenMethod ) );
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $this->getCarrierId( $chosenMethod ) );
 		foreach ( $availableGateways as $key => $availableGateway ) {
 			if (
 				$this->isCodPaymentMethod( $availableGateway->id ) &&
@@ -1587,7 +1587,7 @@ class Checkout {
 		if ( ! $this->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
 			return;
 		}
-		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
 		$surcharge      = $this->getCODSurcharge( $carrierOptions->toArray(), $this->getCartPrice() );
 
 		$maxTaxClass = $this->getTaxClassWithMaxRate();

@@ -98,6 +98,13 @@ class CountryListingPage {
 	private $wcNativeCarrierSettingsConfig;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine                    $latteEngine                   PacketeryLatte engine.
@@ -110,6 +117,7 @@ class CountryListingPage {
 	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
 	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
 	 * @param WcSettingsConfig          $wcNativeCarrierSettingsConfig WC native carrier settings config.
+	 * @param CarrierOptionsFactory     $carrierOptionsFactory         Carrier options factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -121,7 +129,8 @@ class CountryListingPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		WcSettingsConfig $wcNativeCarrierSettingsConfig
+		WcSettingsConfig $wcNativeCarrierSettingsConfig,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->carrierRepository             = $carrierRepository;
@@ -133,6 +142,7 @@ class CountryListingPage {
 		$this->carrierEntityRepository       = $carrierEntityRepository;
 		$this->carDeliveryConfig             = $carDeliveryConfig;
 		$this->wcNativeCarrierSettingsConfig = $wcNativeCarrierSettingsConfig;
+		$this->carrierOptionsFactory         = $carrierOptionsFactory;
 	}
 
 	/**
@@ -358,7 +368,7 @@ class CountryListingPage {
 			}
 
 			$carrierId      = $carrier->getId();
-			$carrierOptions = Options::createByCarrierId( $carrierId );
+			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 
 			$carrierNames[ $carrierId ] = [
 				'name'      => $carrier->getName(),

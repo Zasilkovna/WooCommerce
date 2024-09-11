@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use WC_Data_Store;
 use WC_Shipping_Zone;
@@ -79,6 +80,13 @@ class DashboardWidget {
 	private $helper;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Engine                   $latteEngine             Latte engine.
@@ -89,6 +97,7 @@ class DashboardWidget {
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
 	 * @param Helper                   $helper                  Helper.
+	 * @param CarrierOptionsFactory    $carrierOptionsFactory   Carrier options factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -98,7 +107,8 @@ class DashboardWidget {
 		Options\Page $optionsPage,
 		array $surveyConfig,
 		Carrier\EntityRepository $carrierEntityRepository,
-		Helper $helper
+		Helper $helper,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -108,6 +118,7 @@ class DashboardWidget {
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->helper                  = $helper;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 	}
 
 	/**
@@ -162,7 +173,7 @@ class DashboardWidget {
 
 		foreach ( $this->carrierEntityRepository->getAllCarriersIncludingNonFeed() as $carrier ) {
 			$country        = $carrier->getCountry();
-			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
+			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
 			if ( false === $carrierOptions->isActive() ) {
 				continue;
