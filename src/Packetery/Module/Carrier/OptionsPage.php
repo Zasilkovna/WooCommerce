@@ -523,6 +523,8 @@ class OptionsPage {
 			$form         = $this->createForm( $carrierData );
 		}
 
+		$isCountAvailableVendorsLow = $this->isCountAvailableVendorsLowByCarrierId( $carrier->getId() );
+
 		return [
 			'form'                                 => $form,
 			'formTemplate'                         => $formTemplate,
@@ -530,6 +532,7 @@ class OptionsPage {
 			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
 			'weightLimitsContainerId'              => $this->createFieldContainerId( $form, self::FORM_FIELD_WEIGHT_LIMITS ),
 			'productValueLimitsContainerId'        => $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ),
+			'isCountAvailableVendorsLow'           => $isCountAvailableVendorsLow,
 		];
 	}
 
@@ -563,6 +566,7 @@ class OptionsPage {
 				'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
 				'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
 				'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+				'countAvailableVendorsLow'               => __( 'This carrier displays all types of dispensing points at the same time in the checkout (pickup points, Z-boxes).', 'packeta' ),
 			],
 		];
 
@@ -845,30 +849,26 @@ class OptionsPage {
 	 */
 	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null === $availableVendors ) {
+		if ( null === $availableVendors || $this->isCountAvailableVendorsLowerThenRequiredMinimum( $availableVendors ) ) {
 			return [];
 		}
 
 		$vendorCheckboxes = [];
 		$vendorCarriers   = $this->pickupPointsConfig->getVendorCarriers();
 		foreach ( $availableVendors as $vendorId ) {
-			$vendorProvider       = $vendorCarriers[ $vendorId ];
-			$checkbox             = [
+			$vendorProvider        = $vendorCarriers[ $vendorId ];
+			$checkbox              = [
 				'group'    => $vendorProvider->getGroup(),
 				'name'     => $vendorProvider->getName(),
 				'disabled' => null,
 				'default'  => null,
 			];
-			$hasLowCountAvailable = count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
-			if ( $hasLowCountAvailable ) {
-				$checkbox['disabled'] = true;
-			}
 			$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
 			$hasTheGroupAllowed    = (
 				$hasGroupSettingsSaved &&
 				in_array( $vendorProvider->getGroup(), $carrierOptions['vendor_groups'], true )
 			);
-			if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
+			if ( ! $hasGroupSettingsSaved || $hasTheGroupAllowed ) {
 				$checkbox['default'] = true;
 			}
 			$vendorCheckboxes[] = $checkbox;
@@ -877,4 +877,26 @@ class OptionsPage {
 		return $vendorCheckboxes;
 	}
 
+	/**
+	 * Check if the number of vendors is lower than the required minimum
+	 *
+	 * @param array $availableVendors Available vendors.
+	 *
+	 * @return bool
+	 */
+	public function isCountAvailableVendorsLowerThenRequiredMinimum( array $availableVendors ): bool {
+		return count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
+	}
+
+	/**
+	 * Checks if the number of vendors is lower than the minimum required by the carrier id
+	 *
+	 * @param string $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public function isCountAvailableVendorsLowByCarrierId( string $carrierId ): bool {
+		$availableVendors = $this->getAvailableVendors( $carrierId );
+		return is_array( $availableVendors ) && $this->isCountAvailableVendorsLowerThenRequiredMinimum( $availableVendors );
+	}
 }
