@@ -20,37 +20,6 @@ use Packetery\Nette\Utils\Html;
 class Helper {
 
 	/**
-	 * Options provider.
-	 *
-	 * @var Options\Provider
-	 */
-	private $optionsProvider;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param Options\Provider $optionsProvider Options provider.
-	 */
-	public function __construct( Options\Provider $optionsProvider ) {
-		$this->optionsProvider = $optionsProvider;
-	}
-
-	/**
-	 * Tells if given payment method is COD payment method.
-	 *
-	 * @param string $paymentMethod Payment method.
-	 *
-	 * @return bool
-	 */
-	public function isCodPaymentMethod( string $paymentMethod ): bool {
-		if ( empty( $paymentMethod ) ) {
-			return false;
-		}
-
-		return in_array( $paymentMethod, $this->optionsProvider->getCodPaymentMethods(), true );
-	}
-
-	/**
 	 * Gets order detail url.
 	 *
 	 * @param int $orderId Order ID.

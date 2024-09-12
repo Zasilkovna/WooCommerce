@@ -22,6 +22,7 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\WeightCalculator;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Product;
@@ -71,11 +72,11 @@ class Builder {
 	private $helper;
 
 	/**
-	 * Module helper.
+	 * Payment helper.
 	 *
-	 * @var Module\Helper
+	 * @var PaymentHelper
 	 */
-	private $moduleHelper;
+	private $paymentHelper;
 
 	/**
 	 * Carrier repository.
@@ -92,7 +93,7 @@ class Builder {
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
 	 * @param Core\Helper                   $helper                       Helper.
-	 * @param Module\Helper                 $moduleHelper                 Module helper.
+	 * @param PaymentHelper                 $paymentHelper                Payment helper.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 */
 	public function __construct(
@@ -101,7 +102,7 @@ class Builder {
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		Core\Helper $helper,
-		Module\Helper $moduleHelper,
+		PaymentHelper $paymentHelper,
 		Carrier\EntityRepository $carrierRepository
 	) {
 		$this->optionsProvider              = $optionsProvider;
@@ -109,7 +110,7 @@ class Builder {
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->pickupPointsConfig           = $pickupPointsConfig;
 		$this->helper                       = $helper;
-		$this->moduleHelper                 = $moduleHelper;
+		$this->paymentHelper                = $paymentHelper;
 		$this->carrierRepository            = $carrierRepository;
 	}
 
@@ -241,7 +242,7 @@ class Builder {
 		}
 
 		$order->setEmail( $orderData['billing']['email'] );
-		$hasCodPaymentMethod = $this->moduleHelper->isCodPaymentMethod( $orderData['payment_method'] );
+		$hasCodPaymentMethod = $this->paymentHelper->isCodPaymentMethod( $orderData['payment_method'] );
 		if ( $hasCodPaymentMethod && null === $order->getCod() ) {
 			$order->setCod( $order->getValue() );
 		}
