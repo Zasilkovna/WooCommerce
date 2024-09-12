@@ -25,7 +25,7 @@ use Packetery\Module\Plugin;
 class FeatureFlagManager {
 
 	private const ENDPOINT_URL                      = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
-	private const VALID_FOR_HOURS                   = 4;
+	private const VALID_FOR_SECONDS                 = 4 * HOUR_IN_SECONDS;
 	public const FLAGS_OPTION_ID                    = 'packeta_feature_flags';
 	private const TRANSIENT_SPLIT_MESSAGE_DISMISSED = 'packeta_split_message_dismissed';
 	public const ACTION_HIDE_SPLIT_MESSAGE          = 'dismiss_split_message';
@@ -156,17 +156,8 @@ class FeatureFlagManager {
 			return self::$flags;
 		}
 
-		if ( $hasApiKey && isset( self::$flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
-			$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
-			$lastUpdate = DateTimeImmutable::createFromFormat(
-				Core\Helper::MYSQL_DATETIME_FORMAT,
-				self::$flags[ self::FLAG_LAST_DOWNLOAD ],
-				new \DateTimeZone( 'UTC' )
-			);
-			$ageHours   = ( ( $now->getTimestamp() - $lastUpdate->getTimestamp() ) / HOUR_IN_SECONDS );
-			if ( $ageHours >= self::VALID_FOR_HOURS ) {
-				self::$flags = $this->fetchFlags();
-			}
+		if ( $hasApiKey && ! $this->isLastDownloadValid() ) {
+			self::$flags = $this->fetchFlags();
 		}
 
 		return self::$flags;
@@ -242,6 +233,28 @@ class FeatureFlagManager {
 	 */
 	public static function resetCache(): void {
 		self::$flags = null;
+	}
+
+	/**
+	 * Checks if last download is still valid.
+	 *
+	 * @return bool
+	 */
+	private function isLastDownloadValid(): bool {
+		if ( ! isset( self::$flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
+			// This should not happen, because the datetime is always set when fetching flags.
+			// But we want it not to be prone to errors.
+			return true;
+		}
+
+		$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+		$lastUpdate = DateTimeImmutable::createFromFormat(
+			Core\Helper::MYSQL_DATETIME_FORMAT,
+			self::$flags[ self::FLAG_LAST_DOWNLOAD ],
+			new \DateTimeZone( 'UTC' )
+		);
+
+		return $now->getTimestamp() <= ( $lastUpdate->getTimestamp() + self::VALID_FOR_SECONDS );
 	}
 
 }
