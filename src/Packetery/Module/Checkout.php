@@ -408,6 +408,7 @@ class Checkout {
 				'chooseAddress'                 => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
+				'deliveryAddressNotification'   => __( 'The order will be delivered to the address:', 'packeta' ),
 				'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
 				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
 			],
@@ -593,9 +594,10 @@ class Checkout {
 			return;
 		}
 
-		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
-		$propsToSave  = [];
-		$carrierId    = $this->getCarrierId( $chosenMethod );
+		$checkoutData           = $this->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
+		$propsToSave            = [];
+		$carrierId              = $this->getCarrierId( $chosenMethod );
+		$orderHasUnsavedChanges = false;
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
@@ -634,7 +636,7 @@ class Checkout {
 					$this->mapper->toWcOrderShippingAddress( $wcOrder, $attrName, (string) $attrValue );
 				}
 			}
-			$wcOrder->save();
+			$orderHasUnsavedChanges = true;
 		}
 
 		$orderEntity = new Core\Entity\Order( (string) $wcOrder->get_id(), $this->carrierEntityRepository->getAnyById( $carrierId ) );
@@ -646,6 +648,21 @@ class Checkout {
 			$validatedAddress = $this->mapper->toValidatedAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
+			if ( $this->areBlocksUsedInCheckout() ) {
+				// Change all address fields except customer name and country.
+				$houseNumberSuffix = $checkoutData[ Order\Attribute::ADDRESS_HOUSE_NUMBER ] ? ' ' . $checkoutData[ Order\Attribute::ADDRESS_HOUSE_NUMBER ] : '';
+				$wcOrder->update_meta_data( '_shipping_address_1', $checkoutData[ Order\Attribute::ADDRESS_STREET ] . $houseNumberSuffix );
+				$wcOrder->update_meta_data( '_shipping_address_2', '' );
+				$wcOrder->update_meta_data( '_shipping_city', $checkoutData[ Order\Attribute::ADDRESS_CITY ] );
+				$wcOrder->update_meta_data( '_shipping_state', '' );
+				$wcOrder->update_meta_data( '_shipping_postcode', $checkoutData[ Order\Attribute::ADDRESS_POST_CODE ] );
+
+				$orderHasUnsavedChanges = true;
+			}
+		}
+
+		if ( $orderHasUnsavedChanges ) {
+			$wcOrder->save();
 		}
 
 		if ( ! empty( $checkoutData ) && $this->isCarDeliveryOrder() ) {

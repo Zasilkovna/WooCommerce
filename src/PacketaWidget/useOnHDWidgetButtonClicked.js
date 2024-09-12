@@ -21,6 +21,7 @@ export const useOnHDWidgetButtonClicked = (
 		nonce,
 		saveValidatedAddressUrl,
 		homeDeliveryAttrs,
+		translations,
 	} = settings;
 
 	const onHDWidgetButtonClicked = useCallback( () => {
@@ -71,7 +72,8 @@ export const useOnHDWidgetButtonClicked = (
 					return;
 				}
 
-				setViewState( { deliveryAddressInfo: result.address.name } );
+				const deliveryAddressInfo = translations.deliveryAddressNotification + ' ' + result.address.name;
+				setViewState( { deliveryAddressInfo } );
 
 				fillRateAttrValues( rateId, homeDeliveryAttrs, result.address );
 				let homeDeliveryDataToSave = rateAttrValues[ rateId ];
