@@ -564,7 +564,7 @@ class OptionsPage {
 				'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
 				'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
 				'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
-				'countAvailableVendorsLow'               => __( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
+				'availableVendorsCountLow'               => __( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
 			],
 		];
 
@@ -847,7 +847,7 @@ class OptionsPage {
 	 */
 	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null === $availableVendors || $this->isCountAvailableVendorsLowerThanRequiredMinimum( $availableVendors ) ) {
+		if ( null === $availableVendors || $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors ) ) {
 			return [];
 		}
 
@@ -882,7 +882,7 @@ class OptionsPage {
 	 *
 	 * @return bool
 	 */
-	public function isCountAvailableVendorsLowerThanRequiredMinimum( array $availableVendors ): bool {
+	public function isAvailableVendorsCountLowerThanRequiredMinimum( array $availableVendors ): bool {
 		return count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
 	}
 
@@ -895,6 +895,6 @@ class OptionsPage {
 	 */
 	public function isAvailableVendorsCountLowByCarrierId( string $carrierId ): bool {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		return is_array( $availableVendors ) && $this->isCountAvailableVendorsLowerThanRequiredMinimum( $availableVendors );
+		return is_array( $availableVendors ) && $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors );
 	}
 }
