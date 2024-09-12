@@ -564,7 +564,7 @@ class OptionsPage {
 				'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
 				'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
 				'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
-				'countAvailableVendorsLow'               => __( 'This carrier displays all types of dispensing points at the same time in the checkout (pickup points, Z-boxes).', 'packeta' ),
+				'countAvailableVendorsLow'               => __( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
 			],
 		];
 
