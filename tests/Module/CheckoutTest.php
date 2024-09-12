@@ -515,8 +515,8 @@ class CheckoutTest extends TestCase {
 
 		$carDeliveryConfig = $this->createMock( CarDeliveryConfig::class );
 		$carDeliveryConfig
-			->method( 'isEnabled' )
-			->willReturn( $isCarDeliveryEnabled );
+			->method( 'isDisabled' )
+			->willReturn( ! $isCarDeliveryEnabled );
 
 		$checkout = $this->createCheckoutMock(
 			$wpAdapter,
