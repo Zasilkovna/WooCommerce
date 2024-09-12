@@ -530,7 +530,7 @@ class OptionsPage {
 			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
 			'weightLimitsContainerId'              => $this->createFieldContainerId( $form, self::FORM_FIELD_WEIGHT_LIMITS ),
 			'productValueLimitsContainerId'        => $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ),
-			'isCountAvailableVendorsLow'           => $this->isCountAvailableVendorsLowByCarrierId( $carrier->getId() ),
+			'isAvailableVendorsCountLow'           => $this->isAvailableVendorsCountLowByCarrierId( $carrier->getId() ),
 		];
 	}
 
@@ -893,7 +893,7 @@ class OptionsPage {
 	 *
 	 * @return bool
 	 */
-	public function isCountAvailableVendorsLowByCarrierId( string $carrierId ): bool {
+	public function isAvailableVendorsCountLowByCarrierId( string $carrierId ): bool {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
 		return is_array( $availableVendors ) && $this->isCountAvailableVendorsLowerThanRequiredMinimum( $availableVendors );
 	}

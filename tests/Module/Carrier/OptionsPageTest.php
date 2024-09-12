@@ -56,10 +56,10 @@ class OptionsPageTest extends TestCase {
 		);
 
 		$featureFlagMock->method('isSplitActive')->willReturn(true);
-		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointcz'));
-		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointsk'));
-		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointhu'));
-		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointro'));
+		self::assertTrue($optionsPage->isAvailableVendorsCountLowByCarrierId('zpointcz'));
+		self::assertTrue($optionsPage->isAvailableVendorsCountLowByCarrierId('zpointsk'));
+		self::assertTrue($optionsPage->isAvailableVendorsCountLowByCarrierId('zpointhu'));
+		self::assertTrue($optionsPage->isAvailableVendorsCountLowByCarrierId('zpointro'));
 	}
 
 }
