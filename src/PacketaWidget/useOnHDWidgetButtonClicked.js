@@ -62,7 +62,7 @@ export const useOnHDWidgetButtonClicked = (
 		Packeta.Widget.pick(
 			packeteryApiKey,
 			( result ) => {
-				if ( ! result ) {
+				if ( ! result || ! result.address ) {
 					return;
 				}
 
