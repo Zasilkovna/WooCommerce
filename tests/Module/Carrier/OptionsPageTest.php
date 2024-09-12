@@ -21,47 +21,45 @@ use PHPUnit\Framework\TestCase;
 
 class OptionsPageTest extends TestCase {
 
-	public function setUp(): void {
-		$this->latteEngineMock = $this->createMock(Engine::class);
-		$this->carrierRepositoryMock = $this->createMock(EntityRepository::class);
-		$this->formFactoryMock = $this->createMock(FormFactory::class);
-		$this->request = $this->createMock(Request::class);
-		$this->countryListingPageMock = $this->createMock(CountryListingPage::class);
-		$this->messageManagerMock = $this->createMock( MessageManager::class);
-		$this->featureFlagManagerMock = $this->createMock(FeatureFlagManager::class);
-		$this->carDeliveryConfigMock = $this->createMock(CarDeliveryConfig::class);
-		$this->wcSettingsConfigMock = $this->createMock(WcSettingsConfig::class);
+	public function testIsCountAvailableVendorsLowByCarrierId(): void {
+		$latteEngineMock = $this->createMock(Engine::class);
+		$carrierRepositoryMock = $this->createMock(EntityRepository::class);
+		$formFactoryMock = $this->createMock(FormFactory::class);
+		$request = $this->createMock(Request::class);
+		$countryListingPageMock = $this->createMock(CountryListingPage::class);
+		$messageManagerMock = $this->createMock( MessageManager::class);
+		$featureFlagManagerMock = $this->createMock(FeatureFlagManager::class);
+		$carDeliveryConfigMock = $this->createMock(CarDeliveryConfig::class);
+		$wcSettingsConfigMock = $this->createMock(WcSettingsConfig::class);
 
-		$this->compoundCarrierFactory = new CompoundCarrierCollectionFactory();
-		$this->vendorCollectionFactory = new VendorCollectionFactory();
-		$this->featureFlagMock = $this->createMock(FeatureFlagManager::class);
+		$compoundCarrierFactory = new CompoundCarrierCollectionFactory();
+		$vendorCollectionFactory = new VendorCollectionFactory();
+		$featureFlagMock = $this->createMock(FeatureFlagManager::class);
 
-		$this->packetaPickupPointsConfig = new PacketaPickupPointsConfig(
-			$this->compoundCarrierFactory,
-			$this->vendorCollectionFactory,
-			$this->featureFlagMock
+		$packetaPickupPointsConfig = new PacketaPickupPointsConfig(
+			$compoundCarrierFactory,
+			$vendorCollectionFactory,
+			$featureFlagMock
 		);
 
-			$this->optionsPage = new OptionsPage(
-			$this->latteEngineMock,
-			$this->carrierRepositoryMock,
-			$this->formFactoryMock,
-			$this->request,
-			$this->countryListingPageMock,
-			$this->messageManagerMock,
-			$this->packetaPickupPointsConfig,
-			$this->featureFlagManagerMock,
-			$this->carDeliveryConfigMock,
-			$this->wcSettingsConfigMock,
+		$optionsPage = new OptionsPage(
+			$latteEngineMock,
+			$carrierRepositoryMock,
+			$formFactoryMock,
+			$request,
+			$countryListingPageMock,
+			$messageManagerMock,
+			$packetaPickupPointsConfig,
+			$featureFlagManagerMock,
+			$carDeliveryConfigMock,
+			$wcSettingsConfigMock,
 		);
-	}
 
-	public function testAvailableVendorsAreLowerThanRequiredMinimum(): void {
-		$this->featureFlagMock->method('isSplitActive')->willReturn(true);
-		self::assertTrue($this->optionsPage->isCountAvailableVendorsLowByCarrierId('zpointcz'));
-		self::assertTrue($this->optionsPage->isCountAvailableVendorsLowByCarrierId('zpointsk'));
-		self::assertTrue($this->optionsPage->isCountAvailableVendorsLowByCarrierId('zpointhu'));
-		self::assertTrue($this->optionsPage->isCountAvailableVendorsLowByCarrierId('zpointro'));
+		$featureFlagMock->method('isSplitActive')->willReturn(true);
+		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointcz'));
+		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointsk'));
+		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointhu'));
+		self::assertTrue($optionsPage->isCountAvailableVendorsLowByCarrierId('zpointro'));
 	}
 
 }
