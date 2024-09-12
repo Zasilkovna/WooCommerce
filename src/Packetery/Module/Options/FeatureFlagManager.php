@@ -88,6 +88,8 @@ class FeatureFlagManager {
 		$this->optionsProvider = $optionsProvider;
 		$this->helper          = $helper;
 		$this->wpAdapter       = $wpAdapter;
+
+		self::$flags = null;
 	}
 
 	/**
@@ -224,15 +226,6 @@ class FeatureFlagManager {
 				],
 			]
 		);
-	}
-
-	/**
-	 * Resets static cache. Used in tests.
-	 *
-	 * @return void
-	 */
-	public static function resetCache(): void {
-		self::$flags = null;
 	}
 
 	/**

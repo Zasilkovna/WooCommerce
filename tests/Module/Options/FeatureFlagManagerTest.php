@@ -79,7 +79,6 @@ class FeatureFlagManagerTest extends TestCase {
 			->method( 'getTransient' )
 			->willReturn( $messageDismissed );
 
-		FeatureFlagManager::resetCache();
 		$manager = new FeatureFlagManager(
 			$this->createMock( Engine::class ),
 			$optionsProvider,
