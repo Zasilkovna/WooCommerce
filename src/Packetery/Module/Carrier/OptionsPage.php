@@ -523,8 +523,6 @@ class OptionsPage {
 			$form         = $this->createForm( $carrierData );
 		}
 
-		$isCountAvailableVendorsLow = $this->isCountAvailableVendorsLowByCarrierId( $carrier->getId() );
-
 		return [
 			'form'                                 => $form,
 			'formTemplate'                         => $formTemplate,
@@ -532,7 +530,7 @@ class OptionsPage {
 			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
 			'weightLimitsContainerId'              => $this->createFieldContainerId( $form, self::FORM_FIELD_WEIGHT_LIMITS ),
 			'productValueLimitsContainerId'        => $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ),
-			'isCountAvailableVendorsLow'           => $isCountAvailableVendorsLow,
+			'isCountAvailableVendorsLow'           => $this->isCountAvailableVendorsLowByCarrierId( $carrier->getId() ),
 		];
 	}
 
@@ -849,7 +847,7 @@ class OptionsPage {
 	 */
 	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null === $availableVendors || $this->isCountAvailableVendorsLowerThenRequiredMinimum( $availableVendors ) ) {
+		if ( null === $availableVendors || $this->isCountAvailableVendorsLowerThanRequiredMinimum( $availableVendors ) ) {
 			return [];
 		}
 
@@ -884,7 +882,7 @@ class OptionsPage {
 	 *
 	 * @return bool
 	 */
-	public function isCountAvailableVendorsLowerThenRequiredMinimum( array $availableVendors ): bool {
+	public function isCountAvailableVendorsLowerThanRequiredMinimum( array $availableVendors ): bool {
 		return count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
 	}
 
@@ -897,6 +895,6 @@ class OptionsPage {
 	 */
 	public function isCountAvailableVendorsLowByCarrierId( string $carrierId ): bool {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		return is_array( $availableVendors ) && $this->isCountAvailableVendorsLowerThenRequiredMinimum( $availableVendors );
+		return is_array( $availableVendors ) && $this->isCountAvailableVendorsLowerThanRequiredMinimum( $availableVendors );
 	}
 }
