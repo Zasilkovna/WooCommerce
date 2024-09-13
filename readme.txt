@@ -66,18 +66,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.8.0 =
 
-(CZ)
-Přidáno: výpočet ceny dopravy podle hodnoty objednávky.
-Přidáno: podpora [pokladny založená na blocích](https://woocommerce.com/checkout-blocks/).
-Přidáno: důležité informace o zásilce (podání nebo storno zásilky, tisk šítků, vytvoření reklamačního asistenta) se nyní zapíší do interní poznámky k objednávce.
-Přidáno: Povinná pole (např. hmotnost a rozměry zásilky, pokud je vyžaduje dopravce) jsou nyní zvýrazněna, pokud u objednávky chybí.
-Přidáno: Možnost nastavit více platebních metod jako dobírku.
-Aktualizováno: Při změně dopravce se použije název zadaný uživatelem.
-Aktualizováno: Odstraněna závislost na Guzzle, nyní se používají nativní metody WordPressu.
-
-(EN)
-Added: calculation of shipping price according to order value.
-Added: [block-based checkout](https://woocommerce.com/checkout-blocks/) support.
+Added: Calculation of shipping price according to order value.
+Added: [Block-based checkout](https://woocommerce.com/checkout-blocks) support.
 Added: Logging of important events in the internal order note.
 Added: Important information about the packet (submission or cancellation of the packet, label printing, creation of a claims assistant) will now be recorded in the internal order note.
 Added: Required fields (e.g., packet weight and dimensions when required by the carrier) are now highlighted if missing from the order.
