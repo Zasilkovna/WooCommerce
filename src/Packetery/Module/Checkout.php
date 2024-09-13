@@ -22,6 +22,7 @@ use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
 use Packetery\Nette\Http\Request;
@@ -180,6 +181,13 @@ class Checkout {
 	private $carDeliveryConfig;
 
 	/**
+	 * Payment helper.
+	 *
+	 * @var PaymentHelper
+	 */
+	private $paymentHelper;
+
+	/**
 	 * Checkout constructor.
 	 *
 	 * @param WpAdapter                    $wpAdapter               WpAdapter.
@@ -202,6 +210,7 @@ class Checkout {
 	 * @param Carrier\EntityRepository     $carrierEntityRepository Carrier repository.
 	 * @param Api\Internal\CheckoutRouter  $apiRouter               API router.
 	 * @param CarDeliveryConfig            $carDeliveryConfig       Car delivery config.
+	 * @param PaymentHelper                $paymentHelper           Payment helper.
 	 */
 	public function __construct(
 		WpAdapter $wpAdapter,
@@ -223,7 +232,8 @@ class Checkout {
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		Carrier\EntityRepository $carrierEntityRepository,
 		Api\Internal\CheckoutRouter $apiRouter,
-		CarDeliveryConfig $carDeliveryConfig
+		CarDeliveryConfig $carDeliveryConfig,
+		PaymentHelper $paymentHelper
 	) {
 		$this->wpAdapter                   = $wpAdapter;
 		$this->wcAdapter                   = $wcAdapter;
@@ -245,6 +255,7 @@ class Checkout {
 		$this->carrierEntityRepository     = $carrierEntityRepository;
 		$this->apiRouter                   = $apiRouter;
 		$this->carDeliveryConfig           = $carDeliveryConfig;
+		$this->paymentHelper               = $paymentHelper;
 	}
 
 	/**
@@ -871,7 +882,7 @@ class Checkout {
 		}
 
 		$paymentMethod = $this->getChosenPaymentMethod();
-		if ( empty( $paymentMethod ) || false === $this->isCodPaymentMethod( $paymentMethod ) ) {
+		if ( empty( $paymentMethod ) || false === $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
 		}
 
@@ -1400,7 +1411,7 @@ class Checkout {
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $this->getCarrierId( $chosenMethod ) );
 		foreach ( $availableGateways as $key => $availableGateway ) {
 			if (
-				$this->isCodPaymentMethod( $availableGateway->id ) &&
+				$this->paymentHelper->isCodPaymentMethod( $availableGateway->id ) &&
 				! $carrier->supportsCod()
 			) {
 				unset( $availableGateways[ $key ] );
@@ -1412,19 +1423,6 @@ class Checkout {
 		}
 
 		return $availableGateways;
-	}
-
-	/**
-	 * Checks if payment method is a COD one.
-	 *
-	 * @param string $paymentMethod Payment method.
-	 *
-	 * @return bool
-	 */
-	private function isCodPaymentMethod( string $paymentMethod ): bool {
-		$codPaymentMethod = $this->options_provider->getCodPaymentMethod();
-
-		return ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod );
 	}
 
 	/**
@@ -1576,7 +1574,7 @@ class Checkout {
 			return;
 		}
 		$chosenPaymentMethod = WC()->session->get( 'packetery_checkout_payment_method' );
-		if ( $chosenPaymentMethod !== $this->options_provider->getCodPaymentMethod() ) {
+		if ( null !== $chosenPaymentMethod && ! $this->paymentHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
 			return;
 		}
 		$chosenShippingRate = WC()->session->get( 'packetery_checkout_shipping_method' );
