@@ -170,10 +170,11 @@ export const View = ( { cart } ) => {
 		const rateId = packetaHomeDeliveryShippingRate.rate_id.split( ':' ).pop();
 		const rateCarrierConfig = carrierConfig[ rateId ];
 		const addressValidationSetting = rateCarrierConfig.address_validation || 'none';
+		let addressIsRequired = true;
 		if ( addressValidationSetting === 'none' ) {
 			return null;
-		} else if ( addressValidationSetting === 'optional' && ( ! viewState || ! viewState.deliveryAddressInfo ) ) {
-			setViewState( { deliveryAddressInfo: translations.addressIsNotValidated } );
+		} else if ( addressValidationSetting === 'optional' ) {
+			addressIsRequired = false;
 		}
 
 		return (
@@ -192,7 +193,7 @@ export const View = ( { cart } ) => {
 					value={
 						viewState && viewState.deliveryAddressInfo ? viewState.deliveryAddressInfo : ''
 					}
-					required={ true }
+					required={ addressIsRequired }
 					errorMessage={ getHomeDeliveryErrorMessage( viewState, addressValidationSetting ) }
 				/>
 			</PacketaWidget>
