@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.3
 Tested up to: 6.5.2
-Stable tag: 1.7.6
+Stable tag: 1.8.0
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 8.8.2
@@ -64,7 +64,25 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
-= 1.7.6 =
-Updated: When changing the carrier, the name entered by the user is used.
+= 1.8.0 =
+
+(CZ)
+Přidáno: výpočet ceny dopravy podle hodnoty objednávky.
+Přidáno: podpora [pokladny založená na blocích](https://woocommerce.com/checkout-blocks/).
+Přidáno: důležité informace o zásilce (podání nebo storno zásilky, tisk šítků, vytvoření reklamačního asistenta) se nyní zapíší do interní poznámky k objednávce.
+Přidáno: Povinná pole (např. hmotnost a rozměry zásilky, pokud je vyžaduje dopravce) jsou nyní zvýrazněna, pokud u objednávky chybí.
+Přidáno: Možnost nastavit více platebních metod jako dobírku.
+Aktualizováno: Při změně dopravce se použije název zadaný uživatelem.
+Aktualizováno: Odstraněna závislost na Guzzle, nyní se používají nativní metody WordPressu.
+
+(EN)
+Added: calculation of shipping price according to order value.
+Added: [block-based checkout](https://woocommerce.com/checkout-blocks/) support.
+Added: Logging of important events in the internal order note.
+Added: Important information about the packet (submission or cancellation of the packet, label printing, creation of a claims assistant) will now be recorded in the internal order note.
+Added: Required fields (e.g., packet weight and dimensions when required by the carrier) are now highlighted if missing from the order.
+Added: An option to set multiple payment methods as cash on delivery (COD).
+Updated: When changing a carrier, the name created by the user is applied.
+Updated: Removed dependency on Guzzle and used the WordPress native methods instead.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)
