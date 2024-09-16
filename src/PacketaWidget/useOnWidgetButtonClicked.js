@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from 'react';
+import { fillRateAttrValues } from './fillRateAttrValues';
 
 export const useOnWidgetButtonClicked = (
 	packetaShippingRate,
@@ -40,28 +41,6 @@ export const useOnWidgetButtonClicked = (
 			widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 		}
 
-		const fillRateAttrValues = function ( carrierRateId, data, source ) {
-			for ( let attrKey in data ) {
-				if ( ! data.hasOwnProperty( attrKey ) ) {
-					continue;
-				}
-
-				const { name, widgetResultField, isWidgetResultField } =
-					data[ attrKey ];
-
-				if ( false === isWidgetResultField ) {
-					continue;
-				}
-
-				let widgetField = widgetResultField || attrKey;
-				let addressFieldValue = source[ widgetField ];
-
-				rateAttrValues[ carrierRateId ] =
-					rateAttrValues[ carrierRateId ] || {};
-				rateAttrValues[ carrierRateId ][ name ] = addressFieldValue;
-			}
-		};
-
 		// Storage to store settings of all Packeta shipping methods displayed at checkout.
 		let rateAttrValues = {};
 
@@ -74,7 +53,7 @@ export const useOnWidgetButtonClicked = (
 
 				setViewState( { pickupPoint } );
 
-				fillRateAttrValues( rateId, pickupPointAttrs, pickupPoint );
+				rateAttrValues = fillRateAttrValues( rateId, pickupPointAttrs, pickupPoint, rateAttrValues );
 				let pickupPointDataToSave = rateAttrValues[ rateId ];
 				pickupPointDataToSave.packetery_rate_id = rateId;
 

@@ -5,6 +5,7 @@
  */
 
 import { useCallback } from 'react';
+import { fillRateAttrValues } from './fillRateAttrValues';
 
 export const useOnHDWidgetButtonClicked = (
 	packetaShippingRate,
@@ -35,28 +36,6 @@ export const useOnHDWidgetButtonClicked = (
 		widgetOptions.postcode = shippingAddress.postcode;
 		widgetOptions.carrierId = carrierConfig[ rateId ].id;
 
-		const fillRateAttrValues = function ( carrierRateId, data, source ) {
-			for ( let attrKey in data ) {
-				if ( ! data.hasOwnProperty( attrKey ) ) {
-					continue;
-				}
-
-				const { name, widgetResultField, isWidgetResultField } =
-					data[ attrKey ];
-
-				if ( false === isWidgetResultField ) {
-					continue;
-				}
-
-				let widgetField = widgetResultField || attrKey;
-				let addressFieldValue = source[ widgetField ];
-
-				rateAttrValues[ carrierRateId ] =
-					rateAttrValues[ carrierRateId ] || {};
-				rateAttrValues[ carrierRateId ][ name ] = addressFieldValue;
-			}
-		};
-
 		// Storage to store settings of all Packeta shipping methods displayed at checkout.
 		let rateAttrValues = {};
 
@@ -75,7 +54,7 @@ export const useOnHDWidgetButtonClicked = (
 				const deliveryAddressInfo = translations.deliveryAddressNotification + ' ' + result.address.name;
 				setViewState( { deliveryAddressInfo } );
 
-				fillRateAttrValues( rateId, homeDeliveryAttrs, result.address );
+				rateAttrValues = fillRateAttrValues( rateId, homeDeliveryAttrs, result.address, rateAttrValues );
 				let homeDeliveryDataToSave = rateAttrValues[ rateId ];
 				homeDeliveryDataToSave.packetery_rate_id = rateId;
 				homeDeliveryDataToSave.packetery_address_isValidated = 1;
@@ -94,7 +73,7 @@ export const useOnHDWidgetButtonClicked = (
 						}
 					} )
 					.catch( ( error ) => {
-						console.error( 'Failed to save pickup point data:', error );
+						console.error( 'Failed to save validated address data:', error );
 					} );
 			},
 			widgetOptions
