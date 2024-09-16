@@ -66,8 +66,8 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 == Changelog ==
 = 1.8.0 =
 
-Added: Calculation of the shipping price according to the order value.
 Added: [Block-based checkout](https://woocommerce.com/checkout-blocks/) support.
+Added: Calculation of the shipping price according to the order value.
 Added: Logging of important events in the internal order note.
 Added: Important information about the packet (submission or cancellation of the packet, label printing, creation of a claims assistant) will now be recorded in the internal order note.
 Added: Required fields (e.g., packet weight and dimensions when required by the carrier) are now highlighted if missing from the order.
