@@ -6,6 +6,7 @@ import { ValidatedTextInput } from '@woocommerce/blocks-components';
 
 import { usePacketaShippingRate } from './usePacketaShippingRate';
 import { useOnWidgetButtonClicked } from './useOnWidgetButtonClicked';
+import { useOnHDWidgetButtonClicked } from './useOnHDWidgetButtonClicked';
 import { useDynamicSettings } from './useDynamicSettings';
 import { PacketaWidget } from './PacketaWidget';
 
@@ -31,7 +32,11 @@ export const View = ( { cart } ) => {
 		shippingRates,
 		carrierConfig
 	);
-	const { packetaShippingRate = null, chosenShippingRate = null } = filteredShippingRates || {};
+	const {
+		packetaPickupPointShippingRate = null,
+		packetaHomeDeliveryShippingRate = null,
+		chosenShippingRate = null,
+	} = filteredShippingRates || {};
 
 	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 
@@ -90,7 +95,7 @@ export const View = ( { cart } ) => {
 	}, [ dynamicSettings, setDynamicSettings, viewState, setViewState, shippingAddress ] );
 
 	const onWidgetButtonClicked = useOnWidgetButtonClicked(
-		packetaShippingRate,
+		packetaPickupPointShippingRate,
 		settings,
 		dynamicSettings,
 		setViewState,
@@ -98,18 +103,26 @@ export const View = ( { cart } ) => {
 		cartItemsWeight,
 	);
 
+	const onHDWidgetButtonClicked = useOnHDWidgetButtonClicked(
+		packetaHomeDeliveryShippingRate,
+		settings,
+		dynamicSettings,
+		setViewState,
+		shippingAddress,
+	);
+
 	useEffect( () => {
 		if (
-			packetaShippingRate &&
+			packetaPickupPointShippingRate &&
 			dynamicSettings &&
 			! viewState &&
 			widgetAutoOpen
 		) {
 			onWidgetButtonClicked();
 		}
-	}, [ packetaShippingRate, widgetAutoOpen, onWidgetButtonClicked ] );
+	}, [ packetaPickupPointShippingRate, widgetAutoOpen, onWidgetButtonClicked ] );
 
-	const getErrorMessage = function ( viewState ) {
+	const getPickupPointErrorMessage = function ( viewState ) {
 		if ( viewState && viewState.pickupPoint ) {
 			return null;
 		} else {
@@ -117,31 +130,75 @@ export const View = ( { cart } ) => {
 		}
 	};
 
-	const { choosePickupPoint, packeta } = translations;
+	const getHomeDeliveryErrorMessage = function ( viewState, addressValidationSetting ) {
+		if ( addressValidationSetting === 'optional' || ( viewState && viewState.deliveryAddressInfo ) ) {
+			return null;
+		} else if ( viewState && viewState.deliveryAddressError ) {
+			return viewState.deliveryAddressError;
+		} else {
+			return translations.addressIsNotValidatedAndRequiredByCarrier;
+		}
+	};
 
-	if ( ! packetaShippingRate ) {
-		return null;
+	const { choosePickupPoint, chooseAddress, packeta } = translations;
+
+	if ( packetaPickupPointShippingRate ) {
+		return (
+			<PacketaWidget
+				onClick={ onWidgetButtonClicked }
+				buttonLabel={ choosePickupPoint }
+				logoSrc={ logo }
+				logoAlt={ packeta }
+				info={
+					viewState && viewState.pickupPoint && viewState.pickupPoint.name
+				}
+				loading={ loading }
+				placeholderText={ translations.placeholderText }
+			>
+				<ValidatedTextInput
+					value={
+						viewState && viewState.pickupPoint ? viewState.pickupPoint.name : ''
+					}
+					required={ true }
+					errorMessage={ getPickupPointErrorMessage( viewState ) }
+				/>
+			</PacketaWidget>
+		);
 	}
 
-	return (
-		<PacketaWidget
-			onClick={ onWidgetButtonClicked }
-			buttonLabel={ choosePickupPoint }
-			logoSrc={ logo }
-			logoAlt={ packeta }
-			info={
-				viewState && viewState.pickupPoint && viewState.pickupPoint.name
-			}
-			loading={ loading }
-			placeholderText={ translations.placeholderText }
-		>
-			<ValidatedTextInput
-				value={
-					viewState && viewState.pickupPoint ? viewState.pickupPoint.name : ''
+	if ( packetaHomeDeliveryShippingRate ) {
+		const rateId = packetaHomeDeliveryShippingRate.rate_id.split( ':' ).pop();
+		const rateCarrierConfig = carrierConfig[ rateId ];
+		const addressValidationSetting = rateCarrierConfig.address_validation || 'none';
+		let addressIsRequired = true;
+		if ( addressValidationSetting === 'none' ) {
+			return null;
+		} else if ( addressValidationSetting === 'optional' ) {
+			addressIsRequired = false;
+		}
+
+		return (
+			<PacketaWidget
+				onClick={ onHDWidgetButtonClicked }
+				buttonLabel={ chooseAddress }
+				logoSrc={ logo }
+				logoAlt={ packeta }
+				info={
+					viewState && viewState.deliveryAddressInfo
 				}
-				required={ true }
-				errorMessage={ getErrorMessage( viewState ) }
-			/>
-		</PacketaWidget>
-	);
+				loading={ loading }
+				placeholderText={ translations.placeholderText }
+			>
+				<ValidatedTextInput
+					value={
+						viewState && viewState.deliveryAddressInfo ? viewState.deliveryAddressInfo : ''
+					}
+					required={ addressIsRequired }
+					errorMessage={ getHomeDeliveryErrorMessage( viewState, addressValidationSetting ) }
+				/>
+			</PacketaWidget>
+		);
+	}
+
+	return null;
 };
