@@ -648,14 +648,7 @@ class Checkout {
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
 			if ( $this->areBlocksUsedInCheckout() ) {
-				// Change all address fields except customer name and country.
-				$houseNumberSuffix = $checkoutData[ Order\Attribute::ADDRESS_HOUSE_NUMBER ] ? ' ' . $checkoutData[ Order\Attribute::ADDRESS_HOUSE_NUMBER ] : '';
-				$wcOrder->update_meta_data( '_shipping_address_1', $checkoutData[ Order\Attribute::ADDRESS_STREET ] . $houseNumberSuffix );
-				$wcOrder->update_meta_data( '_shipping_address_2', '' );
-				$wcOrder->update_meta_data( '_shipping_city', $checkoutData[ Order\Attribute::ADDRESS_CITY ] );
-				$wcOrder->update_meta_data( '_shipping_state', '' );
-				$wcOrder->update_meta_data( '_shipping_postcode', $checkoutData[ Order\Attribute::ADDRESS_POST_CODE ] );
-
+				$this->mapper->validatedAddressToWcOrderShippingAddress( $wcOrder, $checkoutData );
 				$orderHasUnsavedChanges = true;
 			}
 		}
