@@ -631,7 +631,10 @@ class Checkout {
 					$propsToSave[ $attrName ] = $attrValue;
 				}
 
-				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
+				if (
+					$this->options_provider->replaceShippingAddressWithPickupPointAddress() &&
+					$this->canReplaceShippingAddress()
+				) {
 					$this->mapper->toWcOrderShippingAddress( $wcOrder, $attrName, (string) $attrValue );
 				}
 			}
@@ -647,7 +650,7 @@ class Checkout {
 			$validatedAddress = $this->mapper->toValidatedAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
-			if ( $this->areBlocksUsedInCheckout() ) {
+			if ( $this->areBlocksUsedInCheckout() && $this->canReplaceShippingAddress() ) {
 				$this->mapper->validatedAddressToWcOrderShippingAddress( $wcOrder, $checkoutData );
 				$orderHasUnsavedChanges = true;
 			}
@@ -1600,6 +1603,17 @@ class Checkout {
 		$taxable     = ! ( false === $maxTaxClass );
 
 		$cart->add_fee( __( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
+	}
+
+	/**
+	 * Checks if address can be replaced.
+	 *
+	 * @return bool
+	 */
+	private function canReplaceShippingAddress(): bool {
+		$shipToDestination = get_option( 'woocommerce_ship_to_destination' );
+
+		return ! ( 'billing_only' === $shipToDestination && $this->areBlocksUsedInCheckout() );
 	}
 
 }
