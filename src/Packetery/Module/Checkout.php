@@ -631,10 +631,7 @@ class Checkout {
 					$propsToSave[ $attrName ] = $attrValue;
 				}
 
-				if (
-					$this->options_provider->replaceShippingAddressWithPickupPointAddress() &&
-					$this->canReplaceShippingAddress()
-				) {
+				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
 					$this->mapper->toWcOrderShippingAddress( $wcOrder, $attrName, (string) $attrValue );
 				}
 			}
@@ -650,7 +647,7 @@ class Checkout {
 			$validatedAddress = $this->mapper->toValidatedAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
-			if ( $this->areBlocksUsedInCheckout() && $this->canReplaceShippingAddress() ) {
+			if ( $this->areBlocksUsedInCheckout() ) {
 				$this->mapper->validatedAddressToWcOrderShippingAddress( $wcOrder, $checkoutData );
 				$orderHasUnsavedChanges = true;
 			}
@@ -717,7 +714,7 @@ class Checkout {
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
-		add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'updateOrderMetaBlocks' ) );
+		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'updateOrderMetaBlocks' ) );
 		if ( ! is_admin() ) {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
@@ -1603,17 +1600,6 @@ class Checkout {
 		$taxable     = ! ( false === $maxTaxClass );
 
 		$cart->add_fee( __( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
-	}
-
-	/**
-	 * Checks if address can be replaced.
-	 *
-	 * @return bool
-	 */
-	private function canReplaceShippingAddress(): bool {
-		$shipToDestination = get_option( 'woocommerce_ship_to_destination' );
-
-		return ! ( 'billing_only' === $shipToDestination && $this->areBlocksUsedInCheckout() );
 	}
 
 }
