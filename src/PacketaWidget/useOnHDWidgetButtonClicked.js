@@ -6,6 +6,7 @@
 
 import { useCallback } from 'react';
 import { fillRateAttrValues } from './fillRateAttrValues';
+import { stringifyOptions } from "./stringifyOptions";
 
 export const useOnHDWidgetButtonClicked = (
 	packetaShippingRate,
@@ -35,6 +36,8 @@ export const useOnHDWidgetButtonClicked = (
 		widgetOptions.city = shippingAddress.city;
 		widgetOptions.postcode = shippingAddress.postcode;
 		widgetOptions.carrierId = carrierConfig[ rateId ].id;
+
+		console.log( 'Address widget options: apiKey: ' + packeteryApiKey + ', ' + stringifyOptions( widgetOptions ) );
 
 		// Storage to store settings of all Packeta shipping methods displayed at checkout.
 		let rateAttrValues = {};

@@ -6,6 +6,7 @@
 
 import { useCallback } from 'react';
 import { fillRateAttrValues } from './fillRateAttrValues';
+import { stringifyOptions } from "./stringifyOptions";
 
 export const useOnWidgetButtonClicked = (
 	packetaShippingRate,
@@ -40,6 +41,8 @@ export const useOnWidgetButtonClicked = (
 		if ( dynamicSettings && dynamicSettings.isAgeVerificationRequired ) {
 			widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 		}
+
+		console.log( 'Pickup point widget options: apiKey: ' + packeteryApiKey + ', ' + stringifyOptions( widgetOptions ) );
 
 		// Storage to store settings of all Packeta shipping methods displayed at checkout.
 		let rateAttrValues = {};
