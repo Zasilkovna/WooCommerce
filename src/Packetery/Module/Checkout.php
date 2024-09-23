@@ -648,14 +648,7 @@ class Checkout {
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
 			if ( $this->areBlocksUsedInCheckout() ) {
-				// Change all address fields except customer name and country.
-				$houseNumberSuffix = $checkoutData[ Order\Attribute::ADDRESS_HOUSE_NUMBER ] ? ' ' . $checkoutData[ Order\Attribute::ADDRESS_HOUSE_NUMBER ] : '';
-				$wcOrder->update_meta_data( '_shipping_address_1', $checkoutData[ Order\Attribute::ADDRESS_STREET ] . $houseNumberSuffix );
-				$wcOrder->update_meta_data( '_shipping_address_2', '' );
-				$wcOrder->update_meta_data( '_shipping_city', $checkoutData[ Order\Attribute::ADDRESS_CITY ] );
-				$wcOrder->update_meta_data( '_shipping_state', '' );
-				$wcOrder->update_meta_data( '_shipping_postcode', $checkoutData[ Order\Attribute::ADDRESS_POST_CODE ] );
-
+				$this->mapper->validatedAddressToWcOrderShippingAddress( $wcOrder, $checkoutData );
 				$orderHasUnsavedChanges = true;
 			}
 		}
@@ -721,7 +714,7 @@ class Checkout {
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
-		add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'updateOrderMetaBlocks' ) );
+		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'updateOrderMetaBlocks' ) );
 		if ( ! is_admin() ) {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}

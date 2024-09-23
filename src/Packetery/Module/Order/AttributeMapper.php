@@ -89,6 +89,25 @@ class AttributeMapper {
 	}
 
 	/**
+	 * Maps validated address from checkout data to WC order shipping address.
+	 *
+	 * @param WC_Order $wcOrder      WC order.
+	 * @param array    $checkoutData Checkout data.
+	 *
+	 * @return void
+	 */
+	public function validatedAddressToWcOrderShippingAddress( WC_Order $wcOrder, array $checkoutData ): void {
+		// Change all address fields except customer name and country.
+		$houseNumberSuffix = $checkoutData[ Attribute::ADDRESS_HOUSE_NUMBER ] ? ' ' . $checkoutData[ Attribute::ADDRESS_HOUSE_NUMBER ] : '';
+		$wcOrder->set_shipping_company( '' );
+		$wcOrder->set_shipping_address_1( $checkoutData[ Attribute::ADDRESS_STREET ] . $houseNumberSuffix );
+		$wcOrder->set_shipping_address_2( '' );
+		$wcOrder->set_shipping_city( $checkoutData[ Attribute::ADDRESS_CITY ] );
+		$wcOrder->set_shipping_state( '' );
+		$wcOrder->set_shipping_postcode( $checkoutData[ Attribute::ADDRESS_POST_CODE ] );
+	}
+
+	/**
 	 * From prepared properties to order Size.
 	 *
 	 * @param Entity\Order $order       Order.
