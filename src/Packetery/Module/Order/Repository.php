@@ -18,7 +18,7 @@ use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
 use WP_Post;
@@ -284,7 +284,7 @@ class Repository {
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getByWcOrder( WC_Order $wcOrder, bool $suppressInvalidCarrierException = false ): ?Order {
-		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+		if ( ! ShippingProvider::wcOrderHasOurMethod( $wcOrder ) ) {
 			return null;
 		}
 
@@ -534,7 +534,7 @@ class Repository {
 
 		foreach ( $rows as $row ) {
 			$wcOrder = $this->getWcOrderById( (int) $row->id );
-			if ( null === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			if ( null === $wcOrder || ! ShippingProvider::wcOrderHasOurMethod( $wcOrder ) ) {
 				continue;
 			}
 

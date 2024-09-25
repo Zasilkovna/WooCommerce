@@ -621,7 +621,6 @@ class OptionsPage {
 						'translations' => [
 							// translators: %s is country code.
 							'title' => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
-
 						],
 					]
 				)

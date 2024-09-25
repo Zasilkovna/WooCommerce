@@ -18,8 +18,8 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order\CarrierModal;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -296,6 +296,13 @@ class Plugin {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Shipping provider.
+	 *
+	 * @var ShippingProvider
+	 */
+	private $shippingProvider;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -334,6 +341,7 @@ class Plugin {
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
 	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param ShippingProvider           $shippingProvider          Shipping provider.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -371,7 +379,8 @@ class Plugin {
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
 		CarrierModal $carrierModal,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ShippingProvider $shippingProvider
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -410,6 +419,7 @@ class Plugin {
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
+		$this->shippingProvider          = $shippingProvider;
 	}
 
 	/**
@@ -557,6 +567,7 @@ class Plugin {
 			}
 		);
 		add_action( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurgarche' ], 20, 1 );
+		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );
 	}
 
 	/**
@@ -1146,6 +1157,9 @@ class Plugin {
 	 */
 	public function add_shipping_method( array $methods ): array {
 		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
+		foreach ( $this->shippingProvider->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+			$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;
+		}
 
 		return $methods;
 	}
