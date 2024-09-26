@@ -7,7 +7,8 @@
 
 namespace Packetery\Module\Shipping;
 
-use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Carrier\Downloader;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Nette\PhpGenerator\PhpFile;
 
 /**
@@ -19,19 +20,31 @@ class ShippingMethodGenerator {
 	private const TARGET_NAMESPACE = 'Packetery\Module\Shipping\Generated';
 
 	/**
-	 * Entity repository.
+	 * Pickup point config.
 	 *
-	 * @var EntityRepository
+	 * @var PacketaPickupPointsConfig
 	 */
-	private $carrierRepository;
+	private $pickupPointConfig;
+
+	/**
+	 * Carrier downloader.
+	 *
+	 * @var Downloader
+	 */
+	private $carrierDownloader;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param EntityRepository $carrierRepository Carrier repository.
+	 * @param PacketaPickupPointsConfig $pickupPointConfig Pickup point config.
+	 * @param Downloader                $carrierDownloader Carrier downloader.
 	 */
-	public function __construct( EntityRepository $carrierRepository ) {
-		$this->carrierRepository = $carrierRepository;
+	public function __construct(
+		PacketaPickupPointsConfig $pickupPointConfig,
+		Downloader $carrierDownloader
+	) {
+		$this->pickupPointConfig = $pickupPointConfig;
+		$this->carrierDownloader = $carrierDownloader;
 	}
 
 	/**
@@ -40,14 +53,25 @@ class ShippingMethodGenerator {
 	 * @return void
 	 */
 	public function generateClasses(): void {
-		$allCarriers = $this->carrierRepository->getAllCarriersIncludingNonFeed();
+		$allCarriers = [];
+
+		$pickupPointCarriers = array_merge( $this->pickupPointConfig->getCompoundCarriers(), $this->pickupPointConfig->getVendorCarriers( true ) );
+		foreach ( $pickupPointCarriers as $pickupPointCarrier ) {
+			$allCarriers[ $pickupPointCarrier->getId() ] = $pickupPointCarrier->getName();
+		}
+
+		$feedCarriers = $this->carrierDownloader->fetch_as_array( 'en' );
+		foreach ( $feedCarriers as $feedCarrier ) {
+			$allCarriers[ $feedCarrier['id'] ] = $feedCarrier['name'];
+		}
+
 		if ( ! $allCarriers ) {
 			return;
 		}
 
-		foreach ( $allCarriers as $carrier ) {
-			if ( ! class_exists( self::TARGET_NAMESPACE . '\\' . $this->getClassnameFromCarrierId( $carrier->getId() ) ) ) {
-				$this->generateClass( $carrier->getId(), $carrier->getName() );
+		foreach ( $allCarriers as $carrierId => $carrierName ) {
+			if ( ! class_exists( self::TARGET_NAMESPACE . '\\' . $this->getClassnameFromCarrierId( $carrierId ) ) ) {
+				$this->generateClass( $carrierId, $carrierName );
 			}
 		}
 	}

@@ -9,6 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Shipping;
 
+use Packetery\Core\Entity\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Options\FeatureFlagManager;
 use Packetery\Module\ShippingMethod;
 
 /**
@@ -19,6 +22,48 @@ use Packetery\Module\ShippingMethod;
 class ShippingProvider {
 
 	/**
+	 * Feature flag manager.
+	 *
+	 * @var FeatureFlagManager
+	 */
+	private $featureFlagManager;
+
+	/**
+	 * Pickup point config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointConfig;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param FeatureFlagManager        $featureFlagManager Feature flag manager.
+	 * @param PacketaPickupPointsConfig $pickupPointConfig  Pickup point config.
+	 */
+	public function __construct(
+		FeatureFlagManager $featureFlagManager,
+		PacketaPickupPointsConfig $pickupPointConfig
+	) {
+		$this->featureFlagManager = $featureFlagManager;
+		$this->pickupPointConfig  = $pickupPointConfig;
+	}
+
+	/**
+	 * Loads generated shipping methods, including split ones when split is off.
+	 *
+	 * @return void
+	 */
+	public function loadAllClasses(): void {
+		$generatedClassesPath = __DIR__ . '/Generated';
+		foreach ( scandir( $generatedClassesPath ) as $filename ) {
+			if ( preg_match( '/\.php$/', $filename ) ) {
+				require_once $generatedClassesPath . '/' . $filename;
+			}
+		}
+	}
+
+	/**
 	 * Loads generated shipping methods.
 	 *
 	 * @return void
@@ -26,9 +71,17 @@ class ShippingProvider {
 	public function loadClasses(): void {
 		$generatedClassesPath = __DIR__ . '/Generated';
 		foreach ( scandir( $generatedClassesPath ) as $filename ) {
-			if ( preg_match( '/\.php$/', $filename ) ) {
-				require_once $generatedClassesPath . '/' . $filename;
+			if ( ! preg_match( '/\.php$/', $filename ) ) {
+				continue;
 			}
+			if ( $this->featureFlagManager->isSplitActive() === false ) {
+				$internalCountries = implode( '|', $this->pickupPointConfig->getInternalCountries() );
+				$vendorGroups      = Carrier::VENDOR_GROUP_ZPOINT . '|' . Carrier::VENDOR_GROUP_ZBOX;
+				if ( preg_match( '/^ShippingMethod_(' . $internalCountries . ')(' . $vendorGroups . ')\.php$/', $filename ) ) {
+					continue;
+				}
+			}
+			require_once $generatedClassesPath . '/' . $filename;
 		}
 	}
 

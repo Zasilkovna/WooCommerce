@@ -67,4 +67,14 @@ class WpAdapter {
 		return is_wp_error( $thing );
 	}
 
+
+	/**
+	 * Retrieves the current locale.
+	 *
+	 * @return string
+	 */
+	public function getLocale(): string {
+		return get_locale();
+	}
+
 }
