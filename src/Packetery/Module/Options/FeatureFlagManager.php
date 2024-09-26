@@ -14,6 +14,7 @@ use Exception;
 use Packetery\Core;
 use Packetery\Latte\Engine;
 use Packetery\Module;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Plugin;
 
 /**
@@ -23,16 +24,23 @@ use Packetery\Module\Plugin;
  */
 class FeatureFlagManager {
 
-	private const ENDPOINT_URL                  = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
-	private const VALID_FOR_HOURS               = 4;
-	private const FLAGS_OPTION_ID               = 'packeta_feature_flags';
-	private const TRANSIENT_SHOW_SPLIT_MESSAGE  = 'packeta_show_split_message';
-	public const ACTION_HIDE_SPLIT_MESSAGE      = 'dismiss_split_message';
-	private const DISABLED_DUE_ERRORS_OPTION_ID = 'packeta_feature_flags_disabled_due_errors';
-	private const ERROR_COUNTER_OPTION_ID       = 'packeta_feature_flags_error_counter';
+	private const ENDPOINT_URL                      = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
+	private const VALID_FOR_SECONDS                 = 4 * HOUR_IN_SECONDS;
+	public const FLAGS_OPTION_ID                    = 'packeta_feature_flags';
+	private const TRANSIENT_SPLIT_MESSAGE_DISMISSED = 'packeta_split_message_dismissed';
+	public const ACTION_HIDE_SPLIT_MESSAGE          = 'dismiss_split_message';
+	public const DISABLED_DUE_ERRORS_OPTION_ID      = 'packeta_feature_flags_disabled_due_errors';
+	private const ERROR_COUNTER_OPTION_ID           = 'packeta_feature_flags_error_counter';
 
 	private const FLAG_LAST_DOWNLOAD = 'lastDownload';
 	private const FLAG_SPLIT_ACTIVE  = 'splitActive';
+
+	/**
+	 * Static cache.
+	 *
+	 * @var array|false|null
+	 */
+	private static $flags;
 
 	/**
 	 * Latte engine.
@@ -56,16 +64,32 @@ class FeatureFlagManager {
 	private $helper;
 
 	/**
+	 * WP adapter;
+	 *
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * Downloader constructor.
 	 *
 	 * @param Engine        $latteEngine Latte engine.
 	 * @param Provider      $optionsProvider Options provider.
 	 * @param Module\Helper $helper Helper.
+	 * @param WpAdapter     $wpAdapter WP adapter.
 	 */
-	public function __construct( Engine $latteEngine, Provider $optionsProvider, Module\Helper $helper ) {
+	public function __construct(
+		Engine $latteEngine,
+		Provider $optionsProvider,
+		Module\Helper $helper,
+		WpAdapter $wpAdapter
+	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
 		$this->helper          = $helper;
+		$this->wpAdapter       = $wpAdapter;
+
+		self::$flags = null;
 	}
 
 	/**
@@ -75,15 +99,15 @@ class FeatureFlagManager {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function fetchFlags(): array {
-		$response = wp_remote_get(
-			add_query_arg( [ 'api_key' => $this->optionsProvider->get_api_key() ], self::ENDPOINT_URL ),
+		$response = $this->wpAdapter->remoteGet(
+			$this->wpAdapter->addQueryArg( [ 'api_key' => $this->optionsProvider->get_api_key() ], self::ENDPOINT_URL ),
 			[ 'timeout' => 20 ]
 		);
 
-		if ( is_wp_error( $response ) ) {
+		if ( $this->wpAdapter->isWpError( $response ) ) {
 			$logger = new \WC_Logger();
 			$logger->warning( 'Packeta Feature flag API download error: ' . $response->get_error_message() );
-			$errorCount = get_option( self::ERROR_COUNTER_OPTION_ID, 0 );
+			$errorCount = $this->wpAdapter->getOption( self::ERROR_COUNTER_OPTION_ID, 0 );
 			update_option( self::ERROR_COUNTER_OPTION_ID, $errorCount + 1 );
 			if ( $errorCount > 5 ) {
 				update_option( self::DISABLED_DUE_ERRORS_OPTION_ID, true );
@@ -93,7 +117,7 @@ class FeatureFlagManager {
 			return [];
 		}
 
-		$responseDecoded = json_decode( wp_remote_retrieve_body( $response ), true );
+		$responseDecoded = json_decode( $this->wpAdapter->remoteRetrieveBody( $response ), true );
 		$lastDownload    = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 		$flags           = [
 			self::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
@@ -113,52 +137,32 @@ class FeatureFlagManager {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function getFlags(): array {
-		static $flags;
-
-		if ( ! isset( $flags ) ) {
-			$flags = get_option( self::FLAGS_OPTION_ID );
+		if ( ! isset( self::$flags ) || null === self::$flags ) {
+			self::$flags = $this->wpAdapter->getOption( self::FLAGS_OPTION_ID );
 		}
 
-		if ( true === get_option( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
-			return $flags ? $flags : [];
+		if ( true === $this->wpAdapter->getOption( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
+			return self::$flags ? self::$flags : [];
 		}
 
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
-		if ( false === $flags ) {
+		if ( false === self::$flags ) {
 			if ( ! $hasApiKey ) {
-				$flags = [];
+				self::$flags = [];
 
-				return $flags;
+				return self::$flags;
 			}
 
-			$flags = $this->fetchFlags();
+			self::$flags = $this->fetchFlags();
 
-			return $flags;
+			return self::$flags;
 		}
 
-		if ( $hasApiKey && isset( $flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
-			$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
-			$lastUpdate = DateTimeImmutable::createFromFormat(
-				Core\Helper::MYSQL_DATETIME_FORMAT,
-				$flags[ self::FLAG_LAST_DOWNLOAD ],
-				new \DateTimeZone( 'UTC' )
-			);
-			$ageHours   = ( ( $now->getTimestamp() - $lastUpdate->getTimestamp() ) / HOUR_IN_SECONDS );
-			if ( $ageHours >= self::VALID_FOR_HOURS ) {
-				$oldFlags = $flags;
-				$flags    = $this->fetchFlags();
-			}
-
-			if (
-				isset( $oldFlags, $flags[ self::FLAG_SPLIT_ACTIVE ] ) &&
-				false === $oldFlags[ self::FLAG_SPLIT_ACTIVE ] &&
-				true === $flags[ self::FLAG_SPLIT_ACTIVE ]
-			) {
-				set_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE, 'yes' );
-			}
+		if ( $hasApiKey && ! $this->isLastDownloadValid() ) {
+			self::$flags = $this->fetchFlags();
 		}
 
-		return $flags;
+		return self::$flags;
 	}
 
 	/**
@@ -182,7 +186,7 @@ class FeatureFlagManager {
 	 * @return void
 	 */
 	public function dismissSplitActivationNotice(): void {
-		delete_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE );
+		$this->wpAdapter->setTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED, 'yes' );
 	}
 
 	/**
@@ -190,8 +194,11 @@ class FeatureFlagManager {
 	 *
 	 * @return bool
 	 */
-	public function hasSplitActivationNotice(): bool {
-		return ( 'yes' === get_transient( self::TRANSIENT_SHOW_SPLIT_MESSAGE ) );
+	public function shouldShowSplitActivationNotice(): bool {
+		return (
+			$this->isSplitActive() &&
+			'yes' !== $this->wpAdapter->getTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED )
+		);
 	}
 
 	/**
@@ -219,6 +226,28 @@ class FeatureFlagManager {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Checks if last download is still valid.
+	 *
+	 * @return bool
+	 */
+	private function isLastDownloadValid(): bool {
+		if ( ! isset( self::$flags[ self::FLAG_LAST_DOWNLOAD ] ) ) {
+			// This should not happen, because the datetime is always set when fetching flags.
+			// But we want it not to be prone to errors.
+			return true;
+		}
+
+		$now        = new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
+		$lastUpdate = DateTimeImmutable::createFromFormat(
+			Core\Helper::MYSQL_DATETIME_FORMAT,
+			self::$flags[ self::FLAG_LAST_DOWNLOAD ],
+			new \DateTimeZone( 'UTC' )
+		);
+
+		return $now->getTimestamp() <= ( $lastUpdate->getTimestamp() + self::VALID_FOR_SECONDS );
 	}
 
 }

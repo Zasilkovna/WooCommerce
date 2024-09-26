@@ -108,6 +108,13 @@ class CountryListingPage {
 	private $carrierActivityBridge;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine                    $latteEngine                   PacketeryLatte engine.
@@ -121,6 +128,7 @@ class CountryListingPage {
 	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
 	 * @param FormFactory               $formFactory                   Form Factory.
 	 * @param ActivityBridge            $carrierActivityBridge         Carrier activity checker.
+	 * @param CarrierOptionsFactory     $carrierOptionsFactory         Carrier options factory.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -133,7 +141,8 @@ class CountryListingPage {
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
 		FormFactory $formFactory,
-		ActivityBridge $carrierActivityBridge
+		ActivityBridge $carrierActivityBridge,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -146,6 +155,7 @@ class CountryListingPage {
 		$this->carDeliveryConfig       = $carDeliveryConfig;
 		$this->formFactory             = $formFactory;
 		$this->carrierActivityBridge   = $carrierActivityBridge;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 	}
 
 	/**
@@ -394,7 +404,7 @@ class CountryListingPage {
 			}
 
 			$carrierId      = $carrier->getId();
-			$carrierOptions = Options::createByCarrierId( $carrierId );
+			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 
 			$carrierNames[ $carrierId ] = [
 				'name'      => $carrier->getName(),

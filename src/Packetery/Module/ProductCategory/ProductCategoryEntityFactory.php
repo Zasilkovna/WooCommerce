@@ -9,12 +9,30 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\ProductCategory;
 
+use Packetery\Module\Framework\WpAdapter;
+
 /**
  * Class ProductCategoryEntityFactory
  *
  * @package Packetery
  */
 class ProductCategoryEntityFactory {
+
+	/**
+	 * WP adapter.
+	 *
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param WpAdapter $wpAdapter WP adapter.
+	 */
+	public function __construct( WpAdapter $wpAdapter ) {
+		$this->wpAdapter = $wpAdapter;
+	}
 
 	/**
 	 * Create instance from term ID.
@@ -24,7 +42,9 @@ class ProductCategoryEntityFactory {
 	 * @return Entity
 	 */
 	public function fromTermId( int $termId ): Entity {
-		return Entity::fromTermId( $termId );
+		$product = $this->wpAdapter->getTerm( $termId );
+
+		return new Entity( $product );
 	}
 
 }

@@ -9,6 +9,12 @@
 
         {if isset($carrier_data['form'])}
 
+            {if $carrier_data['isAvailableVendorsCountLow']}
+                <div class="notice notice-info">
+                    <p>{$translations['lowAvailableVendorsCount']}</p>
+                </div>
+            {/if}
+
             {define pricingRule}
                 <tr n:class="$class ?? ''" n:formContainer="$container[$id]" data-replication-item>
                     <td>

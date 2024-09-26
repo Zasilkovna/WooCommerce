@@ -459,8 +459,6 @@ var packeteryLoadCheckout = function( $, settings ) {
 						return;
 					}
 
-					// todo save selected address to shipping address
-
 					fillHiddenField( carrierRateId, settings.homeDeliveryAttrs[ 'isValidated' ].name, '1' );
 					fillHiddenFields( carrierRateId, settings.homeDeliveryAttrs, selectedAddress );
 					showHomeDeliveryAddress( carrierRateId );

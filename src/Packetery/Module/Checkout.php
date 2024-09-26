@@ -22,6 +22,7 @@ use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order\PickupPointValidator;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
 use Packetery\Nette\Http\Request;
@@ -180,6 +181,13 @@ class Checkout {
 	private $carDeliveryConfig;
 
 	/**
+	 * Payment helper.
+	 *
+	 * @var PaymentHelper
+	 */
+	private $paymentHelper;
+
+	/**
 	 * Carrier activity checker.
 	 *
 	 * @var Carrier\ActivityBridge
@@ -209,6 +217,7 @@ class Checkout {
 	 * @param Carrier\EntityRepository     $carrierEntityRepository Carrier repository.
 	 * @param Api\Internal\CheckoutRouter  $apiRouter               API router.
 	 * @param CarDeliveryConfig            $carDeliveryConfig       Car delivery config.
+	 * @param PaymentHelper                $paymentHelper           Payment helper.
 	 * @param Carrier\ActivityBridge       $activityBridge          Carrier activity checker.
 	 */
 	public function __construct(
@@ -232,6 +241,7 @@ class Checkout {
 		Carrier\EntityRepository $carrierEntityRepository,
 		Api\Internal\CheckoutRouter $apiRouter,
 		CarDeliveryConfig $carDeliveryConfig,
+		PaymentHelper $paymentHelper,
 		Carrier\ActivityBridge $activityBridge
 	) {
 		$this->wpAdapter                   = $wpAdapter;
@@ -254,6 +264,7 @@ class Checkout {
 		$this->carrierEntityRepository     = $carrierEntityRepository;
 		$this->apiRouter                   = $apiRouter;
 		$this->carDeliveryConfig           = $carDeliveryConfig;
+		$this->paymentHelper               = $paymentHelper;
 		$this->carrierActivityBridge       = $activityBridge;
 	}
 
@@ -407,9 +418,8 @@ class Checkout {
 				'chooseAddress'                 => __( 'Choose delivery address', 'packeta' ),
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order', 'packeta' ),
 				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
-				'addressIsValidated'            => __( 'Address is validated', 'packeta' ),
-				'addressIsNotValidated'         => __( 'Delivery address has not been verified.', 'packeta' ),
-				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ),
+				'deliveryAddressNotification'   => __( 'The order will be delivered to the address:', 'packeta' ),
+				'addressIsNotValidatedAndRequiredByCarrier' => __( 'Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier.', 'packeta' ),
 			],
 		];
 	}
@@ -467,7 +477,7 @@ class Checkout {
 
 		// Cannot be null because of previous condition.
 		$carrierId      = $this->getCarrierId( $chosenShippingMethod );
-		$carrierOptions = Carrier\Options::createByCarrierId( $carrierId );
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		$paymentMethod  = $this->getChosenPaymentMethod();
 
 		if ( null !== $paymentMethod && $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
@@ -593,9 +603,10 @@ class Checkout {
 			return;
 		}
 
-		$checkoutData = $this->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
-		$propsToSave  = [];
-		$carrierId    = $this->getCarrierId( $chosenMethod );
+		$checkoutData           = $this->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
+		$propsToSave            = [];
+		$carrierId              = $this->getCarrierId( $chosenMethod );
+		$orderHasUnsavedChanges = false;
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
@@ -634,7 +645,7 @@ class Checkout {
 					$this->mapper->toWcOrderShippingAddress( $wcOrder, $attrName, (string) $attrValue );
 				}
 			}
-			$wcOrder->save();
+			$orderHasUnsavedChanges = true;
 		}
 
 		$orderEntity = new Core\Entity\Order( (string) $wcOrder->get_id(), $this->carrierEntityRepository->getAnyById( $carrierId ) );
@@ -646,6 +657,14 @@ class Checkout {
 			$validatedAddress = $this->mapper->toValidatedAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
+			if ( $this->areBlocksUsedInCheckout() ) {
+				$this->mapper->validatedAddressToWcOrderShippingAddress( $wcOrder, $checkoutData );
+				$orderHasUnsavedChanges = true;
+			}
+		}
+
+		if ( $orderHasUnsavedChanges ) {
+			$wcOrder->save();
 		}
 
 		if ( ! empty( $checkoutData ) && $this->isCarDeliveryOrder() ) {
@@ -705,7 +724,7 @@ class Checkout {
 
 		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
 		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
-		add_action( 'woocommerce_store_api_checkout_update_order_meta', array( $this, 'updateOrderMetaBlocks' ) );
+		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'updateOrderMetaBlocks' ) );
 		if ( ! is_admin() ) {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
@@ -850,7 +869,7 @@ class Checkout {
 			return;
 		}
 
-		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
 		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->getCarrierIdFromShippingMethod( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->getTaxClassWithMaxRate();
 
@@ -881,7 +900,7 @@ class Checkout {
 		}
 
 		$paymentMethod = $this->getChosenPaymentMethod();
-		if ( empty( $paymentMethod ) || false === $this->isCodPaymentMethod( $paymentMethod ) ) {
+		if ( empty( $paymentMethod ) || false === $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
 		}
 
@@ -1073,7 +1092,7 @@ class Checkout {
 			return null;
 		}
 
-		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod )->toArray();
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod )->toArray();
 		$today          = new DateTime();
 		$processingDays = $carrierOptions['days_until_shipping'];
 		$cutoffTime     = $carrierOptions['shipping_time_cut_off'];
@@ -1407,10 +1426,10 @@ class Checkout {
 			return $availableGateways;
 		}
 
-		$carrierOptions = Carrier\Options::createByCarrierId( $this->getCarrierId( $chosenMethod ) );
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $this->getCarrierId( $chosenMethod ) );
 		foreach ( $availableGateways as $key => $availableGateway ) {
 			if (
-				$this->isCodPaymentMethod( $availableGateway->id ) &&
+				$this->paymentHelper->isCodPaymentMethod( $availableGateway->id ) &&
 				! $carrier->supportsCod()
 			) {
 				unset( $availableGateways[ $key ] );
@@ -1422,19 +1441,6 @@ class Checkout {
 		}
 
 		return $availableGateways;
-	}
-
-	/**
-	 * Checks if payment method is a COD one.
-	 *
-	 * @param string $paymentMethod Payment method.
-	 *
-	 * @return bool
-	 */
-	private function isCodPaymentMethod( string $paymentMethod ): bool {
-		$codPaymentMethod = $this->options_provider->getCodPaymentMethod();
-
-		return ( null !== $codPaymentMethod && ! empty( $paymentMethod ) && $paymentMethod === $codPaymentMethod );
 	}
 
 	/**
@@ -1586,7 +1592,7 @@ class Checkout {
 			return;
 		}
 		$chosenPaymentMethod = WC()->session->get( 'packetery_checkout_payment_method' );
-		if ( $chosenPaymentMethod !== $this->options_provider->getCodPaymentMethod() ) {
+		if ( null !== $chosenPaymentMethod && ! $this->paymentHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
 			return;
 		}
 		$chosenShippingRate = WC()->session->get( 'packetery_checkout_shipping_method' );
@@ -1597,7 +1603,7 @@ class Checkout {
 		if ( ! $this->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
 			return;
 		}
-		$carrierOptions = Carrier\Options::createByOptionId( $chosenShippingMethod );
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
 		$surcharge      = $this->getCODSurcharge( $carrierOptions->toArray(), $this->getCartPrice() );
 
 		$maxTaxClass = $this->getTaxClassWithMaxRate();
