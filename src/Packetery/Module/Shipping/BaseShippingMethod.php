@@ -118,8 +118,8 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$shippingMethods     = $zone->get_shipping_methods( true );
 		if ( $shippingMethods ) {
 			foreach ( $shippingMethods as $shippingMethod ) {
-				if ( $shippingMethod instanceof self && isset( $shippingMethod->options['title'] ) ) {
-					$allowedCarrierNames[ $shippingMethod::CARRIER_ID ] = $shippingMethod->options['title'];
+				if ( $shippingMethod instanceof self ) {
+					$allowedCarrierNames[ $shippingMethod::CARRIER_ID ] = $shippingMethod->options['title'] ?? $shippingMethod->get_title();
 				}
 			}
 		}
