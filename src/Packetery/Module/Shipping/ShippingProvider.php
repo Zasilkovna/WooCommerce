@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Shipping;
 
 use Packetery\Core\Entity\Carrier;
+use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Options\FeatureFlagManager;
 use Packetery\Module\ShippingMethod;
@@ -36,17 +37,27 @@ class ShippingProvider {
 	private $pickupPointConfig;
 
 	/**
+	 * Car delivery config.
+	 *
+	 * @var CarDeliveryConfig
+	 */
+	private $carDeliveryConfig;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param FeatureFlagManager        $featureFlagManager Feature flag manager.
 	 * @param PacketaPickupPointsConfig $pickupPointConfig  Pickup point config.
+	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
 	 */
 	public function __construct(
 		FeatureFlagManager $featureFlagManager,
-		PacketaPickupPointsConfig $pickupPointConfig
+		PacketaPickupPointsConfig $pickupPointConfig,
+		CarDeliveryConfig $carDeliveryConfig
 	) {
 		$this->featureFlagManager = $featureFlagManager;
 		$this->pickupPointConfig  = $pickupPointConfig;
+		$this->carDeliveryConfig  = $carDeliveryConfig;
 	}
 
 	/**
@@ -73,6 +84,12 @@ class ShippingProvider {
 		foreach ( scandir( $generatedClassesPath ) as $filename ) {
 			if ( ! preg_match( '/\.php$/', $filename ) ) {
 				continue;
+			}
+			if ( $this->carDeliveryConfig->isDisabled() ) {
+				$carDeliveryIds = implode( '|', Carrier::CAR_DELIVERY_CARRIERS );
+				if ( preg_match( '/^ShippingMethod_(' . $carDeliveryIds . ')\.php$/', $filename ) ) {
+					continue;
+				}
 			}
 			if ( $this->featureFlagManager->isSplitActive() === false ) {
 				$internalCountries = implode( '|', $this->pickupPointConfig->getInternalCountries() );
