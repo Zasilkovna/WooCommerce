@@ -110,10 +110,7 @@ class ShippingProvider {
 	 */
 	public static function wcOrderHasOurMethod( \WC_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_shipping_methods() as $shippingMethod ) {
-			if (
-				strpos( $shippingMethod->get_method_id(), ShippingMethod::PACKETERY_METHOD_ID ) === 0 ||
-				self::isGeneratedMethod( $shippingMethod->get_method_id() )
-			) {
+			if ( self::isPacketaMethod( $shippingMethod->get_method_id() ) ) {
 				return true;
 			}
 		}
@@ -122,14 +119,17 @@ class ShippingProvider {
 	}
 
 	/**
-	 * Checks if provided shipping method id belongs to one of generated methods.
+	 * Checks if provided shipping method id belongs to one of Packeta methods.
 	 *
 	 * @param string $methodId Method id.
 	 *
 	 * @return bool
 	 */
-	public static function isGeneratedMethod( $methodId ): bool {
-		return strpos( $methodId, BaseShippingMethod::PACKETA_METHOD_PREFIX ) === 0;
+	public static function isPacketaMethod( string $methodId ): bool {
+		return (
+			ShippingMethod::PACKETERY_METHOD_ID === $methodId ||
+			strpos( $methodId, BaseShippingMethod::PACKETA_METHOD_PREFIX ) === 0
+		);
 	}
 
 }

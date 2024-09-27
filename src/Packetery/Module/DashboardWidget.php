@@ -163,10 +163,7 @@ class DashboardWidget {
 			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );
 			$shippingZoneMethods = $shippingZone->get_shipping_methods( true );
 			foreach ( $shippingZoneMethods as $method ) {
-				if (
-					ShippingMethod::PACKETERY_METHOD_ID === $method->id ||
-					ShippingProvider::isGeneratedMethod( $method->id )
-				) {
+				if ( ShippingProvider::isPacketaMethod( $method->id ) ) {
 					return true;
 				}
 			}

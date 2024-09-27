@@ -274,14 +274,7 @@ class PacketSubmitter {
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if (
-			(
-				ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId ||
-				ShippingProvider::isGeneratedMethod( $shippingMethodId )
-			) &&
-			! $order->isExported()
-		) {
-
+		if ( ShippingProvider::isPacketaMethod( $shippingMethodId ) && ! $order->isExported() ) {
 			$customsDeclaration = $order->getCustomsDeclaration();
 			if (
 				null !== $customsDeclaration &&

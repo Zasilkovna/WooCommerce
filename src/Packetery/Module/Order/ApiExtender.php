@@ -76,10 +76,7 @@ class ApiExtender {
 		}
 
 		foreach ( $responseData['shipping_lines'] as $key => $shippingLine ) {
-			if (
-				ShippingMethod::PACKETERY_METHOD_ID !== $shippingLine['method_id'] &&
-				! ShippingProvider::isGeneratedMethod( $shippingLine['method_id'] )
-			) {
+			if ( ! ShippingProvider::isPacketaMethod( $shippingLine['method_id'] ) ) {
 				continue;
 			}
 			$response->data['shipping_lines'][ $key ]['packeta'] = $this->getPacketaItemsToShippingLines( $order );
