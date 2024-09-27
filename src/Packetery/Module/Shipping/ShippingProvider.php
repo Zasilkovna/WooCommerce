@@ -102,14 +102,23 @@ class ShippingProvider {
 	}
 
 	/**
-	 * Checks if provided order uses our shipping method.
+	 * Checks if provided order uses our shipping method like native has_shipping_method method.
 	 *
 	 * @param \WC_Order $wcOrder WC order.
 	 *
 	 * @return bool
 	 */
 	public static function wcOrderHasOurMethod( \WC_Order $wcOrder ): bool {
-		return $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID );
+		foreach ( $wcOrder->get_shipping_methods() as $shippingMethod ) {
+			if (
+				strpos( $shippingMethod->get_method_id(), ShippingMethod::PACKETERY_METHOD_ID ) === 0 ||
+				self::isGeneratedMethod( $shippingMethod->get_method_id() )
+			) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
