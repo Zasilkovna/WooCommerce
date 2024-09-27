@@ -50,6 +50,13 @@ class EntityRepository {
 	private $carDeliveryConfig;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * Carrier activity checker.
 	 *
 	 * @var ActivityBridge
@@ -63,6 +70,7 @@ class EntityRepository {
 	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
 	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
+	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
 	 * @param ActivityBridge            $activityBridge       Carrier activity checker.
 	 */
 	public function __construct(
@@ -70,13 +78,15 @@ class EntityRepository {
 		EntityFactory\Carrier $carrierEntityFactory,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CarDeliveryConfig $carDeliveryConfig,
+		CarrierOptionsFactory $carrierOptionsFactory,
 		ActivityBridge $activityBridge
 	) {
-		$this->repository           = $repository;
-		$this->carrierEntityFactory = $carrierEntityFactory;
-		$this->pickupPointsConfig   = $pickupPointsConfig;
-		$this->carDeliveryConfig    = $carDeliveryConfig;
-		$this->activityBridge       = $activityBridge;
+		$this->repository            = $repository;
+		$this->carrierEntityFactory  = $carrierEntityFactory;
+		$this->pickupPointsConfig    = $pickupPointsConfig;
+		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->activityBridge        = $activityBridge;
 	}
 
 	/**
@@ -208,7 +218,7 @@ class EntityRepository {
 		$activeCarriers = [];
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
-			$carrierOptions = Options::createByCarrierId( $carrier->getId() );
+			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 			if ( $this->activityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
@@ -241,7 +251,7 @@ class EntityRepository {
 			return false;
 		}
 
-		$carrierOptions = Options::createByCarrierId( $carrier->getId() );
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
 		return $this->activityBridge->isActive( $carrier->getId(), $carrierOptions );
 	}

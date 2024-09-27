@@ -113,18 +113,26 @@ class OptionsPage {
 	private $optionsProvider;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * OptionsPage constructor.
 	 *
-	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
-	 * @param EntityRepository          $carrierRepository  Carrier repository.
-	 * @param FormFactory               $formFactory        Form factory.
-	 * @param Request                   $httpRequest        Packetery\Nette Request.
-	 * @param CountryListingPage        $countryListingPage CountryListingPage.
-	 * @param MessageManager            $messageManager     Message manager.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param FeatureFlagManager        $featureFlag        Feature flag.
-	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
-	 * @param Provider                  $optionsProvider    Options provider.
+	 * @param Engine                    $latteEngine           PacketeryLatte_engine.
+	 * @param EntityRepository          $carrierRepository     Carrier repository.
+	 * @param FormFactory               $formFactory           Form factory.
+	 * @param Request                   $httpRequest           Packetery\Nette Request.
+	 * @param CountryListingPage        $countryListingPage    CountryListingPage.
+	 * @param MessageManager            $messageManager        Message manager.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
+	 * @param FeatureFlagManager        $featureFlag           Feature flag.
+	 * @param CarDeliveryConfig         $carDeliveryConfig     Car delivery config.
+	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
+	 * @param Provider                  $optionsProvider       Options provider.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -136,18 +144,20 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagManager $featureFlag,
 		CarDeliveryConfig $carDeliveryConfig,
+		CarrierOptionsFactory $carrierOptionsFactory,
 		Provider $optionsProvider
 	) {
-		$this->latteEngine        = $latteEngine;
-		$this->carrierRepository  = $carrierRepository;
-		$this->formFactory        = $formFactory;
-		$this->httpRequest        = $httpRequest;
-		$this->countryListingPage = $countryListingPage;
-		$this->messageManager     = $messageManager;
-		$this->pickupPointsConfig = $pickupPointsConfig;
-		$this->featureFlag        = $featureFlag;
-		$this->carDeliveryConfig  = $carDeliveryConfig;
-		$this->optionsProvider    = $optionsProvider;
+		$this->latteEngine           = $latteEngine;
+		$this->carrierRepository     = $carrierRepository;
+		$this->formFactory           = $formFactory;
+		$this->httpRequest           = $httpRequest;
+		$this->countryListingPage    = $countryListingPage;
+		$this->messageManager        = $messageManager;
+		$this->pickupPointsConfig    = $pickupPointsConfig;
+		$this->featureFlag           = $featureFlag;
+		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->optionsProvider       = $optionsProvider;
 	}
 
 	/**
@@ -452,7 +462,7 @@ class OptionsPage {
 			$options['vendor_groups'] = $newVendors;
 		}
 
-		$persistedOptions      = Options::createByCarrierId( $options['id'] );
+		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
 		$persistedOptionsArray = $persistedOptions->toArray();
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();
@@ -531,6 +541,7 @@ class OptionsPage {
 			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
 			'weightLimitsContainerId'              => $this->createFieldContainerId( $form, self::FORM_FIELD_WEIGHT_LIMITS ),
 			'productValueLimitsContainerId'        => $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ),
+			'isAvailableVendorsCountLow'           => $this->isAvailableVendorsCountLowByCarrierId( $carrier->getId() ),
 		];
 	}
 
@@ -564,6 +575,7 @@ class OptionsPage {
 				'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
 				'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
 				'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+				'lowAvailableVendorsCount'               => __( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
 			],
 		];
 
@@ -846,30 +858,26 @@ class OptionsPage {
 	 */
 	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null === $availableVendors ) {
+		if ( null === $availableVendors || $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors ) ) {
 			return [];
 		}
 
 		$vendorCheckboxes = [];
 		$vendorCarriers   = $this->pickupPointsConfig->getVendorCarriers();
 		foreach ( $availableVendors as $vendorId ) {
-			$vendorProvider       = $vendorCarriers[ $vendorId ];
-			$checkbox             = [
+			$vendorProvider        = $vendorCarriers[ $vendorId ];
+			$checkbox              = [
 				'group'    => $vendorProvider->getGroup(),
 				'name'     => $vendorProvider->getName(),
 				'disabled' => null,
 				'default'  => null,
 			];
-			$hasLowCountAvailable = count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
-			if ( $hasLowCountAvailable ) {
-				$checkbox['disabled'] = true;
-			}
 			$hasGroupSettingsSaved = isset( $carrierOptions['vendor_groups'] );
 			$hasTheGroupAllowed    = (
 				$hasGroupSettingsSaved &&
 				in_array( $vendorProvider->getGroup(), $carrierOptions['vendor_groups'], true )
 			);
-			if ( ! $hasGroupSettingsSaved || $hasLowCountAvailable || $hasTheGroupAllowed ) {
+			if ( ! $hasGroupSettingsSaved || $hasTheGroupAllowed ) {
 				$checkbox['default'] = true;
 			}
 			$vendorCheckboxes[] = $checkbox;
@@ -878,4 +886,26 @@ class OptionsPage {
 		return $vendorCheckboxes;
 	}
 
+	/**
+	 * Check if the number of vendors is lower than the required minimum
+	 *
+	 * @param array $availableVendors Available vendors.
+	 *
+	 * @return bool
+	 */
+	public function isAvailableVendorsCountLowerThanRequiredMinimum( array $availableVendors ): bool {
+		return count( $availableVendors ) <= self::MINIMUM_CHECKED_VENDORS;
+	}
+
+	/**
+	 * Checks if the number of vendors is lower than the minimum required by the carrier id
+	 *
+	 * @param string $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public function isAvailableVendorsCountLowByCarrierId( string $carrierId ): bool {
+		$availableVendors = $this->getAvailableVendors( $carrierId );
+		return is_array( $availableVendors ) && $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors );
+	}
 }

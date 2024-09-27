@@ -19,6 +19,7 @@ services:
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
 	- Packetery\Module\Helper
+	- Packetery\Module\Payment\PaymentHelper
 	- Packetery\Module\Log\Purger
 	- Packetery\Module\Log\Repository
 	- Packetery\Module\Log\DbLogger

@@ -32,7 +32,7 @@ class WcAdapter {
 	}
 
 	/**
-	 * Gets WC product.
+	 * Gets WC product by id.
 	 *
 	 * @param mixed $product_id Product ID.
 	 *
@@ -45,6 +45,17 @@ class WcAdapter {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Gets product by post id.
+	 *
+	 * @param int $postId Post id.
+	 *
+	 * @return false|\WC_Product|null
+	 */
+	public function getProduct( int $postId ) {
+		return wc_get_product( $postId );
 	}
 
 }

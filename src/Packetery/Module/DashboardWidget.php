@@ -11,6 +11,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use WC_Data_Store;
 use WC_Shipping_Zone;
@@ -79,6 +80,13 @@ class DashboardWidget {
 	private $helper;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * Carrier activity checker.
 	 *
 	 * @var Carrier\ActivityBridge
@@ -96,6 +104,7 @@ class DashboardWidget {
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
 	 * @param Helper                   $helper                  Helper.
+	 * @param CarrierOptionsFactory    $carrierOptionsFactory   Carrier options factory.
 	 * @param Carrier\ActivityBridge   $carrierActivityBridge   Carrier activity checker.
 	 */
 	public function __construct(
@@ -107,6 +116,7 @@ class DashboardWidget {
 		array $surveyConfig,
 		Carrier\EntityRepository $carrierEntityRepository,
 		Helper $helper,
+		CarrierOptionsFactory $carrierOptionsFactory,
 		Carrier\ActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
@@ -117,6 +127,7 @@ class DashboardWidget {
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->helper                  = $helper;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 		$this->carrierActivityBridge   = $carrierActivityBridge;
 	}
 
@@ -172,13 +183,13 @@ class DashboardWidget {
 
 		foreach ( $this->carrierEntityRepository->getAllCarriersIncludingNonFeed() as $carrier ) {
 			$country        = $carrier->getCountry();
-			$carrierOptions = Carrier\Options::createByCarrierId( $carrier->getId() );
+			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
 			if ( false === $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
 				continue;
 			}
 
-			if ( false === $isCodSettingNeeded && $this->optionsProvider->getCodPaymentMethod() === null && $carrierOptions->hasAnyCodSurchargeSetting() ) {
+			if ( false === $isCodSettingNeeded && $this->optionsProvider->getCodPaymentMethods() === [] && $carrierOptions->hasAnyCodSurchargeSetting() ) {
 				$isCodSettingNeeded = true;
 			}
 

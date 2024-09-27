@@ -56,18 +56,33 @@ class DataTab {
 	private $carDeliveryConfig;
 
 	/**
+	 * Product entity factory.
+	 *
+	 * @var ProductEntityFactory
+	 */
+	private $productEntityFactory;
+
+	/**
 	 * Tab constructor.
 	 *
-	 * @param FormFactory       $formFactory        Factory engine.
-	 * @param Engine            $latteEngine        Latte engine.
-	 * @param EntityRepository  $carrierRepository  Carrier repository.
-	 * @param CarDeliveryConfig $carDeliveryConfig Car Delivery config.
+	 * @param FormFactory          $formFactory          Factory engine.
+	 * @param Engine               $latteEngine          Latte engine.
+	 * @param EntityRepository     $carrierRepository    Carrier repository.
+	 * @param CarDeliveryConfig    $carDeliveryConfig    Car Delivery config.
+	 * @param ProductEntityFactory $productEntityFactory Product entity factory.
 	 */
-	public function __construct( FormFactory $formFactory, Engine $latteEngine, EntityRepository $carrierRepository, CarDeliveryConfig $carDeliveryConfig ) {
-		$this->formFactory       = $formFactory;
-		$this->latteEngine       = $latteEngine;
-		$this->carrierRepository = $carrierRepository;
-		$this->carDeliveryConfig = $carDeliveryConfig;
+	public function __construct(
+		FormFactory $formFactory,
+		Engine $latteEngine,
+		EntityRepository $carrierRepository,
+		CarDeliveryConfig $carDeliveryConfig,
+		ProductEntityFactory $productEntityFactory
+	) {
+		$this->formFactory          = $formFactory;
+		$this->latteEngine          = $latteEngine;
+		$this->carrierRepository    = $carrierRepository;
+		$this->carDeliveryConfig    = $carDeliveryConfig;
+		$this->productEntityFactory = $productEntityFactory;
 	}
 
 	/**
@@ -137,7 +152,7 @@ class DataTab {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product/data-tab-panel.latte',
 			[
-				'form'         => $this->createForm( Product\Entity::fromGlobals() ),
+				'form'         => $this->createForm( $this->productEntityFactory->fromGlobals() ),
 				'translations' => [
 					'disallowedShippingRatesHeading' => __( 'Packeta shipping methods disabled for this product.', 'packeta' ),
 				],
@@ -151,7 +166,7 @@ class DataTab {
 	 * @param int|string $postId Post ID.
 	 */
 	public function saveData( $postId ): void {
-		$product = Product\Entity::fromPostId( $postId );
+		$product = $this->productEntityFactory->fromPostId( $postId );
 		if ( false === $product->isPhysical() ) {
 			return;
 		}
