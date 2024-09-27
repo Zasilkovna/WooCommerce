@@ -12,10 +12,11 @@ use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Carrier\WcSettingsConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\Provider;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
 
@@ -30,7 +31,8 @@ class OptionsPageTest extends TestCase {
 		$messageManagerMock     = $this->createMock( MessageManager::class );
 		$featureFlagManagerMock = $this->createMock( FeatureFlagManager::class );
 		$carDeliveryConfigMock  = $this->createMock( CarDeliveryConfig::class );
-		$wcSettingsConfigMock   = $this->createMock( WcSettingsConfig::class );
+		$carrierOptionsFactory  = $this->createMock( CarrierOptionsFactory::class );
+		$optionsProvider        = $this->createMock( Provider::class );
 
 		$compoundCarrierFactory  = new CompoundCarrierCollectionFactory();
 		$vendorCollectionFactory = new VendorCollectionFactory();
@@ -52,7 +54,8 @@ class OptionsPageTest extends TestCase {
 			$packetaPickupPointsConfig,
 			$featureFlagManagerMock,
 			$carDeliveryConfigMock,
-			$wcSettingsConfigMock,
+			$carrierOptionsFactory,
+			$optionsProvider,
 		);
 
 		$featureFlagMock->method( 'isSplitActive' )->willReturn( true );
