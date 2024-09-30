@@ -16,6 +16,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Module;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ShippingMethod;
@@ -52,6 +53,13 @@ class Repository {
 	private $helper;
 
 	/**
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
+
+	/**
 	 * Carrier repository.
 	 *
 	 * @var Carrier\EntityRepository
@@ -71,6 +79,7 @@ class Repository {
 	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
 	 * @param Builder                       $orderFactory                 Order factory.
 	 * @param Core\Helper                   $helper                       Helper.
+	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
@@ -78,12 +87,14 @@ class Repository {
 		WpdbAdapter $wpdbAdapter,
 		Builder $orderFactory,
 		Core\Helper $helper,
+		PacketaPickupPointsConfig $pickupPointsConfig,
 		Carrier\EntityRepository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->builder                      = $orderFactory;
 		$this->helper                       = $helper;
+		$this->pickupPointsConfig           = $pickupPointsConfig;
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
