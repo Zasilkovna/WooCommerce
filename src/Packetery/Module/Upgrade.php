@@ -221,8 +221,7 @@ class Upgrade {
 			}
 		}
 
-		// TODO: Update version on new release.
-		if ( $oldVersion && version_compare( $oldVersion, '1.7.7', '<' ) ) {
+		if ( $oldVersion && version_compare( $oldVersion, '1.8.0', '<' ) ) {
 			$generalSettings = $this->optionsProvider->getOptionsByName( Options\Provider::OPTION_NAME_PACKETERY );
 			if ( isset( $generalSettings['cod_payment_method'] ) ) {
 				$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
