@@ -11,9 +11,12 @@ namespace Packetery\Module\Shipping;
 
 use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\ContextResolver;
 use Packetery\Module\Options\FeatureFlagManager;
 use Packetery\Module\ShippingMethod;
+use Packetery\Module\ShippingZoneRepository;
 
 /**
  * Class ShippingProvider.
@@ -44,20 +47,50 @@ class ShippingProvider {
 	private $carDeliveryConfig;
 
 	/**
+	 * Context resolver.
+	 *
+	 * @var ContextResolver
+	 */
+	private $contextResolver;
+
+	/**
+	 * Shipping zone repository.
+	 *
+	 * @var ShippingZoneRepository
+	 */
+	private $shippingZoneRepository;
+
+	/**
+	 * Entity repository.
+	 *
+	 * @var EntityRepository
+	 */
+	private $carrierRepository;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param FeatureFlagManager        $featureFlagManager Feature flag manager.
-	 * @param PacketaPickupPointsConfig $pickupPointConfig  Pickup point config.
-	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
+	 * @param FeatureFlagManager        $featureFlagManager     Feature flag manager.
+	 * @param PacketaPickupPointsConfig $pickupPointConfig      Pickup point config.
+	 * @param CarDeliveryConfig         $carDeliveryConfig      Car delivery config.
+	 * @param ContextResolver           $contextResolver        Context resolver.
+	 * @param ShippingZoneRepository    $shippingZoneRepository Shipping zone repository.
+	 * @param EntityRepository          $carrierRepository      Carrier repository.
 	 */
 	public function __construct(
 		FeatureFlagManager $featureFlagManager,
 		PacketaPickupPointsConfig $pickupPointConfig,
-		CarDeliveryConfig $carDeliveryConfig
+		CarDeliveryConfig $carDeliveryConfig,
+		ContextResolver $contextResolver,
+		ShippingZoneRepository $shippingZoneRepository,
+		EntityRepository $carrierRepository
 	) {
-		$this->featureFlagManager = $featureFlagManager;
-		$this->pickupPointConfig  = $pickupPointConfig;
-		$this->carDeliveryConfig  = $carDeliveryConfig;
+		$this->featureFlagManager     = $featureFlagManager;
+		$this->pickupPointConfig      = $pickupPointConfig;
+		$this->carDeliveryConfig      = $carDeliveryConfig;
+		$this->contextResolver        = $contextResolver;
+		$this->shippingZoneRepository = $shippingZoneRepository;
+		$this->carrierRepository      = $carrierRepository;
 	}
 
 	/**
@@ -107,7 +140,7 @@ class ShippingProvider {
 	 *
 	 * @return array
 	 */
-	public function getGeneratedClassnames(): array {
+	private function getGeneratedClassnames(): array {
 		$namespace = __NAMESPACE__ . '\Generated';
 
 		return array_filter(
@@ -147,6 +180,38 @@ class ShippingProvider {
 			ShippingMethod::PACKETERY_METHOD_ID === $methodId ||
 			strpos( $methodId, BaseShippingMethod::PACKETA_METHOD_PREFIX ) === 0
 		);
+	}
+
+	/**
+	 * Loads shipping methods, uses different approach for zone setting page.
+	 *
+	 * @param array $methods Previous state.
+	 *
+	 * @return array
+	 */
+	public function addMethods( array $methods ): array {
+		$zoneId = $this->contextResolver->getShippingZoneId();
+
+		if ( null === $zoneId ) {
+			foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+				$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;
+			}
+		} else {
+			$allowedCountries = $this->shippingZoneRepository->getCountryCodesForShippingZone( $zoneId );
+			foreach ( $allowedCountries as $countryCode ) {
+				$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryCode );
+				foreach ( $carriers as $carrier ) {
+					foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+						if ( $carrier->getId() === $fullyQualifiedClassname::CARRIER_ID ) {
+							$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		return $methods;
 	}
 
 }

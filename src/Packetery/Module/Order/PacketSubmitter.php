@@ -21,7 +21,6 @@ use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Shipping\ShippingProvider;
-use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 use Packetery\Module;

@@ -1157,9 +1157,7 @@ class Plugin {
 	 */
 	public function add_shipping_method( array $methods ): array {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
-			foreach ( $this->shippingProvider->getGeneratedClassnames() as $fullyQualifiedClassname ) {
-				$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;
-			}
+			$methods = $this->shippingProvider->addMethods( $methods );
 		} else {
 			$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 		}
