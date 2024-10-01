@@ -22,6 +22,7 @@ use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\CarrierModal;
+use Packetery\Module\Order\StoredUntilModal;
 use Packetery\Nette\Http\Request;
 use WC_Email;
 use WC_Order;
@@ -306,6 +307,13 @@ class Plugin {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Stored until modal.
+	 *
+	 * @var StoredUntilModal
+	 */
+	private $storedUntilModal;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $orderMetabox             Order metabox.
@@ -336,15 +344,16 @@ class Plugin {
 	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
 	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
-	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
-	 * @param FeatureFlagProvider        $featureFlagProvider       Feature flag provider.
+	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter Packet auto submitter.
+	 * @param FeatureFlagProvider        $featureFlagProvider Feature flag provider.
 	 * @param FeatureFlagNotice          $featureFlagNotice         Feature flag notice manager.
-	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
-	 * @param Order\ApiExtender          $apiExtender               API extender.
-	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
-	 * @param HookHandler                $hookHandler               Hook handler.
-	 * @param CarrierModal               $carrierModal              Carrier Modal.
-	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param Order\MetaboxesWrapper     $metaboxesWrapper Metaboxes wrapper.
+	 * @param Order\ApiExtender          $apiExtender API extender.
+	 * @param Order\LabelPrintModal      $labelPrintModal Label print modal.
+	 * @param HookHandler                $hookHandler Hook handler.
+	 * @param CarrierModal               $carrierModal Carrier Modal.
+	 * @param CarrierOptionsFactory      $carrierOptionsFactory Carrier options factory.
+	 * @param StoredUntilModal           $storedUntilModal Stored until modal.
 	 */
 	public function __construct(
 		Order\Metabox $orderMetabox,
@@ -383,7 +392,8 @@ class Plugin {
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
 		CarrierModal $carrierModal,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		StoredUntilModal $storedUntilModal
 	) {
 		$this->optionsPage               = $optionsPage;
 		$this->latteEngine               = $latteEngine;
@@ -423,6 +433,7 @@ class Plugin {
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
 		$this->featureFlagNotice         = $featureFlagNotice;
+		$this->storedUntilModal          = $storedUntilModal;
 	}
 
 	/**
@@ -509,6 +520,7 @@ class Plugin {
 			$this->orderModal->register();
 			$this->labelPrintModal->register();
 			$this->metaboxesWrapper->register();
+			$this->storedUntilModal->register();
 		}
 
 		$this->checkout->register_hooks();
@@ -937,6 +949,10 @@ class Plugin {
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/js/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'settings', $orderGridPageSettings );
+
+			$this->enqueueScript( 'packetery-admin-stored-until-modal-js', 'public/js/admin-stored-until-modal.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $datePickerSettings );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
 		$pickupPointPickerSettings = null;
@@ -948,6 +964,15 @@ class Plugin {
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
 			$pickupPointPickerSettings = $this->orderMetabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->orderMetabox->getAddressWidgetSettings();
+
+			$orderGridPageSettings = [
+				'translations' => [
+					'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
+				],
+			];
+			$this->enqueueScript( 'packetery-admin-stored-until-modal-js', 'public/js/admin-stored-until-modal.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $datePickerSettings );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
 		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {

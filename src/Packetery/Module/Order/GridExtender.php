@@ -344,19 +344,22 @@ class GridExtender {
 				$this->latteEngine->render(
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
-						'order'                     => $order,
-						'orderIsSubmittable'        => $this->orderValidator->isValid( $order ),
-						'orderWarningFields'        => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
-						'packetSubmitUrl'           => $packetSubmitUrl,
-						'packetCancelLink'          => $packetCancelLink,
-						'printLink'                 => $printLink,
-						'helper'                    => new CoreHelper(),
-						'datePickerFormat'          => CoreHelper::DATEPICKER_FORMAT,
-						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
-						'packetDeliverOn'           => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
-						'translations'              => [
+						'order'                            => $order,
+						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
+						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
+						'storedUntil'                      => $this->helper->getStringFromDateTime( $order->getStoredUntil(), Core\Helper::DATEPICKER_FORMAT ),
+						'orderWarningFields'               => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+						'packetSubmitUrl'                  => $packetSubmitUrl,
+						'packetCancelLink'                 => $packetCancelLink,
+						'printLink'                        => $printLink,
+						'helper'                           => new CoreHelper(),
+						'datePickerFormat'                 => CoreHelper::DATEPICKER_FORMAT,
+						'logPurgerDatetimeModifier'        => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
+						'packetDeliverOn'                  => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
+						'translations'                     => [
 							'printLabel'                  => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'     => __( 'Set additional packet information', 'packeta' ),
+							'setStoredUntil'              => __( 'Set the pickup date extension', 'packeta' ),
 							'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
 							'submitToPacketa'             => __( 'Submit to Packeta', 'packeta' ),
 							// translators: %s: Order number.
@@ -372,6 +375,15 @@ class GridExtender {
 				break;
 			case 'packetery_packet_status':
 				echo esc_html( PacketStatusResolver::getTranslatedName( $order->getPacketStatus() ) );
+				break;
+			case 'packetery_packet_stored_until':
+				$this->latteEngine->render(
+					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-stored-until.latte',
+					[
+						'orderNumber' => $order->getNumber(),
+						'storedUntil' => $this->helper->getStringFromDateTime( $order->getStoredUntil(), Core\Helper::DATEPICKER_FORMAT ),
+					]
+				);
 				break;
 		}
 	}
@@ -390,11 +402,12 @@ class GridExtender {
 			$newColumns[ $columnName ] = $columnInfo;
 
 			if ( 'order_total' === $columnName ) {
-				$newColumns['packetery_weight']        = __( 'Weight', 'packeta' );
-				$newColumns['packetery']               = __( 'Packeta', 'packeta' );
-				$newColumns['packetery_packet_id']     = __( 'Tracking No.', 'packeta' );
-				$newColumns['packetery_packet_status'] = __( 'Packeta packet status', 'packeta' );
-				$newColumns['packetery_destination']   = __( 'Pickup point or carrier', 'packeta' );
+				$newColumns['packetery_weight']              = __( 'Weight', 'packeta' );
+				$newColumns['packetery']                     = __( 'Packeta', 'packeta' );
+				$newColumns['packetery_packet_id']           = __( 'Tracking No.', 'packeta' );
+				$newColumns['packetery_packet_status']       = __( 'Packeta packet status', 'packeta' );
+				$columnName['packetery_packet_stored_until'] = __( 'Packeta packet stored until', 'packeta' );
+				$newColumns['packetery_destination']         = __( 'Pickup point or carrier', 'packeta' );
 			}
 		}
 

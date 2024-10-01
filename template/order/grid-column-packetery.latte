@@ -10,6 +10,21 @@
 			data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
 			data-packetery-confirm="{$translations['reallyCancelPacket']}"
 	></a>
+    {if $isPossibleExtendPacketPickUpDate}
+      <a data-packetery-stored-until-edit
+         class="button dashicons dashicons-calendar-alt"
+         data-order-data="{= json_encode(
+           [
+           'id' => $order->getNumber(),
+           'custom_number' => $order->getCustomNumber(),
+           'packetery_stored_until' => $storedUntil,
+           'orderIsSubmittable' => $orderIsSubmittable,
+		   'orderWarningFields' => $orderWarningFields,
+           ]
+         )}"
+		   data-tip="{$translations['setStoredUntil']}"
+		></a>
+	{/if}
 {else}
 	<a data-packetery-order-inline-edit
 		class="button woocommerce-help-tip dashicons {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
