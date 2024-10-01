@@ -357,6 +357,7 @@ class Metabox {
 					'showLogsLink'               => $showLogsLink,
 					'packetClaimUrl'             => $packetClaimUrl,
 					'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+					'storedUntil'                => $this->helper->getStringFromDateTime( $order->getStoredUntil(), Helper::DATEPICKER_FORMAT ),
 					'translations'               => [
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
 						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
@@ -375,6 +376,7 @@ class Metabox {
 						'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
 						'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
 						'submissionPassword'        => __( 'submission password', 'packeta' ),
+						'setStoredUntil'            => __( 'Set the pickup date extension', 'packeta' ),
 					],
 				]
 			);
