@@ -77,4 +77,28 @@ class WpAdapter {
 		return get_locale();
 	}
 
+	/**
+	 * Returns non-negative int.
+	 *
+	 * @param mixed $maybeint Value.
+	 *
+	 * @return int
+	 */
+	public function absint( $maybeint ): int {
+		return absint( $maybeint );
+	}
+
+	/**
+	 * Return admin url.
+	 *
+	 * @param int|null $blogId Blog id.
+	 * @param string   $path   Path.
+	 * @param string   $scheme Scheme.
+	 *
+	 * @return string
+	 */
+	public function getAdminUrl( ?int $blogId = null, string $path = '', string $scheme = 'admin' ): string {
+		return get_admin_url( $blogId, $path, $scheme );
+	}
+
 }

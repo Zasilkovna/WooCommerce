@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Framework\WcAdapter;
 use stdClass;
 use WC_Data_Store;
 use WC_Shipping_Zone;
@@ -25,6 +26,22 @@ class ShippingZoneRepository {
 	 * @var WC_Shipping_Zone_Data_Store_Interface|null
 	 */
 	private $dataStore = null;
+
+	/**
+	 * WC adapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
+	 * ShippingZoneRepository constructor.
+	 *
+	 * @param WcAdapter $wcAdapter WC adapter.
+	 */
+	public function __construct( WcAdapter $wcAdapter ) {
+		$this->wcAdapter = $wcAdapter;
+	}
 
 	/**
 	 * Lazy data store getter.
@@ -111,7 +128,7 @@ class ShippingZoneRepository {
 		}
 
 		$countries  = [];
-		$continents = WC()->countries->get_continents();
+		$continents = $this->wcAdapter->countriesGetContinents();
 
 		/**
 		 * Zone location.

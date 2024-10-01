@@ -13,6 +13,8 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Checkout;
 use Packetery\Module\CompatibilityBridge;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\DI\Container;
 
 /**
@@ -50,6 +52,20 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	protected $carrierRepository;
 
 	/**
+	 * WP adapter.
+	 *
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
+	 * WC adapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Constructor for Packeta shipping class
 	 *
 	 * @param int $instance_id Shipping method instance id.
@@ -59,9 +75,11 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 
 		$this->container         = CompatibilityBridge::getContainer();
 		$this->carrierRepository = $this->container->getByType( Carrier\EntityRepository::class );
+		$this->wpAdapter         = $this->container->getByType( WpAdapter::class );
+		$this->wcAdapter         = $this->container->getByType( WcAdapter::class );
 
 		$this->id          = static::getShippingMethodId();
-		$this->instance_id = absint( $instance_id );
+		$this->instance_id = $this->wpAdapter->absint( $instance_id );
 
 		$this->method_title = __( 'Packeta', 'packeta' );
 		$this->title        = __( 'Packeta', 'packeta' );
@@ -79,7 +97,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
 		$this->supports[]         = 'instance-settings';
 		$this->supports[]         = 'instance-settings-modal';
-		$this->options            = get_option( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+		$this->options            = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
 
 		$this->init();
 		$this->checkout = $this->container->getByType( Checkout::class );
@@ -114,7 +132,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	 */
 	public function calculate_shipping( $package = [] ): void {
 		$allowedCarrierNames = [];
-		$zone                = \WC_Shipping_Zones::get_zone_matching_package( $package );
+		$zone                = $this->wcAdapter->shippingZonesGetZoneMatchingPackage( $package );
 		$shippingMethods     = $zone->get_shipping_methods( true );
 		if ( $shippingMethods ) {
 			foreach ( $shippingMethods as $shippingMethod ) {
@@ -138,12 +156,12 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	public function get_instance_form_fields(): array {
 		$latteEngine = $this->container->getByType( Engine::class );
 
-		$carrierSettingsLinkBase = add_query_arg(
+		$carrierSettingsLinkBase = $this->wpAdapter->addQueryArg(
 			[
 				'page'                                    => Carrier\OptionsPage::SLUG,
 				Carrier\OptionsPage::PARAMETER_CARRIER_ID => static::CARRIER_ID,
 			],
-			get_admin_url( null, 'admin.php' )
+			$this->wpAdapter->getAdminUrl( null, 'admin.php' )
 		);
 
 		$latteParams = [
