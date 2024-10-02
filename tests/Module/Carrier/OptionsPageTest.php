@@ -8,6 +8,7 @@ use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
@@ -42,7 +43,8 @@ class OptionsPageTest extends TestCase {
 			$featureFlagMock
 		);
 
-		$optionsPage = new OptionsPage(
+		$carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
+		$optionsPage             = new OptionsPage(
 			$latteEngineMock,
 			$carrierRepositoryMock,
 			$formFactoryMock,
@@ -53,6 +55,7 @@ class OptionsPageTest extends TestCase {
 			$featureFlagManagerMock,
 			$carDeliveryConfigMock,
 			$wcSettingsConfigMock,
+			$carrierOptionsFactory,
 		);
 
 		$featureFlagMock->method( 'isSplitActive' )->willReturn( true );
