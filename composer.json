@@ -18,7 +18,7 @@
         "phpstan-81": "phpstan/vendor/bin/phpstan -cphpstan/php81.neon analyse",
         "phpstan-82": "phpstan/vendor/bin/phpstan -cphpstan/php82.neon analyse",
         "phpstan-83": "phpstan/vendor/bin/phpstan -cphpstan/php83.neon analyse",
-        "tests-unit": "./vendor/bin/phpunit tests",
+        "phpunit": "./vendor/bin/phpunit tests",
         "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage"
     },
     "config": {

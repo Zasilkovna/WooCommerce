@@ -1,0 +1,38 @@
+name: PHPUnit tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version: ['8.3']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl
+          coverage: yes
+
+      - name: php version
+        run: php -v
+
+      - name: Install Composer dependencies
+        run: composer install
+
+      - name: Install Composer dev dependencies
+        working-directory: phpstan
+        run: composer install
+
+      - name: Run PHPUnit
+        run: composer run phpunit
