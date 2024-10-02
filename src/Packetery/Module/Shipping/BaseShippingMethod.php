@@ -16,6 +16,7 @@ use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\DI\Container;
+use function sprintf;
 
 /**
  * Packeta shipping method class.
@@ -81,12 +82,15 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->id          = static::getShippingMethodId();
 		$this->instance_id = $this->wpAdapter->absint( $instance_id );
 
-		$this->method_title = __( 'Packeta', 'packeta' );
-		$this->title        = __( 'Packeta', 'packeta' );
-		$carrier            = $this->carrierRepository->getAnyById( static::CARRIER_ID );
+		$this->method_title       = __( 'Packeta', 'packeta' );
+		$this->title              = __( 'Packeta', 'packeta' );
+		$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
+		$carrier                  = $this->carrierRepository->getAnyById( static::CARRIER_ID );
 		if ( null !== $carrier ) {
 			$this->method_title = $carrier->getName();
 			$this->title        = $carrier->getName();
+			// translators: %s is carrier name.
+			$this->method_description = sprintf( __( 'Allows customers to use %s carrier delivery', 'packeta' ), $carrier->getName() );
 		}
 
 		$this->enabled  = 'yes'; // This can be added as a setting.
@@ -94,10 +98,9 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 			'shipping-zones',
 		];
 
-		$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
-		$this->supports[]         = 'instance-settings';
-		$this->supports[]         = 'instance-settings-modal';
-		$this->options            = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+		$this->supports[] = 'instance-settings';
+		$this->supports[] = 'instance-settings-modal';
+		$this->options    = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
 
 		$this->init();
 		$this->checkout = $this->container->getByType( Checkout::class );
