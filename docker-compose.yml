@@ -1,0 +1,45 @@
+services:
+  nginx:
+    env_file:
+      - ./.env.local
+    container_name: woocommerce_nginx
+    image: nginx
+    restart: always
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8091:80"
+    links:
+      - php
+    depends_on:
+      - php
+
+  php:
+    env_file:
+      - ./.env.local
+    container_name: woocommerce_php
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    expose:
+      - "9000"
+    links:
+      - mysql
+    working_dir: /app
+    volumes:
+      - .:/app
+
+  mysql:
+    container_name: woocommerce_mysql
+    image: mysql:5.7
+    restart: always
+    ports:
+      - "3391:3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: woocommerce
