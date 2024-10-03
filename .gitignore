@@ -12,3 +12,4 @@
 /node_modules/
 phpunit.xml
 .env.local
+/data
