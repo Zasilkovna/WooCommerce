@@ -190,12 +190,10 @@ class OptionsPage {
 
 		$form = $this->formFactory->create( $optionId );
 
-		if ( false === $this->optionsProvider->isWcCarrierConfigEnabled() ) {
-			$form->addCheckbox(
-				self::FORM_FIELD_ACTIVE,
-				__( 'Active carrier', 'packeta' ) . ':'
-			);
-		}
+		$form->addCheckbox(
+			self::FORM_FIELD_ACTIVE,
+			__( 'Active carrier', 'packeta' ) . ':'
+		);
 
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
@@ -460,12 +458,6 @@ class OptionsPage {
 		$newVendors = $this->getCheckedVendors( $options );
 		if ( $newVendors ) {
 			$options['vendor_groups'] = $newVendors;
-		}
-
-		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
-		$persistedOptionsArray = $persistedOptions->toArray();
-		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
-			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();
 		}
 
 		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {

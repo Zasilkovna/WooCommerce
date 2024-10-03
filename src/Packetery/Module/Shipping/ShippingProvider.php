@@ -11,6 +11,7 @@ namespace Packetery\Module\Shipping;
 
 use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ContextResolver;
@@ -68,6 +69,13 @@ class ShippingProvider {
 	private $carrierRepository;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param FeatureFlagManager        $featureFlagManager     Feature flag manager.
@@ -76,6 +84,7 @@ class ShippingProvider {
 	 * @param ContextResolver           $contextResolver        Context resolver.
 	 * @param ShippingZoneRepository    $shippingZoneRepository Shipping zone repository.
 	 * @param EntityRepository          $carrierRepository      Carrier repository.
+	 * @param CarrierOptionsFactory     $carrierOptionsFactory  Carrier options factory.
 	 */
 	public function __construct(
 		FeatureFlagManager $featureFlagManager,
@@ -83,7 +92,8 @@ class ShippingProvider {
 		CarDeliveryConfig $carDeliveryConfig,
 		ContextResolver $contextResolver,
 		ShippingZoneRepository $shippingZoneRepository,
-		EntityRepository $carrierRepository
+		EntityRepository $carrierRepository,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->featureFlagManager     = $featureFlagManager;
 		$this->pickupPointConfig      = $pickupPointConfig;
@@ -91,6 +101,7 @@ class ShippingProvider {
 		$this->contextResolver        = $contextResolver;
 		$this->shippingZoneRepository = $shippingZoneRepository;
 		$this->carrierRepository      = $carrierRepository;
+		$this->carrierOptionsFactory  = $carrierOptionsFactory;
 	}
 
 	/**
@@ -191,24 +202,62 @@ class ShippingProvider {
 	 */
 	public function addMethods( array $methods ): array {
 		$zoneId = $this->contextResolver->getShippingZoneId();
-
 		if ( null === $zoneId ) {
-			foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
-				$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;
-			}
-		} else {
-			$allowedCountries = $this->shippingZoneRepository->getCountryCodesForShippingZone( $zoneId );
-			foreach ( $allowedCountries as $countryCode ) {
-				$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryCode );
-				foreach ( $carriers as $carrier ) {
-					foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
-						if ( $carrier->getId() === $fullyQualifiedClassname::CARRIER_ID ) {
-							$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;
-							break;
-						}
+			return $this->addAllMethods( $methods );
+		}
+
+		$allowedCountries = $this->shippingZoneRepository->getCountryCodesForShippingZone( $zoneId );
+		if ( [] === $allowedCountries ) {
+			return $this->addAllMethods( $methods );
+		}
+
+		foreach ( $allowedCountries as $countryCode ) {
+			$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryCode );
+			foreach ( $carriers as $carrier ) {
+				foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+					if ( $carrier->getId() === $fullyQualifiedClassname::CARRIER_ID ) {
+						$methods = $this->addActiveCarrierMethod( $fullyQualifiedClassname, $methods );
+						break;
 					}
 				}
 			}
+		}
+
+		return $methods;
+	}
+
+	/**
+	 * Add shipping methods to array.
+	 *
+	 * @param array $methods Array.
+	 *
+	 * @return array
+	 */
+	private function addAllMethods( array $methods ): array {
+		foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
+			$methods = $this->addActiveCarrierMethod( $fullyQualifiedClassname, $methods );
+		}
+
+		return $methods;
+	}
+
+	/**
+	 * Adds shipping method to array in case the carrier is active.
+	 *
+	 * @param string $fullyQualifiedClassname Fully qualified classname.
+	 * @param array  $methods                 Methods.
+	 *
+	 * @return array
+	 */
+	private function addActiveCarrierMethod( string $fullyQualifiedClassname, array $methods ): array {
+		/**
+		 * Generated shipping method.
+		 *
+		 * @var BaseShippingMethod $fullyQualifiedClassname
+		 */
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $fullyQualifiedClassname::CARRIER_ID );
+		if ( $carrierOptions->isActive() ) {
+			$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;
 		}
 
 		return $methods;
