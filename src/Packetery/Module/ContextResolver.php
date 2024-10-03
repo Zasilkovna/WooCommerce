@@ -138,4 +138,33 @@ class ContextResolver {
 		return 'post.php' === $pagenow && 'page' === $typenow;
 	}
 
+	/**
+	 * Tells if current page is a shipping zone detail page.
+	 *
+	 * @return bool
+	 */
+	private function isShippingZoneDetailPage(): bool {
+		global $pagenow, $plugin_page;
+
+		return (
+			'admin.php' === $pagenow &&
+			'wc-settings' === $plugin_page &&
+			'shipping' === $this->request->getQuery( 'tab' ) &&
+			$this->request->getQuery( 'zone_id' ) > 0
+		);
+	}
+
+	/**
+	 * Gets id shipping zone id.
+	 *
+	 * @return int|null
+	 */
+	public function getShippingZoneId(): ?int {
+		if ( $this->isShippingZoneDetailPage() ) {
+			return (int) $this->request->getQuery( 'zone_id' );
+		}
+
+		return null;
+	}
+
 }

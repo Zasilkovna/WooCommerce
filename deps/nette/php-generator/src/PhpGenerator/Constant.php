@@ -21,6 +21,8 @@ final class Constant
     use Traits\AttributeAware;
     /** @var mixed */
     private $value;
+    /** @var bool */
+    private $final = \false;
     /** @return static */
     public function setValue($val) : self
     {
@@ -30,5 +32,15 @@ final class Constant
     public function getValue()
     {
         return $this->value;
+    }
+    /** @return static */
+    public function setFinal(bool $state = \true) : self
+    {
+        $this->final = $state;
+        return $this;
+    }
+    public function isFinal() : bool
+    {
+        return $this->final;
     }
 }

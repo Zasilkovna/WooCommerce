@@ -43,7 +43,7 @@ class VendorCollectionFactory {
 				true,
 				'CZK',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 
 			// SK Packeta internal pickup points.
@@ -64,7 +64,7 @@ class VendorCollectionFactory {
 				true,
 				'EUR',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 
 			// HU Packeta internal pickup points.
@@ -85,7 +85,7 @@ class VendorCollectionFactory {
 				true,
 				'HUF',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 
 			// RO Packeta internal pickup points.
@@ -106,7 +106,7 @@ class VendorCollectionFactory {
 				true,
 				'RON',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 		];
 	}

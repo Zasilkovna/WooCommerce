@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Framework\WcAdapter;
 use stdClass;
 use WC_Data_Store;
 use WC_Shipping_Zone;
@@ -22,15 +23,35 @@ class ShippingZoneRepository {
 	/**
 	 * Shipping zone data store.
 	 *
-	 * @var WC_Shipping_Zone_Data_Store_Interface
+	 * @var WC_Shipping_Zone_Data_Store_Interface|null
 	 */
-	private $dataStore;
+	private $dataStore = null;
+
+	/**
+	 * WC adapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
 
 	/**
 	 * ShippingZoneRepository constructor.
+	 *
+	 * @param WcAdapter $wcAdapter WC adapter.
 	 */
-	public function __construct() {
-		$this->dataStore = WC_Data_Store::load( 'shipping-zone' );
+	public function __construct( WcAdapter $wcAdapter ) {
+		$this->wcAdapter = $wcAdapter;
+	}
+
+	/**
+	 * Lazy data store getter.
+	 */
+	public function getDataStore(): WC_Shipping_Zone_Data_Store_Interface {
+		if ( null === $this->dataStore ) {
+			$this->dataStore = WC_Data_Store::load( 'shipping-zone' );
+		}
+
+		return $this->dataStore;
 	}
 
 	/**
@@ -39,7 +60,7 @@ class ShippingZoneRepository {
 	 * @return array
 	 */
 	private function getAllShippingZones(): array {
-		$rawZones = $this->dataStore->get_zones();
+		$rawZones = $this->getDataStore()->get_zones();
 		foreach ( $rawZones as $rawZone ) {
 			$zones[] = new WC_Shipping_Zone( $rawZone );
 		}
@@ -65,7 +86,7 @@ class ShippingZoneRepository {
 		foreach ( $this->getAllShippingZones() as $zone ) {
 			$enabledOnly = true;
 			// Can't use get_shipping_methods because of infinite recursion.
-			$rawMethods = $this->dataStore->get_methods( $zone->get_id(), $enabledOnly );
+			$rawMethods = $this->getDataStore()->get_methods( $zone->get_id(), $enabledOnly );
 
 			/**
 			 * Raw method.
@@ -91,30 +112,55 @@ class ShippingZoneRepository {
 	 * @return array
 	 */
 	public function getCountryCodesForShippingRate( string $rateId ): array {
-		$countries     = [];
-		$zoneLocations = $this->getLocationsForShippingRate( $rateId );
-		if ( ! empty( $zoneLocations ) ) {
-			$continents = WC()->countries->get_continents();
+		return $this->getCountryCodesFromZoneLocations( $this->getLocationsForShippingRate( $rateId ) );
+	}
 
-			/**
-			 * Zone location.
-			 *
-			 * @var stdClass $zoneLocation
-			 */
-			foreach ( $zoneLocations as $zoneLocation ) {
-				if ( 'country' === $zoneLocation->type ) {
-					$countries[] = strtolower( $zoneLocation->code );
-				}
+	/**
+	 * Gets country codes from zone locations.
+	 *
+	 * @param array|null $zoneLocations Zone locations.
+	 *
+	 * @return array
+	 */
+	private function getCountryCodesFromZoneLocations( ?array $zoneLocations ): array {
+		if ( empty( $zoneLocations ) ) {
+			return [];
+		}
 
-				if ( 'continent' === $zoneLocation->type && isset( $continents[ $zoneLocation->code ]['countries'] ) ) {
-					foreach ( $continents[ $zoneLocation->code ]['countries'] as $countryCode ) {
-						$countries[] = strtolower( $countryCode );
-					}
+		$countries  = [];
+		$continents = $this->wcAdapter->countriesGetContinents();
+
+		/**
+		 * Zone location.
+		 *
+		 * @var stdClass $zoneLocation
+		 */
+		foreach ( $zoneLocations as $zoneLocation ) {
+			if ( 'country' === $zoneLocation->type ) {
+				$countries[] = strtolower( $zoneLocation->code );
+			}
+
+			if ( 'continent' === $zoneLocation->type && isset( $continents[ $zoneLocation->code ]['countries'] ) ) {
+				foreach ( $continents[ $zoneLocation->code ]['countries'] as $countryCode ) {
+					$countries[] = strtolower( $countryCode );
 				}
 			}
 		}
 
 		return $countries;
+	}
+
+	/**
+	 * Gets country codes for shipping zone.
+	 *
+	 * @param int $zoneId Zone id.
+	 *
+	 * @return array
+	 */
+	public function getCountryCodesForShippingZone( int $zoneId ): array {
+		$zone = new WC_Shipping_Zone( $zoneId );
+
+		return ( $this->getCountryCodesFromZoneLocations( $zone->get_zone_locations() ) );
 	}
 
 }

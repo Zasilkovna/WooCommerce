@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Api\WebRequestException;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\WebRequestClient;
 
@@ -19,7 +20,7 @@ use Packetery\Module\WebRequestClient;
  * @package Packetery
  */
 class Downloader {
-	private const API_URL                   = 'https://www.zasilkovna.cz/api/v4/%s/branch.json?address-delivery';
+	private const API_URL                   = 'https://pickup-point.api.packeta.com/v5/%s/carrier/json?lang=%s';
 	public const OPTION_LAST_CARRIER_UPDATE = 'packetery_last_carrier_update';
 
 	/**
@@ -44,16 +45,30 @@ class Downloader {
 	private $webRequestClient;
 
 	/**
+	 * WP adapter.
+	 *
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * Downloader constructor.
 	 *
-	 * @param Updater          $carrier_updater Carrier updater.
+	 * @param Updater          $carrier_updater  Carrier updater.
 	 * @param Provider         $options_provider Options provider.
 	 * @param WebRequestClient $webRequestClient HTTP client.
+	 * @param WpAdapter        $wpAdapter        WP adapter.
 	 */
-	public function __construct( Updater $carrier_updater, Provider $options_provider, WebRequestClient $webRequestClient ) {
+	public function __construct(
+		Updater $carrier_updater,
+		Provider $options_provider,
+		WebRequestClient $webRequestClient,
+		WpAdapter $wpAdapter
+	) {
 		$this->carrier_updater  = $carrier_updater;
 		$this->options_provider = $options_provider;
 		$this->webRequestClient = $webRequestClient;
+		$this->wpAdapter        = $wpAdapter;
 	}
 
 	/**
@@ -117,11 +132,13 @@ class Downloader {
 	/**
 	 * Downloads carriers and returns in array.
 	 *
+	 * @param string|null $language Two-letter code.
+	 *
 	 * @return array|null
 	 * @throws WebRequestException DownloadException.
 	 */
-	private function fetch_as_array(): ?array {
-		$json = $this->download_json();
+	public function fetch_as_array( ?string $language = null ): ?array {
+		$json = $this->download_json( $language );
 
 		return $this->get_from_json( $json );
 	}
@@ -129,11 +146,19 @@ class Downloader {
 	/**
 	 * Downloads carriers in JSON.
 	 *
+	 * @param string|null $language Two-letter code.
+	 *
 	 * @return string
 	 * @throws WebRequestException DownloadException.
 	 */
-	private function download_json(): string {
-		return $this->webRequestClient->get( sprintf( self::API_URL, $this->options_provider->get_api_key() ) );
+	private function download_json( ?string $language = null ): string {
+		return $this->webRequestClient->get(
+			sprintf(
+				self::API_URL,
+				$this->options_provider->get_api_key(),
+				( $language ? $language : substr( $this->wpAdapter->getLocale(), 0, 2 ) )
+			)
+		);
 	}
 
 	/**
@@ -144,8 +169,8 @@ class Downloader {
 	 * @return array|null
 	 */
 	private function get_from_json( string $json ): ?array {
-		$carriers_data = json_decode( $json, true );
+		$carriers = json_decode( $json, true );
 
-		return ( $carriers_data['carriers'] ?? null );
+		return ( $carriers ?? null );
 	}
 }

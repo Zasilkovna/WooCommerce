@@ -20,7 +20,7 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 use Packetery\Module;
@@ -273,8 +273,7 @@ class PacketSubmitter {
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $order->isExported() ) {
-
+		if ( ShippingProvider::isPacketaMethod( $shippingMethodId ) && ! $order->isExported() ) {
 			$customsDeclaration = $order->getCustomsDeclaration();
 			if (
 				null !== $customsDeclaration &&

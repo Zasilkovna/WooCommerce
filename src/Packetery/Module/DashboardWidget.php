@@ -13,6 +13,7 @@ namespace Packetery\Module;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Shipping\ShippingProvider;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 
@@ -162,7 +163,7 @@ class DashboardWidget {
 			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );
 			$shippingZoneMethods = $shippingZone->get_shipping_methods( true );
 			foreach ( $shippingZoneMethods as $method ) {
-				if ( ShippingMethod::PACKETERY_METHOD_ID === $method->id ) {
+				if ( ShippingProvider::isPacketaMethod( $method->id ) ) {
 					return true;
 				}
 			}

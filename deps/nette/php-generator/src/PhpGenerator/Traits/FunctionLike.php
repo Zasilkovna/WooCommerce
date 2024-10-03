@@ -10,6 +10,7 @@ namespace Packetery\Nette\PhpGenerator\Traits;
 use Packetery\Nette;
 use Packetery\Nette\PhpGenerator\Dumper;
 use Packetery\Nette\PhpGenerator\Parameter;
+use Packetery\Nette\Utils\Type;
 /**
  * @internal
  */
@@ -28,7 +29,7 @@ trait FunctionLike
     /** @var bool */
     private $returnNullable = \false;
     /** @return static */
-    public function setBody(string $code, array $args = null) : self
+    public function setBody(string $code, ?array $args = null) : self
     {
         $this->body = $args === null ? $code : (new Dumper())->format($code, ...$args);
         return $this;
@@ -38,7 +39,7 @@ trait FunctionLike
         return $this->body;
     }
     /** @return static */
-    public function addBody(string $code, array $args = null) : self
+    public function addBody(string $code, ?array $args = null) : self
     {
         $this->body .= ($args === null ? $code : (new Dumper())->format($code, ...$args)) . "\n";
         return $this;
@@ -49,11 +50,10 @@ trait FunctionLike
      */
     public function setParameters(array $val) : self
     {
+        (function (Parameter ...$val) {
+        })(...\array_values($val));
         $this->parameters = [];
         foreach ($val as $v) {
-            if (!$v instanceof Parameter) {
-                throw new \Packetery\Nette\InvalidArgumentException('Argument must be \\Packetery\\Nette\\PhpGenerator\\Parameter[].');
-            }
             $this->parameters[$v->getName()] = $v;
         }
         return $this;
@@ -96,16 +96,15 @@ trait FunctionLike
     /** @return static */
     public function setReturnType(?string $type) : self
     {
-        if ($type && $type[0] === '?') {
-            $type = \substr($type, 1);
-            $this->returnNullable = \true;
-        }
-        $this->returnType = $type;
+        $this->returnType = \Packetery\Nette\PhpGenerator\Helpers::validateType($type, $this->returnNullable);
         return $this;
     }
-    public function getReturnType() : ?string
+    /**
+     * @return Type|string|null
+     */
+    public function getReturnType(bool $asObject = \false)
     {
-        return $this->returnType;
+        return $asObject && $this->returnType ? Type::fromString($this->returnType) : $this->returnType;
     }
     /** @return static */
     public function setReturnReference(bool $state = \true) : self
@@ -133,7 +132,7 @@ trait FunctionLike
         return $this->returnNullable;
     }
     /** @deprecated */
-    public function setNamespace(\Packetery\Nette\PhpGenerator\PhpNamespace $val = null) : self
+    public function setNamespace(?Nette\PhpGenerator\PhpNamespace $val = null) : self
     {
         \trigger_error(__METHOD__ . '() is deprecated', \E_USER_DEPRECATED);
         return $this;

@@ -9,7 +9,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Module\Carrier;
 use Packetery\Module\Options;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\BaseShippingMethod;
 use WC_Shipping_Zones;
 
 /**
@@ -54,12 +54,8 @@ class ActivityBridge {
 			$shippingMethods = $shippingZone['shipping_methods'];
 
 			foreach ( $shippingMethods as $shippingMethod ) {
-				if (
-					$shippingMethod instanceof ShippingMethod &&
-					'yes' === $shippingMethod->enabled &&
-					! empty( $shippingMethod->get_option( 'carrier_id' ) )
-				) {
-					$activeMethods[] = $shippingMethod->get_option( 'carrier_id' );
+				if ( $shippingMethod instanceof BaseShippingMethod && 'yes' === $shippingMethod->enabled ) {
+					$activeMethods[] = $shippingMethod::CARRIER_ID;
 				}
 			}
 		}
