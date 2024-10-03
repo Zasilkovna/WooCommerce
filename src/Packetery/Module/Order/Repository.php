@@ -171,6 +171,14 @@ class Repository {
 			$clauses['where']  .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`carrier_id` ' . $comparison . ' (' . $this->wpdbAdapter->prepareInClause( $internalCarriers ) . ')';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
+		if ( isset( $paramValues['orderby'] ) && 'packetery_packet_stored_until' === $paramValues['orderby'] ) {
+			if ( 'asc' === $paramValues['order'] ) {
+				$clauses['orderby'] = '`' . $this->wpdbAdapter->packetery_order . '`.`stored_until` ASC';
+			}
+			if ( 'desc' === $paramValues['order'] ) {
+				$clauses['orderby'] = '`' . $this->wpdbAdapter->packetery_order . '`.`stored_until` DESC';
+			}
+		}
 
 		return $clauses;
 	}

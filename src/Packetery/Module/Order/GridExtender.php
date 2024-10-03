@@ -406,11 +406,23 @@ class GridExtender {
 				$newColumns['packetery']                     = __( 'Packeta', 'packeta' );
 				$newColumns['packetery_packet_id']           = __( 'Tracking No.', 'packeta' );
 				$newColumns['packetery_packet_status']       = __( 'Packeta packet status', 'packeta' );
-				$columnName['packetery_packet_stored_until'] = __( 'Packeta packet stored until', 'packeta' );
+				$newColumns['packetery_packet_stored_until'] = __( 'Stored until', 'packeta' );
 				$newColumns['packetery_destination']         = __( 'Pickup point or carrier', 'packeta' );
 			}
 		}
 
 		return $newColumns;
+	}
+
+	/**
+	 * Add order list sortable columns.
+	 *
+	 * @param string[] $columns Order list columns.
+	 *
+	 * @return string[] All columns.
+	 */
+	public function makeOrderListSpecificColumnsSortable( $columns ): array {
+		$meta_key = 'packetery_packet_stored_until';
+		return wp_parse_args( array( 'packetery_packet_stored_until' => $meta_key ), $columns );
 	}
 }

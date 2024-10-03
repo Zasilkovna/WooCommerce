@@ -512,6 +512,21 @@ class Plugin {
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 		add_action( sprintf( 'manage_%s_custom_column', $orderListScreenId ), [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 
+		add_filter(
+			'manage_edit-shop_order_sortable_columns',
+			[
+				$this->gridExtender,
+				'makeOrderListSpecificColumnsSortable',
+			]
+		);
+		add_filter(
+			sprintf( 'manage_%s_sortable_columns', $orderListScreenId ),
+			[
+				$this->gridExtender,
+				'makeOrderListSpecificColumnsSortable',
+			]
+		);
+
 		if ( ! wp_doing_ajax() ) {
 			add_action( 'admin_menu', [ $this, 'add_menu_pages' ] );
 			add_action( 'admin_head', [ $this->labelPrint, 'hideFromMenus' ] );
