@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Response;
 
+use Packetery\Core\Helper;
+
 /**
  * Class PacketStatus
  *
@@ -23,6 +25,14 @@ class PacketStatus extends BaseResponse {
 	 * @var string
 	 */
 	private $codeText;
+
+	/**
+	 * The last possible day to pick up the packet.
+	 *
+	 * @var \DateTimeImmutable|null
+	 */
+	private $storedUntil;
+
 
 	/**
 	 * Gets code text.
@@ -42,5 +52,30 @@ class PacketStatus extends BaseResponse {
 	 */
 	public function setCodeText( string $codeText ): void {
 		$this->codeText = $codeText;
+	}
+
+	/**
+	 * Gets stored until.
+	 *
+	 * @return \DateTimeImmutable|null
+	 */
+	public function getStoredUntil(): ?\DateTimeImmutable {
+		return $this->storedUntil;
+	}
+
+	/**
+	 * Sets stored until.
+	 *
+	 * @param string|null $storedUntil Stored until.
+	 *
+	 * @return void
+	 */
+	public function setStoredUntil( ?string $storedUntil ): void {
+		$formatedStoredUntil = $storedUntil ? \DateTimeImmutable::createFromFormat(
+			Helper::MYSQL_DATE_FORMAT,
+			$storedUntil
+		) : null;
+
+		$this->storedUntil = ( $formatedStoredUntil instanceof \DateTimeImmutable ) ? $formatedStoredUntil : null;
 	}
 }

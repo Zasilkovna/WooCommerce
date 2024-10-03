@@ -114,3 +114,4 @@ services:
 	- Packetery\Module\ShippingZoneRepository
 	- Packetery\Module\Forms\StoredUntilFormFactory
 	- Packetery\Module\Order\StoredUntilModal
+	- Packetery\Module\Order\PacketSetStoredUntil

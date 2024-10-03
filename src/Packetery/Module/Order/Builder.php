@@ -155,6 +155,7 @@ class Builder {
 		$order->setIsLabelPrinted( (bool) $result->is_label_printed );
 		$order->setCarrierNumber( $result->carrier_number );
 		$order->setPacketStatus( $result->packet_status );
+		$order->setStoredUntil( $this->helper->getDateTimeFromString( $result->stored_until ) );
 		$order->setAddressValidated( (bool) $result->address_validated );
 		$order->setAdultContent( $this->parseBool( $result->adult_content ) );
 		$order->setValue( $this->parseFloat( $result->value ) );
