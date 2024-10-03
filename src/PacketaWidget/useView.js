@@ -180,5 +180,5 @@ export const useView = ( cart ) => {
 		};
 	}
 
-	return {};
+	return null;
 };

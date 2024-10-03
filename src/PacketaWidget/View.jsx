@@ -4,8 +4,17 @@ import { useView } from "./useView";
 
 export const View = ( { cart } ) => {
 
+	const view = useView( cart )
+	if ( null === view ) {
+		return null;
+	}
+
+	// translations are sometimes unexpectedly undefined
+	if ( ! view.translations ) {
+		return null;
+	}
+
 	const {
-		skipView,
 		buttonCallback,
 		buttonLabel,
 		buttonInfo,
@@ -15,12 +24,7 @@ export const View = ( { cart } ) => {
 		logo,
 		translations,
 		loading,
-	} = useView( cart );
-
-	// translations are sometimes unexpectedly undefined
-	if ( skipView || ! translations ) {
-		return null;
-	}
+	} = view
 
 	return (
 		<PacketaWidget
