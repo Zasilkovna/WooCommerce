@@ -70,7 +70,7 @@ class ShippingMethodGenerator {
 		}
 
 		foreach ( $allCarriers as $carrierId => $carrierName ) {
-			if ( ! class_exists( self::TARGET_NAMESPACE . '\\' . $this->getClassnameFromCarrierId( $carrierId ) ) ) {
+			if ( ! self::classExists( $carrierId ) ) {
 				$this->generateClass( $carrierId, $carrierName );
 			}
 		}
@@ -92,7 +92,7 @@ class ShippingMethodGenerator {
 		$namespace = $file->addNamespace( self::TARGET_NAMESPACE );
 		$namespace->addUse( BaseShippingMethod::class );
 
-		$className = $this->getClassnameFromCarrierId( $carrierId );
+		$className = self::getClassnameFromCarrierId( $carrierId );
 		$class     = $namespace->addClass( $className );
 		$class->setExtends( BaseShippingMethod::class )->addComment( $carrierName );
 
@@ -112,8 +112,19 @@ class ShippingMethodGenerator {
 	 *
 	 * @return string
 	 */
-	private function getClassnameFromCarrierId( string $carrierId ): string {
+	private static function getClassnameFromCarrierId( string $carrierId ): string {
 		return 'ShippingMethod_' . $carrierId;
+	}
+
+	/**
+	 * Checks if carrier class exists.
+	 *
+	 * @param string $carrierId Carrier id.
+	 *
+	 * @return bool
+	 */
+	public static function classExists( string $carrierId ): bool {
+		return class_exists( self::TARGET_NAMESPACE . '\\' . self::getClassnameFromCarrierId( $carrierId ) );
 	}
 
 }
