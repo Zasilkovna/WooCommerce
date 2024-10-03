@@ -479,7 +479,7 @@ class Plugin {
 
 		$wcEmailHook = $this->optionsProvider->getEmailHook();
 		add_action( $wcEmailHook, [ $this, 'renderEmailFooter' ] );
-		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
+		add_filter( 'woocommerce_shipping_methods', array( $this, 'addShippingMethods' ) );
 
 		$orderListScreenId = 'woocommerce_page_wc-orders';
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
@@ -1155,9 +1155,10 @@ class Plugin {
 	 *
 	 * @return array
 	 */
-	public function add_shipping_method( array $methods ): array {
+	public function addShippingMethods( array $methods ): array {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			$methods = $this->shippingProvider->addMethods( $methods );
+			$methods = $this->shippingProvider->sortMethods( $methods );
 		} else {
 			$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 		}

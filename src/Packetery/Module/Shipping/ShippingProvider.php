@@ -263,4 +263,25 @@ class ShippingProvider {
 		return $methods;
 	}
 
+	/**
+	 * Sort classnames by method_title property.
+	 *
+	 * @param array $methods Methods to sort.
+	 *
+	 * @return array
+	 */
+	public function sortMethods( array $methods ): array {
+		uasort(
+			$methods,
+			function ( $classA, $classB ) {
+				$objectA = new $classA();
+				$objectB = new $classB();
+
+				return strcmp( $objectA->method_title, $objectB->method_title );
+			}
+		);
+
+		return $methods;
+	}
+
 }
