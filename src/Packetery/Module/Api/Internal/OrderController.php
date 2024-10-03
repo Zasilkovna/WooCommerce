@@ -19,6 +19,7 @@ use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\Repository;
 use Packetery\Module\Order\GridExtender;
+use Packetery\Module\Order\PacketSetStoredUntil;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -82,6 +83,14 @@ final class OrderController extends WP_REST_Controller {
 	private $storedUntilFormFactory;
 
 	/**
+	 * Packet Set Stored Until
+	 *
+	 * @var PacketSetStoredUntil
+	 */
+	private $packetSetStoredUntil;
+
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param OrderRouter            $router Router.
@@ -91,6 +100,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param Helper                 $helper Helper.
 	 * @param Form                   $orderForm Order form.
 	 * @param StoredUntilFormFactory $storedUntilFormFactory Stored until Form Factory.
+	 * @param PacketSetStoredUntil   $packetSetStoredUntil Packet Set Stored Until.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -99,7 +109,8 @@ final class OrderController extends WP_REST_Controller {
 		Validator\Order $orderValidator,
 		Helper $helper,
 		Form $orderForm,
-		StoredUntilFormFactory $storedUntilFormFactory
+		StoredUntilFormFactory $storedUntilFormFactory,
+		PacketSetStoredUntil $packetSetStoredUntil
 	) {
 		$this->orderForm              = $orderForm;
 		$this->orderRepository        = $orderRepository;
@@ -108,6 +119,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->helper                 = $helper;
 		$this->router                 = $router;
 		$this->storedUntilFormFactory = $storedUntilFormFactory;
+		$this->packetSetStoredUntil   = $packetSetStoredUntil;
 	}
 
 	/**
@@ -257,6 +269,12 @@ final class OrderController extends WP_REST_Controller {
 		}
 		if ( null === $order ) {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
+		}
+
+		$errorMessage = $this->packetSetStoredUntil->setStoredUntil( $order, $order->getPacketId(), $this->helper->getDateTimeFromString( $storedUntil ) );
+
+		if ( null !== $errorMessage ) {
+			return new WP_Error( 'packetery_fault', $errorMessage, 400 );
 		}
 
 		$order->setStoredUntil( $this->helper->getDateTimeFromString( $storedUntil ) );
