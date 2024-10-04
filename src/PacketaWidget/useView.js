@@ -166,18 +166,22 @@ export const useView = ( cart ) => {
 			inputRequired = false;
 		}
 
-		return {
-			skipView,
-			buttonCallback: onHDWidgetButtonClicked,
-			buttonLabel: translations.chooseAddress,
-			buttonInfo: viewState && viewState.deliveryAddressInfo,
-			inputValue: viewState && viewState.deliveryAddressInfo ? viewState.deliveryAddressInfo : '',
-			inputRequired,
-			errorMessage: getHomeDeliveryErrorMessage( viewState, addressValidationSetting ),
-			logo,
-			translations,
-			loading,
-		};
+		if (skipView) {
+			return null;
+		} else {
+			return {
+				skipView,
+				buttonCallback: onHDWidgetButtonClicked,
+				buttonLabel: translations.chooseAddress,
+				buttonInfo: viewState && viewState.deliveryAddressInfo,
+				inputValue: viewState && viewState.deliveryAddressInfo ? viewState.deliveryAddressInfo : '',
+				inputRequired,
+				errorMessage: getHomeDeliveryErrorMessage( viewState, addressValidationSetting ),
+				logo,
+				translations,
+				loading,
+			};
+		}
 	}
 
 	return null;
