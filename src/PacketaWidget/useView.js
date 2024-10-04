@@ -138,12 +138,10 @@ export const useView = ( cart ) => {
 		}
 	};
 
-	let skipView = false;
 	let inputRequired = true;
 
 	if ( packetaPickupPointShippingRate ) {
 		return {
-			skipView,
 			buttonCallback: onWidgetButtonClicked,
 			buttonLabel: translations.choosePickupPoint,
 			buttonInfo: viewState && viewState.pickupPoint && viewState.pickupPoint.name,
@@ -161,27 +159,22 @@ export const useView = ( cart ) => {
 		const rateCarrierConfig = carrierConfig[ rateId ];
 		const addressValidationSetting = rateCarrierConfig.address_validation || 'none';
 		if ( addressValidationSetting === 'none' ) {
-			skipView = true;
+			return null;
 		} else if ( addressValidationSetting === 'optional' ) {
 			inputRequired = false;
 		}
 
-		if (skipView) {
-			return null;
-		} else {
-			return {
-				skipView,
-				buttonCallback: onHDWidgetButtonClicked,
-				buttonLabel: translations.chooseAddress,
-				buttonInfo: viewState && viewState.deliveryAddressInfo,
-				inputValue: viewState && viewState.deliveryAddressInfo ? viewState.deliveryAddressInfo : '',
-				inputRequired,
-				errorMessage: getHomeDeliveryErrorMessage( viewState, addressValidationSetting ),
-				logo,
-				translations,
-				loading,
-			};
-		}
+		return {
+			buttonCallback: onHDWidgetButtonClicked,
+			buttonLabel: translations.chooseAddress,
+			buttonInfo: viewState && viewState.deliveryAddressInfo,
+			inputValue: viewState && viewState.deliveryAddressInfo ? viewState.deliveryAddressInfo : '',
+			inputRequired,
+			errorMessage: getHomeDeliveryErrorMessage( viewState, addressValidationSetting ),
+			logo,
+			translations,
+			loading,
+		};
 	}
 
 	return null;
