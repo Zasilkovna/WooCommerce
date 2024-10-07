@@ -20,10 +20,6 @@ class PacketSetStoredUntilTest extends TestCase {
 
 	private Client|MockObject $client;
 	private ILogger|MockObject $loggerMock;
-	private Repository|MockObject $orderRepositoryMock;
-	private Request|MockObject $requestMock;
-	private MessageManager|MockObject $messageManagerMock;
-	private Helper|MockObject $helper;
 
 	public function setUp(): void {
 		$this->client                       = $this->createMock( Client::class );
@@ -37,10 +33,6 @@ class PacketSetStoredUntilTest extends TestCase {
 		$this->packetSetStoredUntil = new PacketSetStoredUntil(
 			$this->client,
 			$this->loggerMock,
-			$this->orderRepositoryMock,
-			$this->requestMock,
-			$this->messageManagerMock,
-			$this->helper,
 		);
 	}
 
