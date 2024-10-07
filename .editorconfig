@@ -4,7 +4,7 @@ end_of_line = lf
 indent_size = 4
 indent_style = tab
 insert_final_newline = false
-max_line_length = 200
+max_line_length = 120
 tab_width = 4
 ij_continuation_indent_size = 4
 ij_formatter_off_tag = @formatter:off
@@ -36,6 +36,7 @@ ij_css_value_alignment = do_not_align
 
 [*.latte]
 indent_style = space
+max_line_length = 200
 ij_latte_keep_blank_lines_in_code = 2
 ij_latte_spaces_around_assignment_operators = true
 ij_latte_spaces_around_bitwise_operators = true
