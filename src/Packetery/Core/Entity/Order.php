@@ -244,7 +244,7 @@ class Order {
 	private $customsDeclaration;
 
 	/**
-	 * Deliver on
+	 * Stored until.
 	 *
 	 * @var DateTimeImmutable|null
 	 */
@@ -610,9 +610,9 @@ class Order {
 	}
 
 	/**
-	 * Sets
+	 * Sets stored until.
 	 *
-	 * @param \DateTimeImmutable|null $storedUntil API error date.
+	 * @param \DateTimeImmutable|null $storedUntil Stored until.
 	 */
 	public function setStoredUntil( ?DateTimeImmutable $storedUntil ): void {
 		$this->storedUntil = $storedUntil;
@@ -824,7 +824,7 @@ class Order {
 	}
 
 	/**
-	 * Packet status.
+	 * Get stored until.
 	 *
 	 * @return \DateTimeImmutable|null
 	 */
