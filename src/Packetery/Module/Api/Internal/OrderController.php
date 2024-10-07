@@ -89,7 +89,6 @@ final class OrderController extends WP_REST_Controller {
 	 */
 	private $packetSetStoredUntil;
 
-
 	/**
 	 * Controller constructor.
 	 *
@@ -245,7 +244,7 @@ final class OrderController extends WP_REST_Controller {
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
-	public function saveStoredUntil( WP_REST_Request $request ): WP_Error|WP_REST_Response {
+	public function saveStoredUntil( WP_REST_Request $request ) {
 		$data        = [];
 		$parameters  = $request->get_body_params();
 		$orderId     = (int) $parameters['orderId'];
