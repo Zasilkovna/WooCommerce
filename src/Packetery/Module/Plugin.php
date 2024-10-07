@@ -344,16 +344,16 @@ class Plugin {
 	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
 	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
-	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter Packet auto submitter.
-	 * @param FeatureFlagProvider        $featureFlagProvider Feature flag provider.
+	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
+	 * @param FeatureFlagProvider        $featureFlagProvider        Feature flag provider.
 	 * @param FeatureFlagNotice          $featureFlagNotice         Feature flag notice manager.
-	 * @param Order\MetaboxesWrapper     $metaboxesWrapper Metaboxes wrapper.
-	 * @param Order\ApiExtender          $apiExtender API extender.
-	 * @param Order\LabelPrintModal      $labelPrintModal Label print modal.
-	 * @param HookHandler                $hookHandler Hook handler.
-	 * @param CarrierModal               $carrierModal Carrier Modal.
-	 * @param CarrierOptionsFactory      $carrierOptionsFactory Carrier options factory.
-	 * @param StoredUntilModal           $storedUntilModal Stored until modal.
+	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
+	 * @param Order\ApiExtender          $apiExtender               API extender.
+	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
+	 * @param HookHandler                $hookHandler               Hook handler.
+	 * @param CarrierModal               $carrierModal              Carrier Modal.
+	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param StoredUntilModal           $storedUntilModal          Stored until modal.
 	 */
 	public function __construct(
 		Order\Metabox $orderMetabox,
@@ -980,13 +980,14 @@ class Plugin {
 			$pickupPointPickerSettings = $this->orderMetabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->orderMetabox->getAddressWidgetSettings();
 
-			$orderGridPageSettings = [
+			// todo name
+			$detailPageSettings = [
 				'translations' => [
 					'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
 				],
 			];
 			$this->enqueueScript( 'packetery-admin-stored-until-modal-js', 'public/js/admin-stored-until-modal.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
-			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $datePickerSettings );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $detailPageSettings );
 			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
