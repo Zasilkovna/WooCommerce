@@ -23,11 +23,11 @@ class PacketSynchronizerTest extends TestCase {
 	private Client|MockObject $client;
 
 	protected function setUp(): void {
-		$this->client   = $this->createMock( Client::class );
-		$logger         = $this->createMock( ILogger::class );
-		$this->provider = $this->createMock( Provider::class );
+		$this->client    = $this->createMock( Client::class );
+		$logger          = $this->createMock( ILogger::class );
+		$this->provider  = $this->createMock( Provider::class );
 		$orderRepository = $this->createMock( Repository::class );
-		$wcOrderActions = $this->createMock( WcOrderActions::class );
+		$wcOrderActions  = $this->createMock( WcOrderActions::class );
 
 		$this->packetSynchronizer = new PacketSynchronizer(
 			$this->client,
@@ -39,11 +39,11 @@ class PacketSynchronizerTest extends TestCase {
 	}
 
 	public function testSuccessfulSynchronization(): void {
-		$storedUntil = new \DateTimeImmutable( 'now' );
+		$storedUntil  = new \DateTimeImmutable( 'now' );
 		$packetStatus = 'some packet status';
-		$order       = DummyFactory::createOrderCzPp();
-		$order->setNumber('some number');
-		$order->setPacketId('some packet id');
+		$order        = DummyFactory::createOrderCzPp();
+		$order->setNumber( 'some number' );
+		$order->setPacketId( 'some packet id' );
 
 		$response = $this->createMock( PacketStatus::class );
 		$response->method( 'hasFault' )->willReturn( false );
@@ -66,8 +66,8 @@ class PacketSynchronizerTest extends TestCase {
 		$response = $this->createMock( PacketStatus::class );
 		$response->method( 'hasFault' )->willReturn( true );
 		$response->method( 'getFaultString' )->willReturn( 'Error message' );
-		$response->expects($this->never())->method( 'getStoredUntil' );
-		$response->expects($this->never())->method( 'getCodeText' );
+		$response->expects( $this->never() )->method( 'getStoredUntil' );
+		$response->expects( $this->never() )->method( 'getCodeText' );
 
 		$this->client->method( 'packetStatus' )->willReturn( $response );
 
@@ -83,13 +83,13 @@ class PacketSynchronizerTest extends TestCase {
 
 		$response = $this->createMock( PacketStatus::class );
 		$response->method( 'hasFault' )->willReturn( true );
-		$response->method('hasWrongPassword')->willReturn(true);
-		$response->expects($this->never())->method( 'getStoredUntil' );
-		$response->expects($this->never())->method( 'getCodeText' );
+		$response->method( 'hasWrongPassword' )->willReturn( true );
+		$response->expects( $this->never() )->method( 'getStoredUntil' );
+		$response->expects( $this->never() )->method( 'getCodeText' );
 
 		$this->client->method( 'packetStatus' )->willReturn( $response );
 
-		$this->expectException(InvalidPasswordException::class);
+		$this->expectException( InvalidPasswordException::class );
 		$this->packetSynchronizer->syncStatus( $order );
 	}
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- * Class PacketCanceller
+ * Class PacketSetStoredUntil
  *
- * @package Packetery\Module\Order
+ * @package Packetery
  */
 
 declare( strict_types=1 );
@@ -19,7 +19,7 @@ use Packetery\Nette\Http\Request;
 /**
  * Class PacketSetStoredUntil
  *
- * @package Packetery\Module\Order
+ * @package Packetery
  */
 class PacketSetStoredUntil {
 
@@ -42,25 +42,13 @@ class PacketSetStoredUntil {
 	 *
 	 * @param Soap\Client    $soapApiClient   Soap client API.
 	 * @param Log\ILogger    $logger          Logger.
-	 * @param Repository     $orderRepository Order repository.
-	 * @param Request        $request         Request.
-	 * @param MessageManager $messageManager  Message manager.
-	 * @param Helper         $helper          Helper.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
-		Log\ILogger $logger,
-		Repository $orderRepository,
-		Request $request,
-		MessageManager $messageManager,
-		Helper $helper
+		Log\ILogger $logger
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
-		$this->orderRepository = $orderRepository;
-		$this->request         = $request;
-		$this->messageManager  = $messageManager;
-		$this->helper          = $helper;
 	}
 
 	/**
