@@ -17,7 +17,7 @@
         {/if}
     {/if}
 
-	{if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
+    {if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
         <p><strong>{$translations['addressWasNotValidated']}</strong></p>
     {/if}
 </div>
