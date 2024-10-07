@@ -1,12 +1,12 @@
 === Packeta ===
 Contributors: packeta
 Tags: WooCommerce, shipping
-Requires at least: 5.3
+Requires at least: 5.5
 Tested up to: 6.6.2
 Stable tag: 1.8.0
 Requires PHP: 7.2
 WC requires at least: 4.5
-WC tested up to: 9.3.1
+WC tested up to: 9.3.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -53,7 +53,7 @@ Yes. All functions of our plugin are completely free. No need to purchase any pr
 
 = What are the minimum required versions of WordPress and PHP? =
 
-In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 5.3+ and PHP 7.2 - 8.0.
+In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 5.5+ and PHP 7.2 - 8.2.
 
 = I'm missing a feature I would like to see, what should I do? =
 
