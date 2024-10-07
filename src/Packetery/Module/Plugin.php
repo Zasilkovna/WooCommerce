@@ -20,7 +20,6 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order\CarrierModal;
 use Packetery\Module\Order\StoredUntilModal;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -334,15 +333,15 @@ class Plugin {
 	 * @param Order\PacketSubmitter      $packetSubmitter           Packet submitter.
 	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
-	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter Packet auto submitter.
-	 * @param Options\FeatureFlagManager $featureFlagManager Feature Flag Manager.
-	 * @param Order\MetaboxesWrapper     $metaboxesWrapper Metaboxes wrapper.
-	 * @param Order\ApiExtender          $apiExtender API extender.
-	 * @param Order\LabelPrintModal      $labelPrintModal Label print modal.
-	 * @param HookHandler                $hookHandler Hook handler.
-	 * @param CarrierModal               $carrierModal Carrier Modal.
-	 * @param CarrierOptionsFactory      $carrierOptionsFactory Carrier options factory.
-	 * @param StoredUntilModal           $storedUntilModal Stored until modal.
+	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
+	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
+	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
+	 * @param Order\ApiExtender          $apiExtender               API extender.
+	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
+	 * @param HookHandler                $hookHandler               Hook handler.
+	 * @param CarrierModal               $carrierModal              Carrier Modal.
+	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param StoredUntilModal           $storedUntilModal          Stored until modal.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -969,13 +968,14 @@ class Plugin {
 			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();
 
-			$orderGridPageSettings = [
+			// todo name
+			$detailPageSettings = [
 				'translations' => [
 					'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
 				],
 			];
 			$this->enqueueScript( 'packetery-admin-stored-until-modal-js', 'public/js/admin-stored-until-modal.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
-			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $datePickerSettings );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $detailPageSettings );
 			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 

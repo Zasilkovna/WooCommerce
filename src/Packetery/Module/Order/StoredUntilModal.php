@@ -100,9 +100,9 @@ class StoredUntilModal {
 				'nonce'              => $nonce,
 				'storedUntilSaveUrl' => $storedUntilSaveUrl,
 				'translations'       => [
+					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
 					// translators: %s is packet ID.
 					'order#%s'        => __( 'Order #%s', 'packeta' ),
-					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
 				],
 			]
 		);

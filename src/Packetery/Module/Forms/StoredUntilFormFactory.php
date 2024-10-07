@@ -1,6 +1,6 @@
 <?php
 /**
- * Class StoredUntilModal.
+ * Class StoredUntilFormFactory.
  *
  * @package Packetery
  */
