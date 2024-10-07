@@ -68,11 +68,12 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 
 Added: [Block-based checkout](https://woocommerce.com/checkout-blocks/) support.
 Added: Calculation of the shipping price according to the order value.
-Added: Logging of important events in the internal order note.
 Added: Important information about the packet (submission or cancellation of the packet, label printing, creation of a claims assistant) will now be recorded in the internal order note.
 Added: Required fields (e.g., packet weight and dimensions when required by the carrier) are now highlighted if missing from the order.
 Added: An option to set multiple payment methods as cash on delivery (COD).
+Added: Displaying the shipment status in the order detail.
 Updated: When changing a carrier, the name created by the user is applied.
 Updated: Removed the dependency on Guzzle and used the WordPress native methods instead.
+Updated: Removed all mentions of Alzaboxes.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)
