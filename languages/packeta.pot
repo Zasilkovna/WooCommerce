@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-09-13T12:30:53+00:00\n"
+"POT-Creation-Date: 2024-10-07T09:04:29+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.10.0\n"
 "X-Domain: packeta\n"
@@ -253,7 +253,7 @@ msgid "Address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:318
-#: src/Packetery/Module/Checkout.php:876
+#: src/Packetery/Module/Checkout.php:884
 msgid "Age verification fee"
 msgstr ""
 
@@ -512,7 +512,7 @@ msgid "Choose pickup point"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:406
-#: src/Packetery/Module/Checkout.php:503
+#: src/Packetery/Module/Checkout.php:502
 msgid "Pickup point is not chosen."
 msgstr ""
 
@@ -534,35 +534,34 @@ msgid "The selected country does not correspond to the destination country."
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:411
-msgid "Address is validated"
+msgid "The order will be delivered to the address:"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:412
-msgid "Delivery address has not been verified."
+msgid "Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:413
-#: src/Packetery/Module/Checkout.php:559
-#: src/Packetery/Module/Checkout.php:564
-msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
-msgstr ""
-
-#: src/Packetery/Module/Checkout.php:464
-#: src/Packetery/Module/Checkout.php:475
+#: src/Packetery/Module/Checkout.php:463
+#: src/Packetery/Module/Checkout.php:474
 msgid "Chosen delivery method is no longer available. Please choose another delivery method."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:513
+#: src/Packetery/Module/Checkout.php:512
 msgid "The selected Packeta carrier is not available for the selected delivery country."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:533
+#: src/Packetery/Module/Checkout.php:532
 msgid "The selected Packeta pickup point could not be validated. Please select another."
 msgstr ""
 
 #. translators: %s: Reason for validation failure.
-#: src/Packetery/Module/Checkout.php:537
+#: src/Packetery/Module/Checkout.php:536
 msgid "Reason: %s"
+msgstr ""
+
+#: src/Packetery/Module/Checkout.php:558
+#: src/Packetery/Module/Checkout.php:563
+msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
 msgstr ""
 
 #. translators: %s: Message from downloader.
@@ -570,12 +569,12 @@ msgstr ""
 msgid "The selected Packeta pickup point could not be validated, reason: %s."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:901
-#: src/Packetery/Module/Checkout.php:1594
+#: src/Packetery/Module/Checkout.php:909
+#: src/Packetery/Module/Checkout.php:1602
 msgid "COD surcharge"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:1026
+#: src/Packetery/Module/Checkout.php:1034
 msgid "Free"
 msgstr ""
 
