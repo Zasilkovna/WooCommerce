@@ -610,7 +610,7 @@ class Order {
 	}
 
 	/**
-	 * Sets stored until.
+	 * Sets stored until date.
 	 *
 	 * @param \DateTimeImmutable|null $storedUntil Stored until.
 	 */
@@ -824,7 +824,7 @@ class Order {
 	}
 
 	/**
-	 * Get stored until.
+	 * Get stored until date.
 	 *
 	 * @return \DateTimeImmutable|null
 	 */

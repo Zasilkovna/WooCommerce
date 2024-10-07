@@ -12,9 +12,6 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Log;
-use Packetery\Module\Helper;
-use Packetery\Module\MessageManager;
-use Packetery\Nette\Http\Request;
 
 /**
  * Class PacketSetStoredUntil
@@ -40,8 +37,8 @@ class PacketSetStoredUntil {
 	/**
 	 * Constructor.
 	 *
-	 * @param Soap\Client $soapApiClient   Soap client API.
-	 * @param Log\ILogger $logger          Logger.
+	 * @param Soap\Client $soapApiClient Soap client API.
+	 * @param Log\ILogger $logger        Logger.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
