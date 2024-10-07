@@ -980,7 +980,6 @@ class Plugin {
 			$pickupPointPickerSettings = $this->orderMetabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->orderMetabox->getAddressWidgetSettings();
 
-			// todo name
 			$detailPageSettings = [
 				'translations' => [
 					'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
