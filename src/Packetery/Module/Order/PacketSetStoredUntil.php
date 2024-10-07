@@ -57,7 +57,7 @@ class PacketSetStoredUntil {
 	 *
 	 * @return null|string
 	 */
-	public function setStoredUntil( Order $order, ?string $packetId, \DateTimeImmutable $storedUntil ): null|string {
+	public function setStoredUntil( Order $order, ?string $packetId, \DateTimeImmutable $storedUntil ): ?string {
 		$request      = Soap\Request\PacketSetStoredUntil::create( $packetId, $storedUntil );
 		$result       = $this->soapApiClient->packetSetStoredUntil( $request );
 		$errorMessage = null;
