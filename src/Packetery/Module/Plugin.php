@@ -17,9 +17,10 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Order\CarrierModal;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -254,11 +255,18 @@ class Plugin {
 	private $packetAutoSubmitter;
 
 	/**
-	 * Feature Flag Manager.
+	 * Feature flag provider.
 	 *
-	 * @var Options\FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
-	private $featureFlagManager;
+	private $featureFlagProvider;
+
+	/**
+	 * Feature flag notice manager.
+	 *
+	 * @var FeatureFlagNotice
+	 */
+	private $featureFlagNotice;
 
 	/**
 	 * API extender.
@@ -327,7 +335,8 @@ class Plugin {
 	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
-	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
+	 * @param FeatureFlagProvider        $featureFlagProvider       Feature flag provider.
+	 * @param FeatureFlagNotice          $featureFlagNotice         Feature flag notice manager.
 	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
 	 * @param Order\ApiExtender          $apiExtender               API extender.
 	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
@@ -365,7 +374,8 @@ class Plugin {
 		Order\PacketClaimSubmitter $packetClaimSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
-		Options\FeatureFlagManager $featureFlagManager,
+		FeatureFlagProvider $featureFlagProvider,
+		FeatureFlagNotice $featureFlagNotice,
 		Order\MetaboxesWrapper $metaboxesWrapper,
 		Order\ApiExtender $apiExtender,
 		Order\LabelPrintModal $labelPrintModal,
@@ -403,13 +413,14 @@ class Plugin {
 		$this->packetClaimSubmitter      = $packetClaimSubmitter;
 		$this->productCategoryFormFields = $productCategoryFormFields;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
-		$this->featureFlagManager        = $featureFlagManager;
+		$this->featureFlagProvider       = $featureFlagProvider;
 		$this->metaboxesWrapper          = $metaboxesWrapper;
 		$this->apiExtender               = $apiExtender;
 		$this->labelPrintModal           = $labelPrintModal;
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
+		$this->featureFlagNotice         = $featureFlagNotice;
 	}
 
 	/**
@@ -908,11 +919,9 @@ class Plugin {
 			)
 		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/css/admin.css' );
-			// We want to trigger the message on all pages and show it on first request.
-			$this->featureFlagManager->isSplitActive();
 			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
-			if ( $this->featureFlagManager->shouldShowSplitActivationNotice() ) {
-				add_action( 'admin_notices', [ $this->featureFlagManager, 'renderSplitActivationNotice' ] );
+			if ( $this->featureFlagProvider->shouldShowSplitActivationNotice() ) {
+				add_action( 'admin_notices', [ $this->featureFlagNotice, 'renderSplitActivationNotice' ] );
 			}
 		}
 
@@ -1195,8 +1204,8 @@ class Plugin {
 			$this->packetCanceller->processAction();
 		}
 
-		if ( Options\FeatureFlagManager::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
-			$this->featureFlagManager->dismissSplitActivationNotice();
+		if ( FeatureFlagNotice::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
+			$this->featureFlagProvider->dismissSplitActivationNotice();
 		}
 	}
 

@@ -12,7 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 
 /**
  * Class WidgetOptionsBuilder
@@ -31,7 +31,7 @@ class WidgetOptionsBuilder {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
 	private $featureFlag;
 
@@ -39,11 +39,11 @@ class WidgetOptionsBuilder {
 	 * WidgetOptionsBuilder constructor.
 	 *
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param FeatureFlagManager        $featureFlag        Feature flag.
+	 * @param FeatureFlagProvider       $featureFlag        Feature flag.
 	 */
 	public function __construct(
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag
+		FeatureFlagProvider $featureFlag
 	) {
 		$this->pickupPointsConfig = $pickupPointsConfig;
 		$this->featureFlag        = $featureFlag;

@@ -16,7 +16,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Control;
@@ -93,7 +93,7 @@ class OptionsPage {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
 	private $featureFlag;
 
@@ -128,7 +128,7 @@ class OptionsPage {
 	 * @param CountryListingPage        $countryListingPage CountryListingPage.
 	 * @param MessageManager            $messageManager     Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param FeatureFlagManager        $featureFlag        Feature flag.
+	 * @param FeatureFlagProvider       $featureFlag        Feature flag.
 	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
 	 * @param WcSettingsConfig          $wcSettingsConfig   WC Native carrier settings config.
 	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
@@ -141,7 +141,7 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag,
+		FeatureFlagProvider $featureFlag,
 		CarDeliveryConfig $carDeliveryConfig,
 		WcSettingsConfig $wcSettingsConfig,
 		CarrierOptionsFactory $carrierOptionsFactory
