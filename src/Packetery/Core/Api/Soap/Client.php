@@ -325,7 +325,7 @@ class Client {
 	}
 
 	/**
-	 * Requests for sender return routing strings.
+	 * Requests for set new stored until date.
 	 *
 	 * @param Request\PacketSetStoredUntil $request Request.
 	 *
