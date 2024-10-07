@@ -46,23 +46,23 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @var FeatureFlagProvider
 	 */
-	private $featureFlag;
+	private $featureFlagProvider;
 
 	/**
 	 * PacketaPickupPointsConfig.
 	 *
 	 * @param CompoundCarrierCollectionFactory $compoundCarrierFactory  CompoundCarrierCollectionFactory.
 	 * @param VendorCollectionFactory          $vendorCollectionFactory VendorCollectionFactory.
-	 * @param FeatureFlagProvider              $featureFlag             Feature flag.
+	 * @param FeatureFlagProvider              $featureFlagProvider     Feature flag.
 	 */
 	public function __construct(
 		CompoundCarrierCollectionFactory $compoundCarrierFactory,
 		VendorCollectionFactory $vendorCollectionFactory,
-		FeatureFlagProvider $featureFlag
+		FeatureFlagProvider $featureFlagProvider
 	) {
 		$this->vendorCollectionFactory = $vendorCollectionFactory;
 		$this->compoundCarrierFactory  = $compoundCarrierFactory;
-		$this->featureFlag             = $featureFlag;
+		$this->featureFlagProvider     = $featureFlagProvider;
 	}
 
 	/**
@@ -97,7 +97,7 @@ class PacketaPickupPointsConfig {
 	 * @return VendorProvider[]
 	 */
 	public function getVendorCarriers(): array {
-		if ( ! $this->featureFlag->isSplitActive() ) {
+		if ( ! $this->featureFlagProvider->isSplitActive() ) {
 			return [];
 		}
 
