@@ -125,7 +125,7 @@ class FeatureFlagDownloader {
 		}
 
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
-		if ( false === $this->featureFlagStorage->getFlags() ) {
+		if ( null === $this->featureFlagStorage->getFlags() ) {
 			if ( ! $hasApiKey ) {
 				$this->featureFlagStorage->setFlags( [] );
 
