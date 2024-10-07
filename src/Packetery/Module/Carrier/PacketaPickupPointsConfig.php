@@ -16,7 +16,7 @@ use Packetery\Core\PickupPointProvider\CompoundProvider;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 
 /**
  * Packeta pickup points configuration.
@@ -44,7 +44,7 @@ class PacketaPickupPointsConfig {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
 	private $featureFlag;
 
@@ -53,12 +53,12 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param CompoundCarrierCollectionFactory $compoundCarrierFactory  CompoundCarrierCollectionFactory.
 	 * @param VendorCollectionFactory          $vendorCollectionFactory VendorCollectionFactory.
-	 * @param FeatureFlagManager               $featureFlag             Feature flag.
+	 * @param FeatureFlagProvider              $featureFlag             Feature flag.
 	 */
 	public function __construct(
 		CompoundCarrierCollectionFactory $compoundCarrierFactory,
 		VendorCollectionFactory $vendorCollectionFactory,
-		FeatureFlagManager $featureFlag
+		FeatureFlagProvider $featureFlag
 	) {
 		$this->vendorCollectionFactory = $vendorCollectionFactory;
 		$this->compoundCarrierFactory  = $compoundCarrierFactory;

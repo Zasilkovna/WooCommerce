@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait WpAdapter.
+ * Class WpAdapter.
  *
  * @package Packetery
  */
@@ -14,13 +14,14 @@ use WP_Post;
 use WP_Term;
 
 /**
- * Trait WpAdapter.
+ * Class WpAdapter.
  *
  * @package Packetery
  */
 class WpAdapter {
 	use HookTrait;
 	use HttpTrait;
+	use OptionTrait;
 	use TransientTrait;
 	use PostTrait;
 
@@ -33,18 +34,6 @@ class WpAdapter {
 	 */
 	public function addQueryArg( ...$args ): string {
 		return add_query_arg( ...$args );
-	}
-
-	/**
-	 * WP get_option adapter.
-	 *
-	 * @param string $optionId Option id.
-	 * @param mixed  $defaultValue Default value.
-	 *
-	 * @return mixed
-	 */
-	public function getOption( string $optionId, $defaultValue = false ) {
-		return get_option( $optionId, $defaultValue );
 	}
 
 	/**

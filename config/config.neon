@@ -102,7 +102,10 @@ services:
 	- Packetery\Module\WidgetOptionsBuilder
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
 	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
-	- Packetery\Module\Options\FeatureFlagManager
+	- Packetery\Module\Options\FlagManager\FeatureFlagProvider
+	- Packetery\Module\Options\FlagManager\FeatureFlagNotice
+	- Packetery\Module\Options\FlagManager\FeatureFlagDownloader
+	- Packetery\Module\Options\FlagManager\FeatureFlagStorage
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
