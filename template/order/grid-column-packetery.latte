@@ -4,11 +4,11 @@
 {if $order->getPacketId()}
     <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
     <a
-        class="button dashicons dashicons-trash"
-        title="{$translations['cancelPacket']}"
-        href="{$packetCancelLink}"
-        data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
-        data-packetery-confirm="{$translations['reallyCancelPacket']}"
+            class="button dashicons dashicons-trash"
+            title="{$translations['cancelPacket']}"
+            href="{$packetCancelLink}"
+            data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
+            data-packetery-confirm="{$translations['reallyCancelPacket']}"
     ></a>
 {else}
     <a data-packetery-order-inline-edit
@@ -39,12 +39,12 @@
        )}"
        data-tip="{if ! $orderIsSubmittable}{$translations['packetSubmissionNotPossible']}{else}{$translations['setAdditionalPacketInfo']}{/if}"
     ></a>
-    <a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable }hidden{/if}"
+    <a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable}hidden{/if}"
        title="{$translations['submitToPacketa']}"
        href="{$packetSubmitUrl}"
     ></a>
 {/if}
 
-{if null !== $order->getLastApiErrorMessage() && $order->getLastApiErrorDateTime() > $Helper::now()->modify( $logPurgerDatetimeModifier ) }
+{if null !== $order->getLastApiErrorMessage() && $order->getLastApiErrorDateTime() > $Helper::now()->modify( $logPurgerDatetimeModifier )}
     <span class="dashicons dashicons-warning attention" title="{$translations['lastErrorFromApi']}:&#13;{$order->getLastApiErrorMessage()}"></span>
 {/if}

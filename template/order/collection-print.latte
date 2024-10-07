@@ -65,7 +65,8 @@
                 <td class="packetery-no-wrap">{$packetId}</td>
                 <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_date_created()|date:'d. m.'}</td>
                 <td class="packetery-no-wrap">{$wpOrders[$orderNumber]->get_formatted_shipping_full_name()}</td>
-                <td class="packetery-no-wrap cod-column"><strong>{($order->getCod() ?? 0.0)|number:2} {$wpOrders[$orderNumber]->get_currency()}</strong></td>
+                <td class="packetery-no-wrap cod-column">
+                    <strong>{($order->getCod() ?? 0.0)|number:2} {$wpOrders[$orderNumber]->get_currency()}</strong></td>
 
                 {if $order->getPickupPoint()}
                     <td>{$order->getPickupPoint()->getId()}, {$order->getPickupPoint()->getName()}</td>

@@ -1,9 +1,9 @@
 <div class="notice notice-{$message['type']} is-dismissible">
-        <p>
-                {if ( $message['escape'] ?? true ) === false}
-                        {$message['message']|noescape}
-                {else}
-                        {$message['message']}
-                {/if}
-        </p>
+    <p>
+        {if ( $message['escape'] ?? true ) === false}
+            {$message['message']|noescape}
+        {else}
+            {$message['message']}
+        {/if}
+    </p>
 </div>

@@ -25,9 +25,9 @@
             </th>
             <td>
                 {foreach $form[ 'status_syncing_order_statuses' ]->getControls() as $control}
-                <input n:name=$control>
-                <label n:name=$control />
-                <br>
+                    <input n:name=$control>
+                    <label n:name=$control />
+                    <br>
                 {/foreach}
                 <div class="packetery-help-block">
                     <p>{$translations['statusSyncingOrderStatusesDescription']}</p>
@@ -40,9 +40,9 @@
             </th>
             <td>
                 {foreach $form[ 'status_syncing_packet_statuses' ]->getControls() as $control}
-                <input n:name=$control>
-                <label n:name=$control />
-                <br>
+                    <input n:name=$control>
+                    <label n:name=$control />
+                    <br>
                 {/foreach}
                 <div class="packetery-help-block">
                     <p>{$translations['statusSyncingPacketStatusesDescription']}</p>
@@ -64,10 +64,10 @@
             </th>
             <td>
                 {foreach $form[ 'order_status_change_packet_statuses' ]->getControls() as $control}
-                <div class="packetery-order-status-block">
-                    <label n:name=$control />
-                    <select n:name=$control></select>
-                </div>
+                    <div class="packetery-order-status-block">
+                        <label n:name=$control />
+                        <select n:name=$control></select>
+                    </div>
                 {/foreach}
             </td>
         </tr>
