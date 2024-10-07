@@ -63,7 +63,7 @@ class PacketSetStoredUntil {
 		return new self(
 			$packetId,
 			$storedUntil,
-			new Helper(),
+			new Helper()
 		);
 	}
 
@@ -84,7 +84,7 @@ class PacketSetStoredUntil {
 	public function getStoredUntil(): ?string {
 		return $this->helper->getStringFromDateTime(
 			$this->storedUntil,
-			Helper::MYSQL_DATE_FORMAT,
+			Helper::MYSQL_DATE_FORMAT
 		);
 	}
 }
