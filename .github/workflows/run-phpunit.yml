@@ -35,4 +35,4 @@ jobs:
         run: composer install
 
       - name: Run PHPUnit
-        run: composer run phpunit
+        run: composer run tests-unit
