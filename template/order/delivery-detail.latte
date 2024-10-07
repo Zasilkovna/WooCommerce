@@ -4,20 +4,20 @@
 
 <div class="clear"></div>
 <div>
-	{if $pickupPoint}
-		<h3>
-			{$translations['packeta']} - {$translations['pickupPointDetail']}
-		</h3>
+    {if $pickupPoint}
+        <h3>
+            {$translations['packeta']} - {$translations['pickupPointDetail']}
+        </h3>
 
-		<p><strong>{$translations['name']}</strong>: {$pickupPoint->getName()}</p>
-		<p><strong>{$translations['address']}</strong>: {$pickupPoint->getFullAddress()}</p>
-		{if $pickupPoint->getUrl() && !$isExternalCarrier}
-			<p><a class="button" target="_blank"
-				  href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetailCaps']}</a></p>
-		{/if}
-	{/if}
+        <p><strong>{$translations['name']}</strong>: {$pickupPoint->getName()}</p>
+        <p><strong>{$translations['address']}</strong>: {$pickupPoint->getFullAddress()}</p>
+        {if $pickupPoint->getUrl() && !$isExternalCarrier}
+            <p><a class="button" target="_blank"
+                  href="{$pickupPoint->getUrl()}">{$translations['pickupPointDetailCaps']}</a></p>
+        {/if}
+    {/if}
 
 	{if !$validatedDeliveryAddress && in_array( $carrierAddressValidation, [ 'required', 'optional' ] )}
-		<p><strong>{$translations['addressWasNotValidated']}</strong></p>
-	{/if}
+        <p><strong>{$translations['addressWasNotValidated']}</strong></p>
+    {/if}
 </div>
