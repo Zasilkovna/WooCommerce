@@ -32,7 +32,7 @@ class PacketStatus extends BaseResponse {
 	 * @var \DateTimeImmutable|null
 	 */
 	private $storedUntil;
-	
+
 	/**
 	 * Gets code text.
 	 *
