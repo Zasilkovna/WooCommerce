@@ -35,6 +35,7 @@ ij_css_use_double_quotes = true
 ij_css_value_alignment = do_not_align
 
 [*.latte]
+indent_style = space
 ij_latte_keep_blank_lines_in_code = 2
 ij_latte_spaces_around_assignment_operators = true
 ij_latte_spaces_around_bitwise_operators = true
@@ -329,8 +330,7 @@ ij_typescript_while_on_new_line = false
 ij_typescript_wrap_comments = false
 
 [{*.bash,*.sh,*.zsh}]
-indent_size = 2
-tab_width = 2
+indent_style = space
 ij_shell_binary_ops_start_line = false
 ij_shell_keep_column_alignment_padding = false
 ij_shell_minify_program = false
