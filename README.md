@@ -47,13 +47,29 @@ WP Filters are used to easily alter preselected system behaviors.
 
 To register filter edit wc-includes/functions.php and add your PHP code after all PHP file includes.
 
+##### Pass dimensions in centimeters to pickup point widget
+
+To pass dimensions in centimeters to pickup point widget use code similar to the one below.
+Then the widget filters the pickup points based on the parameters provided.
+Parameter $dimensions is empty array by default.
+
+```
+add_filter( 'packeta_widget_dimensions', function ( array $dimensions ): array {
+	return [
+		'length' => 50,
+		'width'  => 40,
+		'height' => 30,
+	];
+} );
+```
+
 ##### Order status filtering
 
 To filter additional orders from Packeta order list when applying Packeta filter, use following sample code.
 Parameter $queryObject is nullable since plugin version 1.6.0.
 
 ```
-add_filter( 'packetery_exclude_orders_with_status', function (array $statuses): array {
+add_filter( 'packetery_exclude_orders_with_status', function ( array $statuses ): array {
     $statuses[] = 'wc-cancelled';
     return $statuses;
 } );

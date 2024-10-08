@@ -528,6 +528,13 @@ var packeteryLoadCheckout = function( $, settings ) {
 				if ( settings.isAgeVerificationRequired ) {
 					widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 				}
+				if ( settings.dimensions ) {
+					[ 'length', 'width', 'height' ].forEach( ( property ) => {
+						if ( settings.dimensions[ property ] ) {
+							widgetOptions[ property ] = settings.dimensions[ property ];
+						}
+					} );
+				}
 
 				console.log('Pickup point widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {

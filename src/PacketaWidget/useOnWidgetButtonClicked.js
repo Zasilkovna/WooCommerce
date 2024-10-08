@@ -24,6 +24,7 @@ export const useOnWidgetButtonClicked = (
 		nonce,
 		saveSelectedPickupPointUrl,
 		pickupPointAttrs,
+		dimensions,
 	} = settings;
 
 	const onWidgetButtonClicked = useCallback( () => {
@@ -40,6 +41,13 @@ export const useOnWidgetButtonClicked = (
 		}
 		if ( dynamicSettings && dynamicSettings.isAgeVerificationRequired ) {
 			widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+		}
+		if ( dimensions ) {
+			[ 'length', 'width', 'height' ].forEach( ( property ) => {
+				if ( dimensions[ property ] ) {
+					widgetOptions[ property ] = dimensions[ property ];
+				}
+			} );
 		}
 
 		console.log( 'Pickup point widget options: apiKey: ' + packeteryApiKey + ', ' + stringifyOptions( widgetOptions ) );
