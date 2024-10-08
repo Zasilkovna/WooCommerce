@@ -11,6 +11,7 @@ parameters:
         active: false
 
 services:
+	- Packetery\Module\DebugModeChecker(debugMode: %debugMode%)
 	- Packetery\Module\Framework\WpAdapter
 	- Packetery\Module\Framework\WcAdapter
 	- Packetery\Module\Order\MetaboxesWrapper

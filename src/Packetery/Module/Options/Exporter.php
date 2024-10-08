@@ -61,26 +61,36 @@ class Exporter {
 	private $logger;
 
 	/**
+	 * Debug mode checker.
+	 *
+	 * @var Module\DebugModeChecker
+	 */
+	private $debugModeChecker;
+
+	/**
 	 * Exporter constructor.
 	 *
-	 * @param Http\Request       $httpRequest        Http request.
-	 * @param Engine             $latteEngine        Latte engine.
-	 * @param CountryListingPage $countryListingPage Country listing page.
-	 * @param Provider           $optionsProvider    Options provider.
-	 * @param ILogger            $logger             Logger.
+	 * @param Http\Request            $httpRequest        Http request.
+	 * @param Engine                  $latteEngine        Latte engine.
+	 * @param CountryListingPage      $countryListingPage Country listing page.
+	 * @param Provider                $optionsProvider    Options provider.
+	 * @param ILogger                 $logger             Logger.
+	 * @param Module\DebugModeChecker $debugModeChecker   Debug mode checker.
 	 */
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
 		Provider $optionsProvider,
-		ILogger $logger
+		ILogger $logger,
+		Module\DebugModeChecker $debugModeChecker
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
 		$this->countryListingPage = $countryListingPage;
 		$this->optionsProvider    = $optionsProvider;
 		$this->logger             = $logger;
+		$this->debugModeChecker   = $debugModeChecker;
 	}
 
 	/**
@@ -123,7 +133,7 @@ class Exporter {
 			'dbServer'          => $wpdb->db_server_info(),
 			'soap'              => wc_bool_to_string( extension_loaded( 'soap' ) ),
 			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
-			'packetaDebug'      => wc_bool_to_string( PACKETERY_DEBUG ),
+			'packetaDebug'      => wc_bool_to_string( $this->debugModeChecker->isDebugMode() ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
