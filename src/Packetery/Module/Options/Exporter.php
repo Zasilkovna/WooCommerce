@@ -13,6 +13,7 @@ use Packetery\Core\Log\ILogger;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module;
 use Packetery\Latte\Engine;
+use Packetery\Module\DebugModeChecker;
 use Packetery\Nette\Http;
 
 /**
@@ -63,19 +64,19 @@ class Exporter {
 	/**
 	 * Debug mode checker.
 	 *
-	 * @var Module\DebugModeChecker
+	 * @var DebugModeChecker
 	 */
 	private $debugModeChecker;
 
 	/**
 	 * Exporter constructor.
 	 *
-	 * @param Http\Request            $httpRequest        Http request.
-	 * @param Engine                  $latteEngine        Latte engine.
-	 * @param CountryListingPage      $countryListingPage Country listing page.
-	 * @param Provider                $optionsProvider    Options provider.
-	 * @param ILogger                 $logger             Logger.
-	 * @param Module\DebugModeChecker $debugModeChecker   Debug mode checker.
+	 * @param Http\Request       $httpRequest        Http request.
+	 * @param Engine             $latteEngine        Latte engine.
+	 * @param CountryListingPage $countryListingPage Country listing page.
+	 * @param Provider           $optionsProvider    Options provider.
+	 * @param ILogger            $logger             Logger.
+	 * @param DebugModeChecker   $debugModeChecker   Debug mode checker.
 	 */
 	public function __construct(
 		Http\Request $httpRequest,
@@ -83,7 +84,7 @@ class Exporter {
 		CountryListingPage $countryListingPage,
 		Provider $optionsProvider,
 		ILogger $logger,
-		Module\DebugModeChecker $debugModeChecker
+		DebugModeChecker $debugModeChecker
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
