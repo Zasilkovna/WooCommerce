@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.6.2
-Stable tag: 1.8.0
+Stable tag: 1.8.1
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 9.3.3
@@ -64,8 +64,10 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
-= 1.8.0 =
+= 1.8.1 =
+Fixed: Error in bulk label printing.
 
+= 1.8.0 =
 Added: [Block-based checkout](https://woocommerce.com/checkout-blocks/) support.
 Added: Calculation of the shipping price according to the order value.
 Added: Important information about the packet (submission or cancellation of the packet, label printing, creation of a claims assistant) will now be recorded in the internal order note.
