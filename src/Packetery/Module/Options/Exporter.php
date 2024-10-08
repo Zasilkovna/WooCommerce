@@ -10,9 +10,9 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Log\ILogger;
-use Packetery\Module\Carrier\CountryListingPage;
-use Packetery\Module;
 use Packetery\Latte\Engine;
+use Packetery\Module;
+use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\DebugModeChecker;
 use Packetery\Nette\Http;
 
