@@ -30,7 +30,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION                = '1.8.0';
+	public const VERSION                = '1.8.1';
 	public const DOMAIN                 = 'packeta';
 	public const MIN_LISTENER_PRIORITY  = - 9998;
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';

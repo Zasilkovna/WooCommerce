@@ -1,4 +1,7 @@
 == Changelog ==
+= 1.8.1 =
+Fixed: Error in bulk label printing.
+
 = 1.8.0 =
 Added: [Block-based checkout](https://woocommerce.com/checkout-blocks/) support.
 Added: Calculation of the shipping price according to the order value.
