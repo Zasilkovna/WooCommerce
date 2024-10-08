@@ -488,7 +488,7 @@ class LabelPrint {
 				continue;
 			}
 			if ( ! $isCarrierLabels || $order->isExternalCarrier() ) {
-				$packetIds[ $order->getNumber() ] = (int) $order->getPacketId();
+				$packetIds[ $order->getNumber() ] = $order->getPacketId();
 			}
 		}
 
