@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use WC_Logger;
+
 /**
  * Class WcAdapter.
  *
@@ -57,6 +59,15 @@ class WcAdapter {
 	 */
 	public function getProduct( int $postId ) {
 		return wc_get_product( $postId );
+	}
+
+	/**
+	 * Creates new logger instance.
+	 *
+	 * @return WC_Logger
+	 */
+	public function createLogger(): WC_Logger {
+		return new WC_Logger();
 	}
 
 }

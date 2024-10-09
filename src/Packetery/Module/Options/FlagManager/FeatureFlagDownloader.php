@@ -13,9 +13,9 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
 use Packetery\Core;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
-use WC_Logger;
 
 /**
  * Class FeatureFlagDownloader
@@ -45,6 +45,13 @@ class FeatureFlagDownloader {
 	private $wpAdapter;
 
 	/**
+	 * WC adapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Feature flag store.
 	 *
 	 * @var FeatureFlagStorage
@@ -54,17 +61,20 @@ class FeatureFlagDownloader {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param Provider           $optionsProvider Options provider.
-	 * @param WpAdapter          $wpAdapter WP adapter.
+	 * @param Provider           $optionsProvider    Options provider.
+	 * @param WpAdapter          $wpAdapter          WP adapter.
+	 * @param WcAdapter          $wcAdapter          WC adapter.
 	 * @param FeatureFlagStorage $featureFlagStorage Feature flag store.
 	 */
 	public function __construct(
 		Provider $optionsProvider,
 		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
 		FeatureFlagStorage $featureFlagStorage
 	) {
 		$this->optionsProvider    = $optionsProvider;
 		$this->wpAdapter          = $wpAdapter;
+		$this->wcAdapter          = $wcAdapter;
 		$this->featureFlagStorage = $featureFlagStorage;
 	}
 
@@ -81,7 +91,7 @@ class FeatureFlagDownloader {
 		);
 
 		if ( $this->wpAdapter->isWpError( $response ) ) {
-			$logger = new WC_Logger();
+			$logger = $this->wcAdapter->createLogger();
 			$logger->warning( 'Packeta Feature flag API download error: ' . $response->get_error_message() );
 			$errorCount = $this->wpAdapter->getOption( self::ERROR_COUNTER_OPTION_ID, 0 );
 			$this->wpAdapter->updateOption( self::ERROR_COUNTER_OPTION_ID, $errorCount + 1 );
