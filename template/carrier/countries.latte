@@ -1,32 +1,32 @@
 {include '../packeta-header.latte'}
 
 <div class="packetery-options-page packeta_page">
-    {include 'carriersUpdater.latte'}
+	{include 'carriersUpdater.latte'}
 
-    <h2>{$translations['packeta']} - {$translations['countries']}</h2>
+	<h2>{$translations['packeta']} - {$translations['countries']}</h2>
 
-    {if $countries}
-        <table class="packeta_country_list">
-            <tr>
-                <th>{$translations['countryName']}</th>
-                <th>{$translations['countryCode']}</th>
-                <th>{$translations['activeCarrier']}</th>
-                <th>{$translations['action']}</th>
-            </tr>
-            <tr n:foreach="$countries as $country" class="packeta_country_list_item">
-                <td>
-                    <img n:if="null !== $country['flag']" src="{$country['flag']}" alt="{$country['name']}">
-                    {$country['name']}
-                </td>
+	{if $countries}
+		<table class="packeta_country_list">
+			<tr>
+				<th>{$translations['countryName']}</th>
+				<th>{$translations['countryCode']}</th>
+				<th>{$translations['activeCarrier']}</th>
+				<th>{$translations['action']}</th>
+			</tr>
+			<tr n:foreach="$countries as $country" class="packeta_country_list_item">
+				<td>
+					<img n:if="null !== $country['flag']" src="{$country['flag']}" alt="{$country['name']}">
+					{$country['name']}
+				</td>
 
-                <td>{$country[Packetery\Module\Carrier\CountryListingPage::DATA_KEY_COUNTRY_CODE]|upper}</td>
-                <td class="packeta_active_carriers_column">{implode(', ', array_column($country['activeCarriers'], 'name'))}</td>
-                <td>
-                    <a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a>
-                </td>
-            </tr>
-        </table>
-    {else}
-        {$translations['noActiveCountries']}
-    {/if}
+				<td>{$country[Packetery\Module\Carrier\CountryListingPage::DATA_KEY_COUNTRY_CODE]|upper}</td>
+				<td class="packeta_active_carriers_column">{implode(', ', array_column($country['activeCarriers'], 'name'))}</td>
+				<td>
+					<a class="button button-small" href="{$country['url']}">{$translations['setUp']}</a>
+				</td>
+			</tr>
+		</table>
+	{else}
+		{$translations['noActiveCountries']}
+	{/if}
 </div>

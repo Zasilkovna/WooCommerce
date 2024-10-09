@@ -3,32 +3,32 @@
 {var $pickupPoint = $order->getPickupPoint()}
 
 <h2>
-    {$translations['packeta']}
+	{$translations['packeta']}
 </h2>
 
 <table class="td" style="border-spacing: 0; border: 0; vertical-align: middle; width: 100%;">
-    {if $pickupPoint && $displayPickupPointInfo}
-        <tr>
-            <th class="td">{$translations['pickupPointName']}</th>
-            <td class="td">{$pickupPoint->getName()}</td>
-        </tr>
-        {if $pickupPoint->getUrl() && !$order->isExternalCarrier()}
-            <tr>
-                <th class="td">{$translations['pickupPointDetail']}</th>
-                <td class="td"><a href="{$pickupPoint->getUrl()}">{$translations['link']}</a></td>
-            </tr>
-        {/if}
-        <tr>
-            <th class="td">{$translations['pickupPointAddress']}</th>
-            <td class="td">{$pickupPoint->getFullAddress()}</td>
-        </tr>
-    {/if}
+	{if $pickupPoint && $displayPickupPointInfo}
+		<tr>
+			<th class="td">{$translations['pickupPointName']}</th>
+			<td class="td">{$pickupPoint->getName()}</td>
+		</tr>
+		{if $pickupPoint->getUrl() && !$order->isExternalCarrier()}
+			<tr>
+				<th class="td">{$translations['pickupPointDetail']}</th>
+				<td class="td"><a href="{$pickupPoint->getUrl()}">{$translations['link']}</a></td>
+			</tr>
+		{/if}
+		<tr>
+			<th class="td">{$translations['pickupPointAddress']}</th>
+			<td class="td">{$pickupPoint->getFullAddress()}</td>
+		</tr>
+	{/if}
 
-    {if $order->isExported()}
-        <tr>
-            <th class="td">{$translations['packetTrackingOnline']}</th>
-            <td class="td"><a href='{$order->getPacketTrackingUrl()}'>{$order->getPacketBarcode()}</a></td>
-        </tr>
-    {/if}
+	{if $order->isExported()}
+		<tr>
+			<th class="td">{$translations['packetTrackingOnline']}</th>
+			<td class="td"><a href='{$order->getPacketTrackingUrl()}'>{$order->getPacketBarcode()}</a></td>
+		</tr>
+	{/if}
 </table>
 <br>

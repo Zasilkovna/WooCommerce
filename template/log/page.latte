@@ -3,47 +3,47 @@
 {include '../packeta-header.latte'}
 
 <div id="packetery-log-page" class="packeta_log">
-    <table class="packetery-log-table">
-        <thead>
-        <tr>
-            <th class="packetery-log-column packetery-log-column-status">{$translations['status']}</th>
-            <th class="packetery-log-column packetery-log-column-date">{$translations['dateAndTime']}</th>
-            <th class="packetery-log-column packetery-log-column-action">{$translations['action']}</th>
-            <th class="packetery-log-column packetery-log-column-note">{$translations['note']}</th>
-        </tr>
-        </thead>
-        <tbody>
-        {foreach $rows as $row}
-            <tr n:class="'log-' . $row->status">
-                <td class="packetery-log-column packetery-log-column-status">
-                    {$translatedStatuses[$row->status] ?? $row->status}
-                </td>
-                <td class="packetery-log-column packetery-log-column-date">
-                    {$row->date|wpDateTime}
-                </td>
-                <td class="packetery-log-column packetery-log-column-action">
-                    {$translatedActions[$row->action] ?? $row->action}
-                </td>
-                <td class="packetery-log-column packetery-log-column-note">
-                    {$row->note}
-                </td>
-            </tr>
-        {else}
-            <tr>
-                <td colspan="4">
-                    {$translations['logListIsEmpty']}
-                </td>
-            </tr>
-        {/foreach}
+	<table class="packetery-log-table">
+		<thead>
+		<tr>
+			<th class="packetery-log-column packetery-log-column-status">{$translations['status']}</th>
+			<th class="packetery-log-column packetery-log-column-date">{$translations['dateAndTime']}</th>
+			<th class="packetery-log-column packetery-log-column-action">{$translations['action']}</th>
+			<th class="packetery-log-column packetery-log-column-note">{$translations['note']}</th>
+		</tr>
+		</thead>
+		<tbody>
+		{foreach $rows as $row}
+			<tr n:class="'log-' . $row->status">
+				<td class="packetery-log-column packetery-log-column-status">
+					{$translatedStatuses[$row->status] ?? $row->status}
+				</td>
+				<td class="packetery-log-column packetery-log-column-date">
+					{$row->date|wpDateTime}
+				</td>
+				<td class="packetery-log-column packetery-log-column-action">
+					{$translatedActions[$row->action] ?? $row->action}
+				</td>
+				<td class="packetery-log-column packetery-log-column-note">
+					{$row->note}
+				</td>
+			</tr>
+		{else}
+			<tr>
+				<td colspan="4">
+					{$translations['logListIsEmpty']}
+				</td>
+			</tr>
+		{/foreach}
 
-            {if $maxRowsExceeded}
-            <tr>
-                <td colspan="4">
-                    {$translations['moreRowsNotice']}
-                </td>
-            </tr>
-        {/if}
+			{if $maxRowsExceeded}
+			<tr>
+				<td colspan="4">
+					{$translations['moreRowsNotice']}
+				</td>
+			</tr>
+		{/if}
 
-        </tbody>
-    </table>
+		</tbody>
+	</table>
 </div>

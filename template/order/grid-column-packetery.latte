@@ -2,49 +2,49 @@
 {var $Helper = Packetery\Core\Helper::class}
 
 {if $order->getPacketId()}
-    <a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
-    <a
-            class="button dashicons dashicons-trash"
-            title="{$translations['cancelPacket']}"
-            href="{$packetCancelLink}"
-            data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
-            data-packetery-confirm="{$translations['reallyCancelPacket']}"
-    ></a>
+	<a class="button dashicons dashicons-media-default" title="{$translations['printLabel']}" href="{$printLink}"></a>
+	<a
+			class="button dashicons dashicons-trash"
+			title="{$translations['cancelPacket']}"
+			href="{$packetCancelLink}"
+			data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
+			data-packetery-confirm="{$translations['reallyCancelPacket']}"
+	></a>
 {else}
-    <a data-packetery-order-inline-edit
-       class="button woocommerce-help-tip dashicons {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
-       data-order-data="{= json_encode(
-       [
-       'id' => $order->getNumber(),
-       'custom_number' => $order->getCustomNumber(),
-       'packetery_weight' => $order->getFinalWeight(),
-       'packetery_original_weight' => $order->getFinalWeight(),
-       'packetery_length' => $order->getLength(),
-       'packetery_width' => $order->getWidth(),
-       'packetery_height' => $order->getHeight(),
-       'packetery_adult_content' => $order->containsAdultContent(),
-       'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
-       'hasCod' => $order->hasCod(),
-       'hasDeliverOn' => $order->isPacketaInternalPickupPoint(),
-       'allowsAdultContent' => $order->allowsAdultContent(),
-       'packetery_COD' => $order->getCod(),
-       'packetery_value' => $order->getValue(),
-       'packetery_deliver_on' => $packetDeliverOn,
-       'packeteryDeliverOnClass' => $order->isPacketaInternalPickupPoint() ? '' : 'packetery-hidden ',
-       'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',
-       'hasToFillCustomsDeclaration' => $order->hasToFillCustomsDeclaration(),
-       'orderIsSubmittable' => $orderIsSubmittable,
-       'orderWarningFields' => $orderWarningFields,
-       ]
-       )}"
-       data-tip="{if ! $orderIsSubmittable}{$translations['packetSubmissionNotPossible']}{else}{$translations['setAdditionalPacketInfo']}{/if}"
-    ></a>
-    <a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable}hidden{/if}"
-       title="{$translations['submitToPacketa']}"
-       href="{$packetSubmitUrl}"
-    ></a>
+	<a data-packetery-order-inline-edit
+	   class="button woocommerce-help-tip dashicons {if $orderIsSubmittable}dashicons-edit{else}dashicons-warning{/if}"
+	   data-order-data="{= json_encode(
+	   [
+	   'id' => $order->getNumber(),
+	   'custom_number' => $order->getCustomNumber(),
+	   'packetery_weight' => $order->getFinalWeight(),
+	   'packetery_original_weight' => $order->getFinalWeight(),
+	   'packetery_length' => $order->getLength(),
+	   'packetery_width' => $order->getWidth(),
+	   'packetery_height' => $order->getHeight(),
+	   'packetery_adult_content' => $order->containsAdultContent(),
+	   'requiresSizeDimensions' => $order->getCarrier()->requiresSize(),
+	   'hasCod' => $order->hasCod(),
+	   'hasDeliverOn' => $order->isPacketaInternalPickupPoint(),
+	   'allowsAdultContent' => $order->allowsAdultContent(),
+	   'packetery_COD' => $order->getCod(),
+	   'packetery_value' => $order->getValue(),
+	   'packetery_deliver_on' => $packetDeliverOn,
+	   'packeteryDeliverOnClass' => $order->isPacketaInternalPickupPoint() ? '' : 'packetery-hidden ',
+	   'manualWeightIconExtraClass' => $order->hasManualWeight() ? '' : 'packetery-hidden ',
+	   'hasToFillCustomsDeclaration' => $order->hasToFillCustomsDeclaration(),
+	   'orderIsSubmittable' => $orderIsSubmittable,
+	   'orderWarningFields' => $orderWarningFields,
+	   ]
+	   )}"
+	   data-tip="{if ! $orderIsSubmittable}{$translations['packetSubmissionNotPossible']}{else}{$translations['setAdditionalPacketInfo']}{/if}"
+	></a>
+	<a class="button dashicons dashicons-upload packetery-submit-button-inline {if ! $orderIsSubmittable}hidden{/if}"
+	   title="{$translations['submitToPacketa']}"
+	   href="{$packetSubmitUrl}"
+	></a>
 {/if}
 
 {if null !== $order->getLastApiErrorMessage() && $order->getLastApiErrorDateTime() > $Helper::now()->modify( $logPurgerDatetimeModifier )}
-    <span class="dashicons dashicons-warning attention" title="{$translations['lastErrorFromApi']}:&#13;{$order->getLastApiErrorMessage()}"></span>
+	<span class="dashicons dashicons-warning attention" title="{$translations['lastErrorFromApi']}:&#13;{$order->getLastApiErrorMessage()}"></span>
 {/if}

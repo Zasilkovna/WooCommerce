@@ -1,92 +1,92 @@
 <script type="text/template" id="tmpl-wc-packetery-modal-view-order">
-    <div class="wc-backbone-modal" data-packetery-modal>
-        {form $form, 'id' => 'order-modal-edit-form', 'data-order-id' => "{{ data.order.id }}", 'data-nonce' => $nonce, 'data-order-save-url' => $orderSaveUrl}
-            <div class="wc-backbone-modal-content">
-                <section class="wc-backbone-modal-main" role="main">
-                    <header class="wc-backbone-modal-header">
-                        <h1>{php esc_html_e( sprintf( $translations['order#%s'], '{{ data.order.custom_number }}' ) )}</h1>
-                        <div class="modal-close modal-close-link dashicons dashicons-no-alt">
-                            <span class="screen-reader-text">{$translations['closeModalPanel']}</span>
-                        </div>
-                    </header>
-                    <div class="notice is-dismissible hidden">
-                        <p></p>
-                        <button type="button" class="notice-dismiss">
-                            <span class="screen-reader-text"></span>
-                        </button>
-                    </div>
-                    <article>
-                        <div class="wc-order-preview-table-wrapper">
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <td>{label packetery_weight /}
-                                        <span title="{$translations['weightIsManual']}" class="{{ data.order.manualWeightIconExtraClass }}dashicons dashicons-lock"></span>
-                                    </td>
-                                    <td>
-                                        {input packetery_weight value:'{{ data.order.packetery_weight }}'}
-                                        {input packetery_original_weight value:'{{ data.order.packetery_original_weight }}'}
-                                    </td>
-                                </tr>
-                                <# if (data.order.requiresSizeDimensions) { #>
-                                <tr>
-                                    <td>{label packetery_length /}</td>
-                                    <td>{input packetery_length value:'{{ data.order.packetery_length }}'}</td>
-                                </tr>
-                                <tr>
-                                    <td>{label packetery_width /}</td>
-                                    <td>{input packetery_width value:'{{ data.order.packetery_width }}'}</td>
-                                </tr>
-                                <tr>
-                                    <td>{label packetery_height /}</td>
-                                    <td>{input packetery_height value:'{{ data.order.packetery_height }}'}</td>
-                                </tr>
-                                <# } #>
-                                <# if ( data.order.allowsAdultContent ) { #>
-                                <tr>
-                                    <td>{label packetery_adult_content: /}</td>
-                                    <td>
-                                        <input type="checkbox" name="packetery_adult_content"
-                                        <# if ( data.order.packetery_adult_content ) { #>
-                                        checked
-                                        <# } #>
-                                        >
-                                    </td>
-                                </tr>
-                                <# } #>
-                                <# if ( data.order.hasCod ) { #>
-                                <tr>
-                                    <td>{label packetery_COD /}</td>
-                                    <td>{input packetery_COD value:'{{ data.order.packetery_COD }}'}</td>
-                                </tr>
-                                <# } #>
-                                <tr>
-                                    <td>{label packetery_value /}</td>
-                                    <td>{input packetery_value value:'{{ data.order.packetery_value }}'}</td>
-                                </tr>
-                                <# if ( data.order.hasDeliverOn ) { #>
-                                <tr class="{{ data.order.packeteryDeliverOnClass }}">
-                                    <td>{label packetery_deliver_on /}</td>
-                                    <td>{input packetery_deliver_on value:'{{ data.order.packetery_deliver_on }}'}</td>
-                                </tr>
-                                <# } #>
-                                </tbody>
-                            </table>
-                        </div>
-                    </article>
-                    <footer>
-                        <div class="inner">
-                            <div id="publishing-action">
-                                <span class="spinner"></span>
-                                {* TODO: button-sencondary doesn't exist, fixing the typo has no effect on code. Needs to be investigated. *}
-                                {input cancel, 'class' => 'button button-sencondary button-large modal-close modal-close-link'}
-                                {input submit, 'class' => 'button button-primary button-large'}
-                            </div>
-                        </div>
-                    </footer>
-                </section>
-            </div>
-        {/form}
-    </div>
-    <div class="wc-backbone-modal-backdrop modal-close"></div>
+	<div class="wc-backbone-modal" data-packetery-modal>
+		{form $form, 'id' => 'order-modal-edit-form', 'data-order-id' => "{{ data.order.id }}", 'data-nonce' => $nonce, 'data-order-save-url' => $orderSaveUrl}
+			<div class="wc-backbone-modal-content">
+				<section class="wc-backbone-modal-main" role="main">
+					<header class="wc-backbone-modal-header">
+						<h1>{php esc_html_e( sprintf( $translations['order#%s'], '{{ data.order.custom_number }}' ) )}</h1>
+						<div class="modal-close modal-close-link dashicons dashicons-no-alt">
+							<span class="screen-reader-text">{$translations['closeModalPanel']}</span>
+						</div>
+					</header>
+					<div class="notice is-dismissible hidden">
+						<p></p>
+						<button type="button" class="notice-dismiss">
+							<span class="screen-reader-text"></span>
+						</button>
+					</div>
+					<article>
+						<div class="wc-order-preview-table-wrapper">
+							<table>
+								<tbody>
+								<tr>
+									<td>{label packetery_weight /}
+										<span title="{$translations['weightIsManual']}" class="{{ data.order.manualWeightIconExtraClass }}dashicons dashicons-lock"></span>
+									</td>
+									<td>
+										{input packetery_weight value:'{{ data.order.packetery_weight }}'}
+										{input packetery_original_weight value:'{{ data.order.packetery_original_weight }}'}
+									</td>
+								</tr>
+								<# if (data.order.requiresSizeDimensions) { #>
+								<tr>
+									<td>{label packetery_length /}</td>
+									<td>{input packetery_length value:'{{ data.order.packetery_length }}'}</td>
+								</tr>
+								<tr>
+									<td>{label packetery_width /}</td>
+									<td>{input packetery_width value:'{{ data.order.packetery_width }}'}</td>
+								</tr>
+								<tr>
+									<td>{label packetery_height /}</td>
+									<td>{input packetery_height value:'{{ data.order.packetery_height }}'}</td>
+								</tr>
+								<# } #>
+								<# if ( data.order.allowsAdultContent ) { #>
+								<tr>
+									<td>{label packetery_adult_content: /}</td>
+									<td>
+										<input type="checkbox" name="packetery_adult_content"
+										<# if ( data.order.packetery_adult_content ) { #>
+										checked
+										<# } #>
+										>
+									</td>
+								</tr>
+								<# } #>
+								<# if ( data.order.hasCod ) { #>
+								<tr>
+									<td>{label packetery_COD /}</td>
+									<td>{input packetery_COD value:'{{ data.order.packetery_COD }}'}</td>
+								</tr>
+								<# } #>
+								<tr>
+									<td>{label packetery_value /}</td>
+									<td>{input packetery_value value:'{{ data.order.packetery_value }}'}</td>
+								</tr>
+								<# if ( data.order.hasDeliverOn ) { #>
+								<tr class="{{ data.order.packeteryDeliverOnClass }}">
+									<td>{label packetery_deliver_on /}</td>
+									<td>{input packetery_deliver_on value:'{{ data.order.packetery_deliver_on }}'}</td>
+								</tr>
+								<# } #>
+								</tbody>
+							</table>
+						</div>
+					</article>
+					<footer>
+						<div class="inner">
+							<div id="publishing-action">
+								<span class="spinner"></span>
+								{* TODO: button-sencondary doesn't exist, fixing the typo has no effect on code. Needs to be investigated. *}
+								{input cancel, 'class' => 'button button-sencondary button-large modal-close modal-close-link'}
+								{input submit, 'class' => 'button button-primary button-large'}
+							</div>
+						</div>
+					</footer>
+				</section>
+			</div>
+		{/form}
+	</div>
+	<div class="wc-backbone-modal-backdrop modal-close"></div>
 </script>
