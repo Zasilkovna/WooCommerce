@@ -11,8 +11,6 @@ parameters:
         active: false
 
 services:
-	# Debug mode is resolved during plugin bootstrap using PACKETERY_DEBUG constant
-	- Packetery\Module\DebugModeChecker(debugMode: %debugMode%)
 	- Packetery\Module\Framework\WpAdapter
 	- Packetery\Module\Framework\WcAdapter
 	- Packetery\Module\Order\MetaboxesWrapper

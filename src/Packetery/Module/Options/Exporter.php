@@ -13,8 +13,8 @@ use Packetery\Core\Log\ILogger;
 use Packetery\Latte\Engine;
 use Packetery\Module;
 use Packetery\Module\Carrier\CountryListingPage;
-use Packetery\Module\DebugModeChecker;
 use Packetery\Nette\Http;
+use Packetery\Tracy\Debugger;
 
 /**
  * Class Exporter
@@ -62,13 +62,6 @@ class Exporter {
 	private $logger;
 
 	/**
-	 * Debug mode checker.
-	 *
-	 * @var DebugModeChecker
-	 */
-	private $debugModeChecker;
-
-	/**
 	 * Exporter constructor.
 	 *
 	 * @param Http\Request       $httpRequest        Http request.
@@ -76,22 +69,19 @@ class Exporter {
 	 * @param CountryListingPage $countryListingPage Country listing page.
 	 * @param Provider           $optionsProvider    Options provider.
 	 * @param ILogger            $logger             Logger.
-	 * @param DebugModeChecker   $debugModeChecker   Debug mode checker.
 	 */
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
 		Provider $optionsProvider,
-		ILogger $logger,
-		DebugModeChecker $debugModeChecker
+		ILogger $logger
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
 		$this->countryListingPage = $countryListingPage;
 		$this->optionsProvider    = $optionsProvider;
 		$this->logger             = $logger;
-		$this->debugModeChecker   = $debugModeChecker;
 	}
 
 	/**
@@ -134,7 +124,7 @@ class Exporter {
 			'dbServer'          => $wpdb->db_server_info(),
 			'soap'              => wc_bool_to_string( extension_loaded( 'soap' ) ),
 			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
-			'packetaDebug'      => wc_bool_to_string( $this->debugModeChecker->isDebugMode() ),
+			'packetaDebug'      => wc_bool_to_string( Debugger::isEnabled() ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
