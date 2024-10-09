@@ -17,6 +17,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory;
@@ -568,6 +569,7 @@ class CheckoutTest extends TestCase {
 			$carrierEntityRepository,
 			$this->createMock( Api\Internal\CheckoutRouter::class ),
 			$carDeliveryConfig,
+			$this->createMock(PaymentHelper::class),
 		);
 	}
 
