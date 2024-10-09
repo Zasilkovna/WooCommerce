@@ -19,22 +19,22 @@ use Packetery\Module\Order\PacketSynchronizer;
  */
 class Provider {
 
-	const OPTION_NAME_PACKETERY                 = 'packetery';
-	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
-	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
+	public const OPTION_NAME_PACKETERY                 = 'packetery';
+	public const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
+	public const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 
-	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
-	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
-	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
-	const FORCE_PACKET_CANCEL_DEFAULT               = true;
-	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
-	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
-	const AUTO_ORDER_STATUS_DEFAULT                 = '';
+	public const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
+	public const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	public const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
+	public const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
+	public const FORCE_PACKET_CANCEL_DEFAULT               = true;
+	public const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
+	public const WIDGET_AUTO_OPEN_DEFAULT                  = false;
+	public const AUTO_ORDER_STATUS_DEFAULT                 = '';
 	public const EMAIL_HOOK_DEFAULT                 = 'woocommerce_email_footer';
-	const AUTO_ORDER_STATUS                         = 'auto_order_status';
-	const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
-	const PRICES_INCLUDE_TAX_DEFAULT                = false;
+	public const AUTO_ORDER_STATUS                         = 'auto_order_status';
+	public const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
+	public const PRICES_INCLUDE_TAX_DEFAULT                = false;
 
 	/**
 	 *  Options data.
