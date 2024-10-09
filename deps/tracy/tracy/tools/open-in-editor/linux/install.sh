@@ -3,13 +3,12 @@
 # This shell script sets open-editor.sh as handler for editor:// protocol
 
 matches=0
-while read -r line
-do
+while read -r line; do
 	if [ "editor=" == "${line:0:7}" ]; then
 		matches=1
 		break
 	fi
-done < "open-editor.sh"
+done <"open-editor.sh"
 
 if [ "$matches" == "0" ]; then
 	echo -e "\e[31;1mError: it seems like you have not set command to run your editor."
@@ -25,7 +24,7 @@ Exec=tracy-openeditor.sh %u
 Terminal=false
 NoDisplay=true
 Type=Application
-MimeType=x-scheme-handler/editor;" > tracy-openeditor.desktop
+MimeType=x-scheme-handler/editor;" >tracy-openeditor.desktop
 
 chmod +x open-editor.sh
 chmod +x tracy-openeditor.desktop

@@ -1,14 +1,14 @@
 parameters:
-    latteTempFolder: %tempDir%/cache/view
-    surveyConfig:
-        active: true
-        validTo: 2023-03-31 23:59:59
-        url: https://forms.office.com/e/2YjCu9ZEt0
-    carDeliveryConfig:
-        sample: false
-        enabled: false
-    wcCarrierSettingsConfig:
-        active: false
+	latteTempFolder: %tempDir%/cache/view
+	surveyConfig:
+		active: true
+		validTo: 2023-03-31 23:59:59
+		url: https://forms.office.com/e/2YjCu9ZEt0
+	carDeliveryConfig:
+		sample: false
+		enabled: false
+	wcCarrierSettingsConfig:
+		active: false
 
 services:
 	- Packetery\Module\Framework\WpAdapter

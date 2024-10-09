@@ -41,7 +41,7 @@ function get_param {
 }
 
 if [[ -z "$editor" ]]; then
-	echo "You need to set the \$editor variable in file '`realpath $0`'"
+	echo "You need to set the \$editor variable in file '$(realpath $0)'"
 	exit
 fi
 
@@ -52,13 +52,13 @@ fi
 
 # Parse action and essential data from the URI.
 regex='editor\:\/\/(open|create|fix)\/?\?(.*)'
-action=`echo $url | sed -r "s/$regex/\1/i"`
-uri_params=`echo $url | sed -r "s/$regex/\2/i"`
+action=$(echo $url | sed -r "s/$regex/\1/i")
+uri_params=$(echo $url | sed -r "s/$regex/\2/i")
 
-file=`get_param $uri_params "file"`
-line=`get_param $uri_params "line"`
-search=`get_param $uri_params "search"`
-replace=`get_param $uri_params "replace"`
+file=$(get_param $uri_params "file")
+line=$(get_param $uri_params "line")
+search=$(get_param $uri_params "search")
+replace=$(get_param $uri_params "replace")
 
 # Debug?
 #echo "action '$action'"
@@ -81,7 +81,7 @@ done
 if [ "$action" == "create" ] && [[ ! -f "$file" ]]; then
 	mkdir -p $(dirname "$file")
 	touch "$file"
-	echo $replace > "$file"
+	echo $replace >"$file"
 fi
 
 # Action: Fix the file (if the file exists and while creating backup beforehand).
