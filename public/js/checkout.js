@@ -529,7 +529,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 					widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 				}
 				if ( settings.dimensions ) {
-					[ 'length', 'width', 'height' ].forEach( ( property ) => {
+					[ 'length', 'width', 'depth' ].forEach( ( property ) => {
 						if ( settings.dimensions[ property ] ) {
 							widgetOptions[ property ] = settings.dimensions[ property ];
 						}

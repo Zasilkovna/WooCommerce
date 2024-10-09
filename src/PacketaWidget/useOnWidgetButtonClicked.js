@@ -43,7 +43,7 @@ export const useOnWidgetButtonClicked = (
 			widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 		}
 		if ( dimensions ) {
-			[ 'length', 'width', 'height' ].forEach( ( property ) => {
+			[ 'length', 'width', 'depth' ].forEach( ( property ) => {
 				if ( dimensions[ property ] ) {
 					widgetOptions[ property ] = dimensions[ property ];
 				}

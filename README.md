@@ -58,7 +58,7 @@ add_filter( 'packeta_widget_dimensions', function ( array $dimensions ): array {
 	return [
 		'length' => 50,
 		'width'  => 40,
-		'height' => 30,
+		'depth' => 30,
 	];
 } );
 ```
