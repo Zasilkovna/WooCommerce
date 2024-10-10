@@ -31,10 +31,14 @@ class Provider {
 	public const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
 	public const WIDGET_AUTO_OPEN_DEFAULT                  = false;
 	public const AUTO_ORDER_STATUS_DEFAULT                 = '';
-	public const EMAIL_HOOK_DEFAULT                 = 'woocommerce_email_footer';
+	public const EMAIL_HOOK_DEFAULT                        = 'woocommerce_email_footer';
 	public const AUTO_ORDER_STATUS                         = 'auto_order_status';
 	public const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
 	public const PRICES_INCLUDE_TAX_DEFAULT                = false;
+
+	public const AUTOMATIC_CHECKOUT_DETECTION = 'automatic_checkout_detection';
+	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
+	public const CLASSIC_CHECKOUT_DETECTION   = 'classic_checkout_detection';
 
 	/**
 	 *  Options data.
@@ -210,6 +214,20 @@ class Provider {
 		$value = $this->get( 'checkout_widget_button_location' );
 		if ( ! $value ) {
 			return null;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Returns which checkout detection to return
+	 *
+	 * @return string
+	 */
+	public function getCheckoutDetection(): string {
+		$value = $this->get( 'checkout_detection' );
+		if ( ! $value ) {
+			return 'automatic_checkout_detection';
 		}
 
 		return $value;
