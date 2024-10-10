@@ -371,6 +371,13 @@ class Checkout {
 		 */
 		$widgetWeight = (float) apply_filters( 'packeta_widget_weight', $this->getCartWeightKg() );
 
+		/**
+		 * Possibility to pass dimensions in centimeters to widget.
+		 *
+		 * @since 1.8.2
+		 */
+		$dimensions = (array) apply_filters( 'packeta_widget_dimensions', [] );
+
 		return [
 			/**
 			 * Filter widget language in checkout.
@@ -400,6 +407,7 @@ class Checkout {
 			'adminAjaxUrl'               => admin_url( 'admin-ajax.php' ),
 			'nonce'                      => wp_create_nonce( 'wp_rest' ),
 			'savedData'                  => get_transient( $this->getTransientNamePacketaCheckoutData() ),
+			'dimensions'                 => $dimensions,
 			'translations'               => [
 				'packeta'                       => __( 'Packeta', 'packeta' ),
 				'choosePickupPoint'             => __( 'Choose pickup point', 'packeta' ),
