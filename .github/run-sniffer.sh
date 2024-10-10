@@ -16,8 +16,8 @@ echo "➤ Running sniffer:"
 ./vendor/bin/phpcs -s | tee /tmp/sniffer.log
 
 if grep -q '| ERROR' /tmp/sniffer.log; then
-  echo "🛑 Sniffer found errors, fix them."
-  exit 1
+	echo "🛑 Sniffer found errors, fix them."
+	exit 1
 fi
 
 echo "✓ All checked."

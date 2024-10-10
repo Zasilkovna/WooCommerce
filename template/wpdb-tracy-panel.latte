@@ -1,34 +1,34 @@
 <h1>DB queries</h1>
 <div class="tracy-inner">
-    <div class="tracy-inner-container">
-        <table class="tracy-sortable">
-            <thead>
-                <tr>
-                    <th>Query</th>
-                    <th>Function list</th>
-                    <th>Time spent (ms)</th>
-                </tr>
-            </thead>
-            <tbody>
-            {foreach $queries as $queryInfo}
-                {if false === $queryInfo}
-                    <tr>
-                        <td colspan="3">Query count exceeded</td>
-                    </tr>
-                    {php break;}
-                {/if}
+	<div class="tracy-inner-container">
+		<table class="tracy-sortable">
+			<thead>
+			<tr>
+				<th>Query</th>
+				<th>Function list</th>
+				<th>Time spent (ms)</th>
+			</tr>
+			</thead>
+			<tbody>
+			{foreach $queries as $queryInfo}
+				{if false === $queryInfo}
+					<tr>
+						<td colspan="3">Query count exceeded</td>
+					</tr>
+					{php break;}
+				{/if}
 
-                <tr>
-                    <td>{$queryInfo['query']}</td>
-                    <td>{$queryInfo['funcList']}</td>
-                    <td>{$queryInfo['timeSpent']|number:1, '.', ''}</td>
-                </tr>
-            {else}
-                <tr>
-                    <td colspan="3">None found. Do you have SAVEQUERIES constant set to true in wp-config.php?</td>
-                </tr>
-            {/foreach}
-            </tbody>
-        </table>
-    </div>
+				<tr>
+					<td>{$queryInfo['query']}</td>
+					<td>{$queryInfo['funcList']}</td>
+					<td>{$queryInfo['timeSpent']|number:1, '.', ''}</td>
+				</tr>
+			{else}
+				<tr>
+					<td colspan="3">None found. Do you have SAVEQUERIES constant set to true in wp-config.php?</td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>
+	</div>
 </div>

@@ -2,88 +2,88 @@
 {varType bool $isCodPayment}
 
 <div data-packetery-order-metabox>
-{formContext $form}
-        <div class="packetery-table">
-            <input n:name=packetery_order_metabox_nonce />
-            <input n:name=packetery_original_weight />
-            {foreach [
-                Packetery\Module\Order\Form::FIELD_WEIGHT,
-                Packetery\Module\Order\Form::FIELD_LENGTH,
-                Packetery\Module\Order\Form::FIELD_WIDTH,
-                Packetery\Module\Order\Form::FIELD_HEIGHT,
-                Packetery\Module\Order\Form::FIELD_ADULT_CONTENT,
-                Packetery\Module\Order\Form::FIELD_COD,
-                Packetery\Module\Order\Form::FIELD_VALUE,
-            ] as $inputName}
-                {continueIf $inputName === Packetery\Module\Order\Form::FIELD_COD && false === $isCodPayment}
-                {continueIf $inputName === Packetery\Module\Order\Form::FIELD_ADULT_CONTENT && false === $allowsAdultContent}
-                {continueIf in_array($inputName, [
-                    Packetery\Module\Order\Form::FIELD_LENGTH,
-                    Packetery\Module\Order\Form::FIELD_WIDTH,
-                    Packetery\Module\Order\Form::FIELD_HEIGHT
-                ]) && false === $requiresSizeDimensions}
+	{formContext $form}
+		<div class="packetery-table">
+			<input n:name=packetery_order_metabox_nonce />
+			<input n:name=packetery_original_weight />
+			{foreach [
+			Packetery\Module\Order\Form::FIELD_WEIGHT,
+			Packetery\Module\Order\Form::FIELD_LENGTH,
+			Packetery\Module\Order\Form::FIELD_WIDTH,
+			Packetery\Module\Order\Form::FIELD_HEIGHT,
+			Packetery\Module\Order\Form::FIELD_ADULT_CONTENT,
+			Packetery\Module\Order\Form::FIELD_COD,
+			Packetery\Module\Order\Form::FIELD_VALUE,
+			] as $inputName}
+				{continueIf $inputName === Packetery\Module\Order\Form::FIELD_COD && false === $isCodPayment}
+				{continueIf $inputName === Packetery\Module\Order\Form::FIELD_ADULT_CONTENT && false === $allowsAdultContent}
+				{continueIf in_array($inputName, [
+				Packetery\Module\Order\Form::FIELD_LENGTH,
+				Packetery\Module\Order\Form::FIELD_WIDTH,
+				Packetery\Module\Order\Form::FIELD_HEIGHT
+				]) && false === $requiresSizeDimensions}
 
-                {var $suffix = ''}
-                {if in_array( $inputName, [ Packetery\Module\Order\Form::FIELD_COD, Packetery\Module\Order\Form::FIELD_VALUE ] )}
-                    {var $suffix = "($orderCurrency)"}
-                {elseif $inputName === Packetery\Module\Order\Form::FIELD_WEIGHT && $hasOrderManualWeight}
-                    {var $suffix = sprintf('<span title="%s" class="dashicons dashicons-lock"></span>', $translations['weightIsManual'])}
-                {/if}
+				{var $suffix = ''}
+				{if in_array( $inputName, [ Packetery\Module\Order\Form::FIELD_COD, Packetery\Module\Order\Form::FIELD_VALUE ] )}
+					{var $suffix = "($orderCurrency)"}
+				{elseif $inputName === Packetery\Module\Order\Form::FIELD_WEIGHT && $hasOrderManualWeight}
+					{var $suffix = sprintf('<span title="%s" class="dashicons dashicons-lock"></span>', $translations['weightIsManual'])}
+				{/if}
 
-                <div class="packetery-table-row">
-                    <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                        <label n:name=$inputName /> {$suffix|noescape}
-                    </div>
+				<div class="packetery-table-row">
+					<div class="packetery-table-cell packetery-order-metabox-label-cell">
+						<label n:name=$inputName /> {$suffix|noescape}
+					</div>
 
-                    <div class="packetery-table-cell">
-                        <input class="packetery-order-metabox-input{if in_array($inputName, $orderWarningFields, true)} packetery-has-warning{/if}" n:name=$inputName />
-                    </div>
-                </div>
-            {/foreach}
-            {if $isPacketaPickupPoint}
-                <div class="packetery-table-row">
-                    <div class="packetery-table-cell packetery-order-metabox-label-cell">
-                        <label n:name='packetery_deliver_on' />
-                    </div>
-                    <div class="packetery-table-cell">
-                        <input n:name='packetery_deliver_on' class="date-picker packetery-order-metabox-input">
-                    </div>
-                </div>
-            {/if}
-        </div>
-        {if $widgetButtonError}
-            <div class="packeta-metabox-notice">
-                <p>
-                    {$widgetButtonError}
-                </p>
-            </div>
-        {/if}
-        {if $showWidgetButton}
-            {foreach Packetery\Module\Order\Attribute::$pickupPointAttrs as $attr}
-                <input n:name=$attr[name] />
-            {/foreach}
-            <div id="packetery-widget-button-wrapper">
-                <div class="packetery-widget-button-row">
-                    <img src="{$logo}">
-                    <button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_pickup_point >{$form[packetery_pick_pickup_point]->getCaption()}</button>
-                </div>
-                <span data-packetery-widget-info></span>
-            </div>
-        {/if}
+					<div class="packetery-table-cell">
+						<input class="packetery-order-metabox-input{if in_array($inputName, $orderWarningFields, true)} packetery-has-warning{/if}" n:name=$inputName />
+					</div>
+				</div>
+			{/foreach}
+			{if $isPacketaPickupPoint}
+				<div class="packetery-table-row">
+					<div class="packetery-table-cell packetery-order-metabox-label-cell">
+						<label n:name='packetery_deliver_on' />
+					</div>
+					<div class="packetery-table-cell">
+						<input n:name='packetery_deliver_on' class="date-picker packetery-order-metabox-input">
+					</div>
+				</div>
+			{/if}
+		</div>
+		{if $widgetButtonError}
+			<div class="packeta-metabox-notice">
+				<p>
+					{$widgetButtonError}
+				</p>
+			</div>
+		{/if}
+		{if $showWidgetButton}
+			{foreach Packetery\Module\Order\Attribute::$pickupPointAttrs as $attr}
+				<input n:name=$attr[name] />
+			{/foreach}
+			<div id="packetery-widget-button-wrapper">
+				<div class="packetery-widget-button-row">
+					<img src="{$logo}">
+					<button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_pickup_point >{$form[packetery_pick_pickup_point]->getCaption()}</button>
+				</div>
+				<span data-packetery-widget-info></span>
+			</div>
+		{/if}
 
-        {if $showHdWidget}
-            {foreach Packetery\Module\Order\Attribute::$homeDeliveryAttrs as $attr}
-                <input n:name=$attr[name] />
-            {/foreach}
-            <div id="packetery-widget-button-wrapper">
-                <div class="packetery-widget-button-row">
-                    <img src="{$logo}">
-                    <button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_address >{$form[packetery_pick_address]->getCaption()}</button>
-                </div>
-                <span data-packetery-widget-info></span>
-            </div>
-        {/if}
-{/formContext}
+		{if $showHdWidget}
+			{foreach Packetery\Module\Order\Attribute::$homeDeliveryAttrs as $attr}
+				<input n:name=$attr[name] />
+			{/foreach}
+			<div id="packetery-widget-button-wrapper">
+				<div class="packetery-widget-button-row">
+					<img src="{$logo}">
+					<button class="packetery-order-metabox-input button button-secondary" n:name=packetery_pick_address >{$form[packetery_pick_address]->getCaption()}</button>
+				</div>
+				<span data-packetery-widget-info></span>
+			</div>
+		{/if}
+	{/formContext}
 
 {include 'metabox-common.latte'}
 </div>
