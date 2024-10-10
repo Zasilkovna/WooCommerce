@@ -569,7 +569,7 @@ class CheckoutTest extends TestCase {
 			$carrierEntityRepository,
 			$this->createMock( Api\Internal\CheckoutRouter::class ),
 			$carDeliveryConfig,
-			$this->createMock(PaymentHelper::class),
+			$this->createMock( PaymentHelper::class ),
 		);
 	}
 
