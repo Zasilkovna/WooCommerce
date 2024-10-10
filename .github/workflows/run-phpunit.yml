@@ -6,12 +6,12 @@ on:
   pull_request:
 
 jobs:
-  phpstan:
+  phpunit:
     runs-on: ubuntu-24.04
 
     strategy:
       matrix:
-        php-version: ['8.3']
+        php-version: ['8.1']
 
     steps:
       - name: Checkout code
@@ -28,10 +28,6 @@ jobs:
         run: php -v
 
       - name: Install Composer dependencies
-        run: composer install
-
-      - name: Install Composer dev dependencies
-        working-directory: phpstan
         run: composer install
 
       - name: Run PHPUnit
