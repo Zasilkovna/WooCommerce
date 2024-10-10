@@ -18,8 +18,8 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order\CarrierModal;
+use Packetery\Module\Order\StoredUntilModal;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -296,6 +296,13 @@ class Plugin {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Stored until modal.
+	 *
+	 * @var StoredUntilModal
+	 */
+	private $storedUntilModal;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -334,6 +341,7 @@ class Plugin {
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
 	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param StoredUntilModal           $storedUntilModal          Stored until modal.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -371,7 +379,8 @@ class Plugin {
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
 		CarrierModal $carrierModal,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		StoredUntilModal $storedUntilModal
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -410,6 +419,7 @@ class Plugin {
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
+		$this->storedUntilModal          = $storedUntilModal;
 	}
 
 	/**
@@ -488,6 +498,21 @@ class Plugin {
 		add_action( 'manage_shop_order_posts_custom_column', [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 		add_action( sprintf( 'manage_%s_custom_column', $orderListScreenId ), [ $this->gridExtender, 'fillCustomOrderListColumns' ], 10, 2 );
 
+		add_filter(
+			'manage_edit-shop_order_sortable_columns',
+			[
+				$this->gridExtender,
+				'makeOrderListSpecificColumnsSortable',
+			]
+		);
+		add_filter(
+			sprintf( 'manage_%s_sortable_columns', $orderListScreenId ),
+			[
+				$this->gridExtender,
+				'makeOrderListSpecificColumnsSortable',
+			]
+		);
+
 		if ( ! wp_doing_ajax() ) {
 			add_action( 'admin_menu', [ $this, 'add_menu_pages' ] );
 			add_action( 'admin_head', [ $this->labelPrint, 'hideFromMenus' ] );
@@ -496,6 +521,7 @@ class Plugin {
 			$this->orderModal->register();
 			$this->labelPrintModal->register();
 			$this->metaboxesWrapper->register();
+			$this->storedUntilModal->register();
 		}
 
 		$this->checkout->register_hooks();
@@ -926,6 +952,10 @@ class Plugin {
 			$this->enqueueScript( 'packetery-admin-grid-order-edit-js', 'public/js/admin-grid-order-edit.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'datePickerSettings', $datePickerSettings );
 			wp_localize_script( 'packetery-admin-grid-order-edit-js', 'settings', $orderGridPageSettings );
+
+			$this->enqueueScript( 'packetery-admin-stored-until-modal-js', 'public/js/admin-stored-until-modal.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $datePickerSettings );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
 		$pickupPointPickerSettings = null;
@@ -937,6 +967,15 @@ class Plugin {
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
 			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();
+
+			$detailPageSettings = [
+				'translations' => [
+					'packetSubmissionNotPossible' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
+				],
+			];
+			$this->enqueueScript( 'packetery-admin-stored-until-modal-js', 'public/js/admin-stored-until-modal.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $detailPageSettings );
+			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
 		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
