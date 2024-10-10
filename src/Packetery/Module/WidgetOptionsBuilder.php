@@ -12,7 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 
 /**
  * Class WidgetOptionsBuilder
@@ -31,22 +31,22 @@ class WidgetOptionsBuilder {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
-	private $featureFlag;
+	private $featureFlagProvider;
 
 	/**
 	 * WidgetOptionsBuilder constructor.
 	 *
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param FeatureFlagManager        $featureFlag        Feature flag.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig  Internal pickup points config.
+	 * @param FeatureFlagProvider       $featureFlagProvider Feature flag.
 	 */
 	public function __construct(
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag
+		FeatureFlagProvider $featureFlagProvider
 	) {
-		$this->pickupPointsConfig = $pickupPointsConfig;
-		$this->featureFlag        = $featureFlag;
+		$this->pickupPointsConfig  = $pickupPointsConfig;
+		$this->featureFlagProvider = $featureFlagProvider;
 	}
 
 	/**
@@ -124,7 +124,7 @@ class WidgetOptionsBuilder {
 
 		$carrierOption = get_option( $optionId );
 		if ( $carrier->hasPickupPoints() ) {
-			if ( $this->featureFlag->isSplitActive() ) {
+			if ( $this->featureFlagProvider->isSplitActive() ) {
 				$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
 					$carrier->getId(),
 					$carrier->getCountry(),
@@ -162,7 +162,7 @@ class WidgetOptionsBuilder {
 			'weight'      => $order->getFinalWeight(),
 		];
 
-		if ( $this->featureFlag->isSplitActive() ) {
+		if ( $this->featureFlagProvider->isSplitActive() ) {
 			// In backend, we want all pickup points in that country for Packeta carrier.
 			if ( $order->getCarrier()->getId() !== Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 				$widgetOptions['vendors'] = $this->getWidgetVendorsParam(
