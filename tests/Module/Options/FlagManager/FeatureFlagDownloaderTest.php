@@ -7,6 +7,7 @@ namespace Tests\Module\Options\FlagManager;
 use DateTimeImmutable;
 use DateTimeZone;
 use Packetery\Core\Helper;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\FlagManager\FeatureFlagDownloader;
 use Packetery\Module\Options\FlagManager\FeatureFlagStorage;
 use Packetery\Module\Options\Provider;
@@ -132,6 +133,8 @@ class FeatureFlagDownloaderTest extends TestCase {
 				'features' => $dataFromApi,
 			] ) );
 
+		$wcAdapter = $this->createMock( WcAdapter::class );
+
 		$storageMock = $this->createMock( FeatureFlagStorage::class );
 		$storageMock
 			->expects( $this->exactly( $getFromStorageCount ) )
@@ -141,6 +144,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 		$downloader = new FeatureFlagDownloader(
 			$optionsProvider,
 			$wpAdapter,
+			$wcAdapter,
 			$storageMock,
 		);
 
