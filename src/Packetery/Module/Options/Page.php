@@ -503,6 +503,16 @@ class Page {
 					->setRequired( false );
 
 		$container->addSelect(
+			'checkout_detection',
+			__( 'Force checkout type', 'packeta' ),
+			[
+				Provider::AUTOMATIC_CHECKOUT_DETECTION => __( 'Automatic detection', 'packeta' ),
+				Provider::CLASSIC_CHECKOUT_DETECTION   => __( 'Classic checkout', 'packeta' ),
+				Provider::BLOCK_CHECKOUT_DETECTION     => __( 'Block-based checkout', 'packeta' ),
+			]
+		);
+
+		$container->addSelect(
 			'checkout_widget_button_location',
 			__( 'Widget button location in checkout', 'packeta' ),
 			[
@@ -799,6 +809,7 @@ class Page {
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
 			'defaultDimensionsDescription'           => __( 'These dimensions will be applied to the packet by default, if required by the carrier.', 'packeta' ),
+			'setCheckoutDetectionDescription'        => __( 'If you have trouble displaying the widget button in the checkout, you can force what type of checkout you are using.', 'packeta' ),
 			'packetStatusSyncTabLinkLabel'           => __( 'Packet status tracking', 'packeta' ),
 			'statusSyncingOrderStatusesLabel'        => __( 'Order statuses, for which cron will check the packet status', 'packeta' ),
 			'statusSyncingOrderStatusesDescription'  => __( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),
