@@ -1,87 +1,87 @@
 .packeta-widget-button {
-	display: flex;
-	cursor: pointer;
+  display: flex;
+  cursor: pointer;
 }
 .packeta-widget-button img {
-	width: 45px;
-	margin-right: 5px;
+  width: 45px;
+  margin-right: 5px;
 }
 
 .blocks .packeta-widget-button img {
-	width: auto;
-	max-width: 3em;
-	margin-right: 1em;
+  width: auto;
+  max-width: 3em;
+  margin-right: 1em;
 }
 
 .packetery-widget-button-wrapper .packeta-widget-info-error {
-	color: red;
+  color: red;
 }
 .packetery-widget-button-wrapper .packeta-widget-info-success {
-	color: green;
+  color: green;
 }
 .packetery-widget-button-wrapper p {
-	margin-bottom: 0;
+  margin-bottom: 0;
 }
 .packetery-widget-button-wrapper .wc-block-components-text-input input {
-	opacity: 0;
-	width: 0 !important;
-	padding: 0 !important;
-	float: left;
+  opacity: 0;
+  width: 0 !important;
+  padding: 0 !important;
+  float: left;
 }
 
 .packetery-widget-button-table-row td, .packetery-widget-button-table-row th {
-	vertical-align: top;
+  vertical-align: top;
 }
 .packetery-widget-button-table-row td {
-	vertical-align: top;
+  vertical-align: top;
 }
 .packetery-widget-button-table-row td .form-row {
-	padding: 0;
+  padding: 0;
 }
 .packetery-widget-button-table-row .packeta-widget.table-row img {
-	display: none;
+  display: none;
 }
 .packetery-widget-button-table-row th img {
-	width: 45px;
-	height: 45px;
-	display: block;
-	margin-left: auto;
+  width: 45px;
+  height: 45px;
+  display: block;
+  margin-left: auto;
 }
 
 .packeta-widget.after-rate .packeta-widget-button {
-	display: inline-grid;
+  display: inline-grid;
 }
 .packeta-widget.after-rate .packeta-widget-button img, .packeta-widget.after-rate .packeta-widget-button button, .packeta-widget.after-rate .packeta-widget-button a.button {
-	width: 150px;
+  width: 150px;
 }
 .packeta-widget.after-rate .packeta-widget-button img {
-	margin: 0;
+  margin: 0;
 }
 
 .packeta-widget.table-row .packeta-widget-button img {
-	width: 45px;
-	height: 45px;
+  width: 45px;
+  height: 45px;
 }
 
 body .packeta-widget div.packeta-widget-button.packetery-widget-button-row button.button.alt, body .packeta-widget div.packeta-widget-button.packetery-widget-button-row a.button.alt {
-	text-align: center;
+  text-align: center;
 }
 
 .shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row {
-	justify-content: left;
+  justify-content: left;
 }
 .shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row .packeta-widget.table-row .packeta-widget-info {
-	text-align: left;
+  text-align: left;
 }
 .shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row .packeta-widget.table-row .packeta-widget-selected-address {
-	text-align: left;
+  text-align: left;
 }
 .shopengine-widget .shopengine-checkout-review-order .woocommerce-checkout-review-order-table tr.packetery-widget-button-table-row img {
-	margin-right: 5px;
+  margin-right: 5px;
 }
 
 .packetery-hidden {
-	display: none !important;
+  display: none !important;
 }
 
 /*# sourceMappingURL=front.css.map */
