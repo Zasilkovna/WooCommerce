@@ -2,28 +2,28 @@
 
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
-         backupGlobals="false"
-         colors="true"
+		 xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
+		 backupGlobals="false"
+		 colors="true"
 		 displayDetailsOnTestsThatTriggerWarnings="true"
-         bootstrap="tests/bootstrap.php"
+		 bootstrap="tests/bootstrap.php"
 >
-    <php>
-        <ini name="error_reporting" value="-1"/>
-        <server name="APP_ENV" value="test" force="true"/>
-    </php>
+	<php>
+		<ini name="error_reporting" value="-1"/>
+		<server name="APP_ENV" value="test" force="true"/>
+	</php>
 
-    <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
+	<testsuites>
+		<testsuite name="Project Test Suite">
+			<directory>tests</directory>
+		</testsuite>
+	</testsuites>
 
-    <coverage/>
+	<coverage/>
 
-    <source>
-        <include>
-            <directory>src/Packetery</directory>
-        </include>
-    </source>
+	<source>
+		<include>
+			<directory>src/Packetery</directory>
+		</include>
+	</source>
 </phpunit>
