@@ -227,7 +227,7 @@ class Provider {
 	public function getCheckoutDetection(): string {
 		$value = $this->get( 'checkout_detection' );
 		if ( ! $value ) {
-			return 'automatic_checkout_detection';
+			return self::AUTOMATIC_CHECKOUT_DETECTION;
 		}
 
 		return $value;
