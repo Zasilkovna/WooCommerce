@@ -94,12 +94,12 @@ class PacketaPickupPointsConfig {
 	/**
 	 * Gets vendor carriers settings.
 	 *
-	 * @param bool $alwaysReturn Set true to get vendor carriers if split is disabled.
+	 * @param bool $forceReturnVendorCarriers Set true to get vendor carriers if split is disabled.
 	 *
 	 * @return VendorProvider[]
 	 */
-	public function getVendorCarriers( bool $alwaysReturn = false ): array {
-		if ( ! $alwaysReturn && ! $this->featureFlag->isSplitActive() ) {
+	public function getVendorCarriers( bool $forceReturnVendorCarriers = false ): array {
+		if ( ! $forceReturnVendorCarriers && ! $this->featureFlag->isSplitActive() ) {
 			return [];
 		}
 
