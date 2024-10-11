@@ -1157,11 +1157,12 @@ class Plugin {
 	 */
 	public function addShippingMethods( array $methods ): array {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
-			$methods = $this->shippingProvider->addMethods( $methods );
-			$methods = $this->shippingProvider->sortMethods( $methods );
-		} else {
-			$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
+			$unsortedMethods = $this->shippingProvider->addMethods( $methods );
+
+			return $this->shippingProvider->sortMethods( $unsortedMethods );
 		}
+
+		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 
 		return $methods;
 	}
