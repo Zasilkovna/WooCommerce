@@ -707,7 +707,7 @@ class Checkout {
 			return false;
 		}
 
-		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
+		if ( $this->wpAdapter->hasBlock( 'woocommerce/checkout', $this->wpAdapter->getPostField( 'post_content', $this->wcAdapter->getPageId( 'checkout' ) ) ) ) {
 			return true;
 		}
 

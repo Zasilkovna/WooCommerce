@@ -21,6 +21,8 @@ class WpAdapter {
 	use HookTrait;
 	use HttpTrait;
 	use TransientTrait;
+	use BlocksTrait;
+	use PostTrait;
 
 	/**
 	 * Retrieves a modified URL query string.

@@ -18,6 +18,7 @@ class WcAdapter {
 	use WcCustomerTrait;
 	use WcCartTrait;
 	use WcTaxTrait;
+	use WcPageTrait;
 
 	/**
 	 * Converts weight from global unit to kg.
