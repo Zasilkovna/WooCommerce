@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity\Carrier;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
@@ -711,7 +711,7 @@ class OptionsPage {
 
 		$itemRules->addFilter(
 			function ( float $value ) {
-				return Helper::simplifyWeight( $value );
+				return CoreHelper::simplifyWeight( $value );
 			}
 		);
 		// translators: %d is numeric threshold.

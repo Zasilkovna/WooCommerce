@@ -6,7 +6,7 @@ namespace Tests\Module\Options\FlagManager;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\FlagManager\FeatureFlagDownloader;
 use Packetery\Module\Options\FlagManager\FeatureFlagStorage;
@@ -18,15 +18,15 @@ class FeatureFlagDownloaderTest extends TestCase {
 
 	public static function getFlagsProvider(): array {
 		$now          = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
-		$nowFormatted = $now->format( Helper::MYSQL_DATETIME_FORMAT );
+		$nowFormatted = $now->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$fresh          = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
 		$fresh          = $fresh->modify( '-2 hours' );
-		$freshFormatted = $fresh->format( Helper::MYSQL_DATETIME_FORMAT );
+		$freshFormatted = $fresh->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$old          = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
 		$old          = $old->modify( '-8 hours' );
-		$oldFormatted = $old->format( Helper::MYSQL_DATETIME_FORMAT );
+		$oldFormatted = $old->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$freshData       = [
 			'splitActive'  => false,

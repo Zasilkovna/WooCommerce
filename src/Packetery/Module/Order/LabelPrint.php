@@ -17,12 +17,12 @@ use Packetery\Core\Log;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
-use Packetery\Module;
 
 /**
  * Class LabelPrint.
@@ -99,11 +99,11 @@ class LabelPrint {
 	private $packetActionsCommonLogic;
 
 	/**
-	 * Helper.
+	 * ModuleHelper.
 	 *
-	 * @var Module\Helper
+	 * @var ModuleHelper
 	 */
-	private $helper;
+	private $moduleHelper;
 
 	/**
 	 * LabelPrint constructor.
@@ -117,7 +117,7 @@ class LabelPrint {
 	 * @param Log\ILogger              $logger                   Logger.
 	 * @param Repository               $orderRepository          Order repository.
 	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Packet actions common logic.
-	 * @param Module\Helper            $helper                   Helper.
+	 * @param ModuleHelper             $moduleHelper             ModuleHelper.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -129,7 +129,7 @@ class LabelPrint {
 		Log\ILogger $logger,
 		Repository $orderRepository,
 		PacketActionsCommonLogic $packetActionsCommonLogic,
-		Module\Helper $helper
+		ModuleHelper $moduleHelper
 	) {
 		$this->latteEngine              = $latteEngine;
 		$this->optionsProvider          = $optionsProvider;
@@ -140,7 +140,7 @@ class LabelPrint {
 		$this->logger                   = $logger;
 		$this->orderRepository          = $orderRepository;
 		$this->packetActionsCommonLogic = $packetActionsCommonLogic;
-		$this->helper                   = $helper;
+		$this->moduleHelper             = $moduleHelper;
 	}
 
 	/**
@@ -591,7 +591,7 @@ class LabelPrint {
 		$wcOrder->add_order_note(
 			sprintf(
 				$message,
-				$this->helper->createHtmlLink( $trackingUrl, $linkText )
+				$this->moduleHelper->createHtmlLink( $trackingUrl, $linkText )
 			)
 		);
 		$wcOrder->save();

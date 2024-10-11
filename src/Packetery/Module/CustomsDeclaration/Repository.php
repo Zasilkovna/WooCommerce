@@ -11,7 +11,7 @@ namespace Packetery\Module\CustomsDeclaration;
 
 use Packetery\Core\Entity\CustomsDeclaration;
 use Packetery\Core\Entity\CustomsDeclarationItem;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\WpdbAdapter;
 
@@ -313,7 +313,7 @@ class Repository {
 			'ead'                => $customsDeclaration->getEad(),
 			'delivery_cost'      => $customsDeclaration->getDeliveryCost(),
 			'invoice_number'     => $customsDeclaration->getInvoiceNumber(),
-			'invoice_issue_date' => $customsDeclaration->getInvoiceIssueDate()->format( Helper::MYSQL_DATE_FORMAT ),
+			'invoice_issue_date' => $customsDeclaration->getInvoiceIssueDate()->format( CoreHelper::MYSQL_DATE_FORMAT ),
 			'invoice_file_id'    => $customsDeclaration->getInvoiceFileId(),
 			'mrn'                => $customsDeclaration->getMrn(),
 			'ead_file_id'        => $customsDeclaration->getEadFileId(),

@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Entity;
 
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use DateTimeImmutable;
 
 /**
@@ -641,7 +641,7 @@ class Order {
 	 * @return void
 	 */
 	public function setWeight( ?float $weight ): void {
-		$this->weight = Helper::simplifyWeight( $weight );
+		$this->weight = CoreHelper::simplifyWeight( $weight );
 	}
 
 	/**
@@ -652,7 +652,7 @@ class Order {
 	 * @return void
 	 */
 	public function setCalculatedWeight( ?float $weight ): void {
-		$this->calculatedWeight = Helper::simplifyWeight( $weight );
+		$this->calculatedWeight = CoreHelper::simplifyWeight( $weight );
 	}
 
 	/**
@@ -768,7 +768,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketTrackingUrl(): ?string {
-		return $this->packetId ? sprintf( Helper::TRACKING_URL, $this->packetId ) : null;
+		return $this->packetId ? sprintf( CoreHelper::TRACKING_URL, $this->packetId ) : null;
 	}
 
 	/**
@@ -777,7 +777,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketClaimTrackingUrl(): ?string {
-		return $this->packetClaimId ? sprintf( Helper::TRACKING_URL, $this->packetClaimId ) : null;
+		return $this->packetClaimId ? sprintf( CoreHelper::TRACKING_URL, $this->packetClaimId ) : null;
 	}
 
 	/**
@@ -1105,7 +1105,7 @@ class Order {
 	 */
 	public function updateApiErrorMessage( ?string $errorMessage ): void {
 		$this->setLastApiErrorMessage( $errorMessage );
-		$this->setLastApiErrorDateTime( $errorMessage ? Helper::now() : null );
+		$this->setLastApiErrorDateTime( $errorMessage ? CoreHelper::now() : null );
 	}
 
 }

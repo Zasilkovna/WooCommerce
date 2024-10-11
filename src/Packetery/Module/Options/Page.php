@@ -19,7 +19,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 
 /**
  * Class Page
@@ -630,7 +630,7 @@ class Page {
 		}
 
 		$defaultWeight                  = $packeteryContainer['default_weight']->getValue();
-		$options['default_weight']      = is_numeric( $defaultWeight ) ? Helper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
+		$options['default_weight']      = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
 		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
 

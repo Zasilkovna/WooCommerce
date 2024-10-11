@@ -12,7 +12,7 @@ namespace Packetery\Module\Options\FlagManager;
 use DateTimeImmutable;
 use DateTimeZone;
 use Exception;
-use Packetery\Core;
+use Packetery\Core\CoreHelper;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Provider;
@@ -107,7 +107,7 @@ class FeatureFlagDownloader {
 		$lastDownload    = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
 		$flags           = [
 			FeatureFlagProvider::FLAG_SPLIT_ACTIVE  => (bool) $responseDecoded['features']['split'],
-			FeatureFlagProvider::FLAG_LAST_DOWNLOAD => $lastDownload->format( Core\Helper::MYSQL_DATETIME_FORMAT ),
+			FeatureFlagProvider::FLAG_LAST_DOWNLOAD => $lastDownload->format( CoreHelper::MYSQL_DATETIME_FORMAT ),
 		];
 
 		$this->wpAdapter->updateOption( self::FLAGS_OPTION_ID, $flags );
@@ -168,7 +168,7 @@ class FeatureFlagDownloader {
 
 		$now        = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
 		$lastUpdate = DateTimeImmutable::createFromFormat(
-			Core\Helper::MYSQL_DATETIME_FORMAT,
+			CoreHelper::MYSQL_DATETIME_FORMAT,
 			$this->featureFlagStorage->getFlag( FeatureFlagProvider::FLAG_LAST_DOWNLOAD ),
 			new DateTimeZone( 'UTC' )
 		);

@@ -13,7 +13,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\WcSettingsConfig;
-use Packetery\Module\Helper;
+use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Forms;
 use RuntimeException;
 
@@ -175,7 +175,7 @@ class CarrierModal {
 		$this->updateOrderDeliveryTitle( $orderId, $carrierTitle );
 
 		// Without it, the widget cannot be opened and metabox has no values. Needed even in case no change was made.
-		if ( wp_safe_redirect( Helper::getOrderDetailUrl( $orderId ) ) ) {
+		if ( wp_safe_redirect( ModuleHelper::getOrderDetailUrl( $orderId ) ) ) {
 			exit;
 		}
 	}
@@ -232,7 +232,7 @@ class CarrierModal {
 			return [];
 		}
 
-		$shippingCountry = Helper::getWcOrderCountry( $wcOrder );
+		$shippingCountry = ModuleHelper::getWcOrderCountry( $wcOrder );
 		if ( empty( $shippingCountry ) ) {
 			return [];
 		}

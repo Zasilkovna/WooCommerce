@@ -13,6 +13,7 @@ use Packetery\Core\Log\ILogger;
 use Packetery\Latte\Engine;
 use Packetery\Module;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http;
 use Packetery\Tracy\Debugger;
 
@@ -165,7 +166,7 @@ class Exporter {
 
 		foreach ( $plugins as $relativePath => $plugin ) {
 			$item = [
-				'Active' => wc_bool_to_string( Module\Helper::isPluginActive( $relativePath ) ),
+				'Active' => wc_bool_to_string( ModuleHelper::isPluginActive( $relativePath ) ),
 			];
 
 			$options = [ 'Name', 'PluginURI', 'Version', 'WC tested up to', 'WC requires at least', 'AuthorName', 'RequiresPHP' ];

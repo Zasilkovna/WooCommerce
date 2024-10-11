@@ -11,6 +11,7 @@ namespace Packetery\Module;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
 use Packetery\Latte\Engine;
@@ -486,7 +487,7 @@ class Plugin {
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
 
-		$wooCommerceVersion = Helper::getWooCommerceVersion();
+		$wooCommerceVersion = ModuleHelper::getWooCommerceVersion();
 		if ( null !== $wooCommerceVersion && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
 			add_filter( sprintf( 'views_%s', $orderListScreenId ), [ $this->gridExtender, 'addFilterLinks' ] );
 			add_action( 'woocommerce_order_list_table_restrict_manage_orders', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
@@ -633,7 +634,7 @@ class Plugin {
 	 * @return bool
 	 */
 	private static function isWooCommercePluginActive(): bool {
-		return Helper::isPluginActive( 'woocommerce/woocommerce.php' );
+		return ModuleHelper::isPluginActive( 'woocommerce/woocommerce.php' );
 	}
 
 	/**
@@ -757,7 +758,7 @@ class Plugin {
 		 *
 		 * @since 1.5.3
 		 */
-		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailHtml, $templateParams ) );
+		ModuleHelper::renderString( (string) apply_filters( 'packeta_email_footer', $emailHtml, $templateParams ) );
 	}
 
 	/**
@@ -876,8 +877,8 @@ class Plugin {
 		$isOrderDetailPage     = $this->contextResolver->isOrderDetailPage();
 		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
 		$datePickerSettings    = [
-			'deliverOnMinDate' => wp_date( \Packetery\Core\Helper::DATEPICKER_FORMAT, strtotime( 'tomorrow' ) ),
-			'dateFormat'       => \Packetery\Core\Helper::DATEPICKER_FORMAT_JS,
+			'deliverOnMinDate' => wp_date( CoreHelper::DATEPICKER_FORMAT, strtotime( 'tomorrow' ) ),
+			'dateFormat'       => CoreHelper::DATEPICKER_FORMAT_JS,
 		];
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {

@@ -10,8 +10,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Log;
 
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Log\Record;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\WpdbAdapter;
 
 /**
@@ -87,7 +88,7 @@ class Repository {
 		$where = [];
 		foreach ( $dateQuery as $dateQueryItem ) {
 			if ( isset( $dateQueryItem['after'] ) ) {
-				$where[] = $this->wpdbAdapter->prepare( '`date` > %s', Helper::now()->modify( $dateQueryItem['after'] )->format( Helper::MYSQL_DATETIME_FORMAT ) );
+				$where[] = $this->wpdbAdapter->prepare( '`date` > %s', CoreHelper::now()->modify( $dateQueryItem['after'] )->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
 			}
 		}
 
@@ -109,7 +110,7 @@ class Repository {
 	 * @return void
 	 */
 	public function deleteOld( string $before ): void {
-		$dateToFormatted = Helper::now()->modify( $before )->format( Helper::MYSQL_DATETIME_FORMAT );
+		$dateToFormatted = CoreHelper::now()->modify( $before )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 		$this->wpdbAdapter->query(
 			$this->wpdbAdapter->prepare( 'DELETE FROM `' . $this->wpdbAdapter->packetery_log . '` WHERE `date` < %s', $dateToFormatted )
 		);
@@ -127,7 +128,7 @@ class Repository {
 			$record         = new Record();
 			$record->id     = $log->id;
 			$record->status = $log->status;
-			$record->date   = \DateTimeImmutable::createFromFormat( Helper::MYSQL_DATETIME_FORMAT, $log->date, new \DateTimeZone( 'UTC' ) )
+			$record->date   = \DateTimeImmutable::createFromFormat( CoreHelper::MYSQL_DATETIME_FORMAT, $log->date, new \DateTimeZone( 'UTC' ) )
 												->setTimezone( wp_timezone() );
 			$record->action = $log->action;
 			$record->title  = $log->title;
@@ -204,14 +205,14 @@ class Repository {
 	public function save( Record $record ): void {
 		$date = $record->date;
 		if ( null === $date ) {
-			$date = Helper::now();
+			$date = CoreHelper::now();
 		}
 
-		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( Helper::MYSQL_DATETIME_FORMAT );
+		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$paramsString = '';
 		if ( $record->params ) {
-			$params       = \Packetery\Module\Helper::convertArrayFloatsToStrings( $record->params );
+			$params       = ModuleHelper::convertArrayFloatsToStrings( $record->params );
 			$paramsString = wp_json_encode( $params );
 		}
 

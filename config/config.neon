@@ -20,7 +20,7 @@ services:
 	- Packetery\Module\ContextResolver
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
-	- Packetery\Module\Helper
+	- Packetery\Module\ModuleHelper
 	- Packetery\Module\Payment\PaymentHelper
 	- Packetery\Module\Log\Purger
 	- Packetery\Module\Log\Repository
@@ -31,7 +31,7 @@ services:
 	- Packetery\Module\Product\ProductEntityFactory
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
-	- Packetery\Core\Helper
+	- Packetery\Core\CoreHelper
 	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox

@@ -6,7 +6,7 @@
  */
 
 use Packetery\Module\CompatibilityBridge;
-use Packetery\Module\Helper;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\WpdbTracyPanel;
 use Packetery\Nette\Bootstrap\Configurator;
 use Packetery\Tracy\Debugger;
@@ -15,8 +15,8 @@ require_once __DIR__ . '/constants.php';
 
 require_once __DIR__ . '/deps/scoper-autoload.php';
 
-require_once __DIR__ . '/src/Packetery/Module/Helper.php';
-Helper::transformGlobalCookies();
+require_once __DIR__ . '/src/Packetery/Module/ModuleHelper.php';
+ModuleHelper::transformGlobalCookies();
 
 $configurator = new Configurator();
 $configurator->setDebugMode( PACKETERY_DEBUG );

@@ -13,7 +13,7 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
-use Packetery\Module\Helper;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options;
 use Packetery\Nette\Http\Request;
@@ -82,11 +82,11 @@ class PacketCanceller {
 	private $wcOrderActions;
 
 	/**
-	 * Helper.
+	 * ModuleHelper.
 	 *
-	 * @var Helper
+	 * @var ModuleHelper
 	 */
-	private $helper;
+	private $moduleHelper;
 
 	/**
 	 * Constructor.
@@ -99,7 +99,7 @@ class PacketCanceller {
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 * @param WcOrderActions           $wcOrderActions  WC order actions.
-	 * @param Helper                   $helper          Helper.
+	 * @param ModuleHelper             $moduleHelper    ModuleHelper.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -110,7 +110,7 @@ class PacketCanceller {
 		MessageManager $messageManager,
 		PacketActionsCommonLogic $commonLogic,
 		WcOrderActions $wcOrderActions,
-		Helper $helper
+		ModuleHelper $moduleHelper
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -120,7 +120,7 @@ class PacketCanceller {
 		$this->messageManager  = $messageManager;
 		$this->commonLogic     = $commonLogic;
 		$this->wcOrderActions  = $wcOrderActions;
-		$this->helper          = $helper;
+		$this->moduleHelper    = $moduleHelper;
 	}
 
 	/**
@@ -216,7 +216,7 @@ class PacketCanceller {
 				}
 
 				$wcOrder->add_order_note(
-					sprintf( $message, $this->helper->createHtmlLink( $trackingUrl, $text ) )
+					sprintf( $message, $this->moduleHelper->createHtmlLink( $trackingUrl, $text ) )
 				);
 				$wcOrder->save();
 			}

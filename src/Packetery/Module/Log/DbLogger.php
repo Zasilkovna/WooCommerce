@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Log;
 
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Log\Record;
 
 /**
@@ -54,7 +54,7 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 	 */
 	public function add( Record $record ): void {
 		if ( null === $record->date ) {
-			$record->date = Helper::now();
+			$record->date = CoreHelper::now();
 		}
 
 		$this->logRepository->save( $record );
