@@ -800,7 +800,6 @@ ij_markdown_wrap_text_inside_blockquotes = true
 
 [{*.yaml,*.yml}]
 indent_style = space
-indent_size = 4
 ij_yaml_align_values_properties = do_not_align
 ij_yaml_autoinsert_sequence_marker = true
 ij_yaml_block_mapping_on_new_line = false
@@ -812,8 +811,6 @@ ij_yaml_space_before_colon = false
 ij_yaml_spaces_within_braces = true
 ij_yaml_spaces_within_brackets = true
 
-[composer.lock]
-indent_size = 4
-trim_trailing_whitespace = true
-insert_final_newline = true
+[{composer.lock,composer-deps.lock}]
 indent_style = space
+trim_trailing_whitespace = true
