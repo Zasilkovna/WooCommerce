@@ -142,6 +142,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 			->willReturnOnConsecutiveCalls( ...$dataInStorage );
 
 		$downloader = new FeatureFlagDownloader(
+			'dummy-url',
 			$optionsProvider,
 			$wpAdapter,
 			$wcAdapter,

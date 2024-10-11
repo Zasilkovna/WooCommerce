@@ -24,11 +24,17 @@ use Packetery\Module\Options\OptionsProvider;
  */
 class FeatureFlagDownloader {
 
-	private const ENDPOINT_URL                 = 'https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp';
 	private const VALID_FOR_SECONDS            = 4 * HOUR_IN_SECONDS;
 	public const FLAGS_OPTION_ID               = 'packeta_feature_flags';
 	public const DISABLED_DUE_ERRORS_OPTION_ID = 'packeta_feature_flags_disabled_due_errors';
 	private const ERROR_COUNTER_OPTION_ID      = 'packeta_feature_flags_error_counter';
+
+	/**
+	 * Endpoint url.
+	 *
+	 * @var string
+	 */
+	private string $endpointUrl;
 
 	/**
 	 * Options provider.
@@ -61,17 +67,20 @@ class FeatureFlagDownloader {
 	/**
 	 * Downloader constructor.
 	 *
+	 * @param string             $endpointUrl        Endpoint url.
 	 * @param OptionsProvider    $optionsProvider    Options provider.
 	 * @param WpAdapter          $wpAdapter          WP adapter.
 	 * @param WcAdapter          $wcAdapter          WC adapter.
 	 * @param FeatureFlagStorage $featureFlagStorage Feature flag store.
 	 */
 	public function __construct(
+		string $endpointUrl,
 		OptionsProvider $optionsProvider,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
 		FeatureFlagStorage $featureFlagStorage
 	) {
+		$this->endpointUrl        = $endpointUrl;
 		$this->optionsProvider    = $optionsProvider;
 		$this->wpAdapter          = $wpAdapter;
 		$this->wcAdapter          = $wcAdapter;
@@ -86,7 +95,7 @@ class FeatureFlagDownloader {
 	 */
 	private function fetchFlags(): array {
 		$response = $this->wpAdapter->remoteGet(
-			$this->wpAdapter->addQueryArg( [ 'api_key' => $this->optionsProvider->get_api_key() ], self::ENDPOINT_URL ),
+			$this->wpAdapter->addQueryArg( [ 'api_key' => $this->optionsProvider->get_api_key() ], $this->endpointUrl ),
 			[ 'timeout' => 20 ]
 		);
 
