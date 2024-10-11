@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Provider
+ * Class OptionsProvider
  *
  * @package Packetery
  */
@@ -13,11 +13,11 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
- * Class Provider
+ * Class OptionsProvider
  *
  * @package Packetery
  */
-class Provider {
+class OptionsProvider {
 
 	public const OPTION_NAME_PACKETERY                 = 'packetery';
 	public const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
@@ -62,7 +62,7 @@ class Provider {
 	private $autoSubmissionData;
 
 	/**
-	 * Provider constructor.
+	 * OptionsProvider constructor.
 	 */
 	public function __construct() {
 		$data = get_option( self::OPTION_NAME_PACKETERY );

@@ -15,7 +15,7 @@ use Exception;
 use Packetery\Core\CoreHelper;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 
 /**
  * Class FeatureFlagDownloader
@@ -33,7 +33,7 @@ class FeatureFlagDownloader {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -61,13 +61,13 @@ class FeatureFlagDownloader {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param Provider           $optionsProvider    Options provider.
+	 * @param OptionsProvider    $optionsProvider    Options provider.
 	 * @param WpAdapter          $wpAdapter          WP adapter.
 	 * @param WcAdapter          $wcAdapter          WC adapter.
 	 * @param FeatureFlagStorage $featureFlagStorage Feature flag store.
 	 */
 	public function __construct(
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
 		FeatureFlagStorage $featureFlagStorage

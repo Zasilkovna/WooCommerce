@@ -20,7 +20,7 @@ use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product\ProductEntityFactory;
@@ -85,7 +85,7 @@ class Checkout {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider Options provider.
+	 * @var OptionsProvider Options provider.
 	 */
 	private $optionsProvider;
 
@@ -196,7 +196,7 @@ class Checkout {
 	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory    Product category entity factory.
 	 * @param CarrierOptionsFactory        $carrierOptionsFactory   Carrier options factory.
 	 * @param Engine                       $latte_engine            PacketeryLatte engine.
-	 * @param Provider                     $optionsProvider        Options provider.
+	 * @param OptionsProvider              $optionsProvider         Options provider.
 	 * @param Carrier\Repository           $carrierRepository       Carrier repository.
 	 * @param Request                      $httpRequest             Http request.
 	 * @param Order\Repository             $orderRepository         Order repository.
@@ -219,7 +219,7 @@ class Checkout {
 		ProductCategoryEntityFactory $productCategoryEntityFactory,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		Engine $latte_engine,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Order\Repository $orderRepository,
@@ -699,11 +699,11 @@ class Checkout {
 	public function areBlocksUsedInCheckout(): bool {
 		$checkoutDetection = $this->optionsProvider->getCheckoutDetection();
 
-		if ( Provider::BLOCK_CHECKOUT_DETECTION === $checkoutDetection ) {
+		if ( OptionsProvider::BLOCK_CHECKOUT_DETECTION === $checkoutDetection ) {
 			return true;
 		}
 
-		if ( Provider::CLASSIC_CHECKOUT_DETECTION === $checkoutDetection ) {
+		if ( OptionsProvider::CLASSIC_CHECKOUT_DETECTION === $checkoutDetection ) {
 			return false;
 		}
 

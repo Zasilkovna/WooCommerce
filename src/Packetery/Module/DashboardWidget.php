@@ -13,6 +13,7 @@ namespace Packetery\Module;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Options\OptionsProvider;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 
@@ -40,7 +41,7 @@ class DashboardWidget {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -91,7 +92,7 @@ class DashboardWidget {
 	 *
 	 * @param Engine                   $latteEngine             Latte engine.
 	 * @param Carrier\Repository       $carrierRepository       Carrier repository.
-	 * @param Options\Provider         $optionsProvider         Options provider.
+	 * @param OptionsProvider          $optionsProvider         Options provider.
 	 * @param Carrier\OptionsPage      $carrierOptionsPage      Carrier options page.
 	 * @param Options\Page             $optionsPage             Options page.
 	 * @param array                    $surveyConfig            Survey config.
@@ -102,7 +103,7 @@ class DashboardWidget {
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Carrier\OptionsPage $carrierOptionsPage,
 		Options\Page $optionsPage,
 		array $surveyConfig,

@@ -20,6 +20,7 @@ use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\CarrierModal;
 use Packetery\Nette\Http\Request;
 use WC_Email;
@@ -209,7 +210,7 @@ class Plugin {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -327,7 +328,7 @@ class Plugin {
 	 * @param Order\Repository           $orderRepository           Order repository.
 	 * @param Upgrade                    $upgrade                   Plugin upgrade.
 	 * @param QueryProcessor             $queryProcessor            QueryProcessor.
-	 * @param Options\Provider           $optionsProvider           Options provider.
+	 * @param OptionsProvider            $optionsProvider           Options provider.
 	 * @param CronService                $cronService               Cron service.
 	 * @param Order\PacketCanceller      $packetCanceller           Packet canceller.
 	 * @param ContextResolver            $contextResolver           Context resolver.
@@ -366,7 +367,7 @@ class Plugin {
 		Order\Repository $orderRepository,
 		Upgrade $upgrade,
 		QueryProcessor $queryProcessor,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		CronService $cronService,
 		Order\PacketCanceller $packetCanceller,
 		ContextResolver $contextResolver,

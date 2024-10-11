@@ -51,7 +51,7 @@ class Exporter {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -68,14 +68,14 @@ class Exporter {
 	 * @param Http\Request       $httpRequest        Http request.
 	 * @param Engine             $latteEngine        Latte engine.
 	 * @param CountryListingPage $countryListingPage Country listing page.
-	 * @param Provider           $optionsProvider    Options provider.
+	 * @param OptionsProvider    $optionsProvider    Options provider.
 	 * @param ILogger            $logger             Logger.
 	 */
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		ILogger $logger
 	) {
 		$this->httpRequest        = $httpRequest;
@@ -99,14 +99,14 @@ class Exporter {
 		}
 
 		$globalSettings = $this->optionsProvider->getAllOptions();
-		if ( ! empty( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
-			$globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
+		if ( ! empty( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
+			$globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
 				'%s...%s (%s)',
-				substr( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'], 0, 16 ),
-				substr( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'], - 2, 2 ),
-				strlen( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_password'] )
+				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], 0, 16 ),
+				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], - 2, 2 ),
+				strlen( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] )
 			);
-			unset( $globalSettings[ Provider::OPTION_NAME_PACKETERY ]['api_key'] );
+			unset( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_key'] );
 		}
 		$globalSettings['woocommerce_allowed_countries']          = get_option( 'woocommerce_allowed_countries' );
 		$globalSettings['woocommerce_specific_allowed_countries'] = get_option( 'woocommerce_specific_allowed_countries' );

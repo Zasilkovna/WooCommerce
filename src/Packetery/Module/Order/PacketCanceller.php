@@ -15,7 +15,7 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -56,7 +56,7 @@ class PacketCanceller {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -95,7 +95,7 @@ class PacketCanceller {
 	 * @param Log\ILogger              $logger          Logger.
 	 * @param Repository               $orderRepository Order repository.
 	 * @param Request                  $request         Request.
-	 * @param Options\Provider         $optionsProvider Options provider.
+	 * @param OptionsProvider          $optionsProvider Options provider.
 	 * @param MessageManager           $messageManager  Message manager.
 	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
 	 * @param WcOrderActions           $wcOrderActions  WC order actions.
@@ -106,7 +106,7 @@ class PacketCanceller {
 		Log\ILogger $logger,
 		Repository $orderRepository,
 		Request $request,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		MessageManager $messageManager,
 		PacketActionsCommonLogic $commonLogic,
 		WcOrderActions $wcOrderActions,

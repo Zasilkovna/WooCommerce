@@ -19,8 +19,7 @@ use Packetery\Module\Log;
 use Packetery\Module\Log\Page;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Options;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Latte\Engine;
@@ -84,7 +83,7 @@ class Metabox {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -151,7 +150,7 @@ class Metabox {
 	 * @param MessageManager       $message_manager      Message manager.
 	 * @param CoreHelper           $coreHelper           CoreHelper.
 	 * @param Request              $request              Http request.
-	 * @param Provider             $optionsProvider      Options provider.
+	 * @param OptionsProvider      $optionsProvider      Options provider.
 	 * @param Repository           $orderRepository      Order repository.
 	 * @param Page                 $logPage              Log page.
 	 * @param AttributeMapper      $mapper               AttributeMapper.
@@ -167,7 +166,7 @@ class Metabox {
 		MessageManager $message_manager,
 		CoreHelper $coreHelper,
 		Request $request,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Repository $orderRepository,
 		Page $logPage,
 		AttributeMapper $mapper,

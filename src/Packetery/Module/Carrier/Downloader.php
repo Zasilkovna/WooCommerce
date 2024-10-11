@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Api\WebRequestException;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\WebRequestClient;
 
 /**
@@ -32,9 +32,9 @@ class Downloader {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider Options provider.
+	 * @var OptionsProvider Options provider.
 	 */
-	private $options_provider;
+	private $optionsProvider;
 
 	/**
 	 * HTTP client.
@@ -46,13 +46,13 @@ class Downloader {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param Updater          $carrier_updater Carrier updater.
-	 * @param Provider         $options_provider Options provider.
+	 * @param Updater          $carrier_updater  Carrier updater.
+	 * @param OptionsProvider  $optionsProvider  Options provider.
 	 * @param WebRequestClient $webRequestClient HTTP client.
 	 */
-	public function __construct( Updater $carrier_updater, Provider $options_provider, WebRequestClient $webRequestClient ) {
+	public function __construct( Updater $carrier_updater, OptionsProvider $optionsProvider, WebRequestClient $webRequestClient ) {
 		$this->carrier_updater  = $carrier_updater;
-		$this->options_provider = $options_provider;
+		$this->optionsProvider  = $optionsProvider;
 		$this->webRequestClient = $webRequestClient;
 	}
 
@@ -133,7 +133,7 @@ class Downloader {
 	 * @throws WebRequestException DownloadException.
 	 */
 	private function download_json(): string {
-		return $this->webRequestClient->get( sprintf( self::API_URL, $this->options_provider->get_api_key() ) );
+		return $this->webRequestClient->get( sprintf( self::API_URL, $this->optionsProvider->get_api_key() ) );
 	}
 
 	/**

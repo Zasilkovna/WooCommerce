@@ -24,7 +24,7 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\WeightCalculator;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Product;
 use stdClass;
 use WC_Order;
@@ -39,7 +39,7 @@ class Builder {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider Options provider.
+	 * @var OptionsProvider Options provider.
 	 */
 	private $optionsProvider;
 
@@ -88,7 +88,7 @@ class Builder {
 	/**
 	 * Builder constructor.
 	 *
-	 * @param Provider                      $optionsProvider              Options Provider.
+	 * @param OptionsProvider               $optionsProvider              Options Provider.
 	 * @param WeightCalculator              $calculator                   Weight calculator.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
@@ -97,7 +97,7 @@ class Builder {
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 */
 	public function __construct(
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		WeightCalculator $calculator,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketaPickupPointsConfig $pickupPointsConfig,

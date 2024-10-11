@@ -10,8 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Module;
-use Packetery\Module\Options;
 use Packetery\Latte\Engine;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -41,7 +41,7 @@ class LabelPrintModal {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -64,14 +64,14 @@ class LabelPrintModal {
 	 *
 	 * @param Engine                 $latteEngine       Latte engine.
 	 * @param LabelPrint             $labelPrint        Label print.
-	 * @param Options\Provider       $optionsProvider   Options provider.
+	 * @param OptionsProvider        $optionsProvider   Options provider.
 	 * @param Module\ContextResolver $contextResolver   Context resolver.
 	 * @param DetailCommonLogic      $detailCommonLogic Detail common logic.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		LabelPrint $labelPrint,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Module\ContextResolver $contextResolver,
 		DetailCommonLogic $detailCommonLogic
 	) {

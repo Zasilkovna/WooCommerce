@@ -18,7 +18,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
@@ -45,7 +45,7 @@ class LabelPrint {
 	/**
 	 * Options Provider
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -109,7 +109,7 @@ class LabelPrint {
 	 * LabelPrint constructor.
 	 *
 	 * @param Engine                   $latteEngine              Latte Engine.
-	 * @param Provider                 $optionsProvider          Options provider.
+	 * @param OptionsProvider          $optionsProvider          Options provider.
 	 * @param FormFactory              $formFactory              Form factory.
 	 * @param Http\Request             $httpRequest              Http Request.
 	 * @param Client                   $soapApiClient            SOAP API Client.
@@ -121,7 +121,7 @@ class LabelPrint {
 	 */
 	public function __construct(
 		Engine $latteEngine,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		FormFactory $formFactory,
 		Http\Request $httpRequest,
 		Client $soapApiClient,

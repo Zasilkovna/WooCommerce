@@ -41,7 +41,7 @@ services:
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	- Packetery\Module\Options\Page
-	optionsProvider: Packetery\Module\Options\Provider
+	optionsProvider: Packetery\Module\Options\OptionsProvider
 	- Packetery\Module\Carrier\Downloader
 	- Packetery\Module\Carrier\Updater
 	- Packetery\Module\Carrier\Repository

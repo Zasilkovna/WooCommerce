@@ -10,7 +10,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\FlagManager\FeatureFlagDownloader;
 use Packetery\Module\Options\FlagManager\FeatureFlagStorage;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Module\MockFactory;
 
@@ -110,7 +110,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 		array $dataFromApi,
 		array $expectedResult,
 	): void {
-		$optionsProvider = $this->createMock( Provider::class );
+		$optionsProvider = $this->createMock( OptionsProvider::class );
 		$optionsProvider
 			->method( 'get_api_key' )
 			->willReturn( $apiKey );
