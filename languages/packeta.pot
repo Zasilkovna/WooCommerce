@@ -2,16 +2,16 @@
 # This file is distributed under the GNU General Public License v3.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Packeta 1.8.1\n"
+"Project-Id-Version: Packeta 1.8.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/packeta\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-08T13:09:48+02:00\n"
+"POT-Creation-Date: 2024-10-14T13:49:14+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
 
 #. Plugin Name of the plugin
@@ -30,7 +30,7 @@ msgstr ""
 #: src/Packetery/Module/Log/Page.php:118
 #: src/Packetery/Module/Options/Page.php:132
 #: src/Packetery/Module/Options/Page.php:133
-#: src/Packetery/Module/Options/Page.php:769
+#: src/Packetery/Module/Options/Page.php:779
 #: src/Packetery/Module/Order/GridExtender.php:395
 #: src/Packetery/Module/Order/LabelPrint.php:204
 #: src/Packetery/Module/Order/Metabox.php:218
@@ -253,7 +253,7 @@ msgid "Address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:318
-#: src/Packetery/Module/Checkout.php:884
+#: src/Packetery/Module/Checkout.php:900
 msgid "Age verification fee"
 msgstr ""
 
@@ -343,8 +343,8 @@ msgstr ""
 #: src/Packetery/Module/Carrier/OptionsPage.php:570
 #: src/Packetery/Module/Options/Page.php:283
 #: src/Packetery/Module/Options/Page.php:375
-#: src/Packetery/Module/Options/Page.php:541
-#: src/Packetery/Module/Options/Page.php:777
+#: src/Packetery/Module/Options/Page.php:551
+#: src/Packetery/Module/Options/Page.php:787
 msgid "Save changes"
 msgstr ""
 
@@ -569,12 +569,12 @@ msgstr ""
 msgid "The selected Packeta pickup point could not be validated, reason: %s."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:909
-#: src/Packetery/Module/Checkout.php:1602
+#: src/Packetery/Module/Checkout.php:925
+#: src/Packetery/Module/Checkout.php:1618
 msgid "COD surcharge"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:1034
+#: src/Packetery/Module/Checkout.php:1050
 msgid "Free"
 msgstr ""
 
@@ -845,200 +845,220 @@ msgid "Replace shipping address with pickup point address"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:507
-msgid "Widget button location in checkout"
+msgid "Force checkout type"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:509
-msgid "After shipping rate"
+msgid "Automatic detection"
 msgstr ""
 
 #: src/Packetery/Module/Options/Page.php:510
+msgid "Classic checkout"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:511
+msgid "Block-based checkout"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:517
+msgid "Widget button location in checkout"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:519
+msgid "After shipping rate"
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:520
 msgid "After transport methods"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:516
+#: src/Packetery/Module/Options/Page.php:526
 msgid "Hook used to view information in email"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:525
+#: src/Packetery/Module/Options/Page.php:535
 msgid "Force order cancellation"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:529
+#: src/Packetery/Module/Options/Page.php:539
 msgid "Automatically open widget when shipping was selected"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:533
+#: src/Packetery/Module/Options/Page.php:543
 msgid "Display the FREE shipping text in checkout"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:537
+#: src/Packetery/Module/Options/Page.php:547
 msgid "Prices include tax"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:556
+#: src/Packetery/Module/Options/Page.php:566
 msgid "Main Settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:645
+#: src/Packetery/Module/Options/Page.php:655
 msgid "Sender validation was successful"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:652
+#: src/Packetery/Module/Options/Page.php:662
 msgid "Sender could not be validated"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:660
+#: src/Packetery/Module/Options/Page.php:670
 msgid "Specified sender does not exist"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:664
+#: src/Packetery/Module/Options/Page.php:674
 msgid "Unable to check specified sender"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:681
+#: src/Packetery/Module/Options/Page.php:691
 msgid "Specified sender has been validated."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:725
+#: src/Packetery/Module/Options/Page.php:735
 msgid "This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:766
+#: src/Packetery/Module/Options/Page.php:776
 msgid "Cancel the packet for an order even if the cancellation in the Packeta system will not be successful."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:770
+#: src/Packetery/Module/Options/Page.php:780
 msgid "Options"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:771
+#: src/Packetery/Module/Options/Page.php:781
 msgid "General"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:772
+#: src/Packetery/Module/Options/Page.php:782
 msgid "Packet auto-submission"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:773
+#: src/Packetery/Module/Options/Page.php:783
 msgid "Choose events for payment methods that will trigger packet submission"
 msgstr ""
 
 #. translators: %s represents URL.
-#: src/Packetery/Module/Options/Page.php:775
+#: src/Packetery/Module/Options/Page.php:785
 msgid "API password can be found at %s"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:778
+#: src/Packetery/Module/Options/Page.php:788
 msgid "Validate sender"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:779
+#: src/Packetery/Module/Options/Page.php:789
 msgid "Support"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:780
+#: src/Packetery/Module/Options/Page.php:790
 msgid "By clicking the button, you will export the settings of your plugin into a separate file. The export does not contain any sensitive information about your e-shop. Please send the resulting file to the technical support of Packeta (you can find the e-mail address here:"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:784
+#: src/Packetery/Module/Options/Page.php:794
 msgid ") along with the description of your problem. For a better understanding of your problem, we recommend adding screenshots, which show the problem (if possible)."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:788
+#: src/Packetery/Module/Options/Page.php:798
 msgid "Export the plugin settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:789
+#: src/Packetery/Module/Options/Page.php:799
 msgid "Date and time of the last export of settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:790
+#: src/Packetery/Module/Options/Page.php:800
 msgid "The settings have not been exported yet."
 msgstr ""
 
 #. translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end
-#: src/Packetery/Module/Options/Page.php:793
+#: src/Packetery/Module/Options/Page.php:803
 msgid "Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field 'Indication'."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:799
+#: src/Packetery/Module/Options/Page.php:809
 msgid "This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:800
+#: src/Packetery/Module/Options/Page.php:810
 msgid "This value is automatically added to the total weight of each order that contains products with zero weight."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:801
+#: src/Packetery/Module/Options/Page.php:811
 msgid "These dimensions will be applied to the packet by default, if required by the carrier."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:802
+#: src/Packetery/Module/Options/Page.php:812
+msgid "If you have trouble displaying the widget button in the checkout, you can force what type of checkout you are using."
+msgstr ""
+
+#: src/Packetery/Module/Options/Page.php:813
 msgid "Packet status tracking"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:803
+#: src/Packetery/Module/Options/Page.php:814
 msgid "Order statuses, for which cron will check the packet status"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:804
+#: src/Packetery/Module/Options/Page.php:815
 msgid "Cron will automatically track all orders with these statuses and check if the shipment status has changed."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:805
+#: src/Packetery/Module/Options/Page.php:816
 msgid "Packet statuses that are being checked"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:806
+#: src/Packetery/Module/Options/Page.php:817
 msgid "If an order has a shipment with one of these selected statuses, the shipment status will be tracked."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:807
+#: src/Packetery/Module/Options/Page.php:818
 msgid "Number of days after the creation of an order, during which the order status will be checked."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:808
+#: src/Packetery/Module/Options/Page.php:819
 msgid "If this option is active, the widget for selecting pickup points will open automatically after selecting the shipping method at the checkout."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:809
+#: src/Packetery/Module/Options/Page.php:820
 msgid "Change order status after data submission to Packeta."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:810
+#: src/Packetery/Module/Options/Page.php:821
 msgid "If enabled, \"FREE\" will be displayed after the name of the shipping method, if free shipping is applied."
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:811
+#: src/Packetery/Module/Options/Page.php:822
 msgid "Order status change settings"
 msgstr ""
 
-#: src/Packetery/Module/Options/Page.php:812
+#: src/Packetery/Module/Options/Page.php:823
 msgid "Dimensions"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:477
+#: src/Packetery/Module/Options/Provider.php:495
 msgid "1/4 A4, print on A4, 4pcs/page"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:482
+#: src/Packetery/Module/Options/Provider.php:500
 msgid "1/4 A4, direct print, 1pc/page"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:487
+#: src/Packetery/Module/Options/Provider.php:505
 msgid "1/8 A4, direct print, 1pc/page"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:492
+#: src/Packetery/Module/Options/Provider.php:510
 msgid "1/8 A4, print on A4, 8pcs/page"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:497
+#: src/Packetery/Module/Options/Provider.php:515
 msgid "105x35mm, print on A4, 16 pcs/page"
 msgstr ""
 
-#: src/Packetery/Module/Options/Provider.php:502
+#: src/Packetery/Module/Options/Provider.php:520
 msgid "1/16 A4, direct print, 1pc/page"
 msgstr ""
 

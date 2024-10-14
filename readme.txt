@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.6.2
-Stable tag: 1.8.1
+Stable tag: 1.8.2
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 9.3.3
@@ -64,6 +64,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.8.2 =
+Added: Now the user has the possibility to force which type of checkout he uses (block-based or classic).
+
 = 1.8.1 =
 Fixed: Error in bulk label printing.
 
