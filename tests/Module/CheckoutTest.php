@@ -44,7 +44,7 @@ class CheckoutTest extends TestCase {
 
 	private Checkout $checkout;
 
-	public function setUp(): void {
+	private function createCheckoutMock(): void {
 		$this->wpAdapter = MockFactory::createWpAdapter( $this );
 		$this->wcAdapter = $this->createMock( WcAdapter::class );
 		$this->productEntityFactory = $this->createMock( ProductEntityFactory::class );
@@ -465,6 +465,8 @@ class CheckoutTest extends TestCase {
 		bool $isAgeVerificationRequiredByProduct,
 		float $cartWeightKg
 	): void {
+		$this->createCheckoutMock();
+
 		$this->wpAdapter
 			->expects( self::atLeast( $expectedRateCount ) )
 			->method( 'applyFilters' );
@@ -567,16 +569,22 @@ class CheckoutTest extends TestCase {
 	}
 
 	public function testAreBlocksUsedInCheckoutBlockDetection(): void {
+		$this->createCheckoutMock();
+
 		$this->provider->method( 'getCheckoutDetection' )->willReturn( Provider::BLOCK_CHECKOUT_DETECTION );
 		$this->assertTrue( $this->checkout->areBlocksUsedInCheckout() );
 	}
 
 	public function testAreBlocksUsedInCheckoutClassicDetection(): void {
+		$this->createCheckoutMock();
+
 		$this->provider->method('getCheckoutDetection')->willReturn(Provider::CLASSIC_CHECKOUT_DETECTION);
 		$this->assertFalse($this->checkout->areBlocksUsedInCheckout());
 	}
 
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithBlock(): void {
+		$this->createCheckoutMock();
+
 		$this->provider->method('getCheckoutDetection')->willReturn(Provider::AUTOMATIC_CHECKOUT_DETECTION);
 
 		$this->wpAdapter->method('hasBlock')->willReturn( true );
@@ -584,6 +592,8 @@ class CheckoutTest extends TestCase {
 	}
 
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithoutBlock(): void {
+		$this->createCheckoutMock();
+
 		$this->provider->method('getCheckoutDetection')->willReturn(Provider::AUTOMATIC_CHECKOUT_DETECTION);
 
 		$this->wpAdapter->method('hasBlock')->willReturn( false );
