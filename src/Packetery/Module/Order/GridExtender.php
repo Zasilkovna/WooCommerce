@@ -422,7 +422,7 @@ class GridExtender {
 	 * @return string[] All columns.
 	 */
 	public function makeOrderListSpecificColumnsSortable( $columns ): array {
-		$meta_key = 'packetery_packet_stored_until';
-		return wp_parse_args( array( 'packetery_packet_stored_until' => $meta_key ), $columns );
+		$metaKey = 'packetery_packet_stored_until';
+		return wp_parse_args( [ 'packetery_packet_stored_until' => $metaKey ], $columns );
 	}
 }
