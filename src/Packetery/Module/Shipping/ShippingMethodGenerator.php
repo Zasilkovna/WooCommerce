@@ -77,7 +77,9 @@ class ShippingMethodGenerator {
 	}
 
 	/**
-	 * See https://doc.nette.org/en/php-generator
+	 * Generates class source code.
+	 *
+	 * @link https://doc.nette.org/en/php-generator
 	 *
 	 * @param string $carrierId   Carrier id.
 	 * @param string $carrierName Carrier name.
