@@ -29,7 +29,7 @@
 									<span> {$fieldUnit|noescape}</span>
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$container[$id][$fieldName]->getHtmlId() . '_message'}">{inputError $fieldName}</p>
+									id="{$container[$id][$fieldName]->getHtmlId() . '_message'}">{inputError $fieldName}</p>
 							</div>
 							<div class="packetery-label">
 								<label n:name=price />
@@ -41,7 +41,7 @@
 									<span> {$globalCurrency|noescape}</span>
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
+									id="{$container[$id][price]->getHtmlId() . '_message'}">{inputError price}</p>
 							</div>
 						</div>
 						<button type="button" data-replication-delete class="button button-small">{$translations['delete']}</button>
@@ -105,7 +105,7 @@
 									<span> {$globalCurrency|noescape}</span>
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$container[$id][order_price]->getHtmlId() . '_message'}">{inputError order_price}</p>
+									id="{$container[$id][order_price]->getHtmlId() . '_message'}">{inputError order_price}</p>
 							</div>
 							<div class="packetery-label">
 								<label n:name=surcharge />
@@ -117,7 +117,7 @@
 									<span> {$globalCurrency|noescape}</span>
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$container[$id][surcharge]->getHtmlId() . '_message'}">{inputError surcharge}</p>
+									id="{$container[$id][surcharge]->getHtmlId() . '_message'}">{inputError surcharge}</p>
 							</div>
 						</div>
 						<button type="button" data-replication-delete class="button button-small">{$translations['delete']}</button>
@@ -172,9 +172,9 @@
 						</th>
 						<td>
 							<input n:name=name class="packetery-carrier-name"
-											   data-lfv-message-id="{$form[name]->getHtmlId() . '_message'}">
+												data-lfv-message-id="{$form[name]->getHtmlId() . '_message'}">
 							<p class="packetery-input-validation-message help-block text-danger"
-							   id="{$form[name]->getHtmlId() . '_message'}">{inputError name}</p>
+								id="{$form[name]->getHtmlId() . '_message'}">{inputError name}</p>
 						</td>
 					</tr>
 
@@ -215,7 +215,7 @@
 								<select n:name=pricing_type></select>
 							</div>
 							<p class="packetery-input-validation-message help-block text-danger"
-							   id="{$form[pricing_type]->getHtmlId() . '_message'}">{inputError pricing_type}</p>
+								id="{$form[pricing_type]->getHtmlId() . '_message'}">{inputError pricing_type}</p>
 						</td>
 					</tr>
 
@@ -234,7 +234,7 @@
 									<span> {$globalCurrency|noescape}</span>
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">{inputError default_COD_surcharge}</p>
+									id="{$form[default_COD_surcharge]->getHtmlId() . '_message'}">{inputError default_COD_surcharge}</p>
 							</td>
 						</tr>
 					{include surchargeRulesSection form => $form}
@@ -258,7 +258,7 @@
 								<span> {$globalCurrency|noescape}</span>
 							</div>
 							<p class="packetery-input-validation-message help-block text-danger"
-							   id="{$form[free_shipping_limit]->getHtmlId() . '_message'}">{inputError free_shipping_limit}</p>
+								id="{$form[free_shipping_limit]->getHtmlId() . '_message'}">{inputError free_shipping_limit}</p>
 							<p>
 								{$translations['afterExceedingThisAmountShippingIsFree']}
 							</p>
@@ -275,7 +275,7 @@
 									<input n:name=days_until_shipping data-lfv-message-id="{$form[days_until_shipping]->getHtmlId() . '_message'}">
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$form[days_until_shipping]->getHtmlId() . '_message'}">{inputError days_until_shipping}</p>
+									id="{$form[days_until_shipping]->getHtmlId() . '_message'}">{inputError days_until_shipping}</p>
 								<p>
 									{$translations['daysUntilShipping']}
 								</p>
@@ -291,7 +291,7 @@
 									<input n:name=shipping_time_cut_off data-lfv-message-id="{$form[shipping_time_cut_off]->getHtmlId() . '_message'}">
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$form[shipping_time_cut_off]->getHtmlId() . '_message'}">{inputError shipping_time_cut_off}</p>
+									id="{$form[shipping_time_cut_off]->getHtmlId() . '_message'}">{inputError shipping_time_cut_off}</p>
 								<p>
 									{$translations['shippingTimeCutOff']}
 								</p>
@@ -324,7 +324,7 @@
 									<span> {$globalCurrency|noescape}</span>
 								</div>
 								<p class="packetery-input-validation-message help-block text-danger"
-								   id="{$form[age_verification_fee]->getHtmlId() . '_message'}">{inputError age_verification_fee}
+									id="{$form[age_verification_fee]->getHtmlId() . '_message'}">{inputError age_verification_fee}
 								</p>
 								<p>{$translations['ageVerificationSupportedNotification']}</p>
 							</td>

@@ -38,8 +38,9 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 * Activate the plugin in the WordPress menu "Plugins"
 * Set up the plugin according to our user documentation
 * If you update the Packeta plugin manually, you first need to completely delete the "packeta" folder and then upload the folder with the new version of the plugin.
-  You should definitely not upgrade by copying the new version to the original folder.
-  This could cause the original version to merge with the new one, which can cause the plugin to become completely non-functional.
+
+	You should definitely not upgrade by copying the new version to the original folder.
+	This could cause the original version to merge with the new one, which can cause the plugin to become completely non-functional.
 
 #### Filters
 
@@ -54,8 +55,8 @@ Parameter $queryObject is nullable since plugin version 1.6.0.
 
 ```
 add_filter( 'packetery_exclude_orders_with_status', function (array $statuses): array {
-    $statuses[] = 'wc-cancelled';
-    return $statuses;
+	$statuses[] = 'wc-cancelled';
+	return $statuses;
 } );
 ```
 
@@ -67,7 +68,7 @@ For example, to support active CURCY - Multi Currency for WooCommerce plugin, pa
 
 ```
 add_filter( 'packetery_price', function ( float $price ): float {
-    return (float) wmc_get_price( $price );
+	return (float) wmc_get_price( $price );
 } );
 ```
 
@@ -142,7 +143,7 @@ Since 1.6.3. If you would like to set the weight passed to the checkout widget, 
 
 ```
 function packeta_widget_weight($weight) {
-  return 1;
+	return 1;
 }
 
 add_filter( ‘packeta_widget_weight’, ‘packeta_widget_weight’);

@@ -454,7 +454,7 @@ class Repository {
 		$packeteryOrdersResult = $wpdbAdapter->get_results(
 			$wpdbAdapter->prepare(
 				'SELECT * FROM `' . $wpdbAdapter->packetery_order . '` 
-				 WHERE `id` IN (' . $ordersIdsPlaceholder . ')',
+				WHERE `id` IN (' . $ordersIdsPlaceholder . ')',
 				$orderIds
 			),
 			OBJECT_K
