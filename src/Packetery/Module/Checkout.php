@@ -87,7 +87,7 @@ class Checkout {
 	 *
 	 * @var Provider Options provider.
 	 */
-	private $options_provider;
+	private $optionsProvider;
 
 	/**
 	 * Carrier repository.
@@ -196,7 +196,7 @@ class Checkout {
 	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory    Product category entity factory.
 	 * @param CarrierOptionsFactory        $carrierOptionsFactory   Carrier options factory.
 	 * @param Engine                       $latte_engine            PacketeryLatte engine.
-	 * @param Provider                     $options_provider        Options provider.
+	 * @param Provider                     $optionsProvider        Options provider.
 	 * @param Carrier\Repository           $carrierRepository       Carrier repository.
 	 * @param Request                      $httpRequest             Http request.
 	 * @param Order\Repository             $orderRepository         Order repository.
@@ -219,7 +219,7 @@ class Checkout {
 		ProductCategoryEntityFactory $productCategoryEntityFactory,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		Engine $latte_engine,
-		Provider $options_provider,
+		Provider $optionsProvider,
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Order\Repository $orderRepository,
@@ -241,7 +241,7 @@ class Checkout {
 		$this->productCategoryEntiyFactory = $productCategoryEntityFactory;
 		$this->carrierOptionsFactory       = $carrierOptionsFactory;
 		$this->latte_engine                = $latte_engine;
-		$this->options_provider            = $options_provider;
+		$this->optionsProvider             = $optionsProvider;
 		$this->carrierRepository           = $carrierRepository;
 		$this->httpRequest                 = $httpRequest;
 		$this->orderRepository             = $orderRepository;
@@ -391,8 +391,8 @@ class Checkout {
 			'carDeliveryCarriers'        => Entity\Carrier::CAR_DELIVERY_CARRIERS,
 			'expeditionDay'              => $this->getExpeditionDay(),
 			'appIdentity'                => Plugin::getAppIdentity(),
-			'packeteryApiKey'            => $this->options_provider->get_api_key(),
-			'widgetAutoOpen'             => $this->options_provider->shouldWidgetOpenAutomatically(),
+			'packeteryApiKey'            => $this->optionsProvider->get_api_key(),
+			'widgetAutoOpen'             => $this->optionsProvider->shouldWidgetOpenAutomatically(),
 			'saveSelectedPickupPointUrl' => $this->apiRouter->getSaveSelectedPickupPointUrl(),
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
 			'saveCarDeliveryDetailsUrl'  => $this->apiRouter->getSaveCarDeliveryDetailsUrl(),
@@ -631,7 +631,7 @@ class Checkout {
 					$propsToSave[ $attrName ] = $attrValue;
 				}
 
-				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
+				if ( $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
 					$this->mapper->toWcOrderShippingAddress( $wcOrder, $attrName, (string) $attrValue );
 				}
 			}
@@ -664,20 +664,20 @@ class Checkout {
 			$orderEntity->setCarDeliveryId( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] );
 		}
 
-		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
-			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
+		if ( 0.0 === $this->getCartWeightKg() && true === $this->optionsProvider->isDefaultWeightEnabled() ) {
+			$orderEntity->setWeight( $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() );
 		}
 
 		$carrierEntity = $this->carrierEntityRepository->getAnyById( $carrierId );
 		if (
 			null !== $carrierEntity &&
 			true === $carrierEntity->requiresSize() &&
-			true === $this->options_provider->isDefaultDimensionsEnabled()
+			true === $this->optionsProvider->isDefaultDimensionsEnabled()
 		) {
 			$size = new Entity\Size(
-				$this->options_provider->getDefaultLength(),
-				$this->options_provider->getDefaultWidth(),
-				$this->options_provider->getDefaultHeight()
+				$this->optionsProvider->getDefaultLength(),
+				$this->optionsProvider->getDefaultWidth(),
+				$this->optionsProvider->getDefaultHeight()
 			);
 
 			$orderEntity->setSize( $size );
@@ -697,8 +697,24 @@ class Checkout {
 	 * @return bool
 	 */
 	public function areBlocksUsedInCheckout(): bool {
-		// It is possible to use CartCheckoutUtils::is_checkout_block_default as alternative.
-		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
+		$checkoutDetection = $this->optionsProvider->getCheckoutDetection();
+
+		if ( Provider::BLOCK_CHECKOUT_DETECTION === $checkoutDetection ) {
+			return true;
+		}
+
+		if ( Provider::CLASSIC_CHECKOUT_DETECTION === $checkoutDetection ) {
+			return false;
+		}
+
+		if (
+			$this->wpAdapter->hasBlock(
+				'woocommerce/checkout',
+				$this->wpAdapter->getPostField(
+					'post_content',
+					$this->wcAdapter->getPageId( 'checkout' )
+				)
+			) ) {
 			return true;
 		}
 
@@ -729,7 +745,7 @@ class Checkout {
 				 *
 				 * @since 1.3.0
 				 */
-				if ( $this->options_provider->getCheckoutWidgetButtonLocation() === 'after_transport_methods' ) {
+				if ( $this->optionsProvider->getCheckoutWidgetButtonLocation() === 'after_transport_methods' ) {
 					add_action( 'woocommerce_review_order_after_shipping', [ $this, 'renderWidgetButtonTableRow' ] );
 				} else {
 					add_action( 'woocommerce_after_shipping_rate', [ $this, 'renderWidgetButtonAfterShippingRate' ] );
@@ -815,7 +831,7 @@ class Checkout {
 		$weight   = $this->wcAdapter->cartGetCartContentsWeight();
 		$weightKg = $this->wcAdapter->getWeight( $weight, 'kg' );
 		if ( $weightKg ) {
-			$weightKg += $this->options_provider->getPackagingWeight();
+			$weightKg += $this->optionsProvider->getPackagingWeight();
 		}
 
 		return $weightKg;
@@ -874,7 +890,7 @@ class Checkout {
 			$this->isAgeVerification18PlusRequired()
 		) {
 			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
-			if ( false !== $maxTaxClass && $feeAmount > 0 && $this->options_provider->arePricesTaxInclusive() ) {
+			if ( false !== $maxTaxClass && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 				$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
 			}
 
@@ -900,7 +916,7 @@ class Checkout {
 			return;
 		}
 
-		if ( false !== $maxTaxClass && $this->options_provider->arePricesTaxInclusive() ) {
+		if ( false !== $maxTaxClass && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
 		}
 
@@ -980,7 +996,7 @@ class Checkout {
 				$rateId      = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
 				$taxes       = null;
 
-				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
+				if ( $cost > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 					$rates            = $this->wcAdapter->taxGetShippingTaxRates();
 					$taxes            = $this->wcAdapter->taxCalcInclusiveTax( $cost, $rates );
 					$taxExclusiveCost = $cost - array_sum( $taxes );
@@ -1030,7 +1046,7 @@ class Checkout {
 	 * @return string
 	 */
 	private function getFormattedShippingMethodName( string $name, float $cost ): string {
-		if ( 0.0 === $cost && $this->options_provider->isFreeShippingShown() ) {
+		if ( 0.0 === $cost && $this->optionsProvider->isFreeShippingShown() ) {
 			return sprintf( '%s: %s', $name, __( 'Free', 'packeta' ) );
 		}
 

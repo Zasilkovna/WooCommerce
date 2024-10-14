@@ -1,4 +1,7 @@
 == Changelog ==
+= 1.8.2 =
+Added: Now the user has the possibility to force which type of checkout he uses (block-based or classic).
+
 = 1.8.1 =
 Fixed: Error in bulk label printing.
 
