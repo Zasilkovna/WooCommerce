@@ -10,6 +10,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2 # https://github.com/actions/checkout/releases/tag/v2
+
+      - name: Install Subversion
+        run: sudo apt-get install subversion
+
       - name: WordPress plugin deploy
         id: deploy
         uses: 10up/action-wordpress-plugin-deploy@stable # https://github.com/10up/action-wordpress-plugin-deploy
