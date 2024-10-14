@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
@@ -81,6 +82,13 @@ class GridExtender {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -98,7 +106,8 @@ class GridExtender {
 		Repository $orderRepository,
 		Order $orderValidator,
 		ContextResolver $contextResolver,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		WpAdapter $wpAdapter
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -107,6 +116,7 @@ class GridExtender {
 		$this->orderValidator        = $orderValidator;
 		$this->contextResolver       = $contextResolver;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->wpAdapter = $wpAdapter;
 	}
 
 	/**
@@ -354,7 +364,7 @@ class GridExtender {
 						'printLink'                        => $printLink,
 						'helper'                           => new CoreHelper(),
 						'datePickerFormat'                 => CoreHelper::DATEPICKER_FORMAT,
-						'logPurgerDatetimeModifier'        => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
+						'logPurgerDatetimeModifier'        => $this->wpAdapter->getOption( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
 						'packetDeliverOn'                  => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 						'translations'                     => [
 							'printLabel'                  => __( 'Print label', 'packeta' ),
