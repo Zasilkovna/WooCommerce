@@ -123,6 +123,8 @@ class QueryProcessor {
 			'packetery_to_submit'  => null,
 			'packetery_to_print'   => null,
 			'packetery_order_type' => null,
+			'orderby'              => null,
+			'order'                => null,
 		];
 
 		foreach ( $paramValues as $key => $value ) {
