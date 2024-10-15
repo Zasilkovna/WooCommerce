@@ -11,7 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Order;
 use Packetery\Module;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette;
 
 /**
@@ -122,7 +122,7 @@ class DetailCommonLogic {
 			return false;
 		}
 
-		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+		if ( ! ShippingProvider::wcOrderHasOurMethod( $wcOrder ) ) {
 			return false;
 		}
 

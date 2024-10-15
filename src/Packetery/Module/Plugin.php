@@ -18,8 +18,8 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order\CarrierModal;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -296,6 +296,13 @@ class Plugin {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Shipping provider.
+	 *
+	 * @var ShippingProvider
+	 */
+	private $shippingProvider;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -334,6 +341,7 @@ class Plugin {
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
 	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param ShippingProvider           $shippingProvider          Shipping provider.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -371,7 +379,8 @@ class Plugin {
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
 		CarrierModal $carrierModal,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ShippingProvider $shippingProvider
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -410,6 +419,7 @@ class Plugin {
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
+		$this->shippingProvider          = $shippingProvider;
 	}
 
 	/**
@@ -469,7 +479,7 @@ class Plugin {
 
 		$wcEmailHook = $this->optionsProvider->getEmailHook();
 		add_action( $wcEmailHook, [ $this, 'renderEmailFooter' ] );
-		add_filter( 'woocommerce_shipping_methods', array( $this, 'add_shipping_method' ) );
+		add_filter( 'woocommerce_shipping_methods', array( $this, 'addShippingMethods' ) );
 
 		$orderListScreenId = 'woocommerce_page_wc-orders';
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
@@ -557,6 +567,7 @@ class Plugin {
 			}
 		);
 		add_action( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurgarche' ], 20, 1 );
+		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );
 	}
 
 	/**
@@ -1144,7 +1155,13 @@ class Plugin {
 	 *
 	 * @return array
 	 */
-	public function add_shipping_method( array $methods ): array {
+	public function addShippingMethods( array $methods ): array {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+			$unsortedMethods = $this->shippingProvider->addMethods( $methods );
+
+			return $this->shippingProvider->sortMethods( $unsortedMethods );
+		}
+
 		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 
 		return $methods;

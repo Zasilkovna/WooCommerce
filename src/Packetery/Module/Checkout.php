@@ -25,6 +25,7 @@ use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
+use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Nette\Http\Request;
 use WC_Logger;
 use WC_Tax;
@@ -987,8 +988,12 @@ class Checkout {
 			$cost = $this->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
 			if ( null !== $cost ) {
 				$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
-				$rateId      = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
-				$taxes       = null;
+				if ( $this->options_provider->isWcCarrierConfigEnabled() ) {
+					$rateId = BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrier->getId() . ':' . $optionId;
+				} else {
+					$rateId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+				}
+				$taxes = null;
 
 				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
 					$rates            = $this->wcAdapter->taxGetShippingTaxRates();
@@ -1239,6 +1244,10 @@ class Checkout {
 	 * @return string
 	 */
 	private function removeShippingMethodPrefix( string $chosenMethod ): string {
+		if ( $this->options_provider->isWcCarrierConfigEnabled() ) {
+			return preg_replace( '/^' . BaseShippingMethod::PACKETA_METHOD_PREFIX . '\w+:(.+)$/', '$1', $chosenMethod );
+		}
+
 		return str_replace( ShippingMethod::PACKETERY_METHOD_ID . ':', '', $chosenMethod );
 	}
 

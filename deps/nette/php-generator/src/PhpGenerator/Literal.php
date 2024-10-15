@@ -15,12 +15,20 @@ class Literal
 {
     /** @var string */
     private $value;
-    public function __construct(string $value)
+    /** @var ?array */
+    private $args;
+    public function __construct(string $value, ?array $args = null)
     {
         $this->value = $value;
+        $this->args = $args;
     }
     public function __toString() : string
     {
-        return $this->value;
+        return $this->formatWith(new Dumper());
+    }
+    /** @internal */
+    public function formatWith(Dumper $dumper) : string
+    {
+        return $this->args === null ? $this->value : $dumper->format($this->value, ...$this->args);
     }
 }

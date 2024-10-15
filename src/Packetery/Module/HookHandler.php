@@ -10,6 +10,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Shipping\ShippingProvider;
+
 /**
  * Class HookHandler.
  */
@@ -71,7 +73,7 @@ class HookHandler {
 			return;
 		}
 
-		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+		if ( ! ShippingProvider::wcOrderHasOurMethod( $wcOrder ) ) {
 			$this->orderRepository->delete( (int) $wcOrderId );
 			$hasBeenRun = true;
 

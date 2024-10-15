@@ -11,7 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use WC_Data;
 use WC_Order;
 use WP_REST_Response;
@@ -75,7 +75,7 @@ class ApiExtender {
 		}
 
 		foreach ( $responseData['shipping_lines'] as $key => $shippingLine ) {
-			if ( ShippingMethod::PACKETERY_METHOD_ID !== $shippingLine['method_id'] ) {
+			if ( ! ShippingProvider::isPacketaMethod( $shippingLine['method_id'] ) ) {
 				continue;
 			}
 			$response->data['shipping_lines'][ $key ]['packeta'] = $this->getPacketaItemsToShippingLines( $order );

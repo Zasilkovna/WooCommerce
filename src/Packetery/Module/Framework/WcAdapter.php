@@ -38,7 +38,7 @@ class WcAdapter {
 	 *
 	 * @return \WC_Product|null
 	 */
-	public function productFactoryGetProduct( $product_id ) {
+	public function productFactoryGetProduct( $product_id ): ?\WC_Product {
 		$product = WC()->product_factory->get_product( $product_id );
 		if ( $product instanceof \WC_Product ) {
 			return $product;
@@ -56,6 +56,26 @@ class WcAdapter {
 	 */
 	public function getProduct( int $postId ) {
 		return wc_get_product( $postId );
+	}
+
+	/**
+	 * Gets continent list.
+	 *
+	 * @return array
+	 */
+	public function countriesGetContinents(): array {
+		return WC()->countries->get_continents();
+	}
+
+	/**
+	 * Gets shipping zone matching package.
+	 *
+	 * @param array $package Package.
+	 *
+	 * @return \WC_Shipping_Zone
+	 */
+	public function shippingZonesGetZoneMatchingPackage( array $package ): \WC_Shipping_Zone {
+		return \WC_Shipping_Zones::get_zone_matching_package( $package );
 	}
 
 }

@@ -16,6 +16,7 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\Plugin;
+use Packetery\Module\Shipping\ShippingMethodGenerator;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
 
@@ -396,6 +397,10 @@ class CountryListingPage {
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
 			if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
+				continue;
+			}
+
+			if ( $this->optionsProvider->isWcCarrierConfigEnabled() && ! ShippingMethodGenerator::classExists( $carrier->getId() ) ) {
 				continue;
 			}
 
