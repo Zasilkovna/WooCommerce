@@ -90,9 +90,9 @@ class Updater {
 	 * @return array data to store in db
 	 */
 	private function carriers_mapper( array $carriers ): array {
-		$mapped_data = array();
+		$mappedData = array();
 
-		$carrier_boolean_params = array(
+		$carrierBooleanParams = array(
 			'is_pickup_points'         => 'pickupPoints',
 			'has_carrier_direct_label' => 'apiAllowed',
 			'separate_house_number'    => 'separateHouseNumber',
@@ -104,21 +104,21 @@ class Updater {
 		);
 
 		foreach ( $carriers as $carrier ) {
-			$carrier_id   = (int) $carrier['id'];
-			$carrier_data = array(
+			$carrierId   = (int) $carrier['id'];
+			$carrierData = array(
 				'name'       => $carrier['name'],
 				'country'    => $carrier['country'],
 				'currency'   => $carrier['currency'],
 				'max_weight' => (float) $carrier['maxWeight'],
 				'deleted'    => false,
 			);
-			foreach ( $carrier_boolean_params as $column_name => $param_name ) {
-				$carrier_data[ $column_name ] = ( 'true' === $carrier[ $param_name ] );
+			foreach ( $carrierBooleanParams as $columnName => $paramName ) {
+				$carrierData[ $columnName ] = ( 'true' === $carrier[ $paramName ] );
 			}
-			$mapped_data[ $carrier_id ] = $carrier_data;
+			$mappedData[ $carrierId ] = $carrierData;
 		}
 
-		return $mapped_data;
+		return $mappedData;
 	}
 
 	/**
@@ -127,12 +127,12 @@ class Updater {
 	 * @param array $carriers Validated data retrieved from API.
 	 */
 	public function save( array $carriers ): void {
-		$mapped_data  = $this->carriers_mapper( $carriers );
+		$mappedData   = $this->carriers_mapper( $carriers );
 		$carriersInDb = $this->carrierRepository->getAllRawIndexed();
-		foreach ( $mapped_data as $carrier_id => $carrier ) {
-			if ( ! empty( $carriersInDb[ $carrier_id ] ) ) {
-				$this->carrierRepository->update( $carrier, (int) $carrier_id );
-				$differences = $this->getArrayDifferences( $carriersInDb[ $carrier_id ], $carrier );
+		foreach ( $mappedData as $carrierId => $carrier ) {
+			if ( ! empty( $carriersInDb[ $carrierId ] ) ) {
+				$this->carrierRepository->update( $carrier, (int) $carrierId );
+				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
 				if ( ! empty( $differences ) ) {
 					$this->addLogEntry(
 						// translators: %s is carrier name.
@@ -141,9 +141,9 @@ class Updater {
 						__( 'New parameters', 'packeta' ) . ': ' . implode( ', ', $differences )
 					);
 				}
-				unset( $carriersInDb[ $carrier_id ] );
+				unset( $carriersInDb[ $carrierId ] );
 			} else {
-				$carrier['id'] = $carrier_id;
+				$carrier['id'] = $carrierId;
 				$this->carrierRepository->insert( $carrier );
 				$this->addLogEntry(
 					// translators: %s is carrier name.

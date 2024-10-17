@@ -66,17 +66,17 @@ class ShippingMethod extends \WC_Shipping_Method {
 	/**
 	 * Constructor for Packeta shipping class
 	 *
-	 * @param int $instance_id Shipping method instance id.
+	 * @param int $instanceId Shipping method instance id.
 	 */
-	public function __construct( int $instance_id = 0 ) {
+	public function __construct( int $instanceId = 0 ) {
 		parent::__construct();
 
 		$this->container               = CompatibilityBridge::getContainer();
 		$this->wcCarrierSettingsConfig = $this->container->getByType( WcSettingsConfig::class );
 
 		$this->id           = self::PACKETERY_METHOD_ID;
-		$this->instance_id  = absint( $instance_id );
-		$this->method_title = __( 'Packeta', 'packeta' );
+		$this->instance_id  = absint( $instanceId ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->method_title = __( 'Packeta', 'packeta' ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->title        = __( 'Packeta', 'packeta' );
 		$this->enabled      = 'yes'; // This can be added as a setting.
 		$this->supports     = [
@@ -84,11 +84,11 @@ class ShippingMethod extends \WC_Shipping_Method {
 		];
 
 		if ( $this->wcCarrierSettingsConfig->isActive() ) {
-			$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
+			$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->supports[]         = 'instance-settings';
 			$this->supports[]         = 'instance-settings-modal';
 			$this->carrierRepository  = $this->container->getByType( Carrier\EntityRepository::class );
-			$this->options            = get_option( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+			$this->options            = get_option( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		}
 
 		$this->init();
@@ -111,7 +111,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 			return;
 		}
 
-		$this->instance_form_fields = $this->get_instance_form_fields();
+		$this->instance_form_fields = $this->get_instance_form_fields(); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->title                = $this->get_option( 'title' );
 	}
 

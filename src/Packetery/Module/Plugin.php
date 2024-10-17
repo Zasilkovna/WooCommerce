@@ -308,11 +308,11 @@ class Plugin {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Order\Metabox              $order_metabox             Order metabox.
-	 * @param MessageManager             $message_manager           Message manager.
-	 * @param Options\Page               $options_page              Options page.
+	 * @param Order\Metabox              $orderMetabox             Order metabox.
+	 * @param MessageManager             $messageManager           Message manager.
+	 * @param Options\Page               $optionsPage              Options page.
 	 * @param Checkout                   $checkout                  Checkout class.
-	 * @param Engine                     $latte_engine              PacketeryLatte engine.
+	 * @param Engine                     $latteEngine              PacketeryLatte engine.
 	 * @param OptionsPage                $carrierOptionsPage        Carrier options page.
 	 * @param Order\BulkActions          $orderBulkActions          Order BulkActions.
 	 * @param Order\LabelPrint           $labelPrint                Label printing.
@@ -347,11 +347,11 @@ class Plugin {
 	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
 	 */
 	public function __construct(
-		Order\Metabox $order_metabox,
-		MessageManager $message_manager,
-		Options\Page $options_page,
+		Order\Metabox $orderMetabox,
+		MessageManager $messageManager,
+		Options\Page $optionsPage,
 		Checkout $checkout,
-		Engine $latte_engine,
+		Engine $latteEngine,
 		OptionsPage $carrierOptionsPage,
 		Order\BulkActions $orderBulkActions,
 		Order\LabelPrint $labelPrint,
@@ -385,11 +385,11 @@ class Plugin {
 		CarrierModal $carrierModal,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->optionsPage               = $options_page;
-		$this->latteEngine               = $latte_engine;
+		$this->optionsPage               = $optionsPage;
+		$this->latteEngine               = $latteEngine;
 		$this->mainFilePath              = PACKETERY_PLUGIN_DIR . '/packeta.php';
-		$this->orderMetabox              = $order_metabox;
-		$this->messageManager            = $message_manager;
+		$this->orderMetabox              = $orderMetabox;
+		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
 		$this->carrierOptionsPage        = $carrierOptionsPage;
 		$this->orderBulkActions          = $orderBulkActions;
@@ -1028,9 +1028,9 @@ class Plugin {
 		// This hook is tested.
 		add_filter(
 			'__experimental_woocommerce_blocks_add_data_attributes_to_block',
-			function ( $allowed_blocks ) {
-				$allowed_blocks[] = 'packeta/packeta-widget';
-				return $allowed_blocks;
+			function ( $allowedBlocks ) {
+				$allowedBlocks[] = 'packeta/packeta-widget';
+				return $allowedBlocks;
 			},
 			10,
 			1
@@ -1038,9 +1038,9 @@ class Plugin {
 		// This hook is expected replacement in the future.
 		add_filter(
 			'woocommerce_blocks_add_data_attributes_to_block',
-			function ( $allowed_blocks ) {
-				$allowed_blocks[] = 'packeta/packeta-widget';
-				return $allowed_blocks;
+			function ( $allowedBlocks ) {
+				$allowedBlocks[] = 'packeta/packeta-widget';
+				return $allowedBlocks;
 			},
 			10,
 			1
@@ -1089,7 +1089,7 @@ class Plugin {
 		$optionsRepository = $container->getByType( Options\Repository::class );
 		$pluginOptions     = $optionsRepository->getPluginOptions();
 		foreach ( $pluginOptions as $option ) {
-			delete_option( $option->option_name );
+			delete_option( $option->option_name ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		}
 
 		$logRepository = $container->getByType( Log\Repository::class );

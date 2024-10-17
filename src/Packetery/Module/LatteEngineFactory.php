@@ -25,13 +25,13 @@ class LatteEngineFactory {
 	/**
 	 * Creates latte engine factory
 	 *
-	 * @param string $temp_dir Temporary folder.
+	 * @param string $tempDir Temporary folder.
 	 *
 	 * @return Engine
 	 */
-	public function create( string $temp_dir ): Engine {
+	public function create( string $tempDir ): Engine {
 		$engine = new Engine();
-		$engine->setTempDirectory( $temp_dir );
+		$engine->setTempDirectory( $tempDir );
 		FormMacros::install( $engine->getCompiler() );
 		$engine->addFilter(
 			'wpDateTime',

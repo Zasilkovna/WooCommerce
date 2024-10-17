@@ -177,8 +177,8 @@ class Metabox {
 		Form $orderForm,
 		CarrierModal $carrierModal
 	) {
-		$this->latteEngine    = $latteEngine;
-		$this->messageManager = $messageManager;
+		$this->latteEngine          = $latteEngine;
+		$this->messageManager       = $messageManager;
 		$this->coreHelper           = $coreHelper;
 		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
