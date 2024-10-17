@@ -34,7 +34,7 @@ class FeatureFlagDownloader {
 	 *
 	 * @var string
 	 */
-	private string $endpointUrl;
+	private $endpointUrl;
 
 	/**
 	 * Options provider.
