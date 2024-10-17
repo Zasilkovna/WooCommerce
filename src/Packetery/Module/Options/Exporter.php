@@ -10,10 +10,11 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Log\ILogger;
-use Packetery\Module\Carrier\CountryListingPage;
-use Packetery\Module;
 use Packetery\Latte\Engine;
+use Packetery\Module;
+use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Nette\Http;
+use Packetery\Tracy\Debugger;
 
 /**
  * Class Exporter
@@ -123,7 +124,7 @@ class Exporter {
 			'dbServer'          => $wpdb->db_server_info(),
 			'soap'              => wc_bool_to_string( extension_loaded( 'soap' ) ),
 			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
-			'packetaDebug'      => wc_bool_to_string( PACKETERY_DEBUG ),
+			'packetaDebug'      => wc_bool_to_string( Debugger::isEnabled() ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
