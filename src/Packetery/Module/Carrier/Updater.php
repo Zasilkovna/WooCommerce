@@ -31,7 +31,7 @@ class Updater {
 	 *
 	 * @var Repository
 	 */
-	private $carrier_repository;
+	private $carrierRepository;
 
 	/**
 	 * Logger.
@@ -43,12 +43,12 @@ class Updater {
 	/**
 	 * CarrierUpdater constructor.
 	 *
-	 * @param Repository $carrier_repository Carrier repository.
+	 * @param Repository $carrierRepository Carrier repository.
 	 * @param ILogger    $logger             Logger.
 	 */
-	public function __construct( Repository $carrier_repository, ILogger $logger ) {
-		$this->carrier_repository = $carrier_repository;
-		$this->logger             = $logger;
+	public function __construct( Repository $carrierRepository, ILogger $logger ) {
+		$this->carrierRepository = $carrierRepository;
+		$this->logger            = $logger;
 	}
 
 	/**
@@ -128,10 +128,10 @@ class Updater {
 	 */
 	public function save( array $carriers ): void {
 		$mapped_data  = $this->carriers_mapper( $carriers );
-		$carriersInDb = $this->carrier_repository->getAllRawIndexed();
+		$carriersInDb = $this->carrierRepository->getAllRawIndexed();
 		foreach ( $mapped_data as $carrier_id => $carrier ) {
 			if ( ! empty( $carriersInDb[ $carrier_id ] ) ) {
-				$this->carrier_repository->update( $carrier, (int) $carrier_id );
+				$this->carrierRepository->update( $carrier, (int) $carrier_id );
 				$differences = $this->getArrayDifferences( $carriersInDb[ $carrier_id ], $carrier );
 				if ( ! empty( $differences ) ) {
 					$this->addLogEntry(
@@ -144,7 +144,7 @@ class Updater {
 				unset( $carriersInDb[ $carrier_id ] );
 			} else {
 				$carrier['id'] = $carrier_id;
-				$this->carrier_repository->insert( $carrier );
+				$this->carrierRepository->insert( $carrier );
 				$this->addLogEntry(
 					// translators: %s is carrier name.
 					sprintf( __( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
@@ -153,7 +153,7 @@ class Updater {
 		}
 
 		if ( ! empty( $carriersInDb ) ) {
-			$this->carrier_repository->set_as_deleted( array_keys( $carriersInDb ) );
+			$this->carrierRepository->set_as_deleted( array_keys( $carriersInDb ) );
 			foreach ( $carriersInDb as $deletedCarrier ) {
 				if ( true === (bool) $deletedCarrier['deleted'] ) {
 					continue;
