@@ -575,7 +575,11 @@ class Page {
 	 */
 	public function validatePacketeryOptions( array $options ): array {
 		$form = $this->create_form();
-		/** Packetery container. @var Container $packeteryContainer */
+		/**
+		 * Packetery container.
+		 *
+		 * @var Container $packeteryContainer
+		 */
 		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
 		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {
@@ -607,7 +611,11 @@ class Page {
 	 */
 	public function sanitizePacketeryOptions( array $options ): array {
 		$form = $this->create_form();
-		/** Packetery container. @var Container $packeteryContainer */
+		/**
+		 * Packetery container.
+		 *
+		 * @var Container $packeteryContainer
+		 */
 		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
 		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {

@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Api;
 use Packetery\Module\Api\Internal\OrderRouter;
 use Packetery\Latte\Engine;
 
@@ -37,7 +36,7 @@ class Modal {
 	/**
 	 * Order router.
 	 *
-	 * @var Api\Internal\OrderRouter;
+	 * @var OrderRouter;
 	 */
 	private $apiRouter;
 

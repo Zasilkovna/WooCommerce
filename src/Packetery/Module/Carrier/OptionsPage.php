@@ -699,7 +699,11 @@ class OptionsPage {
 	 * @return void
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
-		/** Pricing type control. @var Control $pricingTypeControl */
+		/**
+		 * Pricing type control.
+		 *
+		 * @var Control $pricingTypeControl
+		 */
 		$pricingTypeControl = $weightLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
 		$limit              = $weightLimits->addContainer( (string) $index );
 		$item               = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
