@@ -2,42 +2,42 @@
 
 <div id="packetery-options-page" class="packeta_page">
 
-    <nav class="nav-tab-wrapper">
-        <a
-            href="{$generalTabLink}"
-            class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_GENERAL} nav-tab-active{/if}"
-        >
-            {$translations['general']}
-        </a>
-        <a
-            href="{$packetStatusSyncTabLink}"
-            class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_PACKET_STATUS_SYNC} nav-tab-active{/if}"
-        >
-            {$translations['packetStatusSyncTabLinkLabel']}
-        </a>
-        <a
-                href="{$autoSubmissionTabLink}"
-                class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_AUTO_SUBMISSION} nav-tab-active{/if}"
-        >
-            {$translations['packetAutoSubmission']}
-        </a>
-        <a
-                href="{$supportTabLink}"
-                class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
-        >
-            {$translations['support']}
-        </a>
-    </nav>
+	<nav class="nav-tab-wrapper">
+		<a
+				href="{$generalTabLink}"
+				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_GENERAL} nav-tab-active{/if}"
+		>
+			{$translations['general']}
+		</a>
+		<a
+				href="{$packetStatusSyncTabLink}"
+				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_PACKET_STATUS_SYNC} nav-tab-active{/if}"
+		>
+			{$translations['packetStatusSyncTabLinkLabel']}
+		</a>
+		<a
+				href="{$autoSubmissionTabLink}"
+				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_AUTO_SUBMISSION} nav-tab-active{/if}"
+		>
+			{$translations['packetAutoSubmission']}
+		</a>
+		<a
+				href="{$supportTabLink}"
+				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
+		>
+			{$translations['support']}
+		</a>
+	</nav>
 
-    <div class="packeta_tab_content">
-        {if isset($error)}
-            <div class="notice notice-error">
-                <p><strong>{$error}</strong></p>
-            </div>
-        {/if}
+	<div class="packeta_tab_content">
+		{if isset($error)}
+			<div class="notice notice-error">
+				<p><strong>{$error}</strong></p>
+			</div>
+		{/if}
 
-        {$messages|noescape}
+		{$messages|noescape}
 
-        {include 'page-tabs/' . $activeTab . '.latte'}
-    </div>
+		{include 'page-tabs/' . $activeTab . '.latte'}
+	</div>
 </div>

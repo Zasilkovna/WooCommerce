@@ -1,40 +1,40 @@
 <?xml version="1.0"?>
 <ruleset name="WooCommerce Coding Standards">
-    <description>Packetery WP plugin coding standards ruleset.</description>
+	<description>Packetery WP plugin coding standards ruleset.</description>
 
-    <file>cli</file>
-    <file>src/Packetery</file>
-    <file>bootstrap.php</file>
-    <file>bootstrap-cli.php</file>
-    <file>packeta.php</file>
+	<file>cli</file>
+	<file>src/Packetery</file>
+	<file>bootstrap.php</file>
+	<file>bootstrap-cli.php</file>
+	<file>packeta.php</file>
 
-    <!-- Configs -->
-    <config name="minimum_supported_wp_version" value="5.0" />
+	<!-- Configs -->
+	<config name="minimum_supported_wp_version" value="5.0"/>
 
-    <ini name="error_reporting" value="E_ALL &#38; ~E_DEPRECATED" />
+	<ini name="error_reporting" value="E_ALL &#38; ~E_DEPRECATED"/>
 
-    <!-- Rules -->
-    <rule ref="WooCommerce-Core">
-        <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
-        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
-        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
-        <exclude name="WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase"/>
-        <exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase"/>
-        <exclude name="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase"/>
-        <exclude name="WordPress.NamingConventions.ValidVariableName.InterpolatedVariableNotSnakeCase"/>
-        <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
-        <exclude name="PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore"/>
-        <exclude name="WordPress.NamingConventions.ValidFunctionName.MethodDoubleUnderscore"/>
-        <exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber"/>
-    </rule>
+	<!-- Rules -->
+	<rule ref="WooCommerce-Core">
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase"/>
+		<exclude name="WordPress.NamingConventions.ValidVariableName.InterpolatedVariableNotSnakeCase"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid"/>
+		<exclude name="PHPCompatibility.FunctionNameRestrictions.ReservedFunctionNames.MethodDoubleUnderscore"/>
+		<exclude name="WordPress.NamingConventions.ValidFunctionName.MethodDoubleUnderscore"/>
+		<exclude name="Squiz.Commenting.FunctionCommentThrowTag.WrongNumber"/>
+	</rule>
 
-    <rule ref="WordPress.WP.I18n">
-        <properties>
-            <property name="text_domain" type="array" value="packeta" />
-        </properties>
-    </rule>
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array" value="packeta"/>
+		</properties>
+	</rule>
 
-    <rule ref="PHPCompatibility">
-        <exclude-pattern>tests/</exclude-pattern>
-    </rule>
+	<rule ref="PHPCompatibility">
+		<exclude-pattern>tests/</exclude-pattern>
+	</rule>
 </ruleset>
