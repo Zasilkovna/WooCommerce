@@ -48,7 +48,7 @@ class Repository {
 	 */
 	public function countRows( ?int $orderId, ?string $action ): int {
 		$whereClause = $this->getWhereClause( [], $orderId, $action );
-		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packetery_log . '`' . $whereClause );
+		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packeteryLog . '`' . $whereClause );
 	}
 
 	/**
@@ -94,7 +94,7 @@ class Repository {
 
 		$whereClause = $this->getWhereClause( $where, $orderId, $action );
 
-		$result = $this->wpdbAdapter->get_results( 'SELECT * FROM `' . $this->wpdbAdapter->packetery_log . '` ' . $whereClause . $orderByClause . $limitClause );
+		$result = $this->wpdbAdapter->get_results( 'SELECT * FROM `' . $this->wpdbAdapter->packeteryLog . '` ' . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
 			return $this->remapToRecord( $result );
 		}
@@ -112,7 +112,7 @@ class Repository {
 	public function deleteOld( string $before ): void {
 		$dateToFormatted = CoreHelper::now()->modify( $before )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 		$this->wpdbAdapter->query(
-			$this->wpdbAdapter->prepare( 'DELETE FROM `' . $this->wpdbAdapter->packetery_log . '` WHERE `date` < %s', $dateToFormatted )
+			$this->wpdbAdapter->prepare( 'DELETE FROM `' . $this->wpdbAdapter->packeteryLog . '` WHERE `date` < %s', $dateToFormatted )
 		);
 	}
 
@@ -171,7 +171,7 @@ class Repository {
 	 * @return bool
 	 */
 	public function createOrAlterTable(): bool {
-		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_log . " (
+		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packeteryLog . " (
 			`id` int(11) NOT NULL AUTO_INCREMENT,
 			`order_id` bigint(20) unsigned NULL,
 			`title` varchar(255) NOT NULL DEFAULT '',
@@ -182,7 +182,7 @@ class Repository {
 			PRIMARY KEY  (`id`)
 		) " . $this->wpdbAdapter->get_charset_collate();
 
-		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_log );
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packeteryLog );
 	}
 
 	/**
@@ -191,7 +191,7 @@ class Repository {
 	 * @return void
 	 */
 	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packetery_log . '`' );
+		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryLog . '`' );
 	}
 
 	/**
@@ -231,7 +231,7 @@ class Repository {
 			'date'     => $dateString,
 		];
 
-		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
+		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryLog, $data, null, 'REPLACE' );
 	}
 
 	/**

@@ -31,7 +31,7 @@ class Updater {
 	 *
 	 * @var Repository
 	 */
-	private $carrier_repository;
+	private $carrierRepository;
 
 	/**
 	 * Logger.
@@ -43,12 +43,12 @@ class Updater {
 	/**
 	 * CarrierUpdater constructor.
 	 *
-	 * @param Repository $carrier_repository Carrier repository.
+	 * @param Repository $carrierRepository Carrier repository.
 	 * @param ILogger    $logger             Logger.
 	 */
-	public function __construct( Repository $carrier_repository, ILogger $logger ) {
-		$this->carrier_repository = $carrier_repository;
-		$this->logger             = $logger;
+	public function __construct( Repository $carrierRepository, ILogger $logger ) {
+		$this->carrierRepository = $carrierRepository;
+		$this->logger            = $logger;
 	}
 
 	/**
@@ -90,9 +90,9 @@ class Updater {
 	 * @return array data to store in db
 	 */
 	private function carriers_mapper( array $carriers ): array {
-		$mapped_data = array();
+		$mappedData = array();
 
-		$carrier_boolean_params = array(
+		$carrierBooleanParams = array(
 			'is_pickup_points'         => 'pickupPoints',
 			'has_carrier_direct_label' => 'apiAllowed',
 			'separate_house_number'    => 'separateHouseNumber',
@@ -104,21 +104,21 @@ class Updater {
 		);
 
 		foreach ( $carriers as $carrier ) {
-			$carrier_id   = (int) $carrier['id'];
-			$carrier_data = array(
+			$carrierId   = (int) $carrier['id'];
+			$carrierData = array(
 				'name'       => $carrier['name'],
 				'country'    => $carrier['country'],
 				'currency'   => $carrier['currency'],
 				'max_weight' => (float) $carrier['maxWeight'],
 				'deleted'    => false,
 			);
-			foreach ( $carrier_boolean_params as $column_name => $param_name ) {
-				$carrier_data[ $column_name ] = ( 'true' === $carrier[ $param_name ] );
+			foreach ( $carrierBooleanParams as $columnName => $paramName ) {
+				$carrierData[ $columnName ] = ( 'true' === $carrier[ $paramName ] );
 			}
-			$mapped_data[ $carrier_id ] = $carrier_data;
+			$mappedData[ $carrierId ] = $carrierData;
 		}
 
-		return $mapped_data;
+		return $mappedData;
 	}
 
 	/**
@@ -127,12 +127,12 @@ class Updater {
 	 * @param array $carriers Validated data retrieved from API.
 	 */
 	public function save( array $carriers ): void {
-		$mapped_data  = $this->carriers_mapper( $carriers );
-		$carriersInDb = $this->carrier_repository->getAllRawIndexed();
-		foreach ( $mapped_data as $carrier_id => $carrier ) {
-			if ( ! empty( $carriersInDb[ $carrier_id ] ) ) {
-				$this->carrier_repository->update( $carrier, (int) $carrier_id );
-				$differences = $this->getArrayDifferences( $carriersInDb[ $carrier_id ], $carrier );
+		$mappedData   = $this->carriers_mapper( $carriers );
+		$carriersInDb = $this->carrierRepository->getAllRawIndexed();
+		foreach ( $mappedData as $carrierId => $carrier ) {
+			if ( ! empty( $carriersInDb[ $carrierId ] ) ) {
+				$this->carrierRepository->update( $carrier, (int) $carrierId );
+				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
 				if ( ! empty( $differences ) ) {
 					$this->addLogEntry(
 						// translators: %s is carrier name.
@@ -141,10 +141,10 @@ class Updater {
 						__( 'New parameters', 'packeta' ) . ': ' . implode( ', ', $differences )
 					);
 				}
-				unset( $carriersInDb[ $carrier_id ] );
+				unset( $carriersInDb[ $carrierId ] );
 			} else {
-				$carrier['id'] = $carrier_id;
-				$this->carrier_repository->insert( $carrier );
+				$carrier['id'] = $carrierId;
+				$this->carrierRepository->insert( $carrier );
 				$this->addLogEntry(
 					// translators: %s is carrier name.
 					sprintf( __( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
@@ -153,7 +153,7 @@ class Updater {
 		}
 
 		if ( ! empty( $carriersInDb ) ) {
-			$this->carrier_repository->set_as_deleted( array_keys( $carriersInDb ) );
+			$this->carrierRepository->set_as_deleted( array_keys( $carriersInDb ) );
 			foreach ( $carriersInDb as $deletedCarrier ) {
 				if ( true === (bool) $deletedCarrier['deleted'] ) {
 					continue;
