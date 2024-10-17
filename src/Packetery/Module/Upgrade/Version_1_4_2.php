@@ -81,9 +81,9 @@ class Version_1_4_2 {
 		$productIds = $this->wpdbAdapter->get_col(
 			$this->wpdbAdapter->prepare(
 				'SELECT `post_id` 
-					   FROM `' . $this->wpdbAdapter->postmeta . '` 
-					   WHERE `meta_key` = %s 
-					   AND `meta_value` LIKE %s',
+					FROM `' . $this->wpdbAdapter->postmeta . '` 
+					WHERE `meta_key` = %s 
+					AND `meta_value` LIKE %s',
 				Product\Entity::META_DISALLOWED_SHIPPING_RATES,
 				'%' . $prefix . '%'
 			)

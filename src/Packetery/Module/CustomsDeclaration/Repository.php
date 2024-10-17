@@ -139,18 +139,18 @@ class Repository {
 		$customsDeclarationItemRows = $this->wpdbAdapter->get_results(
 			sprintf(
 				'SELECT
-					    `id`,
-					    `customs_declaration_id`,
-					    `customs_code`,
-					    `value`,
-					    `product_name_en`,
-					    `product_name`,
-					    `units_count`,
-					    `country_of_origin`,
-					    `weight`,
-					    `is_food_or_book`,
-					    `is_voc`
-				    FROM `%s` WHERE `customs_declaration_id` = %d',
+					`id`,
+					`customs_declaration_id`,
+					`customs_code`,
+					`value`,
+					`product_name_en`,
+					`product_name`,
+					`units_count`,
+					`country_of_origin`,
+					`weight`,
+					`is_food_or_book`,
+					`is_voc`
+				FROM `%s` WHERE `customs_declaration_id` = %d',
 				$this->wpdbAdapter->packetery_customs_declaration_item,
 				$customsDeclarationId
 			),
@@ -356,19 +356,19 @@ class Repository {
 	public function createOrAlterTable(): bool {
 		$createTableQuery = sprintf(
 			'CREATE TABLE `%s` (
-            `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-            `order_id` bigint(20) UNSIGNED NOT NULL,
-            `ead` varchar(50) NOT NULL,
-            `delivery_cost` decimal(13,2) UNSIGNED NOT NULL,
-            `invoice_number` varchar(255) NOT NULL,
-            `invoice_issue_date` date NOT NULL,
-            `invoice_file` mediumblob NULL DEFAULT NULL,
-            `invoice_file_id` varchar(255) NULL DEFAULT NULL,
-            `mrn` varchar(32) NULL DEFAULT NULL,
-            `ead_file` mediumblob NULL DEFAULT NULL,
-            `ead_file_id` varchar(255) NULL DEFAULT NULL,
-            PRIMARY KEY  (`id`)
-        ) %s',
+				`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+				`order_id` bigint(20) UNSIGNED NOT NULL,
+				`ead` varchar(50) NOT NULL,
+				`delivery_cost` decimal(13,2) UNSIGNED NOT NULL,
+				`invoice_number` varchar(255) NOT NULL,
+				`invoice_issue_date` date NOT NULL,
+				`invoice_file` mediumblob NULL DEFAULT NULL,
+				`invoice_file_id` varchar(255) NULL DEFAULT NULL,
+				`mrn` varchar(32) NULL DEFAULT NULL,
+				`ead_file` mediumblob NULL DEFAULT NULL,
+				`ead_file_id` varchar(255) NULL DEFAULT NULL,
+			PRIMARY KEY (`id`)
+		) %s',
 			$this->wpdbAdapter->packetery_customs_declaration,
 			$this->wpdbAdapter->get_charset_collate()
 		);
@@ -395,7 +395,7 @@ class Repository {
 				`weight` decimal(10,3) UNSIGNED NOT NULL,
 				`is_food_or_book` tinyint(1) NOT NULL,
 				`is_voc` tinyint(1) NOT NULL,
-			PRIMARY KEY  (`id`)
+			PRIMARY KEY (`id`)
 		) %s',
 			$this->wpdbAdapter->packetery_customs_declaration_item,
 			$this->wpdbAdapter->get_charset_collate()
