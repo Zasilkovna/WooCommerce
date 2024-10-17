@@ -9,9 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Api\Internal;
 
-use Packetery\Core;
 use Packetery\Core\Entity\Size;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
@@ -67,35 +66,35 @@ final class OrderController extends WP_REST_Controller {
 	private $orderValidator;
 
 	/**
-	 * Helper.
+	 * CoreHelper.
 	 *
-	 * @var Core\Helper
+	 * @var CoreHelper
 	 */
-	private $helper;
+	private $coreHelper;
 
 	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter     $router Router.
+	 * @param OrderRouter     $router          Router.
 	 * @param Repository      $orderRepository Order repository.
-	 * @param GridExtender    $gridExtender Grid extender.
-	 * @param Validator\Order $orderValidator Order validator.
-	 * @param Helper          $helper Helper.
-	 * @param Form            $orderForm Order form.
+	 * @param GridExtender    $gridExtender    Grid extender.
+	 * @param Validator\Order $orderValidator  Order validator.
+	 * @param CoreHelper      $coreHelper      CoreHelper.
+	 * @param Form            $orderForm       Order form.
 	 */
 	public function __construct(
 		OrderRouter $router,
 		Repository $orderRepository,
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
-		Helper $helper,
+		CoreHelper $coreHelper,
 		Form $orderForm
 	) {
 		$this->orderForm       = $orderForm;
 		$this->orderRepository = $orderRepository;
 		$this->gridExtender    = $gridExtender;
 		$this->orderValidator  = $orderValidator;
-		$this->helper          = $helper;
+		$this->coreHelper      = $coreHelper;
 		$this->router          = $router;
 	}
 
@@ -177,7 +176,7 @@ final class OrderController extends WP_REST_Controller {
 		$order->setValue( $values[ Form::FIELD_VALUE ] );
 		$order->setSize( $size );
 		// TODO: Find out why are we using this variable and not form value.
-		$order->setDeliverOn( $this->helper->getDateTimeFromString( $packeteryDeliverOn ) );
+		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $packeteryDeliverOn ) );
 
 		$this->orderRepository->save( $order );
 
@@ -193,7 +192,7 @@ final class OrderController extends WP_REST_Controller {
 			Form::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),
-			Form::FIELD_DELIVER_ON    => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
+			Form::FIELD_DELIVER_ON    => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 			'orderIsSubmittable'      => $this->orderValidator->isValid( $order ),
 			'orderWarningFields'      => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 			'hasOrderManualWeight'    => $order->hasManualWeight(),

@@ -11,15 +11,18 @@ namespace Packetery\Module;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Order as PacketeryOrder;
 use Packetery\Core\Log\ILogger;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\CarrierModal;
 use Packetery\Nette\Http\Request;
-use Packetery\Nette\Utils\Html;
 use WC_Email;
 use WC_Order;
 
@@ -207,7 +210,7 @@ class Plugin {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -254,11 +257,18 @@ class Plugin {
 	private $packetAutoSubmitter;
 
 	/**
-	 * Feature Flag Manager.
+	 * Feature flag provider.
 	 *
-	 * @var Options\FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
-	private $featureFlagManager;
+	private $featureFlagProvider;
+
+	/**
+	 * Feature flag notice manager.
+	 *
+	 * @var FeatureFlagNotice
+	 */
+	private $featureFlagNotice;
 
 	/**
 	 * API extender.
@@ -318,7 +328,7 @@ class Plugin {
 	 * @param Order\Repository           $orderRepository           Order repository.
 	 * @param Upgrade                    $upgrade                   Plugin upgrade.
 	 * @param QueryProcessor             $queryProcessor            QueryProcessor.
-	 * @param Options\Provider           $optionsProvider           Options provider.
+	 * @param OptionsProvider            $optionsProvider           Options provider.
 	 * @param CronService                $cronService               Cron service.
 	 * @param Order\PacketCanceller      $packetCanceller           Packet canceller.
 	 * @param ContextResolver            $contextResolver           Context resolver.
@@ -327,7 +337,8 @@ class Plugin {
 	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
-	 * @param Options\FeatureFlagManager $featureFlagManager        Feature Flag Manager.
+	 * @param FeatureFlagProvider        $featureFlagProvider       Feature flag provider.
+	 * @param FeatureFlagNotice          $featureFlagNotice         Feature flag notice manager.
 	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
 	 * @param Order\ApiExtender          $apiExtender               API extender.
 	 * @param Order\LabelPrintModal      $labelPrintModal           Label print modal.
@@ -356,7 +367,7 @@ class Plugin {
 		Order\Repository $orderRepository,
 		Upgrade $upgrade,
 		QueryProcessor $queryProcessor,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		CronService $cronService,
 		Order\PacketCanceller $packetCanceller,
 		ContextResolver $contextResolver,
@@ -365,7 +376,8 @@ class Plugin {
 		Order\PacketClaimSubmitter $packetClaimSubmitter,
 		ProductCategory\FormFields $productCategoryFormFields,
 		Order\PacketAutoSubmitter $packetAutoSubmitter,
-		Options\FeatureFlagManager $featureFlagManager,
+		FeatureFlagProvider $featureFlagProvider,
+		FeatureFlagNotice $featureFlagNotice,
 		Order\MetaboxesWrapper $metaboxesWrapper,
 		Order\ApiExtender $apiExtender,
 		Order\LabelPrintModal $labelPrintModal,
@@ -403,13 +415,14 @@ class Plugin {
 		$this->packetClaimSubmitter      = $packetClaimSubmitter;
 		$this->productCategoryFormFields = $productCategoryFormFields;
 		$this->packetAutoSubmitter       = $packetAutoSubmitter;
-		$this->featureFlagManager        = $featureFlagManager;
+		$this->featureFlagProvider       = $featureFlagProvider;
 		$this->metaboxesWrapper          = $metaboxesWrapper;
 		$this->apiExtender               = $apiExtender;
 		$this->labelPrintModal           = $labelPrintModal;
 		$this->hookHandler               = $hookHandler;
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
+		$this->featureFlagNotice         = $featureFlagNotice;
 	}
 
 	/**
@@ -475,7 +488,7 @@ class Plugin {
 		add_filter( 'views_edit-shop_order', [ $this->gridExtender, 'addFilterLinks' ] );
 		add_action( 'restrict_manage_posts', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
 
-		$wooCommerceVersion = Helper::getWooCommerceVersion();
+		$wooCommerceVersion = ModuleHelper::getWooCommerceVersion();
 		if ( null !== $wooCommerceVersion && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
 			add_filter( sprintf( 'views_%s', $orderListScreenId ), [ $this->gridExtender, 'addFilterLinks' ] );
 			add_action( 'woocommerce_order_list_table_restrict_manage_orders', [ $this->gridExtender, 'renderOrderTypeSelect' ] );
@@ -622,7 +635,7 @@ class Plugin {
 	 * @return bool
 	 */
 	private static function isWooCommercePluginActive(): bool {
-		return Helper::isPluginActive( 'woocommerce/woocommerce.php' );
+		return ModuleHelper::isPluginActive( 'woocommerce/woocommerce.php' );
 	}
 
 	/**
@@ -746,7 +759,7 @@ class Plugin {
 		 *
 		 * @since 1.5.3
 		 */
-		Helper::renderString( (string) apply_filters( 'packeta_email_footer', $emailHtml, $templateParams ) );
+		ModuleHelper::renderString( (string) apply_filters( 'packeta_email_footer', $emailHtml, $templateParams ) );
 	}
 
 	/**
@@ -865,8 +878,8 @@ class Plugin {
 		$isOrderDetailPage     = $this->contextResolver->isOrderDetailPage();
 		$isProductCategoryPage = $this->contextResolver->isProductCategoryDetailPage() || $this->contextResolver->isProductCategoryGridPage();
 		$datePickerSettings    = [
-			'deliverOnMinDate' => wp_date( \Packetery\Core\Helper::DATEPICKER_FORMAT, strtotime( 'tomorrow' ) ),
-			'dateFormat'       => \Packetery\Core\Helper::DATEPICKER_FORMAT_JS,
+			'deliverOnMinDate' => wp_date( CoreHelper::DATEPICKER_FORMAT, strtotime( 'tomorrow' ) ),
+			'dateFormat'       => CoreHelper::DATEPICKER_FORMAT_JS,
 		];
 
 		if ( $isOrderGridPage || $isOrderDetailPage || in_array( $page, [ Carrier\OptionsPage::SLUG, Options\Page::SLUG ], true ) ) {
@@ -908,11 +921,9 @@ class Plugin {
 			)
 		) {
 			$this->enqueueStyle( 'packetery-admin-styles', 'public/css/admin.css' );
-			// We want to trigger the message on all pages and show it on first request.
-			$this->featureFlagManager->isSplitActive();
 			// It is placed here so that typenow in contextResolver works and there is no need to repeat the conditions.
-			if ( $this->featureFlagManager->shouldShowSplitActivationNotice() ) {
-				add_action( 'admin_notices', [ $this->featureFlagManager, 'renderSplitActivationNotice' ] );
+			if ( $this->featureFlagProvider->shouldShowSplitActivationNotice() ) {
+				add_action( 'admin_notices', [ $this->featureFlagNotice, 'renderSplitActivationNotice' ] );
 			}
 		}
 
@@ -1195,8 +1206,8 @@ class Plugin {
 			$this->packetCanceller->processAction();
 		}
 
-		if ( Options\FeatureFlagManager::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
-			$this->featureFlagManager->dismissSplitActivationNotice();
+		if ( FeatureFlagNotice::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
+			$this->featureFlagProvider->dismissSplitActivationNotice();
 		}
 	}
 

@@ -10,17 +10,16 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator;
 use Packetery\Core\Validator\Order;
-use Packetery\Module;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log;
 use Packetery\Module\Log\Page;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Latte\Engine;
@@ -54,11 +53,11 @@ class Metabox {
 	private $message_manager;
 
 	/**
-	 * Helper.
+	 * CoreHelper.
 	 *
-	 * @var Helper
+	 * @var CoreHelper
 	 */
-	private $helper;
+	private $coreHelper;
 
 	/**
 	 * HTTP request.
@@ -84,7 +83,7 @@ class Metabox {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -149,9 +148,9 @@ class Metabox {
 	 *
 	 * @param Engine               $latte_engine         PacketeryLatte engine.
 	 * @param MessageManager       $message_manager      Message manager.
-	 * @param Helper               $helper               Helper.
+	 * @param CoreHelper           $coreHelper           CoreHelper.
 	 * @param Request              $request              Http request.
-	 * @param Provider             $optionsProvider      Options provider.
+	 * @param OptionsProvider      $optionsProvider      Options provider.
 	 * @param Repository           $orderRepository      Order repository.
 	 * @param Page                 $logPage              Log page.
 	 * @param AttributeMapper      $mapper               AttributeMapper.
@@ -165,9 +164,9 @@ class Metabox {
 	public function __construct(
 		Engine $latte_engine,
 		MessageManager $message_manager,
-		Helper $helper,
+		CoreHelper $coreHelper,
 		Request $request,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Repository $orderRepository,
 		Page $logPage,
 		AttributeMapper $mapper,
@@ -180,7 +179,7 @@ class Metabox {
 	) {
 		$this->latte_engine         = $latte_engine;
 		$this->message_manager      = $message_manager;
-		$this->helper               = $helper;
+		$this->coreHelper           = $coreHelper;
 		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
 		$this->orderRepository      = $orderRepository;
@@ -220,7 +219,7 @@ class Metabox {
 					$this,
 					'render_metabox',
 				),
-				Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
+				ModuleHelper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
 				'side',
 				'high'
 			);
@@ -234,19 +233,19 @@ class Metabox {
 		$parts = $this->prepareMetaboxParts();
 
 		if ( isset( $parts[ self::PART_ERROR ] ) ) {
-			Module\Helper::renderString( $parts[ self::PART_ERROR ] );
+			ModuleHelper::renderString( $parts[ self::PART_ERROR ] );
 
 			return;
 		}
 
 		if ( isset( $parts[ self::PART_CARRIER_CHANGE ] ) ) {
-			Module\Helper::renderString( $parts[ self::PART_CARRIER_CHANGE ] );
+			ModuleHelper::renderString( $parts[ self::PART_CARRIER_CHANGE ] );
 		}
 		if ( isset( $parts[ self::PART_CARRIER_CHANGE ], $parts[ self::PART_MAIN ] ) ) {
-			Module\Helper::renderString( '<hr>' );
+			ModuleHelper::renderString( '<hr>' );
 		}
 		if ( isset( $parts[ self::PART_MAIN ] ) ) {
-			Module\Helper::renderString( $parts[ self::PART_MAIN ] );
+			ModuleHelper::renderString( $parts[ self::PART_MAIN ] );
 		}
 	}
 
@@ -313,7 +312,7 @@ class Metabox {
 					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
 				]
 			);
-			$packetClaimTrackingUrl = $this->helper->get_tracking_url( $order->getPacketClaimId() );
+			$packetClaimTrackingUrl = $this->coreHelper->get_tracking_url( $order->getPacketClaimId() );
 		}
 
 		$packetId = $order->getPacketId();
@@ -354,7 +353,7 @@ class Metabox {
 					'isPacketSubmissionPossible' => false,
 					'orderWarningFields'         => [],
 					'packetCancelLink'           => $packetCancelLink,
-					'packetTrackingUrl'          => $this->helper->get_tracking_url( $packetId ),
+					'packetTrackingUrl'          => $this->coreHelper->get_tracking_url( $packetId ),
 					'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
 					'showLogsLink'               => $showLogsLink,
 					'packetClaimUrl'             => $packetClaimUrl,
@@ -396,7 +395,7 @@ class Metabox {
 			$order->getCod(),
 			$order->getValue(),
 			$order->containsAdultContent(),
-			$this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT )
+			$this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT )
 		);
 
 		$prev_invalid_values = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
@@ -582,9 +581,9 @@ class Metabox {
 		}
 
 		$order->setAdultContent( $formValues[ Form::FIELD_ADULT_CONTENT ] );
-		$order->setCod( is_numeric( $formValues[ Form::FIELD_COD ] ) ? Helper::simplifyFloat( $formValues[ Form::FIELD_COD ], 10 ) : null );
-		$order->setValue( is_numeric( $formValues[ Form::FIELD_VALUE ] ) ? Helper::simplifyFloat( $formValues[ Form::FIELD_VALUE ], 10 ) : null );
-		$order->setDeliverOn( $this->helper->getDateTimeFromString( $formValues[ Form::FIELD_DELIVER_ON ] ) );
+		$order->setCod( is_numeric( $formValues[ Form::FIELD_COD ] ) ? CoreHelper::simplifyFloat( $formValues[ Form::FIELD_COD ], 10 ) : null );
+		$order->setValue( is_numeric( $formValues[ Form::FIELD_VALUE ] ) ? CoreHelper::simplifyFloat( $formValues[ Form::FIELD_VALUE ], 10 ) : null );
+		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $formValues[ Form::FIELD_DELIVER_ON ] ) );
 
 		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
 		$order->setSize( $orderSize );

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Helper
+ * Class ModuleHelper
  *
  * @package Packetery\Module
  */
@@ -13,11 +13,11 @@ use Automattic\WooCommerce\Utilities\OrderUtil;
 use Packetery\Nette\Utils\Html;
 
 /**
- * Class Helper
+ * Class ModuleHelper
  *
  * @package Packetery\Module
  */
-class Helper {
+class ModuleHelper {
 
 	/**
 	 * Gets order detail url.

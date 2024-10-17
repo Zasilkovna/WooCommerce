@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Core\Entity;
 
 use Packetery\Core\Entity\PacketStatus;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
@@ -124,7 +124,7 @@ class OrderTest extends TestCase {
 		self::assertSame( $dummyCod, $order->getCod() );
 		self::assertTrue( $order->hasCod() );
 
-		$dummyDateImmutable = Helper::now();
+		$dummyDateImmutable = CoreHelper::now();
 		$order->setDeliverOn( $dummyDateImmutable );
 		self::assertSame( $dummyDateImmutable, $order->getDeliverOn() );
 

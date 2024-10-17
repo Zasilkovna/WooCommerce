@@ -10,13 +10,13 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity\Carrier;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Control;
@@ -93,9 +93,9 @@ class OptionsPage {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
-	private $featureFlag;
+	private $featureFlagProvider;
 
 	/**
 	 * Car delivery config.
@@ -121,16 +121,16 @@ class OptionsPage {
 	/**
 	 * OptionsPage constructor.
 	 *
-	 * @param Engine                    $latteEngine        PacketeryLatte_engine.
-	 * @param EntityRepository          $carrierRepository  Carrier repository.
-	 * @param FormFactory               $formFactory        Form factory.
-	 * @param Request                   $httpRequest        Packetery\Nette Request.
-	 * @param CountryListingPage        $countryListingPage CountryListingPage.
-	 * @param MessageManager            $messageManager     Message manager.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
-	 * @param FeatureFlagManager        $featureFlag        Feature flag.
-	 * @param CarDeliveryConfig         $carDeliveryConfig  Car delivery config.
-	 * @param WcSettingsConfig          $wcSettingsConfig   WC Native carrier settings config.
+	 * @param Engine                    $latteEngine           PacketeryLatte_engine.
+	 * @param EntityRepository          $carrierRepository     Carrier repository.
+	 * @param FormFactory               $formFactory           Form factory.
+	 * @param Request                   $httpRequest           Packetery\Nette Request.
+	 * @param CountryListingPage        $countryListingPage    CountryListingPage.
+	 * @param MessageManager            $messageManager        Message manager.
+	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
+	 * @param FeatureFlagProvider       $featureFlagProvider   Feature flag.
+	 * @param CarDeliveryConfig         $carDeliveryConfig     Car delivery config.
+	 * @param WcSettingsConfig          $wcSettingsConfig      WC Native carrier settings config.
 	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
 	 */
 	public function __construct(
@@ -141,7 +141,7 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag,
+		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
 		WcSettingsConfig $wcSettingsConfig,
 		CarrierOptionsFactory $carrierOptionsFactory
@@ -153,7 +153,7 @@ class OptionsPage {
 		$this->countryListingPage    = $countryListingPage;
 		$this->messageManager        = $messageManager;
 		$this->pickupPointsConfig    = $pickupPointsConfig;
-		$this->featureFlag           = $featureFlag;
+		$this->featureFlagProvider   = $featureFlagProvider;
 		$this->carDeliveryConfig     = $carDeliveryConfig;
 		$this->wcSettingsConfig      = $wcSettingsConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
@@ -200,7 +200,7 @@ class OptionsPage {
 			->setRequired();
 
 		$carrierOptions = get_option( $optionId );
-		if ( $this->featureFlag->isSplitActive() ) {
+		if ( $this->featureFlagProvider->isSplitActive() ) {
 			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
 			if ( $vendorCheckboxes ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
@@ -403,7 +403,7 @@ class OptionsPage {
 
 		$options = $form->getValues( 'array' );
 
-		if ( $this->featureFlag->isSplitActive() ) {
+		if ( $this->featureFlagProvider->isSplitActive() ) {
 			$checkedVendors = $this->getCheckedVendors( $options );
 			if (
 				isset( $options['vendor_groups'] ) &&
@@ -711,7 +711,7 @@ class OptionsPage {
 
 		$itemRules->addFilter(
 			function ( float $value ) {
-				return Helper::simplifyWeight( $value );
+				return CoreHelper::simplifyWeight( $value );
 			}
 		);
 		// translators: %d is numeric threshold.

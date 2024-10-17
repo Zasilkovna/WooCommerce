@@ -99,7 +99,7 @@ class DetailCommonLogic {
 		}
 
 		$idParam = $this->request->getQuery( 'id' );
-		if ( null !== $idParam && Module\Helper::isHposEnabled() ) {
+		if ( null !== $idParam && Module\ModuleHelper::isHposEnabled() ) {
 			return (int) $idParam;
 		}
 

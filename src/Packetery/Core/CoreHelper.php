@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Helper
+ * Class CoreHelper
  *
  * @package Packetery
  */
@@ -13,11 +13,11 @@ namespace Packetery\Core;
 use DateTimeImmutable;
 
 /**
- * Class Helper
+ * Class CoreHelper
  *
  * @package Packetery
  */
-class Helper {
+class CoreHelper {
 	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
 	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	public const MYSQL_DATE_FORMAT     = 'Y-m-d';

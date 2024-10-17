@@ -2,17 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Tests\Module\Options;
+namespace Tests\Module\Options\FlagManager;
 
-use Packetery\Latte\Engine;
-use Packetery\Module;
-use Packetery\Module\Options\FeatureFlagManager;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\FlagManager\FeatureFlagDownloader;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Module\MockFactory;
-use function json_encode;
 
-class FeatureFlagManagerTest extends TestCase {
+class FeatureFlagProviderTest extends TestCase {
 
 	public static function shouldShowSplitActivationNoticeDataProvider(): array {
 		return [
@@ -47,43 +44,21 @@ class FeatureFlagManagerTest extends TestCase {
 		string|false $messageDismissed,
 		bool $expectedResult,
 	): void {
-		$optionsProvider = $this->createMock( Provider::class );
-		$optionsProvider
-			->method( 'get_api_key' )
-			->willReturn( 'dummy_api_key' );
-
 		$wpAdapter = MockFactory::createWpAdapter( $this );
-		$wpAdapter
-			->method( 'getOption' )
-			->willReturnMap( [
-				[
-					FeatureFlagManager::FLAGS_OPTION_ID,
-					false,
-					false,
-				],
-				[
-					FeatureFlagManager::DISABLED_DUE_ERRORS_OPTION_ID,
-					false,
-					false,
-				],
-			] );
-
-		$wpAdapter
-			->method( 'remoteRetrieveBody' )
-			->willReturn( json_encode( [
-				'features' => [
-					'split' => $isSplitActive,
-				],
-			] ) );
 		$wpAdapter
 			->method( 'getTransient' )
 			->willReturn( $messageDismissed );
 
-		$manager = new FeatureFlagManager(
-			$this->createMock( Engine::class ),
-			$optionsProvider,
-			$this->createMock( Module\Helper::class ),
+		$downloader = $this->createMock( FeatureFlagDownloader::class );
+		$downloader
+			->method( 'getFlags' )
+			->willReturn( [
+				FeatureFlagProvider::FLAG_SPLIT_ACTIVE => $isSplitActive,
+			] );
+
+		$manager = new FeatureFlagProvider(
 			$wpAdapter,
+			$downloader,
 		);
 
 		self::assertEquals( $expectedResult, $manager->shouldShowSplitActivationNotice() );

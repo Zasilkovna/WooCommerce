@@ -31,7 +31,7 @@ class CurrencySwitcherFacade {
 	 * @return float
 	 */
 	public function getConvertedPrice( float $price ): float {
-		if ( Helper::isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
+		if ( ModuleHelper::isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
 			return $this->applyFilterWoocsExchangeValue( $price );
 		}
 

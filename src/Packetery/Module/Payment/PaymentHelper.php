@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Payment;
 
-use Packetery\Module\Options;
+use Packetery\Module\Options\OptionsProvider;
 
 /**
  * Class PaymentHelper.
@@ -22,16 +22,16 @@ class PaymentHelper {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param OptionsProvider $optionsProvider Options provider.
 	 */
-	public function __construct( Options\Provider $optionsProvider ) {
+	public function __construct( OptionsProvider $optionsProvider ) {
 		$this->optionsProvider = $optionsProvider;
 	}
 

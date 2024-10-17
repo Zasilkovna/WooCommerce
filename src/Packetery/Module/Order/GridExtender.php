@@ -10,14 +10,14 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
-use Packetery\Module;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
 use Packetery\Latte\Engine;
+use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
 use WC_Order;
@@ -32,11 +32,11 @@ class GridExtender {
 	private const TEMPLATE_GRID_COLUMN_WEIGHT = PACKETERY_PLUGIN_DIR . '/template/order/grid-column-weight.latte';
 
 	/**
-	 * Generic Helper.
+	 * Generic CoreHelper.
 	 *
-	 * @var Core\Helper
+	 * @var CoreHelper
 	 */
-	private $helper;
+	private $coreHelper;
 
 	/**
 	 * Latte Engine.
@@ -83,7 +83,7 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param Helper                $helper                Helper.
+	 * @param CoreHelper            $coreHelper            CoreHelper.
 	 * @param Engine                $latteEngine           Latte Engine.
 	 * @param Request               $httpRequest           Http Request.
 	 * @param Repository            $orderRepository       Order repository.
@@ -92,7 +92,7 @@ class GridExtender {
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 */
 	public function __construct(
-		Helper $helper,
+		CoreHelper $coreHelper,
 		Engine $latteEngine,
 		Request $httpRequest,
 		Repository $orderRepository,
@@ -100,7 +100,7 @@ class GridExtender {
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->helper                = $helper;
+		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
 		$this->httpRequest           = $httpRequest;
 		$this->orderRepository       = $orderRepository;
@@ -118,7 +118,7 @@ class GridExtender {
 	 */
 	public function addFilterLinks( array $var ): array {
 		$latteParams = [
-			'link'       => Module\Helper::getOrderGridUrl(
+			'link'       => ModuleHelper::getOrderGridUrl(
 				[
 					'filter_action'       => 'packetery_filter_link',
 					'packetery_to_submit' => '1',
@@ -132,7 +132,7 @@ class GridExtender {
 		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		$latteParams = [
-			'link'       => Module\Helper::getOrderGridUrl(
+			'link'       => ModuleHelper::getOrderGridUrl(
 				[
 					'filter_action'       => 'packetery_filter_link',
 					'packetery_to_submit' => false,
@@ -249,7 +249,7 @@ class GridExtender {
 			$order = $this->getOrderByIdCached( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			if ( 'packetery' === $column ) {
-				Module\Helper::renderString( $exception->getMessage() );
+				ModuleHelper::renderString( $exception->getMessage() );
 			}
 
 			return;
@@ -294,11 +294,11 @@ class GridExtender {
 				];
 
 				if ( $packetId ) {
-					$latteParams['packetIdTrackingUrl'] = $this->helper->get_tracking_url( $packetId );
+					$latteParams['packetIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetId );
 				}
 
 				if ( $packetClaimId ) {
-					$latteParams['packetClaimIdTrackingUrl'] = $this->helper->get_tracking_url( $packetClaimId );
+					$latteParams['packetClaimIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetClaimId );
 				}
 
 				$this->latteEngine->render(
@@ -350,10 +350,10 @@ class GridExtender {
 						'packetSubmitUrl'           => $packetSubmitUrl,
 						'packetCancelLink'          => $packetCancelLink,
 						'printLink'                 => $printLink,
-						'helper'                    => new Core\Helper(),
-						'datePickerFormat'          => Core\Helper::DATEPICKER_FORMAT,
+						'helper'                    => new CoreHelper(),
+						'datePickerFormat'          => CoreHelper::DATEPICKER_FORMAT,
 						'logPurgerDatetimeModifier' => get_option( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
-						'packetDeliverOn'           => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Core\Helper::DATEPICKER_FORMAT ),
+						'packetDeliverOn'           => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 						'translations'              => [
 							'printLabel'                  => __( 'Print label', 'packeta' ),
 							'setAdditionalPacketInfo'     => __( 'Set additional packet information', 'packeta' ),

@@ -15,7 +15,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\Exception\InvalidPasswordException;
-use Packetery\Module\Options;
+use Packetery\Module\Options\OptionsProvider;
 
 /**
  * Class Synchronizer
@@ -34,7 +34,7 @@ class PacketSynchronizer {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -62,16 +62,16 @@ class PacketSynchronizer {
 	/**
 	 * Constructor.
 	 *
-	 * @param Api\Soap\Client  $apiSoapClient   API soap client.
-	 * @param Log\ILogger      $logger          Logger.
-	 * @param Options\Provider $optionsProvider Options provider.
-	 * @param Repository       $orderRepository Order repository.
-	 * @param WcOrderActions   $wcOrderActions  WC order actions.
+	 * @param Api\Soap\Client $apiSoapClient   API soap client.
+	 * @param Log\ILogger     $logger          Logger.
+	 * @param OptionsProvider $optionsProvider Options provider.
+	 * @param Repository      $orderRepository Order repository.
+	 * @param WcOrderActions  $wcOrderActions  WC order actions.
 	 */
 	public function __construct(
 		Api\Soap\Client $apiSoapClient,
 		Log\ILogger $logger,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Repository $orderRepository,
 		WcOrderActions $wcOrderActions
 	) {

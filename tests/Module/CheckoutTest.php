@@ -13,7 +13,7 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Payment\PaymentHelper;
@@ -51,7 +51,7 @@ class CheckoutTest extends TestCase {
 		$this->currencySwitcherFacade = MockFactory::createCurrencySwitcherFacade( $this );
 		$this->carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
 		$this->carDeliveryConfig = $this->createMock( CarDeliveryConfig::class );
-		$this->provider = $this->createMock( Provider::class );
+		$this->provider = $this->createMock( OptionsProvider::class );
 
 		$this->checkout = new Checkout(
 			$this->wpAdapter,
@@ -569,21 +569,21 @@ class CheckoutTest extends TestCase {
 	public function testAreBlocksUsedInCheckoutBlockDetection(): void {
 		$this->createCheckoutMock();
 
-		$this->provider->method( 'getCheckoutDetection' )->willReturn( Provider::BLOCK_CHECKOUT_DETECTION );
+		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::BLOCK_CHECKOUT_DETECTION );
 		$this->assertTrue( $this->checkout->areBlocksUsedInCheckout() );
 	}
 
 	public function testAreBlocksUsedInCheckoutClassicDetection(): void {
 		$this->createCheckoutMock();
 
-		$this->provider->method('getCheckoutDetection')->willReturn(Provider::CLASSIC_CHECKOUT_DETECTION);
+		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::CLASSIC_CHECKOUT_DETECTION);
 		$this->assertFalse($this->checkout->areBlocksUsedInCheckout());
 	}
 
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithBlock(): void {
 		$this->createCheckoutMock();
 
-		$this->provider->method('getCheckoutDetection')->willReturn(Provider::AUTOMATIC_CHECKOUT_DETECTION);
+		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION);
 
 		$this->wpAdapter->method('hasBlock')->willReturn( true );
 		$this->assertTrue($this->checkout->areBlocksUsedInCheckout());
@@ -592,7 +592,7 @@ class CheckoutTest extends TestCase {
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithoutBlock(): void {
 		$this->createCheckoutMock();
 
-		$this->provider->method('getCheckoutDetection')->willReturn(Provider::AUTOMATIC_CHECKOUT_DETECTION);
+		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION);
 
 		$this->wpAdapter->method('hasBlock')->willReturn( false );
 		$this->assertFalse($this->checkout->areBlocksUsedInCheckout());

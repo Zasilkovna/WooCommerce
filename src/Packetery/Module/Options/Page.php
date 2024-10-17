@@ -19,7 +19,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 
 /**
  * Class Page
@@ -54,7 +54,7 @@ class Page {
 	/**
 	 * Options Provider
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -97,7 +97,7 @@ class Page {
 	 * Plugin constructor.
 	 *
 	 * @param Engine                          $latte_engine       PacketeryLatte_engine.
-	 * @param Provider                        $optionsProvider    Options provider.
+	 * @param OptionsProvider                 $optionsProvider    Options provider.
 	 * @param FormFactory                     $formFactory        Form factory.
 	 * @param \Packetery\Core\Api\Soap\Client $packetaClient      Packeta Client.
 	 * @param Log\ILogger                     $logger             Logger.
@@ -106,7 +106,7 @@ class Page {
 	 */
 	public function __construct(
 		Engine $latte_engine,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		FormFactory $formFactory,
 		\Packetery\Core\Api\Soap\Client $packetaClient,
 		Log\ILogger $logger,
@@ -258,11 +258,11 @@ class Page {
 	public function createAutoSubmissionForm(): Form {
 		$gateways = PaymentGatewayHelper::getAvailablePaymentGateways();
 		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
-		$defaults = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		$defaults = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
 
 		$form->addCheckbox( 'allow', __( 'Allow packet auto-submission', 'packeta' ) )
 				->setRequired( false )
-				->setDefaultValue( Provider::PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT );
+				->setDefaultValue( OptionsProvider::PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT );
 
 		$eventChoices = [
 			PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE => __( 'On order creation at e-shop checkout', 'packeta' ),
@@ -298,7 +298,7 @@ class Page {
 	 * @return void
 	 */
 	public function onAutoSubmissionFormSuccess( Form $form, array $values ): void {
-		update_option( Provider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION, $values );
+		update_option( OptionsProvider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION, $values );
 
 		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 
@@ -314,19 +314,19 @@ class Page {
 	 */
 	private function createPacketStatusSyncForm(): Form {
 		$form     = $this->formFactory->create( 'packetery_packet_status_sync_form' );
-		$settings = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_SYNC );
+		$settings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
 
 		$form->addText( 'max_status_syncing_packets', __( 'Number of orders synced during one cron call', 'packeta' ) )
 				->setRequired( false )
 				->addRule( Form::INTEGER )
 				->addRule( Form::MIN, null, 0 )
-				->setDefaultValue( Provider::MAX_STATUS_SYNCING_PACKETS_DEFAULT );
+				->setDefaultValue( OptionsProvider::MAX_STATUS_SYNCING_PACKETS_DEFAULT );
 
 		$form->addText( 'max_days_of_packet_status_syncing', __( 'Number of days for which the order status is checked', 'packeta' ) )
 				->setRequired( false )
 				->addRule( Form::INTEGER )
 				->addRule( Form::MIN, null, 0 )
-				->setDefaultValue( Provider::MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT );
+				->setDefaultValue( OptionsProvider::MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT );
 
 		$orderStatusesTransformed = self::getOrderStatusesChoiceData();
 		$orderStatusesContainer   = $form->addContainer( 'status_syncing_order_statuses' );
@@ -410,7 +410,7 @@ class Page {
 			unset( $values['max_days_of_packet_status_syncing'] );
 		}
 
-		update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $values );
+		update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $values );
 
 		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 
@@ -440,14 +440,14 @@ class Page {
 			self::FORM_FIELD_PACKETA_LABEL_FORMAT,
 			__( 'Packeta Label Format', 'packeta' ),
 			$packetaLabelFormats
-		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_PACKETA_LABEL_FORMAT );
+		)->checkDefaultValue( false )->setDefaultValue( OptionsProvider::DEFAULT_VALUE_PACKETA_LABEL_FORMAT );
 
 		$carrierLabelFormats = $this->optionsProvider->getCarrierLabelFormat();
 		$container->addSelect(
 			self::FORM_FIELD_CARRIER_LABEL_FORMAT,
 			__( 'Carrier Label Format', 'packeta' ),
 			$carrierLabelFormats
-		)->checkDefaultValue( false )->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
+		)->checkDefaultValue( false )->setDefaultValue( OptionsProvider::DEFAULT_VALUE_CARRIER_LABEL_FORMAT );
 
 		$gateways        = PaymentGatewayHelper::getAvailablePaymentGateways();
 		$enabledGateways = [];
@@ -506,9 +506,9 @@ class Page {
 			'checkout_detection',
 			__( 'Force checkout type', 'packeta' ),
 			[
-				Provider::AUTOMATIC_CHECKOUT_DETECTION => __( 'Automatic detection', 'packeta' ),
-				Provider::CLASSIC_CHECKOUT_DETECTION   => __( 'Classic checkout', 'packeta' ),
-				Provider::BLOCK_CHECKOUT_DETECTION     => __( 'Block-based checkout', 'packeta' ),
+				OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION => __( 'Automatic detection', 'packeta' ),
+				OptionsProvider::CLASSIC_CHECKOUT_DETECTION => __( 'Classic checkout', 'packeta' ),
+				OptionsProvider::BLOCK_CHECKOUT_DETECTION => __( 'Block-based checkout', 'packeta' ),
 			]
 		);
 
@@ -534,24 +534,24 @@ class Page {
 
 		$container->addCheckbox( 'force_packet_cancel', __( 'Force order cancellation', 'packeta' ) )
 					->setRequired( false )
-					->setDefaultValue( Provider::FORCE_PACKET_CANCEL_DEFAULT );
+					->setDefaultValue( OptionsProvider::FORCE_PACKET_CANCEL_DEFAULT );
 
 		$container->addCheckbox( 'widget_auto_open', __( 'Automatically open widget when shipping was selected', 'packeta' ) )
 					->setRequired( false )
-					->setDefaultValue( Provider::WIDGET_AUTO_OPEN_DEFAULT );
+					->setDefaultValue( OptionsProvider::WIDGET_AUTO_OPEN_DEFAULT );
 
 		$container->addCheckbox( self::FORM_FIELD_FREE_SHIPPING_SHOWN, __( 'Display the FREE shipping text in checkout', 'packeta' ) )
 			->setRequired( false )
-			->setDefaultValue( Provider::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT );
+			->setDefaultValue( OptionsProvider::DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT );
 
 		$container->addCheckbox( 'prices_include_tax', __( 'Prices include tax', 'packeta' ) )
 			->setRequired( false )
-			->setDefaultValue( Provider::PRICES_INCLUDE_TAX_DEFAULT );
+			->setDefaultValue( OptionsProvider::PRICES_INCLUDE_TAX_DEFAULT );
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
-		if ( $this->optionsProvider->has_any( Provider::OPTION_NAME_PACKETERY ) ) {
-			$container->setDefaults( $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY ) );
+		if ( $this->optionsProvider->has_any( OptionsProvider::OPTION_NAME_PACKETERY ) ) {
+			$container->setDefaults( $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY ) );
 		}
 
 		return $form;
@@ -630,7 +630,7 @@ class Page {
 		}
 
 		$defaultWeight                  = $packeteryContainer['default_weight']->getValue();
-		$options['default_weight']      = is_numeric( $defaultWeight ) ? Helper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
+		$options['default_weight']      = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
 		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
 

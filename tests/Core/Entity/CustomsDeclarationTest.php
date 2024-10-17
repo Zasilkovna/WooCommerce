@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Core\Entity;
 
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
@@ -49,7 +49,7 @@ class CustomsDeclarationTest extends TestCase {
 		$customsDeclaration->setInvoiceFileId( $dummyInvoiceFileId );
 		self::assertSame( $dummyInvoiceFileId, $customsDeclaration->getInvoiceFileId() );
 
-		$dummyInvoiceIssueDate = Helper::now();
+		$dummyInvoiceIssueDate = CoreHelper::now();
 		$customsDeclaration->setInvoiceIssueDate( $dummyInvoiceIssueDate );
 		self::assertSame( $dummyInvoiceIssueDate, $customsDeclaration->getInvoiceIssueDate() );
 

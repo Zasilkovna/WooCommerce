@@ -12,7 +12,7 @@ use Packetery\Core\Entity\CustomsDeclarationItem;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 
 class DummyFactory {
@@ -148,7 +148,7 @@ class DummyFactory {
 			'dummyEad',
 			1234.5,
 			'dummyInvoiceNumber123',
-			Helper::now(),
+			CoreHelper::now(),
 		);
 
 		$customsDeclaration->setItems( [ self::createCustomsDeclarationItem() ] );

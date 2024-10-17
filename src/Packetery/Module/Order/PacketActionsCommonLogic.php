@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
-use Packetery\Module\Helper;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
@@ -113,7 +113,7 @@ class PacketActionsCommonLogic {
 			$queryVars = [];
 			parse_str( $this->request->getQuery( self::PARAM_ORDER_GRID_PARAMS ) ?? '', $queryVars );
 
-			if ( wp_safe_redirect( Helper::getOrderGridUrl( $queryVars ) ) ) {
+			if ( wp_safe_redirect( ModuleHelper::getOrderGridUrl( $queryVars ) ) ) {
 				exit;
 			}
 		}
@@ -121,7 +121,7 @@ class PacketActionsCommonLogic {
 		if (
 			self::REDIRECT_TO_ORDER_DETAIL === $redirectTo &&
 			null !== $order &&
-			wp_safe_redirect( Helper::getOrderDetailUrl( (int) $order->getNumber() ) )
+			wp_safe_redirect( ModuleHelper::getOrderDetailUrl( (int) $order->getNumber() ) )
 		) {
 			exit;
 		}

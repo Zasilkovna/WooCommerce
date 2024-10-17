@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Packetery\Module\EntityFactory;
 
 use Packetery\Core\Entity;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 
 /**
  * Class CustomsDeclaration.
@@ -32,7 +32,7 @@ class CustomsDeclaration {
 			(float) $data['delivery_cost'],
 			$data['invoice_number'],
 			\DateTimeImmutable::createFromFormat(
-				Helper::MYSQL_DATE_FORMAT,
+				CoreHelper::MYSQL_DATE_FORMAT,
 				$data['invoice_issue_date']
 			)
 		);

@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Api\Soap;
 
 use Packetery\Core\Entity;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 
 /**
  * Class CreatePacketMapper.
@@ -20,19 +20,19 @@ use Packetery\Core\Helper;
 class CreatePacketMapper {
 
 	/**
-	 * Helper.
+	 * CoreHelper.
 	 *
-	 * @var \Packetery\Core\Helper
+	 * @var CoreHelper
 	 */
-	private $helper;
+	private $coreHelper;
 
 	/**
 	 * CreatePacketMapper constructor.
 	 *
-	 * @param Helper $helper Helper.
+	 * @param CoreHelper $coreHelper CoreHelper.
 	 */
-	public function __construct( Helper $helper ) {
-		$this->helper = $helper;
+	public function __construct( CoreHelper $coreHelper ) {
+		$this->coreHelper = $coreHelper;
 	}
 
 	/**
@@ -58,7 +58,7 @@ class CreatePacketMapper {
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
-			'deliverOn'    => $this->helper->getStringFromDateTime( $order->getDeliverOn(), Helper::DATEPICKER_FORMAT ),
+			'deliverOn'    => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 		];
 
 		$pickupPoint = $order->getPickupPoint();

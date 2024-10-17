@@ -15,7 +15,7 @@ use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\WebRequestClient;
 
 /**
@@ -33,7 +33,7 @@ class PickupPointValidator {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -54,11 +54,11 @@ class PickupPointValidator {
 	/**
 	 * PickupPointValidator constructor.
 	 *
-	 * @param Provider         $optionsProvider Options provider.
+	 * @param OptionsProvider  $optionsProvider Options provider.
 	 * @param ILogger          $logger Logger.
 	 * @param WebRequestClient $webRequestClient HTTP client.
 	 */
-	public function __construct( Provider $optionsProvider, ILogger $logger, WebRequestClient $webRequestClient ) {
+	public function __construct( OptionsProvider $optionsProvider, ILogger $logger, WebRequestClient $webRequestClient ) {
 		$this->optionsProvider  = $optionsProvider;
 		$this->logger           = $logger;
 		$this->webRequestClient = $webRequestClient;
