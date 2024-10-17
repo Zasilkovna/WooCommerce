@@ -6,11 +6,12 @@ namespace Tests\Module\Order;
 
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\Size;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator;
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\GridExtender;
 use Packetery\Module\Order\Repository;
 use Packetery\Nette\Http\Request;
@@ -24,7 +25,7 @@ class GridExtenderTest extends TestCase {
 				'length'       => 300.0,
 				'width'        => 200.0,
 				'height'       => 100.0,
-				'unit'         => Provider::DIMENSIONS_UNIT_CM,
+				'unit'         => OptionsProvider::DIMENSIONS_UNIT_CM,
 				'expectedSize' => new Size( 30.0, 20.0, 10.0 )
 			],
 			[
@@ -60,16 +61,17 @@ class GridExtenderTest extends TestCase {
 		$order->method( 'getWidth' )->willReturn( $width );
 		$order->method( 'getHeight' )->willReturn( $height );
 
-		$optionsProvider = $this->createMock( Provider::class );
+		$optionsProvider = $this->createMock( OptionsProvider::class );
 		$optionsProvider->method( 'getDimensionsUnit' )->willReturn( $unit );
 
 		$gridExtender = new GridExtender(
-			$this->createMock( Helper::class ),
+			$this->createMock( CoreHelper::class ),
 			$this->createMock( Engine::class ),
 			$this->createMock( Request::class ),
 			$this->createMock( Repository::class ),
 			$this->createMock( Validator\Order::class ),
 			$this->createMock( ContextResolver::class ),
+			$this->createMock( CarrierOptionsFactory::class ),
 			$optionsProvider,
 		);
 

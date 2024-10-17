@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Options;
 
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use PHPUnit\Framework\TestCase;
 
 class ProviderTest extends TestCase {
@@ -34,12 +34,12 @@ class ProviderTest extends TestCase {
 	 * @dataProvider dimensionsUnitProvider
 	 */
 	public function testGetDimensionsNumberOfDecimals( string $unit, int $expectedDecimals ): void {
-		$provider = $this->getMockBuilder( Provider::class )
-		                 ->onlyMethods( [ 'getDimensionsUnit' ] )
-		                 ->getMock();
+		$provider = $this->getMockBuilder( OptionsProvider::class )
+			->onlyMethods( [ 'getDimensionsUnit' ] )
+			->getMock();
 
 		$provider->method( 'getDimensionsUnit' )
-		         ->willReturn( $unit );
+			->willReturn( $unit );
 
 		$result = $provider->getDimensionsNumberOfDecimals();
 		$this->assertSame( $expectedDecimals, $result );
@@ -95,15 +95,15 @@ class ProviderTest extends TestCase {
 		int $numberOfDecimals,
 		string $unit
 	): void {
-		$provider = $this->getMockBuilder( Provider::class )
-		                 ->onlyMethods( [ 'getDimensionsNumberOfDecimals', 'getDimensionsUnit' ] )
-		                 ->getMock();
+		$provider = $this->getMockBuilder( OptionsProvider::class )
+			->onlyMethods( [ 'getDimensionsNumberOfDecimals', 'getDimensionsUnit' ] )
+			->getMock();
 
 		$provider->method( 'getDimensionsNumberOfDecimals' )
-		         ->willReturn( $numberOfDecimals );
+			->willReturn( $numberOfDecimals );
 
 		$provider->method( 'getDimensionsUnit' )
-		         ->willReturn( $unit );
+			->willReturn( $unit );
 
 		$result = $provider->getSanitizedDimensionValueInMm( $dimensionValue );
 		$this->assertEquals( $expectedValue, $result );

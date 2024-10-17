@@ -13,7 +13,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\Repository;
@@ -76,7 +76,7 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -89,7 +89,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param Validator\Order $orderValidator  Order validator.
 	 * @param CoreHelper      $coreHelper      CoreHelper.
 	 * @param Form            $orderForm       Order form.
-	 * @param Provider        $optionsProvider Options provider.
+	 * @param OptionsProvider $optionsProvider Options provider.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -98,7 +98,7 @@ final class OrderController extends WP_REST_Controller {
 		Validator\Order $orderValidator,
 		CoreHelper $coreHelper,
 		Form $orderForm,
-		Provider $optionsProvider
+		OptionsProvider $optionsProvider
 	) {
 		$this->orderForm       = $orderForm;
 		$this->orderRepository = $orderRepository;
@@ -201,9 +201,9 @@ final class OrderController extends WP_REST_Controller {
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			Form::FIELD_WEIGHT        => $order->getFinalWeight(),
-			Form::FIELD_LENGTH        => Helper::trimDecimalPlaces( $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
-			Form::FIELD_WIDTH         => Helper::trimDecimalPlaces( $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
-			Form::FIELD_HEIGHT        => Helper::trimDecimalPlaces( $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
+			Form::FIELD_LENGTH        => CoreHelper::trimDecimalPlaces( $values[ Form::FIELD_LENGTH ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
+			Form::FIELD_WIDTH         => CoreHelper::trimDecimalPlaces( $values[ Form::FIELD_WIDTH ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
+			Form::FIELD_HEIGHT        => CoreHelper::trimDecimalPlaces( $values[ Form::FIELD_HEIGHT ], $this->optionsProvider->getDimensionsNumberOfDecimals() ),
 			Form::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),

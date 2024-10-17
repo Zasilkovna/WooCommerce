@@ -480,8 +480,8 @@ class Page {
 			'dimensions_unit',
 			__( 'Units used for dimensions', 'packeta' ),
 			[
-				Provider::DIMENSIONS_UNIT_CM         => 'cm',
-				Provider::DEFAULT_DIMENSIONS_UNIT_MM => 'mm',
+				OptionsProvider::DIMENSIONS_UNIT_CM => 'cm',
+				OptionsProvider::DEFAULT_DIMENSIONS_UNIT_MM => 'mm',
 			]
 		)
 		->setDefaultValue( $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM );
@@ -657,7 +657,7 @@ class Page {
 
 		foreach ( [ 'default_length', 'default_width', 'default_height' ] as $dimension ) {
 			$options[ $dimension ] = is_numeric( $packeteryContainer[ $dimension ]->getValue() )
-				? Helper::trimDecimalPlaces( (float) $packeteryContainer[ $dimension ]->getValue(), 1 )
+				? CoreHelper::trimDecimalPlaces( (float) $packeteryContainer[ $dimension ]->getValue(), 1 )
 				: $packeteryContainer[ $dimension ]->getValue();
 		}
 

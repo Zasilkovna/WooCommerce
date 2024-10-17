@@ -5,7 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Module;
 
 use PHPUnit\Framework\TestCase;
-use Packetery\Module\Helper;
+use Packetery\Module\ModuleHelper;
 
 class HelperTest extends TestCase {
 
@@ -42,7 +42,7 @@ class HelperTest extends TestCase {
 	 * @dataProvider convertToCentimetersProvider
 	 */
 	public function testConvertToCentimeters( int $input, ?float $expected ): void {
-		$result = Helper::convertToCentimeters( $input );
+		$result = ModuleHelper::convertToCentimeters( $input );
 		$this->assertSame( $expected, $result );
 	}
 
@@ -79,7 +79,7 @@ class HelperTest extends TestCase {
 	 * @dataProvider convertToMillimetersProvider
 	 */
 	public function testConvertToMillimeters( float $input, ?float $expected ): void {
-		$result = Helper::convertToMillimeters( $input );
+		$result = ModuleHelper::convertToMillimeters( $input );
 		$this->assertSame( $expected, $result );
 	}
 

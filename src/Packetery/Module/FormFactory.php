@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\TextInput;
 use Packetery\Nette\Forms\Form;
@@ -103,7 +103,7 @@ class FormFactory {
 	 * @return string
 	 */
 	private function setNumType( string $unit ): string {
-		if ( Provider::DIMENSIONS_UNIT_CM === $unit ) {
+		if ( OptionsProvider::DIMENSIONS_UNIT_CM === $unit ) {
 			return Form::FLOAT;
 		}
 
@@ -118,7 +118,7 @@ class FormFactory {
 	 * @return float
 	 */
 	private function setMinValue( string $unit ): float {
-		if ( Provider::DIMENSIONS_UNIT_CM === $unit ) {
+		if ( OptionsProvider::DIMENSIONS_UNIT_CM === $unit ) {
 			return 0.1;
 		}
 

@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
-use Packetery\Module\Helper;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -284,7 +284,7 @@ class OptionsProvider {
 
 		$sanitizedValue = (float) number_format( (float) $value, $this->getDimensionsNumberOfDecimals(), '.', '' );
 		if ( self::DIMENSIONS_UNIT_CM === $this->getDimensionsUnit() ) {
-			return Helper::convertToMillimeters( $sanitizedValue );
+			return ModuleHelper::convertToMillimeters( $sanitizedValue );
 		}
 
 		return $sanitizedValue;

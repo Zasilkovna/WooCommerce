@@ -19,7 +19,7 @@ use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log\Purger;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
 use WC_Order;
@@ -85,7 +85,7 @@ class GridExtender {
 	/**
 	 * Settings provider.
 	 *
-	 * @var Module\Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -99,7 +99,7 @@ class GridExtender {
 	 * @param Order                 $orderValidator        Order validator.
 	 * @param ContextResolver       $contextResolver       Context resolver.
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
-	 * @param Provider              $optionsProvider       Settings provider.
+	 * @param OptionsProvider       $optionsProvider       Settings provider.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -109,7 +109,7 @@ class GridExtender {
 		Order $orderValidator,
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		Provider $optionsProvider
+		OptionsProvider $optionsProvider
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -427,8 +427,8 @@ class GridExtender {
 		$width  = $order->getWidth();
 		$height = $order->getHeight();
 		foreach ( [ $length, $width, $height ] as $dimension ) {
-			if ( null !== $dimension && Module\Options\Provider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
-				$size[] = Module\Helper::convertToCentimeters( (int) $dimension );
+			if ( null !== $dimension && OptionsProvider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
+				$size[] = ModuleHelper::convertToCentimeters( (int) $dimension );
 			} else {
 				$size[] = $dimension;
 			}

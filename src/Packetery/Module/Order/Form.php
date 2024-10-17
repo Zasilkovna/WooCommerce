@@ -13,7 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms;
 
 /**
@@ -43,17 +43,17 @@ class Form {
 	/**
 	 * Class Provider
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $options;
 
 	/**
 	 * FormFactory constructor
 	 *
-	 * @param FormFactory $formFactory Form factory.
-	 * @param Provider    $options Options provider.
+	 * @param FormFactory     $formFactory Form factory.
+	 * @param OptionsProvider $options Options provider.
 	 */
-	public function __construct( FormFactory $formFactory, Provider $options ) {
+	public function __construct( FormFactory $formFactory, OptionsProvider $options ) {
 		$this->formFactory = $formFactory;
 		$this->options     = $options;
 	}
