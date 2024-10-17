@@ -338,13 +338,13 @@ class WpdbAdapter {
 	 * only the specified column will be returned, but the entire result is cached for later use.
 	 *
 	 * @param string $query The query you wish to execute. Setting this parameter to null will return the specified column from the cached results of the previous query.
-	 * @param int    $column_offset The desired column (0 being the first). Defaults to 0.
+	 * @param int    $columnOffset The desired column (0 being the first). Defaults to 0.
 	 *
 	 * @return array Returns an empty array if no result is found.
 	 */
-	public function get_col( string $query, int $column_offset = 0 ): array {
+	public function get_col( string $query, int $columnOffset = 0 ): array {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$result = $this->wpdb->get_col( $query, $column_offset );
+		$result = $this->wpdb->get_col( $query, $columnOffset );
 		if ( [] === $result ) {
 			$this->handleError();
 		}

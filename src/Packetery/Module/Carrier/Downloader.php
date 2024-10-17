@@ -85,8 +85,8 @@ class Downloader {
 				'error',
 			];
 		}
-		$validation_result = $this->carrierUpdater->validate_carrier_data( $carriers );
-		if ( ! $validation_result ) {
+		$validationResult = $this->carrierUpdater->validate_carrier_data( $carriers );
+		if ( ! $validationResult ) {
 			// translators: keep %failReason placeholder intact.
 			$translatedMessage = __( 'Carrier download failed: %failReason Please try again later.', 'packeta' );
 			return [
