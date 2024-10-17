@@ -37,12 +37,12 @@ class WcAdapter {
 	/**
 	 * Gets WC product by id.
 	 *
-	 * @param mixed $product_id Product ID.
+	 * @param mixed $productId Product ID.
 	 *
 	 * @return \WC_Product|null
 	 */
-	public function productFactoryGetProduct( $product_id ) {
-		$product = WC()->product_factory->get_product( $product_id );
+	public function productFactoryGetProduct( $productId ) {
+		$product = WC()->product_factory->get_product( $productId );
 		if ( $product instanceof \WC_Product ) {
 			return $product;
 		}

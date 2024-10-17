@@ -80,7 +80,7 @@ class Checkout {
 	 *
 	 * @var Engine
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Options provider.
@@ -240,7 +240,7 @@ class Checkout {
 		$this->productEntiyFactory         = $productEntityFactory;
 		$this->productCategoryEntiyFactory = $productCategoryEntityFactory;
 		$this->carrierOptionsFactory       = $carrierOptionsFactory;
-		$this->latte_engine                = $latte_engine;
+		$this->latteEngine                = $latte_engine;
 		$this->optionsProvider             = $optionsProvider;
 		$this->carrierRepository           = $carrierRepository;
 		$this->httpRequest                 = $httpRequest;
@@ -304,7 +304,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
@@ -330,7 +330,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
@@ -432,7 +432,7 @@ class Checkout {
 	 * Adds fields to the checkout page to save the values later
 	 */
 	public function renderHiddenInputFields(): void {
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
 			[
 				'fields' => array_unique(
@@ -490,11 +490,11 @@ class Checkout {
 				)
 			);
 			foreach ( $required_attrs as $attr => $required ) {
-				$attr_value = null;
+				$attrValue = null;
 				if ( isset( $checkoutData[ $attr ] ) ) {
-					$attr_value = $checkoutData[ $attr ];
+					$attrValue = $checkoutData[ $attr ];
 				}
-				if ( ! $attr_value ) {
+				if ( ! $attrValue ) {
 					$error = true;
 				}
 			}
@@ -770,7 +770,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/car-delivery-estimated-delivery-date.latte'
 		);
 	}

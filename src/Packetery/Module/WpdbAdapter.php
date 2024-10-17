@@ -25,42 +25,42 @@ class WpdbAdapter {
 	 *
 	 * @var string
 	 */
-	public $packetery_carrier;
+	public $packeteryCarrier;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_order;
+	public $packeteryOrder;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_log;
+	public $packeteryLog;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_customs_declaration;
+	public $packeteryCustomsDeclaration;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_customs_declaration_item;
+	public $packeteryCustomsDeclarationItem;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $wc_orders;
+	public $wcOrders;
 
 	/**
 	 * Table name.

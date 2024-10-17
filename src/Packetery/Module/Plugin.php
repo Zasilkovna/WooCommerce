@@ -44,14 +44,14 @@ class Plugin {
 	 *
 	 * @var Options\Page Options page,
 	 */
-	private $options_page;
+	private $optionsPage;
 
 	/**
 	 * PacketeryLatte engine.
 	 *
 	 * @var Engine
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Dashboard widget.
@@ -72,14 +72,14 @@ class Plugin {
 	 *
 	 * @var string Path to main plugin file.
 	 */
-	private $main_file_path;
+	private $mainFilePath;
 
 	/**
 	 * Admin edit order page Packeta metabox.
 	 *
 	 * @var Order\Metabox
 	 */
-	private $order_metabox;
+	private $orderMetabox;
 
 	/**
 	 * Metaboxes wrapper.
@@ -93,7 +93,7 @@ class Plugin {
 	 *
 	 * @var MessageManager
 	 */
-	private $message_manager;
+	private $messageManager;
 
 	/**
 	 * Checkout object.
@@ -385,11 +385,11 @@ class Plugin {
 		CarrierModal $carrierModal,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->options_page              = $options_page;
-		$this->latte_engine              = $latte_engine;
-		$this->main_file_path            = PACKETERY_PLUGIN_DIR . '/packeta.php';
-		$this->order_metabox             = $order_metabox;
-		$this->message_manager           = $message_manager;
+		$this->optionsPage               = $options_page;
+		$this->latteEngine               = $latte_engine;
+		$this->mainFilePath              = PACKETERY_PLUGIN_DIR . '/packeta.php';
+		$this->orderMetabox              = $order_metabox;
+		$this->messageManager            = $message_manager;
 		$this->checkout                  = $checkout;
 		$this->carrierOptionsPage        = $carrierOptionsPage;
 		$this->orderBulkActions          = $orderBulkActions;
@@ -455,7 +455,7 @@ class Plugin {
 		add_action( 'before_woocommerce_init', [ $this, 'declareWooCommerceCompability' ] );
 		add_action( 'init', [ $this->upgrade, 'check' ] );
 		add_action( 'init', [ $this->logger, 'register' ] );
-		add_action( 'init', [ $this->message_manager, 'init' ] );
+		add_action( 'init', [ $this->messageManager, 'init' ] );
 		add_action( 'rest_api_init', [ $this->apiRegistrar, 'registerRoutes' ] );
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueueAdminAssets' ) );
@@ -464,7 +464,7 @@ class Plugin {
 		add_action(
 			'admin_notices',
 			function () {
-				$this->message_manager->render( MessageManager::RENDERER_WORDPRESS );
+				$this->messageManager->render( MessageManager::RENDERER_WORDPRESS );
 			},
 			self::MIN_LISTENER_PRIORITY
 		);
@@ -472,13 +472,13 @@ class Plugin {
 
 		// TODO: deactivation_hook.
 		register_deactivation_hook(
-			$this->main_file_path,
+			$this->mainFilePath,
 			static function () {
 				CronService::deactivate();
 			}
 		);
 
-		register_uninstall_hook( $this->main_file_path, array( __CLASS__, 'uninstall' ) );
+		register_uninstall_hook( $this->mainFilePath, array( __CLASS__, 'uninstall' ) );
 
 		$wcEmailHook = $this->optionsProvider->getEmailHook();
 		add_action( $wcEmailHook, [ $this, 'renderEmailFooter' ] );
@@ -602,7 +602,7 @@ class Plugin {
 		}
 
 		// High-Performance Order Storage.
-		FeaturesUtil::declare_compatibility( 'custom_order_tables', $this->main_file_path );
+		FeaturesUtil::declare_compatibility( 'custom_order_tables', $this->mainFilePath );
 	}
 
 	/**
@@ -618,7 +618,7 @@ class Plugin {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/admin-notice.latte',
 			[
 				'message' => [
@@ -656,7 +656,7 @@ class Plugin {
 		$carrierId      = $orderEntity->getCarrier()->getId();
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
 			[
 				'pickupPoint'              => $orderEntity->getPickupPoint(),
@@ -690,7 +690,7 @@ class Plugin {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/detail.latte',
 			[
 				'displayPickupPointInfo' => $this->shouldDisplayPickupPointInfo(),
@@ -750,7 +750,7 @@ class Plugin {
 				'packetTrackingOnline' => __( 'Packet tracking online', 'packeta' ),
 			],
 		];
-		$emailHtml      = $this->latte_engine->renderToString(
+		$emailHtml      = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/email/order.latte',
 			$templateParams
 		);
@@ -789,7 +789,7 @@ class Plugin {
 	 */
 	public function renderConfirmModalTemplate(): void {
 		if ( $this->contextResolver->isPacketeryConfirmPage() ) {
-			$this->latte_engine->render(
+			$this->latteEngine->render(
 				PACKETERY_PLUGIN_DIR . '/template/confirm-modal-template.latte',
 				[
 					'translations' => [
@@ -813,7 +813,7 @@ class Plugin {
 	private function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
 		wp_enqueue_script(
 			$name,
-			plugin_dir_url( $this->main_file_path ) . $file,
+			plugin_dir_url( $this->mainFilePath ) . $file,
 			$deps,
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) ),
 			$inFooter
@@ -829,7 +829,7 @@ class Plugin {
 	private function enqueueStyle( string $name, string $file ): void {
 		wp_enqueue_style(
 			$name,
-			plugin_dir_url( $this->main_file_path ) . $file,
+			plugin_dir_url( $this->mainFilePath ) . $file,
 			[],
 			md5( (string) filemtime( PACKETERY_PLUGIN_DIR . '/' . $file ) )
 		);
@@ -946,8 +946,8 @@ class Plugin {
 			$this->enqueueScript( 'packetery-multiplier', 'public/js/multiplier.js', true, [ 'jquery', 'live-form-validation-extension' ] );
 			$this->enqueueScript( 'admin-order-detail', 'public/js/admin-order-detail.js', true, [ 'jquery', 'packetery-multiplier', 'live-form-validation-extension' ] );
 			wp_localize_script( 'admin-order-detail', 'datePickerSettings', $datePickerSettings );
-			$pickupPointPickerSettings = $this->order_metabox->getPickupPointWidgetSettings();
-			$addressPickerSettings     = $this->order_metabox->getAddressWidgetSettings();
+			$pickupPointPickerSettings = $this->orderMetabox->getPickupPointWidgetSettings();
+			$addressPickerSettings     = $this->orderMetabox->getAddressWidgetSettings();
 		}
 
 		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
@@ -973,7 +973,7 @@ class Plugin {
 	 *  Add links to left admin menu.
 	 */
 	public function add_menu_pages(): void {
-		$this->options_page->register();
+		$this->optionsPage->register();
 		$this->carrierOptionsPage->register();
 		$this->labelPrint->register();
 		$this->orderCollectionPrint->register();
@@ -1017,7 +1017,7 @@ class Plugin {
 	 */
 	public function init(): void {
 		add_filter(
-			'plugin_action_links_' . plugin_basename( $this->main_file_path ),
+			'plugin_action_links_' . plugin_basename( $this->mainFilePath ),
 			[
 				$this,
 				'addPluginActionLinks',
@@ -1138,7 +1138,7 @@ class Plugin {
 	 * @return array
 	 */
 	public function addPluginRowMeta( array $links, string $pluginFileName ): array {
-		if ( ! strpos( $pluginFileName, basename( $this->main_file_path ) ) ) {
+		if ( ! strpos( $pluginFileName, basename( $this->mainFilePath ) ) ) {
 			return $links;
 		}
 		$links[] = '<a href="' . esc_url( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .

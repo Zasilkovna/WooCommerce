@@ -66,12 +66,12 @@ class CoreHelper {
 	/**
 	 * Returns tracking URL.
 	 *
-	 * @param string $packet_id Packet ID.
+	 * @param string $packetId Packet ID.
 	 *
 	 * @return string
 	 */
-	public function get_tracking_url( string $packet_id ): string {
-		return sprintf( self::TRACKING_URL, rawurlencode( $packet_id ) );
+	public function get_tracking_url( string $packetId ): string {
+		return sprintf( self::TRACKING_URL, rawurlencode( $packetId ) );
 	}
 
 	/**
