@@ -14,7 +14,7 @@ namespace Packetery\Module\Framework;
  *
  * @package Packetery
  */
-trait WcPageTrait {
+class WcPageAdapter {
 
 	/**
 	 * Retrieve page ids - used for myaccount, edit_address, shop, cart, checkout, pay, view_order, terms. returns -1 if no page is found.

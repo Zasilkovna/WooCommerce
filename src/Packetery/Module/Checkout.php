@@ -712,7 +712,7 @@ class Checkout {
 				'woocommerce/checkout',
 				$this->wpAdapter->getPostField(
 					'post_content',
-					$this->wcAdapter->getPageId( 'checkout' )
+					$this->wcAdapter->wcPage->getPageId( 'checkout' )
 				)
 			) ) {
 			return true;
@@ -950,7 +950,7 @@ class Checkout {
 	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
-		$cartProducts              = $this->wcAdapter->cartGetCartContents();
+		$cartProducts              = $this->wcAdapter->wcCart->cartGetCartContents();
 		$cartPrice                 = $this->getCartContentsTotalIncludingTax();
 		$cartWeight                = $this->getCartWeightKg();
 		$totalCartProductValue     = $this->getTotalCartProductValue();
@@ -997,8 +997,8 @@ class Checkout {
 				$taxes       = null;
 
 				if ( $cost > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
-					$rates            = $this->wcAdapter->taxGetShippingTaxRates();
-					$taxes            = $this->wcAdapter->taxCalcInclusiveTax( $cost, $rates );
+					$rates            = $this->wcAdapter->wcTax->getShippingTaxRates();
+					$taxes            = $this->wcAdapter->wcTax->calcInclusiveTax( $cost, $rates );
 					$taxExclusiveCost = $cost - array_sum( $taxes );
 					/**
 					 * Filters shipping taxes.
@@ -1059,7 +1059,7 @@ class Checkout {
 	 * @return bool
 	 */
 	private function isFreeShippingCouponApplied(): bool {
-		return $this->rateCalculator->isFreeShippingCouponApplied( $this->wcAdapter->cart() );
+		return $this->rateCalculator->isFreeShippingCouponApplied( $this->wcAdapter->wcCart->cart() );
 	}
 
 	/**

@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WcCartAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use WC_Cart;
 use WC_Order;
@@ -35,6 +37,13 @@ class RateCalculator {
 	private $wpAdapter;
 
 	/**
+	 * Framework adapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wooCommerceCartAdapter;
+
+	/**
 	 * RateCalculator constructor.
 	 *
 	 * @param WpAdapter              $wpAdapter       Framework adapter.
@@ -42,9 +51,11 @@ class RateCalculator {
 	 */
 	public function __construct(
 		WpAdapter $wpAdapter,
+		WcCartAdapter $wooCommerceCartAdapter,
 		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
 		$this->wpAdapter              = $wpAdapter;
+		$this->wooCommerceCartAdapter = $wooCommerceCartAdapter;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
 	}
 
@@ -127,7 +138,8 @@ class RateCalculator {
 	 * @return bool
 	 */
 	public function isFreeShippingCouponApplied( $cartOrOrder ): bool {
-		$coupons = $cartOrOrder->get_coupons();
+	//	$coupons = $cartOrOrder->get_coupons();
+		$coupons = $this->wooCommerceCartAdapter->getCupons($cartOrOrder);
 		foreach ( $coupons as $coupon ) {
 			if ( method_exists( $coupon, 'get_free_shipping' ) && $coupon->get_free_shipping() ) {
 				return true;

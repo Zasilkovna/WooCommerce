@@ -12,6 +12,9 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout;
 use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WcCartAdapter;
+use Packetery\Module\Framework\WcPageAdapter;
+use Packetery\Module\Framework\WcTaxAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
@@ -31,7 +34,7 @@ use Tests\Core\DummyFactory;
 class CheckoutTest extends TestCase {
 
 	private WpAdapter|MockObject $wpAdapter;
-	private WpAdapter|MockObject $wcAdapter;
+	private WcAdapter|MockObject $wcAdapter;
 	private WpAdapter|MockObject $productEntityFactory;
 	private WpAdapter|MockObject $productCategoryEntityFactory;
 	private WpAdapter|MockObject $carrierOptionsFactory;
@@ -44,7 +47,14 @@ class CheckoutTest extends TestCase {
 
 	private function createCheckoutMock(): void {
 		$this->wpAdapter = MockFactory::createWpAdapter( $this );
-		$this->wcAdapter = $this->createMock( WcAdapter::class );
+	//	$this->wcAdapter = $this->createMock( WcAdapter::class );
+		$this->wcCart = $this->createMock( WcCartAdapter::class );
+		$this->wcTax = $this->createMock( WcTaxAdapter::class );
+		$this->wcPage = $this->createMock( WcPageAdapter::class );
+		$this->wcAdapter = new WcAdapter($this->wcCart, $this->wcTax, $this->wcPage);
+
+
+		//$this->createMock( WcAdapter::class );
 		$this->productEntityFactory = $this->createMock( ProductEntityFactory::class );
 		$this->productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
 		$this->carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
@@ -68,7 +78,7 @@ class CheckoutTest extends TestCase {
 			$this->createMock( Order\PacketAutoSubmitter::class ),
 			$this->createMock( PickupPointValidator::class ),
 			$this->createMock( Order\AttributeMapper::class ),
-			new RateCalculator( $this->wpAdapter, $this->currencySwitcherFacade ),
+			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade ),
 			$this->createMock( PacketaPickupPointsConfig::class ),
 			$this->createMock( WidgetOptionsBuilder::class ),
 			$this->carrierEntityRepository,
@@ -476,7 +486,10 @@ class CheckoutTest extends TestCase {
 		$cart
 			->method( 'get_coupons' )
 			->willReturn( [] );
-		$this->wcAdapter
+
+		$this->wcCart = $this->createMock( WcCartAdapter::class );
+
+		$this->wcCart
 			->method( 'cart' )
 			->willReturn( $cart );
 
@@ -496,23 +509,24 @@ class CheckoutTest extends TestCase {
 			'quantity'   => 1,
 			'data'       => $wcProduct,
 		];
-		$this->wcAdapter
+
+		$this->wcCart
 			->method( 'cartGetCartContents' )
 			->willReturn( [ $cartItem ] );
-		$this->wcAdapter
+		$this->wcCart
 			->method( 'cartGetCartContent' )
 			->willReturn( [ $cartItem ] );
 
 		$this->wcAdapter
 			->method( 'customerGetShippingCountry' )
 			->willReturn( 'cz' );
-		$this->wcAdapter
+		$this->wcCart
 			->method( 'cartGetCartContentsTotal' )
 			->willReturn( 100.0 );
-		$this->wcAdapter
+		$this->wcCart
 			->method( 'cartGetCartContentsTax' )
 			->willReturn( 21.0 );
-		$this->wcAdapter
+		$this->wcCart
 			->method( 'cartGetCartContentsWeight' )
 			->willReturn( $cartWeightKg );
 		$this->wcAdapter

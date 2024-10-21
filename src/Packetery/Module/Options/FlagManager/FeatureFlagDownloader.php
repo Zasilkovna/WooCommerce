@@ -74,11 +74,11 @@ class FeatureFlagDownloader {
 	 * @param FeatureFlagStorage $featureFlagStorage Feature flag store.
 	 */
 	public function __construct(
-		string $endpointUrl,
-		OptionsProvider $optionsProvider,
-		WpAdapter $wpAdapter,
-		WcAdapter $wcAdapter,
-		FeatureFlagStorage $featureFlagStorage
+        string             $endpointUrl,
+        OptionsProvider    $optionsProvider,
+        WpAdapter          $wpAdapter,
+        WcAdapter          $wcAdapter,
+        FeatureFlagStorage $featureFlagStorage
 	) {
 		$this->endpointUrl        = $endpointUrl;
 		$this->optionsProvider    = $optionsProvider;

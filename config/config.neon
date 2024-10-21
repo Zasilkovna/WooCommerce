@@ -111,3 +111,5 @@ services:
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
+	- Packetery\Module\Framework\WcPage
+	- Packetery\Module\Framework\WcTax

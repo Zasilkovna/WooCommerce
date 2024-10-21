@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait WcCartTrait.
+ * Trait WcCartAdapter.
  *
  * @package Packetery
  */
@@ -9,12 +9,15 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use WC_Cart;
+use WC_Order;
+
 /**
- * Trait WcCartTrait.
+ * Trait WcCartAdapter.
  *
  * @package Packetery
  */
-trait WcCartTrait {
+class WcCartAdapter {
 
 	/**
 	 * Gets cart contents.
@@ -68,6 +71,17 @@ trait WcCartTrait {
 	 */
 	public function cart(): ?\WC_Cart {
 		return WC()->cart;
+	}
+
+
+	/**
+	 * Get cupons.
+	 *
+	 * @param WC_Cart|WC_Order $cartOrOrder Cart or order.
+	 * @return array
+	 */
+	public function getCupons($cartOrOrder): array {
+		return $cartOrOrder->get_coupons();
 	}
 
 }

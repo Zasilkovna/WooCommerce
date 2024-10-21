@@ -30,7 +30,7 @@ class ProductEntityFactory {
 	 *
 	 * @param WcAdapter $wcAdapter WC adapter.
 	 */
-	public function __construct( WcAdapter $wcAdapter ) {
+	public function __construct(WcAdapter $wcAdapter ) {
 		$this->wcAdapter = $wcAdapter;
 	}
 

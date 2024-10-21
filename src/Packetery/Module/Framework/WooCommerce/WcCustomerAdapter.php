@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait WcCustomerTrait.
+ * Trait WcCustomerAdapter.
  *
  * @package Packetery
  */
@@ -10,11 +10,11 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 /**
- * Trait WcCustomerTrait.
+ * Trait WcCustomerAdapter.
  *
  * @package Packetery
  */
-trait WcCustomerTrait {
+class WcCustomerAdapter {
 
 	/**
 	 * Gets customer shipping country.
