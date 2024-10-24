@@ -480,22 +480,22 @@ class Page {
 			->toggle( '#packetery-default-dimensions-value' );
 
 		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+			->setRequired()
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 );
 
 		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+			->setRequired()
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 );
 
 		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+			->setRequired()
+			->addRule( Form::INTEGER )
+			->addRule( Form::MIN, null, 0 );
 
 		// TODO: Packet status sync.
 
