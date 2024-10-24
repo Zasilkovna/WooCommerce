@@ -34,6 +34,12 @@
 		</properties>
 	</rule>
 
+	<rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+		<properties>
+			<property name="searchAnnotations" value="true"/>
+		</properties>
+	</rule>
+
 	<rule ref="PHPCompatibility">
 		<exclude-pattern>tests/</exclude-pattern>
 	</rule>
