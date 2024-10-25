@@ -38,21 +38,21 @@
 		<span class="packetery-dashicons-button-fix-text">{$translations['printPacketLabel']}</span>
 	</a>
 	<a data-packetery-stored-until-edit
-            n:if="$order->isPossibleExtendPacketPickUpDate()"
-            class="button dashicons  dashicons-calendar-alt packetery-dashicons-button-fix"
-            data-order-data="{= json_encode(
-            [
-            'id' => $order->getNumber(),
-            'custom_number' => $order->getCustomNumber(),
-            'packetery_stored_until' => $storedUntil,
-            'orderIsSubmittable' => $orderIsSubmittable,
-            'orderWarningFields' => $orderWarningFields,
-            ]
-            )}"
-    >
-        <span class="packetery-dashicons-button-fix-text">{$translations['setStoredUntil']}</span>
-    </a>
-    <a
+		n:if="$order->isPossibleExtendPacketPickUpDate()"
+		class="button dashicons  dashicons-calendar-alt packetery-dashicons-button-fix"
+		data-order-data="{= json_encode(
+		[
+		'id' => $order->getNumber(),
+		'custom_number' => $order->getCustomNumber(),
+		'packetery_stored_until' => $storedUntil,
+		'orderIsSubmittable' => $orderIsSubmittable,
+		'orderWarningFields' => $orderWarningFields,
+		]
+		)}"
+	>
+		<span class="packetery-dashicons-button-fix-text">{$translations['setStoredUntil']}</span>
+	</a>
+	<a
 			n:if="$packetCancelLink"
 			class="button dashicons dashicons-trash packetery-dashicons-button-fix"
 			data-packetery-confirm-heading="{$translations['reallyCancelPacketHeading']}"
