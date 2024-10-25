@@ -365,7 +365,7 @@ class GridExtender {
 						'order'                            => $order,
 						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
 						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
-						'storedUntil'                      => $this->helper->getStringFromDateTime( $order->getStoredUntil(), Core\Helper::DATEPICKER_FORMAT ),
+						'storedUntil'                      => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
 						'orderWarningFields'               => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 						'packetSubmitUrl'                  => $packetSubmitUrl,
 						'packetCancelLink'                 => $packetCancelLink,
