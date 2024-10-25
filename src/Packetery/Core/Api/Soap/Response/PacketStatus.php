@@ -11,7 +11,6 @@ declare( strict_types=1 );
 namespace Packetery\Core\Api\Soap\Response;
 
 use Packetery\Core\CoreHelper;
-use Packetery\Core\Helper;
 
 /**
  * Class PacketStatus

@@ -90,6 +90,7 @@ class GridExtender {
 
 	/**
 	 * Module helper
+	 *
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
@@ -97,13 +98,15 @@ class GridExtender {
 	/**
 	 * GridExtender constructor.
 	 *
-	 * @param CoreHelper            $coreHelper            CoreHelper.
-	 * @param Engine                $latteEngine           Latte Engine.
-	 * @param Request               $httpRequest           Http Request.
-	 * @param Repository            $orderRepository       Order repository.
-	 * @param Order                 $orderValidator        Order validator.
-	 * @param ContextResolver       $contextResolver       Context resolver.
+	 * @param CoreHelper            $coreHelper CoreHelper.
+	 * @param Engine                $latteEngine Latte Engine.
+	 * @param Request               $httpRequest Http Request.
+	 * @param Repository            $orderRepository Order repository.
+	 * @param Order                 $orderValidator Order validator.
+	 * @param ContextResolver       $contextResolver Context resolver.
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
+	 * @param WpAdapter             $wpAdapter Wp Adapter.
+	 * @param ModuleHelper          $moduleHelper Module Helper.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -123,8 +126,8 @@ class GridExtender {
 		$this->orderValidator        = $orderValidator;
 		$this->contextResolver       = $contextResolver;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
-		$this->wpAdapter = $wpAdapter;
-		$this->moduleHelper = $moduleHelper;
+		$this->wpAdapter             = $wpAdapter;
+		$this->moduleHelper          = $moduleHelper;
 	}
 
 	/**

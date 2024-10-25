@@ -50,7 +50,7 @@ class PacketSetStoredUntil {
 	private function __construct( string $packetId, \DateTimeImmutable $storedUntil, CoreHelper $coreHelper ) {
 		$this->packetId    = $packetId;
 		$this->storedUntil = $storedUntil;
-		$this->coreHelper      = $coreHelper;
+		$this->coreHelper  = $coreHelper;
 	}
 
 	/**

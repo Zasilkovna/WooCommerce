@@ -237,13 +237,19 @@ class ModuleHelper {
 	 * Creates translated Date
 	 *
 	 * @param DateTimeImmutable|null $date   Datetime.
-	 * @param string                 $format Datetime format.
 	 *
 	 * @return string|null
 	 */
-	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date, string $format = 'M j, Y' ): ?string {
-		if (null !== $date) {
-			return WC_DateTime::createFromImmutable( $date )->date_i18n( apply_filters( 'woocommerce_admin_order_date_format', __($format, 'woocommerce' ) ) );
+	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
+		if ( null !== $date ) {
+			return WC_DateTime::createFromImmutable( $date )->date_i18n(
+				/**
+				 * Applies woocommerce_admin_order_date_format filters.
+				 *
+				 * @since 1.8.3
+				 */
+				apply_filters( 'woocommerce_admin_order_date_format', __( 'M j, Y', 'woocommerce' ) ) //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			);
 		}
 
 		return null;
