@@ -269,13 +269,13 @@ final class OrderController extends WP_REST_Controller {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
-		$errorMessage = $this->packetSetStoredUntil->setStoredUntil( $order, $order->getPacketId(), $this->helper->getDateTimeFromString( $storedUntil ) );
+		$errorMessage = $this->packetSetStoredUntil->setStoredUntil( $order, $order->getPacketId(), $this->coreHelper->getDateTimeFromString( $storedUntil ) );
 
 		if ( null !== $errorMessage ) {
 			return new WP_Error( 'packetery_fault', $errorMessage, 400 );
 		}
 
-		$order->setStoredUntil( $this->helper->getDateTimeFromString( $storedUntil ) );
+		$order->setStoredUntil( $this->coreHelper->getDateTimeFromString( $storedUntil ) );
 
 		$this->orderRepository->save( $order );
 

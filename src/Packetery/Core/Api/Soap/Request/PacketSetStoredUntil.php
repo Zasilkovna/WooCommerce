@@ -10,7 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Request;
 
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 
 /**
  * Class PacketSetStoredUntil
@@ -36,21 +36,21 @@ class PacketSetStoredUntil {
 	/**
 	 * Stored until date.
 	 *
-	 * @var Helper
+	 * @var CoreHelper
 	 */
-	private $helper;
+	private $coreHelper;
 
 	/**
 	 * Constructor.
 	 *
 	 * @param string             $packetId Packet ID.
 	 * @param \DateTimeImmutable $storedUntil Stored until date.
-	 * @param Helper             $helper Helper.
+	 * @param CoreHelper         $coreHelper Helper.
 	 */
-	private function __construct( string $packetId, \DateTimeImmutable $storedUntil, Helper $helper ) {
+	private function __construct( string $packetId, \DateTimeImmutable $storedUntil, CoreHelper $coreHelper ) {
 		$this->packetId    = $packetId;
 		$this->storedUntil = $storedUntil;
-		$this->helper      = $helper;
+		$this->coreHelper      = $coreHelper;
 	}
 
 	/**
@@ -63,7 +63,7 @@ class PacketSetStoredUntil {
 		return new self(
 			$packetId,
 			$storedUntil,
-			new Helper()
+			new CoreHelper()
 		);
 	}
 
@@ -82,9 +82,9 @@ class PacketSetStoredUntil {
 	 * @return string
 	 */
 	public function getStoredUntil(): ?string {
-		return $this->helper->getStringFromDateTime(
+		return $this->coreHelper->getStringFromDateTime(
 			$this->storedUntil,
-			Helper::MYSQL_DATE_FORMAT
+			CoreHelper::MYSQL_DATE_FORMAT
 		);
 	}
 }
