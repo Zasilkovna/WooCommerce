@@ -89,6 +89,12 @@ class GridExtender {
 	private $wpAdapter;
 
 	/**
+	 * Module helper
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -107,7 +113,8 @@ class GridExtender {
 		Order $orderValidator,
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		ModuleHelper $moduleHelper
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -117,6 +124,7 @@ class GridExtender {
 		$this->contextResolver       = $contextResolver;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->wpAdapter = $wpAdapter;
+		$this->moduleHelper = $moduleHelper;
 	}
 
 	/**
@@ -391,7 +399,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-stored-until.latte',
 					[
 						'orderNumber' => $order->getNumber(),
-						'storedUntil' => $this->helper->getStringFromDateTime( $order->getStoredUntil(), Core\Helper::DATEPICKER_FORMAT ),
+						'storedUntil' => $this->moduleHelper->getTranslatedStringFromDateTime( $order->getStoredUntil() ),
 					]
 				);
 				break;
