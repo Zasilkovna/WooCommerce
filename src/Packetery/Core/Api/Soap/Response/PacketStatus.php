@@ -10,6 +10,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap\Response;
 
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Helper;
 
 /**
@@ -71,7 +72,7 @@ class PacketStatus extends BaseResponse {
 	 */
 	public function setStoredUntil( ?string $storedUntil ): void {
 		$formatedStoredUntil = $storedUntil ? \DateTimeImmutable::createFromFormat(
-			Helper::MYSQL_DATE_FORMAT,
+			CoreHelper::MYSQL_DATE_FORMAT,
 			$storedUntil
 		) : null;
 
