@@ -37,7 +37,7 @@ class StoredUntilModal {
 	private $storedUntilFormFactory;
 
 	/**
-	 *  Order router.
+	 * Order router.
 	 *
 	 * @var OrderRouter
 	 */

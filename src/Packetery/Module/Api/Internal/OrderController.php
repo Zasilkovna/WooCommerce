@@ -91,14 +91,14 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter            $router Router.
-	 * @param Repository             $orderRepository Order repository.
-	 * @param GridExtender           $gridExtender Grid extender.
-	 * @param Validator\Order        $orderValidator Order validator.
-	 * @param CoreHelper             $coreHelper      CoreHelper.
-	 * @param Form                   $orderForm Order form.
+	 * @param OrderRouter            $router                 Router.
+	 * @param Repository             $orderRepository        Order repository.
+	 * @param GridExtender           $gridExtender           Grid extender.
+	 * @param Validator\Order        $orderValidator         Order validator.
+	 * @param CoreHelper             $coreHelper             CoreHelper.
+	 * @param Form                   $orderForm              Order form.
 	 * @param StoredUntilFormFactory $storedUntilFormFactory Stored until Form Factory.
-	 * @param PacketSetStoredUntil   $packetSetStoredUntil Packet Set Stored Until.
+	 * @param PacketSetStoredUntil   $packetSetStoredUntil   Packet Set Stored Until.
 	 */
 	public function __construct(
 		OrderRouter $router,

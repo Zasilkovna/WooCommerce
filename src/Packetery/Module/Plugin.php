@@ -345,7 +345,7 @@ class Plugin {
 	 * @param Order\PacketClaimSubmitter $packetClaimSubmitter      Packet claim submitter.
 	 * @param ProductCategory\FormFields $productCategoryFormFields Product category form fields.
 	 * @param Order\PacketAutoSubmitter  $packetAutoSubmitter       Packet auto submitter.
-	 * @param FeatureFlagProvider        $featureFlagProvider        Feature flag provider.
+	 * @param FeatureFlagProvider        $featureFlagProvider       Feature flag provider.
 	 * @param FeatureFlagNotice          $featureFlagNotice         Feature flag notice manager.
 	 * @param Order\MetaboxesWrapper     $metaboxesWrapper          Metaboxes wrapper.
 	 * @param Order\ApiExtender          $apiExtender               API extender.

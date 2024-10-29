@@ -34,7 +34,7 @@ class PacketSetStoredUntil {
 	private $storedUntil;
 
 	/**
-	 * Stored until date.
+	 * Core helper.
 	 *
 	 * @var CoreHelper
 	 */
