@@ -1413,8 +1413,9 @@ class Checkout {
 		}
 
 		$order = null;
-		if ( isset( $wp->query_vars['order-pay'] ) && is_numeric( $wp->query_vars['order-pay'] ) ) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-			$order = $this->orderRepository->getById( (int) $wp->query_vars['order-pay'], true ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$wpOrderPay = $wp->query_vars['order-pay'] ?? null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		if ( is_numeric( $wpOrderPay ) ) {
+			$order = $this->orderRepository->getById( (int) $wpOrderPay, true );
 		}
 
 		if ( $order instanceof Entity\Order ) {

@@ -181,8 +181,8 @@ class Upgrade {
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
-			$version142 = new Version_1_4_2( $this->wpdbAdapter );
-			$version142->run();
+			$version = new Version_1_4_2( $this->wpdbAdapter );
+			$version->run();
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.5', '<' ) ) {
