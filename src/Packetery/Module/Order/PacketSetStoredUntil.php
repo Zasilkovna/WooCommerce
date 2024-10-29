@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Log;
 
@@ -58,7 +59,7 @@ class PacketSetStoredUntil {
 	 * @return null|string
 	 */
 	public function setStoredUntil( Order $order, ?string $packetId, \DateTimeImmutable $storedUntil ): ?string {
-		$request      = Soap\Request\PacketSetStoredUntil::create( $packetId, $storedUntil );
+		$request      = new Soap\Request\PacketSetStoredUntil( $packetId, $storedUntil, new CoreHelper() );
 		$result       = $this->soapApiClient->packetSetStoredUntil( $request );
 		$errorMessage = null;
 

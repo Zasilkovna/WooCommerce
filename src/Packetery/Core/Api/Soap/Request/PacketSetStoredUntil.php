@@ -47,24 +47,10 @@ class PacketSetStoredUntil {
 	 * @param \DateTimeImmutable $storedUntil Stored until date.
 	 * @param CoreHelper         $coreHelper Helper.
 	 */
-	private function __construct( string $packetId, \DateTimeImmutable $storedUntil, CoreHelper $coreHelper ) {
+	public function __construct( string $packetId, \DateTimeImmutable $storedUntil, CoreHelper $coreHelper ) {
 		$this->packetId    = $packetId;
 		$this->storedUntil = $storedUntil;
 		$this->coreHelper  = $coreHelper;
-	}
-
-	/**
-	 * Named Constructor.
-	 *
-	 * @param string             $packetId Packet ID.
-	 * @param \DateTimeImmutable $storedUntil Stored until date.
-	 */
-	public static function create( string $packetId, \DateTimeImmutable $storedUntil ): PacketSetStoredUntil {
-		return new self(
-			$packetId,
-			$storedUntil,
-			new CoreHelper()
-		);
 	}
 
 	/**
