@@ -73,7 +73,7 @@ class WidgetOptionsBuilder {
 			$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
 		}
 		if ( empty( $vendorGroups ) ) {
-			$vendorGroups = $this->pickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId, $country );
+			$vendorGroups = $this->pickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId );
 		}
 
 		if ( empty( $vendorGroups ) ) {
