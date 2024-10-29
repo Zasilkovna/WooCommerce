@@ -22,7 +22,7 @@ class PacketSynchronizerTest extends TestCase {
 	private PacketSynchronizer $packetSynchronizer;
 	private Client|MockObject $client;
 
-	protected function setUp(): void {
+	private function createPacketSynchronize(): void {
 		$this->client    = $this->createMock( Client::class );
 		$logger          = $this->createMock( ILogger::class );
 		$this->provider  = $this->createMock( OptionsProvider::class );
@@ -39,6 +39,7 @@ class PacketSynchronizerTest extends TestCase {
 	}
 
 	public function testSuccessfulSynchronization(): void {
+		$this->createPacketSynchronize();
 		$storedUntil  = new \DateTimeImmutable( 'now' );
 		$packetStatus = 'some packet status';
 		$order        = DummyFactory::createOrderCzPp();
@@ -59,6 +60,7 @@ class PacketSynchronizerTest extends TestCase {
 	}
 
 	public function testSynchronizationHasFault(): void {
+		$this->createPacketSynchronize();
 		$order = $this->createMock( Order::class );
 		$order->method( 'getPacketId' )->willReturn( '123456' );
 		$order->method( 'getNumber' )->willReturn( '123456' );
@@ -77,6 +79,7 @@ class PacketSynchronizerTest extends TestCase {
 	}
 
 	public function testSynchronizationHasWrongPassword(): void {
+		$this->createPacketSynchronize();
 		$order = $this->createMock( Order::class );
 		$order->method( 'getPacketId' )->willReturn( '123456' );
 		$order->method( 'getNumber' )->willReturn( '123456' );
