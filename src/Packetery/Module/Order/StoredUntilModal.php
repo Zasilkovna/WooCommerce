@@ -64,27 +64,16 @@ class StoredUntilModal {
 	 * Registers order modal.
 	 */
 	public function register(): void {
-		add_action( 'admin_head', [ $this, 'renderPacketModal' ] );
+		add_action( 'admin_head', [ $this, 'renderModal' ] );
 	}
 
 	/**
 	 * Renders packet modal.
-	 */
-	public function renderPacketModal(): void {
-		$this->renderModal(
-			self::MODAL_ID
-		);
-	}
-
-	/**
-	 * Renders packet modal.
-	 *
-	 * @param string $id       Modal ID.
 	 *
 	 * @return void
 	 */
-	private function renderModal( string $id ): void {
-		$form  = $this->storedUntilFormFactory->createForm( sprintf( '%s_form', $id ) );
+	public function renderModal(): void {
+		$form  = $this->storedUntilFormFactory->createForm( sprintf( '%s_form', self::MODAL_ID ) );
 		$nonce = wp_create_nonce( 'wp_rest' );
 
 		$storedUntilSaveUrl = $this->orderRouter->getSaveStoredUntilUrl();
@@ -95,7 +84,7 @@ class StoredUntilModal {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/stored-until-modal.latte',
 			[
-				'id'                 => $id,
+				'id'                 => self::MODAL_ID,
 				'form'               => $form,
 				'nonce'              => $nonce,
 				'storedUntilSaveUrl' => $storedUntilSaveUrl,

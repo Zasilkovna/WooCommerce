@@ -987,7 +987,6 @@ class Plugin {
 			];
 			$this->enqueueScript( 'packetery-admin-stored-until-modal-js', 'public/js/admin-stored-until-modal.js', true, [ 'jquery', 'wp-util', 'backbone' ] );
 			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'datePickerSettings', $detailPageSettings );
-			wp_localize_script( 'packetery-admin-stored-until-modal-js', 'settings', $orderGridPageSettings );
 		}
 
 		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
