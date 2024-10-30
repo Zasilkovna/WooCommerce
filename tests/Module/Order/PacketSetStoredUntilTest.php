@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Module\Order;
 
 use Packetery\Core\Api\Soap\Client;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Api\Soap\Response\PacketSetStoredUntil as ResponsePacketSetStoredUntil;
 use Packetery\Module\Order\PacketSetStoredUntil;
@@ -27,6 +28,7 @@ class PacketSetStoredUntilTest extends TestCase {
 		$this->packetSetStoredUntil = new PacketSetStoredUntil(
 			$this->client,
 			$this->loggerMock,
+			new CoreHelper(),
 		);
 	}
 
