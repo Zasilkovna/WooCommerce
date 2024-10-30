@@ -36,17 +36,27 @@ class PacketSetStoredUntil {
 	private $logger;
 
 	/**
+	 * CoreHelper.
+	 *
+	 * @var CoreHelper
+	 */
+	private $coreHelper;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Soap\Client $soapApiClient Soap client API.
 	 * @param Log\ILogger $logger        Logger.
+	 * @param CoreHelper  $coreHelper     CoreHelper.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
-		Log\ILogger $logger
+		Log\ILogger $logger,
+		CoreHelper $coreHelper,
 	) {
 		$this->soapApiClient = $soapApiClient;
 		$this->logger        = $logger;
+		$this->coreHelper    = $coreHelper;
 	}
 
 	/**
@@ -59,7 +69,7 @@ class PacketSetStoredUntil {
 	 * @return null|string
 	 */
 	public function setStoredUntil( Order $order, ?string $packetId, \DateTimeImmutable $storedUntil ): ?string {
-		$request      = new Soap\Request\PacketSetStoredUntil( $packetId, $storedUntil, new CoreHelper() );
+		$request      = new Soap\Request\PacketSetStoredUntil( $packetId, $storedUntil, $this->coreHelper );
 		$result       = $this->soapApiClient->packetSetStoredUntil( $request );
 		$errorMessage = null;
 
