@@ -47,12 +47,12 @@ class PacketSetStoredUntil {
 	 *
 	 * @param Soap\Client $soapApiClient Soap client API.
 	 * @param Log\ILogger $logger        Logger.
-	 * @param CoreHelper  $coreHelper     CoreHelper.
+	 * @param CoreHelper  $coreHelper    CoreHelper.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
 		Log\ILogger $logger,
-		CoreHelper $coreHelper,
+		CoreHelper $coreHelper
 	) {
 		$this->soapApiClient = $soapApiClient;
 		$this->logger        = $logger;
