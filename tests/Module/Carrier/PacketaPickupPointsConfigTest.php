@@ -12,18 +12,6 @@ use PHPUnit\Framework\TestCase;
 
 class PacketaPickupPointsConfigTest extends TestCase {
 
-	private function createPacketaPickupPointsConfigMock(): PacketaPickupPointsConfig {
-		$featureFlagProvider = $this->createMock( FeatureFlagProvider::class );
-		$featureFlagProvider->method( 'isSplitActive' )
-			->willReturn( true );
-
-		return new PacketaPickupPointsConfig(
-			new CompoundCarrierCollectionFactory(),
-			new VendorCollectionFactory(),
-			$featureFlagProvider,
-		);
-	}
-
 	public static function compoundCarrierGroupsProvider(): array {
 		return [
 			'CZ'           => [
@@ -69,7 +57,15 @@ class PacketaPickupPointsConfigTest extends TestCase {
 	 * @dataProvider compoundCarrierGroupsProvider
 	 */
 	public function testGetCompoundCarrierVendorGroups( string $carrierId, array $expectedGroups ): void {
-		$packetaPickupPointsConfig = $this->createPacketaPickupPointsConfigMock();
+		$featureFlagProvider = $this->createMock( FeatureFlagProvider::class );
+		$featureFlagProvider->method( 'isSplitActive' )
+			->willReturn( true );
+
+		$packetaPickupPointsConfig = new PacketaPickupPointsConfig(
+			new CompoundCarrierCollectionFactory(),
+			new VendorCollectionFactory(),
+			$featureFlagProvider,
+		);
 
 		self::assertEquals( $expectedGroups, $packetaPickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId ) );
 	}
