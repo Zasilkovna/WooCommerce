@@ -16,6 +16,7 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\Exception\InvalidPasswordException;
 use Packetery\Module\Options\OptionsProvider;
+use function as_schedule_single_action;
 
 /**
  * Class Synchronizer
@@ -23,6 +24,8 @@ use Packetery\Module\Options\OptionsProvider;
  * @package Packetery\Module\Order
  */
 class PacketSynchronizer {
+
+	private const HOOK_NAME_SYNC_ORDER_STATUS = 'packetery_sync_order_status';
 
 	/**
 	 * API soap client.
@@ -83,25 +86,46 @@ class PacketSynchronizer {
 	}
 
 	/**
+	 * Register hook.
+	 *
+	 * @return void
+	 */
+	public function register() {
+		add_action( self::HOOK_NAME_SYNC_ORDER_STATUS, [ $this, 'syncStatusById' ] );
+	}
+
+	/**
 	 * Synchronizes packets.
 	 *
 	 * @return void
 	 */
 	public function syncStatuses(): void {
-		$results = $this->orderRepository->findStatusSyncingOrders(
+		$results = $this->orderRepository->findStatusSyncingOrderIds(
 			$this->optionsProvider->getStatusSyncingPacketStatuses(),
 			$this->optionsProvider->getExistingStatusSyncingOrderStatuses(),
 			$this->optionsProvider->getMaxDaysOfPacketStatusSyncing(),
 			$this->optionsProvider->getMaxStatusSyncingPackets()
 		);
 
-		foreach ( $results as $order ) {
-			try {
-				$this->syncStatus( $order );
-			} catch ( InvalidPasswordException $exception ) {
-				break;
-			}
+		foreach ( $results as $orderId ) {
+			as_schedule_single_action( time(), self::HOOK_NAME_SYNC_ORDER_STATUS, [ $orderId ] );
 		}
+	}
+
+	/**
+	 * Synchronizes status for one order.
+	 *
+	 * @param int $orderId Order id.
+	 *
+	 * @return void
+	 */
+	public function syncStatusById( int $orderId ): void {
+		$order = $this->orderRepository->getById( $orderId );
+		if ( null === $order ) {
+			return;
+		}
+
+		$this->syncStatus( $order );
 	}
 
 	/**
