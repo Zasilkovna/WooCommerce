@@ -1,4 +1,8 @@
 == Changelog ==
+= 1.8.3 =
+Added: Possibility to enable Tracy debugger for specific IP addresses.
+Fixed: Correct display for Packeta Pick-up Point carrier in countries with external pickup points.
+
 = 1.8.2 =
 Added: Now the user has the possibility to force which type of checkout he uses (block-based or classic).
 
