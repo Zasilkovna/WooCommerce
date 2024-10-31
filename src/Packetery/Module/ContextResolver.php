@@ -41,10 +41,12 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderGridPage(): bool {
-		global $pagenow, $typenow, $pluginPage;
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+		global $pagenow, $typenow, $plugin_page;
 
 		if ( ModuleHelper::isHposEnabled() ) {
-			return 'admin.php' === $pagenow && 'wc-orders' === $pluginPage && false === in_array( $this->request->getQuery( 'action' ), [ 'edit', 'new' ], true );
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && false === in_array( $this->request->getQuery( 'action' ), [ 'edit', 'new' ], true );
 		}
 
 		return 'edit.php' === $pagenow && 'shop_order' === $typenow;
@@ -56,10 +58,12 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderDetailPage(): bool {
-		global $pagenow, $typenow, $pluginPage;
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+		global $pagenow, $typenow, $plugin_page;
 
 		if ( ModuleHelper::isHposEnabled() ) {
-			return 'admin.php' === $pagenow && 'wc-orders' === $pluginPage && 'edit' === $this->request->getQuery( 'action' );
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && 'edit' === $this->request->getQuery( 'action' );
 		}
 
 		return 'post.php' === $pagenow && 'shop_order' === $typenow;
