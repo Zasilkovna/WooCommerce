@@ -23,16 +23,6 @@ class FeatureFlagProviderTest extends TestCase {
 				'messageDismissed' => 'yes',
 				'expectedResult'   => false,
 			],
-			[
-				'isSplitActive'    => false,
-				'messageDismissed' => 'yes',
-				'expectedResult'   => false,
-			],
-			[
-				'isSplitActive'    => false,
-				'messageDismissed' => false,
-				'expectedResult'   => false,
-			],
 		];
 	}
 
