@@ -60,7 +60,7 @@ class FeatureFlagProvider {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	public function isSplitActive(): bool {
-		// Temporarily enabled. Split will be removed completely in the 2nd phase.
+		// Enabled for all users. Method will be removed later.
 		return true;
 	}
 
