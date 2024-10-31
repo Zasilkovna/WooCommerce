@@ -1,8 +1,10 @@
 {
 	"Exclude": [
 		"^vendor\/",
+		"^node_modules\/",
 		"^.git\/",
 		"^deps\/",
+		"^tests-coverage\/",
 		"^phpstan\/vendor\/",
 		"^public\/libs\/",
 		"^public\/block\/index.asset.php",
