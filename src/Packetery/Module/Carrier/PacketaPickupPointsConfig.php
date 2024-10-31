@@ -92,6 +92,29 @@ class PacketaPickupPointsConfig {
 	}
 
 	/**
+	 * Gets vendor groups for compound carrier.
+	 *
+	 * @param string $carrierId Carrier id.
+	 *
+	 * @return array
+	 */
+	public function getCompoundCarrierVendorGroups( string $carrierId ): array {
+		$vendorGroups              = [];
+		$vendorCarriers            = $this->getVendorCarriers();
+		$compoundCarrierCollection = $this->compoundCarrierFactory->create();
+		foreach ( $compoundCarrierCollection as $compoundProvider ) {
+			if ( $compoundProvider->getId() === $carrierId ) {
+				$vendorCodes = $compoundProvider->getVendorCodes();
+				foreach ( $vendorCodes as $vendorCode ) {
+					$vendorGroups[] = $vendorCarriers[ $vendorCode ]->getGroup();
+				}
+			}
+		}
+
+		return $vendorGroups;
+	}
+
+	/**
 	 * Gets vendor carriers settings.
 	 *
 	 * @return VendorProvider[]

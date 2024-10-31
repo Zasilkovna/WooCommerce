@@ -54,11 +54,11 @@ class WidgetOptionsBuilder {
 	 *
 	 * @param string     $carrierId    Carrier id.
 	 * @param string     $country      Country.
-	 * @param array|null $vendorGroups Vendor groups.
+	 * @param array|null $vendorGroups Vendor groups when checked in compound carrier settings.
 	 *
-	 * @return array|null
+	 * @return array
 	 */
-	private function getWidgetVendorsParam( string $carrierId, string $country, ?array $vendorGroups ): ?array {
+	private function getWidgetVendorsParam( string $carrierId, string $country, ?array $vendorGroups ): array {
 		if ( is_numeric( $carrierId ) ) {
 			return [
 				[
@@ -68,13 +68,15 @@ class WidgetOptionsBuilder {
 			];
 		}
 
-		$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
-		if ( ! empty( $vendorCarriers[ $carrierId ] ) ) {
-			$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
-		}
-
 		if ( empty( $vendorGroups ) ) {
-			return null;
+			if ( $this->pickupPointsConfig->isCompoundCarrierId( $carrierId ) ) {
+				$vendorGroups = $this->pickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId );
+			} else {
+				$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
+				if ( ! empty( $vendorCarriers[ $carrierId ] ) ) {
+					$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
+				}
+			}
 		}
 
 		$vendorsParam = [];
