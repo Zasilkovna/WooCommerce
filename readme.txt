@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.6.2
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 9.3.3
@@ -64,6 +64,9 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.8.4 =
+Fixed: Incorrect usage of a helper class causing an error when order with stored API error message is in the order list.
+
 = 1.8.3 =
 Added: Possibility to enable Tracy debugger for specific IP addresses.
 Fixed: Correct display for Packeta Pick-up Point carrier in countries with external pickup points.

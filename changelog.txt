@@ -1,4 +1,7 @@
 == Changelog ==
+= 1.8.4 =
+Fixed: Incorrect usage of a helper class causing an error when order with stored API error message is in the order list.
+
 = 1.8.3 =
 Added: Possibility to enable Tracy debugger for specific IP addresses.
 Fixed: Correct display for Packeta Pick-up Point carrier in countries with external pickup points.
