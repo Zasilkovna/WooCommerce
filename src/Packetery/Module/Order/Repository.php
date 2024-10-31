@@ -676,7 +676,8 @@ class Repository {
 	 * @return void
 	 */
 	public function deletedPostHook( int $postId, WP_Post $post ): void {
-		if ( 'shop_order' === $post->post_type ) { // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		if ( 'shop_order' === $post->post_type ) {
 			$this->delete( $postId );
 		}
 	}

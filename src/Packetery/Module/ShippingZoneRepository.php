@@ -73,7 +73,8 @@ class ShippingZoneRepository {
 			 * @var stdClass $rawMethod
 			 */
 			foreach ( $rawMethods as $rawMethod ) {
-				$rawMethodId = sprintf( '%s:%s', $rawMethod->method_id, $rawMethod->instance_id ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+				$rawMethodId = sprintf( '%s:%s', $rawMethod->method_id, $rawMethod->instance_id );
 				if ( $methodRateId === $rawMethodId ) {
 					return $zone->get_zone_locations();
 				}

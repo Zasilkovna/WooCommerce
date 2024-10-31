@@ -50,7 +50,11 @@ class Downloader {
 	 * @param OptionsProvider  $optionsProvider  Options provider.
 	 * @param WebRequestClient $webRequestClient HTTP client.
 	 */
-	public function __construct( Updater $carrierUpdater, OptionsProvider $optionsProvider, WebRequestClient $webRequestClient ) {
+	public function __construct(
+		Updater $carrierUpdater,
+		OptionsProvider $optionsProvider,
+		WebRequestClient $webRequestClient
+	) {
 		$this->carrierUpdater   = $carrierUpdater;
 		$this->optionsProvider  = $optionsProvider;
 		$this->webRequestClient = $webRequestClient;

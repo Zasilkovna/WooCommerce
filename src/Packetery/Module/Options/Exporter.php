@@ -237,7 +237,8 @@ class Exporter {
 		} elseif ( $variable instanceof \WC_Shipping_Method ) {
 			$methodInfo = [
 				'id'           => $variable->id,
-				'method_title' => $variable->method_title, // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+				'method_title' => $variable->method_title,
 				'enabled'      => $variable->enabled,
 			];
 			$output    .= PHP_EOL . $this->formatVariable( $methodInfo, $level );

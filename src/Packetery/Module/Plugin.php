@@ -1030,6 +1030,7 @@ class Plugin {
 			'__experimental_woocommerce_blocks_add_data_attributes_to_block',
 			function ( $allowedBlocks ) {
 				$allowedBlocks[] = 'packeta/packeta-widget';
+
 				return $allowedBlocks;
 			},
 			10,
@@ -1040,6 +1041,7 @@ class Plugin {
 			'woocommerce_blocks_add_data_attributes_to_block',
 			function ( $allowedBlocks ) {
 				$allowedBlocks[] = 'packeta/packeta-widget';
+
 				return $allowedBlocks;
 			},
 			10,
@@ -1089,7 +1091,8 @@ class Plugin {
 		$optionsRepository = $container->getByType( Options\Repository::class );
 		$pluginOptions     = $optionsRepository->getPluginOptions();
 		foreach ( $pluginOptions as $option ) {
-			delete_option( $option->option_name ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			delete_option( $option->option_name );
 		}
 
 		$logRepository = $container->getByType( Log\Repository::class );

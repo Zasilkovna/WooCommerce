@@ -1413,7 +1413,8 @@ class Checkout {
 		}
 
 		$order = null;
-		$wpOrderPay = $wp->query_vars['order-pay'] ?? null; // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$wpOrderPay = $wp->query_vars['order-pay'] ?? null;
 		if ( is_numeric( $wpOrderPay ) ) {
 			$order = $this->orderRepository->getById( (int) $wpOrderPay, true );
 		}
