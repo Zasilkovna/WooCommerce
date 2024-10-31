@@ -221,7 +221,7 @@ class Upgrade {
 			}
 		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.8.0', '<' ) ) {
+		if ( $oldVersion && version_compare( $oldVersion, '1.8.3', '<' ) ) {
 			$generalSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
 			if ( isset( $generalSettings['cod_payment_method'] ) ) {
 				$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
