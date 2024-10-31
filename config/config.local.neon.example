@@ -4,3 +4,4 @@ parameters:
 		enabled: false
 	wcCarrierSettingsConfig:
 		active: false # Change to true in order to activate native Packeta carrier settings
+	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl

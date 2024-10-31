@@ -11,6 +11,7 @@ parameters:
 		active: false
 	featureFlagConfig:
 		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
+	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -63,7 +64,7 @@ services:
 	- Packetery\Module\Order\LabelPrint
 	- Packetery\Module\Order\ApiExtender
 	- Packetery\Module\Order\GridExtender
-	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
+	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password(), wsdlUrl: %wsdlUrl%)
 	- Packetery\Module\Order\DetailCommonLogic
 	- Packetery\Module\Order\PacketActionsCommonLogic
 	- Packetery\Module\Order\PacketSubmitter
