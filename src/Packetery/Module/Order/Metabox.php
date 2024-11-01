@@ -464,7 +464,7 @@ class Metabox {
 				'orderWarningFields'         => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 				'packetCancelLink'           => null,
 				'packetTrackingUrl'          => null,
-				'packetStatusTranslatedName'                => null,
+				'packetStatusTranslatedName' => null,
 				'packetSubmitUrl'            => $packetSubmitUrl,
 				'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
 				'packetClaimUrl'             => $packetClaimUrl,
