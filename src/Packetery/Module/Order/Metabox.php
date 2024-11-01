@@ -325,7 +325,7 @@ class Metabox {
 				]
 			);
 
-			$orderStatus = PacketStatusResolver::resolveTranslatedStatus( $order->getPacketStatus() );
+			$orderStatus = PacketStatusResolver::getTranslatedName( $order->getPacketStatus() );
 
 			$statusClasses = [
 				'received data'         => 'received-data',
@@ -337,7 +337,7 @@ class Metabox {
 			];
 
 			$statusClass = 'delivery-status';
-			$statusType  = PacketStatusResolver::resolveName( $order->getPacketStatus() );
+			$statusType  = $order->getPacketStatus();
 
 			if ( isset( $statusClasses[ $statusType ] ) ) {
 				$statusClass = $statusClasses[ $statusType ];
