@@ -179,7 +179,7 @@ class PacketSynchronizer {
 			PacketStatus::CUSTOMS                =>
 				new PacketStatus( PacketStatus::CUSTOMS, __( 'Customs declaration process', 'packeta' ), true ),
 			PacketStatus::REVERSE_PACKET_ARRIVED =>
-				new PacketStatus( PacketStatus::REVERSE_PACKET_ARRIVED, __( 'Reverse parcel has been accepted at our branch', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::REVERSE_PACKET_ARRIVED, __( 'Reverse parcel has been accepted at our pick up point', 'packeta' ), true ),
 			PacketStatus::DELIVERY_ATTEMPT       =>
 				new PacketStatus( PacketStatus::DELIVERY_ATTEMPT, __( 'Unsuccessful delivery attempt of parcel', 'packeta' ), true ),
 			PacketStatus::REJECTED_BY_RECIPIENT  =>
