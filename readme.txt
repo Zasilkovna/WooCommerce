@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.6.2
-Stable tag: 1.8.4
+Stable tag: 1.8.5
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 9.3.3
@@ -64,6 +64,11 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 1.8.5 =
+Updated: Users now have the option in the Packeta pick-up point carrier settings to choose whether to deliver to Z-Boxes, pick-up points, or both.
+Updated: Added more packet statuses
+Fixed: Fixed a bug that caused the plugin to crash when there is an unexpected or invalid packet status in the database
+
 = 1.8.4 =
 Fixed: Incorrect usage of a helper class causing an error when order with stored API error message is in the order list.
 

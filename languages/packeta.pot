@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-31T16:33:27+01:00\n"
+"POT-Creation-Date: 2024-11-01T16:34:26+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -31,7 +31,7 @@ msgstr ""
 #: src/Packetery/Module/Options/Page.php:132
 #: src/Packetery/Module/Options/Page.php:133
 #: src/Packetery/Module/Options/Page.php:787
-#: src/Packetery/Module/Order/GridExtender.php:395
+#: src/Packetery/Module/Order/GridExtender.php:394
 #: src/Packetery/Module/Order/LabelPrint.php:204
 #: src/Packetery/Module/Order/Metabox.php:217
 #: src/Packetery/Module/Plugin.php:667
@@ -507,7 +507,7 @@ msgid "maximum weight (kg)"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:405
-#: src/Packetery/Module/Order/Metabox.php:682
+#: src/Packetery/Module/Order/Metabox.php:681
 msgid "Choose pickup point"
 msgstr ""
 
@@ -529,7 +529,7 @@ msgid "Address validation is out of order"
 msgstr ""
 
 #: src/Packetery/Module/Checkout.php:410
-#: src/Packetery/Module/Order/Metabox.php:636
+#: src/Packetery/Module/Order/Metabox.php:635
 msgid "The selected country does not correspond to the destination country."
 msgstr ""
 
@@ -1175,7 +1175,7 @@ msgid "C.O.D."
 msgstr ""
 
 #: src/Packetery/Module/Order/CollectionPrint.php:197
-#: src/Packetery/Module/Order/GridExtender.php:398
+#: src/Packetery/Module/Order/GridExtender.php:397
 msgid "Pickup point or carrier"
 msgstr ""
 
@@ -1355,8 +1355,8 @@ msgid "Packeta pickup points packets"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:292
-#: src/Packetery/Module/Order/Metabox.php:363
-#: src/Packetery/Module/Order/Metabox.php:486
+#: src/Packetery/Module/Order/Metabox.php:362
+#: src/Packetery/Module/Order/Metabox.php:485
 msgid "Packet claim tracking"
 msgstr ""
 
@@ -1369,32 +1369,32 @@ msgid "Set additional packet information"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:360
-#: src/Packetery/Module/Order/Metabox.php:482
+#: src/Packetery/Module/Order/Metabox.php:481
 #: src/Packetery/Module/Plugin.php:934
 msgid "It is not possible to submit the shipment because all the information required for this shipment is not filled."
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:361
-#: src/Packetery/Module/Order/Metabox.php:485
+#: src/Packetery/Module/Order/Metabox.php:484
 msgid "Submit to Packeta"
 msgstr ""
 
 #. translators: %s: Order number.
 #: src/Packetery/Module/Order/GridExtender.php:363
-#: src/Packetery/Module/Order/Metabox.php:366
-#: src/Packetery/Module/Order/Metabox.php:492
+#: src/Packetery/Module/Order/Metabox.php:365
+#: src/Packetery/Module/Order/Metabox.php:491
 #: src/Packetery/Module/Order/Modal.php:82
 msgid "Order #%s"
 msgstr ""
 
 #. translators: %s: Packet number.
 #: src/Packetery/Module/Order/GridExtender.php:365
-#: src/Packetery/Module/Order/Metabox.php:368
+#: src/Packetery/Module/Order/Metabox.php:367
 msgid "Do you really wish to cancel parcel number %s?"
 msgstr ""
 
 #: src/Packetery/Module/Order/GridExtender.php:367
-#: src/Packetery/Module/Order/Metabox.php:372
+#: src/Packetery/Module/Order/Metabox.php:371
 msgid "Cancel packet"
 msgstr ""
 
@@ -1402,15 +1402,15 @@ msgstr ""
 msgid "Last error from Packeta API"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:394
+#: src/Packetery/Module/Order/GridExtender.php:393
 msgid "Weight"
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:396
+#: src/Packetery/Module/Order/GridExtender.php:395
 msgid "Tracking No."
 msgstr ""
 
-#: src/Packetery/Module/Order/GridExtender.php:397
+#: src/Packetery/Module/Order/GridExtender.php:396
 msgid "Packeta packet status"
 msgstr ""
 
@@ -1496,90 +1496,90 @@ msgstr ""
 msgid "Print"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:362
+#: src/Packetery/Module/Order/Metabox.php:361
 #: src/Packetery/Module/Plugin.php:703
 #: src/Packetery/Module/Plugin.php:750
 msgid "Packet tracking online"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:364
-#: src/Packetery/Module/Order/Metabox.php:483
+#: src/Packetery/Module/Order/Metabox.php:363
+#: src/Packetery/Module/Order/Metabox.php:482
 msgid "Show logs"
 msgstr ""
 
 #. translators: %s: Packet claim number.
-#: src/Packetery/Module/Order/Metabox.php:370
-#: src/Packetery/Module/Order/Metabox.php:494
+#: src/Packetery/Module/Order/Metabox.php:369
+#: src/Packetery/Module/Order/Metabox.php:493
 msgid "Do you really wish to cancel packet claim number %s?"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:373
+#: src/Packetery/Module/Order/Metabox.php:372
 msgid "Create packet claim"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:374
+#: src/Packetery/Module/Order/Metabox.php:373
 msgid "Print packet label"
+msgstr ""
+
+#: src/Packetery/Module/Order/Metabox.php:374
+#: src/Packetery/Module/Order/Metabox.php:486
+msgid "Print packet claim label"
 msgstr ""
 
 #: src/Packetery/Module/Order/Metabox.php:375
 #: src/Packetery/Module/Order/Metabox.php:487
-msgid "Print packet claim label"
+msgid "Cancel packet claim"
 msgstr ""
 
 #: src/Packetery/Module/Order/Metabox.php:376
 #: src/Packetery/Module/Order/Metabox.php:488
-msgid "Cancel packet claim"
+msgid "Packet claim password"
 msgstr ""
 
 #: src/Packetery/Module/Order/Metabox.php:377
 #: src/Packetery/Module/Order/Metabox.php:489
-msgid "Packet claim password"
-msgstr ""
-
-#: src/Packetery/Module/Order/Metabox.php:378
-#: src/Packetery/Module/Order/Metabox.php:490
 msgid "submission password"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:422
+#: src/Packetery/Module/Order/Metabox.php:421
 msgid "The pickup point cannot be changed because the shipping address has no country set. First, change the country of delivery in the shipping address."
 msgstr ""
 
 #. translators: %s is country code.
-#: src/Packetery/Module/Order/Metabox.php:429
+#: src/Packetery/Module/Order/Metabox.php:428
 msgid "The pickup point cannot be changed because the selected carrier does not deliver to country \"%s\". First, change the country of delivery in the shipping address."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:439
+#: src/Packetery/Module/Order/Metabox.php:438
 msgid "The address cannot be validated because the shipping address has no country set. First, change the country of delivery in the shipping address."
 msgstr ""
 
 #. translators: %s is country code.
-#: src/Packetery/Module/Order/Metabox.php:446
+#: src/Packetery/Module/Order/Metabox.php:445
 msgid "The address cannot be validated because the selected carrier does not deliver to country \"%s\". First, change the country of delivery in the shipping address."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:484
+#: src/Packetery/Module/Order/Metabox.php:483
 msgid "Weight is manually set. To calculate weight remove field content and save."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:526
+#: src/Packetery/Module/Order/Metabox.php:525
 msgid "Packeta: entered data is not valid!"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:534
+#: src/Packetery/Module/Order/Metabox.php:533
 msgid "Session has expired! Please try again."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:540
+#: src/Packetery/Module/Order/Metabox.php:539
 msgid "You do not have sufficient rights to make changes!"
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:635
+#: src/Packetery/Module/Order/Metabox.php:634
 msgid "Address validation is out of order."
 msgstr ""
 
-#: src/Packetery/Module/Order/Metabox.php:683
+#: src/Packetery/Module/Order/Metabox.php:682
 msgid "Check shipping address"
 msgstr ""
 
@@ -1782,6 +1782,22 @@ msgid "Parcel has been collected"
 msgstr ""
 
 #: src/Packetery/Module/Order/PacketSynchronizer.php:180
+msgid "Customs declaration process"
+msgstr ""
+
+#: src/Packetery/Module/Order/PacketSynchronizer.php:182
+msgid "Reverse parcel has been accepted at our pick up point"
+msgstr ""
+
+#: src/Packetery/Module/Order/PacketSynchronizer.php:184
+msgid "Unsuccessful delivery attempt of parcel"
+msgstr ""
+
+#: src/Packetery/Module/Order/PacketSynchronizer.php:186
+msgid "Rejected by recipient response"
+msgstr ""
+
+#: src/Packetery/Module/Order/PacketSynchronizer.php:188
 msgid "Unknown parcel status"
 msgstr ""
 
