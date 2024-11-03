@@ -325,8 +325,7 @@ class Metabox {
 				]
 			);
 
-			$statuses    = PacketSynchronizer::getPacketStatuses();
-			$orderStatus = $statuses[ $order->getPacketStatus() ]->getTranslatedName();
+			$packetStatusTranslatedName = PacketStatusResolver::getTranslatedName( $order->getPacketStatus() );
 
 			$statusClasses = [
 				'received data'         => 'received-data',
@@ -338,7 +337,7 @@ class Metabox {
 			];
 
 			$statusClass = 'delivery-status';
-			$statusType  = $statuses[ $order->getPacketStatus() ]->getName();
+			$statusType  = $order->getPacketStatus();
 
 			if ( isset( $statusClasses[ $statusType ] ) ) {
 				$statusClass = $statusClasses[ $statusType ];
@@ -348,7 +347,7 @@ class Metabox {
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                      => $order,
-					'orderStatus'                => $orderStatus,
+					'packetStatusTranslatedName' => $packetStatusTranslatedName,
 					'statusClass'                => $statusClass,
 					'isPacketSubmissionPossible' => false,
 					'orderWarningFields'         => [],
@@ -465,7 +464,7 @@ class Metabox {
 				'orderWarningFields'         => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
 				'packetCancelLink'           => null,
 				'packetTrackingUrl'          => null,
-				'orderStatus'                => null,
+				'packetStatusTranslatedName' => null,
 				'packetSubmitUrl'            => $packetSubmitUrl,
 				'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
 				'packetClaimUrl'             => $packetClaimUrl,

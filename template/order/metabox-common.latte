@@ -5,8 +5,8 @@
 		{$translations['packetTrackingOnline']}:
 		<a href="{$packetTrackingUrl}" target="_blank">Z{$order->getPacketId()}</a>
 	</li>
-	<li n:if="$orderStatus">
-		<p class="packetery-order-status {$statusClass}">{$orderStatus}</p>
+	<li n:if="$packetStatusTranslatedName">
+		<p class="packetery-order-status {$statusClass}">{$packetStatusTranslatedName}</p>
 	</li>
 	<li n:if="$packetClaimTrackingUrl">
 		{$translations['packetClaimTrackingOnline']}:
