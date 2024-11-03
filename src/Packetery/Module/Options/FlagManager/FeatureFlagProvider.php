@@ -60,12 +60,8 @@ class FeatureFlagProvider {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	public function isSplitActive(): bool {
-		$flags = $this->featureFlagDownloader->getFlags();
-		if ( isset( $flags[ self::FLAG_SPLIT_ACTIVE ] ) ) {
-			return (bool) $flags[ self::FLAG_SPLIT_ACTIVE ];
-		}
-
-		return false;
+		// Enabled for all users. Method will be removed later.
+		return true;
 	}
 
 	/**
