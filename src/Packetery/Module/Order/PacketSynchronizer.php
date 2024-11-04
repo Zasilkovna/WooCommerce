@@ -15,8 +15,8 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\Exception\InvalidPasswordException;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
-use function as_schedule_single_action;
 
 /**
  * Class Synchronizer
@@ -63,6 +63,13 @@ class PacketSynchronizer {
 	private $wcOrderActions;
 
 	/**
+	 * WC adapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Api\Soap\Client $apiSoapClient   API soap client.
@@ -70,19 +77,22 @@ class PacketSynchronizer {
 	 * @param OptionsProvider $optionsProvider Options provider.
 	 * @param Repository      $orderRepository Order repository.
 	 * @param WcOrderActions  $wcOrderActions  WC order actions.
+	 * @param WcAdapter       $wcAdapter       WC adapter.
 	 */
 	public function __construct(
 		Api\Soap\Client $apiSoapClient,
 		Log\ILogger $logger,
 		OptionsProvider $optionsProvider,
 		Repository $orderRepository,
-		WcOrderActions $wcOrderActions
+		WcOrderActions $wcOrderActions,
+		WcAdapter $wcAdapter
 	) {
 		$this->apiSoapClient   = $apiSoapClient;
 		$this->logger          = $logger;
 		$this->optionsProvider = $optionsProvider;
 		$this->orderRepository = $orderRepository;
 		$this->wcOrderActions  = $wcOrderActions;
+		$this->wcAdapter       = $wcAdapter;
 	}
 
 	/**
@@ -108,7 +118,7 @@ class PacketSynchronizer {
 		);
 
 		foreach ( $results as $orderId ) {
-			as_schedule_single_action( time(), self::HOOK_NAME_SYNC_ORDER_STATUS, [ $orderId ] );
+			$this->wcAdapter->asScheduleSingleAction( time(), self::HOOK_NAME_SYNC_ORDER_STATUS, [ $orderId ] );
 		}
 	}
 

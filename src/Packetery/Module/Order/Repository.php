@@ -487,7 +487,7 @@ class Repository {
 	 * @param int   $maxDays               Max number of days of single packet sync.
 	 * @param int   $limit                 Number of records.
 	 *
-	 * @return iterable|Order[]
+	 * @return int[]
 	 */
 	public function findStatusSyncingOrderIds( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
 		$dateLimit = CoreHelper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
