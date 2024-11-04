@@ -288,4 +288,5 @@ final class OrderController extends WP_REST_Controller {
 
 		return new WP_REST_Response( $data, 200 );
 	}
+
 }

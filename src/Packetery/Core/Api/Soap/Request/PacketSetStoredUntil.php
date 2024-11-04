@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Core\Api\Soap\Request;
 
 use Packetery\Core\CoreHelper;
@@ -73,4 +72,5 @@ class PacketSetStoredUntil {
 			CoreHelper::MYSQL_DATE_FORMAT
 		);
 	}
+
 }
