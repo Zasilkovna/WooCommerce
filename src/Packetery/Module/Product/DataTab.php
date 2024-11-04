@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Product;
 
 use Packetery\Latte\Engine;

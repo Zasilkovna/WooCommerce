@@ -82,6 +82,13 @@
 		</properties>
 	</rule>
 
+	<rule ref="SlevomatCodingStandard.Namespaces.NamespaceSpacing">
+		<properties>
+			<property name="linesCountBeforeNamespace" value="1"/>
+			<property name="linesCountAfterNamespace" value="1"/>
+		</properties>
+	</rule>
+
 	<rule ref="PHPCompatibility">
 		<exclude-pattern>tests/</exclude-pattern>
 	</rule>
