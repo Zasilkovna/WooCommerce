@@ -9,15 +9,16 @@ declare(strict_types=1);
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
-use Packetery\Core\CoreHelper;
+use Packetery\Latte\Engine;
+use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRules;
 use Packetery\Module\Message;
 use Packetery\Module\MessageManager;
-use Packetery\Latte\Engine;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
@@ -25,7 +26,6 @@ use Packetery\Nette\Forms\Controls\Checkbox;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\FileUpload;
 use Packetery\Nette\Http\Request;
-use Packetery\Module\CustomsDeclaration;
 
 /**
  * Class CustomsDeclarationMetabox.

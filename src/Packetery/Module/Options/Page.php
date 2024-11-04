@@ -10,16 +10,16 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Log;
+use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
-use Packetery\Latte\Engine;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Form;
-use Packetery\Core\CoreHelper;
 
 /**
  * Class Page

@@ -58,6 +58,8 @@
 		</properties>
 	</rule>
 
+	<rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
+
 	<rule ref="PHPCompatibility">
 		<exclude-pattern>tests/</exclude-pattern>
 	</rule>

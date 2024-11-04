@@ -12,15 +12,15 @@ namespace Packetery\Module\Order;
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
-use Packetery\Module\Framework\WpAdapter;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
-use Packetery\Latte\Engine;
 use Packetery\Module\ModuleHelper;
-use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
+use Packetery\Nette\Http\Request;
 use WC_Order;
 
 /**

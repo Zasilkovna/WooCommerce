@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Packetery\Module\CustomsDeclaration;
 
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\CustomsDeclaration;
 use Packetery\Core\Entity\CustomsDeclarationItem;
-use Packetery\Core\CoreHelper;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\WpdbAdapter;
 

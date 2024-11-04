@@ -13,8 +13,8 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
-use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Http\Request;
 

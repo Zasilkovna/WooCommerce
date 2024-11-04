@@ -10,12 +10,12 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 
 /**

@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Core\Entity\Carrier;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
