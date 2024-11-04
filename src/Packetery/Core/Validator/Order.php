@@ -120,6 +120,7 @@ class Order {
 		if ( empty( $this->translations[ $key ] ) ) {
 			return $key;
 		}
+
 		return $this->translations[ $key ];
 	}
 

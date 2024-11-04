@@ -176,6 +176,7 @@ class PacketaPickupPointsConfig {
 	 */
 	public function isVendorCarrierId( string $carrierId ): bool {
 		$vendorCarriers = $this->getVendorCarriers();
+
 		return isset( $vendorCarriers[ $carrierId ] );
 	}
 

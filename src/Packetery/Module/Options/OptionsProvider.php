@@ -260,6 +260,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_weight' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_weight' );
 	}
 
@@ -281,6 +282,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_length' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_length' );
 	}
 
@@ -293,6 +295,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_height' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_height' );
 	}
 
@@ -305,6 +308,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_width' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_width' );
 	}
 

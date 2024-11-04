@@ -46,11 +46,13 @@ class LatteEngineFactory {
 			function ( MacroNode $node, PhpWriter $writer ) {
 				$output = trim( $node->args, "'" );
 				$output = preg_replace( '~/~', '|', $output );
+
 				return $writer->write( '/* ' . $output . ' */' );
 			}
 		);
 
 		$engine->addMacro( 'packetery-macro-set', $macroSet );
+
 		return $engine;
 	}
 }

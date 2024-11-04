@@ -48,6 +48,7 @@ class Repository {
 	 */
 	public function countRows( ?int $orderId, ?string $action ): int {
 		$whereClause = $this->getWhereClause( [], $orderId, $action );
+
 		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packeteryLog . '`' . $whereClause );
 	}
 

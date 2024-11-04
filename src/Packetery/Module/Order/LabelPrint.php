@@ -251,6 +251,7 @@ class LabelPrint {
 		if ( ! $packetIds ) {
 			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+
 			return;
 		}
 
@@ -287,6 +288,7 @@ class LabelPrint {
 				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
 			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+
 			return;
 		}
 

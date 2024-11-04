@@ -236,6 +236,7 @@ class CollectionPrint {
 	 */
 	private function requestShipment( array $packetIds ): Response\CreateShipment {
 		$request = new Request\CreateShipment( array_values( $packetIds ) );
+
 		return $this->soapApiClient->createShipment( $request );
 	}
 
@@ -248,6 +249,7 @@ class CollectionPrint {
 	 */
 	private function requestBarcodePng( string $barcode ): Response\BarcodePng {
 		$request = new Request\BarcodePng( $barcode );
+
 		return $this->soapApiClient->barcodePng( $request );
 	}
 

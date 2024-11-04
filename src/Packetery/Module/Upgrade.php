@@ -385,6 +385,7 @@ class Upgrade {
 	 */
 	private function getMetaAsNullableString( \WC_Order $order, string $key ): ?string {
 		$value = $order->get_meta( $key, true );
+
 		return ( ( null !== $value && '' !== $value ) ? (string) $value : null );
 	}
 
@@ -398,6 +399,7 @@ class Upgrade {
 	 */
 	private function getMetaAsNullableFloat( \WC_Order $order, string $key ): ?float {
 		$value = $order->get_meta( $key, true );
+
 		return ( ( null !== $value && '' !== $value ) ? (float) $value : null );
 	}
 

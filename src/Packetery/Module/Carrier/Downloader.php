@@ -81,6 +81,7 @@ class Downloader {
 		if ( ! $carriers ) {
 			// translators: keep %failReason placeholder intact.
 			$translatedMessage = __( 'Carrier download failed: %failReason Please try again later.', 'packeta' );
+
 			return [
 				strtr(
 					$translatedMessage,
@@ -93,6 +94,7 @@ class Downloader {
 		if ( ! $validationResult ) {
 			// translators: keep %failReason placeholder intact.
 			$translatedMessage = __( 'Carrier download failed: %failReason Please try again later.', 'packeta' );
+
 			return [
 				strtr(
 					$translatedMessage,

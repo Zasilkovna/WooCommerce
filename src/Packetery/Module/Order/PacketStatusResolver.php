@@ -25,6 +25,7 @@ class PacketStatusResolver {
 	 */
 	public static function getTranslatedName( ?string $status ): ?string {
 		$statuses = PacketSynchronizer::getPacketStatuses();
+
 		return isset( $statuses[ $status ] ) ? $statuses[ $status ]->getTranslatedName() : $status;
 	}
 }

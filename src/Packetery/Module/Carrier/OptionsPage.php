@@ -398,6 +398,7 @@ class OptionsPage {
 	public function validateOptions( Form $form ): void {
 		if ( $form->hasErrors() ) {
 			add_settings_error( '', '', esc_attr( __( 'Some carrier data is invalid', 'packeta' ) ) );
+
 			return;
 		}
 
@@ -909,6 +910,7 @@ class OptionsPage {
 	 */
 	public function isAvailableVendorsCountLowByCarrierId( string $carrierId ): bool {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
+
 		return is_array( $availableVendors ) && $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors );
 	}
 }

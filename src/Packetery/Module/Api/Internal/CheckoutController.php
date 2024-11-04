@@ -155,6 +155,7 @@ final class CheckoutController extends WP_REST_Controller {
 				if ( '' === $savedData ) {
 					delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 				}
+
 				return new WP_REST_Response( [], 200 );
 			}
 

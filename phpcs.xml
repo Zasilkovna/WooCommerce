@@ -69,6 +69,15 @@
 		</properties>
 	</rule>
 
+	<rule ref="SlevomatCodingStandard.ControlStructures.JumpStatementsSpacing">
+		<properties>
+			<property name="jumpStatements" type="array">
+				<element value="return"/>
+			</property>
+			<property name="linesCountBefore" value="1"/>
+		</properties>
+	</rule>
+
 	<rule ref="PHPCompatibility">
 		<exclude-pattern>tests/</exclude-pattern>
 	</rule>
