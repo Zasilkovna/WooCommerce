@@ -10,7 +10,9 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
+use DateTimeImmutable;
 use Packetery\Nette\Utils\Html;
+use WC_DateTime;
 
 /**
  * Class ModuleHelper
@@ -230,5 +232,28 @@ class ModuleHelper {
 
 		return [ $link->startTag(), $link->endTag() ];
 	}
+
+	/**
+	 * Creates translated Date
+	 *
+	 * @param DateTimeImmutable|null $date   Datetime.
+	 *
+	 * @return string|null
+	 */
+	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
+		if ( null !== $date ) {
+			return WC_DateTime::createFromImmutable( $date )->date_i18n(
+				/**
+				 * Applies woocommerce_admin_order_date_format filters.
+				 *
+				 * @since 1.8.3
+				 */
+				apply_filters( 'woocommerce_admin_order_date_format', __( 'M j, Y', 'woocommerce' ) ) //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			);
+		}
+
+		return null;
+	}
+
 
 }

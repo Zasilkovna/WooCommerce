@@ -160,6 +160,7 @@ class Client {
 			$soapClient = new SoapClient( $this->wsdlUrl );
 			$result     = $soapClient->packetStatus( $this->apiPassword, $request->getPacketId() );
 			$response->setCodeText( $result->codeText );
+			$response->setStoredUntil( $result->storedUntil );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
@@ -315,6 +316,26 @@ class Client {
 			$soapClient = new SoapClient( $this->wsdlUrl );
 			$soapClient->senderGetReturnRouting( $this->apiPassword, $request->getSenderLabel() );
 			// TODO: Set return routing strings.
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Sets new stored until date.
+	 *
+	 * @param Request\PacketSetStoredUntil $request Request.
+	 *
+	 * @return Response\PacketSetStoredUntil
+	 */
+	public function packetSetStoredUntil( Request\PacketSetStoredUntil $request ): Response\PacketSetStoredUntil {
+		$response = new Response\PacketSetStoredUntil();
+		try {
+			$soapClient = new SoapClient( $this->wsdlUrl );
+			$soapClient->packetSetStoredUntil( $this->apiPassword, $request->getPacketId(), $request->getStoredUntil() );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );

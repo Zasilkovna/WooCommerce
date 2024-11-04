@@ -171,6 +171,14 @@ class Repository {
 			$clauses['where']  .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`carrier_id` ' . $comparison . ' (' . $this->wpdbAdapter->prepareInClause( $internalCarriers ) . ')';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
+		if ( isset( $paramValues['orderby'] ) && 'packetery_packet_stored_until' === $paramValues['orderby'] ) {
+			if ( 'asc' === $paramValues['order'] ) {
+				$clauses['orderby'] = '`' . $this->wpdbAdapter->packetery_order . '`.`stored_until` ASC';
+			}
+			if ( 'desc' === $paramValues['order'] ) {
+				$clauses['orderby'] = '`' . $this->wpdbAdapter->packetery_order . '`.`stored_until` DESC';
+			}
+		}
 
 		return $clauses;
 	}
@@ -208,6 +216,7 @@ class Repository {
 			`api_error_date` datetime NULL,
 			`carrier_number` varchar(255) NULL,
 			`packet_status` varchar(255) NULL,
+			`stored_until` date NULL,
 			`deliver_on` date NULL,
 			`car_delivery_id` varchar(255) NULL,
 			PRIMARY KEY  (`id`)
@@ -346,6 +355,7 @@ class Repository {
 			'packet_claim_id'       => $order->getPacketClaimId(),
 			'packet_claim_password' => $order->getPacketClaimPassword(),
 			'packet_status'         => $order->getPacketStatus(),
+			'stored_until'          => $this->helper->getStringFromDateTime( $order->getStoredUntil(), $this->helper::DATEPICKER_FORMAT ),
 			'is_label_printed'      => (int) $order->isLabelPrinted(),
 			'carrier_number'        => $order->getCarrierNumber(),
 			'weight'                => $order->getWeight(),

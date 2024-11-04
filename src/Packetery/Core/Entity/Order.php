@@ -244,6 +244,13 @@ class Order {
 	private $customsDeclaration;
 
 	/**
+	 * Stored until.
+	 *
+	 * @var DateTimeImmutable|null
+	 */
+	private $storedUntil;
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string  $number  Order id.
@@ -603,6 +610,15 @@ class Order {
 	}
 
 	/**
+	 * Sets stored until date.
+	 *
+	 * @param \DateTimeImmutable|null $storedUntil Stored until.
+	 */
+	public function setStoredUntil( ?DateTimeImmutable $storedUntil ): void {
+		$this->storedUntil = $storedUntil;
+	}
+
+	/**
 	 * Sets is exported flag.
 	 *
 	 * @param bool $isExported Packet id.
@@ -805,6 +821,26 @@ class Order {
 	 */
 	public function getPacketStatus(): ?string {
 		return $this->packetStatus;
+	}
+
+	/**
+	 * Get stored until date.
+	 *
+	 * @return \DateTimeImmutable|null
+	 */
+	public function getStoredUntil(): ?\DateTimeImmutable {
+		return $this->storedUntil;
+	}
+
+	/**
+	 * Tells it's possible to extend the package pickup date.
+	 *
+	 * @return bool
+	 */
+	public function isPossibleExtendPacketPickUpDate(): bool {
+		return PacketStatus::READY_FOR_PICKUP === $this->packetStatus &&
+			null !== $this->storedUntil &&
+			$this->isPacketaInternalPickupPoint();
 	}
 
 	/**

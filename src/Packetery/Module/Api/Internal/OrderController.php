@@ -13,10 +13,12 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Forms\StoredUntilFormFactory;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\Repository;
 use Packetery\Module\Order\GridExtender;
+use Packetery\Module\Order\PacketSetStoredUntil;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -73,14 +75,30 @@ final class OrderController extends WP_REST_Controller {
 	private $coreHelper;
 
 	/**
+	 * Stored until Form Factory
+	 *
+	 * @var StoredUntilFormFactory
+	 */
+	private $storedUntilFormFactory;
+
+	/**
+	 * Packet Set Stored Until
+	 *
+	 * @var PacketSetStoredUntil
+	 */
+	private $packetSetStoredUntil;
+
+	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter     $router          Router.
-	 * @param Repository      $orderRepository Order repository.
-	 * @param GridExtender    $gridExtender    Grid extender.
-	 * @param Validator\Order $orderValidator  Order validator.
-	 * @param CoreHelper      $coreHelper      CoreHelper.
-	 * @param Form            $orderForm       Order form.
+	 * @param OrderRouter            $router                 Router.
+	 * @param Repository             $orderRepository        Order repository.
+	 * @param GridExtender           $gridExtender           Grid extender.
+	 * @param Validator\Order        $orderValidator         Order validator.
+	 * @param CoreHelper             $coreHelper             CoreHelper.
+	 * @param Form                   $orderForm              Order form.
+	 * @param StoredUntilFormFactory $storedUntilFormFactory Stored until Form Factory.
+	 * @param PacketSetStoredUntil   $packetSetStoredUntil   Packet Set Stored Until.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -88,14 +106,18 @@ final class OrderController extends WP_REST_Controller {
 		GridExtender $gridExtender,
 		Validator\Order $orderValidator,
 		CoreHelper $coreHelper,
-		Form $orderForm
+		Form $orderForm,
+		StoredUntilFormFactory $storedUntilFormFactory,
+		PacketSetStoredUntil $packetSetStoredUntil
 	) {
-		$this->orderForm       = $orderForm;
-		$this->orderRepository = $orderRepository;
-		$this->gridExtender    = $gridExtender;
-		$this->orderValidator  = $orderValidator;
-		$this->coreHelper      = $coreHelper;
-		$this->router          = $router;
+		$this->orderForm              = $orderForm;
+		$this->orderRepository        = $orderRepository;
+		$this->gridExtender           = $gridExtender;
+		$this->orderValidator         = $orderValidator;
+		$this->coreHelper             = $coreHelper;
+		$this->router                 = $router;
+		$this->storedUntilFormFactory = $storedUntilFormFactory;
+		$this->packetSetStoredUntil   = $packetSetStoredUntil;
 	}
 
 	/**
@@ -110,6 +132,19 @@ final class OrderController extends WP_REST_Controller {
 				[
 					'methods'             => WP_REST_Server::EDITABLE,
 					'callback'            => [ $this, 'saveModal' ],
+					'permission_callback' => function () {
+						return current_user_can( 'edit_posts' );
+					},
+				],
+			]
+		);
+
+		$this->router->registerRoute(
+			OrderRouter::PATH_SAVE_STORED_UNTIL,
+			[
+				[
+					'methods'             => WP_REST_Server::EDITABLE,
+					'callback'            => [ $this, 'saveStoredUntil' ],
 					'permission_callback' => function () {
 						return current_user_can( 'edit_posts' );
 					},
@@ -201,4 +236,56 @@ final class OrderController extends WP_REST_Controller {
 		return new WP_REST_Response( $data, 200 );
 	}
 
+	/**
+	 * Update one item from the collection
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function saveStoredUntil( WP_REST_Request $request ) {
+		$data        = [];
+		$parameters  = $request->get_body_params();
+		$orderId     = (int) $parameters['orderId'];
+		$storedUntil = $parameters['packeteryStoredUntil'] ?? null;
+
+		$form = $this->storedUntilFormFactory->createForm( sprintf( '%s_form', Order\StoredUntilModal::MODAL_ID ) );
+		$form->setValues(
+			[
+				'packetery_stored_until' => $storedUntil,
+			]
+		);
+
+		if ( false === $form->isValid() ) {
+			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
+		}
+
+		try {
+			$order = $this->orderRepository->getById( $orderId );
+		} catch ( InvalidCarrierException $exception ) {
+			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
+		}
+		if ( null === $order ) {
+			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
+		}
+
+		$errorMessage = $this->packetSetStoredUntil->setStoredUntil( $order, $order->getPacketId(), $this->coreHelper->getDateTimeFromString( $storedUntil ) );
+
+		if ( null !== $errorMessage ) {
+			return new WP_Error( 'packetery_fault', $errorMessage, 400 );
+		}
+
+		$order->setStoredUntil( $this->coreHelper->getDateTimeFromString( $storedUntil ) );
+
+		$this->orderRepository->save( $order );
+
+		$data['message'] = __( 'Success', 'packeta' );
+		$data['data']    = [
+			'packeteryStoredUntil' => $order->getStoredUntil(),
+			'orderIsSubmittable'   => $this->orderValidator->isValid( $order ),
+			'orderWarningFields'   => Form::getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) ),
+		];
+
+		return new WP_REST_Response( $data, 200 );
+	}
 }
