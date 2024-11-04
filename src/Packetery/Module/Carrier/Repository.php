@@ -223,4 +223,5 @@ class Repository {
 	public function update( array $data, int $carrierId ): void {
 		$this->wpdbAdapter->update( $this->wpdbAdapter->packeteryCarrier, $data, [ 'id' => $carrierId ] );
 	}
+
 }

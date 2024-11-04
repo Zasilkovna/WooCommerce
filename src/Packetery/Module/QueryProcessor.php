@@ -133,4 +133,5 @@ class QueryProcessor {
 
 		return $paramValues;
 	}
+
 }

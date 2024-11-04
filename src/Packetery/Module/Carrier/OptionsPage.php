@@ -913,4 +913,5 @@ class OptionsPage {
 
 		return is_array( $availableVendors ) && $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors );
 	}
+
 }

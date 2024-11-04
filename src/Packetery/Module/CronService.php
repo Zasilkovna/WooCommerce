@@ -131,4 +131,5 @@ class CronService {
 		as_unschedule_action( self::CRON_PACKET_STATUS_SYNC_HOOK );
 		as_unschedule_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND );
 	}
+
 }

@@ -249,4 +249,5 @@ class DashboardWidget {
 			]
 		);
 	}
+
 }

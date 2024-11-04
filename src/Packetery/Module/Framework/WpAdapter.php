@@ -69,4 +69,5 @@ class WpAdapter {
 	public function hasBlock( string $blockName, $post ): bool {
 		return has_block( $blockName, $post );
 	}
+
 }

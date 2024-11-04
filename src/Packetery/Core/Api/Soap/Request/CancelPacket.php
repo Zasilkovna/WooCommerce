@@ -41,4 +41,5 @@ class CancelPacket {
 	public function getPacketId(): string {
 		return $this->packetId;
 	}
+
 }

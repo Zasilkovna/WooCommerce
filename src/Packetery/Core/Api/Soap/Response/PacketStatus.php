@@ -77,4 +77,5 @@ class PacketStatus extends BaseResponse {
 
 		$this->storedUntil = ( $formatedStoredUntil instanceof \DateTimeImmutable ) ? $formatedStoredUntil : null;
 	}
+
 }

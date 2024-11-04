@@ -67,4 +67,5 @@ class CustomsDeclaration {
 
 		return $entity;
 	}
+
 }

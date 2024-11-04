@@ -200,4 +200,5 @@ class DataTab {
 			update_post_meta( $productId, $attr, $value );
 		}
 	}
+
 }

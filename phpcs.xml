@@ -42,13 +42,20 @@
 		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
 		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
 	</rule>
-	<rule ref="Squiz.NamingConventions.ValidVariableName">
-		<exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
-	</rule>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array" value="packeta"/>
+		</properties>
+	</rule>
+
+	<rule ref="Squiz.NamingConventions.ValidVariableName">
+		<exclude name="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore"/>
+	</rule>
+
+	<rule ref="Squiz.WhiteSpace.FunctionSpacing">
+		<properties>
+			<property name="spacing" value="1" />
 		</properties>
 	</rule>
 

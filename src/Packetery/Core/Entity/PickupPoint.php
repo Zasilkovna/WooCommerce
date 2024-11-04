@@ -228,4 +228,5 @@ class PickupPoint {
 	public function setCity( ?string $city ): void {
 		$this->city = $city;
 	}
+
 }

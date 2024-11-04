@@ -41,4 +41,5 @@ class BarcodePng extends BaseResponse {
 	public function setImageContent( ?string $imageContent ): void {
 		$this->imageContent = $imageContent;
 	}
+
 }

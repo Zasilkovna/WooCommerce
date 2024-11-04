@@ -67,4 +67,5 @@ class Entity {
 	public function getId(): int {
 		return $this->category->term_id;
 	}
+
 }

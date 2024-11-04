@@ -198,4 +198,5 @@ class PacketSynchronizer {
 				new PacketStatus( PacketStatus::UNKNOWN, __( 'Unknown parcel status', 'packeta' ), false ),
 		];
 	}
+
 }

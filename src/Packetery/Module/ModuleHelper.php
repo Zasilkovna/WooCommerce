@@ -173,7 +173,6 @@ class ModuleHelper {
 		return OrderUtil::custom_orders_table_usage_is_enabled();
 	}
 
-
 	/**
 	 * Converts all float values within an array to strings.
 	 *

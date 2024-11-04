@@ -98,4 +98,5 @@ class PacketSubmissionResult {
 	public function getCounter(): array {
 		return $this->counter;
 	}
+
 }

@@ -549,4 +549,5 @@ class CustomsDeclarationMetabox {
 			$fieldsToOmit[]                       = $relatedFileIdKey;
 		}
 	}
+
 }

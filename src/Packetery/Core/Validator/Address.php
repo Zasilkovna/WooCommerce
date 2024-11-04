@@ -29,5 +29,4 @@ class Address {
 		return ( $address->getStreet() && $address->getCity() && $address->getZip() );
 	}
 
-
 }

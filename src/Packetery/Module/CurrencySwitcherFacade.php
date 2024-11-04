@@ -62,4 +62,5 @@ class CurrencySwitcherFacade {
 
 		return $value;
 	}
+
 }

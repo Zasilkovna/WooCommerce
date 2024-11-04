@@ -99,4 +99,5 @@ class MetaboxesWrapper {
 
 		$this->customDeclarationMetabox->saveFields( $order );
 	}
+
 }

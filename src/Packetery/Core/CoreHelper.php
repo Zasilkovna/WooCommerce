@@ -107,4 +107,5 @@ class CoreHelper {
 	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
 		return $date ? new DateTimeImmutable( $date ) : null;
 	}
+
 }

@@ -39,4 +39,5 @@ class CreateStorageFile extends BaseResponse {
 	public function getId(): ?string {
 		return $this->id;
 	}
+
 }

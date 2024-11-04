@@ -26,4 +26,5 @@ trait WcPageTrait {
 	public function getPageId( string $page ): int {
 		return wc_get_page_id( $page );
 	}
+
 }

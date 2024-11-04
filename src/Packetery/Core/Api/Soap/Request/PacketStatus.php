@@ -41,4 +41,5 @@ class PacketStatus {
 	public function getPacketId(): string {
 		return $this->packetId;
 	}
+
 }

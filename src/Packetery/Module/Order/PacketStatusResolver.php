@@ -28,4 +28,5 @@ class PacketStatusResolver {
 
 		return isset( $statuses[ $status ] ) ? $statuses[ $status ]->getTranslatedName() : $status;
 	}
+
 }

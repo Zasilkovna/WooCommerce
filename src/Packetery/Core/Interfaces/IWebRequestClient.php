@@ -15,6 +15,7 @@ namespace Packetery\Core\Interfaces;
  * @package Packetery
  */
 interface IWebRequestClient {
+
 	/**
 	 * Accepts parameters in WP format.
 	 *
@@ -32,4 +33,5 @@ interface IWebRequestClient {
 	 * @return string
 	 */
 	public function get( string $url, array $options ): string;
+
 }

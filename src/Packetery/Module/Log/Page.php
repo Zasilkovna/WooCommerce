@@ -205,4 +205,5 @@ class Page {
 			admin_url( 'admin.php' )
 		);
 	}
+
 }

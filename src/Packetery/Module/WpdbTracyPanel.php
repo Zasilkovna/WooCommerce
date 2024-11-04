@@ -102,4 +102,5 @@ class WpdbTracyPanel implements Tracy\IBarPanel {
 			]
 		);
 	}
+
 }

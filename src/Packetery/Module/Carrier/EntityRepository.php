@@ -136,7 +136,6 @@ class EntityRepository {
 		return $entities;
 	}
 
-
 	/**
 	 * Gets all active carriers.
 	 *

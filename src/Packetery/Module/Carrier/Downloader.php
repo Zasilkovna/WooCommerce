@@ -154,4 +154,5 @@ class Downloader {
 
 		return ( $carriersData['carriers'] ?? null );
 	}
+
 }

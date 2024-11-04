@@ -854,4 +854,5 @@ class Page {
 			get_admin_url( null, 'admin.php' )
 		);
 	}
+
 }

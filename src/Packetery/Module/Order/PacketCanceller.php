@@ -301,4 +301,5 @@ class PacketCanceller {
 
 		return $revertSubmission;
 	}
+
 }
