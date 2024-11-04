@@ -24,7 +24,6 @@ class FeatureFlagProvider {
 
 	private const TRANSIENT_SPLIT_MESSAGE_DISMISSED = 'packeta_split_message_dismissed';
 
-
 	/**
 	 * WP adapter;
 	 *
