@@ -334,7 +334,7 @@ class Client {
 	public function packetSetStoredUntil( Request\PacketSetStoredUntil $request ): Response\PacketSetStoredUntil {
 		$response = new Response\PacketSetStoredUntil();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$soapClient->packetSetStoredUntil( $this->apiPassword, $request->getPacketId(), $request->getStoredUntil() );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
