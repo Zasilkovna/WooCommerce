@@ -173,10 +173,10 @@ class Repository {
 		}
 		if ( isset( $paramValues['orderby'] ) && 'packetery_packet_stored_until' === $paramValues['orderby'] ) {
 			if ( 'asc' === $paramValues['order'] ) {
-				$clauses['orderby'] = '`' . $this->wpdbAdapter->packetery_order . '`.`stored_until` ASC';
+				$clauses['orderby'] = '`' . $this->wpdbAdapter->packeteryOrder . '`.`stored_until` ASC';
 			}
 			if ( 'desc' === $paramValues['order'] ) {
-				$clauses['orderby'] = '`' . $this->wpdbAdapter->packetery_order . '`.`stored_until` DESC';
+				$clauses['orderby'] = '`' . $this->wpdbAdapter->packeteryOrder . '`.`stored_until` DESC';
 			}
 		}
 
@@ -355,7 +355,7 @@ class Repository {
 			'packet_claim_id'       => $order->getPacketClaimId(),
 			'packet_claim_password' => $order->getPacketClaimPassword(),
 			'packet_status'         => $order->getPacketStatus(),
-			'stored_until'          => $this->helper->getStringFromDateTime( $order->getStoredUntil(), $this->helper::DATEPICKER_FORMAT ),
+			'stored_until'          => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
 			'is_label_printed'      => (int) $order->isLabelPrinted(),
 			'carrier_number'        => $order->getCarrierNumber(),
 			'weight'                => $order->getWeight(),
@@ -376,7 +376,7 @@ class Repository {
 			'value'                 => $order->getValue(),
 			'api_error_message'     => $order->getLastApiErrorMessage(),
 			'api_error_date'        => $apiErrorDateTime,
-			'deliver_on'            => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), $this->coreHelper::DATEPICKER_FORMAT ),
+			'deliver_on'            => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 		];
 
 		return $data;
