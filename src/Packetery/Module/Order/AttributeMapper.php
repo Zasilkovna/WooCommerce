@@ -40,21 +40,27 @@ class AttributeMapper {
 			switch ( $attrName ) {
 				case Attribute::POINT_ID:
 					$pickupPoint->setId( $attrValue );
+
 					break;
 				case Attribute::POINT_NAME:
 					$pickupPoint->setName( $attrValue );
+
 					break;
 				case Attribute::POINT_URL:
 					$pickupPoint->setUrl( $attrValue );
+
 					break;
 				case Attribute::POINT_STREET:
 					$pickupPoint->setStreet( $attrValue );
+
 					break;
 				case Attribute::POINT_ZIP:
 					$pickupPoint->setZip( $attrValue );
+
 					break;
 				case Attribute::POINT_CITY:
 					$pickupPoint->setCity( $attrValue );
+
 					break;
 			}
 		}
@@ -126,15 +132,19 @@ class AttributeMapper {
 				// TODO: Setting these values shouldn't be done here?
 				case Form::FIELD_WEIGHT:
 					$order->setWeight( $attrValue );
+
 					break;
 				case Form::FIELD_WIDTH:
 					$orderSize->setWidth( $attrValue );
+
 					break;
 				case Form::FIELD_LENGTH:
 					$orderSize->setLength( $attrValue );
+
 					break;
 				case Form::FIELD_HEIGHT:
 					$orderSize->setHeight( $attrValue );
+
 					break;
 			}
 		}

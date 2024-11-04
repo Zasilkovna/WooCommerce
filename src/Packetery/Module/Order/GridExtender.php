@@ -285,6 +285,7 @@ class GridExtender {
 					self::TEMPLATE_GRID_COLUMN_WEIGHT,
 					$this->getWeightCellContentParams( $order )
 				);
+
 				break;
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -296,11 +297,13 @@ class GridExtender {
 					} else {
 						echo esc_html( $pointName );
 					}
+
 					break;
 				}
 
 				$homeDeliveryCarrierOptions = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() );
 				echo esc_html( $homeDeliveryCarrierOptions->getName() );
+
 				break;
 			case 'packetery_packet_id':
 				$packetId      = $order->getPacketId();
@@ -326,6 +329,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-tracking.latte',
 					$latteParams
 				);
+
 				break;
 			case 'packetery':
 				$encodedOrderGridParams = rawurlencode( $this->httpRequest->getUrl()->getQuery() );
@@ -393,9 +397,11 @@ class GridExtender {
 						],
 					]
 				);
+
 				break;
 			case 'packetery_packet_status':
 				echo esc_html( PacketStatusResolver::getTranslatedName( $order->getPacketStatus() ) );
+
 				break;
 			case 'packetery_packet_stored_until':
 				$this->latteEngine->render(

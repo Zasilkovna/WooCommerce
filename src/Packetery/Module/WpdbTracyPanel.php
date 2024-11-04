@@ -74,6 +74,7 @@ class WpdbTracyPanel implements Tracy\IBarPanel {
 			$count++;
 			if ( $count >= $maxQueries ) {
 				yield false;
+
 				break;
 			}
 		}

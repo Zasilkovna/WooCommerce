@@ -545,6 +545,7 @@ class LabelPrint {
 					$order->updateApiErrorMessage( $response->getFaultString() );
 					$this->orderRepository->save( $order );
 				}
+
 				continue;
 			}
 			$pairs[ $orderId ] = [

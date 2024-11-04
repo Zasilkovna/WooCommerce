@@ -63,6 +63,7 @@ class CarrierModalFormFactory {
 						self::FIELD_CARRIER_ID => $currentCarrier,
 					]
 				);
+
 				break;
 			}
 		}

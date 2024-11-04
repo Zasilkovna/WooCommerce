@@ -193,6 +193,7 @@ class Updater {
 				if ( '1' === (string) $oldValue && isset( $new['name'] ) ) {
 					$differences[ $key ] = __( 'carrier was re-enabled', 'packeta' );
 				}
+
 				continue;
 			}
 

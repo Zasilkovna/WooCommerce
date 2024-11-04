@@ -85,6 +85,7 @@ class PacketAutoSubmitter {
 						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId );
 					}
 				);
+
 				continue;
 			}
 

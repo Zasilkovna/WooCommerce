@@ -71,9 +71,6 @@
 
 	<rule ref="SlevomatCodingStandard.ControlStructures.JumpStatementsSpacing">
 		<properties>
-			<property name="jumpStatements" type="array">
-				<element value="return"/>
-			</property>
 			<property name="linesCountBefore" value="1"/>
 		</properties>
 	</rule>
