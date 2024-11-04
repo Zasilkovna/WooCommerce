@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="WooCommerce Coding Standards">
+<ruleset name="Packeta WordPress WooCommerce Plugin Coding Standards">
 	<description>Packetery WP plugin coding standards ruleset.</description>
 	<arg name="basepath" value="."/>
 	<arg name="cache" value="temp/.phpcs-cache"/>
