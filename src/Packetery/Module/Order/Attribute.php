@@ -78,6 +78,7 @@ class Attribute {
 			'required' => false,
 		],
 	];
+
 	/**
 	 * Home delivery attributes configuration.
 	 *
