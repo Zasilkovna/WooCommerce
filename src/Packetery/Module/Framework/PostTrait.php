@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 use WP_Post;
+
 /**
  * Trait PostTrait.
  *

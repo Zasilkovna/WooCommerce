@@ -98,6 +98,14 @@
 		</properties>
 	</rule>
 
+	<rule ref="SlevomatCodingStandard.Namespaces.UseSpacing">
+		<properties>
+			<property name="linesCountBeforeFirstUse" value="1"/>
+			<property name="linesCountBetweenUseTypes" value="0"/>
+			<property name="linesCountAfterLastUse" value="1"/>
+		</properties>
+	</rule>
+
 	<rule ref="PHPCompatibility">
 		<exclude-pattern>tests/</exclude-pattern>
 	</rule>

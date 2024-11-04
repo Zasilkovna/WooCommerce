@@ -15,7 +15,6 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
 
-
 /**
  * Class PacketActionsBrain
  *
