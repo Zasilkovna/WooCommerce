@@ -237,6 +237,7 @@ class Exporter {
 		} elseif ( $variable instanceof \WC_Shipping_Method ) {
 			$methodInfo = [
 				'id'           => $variable->id,
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				'method_title' => $variable->method_title,
 				'enabled'      => $variable->enabled,
 			];

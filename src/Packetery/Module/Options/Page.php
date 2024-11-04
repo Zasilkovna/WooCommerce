@@ -49,7 +49,7 @@ class Page {
 	 *
 	 * @var Engine PacketeryLatte engine.
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Options Provider
@@ -96,7 +96,7 @@ class Page {
 	/**
 	 * Plugin constructor.
 	 *
-	 * @param Engine                          $latte_engine       PacketeryLatte_engine.
+	 * @param Engine                          $latteEngine       PacketeryLatte_engine.
 	 * @param OptionsProvider                 $optionsProvider    Options provider.
 	 * @param FormFactory                     $formFactory        Form factory.
 	 * @param \Packetery\Core\Api\Soap\Client $packetaClient      Packeta Client.
@@ -105,7 +105,7 @@ class Page {
 	 * @param \Packetery\Nette\Http\Request   $httpRequest        HTTP request.
 	 */
 	public function __construct(
-		Engine $latte_engine,
+		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
 		FormFactory $formFactory,
 		\Packetery\Core\Api\Soap\Client $packetaClient,
@@ -113,7 +113,7 @@ class Page {
 		MessageManager $messageManager,
 		\Packetery\Nette\Http\Request $httpRequest
 	) {
-		$this->latte_engine    = $latte_engine;
+		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
 		$this->packetaClient   = $packetaClient;
@@ -628,11 +628,11 @@ class Page {
 			}
 		}
 
-		$api_password = $packeteryContainer['api_password'];
-		if ( $api_password->hasErrors() === false ) {
-			$api_pass           = $api_password->getValue();
-			$options['api_key'] = substr( $api_pass, 0, 16 );
-			$this->packetaClient->setApiPassword( $api_pass );
+		$apiPassword = $packeteryContainer['api_password'];
+		if ( $apiPassword->hasErrors() === false ) {
+			$apiPass            = $apiPassword->getValue();
+			$options['api_key'] = substr( $apiPass, 0, 16 );
+			$this->packetaClient->setApiPassword( $apiPass );
 		} else {
 			$options['api_key'] = '';
 		}
@@ -743,7 +743,7 @@ class Page {
 			$latteParams['error'] = __( 'This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator.', 'packeta' );
 		}
 
-		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
+		$latteParams['apiPasswordLink'] = trim( $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
 
 		$latteParams['exportLink'] = add_query_arg(
 			[
@@ -831,7 +831,7 @@ class Page {
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 		];
 
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
+		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}
 
 	/**

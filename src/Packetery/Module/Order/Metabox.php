@@ -43,14 +43,14 @@ class Metabox {
 	 *
 	 * @var Engine
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Message manager.
 	 *
 	 * @var MessageManager
 	 */
-	private $message_manager;
+	private $messageManager;
 
 	/**
 	 * CoreHelper.
@@ -146,8 +146,8 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine               $latte_engine         PacketeryLatte engine.
-	 * @param MessageManager       $message_manager      Message manager.
+	 * @param Engine               $latteEngine          PacketeryLatte engine.
+	 * @param MessageManager       $messageManager       Message manager.
 	 * @param CoreHelper           $coreHelper           CoreHelper.
 	 * @param Request              $request              Http request.
 	 * @param OptionsProvider      $optionsProvider      Options provider.
@@ -162,8 +162,8 @@ class Metabox {
 	 * @param CarrierModal         $carrierModal         Carrier change modal.
 	 */
 	public function __construct(
-		Engine $latte_engine,
-		MessageManager $message_manager,
+		Engine $latteEngine,
+		MessageManager $messageManager,
 		CoreHelper $coreHelper,
 		Request $request,
 		OptionsProvider $optionsProvider,
@@ -177,8 +177,8 @@ class Metabox {
 		Form $orderForm,
 		CarrierModal $carrierModal
 	) {
-		$this->latte_engine         = $latte_engine;
-		$this->message_manager      = $message_manager;
+		$this->latteEngine          = $latteEngine;
+		$this->messageManager       = $messageManager;
 		$this->coreHelper           = $coreHelper;
 		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
@@ -270,7 +270,7 @@ class Metabox {
 			$order = $this->orderRepository->getById( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			$partsCache = [
-				self::PART_ERROR => $this->latte_engine->renderToString(
+				self::PART_ERROR => $this->latteEngine->renderToString(
 					PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
 					[
 						'errorMessage' => $exception->getMessage(),
@@ -343,7 +343,7 @@ class Metabox {
 				$statusClass = $statusClasses[ $statusType ];
 			}
 
-			$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
+			$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                      => $order,
@@ -397,9 +397,9 @@ class Metabox {
 			$this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT )
 		);
 
-		$prev_invalid_values = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
-		if ( $prev_invalid_values ) {
-			$this->form->setValues( $prev_invalid_values );
+		$prevInvalidValues = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
+		if ( $prevInvalidValues ) {
+			$this->form->setValues( $prevInvalidValues );
 			$this->form->validate();
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
@@ -452,7 +452,7 @@ class Metabox {
 			}
 		}
 
-		$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
+		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
 				'form'                       => $this->form,
@@ -522,7 +522,7 @@ class Metabox {
 
 		if ( false === $this->form->isValid() ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( true ) );
-			$this->message_manager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
@@ -530,13 +530,13 @@ class Metabox {
 		$formValues = $this->form->getValues( 'array' );
 
 		if ( ! wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) ) {
-			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
 
 		if ( ! current_user_can( 'edit_post', $orderId ) ) {
-			$this->message_manager->flash_message( __( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}

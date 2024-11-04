@@ -66,16 +66,18 @@ class ShippingMethod extends \WC_Shipping_Method {
 	/**
 	 * Constructor for Packeta shipping class
 	 *
-	 * @param int $instance_id Shipping method instance id.
+	 * @param int $instanceId Shipping method instance id.
 	 */
-	public function __construct( int $instance_id = 0 ) {
+	public function __construct( int $instanceId = 0 ) {
 		parent::__construct();
 
 		$this->container               = CompatibilityBridge::getContainer();
 		$this->wcCarrierSettingsConfig = $this->container->getByType( WcSettingsConfig::class );
 
-		$this->id           = self::PACKETERY_METHOD_ID;
-		$this->instance_id  = absint( $instance_id );
+		$this->id = self::PACKETERY_METHOD_ID;
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->instance_id = absint( $instanceId );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->method_title = __( 'Packeta', 'packeta' );
 		$this->title        = __( 'Packeta', 'packeta' );
 		$this->enabled      = 'yes'; // This can be added as a setting.
@@ -84,11 +86,13 @@ class ShippingMethod extends \WC_Shipping_Method {
 		];
 
 		if ( $this->wcCarrierSettingsConfig->isActive() ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
 			$this->supports[]         = 'instance-settings';
 			$this->supports[]         = 'instance-settings-modal';
 			$this->carrierRepository  = $this->container->getByType( Carrier\EntityRepository::class );
-			$this->options            = get_option( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			$this->options = get_option( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
 		}
 
 		$this->init();
@@ -111,6 +115,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 			return;
 		}
 
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->instance_form_fields = $this->get_instance_form_fields();
 		$this->title                = $this->get_option( 'title' );
 	}

@@ -29,6 +29,7 @@ use Packetery\Module\Product;
 use stdClass;
 use WC_Order;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 /**
  * Class Builder
  *

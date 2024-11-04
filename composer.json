@@ -15,6 +15,8 @@
         "build-deps": "bash build-deps.sh",
         "check:ec": "vendor/bin/ec .",
         "wpify-scoper": "wpify-scoper",
+        "check:phpcs": "vendor/bin/phpcs",
+        "fix:phpcbf": "vendor/bin/phpcbf",
         "phpstan-72": "phpstan/vendor/bin/phpstan -cphpstan/php72.neon analyse",
         "phpstan-74": "phpstan/vendor/bin/phpstan -cphpstan/php74.neon analyse",
         "phpstan-80": "phpstan/vendor/bin/phpstan -cphpstan/php80.neon analyse",

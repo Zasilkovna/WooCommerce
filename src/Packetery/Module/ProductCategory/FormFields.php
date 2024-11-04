@@ -134,7 +134,8 @@ class FormFields {
 	 */
 	public function render( $term ): void {
 		$isProductCategoryObject = ( is_object( $term ) && get_class( $term ) === \WP_Term::class );
-		$productCategory         = $isProductCategoryObject ? $this->productCategoryEntityFactory->fromTermId( $term->term_id ) : null;
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$productCategory = $isProductCategoryObject ? $this->productCategoryEntityFactory->fromTermId( $term->term_id ) : null;
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[

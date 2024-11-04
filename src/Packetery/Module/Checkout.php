@@ -80,7 +80,7 @@ class Checkout {
 	 *
 	 * @var Engine
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Options provider.
@@ -195,7 +195,7 @@ class Checkout {
 	 * @param ProductEntityFactory         $productEntityFactory    Product entity factory.
 	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory    Product category entity factory.
 	 * @param CarrierOptionsFactory        $carrierOptionsFactory   Carrier options factory.
-	 * @param Engine                       $latte_engine            PacketeryLatte engine.
+	 * @param Engine                       $latteEngine             PacketeryLatte engine.
 	 * @param OptionsProvider              $optionsProvider         Options provider.
 	 * @param Carrier\Repository           $carrierRepository       Carrier repository.
 	 * @param Request                      $httpRequest             Http request.
@@ -218,7 +218,7 @@ class Checkout {
 		ProductEntityFactory $productEntityFactory,
 		ProductCategoryEntityFactory $productCategoryEntityFactory,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		Engine $latte_engine,
+		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
@@ -240,7 +240,7 @@ class Checkout {
 		$this->productEntiyFactory         = $productEntityFactory;
 		$this->productCategoryEntiyFactory = $productCategoryEntityFactory;
 		$this->carrierOptionsFactory       = $carrierOptionsFactory;
-		$this->latte_engine                = $latte_engine;
+		$this->latteEngine                 = $latteEngine;
 		$this->optionsProvider             = $optionsProvider;
 		$this->carrierRepository           = $carrierRepository;
 		$this->httpRequest                 = $httpRequest;
@@ -304,7 +304,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
@@ -330,7 +330,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
@@ -432,7 +432,7 @@ class Checkout {
 	 * Adds fields to the checkout page to save the values later
 	 */
 	public function renderHiddenInputFields(): void {
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
 			[
 				'fields' => array_unique(
@@ -481,20 +481,20 @@ class Checkout {
 			/**
 			 * Returns array always.
 			 *
-			 * @var array $required_attrs
+			 * @var array $requiredAttrs
 			 */
-			$required_attrs = array_filter(
+			$requiredAttrs = array_filter(
 				array_combine(
 					array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
 					array_column( Order\Attribute::$pickupPointAttrs, 'required' )
 				)
 			);
-			foreach ( $required_attrs as $attr => $required ) {
-				$attr_value = null;
+			foreach ( $requiredAttrs as $attr => $required ) {
+				$attrValue = null;
 				if ( isset( $checkoutData[ $attr ] ) ) {
-					$attr_value = $checkoutData[ $attr ];
+					$attrValue = $checkoutData[ $attr ];
 				}
-				if ( ! $attr_value ) {
+				if ( ! $attrValue ) {
 					$error = true;
 				}
 			}
@@ -770,7 +770,7 @@ class Checkout {
 			return;
 		}
 
-		$this->latte_engine->render(
+		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/car-delivery-estimated-delivery-date.latte'
 		);
 	}
@@ -1413,8 +1413,10 @@ class Checkout {
 		}
 
 		$order = null;
-		if ( isset( $wp->query_vars['order-pay'] ) && is_numeric( $wp->query_vars['order-pay'] ) ) {
-			$order = $this->orderRepository->getById( (int) $wp->query_vars['order-pay'], true );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$wpOrderPay = $wp->query_vars['order-pay'] ?? null;
+		if ( is_numeric( $wpOrderPay ) ) {
+			$order = $this->orderRepository->getById( (int) $wpOrderPay, true );
 		}
 
 		if ( $order instanceof Entity\Order ) {

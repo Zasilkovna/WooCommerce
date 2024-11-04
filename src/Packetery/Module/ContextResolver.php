@@ -41,9 +41,11 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderGridPage(): bool {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $typenow, $plugin_page;
 
 		if ( ModuleHelper::isHposEnabled() ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && false === in_array( $this->request->getQuery( 'action' ), [ 'edit', 'new' ], true );
 		}
 
@@ -56,9 +58,11 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderDetailPage(): bool {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $typenow, $plugin_page;
 
 		if ( ModuleHelper::isHposEnabled() ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && 'edit' === $this->request->getQuery( 'action' );
 		}
 

@@ -27,7 +27,7 @@ class Downloader {
 	 *
 	 * @var Updater Carrier updater.
 	 */
-	private $carrier_updater;
+	private $carrierUpdater;
 
 	/**
 	 * Options provider.
@@ -46,12 +46,16 @@ class Downloader {
 	/**
 	 * Downloader constructor.
 	 *
-	 * @param Updater          $carrier_updater  Carrier updater.
+	 * @param Updater          $carrierUpdater  Carrier updater.
 	 * @param OptionsProvider  $optionsProvider  Options provider.
 	 * @param WebRequestClient $webRequestClient HTTP client.
 	 */
-	public function __construct( Updater $carrier_updater, OptionsProvider $optionsProvider, WebRequestClient $webRequestClient ) {
-		$this->carrier_updater  = $carrier_updater;
+	public function __construct(
+		Updater $carrierUpdater,
+		OptionsProvider $optionsProvider,
+		WebRequestClient $webRequestClient
+	) {
+		$this->carrierUpdater   = $carrierUpdater;
 		$this->optionsProvider  = $optionsProvider;
 		$this->webRequestClient = $webRequestClient;
 	}
@@ -85,8 +89,8 @@ class Downloader {
 				'error',
 			];
 		}
-		$validation_result = $this->carrier_updater->validate_carrier_data( $carriers );
-		if ( ! $validation_result ) {
+		$validationResult = $this->carrierUpdater->validate_carrier_data( $carriers );
+		if ( ! $validationResult ) {
 			// translators: keep %failReason placeholder intact.
 			$translatedMessage = __( 'Carrier download failed: %failReason Please try again later.', 'packeta' );
 			return [
@@ -97,7 +101,7 @@ class Downloader {
 				'error',
 			];
 		}
-		$this->carrier_updater->save( $carriers );
+		$this->carrierUpdater->save( $carriers );
 		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( DATE_ATOM ) );
 
 		return [
@@ -144,8 +148,8 @@ class Downloader {
 	 * @return array|null
 	 */
 	private function get_from_json( string $json ): ?array {
-		$carriers_data = json_decode( $json, true );
+		$carriersData = json_decode( $json, true );
 
-		return ( $carriers_data['carriers'] ?? null );
+		return ( $carriersData['carriers'] ?? null );
 	}
 }

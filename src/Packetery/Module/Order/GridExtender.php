@@ -384,20 +384,20 @@ class GridExtender {
 	 * @return string[] All columns.
 	 */
 	public function addOrderListColumns( array $columns ): array {
-		$new_columns = array();
+		$newColumns = array();
 
-		foreach ( $columns as $column_name => $column_info ) {
-			$new_columns[ $column_name ] = $column_info;
+		foreach ( $columns as $columnName => $columnInfo ) {
+			$newColumns[ $columnName ] = $columnInfo;
 
-			if ( 'order_total' === $column_name ) {
-				$new_columns['packetery_weight']        = __( 'Weight', 'packeta' );
-				$new_columns['packetery']               = __( 'Packeta', 'packeta' );
-				$new_columns['packetery_packet_id']     = __( 'Tracking No.', 'packeta' );
-				$new_columns['packetery_packet_status'] = __( 'Packeta packet status', 'packeta' );
-				$new_columns['packetery_destination']   = __( 'Pickup point or carrier', 'packeta' );
+			if ( 'order_total' === $columnName ) {
+				$newColumns['packetery_weight']        = __( 'Weight', 'packeta' );
+				$newColumns['packetery']               = __( 'Packeta', 'packeta' );
+				$newColumns['packetery_packet_id']     = __( 'Tracking No.', 'packeta' );
+				$newColumns['packetery_packet_status'] = __( 'Packeta packet status', 'packeta' );
+				$newColumns['packetery_destination']   = __( 'Pickup point or carrier', 'packeta' );
 			}
 		}
 
-		return $new_columns;
+		return $newColumns;
 	}
 }
