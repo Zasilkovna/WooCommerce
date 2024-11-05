@@ -62,7 +62,11 @@ class CoreHelper {
 	public static function trimDecimalPlaces( float $value, int $position ): string {
 		$formattedValue = number_format( $value, $position, '.', '' );
 
-		return rtrim( rtrim( $formattedValue, '0' ), '.' );
+		if ( $position > 0 ) {
+			return rtrim( rtrim( $formattedValue, '0' ), '.' );
+		}
+
+		return $formattedValue;
 	}
 
 	/**

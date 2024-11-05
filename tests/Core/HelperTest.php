@@ -37,6 +37,7 @@ class HelperTest extends TestCase {
 		self::assertInstanceOf( DateTimeImmutable::class, CoreHelper::now() );
 		self::assertSame( '4.123', CoreHelper::trimDecimalPlaces( 4.1234566778, 3 ) );
 		self::assertSame( '20', CoreHelper::trimDecimalPlaces( 20.0, 3 ) );
+		self::assertSame( '10', CoreHelper::trimDecimalPlaces( 10.0, 0 ) );
 		self::assertNotSame( -4.123, CoreHelper::trimDecimalPlaces( - 4.1234566778, 3 ) );
 	}
 
