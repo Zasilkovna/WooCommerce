@@ -26,7 +26,18 @@
         "phpstan-82": "phpstan/vendor/bin/phpstan -cphpstan/php82.neon analyse",
         "phpstan-83": "phpstan/vendor/bin/phpstan -cphpstan/php83.neon analyse",
         "tests-unit": "./vendor/bin/phpunit tests",
-        "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage"
+        "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage",
+        "check:all": [
+            "@check:phpcs",
+            "@tests-unit",
+            "@phpstan-72",
+            "@phpstan-74",
+            "@phpstan-80",
+            "@phpstan-81",
+            "@phpstan-82",
+            "@phpstan-83",
+            "@check:ec"
+        ]
     },
     "config": {
         "platform": {
