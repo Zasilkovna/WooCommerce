@@ -60,7 +60,15 @@ class CoreHelper {
 	 * @return string
 	 */
 	public static function trimDecimalPlaces( float $value, int $position ): string {
-		return rtrim( number_format( $value, $position, '.', '' ), '0.' );
+		$formattedValue = number_format( $value, $position, '.', '' );
+
+		if ( ( $position > 0 ) && strpos( $formattedValue, '.' ) !== false ) {
+			$trimmedValue = rtrim( $formattedValue, '0' );
+
+			return rtrim( $trimmedValue, '.' );
+		}
+
+		return $formattedValue;
 	}
 
 	/**
