@@ -19,7 +19,7 @@
 	<file>tests</file>
 
 	<!-- Configs -->
-	<config name="minimum_supported_wp_version" value="5.0"/>
+	<config name="minimum_supported_wp_version" value="5.5"/>
 
 	<ini name="error_reporting" value="E_ALL &#38; ~E_DEPRECATED"/>
 
