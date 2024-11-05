@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace Tests\Core\Entity;
 
-use Tests\Core\DummyFactory;
 use PHPUnit\Framework\TestCase;
+use Tests\Core\DummyFactory;
 
 class SizeTest extends TestCase {
 

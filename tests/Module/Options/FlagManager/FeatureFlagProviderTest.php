@@ -42,9 +42,11 @@ class FeatureFlagProviderTest extends TestCase {
 		$downloader = $this->createMock( FeatureFlagDownloader::class );
 		$downloader
 			->method( 'getFlags' )
-			->willReturn( [
-				FeatureFlagProvider::FLAG_SPLIT_ACTIVE => $isSplitActive,
-			] );
+			->willReturn(
+				[
+					FeatureFlagProvider::FLAG_SPLIT_ACTIVE => $isSplitActive,
+				]
+			);
 
 		$manager = new FeatureFlagProvider(
 			$wpAdapter,

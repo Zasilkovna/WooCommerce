@@ -16,6 +16,7 @@
 	<file>bootstrap.php</file>
 	<file>bootstrap-cli.php</file>
 	<file>packeta.php</file>
+	<file>tests</file>
 
 	<!-- Configs -->
 	<config name="minimum_supported_wp_version" value="5.0"/>
@@ -114,7 +115,5 @@
 		</properties>
 	</rule>
 
-	<rule ref="PHPCompatibility">
-		<exclude-pattern>tests/</exclude-pattern>
-	</rule>
+	<rule ref="PHPCompatibility"/>
 </ruleset>

@@ -19,28 +19,28 @@ class PacketaPickupPointsConfigTest extends TestCase {
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'SK'           => [
 				'carrierId'      => 'zpointsk',
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'HU'           => [
 				'carrierId'      => 'zpointhu',
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'RO'           => [
 				'carrierId'      => 'zpointro',
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'numeric'      => [
 				'carrierId'      => '106',

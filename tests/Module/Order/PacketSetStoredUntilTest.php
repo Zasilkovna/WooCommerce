@@ -5,9 +5,9 @@ declare( strict_types=1 );
 namespace Tests\Module\Order;
 
 use Packetery\Core\Api\Soap\Client;
+use Packetery\Core\Api\Soap\Response\PacketSetStoredUntil as ResponsePacketSetStoredUntil;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Log\ILogger;
-use Packetery\Core\Api\Soap\Response\PacketSetStoredUntil as ResponsePacketSetStoredUntil;
 use Packetery\Module\Order\PacketSetStoredUntil;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -58,4 +58,5 @@ class PacketSetStoredUntilTest extends TestCase {
 
 		$this->assertSame( $errorMessage, $result );
 	}
+
 }

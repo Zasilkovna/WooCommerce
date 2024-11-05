@@ -44,8 +44,8 @@ class OptionsPageTest extends TestCase {
 			$featureFlagProviderMock
 		);
 
-		$carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
-		$optionsPage             = new OptionsPage(
+		$carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
+		$optionsPage           = new OptionsPage(
 			$latteEngineMock,
 			$carrierRepositoryMock,
 			$formFactoryMock,

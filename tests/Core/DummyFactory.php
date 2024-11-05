@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Core;
 
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Address;
 use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Entity\CustomsDeclaration;
@@ -12,7 +13,6 @@ use Packetery\Core\Entity\CustomsDeclarationItem;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
-use Packetery\Core\CoreHelper;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 
 class DummyFactory {

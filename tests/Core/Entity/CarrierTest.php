@@ -10,7 +10,7 @@ use Tests\Core\DummyFactory;
 class CarrierTest extends TestCase {
 
 	public function testGetters(): void {
-		$carrier = DummyFactory::createCarrierCzechPp();
+		$carrier            = DummyFactory::createCarrierCzechPp();
 		$carDeliveryCarrier = DummyFactory::createCarDeliveryCarrier();
 		self::assertIsArray( $carrier->__toArray() );
 		self::assertIsString( $carrier->getName() );

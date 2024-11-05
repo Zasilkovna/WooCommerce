@@ -39,19 +39,18 @@ class CheckoutTest extends TestCase {
 	private WpAdapter|MockObject $carrierEntityRepository;
 	private WpAdapter|MockObject $carDeliveryConfig;
 	private WpAdapter|MockObject $provider;
-
 	private Checkout $checkout;
 
 	private function createCheckoutMock(): void {
-		$this->wpAdapter = MockFactory::createWpAdapter( $this );
-		$this->wcAdapter = $this->createMock( WcAdapter::class );
-		$this->productEntityFactory = $this->createMock( ProductEntityFactory::class );
+		$this->wpAdapter                    = MockFactory::createWpAdapter( $this );
+		$this->wcAdapter                    = $this->createMock( WcAdapter::class );
+		$this->productEntityFactory         = $this->createMock( ProductEntityFactory::class );
 		$this->productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
-		$this->carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
-		$this->currencySwitcherFacade = MockFactory::createCurrencySwitcherFacade( $this );
-		$this->carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
-		$this->carDeliveryConfig = $this->createMock( CarDeliveryConfig::class );
-		$this->provider = $this->createMock( OptionsProvider::class );
+		$this->carrierOptionsFactory        = $this->createMock( CarrierOptionsFactory::class );
+		$this->currencySwitcherFacade       = MockFactory::createCurrencySwitcherFacade( $this );
+		$this->carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
+		$this->carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
+		$this->provider                     = $this->createMock( OptionsProvider::class );
 
 		$this->checkout = new Checkout(
 			$this->wpAdapter,
@@ -74,14 +73,14 @@ class CheckoutTest extends TestCase {
 			$this->carrierEntityRepository,
 			$this->createMock( Api\Internal\CheckoutRouter::class ),
 			$this->carDeliveryConfig,
-			$this->createMock(PaymentHelper::class),
+			$this->createMock( PaymentHelper::class ),
 		);
 
 	}
 
 	public static function rateCreationDataProvider(): array {
 		return [
-			'configured carriers must be present in rates'            =>
+			'configured carriers must be present in rates' =>
 				[
 					'expectedRateCount'                  => 2,
 					'carriers'                           =>
@@ -131,7 +130,7 @@ class CheckoutTest extends TestCase {
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeight'                         => 5.0,
 				],
-			'car delivery carrier must not be present in rates'       =>
+			'car delivery carrier must not be present in rates' =>
 				[
 					'expectedRateCount'                  => 1,
 					'carriers'                           =>
@@ -177,7 +176,7 @@ class CheckoutTest extends TestCase {
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeight'                         => 1.0,
 				],
-			'only one carrier is active'                              =>
+			'only one carrier is active'                   =>
 				[
 					'expectedRateCount'                  => 1,
 					'carriers'                           =>
@@ -257,7 +256,7 @@ class CheckoutTest extends TestCase {
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeight'                         => 21.0,
 				],
-			'inactive carrier must be omitted'                        =>
+			'inactive carrier must be omitted'             =>
 				[
 					'expectedRateCount'                  => 0,
 					'carriers'                           =>
@@ -288,7 +287,7 @@ class CheckoutTest extends TestCase {
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeight'                         => 1.0,
 				],
-			'carrier disallowed by product must be omitted'           =>
+			'carrier disallowed by product must be omitted' =>
 				[
 					'expectedRateCount'                  => 0,
 					'carriers'                           =>
@@ -317,7 +316,7 @@ class CheckoutTest extends TestCase {
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeight'                         => 1.0,
 				],
-			'carrier disallowed by product category must be omitted'  =>
+			'carrier disallowed by product category must be omitted' =>
 				[
 					'expectedRateCount'                  => 0,
 					'carriers'                           =>
@@ -346,7 +345,7 @@ class CheckoutTest extends TestCase {
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeight'                         => 1.0,
 				],
-			'car delivery carriers must be supported'                 =>
+			'car delivery carriers must be supported'      =>
 				[
 					'expectedRateCount'                  => 1,
 					'carriers'                           =>
@@ -414,7 +413,7 @@ class CheckoutTest extends TestCase {
 					'isAgeVerificationRequiredByProduct' => true,
 					'cartWeight'                         => 1.0,
 				],
-			'allowed carrier names argument must support null'        =>
+			'allowed carrier names argument must support null' =>
 				[
 					'expectedRateCount'                  => 1,
 					'carriers'                           =>
@@ -544,14 +543,16 @@ class CheckoutTest extends TestCase {
 
 		$this->carrierOptionsFactory
 			->method( 'createByOptionId' )
-			->willReturnCallback( function ( $optionId ) use ( $carriersOptions ) {
-				$carrierOptions = $carriersOptions[ $optionId ];
+			->willReturnCallback(
+				function ( $optionId ) use ( $carriersOptions ) {
+					$carrierOptions = $carriersOptions[ $optionId ];
 
-				return new Carrier\Options(
-					$optionId,
-					$carrierOptions
-				);
-			} );
+					return new Carrier\Options(
+						$optionId,
+						$carrierOptions
+					);
+				}
+			);
 
 		$this->carrierEntityRepository
 			->method( 'getByCountryIncludingNonFeed' )
@@ -576,25 +577,26 @@ class CheckoutTest extends TestCase {
 	public function testAreBlocksUsedInCheckoutClassicDetection(): void {
 		$this->createCheckoutMock();
 
-		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::CLASSIC_CHECKOUT_DETECTION);
-		$this->assertFalse($this->checkout->areBlocksUsedInCheckout());
+		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::CLASSIC_CHECKOUT_DETECTION );
+		$this->assertFalse( $this->checkout->areBlocksUsedInCheckout() );
 	}
 
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithBlock(): void {
 		$this->createCheckoutMock();
 
-		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION);
+		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
 
-		$this->wpAdapter->method('hasBlock')->willReturn( true );
-		$this->assertTrue($this->checkout->areBlocksUsedInCheckout());
+		$this->wpAdapter->method( 'hasBlock' )->willReturn( true );
+		$this->assertTrue( $this->checkout->areBlocksUsedInCheckout() );
 	}
 
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithoutBlock(): void {
 		$this->createCheckoutMock();
 
-		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION);
+		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
 
-		$this->wpAdapter->method('hasBlock')->willReturn( false );
-		$this->assertFalse($this->checkout->areBlocksUsedInCheckout());
+		$this->wpAdapter->method( 'hasBlock' )->willReturn( false );
+		$this->assertFalse( $this->checkout->areBlocksUsedInCheckout() );
 	}
+
 }

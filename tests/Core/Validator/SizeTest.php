@@ -13,7 +13,7 @@ class SizeTest extends TestCase {
 	public function testValidate(): void {
 		$validator = new Size();
 
-		$dummySize = DummyFactory::createSize();
+		$dummySize        = DummyFactory::createSize();
 		$validationReport = $validator->validate( $dummySize );
 		self::assertTrue( $validationReport->isHeightValid() );
 		self::assertTrue( $validationReport->isWidthValid() );
