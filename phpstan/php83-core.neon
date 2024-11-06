@@ -1,0 +1,5 @@
+includes:
+	- base.neon
+	- core.neon
+parameters:
+	phpVersion: 80300
