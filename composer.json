@@ -10,7 +10,9 @@
         "php-stubs/woocommerce-stubs": "^9.1",
         "editorconfig-checker/editorconfig-checker": "^10.6",
         "slevomat/coding-standard": "^8.15",
-        "wp-cli/wp-cli-bundle": "^2.11"
+        "wp-cli/wp-cli-bundle": "^2.11",
+        "phpstan/extension-installer": "^1.4",
+        "szepeviktor/phpstan-wordpress": "^1.3"
     },
     "scripts": {
         "build:deps": "bash build-deps.sh",
@@ -19,12 +21,12 @@
         "wpify-scoper": "wpify-scoper",
         "check:phpcs": "vendor/bin/phpcs",
         "fix:phpcbf": "vendor/bin/phpcbf",
-        "phpstan:php72": "phpstan/vendor/bin/phpstan -cphpstan/php72.neon analyse",
-        "phpstan:php74": "phpstan/vendor/bin/phpstan -cphpstan/php74.neon analyse",
-        "phpstan:php80": "phpstan/vendor/bin/phpstan -cphpstan/php80.neon analyse",
-        "phpstan:php81": "phpstan/vendor/bin/phpstan -cphpstan/php81.neon analyse",
-        "phpstan:php82": "phpstan/vendor/bin/phpstan -cphpstan/php82.neon analyse",
-        "phpstan:php83": "phpstan/vendor/bin/phpstan -cphpstan/php83.neon analyse",
+        "phpstan:php72": "phpstan analyse -c phpstan/php72.neon",
+        "phpstan:php74": "phpstan analyse -c phpstan/php74.neon",
+        "phpstan:php80": "phpstan analyse -c phpstan/php80.neon",
+        "phpstan:php81": "phpstan analyse -c phpstan/php81.neon",
+        "phpstan:php82": "phpstan analyse -c phpstan/php82.neon",
+        "phpstan:php83": "phpstan analyse -c phpstan/php83.neon",
         "tests-unit": "vendor/bin/phpunit tests",
         "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage",
         "check:all": [
@@ -45,7 +47,8 @@
         },
         "allow-plugins": {
             "wpify/scoper": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true
         }
     },
     "autoload": {
