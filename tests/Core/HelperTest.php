@@ -31,40 +31,62 @@ class HelperTest extends TestCase {
 		);
 	}
 
-	public function testStatic(): void {
-		self::assertSame( 10.222, CoreHelper::simplifyWeight( 10.2222 ) );
-		self::assertNull( CoreHelper::simplifyWeight( null ) );
+	public function testNow(): void {
 		self::assertInstanceOf( DateTimeImmutable::class, CoreHelper::now() );
 	}
 
-	public static function trimDecimalPlacesDataProvider(): array {
+	public static function simplifyWeightProvider(): array {
 		return [
-			'HappyPath1' => [
+			'float-with-3-decimals' => [
+					'expected' => 10.222,
+					'weight' => 10.2222
+			],
+			'full-number-without-decimals' => [
+					'expected' => 1,
+					'weight' => 1.000000
+			],
+			'null' => [
+					'expected' => null,
+					'weight' => null
+			]
+		];
+	}
+
+	/**
+	 * @dataProvider simplifyWeightProvider
+	 */
+	public function testSimplifyWeight( ?float $expected, ?float $weight ): void {
+		self::assertSame( $expected, CoreHelper::simplifyWeight( $weight ) );
+	}
+
+	public static function trimDecimalPlacesProvider(): array {
+		return [
+			'float-with-3-decimals' => [
 				'expected' => '4.123',
 				'value' => 4.1234566778,
 				'decimals' => 3
 			],
-			'HappyPath2' => [
+			'single-digit-full-number-without-decimals' => [
 				'expected' => '4',
 				'value' => 4.1234566778,
 				'decimals' => 0
 			],
-			'HappyPath3' => [
+			'full-number-without-3-decimals' => [
 				'expected' => '20',
 				'value' => 20.0,
 				'decimals' => 3
 			],
-			'HappyPath4' => [
+			'full-number-without-decimals' => [
 				'expected' => '10',
 				'value' => 10.0,
 				'decimals' => 0
 			],
-			'HappyPath5' => [
+			'negative-float-with-3-decimals' => [
 				'expected' => '-4.123',
 				'value' => - 4.1234566778,
 				'decimals' => 3
 			],
-			'HappyPath6' => [
+			'negative-single-digit-full-number-without-decimals' => [
 				'expected' => '-4',
 				'value' => - 4.1234566778,
 				'decimals' => 0
@@ -73,7 +95,7 @@ class HelperTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider trimDecimalPlacesDataProvider
+	 * @dataProvider trimDecimalPlacesProvider
 	 */
 	public function testTrimDecimalPlaces( string $expected, float $value, int $decimals): void {
 		self::assertSame( $expected, CoreHelper::trimDecimalPlaces( $value, $decimals ) );
