@@ -106,10 +106,9 @@ class ShippingMethod extends \WC_Shipping_Method {
 		if ( ! $this->wcCarrierSettingsConfig->isActive() ) {
 			add_action(
 				'woocommerce_update_options_shipping_' . $this->id,
-				[
-					$this,
-					'process_admin_options',
-				]
+				function() {
+					$this->process_admin_options();
+				}
 			);
 
 			return;

@@ -74,7 +74,7 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 3 );
+		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 2 );
 
 		$mappedEvents = $this->optionsProvider->getPacketAutoSubmissionMappedUniqueEvents();
 		foreach ( $mappedEvents as $mappedEvent ) {

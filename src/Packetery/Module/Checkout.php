@@ -728,13 +728,13 @@ class Checkout {
 		// This action works for both classic and Divi templates.
 		add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 
-		add_action( 'woocommerce_checkout_process', array( $this, 'validateCheckoutData' ) );
-		add_action( 'woocommerce_checkout_update_order_meta', array( $this, 'updateOrderMeta' ) );
-		add_action( 'woocommerce_store_api_checkout_order_processed', array( $this, 'updateOrderMetaBlocks' ) );
+		add_action( 'woocommerce_checkout_process', [ $this, 'validateCheckoutData' ] );
+		add_action( 'woocommerce_checkout_update_order_meta', [ $this, 'updateOrderMeta' ] );
+		add_action( 'woocommerce_store_api_checkout_order_processed', [ $this, 'updateOrderMetaBlocks' ] );
 		if ( ! is_admin() ) {
 			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 		}
-		add_action( 'woocommerce_review_order_before_shipping', array( $this, 'updateShippingRates' ), 10, 2 );
+		add_action( 'woocommerce_review_order_before_shipping', [ $this, 'updateShippingRates' ], 10 );
 		add_filter( 'woocommerce_cart_shipping_packages', [ $this, 'updateShippingPackages' ] );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
 		add_action(

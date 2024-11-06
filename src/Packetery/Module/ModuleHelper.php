@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
+use DateTime;
 use DateTimeImmutable;
 use Packetery\Nette\Utils\Html;
 use WC_DateTime;
@@ -242,7 +243,9 @@ class ModuleHelper {
 	 */
 	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
 		if ( null !== $date ) {
-			return WC_DateTime::createFromImmutable( $date )->date_i18n(
+			$dateTimeString = $date->format( 'Y-m-d H:i:s' );
+
+			return ( new WC_DateTime( $dateTimeString ) )->date_i18n(
 				/**
 				 * Applies woocommerce_admin_order_date_format filters.
 				 *
