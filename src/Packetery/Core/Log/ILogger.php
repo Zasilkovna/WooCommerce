@@ -48,6 +48,6 @@ interface ILogger {
 	 *
 	 * @return int
 	 */
-	public function countRecords( $orderId = null, ?string $action = null): int;
+	public function countRecords( $orderId = null, ?string $action = null ): int;
 
 }

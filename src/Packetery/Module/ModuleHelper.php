@@ -131,13 +131,13 @@ class ModuleHelper {
 	/**
 	 * Renders string.
 	 *
-	 * @param string $string String to render.
+	 * @param string $inputString String to render.
 	 *
 	 * @return void
 	 */
-	public static function renderString( string $string ): void {
+	public static function renderString( string $inputString ): void {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $string;
+		echo $inputString;
 	}
 
 	/**
@@ -176,13 +176,13 @@ class ModuleHelper {
 	/**
 	 * Converts all float values within an array to strings.
 	 *
-	 * @param array $array Array with parameters.
+	 * @param array $inputArray Array with parameters.
 	 *
 	 * @return array
 	 */
-	public static function convertArrayFloatsToStrings( array $array ): array {
+	public static function convertArrayFloatsToStrings( array $inputArray ): array {
 		array_walk_recursive(
-			$array,
+			$inputArray,
 			static function ( &$item ) {
 				if ( is_float( $item ) ) {
 					$item = (string) $item;
@@ -190,7 +190,7 @@ class ModuleHelper {
 			}
 		);
 
-		return $array;
+		return $inputArray;
 	}
 
 	/**
@@ -214,19 +214,19 @@ class ModuleHelper {
 	 *
 	 * @param string      $href Href.
 	 * @param string|null $target Target.
-	 * @param string|null $class Class.
+	 * @param string|null $className Class.
 	 *
 	 * @return string[]
 	 */
-	public function createLinkParts( string $href, string $target = null, string $class = null ): array {
+	public function createLinkParts( string $href, string $target = null, string $className = null ): array {
 		$link = Html::el( 'a' )->href( $href );
 
 		if ( null !== $target ) {
 			$link->target( $target );
 		}
 
-		if ( null !== $class ) {
-			$link->class( $class );
+		if ( null !== $className ) {
+			$link->class( $className );
 		}
 
 		return [ $link->startTag(), $link->endTag() ];

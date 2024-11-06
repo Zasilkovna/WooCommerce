@@ -22,6 +22,7 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
 use WC_Order;
+use function esc_html;
 
 /**
  * Class GridExtender.
@@ -133,11 +134,11 @@ class GridExtender {
 	/**
 	 * Adds custom filtering links to order grid.
 	 *
-	 * @param array $var Array of html links.
+	 * @param array $htmlLinks Array of html links.
 	 *
 	 * @return array
 	 */
-	public function addFilterLinks( array $var ): array {
+	public function addFilterLinks( array $htmlLinks ): array {
 		$latteParams = [
 			'link'       => ModuleHelper::getOrderGridUrl(
 				[
@@ -150,7 +151,7 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		$latteParams = [
 			'link'       => ModuleHelper::getOrderGridUrl(
@@ -164,9 +165,9 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
-		return $var;
+		return $htmlLinks;
 	}
 
 	/**
@@ -270,7 +271,7 @@ class GridExtender {
 			$order = $this->getOrderByIdCached( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			if ( 'packetery' === $column ) {
-				ModuleHelper::renderString( $exception->getMessage() );
+				echo esc_html( $exception->getMessage() );
 			}
 
 			return;

@@ -171,7 +171,7 @@ class DataTab {
 		}
 
 		$form              = $this->createForm( $product );
-		$form->onSuccess[] = function( Form $form, array $values ) use ( $product ) {
+		$form->onSuccess[] = function ( Form $form, array $values ) use ( $product ) {
 			$this->processFormData( $product->getId(), $values );
 		};
 

@@ -318,7 +318,7 @@ class LabelPrint {
 		$form = $this->formFactory->create( $name );
 
 		$availableOffsets = [];
-		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
+		for ( $i = 0; $i <= $maxOffset; $i++ ) {
 			$availableOffsets[ $i ] = ( 0 === $i ?
 				__( "don't skip any field on a print sheet", 'packeta' ) :
 				// translators: %s is offset.

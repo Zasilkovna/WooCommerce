@@ -75,7 +75,6 @@ class CheckoutTest extends TestCase {
 			$this->carDeliveryConfig,
 			$this->createMock( PaymentHelper::class ),
 		);
-
 	}
 
 	public static function rateCreationDataProvider(): array {

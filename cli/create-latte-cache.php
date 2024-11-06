@@ -18,6 +18,7 @@ $latteEngine = $container->getByType( Engine::class );
 if ( is_dir( $container->parameters['latteTempFolder'] ) ) {
 	$filesToDelete = Finder::findFiles( '*' )->from( $container->parameters['latteTempFolder'] );
 	foreach ( $filesToDelete as $fileToDelete ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink
 		unlink( $fileToDelete );
 	}
 }
