@@ -1,4 +1,5 @@
 includes:
 	- base.neon
+	- core.neon
 parameters:
-	phpVersion: 80200
+	phpVersion: 70400
