@@ -437,7 +437,6 @@ class PacketSubmitter {
 	private function preparePacketData( Entity\Order $order ): array {
 		$validationErrors = $this->orderValidator->validate( $order );
 		if ( ! empty( $validationErrors ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new InvalidRequestException( 'All required order attributes are not set.', $validationErrors );
 		}
 

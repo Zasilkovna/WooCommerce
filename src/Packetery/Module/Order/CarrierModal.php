@@ -163,7 +163,6 @@ class CarrierModal {
 		$orderId      = $this->detailCommonLogic->getOrderId();
 		$newCarrierId = (string) $values[ CarrierModalFormFactory::FIELD_CARRIER_ID ];
 		if ( null === $orderId ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new RuntimeException( 'Packeta: Failed to process carrier change, new carrier id ' . $newCarrierId );
 		}
 
@@ -194,7 +193,6 @@ class CarrierModal {
 	private function createNewCarrierOrder( int $orderId, string $newCarrierId ): string {
 		$newCarrier = $this->carrierRepository->getAnyById( $newCarrierId );
 		if ( null === $newCarrier ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new RuntimeException( 'Packeta: Failed to get instance of carrier with id ' . $newCarrierId );
 		}
 		$this->orderRepository->saveData(
@@ -206,7 +204,6 @@ class CarrierModal {
 
 		$options = $this->carrierOptionsFactory->createByCarrierId( $newCarrier->getId() );
 		if ( ! $options->hasOptions() ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new RuntimeException( 'Missing options for carrier ' . $newCarrier->getId() );
 		}
 

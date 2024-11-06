@@ -96,7 +96,6 @@ class OptionsProvider {
 	public function getOptionsByName( string $optionsName ): array {
 		$data = $this->getAllOptions();
 		if ( ! isset( $data[ $optionsName ] ) ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new \InvalidArgumentException( sprintf( 'Option name "%s" does not exist.', $optionsName ) );
 		}
 

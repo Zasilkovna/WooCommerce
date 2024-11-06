@@ -28,8 +28,6 @@ use Packetery\Module\Product;
 use Packetery\Module\WeightCalculator;
 use stdClass;
 use WC_Order;
-use function esc_html;
-use function esc_html__;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 /**
@@ -129,7 +127,7 @@ class Builder {
 	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
 		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
 		if ( empty( $country ) ) {
-			throw new InvalidCarrierException( esc_html__( 'Please set the country of the delivery address first.', 'packeta' ) );
+			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
 		}
 
 		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
@@ -138,8 +136,8 @@ class Builder {
 			throw new InvalidCarrierException(
 				sprintf(
 				// translators: %s is carrier id.
-					esc_html__( 'Order carrier is invalid (%s). Please contact Packeta support.', 'packeta' ),
-					esc_html( $carrierId )
+					__( 'Order carrier is invalid (%s). Please contact Packeta support.', 'packeta' ),
+					$carrierId
 				)
 			);
 		}

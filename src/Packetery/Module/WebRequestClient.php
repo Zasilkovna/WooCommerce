@@ -11,7 +11,6 @@ namespace Packetery\Module;
 
 use Packetery\Core\Api\WebRequestException;
 use Packetery\Core\Interfaces\IWebRequestClient;
-use function esc_html;
 
 /**
  * Class WebRequestClient
@@ -33,7 +32,7 @@ class WebRequestClient implements IWebRequestClient {
 	public function post( string $url, array $options ): string {
 		$resultResponse = wp_remote_post( $url, $options );
 		if ( is_wp_error( $resultResponse ) ) {
-			throw new WebRequestException( esc_html( $resultResponse->get_error_message() ) );
+			throw new WebRequestException( $resultResponse->get_error_message() );
 		}
 
 		return wp_remote_retrieve_body( $resultResponse );
@@ -54,7 +53,7 @@ class WebRequestClient implements IWebRequestClient {
 		];
 		$resultResponse = wp_remote_get( $url, $options );
 		if ( is_wp_error( $resultResponse ) ) {
-			throw new WebRequestException( esc_html( $resultResponse->get_error_message() ) );
+			throw new WebRequestException( $resultResponse->get_error_message() );
 		}
 
 		return wp_remote_retrieve_body( $resultResponse );

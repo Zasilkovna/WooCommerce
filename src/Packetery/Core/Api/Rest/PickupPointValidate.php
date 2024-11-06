@@ -70,7 +70,6 @@ class PickupPointValidate {
 
 			return new PickupPointValidateResponse( $resultArray['isValid'], $resultArray['errors'] );
 		} catch ( \Exception $exception ) {
-			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 			throw new RestException( $exception->getMessage() );
 		}
 	}

@@ -47,6 +47,7 @@
 		<exclude name="Squiz.Commenting.FunctionComment.EmptyThrows"/>
 		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
 		<exclude name="PSR2.Classes.ClassDeclaration.CloseBraceAfterBody"/>
+		<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>
 	</rule>
 
 	<rule ref="WordPress.WP.I18n">

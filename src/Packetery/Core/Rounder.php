@@ -40,7 +40,6 @@ class Rounder {
 			throw new InvalidArgumentException(
 				sprintf(
 					'Precision should be non-negative number, roundingType should be one of %s.',
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 					implode( ', ', self::ROUNDING_TYPES )
 				)
 			);
@@ -92,7 +91,6 @@ class Rounder {
 			throw new InvalidArgumentException(
 				sprintf(
 					'Divisor should be positive number, roundingType should be one of %s.',
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 					implode( ', ', self::ROUNDING_TYPES )
 				)
 			);
@@ -119,7 +117,6 @@ class Rounder {
 			throw new InvalidArgumentException(
 				sprintf(
 					'RoundingType should should be one of %s.',
-					// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped
 					implode( ', ', self::ROUNDING_TYPES )
 				)
 			);

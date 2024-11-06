@@ -17,8 +17,6 @@ use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
-use function esc_html;
-use function esc_html__;
 
 /**
  * Packeta pickup points configuration.
@@ -240,8 +238,8 @@ class PacketaPickupPointsConfig {
 				throw new InvalidCarrierException(
 					sprintf(
 					// translators: %s is country code.
-						esc_html__( 'Selected carrier does not deliver to country "%s".', 'packeta' ),
-						esc_html( $country )
+						__( 'Selected carrier does not deliver to country "%s".', 'packeta' ),
+						$country
 					)
 				);
 			}
