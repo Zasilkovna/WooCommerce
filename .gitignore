@@ -1,7 +1,6 @@
 /.idea/
 /vendor
 /phpcs/vendor
-/phpstan/vendor
 /temp/*
 !/temp/.gitignore
 /log/
