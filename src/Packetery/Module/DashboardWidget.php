@@ -14,8 +14,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Options\OptionsProvider;
-use WC_Data_Store;
-use WC_Shipping_Zone;
+use WC_Shipping_Zones;
 
 /**
  * Class DashboardWidget
@@ -146,16 +145,10 @@ class DashboardWidget {
 	 * @return bool
 	 */
 	private function isPacketaShippingMethodActive(): bool {
-		$shippingDataStore = WC_Data_Store::load( 'shipping-zone' );
-		$shippingZones     = $shippingDataStore->get_zones();
-
-		foreach ( $shippingZones as $shippingZoneId ) {
-			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );
-			$shippingZoneMethods = $shippingZone->get_shipping_methods( true );
-			foreach ( $shippingZoneMethods as $method ) {
-				if ( ShippingMethod::PACKETERY_METHOD_ID === $method->id ) {
-					return true;
-				}
+		$shippingZones = WC_Shipping_Zones::get_zones();
+		foreach ( $shippingZones as $shippingZone ) {
+			if ( in_array( ShippingMethod::PACKETERY_METHOD_ID, array_column( $shippingZone['shipping_methods'], 'id' ), true ) ) {
+				return true;
 			}
 		}
 

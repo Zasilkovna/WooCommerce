@@ -255,7 +255,7 @@ class Repository {
 	 *
 	 * @param int $id Order ID.
 	 *
-	 * @return object|null
+	 * @return Order|null
 	 */
 	public function findById( int $id ): ?Order {
 		$wcOrder = $this->getWcOrderById( $id );

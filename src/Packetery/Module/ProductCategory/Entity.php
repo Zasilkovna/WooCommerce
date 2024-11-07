@@ -30,9 +30,9 @@ class Entity {
 	/**
 	 * Entity constructor.
 	 *
-	 * @param \WP_term $category Category.
+	 * @param \WP_Term $category Category.
 	 */
-	public function __construct( \WP_term $category ) {
+	public function __construct( \WP_Term $category ) {
 		$this->category = $category;
 	}
 

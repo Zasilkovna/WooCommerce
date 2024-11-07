@@ -15,7 +15,9 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Forms;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 use RuntimeException;
+use WC_Order_Item_Shipping;
 
 /**
  * Class CarrierModal.
@@ -132,7 +134,8 @@ class CarrierModal {
 		);
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
-		if ( $form['submit']->isSubmittedBy() ) {
+		$submitButton = $form['submit'];
+		if ( $submitButton instanceof SubmitButton && $submitButton->isSubmittedBy() ) {
 			$form->fireEvents();
 		}
 
@@ -315,11 +318,13 @@ class CarrierModal {
 		}
 		$shippingItems = $order->get_items( 'shipping' );
 		if ( count( $shippingItems ) > 0 ) {
-			$firstItem = array_shift( $shippingItems );
-			$firstItem->set_method_title( $carrierTitle );
-			$firstItem->save();
-			$order->calculate_totals();
-			$order->save();
+			$firstItem = reset( $shippingItems );
+			if ( $firstItem instanceof WC_Order_Item_Shipping ) {
+				$firstItem->set_method_title( $carrierTitle );
+				$firstItem->save();
+				$order->calculate_totals();
+				$order->save();
+			}
 		}
 	}
 

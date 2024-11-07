@@ -226,7 +226,7 @@ class PacketaPickupPointsConfig {
 	 * @param string $carrierId Carrier id.
 	 * @param string $country Lowercase country.
 	 *
-	 * @return string|null Null in case of split vendor when split is off.
+	 * @return string
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getFixedCarrierId( string $carrierId, string $country ): string {

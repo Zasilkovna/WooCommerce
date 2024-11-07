@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Module\Api\Internal\OrderRouter;
 use Packetery\Module\Forms\StoredUntilFormFactory;
 use Packetery\Latte\Engine;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 
 /**
  * Class StoredUntilModal.
@@ -77,7 +78,11 @@ class StoredUntilModal {
 		$nonce = wp_create_nonce( 'wp_rest' );
 
 		$storedUntilSaveUrl = $this->orderRouter->getSaveStoredUntilUrl();
-		if ( $form['submit']->isSubmittedBy() ) {
+
+		$submitButton = $form['submit'];
+		if ( $submitButton instanceof SubmitButton &&
+			$submitButton->isSubmittedBy()
+		) {
 			$form->fireEvents();
 		}
 

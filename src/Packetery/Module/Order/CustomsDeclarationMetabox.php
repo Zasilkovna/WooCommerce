@@ -22,6 +22,7 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\Checkbox;
+use Packetery\Nette\Forms\Controls\UploadControl;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\FileUpload;
 use Packetery\Nette\Http\Request;
@@ -360,12 +361,14 @@ class CustomsDeclarationMetabox {
 		/** Form input control. @var BaseControl[] $controls */
 		$controls = $form->getComponents( true, BaseControl::class );
 		foreach ( $controls as $control ) {
-			foreach ( $control->getErrors() as $error ) {
-				$this->messageManager->flashMessageObject(
-					Message::create()
-						->setText( sprintf( '%s: %s', $control->getCaption(), $error ) )
-						->setType( MessageManager::TYPE_ERROR )
-				);
+			if ( $control instanceof BaseControl ) {
+				foreach ( $control->getErrors() as $error ) {
+					$this->messageManager->flashMessageObject(
+						Message::create()
+								->setText( sprintf( '%s: %s', $control->getCaption(), $error ) )
+								->setType( MessageManager::TYPE_ERROR )
+					);
+				}
 			}
 		}
 	}
@@ -518,35 +521,37 @@ class CustomsDeclarationMetabox {
 		$fileUpload    = $containerValues[ $key ];
 		$uploadControl = $formContainer[ $key ];
 
-		if ( $fileUpload->hasFile() && 0 >= $fileUpload->getSize() ) {
-			$formContainer[ $key ]->addError( __( 'Uploaded file is empty.', 'packeta' ) );
-			$fileUpload = new FileUpload( null );
-		}
+		if ( $uploadControl instanceof UploadControl ) {
+			if ( $fileUpload->hasFile() && 0 >= $fileUpload->getSize() ) {
+				$uploadControl->addError( __( 'Uploaded file is empty.', 'packeta' ) );
+				$fileUpload = new FileUpload( null );
+			}
 
-		if ( $fileUpload->hasFile() && self::MAX_UPLOAD_FILE_MEGABYTES * 1024 * 1024 === $fileUpload->getSize() ) {
-			// translators: %d is numeric value.
-			$formContainer[ $key ]->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), self::MAX_UPLOAD_FILE_MEGABYTES ) );
-			$fileUpload = new FileUpload( null );
-		}
+			if ( $fileUpload->hasFile() && self::MAX_UPLOAD_FILE_MEGABYTES * 1024 * 1024 === $fileUpload->getSize() ) {
+				// translators: %d is numeric value.
+				$uploadControl->addError( sprintf( __( 'Uploaded file is too big for storage. Max size is %d MB.', 'packeta' ), self::MAX_UPLOAD_FILE_MEGABYTES ) );
+				$fileUpload = new FileUpload( null );
+			}
 
-		if ( $fileUpload->hasFile() && $fileUpload->isOk() ) {
-			$containerValues[ $key ]              = static function () use ( $fileUpload ): string {
-				return $fileUpload->getContents();
-			};
-			$containerValues[ $relatedFileIdKey ] = null;
-		}
+			if ( $fileUpload->hasFile() && $fileUpload->isOk() ) {
+				$containerValues[ $key ]              = static function () use ( $fileUpload ): string {
+					return $fileUpload->getContents();
+				};
+				$containerValues[ $relatedFileIdKey ] = null;
+			}
 
-		if ( $fileUpload->hasFile() && false === $fileUpload->isOk() ) {
-			$containerValues[ $key ]              = null;
-			$containerValues[ $relatedFileIdKey ] = null;
-			$uploadControl->addError( __( 'File failed to upload.', 'packeta' ) );
-		}
+			if ( $fileUpload->hasFile() && false === $fileUpload->isOk() ) {
+				$containerValues[ $key ]              = null;
+				$containerValues[ $relatedFileIdKey ] = null;
+				$uploadControl->addError( __( 'File failed to upload.', 'packeta' ) );
+			}
 
-		if ( $containerValues[ $key ] instanceof FileUpload ) {
-			$containerValues[ $key ]              = null;
-			$containerValues[ $relatedFileIdKey ] = null;
-			$fieldsToOmit[]                       = $key;
-			$fieldsToOmit[]                       = $relatedFileIdKey;
+			if ( $containerValues[ $key ] instanceof FileUpload ) {
+				$containerValues[ $key ]              = null;
+				$containerValues[ $relatedFileIdKey ] = null;
+				$fieldsToOmit[]                       = $key;
+				$fieldsToOmit[]                       = $relatedFileIdKey;
+			}
 		}
 	}
 }
