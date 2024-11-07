@@ -28,6 +28,7 @@
         "tests-unit": "vendor/bin/phpunit tests",
         "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage",
         "check:all": [
+            "@check:ec",
             "@check:phpcs",
             "@phpstan:php72",
             "@phpstan:php74",
@@ -35,8 +36,7 @@
             "@phpstan:php81",
             "@phpstan:php82",
             "@phpstan:php83",
-            "@tests-unit",
-            "@check:ec"
+            "@tests-unit"
         ]
     },
     "config": {
