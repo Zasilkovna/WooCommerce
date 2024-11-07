@@ -17,6 +17,7 @@ use WC_Logger;
  * @package Packetery
  */
 class WcAdapter {
+	use ActionSchedulerTrait;
 	use WcCustomerTrait;
 	use WcCartTrait;
 	use WcTaxTrait;

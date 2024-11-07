@@ -487,9 +487,10 @@ class Repository {
 	 * @param int   $maxDays               Max number of days of single packet sync.
 	 * @param int   $limit                 Number of records.
 	 *
-	 * @return iterable|Order[]
+	 * @return \Generator<int>
+	 * @throws Exception Exception.
 	 */
-	public function findStatusSyncingOrders( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
+	public function findStatusSyncingOrderIds( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): \Generator {
 		$dateLimit = CoreHelper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
 		$andWhere    = [ '`o`.`packet_id` IS NOT NULL' ];
@@ -533,7 +534,7 @@ class Repository {
 
 		$sql = $this->wpdbAdapter->prepare(
 			'
-			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` `o` 
+			SELECT `o`.`id` FROM `' . $this->wpdbAdapter->packetery_order . '` `o` 
 			' . $this->getWcOrderJoinClause() . '
 			' . $where . '
 			' . $orderBy . '
@@ -549,11 +550,7 @@ class Repository {
 				continue;
 			}
 
-			try {
-				yield $this->builder->build( $wcOrder, $row );
-			} catch ( InvalidCarrierException $exception ) {
-				continue;
-			}
+			yield (int) $row->id;
 		}
 	}
 

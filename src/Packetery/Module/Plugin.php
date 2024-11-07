@@ -22,6 +22,7 @@ use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\CarrierModal;
+use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Nette\Http\Request;
 use WC_Email;
 use WC_Order;
@@ -306,6 +307,13 @@ class Plugin {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Packet synchronizer.
+	 *
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * Plugin constructor.
 	 *
 	 * @param Order\Metabox              $order_metabox             Order metabox.
@@ -345,6 +353,7 @@ class Plugin {
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
 	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param PacketSynchronizer         $packetSynchronizer        Packet synchronizer.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,
@@ -383,7 +392,8 @@ class Plugin {
 		Order\LabelPrintModal $labelPrintModal,
 		HookHandler $hookHandler,
 		CarrierModal $carrierModal,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		PacketSynchronizer $packetSynchronizer
 	) {
 		$this->options_page              = $options_page;
 		$this->latte_engine              = $latte_engine;
@@ -423,6 +433,7 @@ class Plugin {
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
 		$this->featureFlagNotice         = $featureFlagNotice;
+		$this->packetSynchronizer        = $packetSynchronizer;
 	}
 
 	/**
@@ -519,6 +530,7 @@ class Plugin {
 		$this->apiExtender->register();
 		$this->hookHandler->register();
 		$this->carrierModal->register();
+		$this->packetSynchronizer->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );
