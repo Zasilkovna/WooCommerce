@@ -110,14 +110,14 @@ class PacketSynchronizer {
 	 * @return void
 	 */
 	public function syncStatuses(): void {
-		$results = $this->orderRepository->findStatusSyncingOrderIds(
+		$syncingOrderIds = $this->orderRepository->findStatusSyncingOrderIds(
 			$this->optionsProvider->getStatusSyncingPacketStatuses(),
 			$this->optionsProvider->getExistingStatusSyncingOrderStatuses(),
 			$this->optionsProvider->getMaxDaysOfPacketStatusSyncing(),
 			$this->optionsProvider->getMaxStatusSyncingPackets()
 		);
 
-		foreach ( $results as $orderId ) {
+		foreach ( $syncingOrderIds as $orderId ) {
 			$this->wcAdapter->asScheduleSingleAction( time(), self::HOOK_NAME_SYNC_ORDER_STATUS, [ $orderId ] );
 		}
 	}
