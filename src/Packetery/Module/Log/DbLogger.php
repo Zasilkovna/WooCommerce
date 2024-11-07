@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Log;
 
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 
 /**
@@ -17,7 +18,7 @@ use Packetery\Core\Log\Record;
  *
  * @package Packetery\Module\Log
  */
-class DbLogger implements \Packetery\Core\Log\ILogger {
+class DbLogger implements ILogger {
 
 	/**
 	 * Log repository.

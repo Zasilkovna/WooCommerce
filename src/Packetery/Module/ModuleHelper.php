@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
-use DateTime;
 use DateTimeImmutable;
 use Packetery\Nette\Utils\Html;
 use WC_DateTime;
