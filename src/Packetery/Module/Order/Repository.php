@@ -487,9 +487,9 @@ class Repository {
 	 * @param int   $maxDays               Max number of days of single packet sync.
 	 * @param int   $limit                 Number of records.
 	 *
-	 * @return int[]
+	 * @return \Generator<int>
 	 */
-	public function findStatusSyncingOrderIds( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
+	public function findStatusSyncingOrderIds( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): \Generator {
 		$dateLimit = CoreHelper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
 		$andWhere    = [ '`o`.`packet_id` IS NOT NULL' ];
