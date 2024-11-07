@@ -72,7 +72,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isValid( Entity\Order $order ): bool {
-		return empty( $this->validate( $order ) );
+		return count( $this->validate( $order ) ) === 0;
 	}
 
 	/**
@@ -85,11 +85,11 @@ class Order {
 	public function validate( Entity\Order $order ): array {
 		$sizeReport = $this->validateSize( $order );
 		$errors     = [
-			self::ERROR_TRANSLATION_KEY_NUMBER  => ! $order->getNumber(),
-			self::ERROR_TRANSLATION_KEY_NAME    => ! $order->getName(),
-			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->getValue(),
-			self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => ! $order->getPickupPointOrCarrierId(),
-			self::ERROR_TRANSLATION_KEY_ESHOP   => ! $order->getEshop(),
+			self::ERROR_TRANSLATION_KEY_NUMBER  => ! $order->hasNumber(),
+			self::ERROR_TRANSLATION_KEY_NAME    => ! $order->hasName(),
+			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->hasValue(),
+			self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => ! $order->hasPickupPointOrCarrierId(),
+			self::ERROR_TRANSLATION_KEY_ESHOP   => ! $order->hasEshop(),
 			self::ERROR_TRANSLATION_KEY_WEIGHT  => ! $this->validateFinalWeight( $order ),
 			self::ERROR_TRANSLATION_KEY_ADDRESS => ! $this->validateAddress( $order ),
 			self::ERROR_TRANSLATION_KEY_HEIGHT  => ! $sizeReport->isHeightValid(),
@@ -117,7 +117,7 @@ class Order {
 	 * @return string
 	 */
 	private function getTranslation( string $key ): string {
-		if ( empty( $this->translations[ $key ] ) ) {
+		if ( ! isset( $this->translations[ $key ] ) ) {
 			return $key;
 		}
 

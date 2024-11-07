@@ -185,7 +185,7 @@ class CreatePacket {
 				$this->street = $address->getStreet();
 				$this->city   = $address->getCity();
 				$this->zip    = $address->getZip();
-				if ( $address->getHouseNumber() ) {
+				if ( null !== $address->getHouseNumber() ) {
 					$this->houseNumber = $address->getHouseNumber();
 				}
 			}
