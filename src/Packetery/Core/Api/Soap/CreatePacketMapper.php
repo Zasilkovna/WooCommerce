@@ -72,7 +72,7 @@ class CreatePacketMapper {
 				$createPacketData['street'] = $address->getStreet();
 				$createPacketData['city']   = $address->getCity();
 				$createPacketData['zip']    = $address->getZip();
-				if ( $address->getHouseNumber() ) {
+				if ( null !== $address->getHouseNumber() ) {
 					$createPacketData['houseNumber'] = $address->getHouseNumber();
 				}
 			}
