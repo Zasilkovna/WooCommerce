@@ -14,7 +14,7 @@
     },
     "scripts": {
         "build:deps": "bash build-deps.sh",
-        "build:pot": "bash build-pot.sh",
+        "build:pot": "vendor/bin/wp i18n make-pot . languages/packeta.pot --allow-root",
         "check:ec": "vendor/bin/ec .",
         "wpify-scoper": "wpify-scoper",
         "check:phpcs": "vendor/bin/phpcs",
@@ -25,7 +25,7 @@
         "phpstan:php81": "phpstan/vendor/bin/phpstan -cphpstan/php81.neon analyse",
         "phpstan:php82": "phpstan/vendor/bin/phpstan -cphpstan/php82.neon analyse",
         "phpstan:php83": "phpstan/vendor/bin/phpstan -cphpstan/php83.neon analyse",
-        "tests-unit": "./vendor/bin/phpunit tests",
+        "tests-unit": "vendor/bin/phpunit tests",
         "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage",
         "check:all": [
             "@check:phpcs",
