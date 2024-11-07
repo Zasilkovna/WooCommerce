@@ -488,6 +488,7 @@ class Repository {
 	 * @param int   $limit                 Number of records.
 	 *
 	 * @return \Generator<int>
+	 * @throws Exception Exception.
 	 */
 	public function findStatusSyncingOrderIds( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): \Generator {
 		$dateLimit = CoreHelper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );

@@ -108,6 +108,7 @@ class PacketSynchronizer {
 	 * Synchronizes packets.
 	 *
 	 * @return void
+	 * @throws \Exception Exception.
 	 */
 	public function syncStatuses(): void {
 		$syncingOrderIds = $this->orderRepository->findStatusSyncingOrderIds(
