@@ -69,5 +69,4 @@ class CustomsDeclarationTest extends TestCase {
 
 		self::assertIsString( $customsDeclaration->getOrderId() );
 	}
-
 }

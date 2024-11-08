@@ -58,5 +58,4 @@ class FeatureFlagStorage {
 	public function getFlag( $key ) {
 		return self::$flags[ $key ] ?? null;
 	}
-
 }

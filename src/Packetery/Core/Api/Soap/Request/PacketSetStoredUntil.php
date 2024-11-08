@@ -72,5 +72,4 @@ class PacketSetStoredUntil {
 			CoreHelper::MYSQL_DATE_FORMAT
 		);
 	}
-
 }

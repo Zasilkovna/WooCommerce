@@ -91,5 +91,4 @@ class Version_1_4_2 {
 
 		return array_map( 'intval', $productIds );
 	}
-
 }

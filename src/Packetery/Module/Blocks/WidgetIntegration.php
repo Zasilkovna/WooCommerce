@@ -116,5 +116,4 @@ class WidgetIntegration implements IntegrationInterface {
 
 		return Plugin::VERSION;
 	}
-
 }

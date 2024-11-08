@@ -13,7 +13,6 @@ namespace Packetery\Core\Api\Soap\Response;
  * SenderGetReturnRouting
  */
 class SenderGetReturnRouting extends BaseResponse {
-
 	/**
 	 * Checks if sender exists.
 	 *
@@ -29,5 +28,4 @@ class SenderGetReturnRouting extends BaseResponse {
 
 		return null;
 	}
-
 }

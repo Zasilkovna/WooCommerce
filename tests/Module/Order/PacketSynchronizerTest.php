@@ -95,5 +95,4 @@ class PacketSynchronizerTest extends TestCase {
 		$this->expectException( InvalidPasswordException::class );
 		$this->packetSynchronizer->syncStatus( $order );
 	}
-
 }

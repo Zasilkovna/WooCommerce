@@ -210,5 +210,4 @@ class LabelPrintModal {
 			exit;
 		}
 	}
-
 }

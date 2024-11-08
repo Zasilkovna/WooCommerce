@@ -14,7 +14,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class PickupPointValidateTest extends TestCase {
-
 	public function testValidateOk(): void {
 		$webRequestClientMock = $this->getWebRequestClientMock();
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
@@ -47,5 +46,4 @@ class PickupPointValidateTest extends TestCase {
 	private function getWebRequestClientMock(): MockObject|IWebRequestClient {
 		return $this->createMock( IWebRequestClient::class );
 	}
-
 }

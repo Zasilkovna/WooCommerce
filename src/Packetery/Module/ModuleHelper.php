@@ -20,7 +20,6 @@ use WC_DateTime;
  * @package Packetery\Module
  */
 class ModuleHelper {
-
 	/**
 	 * Gets order detail url.
 	 *
@@ -253,5 +252,4 @@ class ModuleHelper {
 
 		return null;
 	}
-
 }

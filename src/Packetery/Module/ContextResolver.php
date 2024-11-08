@@ -140,5 +140,4 @@ class ContextResolver {
 
 		return 'post.php' === $pagenow && 'page' === $typenow;
 	}
-
 }

@@ -81,5 +81,4 @@ class HookHandler {
 
 		$hasBeenRun = true;
 	}
-
 }

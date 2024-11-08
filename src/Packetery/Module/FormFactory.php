@@ -68,5 +68,4 @@ class FormFactory {
 
 		return $form;
 	}
-
 }

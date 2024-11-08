@@ -174,5 +174,4 @@ class Order {
 
 		return new SizeReport( true, true, true );
 	}
-
 }

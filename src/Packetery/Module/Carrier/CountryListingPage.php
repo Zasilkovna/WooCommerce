@@ -385,5 +385,4 @@ class CountryListingPage {
 
 		return $carrierNames;
 	}
-
 }

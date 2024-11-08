@@ -85,5 +85,4 @@ class Entity {
 	public function getId(): int {
 		return $this->product->get_id();
 	}
-
 }

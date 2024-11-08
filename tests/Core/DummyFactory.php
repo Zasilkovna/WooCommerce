@@ -16,7 +16,6 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 
 class DummyFactory {
-
 	public static function createAddress(): Address {
 		return new Address( 'Dummy street', 'Dummy city', '123 45' );
 	}
@@ -182,5 +181,4 @@ class DummyFactory {
 			null,
 		);
 	}
-
 }

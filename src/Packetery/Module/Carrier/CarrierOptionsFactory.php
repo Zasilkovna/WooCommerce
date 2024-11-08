@@ -60,5 +60,4 @@ class CarrierOptionsFactory {
 
 		return $this->createByOptionId( $optionId );
 	}
-
 }

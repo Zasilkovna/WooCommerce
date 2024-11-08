@@ -599,5 +599,4 @@ class LabelPrint {
 		);
 		$wcOrder->save();
 	}
-
 }

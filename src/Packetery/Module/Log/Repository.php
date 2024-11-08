@@ -260,5 +260,4 @@ class Repository {
 
 		return $whereClause;
 	}
-
 }

@@ -8,7 +8,6 @@ use Packetery\Core\Api\InvalidRequestException;
 use PHPUnit\Framework\TestCase;
 
 class InvalidRequestExceptionTest extends TestCase {
-
 	public function testGetMessages(): void {
 		$message          = 'some error message';
 		$invalidException = new InvalidRequestException( 'Error message', [ $message ] );
@@ -16,5 +15,4 @@ class InvalidRequestExceptionTest extends TestCase {
 		self::assertIsArray( $invalidException->getMessages() );
 		self::assertContains( $message, $invalidException->getMessages() );
 	}
-
 }

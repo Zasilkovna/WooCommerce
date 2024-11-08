@@ -456,5 +456,4 @@ class GridExtender {
 
 		return wp_parse_args( [ 'packetery_packet_stored_until' => $metaKey ], $columns );
 	}
-
 }

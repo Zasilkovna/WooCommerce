@@ -97,5 +97,4 @@ class CreatePacket extends BaseResponse {
 
 		return implode( ', ', $allErrors );
 	}
-
 }

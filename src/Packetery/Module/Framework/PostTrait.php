@@ -17,7 +17,6 @@ use WP_Post;
  * @package Packetery
  */
 trait PostTrait {
-
 	/**
 	 * Retrieves data from a post field based on Post ID.
 	 *
@@ -29,5 +28,4 @@ trait PostTrait {
 	public function getPostField( string $field, $post ): string {
 		return get_post_field( $field, $post );
 	}
-
 }

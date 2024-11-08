@@ -48,5 +48,4 @@ trait InvalidPacketIds {
 
 		return null;
 	}
-
 }

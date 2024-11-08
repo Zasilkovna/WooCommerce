@@ -58,5 +58,4 @@ class PickupPointValidateResponse {
 	public function getErrors(): array {
 		return $this->errors;
 	}
-
 }

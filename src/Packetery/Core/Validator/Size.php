@@ -17,7 +17,6 @@ use Packetery\Core\Entity;
  * @package Packetery\Validator
  */
 class Size {
-
 	/**
 	 * Validates data needed to instantiate.
 	 *
@@ -32,5 +31,4 @@ class Size {
 			(bool) $size->getLength()
 		);
 	}
-
 }

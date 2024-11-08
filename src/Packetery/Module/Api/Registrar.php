@@ -56,5 +56,4 @@ class Registrar {
 		$this->orderController->registerRoutes();
 		$this->checkoutController->registerRoutes();
 	}
-
 }

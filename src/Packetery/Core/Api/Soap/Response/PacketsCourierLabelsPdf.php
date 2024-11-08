@@ -87,5 +87,4 @@ class PacketsCourierLabelsPdf extends BaseResponse implements ILabelResponse {
 
 		return null;
 	}
-
 }

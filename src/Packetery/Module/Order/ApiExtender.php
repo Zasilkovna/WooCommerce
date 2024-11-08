@@ -108,5 +108,4 @@ class ApiExtender {
 
 		return $items;
 	}
-
 }

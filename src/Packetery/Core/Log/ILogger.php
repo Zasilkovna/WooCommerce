@@ -15,7 +15,6 @@ namespace Packetery\Core\Log;
  * @package Packetery\Log
  */
 interface ILogger {
-
 	/**
 	 * Registers log driver.
 	 */
@@ -49,5 +48,4 @@ interface ILogger {
 	 * @return int
 	 */
 	public function countRecords( $orderId = null, ?string $action = null ): int;
-
 }

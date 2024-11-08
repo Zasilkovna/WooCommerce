@@ -290,5 +290,4 @@ class Updater {
 			],
 		];
 	}
-
 }

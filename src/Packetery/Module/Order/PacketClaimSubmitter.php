@@ -231,5 +231,4 @@ class PacketClaimSubmitter {
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 		$this->commonLogic->redirectTo( $redirectTo, $order );
 	}
-
 }

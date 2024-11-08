@@ -277,5 +277,4 @@ class EntityRepository {
 
 		return array_merge( ...$availableCarriersToMerge );
 	}
-
 }

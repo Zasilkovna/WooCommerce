@@ -57,5 +57,4 @@ class StoredUntilFormFactory {
 
 		return $form;
 	}
-
 }

@@ -21,7 +21,6 @@ use Packetery\Nette\Bridges\FormsLatte\FormMacros;
  * @package Packetery
  */
 class LatteEngineFactory {
-
 	/**
 	 * Creates latte engine factory
 	 *
@@ -55,5 +54,4 @@ class LatteEngineFactory {
 
 		return $engine;
 	}
-
 }

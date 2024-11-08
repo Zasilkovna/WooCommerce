@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class CustomsDeclarationItemTest extends TestCase {
-
 	public function testSettersAndGetters(): void {
 		$customsDeclarationItem = DummyFactory::createCustomsDeclarationItem();
 
@@ -35,5 +34,4 @@ class CustomsDeclarationItemTest extends TestCase {
 		self::assertIsFloat( $customsDeclarationItem->getValue() );
 		self::assertIsFloat( $customsDeclarationItem->getWeight() );
 	}
-
 }

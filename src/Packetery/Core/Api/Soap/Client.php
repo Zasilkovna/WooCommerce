@@ -381,5 +381,4 @@ class Client {
 
 		return $exception->faultstring;
 	}
-
 }

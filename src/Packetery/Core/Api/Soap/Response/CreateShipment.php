@@ -152,5 +152,4 @@ class CreateShipment extends BaseResponse {
 	public function setInvalidPacketIds( array $invalidPacketIds ): void {
 		$this->invalidPacketIds = $invalidPacketIds;
 	}
-
 }

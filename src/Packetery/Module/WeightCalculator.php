@@ -60,5 +60,4 @@ class WeightCalculator {
 
 		return $weightKg;
 	}
-
 }

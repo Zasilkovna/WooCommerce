@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class OrderTest extends TestCase {
-
 	public function testSettersAndGetters(): void {
 		$order             = DummyFactory::createOrderCzPp();
 		$carDeliveryOrder  = DummyFactory::createOrderCzCdIncomplete();
@@ -145,5 +144,4 @@ class OrderTest extends TestCase {
 		self::assertIsFloat( $order->getWidth() );
 		self::assertIsFloat( $order->getHeight() );
 	}
-
 }

@@ -173,5 +173,4 @@ class FormFields {
 			$form->fireEvents();
 		}
 	}
-
 }

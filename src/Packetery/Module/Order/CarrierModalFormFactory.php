@@ -73,5 +73,4 @@ class CarrierModalFormFactory {
 
 		return $form;
 	}
-
 }

@@ -40,5 +40,4 @@ class PacketCourierNumber {
 	public function getPacketId(): string {
 		return $this->packetId;
 	}
-
 }

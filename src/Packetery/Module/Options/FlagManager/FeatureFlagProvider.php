@@ -83,5 +83,4 @@ class FeatureFlagProvider {
 			'yes' !== $this->wpAdapter->getTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED )
 		);
 	}
-
 }

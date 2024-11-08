@@ -191,5 +191,4 @@ class Options {
 	public function hasOptions(): bool {
 		return ! empty( $this->options );
 	}
-
 }

@@ -94,5 +94,4 @@ class CreatePacketClaimWithPassword extends BaseResponse {
 	public function getValidationErrors(): array {
 		return $this->validationErrors;
 	}
-
 }

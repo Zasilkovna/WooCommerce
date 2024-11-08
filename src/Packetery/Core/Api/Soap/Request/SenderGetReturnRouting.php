@@ -38,5 +38,4 @@ class SenderGetReturnRouting {
 	public function getSenderLabel(): string {
 		return $this->senderLabel;
 	}
-
 }

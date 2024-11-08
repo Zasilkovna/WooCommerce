@@ -197,5 +197,4 @@ class AttributeMapper {
 			$values[ Attribute::ADDRESS_POST_CODE ]
 		);
 	}
-
 }

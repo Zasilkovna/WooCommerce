@@ -417,5 +417,4 @@ class Repository {
 	public function drop(): void {
 		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '`' );
 	}
-
 }

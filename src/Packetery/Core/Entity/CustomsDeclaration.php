@@ -393,5 +393,4 @@ class CustomsDeclaration {
 	public function hasInvoiceFileContent(): bool {
 		return $this->hasInvoiceFileContent;
 	}
-
 }

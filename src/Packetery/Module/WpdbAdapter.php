@@ -457,5 +457,4 @@ class WpdbAdapter {
 	public function escLike( string $text ): string {
 		return $this->wpdb->esc_like( $text );
 	}
-
 }

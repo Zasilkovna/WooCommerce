@@ -57,5 +57,4 @@ class ProductEntityFactory {
 
 		return $this->fromPostId( $post->ID );
 	}
-
 }

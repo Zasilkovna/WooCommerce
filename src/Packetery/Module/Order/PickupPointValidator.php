@@ -115,5 +115,4 @@ class PickupPointValidator {
 			'PickupPointTechnicalReason'  => __( 'The pick-up point cannot be chosen as a final destination of your packet due to technical reasons.', 'packeta' ),
 		];
 	}
-
 }

@@ -228,5 +228,4 @@ class ShippingMethod extends \WC_Shipping_Method {
 
 		return $settings;
 	}
-
 }

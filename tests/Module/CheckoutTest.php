@@ -597,5 +597,4 @@ class CheckoutTest extends TestCase {
 		$this->wpAdapter->method( 'hasBlock' )->willReturn( false );
 		$this->assertFalse( $this->checkout->areBlocksUsedInCheckout() );
 	}
-
 }

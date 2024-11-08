@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class OrderTest extends TestCase {
-
 	public function testValidation(): void {
 		$addressValidator      = new Address();
 		$sizeValidator         = new Size();
@@ -54,5 +53,4 @@ class OrderTest extends TestCase {
 		$validator = new Order( $addressValidator, $sizeValidator, [ Order::ERROR_TRANSLATION_KEY_NAME => '' ] );
 		self::assertFalse( $validator->isValid( $dummyOrder ) );
 	}
-
 }

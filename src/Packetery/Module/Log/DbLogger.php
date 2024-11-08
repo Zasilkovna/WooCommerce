@@ -124,5 +124,4 @@ class DbLogger implements \Packetery\Core\Log\ILogger {
 
 		return $logs;
 	}
-
 }

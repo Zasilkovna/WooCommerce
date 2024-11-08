@@ -164,5 +164,4 @@ abstract class BaseProvider {
 	public function hasPickupPoints(): bool {
 		return $this->hasPickupPoints;
 	}
-
 }

@@ -108,5 +108,4 @@ class Size {
 	public function setHeight( ?float $height ): void {
 		$this->height = $height;
 	}
-
 }

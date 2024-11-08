@@ -196,5 +196,4 @@ final class CheckoutController extends WP_REST_Controller {
 			DAY_IN_SECONDS
 		);
 	}
-
 }

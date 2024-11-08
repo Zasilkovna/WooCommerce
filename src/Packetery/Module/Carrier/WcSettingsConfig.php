@@ -38,5 +38,4 @@ class WcSettingsConfig {
 	public function isActive(): bool {
 		return $this->active;
 	}
-
 }

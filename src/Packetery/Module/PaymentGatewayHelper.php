@@ -13,7 +13,6 @@ namespace Packetery\Module;
  * Class PaymentHelper
  */
 class PaymentGatewayHelper {
-
 	/**
 	 * Gets available payment gateway choices.
 	 *
@@ -50,5 +49,4 @@ class PaymentGatewayHelper {
 			}
 		);
 	}
-
 }

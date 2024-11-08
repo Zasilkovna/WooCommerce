@@ -311,5 +311,4 @@ class Builder {
 
 		return (bool) $value;
 	}
-
 }

@@ -1143,5 +1143,4 @@ class Order {
 		$this->setLastApiErrorMessage( $errorMessage );
 		$this->setLastApiErrorDateTime( $errorMessage ? CoreHelper::now() : null );
 	}
-
 }

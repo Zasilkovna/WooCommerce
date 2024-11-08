@@ -58,5 +58,4 @@ class PacketSetStoredUntilTest extends TestCase {
 
 		$this->assertSame( $errorMessage, $result );
 	}
-
 }

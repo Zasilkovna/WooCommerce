@@ -258,5 +258,4 @@ class CustomsDeclarationItem {
 	public function setIsVoc( bool $isVoc ): void {
 		$this->isVoc = $isVoc;
 	}
-
 }

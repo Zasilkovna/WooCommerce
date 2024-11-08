@@ -1620,5 +1620,4 @@ class Checkout {
 
 		$cart->add_fee( __( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
 	}
-
 }

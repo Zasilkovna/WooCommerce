@@ -10,7 +10,6 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class MockFactory {
-
 	public static function createWpAdapter( TestCase $testCase ): WpAdapter|MockObject {
 		$mock = $testCase->getMockBuilder( WpAdapter::class )->getMock();
 		$mock
@@ -36,5 +35,4 @@ class MockFactory {
 
 		return $mock;
 	}
-
 }

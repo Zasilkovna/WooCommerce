@@ -52,5 +52,4 @@ final class OrderRouter extends BaseRouter {
 	public function getSaveStoredUntilUrl(): string {
 		return $this->getRouteUrl( self::PATH_SAVE_STORED_UNTIL );
 	}
-
 }

@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Module\MockFactory;
 
 class FeatureFlagProviderTest extends TestCase {
-
 	public static function shouldShowSplitActivationNoticeDataProvider(): array {
 		return [
 			[
@@ -55,5 +54,4 @@ class FeatureFlagProviderTest extends TestCase {
 
 		self::assertEquals( $expectedResult, $manager->shouldShowSplitActivationNotice() );
 	}
-
 }

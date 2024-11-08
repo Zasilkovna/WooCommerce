@@ -40,5 +40,4 @@ class BarcodePng {
 	public function getBarcode(): string {
 		return $this->barcode;
 	}
-
 }

@@ -162,5 +162,4 @@ class BulkActions {
 		$latteParams = $this->packetSubmitter->getTranslatedSubmissionMessages( $get, $orderId );
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/order/export-result.latte', $latteParams );
 	}
-
 }

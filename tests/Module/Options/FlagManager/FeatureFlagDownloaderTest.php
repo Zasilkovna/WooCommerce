@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Module\MockFactory;
 
 class FeatureFlagDownloaderTest extends TestCase {
-
 	public static function getFlagsProvider(): array {
 		$now          = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
 		$nowFormatted = $now->format( CoreHelper::MYSQL_DATETIME_FORMAT );
@@ -158,5 +157,4 @@ class FeatureFlagDownloaderTest extends TestCase {
 
 		self::assertEquals( $expectedResult, $downloader->getFlags() );
 	}
-
 }

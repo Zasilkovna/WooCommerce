@@ -673,5 +673,4 @@ class OptionsProvider {
 	public function sanitizePaymentGatewayId( string $id ): string {
 		return preg_replace( '/\W/', '_', $id );
 	}
-
 }

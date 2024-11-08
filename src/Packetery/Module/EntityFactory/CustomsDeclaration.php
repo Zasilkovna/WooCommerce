@@ -16,7 +16,6 @@ use Packetery\Core\Entity;
  * Class CustomsDeclaration.
  */
 class CustomsDeclaration {
-
 	/**
 	 * Creates customs declaration entity from standard structure.
 	 *
@@ -67,5 +66,4 @@ class CustomsDeclaration {
 
 		return $entity;
 	}
-
 }

@@ -710,5 +710,4 @@ class Repository {
 
 		return null;
 	}
-
 }

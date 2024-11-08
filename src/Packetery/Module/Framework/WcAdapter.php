@@ -69,5 +69,4 @@ class WcAdapter {
 	public function createLogger(): WC_Logger {
 		return new WC_Logger();
 	}
-
 }

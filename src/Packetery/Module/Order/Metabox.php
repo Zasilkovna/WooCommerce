@@ -683,5 +683,4 @@ class Metabox {
 		$this->form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
 		$this->form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 	}
-
 }

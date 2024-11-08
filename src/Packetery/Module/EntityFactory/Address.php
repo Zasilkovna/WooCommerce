@@ -17,7 +17,6 @@ use Packetery\Core\Entity;
  * @package Packetery\Module\EntityFactory
  */
 class Address {
-
 	/**
 	 * Return WC store default address.
 	 *
@@ -32,5 +31,4 @@ class Address {
 
 		return $address;
 	}
-
 }

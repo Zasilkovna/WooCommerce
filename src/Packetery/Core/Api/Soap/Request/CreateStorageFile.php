@@ -56,5 +56,4 @@ class CreateStorageFile {
 	public function getName(): string {
 		return $this->name;
 	}
-
 }

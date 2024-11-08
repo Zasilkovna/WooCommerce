@@ -138,5 +138,4 @@ class RateCalculator {
 
 		return false;
 	}
-
 }

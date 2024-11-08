@@ -83,5 +83,4 @@ class CountryListingTemplateParams {
 		$this->settingsChangedMessage = $settingsChangedMessage;
 		$this->translations           = $translations;
 	}
-
 }

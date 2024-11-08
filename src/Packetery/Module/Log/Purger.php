@@ -43,5 +43,4 @@ class Purger {
 	public function autoDeleteHook(): void {
 		$this->logRepository->deleteOld( get_option( self::PURGER_OPTION_NAME, self::PURGER_MODIFIER_DEFAULT ) );
 	}
-
 }

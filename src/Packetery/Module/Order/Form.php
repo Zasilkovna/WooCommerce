@@ -163,5 +163,4 @@ class Form {
 
 		return $fields;
 	}
-
 }

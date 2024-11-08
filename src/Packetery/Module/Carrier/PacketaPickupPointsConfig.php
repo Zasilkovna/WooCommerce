@@ -249,5 +249,4 @@ class PacketaPickupPointsConfig {
 
 		return $carrierId;
 	}
-
 }

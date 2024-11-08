@@ -128,5 +128,4 @@ class DetailCommonLogic {
 
 		return true;
 	}
-
 }

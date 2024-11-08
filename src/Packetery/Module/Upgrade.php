@@ -475,5 +475,4 @@ class Upgrade {
 		$record->title = sprintf( __( 'Database %s table could not be created or altered, more information might be found in WooCommerce logs.', 'packeta' ), $table );
 		$this->logger->add( $record );
 	}
-
 }

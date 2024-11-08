@@ -132,5 +132,4 @@ class QueryProcessor {
 
 		return $paramValues;
 	}
-
 }

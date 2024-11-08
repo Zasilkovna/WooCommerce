@@ -74,5 +74,4 @@ class SizeReport {
 	public function isLengthValid(): bool {
 		return $this->isLengthValid;
 	}
-
 }

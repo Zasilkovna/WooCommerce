@@ -48,5 +48,4 @@ class PaymentHelper {
 
 		return in_array( $paymentMethod, $this->optionsProvider->getCodPaymentMethods(), true );
 	}
-
 }

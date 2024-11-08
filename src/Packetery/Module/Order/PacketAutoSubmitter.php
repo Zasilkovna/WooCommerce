@@ -148,5 +148,4 @@ class PacketAutoSubmitter {
 		}
 		as_schedule_single_action( time(), self::HOOK_NAME_HANDLE_EVENT, [ $event, $orderId, is_admin() === false ] );
 	}
-
 }

@@ -184,5 +184,4 @@ class FeatureFlagDownloader {
 
 		return $now->getTimestamp() <= ( $lastUpdate->getTimestamp() + self::VALID_FOR_SECONDS );
 	}
-
 }

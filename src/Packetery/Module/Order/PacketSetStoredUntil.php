@@ -107,5 +107,4 @@ class PacketSetStoredUntil {
 
 		return $errorMessage;
 	}
-
 }

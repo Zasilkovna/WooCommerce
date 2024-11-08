@@ -81,5 +81,4 @@ class Carrier {
 			$nonFeedCarrierProvider->supportsAgeVerification()
 		);
 	}
-
 }

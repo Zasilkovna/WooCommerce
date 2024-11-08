@@ -15,7 +15,6 @@ namespace Packetery\Module\Order;
  * @package Packetery\Module\Order
  */
 class PacketStatusResolver {
-
 	/**
 	 * Gets translated name of packet status.
 	 *
@@ -28,5 +27,4 @@ class PacketStatusResolver {
 
 		return isset( $statuses[ $status ] ) ? $statuses[ $status ]->getTranslatedName() : $status;
 	}
-
 }

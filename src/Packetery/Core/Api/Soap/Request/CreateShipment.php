@@ -65,5 +65,4 @@ class CreateShipment {
 	public function setCustomBarcode( ?string $customBarcode ): void {
 		$this->customBarcode = $customBarcode;
 	}
-
 }

@@ -45,5 +45,4 @@ class PacketsLabelsPdf extends BaseResponse implements ILabelResponse {
 	public function getPdfContents(): string {
 		return $this->pdfContents;
 	}
-
 }
