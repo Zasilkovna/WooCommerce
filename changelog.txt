@@ -1,4 +1,9 @@
 == Changelog ==
+= 1.8.6 =
+Fixed: The static function where it would falsely trim a submitted full number ending with 0.
+Fixed: Fixed validation for hidden default dimensions inputs with invalid values.
+Updated: Syncing order statuses one by one instead of a single batch.
+
 = 1.8.5 =
 Updated: Users now have the option in the Packeta pick-up point carrier settings to choose whether to deliver to Z-Boxes, pick-up points, or both.
 Updated: Added more packet statuses.
