@@ -28,7 +28,6 @@ jobs:
                 run: php -v
 
             -   name: Install Composer dependencies
-                working-directory: phpstan
                 run: composer install
 
             -   name: Run PHPStan with php version 7.2
