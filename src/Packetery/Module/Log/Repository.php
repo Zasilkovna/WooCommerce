@@ -13,6 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Log\Record;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\WpdbAdapter;
+
 use function esc_html;
 
 /**
