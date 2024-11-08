@@ -5,7 +5,6 @@
 		"^.git\/",
 		"^deps\/",
 		"^tests-coverage\/",
-		"^phpstan\/vendor\/",
 		"^public\/libs\/",
 		"^public\/block\/index.asset.php",
 		"^public\/block\/index.js",
