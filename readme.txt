@@ -67,6 +67,7 @@ Please contact us at technicka.podpora@zasilkovna.cz .
 = 1.8.6 =
 Fixed: The static function where it would falsely trim a submitted full number ending with 0.
 Fixed: Fixed validation for hidden default dimensions inputs with invalid values.
+Fixed: TypeError when getting cart product instance that could appear at checkout.
 Updated: Syncing order statuses one by one instead of a single batch.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

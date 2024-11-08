@@ -18,6 +18,7 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -448,6 +449,8 @@ class Checkout {
 
 	/**
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
+	 *
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function validateCheckoutData(): void {
 		$chosenShippingMethod = $this->getChosenMethod();
@@ -868,6 +871,7 @@ class Checkout {
 	 * Calculates fees.
 	 *
 	 * @return void
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function calculateFees(): void {
 		$chosenShippingMethod = $this->calculateShipping();
@@ -946,6 +950,7 @@ class Checkout {
 	 * @param array|null $allowedCarrierNames List of allowed carrier names.
 	 *
 	 * @return array
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
@@ -1272,6 +1277,7 @@ class Checkout {
 	 * Gets disallowed shipping rate ids.
 	 *
 	 * @return array
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function getDisallowedShippingRateIds(): array {
 		$cartProducts = $this->wcAdapter->cartGetCartContent();
@@ -1294,6 +1300,7 @@ class Checkout {
 	 * Tells if age verification is required by products in cart.
 	 *
 	 * @return bool
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function isAgeVerification18PlusRequired(): bool {
 		if ( ! $this->wpAdapter->didAction( 'wp_loaded' ) ) {
@@ -1316,6 +1323,7 @@ class Checkout {
 	 * Returns tax_class with the highest tax_rate of cart products, false if no product is taxable.
 	 *
 	 * @return false|string
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function getTaxClassWithMaxRate() {
 		$products   = $this->wcAdapter->cartGetCartContent();
@@ -1323,6 +1331,9 @@ class Checkout {
 
 		foreach ( $products as $cartProduct ) {
 			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
+			if ( ! ( $product instanceof \WC_Product ) ) {
+				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
+			}
 			if ( $product->is_taxable() ) {
 				$taxClasses[] = $product->get_tax_class();
 			}
@@ -1373,6 +1384,7 @@ class Checkout {
 	 * @param array  $cartProducts Array of cart products.
 	 *
 	 * @return bool
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
 		if ( ! $cartProducts ) {
@@ -1383,7 +1395,10 @@ class Checkout {
 			if ( ! isset( $cartProduct['product_id'] ) ) {
 				continue;
 			}
-			$product            = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
+			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
+			if ( ! ( $product instanceof \WC_Product ) ) {
+				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
+			}
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {
@@ -1592,6 +1607,7 @@ class Checkout {
 	 * @param \WC_Cart $cart WC cart.
 	 *
 	 * @return void
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function applyCodSurgarche( \WC_Cart $cart ): void {
 		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {

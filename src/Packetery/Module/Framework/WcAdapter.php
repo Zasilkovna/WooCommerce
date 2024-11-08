@@ -42,7 +42,7 @@ class WcAdapter {
 	 *
 	 * @return \WC_Product|null
 	 */
-	public function productFactoryGetProduct( $product_id ) {
+	public function productFactoryGetProduct( $product_id ): ?\WC_Product {
 		$product = WC()->product_factory->get_product( $product_id );
 		if ( $product instanceof \WC_Product ) {
 			return $product;
@@ -52,14 +52,14 @@ class WcAdapter {
 	}
 
 	/**
-	 * Gets product by post id.
+	 * Gets product by post or post id.
 	 *
-	 * @param int $postId Post id.
+	 * @param mixed $theProduct Post id or object.
 	 *
 	 * @return false|\WC_Product|null
 	 */
-	public function getProduct( int $postId ) {
-		return wc_get_product( $postId );
+	public function getProduct( $theProduct ) {
+		return wc_get_product( $theProduct );
 	}
 
 	/**
