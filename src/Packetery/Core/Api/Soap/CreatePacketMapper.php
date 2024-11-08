@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap;
 
-use Packetery\Core\Entity;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity;
 
 /**
  * Class CreatePacketMapper.
@@ -192,5 +192,4 @@ class CreatePacketMapper {
 
 		return $createPacketData;
 	}
-
 }

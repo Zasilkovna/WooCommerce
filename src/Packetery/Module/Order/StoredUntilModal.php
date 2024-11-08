@@ -9,9 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Latte\Engine;
 use Packetery\Module\Api\Internal\OrderRouter;
 use Packetery\Module\Forms\StoredUntilFormFactory;
-use Packetery\Latte\Engine;
 
 /**
  * Class StoredUntilModal.
@@ -96,5 +96,4 @@ class StoredUntilModal {
 			]
 		);
 	}
-
 }

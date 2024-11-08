@@ -1585,6 +1585,7 @@ class Checkout {
 			WC()->initialize_session();
 			$token = WC()->session->get_customer_id();
 		}
+
 		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
 	}
 
@@ -1619,5 +1620,4 @@ class Checkout {
 
 		$cart->add_fee( __( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
 	}
-
 }

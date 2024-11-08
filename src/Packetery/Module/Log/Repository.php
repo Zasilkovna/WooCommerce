@@ -7,13 +7,14 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Log;
 
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Log\Record;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\WpdbAdapter;
+
+use function esc_html;
 
 /**
  * Class Repository
@@ -48,6 +49,7 @@ class Repository {
 	 */
 	public function countRows( ?int $orderId, ?string $action ): int {
 		$whereClause = $this->getWhereClause( [], $orderId, $action );
+
 		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packeteryLog . '`' . $whereClause );
 	}
 
@@ -159,7 +161,7 @@ class Repository {
 			array_filter(
 				[
 					$title,
-					( $params ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
+					( $params ? 'Data: ' . esc_html( wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) ) : '' ),
 				]
 			)
 		);
@@ -258,5 +260,4 @@ class Repository {
 
 		return $whereClause;
 	}
-
 }

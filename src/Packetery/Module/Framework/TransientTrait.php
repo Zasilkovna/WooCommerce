@@ -17,7 +17,6 @@ use function get_transient;
  * @package Packetery
  */
 trait TransientTrait {
-
 	/**
 	 * Gets transient value.
 	 *
@@ -41,5 +40,4 @@ trait TransientTrait {
 	public function setTransient( string $transientName, $transientValue, int $expiration = 0 ): bool {
 		return set_transient( $transientName, $transientValue, $expiration );
 	}
-
 }

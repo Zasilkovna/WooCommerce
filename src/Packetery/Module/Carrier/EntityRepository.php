@@ -136,7 +136,6 @@ class EntityRepository {
 		return $entities;
 	}
 
-
 	/**
 	 * Gets all active carriers.
 	 *
@@ -278,5 +277,4 @@ class EntityRepository {
 
 		return array_merge( ...$availableCarriersToMerge );
 	}
-
 }

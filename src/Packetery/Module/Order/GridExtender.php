@@ -12,16 +12,18 @@ namespace Packetery\Module\Order;
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
-use Packetery\Module\Framework\WpAdapter;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
-use Packetery\Latte\Engine;
 use Packetery\Module\ModuleHelper;
-use Packetery\Nette\Http\Request;
 use Packetery\Module\Plugin;
+use Packetery\Nette\Http\Request;
 use WC_Order;
+
+use function esc_html;
 
 /**
  * Class GridExtender.
@@ -133,11 +135,11 @@ class GridExtender {
 	/**
 	 * Adds custom filtering links to order grid.
 	 *
-	 * @param array $var Array of html links.
+	 * @param array $htmlLinks Array of html links.
 	 *
 	 * @return array
 	 */
-	public function addFilterLinks( array $var ): array {
+	public function addFilterLinks( array $htmlLinks ): array {
 		$latteParams = [
 			'link'       => ModuleHelper::getOrderGridUrl(
 				[
@@ -150,7 +152,7 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		$latteParams = [
 			'link'       => ModuleHelper::getOrderGridUrl(
@@ -164,9 +166,9 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
-		$var[]       = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
-		return $var;
+		return $htmlLinks;
 	}
 
 	/**
@@ -270,7 +272,7 @@ class GridExtender {
 			$order = $this->getOrderByIdCached( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			if ( 'packetery' === $column ) {
-				ModuleHelper::renderString( $exception->getMessage() );
+				echo esc_html( $exception->getMessage() );
 			}
 
 			return;
@@ -285,6 +287,7 @@ class GridExtender {
 					self::TEMPLATE_GRID_COLUMN_WEIGHT,
 					$this->getWeightCellContentParams( $order )
 				);
+
 				break;
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
@@ -296,11 +299,13 @@ class GridExtender {
 					} else {
 						echo esc_html( $pointName );
 					}
+
 					break;
 				}
 
 				$homeDeliveryCarrierOptions = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() );
 				echo esc_html( $homeDeliveryCarrierOptions->getName() );
+
 				break;
 			case 'packetery_packet_id':
 				$packetId      = $order->getPacketId();
@@ -326,6 +331,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-tracking.latte',
 					$latteParams
 				);
+
 				break;
 			case 'packetery':
 				$encodedOrderGridParams = rawurlencode( $this->httpRequest->getUrl()->getQuery() );
@@ -393,9 +399,11 @@ class GridExtender {
 						],
 					]
 				);
+
 				break;
 			case 'packetery_packet_status':
 				echo esc_html( PacketStatusResolver::getTranslatedName( $order->getPacketStatus() ) );
+
 				break;
 			case 'packetery_packet_stored_until':
 				$this->latteEngine->render(
@@ -405,6 +413,7 @@ class GridExtender {
 						'storedUntil' => $this->moduleHelper->getTranslatedStringFromDateTime( $order->getStoredUntil() ),
 					]
 				);
+
 				break;
 		}
 	}
@@ -444,6 +453,7 @@ class GridExtender {
 	 */
 	public function makeOrderListSpecificColumnsSortable( array $columns ): array {
 		$metaKey = 'packetery_packet_stored_until';
+
 		return wp_parse_args( [ 'packetery_packet_stored_until' => $metaKey ], $columns );
 	}
 }

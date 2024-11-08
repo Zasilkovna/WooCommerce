@@ -9,10 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity;
 use Packetery\Core\Validator;
 use Packetery\Core\Validator\Order;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log;
@@ -22,7 +23,6 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms;
 use Packetery\Nette\Http\Request;
 use WC_Data_Exception;
@@ -683,5 +683,4 @@ class Metabox {
 		$this->form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
 		$this->form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 	}
-
 }

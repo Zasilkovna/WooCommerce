@@ -15,7 +15,6 @@ namespace Packetery\Module;
  * @package Packetery
  */
 class WpdbAdapterFactory {
-
 	/**
 	 * Creates WpdbAdapter instance
 	 *

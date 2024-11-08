@@ -69,6 +69,7 @@ class Message {
 	 */
 	public function setText( string $message ): self {
 		$this->message = $message;
+
 		return $this;
 	}
 
@@ -81,6 +82,7 @@ class Message {
 	 */
 	public function setType( string $type ): self {
 		$this->type = $type;
+
 		return $this;
 	}
 
@@ -93,6 +95,7 @@ class Message {
 	 */
 	public function setRenderer( string $renderer ): self {
 		$this->renderer = $renderer;
+
 		return $this;
 	}
 
@@ -105,6 +108,7 @@ class Message {
 	 */
 	public function setContext( string $context ): self {
 		$this->context = $context;
+
 		return $this;
 	}
 
@@ -117,6 +121,7 @@ class Message {
 	 */
 	public function setEscape( bool $escape ): self {
 		$this->escape = $escape;
+
 		return $this;
 	}
 

@@ -17,7 +17,6 @@ use Packetery\Core\Validator;
  * @package Packetery
  */
 class ValidatorTranslations {
-
 	/**
 	 * Translations with specified keys.
 	 *
@@ -38,5 +37,4 @@ class ValidatorTranslations {
 			Validator\Order::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => __( 'Customs declaration is not set.', 'packeta' ),
 		];
 	}
-
 }

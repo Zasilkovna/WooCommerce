@@ -624,6 +624,7 @@ class Repository {
 
 		if ( ModuleHelper::isHposEnabled() ) {
 			$sourceTableAlias = 'wc_o';
+
 			return sprintf(
 				'JOIN `%s` `%s` ON `%s`.`id` = `%s`.`id`',
 				$this->wpdbAdapter->wcOrders,
@@ -634,6 +635,7 @@ class Repository {
 		}
 
 		$sourceTableAlias = 'wp_p';
+
 		return sprintf(
 			'JOIN `%s` `%s` ON `%s`.`ID` = `%s`.`id`',
 			$this->wpdbAdapter->posts,
@@ -655,6 +657,7 @@ class Repository {
 			LEFT JOIN `' . $this->wpdbAdapter->wcOrders . '` ON `' . $this->wpdbAdapter->wcOrders . '`.`id` = `' . $this->wpdbAdapter->packeteryOrder . '`.`id`
 			WHERE `' . $this->wpdbAdapter->wcOrders . '`.`id` IS NULL'
 			);
+
 			return;
 		}
 
@@ -707,5 +710,4 @@ class Repository {
 
 		return null;
 	}
-
 }

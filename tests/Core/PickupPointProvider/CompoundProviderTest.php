@@ -8,7 +8,6 @@ use Packetery\Core\PickupPointProvider\CompoundProvider;
 use PHPUnit\Framework\TestCase;
 
 class CompoundProviderTest extends TestCase {
-
 	public function testGetVendorCodes(): void {
 		$vendor = new CompoundProvider(
 			'zpointcz',
@@ -24,5 +23,4 @@ class CompoundProviderTest extends TestCase {
 		);
 		self::assertCount( 2, $vendor->getVendorCodes() );
 	}
-
 }

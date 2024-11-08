@@ -17,7 +17,6 @@ use Packetery\Core\Entity;
  * @package Packetery\Validator
  */
 class Address {
-
 	/**
 	 * Validates data needed to instantiate.
 	 *
@@ -28,6 +27,4 @@ class Address {
 	public function validate( Entity\Address $address ): bool {
 		return ( $address->getStreet() && $address->getCity() && $address->getZip() );
 	}
-
-
 }

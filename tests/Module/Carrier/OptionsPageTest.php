@@ -21,7 +21,6 @@ use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
 
 class OptionsPageTest extends TestCase {
-
 	public function testIsAvailableVendorsCountLowByCarrierId(): void {
 		$latteEngineMock         = $this->createMock( Engine::class );
 		$carrierRepositoryMock   = $this->createMock( EntityRepository::class );
@@ -44,8 +43,8 @@ class OptionsPageTest extends TestCase {
 			$featureFlagProviderMock
 		);
 
-		$carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
-		$optionsPage             = new OptionsPage(
+		$carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
+		$optionsPage           = new OptionsPage(
 			$latteEngineMock,
 			$carrierRepositoryMock,
 			$formFactoryMock,
@@ -64,5 +63,4 @@ class OptionsPageTest extends TestCase {
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointhu' ) );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointro' ) );
 	}
-
 }

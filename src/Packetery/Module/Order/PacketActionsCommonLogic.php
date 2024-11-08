@@ -10,11 +10,10 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
-use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
-
 
 /**
  * Class PacketActionsBrain

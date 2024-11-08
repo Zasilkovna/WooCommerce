@@ -9,7 +9,6 @@ use Packetery\Core\Rounder;
 use PHPUnit\Framework\TestCase;
 
 class RounderTest extends TestCase {
-
 	public function testStatic(): void {
 		$testValue = 106.5;
 
@@ -37,5 +36,4 @@ class RounderTest extends TestCase {
 
 		Rounder::roundByCurrency( 106.5, 'EUR', 2 );
 	}
-
 }

@@ -15,7 +15,6 @@ namespace Packetery\Module\Framework;
  * @package Packetery
  */
 trait HookTrait {
-
 	/**
 	 * Applies filters.
 	 *
@@ -44,5 +43,4 @@ trait HookTrait {
 	public function didAction( string $hookName ): int {
 		return did_action( $hookName );
 	}
-
 }

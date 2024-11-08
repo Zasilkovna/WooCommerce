@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Module\MockFactory;
 
 class FeatureFlagDownloaderTest extends TestCase {
-
 	public static function getFlagsProvider(): array {
 		$now          = new DateTimeImmutable( 'now', new DateTimeZone( 'UTC' ) );
 		$nowFormatted = $now->format( CoreHelper::MYSQL_DATETIME_FORMAT );
@@ -53,7 +52,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 				],
 				'expectedResult'      => $freshEnoughData,
 			],
-			'returns from storage in case of errors'           => [
+			'returns from storage in case of errors' => [
 				'apiKey'              => 'dummy-api-key',
 				'errors'              => true,
 				'getFromStorageCount' => 3,
@@ -64,7 +63,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 				],
 				'expectedResult'      => $oldData,
 			],
-			'returns empty in case of no api key'              => [
+			'returns empty in case of no api key'    => [
 				'apiKey'              => null,
 				'errors'              => false,
 				'getFromStorageCount' => 3,
@@ -73,7 +72,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 				'dataFromApi'         => [],
 				'expectedResult'      => [],
 			],
-			'downloads when storage empty'                     => [
+			'downloads when storage empty'           => [
 				'apiKey'              => 'dummy-api-key',
 				'errors'              => false,
 				'getFromStorageCount' => 3,
@@ -84,7 +83,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 				],
 				'expectedResult'      => $freshData,
 			],
-			'downloads when storage holds old data'            => [
+			'downloads when storage holds old data'  => [
 				'apiKey'              => 'dummy-api-key',
 				'errors'              => false,
 				'getFromStorageCount' => 3,
@@ -118,20 +117,27 @@ class FeatureFlagDownloaderTest extends TestCase {
 		$wpAdapter = MockFactory::createWpAdapter( $this );
 		$wpAdapter
 			->method( 'getOption' )
-			->willReturnCallback( function ( $option ) use ( $dataInOptions, $errors ) {
-				if ( $option === FeatureFlagDownloader::FLAGS_OPTION_ID ) {
-					return $dataInOptions;
+			->willReturnCallback(
+				function ( $option ) use ( $dataInOptions, $errors ) {
+					if ( FeatureFlagDownloader::FLAGS_OPTION_ID === $option ) {
+						return $dataInOptions;
+					}
+					if ( FeatureFlagDownloader::DISABLED_DUE_ERRORS_OPTION_ID === $option ) {
+						return $errors;
+					}
+					self::fail( 'unexpected option: ' . $option );
 				}
-				if ( $option === FeatureFlagDownloader::DISABLED_DUE_ERRORS_OPTION_ID ) {
-					return $errors;
-				}
-				self::fail( 'unexpected option: ' . $option );
-			} );
+			);
 		$wpAdapter
 			->method( 'remoteRetrieveBody' )
-			->willReturn( json_encode( [
-				'features' => $dataFromApi,
-			] ) );
+			->willReturn(
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+				json_encode(
+					[
+						'features' => $dataFromApi,
+					]
+				)
+			);
 
 		$wcAdapter = $this->createMock( WcAdapter::class );
 
@@ -151,5 +157,4 @@ class FeatureFlagDownloaderTest extends TestCase {
 
 		self::assertEquals( $expectedResult, $downloader->getFlags() );
 	}
-
 }

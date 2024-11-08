@@ -15,7 +15,6 @@ namespace Packetery\Module\Framework;
  * @package Packetery
  */
 trait OptionTrait {
-
 	/**
 	 * WP get_option adapter.
 	 *
@@ -39,5 +38,4 @@ trait OptionTrait {
 	public function updateOption( string $optionId, $newValue ): bool {
 		return update_option( $optionId, $newValue );
 	}
-
 }

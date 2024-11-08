@@ -15,7 +15,6 @@ namespace Packetery\Module\Framework;
  * @package Packetery
  */
 trait WcCustomerTrait {
-
 	/**
 	 * Gets customer shipping country.
 	 *
@@ -33,5 +32,4 @@ trait WcCustomerTrait {
 	public function customerGetBillingCountry(): string {
 		return WC()->customer->get_billing_country();
 	}
-
 }

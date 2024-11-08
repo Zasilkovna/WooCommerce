@@ -13,14 +13,14 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\ILabelResponse;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
-use Packetery\Core\Log;
 use Packetery\Core\Entity\Order;
+use Packetery\Core\Log;
+use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
 
@@ -251,6 +251,7 @@ class LabelPrint {
 		if ( ! $packetIds ) {
 			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+
 			return;
 		}
 
@@ -287,6 +288,7 @@ class LabelPrint {
 				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
 			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+
 			return;
 		}
 
@@ -316,7 +318,7 @@ class LabelPrint {
 		$form = $this->formFactory->create( $name );
 
 		$availableOffsets = [];
-		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
+		for ( $i = 0; $i <= $maxOffset; $i++ ) {
 			$availableOffsets[ $i ] = ( 0 === $i ?
 				__( "don't skip any field on a print sheet", 'packeta' ) :
 				// translators: %s is offset.
@@ -543,6 +545,7 @@ class LabelPrint {
 					$order->updateApiErrorMessage( $response->getFaultString() );
 					$this->orderRepository->save( $order );
 				}
+
 				continue;
 			}
 			$pairs[ $orderId ] = [
@@ -596,5 +599,4 @@ class LabelPrint {
 		);
 		$wcOrder->save();
 	}
-
 }

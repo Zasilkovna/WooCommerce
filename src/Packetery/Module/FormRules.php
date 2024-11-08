@@ -13,7 +13,6 @@ namespace Packetery\Module;
  * Class FormRules.
  */
 class FormRules {
-
 	/**
 	 * Creates greaterThan validator parts for addRule form method.
 	 *
@@ -40,5 +39,4 @@ class FormRules {
 			__( 'Please enter date in proper format.', 'packeta' ),
 		];
 	}
-
 }

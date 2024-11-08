@@ -322,5 +322,4 @@ class CarrierModal {
 			$order->save();
 		}
 	}
-
 }

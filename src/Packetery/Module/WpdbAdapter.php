@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
 
 use Packetery\Tracy\Debugger;
@@ -458,5 +457,4 @@ class WpdbAdapter {
 	public function escLike( string $text ): string {
 		return $this->wpdb->esc_like( $text );
 	}
-
 }

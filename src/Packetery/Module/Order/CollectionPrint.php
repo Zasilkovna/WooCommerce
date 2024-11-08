@@ -13,10 +13,10 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Entity\Order;
+use Packetery\Latte\Engine;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Http;
 
 /**
@@ -236,6 +236,7 @@ class CollectionPrint {
 	 */
 	private function requestShipment( array $packetIds ): Response\CreateShipment {
 		$request = new Request\CreateShipment( array_values( $packetIds ) );
+
 		return $this->soapApiClient->createShipment( $request );
 	}
 
@@ -248,6 +249,7 @@ class CollectionPrint {
 	 */
 	private function requestBarcodePng( string $barcode ): Response\BarcodePng {
 		$request = new Request\BarcodePng( $barcode );
+
 		return $this->soapApiClient->barcodePng( $request );
 	}
 

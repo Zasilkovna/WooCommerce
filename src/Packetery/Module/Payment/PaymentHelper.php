@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Payment;
 
 use Packetery\Module\Options\OptionsProvider;

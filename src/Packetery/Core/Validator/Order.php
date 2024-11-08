@@ -120,6 +120,7 @@ class Order {
 		if ( empty( $this->translations[ $key ] ) ) {
 			return $key;
 		}
+
 		return $this->translations[ $key ];
 	}
 
@@ -173,5 +174,4 @@ class Order {
 
 		return new SizeReport( true, true, true );
 	}
-
 }

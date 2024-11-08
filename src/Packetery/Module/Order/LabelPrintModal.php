@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module;
 use Packetery\Latte\Engine;
+use Packetery\Module;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms\Form;
 

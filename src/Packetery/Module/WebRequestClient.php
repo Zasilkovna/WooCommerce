@@ -58,5 +58,4 @@ class WebRequestClient implements IWebRequestClient {
 
 		return wp_remote_retrieve_body( $resultResponse );
 	}
-
 }

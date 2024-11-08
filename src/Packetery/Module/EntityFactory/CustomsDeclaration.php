@@ -9,14 +9,13 @@ declare(strict_types=1);
 
 namespace Packetery\Module\EntityFactory;
 
-use Packetery\Core\Entity;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity;
 
 /**
  * Class CustomsDeclaration.
  */
 class CustomsDeclaration {
-
 	/**
 	 * Creates customs declaration entity from standard structure.
 	 *

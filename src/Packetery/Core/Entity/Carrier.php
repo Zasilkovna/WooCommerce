@@ -331,5 +331,4 @@ class Carrier {
 	public function isCarDelivery(): bool {
 		return in_array( $this->id, self::CAR_DELIVERY_CARRIERS, true );
 	}
-
 }

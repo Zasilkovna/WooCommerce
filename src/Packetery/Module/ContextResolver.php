@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
 
 use Packetery\Nette\Http\Request;
@@ -141,5 +140,4 @@ class ContextResolver {
 
 		return 'post.php' === $pagenow && 'page' === $typenow;
 	}
-
 }

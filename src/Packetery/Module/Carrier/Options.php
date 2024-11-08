@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Rounder;
@@ -192,5 +191,4 @@ class Options {
 	public function hasOptions(): bool {
 		return ! empty( $this->options );
 	}
-
 }

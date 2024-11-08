@@ -11,11 +11,12 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap;
+use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
-use Packetery\Core\Api\Soap\CreatePacketMapper;
+use Packetery\Module;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
@@ -24,7 +25,6 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
 use WC_Order;
-use Packetery\Module;
 
 /**
  * Class PacketSubmitter
@@ -543,5 +543,4 @@ class PacketSubmitter {
 			1
 		);
 	}
-
 }

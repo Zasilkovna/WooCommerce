@@ -75,7 +75,7 @@ class PacketSynchronizerTest extends TestCase {
 
 		$this->packetSynchronizer->syncStatus( $order );
 
-		$this->assertTrue( true ); // No exceptions thrown
+		$this->assertTrue( true ); // No exceptions thrown.
 	}
 
 	public function testSynchronizationHasWrongPassword(): void {

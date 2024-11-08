@@ -153,6 +153,7 @@ class MessageManager {
 		}
 
 		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );
+
 		return $output;
 	}
 }

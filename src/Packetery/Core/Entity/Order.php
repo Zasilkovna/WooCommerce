@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Entity;
 
-use Packetery\Core\CoreHelper;
 use DateTimeImmutable;
+use Packetery\Core\CoreHelper;
 
 /**
  * Class Order
@@ -1143,5 +1143,4 @@ class Order {
 		$this->setLastApiErrorMessage( $errorMessage );
 		$this->setLastApiErrorDateTime( $errorMessage ? CoreHelper::now() : null );
 	}
-
 }

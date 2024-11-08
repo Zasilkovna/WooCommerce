@@ -175,28 +175,29 @@ class Updater {
 	/**
 	 * Gets array changes as array of strings.
 	 *
-	 * @param array $old Previous version.
-	 * @param array $new New version.
+	 * @param array $oldData Previous version.
+	 * @param array $newData New version.
 	 *
 	 * @return string[]
 	 */
-	private function getArrayDifferences( array $old, array $new ): array {
+	private function getArrayDifferences( array $oldData, array $newData ): array {
 		$differences    = [];
 		$columnSettings = $this->getColumnSettings();
 
-		foreach ( $old as $key => $oldValue ) {
+		foreach ( $oldData as $key => $oldValue ) {
 			if ( 'id' === $key ) {
 				continue;
 			}
 
 			if ( 'deleted' === $key ) {
-				if ( '1' === (string) $oldValue && isset( $new['name'] ) ) {
+				if ( '1' === (string) $oldValue && isset( $newData['name'] ) ) {
 					$differences[ $key ] = __( 'carrier was re-enabled', 'packeta' );
 				}
+
 				continue;
 			}
 
-			$newValue = (string) $new[ $key ];
+			$newValue = (string) $newData[ $key ];
 			if ( $columnSettings[ $key ]['isBoolean'] ) {
 				$newValue = ( '1' === $newValue ? $newValue : '0' );
 				$oldValue = ( '1' === (string) $oldValue ? (string) $oldValue : '0' );
@@ -289,5 +290,4 @@ class Updater {
 			],
 		];
 	}
-
 }

@@ -15,7 +15,6 @@ namespace Packetery\Module\Framework;
  * @package Packetery
  */
 trait WcCartTrait {
-
 	/**
 	 * Gets cart contents.
 	 *
@@ -69,5 +68,4 @@ trait WcCartTrait {
 	public function cart(): ?\WC_Cart {
 		return WC()->cart;
 	}
-
 }

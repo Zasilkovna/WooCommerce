@@ -109,5 +109,4 @@ class ShippingZoneRepository {
 
 		return $countries;
 	}
-
 }

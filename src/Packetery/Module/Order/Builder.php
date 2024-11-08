@@ -22,10 +22,10 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Payment\PaymentHelper;
-use Packetery\Module\WeightCalculator;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product;
+use Packetery\Module\WeightCalculator;
 use stdClass;
 use WC_Order;
 
@@ -311,5 +311,4 @@ class Builder {
 
 		return (bool) $value;
 	}
-
 }
