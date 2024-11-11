@@ -7,7 +7,7 @@
         "composer/composer": "^2.6",
         "wpify/scoper": "3.2.13",
         "phpunit/phpunit": "10.4.2",
-        "php-stubs/woocommerce-stubs": "^9.1",
+        "php-stubs/woocommerce-stubs": "^9.3",
         "editorconfig-checker/editorconfig-checker": "^10.6",
         "slevomat/coding-standard": "^8.15",
         "wp-cli/wp-cli-bundle": "^2.11",
