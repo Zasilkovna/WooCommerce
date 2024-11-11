@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-11-08T09:39:13+01:00\n"
+"POT-Creation-Date: 2024-11-11T10:21:35+01:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.11.0\n"
 "X-Domain: packeta\n"
@@ -22,9 +22,9 @@ msgstr ""
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:131
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:133
 #: src/Packetery/Module/Carrier/PacketaPickupPointsConfig.php:135
-#: src/Packetery/Module/Checkout.php:313
-#: src/Packetery/Module/Checkout.php:339
-#: src/Packetery/Module/Checkout.php:404
+#: src/Packetery/Module/Checkout.php:314
+#: src/Packetery/Module/Checkout.php:340
+#: src/Packetery/Module/Checkout.php:405
 #: src/Packetery/Module/DashboardWidget.php:140
 #: src/Packetery/Module/DashboardWidget.php:210
 #: src/Packetery/Module/Log/Page.php:118
@@ -37,10 +37,10 @@ msgstr ""
 #: src/Packetery/Module/Plugin.php:679
 #: src/Packetery/Module/Plugin.php:711
 #: src/Packetery/Module/Plugin.php:757
-#: src/Packetery/Module/Product/DataTab.php:108
-#: src/Packetery/Module/ShippingMethod.php:79
+#: src/Packetery/Module/Product/DataTab.php:109
 #: src/Packetery/Module/ShippingMethod.php:80
-#: src/Packetery/Module/ShippingMethod.php:205
+#: src/Packetery/Module/ShippingMethod.php:81
+#: src/Packetery/Module/ShippingMethod.php:207
 msgid "Packeta"
 msgstr ""
 
@@ -253,7 +253,7 @@ msgid "Address validation"
 msgstr ""
 
 #: src/Packetery/Module/Carrier/OptionsPage.php:318
-#: src/Packetery/Module/Checkout.php:900
+#: src/Packetery/Module/Checkout.php:904
 msgid "Age verification fee"
 msgstr ""
 
@@ -506,75 +506,75 @@ msgstr ""
 msgid "maximum weight (kg)"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:405
+#: src/Packetery/Module/Checkout.php:406
 #: src/Packetery/Module/Order/Metabox.php:681
 msgid "Choose pickup point"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:406
-#: src/Packetery/Module/Checkout.php:502
+#: src/Packetery/Module/Checkout.php:407
+#: src/Packetery/Module/Checkout.php:505
 msgid "Pickup point is not chosen."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:407
+#: src/Packetery/Module/Checkout.php:408
 msgid "Loading Packeta widget button..."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:408
+#: src/Packetery/Module/Checkout.php:409
 msgid "Choose delivery address"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:409
+#: src/Packetery/Module/Checkout.php:410
 msgid "Address validation is out of order"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:410
+#: src/Packetery/Module/Checkout.php:411
 #: src/Packetery/Module/Order/Metabox.php:635
 msgid "The selected country does not correspond to the destination country."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:411
+#: src/Packetery/Module/Checkout.php:412
 msgid "The order will be delivered to the address:"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:412
+#: src/Packetery/Module/Checkout.php:413
 msgid "Delivery address has not been chosen. Choosing a delivery address using the widget is required by this carrier."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:463
-#: src/Packetery/Module/Checkout.php:474
+#: src/Packetery/Module/Checkout.php:466
+#: src/Packetery/Module/Checkout.php:477
 msgid "Chosen delivery method is no longer available. Please choose another delivery method."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:512
+#: src/Packetery/Module/Checkout.php:515
 msgid "The selected Packeta carrier is not available for the selected delivery country."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:532
+#: src/Packetery/Module/Checkout.php:535
 msgid "The selected Packeta pickup point could not be validated. Please select another."
 msgstr ""
 
 #. translators: %s: Reason for validation failure.
-#: src/Packetery/Module/Checkout.php:536
+#: src/Packetery/Module/Checkout.php:539
 msgid "Reason: %s"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:558
-#: src/Packetery/Module/Checkout.php:563
+#: src/Packetery/Module/Checkout.php:561
+#: src/Packetery/Module/Checkout.php:566
 msgid "Delivery address has not been verified. Verification of delivery address is required by this carrier."
 msgstr ""
 
 #. translators: %s: Message from downloader.
-#: src/Packetery/Module/Checkout.php:608
+#: src/Packetery/Module/Checkout.php:611
 msgid "The selected Packeta pickup point could not be validated, reason: %s."
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:925
-#: src/Packetery/Module/Checkout.php:1618
+#: src/Packetery/Module/Checkout.php:929
+#: src/Packetery/Module/Checkout.php:1634
 msgid "COD surcharge"
 msgstr ""
 
-#: src/Packetery/Module/Checkout.php:1050
+#: src/Packetery/Module/Checkout.php:1055
 msgid "Free"
 msgstr ""
 
@@ -1967,11 +1967,11 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: src/Packetery/Module/Product/DataTab.php:125
+#: src/Packetery/Module/Product/DataTab.php:126
 msgid "Age verification 18+"
 msgstr ""
 
-#: src/Packetery/Module/Product/DataTab.php:157
+#: src/Packetery/Module/Product/DataTab.php:158
 msgid "Packeta shipping methods disabled for this product."
 msgstr ""
 
@@ -1979,27 +1979,27 @@ msgstr ""
 msgid "Packeta shipping methods disabled for this category"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:87
+#: src/Packetery/Module/ShippingMethod.php:88
 msgid "Allows to choose one of Packeta delivery methods"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:178
+#: src/Packetery/Module/ShippingMethod.php:180
 msgid "please select"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:196
+#: src/Packetery/Module/ShippingMethod.php:198
 msgid "Configure selected carrier"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:202
+#: src/Packetery/Module/ShippingMethod.php:204
 msgid "Method title"
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:204
+#: src/Packetery/Module/ShippingMethod.php:206
 msgid "This controls the title which the user sees during checkout."
 msgstr ""
 
-#: src/Packetery/Module/ShippingMethod.php:209
+#: src/Packetery/Module/ShippingMethod.php:211
 msgid "Selected shipping method"
 msgstr ""
 
