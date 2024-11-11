@@ -528,7 +528,7 @@ class Metabox {
 
 			return;
 		}
-
+		/** @var array<string, string|float|int|true|null> $formValues */
 		$formValues = $this->form->getValues( 'array' );
 
 		if ( ! wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) ) {
