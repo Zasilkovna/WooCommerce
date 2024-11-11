@@ -13,6 +13,7 @@ namespace Packetery\Module\Product;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
+use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
 use Packetery\Latte\Engine;
@@ -164,6 +165,8 @@ class DataTab {
 	 * Saves product data.
 	 *
 	 * @param int|string $postId Post ID.
+	 *
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function saveData( $postId ): void {
 		$product = $this->productEntityFactory->fromPostId( $postId );
