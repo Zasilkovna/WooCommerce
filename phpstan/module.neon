@@ -4,3 +4,5 @@ parameters:
 		- ../src/Packetery/Module
 	strictRules:
 		allRules: false
+	scanDirectories:
+		- ../src/Packetery/Core
