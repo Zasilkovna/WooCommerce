@@ -1,7 +1,7 @@
 == Changelog ==
 = 1.8.6 =
-Fixed: The static function where it would falsely trim a submitted full number ending with 0.
-Fixed: Fixed validation for hidden default dimensions inputs with invalid values.
+Fixed: In the plugin settings, the default shipment weight was incorrectly stored if it contained a number ending in zero.
+Fixed: Failed to save plugin settings if default weight or default dimensions were disabled and hidden settings field contained invalid data.
 Fixed: TypeError when getting cart product instance that could appear at checkout.
 Updated: Syncing order statuses one by one instead of a single batch.
 
