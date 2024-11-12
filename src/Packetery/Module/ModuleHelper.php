@@ -241,9 +241,7 @@ class ModuleHelper {
 	 */
 	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
 		if ( null !== $date ) {
-			$dateTimeString = CoreHelper::MYSQL_DATETIME_FORMAT;
-
-			return ( new WC_DateTime( $dateTimeString ) )->date_i18n(
+			return ( new WC_DateTime( CoreHelper::MYSQL_DATETIME_FORMAT ) )->date_i18n(
 				/**
 				 * Applies woocommerce_admin_order_date_format filters.
 				 *
