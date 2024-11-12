@@ -13,8 +13,9 @@ use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
 use Packetery\Module\CronService;
 use Packetery\Module\Log;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\Plugin;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -105,20 +106,15 @@ class CountryListingPage {
 	private $carrierOptionsFactory;
 
 	/**
-	 * CountryListingPage constructor.
-	 *
-	 * @param Engine                    $latteEngine                   PacketeryLatte engine.
-	 * @param Repository                $carrierRepository             Carrier repository.
-	 * @param Downloader                $downloader                    Carrier downloader.
-	 * @param Request                   $httpRequest                   Http request.
-	 * @param OptionsProvider           $optionsProvider               Options provider.
-	 * @param Log\Page                  $logPage                       Log page.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig            Internal pickup points config.
-	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
-	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
-	 * @param WcSettingsConfig          $wcNativeCarrierSettingsConfig WC native carrier settings config.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory         Carrier options factory.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
@@ -130,7 +126,9 @@ class CountryListingPage {
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
 		WcSettingsConfig $wcNativeCarrierSettingsConfig,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder
 	) {
 		$this->latteEngine                   = $latteEngine;
 		$this->carrierRepository             = $carrierRepository;
@@ -143,6 +141,8 @@ class CountryListingPage {
 		$this->carDeliveryConfig             = $carDeliveryConfig;
 		$this->wcNativeCarrierSettingsConfig = $wcNativeCarrierSettingsConfig;
 		$this->carrierOptionsFactory         = $carrierOptionsFactory;
+		$this->moduleHelper                  = $moduleHelper;
+		$this->urlBuilder                    = $urlBuilder;
 	}
 
 	/**
@@ -239,6 +239,7 @@ class CountryListingPage {
 				$isApiPasswordSet,
 				$nextScheduledRun,
 				$settingsChangedMessage,
+				$this->moduleHelper->isCzechLocale(),
 				$translations
 			)
 		);
@@ -277,7 +278,7 @@ class CountryListingPage {
 				),
 				'activeCarriers'            => $activeCarriers,
 				'allCarriers'               => $allCarriers,
-				'flag'                      => Plugin::buildAssetUrl( sprintf( 'public/images/flags/%s.png', $country ) ),
+				'flag'                      => $this->urlBuilder->buildAssetUrl( sprintf( 'public/images/flags/%s.png', $country ) ),
 			];
 		}
 

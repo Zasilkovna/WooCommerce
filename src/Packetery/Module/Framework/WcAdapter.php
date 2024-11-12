@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use WC_Logger;
 
 /**
@@ -20,8 +21,10 @@ class WcAdapter {
 	use ActionSchedulerTrait;
 	use WcCustomerTrait;
 	use WcCartTrait;
-	use WcTaxTrait;
+	use WcCustomerTrait;
 	use WcPageTrait;
+	use WcSessionTrait;
+	use WcTaxTrait;
 
 	/**
 	 * Converts weight from global unit to kg.
@@ -69,5 +72,21 @@ class WcAdapter {
 	 */
 	public function createLogger(): WC_Logger {
 		return new WC_Logger();
+	}
+
+	public function isCheckout(): bool {
+		return is_checkout();
+	}
+
+	public function featuresUtilDeclareCompatibility( string $featureId, string $pluginFile, bool $positiveCompatibility = true ): void {
+		FeaturesUtil::declare_compatibility( $featureId, $pluginFile, $positiveCompatibility );
+	}
+
+	public function storeApiRegisterUpdateCallback( array $args ): void {
+		woocommerce_store_api_register_update_callback( $args );
+	}
+
+	public function shipToBillingAddressOnly(): bool {
+		return wc_ship_to_billing_address_only();
 	}
 }

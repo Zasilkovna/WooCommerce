@@ -16,11 +16,6 @@ namespace Packetery\Core\Log;
  */
 interface ILogger {
 	/**
-	 * Registers log driver.
-	 */
-	public function register(): void;
-
-	/**
 	 * Adds log record.
 	 *
 	 * @param Record $record Record.

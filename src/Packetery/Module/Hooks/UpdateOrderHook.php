@@ -1,18 +1,21 @@
 <?php
 /**
- * Class HookHandler.
+ * Class UpdateOrderHook.
  *
  * @package Packetery
  */
 
 declare( strict_types=1 );
 
-namespace Packetery\Module;
+namespace Packetery\Module\Hooks;
+
+use Packetery\Module\Order;
+use Packetery\Module\ShippingMethod;
 
 /**
- * Class HookHandler.
+ * Class UpdateOrderHook.
  */
-class HookHandler {
+class UpdateOrderHook {
 
 	/**
 	 * Metabox Wrapper.

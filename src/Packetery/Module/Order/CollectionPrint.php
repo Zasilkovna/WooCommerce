@@ -17,6 +17,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http;
 
 /**
@@ -78,16 +79,10 @@ class CollectionPrint {
 	private $commonLogic;
 
 	/**
-	 * LabelPrint constructor.
-	 *
-	 * @param Engine                   $latteEngine              Latte Engine.
-	 * @param Http\Request             $httpRequest              Http Request.
-	 * @param Client                   $soapApiClient            SOAP API Client.
-	 * @param MessageManager           $messageManager           Message Manager.
-	 * @param EntityFactory\Address    $addressFactory           Address factory.
-	 * @param Repository               $orderRepository          Order repository.
-	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Common logic.
+	 * @var UrlBuilder
 	 */
+	private $urlBuilder;
+
 	public function __construct(
 		Engine $latteEngine,
 		Http\Request $httpRequest,
@@ -95,7 +90,8 @@ class CollectionPrint {
 		MessageManager $messageManager,
 		EntityFactory\Address $addressFactory,
 		Repository $orderRepository,
-		PacketActionsCommonLogic $packetActionsCommonLogic
+		PacketActionsCommonLogic $packetActionsCommonLogic,
+		UrlBuilder $urlBuilder
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
@@ -104,6 +100,7 @@ class CollectionPrint {
 		$this->addressFactory  = $addressFactory;
 		$this->orderRepository = $orderRepository;
 		$this->commonLogic     = $packetActionsCommonLogic;
+		$this->urlBuilder      = $urlBuilder;
 	}
 
 	/**
@@ -182,7 +179,7 @@ class CollectionPrint {
 				'wpOrders'            => $wpOrders,
 				'orderCount'          => count( $packetIds ),
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
-				'stylesheet'          => Plugin::buildAssetUrl( 'public/css/order-collection-print.css' ),
+				'stylesheet'          => $this->urlBuilder->buildAssetUrl( 'public/css/order-collection-print.css' ),
 				'translations'        => [
 					'handoverPacketsHeading' => __( 'Handover packets', 'packeta' ),
 					'packetCount'            => __( 'Packet count', 'packeta' ),

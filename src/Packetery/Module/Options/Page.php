@@ -9,19 +9,24 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use DateTime;
+use Packetery\Core\Api;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\SubmitButton;
 use Packetery\Nette\Forms\Form;
+use Packetery\Nette\Http;
 
 /**
  * Class Page
@@ -70,7 +75,7 @@ class Page {
 	/**
 	 * Packeta client.
 	 *
-	 * @var \Packetery\Core\Api\Soap\Client
+	 * @var Api\Soap\Client
 	 */
 	private $packetaClient;
 
@@ -89,31 +94,30 @@ class Page {
 	private $messageManager;
 
 	/**
-	 * HTTP request.
-	 *
-	 * @var \Packetery\Nette\Http\Request
+	 * @var Http\Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * Plugin constructor.
-	 *
-	 * @param Engine                          $latteEngine       PacketeryLatte_engine.
-	 * @param OptionsProvider                 $optionsProvider    Options provider.
-	 * @param FormFactory                     $formFactory        Form factory.
-	 * @param \Packetery\Core\Api\Soap\Client $packetaClient      Packeta Client.
-	 * @param Log\ILogger                     $logger             Logger.
-	 * @param MessageManager                  $messageManager     Message manager.
-	 * @param \Packetery\Nette\Http\Request   $httpRequest        HTTP request.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
 		FormFactory $formFactory,
-		\Packetery\Core\Api\Soap\Client $packetaClient,
+		Api\Soap\Client $packetaClient,
 		Log\ILogger $logger,
 		MessageManager $messageManager,
-		\Packetery\Nette\Http\Request $httpRequest
+		Http\Request $httpRequest,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
@@ -122,6 +126,8 @@ class Page {
 		$this->logger          = $logger;
 		$this->messageManager  = $messageManager;
 		$this->httpRequest     = $httpRequest;
+		$this->moduleHelper    = $moduleHelper;
+		$this->urlBuilder      = $urlBuilder;
 	}
 
 	/**
@@ -805,7 +811,7 @@ class Page {
 		$lastExport       = null;
 		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );
 		if ( false !== $lastExportOption ) {
-			$date = \DateTime::createFromFormat( DATE_ATOM, $lastExportOption );
+			$date = DateTime::createFromFormat( DATE_ATOM, $lastExportOption );
 			if ( false !== $date ) {
 				$date->setTimezone( wp_timezone() );
 				$lastExport = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
@@ -817,6 +823,9 @@ class Page {
 
 		$latteParams['forcePacketCancelDescription'] = __( 'Cancel the packet for an order even if the cancellation in the Packeta system will not be successful.', 'packeta' );
 		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		$latteParams['isCzechLocale']                = $this->moduleHelper->isCzechLocale();
+		$latteParams['logoZasilkovna']               = $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' );
+		$latteParams['logoPacketa']                  = $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' );
 		$latteParams['translations']                 = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
 			'title'                                  => __( 'Options', 'packeta' ),

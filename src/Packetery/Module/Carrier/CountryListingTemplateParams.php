@@ -59,21 +59,17 @@ class CountryListingTemplateParams {
 	public $translations;
 
 	/**
-	 * CountryListingTemplateParams constructor.
-	 *
-	 * @param array       $carriersUpdate         Carriers update params.
-	 * @param array       $countries              Countries.
-	 * @param bool        $isApiPasswordSet       Tells whether API password is set, or not.
-	 * @param string|null $nextScheduledRun       Next update run.
-	 * @param string|null $settingsChangedMessage Settings changed message.
-	 * @param array       $translations           Translations.
+	 * @var bool
 	 */
+	private $isCzechLocale;
+
 	public function __construct(
 		array $carriersUpdate,
 		array $countries,
 		bool $isApiPasswordSet,
 		?string $nextScheduledRun,
 		?string $settingsChangedMessage,
+		bool $isCzechLocale,
 		array $translations
 	) {
 		$this->carriersUpdate         = $carriersUpdate;
@@ -81,6 +77,7 @@ class CountryListingTemplateParams {
 		$this->isApiPasswordSet       = $isApiPasswordSet;
 		$this->nextScheduledRun       = $nextScheduledRun;
 		$this->settingsChangedMessage = $settingsChangedMessage;
+		$this->isCzechLocale          = $isCzechLocale;
 		$this->translations           = $translations;
 	}
 }

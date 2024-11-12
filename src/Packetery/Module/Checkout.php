@@ -26,6 +26,7 @@ use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http\Request;
 use WC_Logger;
 use WC_Tax;
@@ -189,30 +190,10 @@ class Checkout {
 	private $paymentHelper;
 
 	/**
-	 * Checkout constructor.
-	 *
-	 * @param WpAdapter                    $wpAdapter               WpAdapter.
-	 * @param WcAdapter                    $wcAdapter               WcAdapter.
-	 * @param ProductEntityFactory         $productEntityFactory    Product entity factory.
-	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory    Product category entity factory.
-	 * @param CarrierOptionsFactory        $carrierOptionsFactory   Carrier options factory.
-	 * @param Engine                       $latteEngine             PacketeryLatte engine.
-	 * @param OptionsProvider              $optionsProvider         Options provider.
-	 * @param Carrier\Repository           $carrierRepository       Carrier repository.
-	 * @param Request                      $httpRequest             Http request.
-	 * @param Order\Repository             $orderRepository         Order repository.
-	 * @param CurrencySwitcherFacade       $currencySwitcherFacade  Currency switcher facade.
-	 * @param Order\PacketAutoSubmitter    $packetAutoSubmitter     Packet auto submitter.
-	 * @param PickupPointValidator         $pickupPointValidator    Pickup point validation API.
-	 * @param Order\AttributeMapper        $mapper                  OrderFacade.
-	 * @param RateCalculator               $rateCalculator          RateCalculator.
-	 * @param PacketaPickupPointsConfig    $pickupPointsConfig      Internal pickup points config.
-	 * @param WidgetOptionsBuilder         $widgetOptionsBuilder    Widget options builder.
-	 * @param Carrier\EntityRepository     $carrierEntityRepository Carrier repository.
-	 * @param Api\Internal\CheckoutRouter  $apiRouter               API router.
-	 * @param CarDeliveryConfig            $carDeliveryConfig       Car delivery config.
-	 * @param PaymentHelper                $paymentHelper           Payment helper.
+	 * @var UrlBuilder
 	 */
+	private $urlBuilder;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
@@ -234,7 +215,8 @@ class Checkout {
 		Carrier\EntityRepository $carrierEntityRepository,
 		Api\Internal\CheckoutRouter $apiRouter,
 		CarDeliveryConfig $carDeliveryConfig,
-		PaymentHelper $paymentHelper
+		PaymentHelper $paymentHelper,
+		UrlBuilder $urlBuilder
 	) {
 		$this->wpAdapter                   = $wpAdapter;
 		$this->wcAdapter                   = $wcAdapter;
@@ -257,6 +239,7 @@ class Checkout {
 		$this->apiRouter                   = $apiRouter;
 		$this->carDeliveryConfig           = $carDeliveryConfig;
 		$this->paymentHelper               = $paymentHelper;
+		$this->urlBuilder                  = $urlBuilder;
 	}
 
 	/**
@@ -309,7 +292,7 @@ class Checkout {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button-row.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
-				'logo'         => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
 				'translations' => [
 					'packeta' => __( 'Packeta', 'packeta' ),
 				],
@@ -335,7 +318,7 @@ class Checkout {
 			PACKETERY_PLUGIN_DIR . '/template/checkout/widget-button.latte',
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
-				'logo'         => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
 				'translations' => [
 					'packeta' => __( 'Packeta', 'packeta' ),
 				],
@@ -379,7 +362,7 @@ class Checkout {
 			 * @since 1.4.2
 			 */
 			'language'                   => (string) apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
-			'logo'                       => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
+			'logo'                       => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
 			'country'                    => $this->getCustomerCountry(),
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
@@ -724,16 +707,17 @@ class Checkout {
 	/**
 	 * Registers Packeta checkout hooks
 	 */
-	public function register_hooks(): void {
+	public function registerHooks(): void {
 		// This action works for both classic and Divi templates.
 		add_action( 'woocommerce_review_order_before_submit', [ $this, 'renderHiddenInputFields' ] );
 
 		add_action( 'woocommerce_checkout_process', [ $this, 'validateCheckoutData' ] );
 		add_action( 'woocommerce_checkout_update_order_meta', [ $this, 'updateOrderMeta' ] );
 		add_action( 'woocommerce_store_api_checkout_order_processed', [ $this, 'updateOrderMetaBlocks' ] );
-		if ( ! is_admin() ) {
-			add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
-		}
+
+		// Must not be registered at backend.
+		add_filter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
+
 		add_action( 'woocommerce_review_order_before_shipping', [ $this, 'updateShippingRates' ], 10 );
 		add_filter( 'woocommerce_cart_shipping_packages', [ $this, 'updateShippingPackages' ] );
 		add_action( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
@@ -1606,7 +1590,7 @@ class Checkout {
 	 * @return void
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function applyCodSurgarche( \WC_Cart $cart ): void {
+	public function applyCodSurcharge( \WC_Cart $cart ): void {
 		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
 			return;
 		}

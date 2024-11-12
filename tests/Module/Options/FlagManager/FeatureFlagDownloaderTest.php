@@ -138,6 +138,8 @@ class FeatureFlagDownloaderTest extends TestCase {
 					]
 				)
 			);
+		$wpAdapter->method( 'addQueryArg' )
+			->willReturn( 'dummyUrl' );
 
 		$wcAdapter = $this->createMock( WcAdapter::class );
 

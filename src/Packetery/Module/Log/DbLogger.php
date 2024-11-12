@@ -37,14 +37,6 @@ class DbLogger implements ILogger {
 	}
 
 	/**
-	 * Registers logger.
-	 *
-	 * @return void
-	 */
-	public function register(): void {
-	}
-
-	/**
 	 * Adds record.
 	 *
 	 * @param Record $record Record.

@@ -12,6 +12,8 @@ namespace Packetery\Module\Log;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
+use Packetery\Module\ModuleHelper;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -50,16 +52,27 @@ class Page {
 	private $request;
 
 	/**
-	 * Page constructor.
-	 *
-	 * @param Engine  $latteEngine Engine.
-	 * @param ILogger $manager     Manager.
-	 * @param Request $request     Request.
+	 * @var ModuleHelper
 	 */
-	public function __construct( Engine $latteEngine, ILogger $manager, Request $request ) {
-		$this->latteEngine = $latteEngine;
-		$this->logger      = $manager;
-		$this->request     = $request;
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
+	public function __construct(
+		Engine $latteEngine,
+		ILogger $manager,
+		Request $request,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder
+	) {
+		$this->latteEngine  = $latteEngine;
+		$this->logger       = $manager;
+		$this->request      = $request;
+		$this->moduleHelper = $moduleHelper;
+		$this->urlBuilder   = $urlBuilder;
 	}
 
 	/**
@@ -113,6 +126,8 @@ class Page {
 				'maxRowsExceeded'    => $totalCount > self::MAX_ROWS,
 				'translatedActions'  => $translatedActions,
 				'translatedStatuses' => $translatedStatuses,
+				'logoZasilkovna'     => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
+				'logoPacketa'        => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 				'translations'       => [
 					'packeta'        => __( 'Packeta', 'packeta' ),
 					'title'          => __( 'Log', 'packeta' ),

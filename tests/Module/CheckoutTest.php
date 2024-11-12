@@ -22,6 +22,7 @@ use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
 use Packetery\Module\RateCalculator;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Module\WidgetOptionsBuilder;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -74,6 +75,7 @@ class CheckoutTest extends TestCase {
 			$this->createMock( Api\Internal\CheckoutRouter::class ),
 			$this->carDeliveryConfig,
 			$this->createMock( PaymentHelper::class ),
+			$this->createMock( UrlBuilder::class )
 		);
 	}
 

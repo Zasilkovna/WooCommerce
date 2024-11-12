@@ -25,6 +25,7 @@
  */
 
 use Packetery\Module\Plugin;
+use Packetery\Nette\DI\Container;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -34,5 +35,8 @@ if ( PHP_SAPI === 'cli' ) {
 	return;
 }
 
+/** @var Container $container */
 $container = require __DIR__ . '/bootstrap.php';
-$container->getByType( Plugin::class )->run();
+/** @var Plugin $packetaPlugin */
+$packetaPlugin = $container->getByType( Plugin::class );
+$packetaPlugin->run();
