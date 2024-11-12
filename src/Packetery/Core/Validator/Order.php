@@ -117,11 +117,7 @@ class Order {
 	 * @return string
 	 */
 	private function getTranslation( string $key ): string {
-		if ( ! isset( $this->translations[ $key ] ) ) {
-			return $key;
-		}
-
-		return $this->translations[ $key ];
+		return $this->translations[ $key ] ?? $key;
 	}
 
 	/**
