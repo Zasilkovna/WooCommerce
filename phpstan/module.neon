@@ -1,4 +1,8 @@
 parameters:
+	bootstrapFiles:
+		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+		- ../constants.php
 	level: 2
 	paths:
 		- ../src/Packetery/Module
@@ -6,3 +10,4 @@ parameters:
 		allRules: false
 	scanDirectories:
 		- ../src/Packetery/Core
+		- ../deps
