@@ -146,8 +146,10 @@ class DashboardWidget {
 	private function isPacketaShippingMethodActive(): bool {
 		$shippingZones = WC_Shipping_Zones::get_zones();
 		foreach ( $shippingZones as $shippingZone ) {
-			if ( in_array( ShippingMethod::PACKETERY_METHOD_ID, array_column( $shippingZone['shipping_methods'], 'id' ), true ) ) {
-				return true;
+			foreach ( $shippingZone['shipping_methods'] as $method ) {
+				if ( ShippingMethod::PACKETERY_METHOD_ID === $method['id'] ) {
+					return true;
+				}
 			}
 		}
 
