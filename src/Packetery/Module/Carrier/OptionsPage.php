@@ -201,8 +201,8 @@ class OptionsPage {
 
 		$carrierOptions = get_option( $optionId );
 		if ( $this->featureFlagProvider->isSplitActive() ) {
-			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
-			if ( $vendorCheckboxes ) {
+			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( false !== $carrierOptions ? $carrierOptions : null ) );
+			if ( 0 < count( $vendorCheckboxes ) ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
 				foreach ( $vendorCheckboxes as $checkboxConfig ) {
 					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
@@ -232,7 +232,7 @@ class OptionsPage {
 				->toggle( $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ) );
 
 		$weightLimits = $form->addContainer( self::FORM_FIELD_WEIGHT_LIMITS );
-		if ( empty( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) ) {
 			$this->addWeightLimit( $weightLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] as $index => $limit ) {
@@ -241,7 +241,7 @@ class OptionsPage {
 		}
 
 		$productValueLimits = $form->addContainer( self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
-		if ( empty( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) ) {
 			$this->addProductValueLimit( $productValueLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] as $index => $limit ) {
@@ -259,7 +259,7 @@ class OptionsPage {
 				->addRule( Form::MIN, null, 0 );
 
 			$surchargeLimits = $form->addContainer( 'surcharge_limits' );
-			if ( ! empty( $carrierData['surcharge_limits'] ) ) {
+			if ( isset( $carrierData['surcharge_limits'] ) ) {
 				foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
 					$this->addSurchargeLimit( $surchargeLimits, $index );
 				}
@@ -458,7 +458,7 @@ class OptionsPage {
 	public function updateOptions( Form $form ): void {
 		$options    = $form->getValues( 'array' );
 		$newVendors = $this->getCheckedVendors( $options );
-		if ( $newVendors ) {
+		if ( count( $newVendors ) > 0 ) {
 			$options['vendor_groups'] = $newVendors;
 		}
 
@@ -518,7 +518,7 @@ class OptionsPage {
 		}
 
 		$post = $this->httpRequest->getPost();
-		if ( ! empty( $post ) && $post['id'] === $carrier->getId() ) {
+		if ( isset( $post ) && $post['id'] === $carrier->getId() ) {
 			$formTemplate = $this->createFormTemplate( $post );
 			$form         = $this->createForm( $post );
 			if ( $form->isSubmitted() ) {
@@ -579,7 +579,7 @@ class OptionsPage {
 			],
 		];
 
-		if ( $carrierId ) {
+		if ( null !== $carrierId ) {
 			$carrier             = $this->carrierRepository->getAnyById( $carrierId );
 			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
 			if ( null === $carrier || null === $carrierTemplateData ) {
@@ -601,7 +601,7 @@ class OptionsPage {
 				)
 			);
 
-		} elseif ( $countryIso ) {
+		} elseif ( null !== $countryIso ) {
 			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
 			foreach ( $countryCarriers as $carrier ) {
@@ -815,7 +815,7 @@ class OptionsPage {
 	 */
 	private function getCheckedVendors( array $options ): array {
 		$vendorCodes = [];
-		if ( ! empty( $options['vendor_groups'] ) ) {
+		if ( isset( $options['vendor_groups'] ) ) {
 			$vendorCodes = $options['vendor_groups'];
 		}
 

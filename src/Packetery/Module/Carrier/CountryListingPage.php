@@ -150,13 +150,13 @@ class CountryListingPage {
 	 */
 	public function render(): void {
 		$carriersUpdateParams = [];
-		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
+		if ( null !== $this->httpRequest->getQuery( 'update_carriers' ) ) {
 			set_transient( 'packetery_run_update_carriers', true );
 			if ( wp_safe_redirect( add_query_arg( [ 'page' => OptionsPage::SLUG ], get_admin_url( null, 'admin.php' ) ) ) ) {
 				exit;
 			}
 		}
-		if ( get_transient( 'packetery_run_update_carriers' ) ) {
+		if ( false !== get_transient( 'packetery_run_update_carriers' ) ) {
 			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
 			$carriersUpdateParams                           = [
 				'result'      => $carrierUpdaterResult,
@@ -190,7 +190,7 @@ class CountryListingPage {
 
 		$carrierChanges         = get_transient( self::TRANSIENT_CARRIER_CHANGES );
 		$settingsChangedMessage = null;
-		if ( $carrierChanges ) {
+		if ( false !== $carrierChanges ) {
 			$settingsChangedMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'The carrier settings have changed since the last carrier update. %1$sShow logs%2$s', 'packeta' ),
 				'<a href="' . $this->logPage->createLogListUrl( null, Record::ACTION_CARRIER_LIST_UPDATE ) . '">',

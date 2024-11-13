@@ -792,7 +792,7 @@ class Page {
 				$lastExport = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 			}
 		}
-		if ( $lastExport ) {
+		if ( null !== $lastExport ) {
 			$latteParams['lastExport'] = $lastExport;
 		}
 

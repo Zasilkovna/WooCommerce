@@ -797,7 +797,7 @@ class Plugin {
 	 * @return bool
 	 */
 	private function shouldHidePacketaInfo( PacketeryOrder $order ): bool {
-		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && $order->getPickupPoint();
+		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && null !== $order->getPickupPoint();
 
 		return ( ! $isPickupPointInfoVisible ) && false === $order->isExported();
 	}
@@ -932,7 +932,7 @@ class Plugin {
 		$isProductPage = $this->contextResolver->isProductPage();
 		$isPageDetail  = $this->contextResolver->isPageDetail();
 		$screen        = get_current_screen();
-		$isDashboard   = ( $screen && 'dashboard' === $screen->id );
+		$isDashboard   = ( null !== $screen && 'dashboard' === $screen->id );
 
 		if (
 			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard || $isPageDetail ||

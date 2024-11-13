@@ -132,7 +132,7 @@ class FeatureFlagDownloader {
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	public function getFlags(): array {
-		if ( empty( $this->featureFlagStorage->getFlags() ) ) {
+		if ( null === $this->featureFlagStorage->getFlags() || 0 === count( $this->featureFlagStorage->getFlags() ) ) {
 			$flagsFromOptions = $this->wpAdapter->getOption( self::FLAGS_OPTION_ID );
 			if ( is_array( $flagsFromOptions ) ) {
 				$this->featureFlagStorage->setFlags( $flagsFromOptions );
@@ -140,7 +140,7 @@ class FeatureFlagDownloader {
 		}
 
 		if ( true === $this->wpAdapter->getOption( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
-			return $this->featureFlagStorage->getFlags() ? $this->featureFlagStorage->getFlags() : [];
+			return $this->featureFlagStorage->getFlags() ?? [];
 		}
 
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );

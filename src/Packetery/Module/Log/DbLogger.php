@@ -85,7 +85,7 @@ class DbLogger implements ILogger {
 		}
 
 		$logs = $this->logRepository->find( $arguments );
-		if ( ! $logs ) {
+		if ( is_iterable( $logs ) === false && count( $logs ) ) {
 			return [];
 		}
 
@@ -119,7 +119,7 @@ class DbLogger implements ILogger {
 		];
 
 		$logs = $this->logRepository->find( $arguments );
-		if ( ! $logs ) {
+		if ( is_iterable( $logs ) === false && count( $logs ) === 0 ) {
 			return [];
 		}
 

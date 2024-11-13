@@ -55,7 +55,7 @@ class FeatureFlagDownloaderTest extends TestCase {
 			'returns from storage in case of errors' => [
 				'apiKey'              => 'dummy-api-key',
 				'errors'              => true,
-				'getFromStorageCount' => 3,
+				'getFromStorageCount' => 2,
 				'dataInStorage'       => [ null, $oldData, $oldData ],
 				'dataInOptions'       => $oldData,
 				'dataFromApi'         => [

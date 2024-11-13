@@ -130,10 +130,10 @@ class Updater {
 		$mappedData   = $this->carriers_mapper( $carriers );
 		$carriersInDb = $this->carrierRepository->getAllRawIndexed();
 		foreach ( $mappedData as $carrierId => $carrier ) {
-			if ( ! empty( $carriersInDb[ $carrierId ] ) ) {
+			if ( isset( $carriersInDb[ $carrierId ] ) ) {
 				$this->carrierRepository->update( $carrier, (int) $carrierId );
 				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
-				if ( ! empty( $differences ) ) {
+				if ( count( $differences ) > 0 ) {
 					$this->addLogEntry(
 						// translators: %s is carrier name.
 						sprintf( __( 'Carrier parameters changed for carrier "%s".', 'packeta' ), $carrier['name'] ) . ' ' .
@@ -152,7 +152,7 @@ class Updater {
 			}
 		}
 
-		if ( ! empty( $carriersInDb ) ) {
+		if ( count( $carriersInDb ) > 0 ) {
 			$this->carrierRepository->set_as_deleted( array_keys( $carriersInDb ) );
 			foreach ( $carriersInDb as $deletedCarrier ) {
 				if ( true === (bool) $deletedCarrier['deleted'] ) {
@@ -165,7 +165,7 @@ class Updater {
 			}
 		}
 
-		if ( ! empty( $this->logMessages ) ) {
+		if ( count( $this->logMessages ) > 0 ) {
 			set_transient( CountryListingPage::TRANSIENT_CARRIER_CHANGES, true );
 		} else {
 			delete_transient( CountryListingPage::TRANSIENT_CARRIER_CHANGES );

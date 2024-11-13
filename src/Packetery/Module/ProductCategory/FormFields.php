@@ -117,7 +117,7 @@ class FormFields {
 
 		$form->setDefaults(
 			[
-				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory ? $productCategory->getDisallowedShippingRateChoices() : [],
+				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => null !== $productCategory ? $productCategory->getDisallowedShippingRateChoices() : [],
 			]
 		);
 

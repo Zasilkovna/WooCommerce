@@ -319,11 +319,11 @@ class GridExtender {
 					],
 				];
 
-				if ( $packetId ) {
+				if ( null !== $packetId ) {
 					$latteParams['packetIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetId );
 				}
 
-				if ( $packetClaimId ) {
+				if ( null !== $packetClaimId ) {
 					$latteParams['packetClaimIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetClaimId );
 				}
 

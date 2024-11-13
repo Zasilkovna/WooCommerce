@@ -436,12 +436,12 @@ class PacketSubmitter {
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
 		$validationErrors = $this->orderValidator->validate( $order );
-		if ( ! empty( $validationErrors ) ) {
+		if ( count( $validationErrors ) > 0 ) {
 			throw new InvalidRequestException( 'All required order attributes are not set.', $validationErrors );
 		}
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
-		if ( ! empty( $createPacketData['cod'] ) ) {
+		if ( count( $createPacketData['cod'] ) > 0 ) {
 			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
 			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );
 			$createPacketData['cod'] = $roundedCod;

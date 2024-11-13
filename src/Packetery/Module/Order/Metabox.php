@@ -211,7 +211,7 @@ class Metabox {
 		$this->initializeForm();
 		$parts = $this->prepareMetaboxParts();
 
-		if ( ! empty( $parts ) ) {
+		if ( count( $parts ) > 0 ) {
 			add_meta_box(
 				'packetery_metabox',
 				__( 'Packeta', 'packeta' ),
@@ -304,7 +304,7 @@ class Metabox {
 
 		$packetClaimCancelUrl   = null;
 		$packetClaimTrackingUrl = null;
-		if ( $order->getPacketClaimId() ) {
+		if ( null !== $order->getPacketClaimId() ) {
 			$packetClaimCancelUrl   = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -316,7 +316,7 @@ class Metabox {
 		}
 
 		$packetId = $order->getPacketId();
-		if ( $packetId ) {
+		if ( null !== $packetId ) {
 			$packetCancelLink = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -400,7 +400,7 @@ class Metabox {
 		);
 
 		$prevInvalidValues = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
-		if ( $prevInvalidValues ) {
+		if ( null !== $prevInvalidValues ) {
 			$this->form->setValues( $prevInvalidValues );
 			$this->form->validate();
 		}
@@ -419,7 +419,7 @@ class Metabox {
 		) {
 			if ( $order->isPickupPointDelivery() ) {
 				$showWidgetButton = false;
-				if ( empty( $shippingCountry ) ) {
+				if ( null === $shippingCountry ) {
 					$widgetButtonError = __(
 						'The pickup point cannot be changed because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
@@ -436,7 +436,7 @@ class Metabox {
 				}
 			} elseif ( in_array( $order->getCarrier()->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$showHdWidget = false;
-				if ( empty( $shippingCountry ) ) {
+				if ( null === $shippingCountry ) {
 					$widgetButtonError = __(
 						'The address cannot be validated because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
@@ -560,7 +560,7 @@ class Metabox {
 				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
 				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
-					if ( ! empty( $formValues[ Attribute::CARRIER_ID ] ) ) {
+					if ( isset( $formValues[ Attribute::CARRIER_ID ] ) ) {
 						$pickupPointValue = $formValues[ Attribute::CARRIER_ID ];
 					} else {
 						$pickupPointValue = $order->getCarrier()->getId();

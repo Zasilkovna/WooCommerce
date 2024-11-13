@@ -78,7 +78,7 @@ class Repository {
 		}
 
 		$orderByClause = '';
-		if ( $orderByTransformed ) {
+		if ( count( $orderByTransformed ) > 0 ) {
 			$orderByClause = ' ORDER BY ' . implode( ', ', $orderByTransformed );
 		}
 
@@ -161,7 +161,7 @@ class Repository {
 			array_filter(
 				[
 					$title,
-					( $params ? 'Data: ' . esc_html( wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) ) : '' ),
+					( count( $params ) > 0 ? 'Data: ' . esc_html( wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) ) : '' ),
 				]
 			)
 		);
@@ -213,7 +213,7 @@ class Repository {
 		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$paramsString = '';
-		if ( $record->params ) {
+		if ( count( $record->params ) > 0 ) {
 			$params       = ModuleHelper::convertArrayFloatsToStrings( $record->params );
 			$paramsString = wp_json_encode( $params );
 		}
@@ -254,7 +254,7 @@ class Repository {
 		}
 
 		$whereClause = '';
-		if ( $where ) {
+		if ( count( $where ) < 0 ) {
 			$whereClause = ' WHERE ' . implode( ' AND ', $where );
 		}
 

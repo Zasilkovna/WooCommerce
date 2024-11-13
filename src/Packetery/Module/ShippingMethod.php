@@ -150,7 +150,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 			$allowedCarrierNames = [];
 			$zone                = \WC_Shipping_Zones::get_zone_matching_package( $package );
 			$shippingMethods     = $zone->get_shipping_methods( true );
-			if ( $shippingMethods ) {
+			if ( count( $shippingMethods ) > 0 ) {
 				foreach ( $shippingMethods as $shippingMethod ) {
 					if ( isset( $shippingMethod->options[ self::OPTION_CARRIER_ID ] ) ) {
 						$allowedCarrierNames[ $shippingMethod->options[ self::OPTION_CARRIER_ID ] ] = $shippingMethod->options['title'];

@@ -202,7 +202,7 @@ class Upgrade {
 				if ( $orderStatusAutoChange ) {
 					$syncSettings['allow_order_status_change'] = true;
 				}
-				if ( ! empty( $autoOrderStatus ) ) {
+				if ( null !== $autoOrderStatus ) {
 					$syncSettings['order_status_change_packet_statuses'] = [
 						Core\Entity\PacketStatus::RECEIVED_DATA => $autoOrderStatus,
 					];
@@ -319,7 +319,7 @@ class Upgrade {
 			$order->delete_meta_data( self::META_POINT_URL );
 
 			$validatedAddressId = $this->getValidatedAddressIdByOrderId( (int) $order->get_id() );
-			if ( $validatedAddressId ) {
+			if ( null !== $validatedAddressId ) {
 				$validatedAddress = $this->createAddressFromPostId( $validatedAddressId );
 				$orderEntity->setAddressValidated( true );
 				$orderEntity->setDeliveryAddress( $validatedAddress );
@@ -370,7 +370,7 @@ class Upgrade {
 			]
 		);
 
-		if ( empty( $postIds ) ) {
+		if ( count( $postIds ) === 0 ) {
 			return null;
 		}
 

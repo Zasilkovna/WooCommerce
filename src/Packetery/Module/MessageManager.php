@@ -55,7 +55,7 @@ class MessageManager {
 	 */
 	public function init(): void {
 		$messages = get_transient( $this->getTransientName() );
-		if ( ! $messages ) {
+		if ( false === $messages ) {
 			$messages = [];
 		}
 
