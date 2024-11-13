@@ -123,7 +123,7 @@ class OptionsProvider {
 	 * @return bool Has any data.
 	 */
 	public function has_any( string $optionName ): bool {
-		return null !== $this->getOptionsByName( $optionName ) && count( $this->getOptionsByName( $optionName ) ) > 0;
+		return count( $this->getOptionsByName( $optionName ) ) > 0;
 	}
 
 	/**
