@@ -32,24 +32,14 @@ class FeatureFlagProvider {
 	private $wpAdapter;
 
 	/**
-	 * Feature flag downloader.
-	 *
-	 * @var FeatureFlagDownloader
-	 */
-	private $featureFlagDownloader;
-
-	/**
 	 * Constructor.
 	 *
 	 * @param WpAdapter             $wpAdapter WP adapter.
-	 * @param FeatureFlagDownloader $featureFlagDownloader Feature flag downloader.
 	 */
 	public function __construct(
-		WpAdapter $wpAdapter,
-		FeatureFlagDownloader $featureFlagDownloader
+		WpAdapter $wpAdapter
 	) {
-		$this->wpAdapter             = $wpAdapter;
-		$this->featureFlagDownloader = $featureFlagDownloader;
+		$this->wpAdapter = $wpAdapter;
 	}
 
 	/**
