@@ -1093,7 +1093,7 @@ class Plugin {
 	 * Only a static class method or function can be used in an uninstall hook.
 	 */
 	public static function uninstall(): void {
-		if ( defined( 'PACKETERY_DEBUG' ) && PACKETERY_DEBUG === true ) {
+		if ( defined( 'PACKETERY_DEBUG' ) && constant( 'PACKETERY_DEBUG' ) === true ) {
 			return;
 		}
 

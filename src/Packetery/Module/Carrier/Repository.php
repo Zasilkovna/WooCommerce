@@ -46,7 +46,7 @@ class Repository {
 	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
+	 * @param WpdbAdapter $wpdbAdapter        WpdbAdapter.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,

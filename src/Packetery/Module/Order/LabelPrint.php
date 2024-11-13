@@ -277,10 +277,8 @@ class LabelPrint {
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
-		if ( null === $response || $response->hasFault() ) {
-			$message = ( null !== $response && $response->hasFault() ) ?
-				__( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' ) :
-				__( 'You selected orders that were not submitted yet', 'packeta' );
+		if ( $response->hasFault() ) {
+			$message = __( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
@@ -365,9 +363,9 @@ class LabelPrint {
 	 * @param int   $offset Offset value.
 	 * @param array $packetIds Packet ids.
 	 *
-	 * @return Response\PacketsLabelsPdf|null
+	 * @return Response\PacketsLabelsPdf
 	 */
-	private function requestPacketaLabels( int $offset, array $packetIds ): ?Response\PacketsLabelsPdf {
+	private function requestPacketaLabels( int $offset, array $packetIds ): Response\PacketsLabelsPdf {
 		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?

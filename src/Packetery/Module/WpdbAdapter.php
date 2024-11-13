@@ -325,7 +325,7 @@ class WpdbAdapter {
 	 * @return \Generator
 	 */
 	public function getWpdbQueries(): \Generator {
-		if ( isset( $this->wpdb->queries ) ) {
+		if ( count( $this->wpdb->queries ) > 0 ) {
 			foreach ( $this->wpdb->queries as $queryInfo ) {
 				yield $queryInfo;
 			}

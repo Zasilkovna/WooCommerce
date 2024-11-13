@@ -226,9 +226,9 @@ class Repository {
 		$data = [
 			'id'       => $record->id,
 			'order_id' => $orderId,
-			'title'    => ( $record->title ?? '' ),
-			'status'   => ( $record->status ?? '' ),
-			'action'   => ( $record->action ?? '' ),
+			'title'    => $record->title,
+			'status'   => $record->status,
+			'action'   => $record->action,
 			'params'   => $paramsString,
 			'date'     => $dateString,
 		];

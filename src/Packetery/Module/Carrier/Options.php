@@ -189,6 +189,6 @@ class Options {
 	 * @return bool
 	 */
 	public function hasOptions(): bool {
-		return isset( $this->options );
+		return count( $this->options ) > 0;
 	}
 }

@@ -130,7 +130,7 @@ class WidgetOptionsBuilder {
 				$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
 					$carrier->getId(),
 					$carrier->getCountry(),
-					( ( ( null !== $carrierOption || false !== $carrierOption ) && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
+					( ( ( null !== $carrierOption && false !== $carrierOption ) && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
 				);
 			} else {
 				$carrierConfigForWidget['carriers'] = $this->getCarriersParam( true, $carrier->getId() );
@@ -139,7 +139,7 @@ class WidgetOptionsBuilder {
 
 		if ( ! $carrier->hasPickupPoints() ) {
 			$addressValidation = 'none';
-			if ( ( null !== $carrierOption || false !== $carrierOption ) && in_array( $carrier->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
+			if ( ( null !== $carrierOption && false !== $carrierOption ) && in_array( $carrier->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 			}
 

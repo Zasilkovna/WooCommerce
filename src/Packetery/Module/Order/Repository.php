@@ -412,8 +412,8 @@ class Repository {
 	 * @return void
 	 */
 	private function onBeforeDataInsertion( array $orderData ): void {
-		$pointId   = $orderData['point_id'] ? (string) $orderData['point_id'] : null;
-		$carrierId = $orderData['carrier_id'] ? (string) $orderData['carrier_id'] : null;
+		$pointId   = $orderData['point_id'] ?? null;
+		$carrierId = $orderData['carrier_id'] ?? null;
 		/**
 		 * Tells if Packeta debug logs are enabled.
 		 *
@@ -421,7 +421,7 @@ class Repository {
 		 */
 		$isLoggingActive = (bool) apply_filters( 'packeta_enable_debug_logs', false );
 
-		if ( ( '' !== $pointId && null !== $pointId ) || ! $isLoggingActive || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
+		if ( ( null !== $pointId && '' !== $pointId ) || ! $isLoggingActive || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
 			return;
 		}
 

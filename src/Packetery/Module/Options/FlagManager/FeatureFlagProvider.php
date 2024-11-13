@@ -34,7 +34,7 @@ class FeatureFlagProvider {
 	/**
 	 * Constructor.
 	 *
-	 * @param WpAdapter             $wpAdapter WP adapter.
+	 * @param WpAdapter $wpAdapter WP adapter.
 	 */
 	public function __construct(
 		WpAdapter $wpAdapter
