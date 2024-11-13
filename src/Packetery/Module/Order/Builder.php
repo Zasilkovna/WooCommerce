@@ -127,7 +127,7 @@ class Builder {
 	 */
 	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
 		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( empty( $country ) ) {
+		if ( '' === $country ) {
 			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
 		}
 
@@ -236,11 +236,11 @@ class Builder {
 
 		// Shipping address phone is optional.
 		$order->setPhone( $orderData['billing']['phone'] );
-		if ( ! empty( $contactInfo['phone'] ) ) {
+		if ( isset( $contactInfo['phone'] ) && '' !== $contactInfo['phone'] ) {
 			$order->setPhone( $contactInfo['phone'] );
 		}
 		// Additional address information.
-		if ( ! empty( $contactInfo['address_2'] ) ) {
+		if ( isset( $contactInfo['address_2'] ) && '' !== $contactInfo['address_2'] ) {
 			$order->setNote( $contactInfo['address_2'] );
 		}
 

@@ -99,7 +99,7 @@ class Exporter {
 		}
 
 		$globalSettings = $this->optionsProvider->getAllOptions();
-		if ( ! empty( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
+		if ( isset( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
 			$globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
 				'%s...%s (%s)',
 				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], 0, 16 ),

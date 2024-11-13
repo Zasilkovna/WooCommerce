@@ -60,7 +60,7 @@ class DbLogger implements ILogger {
 	 * @param array       $sorting Sorting config.
 	 * @param int         $limit   Limit.
 	 *
-	 * @return iterable|Record[]
+	 * @return \Generator<Record>
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getRecords( $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable {
@@ -77,7 +77,7 @@ class DbLogger implements ILogger {
 		}
 
 		$logs = $this->logRepository->find( $arguments );
-		if ( ! $logs ) {
+		if ( ! $logs instanceof \Generator ) {
 			return [];
 		}
 
@@ -101,17 +101,17 @@ class DbLogger implements ILogger {
 	 *
 	 * @param array $dateQuery Date_query compatible array.
 	 *
-	 * @return array
+	 * @return \Generator<Record>|array<empty>
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function getForPeriodAsArray( array $dateQuery ): iterable {
+	public function getForPeriodAsArray( array $dateQuery ) {
 		$arguments = [
 			'orderby'    => [ 'date' => 'ASC' ],
 			'date_query' => $dateQuery,
 		];
 
 		$logs = $this->logRepository->find( $arguments );
-		if ( ! $logs ) {
+		if ( ! $logs instanceof \Generator ) {
 			return [];
 		}
 

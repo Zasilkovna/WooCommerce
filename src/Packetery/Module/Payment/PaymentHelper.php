@@ -42,7 +42,7 @@ class PaymentHelper {
 	 * @return bool
 	 */
 	public function isCodPaymentMethod( string $paymentMethod ): bool {
-		if ( empty( $paymentMethod ) ) {
+		if ( '' === $paymentMethod ) {
 			return false;
 		}
 

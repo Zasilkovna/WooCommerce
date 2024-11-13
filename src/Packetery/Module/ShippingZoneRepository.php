@@ -40,6 +40,7 @@ class ShippingZoneRepository {
 	 */
 	private function getAllShippingZones(): array {
 		$rawZones = $this->dataStore->get_zones();
+		$zones    = [];
 		foreach ( $rawZones as $rawZone ) {
 			$zones[] = new WC_Shipping_Zone( $rawZone );
 		}
@@ -94,7 +95,7 @@ class ShippingZoneRepository {
 	public function getCountryCodesForShippingRate( string $rateId ): array {
 		$countries     = [];
 		$zoneLocations = $this->getLocationsForShippingRate( $rateId );
-		if ( ! empty( $zoneLocations ) ) {
+		if ( null !== $zoneLocations ) {
 			/**
 			 * Zone location.
 			 *

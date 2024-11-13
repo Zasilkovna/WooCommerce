@@ -273,7 +273,7 @@ class Repository {
 	private function deleteItems( string $customsDeclarationId ): void {
 		$items = $this->getItemsByCustomsDeclarationId( $customsDeclarationId );
 
-		if ( empty( $items ) ) {
+		if ( count( $items ) === 0 ) {
 			return;
 		}
 

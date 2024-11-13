@@ -120,7 +120,7 @@ class CollectionPrint {
 			return;
 		}
 
-		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
+		if ( false === get_transient( self::getOrderIdsTransientName() ) ) {
 			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), 'info' );
 			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
@@ -140,14 +140,14 @@ class CollectionPrint {
 			$wpOrders[ $orderNumber ]  = $this->orderRepository->getWcOrderById( (int) $orderNumber );
 		}
 
-		if ( ! $packetIds ) {
+		if ( count( $packetIds ) === 0 ) {
 			delete_transient( self::getOrderIdsTransientName() );
 			$this->messageManager->flash_message( __( 'Selected orders were not yet submitted to Packeta.', 'packeta' ), 'info' );
 			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
 
 		$shipmentResult = $this->requestShipment( $packetIds );
-		if ( $shipmentResult->hasFault() && $shipmentResult->getInvalidPacketIds() ) {
+		if ( $shipmentResult->hasFault() && count( $shipmentResult->getInvalidPacketIds() ) > 0 ) {
 			$this->logApiErrorMessageFromCreateShipmentResponse( $shipmentResult, $orders );
 			$packetIds      = array_diff( $packetIds, $shipmentResult->getInvalidPacketIds() );
 			$shipmentResult = $this->requestShipment( $packetIds );

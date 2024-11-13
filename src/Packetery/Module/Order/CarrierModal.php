@@ -236,7 +236,7 @@ class CarrierModal {
 		}
 
 		$shippingCountry = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( empty( $shippingCountry ) ) {
+		if ( '' === $shippingCountry ) {
 			return [];
 		}
 
