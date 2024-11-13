@@ -6,8 +6,9 @@ parameters:
 	level: 2
 	paths:
 		- ../src/Packetery/Module
+	treatPhpDocTypesAsCertain: false
 	strictRules:
-		allRules: false
+		allRules: true
 	scanDirectories:
 		- ../src/Packetery/Core
 		- ../deps
