@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Interfaces\IValidatorTranslations;
 use Packetery\Core\Validator;
 
 /**
@@ -16,7 +17,7 @@ use Packetery\Core\Validator;
  *
  * @package Packetery
  */
-class ValidatorTranslations {
+class ValidatorTranslations implements IValidatorTranslations {
 
 	/**
 	 * Translations with specified keys.

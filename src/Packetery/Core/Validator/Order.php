@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Validator;
 
 use Packetery\Core\Entity;
+use Packetery\Core\Interfaces\IValidatorTranslations;
 
 /**
  * Class Order
@@ -47,21 +48,32 @@ class Order {
 	/**
 	 * Validation errors translations.
 	 *
-	 * @var array<string, string> $translations
+	 * @var array<string, string>|null $translations
 	 */
-	private $translations;
+	private $translations = null;
+
+	/**
+	 * Translations.
+	 *
+	 * @var IValidatorTranslations
+	 */
+	private $validatorTranslations;
 
 	/**
 	 * Order constructor.
 	 *
-	 * @param Address               $addressValidator Address validator.
-	 * @param Size                  $sizeValidator    Size validator.
-	 * @param array<string, string> $translations     Translations with specified keys.
+	 * @param Address                $addressValidator      Address validator.
+	 * @param Size                   $sizeValidator         Size validator.
+	 * @param IValidatorTranslations $validatorTranslations Translations.
 	 */
-	public function __construct( Address $addressValidator, Size $sizeValidator, array $translations ) {
-		$this->addressValidator = $addressValidator;
-		$this->sizeValidator    = $sizeValidator;
-		$this->translations     = $translations;
+	public function __construct(
+		Address $addressValidator,
+		Size $sizeValidator,
+		IValidatorTranslations $validatorTranslations
+	) {
+		$this->addressValidator      = $addressValidator;
+		$this->sizeValidator         = $sizeValidator;
+		$this->validatorTranslations = $validatorTranslations;
 	}
 
 	/**
@@ -114,12 +126,18 @@ class Order {
 	 * Return the key if translation is not set.
 	 *
 	 * @param string $key Translation key.
+	 *
 	 * @return string
 	 */
 	private function getTranslation( string $key ): string {
+		if ( null === $this->translations ) {
+			$this->translations = $this->validatorTranslations->get();
+		}
+
 		if ( empty( $this->translations[ $key ] ) ) {
 			return $key;
 		}
+
 		return $this->translations[ $key ];
 	}
 

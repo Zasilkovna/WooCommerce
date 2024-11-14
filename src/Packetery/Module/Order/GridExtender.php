@@ -87,7 +87,7 @@ class GridExtender {
 	 * @param Engine                $latteEngine           Latte Engine.
 	 * @param Request               $httpRequest           Http Request.
 	 * @param Repository            $orderRepository       Order repository.
-	 * @param Order                 $orderValidator        Order validator.
+	 * @param OrderValidatorFactory $orderValidatorFactory Order validator.
 	 * @param ContextResolver       $contextResolver       Context resolver.
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 */
@@ -96,7 +96,7 @@ class GridExtender {
 		Engine $latteEngine,
 		Request $httpRequest,
 		Repository $orderRepository,
-		Order $orderValidator,
+		OrderValidatorFactory $orderValidatorFactory,
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
@@ -104,7 +104,7 @@ class GridExtender {
 		$this->latteEngine           = $latteEngine;
 		$this->httpRequest           = $httpRequest;
 		$this->orderRepository       = $orderRepository;
-		$this->orderValidator        = $orderValidator;
+		$this->orderValidator        = $orderValidatorFactory->create();
 		$this->contextResolver       = $contextResolver;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
