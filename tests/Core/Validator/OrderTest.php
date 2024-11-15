@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Core\Validator;
 
-use Packetery\Core\Interfaces\IValidatorTranslations;
+use Packetery\Core\Interfaces\ValidatorTranslationsInterface;
 use Packetery\Core\Validator\Address;
 use Packetery\Core\Validator\Order;
 use Packetery\Core\Validator\Size;
@@ -16,7 +16,7 @@ class OrderTest extends TestCase {
 	public function testValidation(): void {
 		$addressValidator          = new Address();
 		$sizeValidator             = new Size();
-		$validatorTranslationsMock = $this->createMock( IValidatorTranslations::class );
+		$validatorTranslationsMock = $this->createMock( ValidatorTranslationsInterface::class );
 		$validatorTranslationsMock->method( 'get' )->willReturn( [
 			Order::ERROR_TRANSLATION_KEY_NUMBER                     => 'Order number is not set.',
 			Order::ERROR_TRANSLATION_KEY_NAME                       => 'Customer name is not set.',

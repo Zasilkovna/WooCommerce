@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Core\Validator;
 
 use Packetery\Core\Entity;
-use Packetery\Core\Interfaces\IValidatorTranslations;
+use Packetery\Core\Interfaces\ValidatorTranslationsInterface;
 
 /**
  * Class Order
@@ -55,21 +55,21 @@ class Order {
 	/**
 	 * Translations.
 	 *
-	 * @var IValidatorTranslations
+	 * @var ValidatorTranslationsInterface
 	 */
 	private $validatorTranslations;
 
 	/**
 	 * Order constructor.
 	 *
-	 * @param Address                $addressValidator      Address validator.
-	 * @param Size                   $sizeValidator         Size validator.
-	 * @param IValidatorTranslations $validatorTranslations Translations.
+	 * @param Address                        $addressValidator      Address validator.
+	 * @param Size                           $sizeValidator         Size validator.
+	 * @param ValidatorTranslationsInterface $validatorTranslations Translations.
 	 */
 	public function __construct(
 		Address $addressValidator,
 		Size $sizeValidator,
-		IValidatorTranslations $validatorTranslations
+		ValidatorTranslationsInterface $validatorTranslations
 	) {
 		$this->addressValidator      = $addressValidator;
 		$this->sizeValidator         = $sizeValidator;

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class IValidatorTranslations
+ * Class ValidatorTranslationsInterface
  *
  * @package Packetery
  */
@@ -14,7 +14,7 @@ use Packetery\Core\Validator\Address;
 use Packetery\Core\Validator\Size;
 
 /**
- * Class IValidatorTranslations
+ * Class ValidatorTranslationsInterface
  *
  * @package Packetery
  */

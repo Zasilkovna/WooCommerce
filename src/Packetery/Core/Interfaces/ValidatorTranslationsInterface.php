@@ -1,6 +1,6 @@
 <?php
 /**
- * Class IValidatorTranslations
+ * Class ValidatorTranslationsInterface
  *
  * @package Packetery
  */
@@ -10,11 +10,11 @@ declare( strict_types=1 );
 namespace Packetery\Core\Interfaces;
 
 /**
- * Class IValidatorTranslations
+ * Class ValidatorTranslationsInterface
  *
  * @package Packetery
  */
-interface IValidatorTranslations {
+interface ValidatorTranslationsInterface {
 	/**
 	 * Gets translations for keys specified in validate method.
 	 *
