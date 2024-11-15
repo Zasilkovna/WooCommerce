@@ -69,11 +69,13 @@ class PacketStatus extends BaseResponse {
 	 * @return void
 	 */
 	public function setStoredUntil( ?string $storedUntil ): void {
-		$formatedStoredUntil = null !== $storedUntil ? \DateTimeImmutable::createFromFormat(
-			CoreHelper::MYSQL_DATE_FORMAT,
-			$storedUntil
-		) : null;
+		if ( null === $storedUntil ) {
+			$this->storedUntil = null;
 
-		$this->storedUntil = ( $formatedStoredUntil instanceof \DateTimeImmutable ) ? $formatedStoredUntil : null;
+			return;
+		}
+
+		$formattedStoredUntil = \DateTimeImmutable::createFromFormat( CoreHelper::MYSQL_DATE_FORMAT, $storedUntil );
+		$this->storedUntil    = $formattedStoredUntil instanceof \DateTimeImmutable ? $formattedStoredUntil : null;
 	}
 }
