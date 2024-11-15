@@ -428,18 +428,10 @@ class Order {
 		return (int) $this->pickupPoint->getId();
 	}
 
-	/**
-	 * Has pickup point/carrier id.
-	 *
-	 * @return bool
-	 */
 	public function hasPickupPointOrCarrierId(): bool {
 		$pickupPointOrCarrierId = $this->getPickupPointOrCarrierId();
-		if ( null !== $pickupPointOrCarrierId && 0 !== $pickupPointOrCarrierId ) {
-			return true;
-		}
 
-		return false;
+		return null !== $pickupPointOrCarrierId && 0 !== $pickupPointOrCarrierId;
 	}
 
 	/**
@@ -997,11 +989,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasNumber(): bool {
-		if ( null !== $this->number && '' !== $this->number ) {
-			return true;
-		}
-
-		return false;
+		return null !== $this->number && '' !== $this->number;
 	}
 
 	/**
@@ -1019,11 +1007,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasName(): bool {
-		if ( null !== $this->name && '' !== $this->name ) {
-			return true;
-		}
-
-		return false;
+		return null !== $this->name && '' !== $this->name;
 	}
 
 	/**
@@ -1050,11 +1034,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasValue(): bool {
-		if ( null !== $this->value ) {
-			return true;
-		}
-
-		return false;
+		return null !== $this->value;
 	}
 
 	/**
@@ -1081,11 +1061,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasEshop(): bool {
-		if ( null !== $this->eshop && '' !== $this->eshop ) {
-			return true;
-		}
-
-		return false;
+		return null !== $this->eshop && '' !== $this->eshop;
 	}
 
 	/**
