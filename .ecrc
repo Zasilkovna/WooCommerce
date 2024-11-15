@@ -9,6 +9,7 @@
 		"^public\/libs\/",
 		"^public\/block\/index.asset.php",
 		"^public\/block\/index.js",
+		"^public\/block\/block.json",
 		"^public\/js\/live-form-validation-extension.js",
 		"^languages\/",
 		"LICENSE$",
