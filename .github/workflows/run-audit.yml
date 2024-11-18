@@ -1,0 +1,18 @@
+name: Composer security audit
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+jobs:
+    audit:
+        name: Run composer security audit
+        runs-on: ubuntu-24.04
+        steps:
+            -   uses: actions/checkout@master
+            -   name: Running composer security audit
+                shell: bash
+                run: |
+                    COMPOSER=composer.json composer install
+                    composer audit
+                    COMPOSER=composer-deps.json composer install
+                    composer audit
