@@ -73,8 +73,9 @@ services:
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
-	validatorTranslations: Packetery\Module\Order\ValidatorTranslations
-	- Packetery\Core\Validator\Order(translations: @validatorTranslations::get())
+	- Packetery\Module\Order\ValidatorTranslations
+	- Packetery\Module\Order\OrderValidatorFactory
+	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
 	- Packetery\Module\CustomsDeclaration\Repository
 	- Packetery\Module\Api\Internal\OrderController

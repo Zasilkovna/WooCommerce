@@ -15,6 +15,7 @@ use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
+use Packetery\Module\Order\OrderValidatorFactory;
 use Packetery\Module\Order\Repository;
 use Packetery\Module\Order\GridExtender;
 use WP_Error;
@@ -75,25 +76,25 @@ final class OrderController extends WP_REST_Controller {
 	/**
 	 * Controller constructor.
 	 *
-	 * @param OrderRouter     $router          Router.
-	 * @param Repository      $orderRepository Order repository.
-	 * @param GridExtender    $gridExtender    Grid extender.
-	 * @param Validator\Order $orderValidator  Order validator.
-	 * @param CoreHelper      $coreHelper      CoreHelper.
-	 * @param Form            $orderForm       Order form.
+	 * @param OrderRouter           $router                 Router.
+	 * @param Repository            $orderRepository        Order repository.
+	 * @param GridExtender          $gridExtender           Grid extender.
+	 * @param OrderValidatorFactory $orderValidatorFactory  Order validator.
+	 * @param CoreHelper            $coreHelper             CoreHelper.
+	 * @param Form                  $orderForm              Order form.
 	 */
 	public function __construct(
 		OrderRouter $router,
 		Repository $orderRepository,
 		GridExtender $gridExtender,
-		Validator\Order $orderValidator,
+		OrderValidatorFactory $orderValidatorFactory,
 		CoreHelper $coreHelper,
 		Form $orderForm
 	) {
 		$this->orderForm       = $orderForm;
 		$this->orderRepository = $orderRepository;
 		$this->gridExtender    = $gridExtender;
-		$this->orderValidator  = $orderValidator;
+		$this->orderValidator  = $orderValidatorFactory->create();
 		$this->coreHelper      = $coreHelper;
 		$this->router          = $router;
 	}
