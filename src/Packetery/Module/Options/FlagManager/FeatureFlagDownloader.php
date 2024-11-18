@@ -140,7 +140,7 @@ class FeatureFlagDownloader {
 		}
 
 		if ( true === $this->wpAdapter->getOption( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
-			return $this->featureFlagStorage->getFlags() ? $this->featureFlagStorage->getFlags() : [];
+			return $this->featureFlagStorage->getFlags() ?: [];
 		}
 
 		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );

@@ -201,7 +201,7 @@ class OptionsPage {
 
 		$carrierOptions = get_option( $optionId );
 		if ( $this->featureFlagProvider->isSplitActive() ) {
-			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
+			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], $carrierOptions ?: null );
 			if ( $vendorCheckboxes ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
 				foreach ( $vendorCheckboxes as $checkboxConfig ) {

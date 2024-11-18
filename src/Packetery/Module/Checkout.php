@@ -490,10 +490,7 @@ class Checkout {
 				)
 			);
 			foreach ( $requiredAttrs as $attr => $required ) {
-				$attrValue = null;
-				if ( isset( $checkoutData[ $attr ] ) ) {
-					$attrValue = $checkoutData[ $attr ];
-				}
+				$attrValue = $checkoutData[ $attr ] ?? null;
 				if ( ! $attrValue ) {
 					$error = true;
 				}
@@ -1187,7 +1184,7 @@ class Checkout {
 			}
 		}
 
-		return ( $chosenShippingRate ? $chosenShippingRate : '' );
+		return $chosenShippingRate ?: '';
 	}
 
 	/**
@@ -1200,11 +1197,8 @@ class Checkout {
 	 */
 	private function getCarrierId( string $chosenMethod ): ?string {
 		$carrierId = $this->getCarrierIdFromShippingMethod( $chosenMethod );
-		if ( null === $carrierId ) {
-			return null;
-		}
 
-		return $carrierId;
+		return $carrierId ?? null;
 	}
 
 	/**

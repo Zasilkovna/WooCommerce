@@ -659,7 +659,7 @@ class OptionsProvider {
 	public function getEmailHook(): string {
 		$emailHook = $this->get( 'email_hook' );
 
-		return ( null !== $emailHook ? $emailHook : self::EMAIL_HOOK_DEFAULT );
+		return $emailHook ?? self::EMAIL_HOOK_DEFAULT;
 	}
 
 	/**
