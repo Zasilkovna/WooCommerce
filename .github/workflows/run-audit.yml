@@ -12,7 +12,8 @@ jobs:
             -   name: Running composer security audit
                 shell: bash
                 run: |
-                    COMPOSER=composer.json composer install
+                    composer install
                     composer audit
-                    COMPOSER=composer-deps.json composer install
+                    cd deps-composer
+                    composer install
                     composer audit
