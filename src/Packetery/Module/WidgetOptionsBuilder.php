@@ -154,7 +154,7 @@ class WidgetOptionsBuilder {
 	 *
 	 * @param Order $order Order.
 	 *
-	 * @return array|null
+	 * @return array
 	 */
 	public function createPickupPointForAdmin( Order $order ): array {
 		$widgetOptions = [

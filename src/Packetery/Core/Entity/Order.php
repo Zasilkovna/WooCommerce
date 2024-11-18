@@ -428,6 +428,12 @@ class Order {
 		return (int) $this->pickupPoint->getId();
 	}
 
+	public function hasPickupPointOrCarrierId(): bool {
+		$pickupPointOrCarrierId = $this->getPickupPointOrCarrierId();
+
+		return null !== $pickupPointOrCarrierId && 0 !== $pickupPointOrCarrierId;
+	}
+
 	/**
 	 * Sets pickup point.
 	 *
@@ -766,7 +772,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketBarcode(): ?string {
-		return $this->packetId ? 'Z' . $this->packetId : null;
+		return null !== $this->packetId ? 'Z' . $this->packetId : null;
 	}
 
 	/**
@@ -775,7 +781,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketClaimBarcode(): ?string {
-		return $this->packetClaimId ? 'Z' . $this->packetClaimId : null;
+		return null !== $this->packetClaimId ? 'Z' . $this->packetClaimId : null;
 	}
 
 	/**
@@ -784,7 +790,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketTrackingUrl(): ?string {
-		return $this->packetId ? sprintf( CoreHelper::TRACKING_URL, $this->packetId ) : null;
+		return null !== $this->packetId ? sprintf( CoreHelper::TRACKING_URL, $this->packetId ) : null;
 	}
 
 	/**
@@ -793,7 +799,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketClaimTrackingUrl(): ?string {
-		return $this->packetClaimId ? sprintf( CoreHelper::TRACKING_URL, $this->packetClaimId ) : null;
+		return null !== $this->packetClaimId ? sprintf( CoreHelper::TRACKING_URL, $this->packetClaimId ) : null;
 	}
 
 	/**
@@ -926,7 +932,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getLength(): ?float {
-		if ( empty( $this->size ) ) {
+		if ( null === $this->size ) {
 			return null;
 		}
 
@@ -939,7 +945,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getWidth(): ?float {
-		if ( empty( $this->size ) ) {
+		if ( null === $this->size ) {
 			return null;
 		}
 
@@ -952,7 +958,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getHeight(): ?float {
-		if ( empty( $this->size ) ) {
+		if ( null === $this->size ) {
 			return null;
 		}
 
@@ -978,12 +984,30 @@ class Order {
 	}
 
 	/**
+	 * Has order id.
+	 *
+	 * @return bool
+	 */
+	public function hasNumber(): bool {
+		return null !== $this->number && '' !== $this->number;
+	}
+
+	/**
 	 * Gets customer name.
 	 *
 	 * @return string|null
 	 */
 	public function getName(): ?string {
 		return $this->name;
+	}
+
+	/**
+	 * Has customer name.
+	 *
+	 * @return bool
+	 */
+	public function hasName(): bool {
+		return null !== $this->name && '' !== $this->name;
 	}
 
 	/**
@@ -1005,6 +1029,15 @@ class Order {
 	}
 
 	/**
+	 * Has order value.
+	 *
+	 * @return bool
+	 */
+	public function hasValue(): bool {
+		return null !== $this->value;
+	}
+
+	/**
 	 * Gets order COD value.
 	 *
 	 * @return float|null
@@ -1020,6 +1053,15 @@ class Order {
 	 */
 	public function getEshop(): ?string {
 		return $this->eshop;
+	}
+
+	/**
+	 * Has sender label.
+	 *
+	 * @return bool
+	 */
+	public function hasEshop(): bool {
+		return null !== $this->eshop && '' !== $this->eshop;
 	}
 
 	/**
@@ -1141,6 +1183,6 @@ class Order {
 	 */
 	public function updateApiErrorMessage( ?string $errorMessage ): void {
 		$this->setLastApiErrorMessage( $errorMessage );
-		$this->setLastApiErrorDateTime( $errorMessage ? CoreHelper::now() : null );
+		$this->setLastApiErrorDateTime( null !== $errorMessage ? CoreHelper::now() : null );
 	}
 }

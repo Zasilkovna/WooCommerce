@@ -942,7 +942,7 @@ class Plugin {
 					Options\Page::SLUG,
 					Carrier\OptionsPage::SLUG,
 					Log\Page::SLUG,
-					Order\labelPrint::MENU_SLUG,
+					Order\LabelPrint::MENU_SLUG,
 				],
 				true
 			)

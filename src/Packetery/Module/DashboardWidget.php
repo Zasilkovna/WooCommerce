@@ -15,6 +15,7 @@ use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Options\OptionsProvider;
 use WC_Data_Store;
 use WC_Shipping_Zone;
+use WC_Shipping_Zone_Data_Store;
 
 /**
  * Class DashboardWidget
@@ -145,6 +146,7 @@ class DashboardWidget {
 	 * @return bool
 	 */
 	private function isPacketaShippingMethodActive(): bool {
+		/** @var WC_Shipping_Zone_Data_Store $shippingDataStore */
 		$shippingDataStore = WC_Data_Store::load( 'shipping-zone' );
 		$shippingZones     = $shippingDataStore->get_zones();
 

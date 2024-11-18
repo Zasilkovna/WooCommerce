@@ -12,6 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Latte\Engine;
 use Packetery\Module;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -140,8 +141,11 @@ class LabelPrintModal {
 	 * @return void
 	 */
 	private function renderModal( string $id, string $format, string $packetId ): void {
-		$form = $this->createForm( sprintf( '%s_form', $id ), $format, $packetId );
-		if ( $form['submit']->isSubmittedBy() ) {
+		$form         = $this->createForm( sprintf( '%s_form', $id ), $format, $packetId );
+		$submitButton = $form['submit'];
+		if ( $submitButton instanceof SubmitButton &&
+			$submitButton->isSubmittedBy()
+		) {
 			$form->fireEvents();
 		}
 

@@ -92,7 +92,7 @@ class CoreHelper {
 	 * @return string|null
 	 */
 	public function getStringFromDateTime( ?DateTimeImmutable $date, string $format ): ?string {
-		return $date ? $date->format( $format ) : null;
+		return null !== $date ? $date->format( $format ) : null;
 	}
 
 	/**
@@ -104,6 +104,6 @@ class CoreHelper {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
-		return $date ? new DateTimeImmutable( $date ) : null;
+		return null !== $date ? new DateTimeImmutable( $date ) : null;
 	}
 }

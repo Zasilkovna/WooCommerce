@@ -19,6 +19,8 @@ use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
+use Packetery\Nette\Forms\Controls\BaseControl;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -593,7 +595,7 @@ class Page {
 		}
 
 		$apiPassword = $packeteryContainer['api_password'];
-		if ( $apiPassword->hasErrors() === false ) {
+		if ( $apiPassword instanceof BaseControl && $apiPassword->hasErrors() === false ) {
 			$this->packetaClient->setApiPassword( $apiPassword->getValue() );
 		}
 
@@ -629,7 +631,8 @@ class Page {
 		}
 
 		$apiPassword = $packeteryContainer['api_password'];
-		if ( $apiPassword->hasErrors() === false ) {
+
+		if ( $apiPassword instanceof BaseControl && $apiPassword->hasErrors() === false ) {
 			$apiPass            = $apiPassword->getValue();
 			$options['api_key'] = substr( $apiPass, 0, 16 );
 			$this->packetaClient->setApiPassword( $apiPass );
@@ -637,10 +640,18 @@ class Page {
 			$options['api_key'] = '';
 		}
 
-		$defaultWeight                  = $packeteryContainer['default_weight']->getValue();
-		$options['default_weight']      = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
-		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
-		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
+		if ( $packeteryContainer['default_weight'] instanceof BaseControl ) {
+			$defaultWeight             = $packeteryContainer['default_weight']->getValue();
+			$options['default_weight'] = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
+		}
+
+		if ( $packeteryContainer['force_packet_cancel'] instanceof BaseControl ) {
+			$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
+		}
+
+		if ( $packeteryContainer['free_shipping_shown'] instanceof BaseControl ) {
+			$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
+		}
 
 		return $options;
 	}
@@ -714,12 +725,16 @@ class Page {
 		}
 
 		$packetStatusSyncForm = $this->createPacketStatusSyncForm();
-		if ( $packetStatusSyncForm['save']->isSubmittedBy() ) {
+		if ( $packetStatusSyncForm['save'] instanceof SubmitButton &&
+			$packetStatusSyncForm['save']->isSubmittedBy()
+		) {
 			$packetStatusSyncForm->fireEvents();
 		}
 
 		$autoSubmissionForm = $this->createAutoSubmissionForm();
-		if ( $autoSubmissionForm['save']->isSubmittedBy() ) {
+		if ( $autoSubmissionForm['save'] instanceof SubmitButton &&
+			$autoSubmissionForm['save']->isSubmittedBy()
+		) {
 			$autoSubmissionForm->fireEvents();
 		}
 	}
