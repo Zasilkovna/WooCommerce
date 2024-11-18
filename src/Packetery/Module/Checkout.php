@@ -1409,7 +1409,7 @@ class Checkout {
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$wpOrderPay = $wp->query_vars['order-pay'] ?? null;
 		if ( is_numeric( $wpOrderPay ) ) {
-			$order = $this->orderRepository->getById( (int) $wpOrderPay, true );
+			$order = $this->orderRepository->getByIdWithValidCarrier( (int) $wpOrderPay );
 		}
 
 		if ( $order instanceof Entity\Order ) {

@@ -376,7 +376,7 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getById( $orderId, true );
+			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
 				if ( null !== $order ) {
@@ -428,7 +428,7 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getById( $orderId, true );
+			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
 				if ( null !== $order ) {
@@ -540,7 +540,7 @@ class LabelPrint {
 				];
 				$record->orderId = $orderId;
 				$this->logger->add( $record );
-				$order = $this->orderRepository->getById( $orderId, true );
+				$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 				if ( null !== $order ) {
 					$order->updateApiErrorMessage( $response->getFaultString() );
 					$this->orderRepository->save( $order );

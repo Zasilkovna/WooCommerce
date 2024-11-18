@@ -233,21 +233,27 @@ class Repository {
 	}
 
 	/**
-	 * Gets order data.
-	 *
-	 * @param int  $id                              Order id.
-	 * @param bool $suppressInvalidCarrierException Tells if carrier exception should be ignored.
-	 *
-	 * @return Order|null
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
-	public function getById( int $id, bool $suppressInvalidCarrierException = false ): ?Order {
+	public function getById( int $id ): ?Order {
 		$wcOrder = $this->getWcOrderById( $id );
 		if ( null === $wcOrder ) {
 			return null;
 		}
 
-		return $this->getByWcOrder( $wcOrder, $suppressInvalidCarrierException );
+		return $this->getByWcOrder( $wcOrder );
+	}
+
+	/**
+	 * Ignores InvalidCarrierException.
+	 */
+	public function getByIdWithValidCarrier( int $id ): ?Order {
+		$wcOrder = $this->getWcOrderById( $id );
+		if ( null === $wcOrder ) {
+			return null;
+		}
+
+		return $this->getByWcOrderWithValidCarrier( $wcOrder );
 	}
 
 	/**
@@ -294,32 +300,43 @@ class Repository {
 		);
 	}
 
-	/**
-	 * Gets order by wc order.
-	 *
-	 * @param WC_Order $wcOrder                         WC Order.
-	 * @param bool     $suppressInvalidCarrierException Tells if carrier exception should be ignored.
-	 *
-	 * @return Order|null
-	 * @throws InvalidCarrierException InvalidCarrierException.
-	 */
-	public function getByWcOrder( WC_Order $wcOrder, bool $suppressInvalidCarrierException = false ): ?Order {
+	private function getDataByWcOrder( WC_Order $wcOrder ): ?object {
 		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 			return null;
 		}
 
-		$result = $this->getDataById( $wcOrder->get_id() );
-		if ( ! $result ) {
+		$packeteryOrderData = $this->getDataById( $wcOrder->get_id() );
+		if ( ! is_object( $packeteryOrderData ) ) {
+			return null;
+		}
+
+		return $packeteryOrderData;
+	}
+
+	/**
+	 * @throws InvalidCarrierException
+	 */
+	public function getByWcOrder( WC_Order $wcOrder ): ?Order {
+		$packeteryOrderData = $this->getDataByWcOrder( $wcOrder );
+		if ( null === $packeteryOrderData ) {
+			return null;
+		}
+
+		return $this->builder->build( $wcOrder, $packeteryOrderData );
+	}
+
+	/**
+	 * Ignores InvalidCarrierException.
+	 */
+	public function getByWcOrderWithValidCarrier( WC_Order $wcOrder ): ?Order {
+		$packeteryOrderData = $this->getDataByWcOrder( $wcOrder );
+		if ( null === $packeteryOrderData ) {
 			return null;
 		}
 
 		try {
-			return $this->builder->build( $wcOrder, $result );
+			return $this->builder->build( $wcOrder, $packeteryOrderData );
 		} catch ( InvalidCarrierException $invalidCarrierException ) {
-			if ( false === $suppressInvalidCarrierException ) {
-				throw $invalidCarrierException;
-			}
-
 			return null;
 		}
 	}

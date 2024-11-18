@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Order;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ShippingMethod;
 use WC_Data;
 use WC_Order;
@@ -64,12 +63,7 @@ class ApiExtender {
 			return $response;
 		}
 
-		try {
-			$order = $this->orderRepository->getByWcOrder( $wcData );
-		} catch ( InvalidCarrierException $invalidCarrierException ) {
-			return $response;
-		}
-
+		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcData );
 		if ( null === $order ) {
 			return $response;
 		}

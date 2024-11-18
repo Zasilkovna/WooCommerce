@@ -19,7 +19,6 @@ use Packetery\Core\Validator;
 use Packetery\Module;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\CustomsDeclaration;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\ShippingMethod;
@@ -256,11 +255,7 @@ class PacketSubmitter {
 	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
 		if ( null === $order ) {
-			try {
-				$order = $this->orderRepository->getByWcOrder( $wcOrder );
-			} catch ( InvalidCarrierException $exception ) {
-				$order = null;
-			}
+			$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		}
 		if ( null === $order ) {
 			$submissionResult->increaseIgnoredCount();
@@ -533,7 +528,7 @@ class PacketSubmitter {
 		add_action(
 			self::HOOK_PACKET_STATUS_SYNC,
 			function ( string $orderId ): void {
-				$order = $this->orderRepository->getById( (int) $orderId, true );
+				$order = $this->orderRepository->getByIdWithValidCarrier( (int) $orderId );
 				if ( null === $order ) {
 					return;
 				}

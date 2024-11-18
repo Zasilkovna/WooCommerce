@@ -7,7 +7,6 @@ namespace Packetery\Module\Views;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order;
@@ -60,28 +59,24 @@ class ViewAdmin {
 	/**
 	 * Renders delivery detail for packetery orders.
 	 *
-	 * @param WC_Order $order WordPress order.
+	 * @param WC_Order $wcOrder WordPress order.
 	 */
-	public function renderDeliveryDetail( WC_Order $order ): void {
-		try {
-			$orderEntity = $this->orderRepository->getByWcOrder( $order );
-		} catch ( InvalidCarrierException $exception ) {
-			$orderEntity = null;
-		}
-		if ( null === $orderEntity ) {
+	public function renderDeliveryDetail( WC_Order $wcOrder ): void {
+		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
+		if ( null === $order ) {
 			return;
 		}
 
-		$carrierId      = $orderEntity->getCarrier()->getId();
+		$carrierId      = $order->getCarrier()->getId();
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/delivery-detail.latte',
 			[
-				'pickupPoint'              => $orderEntity->getPickupPoint(),
-				'validatedDeliveryAddress' => $orderEntity->getValidatedDeliveryAddress(),
+				'pickupPoint'              => $order->getPickupPoint(),
+				'validatedDeliveryAddress' => $order->getValidatedDeliveryAddress(),
 				'carrierAddressValidation' => $carrierOptions->getAddressValidation(),
-				'isExternalCarrier'        => $orderEntity->isExternalCarrier(),
+				'isExternalCarrier'        => $order->isExternalCarrier(),
 				'translations'             => [
 					'packeta'                => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 					'pickupPointDetail'      => $this->wpAdapter->__( 'Pickup Point Detail', 'packeta' ),
