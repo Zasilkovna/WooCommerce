@@ -14,8 +14,6 @@ use Packetery\Core\Log\Record;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\WpdbAdapter;
 
-use function esc_html;
-
 /**
  * Class Repository
  *
@@ -161,7 +159,7 @@ class Repository {
 			array_filter(
 				[
 					$title,
-					( $params ? 'Data: ' . esc_html( wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) ) : '' ),
+					( $params ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
 				]
 			)
 		);
