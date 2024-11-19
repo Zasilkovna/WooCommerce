@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if command -v composer &> /dev/null; then
-    COMPOSER_CMD="composer"
+if command -v composer &>/dev/null; then
+	COMPOSER_CMD="composer"
 elif [ -f "./composer.phar" ]; then
-    COMPOSER_CMD="php ./composer.phar"
+	COMPOSER_CMD="php ./composer.phar"
 else
-    echo "Error: Composer is not available. Neither 'composer' command nor 'composer.phar' was found." >&2
-    exit 1
+	echo "Error: Composer is not available. Neither 'composer' command nor 'composer.phar' was found." >&2
+	exit 1
 fi
 
 $COMPOSER_CMD update
