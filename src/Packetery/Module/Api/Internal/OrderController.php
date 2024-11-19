@@ -17,6 +17,7 @@ use Packetery\Module\Forms\StoredUntilFormFactory;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\GridExtender;
+use Packetery\Module\Order\OrderValidatorFactory;
 use Packetery\Module\Order\PacketSetStoredUntil;
 use Packetery\Module\Order\Repository;
 use WP_Error;
@@ -94,7 +95,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param OrderRouter            $router                 Router.
 	 * @param Repository             $orderRepository        Order repository.
 	 * @param GridExtender           $gridExtender           Grid extender.
-	 * @param Validator\Order        $orderValidator         Order validator.
+	 * @param OrderValidatorFactory  $orderValidatorFactory  Order validator.
 	 * @param CoreHelper             $coreHelper             CoreHelper.
 	 * @param Form                   $orderForm              Order form.
 	 * @param StoredUntilFormFactory $storedUntilFormFactory Stored until Form Factory.
@@ -104,7 +105,7 @@ final class OrderController extends WP_REST_Controller {
 		OrderRouter $router,
 		Repository $orderRepository,
 		GridExtender $gridExtender,
-		Validator\Order $orderValidator,
+		OrderValidatorFactory $orderValidatorFactory,
 		CoreHelper $coreHelper,
 		Form $orderForm,
 		StoredUntilFormFactory $storedUntilFormFactory,
@@ -113,7 +114,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->orderForm              = $orderForm;
 		$this->orderRepository        = $orderRepository;
 		$this->gridExtender           = $gridExtender;
-		$this->orderValidator         = $orderValidator;
+		$this->orderValidator         = $orderValidatorFactory->create();
 		$this->coreHelper             = $coreHelper;
 		$this->router                 = $router;
 		$this->storedUntilFormFactory = $storedUntilFormFactory;

@@ -22,6 +22,7 @@ use Packetery\Module\Options\FlagManager\FeatureFlagNotice;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\CarrierModal;
+use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\Order\StoredUntilModal;
 use Packetery\Nette\Http\Request;
 use WC_Email;
@@ -34,7 +35,7 @@ use WC_Order;
  */
 class Plugin {
 
-	public const VERSION                = '1.8.5';
+	public const VERSION                = '1.8.6';
 	public const DOMAIN                 = 'packeta';
 	public const MIN_LISTENER_PRIORITY  = - 9998;
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';
@@ -307,6 +308,13 @@ class Plugin {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Packet synchronizer.
+	 *
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * Stored until modal.
 	 *
 	 * @var StoredUntilModal
@@ -353,6 +361,7 @@ class Plugin {
 	 * @param HookHandler                $hookHandler               Hook handler.
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
 	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
+	 * @param PacketSynchronizer         $packetSynchronizer        Packet synchronizer.
 	 * @param StoredUntilModal           $storedUntilModal          Stored until modal.
 	 */
 	public function __construct(
@@ -393,6 +402,7 @@ class Plugin {
 		HookHandler $hookHandler,
 		CarrierModal $carrierModal,
 		CarrierOptionsFactory $carrierOptionsFactory,
+		PacketSynchronizer $packetSynchronizer,
 		StoredUntilModal $storedUntilModal
 	) {
 		$this->optionsPage               = $optionsPage;
@@ -433,6 +443,7 @@ class Plugin {
 		$this->carrierModal              = $carrierModal;
 		$this->carrierOptionsFactory     = $carrierOptionsFactory;
 		$this->featureFlagNotice         = $featureFlagNotice;
+		$this->packetSynchronizer        = $packetSynchronizer;
 		$this->storedUntilModal          = $storedUntilModal;
 	}
 
@@ -546,6 +557,7 @@ class Plugin {
 		$this->apiExtender->register();
 		$this->hookHandler->register();
 		$this->carrierModal->register();
+		$this->packetSynchronizer->register();
 
 		add_action( 'woocommerce_admin_order_data_after_shipping_address', [ $this, 'renderDeliveryDetail' ] );
 		add_action( 'woocommerce_order_details_after_order_table', [ $this, 'renderOrderDetail' ] );

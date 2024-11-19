@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
-use Packetery\Core\Validator\Order;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
@@ -104,7 +103,7 @@ class GridExtender {
 	 * @param Engine                $latteEngine           Latte Engine.
 	 * @param Request               $httpRequest           Http Request.
 	 * @param Repository            $orderRepository       Order repository.
-	 * @param Order                 $orderValidator        Order validator.
+	 * @param OrderValidatorFactory $orderValidatorFactory Order validator.
 	 * @param ContextResolver       $contextResolver       Context resolver.
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 * @param WpAdapter             $wpAdapter             WordPress adapter.
@@ -115,7 +114,7 @@ class GridExtender {
 		Engine $latteEngine,
 		Request $httpRequest,
 		Repository $orderRepository,
-		Order $orderValidator,
+		OrderValidatorFactory $orderValidatorFactory,
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		WpAdapter $wpAdapter,
@@ -125,7 +124,7 @@ class GridExtender {
 		$this->latteEngine           = $latteEngine;
 		$this->httpRequest           = $httpRequest;
 		$this->orderRepository       = $orderRepository;
-		$this->orderValidator        = $orderValidator;
+		$this->orderValidator        = $orderValidatorFactory->create();
 		$this->contextResolver       = $contextResolver;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->wpAdapter             = $wpAdapter;

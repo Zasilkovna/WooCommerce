@@ -278,8 +278,8 @@ class Page {
 				$this->optionsProvider->sanitizePaymentGatewayId( $gateway->id )
 			);
 			$paymentMethodEventsMethod->addSelect( 'event', $gateway->get_method_title(), $eventChoices )
-										->setPrompt( __( 'Select event', 'packeta' ) )
-										->checkDefaultValue( false );
+				->setPrompt( __( 'Select event', 'packeta' ) )
+				->checkDefaultValue( false );
 		}
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
@@ -364,7 +364,7 @@ class Page {
 		$orderStatuses                   = wc_get_order_statuses();
 		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
 			$item         = $orderStatusChangePacketStatuses->addSelect( $packetStatusHash, $packetStatusData['label'], $orderStatuses )
-													->setPrompt( __( 'Order status', 'packeta' ) );
+				->setPrompt( __( 'Order status', 'packeta' ) );
 			$targetStatus = $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] ?? null;
 			if ( null !== $targetStatus && array_key_exists( $targetStatus, $orderStatuses ) ) {
 				$item->setDefaultValue( $targetStatus );
@@ -432,10 +432,10 @@ class Page {
 
 		$container = $form->addContainer( self::FORM_FIELDS_CONTAINER );
 		$container->addText( 'api_password', __( 'API password', 'packeta' ) )
-					->setRequired()
-					->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', 'packeta' ), '[a-z\d]{32}' );
+			->setRequired()
+			->addRule( $form::PATTERN, __( 'API password must be 32 characters long and must contain valid characters!', 'packeta' ), '[a-z\d]{32}' );
 		$container->addText( 'sender', __( 'Sender', 'packeta' ) )
-					->setRequired();
+			->setRequired();
 
 		$packetaLabelFormats = $this->optionsProvider->getPacketaLabelFormats();
 		$container->addSelect(
@@ -463,46 +463,47 @@ class Page {
 		)->checkDefaultValue( false );
 
 		$container->addText( 'packaging_weight', __( 'Weight of packaging material', 'packeta' ) . ' (kg)' )
-					->setRequired( true )
-					->addRule( Form::FLOAT )
-					->addRule( Form::MIN, null, 0 )
-					->setDefaultValue( 0 );
+			->setRequired()
+			->addRule( Form::FLOAT )
+			->addRule( Form::MIN, null, 0 )
+			->setDefaultValue( 0 );
 
 		$container->addCheckbox( 'default_weight_enabled', __( 'Enable default weight', 'packeta' ) )
-					->addCondition( Form::EQUAL, true )
-						->toggle( '#packetery-default-weight-value' );
+			->addCondition( Form::EQUAL, true )
+				->toggle( '#packetery-default-weight-value' );
 
 		$container->addText( 'default_weight', __( 'Default weight', 'packeta' ) . ' (kg)' )
-					->addRule( Form::FLOAT )
-					->addRule( Form::MIN, null, 0.1 )
-					->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
-						->setRequired();
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_weight_enabled'], Form::EQUAL, true )
+				->setRequired()
+				->addRule( Form::FLOAT )
+				->addRule( Form::MIN, null, 0.1 );
+
 		$container->addCheckbox( 'default_dimensions_enabled', __( 'Enable default dimensions', 'packeta' ) )
 			->addCondition( Form::EQUAL, true )
-			->toggle( '#packetery-default-dimensions-value' );
+				->toggle( '#packetery-default-dimensions-value' );
 
 		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+				->addRule( Form::INTEGER )
+				->addRule( Form::MIN, null, 0 );
 
 		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+				->addRule( Form::INTEGER )
+				->addRule( Form::MIN, null, 0 );
 
 		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
-			->addRule( Form::INTEGER )
-			->addRule( Form::MIN, null, 0 )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-			->setRequired();
+				->setRequired()
+				->addRule( Form::INTEGER )
+				->addRule( Form::MIN, null, 0 );
 
 		// TODO: Packet status sync.
 
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packeta' ) )
-					->setRequired( false );
+			->setRequired( false );
 
 		$container->addSelect(
 			'checkout_detection',
@@ -535,12 +536,12 @@ class Page {
 		);
 
 		$container->addCheckbox( 'force_packet_cancel', __( 'Force order cancellation', 'packeta' ) )
-					->setRequired( false )
-					->setDefaultValue( OptionsProvider::FORCE_PACKET_CANCEL_DEFAULT );
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::FORCE_PACKET_CANCEL_DEFAULT );
 
 		$container->addCheckbox( 'widget_auto_open', __( 'Automatically open widget when shipping was selected', 'packeta' ) )
-					->setRequired( false )
-					->setDefaultValue( OptionsProvider::WIDGET_AUTO_OPEN_DEFAULT );
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::WIDGET_AUTO_OPEN_DEFAULT );
 
 		$container->addCheckbox( self::FORM_FIELD_FREE_SHIPPING_SHOWN, __( 'Display the FREE shipping text in checkout', 'packeta' ) )
 			->setRequired( false )
@@ -590,7 +591,7 @@ class Page {
 					continue;
 				}
 
-				add_settings_error( $control->getCaption(), esc_attr( $control->getName() ), $control->getError() );
+				add_settings_error( OptionsProvider::OPTION_NAME_PACKETERY, esc_attr( $control->getName() ), "{$control->getCaption()}: {$control->getError()}" );
 			}
 		}
 
@@ -651,6 +652,24 @@ class Page {
 
 		if ( $packeteryContainer['free_shipping_shown'] instanceof BaseControl ) {
 			$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
+		}
+
+		$previousOptions = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
+		if ( ! isset( $options['default_weight_enabled'] ) ) {
+			if ( isset( $previousOptions['default_weight'] ) ) {
+				$options['default_weight'] = $previousOptions['default_weight'];
+			} else {
+				unset( $options['default_weight'] );
+			}
+		}
+		if ( ! isset( $options['default_dimensions_enabled'] ) ) {
+			foreach ( [ 'default_length', 'default_width', 'default_height' ] as $dimension ) {
+				if ( isset( $previousOptions[ $dimension ] ) ) {
+					$options[ $dimension ] = $previousOptions[ $dimension ];
+				} else {
+					unset( $options[ $dimension ] );
+				}
+			}
 		}
 
 		return $options;

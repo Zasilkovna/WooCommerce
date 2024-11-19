@@ -9,6 +9,7 @@ use Packetery\Core\Api\Soap\Response\PacketStatus;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Log\ILogger;
 use Packetery\Module\Exception\InvalidPasswordException;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\Order\Repository;
@@ -28,13 +29,15 @@ class PacketSynchronizerTest extends TestCase {
 		$this->provider  = $this->createMock( OptionsProvider::class );
 		$orderRepository = $this->createMock( Repository::class );
 		$wcOrderActions  = $this->createMock( WcOrderActions::class );
+		$wcAdapter       = $this->createMock( WcAdapter::class );
 
 		$this->packetSynchronizer = new PacketSynchronizer(
 			$this->client,
 			$logger,
 			$this->provider,
 			$orderRepository,
-			$wcOrderActions
+			$wcOrderActions,
+			$wcAdapter,
 		);
 	}
 
