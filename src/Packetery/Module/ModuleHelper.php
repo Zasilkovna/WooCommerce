@@ -120,7 +120,13 @@ class ModuleHelper {
 			return null;
 		}
 
-		$version = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', [ 'Version' => 'Version' ], 'plugin' )['Version'];
+		$version     = '';
+		$getFileData = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', [ 'Version' => 'Version' ], 'plugin' );
+
+		if ( isset( $getFileData['Version'] ) ) {
+			$version = $getFileData['Version'];
+		}
+
 		if ( '' === $version ) {
 			return null;
 		}

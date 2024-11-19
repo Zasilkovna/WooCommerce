@@ -23,8 +23,6 @@ use Packetery\Nette\Forms\Control;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
 
-use function Packetery\bdump;
-
 /**
  * Class OptionsPage
  *
@@ -234,8 +232,7 @@ class OptionsPage {
 				->toggle( $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ) );
 
 		$weightLimits = $form->addContainer( self::FORM_FIELD_WEIGHT_LIMITS );
-		bdump( $weightLimits );
-		if ( ! isset( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) || count( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) === 0 ) {
 			$this->addWeightLimit( $weightLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] as $index => $limit ) {
@@ -244,7 +241,7 @@ class OptionsPage {
 		}
 
 		$productValueLimits = $form->addContainer( self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
-		if ( ! isset( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) || count( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) === 0 ) {
 			$this->addProductValueLimit( $productValueLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] as $index => $limit ) {
@@ -262,7 +259,7 @@ class OptionsPage {
 				->addRule( Form::MIN, null, 0 );
 
 			$surchargeLimits = $form->addContainer( 'surcharge_limits' );
-			if ( isset( $carrierData['surcharge_limits'] ) ) {
+			if ( isset( $carrierData['surcharge_limits'] ) && count( $carrierData['surcharge_limits'] ) > 0 ) {
 				foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
 					$this->addSurchargeLimit( $surchargeLimits, $index );
 				}
