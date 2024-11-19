@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
+use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 
 /**
@@ -40,9 +41,13 @@ class ProductEntityFactory {
 	 * @param int|string $postId Post ID.
 	 *
 	 * @return Entity
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function fromPostId( $postId ): Entity {
 		$product = $this->wcAdapter->getProduct( $postId );
+		if ( ! ( $product instanceof \WC_Product ) ) {
+			throw new ProductNotFoundException( "Product $postId not found." );
+		}
 
 		return new Entity( $product );
 	}

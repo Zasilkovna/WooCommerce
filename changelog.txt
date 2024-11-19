@@ -1,4 +1,10 @@
 == Changelog ==
+= 1.8.6 =
+Fixed: In the plugin settings, the default shipment weight was incorrectly stored if it contained a number ending in zero.
+Fixed: Failed to save plugin settings if default weight or default dimensions were disabled and hidden settings field contained invalid data.
+Fixed: TypeError when getting cart product instance that could appear at checkout.
+Updated: Syncing order statuses one by one instead of a single batch.
+
 = 1.8.5 =
 Updated: Users now have the option in the Packeta pick-up point carrier settings to choose whether to deliver to Z-Boxes, pick-up points, or both.
 Updated: Added more packet statuses.

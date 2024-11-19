@@ -11,6 +11,7 @@ namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\WcSettingsConfig;
+use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Nette\DI\Container;
 
 /**
@@ -142,6 +143,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 * @param array $package Order information.
 	 *
 	 * @return void
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function calculate_shipping( $package = [] ): void {
 		$allowedCarrierNames = null;

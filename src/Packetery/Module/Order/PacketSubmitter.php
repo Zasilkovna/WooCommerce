@@ -129,7 +129,7 @@ class PacketSubmitter {
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
-	 * @param Validator\Order               $orderValidator               Order validator.
+	 * @param OrderValidatorFactory         $orderValidatorFactory Order validator.
 	 * @param Log\ILogger                   $logger                       Logger.
 	 * @param Repository                    $orderRepository              Order repository.
 	 * @param CreatePacketMapper            $createPacketMapper           CreatePacketMapper.
@@ -144,7 +144,7 @@ class PacketSubmitter {
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
-		Validator\Order $orderValidator,
+		OrderValidatorFactory $orderValidatorFactory,
 		Log\ILogger $logger,
 		Repository $orderRepository,
 		CreatePacketMapper $createPacketMapper,
@@ -158,7 +158,7 @@ class PacketSubmitter {
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->soapApiClient                = $soapApiClient;
-		$this->orderValidator               = $orderValidator;
+		$this->orderValidator               = $orderValidatorFactory->create();
 		$this->logger                       = $logger;
 		$this->orderRepository              = $orderRepository;
 		$this->createPacketMapper           = $createPacketMapper;

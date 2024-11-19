@@ -146,20 +146,20 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine               $latteEngine          PacketeryLatte engine.
-	 * @param MessageManager       $messageManager       Message manager.
-	 * @param CoreHelper           $coreHelper           CoreHelper.
-	 * @param Request              $request              Http request.
-	 * @param OptionsProvider      $optionsProvider      Options provider.
-	 * @param Repository           $orderRepository      Order repository.
-	 * @param Page                 $logPage              Log page.
-	 * @param AttributeMapper      $mapper               AttributeMapper.
-	 * @param WidgetOptionsBuilder $widgetOptionsBuilder Widget options builder.
-	 * @param EntityRepository     $carrierRepository    Carrier repository.
-	 * @param Order                $orderValidator       Order validator.
-	 * @param DetailCommonLogic    $detailCommonLogic    Detail common logic.
-	 * @param Form                 $orderForm            Order details.
-	 * @param CarrierModal         $carrierModal         Carrier change modal.
+	 * @param Engine                $latteEngine           PacketeryLatte engine.
+	 * @param MessageManager        $messageManager        Message manager.
+	 * @param CoreHelper            $coreHelper            CoreHelper.
+	 * @param Request               $request               Http request.
+	 * @param OptionsProvider       $optionsProvider       Options provider.
+	 * @param Repository            $orderRepository       Order repository.
+	 * @param Page                  $logPage               Log page.
+	 * @param AttributeMapper       $mapper                AttributeMapper.
+	 * @param WidgetOptionsBuilder  $widgetOptionsBuilder  Widget options builder.
+	 * @param EntityRepository      $carrierRepository     Carrier repository.
+	 * @param OrderValidatorFactory $orderValidatorFactory Order validator.
+	 * @param DetailCommonLogic     $detailCommonLogic     Detail common logic.
+	 * @param Form                  $orderForm             Order details.
+	 * @param CarrierModal          $carrierModal          Carrier change modal.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -172,7 +172,7 @@ class Metabox {
 		AttributeMapper $mapper,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
 		EntityRepository $carrierRepository,
-		Order $orderValidator,
+		OrderValidatorFactory $orderValidatorFactory,
 		DetailCommonLogic $detailCommonLogic,
 		Form $orderForm,
 		CarrierModal $carrierModal
@@ -187,7 +187,7 @@ class Metabox {
 		$this->mapper               = $mapper;
 		$this->widgetOptionsBuilder = $widgetOptionsBuilder;
 		$this->carrierRepository    = $carrierRepository;
-		$this->orderValidator       = $orderValidator;
+		$this->orderValidator       = $orderValidatorFactory->create();
 		$this->detailCommonLogic    = $detailCommonLogic;
 		$this->orderForm            = $orderForm;
 		$this->carrierModal         = $carrierModal;
