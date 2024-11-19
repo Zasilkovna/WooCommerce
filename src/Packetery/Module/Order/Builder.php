@@ -236,11 +236,11 @@ class Builder {
 
 		// Shipping address phone is optional.
 		$order->setPhone( $orderData['billing']['phone'] );
-		if ( isset( $contactInfo['phone'] ) ) {
+		if ( isset( $contactInfo['phone'] ) && '' !== $contactInfo['phone'] ) {
 			$order->setPhone( $contactInfo['phone'] );
 		}
 		// Additional address information.
-		if ( isset( $contactInfo['address_2'] ) ) {
+		if ( isset( $contactInfo['address_2'] ) && '' !== $contactInfo['address_2'] ) {
 			$order->setNote( $contactInfo['address_2'] );
 		}
 

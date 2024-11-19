@@ -400,7 +400,7 @@ class Metabox {
 		);
 
 		$prevInvalidValues = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
-		if ( null !== $prevInvalidValues ) {
+		if ( null !== $prevInvalidValues && false !== $prevInvalidValues ) {
 			$this->form->setValues( $prevInvalidValues );
 			$this->form->validate();
 		}

@@ -58,10 +58,10 @@ class Repository {
 	 *
 	 * @param array $arguments Search arguments.
 	 *
-	 * @return iterable|Record[]
+	 * @return \Generator<Record>|array<empty>
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function find( array $arguments ): iterable {
+	public function find( array $arguments ) {
 		$orderId   = $arguments['order_id'] ?? null;
 		$action    = $arguments['action'] ?? null;
 		$orderBy   = $arguments['orderby'] ?? [];
@@ -123,7 +123,7 @@ class Repository {
 	 *
 	 * @param iterable $logs Logs.
 	 *
-	 * @return \Generator|Record[]
+	 * @return \Generator<Record>
 	 */
 	public function remapToRecord( iterable $logs ): \Generator {
 		foreach ( $logs as $log ) {
@@ -213,7 +213,7 @@ class Repository {
 		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$paramsString = '';
-		if ( count( $record->params ) > 0 ) {
+		if ( null !== $record->params && count( $record->params ) > 0 ) {
 			$params       = ModuleHelper::convertArrayFloatsToStrings( $record->params );
 			$paramsString = wp_json_encode( $params );
 		}
@@ -254,7 +254,7 @@ class Repository {
 		}
 
 		$whereClause = '';
-		if ( count( $where ) < 0 ) {
+		if ( count( $where ) > 0 ) {
 			$whereClause = ' WHERE ' . implode( ' AND ', $where );
 		}
 

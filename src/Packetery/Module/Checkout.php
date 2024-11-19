@@ -559,7 +559,7 @@ class Checkout {
 			}
 		}
 
-		if ( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) && $this->isCarDeliveryOrder() ) {
+		if ( ( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) && $this->isCarDeliveryOrder() ) {
 			wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 		}
 	}
@@ -610,7 +610,7 @@ class Checkout {
 				}
 			}
 
-			if ( count( $checkoutData ) > 0 ) {
+			if ( count( $checkoutData ) === 0 ) {
 				return;
 			}
 			foreach ( Order\Attribute::$pickupPointAttrs as $attr ) {
@@ -909,7 +909,7 @@ class Checkout {
 		}
 
 		$paymentMethod = $this->getChosenPaymentMethod();
-		if ( null !== $paymentMethod || false === $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) ) {
+		if ( null === $paymentMethod || false === $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
 		}
 
@@ -1331,7 +1331,7 @@ class Checkout {
 			}
 		}
 
-		if ( count( $taxClasses ) < 0 ) {
+		if ( count( $taxClasses ) === 0 ) {
 			return false;
 		}
 
@@ -1511,7 +1511,7 @@ class Checkout {
 		$checkoutData      = $this->httpRequest->getPost();
 		$savedCheckoutData = get_transient( $this->getTransientNamePacketaCheckoutData() );
 
-		if ( null === $checkoutData && ! isset( $savedCheckoutData[ $chosenShippingMethod ] ) ) {
+		if ( ! isset( $savedCheckoutData[ $chosenShippingMethod ] ) && ( null === $checkoutData || count( $checkoutData ) === 0 ) ) {
 			/**
 			 * WC logger.
 			 *
@@ -1542,8 +1542,8 @@ class Checkout {
 
 		$savedCarrierData = $savedCheckoutData[ $chosenShippingMethod ];
 		if (
-			! isset( $checkoutData[ Order\Attribute::POINT_ID ] ) &&
-			isset( $savedCarrierData[ Order\Attribute::POINT_ID ] )
+			( ! isset( $checkoutData[ Order\Attribute::POINT_ID ] ) || '' === $checkoutData[ Order\Attribute::POINT_ID ] ) &&
+			( isset( $savedCarrierData[ Order\Attribute::POINT_ID ] ) || '' !== $savedCarrierData[ Order\Attribute::POINT_ID ] )
 		) {
 			foreach ( Order\Attribute::$pickupPointAttrs as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
@@ -1551,8 +1551,8 @@ class Checkout {
 		}
 
 		if (
-			! isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
-			isset( $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] )
+			( ! isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) || '' === $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
+			( isset( $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) || '' !== $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] )
 		) {
 			foreach ( Order\Attribute::$homeDeliveryAttrs as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
@@ -1560,8 +1560,8 @@ class Checkout {
 		}
 
 		if (
-			! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) &&
-			isset( $savedCarrierData[ Order\Attribute::CAR_DELIVERY_ID ] )
+			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) &&
+			( isset( $savedCarrierData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' !== $savedCarrierData[ Order\Attribute::CAR_DELIVERY_ID ] )
 		) {
 			foreach ( Order\Attribute::$carDeliveryAttrs as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
@@ -1569,8 +1569,8 @@ class Checkout {
 		}
 
 		if (
-			! isset( $checkoutData[ Order\Attribute::CARRIER_ID ] ) &&
-			isset( $savedCarrierData[ Order\Attribute::CARRIER_ID ] )
+			( ! isset( $checkoutData[ Order\Attribute::CARRIER_ID ] ) || '' === $checkoutData[ Order\Attribute::CARRIER_ID ] ) &&
+			( isset( $savedCarrierData[ Order\Attribute::CARRIER_ID ] ) || '' !== $savedCarrierData[ Order\Attribute::CARRIER_ID ] )
 		) {
 			$checkoutData[ Order\Attribute::CARRIER_ID ] = $savedCarrierData[ Order\Attribute::CARRIER_ID ];
 		}

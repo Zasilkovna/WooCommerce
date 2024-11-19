@@ -23,6 +23,8 @@ use Packetery\Nette\Forms\Control;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
 
+use function Packetery\bdump;
+
 /**
  * Class OptionsPage
  *
@@ -202,7 +204,7 @@ class OptionsPage {
 		$carrierOptions = get_option( $optionId );
 		if ( $this->featureFlagProvider->isSplitActive() ) {
 			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( false !== $carrierOptions ? $carrierOptions : null ) );
-			if ( 0 < count( $vendorCheckboxes ) ) {
+			if ( count( $vendorCheckboxes ) > 0 ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
 				foreach ( $vendorCheckboxes as $checkboxConfig ) {
 					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
@@ -232,6 +234,7 @@ class OptionsPage {
 				->toggle( $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ) );
 
 		$weightLimits = $form->addContainer( self::FORM_FIELD_WEIGHT_LIMITS );
+		bdump( $weightLimits );
 		if ( ! isset( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) ) {
 			$this->addWeightLimit( $weightLimits, 0 );
 		} else {
