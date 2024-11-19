@@ -8,11 +8,20 @@ jobs:
         name: Run composer security audit
         runs-on: ubuntu-24.04
         steps:
-            -   uses: actions/checkout@master
-            -   name: Running composer security audit
-                shell: bash
-                run: |
-                    composer install
-                    composer audit
-                    composer install --working-dir=deps-composer
-                    composer audit --working-dir=deps-composer
+          - uses: actions/checkout@v3
+
+          - name: Setup PHP
+            uses: shivammathur/setup-php@v2
+            with:
+              php-version: '8.2'
+
+          - name: Validate PHP Version
+            run: php -v
+
+          - name: Running composer security audit
+            shell: bash
+            run: |
+                composer install
+                composer audit
+                composer install --working-dir=deps-composer
+                composer audit --working-dir=deps-composer
