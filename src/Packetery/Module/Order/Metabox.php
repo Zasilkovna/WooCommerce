@@ -12,7 +12,6 @@ namespace Packetery\Module\Order;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Validator;
-use Packetery\Core\Validator\Order;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;

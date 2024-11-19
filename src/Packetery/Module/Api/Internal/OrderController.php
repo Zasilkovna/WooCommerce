@@ -16,8 +16,8 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Forms\StoredUntilFormFactory;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
-use Packetery\Module\Order\OrderValidatorFactory;
 use Packetery\Module\Order\GridExtender;
+use Packetery\Module\Order\OrderValidatorFactory;
 use Packetery\Module\Order\PacketSetStoredUntil;
 use Packetery\Module\Order\Repository;
 use WP_Error;
@@ -111,12 +111,12 @@ final class OrderController extends WP_REST_Controller {
 		StoredUntilFormFactory $storedUntilFormFactory,
 		PacketSetStoredUntil $packetSetStoredUntil
 	) {
-		$this->orderForm       = $orderForm;
-		$this->orderRepository = $orderRepository;
-		$this->gridExtender    = $gridExtender;
-		$this->orderValidator  = $orderValidatorFactory->create();
-		$this->coreHelper      = $coreHelper;
-		$this->router          = $router;
+		$this->orderForm              = $orderForm;
+		$this->orderRepository        = $orderRepository;
+		$this->gridExtender           = $gridExtender;
+		$this->orderValidator         = $orderValidatorFactory->create();
+		$this->coreHelper             = $coreHelper;
+		$this->router                 = $router;
 		$this->storedUntilFormFactory = $storedUntilFormFactory;
 		$this->packetSetStoredUntil   = $packetSetStoredUntil;
 	}

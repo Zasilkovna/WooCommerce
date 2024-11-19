@@ -64,5 +64,4 @@ class OrderValidatorFactory {
 	public function create(): Validator\Order {
 		return new Validator\Order( $this->addressValidator, $this->sizeValidator, $this->validatorTranslations );
 	}
-
 }

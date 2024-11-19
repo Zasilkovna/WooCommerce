@@ -16,19 +16,21 @@ class OrderTest extends TestCase {
 		$addressValidator          = new Address();
 		$sizeValidator             = new Size();
 		$validatorTranslationsMock = $this->createMock( ValidatorTranslationsInterface::class );
-		$validatorTranslationsMock->method( 'get' )->willReturn( [
-			Order::ERROR_TRANSLATION_KEY_NUMBER                     => 'Order number is not set.',
-			Order::ERROR_TRANSLATION_KEY_NAME                       => 'Customer name is not set.',
-			Order::ERROR_TRANSLATION_KEY_VALUE                      => 'Order value is not set.',
-			Order::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => 'Pickup point or carrier id is not set.',
-			Order::ERROR_TRANSLATION_KEY_ESHOP                      => 'Sender label is not set.',
-			Order::ERROR_TRANSLATION_KEY_WEIGHT                     => 'Weight is not set or is zero.',
-			Order::ERROR_TRANSLATION_KEY_ADDRESS                    => 'Address is not set or is incomplete.',
-			Order::ERROR_TRANSLATION_KEY_HEIGHT                     => 'Order height is not set.',
-			Order::ERROR_TRANSLATION_KEY_WIDTH                      => 'Order width is not set.',
-			Order::ERROR_TRANSLATION_KEY_LENGTH                     => 'Order length is set.',
-			Order::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION        => 'Customs declaration is not set.',
-		] );
+		$validatorTranslationsMock->method( 'get' )->willReturn(
+			[
+				Order::ERROR_TRANSLATION_KEY_NUMBER  => 'Order number is not set.',
+				Order::ERROR_TRANSLATION_KEY_NAME    => 'Customer name is not set.',
+				Order::ERROR_TRANSLATION_KEY_VALUE   => 'Order value is not set.',
+				Order::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => 'Pickup point or carrier id is not set.',
+				Order::ERROR_TRANSLATION_KEY_ESHOP   => 'Sender label is not set.',
+				Order::ERROR_TRANSLATION_KEY_WEIGHT  => 'Weight is not set or is zero.',
+				Order::ERROR_TRANSLATION_KEY_ADDRESS => 'Address is not set or is incomplete.',
+				Order::ERROR_TRANSLATION_KEY_HEIGHT  => 'Order height is not set.',
+				Order::ERROR_TRANSLATION_KEY_WIDTH   => 'Order width is not set.',
+				Order::ERROR_TRANSLATION_KEY_LENGTH  => 'Order length is set.',
+				Order::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => 'Customs declaration is not set.',
+			]
+		);
 
 		$validator = new Order( $addressValidator, $sizeValidator, $validatorTranslationsMock );
 
