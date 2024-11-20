@@ -1156,11 +1156,8 @@ class Checkout {
 	 */
 	private function getChosenPaymentMethod(): ?string {
 		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
-		if ( null !== $paymentMethod ) {
-			return $paymentMethod;
-		}
 
-		return null;
+		return $paymentMethod ?? null;
 	}
 
 	/**
