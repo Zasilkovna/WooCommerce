@@ -559,7 +559,10 @@ class Checkout {
 			}
 		}
 
-		if ( ( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) && $this->isCarDeliveryOrder() ) {
+		if (
+			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] )
+			&& $this->isCarDeliveryOrder()
+		) {
 			wc_add_notice( __( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 		}
 	}
