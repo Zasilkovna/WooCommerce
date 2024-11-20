@@ -150,7 +150,7 @@ class CountryListingPage {
 	 */
 	public function render(): void {
 		$carriersUpdateParams = [];
-		if ( null !== $this->httpRequest->getQuery( 'update_carriers' ) && '' !== $this->httpRequest->getQuery( 'update_carriers' ) ) {
+		if ( null !== $this->httpRequest->getQuery( 'update_carriers' ) ) {
 			set_transient( 'packetery_run_update_carriers', true );
 			if ( wp_safe_redirect( add_query_arg( [ 'page' => OptionsPage::SLUG ], get_admin_url( null, 'admin.php' ) ) ) ) {
 				exit;

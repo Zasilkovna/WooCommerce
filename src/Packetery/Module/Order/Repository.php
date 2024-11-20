@@ -421,7 +421,7 @@ class Repository {
 		 */
 		$isLoggingActive = (bool) apply_filters( 'packeta_enable_debug_logs', false );
 
-		if ( '' !== $pointId || '' !== $carrierId || ! $isLoggingActive || null !== ( $pointId ) || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
+		if ( ( '' !== $pointId && null !== $pointId ) || '' !== $carrierId || ! $isLoggingActive || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
 			return;
 		}
 

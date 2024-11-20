@@ -119,7 +119,7 @@ class DbLogger implements ILogger {
 		];
 
 		$logs = $this->logRepository->find( $arguments );
-		if ( is_iterable( $logs ) === false && count( $logs ) === 0 ) {
+		if ( $logs instanceof \Generator ) {
 			return [];
 		}
 
