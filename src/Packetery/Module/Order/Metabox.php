@@ -560,7 +560,7 @@ class Metabox {
 				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
 				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
-					if ( isset( $formValues[ Attribute::CARRIER_ID ] ) ) {
+					if ( isset( $formValues[ Attribute::CARRIER_ID ] ) && '' !== $formValues[ Attribute::CARRIER_ID ] ) {
 						$pickupPointValue = $formValues[ Attribute::CARRIER_ID ];
 					} else {
 						$pickupPointValue = $order->getCarrier()->getId();
