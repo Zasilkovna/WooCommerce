@@ -98,8 +98,8 @@
             "prefix": "Packetery",
             "folder": "deps",
             "temp": "temp/scoper-works",
-            "composerjson": "composer-deps.json",
-            "composerlock": "composer-deps.lock",
+            "composerjson": "deps-composer/composer.json",
+            "composerlock": "deps-composer/composer.lock",
             "autorun": false
         }
     }
