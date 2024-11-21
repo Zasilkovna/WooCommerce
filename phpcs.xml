@@ -11,10 +11,8 @@
 	<arg value="p"/>
 	<arg value="s"/>
 
-	<file>cli</file>
 	<file>src/Packetery</file>
 	<file>bootstrap.php</file>
-	<file>bootstrap-cli.php</file>
 	<file>packeta.php</file>
 	<file>tests</file>
 
