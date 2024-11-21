@@ -3,7 +3,7 @@ parameters:
 		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
 		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
 		- ../constants.php
-	level: 4
+	level: 5
 	paths:
 		- ../src/Packetery/Module
 	treatPhpDocTypesAsCertain: false
