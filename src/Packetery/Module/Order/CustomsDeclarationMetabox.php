@@ -386,7 +386,7 @@ class CustomsDeclarationMetabox {
 		}
 
 		$fieldsToOmit = [];
-		/** Form container. @var Container $customsDeclarationContainer */
+		/** @var Container $customsDeclarationContainer */
 		$customsDeclarationContainer = $form[ self::FORM_CONTAINER_NAME ];
 		$prefixedValues              = $form->getValues( 'array' );
 		$containerValues             = $prefixedValues[ self::FORM_CONTAINER_NAME ];
