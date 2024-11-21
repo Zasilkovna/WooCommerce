@@ -742,7 +742,7 @@ class OptionsPage {
 	 * @return void
 	 */
 	private function addProductValueLimit( Container $productValueLimits, $index ): void {
-		/** Pricing type control. @var Control $pricingTypeControl */
+		/** @var Control $pricingTypeControl */
 		$pricingTypeControl = $productValueLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
 		$limit              = $productValueLimits->addContainer( (string) $index );
 		$item               = $limit->addText( 'value', __( 'Product value up to', 'packeta' ) . ':' );

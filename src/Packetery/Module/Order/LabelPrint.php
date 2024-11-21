@@ -360,8 +360,8 @@ class LabelPrint {
 	/**
 	 * Prepares labels.
 	 *
-	 * @param int   $offset Offset value.
-	 * @param array $packetIds Packet ids.
+	 * @param int           $offset Offset value.
+	 * @param array<string> $packetIds Packet ids.
 	 *
 	 * @return Response\PacketsLabelsPdf
 	 */

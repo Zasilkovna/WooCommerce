@@ -141,7 +141,7 @@ class Page {
 			__( 'Packeta', 'packeta' ),
 			'manage_options',
 			self::SLUG,
-			'',
+			function () {},
 			$icon
 		);
 		add_submenu_page(
@@ -572,7 +572,7 @@ class Page {
 	public function admin_init(): void {
 		add_filter( 'pre_update_option_packetery', [ $this, 'validatePacketeryOptions' ] );
 		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, [ $this, 'sanitizePacketeryOptions' ] );
-		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), '', self::SLUG );
+		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), function () {}, self::SLUG );
 	}
 
 	/**

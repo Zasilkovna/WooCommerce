@@ -522,7 +522,7 @@ class Metabox {
 		}
 
 		if ( false === $this->form->isValid() ) {
-			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( true ) );
+			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( 'array' ) );
 			$this->messageManager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
