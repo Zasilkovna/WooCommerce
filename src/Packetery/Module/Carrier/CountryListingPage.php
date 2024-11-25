@@ -233,6 +233,8 @@ class CountryListingPage {
 				$nextScheduledRun,
 				$settingsChangedMessage,
 				$this->moduleHelper->isCzechLocale(),
+				$this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
+				$this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 				$translations
 			)
 		);
