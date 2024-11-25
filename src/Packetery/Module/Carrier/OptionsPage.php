@@ -519,7 +519,7 @@ class OptionsPage {
 		}
 
 		$post = $this->httpRequest->getPost();
-		if ( isset( $post ) && $post['id'] === $carrier->getId() ) {
+		if ( isset( $post['id'] ) && $post['id'] === $carrier->getId() ) {
 			$formTemplate = $this->createFormTemplate( $post );
 			$form         = $this->createForm( $post );
 			if ( $form->isSubmitted() ) {
