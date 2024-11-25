@@ -22,7 +22,7 @@ class ShippingZoneRepository {
 	/**
 	 * Shipping zone data store.
 	 *
-	 * @var WC_Shipping_Zone_Data_Store_Interface
+	 * @var WC_Shipping_Zone_Data_Store_Interface|WC_Data_Store
 	 */
 	private $dataStore;
 

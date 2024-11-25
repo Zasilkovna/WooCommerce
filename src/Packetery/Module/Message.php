@@ -54,7 +54,7 @@ class Message {
 	/**
 	 * Creates message.
 	 *
-	 * @return static
+	 * @return self
 	 */
 	public static function create(): self {
 		return new self();

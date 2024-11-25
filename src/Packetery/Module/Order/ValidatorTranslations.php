@@ -21,7 +21,7 @@ class ValidatorTranslations implements ValidatorTranslationsInterface {
 	/**
 	 * Translations with specified keys.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function get(): array {
 		return [

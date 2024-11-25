@@ -55,15 +55,15 @@ class DbLogger implements ILogger {
 	/**
 	 * Gets records.
 	 *
-	 * @param mixed       $orderId Order ID.
+	 * @param int|null    $orderId Order ID.
 	 * @param string|null $action  Action.
 	 * @param array       $sorting Sorting config.
 	 * @param int         $limit   Limit.
 	 *
-	 * @return \Generator<Record>
+	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function getRecords( $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable {
+	public function getRecords( ?int $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable {
 		$arguments = [
 			'orderby' => $sorting,
 			'limit'   => $limit,
@@ -92,7 +92,7 @@ class DbLogger implements ILogger {
 	 *
 	 * @return int
 	 */
-	public function countRecords( $orderId = null, ?string $action = null ): int {
+	public function countRecords( ?int $orderId = null, ?string $action = null ): int {
 		return $this->logRepository->countRows( $orderId, $action );
 	}
 
@@ -101,7 +101,7 @@ class DbLogger implements ILogger {
 	 *
 	 * @param array $dateQuery Date_query compatible array.
 	 *
-	 * @return \Generator<Record>|array<empty>
+	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getForPeriodAsArray( array $dateQuery ) {
