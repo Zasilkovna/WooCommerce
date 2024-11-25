@@ -231,6 +231,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 					PACKETERY_PLUGIN_DIR . '/template/carrier/carrier-modal-fragment.latte',
 					$latteParams
 				),
+				'default'     => '',
 			],
 		];
 
