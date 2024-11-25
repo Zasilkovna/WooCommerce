@@ -209,7 +209,7 @@ class AssetManager {
 		$isPageDetail  = $this->contextResolver->isPageDetail();
 
 		$screen      = $this->wpAdapter->getCurrentScree();
-		$isDashboard = ( $screen && 'dashboard' === $screen->id );
+		$isDashboard = ( null !== $screen && 'dashboard' === $screen->id );
 
 		if (
 			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard || $isPageDetail ||

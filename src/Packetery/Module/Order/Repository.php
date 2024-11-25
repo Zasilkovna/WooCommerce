@@ -119,7 +119,7 @@ class Repository {
 		 * @param array $paramValues Param values.
 		 */
 		$orderStatusesToExclude = (array) apply_filters( 'packetery_exclude_orders_with_status', [], $queryObject, $paramValues );
-		if ( ! $orderStatusesToExclude ) {
+		if ( count( $orderStatusesToExclude ) === 0 ) {
 			return;
 		}
 
@@ -355,7 +355,7 @@ class Repository {
 		}
 
 		$deliveryAddress = null;
-		if ( $order->isAddressValidated() && $order->getDeliveryAddress() ) {
+		if ( $order->isAddressValidated() && null !== $order->getDeliveryAddress() ) {
 			$deliveryAddress = wp_json_encode( $order->getDeliveryAddress()->export() );
 		}
 
@@ -429,8 +429,8 @@ class Repository {
 	 * @return void
 	 */
 	private function onBeforeDataInsertion( array $orderData ): void {
-		$pointId   = $orderData['point_id'] ?? null;
-		$carrierId = $orderData['carrier_id'] ?? null;
+		$pointId   = $orderData['point_id'] ? (string) $orderData['point_id'] : null;
+		$carrierId = $orderData['carrier_id'] ? (string) $orderData['carrier_id'] : null;
 		/**
 		 * Tells if Packeta debug logs are enabled.
 		 *
@@ -438,7 +438,7 @@ class Repository {
 		 */
 		$isLoggingActive = (bool) apply_filters( 'packeta_enable_debug_logs', false );
 
-		if ( ! $isLoggingActive || ! empty( $pointId ) || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( (string) $carrierId ) ) {
+		if ( ( '' !== $pointId && null !== $pointId ) || ! $isLoggingActive || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
 			return;
 		}
 
@@ -472,7 +472,7 @@ class Repository {
 	 * @return Order[]
 	 */
 	public function getByIds( array $orderIds ): array {
-		if ( empty( $orderIds ) ) {
+		if ( count( $orderIds ) === 0 ) {
 			return [];
 		}
 
@@ -532,24 +532,24 @@ class Repository {
 		$orPacketStatus   = [];
 		$orPacketStatus[] = '`o`.`packet_status` IS NULL';
 
-		if ( $allowedPacketStatuses ) {
+		if ( count( $allowedPacketStatuses ) > 0 ) {
 			$orPacketStatus[] = '`o`.`packet_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedPacketStatuses ) . ')';
 		}
 
-		if ( $orPacketStatus ) {
+		if ( count( $orPacketStatus ) > 0 ) {
 			$andWhere[] = '(' . implode( ' OR ', $orPacketStatus ) . ')';
 		}
 
-		if ( $allowedOrderStatuses && $hposEnabled ) {
+		if ( count( $allowedOrderStatuses ) > 0 && $hposEnabled ) {
 			$andWhere[] = '`wc_o`.`status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
-		} elseif ( $allowedOrderStatuses && false === $hposEnabled ) {
+		} elseif ( count( $allowedOrderStatuses ) > 0 && false === $hposEnabled ) {
 			$andWhere[] = '`wp_p`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} else {
 			$andWhere[] = '1 = 0';
 		}
 
 		$where = '';
-		if ( $andWhere ) {
+		if ( count( $andWhere ) > 0 ) {
 			$where = ' WHERE ' . implode( ' AND ', $andWhere );
 		}
 

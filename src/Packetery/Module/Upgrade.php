@@ -145,90 +145,92 @@ class Upgrade {
 		$this->createCustomsDeclarationTables();
 
 		// If no previous version detected, no upgrade will be run.
-		if ( $oldVersion && version_compare( $oldVersion, '1.2.0', '<' ) ) {
-			$logEntries = get_posts(
-				[
-					'post_type'   => 'packetery_log',
-					'post_status' => 'any',
-					'nopaging'    => true,
-					'fields'      => 'ids',
-				]
-			);
-			foreach ( $logEntries as $logEntryId ) {
-				wp_delete_post( $logEntryId, true );
+		if ( null !== $oldVersion && false !== $oldVersion ) {
+			if ( version_compare( $oldVersion, '1.2.0', '<' ) ) {
+				$logEntries = get_posts(
+					[
+						'post_type'   => 'packetery_log',
+						'post_status' => 'any',
+						'nopaging'    => true,
+						'fields'      => 'ids',
+					]
+				);
+				foreach ( $logEntries as $logEntryId ) {
+					wp_delete_post( $logEntryId, true );
+				}
+
+				unregister_post_type( 'packetery_log' );
+
+				$this->migrateWpOrderMetadata();
+				$addressEntries = get_posts(
+					[
+						'post_type'   => self::POST_TYPE_VALIDATED_ADDRESS,
+						'post_status' => 'any',
+						'nopaging'    => true,
+						'fields'      => 'ids',
+					]
+				);
+				foreach ( $addressEntries as $addressEntryId ) {
+					wp_delete_post( $addressEntryId, true );
+				}
+
+				unregister_post_type( self::POST_TYPE_VALIDATED_ADDRESS );
 			}
 
-			unregister_post_type( 'packetery_log' );
-
-			$this->migrateWpOrderMetadata();
-			$addressEntries = get_posts(
-				[
-					'post_type'   => self::POST_TYPE_VALIDATED_ADDRESS,
-					'post_status' => 'any',
-					'nopaging'    => true,
-					'fields'      => 'ids',
-				]
-			);
-			foreach ( $addressEntries as $addressEntryId ) {
-				wp_delete_post( $addressEntryId, true );
+			if ( version_compare( $oldVersion, '1.2.6', '<' ) ) {
+				$this->orderRepository->deleteOrphans();
 			}
 
-			unregister_post_type( self::POST_TYPE_VALIDATED_ADDRESS );
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.2.6', '<' ) ) {
-			$this->orderRepository->deleteOrphans();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.4.2', '<' ) ) {
-			$migration = new Version_1_4_2( $this->wpdbAdapter );
-			$migration->run();
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.5', '<' ) ) {
-			wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.6.0', '<' ) ) {
-			wp_clear_scheduled_hook( CronService::CRON_LOG_AUTO_DELETION_HOOK );
-			wp_clear_scheduled_hook( CronService::CRON_PACKET_STATUS_SYNC_HOOK );
-		}
-
-		if ( $oldVersion && version_compare( $oldVersion, '1.7.0', '<' ) ) {
-			$orderStatusAutoChange = $this->optionsProvider->isOrderStatusAutoChangeEnabled();
-			$autoOrderStatus       = $this->optionsProvider->getAutoOrderStatus();
-			$syncSettings          = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
-			if ( $orderStatusAutoChange ) {
-				$syncSettings['allow_order_status_change'] = true;
-			}
-			if ( ! empty( $autoOrderStatus ) ) {
-				$syncSettings['order_status_change_packet_statuses'] = [
-					Core\Entity\PacketStatus::RECEIVED_DATA => $autoOrderStatus,
-				];
+			if ( version_compare( $oldVersion, '1.4.2', '<' ) ) {
+				$migration = new Version_1_4_2( $this->wpdbAdapter );
+				$migration->run();
 			}
 
-			update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
-		}
+			if ( version_compare( $oldVersion, '1.5', '<' ) ) {
+				wp_clear_scheduled_hook( CronService::CRON_CARRIERS_HOOK );
+			}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.7.1', '<' ) ) {
-			$syncSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
-			if (
-				isset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] ) &&
-				'' === $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ]
-			) {
-				unset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] );
+			if ( version_compare( $oldVersion, '1.6.0', '<' ) ) {
+				wp_clear_scheduled_hook( CronService::CRON_LOG_AUTO_DELETION_HOOK );
+				wp_clear_scheduled_hook( CronService::CRON_PACKET_STATUS_SYNC_HOOK );
+			}
+
+			if ( version_compare( $oldVersion, '1.7.0', '<' ) ) {
+				$orderStatusAutoChange = $this->optionsProvider->isOrderStatusAutoChangeEnabled();
+				$autoOrderStatus       = $this->optionsProvider->getAutoOrderStatus();
+				$syncSettings          = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
+				if ( $orderStatusAutoChange ) {
+					$syncSettings['allow_order_status_change'] = true;
+				}
+				if ( null !== $autoOrderStatus ) {
+					$syncSettings['order_status_change_packet_statuses'] = [
+						Core\Entity\PacketStatus::RECEIVED_DATA => $autoOrderStatus,
+					];
+				}
+
 				update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
 			}
-		}
 
-		if ( $oldVersion && version_compare( $oldVersion, '1.8.0', '<' ) ) {
-			$generalSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
-			if ( isset( $generalSettings['cod_payment_method'] ) ) {
-				$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
-				unset( $generalSettings['cod_payment_method'] );
+			if ( version_compare( $oldVersion, '1.7.1', '<' ) ) {
+				$syncSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
+				if (
+					isset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] ) &&
+					'' === $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ]
+				) {
+					unset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] );
+					update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
+				}
 			}
 
-			update_option( OptionsProvider::OPTION_NAME_PACKETERY, $generalSettings );
+			if ( version_compare( $oldVersion, '1.8.0', '<' ) ) {
+				$generalSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
+				if ( isset( $generalSettings['cod_payment_method'] ) ) {
+					$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
+					unset( $generalSettings['cod_payment_method'] );
+				}
+
+				update_option( OptionsProvider::OPTION_NAME_PACKETERY, $generalSettings );
+			}
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );
@@ -317,7 +319,7 @@ class Upgrade {
 			$order->delete_meta_data( self::META_POINT_URL );
 
 			$validatedAddressId = $this->getValidatedAddressIdByOrderId( (int) $order->get_id() );
-			if ( $validatedAddressId ) {
+			if ( null !== $validatedAddressId ) {
 				$validatedAddress = $this->createAddressFromPostId( $validatedAddressId );
 				$orderEntity->setAddressValidated( true );
 				$orderEntity->setDeliveryAddress( $validatedAddress );
@@ -368,7 +370,7 @@ class Upgrade {
 			]
 		);
 
-		if ( empty( $postIds ) ) {
+		if ( count( $postIds ) === 0 ) {
 			return null;
 		}
 

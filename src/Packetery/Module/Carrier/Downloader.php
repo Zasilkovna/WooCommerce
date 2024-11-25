@@ -78,7 +78,7 @@ class Downloader {
 				'error',
 			];
 		}
-		if ( ! $carriers ) {
+		if ( null === $carriers || count( $carriers ) === 0 ) {
 			// translators: keep %failReason placeholder intact.
 			$translatedMessage = __( 'Carrier download failed: %failReason Please try again later.', 'packeta' );
 

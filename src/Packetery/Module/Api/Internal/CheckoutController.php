@@ -146,7 +146,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	public function removeSavedData( WP_REST_Request $request ): WP_REST_Response {
 		$params = $request->get_params();
-		if ( empty( $params['carrierId'] ) ) {
+		if ( ! isset( $params['carrierId'] ) || '' === $params['carrierId'] ) {
 			delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 		} else {
 			$savedData = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );

@@ -164,7 +164,7 @@ class Page {
 	 */
 	private function getAction(): ?string {
 		$action = $this->request->getQuery( self::PARAM_ACTION );
-		if ( ! empty( $action ) ) {
+		if ( null !== ( $action ) ) {
 			return (string) $action;
 		}
 

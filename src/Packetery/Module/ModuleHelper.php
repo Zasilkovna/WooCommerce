@@ -109,7 +109,7 @@ class ModuleHelper {
 	 * @return void
 	 */
 	public static function transformGlobalCookies(): void {
-		if ( empty( $_COOKIE ) ) {
+		if ( count( $_COOKIE ) === 0 ) {
 			return;
 		}
 		foreach ( $_COOKIE as $key => $value ) {
@@ -131,8 +131,14 @@ class ModuleHelper {
 			return null;
 		}
 
-		$version = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', [ 'Version' => 'Version' ], 'plugin' )['Version'];
-		if ( ! $version ) {
+		$version  = '';
+		$fileData = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', [ 'Version' => 'Version' ], 'plugin' );
+
+		if ( isset( $fileData['Version'] ) ) {
+			$version = $fileData['Version'];
+		}
+
+		if ( '' === $version ) {
 			return null;
 		}
 
@@ -160,7 +166,7 @@ class ModuleHelper {
 	 */
 	public static function getWcOrderCountry( \WC_Order $wcOrder ): string {
 		$country = $wcOrder->get_shipping_country();
-		if ( empty( $country ) ) {
+		if ( null === $country || '' === $country ) {
 			$country = $wcOrder->get_billing_country();
 		}
 
