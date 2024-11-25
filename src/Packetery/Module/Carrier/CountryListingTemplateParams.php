@@ -61,7 +61,17 @@ class CountryListingTemplateParams {
 	/**
 	 * @var bool
 	 */
-	private $isCzechLocale;
+	public $isCzechLocale;
+
+	/**
+	 * @var string|null
+	 */
+	public $logoZasilkovna;
+
+	/**
+	 * @var string|null
+	 */
+	public $logoPacketa;
 
 	public function __construct(
 		array $carriersUpdate,
@@ -70,6 +80,8 @@ class CountryListingTemplateParams {
 		?string $nextScheduledRun,
 		?string $settingsChangedMessage,
 		bool $isCzechLocale,
+		?string $logoZasilkovna,
+		?string $logoPacketa,
 		array $translations
 	) {
 		$this->carriersUpdate         = $carriersUpdate;
@@ -78,6 +90,8 @@ class CountryListingTemplateParams {
 		$this->nextScheduledRun       = $nextScheduledRun;
 		$this->settingsChangedMessage = $settingsChangedMessage;
 		$this->isCzechLocale          = $isCzechLocale;
+		$this->logoZasilkovna         = $logoZasilkovna;
+		$this->logoPacketa            = $logoPacketa;
 		$this->translations           = $translations;
 	}
 }

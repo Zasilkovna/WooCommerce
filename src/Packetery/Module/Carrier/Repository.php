@@ -44,24 +44,14 @@ class Repository {
 	private $wpdbAdapter;
 
 	/**
-	 * Internal pickup points config.
-	 *
-	 * @var PacketaPickupPointsConfig
-	 */
-	private $pickupPointsConfig;
-
-	/**
 	 * Repository constructor.
 	 *
-	 * @param WpdbAdapter               $wpdbAdapter        WpdbAdapter.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig Internal pickup points config.
+	 * @param WpdbAdapter $wpdbAdapter        WpdbAdapter.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
-		PacketaPickupPointsConfig $pickupPointsConfig
 	) {
-		$this->wpdbAdapter        = $wpdbAdapter;
-		$this->pickupPointsConfig = $pickupPointsConfig;
+		$this->wpdbAdapter = $wpdbAdapter;
 	}
 
 	/**

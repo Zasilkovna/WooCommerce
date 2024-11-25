@@ -495,8 +495,8 @@ class Checkout {
 				wc_add_notice( __( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
 				$error = true;
 			}
-
-			if ( ! $error && PickupPointValidator::IS_ACTIVE ) {
+			// @phpstan-ignore-next-line
+			if ( false === $error && PickupPointValidator::IS_ACTIVE ) {
 				$pickupPointId         = $checkoutData[ Order\Attribute::POINT_ID ];
 				$carriersForValidation = $chosenShippingMethod;
 				if ( '' === $carrierId ) {
@@ -587,6 +587,7 @@ class Checkout {
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
 		if ( $this->isPickupPointOrder() ) {
+			// @phpstan-ignore-next-line
 			if ( PickupPointValidator::IS_ACTIVE ) {
 				$pickupPointValidationError = WC()->session->get( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
 				if ( null !== $pickupPointValidationError ) {
@@ -1143,7 +1144,7 @@ class Checkout {
 	private function getChosenPaymentMethod(): ?string {
 		$paymentMethod = WC()->session->get( 'chosen_payment_method' );
 
-		return $paymentMethod ?? null;
+		return is_string( $paymentMethod ) ? $paymentMethod : null;
 	}
 
 	/**

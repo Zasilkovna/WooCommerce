@@ -222,13 +222,6 @@ class CountryListingPage {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte';
 		} else {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte';
-			array_merge(
-				$translations,
-				[
-					'countryCode'       => __( 'Country code', 'packeta' ),
-					'noActiveCountries' => __( 'No active countries.', 'packeta' ),
-				]
-			);
 		}
 
 		$this->latteEngine->render(
@@ -240,6 +233,8 @@ class CountryListingPage {
 				$nextScheduledRun,
 				$settingsChangedMessage,
 				$this->moduleHelper->isCzechLocale(),
+				$this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
+				$this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 				$translations
 			)
 		);

@@ -182,7 +182,7 @@ class ModuleHelper {
 		if ( false === class_exists( 'Automattic\\WooCommerce\\Utilities\\OrderUtil' ) ) {
 			return false;
 		}
-
+		// @phpstan-ignore-next-line (This method was probably added in WC version 6.9.0, backward compatibility)
 		if ( false === method_exists( OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) ) {
 			return false;
 		}
