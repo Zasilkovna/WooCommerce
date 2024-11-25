@@ -23,9 +23,8 @@ trait TranslationTrait {
 		unload_textdomain( $domain, $reloadable );
 	}
 
-	public function loadPluginTextDomain( string $domain, bool $deprecated = false, bool $pluginRelativePath = false ): void {
-		// phpcs:ignore WordPress.WP.DeprecatedParameters.Load_plugin_textdomainParam2Found
-		load_plugin_textdomain( $domain, $deprecated, $pluginRelativePath );
+	public function loadPluginTextDomain( string $domain ): void {
+		load_plugin_textdomain( $domain );
 	}
 
 	public function loadDefaultTextDomain(): void {

@@ -162,7 +162,7 @@ class Options {
 			return true;
 		}
 
-		return ! empty( $this->options['surcharge_limits'] );
+		return isset( $this->options['surcharge_limits'] );
 	}
 
 	/**
@@ -189,6 +189,6 @@ class Options {
 	 * @return bool
 	 */
 	public function hasOptions(): bool {
-		return ! empty( $this->options );
+		return count( $this->options ) > 0;
 	}
 }

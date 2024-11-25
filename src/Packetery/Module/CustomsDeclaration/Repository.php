@@ -135,7 +135,7 @@ class Repository {
 		if ( null === $customsDeclarationId ) {
 			return [];
 		}
-
+		/** @var null|array $customsDeclarationItemRows */
 		$customsDeclarationItemRows = $this->wpdbAdapter->get_results(
 			sprintf(
 				'SELECT
@@ -273,7 +273,7 @@ class Repository {
 	private function deleteItems( string $customsDeclarationId ): void {
 		$items = $this->getItemsByCustomsDeclarationId( $customsDeclarationId );
 
-		if ( empty( $items ) ) {
+		if ( count( $items ) === 0 ) {
 			return;
 		}
 

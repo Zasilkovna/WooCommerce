@@ -3,11 +3,12 @@ parameters:
 		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
 		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
 		- ../constants.php
-	level: 2
+	level: 5
 	paths:
 		- ../src/Packetery/Module
+	treatPhpDocTypesAsCertain: false
 	strictRules:
-		allRules: false
+		allRules: true
 	scanDirectories:
 		- ../src/Packetery/Core
 		- ../deps

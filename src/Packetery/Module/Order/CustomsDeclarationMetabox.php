@@ -337,7 +337,7 @@ class CustomsDeclarationMetabox {
 
 		$items = $prefixContainer->addContainer( 'items' );
 
-		if ( empty( $structureData[ self::FORM_CONTAINER_NAME ]['items'] ) ) {
+		if ( count( $structureData[ self::FORM_CONTAINER_NAME ]['items'] ) === 0 ) {
 			$this->addCustomsDeclarationItem( $activator, $items, 'new_0' );
 		} else {
 			foreach ( $structureData[ self::FORM_CONTAINER_NAME ]['items'] as $itemId => $itemDefaults ) {
@@ -386,7 +386,7 @@ class CustomsDeclarationMetabox {
 		}
 
 		$fieldsToOmit = [];
-		/** Form container. @var Container $customsDeclarationContainer */
+		/** @var Container $customsDeclarationContainer */
 		$customsDeclarationContainer = $form[ self::FORM_CONTAINER_NAME ];
 		$prefixedValues              = $form->getValues( 'array' );
 		$containerValues             = $prefixedValues[ self::FORM_CONTAINER_NAME ];

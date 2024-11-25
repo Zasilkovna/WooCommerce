@@ -26,15 +26,15 @@ class PickupPointValidateResponse {
 	/**
 	 * Possible errors.
 	 *
-	 * @var string[]
+	 * @var array<int, array{code: string, description: string}>
 	 */
 	private $errors;
 
 	/**
 	 * PickupPointValidateResponse constructor.
 	 *
-	 * @param bool     $isValid Validity flag.
-	 * @param string[] $errors  Possible errors.
+	 * @param bool                                                 $isValid
+	 * @param array<int, array{code: string, description: string}> $errors
 	 */
 	public function __construct( bool $isValid, array $errors ) {
 		$this->isValid = $isValid;
@@ -53,7 +53,7 @@ class PickupPointValidateResponse {
 	/**
 	 * Get array of errors.
 	 *
-	 * @return string[]
+	 * @return array<int, array{code: string, description: string}>
 	 */
 	public function getErrors(): array {
 		return $this->errors;

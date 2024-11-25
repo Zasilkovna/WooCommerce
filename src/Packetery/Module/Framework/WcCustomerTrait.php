@@ -18,18 +18,18 @@ trait WcCustomerTrait {
 	/**
 	 * Gets customer shipping country.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function customerGetShippingCountry(): string {
+	public function customerGetShippingCountry(): ?string {
 		return WC()->customer->get_shipping_country();
 	}
 
 	/**
 	 * Gets customer billing country.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function customerGetBillingCountry(): string {
+	public function customerGetBillingCountry(): ?string {
 		return WC()->customer->get_billing_country();
 	}
 }

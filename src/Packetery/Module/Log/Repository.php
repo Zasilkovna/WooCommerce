@@ -56,10 +56,10 @@ class Repository {
 	 *
 	 * @param array $arguments Search arguments.
 	 *
-	 * @return iterable|Record[]
+	 * @return \Generator<Record>|array<empty>
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function find( array $arguments ): iterable {
+	public function find( array $arguments ) {
 		$orderId   = $arguments['order_id'] ?? null;
 		$action    = $arguments['action'] ?? null;
 		$orderBy   = $arguments['orderby'] ?? [];
@@ -76,7 +76,7 @@ class Repository {
 		}
 
 		$orderByClause = '';
-		if ( $orderByTransformed ) {
+		if ( count( $orderByTransformed ) > 0 ) {
 			$orderByClause = ' ORDER BY ' . implode( ', ', $orderByTransformed );
 		}
 
@@ -121,7 +121,7 @@ class Repository {
 	 *
 	 * @param iterable $logs Logs.
 	 *
-	 * @return \Generator|Record[]
+	 * @return \Generator<Record>
 	 */
 	public function remapToRecord( iterable $logs ): \Generator {
 		foreach ( $logs as $log ) {
@@ -159,7 +159,7 @@ class Repository {
 			array_filter(
 				[
 					$title,
-					( $params ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
+					( count( $params ) > 0 ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
 				]
 			)
 		);
@@ -211,7 +211,7 @@ class Repository {
 		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$paramsString = '';
-		if ( $record->params ) {
+		if ( null !== $record->params && count( $record->params ) > 0 ) {
 			$params       = ModuleHelper::convertArrayFloatsToStrings( $record->params );
 			$paramsString = wp_json_encode( $params );
 		}
@@ -224,9 +224,9 @@ class Repository {
 		$data = [
 			'id'       => $record->id,
 			'order_id' => $orderId,
-			'title'    => ( $record->title ?? '' ),
-			'status'   => ( $record->status ?? '' ),
-			'action'   => ( $record->action ?? '' ),
+			'title'    => $record->title,
+			'status'   => $record->status,
+			'action'   => $record->action,
 			'params'   => $paramsString,
 			'date'     => $dateString,
 		];
@@ -252,7 +252,7 @@ class Repository {
 		}
 
 		$whereClause = '';
-		if ( $where ) {
+		if ( count( $where ) > 0 ) {
 			$whereClause = ' WHERE ' . implode( ' AND ', $where );
 		}
 

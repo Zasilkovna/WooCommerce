@@ -232,7 +232,7 @@ class EntityRepository {
 		if ( ! is_numeric( $carrierId ) ) {
 			$compoundCarriers = $this->pickupPointsConfig->getCompoundCarriers();
 
-			return ( ! empty( $compoundCarriers[ $customerCountry ] ) );
+			return ( isset( $compoundCarriers[ $customerCountry ] ) );
 		}
 
 		$carrier = $this->getById( (int) $carrierId );
@@ -269,7 +269,7 @@ class EntityRepository {
 		$shippingZoneRepository   = new ShippingZoneRepository();
 		$countries                = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
 		$availableCarriersToMerge = [];
-		if ( ! empty( $countries ) ) {
+		if ( count( $countries ) > 0 ) {
 			foreach ( $countries as $countryCode ) {
 				$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
 			}

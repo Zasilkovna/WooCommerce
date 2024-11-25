@@ -186,7 +186,7 @@ class LabelPrint {
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
 
 		$orderIdsTransient = $this->getOrderIdsTransient();
-		if ( $orderIdsTransient ) {
+		if ( null !== $orderIdsTransient ) {
 			$orderIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 			$count    = count( $orderIds );
 		} else {
@@ -235,20 +235,20 @@ class LabelPrint {
 
 		$fallbackToPacketaLabel = false;
 		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$idParam                = $this->httpRequest->getQuery( 'id' ) ? (int) $this->httpRequest->getQuery( 'id' ) : null;
+		$idParam                = null !== $this->httpRequest->getQuery( 'id' ) ? (int) $this->httpRequest->getQuery( 'id' ) : null;
 		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
 		if ( null !== $idParam && null !== $packetIdParam ) {
 			$fallbackToPacketaLabel = true;
 			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
 			$orderIdsTransient = $this->getOrderIdsTransient();
-			if ( ! $orderIdsTransient ) {
+			if ( null === $orderIdsTransient ) {
 				return;
 			}
 
 			$packetIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 		}
-		if ( ! $packetIds ) {
+		if ( count( $packetIds ) === 0 ) {
 			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 
@@ -277,10 +277,8 @@ class LabelPrint {
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
-		if ( ! $response || $response->hasFault() ) {
-			$message = ( null !== $response && $response->hasFault() ) ?
-				__( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' ) :
-				__( 'You selected orders that were not submitted yet', 'packeta' );
+		if ( $response->hasFault() ) {
+			$message = __( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
@@ -362,12 +360,12 @@ class LabelPrint {
 	/**
 	 * Prepares labels.
 	 *
-	 * @param int   $offset Offset value.
-	 * @param array $packetIds Packet ids.
+	 * @param int           $offset Offset value.
+	 * @param array<string> $packetIds Packet ids.
 	 *
-	 * @return Response\PacketsLabelsPdf|null
+	 * @return Response\PacketsLabelsPdf
 	 */
-	private function requestPacketaLabels( int $offset, array $packetIds ): ?Response\PacketsLabelsPdf {
+	private function requestPacketaLabels( int $offset, array $packetIds ): Response\PacketsLabelsPdf {
 		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?

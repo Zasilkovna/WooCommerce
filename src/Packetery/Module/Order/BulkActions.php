@@ -148,7 +148,7 @@ class BulkActions {
 	 */
 	public function renderPacketsExportResult(): void {
 		$get = $this->httpRequest->getQuery();
-		if ( empty( $get['submit_to_api'] ) ) {
+		if ( ! isset( $get['submit_to_api'] ) ) {
 			return;
 		}
 

@@ -126,6 +126,7 @@ class Page {
 				'maxRowsExceeded'    => $totalCount > self::MAX_ROWS,
 				'translatedActions'  => $translatedActions,
 				'translatedStatuses' => $translatedStatuses,
+				'isCzechLocale'      => $this->moduleHelper->isCzechLocale(),
 				'logoZasilkovna'     => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
 				'logoPacketa'        => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 				'translations'       => [
@@ -164,7 +165,7 @@ class Page {
 	 */
 	private function getAction(): ?string {
 		$action = $this->request->getQuery( self::PARAM_ACTION );
-		if ( ! empty( $action ) ) {
+		if ( null !== ( $action ) ) {
 			return (string) $action;
 		}
 
