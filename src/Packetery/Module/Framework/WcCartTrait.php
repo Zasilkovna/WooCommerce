@@ -68,4 +68,8 @@ trait WcCartTrait {
 	public function cart(): ?\WC_Cart {
 		return WC()->cart;
 	}
+
+	public function cartCalculateTotals(): void {
+		WC()->cart->calculate_totals();
+	}
 }

@@ -16,7 +16,9 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
 
@@ -32,7 +34,6 @@ class OptionsPageTest extends TestCase {
 		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
 		$carDeliveryConfigMock = $this->createMock( CarDeliveryConfig::class );
 		$wcSettingsConfigMock  = $this->createMock( WcSettingsConfig::class );
-		$carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
 
 		$compoundCarrierFactory  = new CompoundCarrierCollectionFactory();
 		$vendorCollectionFactory = new VendorCollectionFactory();
@@ -56,6 +57,8 @@ class OptionsPageTest extends TestCase {
 			$carDeliveryConfigMock,
 			$wcSettingsConfigMock,
 			$carrierOptionsFactory,
+			$this->createMock( ModuleHelper::class ),
+			$this->createMock( UrlBuilder::class ),
 		);
 
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointcz' ) );

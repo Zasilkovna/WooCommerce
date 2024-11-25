@@ -16,8 +16,10 @@ use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Control;
 use Packetery\Nette\Forms\Form;
@@ -119,20 +121,15 @@ class OptionsPage {
 	private $carrierOptionsFactory;
 
 	/**
-	 * OptionsPage constructor.
-	 *
-	 * @param Engine                    $latteEngine           PacketeryLatte_engine.
-	 * @param EntityRepository          $carrierRepository     Carrier repository.
-	 * @param FormFactory               $formFactory           Form factory.
-	 * @param Request                   $httpRequest           Packetery\Nette Request.
-	 * @param CountryListingPage        $countryListingPage    CountryListingPage.
-	 * @param MessageManager            $messageManager        Message manager.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
-	 * @param FeatureFlagProvider       $featureFlagProvider   Feature flag.
-	 * @param CarDeliveryConfig         $carDeliveryConfig     Car delivery config.
-	 * @param WcSettingsConfig          $wcSettingsConfig      WC Native carrier settings config.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
@@ -144,7 +141,9 @@ class OptionsPage {
 		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
 		WcSettingsConfig $wcSettingsConfig,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder
 	) {
 		$this->latteEngine           = $latteEngine;
 		$this->carrierRepository     = $carrierRepository;
@@ -157,6 +156,8 @@ class OptionsPage {
 		$this->carDeliveryConfig     = $carDeliveryConfig;
 		$this->wcSettingsConfig      = $wcSettingsConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->moduleHelper          = $moduleHelper;
+		$this->urlBuilder            = $urlBuilder;
 	}
 
 	/**
@@ -554,6 +555,9 @@ class OptionsPage {
 		$commonTemplateParams = [
 			'globalCurrency' => get_woocommerce_currency_symbol(),
 			'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+			'isCzechLocale'  => $this->moduleHelper->isCzechLocale(),
+			'logoZasilkovna' => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
+			'logoPacketa'    => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 			'translations'   => [
 				'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
 				'delete'                                 => __( 'Delete', 'packeta' ),

@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\Exception\ProductNotFoundException;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\DI\Container;
 
 /**
@@ -65,6 +66,11 @@ class ShippingMethod extends \WC_Shipping_Method {
 	private $wcCarrierSettingsConfig;
 
 	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
+	/**
 	 * Constructor for Packeta shipping class
 	 *
 	 * @param int $instanceId Shipping method instance id.
@@ -74,6 +80,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 
 		$this->container               = CompatibilityBridge::getContainer();
 		$this->wcCarrierSettingsConfig = $this->container->getByType( WcSettingsConfig::class );
+		$this->urlBuilder              = $this->container->getByType( UrlBuilder::class );
 
 		$this->id = self::PACKETERY_METHOD_ID;
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
@@ -133,7 +140,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 		$settingsHtml = $this->generate_settings_html( $this->get_instance_form_fields(), false );
 
 		// phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-		return '<table class="form-table">' . $settingsHtml . "</table>\n" . '<script type="text/javascript" src="' . Plugin::buildAssetUrl( 'public/js/admin-carrier-modal.js' ) . '"></script>';
+		return '<table class="form-table">' . $settingsHtml . "</table>\n" . '<script type="text/javascript" src="' . $this->urlBuilder->buildAssetUrl( 'public/js/admin-carrier-modal.js' ) . '"></script>';
 	}
 
 	/**

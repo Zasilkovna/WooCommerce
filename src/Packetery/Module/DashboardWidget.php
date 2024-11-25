@@ -13,6 +13,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Views\UrlBuilder;
 use WC_Data_Store;
 use WC_Shipping_Zone;
 use WC_Shipping_Zone_Data_Store;
@@ -88,18 +89,10 @@ class DashboardWidget {
 	private $carrierOptionsFactory;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Engine                   $latteEngine             Latte engine.
-	 * @param Carrier\Repository       $carrierRepository       Carrier repository.
-	 * @param OptionsProvider          $optionsProvider         Options provider.
-	 * @param Carrier\OptionsPage      $carrierOptionsPage      Carrier options page.
-	 * @param Options\Page             $optionsPage             Options page.
-	 * @param array                    $surveyConfig            Survey config.
-	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
-	 * @param ModuleHelper             $moduleHelper            ModuleHelper.
-	 * @param CarrierOptionsFactory    $carrierOptionsFactory   Carrier options factory.
+	 * @var UrlBuilder
 	 */
+	private $urlBuilder;
+
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
@@ -109,7 +102,8 @@ class DashboardWidget {
 		array $surveyConfig,
 		Carrier\EntityRepository $carrierEntityRepository,
 		ModuleHelper $moduleHelper,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		UrlBuilder $urlBuilder
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -120,6 +114,7 @@ class DashboardWidget {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->moduleHelper            = $moduleHelper;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->urlBuilder              = $urlBuilder;
 	}
 
 	/**
@@ -205,7 +200,7 @@ class DashboardWidget {
 				'survey'             => new SurveyConfig(
 					( $this->surveyConfig['active'] && new \DateTimeImmutable( 'now' ) <= $this->surveyConfig['validTo'] ),
 					$this->surveyConfig['url'],
-					Plugin::buildAssetUrl( 'public/images/survey-illustration.png' )
+					$this->urlBuilder->buildAssetUrl( 'public/images/survey-illustration.png' )
 				),
 				'translations'       => [
 					'packeta'                => __( 'Packeta', 'packeta' ),

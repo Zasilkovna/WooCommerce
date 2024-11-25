@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use DateTimeImmutable;
 use Packetery\Core\CoreHelper;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\Utils\Html;
 use WC_DateTime;
 
@@ -21,6 +22,16 @@ use WC_DateTime;
  * @package Packetery\Module
  */
 class ModuleHelper {
+
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	public function __construct( WpAdapter $wpAdapter ) {
+		$this->wpAdapter = $wpAdapter;
+	}
+
 	/**
 	 * Gets order detail url.
 	 *
@@ -252,5 +263,33 @@ class ModuleHelper {
 		}
 
 		return null;
+	}
+
+	public static function isWooCommercePluginActive(): bool {
+		return self::isPluginActive( 'woocommerce/woocommerce.php' );
+	}
+
+	public static function getPluginMainFilePath(): string {
+		return PACKETERY_PLUGIN_DIR . '/packeta.php';
+	}
+
+	/**
+	 * Gets current locale.
+	 */
+	public function getLocale(): string {
+		/**
+		 * Applies plugin_locale filters.
+		 *
+		 * @since 1.0.0
+		 */
+		return (string) $this->wpAdapter->applyFilters(
+			'plugin_locale',
+			( $this->wpAdapter->isAdmin() ? $this->wpAdapter->getUserLocale() : $this->wpAdapter->getLocale() ),
+			Plugin::DOMAIN
+		);
+	}
+
+	public function isCzechLocale(): bool {
+		return $this->getLocale() === 'cs_CZ';
 	}
 }

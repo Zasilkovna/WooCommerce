@@ -104,7 +104,7 @@ class ContextResolver {
 	 *
 	 * @return bool
 	 */
-	public function isPacketeryConfirmPage(): bool {
+	public function isConfirmModalPage(): bool {
 		return $this->isOrderDetailPage() || $this->isOrderGridPage();
 	}
 
