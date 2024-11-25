@@ -51,11 +51,11 @@ class FeatureFlagStorage {
 	/**
 	 * Gets flag.
 	 *
-	 * @param array|false|null $key Key.
+	 * @param string $key Key.
 	 *
 	 * @return mixed|null
 	 */
-	public function getFlag( $key ) {
+	public function getFlag( string $key ) {
 		return self::$flags[ $key ] ?? null;
 	}
 }

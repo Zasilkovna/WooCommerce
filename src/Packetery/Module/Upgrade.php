@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Upgrade\Version_1_4_2;
 
@@ -96,17 +97,10 @@ class Upgrade {
 	private $optionsProvider;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Order\Repository              $orderRepository              Order repository.
-	 * @param MessageManager                $messageManager               Message manager.
-	 * @param ILogger                       $logger                       Logger.
-	 * @param Log\Repository                $logRepository                Log repository.
-	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
-	 * @param Carrier\Repository            $carrierRepository            Carrier repository.
-	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
-	 * @param OptionsProvider               $optionsProvider              Options provider.
+	 * @var EntityRepository
 	 */
+	private $carrierEntityRepository;
+
 	public function __construct(
 		Order\Repository $orderRepository,
 		MessageManager $messageManager,
@@ -115,7 +109,8 @@ class Upgrade {
 		WpdbAdapter $wpdbAdapter,
 		Carrier\Repository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
-		OptionsProvider $optionsProvider
+		OptionsProvider $optionsProvider,
+		EntityRepository $carrierEntityRepository,
 	) {
 		$this->orderRepository              = $orderRepository;
 		$this->messageManager               = $messageManager;
@@ -125,6 +120,7 @@ class Upgrade {
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->optionsProvider              = $optionsProvider;
+		$this->carrierEntityRepository      = $carrierEntityRepository;
 	}
 
 	/**
@@ -266,7 +262,7 @@ class Upgrade {
 		foreach ( $orders as $order ) {
 			$orderEntity = new Core\Entity\Order(
 				(string) $order->get_id(),
-				$this->getMetaAsNullableString( $order, self::META_CARRIER_ID )
+				$this->carrierEntityRepository->getAnyById( $this->getMetaAsNullableString( $order, self::META_CARRIER_ID ) )
 			);
 			$order->delete_meta_data( self::META_CARRIER_ID );
 
