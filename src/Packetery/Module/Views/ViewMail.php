@@ -3,7 +3,6 @@
 namespace Packetery\Module\Views;
 
 use Packetery\Latte\Engine;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\DetailCommonLogic;
@@ -65,22 +64,18 @@ class ViewMail {
 			return;
 		}
 
-		try {
-			$packeteryOrder = $this->orderRepository->getByWcOrder( $wcOrder );
-		} catch ( InvalidCarrierException $exception ) {
-			$packeteryOrder = null;
-		}
-		if ( null === $packeteryOrder ) {
+		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
+		if ( null === $order ) {
 			return;
 		}
 
-		if ( $this->detailCommonLogic->shouldHidePacketaInfo( $packeteryOrder ) ) {
+		if ( $this->detailCommonLogic->shouldHidePacketaInfo( $order ) ) {
 			return;
 		}
 
 		$templateParams = [
 			'displayPickupPointInfo' => $this->detailCommonLogic->shouldDisplayPickupPointInfo(),
-			'order'                  => $packeteryOrder,
+			'order'                  => $order,
 			'translations'           => [
 				'packeta'              => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				'pickupPointDetail'    => $this->wpAdapter->__( 'Pickup Point Detail', 'packeta' ),

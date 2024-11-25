@@ -148,7 +148,7 @@ class PacketActionsCommonLogic {
 	public function getOrder(): ?Entity\Order {
 		$orderId = $this->getOrderId();
 		if ( null !== $orderId ) {
-			return $this->orderRepository->getById( $orderId, true );
+			return $this->orderRepository->getByIdWithValidCarrier( $orderId );
 		}
 
 		return null;

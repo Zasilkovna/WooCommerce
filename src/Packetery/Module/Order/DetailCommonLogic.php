@@ -88,7 +88,7 @@ class DetailCommonLogic {
 			return null;
 		}
 
-		$this->order = $this->orderRepository->getById( $orderId, true );
+		$this->order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 		return $this->order;
 	}

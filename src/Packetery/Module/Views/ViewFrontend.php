@@ -50,7 +50,7 @@ class ViewFrontend {
 	 * @param WC_Order $wcOrder WordPress order.
 	 */
 	public function renderOrderDetail( WC_Order $wcOrder ): void {
-		$order = $this->orderRepository->getByWcOrder( $wcOrder, true );
+		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		if ( null === $order ) {
 			return;
 		}
