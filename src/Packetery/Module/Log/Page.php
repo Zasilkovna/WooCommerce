@@ -126,6 +126,7 @@ class Page {
 				'maxRowsExceeded'    => $totalCount > self::MAX_ROWS,
 				'translatedActions'  => $translatedActions,
 				'translatedStatuses' => $translatedStatuses,
+				'isCzechLocale'      => $this->moduleHelper->isCzechLocale(),
 				'logoZasilkovna'     => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
 				'logoPacketa'        => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 				'translations'       => [
