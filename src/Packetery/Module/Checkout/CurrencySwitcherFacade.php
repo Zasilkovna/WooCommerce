@@ -7,12 +7,26 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Module;
+namespace Packetery\Module\Checkout;
+
+use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\ModuleHelper;
 
 /**
  * Class CurrencySwitcherFacade.
  */
 class CurrencySwitcherFacade {
+
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	public function __construct(
+		WpAdapter $wpAdapter
+	) {
+		$this->wpAdapter = $wpAdapter;
+	}
 
 	/**
 	 * List of supported plugins for options export.
@@ -40,7 +54,9 @@ class CurrencySwitcherFacade {
 		 *
 		 * @since 1.4
 		 */
-		return (float) apply_filters( 'packetery_price', $price );
+		$price = (float) $this->wpAdapter->applyFilters( 'packetery_price', $price );
+
+		return $price;
 	}
 
 	/**
@@ -57,7 +73,7 @@ class CurrencySwitcherFacade {
 			 *
 			 * @since 1.2.7
 			 */
-			$value = (float) apply_filters( 'woocs_exchange_value', $value );
+			$value = (float) $this->wpAdapter->applyFilters( 'woocs_exchange_value', $value );
 		}
 
 		return $value;

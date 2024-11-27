@@ -7,8 +7,10 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Module;
+namespace Packetery\Module\Checkout;
 
+use Packetery\Module\Carrier;
+use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use WC_Cart;
 use WC_Order;
@@ -21,31 +23,48 @@ use WC_Order;
 class RateCalculator {
 
 	/**
-	 * Currency switcher facade.
-	 *
 	 * @var CurrencySwitcherFacade
 	 */
 	private $currencySwitcherFacade;
 
 	/**
-	 * Framework adapter.
-	 *
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
 
 	/**
-	 * RateCalculator constructor.
-	 *
-	 * @param WpAdapter              $wpAdapter       Framework adapter.
-	 * @param CurrencySwitcherFacade $currencySwitcherFacade Currency switcher facade.
+	 * @var WcAdapter
 	 */
+	private $wcAdapter;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
 		CurrencySwitcherFacade $currencySwitcherFacade
 	) {
 		$this->wpAdapter              = $wpAdapter;
+		$this->wcAdapter              = $wcAdapter;
 		$this->currencySwitcherFacade = $currencySwitcherFacade;
+	}
+
+	/**
+	 * Computes custom rate cost for carrier using cart contents.
+	 *
+	 * @param Carrier\Options $options    Carrier options.
+	 * @param float           $cartPrice  Price.
+	 * @param float           $totalCartProductValue Total cart product value.
+	 * @param float|int       $cartWeight Weight.
+	 *
+	 * @return ?float
+	 */
+	public function getRateCost( Carrier\Options $options, float $cartPrice, float $totalCartProductValue, $cartWeight ): ?float {
+		return $this->getShippingRateCost(
+			$options,
+			$cartPrice,
+			$totalCartProductValue,
+			$cartWeight,
+			$this->isFreeShippingCouponApplied( $this->wcAdapter->cart() )
+		);
 	}
 
 	/**
@@ -119,6 +138,48 @@ class RateCalculator {
 		 * @since 1.4.1
 		 */
 		return (float) $this->wpAdapter->applyFilters( 'packeta_shipping_price', (float) $cost, $filterParameters );
+	}
+
+	/**
+	 * Gets applicable COD surcharge.
+	 *
+	 * @param array $carrierOptions Carrier options.
+	 * @param float $cartPrice      Cart price.
+	 *
+	 * @return float
+	 */
+	public function getCODSurcharge( array $carrierOptions, float $cartPrice ): float {
+		if ( isset( $carrierOptions['surcharge_limits'] ) ) {
+			foreach ( $carrierOptions['surcharge_limits'] as $weightLimit ) {
+				if ( $cartPrice <= $weightLimit['order_price'] ) {
+					return (float) $weightLimit['surcharge'];
+				}
+			}
+		}
+
+		if ( isset( $carrierOptions['default_COD_surcharge'] ) && is_numeric( $carrierOptions['default_COD_surcharge'] ) ) {
+			return (float) $carrierOptions['default_COD_surcharge'];
+		}
+
+		return 0.0;
+	}
+
+	/**
+	 * @param string            $name             Name.
+	 * @param string            $optionId         Option ID.
+	 * @param float             $taxExclusiveCost Cost.
+	 * @param array<float>|null $taxes            Taxes. It is going to be calculated if null.
+	 *
+	 * @return array
+	 */
+	public function createShippingRate( string $name, string $optionId, float $taxExclusiveCost, ?array $taxes ): array {
+		return [
+			'label'    => $name,
+			'id'       => $optionId,
+			'cost'     => $taxExclusiveCost,
+			'taxes'    => $taxes ?? '',
+			'calc_tax' => 'per_order',
+		];
 	}
 
 	/**

@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use WC_Customer;
+
 /**
  * Trait WcCartTrait.
  *
@@ -71,5 +73,24 @@ trait WcCartTrait {
 
 	public function cartCalculateTotals(): void {
 		WC()->cart->calculate_totals();
+	}
+
+	/**
+	 * Value is cast to float because PHPDoc is not reliable.
+	 */
+	public function cartGetSubtotal(): float {
+		return (float) WC()->cart->get_subtotal();
+	}
+
+	public function cartGetCustomer(): WC_Customer {
+		return WC()->cart->get_customer();
+	}
+
+	public function cartCalculateShipping(): array {
+		return WC()->cart->calculate_shipping();
+	}
+
+	public function cartFeesApiAddFee( array $args ): void {
+		WC()->cart->fees_api()->add_fee( $args );
 	}
 }

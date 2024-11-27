@@ -7,7 +7,8 @@ namespace Packetery\Module\Hooks;
 use Packetery\Module\Api;
 use Packetery\Module\Blocks\BlockHooks;
 use Packetery\Module\Carrier\OptionsPage;
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\Checkout;
+use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\CronService;
 use Packetery\Module\DashboardWidget;
 use Packetery\Module\Framework\WpAdapter;
@@ -222,6 +223,11 @@ class HookRegistrar {
 	 */
 	private $packetSynchronizer;
 
+	/**
+	 * @var CheckoutSettings
+	 */
+	private $checkoutSettings;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -258,7 +264,8 @@ class HookRegistrar {
 		Log\Page $logPage,
 		Options\Page $optionsPage,
 		WpAdapter $wpAdapter,
-		PacketSynchronizer $packetSynchronizer
+		PacketSynchronizer $packetSynchronizer,
+		CheckoutSettings $checkoutSettings
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
@@ -296,6 +303,7 @@ class HookRegistrar {
 		$this->optionsPage               = $optionsPage;
 		$this->wpAdapter                 = $wpAdapter;
 		$this->packetSynchronizer        = $packetSynchronizer;
+		$this->checkoutSettings          = $checkoutSettings;
 	}
 
 	public function register(): void {
@@ -497,8 +505,8 @@ class HookRegistrar {
 			$this->wpAdapter->addAction( 'woocommerce_blocks_loaded', [ $this->blockHooks, 'orderUpdateCallback' ] );
 		} else {
 			// For blocks.
-			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
-			$this->wpAdapter->addAction( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
+			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkoutSettings, 'createSettingsAjax' ] );
+			$this->wpAdapter->addAction( 'wp_ajax_nopriv_get_settings', [ $this->checkoutSettings, 'createSettingsAjax' ] );
 		}
 	}
 

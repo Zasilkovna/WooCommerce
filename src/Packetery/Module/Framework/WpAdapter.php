@@ -101,4 +101,27 @@ class WpAdapter {
 	public function isAdmin(): bool {
 		return is_admin();
 	}
+
+	public function createNonce( string $action ): string {
+		return wp_create_nonce( $action );
+	}
+
+	public function sendJson( array $settings ): void {
+		wp_send_json( $settings );
+	}
+
+	public function isUserLoggedIn(): bool {
+		return is_user_logged_in();
+	}
+
+	public function getSessionToken(): string {
+		return wp_get_session_token();
+	}
+
+	/**
+	 * @return false|string
+	 */
+	public function jsonEncode( $data ) {
+		return wp_json_encode( $data );
+	}
 }
