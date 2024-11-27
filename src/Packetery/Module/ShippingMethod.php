@@ -11,6 +11,7 @@ namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\WcSettingsConfig;
+use Packetery\Module\Checkout\Checkout;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\DI\Container;

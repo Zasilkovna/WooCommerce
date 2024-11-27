@@ -6,16 +6,16 @@ namespace Packetery\Module\Blocks;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationRegistry;
 use Packetery\Module\Blocks;
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 
 class BlockHooks {
 
 	/**
-	 * @var Checkout
+	 * @var CheckoutSettings
 	 */
-	private $checkout;
+	private $checkoutSettings;
 
 	/**
 	 * @var WpAdapter
@@ -28,19 +28,19 @@ class BlockHooks {
 	private $wcAdapter;
 
 	public function __construct(
-		Checkout $checkout,
+		CheckoutSettings $checkoutSettings,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter
 	) {
-		$this->checkout  = $checkout;
-		$this->wpAdapter = $wpAdapter;
-		$this->wcAdapter = $wcAdapter;
+		$this->checkoutSettings = $checkoutSettings;
+		$this->wpAdapter        = $wpAdapter;
+		$this->wcAdapter        = $wcAdapter;
 	}
 
 	public function registerCheckoutBlock( IntegrationRegistry $integrationRegistry ): void {
 		$integrationRegistry->register(
 			new Blocks\WidgetIntegration(
-				$this->checkout->createSettings()
+				$this->checkoutSettings->createSettings()
 			)
 		);
 	}
