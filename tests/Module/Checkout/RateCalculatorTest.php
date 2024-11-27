@@ -2,11 +2,14 @@
 
 declare( strict_types=1 );
 
-namespace Tests\Module;
+namespace Tests\Module\Checkout;
 
 use Packetery\Module\Carrier\Options;
-use Packetery\Module\RateCalculator;
+use Packetery\Module\Checkout\RateCalculator;
+use Packetery\Module\Framework\WcAdapter;
 use PHPUnit\Framework\TestCase;
+use Tests\Module\CarrierOptionsDummyFactory;
+use Tests\Module\MockFactory;
 
 class RateCalculatorTest extends TestCase {
 	/**
@@ -123,7 +126,8 @@ class RateCalculatorTest extends TestCase {
 
 		$rateCalculator = new RateCalculator(
 			$wpAdapter,
-			MockFactory::createCurrencySwitcherFacade( $this )
+			$this->createMock( WcAdapter::class ),
+			MockFactory::createCurrencySwitcherFacade( $this ),
 		);
 
 		$cost = $rateCalculator->getShippingRateCost(

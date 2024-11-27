@@ -11,8 +11,8 @@ namespace Packetery\Module\Options;
 
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
-use Packetery\Module;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Checkout\CurrencySwitcherFacade;
 use Packetery\Module\Log\DbLogger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http;
@@ -140,7 +140,7 @@ class Exporter {
 			 */
 			'plugins'           => $this->getFormattedPlugins( (array) apply_filters( 'all_plugins', get_plugins() ) ),
 			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
-			'currencySwitchers' => $this->formatVariable( Module\CurrencySwitcherFacade::$supportedCurrencySwitchers ),
+			'currencySwitchers' => $this->formatVariable( CurrencySwitcherFacade::$supportedCurrencySwitchers ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
