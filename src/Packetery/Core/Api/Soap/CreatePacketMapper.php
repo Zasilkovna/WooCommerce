@@ -53,7 +53,7 @@ class CreatePacketMapper {
 	public function fromOrderToArray( Entity\Order $order ): array {
 		$createPacketData = [
 			// Required attributes.
-			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),
+			'number'       => $order->getCustomNumberOrNumber(),
 			'name'         => $order->getName(),
 			'surname'      => $order->getSurname(),
 			'value'        => $order->getValue(),
