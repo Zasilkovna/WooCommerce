@@ -1505,7 +1505,13 @@ class Checkout {
 		$checkoutData      = $this->httpRequest->getPost();
 		$savedCheckoutData = get_transient( $this->getTransientNamePacketaCheckoutData() );
 
-		if ( ! isset( $savedCheckoutData[ $chosenShippingMethod ] ) && ( null === $checkoutData || ( is_array( $savedCheckoutData ) && count( $checkoutData ) === 0 ) ) ) {
+		if (
+			! isset( $savedCheckoutData[ $chosenShippingMethod ] ) &&
+			(
+				null === $checkoutData ||
+				( is_array( $savedCheckoutData ) && count( $checkoutData ) === 0 )
+			)
+		) {
 			/**
 			 * WC logger.
 			 *
