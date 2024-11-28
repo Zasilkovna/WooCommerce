@@ -165,7 +165,7 @@ class CheckoutSettings {
 			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttrs,
 			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttrs,
 			'carDeliveryCarriers'        => Entity\Carrier::CAR_DELIVERY_CARRIERS,
-			'expeditionDay'              => $this->getExpeditionDay(),
+			'expeditionDay'              => $this->getCarDeliveryExpeditionDay(),
 			'appIdentity'                => Plugin::getAppIdentity(),
 			'packeteryApiKey'            => $this->optionsProvider->get_api_key(),
 			'widgetAutoOpen'             => $this->optionsProvider->shouldWidgetOpenAutomatically(),
@@ -209,7 +209,7 @@ class CheckoutSettings {
 	 *
 	 * @return string
 	 */
-	private function getExpeditionDay(): ?string {
+	private function getCarDeliveryExpeditionDay(): ?string {
 		$chosenShippingMethod = $this->sessionService->getChosenMethodFromSession();
 		$carrierId            = OptionPrefixer::removePrefix( $chosenShippingMethod );
 		if ( false === $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) {
