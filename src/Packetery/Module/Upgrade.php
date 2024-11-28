@@ -110,7 +110,7 @@ class Upgrade {
 		Carrier\Repository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		OptionsProvider $optionsProvider,
-		EntityRepository $carrierEntityRepository,
+		EntityRepository $carrierEntityRepository
 	) {
 		$this->orderRepository              = $orderRepository;
 		$this->messageManager               = $messageManager;
