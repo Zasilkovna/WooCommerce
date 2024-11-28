@@ -35,7 +35,7 @@ class CheckoutValidator {
 	/**
 	 * @var CheckoutService
 	 */
-	private $service;
+	private $checkoutService;
 
 	/**
 	 * @var CartService
@@ -66,7 +66,7 @@ class CheckoutValidator {
 		PickupPointValidator $pickupPointValidator,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
-		CheckoutService $service,
+		CheckoutService $checkoutService,
 		CartService $cartService,
 		SessionService $sessionService,
 		CheckoutStorage $storage,
@@ -76,7 +76,7 @@ class CheckoutValidator {
 		$this->pickupPointValidator    = $pickupPointValidator;
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
-		$this->service                 = $service;
+		$this->checkoutService         = $checkoutService;
 		$this->cartService             = $cartService;
 		$this->sessionService          = $sessionService;
 		$this->storage                 = $storage;
@@ -90,10 +90,10 @@ class CheckoutValidator {
 	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function validateCheckoutData(): void {
-		$chosenShippingMethod = $this->service->getChosenMethod();
+		$chosenShippingMethod = $this->checkoutService->getChosenMethod();
 		$this->wcAdapter->sessionSet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
-		if ( false === $this->service->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
+		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
 			return;
 		}
 
@@ -106,7 +106,7 @@ class CheckoutValidator {
 		}
 
 		// Cannot be null because of previous condition.
-		$carrierId      = $this->service->getCarrierIdFromShippingMethod( $chosenShippingMethod );
+		$carrierId      = $this->checkoutService->getCarrierIdFromShippingMethod( $chosenShippingMethod );
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		$paymentMethod  = $this->sessionService->getChosenPaymentMethod();
 
@@ -116,17 +116,17 @@ class CheckoutValidator {
 			return;
 		}
 
-		if ( $this->service->isPickupPointOrder() ) {
+		if ( $this->checkoutService->isPickupPointOrder() ) {
 			$this->validatePickupPoint( $checkoutData, $carrierId, $chosenShippingMethod );
 		}
 
-		if ( $this->service->isHomeDeliveryOrder() ) {
+		if ( $this->checkoutService->isHomeDeliveryOrder() ) {
 			$this->validateHomeDelivery( $checkoutData, $carrierId );
 		}
 
 		if (
 			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] )
-			&& $this->service->isCarDeliveryOrder()
+			&& $this->checkoutService->isCarDeliveryOrder()
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 		}
@@ -159,7 +159,7 @@ class CheckoutValidator {
 			! $error &&
 			! $this->carrierEntityRepository->isValidForCountry(
 				$carrierId,
-				$this->service->getCustomerCountry()
+				$this->checkoutService->getCustomerCountry()
 			)
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
@@ -202,8 +202,8 @@ class CheckoutValidator {
 			$pickupPointId,
 			$carrierId,
 			$pointCarrierId,
-			$this->service->getCustomerCountry(),
-			$this->service->getCarrierIdFromShippingMethod( $chosenShippingMethod ),
+			$this->checkoutService->getCustomerCountry(),
+			$this->checkoutService->getCarrierIdFromShippingMethod( $chosenShippingMethod ),
 			false,
 			false,
 			$this->cartService->getCartWeightKg(),

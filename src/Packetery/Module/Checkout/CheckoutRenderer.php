@@ -28,7 +28,7 @@ class CheckoutRenderer {
 	/**
 	 * @var CheckoutService
 	 */
-	private $service;
+	private $checkoutService;
 
 	/**
 	 * @var WpAdapter
@@ -38,13 +38,13 @@ class CheckoutRenderer {
 	public function __construct(
 		Engine $latteEngine,
 		UrlBuilder $urlBuilder,
-		CheckoutService $service,
+		CheckoutService $checkoutService,
 		WpAdapter $wpAdapter
 	) {
-		$this->latteEngine = $latteEngine;
-		$this->urlBuilder  = $urlBuilder;
-		$this->service     = $service;
-		$this->wpAdapter   = $wpAdapter;
+		$this->latteEngine     = $latteEngine;
+		$this->urlBuilder      = $urlBuilder;
+		$this->checkoutService = $checkoutService;
+		$this->wpAdapter       = $wpAdapter;
 	}
 
 	/**
@@ -75,7 +75,7 @@ class CheckoutRenderer {
 			return;
 		}
 
-		if ( ! $this->service->isPacketeryShippingMethod( $shippingRate->get_id() ) ) {
+		if ( ! $this->checkoutService->isPacketeryShippingMethod( $shippingRate->get_id() ) ) {
 			return;
 		}
 
@@ -123,7 +123,7 @@ class CheckoutRenderer {
 			return;
 		}
 
-		if ( ! $this->service->isCarDeliveryOrder() ) {
+		if ( ! $this->checkoutService->isCarDeliveryOrder() ) {
 			return;
 		}
 

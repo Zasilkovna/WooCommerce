@@ -86,7 +86,7 @@ class Checkout {
 	/**
 	 * @var CheckoutService
 	 */
-	private $service;
+	private $checkoutService;
 
 	/**
 	 * @var CheckoutRenderer
@@ -126,7 +126,7 @@ class Checkout {
 		Carrier\EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
 		PaymentHelper $paymentHelper,
-		CheckoutService $service,
+		CheckoutService $checkoutService,
 		CheckoutRenderer $renderer,
 		CheckoutStorage $storage,
 		CartService $cartService,
@@ -145,7 +145,7 @@ class Checkout {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
 		$this->paymentHelper           = $paymentHelper;
-		$this->service                 = $service;
+		$this->checkoutService         = $checkoutService;
 		$this->renderer                = $renderer;
 		$this->storage                 = $storage;
 		$this->cartService             = $cartService;
@@ -210,19 +210,19 @@ class Checkout {
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function updateOrderMetaBlocks( WC_Order $wcOrder ): void {
-		$chosenMethod = $this->service->getChosenMethod();
-		if ( false === $this->service->isPacketeryShippingMethod( $chosenMethod ) ) {
+		$chosenMethod = $this->checkoutService->getChosenMethod();
+		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return;
 		}
 
 		$checkoutData           = $this->storage->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
 		$propsToSave            = [];
-		$carrierId              = $this->service->getCarrierIdFromShippingMethod( $chosenMethod );
+		$carrierId              = $this->checkoutService->getCarrierIdFromShippingMethod( $chosenMethod );
 		$orderHasUnsavedChanges = false;
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
 
-		if ( $this->service->isPickupPointOrder() ) {
+		if ( $this->checkoutService->isPickupPointOrder() ) {
 			// @phpstan-ignore-next-line
 			if ( PickupPointValidator::IS_ACTIVE ) {
 				$pickupPointValidationError = $this->wcAdapter->sessionGet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
@@ -270,12 +270,12 @@ class Checkout {
 		if (
 			isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
 			'1' === $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] &&
-			$this->service->isHomeDeliveryOrder()
+			$this->checkoutService->isHomeDeliveryOrder()
 		) {
 			$validatedAddress = $this->mapper->toValidatedAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $validatedAddress );
 			$orderEntity->setAddressValidated( true );
-			if ( $this->service->areBlocksUsedInCheckout() ) {
+			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 				$this->mapper->validatedAddressToWcOrderShippingAddress( $wcOrder, $checkoutData );
 				$orderHasUnsavedChanges = true;
 			}
@@ -285,7 +285,7 @@ class Checkout {
 			$wcOrder->save();
 		}
 
-		if ( count( $checkoutData ) > 0 && $this->service->isCarDeliveryOrder() ) {
+		if ( count( $checkoutData ) > 0 && $this->checkoutService->isCarDeliveryOrder() ) {
 			$address = $this->mapper->toCarDeliveryAddress( $checkoutData );
 			$orderEntity->setDeliveryAddress( $address );
 			$orderEntity->setAddressValidated( true );
@@ -326,13 +326,13 @@ class Checkout {
 	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function calculateFees(): void {
-		$chosenShippingMethod = $this->service->calculateShippingAndGetId();
-		if ( false === $this->service->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
+		$chosenShippingMethod = $this->checkoutService->calculateShippingAndGetId();
+		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
 			return;
 		}
 
 		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
-		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->service->getCarrierIdFromShippingMethod( $chosenShippingMethod ) );
+		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->checkoutService->getCarrierIdFromShippingMethod( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->cartService->getTaxClassWithMaxRate();
 
 		if (
@@ -420,7 +420,7 @@ class Checkout {
 	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function getShippingRates( ?array $allowedCarrierNames ): array {
-		$customerCountry           = $this->service->getCustomerCountry();
+		$customerCountry           = $this->checkoutService->getCustomerCountry();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
 		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 		$cartPrice                 = $this->cartService->getCartContentsTotalIncludingTax();
@@ -538,11 +538,11 @@ class Checkout {
 			$chosenMethod = $this->sessionService->getChosenMethodFromSession();
 		}
 
-		if ( ! $this->service->isPacketeryShippingMethod( $chosenMethod ) ) {
+		if ( ! $this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return $availableGateways;
 		}
 
-		$carrierId = $this->service->getCarrierIdFromShippingMethod( $chosenMethod );
+		$carrierId = $this->checkoutService->getCarrierIdFromShippingMethod( $chosenMethod );
 		$carrier   = $this->carrierEntityRepository->getAnyById( $carrierId );
 		if ( null === $carrier ) {
 			return $availableGateways;
@@ -585,10 +585,10 @@ class Checkout {
 		if ( null === $chosenShippingRate ) {
 			return;
 		}
-		if ( ! $this->service->isPacketeryShippingMethod( $chosenShippingRate ) ) {
+		if ( ! $this->checkoutService->isPacketeryShippingMethod( $chosenShippingRate ) ) {
 			return;
 		}
-		$chosenShippingMethod = $this->service->removeShippingMethodPrefix( $chosenShippingRate );
+		$chosenShippingMethod = $this->checkoutService->removeShippingMethodPrefix( $chosenShippingRate );
 		$carrierOptions       = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
 		$surcharge            = $this->rateCalculator->getCODSurcharge(
 			$carrierOptions->toArray(),
