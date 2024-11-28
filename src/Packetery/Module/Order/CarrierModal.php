@@ -317,7 +317,7 @@ class CarrierModal {
 			return;
 		}
 		$shippingItems = $order->get_items( 'shipping' );
-		if ( count( $shippingItems ) > 0 ) {
+		if ( is_array( $shippingItems ) && count( $shippingItems ) > 0 ) {
 			$firstItem = reset( $shippingItems );
 			if ( $firstItem instanceof WC_Order_Item_Shipping ) {
 				$firstItem->set_method_title( $carrierTitle );
