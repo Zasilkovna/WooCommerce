@@ -174,7 +174,7 @@ class CheckoutValidator {
 				$carriersForValidation = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
 			}
 			$pickupPointValidationResponse = $this->pickupPointValidator->validate(
-				$this->getPickupPointValidateRequest(
+				$this->createPickupPointValidateRequest(
 					$pickupPointId,
 					$carrierId,
 					( is_numeric( $carrierId ) ? $pickupPointId : null ),
@@ -192,7 +192,7 @@ class CheckoutValidator {
 		}
 	}
 
-	private function getPickupPointValidateRequest(
+	private function createPickupPointValidateRequest(
 		string $pickupPointId,
 		?string $carrierId,
 		?string $pointCarrierId,
