@@ -64,7 +64,7 @@ class CheckoutSettings {
 	/**
 	 * @var CheckoutService
 	 */
-	private $service;
+	private $checkoutService;
 
 	/**
 	 * @var CartService
@@ -95,7 +95,7 @@ class CheckoutSettings {
 		Api\Internal\CheckoutRouter $apiRouter,
 		Carrier\CarrierOptionsFactory $carrierOptionsFactory,
 		CheckoutStorage $storage,
-		CheckoutService $service,
+		CheckoutService $checkoutService,
 		CartService $cartService,
 		SessionService $sessionService,
 		WpAdapter $wpAdapter,
@@ -110,7 +110,7 @@ class CheckoutSettings {
 		$this->apiRouter               = $apiRouter;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 		$this->storage                 = $storage;
-		$this->service                 = $service;
+		$this->checkoutService         = $checkoutService;
 		$this->cartService             = $cartService;
 		$this->sessionService          = $sessionService;
 		$this->wpAdapter               = $wpAdapter;
@@ -156,7 +156,7 @@ class CheckoutSettings {
 		return [
 			'language'                   => $language,
 			'logo'                       => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
-			'country'                    => $this->service->getCustomerCountry(),
+			'country'                    => $this->checkoutService->getCustomerCountry(),
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
 			'isCarDeliverySampleEnabled' => $this->carDeliveryConfig->isSampleEnabled(),
