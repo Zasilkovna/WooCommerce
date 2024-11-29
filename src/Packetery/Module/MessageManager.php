@@ -37,7 +37,7 @@ class MessageManager {
 	/**
 	 * Messages to be displayed.
 	 *
-	 * @var array
+	 * @var array<array<string, string>>
 	 */
 	private $messages = [];
 

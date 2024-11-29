@@ -63,7 +63,7 @@ class DashboardWidget {
 	/**
 	 * Survey config.
 	 *
-	 * @var array
+	 * @var array<string, bool|string>
 	 */
 	private $surveyConfig;
 

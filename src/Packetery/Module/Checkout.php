@@ -464,11 +464,7 @@ class Checkout {
 
 		if ( $this->isPickupPointOrder() ) {
 			$error = false;
-			/**
-			 * Returns array always.
-			 *
-			 * @var array $requiredAttrs
-			 */
+
 			$requiredAttrs = array_filter(
 				array_combine(
 					array_column( Order\Attribute::$pickupPointAttrs, 'name' ),

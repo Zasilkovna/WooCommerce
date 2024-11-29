@@ -96,7 +96,7 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param string $carrierId Carrier id.
 	 *
-	 * @return array
+	 * @return array<int, string>
 	 */
 	public function getCompoundCarrierVendorGroups( string $carrierId ): array {
 		$vendorGroups              = [];
@@ -196,7 +196,7 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param string $country Country.
 	 *
-	 * @return array
+	 * @return array<int<0, max>, BaseProvider>
 	 */
 	public function getNonFeedCarriersByCountry( string $country ): array {
 		$filteredCarriers = [];

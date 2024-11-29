@@ -63,7 +63,7 @@ class Downloader {
 	/**
 	 * Runs update and returns result.
 	 *
-	 * @return array
+	 * @return array<int, string>
 	 */
 	public function run(): array {
 		try {
@@ -123,7 +123,7 @@ class Downloader {
 	/**
 	 * Downloads carriers and returns in array.
 	 *
-	 * @return array|null
+	 * @return array<int, array<string, string>>|null
 	 * @throws WebRequestException DownloadException.
 	 */
 	private function fetch_as_array(): ?array {
@@ -147,7 +147,7 @@ class Downloader {
 	 *
 	 * @param string $json JSON.
 	 *
-	 * @return array|null
+	 * @return array<int, array<string, string>>|null
 	 */
 	private function get_from_json( string $json ): ?array {
 		$carriersData = json_decode( $json, true );

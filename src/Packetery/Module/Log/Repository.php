@@ -54,7 +54,7 @@ class Repository {
 	/**
 	 * Finds logs.
 	 *
-	 * @param array $arguments Search arguments.
+	 * @param array<string, string|int|bool|float|null|array<string,mixed>> $arguments Search arguments.
 	 *
 	 * @return \Generator<Record>|array<empty>
 	 * @throws \Exception From DateTimeImmutable.
@@ -67,12 +67,14 @@ class Repository {
 		$dateQuery = $arguments['date_query'] ?? [];
 
 		$orderByTransformed = [];
-		foreach ( $orderBy as $orderByKey => $orderByValue ) {
-			if ( ! in_array( $orderByValue, [ 'ASC', 'DESC' ], true ) ) {
-				$orderByValue = 'ASC';
-			}
+		if ( count( $orderBy ) > 0 ) {
+			foreach ( $orderBy as $orderByKey => $orderByValue ) {
+				if ( ! in_array( $orderByValue, [ 'ASC', 'DESC' ], true ) ) {
+					$orderByValue = 'ASC';
+				}
 
-			$orderByTransformed[] = '`' . $orderByKey . '` ' . $orderByValue;
+				$orderByTransformed[] = '`' . $orderByKey . '` ' . $orderByValue;
+			}
 		}
 
 		$orderByClause = '';
@@ -86,9 +88,11 @@ class Repository {
 		}
 
 		$where = [];
-		foreach ( $dateQuery as $dateQueryItem ) {
-			if ( isset( $dateQueryItem['after'] ) ) {
-				$where[] = $this->wpdbAdapter->prepare( '`date` > %s', CoreHelper::now()->modify( $dateQueryItem['after'] )->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
+		if ( count( $dateQuery ) > 0 ) {
+			foreach ( $dateQuery as $dateQueryItem ) {
+				if ( isset( $dateQueryItem['after'] ) ) {
+					$where[] = $this->wpdbAdapter->prepare( '`date` > %s', CoreHelper::now()->modify( $dateQueryItem['after'] )->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
+				}
 			}
 		}
 
@@ -119,11 +123,11 @@ class Repository {
 	/**
 	 * Remaps logs.
 	 *
-	 * @param iterable $logs Logs.
+	 * @param array $logs Logs.
 	 *
 	 * @return \Generator<Record>
 	 */
-	public function remapToRecord( iterable $logs ): \Generator {
+	public function remapToRecord( array $logs ): \Generator {
 		foreach ( $logs as $log ) {
 			$record         = new Record();
 			$record->id     = $log->id;

@@ -19,7 +19,7 @@ class PacketSubmissionResult {
 	/**
 	 * Submission result counter.
 	 *
-	 * @var int[]
+	 * @var array<string, int>
 	 */
 	private $counter = [
 		'success'         => 0,
@@ -93,7 +93,7 @@ class PacketSubmissionResult {
 	/**
 	 * Gets counter.
 	 *
-	 * @return array
+	 * @return array<string, int>
 	 */
 	public function getCounter(): array {
 		return $this->counter;

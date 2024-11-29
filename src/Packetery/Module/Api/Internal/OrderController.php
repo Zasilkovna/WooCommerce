@@ -20,6 +20,7 @@ use Packetery\Module\Order\GridExtender;
 use Packetery\Module\Order\OrderValidatorFactory;
 use Packetery\Module\Order\PacketSetStoredUntil;
 use Packetery\Module\Order\Repository;
+use Packetery\Nette\Http\Request;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -155,12 +156,11 @@ final class OrderController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Update one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<array<string>> $request
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveModal( WP_REST_Request $request ) {
 		$data               = [];
 		$parameters         = $request->get_body_params();
@@ -238,12 +238,11 @@ final class OrderController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Update one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<array<string>> $request
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveStoredUntil( WP_REST_Request $request ) {
 		$data        = [];
 		$parameters  = $request->get_body_params();

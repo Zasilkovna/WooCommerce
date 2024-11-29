@@ -227,7 +227,7 @@ class CollectionPrint {
 	/**
 	 * Request shipment.
 	 *
-	 * @param array $packetIds Packet ids.
+	 * @param array<string> $packetIds Packet ids.
 	 *
 	 * @return Response\CreateShipment
 	 */

@@ -99,9 +99,9 @@ class DataTab {
 	/**
 	 * Registers tab.
 	 *
-	 * @param array $tabs Tabs definition array.
+	 * @param array<string> $tabs Tabs definition array.
 	 *
-	 * @return array
+	 * @return array<string,array<string,string|array<string>>>
 	 */
 	public function registerTab( array $tabs ): array {
 		$tabs[ self::NAME ] = [
@@ -186,8 +186,8 @@ class DataTab {
 	/**
 	 * Process form data.
 	 *
-	 * @param int   $productId Product ID.
-	 * @param array $values    Form values.
+	 * @param int                                    $productId Product ID.
+	 * @param array<string, bool|array<string,bool>> $values    Form values.
 	 */
 	public function processFormData( int $productId, array $values ): void {
 		foreach ( $values as $attr => $value ) {

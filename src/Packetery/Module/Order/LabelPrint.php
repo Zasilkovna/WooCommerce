@@ -412,8 +412,8 @@ class LabelPrint {
 	/**
 	 * Prepares carrier labels.
 	 *
-	 * @param int   $offset Offset value.
-	 * @param array $packetIds Packet ids.
+	 * @param int           $offset Offset value.
+	 * @param array<string> $packetIds Packet ids.
 	 *
 	 * @return Response\PacketsCourierLabelsPdf
 	 */
@@ -475,8 +475,8 @@ class LabelPrint {
 	/**
 	 * Gets saved packet ids.
 	 *
-	 * @param array $orderIds Order IDs from transient.
-	 * @param bool  $isCarrierLabels Are carrier labels requested?.
+	 * @param array<string> $orderIds Order IDs from transient.
+	 * @param bool          $isCarrierLabels Are carrier labels requested?.
 	 *
 	 * @return string[]
 	 */
@@ -498,7 +498,7 @@ class LabelPrint {
 	/**
 	 * Gets order IDs transient.
 	 *
-	 * @return array|null
+	 * @return array<string>|null
 	 */
 	private function getOrderIdsTransient(): ?array {
 		$orderIds = get_transient( self::getOrderIdsTransientName() );
@@ -514,7 +514,7 @@ class LabelPrint {
 	 *
 	 * @param string[] $packetIds List of packet ids.
 	 *
-	 * @return array[]
+	 * @return array<int, array{packetId: string, courierNumber: string}>
 	 */
 	private function getPacketIdsWithCourierNumbers( array $packetIds ): array {
 		$pairs = [];

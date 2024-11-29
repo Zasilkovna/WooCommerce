@@ -17,7 +17,7 @@ class FormRules {
 	 * Creates greaterThan validator parts for addRule form method.
 	 *
 	 * @param float $threshold Threshold.
-	 * @return array
+	 * @return array{array{class-string<FormValidators>, 'greaterThan'}, string, float}
 	 */
 	public static function getGreaterThanParameters( float $threshold ): array {
 		return [
@@ -31,7 +31,7 @@ class FormRules {
 	/**
 	 * Creates date validator parts for addRule form method.
 	 *
-	 * @return array
+	 * @return array{array{class-string<FormValidators>, 'dateIsInMysqlFormat'}, string}
 	 */
 	public static function getDateParameters(): array {
 		return [

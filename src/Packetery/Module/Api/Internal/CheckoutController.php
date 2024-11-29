@@ -99,12 +99,11 @@ final class CheckoutController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Save selected pickup point.
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<array<string>> $request
 	 *
 	 * @return WP_REST_Response
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveSelectedPickupPoint( WP_REST_Request $request ): WP_REST_Response {
 		$this->save( $request, Attribute::$pickupPointAttrs );
 
@@ -112,12 +111,11 @@ final class CheckoutController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Save validated address.
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<array<string>> $request
 	 *
 	 * @return WP_REST_Response
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveValidatedAddress( WP_REST_Request $request ): WP_REST_Response {
 		$this->save( $request, Attribute::$homeDeliveryAttrs );
 
@@ -125,12 +123,11 @@ final class CheckoutController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Save car delivery details.
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<array<string>> $request
 	 *
 	 * @return WP_REST_Response
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveCarDeliveryDetails( WP_REST_Request $request ): WP_REST_Response {
 		$this->save( $request, Attribute::$carDeliveryAttrs );
 
@@ -140,10 +137,11 @@ final class CheckoutController extends WP_REST_Controller {
 	/**
 	 * Removes saved selected pickup point or validated address.
 	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<array<string>> $request
 	 *
 	 * @return WP_REST_Response
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function removeSavedData( WP_REST_Request $request ): WP_REST_Response {
 		$params = $request->get_params();
 		if ( ! isset( $params['carrierId'] ) || '' === $params['carrierId'] ) {
@@ -173,11 +171,12 @@ final class CheckoutController extends WP_REST_Controller {
 	/**
 	 * Saves carrier data.
 	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @param array           $carrierAttrs Carrier attributes.
+	 * @param WP_REST_Request<array<string>> $request
+	 * @param array                          $carrierAttrs
 	 *
 	 * @return void
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	private function save( WP_REST_Request $request, array $carrierAttrs ): void {
 		$parameters = $request->get_body_params();
 		$savedData  = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );

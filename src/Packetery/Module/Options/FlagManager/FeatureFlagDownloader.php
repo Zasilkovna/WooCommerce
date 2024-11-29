@@ -90,7 +90,7 @@ class FeatureFlagDownloader {
 	/**
 	 * Downloads flags.
 	 *
-	 * @return array
+	 * @return array<string, bool|string>
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function fetchFlags(): array {

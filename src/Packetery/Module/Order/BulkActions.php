@@ -69,9 +69,9 @@ class BulkActions {
 	/**
 	 * Adds custom actions to dropdown in admin order list.
 	 *
-	 * @param array $actions Array of action.
+	 * @param array<string, string> $actions Array of action.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function addActions( array $actions ): array {
 		$actions['submit_to_api']                                  = __( 'Submit orders to Packeta', 'packeta' );
@@ -85,9 +85,9 @@ class BulkActions {
 	/**
 	 * Executes the action for selected orders and returns url to redirect to.
 	 *
-	 * @param string $redirectTo Url.
-	 * @param string $action Action id.
-	 * @param array  $postIds Order ids.
+	 * @param string     $redirectTo Url.
+	 * @param string     $action Action id.
+	 * @param array<int> $postIds Order ids.
 	 *
 	 * @return string
 	 */

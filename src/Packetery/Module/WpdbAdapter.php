@@ -106,7 +106,7 @@ class WpdbAdapter {
 	 *                       correspond to an stdClass object, an associative array, or a numeric array,
 	 *                       respectively. Default OBJECT.
 	 *
-	 * @return array|object|null Database query result or null on failure.
+	 * @return array<string, mixed>|object|null Database query result or null on failure.
 	 */
 	public function get_row( string $query, string $output = OBJECT ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -157,10 +157,10 @@ class WpdbAdapter {
 	/**
 	 * Helper function for insert and replace.
 	 *
-	 * @param string     $table  Table name.
-	 * @param array      $data   Data to insert (in column => value pairs).
-	 * @param array|null $format Optional. An array of formats to be mapped to each of the value in $data.
-	 * @param string     $type   Optional. Type of operation. Possible values include 'INSERT' or 'REPLACE'.
+	 * @param string               $table  Table name.
+	 * @param array<string, mixed> $data   Data to insert (in column => value pairs).
+	 * @param array<string>|null   $format Optional. An array of formats to be mapped to each of the value in $data.
+	 * @param string               $type   Optional. Type of operation. Possible values include 'INSERT' or 'REPLACE'.
 	 *
 	 * @return int|false The number of rows affected, or false on error.
 	 */
@@ -176,9 +176,9 @@ class WpdbAdapter {
 	/**
 	 * Deletes a row in the table.
 	 *
-	 * @param string      $table       Table name.
-	 * @param array       $where       A named array of WHERE clauses (in column => value pairs).
-	 * @param string|null $whereFormat Optional. An array of formats to be mapped to each of the values in $where.
+	 * @param string                    $table       Table name.
+	 * @param array<string, int|string> $where       A named array of WHERE clauses (in column => value pairs).
+	 * @param string|null               $whereFormat Optional. An array of formats to be mapped to each of the values in $where.
 	 *
 	 * @return int|false The number of rows updated, or false on error.
 	 */
@@ -194,8 +194,8 @@ class WpdbAdapter {
 	/**
 	 * Inserts a row into the table.
 	 *
-	 * @param string $table Table name.
-	 * @param array  $data  Data to insert (in column => value pairs).
+	 * @param string               $table Table name.
+	 * @param array<string, mixed> $data  Data to insert (in column => value pairs).
 	 *
 	 * @return int|false The number of rows inserted, or false on error.
 	 */
@@ -211,9 +211,9 @@ class WpdbAdapter {
 	/**
 	 * Updates a row in the table.
 	 *
-	 * @param string $table Table name.
-	 * @param array  $data  Data to update (in column => value pairs).
-	 * @param array  $where A named array of WHERE clauses (in column => value pairs).
+	 * @param string                                    $table Table name.
+	 * @param array<string, int|float|string|null|bool> $data  Data to update (in column => value pairs).
+	 * @param array<string, int|string>                 $where A named array of WHERE clauses (in column => value pairs).
 	 *
 	 * @return int|false The number of rows updated, or false on error.
 	 */
@@ -339,7 +339,7 @@ class WpdbAdapter {
 	 * @param string $query The query you wish to execute. Setting this parameter to null will return the specified column from the cached results of the previous query.
 	 * @param int    $columnOffset The desired column (0 being the first). Defaults to 0.
 	 *
-	 * @return array Returns an empty array if no result is found.
+	 * @return array<int|float|string|null|bool>  Returns an empty array if no result is found.
 	 */
 	public function get_col( string $query, int $columnOffset = 0 ): array {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
@@ -354,9 +354,9 @@ class WpdbAdapter {
 	/**
 	 * Quote array of strings.
 	 *
-	 * @param array $input Input.
+	 * @param array<string> $input Input.
 	 *
-	 * @return array
+	 * @return array<string>
 	 */
 	private function quoteArrayOfStrings( array $input ): array {
 		return array_map(
@@ -370,7 +370,7 @@ class WpdbAdapter {
 	/**
 	 * Prepare IN clause from array of strings.
 	 *
-	 * @param array $input Input array.
+	 * @param array<string> $input Input array.
 	 *
 	 * @return string
 	 */
@@ -418,9 +418,9 @@ class WpdbAdapter {
 	/**
 	 * Parses the output given by dbDelta and returns information about it. Taken from DatabaseUtil 7.5.1.
 	 *
-	 * @param array $dbdeltaOutput The output from the execution of dbDelta.
+	 * @param array<int|string, string> $dbdeltaOutput The output from the execution of dbDelta.
 	 *
-	 * @return array[] An array containing a 'created_tables' key whose value is an array with the names of the tables that have been (or would have been) created.
+	 * @return array{created_tables: array<int<0, max>, (int|string)>} An array containing a 'created_tables' key whose value is an array with the names of the tables that have been (or would have been) created.
 	 */
 	private function parseDbdeltaOutput( array $dbdeltaOutput ): array {
 		$createdTables = [];

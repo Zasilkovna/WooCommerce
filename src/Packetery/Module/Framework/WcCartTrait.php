@@ -18,7 +18,7 @@ trait WcCartTrait {
 	/**
 	 * Gets cart contents.
 	 *
-	 * @return array of cart items
+	 * @return array<string|int, mixed> of cart items
 	 */
 	public function cartGetCartContents(): array {
 		return WC()->cart->get_cart_contents();
