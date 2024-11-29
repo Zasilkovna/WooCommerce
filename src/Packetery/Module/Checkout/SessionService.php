@@ -51,7 +51,7 @@ class SessionService {
 	 * Updates shipping rates cost based on cart properties.
 	 * To test, change the shipping price during the transition from the first to the second step of the cart.
 	 */
-	public function updateShippingRates(): void {
+	public function actionUpdateShippingRates(): void {
 		$packages = $this->wcAdapter->shippingGetPackages();
 		foreach ( $packages as $i => $package ) {
 			$this->wcAdapter->sessionSet( 'shipping_for_package_' . $i, false );
@@ -68,7 +68,7 @@ class SessionService {
 	 *
 	 * @return array
 	 */
-	public function updateShippingPackages( array $packages ): array {
+	public function filterUpdateShippingPackages( array $packages ): array {
 		foreach ( $packages as &$package ) {
 			$package['packetery_payment_method'] = $this->getChosenPaymentMethod();
 		}

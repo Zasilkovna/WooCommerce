@@ -497,7 +497,14 @@ class HookRegistrar {
 
 		$this->wpAdapter->addAction( 'wp_enqueue_scripts', [ $this->assetManager, 'enqueueFrontAssets' ] );
 		if ( $this->wpAdapter->doingAjax() === false ) {
-			$this->wpAdapter->addAction( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurcharge' ], 20 );
+			$this->wpAdapter->addAction(
+				'woocommerce_cart_calculate_fees',
+				[
+					$this->checkout,
+					'actionApplyCodSurcharge',
+				],
+				20
+			);
 			$this->wpAdapter->addAction( 'woocommerce_order_details_after_order_table', [ $this->viewFrontend, 'renderOrderDetail' ] );
 
 			$this->wpAdapter->addAction( 'init', [ $this->blockHooks, 'register' ] );
@@ -505,8 +512,14 @@ class HookRegistrar {
 			$this->wpAdapter->addAction( 'woocommerce_blocks_loaded', [ $this->blockHooks, 'orderUpdateCallback' ] );
 		} else {
 			// For blocks.
-			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkoutSettings, 'createSettingsAjax' ] );
-			$this->wpAdapter->addAction( 'wp_ajax_nopriv_get_settings', [ $this->checkoutSettings, 'createSettingsAjax' ] );
+			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkoutSettings, 'actionCreateSettingsAjax' ] );
+			$this->wpAdapter->addAction(
+				'wp_ajax_nopriv_get_settings',
+				[
+					$this->checkoutSettings,
+					'actionCreateSettingsAjax',
+				]
+			);
 		}
 	}
 
