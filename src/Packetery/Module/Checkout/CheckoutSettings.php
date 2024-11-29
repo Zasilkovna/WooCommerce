@@ -195,7 +195,7 @@ class CheckoutSettings {
 	 *
 	 * @return void
 	 */
-	public function createSettingsAjax(): void {
+	public function actionCreateSettingsAjax(): void {
 		$settings = [];
 		if ( $this->wcAdapter->cart() instanceof WC_Cart ) {
 			$settings['isAgeVerificationRequired'] = $this->cartService->isAgeVerification18PlusRequired();

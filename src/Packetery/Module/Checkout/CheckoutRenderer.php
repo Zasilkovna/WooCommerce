@@ -50,7 +50,7 @@ class CheckoutRenderer {
 	/**
 	 * Adds fields to the checkout page to save the values later
 	 */
-	public function renderHiddenInputFields(): void {
+	public function actionRenderHiddenInputFields(): void {
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/checkout/input_fields.latte',
 			[
@@ -70,7 +70,7 @@ class CheckoutRenderer {
 	 *
 	 * @param WC_Shipping_Rate $shippingRate Shipping rate.
 	 */
-	public function renderWidgetButtonAfterShippingRate( WC_Shipping_Rate $shippingRate ): void {
+	public function actionRenderWidgetButtonAfterShippingRate( WC_Shipping_Rate $shippingRate ): void {
 		if ( ! is_checkout() ) {
 			return;
 		}
@@ -96,7 +96,7 @@ class CheckoutRenderer {
 	 *
 	 * @return void
 	 */
-	public function renderWidgetButtonTableRow(): void {
+	public function actionRenderWidgetButtonTableRow(): void {
 		if ( ! is_checkout() ) {
 			return;
 		}
@@ -118,7 +118,7 @@ class CheckoutRenderer {
 	 *
 	 * @return void
 	 */
-	public function renderEstimatedDeliveryDateSection(): void {
+	public function actionRenderEstimatedDeliveryDateSection(): void {
 		if ( ! is_checkout() ) {
 			return;
 		}

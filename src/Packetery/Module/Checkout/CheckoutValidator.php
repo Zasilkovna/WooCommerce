@@ -89,7 +89,7 @@ class CheckoutValidator {
 	 *
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function validateCheckoutData(): void {
+	public function actionValidateCheckoutData(): void {
 		$chosenShippingMethod = $this->checkoutService->getChosenMethod();
 		$this->wcAdapter->sessionSet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
