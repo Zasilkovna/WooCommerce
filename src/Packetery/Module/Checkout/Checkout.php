@@ -155,18 +155,43 @@ class Checkout {
 
 	public function registerHooks(): void {
 		// This action works for both classic and Divi templates.
-		$this->wpAdapter->addAction( 'woocommerce_review_order_before_submit', [ $this->renderer, 'renderHiddenInputFields' ] );
+		$this->wpAdapter->addAction(
+			'woocommerce_review_order_before_submit',
+			[
+				$this->renderer,
+				'actionRenderHiddenInputFields',
+			]
+		);
 
-		$this->wpAdapter->addAction( 'woocommerce_checkout_process', [ $this->validator, 'validateCheckoutData' ] );
-		$this->wpAdapter->addAction( 'woocommerce_checkout_update_order_meta', [ $this, 'updateOrderMeta' ] );
-		$this->wpAdapter->addAction( 'woocommerce_store_api_checkout_order_processed', [ $this, 'updateOrderMetaBlocks' ] );
+		$this->wpAdapter->addAction( 'woocommerce_checkout_process', [ $this->validator, 'actionValidateCheckoutData' ] );
+		$this->wpAdapter->addAction( 'woocommerce_checkout_update_order_meta', [ $this, 'actionUpdateOrderMeta' ] );
+		$this->wpAdapter->addAction(
+			'woocommerce_store_api_checkout_order_processed',
+			[
+				$this,
+				'actionUpdateOrderMetaBlocks',
+			]
+		);
 
 		// Must not be registered at backend.
 		$this->wpAdapter->addFilter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 
-		$this->wpAdapter->addAction( 'woocommerce_review_order_before_shipping', [ $this->sessionService, 'updateShippingRates' ], 10 );
-		$this->wpAdapter->addFilter( 'woocommerce_cart_shipping_packages', [ $this->sessionService, 'updateShippingPackages' ] );
-		$this->wpAdapter->addAction( 'woocommerce_cart_calculate_fees', [ $this, 'calculateFees' ] );
+		$this->wpAdapter->addAction(
+			'woocommerce_review_order_before_shipping',
+			[
+				$this->sessionService,
+				'actionUpdateShippingRates',
+			],
+			10
+		);
+		$this->wpAdapter->addFilter(
+			'woocommerce_cart_shipping_packages',
+			[
+				$this->sessionService,
+				'filterUpdateShippingPackages',
+			]
+		);
+		$this->wpAdapter->addAction( 'woocommerce_cart_calculate_fees', [ $this, 'actionCalculateFees' ] );
 		$this->wpAdapter->addAction(
 			'init',
 			function () {
@@ -176,14 +201,32 @@ class Checkout {
 				 * @since 1.3.0
 				 */
 				if ( $this->optionsProvider->getCheckoutWidgetButtonLocation() === 'after_transport_methods' ) {
-					$this->wpAdapter->addAction( 'woocommerce_review_order_after_shipping', [ $this->renderer, 'renderWidgetButtonTableRow' ] );
+					$this->wpAdapter->addAction(
+						'woocommerce_review_order_after_shipping',
+						[
+							$this->renderer,
+							'actionRenderWidgetButtonTableRow',
+						]
+					);
 				} else {
-					$this->wpAdapter->addAction( 'woocommerce_after_shipping_rate', [ $this->renderer, 'renderWidgetButtonAfterShippingRate' ] );
+					$this->wpAdapter->addAction(
+						'woocommerce_after_shipping_rate',
+						[
+							$this->renderer,
+							'actionRenderWidgetButtonAfterShippingRate',
+						]
+					);
 				}
 			}
 		);
 
-		$this->wpAdapter->addAction( 'woocommerce_review_order_after_shipping', [ $this->renderer, 'renderEstimatedDeliveryDateSection' ] );
+		$this->wpAdapter->addAction(
+			'woocommerce_review_order_after_shipping',
+			[
+				$this->renderer,
+				'actionRenderEstimatedDeliveryDateSection',
+			]
+		);
 	}
 
 	/**
@@ -193,13 +236,13 @@ class Checkout {
 	 *
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function updateOrderMeta( int $orderId ): void {
+	public function actionUpdateOrderMeta( int $orderId ): void {
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 		if ( null === $wcOrder ) {
 			return;
 		}
 
-		$this->updateOrderMetaBlocks( $wcOrder );
+		$this->actionUpdateOrderMetaBlocks( $wcOrder );
 	}
 
 	/**
@@ -209,7 +252,7 @@ class Checkout {
 	 *
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
-	public function updateOrderMetaBlocks( WC_Order $wcOrder ): void {
+	public function actionUpdateOrderMetaBlocks( WC_Order $wcOrder ): void {
 		$chosenMethod = $this->checkoutService->getChosenMethod();
 		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return;
@@ -325,7 +368,7 @@ class Checkout {
 	 * @return void
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function calculateFees(): void {
+	public function actionCalculateFees(): void {
 		$chosenShippingMethod = $this->checkoutService->calculateShippingAndGetId();
 		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
 			return;
@@ -573,7 +616,7 @@ class Checkout {
 	 * @return void
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function applyCodSurcharge( WC_Cart $cart ): void {
+	public function actionApplyCodSurcharge( WC_Cart $cart ): void {
 		if ( ! defined( 'DOING_AJAX' ) && $this->wpAdapter->isAdmin() ) {
 			return;
 		}
