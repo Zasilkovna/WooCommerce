@@ -26,7 +26,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	/**
 	 * Options.
 	 *
-	 * @var null|array|false
+	 * @var null|false|array<string, string|null>
 	 */
 	private $options;
 
@@ -144,10 +144,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	}
 
 	/**
-	 * Function to calculate shipping fee.
-	 * Triggered by cart contents change, country change.
-	 *
-	 * @param array $package Order information.
+	 * @param array<string|int, mixed> $package Shipping package.
 	 *
 	 * @return void
 	 * @throws ProductNotFoundException Product not found.
@@ -177,7 +174,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	/**
 	 * Derived from settings-flat-rate.php.
 	 *
-	 * @return array
+	 * @return array<string|int, mixed>
 	 */
 	public function get_instance_form_fields(): array {
 		if ( ! $this->wcCarrierSettingsConfig->isActive() ) {

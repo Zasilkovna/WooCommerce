@@ -22,7 +22,7 @@ class Updater {
 	/**
 	 * Log messages.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $logMessages = [];
 
@@ -54,7 +54,7 @@ class Updater {
 	/**
 	 * Validates data from API.
 	 *
-	 * @param array $carriers Data retrieved from API.
+	 * @param non-empty-array<int, array<string, string>> $carriers
 	 *
 	 * @return bool
 	 */
@@ -85,9 +85,9 @@ class Updater {
 	/**
 	 * Maps input data to storage structure.
 	 *
-	 * @param array $carriers Validated data retrieved from API.
+	 * @param array<int, array<string, string>> $carriers $carriers Validated data retrieved from API.
 	 *
-	 * @return array data to store in db
+	 * @return array<int, array<string, string|float|bool>> data to store in db
 	 */
 	private function carriers_mapper( array $carriers ): array {
 		$mappedData = array();
@@ -124,14 +124,14 @@ class Updater {
 	/**
 	 * Saves carriers.
 	 *
-	 * @param array $carriers Validated data retrieved from API.
+	 * @param array<int, array<string, string>> $carriers Validated data retrieved from API.
 	 */
 	public function save( array $carriers ): void {
 		$mappedData   = $this->carriers_mapper( $carriers );
 		$carriersInDb = $this->carrierRepository->getAllRawIndexed();
 		foreach ( $mappedData as $carrierId => $carrier ) {
 			if ( isset( $carriersInDb[ $carrierId ] ) ) {
-				$this->carrierRepository->update( $carrier, (int) $carrierId );
+				$this->carrierRepository->update( $carrier, $carrierId );
 				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
 				if ( count( $differences ) > 0 ) {
 					$this->addLogEntry(
@@ -175,10 +175,10 @@ class Updater {
 	/**
 	 * Gets array changes as array of strings.
 	 *
-	 * @param array $oldData Previous version.
-	 * @param array $newData New version.
+	 * @param array<string, string>            $oldData Previous version.
+	 * @param array<string, string|float|bool> $newData New version.
 	 *
-	 * @return string[]
+	 * @return array<string, string>
 	 */
 	private function getArrayDifferences( array $oldData, array $newData ): array {
 		$differences    = [];
@@ -236,7 +236,7 @@ class Updater {
 	/**
 	 * Gets translations and isBoolean properties for column names.
 	 *
-	 * @return array[]
+	 * @return array<string, array<string, string|bool>>
 	 */
 	private function getColumnSettings(): array {
 		return [

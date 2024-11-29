@@ -135,7 +135,7 @@ class Repository {
 		if ( null === $customsDeclarationId ) {
 			return [];
 		}
-		/** @var null|array $customsDeclarationItemRows */
+		/** @var null|array<string, string[]> $customsDeclarationItemRows */
 		$customsDeclarationItemRows = $this->wpdbAdapter->get_results(
 			sprintf(
 				'SELECT

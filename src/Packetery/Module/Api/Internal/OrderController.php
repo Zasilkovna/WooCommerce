@@ -155,12 +155,11 @@ final class OrderController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Update one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<string[]> $request
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveModal( WP_REST_Request $request ) {
 		$data               = [];
 		$parameters         = $request->get_body_params();
@@ -238,12 +237,11 @@ final class OrderController extends WP_REST_Controller {
 	}
 
 	/**
-	 * Update one item from the collection
-	 *
-	 * @param WP_REST_Request $request Full data about the request.
+	 * @param WP_REST_Request<string[]> $request
 	 *
 	 * @return WP_REST_Response|WP_Error
 	 */
+	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveStoredUntil( WP_REST_Request $request ) {
 		$data        = [];
 		$parameters  = $request->get_body_params();

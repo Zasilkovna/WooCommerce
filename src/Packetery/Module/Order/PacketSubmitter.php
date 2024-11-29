@@ -414,7 +414,7 @@ class PacketSubmitter {
 	 * Prepares packet attributes.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 * @return array
+	 * @return array<string, string|null|bool>
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
@@ -438,10 +438,10 @@ class PacketSubmitter {
 	/**
 	 * Gets translated messages by submission result.
 	 *
-	 * @param array    $submissionResult Submission result.
-	 * @param int|null $orderId Order ID.
+	 * @param array<string, int> $submissionResult Submission result.
+	 * @param int|null           $orderId Order ID.
 	 *
-	 * @return array
+	 * @return array<string, null|string>
 	 */
 	public function getTranslatedSubmissionMessages( array $submissionResult, ?int $orderId ): array {
 		$success = null;
@@ -488,7 +488,7 @@ class PacketSubmitter {
 				);
 			}
 		} elseif ( isset( $submissionResult['errors'] ) ) {
-			$errors = esc_html( $submissionResult['errors'] );
+			$errors = esc_html( (string) $submissionResult['errors'] );
 		}
 
 		if ( is_numeric( $submissionResult['statusUnchanged'] ) && $submissionResult['statusUnchanged'] > 0 ) {

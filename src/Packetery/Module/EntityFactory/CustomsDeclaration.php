@@ -46,7 +46,7 @@ class CustomsDeclaration {
 	/**
 	 * Creates item from standardized structure.
 	 *
-	 * @param array $data Data.
+	 * @param array<string, string> $data Data.
 	 * @return Entity\CustomsDeclarationItem
 	 */
 	public function createItemFromStandardizedStructure( array $data ): Entity\CustomsDeclarationItem {

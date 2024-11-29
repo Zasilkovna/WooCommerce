@@ -43,21 +43,22 @@ class OptionsProvider {
 	/**
 	 *  Options data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	private $data;
 
 	/**
 	 * Sync data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
+	 * }
 	 */
 	private $syncData;
 
 	/**
 	 * Auto submission data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	private $autoSubmissionData;
 

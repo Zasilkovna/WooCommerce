@@ -83,7 +83,7 @@ class ApiExtender {
 	 *
 	 * @param Order $order Packetery Order.
 	 *
-	 * @return array
+	 * @return array<string, string|null>
 	 */
 	private function getPacketaItemsToShippingLines( Order $order ): array {
 		$items = [

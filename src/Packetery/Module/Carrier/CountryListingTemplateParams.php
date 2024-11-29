@@ -19,14 +19,14 @@ class CountryListingTemplateParams {
 	/**
 	 * Carriers Update params.
 	 *
-	 * @var array
+	 * @var array<string, string|array<string, string>>
 	 */
 	public $carriersUpdate;
 
 	/**
 	 * Countries.
 	 *
-	 * @var array
+	 * @var mixed[]
 	 */
 	public $countries;
 
@@ -54,7 +54,7 @@ class CountryListingTemplateParams {
 	/**
 	 * Translations.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	public $translations;
 

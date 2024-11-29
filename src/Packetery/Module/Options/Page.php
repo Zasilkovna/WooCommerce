@@ -242,7 +242,7 @@ class Page {
 	/**
 	 * Gets order statuses for form.
 	 *
-	 * @return array
+	 * @return array<string, array<string, int|string>>
 	 */
 	public static function getOrderStatusesChoiceData(): array {
 		$orderStatuses            = wc_get_order_statuses();

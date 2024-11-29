@@ -464,11 +464,7 @@ class Checkout {
 
 		if ( $this->isPickupPointOrder() ) {
 			$error = false;
-			/**
-			 * Returns array always.
-			 *
-			 * @var array $requiredAttrs
-			 */
+
 			$requiredAttrs = array_filter(
 				array_combine(
 					array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
@@ -1238,10 +1234,10 @@ class Checkout {
 	/**
 	 * Create shipping rate.
 	 *
-	 * @param string            $name             Name.
-	 * @param string            $optionId         Option ID.
-	 * @param float             $taxExclusiveCost Cost.
-	 * @param array<float>|null $taxes            Taxes. If NULL than it is going to be calculated.
+	 * @param string       $name             Name.
+	 * @param string       $optionId         Option ID.
+	 * @param float        $taxExclusiveCost Cost.
+	 * @param float[]|null $taxes            Taxes. If NULL than it is going to be calculated.
 	 *
 	 * @return array
 	 */

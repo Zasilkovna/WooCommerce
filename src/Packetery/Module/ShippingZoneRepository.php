@@ -36,7 +36,7 @@ class ShippingZoneRepository {
 	/**
 	 * Gets all zones.
 	 *
-	 * @return array
+	 * @return WC_Shipping_Zone[]
 	 */
 	private function getAllShippingZones(): array {
 		$rawZones = $this->dataStore->get_zones();
@@ -55,7 +55,7 @@ class ShippingZoneRepository {
 	 *
 	 * @param string $methodRateId Method rate id.
 	 *
-	 * @return array|null
+	 * @return stdClass[]|null
 	 */
 	private function getLocationsForShippingRate( string $methodRateId ): ?array {
 		/**
@@ -90,7 +90,7 @@ class ShippingZoneRepository {
 	 *
 	 * @param string $rateId Rate id.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCountryCodesForShippingRate( string $rateId ): array {
 		$countries     = [];

@@ -42,7 +42,7 @@ class Attribute {
 	/**
 	 * Pickup point attributes configuration.
 	 *
-	 * @var array[]
+	 * @var array<string, array<string, string|bool>>
 	 */
 	public static $pickupPointAttrs = [
 		'id'        => [
@@ -82,7 +82,7 @@ class Attribute {
 	/**
 	 * Home delivery attributes configuration.
 	 *
-	 * @var array[]
+	 * @var array<string, array<string, string|bool>>
 	 */
 	public static $homeDeliveryAttrs = [
 		'isValidated' => [
@@ -122,7 +122,7 @@ class Attribute {
 	/**
 	 * Car delivery attributes configuration.
 	 *
-	 * @var array[]
+	 * @var array<string, array<string, string|bool>>
 	 */
 	public static $carDeliveryAttrs = [
 		'carDeliveryId'           => [
