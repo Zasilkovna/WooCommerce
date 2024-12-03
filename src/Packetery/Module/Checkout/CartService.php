@@ -10,6 +10,7 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
+use WC_Product;
 
 class CartService {
 
@@ -145,7 +146,8 @@ class CartService {
 
 		foreach ( $products as $cartProduct ) {
 			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
-			if ( ! ( $product instanceof \WC_Product ) ) {
+			if ( ! ( $product instanceof WC_Product ) ) {
+				// todo 2337 coverage.
 				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
 			}
 			if ( $product->is_taxable() ) {
@@ -207,10 +209,12 @@ class CartService {
 
 		foreach ( $cartProducts as $cartProduct ) {
 			if ( ! isset( $cartProduct['product_id'] ) ) {
+				// todo 2337 coverage.
 				continue;
 			}
 			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
-			if ( ! ( $product instanceof \WC_Product ) ) {
+			if ( ! ( $product instanceof WC_Product ) ) {
+				// todo 2337 coverage.
 				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
 			}
 			$productCategoryIds = $product->get_category_ids();
