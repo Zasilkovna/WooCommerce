@@ -61,6 +61,8 @@ services:
 	- Packetery\Module\Checkout\CheckoutValidator
 	- Packetery\Module\Checkout\CartService
 	- Packetery\Module\Checkout\SessionService
+	- Packetery\Module\Checkout\ShippingRateFactory
+	- Packetery\Module\Checkout\OrderUpdater
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
