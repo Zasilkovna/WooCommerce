@@ -1,0 +1,192 @@
+<?php
+
+namespace Packetery\Module\Checkout;
+
+use Packetery\Core\Entity;
+use Packetery\Module\Carrier;
+use Packetery\Module\Exception\ProductNotFoundException;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\ShippingMethod;
+
+class ShippingRateFactory {
+	private $checkoutService;
+	private $carrierEntityRepository;
+	private $wcAdapter;
+	private $cartService;
+	private $carrierOptionsFactory;
+	private $carDeliveryConfig;
+	private $rateCalculator;
+	private $optionsProvider;
+	private $wpAdapter;
+
+	public function __construct(
+		CheckoutService $checkoutService,
+		Carrier\EntityRepository $carrierEntityRepository,
+		WcAdapter $wcAdapter,
+		CartService $cartService,
+		Carrier\CarrierOptionsFactory $carrierOptionsFactory,
+		Carrier\CarDeliveryConfig $carDeliveryConfig,
+		RateCalculator $rateCalculator,
+		OptionsProvider $optionsProvider,
+		WpAdapter $wpAdapter
+	) {
+		$this->checkoutService         = $checkoutService;
+		$this->carrierEntityRepository = $carrierEntityRepository;
+		$this->wcAdapter               = $wcAdapter;
+		$this->cartService             = $cartService;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->rateCalculator          = $rateCalculator;
+		$this->optionsProvider         = $optionsProvider;
+		$this->wpAdapter               = $wpAdapter;
+	}
+
+	/**
+	 * Prepare shipping rates based on cart properties.
+	 *
+	 * @param array|null $allowedCarrierNames List of allowed carrier names.
+	 *
+	 * @return array
+	 * @throws ProductNotFoundException Product not found.
+	 */
+	public function createShippingRates( ?array $allowedCarrierNames ): array {
+		$customerCountry           = $this->checkoutService->getCustomerCountry();
+		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
+		$cartProducts              = $this->wcAdapter->cartGetCartContents();
+		$cartPrice                 = $this->cartService->getCartContentsTotalIncludingTax();
+		$cartWeight                = $this->cartService->getCartWeightKg();
+		$totalCartProductValue     = $this->cartService->getTotalCartProductValue();
+		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
+		$isAgeVerificationRequired = $this->cartService->isAgeVerification18PlusRequired();
+
+		$customRates = [];
+		foreach ( $availableCarriers as $carrier ) {
+			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
+			$rateId       = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+			$shippingRate = $this->createShippingRateOfCarrier(
+				$isAgeVerificationRequired,
+				$carrier,
+				$allowedCarrierNames,
+				$optionId,
+				$disallowedShippingRateIds,
+				$cartProducts,
+				$cartPrice,
+				$totalCartProductValue,
+				$cartWeight,
+				$rateId
+			);
+
+			if ( null !== $shippingRate ) {
+				$customRates[ $rateId ] = $shippingRate;
+			}
+		}
+
+		return $customRates;
+	}
+
+	private function createShippingRateOfCarrier(
+		bool $isAgeVerificationRequired,
+		Entity\Carrier $carrier,
+		?array $allowedCarrierNames,
+		string $optionId,
+		array $disallowedShippingRateIds,
+		array $cartProducts,
+		float $cartPrice,
+		float $totalCartProductValue,
+		float $cartWeight,
+		string $rateId
+	): ?array {
+		if ( $isAgeVerificationRequired && false === $carrier->supportsAgeVerification() ) {
+			return null;
+		}
+
+		if ( null !== $allowedCarrierNames && ! array_key_exists( $carrier->getId(), $allowedCarrierNames ) ) {
+			return null;
+		}
+
+		$options     = $this->carrierOptionsFactory->createByOptionId( $optionId );
+		$carrierName = $options->getName();
+		if ( null !== $allowedCarrierNames ) {
+			$carrierName = $allowedCarrierNames[ $carrier->getId() ];
+		}
+		if ( null === $carrierName ) {
+			return null;
+		}
+
+		if ( null === $allowedCarrierNames && false === $options->isActive() ) {
+			return null;
+		}
+
+		if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
+			return null;
+		}
+
+		if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
+			return null;
+		}
+
+		if ( $this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts ) ) {
+			return null;
+		}
+
+		$cost = $this->rateCalculator->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
+		if ( null !== $cost ) {
+			return $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId );
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param string $carrierName
+	 * @param float  $cost
+	 * @param string $rateId
+	 *
+	 * @return array
+	 */
+	private function createShippingRateAndApplyTaxes( string $carrierName, float $cost, string $rateId ): array {
+		$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
+		$taxes       = null;
+		if ( $cost > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
+			$rates            = $this->wcAdapter->taxGetShippingTaxRates();
+			$taxes            = $this->wcAdapter->taxCalcInclusiveTax( $cost, $rates );
+			$taxExclusiveCost = $cost - array_sum( $taxes );
+
+			/**
+			 * Filters shipping taxes.
+			 *
+			 * @param array $taxes Taxes.
+			 * @param float $taxExclusiveCost Tax exclusive cost.
+			 * @param array $rates Rates.
+			 *
+			 * @since 1.6.5
+			 */
+			$taxes = $this->wpAdapter->applyFilters( 'woocommerce_calc_shipping_tax', $taxes, $taxExclusiveCost, $rates );
+			if ( ! is_array( $taxes ) ) {
+				$taxes = [];
+			}
+
+			$cost -= array_sum( $taxes );
+		}
+
+		return $this->rateCalculator->createShippingRate( $carrierName, $rateId, $cost, $taxes );
+	}
+
+	/**
+	 * Returns the shipping method name by price.
+	 *
+	 * @param string $name Shipping Rate Name.
+	 * @param float  $cost Shipping Rate Cost.
+	 * @return string
+	 */
+	private function getFormattedShippingMethodName( string $name, float $cost ): string {
+		// todo test.
+		if ( 0.0 === $cost && $this->optionsProvider->isFreeShippingShown() ) {
+			return sprintf( '%s: %s', $name, $this->wpAdapter->__( 'Free', 'packeta' ) );
+		}
+
+		return $name;
+	}
+}

@@ -8,18 +8,12 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Checkout\CartService;
-use Packetery\Module\Checkout\Checkout;
-use Packetery\Module\Checkout\CheckoutRenderer;
 use Packetery\Module\Checkout\CheckoutService;
-use Packetery\Module\Checkout\CheckoutStorage;
-use Packetery\Module\Checkout\CheckoutValidator;
 use Packetery\Module\Checkout\RateCalculator;
-use Packetery\Module\Checkout\SessionService;
+use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\Order;
-use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory;
@@ -31,7 +25,7 @@ use Tests\Module\MockFactory;
 use WC_Cart;
 use WC_Product;
 
-class CheckoutTest extends TestCase {
+class ShippingRateFactoryTest extends TestCase {
 
 	private WpAdapter|MockObject $wpAdapter;
 	private WpAdapter|MockObject $wcAdapter;
@@ -42,10 +36,10 @@ class CheckoutTest extends TestCase {
 	private WpAdapter|MockObject $carrierEntityRepository;
 	private WpAdapter|MockObject $carDeliveryConfig;
 	private WpAdapter|MockObject $provider;
-	private CartService|MockObject $cartResolver;
-	private Checkout $checkout;
+	private CartService|MockObject $cartService;
+	private ShippingRateFactory $shippingRateFactory;
 
-	private function createCheckoutMock(): void {
+	private function createShippingRateFactoryMock(): void {
 		$this->wpAdapter                    = MockFactory::createWpAdapter( $this );
 		$this->wcAdapter                    = $this->createMock( WcAdapter::class );
 		$this->productEntityFactory         = $this->createMock( ProductEntityFactory::class );
@@ -55,27 +49,18 @@ class CheckoutTest extends TestCase {
 		$this->carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
 		$this->carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
 		$this->provider                     = $this->createMock( OptionsProvider::class );
-		$this->cartResolver                 = $this->createMock( CartService::class );
+		$this->cartService                  = $this->createMock( CartService::class );
 
-		$this->checkout = new Checkout(
-			$this->wpAdapter,
-			$this->wcAdapter,
-			$this->carrierOptionsFactory,
-			$this->provider,
-			$this->createMock( Order\Repository::class ),
-			$this->currencySwitcherFacade,
-			$this->createMock( Order\PacketAutoSubmitter::class ),
-			$this->createMock( Order\AttributeMapper::class ),
-			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade ),
-			$this->carrierEntityRepository,
-			$this->carDeliveryConfig,
-			$this->createMock( PaymentHelper::class ),
+		$this->shippingRateFactory = new ShippingRateFactory(
 			$this->createMock( CheckoutService::class ),
-			$this->createMock( CheckoutRenderer::class ),
-			$this->createMock( CheckoutStorage::class ),
-			$this->cartResolver,
-			$this->createMock( SessionService::class ),
-			$this->createMock( CheckoutValidator::class ),
+			$this->carrierEntityRepository,
+			$this->wcAdapter,
+			$this->cartService,
+			$this->carrierOptionsFactory,
+			$this->carDeliveryConfig,
+			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade ),
+			$this->provider,
+			$this->wpAdapter,
 		);
 	}
 
@@ -452,7 +437,7 @@ class CheckoutTest extends TestCase {
 	 * @dataProvider rateCreationDataProvider
 	 * @throws \PHPUnit\Framework\MockObject\Exception
 	 */
-	public function testGetShippingRates(
+	public function testCreateShippingRates(
 		int $expectedRateCount,
 		array $carriers,
 		array $carriersOptions,
@@ -463,7 +448,7 @@ class CheckoutTest extends TestCase {
 		bool $isAgeVerificationRequiredByProduct,
 		float $cartWeightKg
 	): void {
-		$this->createCheckoutMock();
+		$this->createShippingRateFactoryMock();
 
 		$this->wpAdapter
 			->expects( self::atLeast( $expectedRateCount ) )
@@ -512,7 +497,7 @@ class CheckoutTest extends TestCase {
 		$this->wcAdapter
 			->method( 'cartGetCartContentsTax' )
 			->willReturn( 21.0 );
-		$this->cartResolver
+		$this->cartService
 			->method( 'getCartWeightKg' )
 			->willReturn( $cartWeightKg );
 
@@ -529,7 +514,7 @@ class CheckoutTest extends TestCase {
 		$this->productEntityFactory
 			->method( 'fromPostId' )
 			->willReturn( $productEntity );
-		$this->cartResolver
+		$this->cartService
 			->method( 'isAgeVerification18PlusRequired' )
 			->willReturn( $isAgeVerificationRequiredByProduct );
 
@@ -563,7 +548,7 @@ class CheckoutTest extends TestCase {
 			->method( 'isDisabled' )
 			->willReturn( ! $isCarDeliveryEnabled );
 
-		$rates = $this->checkout->getShippingRates( $allowedCarrierNames );
+		$rates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
 
 		self::assertCount( $expectedRateCount, $rates );
 	}
