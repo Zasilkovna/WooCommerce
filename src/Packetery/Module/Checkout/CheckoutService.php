@@ -154,8 +154,7 @@ class CheckoutService {
 	 * @return bool
 	 */
 	public function isPickupPointOrder(): bool {
-		$chosenMethod = $this->getChosenMethod();
-		$carrierId    = $this->getCarrierIdFromShippingMethod( $chosenMethod );
+		$carrierId = $this->getCarrierIdFromShippingMethod( $this->getChosenMethod() );
 
 		return null !== $carrierId && $this->isPickupPointCarrier( $carrierId );
 	}
@@ -167,7 +166,7 @@ class CheckoutService {
 	 *
 	 * @return bool
 	 */
-	public function isPickupPointCarrier( string $carrierId ): bool {
+	private function isPickupPointCarrier( string $carrierId ): bool {
 		if ( $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
 			return true;
 		}
