@@ -21,28 +21,33 @@ use WC_Shipping_Rate;
 class CheckoutServiceTest extends TestCase {
 
 	private WpAdapter|MockObject $wpAdapter;
-	private WpAdapter|MockObject $wcAdapter;
-	private WpAdapter|MockObject $carrierEntityRepository;
-	private WpAdapter|MockObject $carDeliveryConfig;
-	private WpAdapter|MockObject $provider;
-	private CheckoutService $resolver;
+	private WcAdapter|MockObject $wcAdapter;
+	private Carrier\Repository|MockObject $carrierRepository;
+	private Carrier\EntityRepository|MockObject $carrierEntityRepository;
+	private CarDeliveryConfig|MockObject $carDeliveryConfig;
+	private OptionsProvider|MockObject $provider;
+	private Request|MockObject $httpRequest;
+	private PacketaPickupPointsConfig|MockObject $pickupPointsConfig;
+	private CheckoutService $checkoutService;
 
 	private function createCheckoutServiceMock(): void {
 		$this->wpAdapter               = MockFactory::createWpAdapter( $this );
 		$this->wcAdapter               = $this->createMock( WcAdapter::class );
+		$this->carrierRepository       = $this->createMock( Carrier\Repository::class );
 		$this->carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
 		$this->carDeliveryConfig       = $this->createMock( CarDeliveryConfig::class );
 		$this->provider                = $this->createMock( OptionsProvider::class );
 		$this->httpRequest             = $this->createMock( Request::class );
+		$this->pickupPointsConfig      = $this->createMock( PacketaPickupPointsConfig::class );
 
-		$this->resolver = new CheckoutService(
+		$this->checkoutService = new CheckoutService(
 			$this->wpAdapter,
 			$this->wcAdapter,
 			$this->httpRequest,
 			$this->carDeliveryConfig,
-			$this->createMock( Carrier\Repository::class ),
+			$this->carrierRepository,
 			$this->carrierEntityRepository,
-			$this->createMock( PacketaPickupPointsConfig::class ),
+			$this->pickupPointsConfig,
 			$this->provider,
 		);
 	}
@@ -51,7 +56,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->createCheckoutServiceMock();
 
 		$this->wcAdapter->method( 'cartCalculateShipping' )->willReturn( [] );
-		$this->assertEquals( '', $this->resolver->calculateShippingAndGetId() );
+		$this->assertEquals( '', $this->checkoutService->calculateShippingAndGetId() );
 	}
 
 	public function testCalculateShippingAndGetIdReturnsShippingRateIdStrippedOfPrefix(): void {
@@ -63,7 +68,7 @@ class CheckoutServiceTest extends TestCase {
 		$mockedShippingRate->method( 'get_id' )->willReturn( $shippingRateFullId );
 		$this->wcAdapter->method( 'cartCalculateShipping' )->willReturn( [ $mockedShippingRate ] );
 
-		$this->assertEquals( $shippingRateId, $this->resolver->calculateShippingAndGetId() );
+		$this->assertEquals( $shippingRateId, $this->checkoutService->calculateShippingAndGetId() );
 	}
 
 	public function testGetChosenMethodWhenPostShippingMethodIsNull(): void {
@@ -71,7 +76,7 @@ class CheckoutServiceTest extends TestCase {
 
 		$this->httpRequest->method( 'getPost' )->with( 'shipping_method' )->willReturn( null );
 
-		$this->assertEquals( '', $this->resolver->getChosenMethod() );
+		$this->assertEquals( '', $this->checkoutService->getChosenMethod() );
 	}
 
 	public function testGetChosenMethodWhenPostShippingMethodIsNotNull(): void {
@@ -81,21 +86,195 @@ class CheckoutServiceTest extends TestCase {
 		$shippingRateFullId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $shippingRateId;
 		$this->httpRequest->method( 'getPost' )->with( 'shipping_method' )->willReturn( [ $shippingRateFullId ] );
 
-		$this->assertEquals( $shippingRateId, $this->resolver->getChosenMethod() );
+		$this->assertEquals( $shippingRateId, $this->checkoutService->getChosenMethod() );
+	}
+
+	public function testRemoveShippingMethodPrefixWithValueNotContainingPrefix(): void {
+		$this->createCheckoutServiceMock();
+		$chosenMethod = 'dummyRate';
+		$this->assertEquals( 'dummyRate', $this->checkoutService->removeShippingMethodPrefix( $chosenMethod ) );
+	}
+
+	public function testRemoveShippingMethodPrefixWithValueContainingPrefix(): void {
+		$this->createCheckoutServiceMock();
+		$shippingRateId     = 'packetery_carrier_zpointcz';
+		$shippingRateFullId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $shippingRateId;
+		$this->assertEquals( $shippingRateId, $this->checkoutService->removeShippingMethodPrefix( $shippingRateFullId ) );
+	}
+
+	public function testRemoveShippingMethodPrefixWithEmptyValue(): void {
+		$this->createCheckoutServiceMock();
+		$this->assertEquals( '', $this->checkoutService->removeShippingMethodPrefix( '' ) );
+	}
+
+	public function testIsPacketeryShippingMethodReturnsFalseWhenGivenInvalidOptionId(): void {
+		$this->createCheckoutServiceMock();
+		$invalidOptionId = 'third_party_carrier_dummy';
+
+		$this->assertFalse( $this->checkoutService->isPacketeryShippingMethod( $invalidOptionId ) );
+	}
+
+	public function testIsPacketeryShippingMethodReturnsTrueWhenGivenValidOptionId(): void {
+		$this->createCheckoutServiceMock();
+		$validOptionId = 'packetery_carrier_dummy';
+
+		$this->assertTrue( $this->checkoutService->isPacketeryShippingMethod( $validOptionId ) );
+	}
+
+	public function testGetCarrierIdFromShippingMethodNonPacketery(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->assertNull( $this->checkoutService->getCarrierIdFromShippingMethod( 'dummy_carrier' ) );
+	}
+
+	public function testGetCarrierIdFromShippingMethodPacketery(): void {
+		$this->createCheckoutServiceMock();
+
+		$shippingMethod = 'packetery_carrier_zpointcz';
+		$this->assertEquals( 'zpointcz', $this->checkoutService->getCarrierIdFromShippingMethod( $shippingMethod ) );
+	}
+
+	public function testGetCarrierIdFromShippingMethodEmpty(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->assertNull( $this->checkoutService->getCarrierIdFromShippingMethod( '' ) );
+	}
+
+	public function testIsPickupPointOrderWhenItIsNot(): void {
+		$this->createCheckoutServiceMock();
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'dummy_method' ] );
+		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( false );
+		$this->carrierRepository->method( 'hasPickupPoints' )->willReturn( false );
+
+		$this->assertFalse( $this->checkoutService->isPickupPointOrder() );
+	}
+
+	public function testIsPickupPointOrderWhenItIs(): void {
+		$this->createCheckoutServiceMock();
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_3060' ] );
+		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( false );
+		$this->carrierRepository->method( 'hasPickupPoints' )->willReturn( true );
+
+		$this->assertTrue( $this->checkoutService->isPickupPointOrder() );
+	}
+
+	public function testIsPickupPointOrderWhenItIsInternal(): void {
+		$this->createCheckoutServiceMock();
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_zpointcz' ] );
+		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( true );
+		$this->carrierRepository->method( 'hasPickupPoints' )->willReturn( false );
+
+		$this->assertTrue( $this->checkoutService->isPickupPointOrder() );
+	}
+
+	public function testIsHomeDeliveryOrderWithHomeDelivery(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_106' ] );
+		$this->carrierEntityRepository->method( 'isHomeDeliveryCarrier' )->willReturn( true );
+
+		$this->assertTrue( $this->checkoutService->isHomeDeliveryOrder() );
+	}
+
+	public function testIsHomeDeliveryOrderWithNonHomeDelivery(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_zpointcz' ] );
+		$this->carrierEntityRepository->method( 'isHomeDeliveryCarrier' )->willReturn( false );
+
+		$this->assertFalse( $this->checkoutService->isHomeDeliveryOrder() );
+	}
+
+	public function testIsHomeDeliveryOrderWithNoChosenMethod(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( null );
+
+		$this->assertFalse( $this->checkoutService->isHomeDeliveryOrder() );
+	}
+
+	public function testIsHomeDeliveryOrderWithEmptyChosenMethod(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( [ '' ] );
+
+		$this->assertFalse( $this->checkoutService->isHomeDeliveryOrder() );
+	}
+
+	public function testIsCarDeliveryOrderWithCarDelivery(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_25061' ] );
+		$this->carDeliveryConfig->method( 'isCarDeliveryCarrier' )->willReturn( true );
+
+		$this->assertTrue( $this->checkoutService->isCarDeliveryOrder() );
+	}
+
+	public function testIsCarDeliveryOrderWithNonCarDelivery(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_zpointcz' ] );
+		$this->carDeliveryConfig->method( 'isCarDeliveryCarrier' )->willReturn( false );
+
+		$this->assertFalse( $this->checkoutService->isCarDeliveryOrder() );
+	}
+
+	public function testIsCarDeliveryOrderWithNoChosenMethod(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( null );
+
+		$this->assertFalse( $this->checkoutService->isCarDeliveryOrder() );
+	}
+
+	public function testIsCarDeliveryOrderWithEmptyChosenMethod(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( [ '' ] );
+
+		$this->assertFalse( $this->checkoutService->isCarDeliveryOrder() );
+	}
+
+	public function testGetCustomerCountryWhenCustomerShippingCountryIsNotNull(): void {
+		$this->createCheckoutServiceMock();
+
+		$expectedCountry = 'cz';
+		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( strtoupper( $expectedCountry ) );
+
+		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
+	}
+
+	public function testGetCustomerCountryWhenCustomerShippingCountryIsNull(): void {
+		$this->createCheckoutServiceMock();
+
+		$expectedCountry = 'cz';
+		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
+		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( strtoupper( $expectedCountry ) );
+
+		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
+	}
+
+	public function testGetCustomerCountryWhenCustomerShippingCountryAndCustomerBillingCountryAreNull(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
+		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( null );
+
+		$this->assertEquals( '', $this->checkoutService->getCustomerCountry() );
 	}
 
 	public function testAreBlocksUsedInCheckoutBlockDetection(): void {
 		$this->createCheckoutServiceMock();
 
 		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::BLOCK_CHECKOUT_DETECTION );
-		$this->assertTrue( $this->resolver->areBlocksUsedInCheckout() );
+		$this->assertTrue( $this->checkoutService->areBlocksUsedInCheckout() );
 	}
 
 	public function testAreBlocksUsedInCheckoutClassicDetection(): void {
 		$this->createCheckoutServiceMock();
 
 		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::CLASSIC_CHECKOUT_DETECTION );
-		$this->assertFalse( $this->resolver->areBlocksUsedInCheckout() );
+		$this->assertFalse( $this->checkoutService->areBlocksUsedInCheckout() );
 	}
 
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithBlock(): void {
@@ -104,7 +283,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
 
 		$this->wpAdapter->method( 'hasBlock' )->willReturn( true );
-		$this->assertTrue( $this->resolver->areBlocksUsedInCheckout() );
+		$this->assertTrue( $this->checkoutService->areBlocksUsedInCheckout() );
 	}
 
 	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithoutBlock(): void {
@@ -113,6 +292,6 @@ class CheckoutServiceTest extends TestCase {
 		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
 
 		$this->wpAdapter->method( 'hasBlock' )->willReturn( false );
-		$this->assertFalse( $this->resolver->areBlocksUsedInCheckout() );
+		$this->assertFalse( $this->checkoutService->areBlocksUsedInCheckout() );
 	}
 }
