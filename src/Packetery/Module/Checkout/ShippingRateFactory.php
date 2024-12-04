@@ -151,8 +151,10 @@ class ShippingRateFactory {
 	 * @return array
 	 */
 	private function createShippingRateAndApplyTaxes( string $carrierName, float $cost, string $rateId ): array {
-		$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
-		$taxes       = null;
+		if ( $this->isFreeShippingApplicable( $cost ) ) {
+			$carrierName = $this->formatCarrierNameWithFreeShipping( $carrierName );
+		}
+		$taxes = null;
 		if ( $cost > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$rates            = $this->wcAdapter->taxGetShippingTaxRates();
 			$taxes            = $this->wcAdapter->taxCalcInclusiveTax( $cost, $rates );
@@ -178,18 +180,11 @@ class ShippingRateFactory {
 		return $this->rateCalculator->createShippingRate( $carrierName, $rateId, $cost, $taxes );
 	}
 
-	/**
-	 * Returns the shipping method name by price.
-	 *
-	 * @param string $name Shipping Rate Name.
-	 * @param float  $cost Shipping Rate Cost.
-	 * @return string
-	 */
-	private function getFormattedShippingMethodName( string $name, float $cost ): string {
-		if ( 0.0 === $cost && $this->optionsProvider->isFreeShippingShown() ) {
-			return sprintf( '%s: %s', $name, $this->wpAdapter->__( 'Free', 'packeta' ) );
-		}
+	private function formatCarrierNameWithFreeShipping( string $carrierName ): string {
+		return sprintf( '%s: %s', $carrierName, $this->wpAdapter->__( 'Free', 'packeta' ) );
+	}
 
-		return $name;
+	private function isFreeShippingApplicable( float $cost ): bool {
+		return 0.0 === $cost && $this->optionsProvider->isFreeShippingShown();
 	}
 }
