@@ -31,7 +31,6 @@ use Packetery\Nette\Utils\Html;
  * @property-read array $errors
  * @property-read array $options
  * @property-read string $error
- * @internal
  */
 abstract class BaseControl extends \Packetery\Nette\ComponentModel\Component implements Control
 {

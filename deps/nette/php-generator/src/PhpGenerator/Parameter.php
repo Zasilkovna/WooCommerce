@@ -12,7 +12,6 @@ use Packetery\Nette;
  * Function/Method parameter description.
  *
  * @property mixed $defaultValue
- * @internal
  */
 class Parameter
 {

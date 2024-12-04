@@ -10,7 +10,6 @@ namespace Packetery\Tracy;
 use Packetery\Nette;
 /**
  * Rendering helpers for Debugger.
- * @internal
  */
 class Helpers
 {

@@ -13,7 +13,6 @@ use Packetery\Nette\DI\Definitions;
 use Packetery\Nette\Utils\Reflection;
 /**
  * Calls inject methods and fills @inject properties.
- * @internal
  */
 final class InjectExtension extends DI\CompilerExtension
 {

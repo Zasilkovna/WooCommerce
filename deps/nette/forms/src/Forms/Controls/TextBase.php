@@ -12,7 +12,6 @@ use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Utils\Strings;
 /**
  * Implements the basic functionality common to text input controls.
- * @internal
  */
 abstract class TextBase extends BaseControl
 {

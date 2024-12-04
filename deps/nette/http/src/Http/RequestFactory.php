@@ -12,7 +12,6 @@ use Packetery\Nette\Utils\Arrays;
 use Packetery\Nette\Utils\Strings;
 /**
  * HTTP request factory.
- * @internal
  */
 class RequestFactory
 {

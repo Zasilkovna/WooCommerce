@@ -12,7 +12,6 @@ use Packetery\Nette;
  * Class property description.
  *
  * @property mixed $value
- * @internal
  */
 final class Property
 {
