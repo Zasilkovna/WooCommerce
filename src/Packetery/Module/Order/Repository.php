@@ -347,7 +347,7 @@ class Repository {
 	 *
 	 * @param Order $order Order.
 	 *
-	 * @return array<string, string|null|DateTimeImmutable>
+	 * @return array<string, bool|float|int|string|null>
 	 */
 	private function orderToDbArray( Order $order ): array {
 		$point = $order->getPickupPoint();
@@ -414,7 +414,7 @@ class Repository {
 	/**
 	 * Saves order data.
 	 *
-	 * @param array<string, string|null|DateTimeImmutable> $orderData Order data.
+	 * @param array<string, int|string|null|DateTimeImmutable> $orderData Order data.
 	 *
 	 * @return void
 	 */

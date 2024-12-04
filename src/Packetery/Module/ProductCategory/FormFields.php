@@ -152,8 +152,6 @@ class FormFields {
 	 * @param int    $termId         Post ID.
 	 * @param int    $termTaxonomyId Term taxonomy ID.
 	 * @param string $taxonomy       Taxonomy slug.
-	 *
-	 * @return void
 	 */
 	public function saveData( int $termId, int $termTaxonomyId, string $taxonomy = '' ): void {
 		if ( $taxonomy !== ProductCategory\Entity::TAXONOMY_NAME ) {

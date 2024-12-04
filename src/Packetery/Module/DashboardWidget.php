@@ -142,8 +142,10 @@ class DashboardWidget {
 	 */
 	private function isPacketaShippingMethodActive(): bool {
 		/** @var WC_Shipping_Zone_Data_Store $shippingDataStore */
+		/** @phpstan-ignore varTag.type */
 		$shippingDataStore = WC_Data_Store::load( 'shipping-zone' );
-		$shippingZones     = $shippingDataStore->get_zones();
+
+		$shippingZones = $shippingDataStore->get_zones();
 
 		foreach ( $shippingZones as $shippingZoneId ) {
 			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );

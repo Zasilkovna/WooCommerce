@@ -588,7 +588,7 @@ class Metabox {
 	/**
 	 * Creates pickup point picker settings.
 	 *
-	 * @return array<string, array<string, null|array<string, string|bool>|string>>|null
+	 * @return array<string, array|string|null>
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
