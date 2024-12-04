@@ -78,7 +78,7 @@ class CheckoutServiceTest extends TestCase {
 
 		$this->httpRequest->method( 'getPost' )->with( 'shipping_method' )->willReturn( null );
 
-		$this->assertEquals( '', $this->checkoutService->getChosenMethod() );
+		$this->assertEquals( '', $this->checkoutService->resolveChosenMethod() );
 	}
 
 	public function testGetChosenMethodWhenPostShippingMethodIsNotNull(): void {
@@ -88,7 +88,7 @@ class CheckoutServiceTest extends TestCase {
 		$shippingRateFullId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $shippingRateId;
 		$this->httpRequest->method( 'getPost' )->with( 'shipping_method' )->willReturn( [ $shippingRateFullId ] );
 
-		$this->assertEquals( $shippingRateId, $this->checkoutService->getChosenMethod() );
+		$this->assertEquals( $shippingRateId, $this->checkoutService->resolveChosenMethod() );
 	}
 
 	public function testRemoveShippingMethodPrefixWithValueNotContainingPrefix(): void {

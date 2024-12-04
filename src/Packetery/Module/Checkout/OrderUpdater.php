@@ -70,7 +70,7 @@ class OrderUpdater {
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function actionUpdateOrder( WC_Order $wcOrder ): void {
-		$chosenMethod = $this->checkoutService->getChosenMethod();
+		$chosenMethod = $this->checkoutService->resolveChosenMethod();
 		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) ) {
 			return;
 		}
