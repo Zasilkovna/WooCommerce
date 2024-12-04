@@ -1,9 +1,12 @@
 <?php
 
+declare( strict_types=1 );
+
 namespace Tests\Module\Checkout;
 
 use Exception;
 use Packetery\Module\Checkout\CartService;
+use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -225,6 +228,23 @@ class CartServiceTest extends TestCase {
 		$this->assertEquals( [ 1, 2 ], $this->cartService->getDisallowedShippingRateIds() );
 	}
 
+	public function testGetTaxClassWithMaxRateWithInvalidProduct(): void {
+		$this->createCartServiceMock();
+		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
+			[
+				[ 'product_id' => 1 ],
+			]
+		);
+		$product = null;
+		$this->wcAdapter->expects( $this->once() )
+						->method( 'productFactoryGetProduct' )
+						->with( $this->equalTo( 1 ) )
+						->willReturn( $product );
+
+		$this->expectException( ProductNotFoundException::class );
+		$this->cartService->getTaxClassWithMaxRate();
+	}
+
 	public function testGetTaxClassWithMaxRateWithNoTaxableProduct(): void {
 		$this->createCartServiceMock();
 		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
@@ -336,6 +356,21 @@ class CartServiceTest extends TestCase {
 		$this->wcAdapter->method( 'cartGetCartContentsTax' )->willReturn( 5.00 );
 
 		$this->assertSame( 20.00, $this->cartService->getCartContentsTotalIncludingTax() );
+	}
+
+	public function testIsShippingRateRestrictedByProductsCategoryWithInvalidProduct(): void {
+		$this->createCartServiceMock();
+
+		$this->wcAdapter->method( 'productFactoryGetProduct' )->willReturn( null );
+
+		$this->expectException( ProductNotFoundException::class );
+		$this->cartService->isShippingRateRestrictedByProductsCategory( 'testRate', [ [ 'product_id' => 1 ] ] );
+	}
+
+	public function testIsShippingRateRestrictedByProductsCategoryWithProductWithoutId(): void {
+		$this->createCartServiceMock();
+
+		$this->assertFalse( $this->cartService->isShippingRateRestrictedByProductsCategory( 'testRate', [ [ 'quantity' => 1 ] ] ) );
 	}
 
 	public function testIsShippingRateRestrictedByProductsCategoryWithNoProductCategories(): void {
