@@ -23,9 +23,9 @@ use WC_Order;
 class RateCalculator {
 
 	/**
-	 * @var CurrencySwitcherFacade
+	 * @var CurrencySwitcherService
 	 */
-	private $currencySwitcherFacade;
+	private $currencySwitcherService;
 
 	/**
 	 * @var WpAdapter
@@ -40,11 +40,11 @@ class RateCalculator {
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
-		CurrencySwitcherFacade $currencySwitcherFacade
+		CurrencySwitcherService $currencySwitcherService
 	) {
-		$this->wpAdapter              = $wpAdapter;
-		$this->wcAdapter              = $wcAdapter;
-		$this->currencySwitcherFacade = $currencySwitcherFacade;
+		$this->wpAdapter               = $wpAdapter;
+		$this->wcAdapter               = $wcAdapter;
+		$this->currencySwitcherService = $currencySwitcherService;
 	}
 
 	/**
@@ -114,7 +114,7 @@ class RateCalculator {
 
 		$freeShippingLimit = null;
 		if ( $carrierOptions['free_shipping_limit'] ) {
-			$freeShippingLimit = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions['free_shipping_limit'] );
+			$freeShippingLimit = $this->currencySwitcherService->getConvertedPrice( $carrierOptions['free_shipping_limit'] );
 			if ( $cartPrice >= $freeShippingLimit ) {
 				$cost = 0;
 			}

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class CurrencySwitcherFacade
+ * Class CurrencySwitcherService
  *
  * @package Packetery\Module
  */
@@ -13,9 +13,9 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 
 /**
- * Class CurrencySwitcherFacade.
+ * Class CurrencySwitcherService.
  */
-class CurrencySwitcherFacade {
+class CurrencySwitcherService {
 
 	/**
 	 * @var WpAdapter

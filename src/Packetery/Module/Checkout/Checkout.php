@@ -43,9 +43,9 @@ class Checkout {
 	private $orderRepository;
 
 	/**
-	 * @var CurrencySwitcherFacade
+	 * @var CurrencySwitcherService
 	 */
-	private $currencySwitcherFacade;
+	private $currencySwitcherService;
 
 	/**
 	 * @var RateCalculator
@@ -98,7 +98,7 @@ class Checkout {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		OptionsProvider $optionsProvider,
 		Order\Repository $orderRepository,
-		CurrencySwitcherFacade $currencySwitcherFacade,
+		CurrencySwitcherService $currencySwitcherService,
 		RateCalculator $rateCalculator,
 		Carrier\EntityRepository $carrierEntityRepository,
 		PaymentHelper $paymentHelper,
@@ -114,7 +114,7 @@ class Checkout {
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 		$this->optionsProvider         = $optionsProvider;
 		$this->orderRepository         = $orderRepository;
-		$this->currencySwitcherFacade  = $currencySwitcherFacade;
+		$this->currencySwitcherService = $currencySwitcherService;
 		$this->rateCalculator          = $rateCalculator;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->paymentHelper           = $paymentHelper;
@@ -230,7 +230,7 @@ class Checkout {
 			null !== $carrierOptions->getAgeVerificationFee() &&
 			$this->cartService->isAgeVerification18PlusRequired()
 		) {
-			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
+			$feeAmount = $this->currencySwitcherService->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
 			if ( false !== $maxTaxClass && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 				$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
 			}
@@ -255,7 +255,7 @@ class Checkout {
 			$carrierOptions->toArray(),
 			$this->wcAdapter->cartGetSubtotal()
 		);
-		$applicableSurcharge = $this->currencySwitcherFacade->getConvertedPrice( $applicableSurcharge );
+		$applicableSurcharge = $this->currencySwitcherService->getConvertedPrice( $applicableSurcharge );
 		if ( 0 >= $applicableSurcharge ) {
 			return;
 		}
