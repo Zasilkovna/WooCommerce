@@ -54,7 +54,7 @@ class ShippingRateFactory {
 	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function createShippingRates( ?array $allowedCarrierNames ): array {
-		$customerCountry           = $this->checkoutService->getCustomerCountry();
+		$customerCountry           = $this->checkoutService->getCustomerCountryOrEmpty();
 		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
 		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 		$cartPrice                 = $this->cartService->getCartContentsTotalIncludingTax();

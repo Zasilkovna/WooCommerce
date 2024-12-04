@@ -159,7 +159,7 @@ class CheckoutValidator {
 			! $error &&
 			! $this->carrierEntityRepository->isValidForCountry(
 				$carrierId,
-				$this->checkoutService->getCustomerCountry()
+				$this->checkoutService->getCustomerCountryOrEmpty()
 			)
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
@@ -202,7 +202,7 @@ class CheckoutValidator {
 			$pickupPointId,
 			$carrierId,
 			$pointCarrierId,
-			$this->checkoutService->getCustomerCountry(),
+			$this->checkoutService->getCustomerCountryOrEmpty(),
 			$this->checkoutService->getCarrierIdFromShippingMethod( $chosenShippingMethod ),
 			false,
 			false,
