@@ -243,7 +243,7 @@ class CheckoutServiceTest extends TestCase {
 		$expectedCountry = 'cz';
 		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( strtoupper( $expectedCountry ) );
 
-		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
+		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountryOrEmpty() );
 	}
 
 	public function testGetCustomerCountryWhenCustomerShippingCountryIsNull(): void {
@@ -253,7 +253,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
 		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( strtoupper( $expectedCountry ) );
 
-		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
+		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountryOrEmpty() );
 	}
 
 	public function testGetCustomerCountryWhenCustomerShippingCountryAndCustomerBillingCountryAreNull(): void {
@@ -262,7 +262,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
 		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( null );
 
-		$this->assertEquals( '', $this->checkoutService->getCustomerCountry() );
+		$this->assertEquals( '', $this->checkoutService->getCustomerCountryOrEmpty() );
 	}
 
 	public function testAreBlocksUsedInCheckoutBlockDetection(): void {

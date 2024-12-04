@@ -203,7 +203,7 @@ class CheckoutService {
 	 *
 	 * @return string
 	 */
-	public function getCustomerCountry(): string {
+	public function getCustomerCountryOrEmpty(): string {
 		$country = '';
 		if ( null !== $this->wcAdapter->customerGetShippingCountry() ) {
 			$country = strtolower( $this->wcAdapter->customerGetShippingCountry() );
