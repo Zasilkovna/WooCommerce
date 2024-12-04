@@ -20,6 +20,8 @@ use WC_Shipping_Rate;
 
 class CheckoutServiceTest extends TestCase {
 
+	const SHIPPING_RATE_INTERNAL_PICKUP_POINTS = 'packetery_carrier_zpointcz';
+
 	private WpAdapter|MockObject $wpAdapter;
 	private WcAdapter|MockObject $wcAdapter;
 	private Carrier\Repository|MockObject $carrierRepository;
@@ -62,7 +64,7 @@ class CheckoutServiceTest extends TestCase {
 	public function testCalculateShippingAndGetIdReturnsShippingRateIdStrippedOfPrefix(): void {
 		$this->createCheckoutServiceMock();
 
-		$shippingRateId     = 'packetery_carrier_zpointcz';
+		$shippingRateId     = self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS;
 		$shippingRateFullId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $shippingRateId;
 		$mockedShippingRate = $this->createMock( WC_Shipping_Rate::class );
 		$mockedShippingRate->method( 'get_id' )->willReturn( $shippingRateFullId );
@@ -82,7 +84,7 @@ class CheckoutServiceTest extends TestCase {
 	public function testGetChosenMethodWhenPostShippingMethodIsNotNull(): void {
 		$this->createCheckoutServiceMock();
 
-		$shippingRateId     = 'packetery_carrier_zpointcz';
+		$shippingRateId     = self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS;
 		$shippingRateFullId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $shippingRateId;
 		$this->httpRequest->method( 'getPost' )->with( 'shipping_method' )->willReturn( [ $shippingRateFullId ] );
 
@@ -97,7 +99,7 @@ class CheckoutServiceTest extends TestCase {
 
 	public function testRemoveShippingMethodPrefixWithValueContainingPrefix(): void {
 		$this->createCheckoutServiceMock();
-		$shippingRateId     = 'packetery_carrier_zpointcz';
+		$shippingRateId     = self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS;
 		$shippingRateFullId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $shippingRateId;
 		$this->assertEquals( $shippingRateId, $this->checkoutService->removeShippingMethodPrefix( $shippingRateFullId ) );
 	}
@@ -130,7 +132,7 @@ class CheckoutServiceTest extends TestCase {
 	public function testGetCarrierIdFromShippingMethodPacketery(): void {
 		$this->createCheckoutServiceMock();
 
-		$shippingMethod = 'packetery_carrier_zpointcz';
+		$shippingMethod = self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS;
 		$this->assertEquals( 'zpointcz', $this->checkoutService->getCarrierIdFromShippingMethod( $shippingMethod ) );
 	}
 
@@ -160,7 +162,7 @@ class CheckoutServiceTest extends TestCase {
 
 	public function testIsPickupPointOrderWhenItIsInternal(): void {
 		$this->createCheckoutServiceMock();
-		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_zpointcz' ] );
+		$this->httpRequest->method( 'getPost' )->willReturn( [ self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS ] );
 		$this->pickupPointsConfig->method( 'isInternalPickupPointCarrier' )->willReturn( true );
 		$this->carrierRepository->method( 'hasPickupPoints' )->willReturn( false );
 
@@ -179,7 +181,7 @@ class CheckoutServiceTest extends TestCase {
 	public function testIsHomeDeliveryOrderWithNonHomeDelivery(): void {
 		$this->createCheckoutServiceMock();
 
-		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_zpointcz' ] );
+		$this->httpRequest->method( 'getPost' )->willReturn( [ self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS ] );
 		$this->carrierEntityRepository->method( 'isHomeDeliveryCarrier' )->willReturn( false );
 
 		$this->assertFalse( $this->checkoutService->isHomeDeliveryOrder() );
@@ -213,7 +215,7 @@ class CheckoutServiceTest extends TestCase {
 	public function testIsCarDeliveryOrderWithNonCarDelivery(): void {
 		$this->createCheckoutServiceMock();
 
-		$this->httpRequest->method( 'getPost' )->willReturn( [ 'packetery_carrier_zpointcz' ] );
+		$this->httpRequest->method( 'getPost' )->willReturn( [ self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS ] );
 		$this->carDeliveryConfig->method( 'isCarDeliveryCarrier' )->willReturn( false );
 
 		$this->assertFalse( $this->checkoutService->isCarDeliveryOrder() );
