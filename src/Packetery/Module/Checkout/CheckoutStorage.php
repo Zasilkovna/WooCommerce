@@ -65,7 +65,13 @@ class CheckoutStorage {
 		$checkoutData      = $this->httpRequest->getPost();
 		$savedCheckoutData = $this->getFromTransient();
 
-		if ( ! isset( $savedCheckoutData[ $chosenShippingMethod ] ) && ( null === $checkoutData || count( $checkoutData ) === 0 ) ) {
+		if (
+			! isset( $savedCheckoutData[ $chosenShippingMethod ] ) &&
+			(
+				null === $checkoutData ||
+				( is_array( $savedCheckoutData ) && count( $checkoutData ) === 0 )
+			)
+		) {
 			$wcLogger  = $this->wcAdapter->getLogger();
 			$dataToLog = [
 				'chosenShippingMethod' => $chosenShippingMethod,
