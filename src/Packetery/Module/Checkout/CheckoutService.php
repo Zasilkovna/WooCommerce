@@ -97,7 +97,7 @@ class CheckoutService {
 	 *
 	 * @return string
 	 */
-	public function getChosenMethod(): string {
+	public function resolveChosenMethod(): string {
 		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
 
 		if ( null !== $postedShippingMethodArray ) {
@@ -154,7 +154,7 @@ class CheckoutService {
 	 * @return bool
 	 */
 	public function isPickupPointOrder(): bool {
-		$carrierId = $this->getCarrierIdFromShippingMethod( $this->getChosenMethod() );
+		$carrierId = $this->getCarrierIdFromShippingMethod( $this->resolveChosenMethod() );
 
 		return null !== $carrierId && $this->isPickupPointCarrier( $carrierId );
 	}
@@ -180,7 +180,7 @@ class CheckoutService {
 	 * @return bool
 	 */
 	public function isHomeDeliveryOrder(): bool {
-		$chosenMethod = $this->getChosenMethod();
+		$chosenMethod = $this->resolveChosenMethod();
 		$carrierId    = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
 		return null !== $carrierId && $this->carrierEntityRepository->isHomeDeliveryCarrier( $carrierId );
@@ -192,7 +192,7 @@ class CheckoutService {
 	 * @return bool
 	 */
 	public function isCarDeliveryOrder(): bool {
-		$chosenMethod = $this->getChosenMethod();
+		$chosenMethod = $this->resolveChosenMethod();
 		$carrierId    = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
 		return null !== $carrierId && $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId );
