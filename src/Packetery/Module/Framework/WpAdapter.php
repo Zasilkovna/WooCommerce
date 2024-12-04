@@ -124,4 +124,19 @@ class WpAdapter {
 	public function jsonEncode( $data ) {
 		return wp_json_encode( $data );
 	}
+
+	public function isMultisite(): bool {
+		return is_multisite();
+	}
+
+	public function getMuPlugins(): array {
+		return get_mu_plugins();
+	}
+
+	/**
+	 * @return false|mixed
+	 */
+	public function getSiteOption( string $option ) {
+		return get_site_option( $option );
+	}
 }
