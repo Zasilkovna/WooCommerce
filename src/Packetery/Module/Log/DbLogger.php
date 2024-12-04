@@ -37,12 +37,7 @@ class DbLogger implements ILogger {
 	}
 
 	/**
-	 * Adds record.
-	 *
-	 * @param Record $record Record.
-	 *
-	 * @return void
-	 * @throws \Exception From DateTimeImmutable.
+	 * @param Record $record
 	 */
 	public function add( Record $record ): void {
 		if ( null === $record->date ) {

@@ -16,7 +16,6 @@ use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Views\UrlBuilder;
 use WC_Data_Store;
 use WC_Shipping_Zone;
-use WC_Shipping_Zone_Data_Store;
 
 /**
  * Class DashboardWidget
@@ -141,9 +140,9 @@ class DashboardWidget {
 	 * @return bool
 	 */
 	private function isPacketaShippingMethodActive(): bool {
-		/** @var WC_Shipping_Zone_Data_Store $shippingDataStore */
 		$shippingDataStore = WC_Data_Store::load( 'shipping-zone' );
-		$shippingZones     = $shippingDataStore->get_zones();
+		/** @phpstan-ignore method.notFound */
+		$shippingZones = $shippingDataStore->get_zones();
 
 		foreach ( $shippingZones as $shippingZoneId ) {
 			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );
