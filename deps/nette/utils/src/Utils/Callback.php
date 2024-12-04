@@ -11,7 +11,6 @@ use Packetery\Nette;
 use function is_array, is_object, is_string;
 /**
  * PHP callable tools.
- * @internal
  */
 final class Callback
 {

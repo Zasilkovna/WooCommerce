@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\MemberAccessException;
 /**
  * \Packetery\Nette\SmartObject helpers.
- * @internal
  */
 final class ObjectHelpers
 {

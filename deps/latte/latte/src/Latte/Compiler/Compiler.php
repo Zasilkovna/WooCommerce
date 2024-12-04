@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * Latte compiler.
- * @internal
  */
 class Compiler
 {

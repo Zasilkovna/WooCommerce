@@ -9,7 +9,6 @@ namespace Packetery\Tracy;
 
 /**
  * Custom output for Debugger.
- * @internal
  */
 interface IBarPanel
 {

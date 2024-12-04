@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Schema\Context;
 use Packetery\Nette\Schema\Helpers;
 use Packetery\Nette\Schema\Schema;
-/** @internal */
 final class AnyOf implements Schema
 {
     use Base;
