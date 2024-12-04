@@ -54,29 +54,17 @@ class ShippingRateFactory {
 	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function createShippingRates( ?array $allowedCarrierNames ): array {
-		$customerCountry           = $this->checkoutService->getCustomerCountryOrEmpty();
-		$availableCarriers         = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
-		$cartProducts              = $this->wcAdapter->cartGetCartContents();
-		$cartPrice                 = $this->cartService->getCartContentsTotalIncludingTax();
-		$cartWeight                = $this->cartService->getCartWeightKg();
-		$totalCartProductValue     = $this->cartService->getTotalCartProductValue();
-		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
-		$isAgeVerificationRequired = $this->cartService->isAgeVerification18PlusRequired();
+		$customerCountry   = $this->checkoutService->getCustomerCountryOrEmpty();
+		$availableCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
 
 		$customRates = [];
 		foreach ( $availableCarriers as $carrier ) {
 			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
 			$rateId       = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
 			$shippingRate = $this->createShippingRateOfCarrier(
-				$isAgeVerificationRequired,
 				$carrier,
 				$allowedCarrierNames,
 				$optionId,
-				$disallowedShippingRateIds,
-				$cartProducts,
-				$cartPrice,
-				$totalCartProductValue,
-				$cartWeight,
 				$rateId
 			);
 
@@ -88,25 +76,23 @@ class ShippingRateFactory {
 		return $customRates;
 	}
 
+	/**
+	 * @throws ProductNotFoundException
+	 */
 	private function createShippingRateOfCarrier(
-		bool $isAgeVerificationRequired,
 		Entity\Carrier $carrier,
 		?array $allowedCarrierNames,
 		string $optionId,
-		array $disallowedShippingRateIds,
-		array $cartProducts,
-		float $cartPrice,
-		float $totalCartProductValue,
-		float $cartWeight,
 		string $rateId
 	): ?array {
+		$cartPrice             = $this->cartService->getCartContentsTotalIncludingTax();
+		$cartWeight            = $this->cartService->getCartWeightKg();
+		$totalCartProductValue = $this->cartService->getTotalCartProductValue();
+
 		if ( ! $this->canCreateShippingRate(
-			$isAgeVerificationRequired,
 			$carrier,
 			$allowedCarrierNames,
-			$optionId,
-			$disallowedShippingRateIds,
-			$cartProducts
+			$optionId
 		) ) {
 			return null;
 		}
@@ -119,14 +105,18 @@ class ShippingRateFactory {
 		return null !== $cost ? $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId ) : null;
 	}
 
+	/**
+	 * @throws ProductNotFoundException
+	 */
 	private function canCreateShippingRate(
-		bool $isAgeVerificationRequired,
 		Entity\Carrier $carrier,
 		?array $allowedCarrierNames,
-		string $optionId,
-		array $disallowedShippingRateIds,
-		array $cartProducts
+		string $optionId
 	): bool {
+		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
+		$isAgeVerificationRequired = $this->cartService->isAgeVerification18PlusRequired();
+		$cartProducts              = $this->wcAdapter->cartGetCartContents();
+
 		if ( $isAgeVerificationRequired && ! $carrier->supportsAgeVerification() ) {
 			return false;
 		}
