@@ -11,6 +11,8 @@ namespace Packetery\Core\Api\Soap;
 
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
+use Packetery\Core\Rounder;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 
 /**
  * Class CreatePacketMapper.
@@ -27,12 +29,19 @@ class CreatePacketMapper {
 	private $coreHelper;
 
 	/**
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * CreatePacketMapper constructor.
 	 *
-	 * @param CoreHelper $coreHelper CoreHelper.
+	 * @param CoreHelper            $coreHelper
+	 * @param CarrierOptionsFactory $carrierOptionsFactory
 	 */
-	public function __construct( CoreHelper $coreHelper ) {
-		$this->coreHelper = $coreHelper;
+	public function __construct( CoreHelper $coreHelper, CarrierOptionsFactory $carrierOptionsFactory ) {
+		$this->coreHelper            = $coreHelper;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
@@ -44,7 +53,7 @@ class CreatePacketMapper {
 	public function fromOrderToArray( Entity\Order $order ): array {
 		$createPacketData = [
 			// Required attributes.
-			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),
+			'number'       => $order->getCustomNumberOrNumber(),
 			'name'         => $order->getName(),
 			'surname'      => $order->getSurname(),
 			'value'        => $order->getValue(),
@@ -53,13 +62,20 @@ class CreatePacketMapper {
 			'eshop'        => $order->getEshop(),
 			// Optional attributes.
 			'adultContent' => (int) $order->containsAdultContent(),
-			'cod'          => $order->getCod(),
+			'cod'          => null,
 			'currency'     => $order->getCurrency(),
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
 			'deliverOn'    => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 		];
+
+		$codValue = $order->getCod();
+		if ( null !== $codValue ) {
+			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
+			$roundedCod              = Rounder::roundByCurrency( $codValue, $createPacketData['currency'], $roundingType );
+			$createPacketData['cod'] = $roundedCod;
+		}
 
 		$pickupPoint = $order->getPickupPoint();
 		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {

@@ -14,10 +14,8 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
-use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
 use Packetery\Module;
-use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -118,13 +116,6 @@ class PacketSubmitter {
 	private $moduleHelper;
 
 	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
-	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
@@ -139,7 +130,6 @@ class PacketSubmitter {
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
 	 * @param ModuleHelper                  $moduleHelper                 ModuleHelper.
-	 * @param CarrierOptionsFactory         $carrierOptionsFactory        Carrier options factory.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -153,8 +143,7 @@ class PacketSubmitter {
 		PacketActionsCommonLogic $commonLogic,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketSynchronizer $packetSynchronizer,
-		ModuleHelper $moduleHelper,
-		CarrierOptionsFactory $carrierOptionsFactory
+		ModuleHelper $moduleHelper
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidatorFactory->create();
@@ -168,7 +157,6 @@ class PacketSubmitter {
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
 		$this->moduleHelper                 = $moduleHelper;
-		$this->carrierOptionsFactory        = $carrierOptionsFactory;
 	}
 
 	/**
@@ -436,11 +424,6 @@ class PacketSubmitter {
 		}
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
-		if ( count( $createPacketData['cod'] ) > 0 ) {
-			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
-			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );
-			$createPacketData['cod'] = $roundedCod;
-		}
 
 		/**
 		 * Allows to update CreatePacket request data.

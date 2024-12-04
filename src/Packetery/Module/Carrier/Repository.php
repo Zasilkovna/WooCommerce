@@ -49,7 +49,7 @@ class Repository {
 	 * @param WpdbAdapter $wpdbAdapter        WpdbAdapter.
 	 */
 	public function __construct(
-		WpdbAdapter $wpdbAdapter,
+		WpdbAdapter $wpdbAdapter
 	) {
 		$this->wpdbAdapter = $wpdbAdapter;
 	}

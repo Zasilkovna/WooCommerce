@@ -1185,4 +1185,8 @@ class Order {
 		$this->setLastApiErrorMessage( $errorMessage );
 		$this->setLastApiErrorDateTime( null !== $errorMessage ? CoreHelper::now() : null );
 	}
+
+	public function getCustomNumberOrNumber(): ?string {
+		return $this->getCustomNumber() ?? $this->getNumber();
+	}
 }
