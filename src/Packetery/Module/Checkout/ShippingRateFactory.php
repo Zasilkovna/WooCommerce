@@ -98,45 +98,49 @@ class ShippingRateFactory {
 		float $cartWeight,
 		string $rateId
 	): ?array {
-		if ( $isAgeVerificationRequired && false === $carrier->supportsAgeVerification() ) {
-			return null;
-		}
-
-		if ( null !== $allowedCarrierNames && ! array_key_exists( $carrier->getId(), $allowedCarrierNames ) ) {
+		if ( ! $this->canCreateShippingRate(
+			$isAgeVerificationRequired,
+			$carrier,
+			$allowedCarrierNames,
+			$optionId,
+			$disallowedShippingRateIds,
+			$cartProducts
+		) ) {
 			return null;
 		}
 
 		$options     = $this->carrierOptionsFactory->createByOptionId( $optionId );
-		$carrierName = $options->getName();
-		if ( null !== $allowedCarrierNames ) {
-			$carrierName = $allowedCarrierNames[ $carrier->getId() ];
-		}
-		if ( null === $carrierName ) {
-			return null;
-		}
-
-		if ( null === $allowedCarrierNames && false === $options->isActive() ) {
-			return null;
-		}
-
-		if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
-			return null;
-		}
-
-		if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
-			return null;
-		}
-
-		if ( $this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts ) ) {
-			return null;
-		}
+		$carrierName = $allowedCarrierNames[ $carrier->getId() ] ?? $options->getName();
 
 		$cost = $this->rateCalculator->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
-		if ( null !== $cost ) {
-			return $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId );
+
+		return null !== $cost ? $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId ) : null;
+	}
+
+	private function canCreateShippingRate(
+		bool $isAgeVerificationRequired,
+		Entity\Carrier $carrier,
+		?array $allowedCarrierNames,
+		string $optionId,
+		array $disallowedShippingRateIds,
+		array $cartProducts
+	): bool {
+		if ( $isAgeVerificationRequired && ! $carrier->supportsAgeVerification() ) {
+			return false;
 		}
 
-		return null;
+		if ( null !== $allowedCarrierNames && ! array_key_exists( $carrier->getId(), $allowedCarrierNames ) ) {
+			return false;
+		}
+
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $optionId );
+
+		return ! (
+			( null === $allowedCarrierNames && ! $carrierOptions->isActive() ) ||
+			( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) ||
+			in_array( $optionId, $disallowedShippingRateIds, true ) ||
+			$this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts )
+		);
 	}
 
 	/**
@@ -182,7 +186,6 @@ class ShippingRateFactory {
 	 * @return string
 	 */
 	private function getFormattedShippingMethodName( string $name, float $cost ): string {
-		// todo test.
 		if ( 0.0 === $cost && $this->optionsProvider->isFreeShippingShown() ) {
 			return sprintf( '%s: %s', $name, $this->wpAdapter->__( 'Free', 'packeta' ) );
 		}
