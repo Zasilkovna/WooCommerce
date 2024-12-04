@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Module;
 
-use Packetery\Module\Checkout\CurrencySwitcherFacade;
+use Packetery\Module\Checkout\CurrencySwitcherService;
 use Packetery\Module\Framework\WpAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,8 +23,8 @@ class MockFactory {
 		return $mock;
 	}
 
-	public static function createCurrencySwitcherFacade( TestCase $testCase ): CurrencySwitcherFacade|MockObject {
-		$mock = $testCase->getMockBuilder( CurrencySwitcherFacade::class )
+	public static function createCurrencySwitcherFacade( TestCase $testCase ): CurrencySwitcherService|MockObject {
+		$mock = $testCase->getMockBuilder( CurrencySwitcherService::class )
 			->disableOriginalConstructor()
 			->getMock();
 		$mock

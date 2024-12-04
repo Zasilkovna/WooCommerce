@@ -104,7 +104,7 @@ services:
 	- Packetery\Module\Upgrade\Version_1_4_2
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
-	- Packetery\Module\Checkout\CurrencySwitcherFacade
+	- Packetery\Module\Checkout\CurrencySwitcherService
 	- Packetery\Core\Api\Soap\CreatePacketMapper
 	- Packetery\Module\Order\PickupPointValidator
 	- Packetery\Module\Checkout\RateCalculator
