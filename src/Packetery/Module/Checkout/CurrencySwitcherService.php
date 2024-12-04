@@ -22,10 +22,17 @@ class CurrencySwitcherService {
 	 */
 	private $wpAdapter;
 
+	/**
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
 	public function __construct(
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		ModuleHelper $moduleHelper
 	) {
-		$this->wpAdapter = $wpAdapter;
+		$this->wpAdapter    = $wpAdapter;
+		$this->moduleHelper = $moduleHelper;
 	}
 
 	/**
@@ -45,7 +52,7 @@ class CurrencySwitcherService {
 	 * @return float
 	 */
 	public function getConvertedPrice( float $price ): float {
-		if ( ModuleHelper::isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
+		if ( $this->moduleHelper->isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
 			return $this->applyFilterWoocsExchangeValue( $price );
 		}
 

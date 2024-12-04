@@ -228,6 +228,11 @@ class HookRegistrar {
 	 */
 	private $checkoutSettings;
 
+	/**
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -265,7 +270,8 @@ class HookRegistrar {
 		Options\Page $optionsPage,
 		WpAdapter $wpAdapter,
 		PacketSynchronizer $packetSynchronizer,
-		CheckoutSettings $checkoutSettings
+		CheckoutSettings $checkoutSettings,
+		ModuleHelper $moduleHelper
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
@@ -304,12 +310,13 @@ class HookRegistrar {
 		$this->wpAdapter                 = $wpAdapter;
 		$this->packetSynchronizer        = $packetSynchronizer;
 		$this->checkoutSettings          = $checkoutSettings;
+		$this->moduleHelper              = $moduleHelper;
 	}
 
 	public function register(): void {
 		$this->wpAdapter->addAction( 'init', [ $this->pluginHooks, 'loadTranslation' ] );
 
-		if ( ModuleHelper::isWooCommercePluginActive() === false ) {
+		if ( $this->moduleHelper->isWooCommercePluginActive() === false ) {
 			if ( $this->wpAdapter->isAdmin() ) {
 				$this->wpAdapter->addAction( 'admin_notices', [ $this->viewAdmin, 'echoInactiveWooCommerceNotice' ] );
 			}
