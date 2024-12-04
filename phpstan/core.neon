@@ -5,3 +5,8 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	strictRules:
 		allRules: true
+	ignoreErrors:
+		-
+			identifier: arrayFilter.strict
+	paths:
+		- ../src/Packetery/Core
