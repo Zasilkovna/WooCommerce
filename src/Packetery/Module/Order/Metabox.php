@@ -522,7 +522,7 @@ class Metabox {
 		/** @var array<string, string|float|int|true|null> $formValues */
 		$formValues = $this->form->getValues( 'array' );
 
-		if ( ! wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) ) {
+		if ( wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) !== 1 ) {
 			$this->messageManager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;

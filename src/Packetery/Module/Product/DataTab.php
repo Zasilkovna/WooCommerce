@@ -101,7 +101,7 @@ class DataTab {
 	 *
 	 * @param string[] $tabs Tabs definition array.
 	 *
-	 * @return array<string, array<string, string|string[]>>
+	 * @return array<array<string,string[]|string>|string>
 	 */
 	public function registerTab( array $tabs ): array {
 		$tabs[ self::NAME ] = [

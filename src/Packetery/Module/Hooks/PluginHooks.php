@@ -136,7 +136,7 @@ class PluginHooks {
 	 * @return array
 	 */
 	public function addPluginRowMeta( array $links, string $pluginFileName ): array {
-		if ( ! strpos( $pluginFileName, basename( ModuleHelper::getPluginMainFilePath() ) ) ) {
+		if ( strpos( $pluginFileName, basename( ModuleHelper::getPluginMainFilePath() ) ) === false ) {
 			return $links;
 		}
 		$links[] = '<a href="' . $this->wpAdapter->escUrl( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .
