@@ -2,7 +2,7 @@
 /**
  * Class StoredUntilFormFactory.
  *
- * @package Packetery
+ * @package Packetery\Forms
  */
 
 declare( strict_types=1 );
