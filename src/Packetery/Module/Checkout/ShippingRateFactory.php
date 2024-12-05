@@ -85,10 +85,6 @@ class ShippingRateFactory {
 		string $optionId,
 		string $rateId
 	): ?array {
-		$cartPrice             = $this->cartService->getCartContentsTotalIncludingTax();
-		$cartWeight            = $this->cartService->getCartWeightKg();
-		$totalCartProductValue = $this->cartService->getTotalCartProductValue();
-
 		if ( ! $this->canCreateShippingRate(
 			$carrier,
 			$allowedCarrierNames,
@@ -97,10 +93,12 @@ class ShippingRateFactory {
 			return null;
 		}
 
-		$options     = $this->carrierOptionsFactory->createByOptionId( $optionId );
-		$carrierName = $allowedCarrierNames[ $carrier->getId() ] ?? $options->getName();
-
-		$cost = $this->rateCalculator->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
+		$options               = $this->carrierOptionsFactory->createByOptionId( $optionId );
+		$carrierName           = $allowedCarrierNames[ $carrier->getId() ] ?? $options->getName();
+		$cartPrice             = $this->cartService->getCartContentsTotalIncludingTax();
+		$cartWeight            = $this->cartService->getCartWeightKg();
+		$totalCartProductValue = $this->cartService->getTotalCartProductValue();
+		$cost                  = $this->rateCalculator->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
 
 		return null !== $cost ? $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId ) : null;
 	}
@@ -113,10 +111,7 @@ class ShippingRateFactory {
 		?array $allowedCarrierNames,
 		string $optionId
 	): bool {
-		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
 		$isAgeVerificationRequired = $this->cartService->isAgeVerification18PlusRequired();
-		$cartProducts              = $this->wcAdapter->cartGetCartContents();
-
 		if ( $isAgeVerificationRequired && ! $carrier->supportsAgeVerification() ) {
 			return false;
 		}
@@ -125,7 +120,9 @@ class ShippingRateFactory {
 			return false;
 		}
 
-		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $optionId );
+		$carrierOptions            = $this->carrierOptionsFactory->createByOptionId( $optionId );
+		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
+		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 
 		return ! (
 			( null === $allowedCarrierNames && ! $carrierOptions->isActive() ) ||
