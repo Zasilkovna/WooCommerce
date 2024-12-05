@@ -66,7 +66,7 @@ class AssetManager {
 	/**
 	 * @var CheckoutService
 	 */
-	private $checkoutResolver;
+	private $checkoutService;
 
 	public function __construct(
 		ContextResolver $contextResolver,
@@ -77,7 +77,7 @@ class AssetManager {
 		CheckoutSettings $checkoutSettings,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
-		CheckoutService $checkoutResolver
+		CheckoutService $checkoutService
 	) {
 
 		$this->contextResolver     = $contextResolver;
@@ -88,7 +88,7 @@ class AssetManager {
 		$this->checkoutSettings    = $checkoutSettings;
 		$this->wpAdapter           = $wpAdapter;
 		$this->wcAdapter           = $wcAdapter;
-		$this->checkoutResolver    = $checkoutResolver;
+		$this->checkoutService     = $checkoutService;
 	}
 
 	/**
@@ -133,7 +133,7 @@ class AssetManager {
 				$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
 				$this->enqueueStyle( 'packetery-custom-front-styles', 'public/css/custom-front.css' );
 			}
-			if ( $this->checkoutResolver->areBlocksUsedInCheckout() ) {
+			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 				$this->wpAdapter->enqueueScript(
 					'packetery-widget-library',
 					'https://widget.packeta.com/v6/www/js/library.js',
