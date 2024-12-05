@@ -278,7 +278,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 
-		if ( $carrier->isCarDelivery() ) {
+		if ( $carrier !== null && $carrier->isCarDelivery() ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )

@@ -128,10 +128,10 @@ class FeatureFlagDownloader {
 	/**
 	 * Gets or downloads flags.
 	 *
-	 * @return array
-	 * @throws Exception From DateTimeImmutable.
+	 * @return array<string, string>|null
+	 * @throws Exception
 	 */
-	public function getFlags(): array {
+	public function getFlags(): ?array {
 		if ( $this->featureFlagStorage->getFlags() === null || count( $this->featureFlagStorage->getFlags() ) === 0 ) {
 			$flagsFromOptions = $this->wpAdapter->getOption( self::FLAGS_OPTION_ID );
 			if ( is_array( $flagsFromOptions ) ) {
