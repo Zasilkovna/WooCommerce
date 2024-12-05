@@ -12,7 +12,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Validator\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Nette\Forms;
 
 /**
@@ -89,7 +89,7 @@ class Form {
 			->setRequired( false )
 			->setNullable()
 			// translators: %s: Represents minimal date for delayed delivery.
-			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( Helper::DATEPICKER_FORMAT ) );
+			->addRule( [ FormValidators::class, 'dateIsLater' ], __( 'Date must be later than %s', 'packeta' ), wp_date( CoreHelper::DATEPICKER_FORMAT ) );
 
 		return $form;
 	}

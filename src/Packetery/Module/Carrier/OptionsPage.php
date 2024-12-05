@@ -10,13 +10,13 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity\Carrier;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Options\Provider;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
@@ -94,9 +94,9 @@ class OptionsPage {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
-	private $featureFlag;
+	private $featureFlagProvider;
 
 	/**
 	 * Car delivery config.
@@ -120,6 +120,13 @@ class OptionsPage {
 	private $carrierOptionsFactory;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * OptionsPage constructor.
 	 *
 	 * @param Engine                    $latteEngine           PacketeryLatte_engine.
@@ -129,8 +136,9 @@ class OptionsPage {
 	 * @param CountryListingPage        $countryListingPage    CountryListingPage.
 	 * @param MessageManager            $messageManager        Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
-	 * @param FeatureFlagManager        $featureFlag           Feature flag.
+	 * @param FeatureFlagProvider       $featureFlagProvider   Feature flag.
 	 * @param CarDeliveryConfig         $carDeliveryConfig     Car delivery config.
+	 * @param WcSettingsConfig          $wcSettingsConfig      WC Native carrier settings config.
 	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
 	 * @param Provider                  $optionsProvider       Options provider.
 	 */
@@ -142,8 +150,9 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag,
+		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
+		WcSettingsConfig $wcSettingsConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		Provider $optionsProvider
 	) {
@@ -154,8 +163,9 @@ class OptionsPage {
 		$this->countryListingPage    = $countryListingPage;
 		$this->messageManager        = $messageManager;
 		$this->pickupPointsConfig    = $pickupPointsConfig;
-		$this->featureFlag           = $featureFlag;
+		$this->featureFlagProvider   = $featureFlagProvider;
 		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->wcSettingsConfig      = $wcSettingsConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->optionsProvider       = $optionsProvider;
 	}
@@ -199,7 +209,7 @@ class OptionsPage {
 			->setRequired();
 
 		$carrierOptions = get_option( $optionId );
-		if ( $this->featureFlag->isSplitActive() ) {
+		if ( $this->featureFlagProvider->isSplitActive() ) {
 			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
 			if ( $vendorCheckboxes ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
@@ -402,7 +412,7 @@ class OptionsPage {
 
 		$options = $form->getValues( 'array' );
 
-		if ( $this->featureFlag->isSplitActive() ) {
+		if ( $this->featureFlagProvider->isSplitActive() ) {
 			$checkedVendors = $this->getCheckedVendors( $options );
 			if (
 				isset( $options['vendor_groups'] ) &&
@@ -691,7 +701,11 @@ class OptionsPage {
 	 * @return void
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
-		/** Pricing type control. @var Control $pricingTypeControl */
+		/**
+		 * Pricing type control.
+		 *
+		 * @var Control $pricingTypeControl
+		 */
 		$pricingTypeControl = $weightLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
 		$limit              = $weightLimits->addContainer( (string) $index );
 		$item               = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
@@ -703,7 +717,7 @@ class OptionsPage {
 
 		$itemRules->addFilter(
 			function ( float $value ) {
-				return Helper::simplifyWeight( $value );
+				return CoreHelper::simplifyWeight( $value );
 			}
 		);
 		// translators: %d is numeric threshold.

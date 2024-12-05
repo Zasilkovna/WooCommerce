@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Log;
-use Packetery\Module\Options;
+use Packetery\Module\Options\OptionsProvider;
 use WC_Logger;
 
 /**
@@ -23,7 +23,7 @@ class WcOrderActions {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -44,13 +44,13 @@ class WcOrderActions {
 	/**
 	 * Constructor.
 	 *
-	 * @param Log\ILogger      $logger Logger.
-	 * @param Options\Provider $optionsProvider Options provider.
-	 * @param Repository       $orderRepository Order repository.
+	 * @param Log\ILogger     $logger Logger.
+	 * @param OptionsProvider $optionsProvider Options provider.
+	 * @param Repository      $orderRepository Order repository.
 	 */
 	public function __construct(
 		Log\ILogger $logger,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Repository $orderRepository
 	) {
 		$this->logger          = $logger;

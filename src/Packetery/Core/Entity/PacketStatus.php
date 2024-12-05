@@ -27,6 +27,10 @@ class PacketStatus {
 	public const PREPARED_FOR_DEPARTURE = 'prepared for departure';
 	public const HANDED_TO_CARRIER      = 'handed to carrier';
 	public const RETURNED               = 'returned';
+	public const CUSTOMS                = 'customs';
+	public const REVERSE_PACKET_ARRIVED = 'reverse packet arrived';
+	public const DELIVERY_ATTEMPT       = 'delivery attempt';
+	public const REJECTED_BY_RECIPIENT  = 'rejected by recipient';
 	public const UNKNOWN                = 'unknown';
 
 	/**

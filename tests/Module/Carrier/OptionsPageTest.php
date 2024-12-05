@@ -8,14 +8,14 @@ use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Options\Provider;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
@@ -29,9 +29,10 @@ class OptionsPageTest extends TestCase {
 		$request                = $this->createMock( Request::class );
 		$countryListingPageMock = $this->createMock( CountryListingPage::class );
 		$messageManagerMock     = $this->createMock( MessageManager::class );
-		$featureFlagManagerMock = $this->createMock( FeatureFlagManager::class );
+		$featureFlagProviderMock = $this->createMock( FeatureFlagProvider::class );
+		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
 		$carDeliveryConfigMock  = $this->createMock( CarDeliveryConfig::class );
-		$carrierOptionsFactory  = $this->createMock( CarrierOptionsFactory::class );
+		$carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
 		$optionsProvider        = $this->createMock( Provider::class );
 
 		$compoundCarrierFactory  = new CompoundCarrierCollectionFactory();
@@ -41,10 +42,10 @@ class OptionsPageTest extends TestCase {
 		$packetaPickupPointsConfig = new PacketaPickupPointsConfig(
 			$compoundCarrierFactory,
 			$vendorCollectionFactory,
-			$featureFlagMock
+			$featureFlagProviderMock
 		);
 
-		$optionsPage = new OptionsPage(
+		$optionsPage             = new OptionsPage(
 			$latteEngineMock,
 			$carrierRepositoryMock,
 			$formFactoryMock,
@@ -52,8 +53,9 @@ class OptionsPageTest extends TestCase {
 			$countryListingPageMock,
 			$messageManagerMock,
 			$packetaPickupPointsConfig,
-			$featureFlagManagerMock,
+			$featureFlagProviderMock,
 			$carDeliveryConfigMock,
+			$wcSettingsConfigMock,
 			$carrierOptionsFactory,
 			$optionsProvider,
 		);

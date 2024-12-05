@@ -13,6 +13,7 @@ namespace Packetery\Module;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\ShippingProvider;
 use WC_Data_Store;
 use WC_Shipping_Zone;
@@ -41,7 +42,7 @@ class DashboardWidget {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -74,11 +75,11 @@ class DashboardWidget {
 	private $carrierEntityRepository;
 
 	/**
-	 * Helper.
+	 * ModuleHelper.
 	 *
-	 * @var Helper
+	 * @var ModuleHelper
 	 */
-	private $helper;
+	private $moduleHelper;
 
 	/**
 	 * Carrier options factory.
@@ -99,24 +100,24 @@ class DashboardWidget {
 	 *
 	 * @param Engine                   $latteEngine             Latte engine.
 	 * @param Carrier\Repository       $carrierRepository       Carrier repository.
-	 * @param Options\Provider         $optionsProvider         Options provider.
+	 * @param OptionsProvider          $optionsProvider         Options provider.
 	 * @param Carrier\OptionsPage      $carrierOptionsPage      Carrier options page.
 	 * @param Options\Page             $optionsPage             Options page.
 	 * @param array                    $surveyConfig            Survey config.
 	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
-	 * @param Helper                   $helper                  Helper.
+	 * @param ModuleHelper             $moduleHelper                  Helper.
 	 * @param CarrierOptionsFactory    $carrierOptionsFactory   Carrier options factory.
 	 * @param Carrier\ActivityBridge   $carrierActivityBridge   Carrier activity checker.
 	 */
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Carrier\OptionsPage $carrierOptionsPage,
 		Options\Page $optionsPage,
 		array $surveyConfig,
 		Carrier\EntityRepository $carrierEntityRepository,
-		Helper $helper,
+		ModuleHelper $moduleHelper,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		Carrier\ActivityBridge $carrierActivityBridge
 	) {
@@ -127,7 +128,7 @@ class DashboardWidget {
 		$this->optionsPage             = $optionsPage;
 		$this->surveyConfig            = $surveyConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
-		$this->helper                  = $helper;
+		$this->moduleHelper            = $moduleHelper;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 		$this->carrierActivityBridge   = $carrierActivityBridge;
 	}
@@ -222,27 +223,27 @@ class DashboardWidget {
 					'noGlobalSettings'       => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Global plugin settings have not been made, you can make the settings %1$shere%2$s.', 'packeta' ),
-						...$this->helper->createLinkParts( $this->optionsPage->createLink() )
+						...$this->moduleHelper->createLinkParts( $this->optionsPage->createLink() )
 					),
 					'noActiveCountry'        => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'Now you do not send parcels to any country via Packeta. The settings can be made %1$shere%2$s.', 'packeta' ),
-						...$this->helper->createLinkParts( $this->carrierOptionsPage->createUrl() )
+						...$this->moduleHelper->createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
 					'noCodPaymentConfigured' => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No COD payment configured. The settings can be made %1$shere%2$s.', 'packeta' ),
-						...$this->helper->createLinkParts( $this->optionsPage->createLink() )
+						...$this->moduleHelper->createLinkParts( $this->optionsPage->createLink() )
 					),
 					'noExternalCarrier'      => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No external carrier was found. Carriers can be downloaded %1$shere%2$s.', 'packeta' ),
-						...$this->helper->createLinkParts( $this->carrierOptionsPage->createUrl() )
+						...$this->moduleHelper->createLinkParts( $this->carrierOptionsPage->createUrl() )
 					),
 					'noPacketaShipping'      => sprintf(
 						// translators: 1: link start 2: link end.
 						esc_html__( 'No Packeta shipping method was configured. Configure shipping zone with Packeta shipping method %1$shere%2$s.', 'packeta' ),
-						...$this->helper->createLinkParts(
+						...$this->moduleHelper->createLinkParts(
 							add_query_arg(
 								[
 									'page' => 'wc-settings',

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Provider
+ * Class OptionsProvider
  *
  * @package Packetery
  */
@@ -13,30 +13,34 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
- * Class Provider
+ * Class OptionsProvider
  *
  * @package Packetery
  */
-class Provider {
+class OptionsProvider {
 
-	const OPTION_NAME_PACKETERY                 = 'packetery';
-	const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
-	const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
-	const OPTION_NAME_PACKETERY_ADVANCED        = 'packetery_advanced';
+	public const OPTION_NAME_PACKETERY                 = 'packetery';
+	public const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
+	public const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
+	public const OPTION_NAME_PACKETERY_ADVANCED        = 'packetery_advanced';
 
-	const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
-	const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
-	const DEFAULT_VALUE_CARRIER_SETTINGS            = false;
-	const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
-	const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
-	const FORCE_PACKET_CANCEL_DEFAULT               = true;
-	const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
-	const WIDGET_AUTO_OPEN_DEFAULT                  = false;
-	const AUTO_ORDER_STATUS_DEFAULT                 = '';
-	public const EMAIL_HOOK_DEFAULT                 = 'woocommerce_email_footer';
-	const AUTO_ORDER_STATUS                         = 'auto_order_status';
-	const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
-	const PRICES_INCLUDE_TAX_DEFAULT                = false;
+	public const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
+	public const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	public const DEFAULT_VALUE_CARRIER_SETTINGS            = false;
+	public const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
+	public const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
+	public const FORCE_PACKET_CANCEL_DEFAULT               = true;
+	public const PACKET_AUTO_SUBMISSION_ALLOWED_DEFAULT    = false;
+	public const WIDGET_AUTO_OPEN_DEFAULT                  = false;
+	public const AUTO_ORDER_STATUS_DEFAULT                 = '';
+	public const EMAIL_HOOK_DEFAULT                        = 'woocommerce_email_footer';
+	public const AUTO_ORDER_STATUS                         = 'auto_order_status';
+	public const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
+	public const PRICES_INCLUDE_TAX_DEFAULT                = false;
+
+	public const AUTOMATIC_CHECKOUT_DETECTION = 'automatic_checkout_detection';
+	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
+	public const CLASSIC_CHECKOUT_DETECTION   = 'classic_checkout_detection';
 
 	/**
 	 *  Options data.
@@ -67,7 +71,7 @@ class Provider {
 	private $advancedData;
 
 	/**
-	 * Provider constructor.
+	 * OptionsProvider constructor.
 	 */
 	public function __construct() {
 		$data = get_option( self::OPTION_NAME_PACKETERY );
@@ -226,6 +230,20 @@ class Provider {
 		$value = $this->get( 'checkout_widget_button_location' );
 		if ( ! $value ) {
 			return null;
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Returns which checkout detection to return
+	 *
+	 * @return string
+	 */
+	public function getCheckoutDetection(): string {
+		$value = $this->get( 'checkout_detection' );
+		if ( ! $value ) {
+			return self::AUTOMATIC_CHECKOUT_DETECTION;
 		}
 
 		return $value;

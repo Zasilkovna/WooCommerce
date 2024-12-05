@@ -12,7 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Upgrade\Version_1_4_2;
 
 /**
@@ -91,7 +91,7 @@ class Upgrade {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -105,7 +105,7 @@ class Upgrade {
 	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
 	 * @param Carrier\Repository            $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
-	 * @param Options\Provider              $optionsProvider              Options provider.
+	 * @param OptionsProvider               $optionsProvider              Options provider.
 	 */
 	public function __construct(
 		Order\Repository $orderRepository,
@@ -115,7 +115,7 @@ class Upgrade {
 		WpdbAdapter $wpdbAdapter,
 		Carrier\Repository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
-		Options\Provider $optionsProvider
+		OptionsProvider $optionsProvider
 	) {
 		$this->orderRepository              = $orderRepository;
 		$this->messageManager               = $messageManager;
@@ -197,7 +197,7 @@ class Upgrade {
 		if ( $oldVersion && version_compare( $oldVersion, '1.7.0', '<' ) ) {
 			$orderStatusAutoChange = $this->optionsProvider->isOrderStatusAutoChangeEnabled();
 			$autoOrderStatus       = $this->optionsProvider->getAutoOrderStatus();
-			$syncSettings          = $this->optionsProvider->getOptionsByName( Options\Provider::OPTION_NAME_PACKETERY_SYNC );
+			$syncSettings          = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
 			if ( $orderStatusAutoChange ) {
 				$syncSettings['allow_order_status_change'] = true;
 			}
@@ -207,18 +207,28 @@ class Upgrade {
 				];
 			}
 
-			update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
+			update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
 		}
 
 		if ( $oldVersion && version_compare( $oldVersion, '1.7.1', '<' ) ) {
-			$syncSettings = $this->optionsProvider->getOptionsByName( Options\Provider::OPTION_NAME_PACKETERY_SYNC );
+			$syncSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
 			if (
 				isset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] ) &&
 				'' === $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ]
 			) {
 				unset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] );
-				update_option( Provider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
+				update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
 			}
+		}
+
+		if ( $oldVersion && version_compare( $oldVersion, '1.8.0', '<' ) ) {
+			$generalSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
+			if ( isset( $generalSettings['cod_payment_method'] ) ) {
+				$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
+				unset( $generalSettings['cod_payment_method'] );
+			}
+
+			update_option( OptionsProvider::OPTION_NAME_PACKETERY, $generalSettings );
 		}
 
 		// TODO: Update version on new release.

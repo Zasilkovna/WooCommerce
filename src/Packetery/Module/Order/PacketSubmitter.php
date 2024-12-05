@@ -20,6 +20,8 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
+use Packetery\Module\ShippingMethod;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 use WC_Order;
@@ -111,11 +113,18 @@ class PacketSubmitter {
 	private $packetSynchronizer;
 
 	/**
-	 * Helper.
+	 * ModuleHelper.
 	 *
-	 * @var Module\Helper
+	 * @var ModuleHelper
 	 */
-	private $helper;
+	private $moduleHelper;
+
+	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
 
 	/**
 	 * Carrier options factory.
@@ -128,7 +137,7 @@ class PacketSubmitter {
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
-	 * @param Validator\Order               $orderValidator               Order validator.
+	 * @param OrderValidatorFactory         $orderValidatorFactory Order validator.
 	 * @param Log\ILogger                   $logger                       Logger.
 	 * @param Repository                    $orderRepository              Order repository.
 	 * @param CreatePacketMapper            $createPacketMapper           CreatePacketMapper.
@@ -138,12 +147,12 @@ class PacketSubmitter {
 	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
-	 * @param Module\Helper                 $helper                       Helper.
+	 * @param ModuleHelper                  $moduleHelper                 ModuleHelper.
 	 * @param CarrierOptionsFactory         $carrierOptionsFactory        Carrier options factory.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
-		Validator\Order $orderValidator,
+		OrderValidatorFactory $orderValidatorFactory,
 		Log\ILogger $logger,
 		Repository $orderRepository,
 		CreatePacketMapper $createPacketMapper,
@@ -153,11 +162,11 @@ class PacketSubmitter {
 		PacketActionsCommonLogic $commonLogic,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketSynchronizer $packetSynchronizer,
-		Module\Helper $helper,
+		ModuleHelper $moduleHelper,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->soapApiClient                = $soapApiClient;
-		$this->orderValidator               = $orderValidator;
+		$this->orderValidator               = $orderValidatorFactory->create();
 		$this->logger                       = $logger;
 		$this->orderRepository              = $orderRepository;
 		$this->createPacketMapper           = $createPacketMapper;
@@ -167,7 +176,7 @@ class PacketSubmitter {
 		$this->commonLogic                  = $commonLogic;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
-		$this->helper                       = $helper;
+		$this->moduleHelper                 = $moduleHelper;
 		$this->carrierOptionsFactory        = $carrierOptionsFactory;
 	}
 
@@ -402,7 +411,7 @@ class PacketSubmitter {
 					sprintf(
 						// translators: %s represents a packet tracking link.
 						__( 'Packeta: Packet %s has been created', 'packeta' ),
-						$this->helper->createHtmlLink( $order->getPacketTrackingUrl(), $order->getPacketBarcode() )
+						$this->moduleHelper->createHtmlLink( $order->getPacketTrackingUrl(), $order->getPacketBarcode() )
 					)
 				);
 				$wcOrder->save();

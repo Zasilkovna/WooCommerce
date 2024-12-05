@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Core\Validator;
 
+use Packetery\Core\Interfaces\ValidatorTranslationsInterface;
 use Packetery\Core\Validator\Address;
 use Packetery\Core\Validator\Order;
 use Packetery\Core\Validator\Size;
@@ -13,9 +14,10 @@ use Tests\Core\DummyFactory;
 class OrderTest extends TestCase {
 
 	public function testValidation(): void {
-		$addressValidator      = new Address();
-		$sizeValidator         = new Size();
-		$validatorTranslations = [
+		$addressValidator          = new Address();
+		$sizeValidator             = new Size();
+		$validatorTranslationsMock = $this->createMock( ValidatorTranslationsInterface::class );
+		$validatorTranslationsMock->method( 'get' )->willReturn( [
 			Order::ERROR_TRANSLATION_KEY_NUMBER                     => 'Order number is not set.',
 			Order::ERROR_TRANSLATION_KEY_NAME                       => 'Customer name is not set.',
 			Order::ERROR_TRANSLATION_KEY_VALUE                      => 'Order value is not set.',
@@ -27,8 +29,9 @@ class OrderTest extends TestCase {
 			Order::ERROR_TRANSLATION_KEY_WIDTH                      => 'Order width is not set.',
 			Order::ERROR_TRANSLATION_KEY_LENGTH                     => 'Order length is set.',
 			Order::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION        => 'Customs declaration is not set.',
-		];
-		$validator = new Order( $addressValidator, $sizeValidator, $validatorTranslations );
+		] );
+
+		$validator = new Order( $addressValidator, $sizeValidator, $validatorTranslationsMock );
 
 		$dummyOrder = DummyFactory::createOrderCzPp();
 		$dummyOrder->setPickupPoint( DummyFactory::createPickupPoint() );
@@ -51,7 +54,8 @@ class OrderTest extends TestCase {
 
 		self::assertCount( 4, $validator->validate( $dummyOrderHdInvalid ) );
 
-		$validator = new Order( $addressValidator, $sizeValidator, [ Order::ERROR_TRANSLATION_KEY_NAME => ''] );
+		$validatorTranslationsMock->method( 'get' )->willReturn( [ Order::ERROR_TRANSLATION_KEY_NAME => '' ] );
+		$validator = new Order( $addressValidator, $sizeValidator, $validatorTranslationsMock );
 		self::assertFalse( $validator->isValid( $dummyOrder ) );
 	}
 

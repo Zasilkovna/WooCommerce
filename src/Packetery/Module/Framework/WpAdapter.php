@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait WpAdapter.
+ * Class WpAdapter.
  *
  * @package Packetery
  */
@@ -10,17 +10,20 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 use WP_Error;
+use WP_Post;
 use WP_Term;
 
 /**
- * Trait WpAdapter.
+ * Class WpAdapter.
  *
  * @package Packetery
  */
 class WpAdapter {
 	use HookTrait;
 	use HttpTrait;
+	use OptionTrait;
 	use TransientTrait;
+	use PostTrait;
 
 	/**
 	 * Retrieves a modified URL query string.
@@ -31,18 +34,6 @@ class WpAdapter {
 	 */
 	public function addQueryArg( ...$args ): string {
 		return add_query_arg( ...$args );
-	}
-
-	/**
-	 * WP get_option adapter.
-	 *
-	 * @param string $optionId Option id.
-	 * @param mixed  $defaultValue Default value.
-	 *
-	 * @return mixed
-	 */
-	public function getOption( string $optionId, $defaultValue = false ) {
-		return get_option( $optionId, $defaultValue );
 	}
 
 	/**
@@ -67,6 +58,17 @@ class WpAdapter {
 		return is_wp_error( $thing );
 	}
 
+	/**
+	 * Determines whether a $post or a string contains a specific block type.
+	 *
+	 * @param string                  $blockName Full block type to look for.
+	 * @param int|string|WP_Post|null $post Optional. Post content, post ID, or post object.
+	 *
+	 * @return bool
+	 */
+	public function hasBlock( string $blockName, $post ): bool {
+		return has_block( $blockName, $post );
+	}
 
 	/**
 	 * Retrieves the current locale.

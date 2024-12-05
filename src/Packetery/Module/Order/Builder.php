@@ -11,20 +11,20 @@ namespace Packetery\Module\Order;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Packetery\Core;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Address;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
 use Packetery\Core\Entity\Size;
-use Packetery\Module;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\WeightCalculator;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Product;
 use stdClass;
 use WC_Order;
@@ -39,7 +39,7 @@ class Builder {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider Options provider.
+	 * @var OptionsProvider Options provider.
 	 */
 	private $optionsProvider;
 
@@ -65,11 +65,18 @@ class Builder {
 	private $pickupPointsConfig;
 
 	/**
-	 * Helper.
+	 * CoreHelper.
 	 *
-	 * @var Core\Helper
+	 * @var CoreHelper
 	 */
-	private $helper;
+	private $coreHelper;
+
+	/**
+	 * Payment helper.
+	 *
+	 * @var PaymentHelper
+	 */
+	private $paymentHelper;
 
 	/**
 	 * Payment helper.
@@ -88,20 +95,20 @@ class Builder {
 	/**
 	 * Builder constructor.
 	 *
-	 * @param Provider                      $optionsProvider              Options Provider.
+	 * @param OptionsProvider               $optionsProvider              Options Provider.
 	 * @param WeightCalculator              $calculator                   Weight calculator.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
-	 * @param Core\Helper                   $helper                       Helper.
+	 * @param CoreHelper                    $coreHelper                   CoreHelper.
 	 * @param PaymentHelper                 $paymentHelper                Payment helper.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 */
 	public function __construct(
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		WeightCalculator $calculator,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		Core\Helper $helper,
+		CoreHelper $coreHelper,
 		PaymentHelper $paymentHelper,
 		Carrier\EntityRepository $carrierRepository
 	) {
@@ -109,7 +116,7 @@ class Builder {
 		$this->calculator                   = $calculator;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->pickupPointsConfig           = $pickupPointsConfig;
-		$this->helper                       = $helper;
+		$this->coreHelper                   = $coreHelper;
 		$this->paymentHelper                = $paymentHelper;
 		$this->carrierRepository            = $carrierRepository;
 	}
@@ -124,7 +131,7 @@ class Builder {
 	 * @throws InvalidCarrierException In case Carrier entity could not be created.
 	 */
 	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
-		$country = Module\Helper::getWcOrderCountry( $wcOrder );
+		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
 		if ( empty( $country ) ) {
 			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
 		}
@@ -158,13 +165,13 @@ class Builder {
 		$order->setAdultContent( $this->parseBool( $result->adult_content ) );
 		$order->setValue( $this->parseFloat( $result->value ) );
 		$order->setCod( $this->parseFloat( $result->cod ) );
-		$order->setDeliverOn( $this->helper->getDateTimeFromString( $result->deliver_on ) );
+		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $result->deliver_on ) );
 		$order->setLastApiErrorMessage( $result->api_error_message );
 		$order->setLastApiErrorDateTime(
 			( null === $result->api_error_date )
 				? null
 				: DateTimeImmutable::createFromFormat(
-					Core\Helper::MYSQL_DATETIME_FORMAT,
+					CoreHelper::MYSQL_DATETIME_FORMAT,
 					$result->api_error_date,
 					new DateTimeZone( 'UTC' )
 				)->setTimezone( wp_timezone() )
@@ -209,7 +216,7 @@ class Builder {
 			$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		}
 
-		$order->setShippingCountry( Module\Helper::getWcOrderCountry( $wcOrder ) );
+		$order->setShippingCountry( ModuleHelper::getWcOrderCountry( $wcOrder ) );
 
 		$orderData   = $wcOrder->get_data();
 		$contactInfo = ( $wcOrder->has_shipping_address() ? $orderData['shipping'] : $orderData['billing'] );

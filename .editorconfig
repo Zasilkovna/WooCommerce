@@ -3,7 +3,7 @@ charset = utf-8
 end_of_line = lf
 indent_size = 4
 indent_style = tab
-insert_final_newline = false
+insert_final_newline = true
 max_line_length = 120
 tab_width = 4
 ij_continuation_indent_size = 4
@@ -11,10 +11,12 @@ ij_formatter_off_tag = @formatter:off
 ij_formatter_on_tag = @formatter:on
 ij_formatter_tags_enabled = true
 ij_smart_tabs = false
-ij_visual_guides = 
+ij_visual_guides =
 ij_wrap_on_typing = false
 
 [*.css]
+indent_size = 2
+indent_style = space
 ij_css_align_closing_brace_with_properties = false
 ij_css_blank_lines_around_nested_selector = 1
 ij_css_blank_lines_between_blocks = 1
@@ -243,7 +245,7 @@ ij_typescript_prefer_explicit_types_function_expression_returns = false
 ij_typescript_prefer_explicit_types_function_returns = false
 ij_typescript_prefer_explicit_types_vars_fields = false
 ij_typescript_prefer_parameters_wrap = false
-ij_typescript_property_prefix = 
+ij_typescript_property_prefix =
 ij_typescript_reformat_c_style_comments = false
 ij_typescript_space_after_colon = true
 ij_typescript_space_after_comma = true
@@ -422,7 +424,7 @@ ij_javascript_prefer_explicit_types_function_expression_returns = false
 ij_javascript_prefer_explicit_types_function_returns = false
 ij_javascript_prefer_explicit_types_vars_fields = false
 ij_javascript_prefer_parameters_wrap = false
-ij_javascript_property_prefix = 
+ij_javascript_property_prefix =
 ij_javascript_reformat_c_style_comments = false
 ij_javascript_space_after_colon = true
 ij_javascript_space_after_comma = true
@@ -806,6 +808,7 @@ ij_markdown_wrap_text_inside_blockquotes = true
 
 [{*.yaml,*.yml}]
 indent_size = 2
+indent_style = space
 ij_yaml_align_values_properties = do_not_align
 ij_yaml_autoinsert_sequence_marker = true
 ij_yaml_block_mapping_on_new_line = false
@@ -817,8 +820,18 @@ ij_yaml_space_before_colon = false
 ij_yaml_spaces_within_braces = true
 ij_yaml_spaces_within_brackets = true
 
-[{composer.json,composer.lock}]
+[{composer.json,composer.lock,composer-deps.lock,composer-deps.json}]
 indent_size = 4
+indent_style = space
 trim_trailing_whitespace = true
 insert_final_newline = true
+max_line_length = off
+
+[public/block/block.json]
+indent_size = 2
+indent_style = tab
+insert_final_newline = true
+
+[{readme.txt,changelog.txt}]
 indent_style = space
+indent_size = 2

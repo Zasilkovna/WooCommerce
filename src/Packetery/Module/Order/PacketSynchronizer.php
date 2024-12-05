@@ -15,7 +15,8 @@ use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\Exception\InvalidPasswordException;
-use Packetery\Module\Options;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Options\OptionsProvider;
 
 /**
  * Class Synchronizer
@@ -23,6 +24,8 @@ use Packetery\Module\Options;
  * @package Packetery\Module\Order
  */
 class PacketSynchronizer {
+
+	private const HOOK_NAME_SYNC_ORDER_STATUS = 'packetery_sync_order_status';
 
 	/**
 	 * API soap client.
@@ -34,7 +37,7 @@ class PacketSynchronizer {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -60,48 +63,80 @@ class PacketSynchronizer {
 	private $wcOrderActions;
 
 	/**
+	 * WC adapter.
+	 *
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * Constructor.
 	 *
-	 * @param Api\Soap\Client  $apiSoapClient   API soap client.
-	 * @param Log\ILogger      $logger          Logger.
-	 * @param Options\Provider $optionsProvider Options provider.
-	 * @param Repository       $orderRepository Order repository.
-	 * @param WcOrderActions   $wcOrderActions  WC order actions.
+	 * @param Api\Soap\Client $apiSoapClient   API soap client.
+	 * @param Log\ILogger     $logger          Logger.
+	 * @param OptionsProvider $optionsProvider Options provider.
+	 * @param Repository      $orderRepository Order repository.
+	 * @param WcOrderActions  $wcOrderActions  WC order actions.
+	 * @param WcAdapter       $wcAdapter       WC adapter.
 	 */
 	public function __construct(
 		Api\Soap\Client $apiSoapClient,
 		Log\ILogger $logger,
-		Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Repository $orderRepository,
-		WcOrderActions $wcOrderActions
+		WcOrderActions $wcOrderActions,
+		WcAdapter $wcAdapter
 	) {
 		$this->apiSoapClient   = $apiSoapClient;
 		$this->logger          = $logger;
 		$this->optionsProvider = $optionsProvider;
 		$this->orderRepository = $orderRepository;
 		$this->wcOrderActions  = $wcOrderActions;
+		$this->wcAdapter       = $wcAdapter;
+	}
+
+	/**
+	 * Register hook.
+	 *
+	 * @return void
+	 */
+	public function register() {
+		add_action( self::HOOK_NAME_SYNC_ORDER_STATUS, [ $this, 'syncStatusById' ] );
 	}
 
 	/**
 	 * Synchronizes packets.
 	 *
 	 * @return void
+	 * @throws \Exception Exception.
 	 */
 	public function syncStatuses(): void {
-		$results = $this->orderRepository->findStatusSyncingOrders(
+		$syncingOrderIds = $this->orderRepository->findStatusSyncingOrderIds(
 			$this->optionsProvider->getStatusSyncingPacketStatuses(),
 			$this->optionsProvider->getExistingStatusSyncingOrderStatuses(),
 			$this->optionsProvider->getMaxDaysOfPacketStatusSyncing(),
 			$this->optionsProvider->getMaxStatusSyncingPackets()
 		);
 
-		foreach ( $results as $order ) {
-			try {
-				$this->syncStatus( $order );
-			} catch ( InvalidPasswordException $exception ) {
-				break;
-			}
+		foreach ( $syncingOrderIds as $orderId ) {
+			$this->wcAdapter->asScheduleSingleAction( time(), self::HOOK_NAME_SYNC_ORDER_STATUS, [ $orderId ] );
 		}
+	}
+
+	/**
+	 * Synchronizes status for one order.
+	 *
+	 * @param int $orderId Order id.
+	 *
+	 * @return void
+	 */
+	public function syncStatusById( int $orderId ): void {
+		$order = $this->orderRepository->getById( $orderId );
+		if ( null === $order ) {
+			return;
+		}
+
+		$this->syncStatus( $order );
 	}
 
 	/**
@@ -176,6 +211,14 @@ class PacketSynchronizer {
 				new PacketStatus( PacketStatus::CANCELLED, __( 'Cancelled', 'packeta' ), false ),
 			PacketStatus::COLLECTED              =>
 				new PacketStatus( PacketStatus::COLLECTED, __( 'Parcel has been collected', 'packeta' ), true ),
+			PacketStatus::CUSTOMS                =>
+				new PacketStatus( PacketStatus::CUSTOMS, __( 'Customs declaration process', 'packeta' ), true ),
+			PacketStatus::REVERSE_PACKET_ARRIVED =>
+				new PacketStatus( PacketStatus::REVERSE_PACKET_ARRIVED, __( 'Reverse parcel has been accepted at our pick up point', 'packeta' ), true ),
+			PacketStatus::DELIVERY_ATTEMPT       =>
+				new PacketStatus( PacketStatus::DELIVERY_ATTEMPT, __( 'Unsuccessful delivery attempt of parcel', 'packeta' ), true ),
+			PacketStatus::REJECTED_BY_RECIPIENT  =>
+				new PacketStatus( PacketStatus::REJECTED_BY_RECIPIENT, __( 'Rejected by recipient response', 'packeta' ), true ),
 			PacketStatus::UNKNOWN                =>
 				new PacketStatus( PacketStatus::UNKNOWN, __( 'Unknown parcel status', 'packeta' ), false ),
 		];
