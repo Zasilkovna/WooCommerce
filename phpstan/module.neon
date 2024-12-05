@@ -1,3 +1,5 @@
+includes:
+	- base.neon
 parameters:
 	level: 6
 	strictRules:
