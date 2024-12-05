@@ -15,7 +15,7 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\ContextResolver;
-use Packetery\Module\Options\FeatureFlagManager;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
 
@@ -27,11 +27,11 @@ use Packetery\Module\ShippingZoneRepository;
 class ShippingProvider {
 
 	/**
-	 * Feature flag manager.
+	 * Feature flag provider.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
-	private $featureFlagManager;
+	private $featureFlagProvider;
 
 	/**
 	 * Pickup point config.
@@ -78,7 +78,7 @@ class ShippingProvider {
 	/**
 	 * Constructor.
 	 *
-	 * @param FeatureFlagManager        $featureFlagManager     Feature flag manager.
+	 * @param FeatureFlagProvider       $featureFlagProvider    Feature flag manager.
 	 * @param PacketaPickupPointsConfig $pickupPointConfig      Pickup point config.
 	 * @param CarDeliveryConfig         $carDeliveryConfig      Car delivery config.
 	 * @param ContextResolver           $contextResolver        Context resolver.
@@ -87,7 +87,7 @@ class ShippingProvider {
 	 * @param CarrierOptionsFactory     $carrierOptionsFactory  Carrier options factory.
 	 */
 	public function __construct(
-		FeatureFlagManager $featureFlagManager,
+		FeatureFlagProvider $featureFlagProvider,
 		PacketaPickupPointsConfig $pickupPointConfig,
 		CarDeliveryConfig $carDeliveryConfig,
 		ContextResolver $contextResolver,
@@ -95,7 +95,7 @@ class ShippingProvider {
 		EntityRepository $carrierRepository,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->featureFlagManager     = $featureFlagManager;
+		$this->featureFlagProvider    = $featureFlagProvider;
 		$this->pickupPointConfig      = $pickupPointConfig;
 		$this->carDeliveryConfig      = $carDeliveryConfig;
 		$this->contextResolver        = $contextResolver;
@@ -135,7 +135,7 @@ class ShippingProvider {
 					continue;
 				}
 			}
-			if ( $this->featureFlagManager->isSplitActive() === false ) {
+			if ( $this->featureFlagProvider->isSplitActive() === false ) {
 				$internalCountries = implode( '|', $this->pickupPointConfig->getInternalCountries() );
 				$vendorGroups      = Carrier::VENDOR_GROUP_ZPOINT . '|' . Carrier::VENDOR_GROUP_ZBOX;
 				if ( preg_match( '/^ShippingMethod_(' . $internalCountries . ')(' . $vendorGroups . ')\.php$/', $filename ) ) {

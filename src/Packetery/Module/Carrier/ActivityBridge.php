@@ -8,7 +8,7 @@
 namespace Packetery\Module\Carrier;
 
 use Packetery\Module\Carrier;
-use Packetery\Module\Options;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\BaseShippingMethod;
 use WC_Shipping_Zones;
 
@@ -22,16 +22,16 @@ class ActivityBridge {
 	/**
 	 * Options provider.
 	 *
-	 * @var Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param Options\Provider $optionsProvider Options provider.
+	 * @param OptionsProvider $optionsProvider Options provider.
 	 */
-	public function __construct( Options\Provider $optionsProvider ) {
+	public function __construct( OptionsProvider $optionsProvider ) {
 		$this->optionsProvider = $optionsProvider;
 	}
 

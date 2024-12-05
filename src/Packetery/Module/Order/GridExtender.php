@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
-use Packetery\Core\Validator\Order;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Exception\InvalidCarrierException;

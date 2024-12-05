@@ -16,7 +16,7 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
 
@@ -33,11 +33,10 @@ class OptionsPageTest extends TestCase {
 		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
 		$carDeliveryConfigMock  = $this->createMock( CarDeliveryConfig::class );
 		$carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
-		$optionsProvider        = $this->createMock( Provider::class );
+		$optionsProvider        = $this->createMock( OptionsProvider::class );
 
 		$compoundCarrierFactory  = new CompoundCarrierCollectionFactory();
 		$vendorCollectionFactory = new VendorCollectionFactory();
-		$featureFlagMock         = $this->createMock( FeatureFlagManager::class );
 
 		$packetaPickupPointsConfig = new PacketaPickupPointsConfig(
 			$compoundCarrierFactory,
@@ -55,12 +54,9 @@ class OptionsPageTest extends TestCase {
 			$packetaPickupPointsConfig,
 			$featureFlagProviderMock,
 			$carDeliveryConfigMock,
-			$wcSettingsConfigMock,
-			$carrierOptionsFactory,
-			$optionsProvider,
 		);
 
-		$featureFlagMock->method( 'isSplitActive' )->willReturn( true );
+		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointcz' ) );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointsk' ) );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointhu' ) );

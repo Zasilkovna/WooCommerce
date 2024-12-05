@@ -116,13 +116,6 @@ class CountryListingPage {
 	private $carrierOptionsFactory;
 
 	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
-	/**
 	 * CountryListingPage constructor.
 	 *
 	 * @param Engine                    $latteEngine                   PacketeryLatte engine.

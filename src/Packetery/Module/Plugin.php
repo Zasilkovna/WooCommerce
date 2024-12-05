@@ -362,7 +362,7 @@ class Plugin {
 	 * @param CarrierModal               $carrierModal              Carrier Modal.
 	 * @param CarrierOptionsFactory      $carrierOptionsFactory     Carrier options factory.
 	 * @param PacketSynchronizer         $packetSynchronizer        Packet synchronizer.
-	 * @param ShippingProvider           $shippingProvider          Shipping provider.
+	 * @param ShippingProvider           $shippingProvider Shipping provider.
 	 */
 	public function __construct(
 		Order\Metabox $order_metabox,

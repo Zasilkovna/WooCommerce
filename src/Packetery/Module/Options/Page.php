@@ -427,11 +427,11 @@ class Page {
 	 */
 	public function createAdvancedForm(): Form {
 		$form     = $this->formFactory->create( 'packetery_advanced_form' );
-		$defaults = $this->optionsProvider->getOptionsByName( Provider::OPTION_NAME_PACKETERY_ADVANCED );
+		$defaults = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED );
 
 		$form->addCheckbox( 'new_carrier_settings_enabled', __( 'Allow new carrier settings', 'packeta' ) )
 			->setRequired( false )
-			->setDefaultValue( Provider::DEFAULT_VALUE_CARRIER_SETTINGS );
+			->setDefaultValue( OptionsProvider::DEFAULT_VALUE_CARRIER_SETTINGS );
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
@@ -451,7 +451,7 @@ class Page {
 	 * @return void
 	 */
 	public function onAdvancedFormSuccess( Form $form, array $values ): void {
-		update_option( Provider::OPTION_NAME_PACKETERY_ADVANCED, $values );
+		update_option( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED, $values );
 
 		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 

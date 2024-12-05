@@ -11,7 +11,6 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout;
-use Packetery\Module\CurrencySwitcherFacade;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -40,6 +39,7 @@ class CheckoutTest extends TestCase {
 	private WpAdapter|MockObject $carrierEntityRepository;
 	private WpAdapter|MockObject $carDeliveryConfig;
 	private WpAdapter|MockObject $provider;
+	private Carrier\ActivityBridge|MockObject $activityBridge;
 
 	private Checkout $checkout;
 
@@ -53,6 +53,7 @@ class CheckoutTest extends TestCase {
 		$this->carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
 		$this->carDeliveryConfig = $this->createMock( CarDeliveryConfig::class );
 		$this->provider = $this->createMock( OptionsProvider::class );
+		$this->activityBridge = $this->createMock( Carrier\ActivityBridge::class );
 
 		$this->checkout = new Checkout(
 			$this->wpAdapter,
@@ -76,6 +77,7 @@ class CheckoutTest extends TestCase {
 			$this->createMock( Api\Internal\CheckoutRouter::class ),
 			$this->carDeliveryConfig,
 			$this->createMock(PaymentHelper::class),
+			$this->activityBridge,
 		);
 
 	}
@@ -562,7 +564,6 @@ class CheckoutTest extends TestCase {
 			->method( 'isDisabled' )
 			->willReturn( ! $isCarDeliveryEnabled );
 
-		$this->activityBridge = $this->createMock( Carrier\ActivityBridge::class );
 		$this->activityBridge
 			->method( 'isActive' )
 			->willReturnOnConsecutiveCalls( ...array_column( $carriersOptions, 'active' ) );

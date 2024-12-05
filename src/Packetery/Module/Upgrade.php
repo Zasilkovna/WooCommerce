@@ -233,13 +233,13 @@ class Upgrade {
 
 		// TODO: Update version on new release.
 		if ( $oldVersion && version_compare( $oldVersion, '1.7.7', '<' ) ) {
-			$generalSettings = $this->optionsProvider->getOptionsByName( Options\Provider::OPTION_NAME_PACKETERY );
+			$generalSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
 			if ( isset( $generalSettings['cod_payment_method'] ) ) {
 				$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
 				unset( $generalSettings['cod_payment_method'] );
 			}
 
-			update_option( Provider::OPTION_NAME_PACKETERY, $generalSettings );
+			update_option( OptionsProvider::OPTION_NAME_PACKETERY, $generalSettings );
 		}
 
 		update_option( 'packetery_version', Plugin::VERSION );

@@ -79,13 +79,6 @@ class Builder {
 	private $paymentHelper;
 
 	/**
-	 * Payment helper.
-	 *
-	 * @var PaymentHelper
-	 */
-	private $paymentHelper;
-
-	/**
 	 * Carrier repository.
 	 *
 	 * @var Carrier\EntityRepository

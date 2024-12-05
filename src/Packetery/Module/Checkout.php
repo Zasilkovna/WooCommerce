@@ -1009,7 +1009,7 @@ class Checkout {
 			$cost = $this->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
 			if ( null !== $cost ) {
 				$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
-				if ( $this->options_provider->isWcCarrierConfigEnabled() ) {
+				if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 					$rateId = BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrier->getId() . ':' . $optionId;
 				} else {
 					$rateId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
@@ -1265,7 +1265,7 @@ class Checkout {
 	 * @return string
 	 */
 	private function removeShippingMethodPrefix( string $chosenMethod ): string {
-		if ( $this->options_provider->isWcCarrierConfigEnabled() ) {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			return preg_replace( '/^' . BaseShippingMethod::PACKETA_METHOD_PREFIX . '\w+:(.+)$/', '$1', $chosenMethod );
 		}
 

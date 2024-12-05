@@ -21,7 +21,6 @@ use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\ShippingMethod;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 use WC_Order;
@@ -118,13 +117,6 @@ class PacketSubmitter {
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
-
-	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
 
 	/**
 	 * Carrier options factory.

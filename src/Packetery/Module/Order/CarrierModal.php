@@ -12,10 +12,9 @@ namespace Packetery\Module\Order;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
-use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Forms;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use RuntimeException;
 
 /**
@@ -65,16 +64,9 @@ class CarrierModal {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
-
-	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
 
 	/**
 	 * Carrier options factory.
@@ -91,7 +83,7 @@ class CarrierModal {
 	 * @param CarrierModalFormFactory  $carrierModalFormFactory  Carrier Modal form factory.
 	 * @param Repository               $orderRepository          Order repository.
 	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
-	 * @param Provider                 $optionsProvider          Options provider.
+	 * @param OptionsProvider          $optionsProvider          Options provider.
 	 * @param CarrierOptionsFactory    $carrierOptionsFactory    Carrier options factory.
 	 */
 	public function __construct(
@@ -100,7 +92,7 @@ class CarrierModal {
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine             = $latteEngine;

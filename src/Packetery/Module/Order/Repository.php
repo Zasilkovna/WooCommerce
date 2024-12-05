@@ -19,7 +19,6 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\ShippingMethod;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
