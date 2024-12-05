@@ -10,14 +10,13 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity\Carrier;
-use Packetery\Core\Helper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\FeatureFlagManager;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Control;
@@ -94,9 +93,9 @@ class OptionsPage {
 	/**
 	 * Feature flag.
 	 *
-	 * @var FeatureFlagManager
+	 * @var FeatureFlagProvider
 	 */
-	private $featureFlag;
+	private $featureFlagProvider;
 
 	/**
 	 * Car delivery config.
@@ -104,20 +103,6 @@ class OptionsPage {
 	 * @var CarDeliveryConfig
 	 */
 	private $carDeliveryConfig;
-
-	/**
-	 * WC Native carrier settings config.
-	 *
-	 * @var Provider
-	 */
-	private $optionsProvider;
-
-	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
 
 	/**
 	 * OptionsPage constructor.
@@ -129,10 +114,8 @@ class OptionsPage {
 	 * @param CountryListingPage        $countryListingPage    CountryListingPage.
 	 * @param MessageManager            $messageManager        Message manager.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
-	 * @param FeatureFlagManager        $featureFlag           Feature flag.
+	 * @param FeatureFlagProvider       $featureFlagProvider   Feature flag.
 	 * @param CarDeliveryConfig         $carDeliveryConfig     Car delivery config.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
-	 * @param Provider                  $optionsProvider       Options provider.
 	 */
 	public function __construct(
 		Engine $latteEngine,
@@ -142,22 +125,18 @@ class OptionsPage {
 		CountryListingPage $countryListingPage,
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagManager $featureFlag,
-		CarDeliveryConfig $carDeliveryConfig,
-		CarrierOptionsFactory $carrierOptionsFactory,
-		Provider $optionsProvider
+		FeatureFlagProvider $featureFlagProvider,
+		CarDeliveryConfig $carDeliveryConfig
 	) {
-		$this->latteEngine           = $latteEngine;
-		$this->carrierRepository     = $carrierRepository;
-		$this->formFactory           = $formFactory;
-		$this->httpRequest           = $httpRequest;
-		$this->countryListingPage    = $countryListingPage;
-		$this->messageManager        = $messageManager;
-		$this->pickupPointsConfig    = $pickupPointsConfig;
-		$this->featureFlag           = $featureFlag;
-		$this->carDeliveryConfig     = $carDeliveryConfig;
-		$this->carrierOptionsFactory = $carrierOptionsFactory;
-		$this->optionsProvider       = $optionsProvider;
+		$this->latteEngine         = $latteEngine;
+		$this->carrierRepository   = $carrierRepository;
+		$this->formFactory         = $formFactory;
+		$this->httpRequest         = $httpRequest;
+		$this->countryListingPage  = $countryListingPage;
+		$this->messageManager      = $messageManager;
+		$this->pickupPointsConfig  = $pickupPointsConfig;
+		$this->featureFlagProvider = $featureFlagProvider;
+		$this->carDeliveryConfig   = $carDeliveryConfig;
 	}
 
 	/**
@@ -199,7 +178,7 @@ class OptionsPage {
 			->setRequired();
 
 		$carrierOptions = get_option( $optionId );
-		if ( $this->featureFlag->isSplitActive() ) {
+		if ( $this->featureFlagProvider->isSplitActive() ) {
 			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
 			if ( $vendorCheckboxes ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
@@ -402,7 +381,7 @@ class OptionsPage {
 
 		$options = $form->getValues( 'array' );
 
-		if ( $this->featureFlag->isSplitActive() ) {
+		if ( $this->featureFlagProvider->isSplitActive() ) {
 			$checkedVendors = $this->getCheckedVendors( $options );
 			if (
 				isset( $options['vendor_groups'] ) &&
@@ -691,7 +670,11 @@ class OptionsPage {
 	 * @return void
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
-		/** Pricing type control. @var Control $pricingTypeControl */
+		/**
+		 * Pricing type control.
+		 *
+		 * @var Control $pricingTypeControl
+		 */
 		$pricingTypeControl = $weightLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
 		$limit              = $weightLimits->addContainer( (string) $index );
 		$item               = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
@@ -703,7 +686,7 @@ class OptionsPage {
 
 		$itemRules->addFilter(
 			function ( float $value ) {
-				return Helper::simplifyWeight( $value );
+				return CoreHelper::simplifyWeight( $value );
 			}
 		);
 		// translators: %d is numeric threshold.

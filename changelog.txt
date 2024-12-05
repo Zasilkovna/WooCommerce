@@ -1,4 +1,42 @@
 == Changelog ==
+= 1.8.7 =
+Updated: Added compatibility with WordPress 6.7 - premature use of translation function prevented.
+
+= 1.8.6 =
+Fixed: In the plugin settings, the default shipment weight was incorrectly stored if it contained a number ending in zero.
+Fixed: Failed to save plugin settings if default weight or default dimensions were disabled and hidden settings field contained invalid data.
+Fixed: TypeError when getting cart product instance that could appear at checkout.
+Updated: Syncing order statuses one by one instead of a single batch.
+
+= 1.8.5 =
+Updated: Users now have the option in the Packeta pick-up point carrier settings to choose whether to deliver to Z-Boxes, pick-up points, or both.
+Updated: Added more packet statuses.
+Fixed: Fixed a bug that caused the plugin to crash when there is an unexpected or invalid packet status in the database.
+
+= 1.8.4 =
+Fixed: Incorrect usage of a helper class causing an error when order with stored API error message is in the order list.
+
+= 1.8.3 =
+Added: Possibility to enable Tracy debugger for specific IP addresses.
+Fixed: Correct display for Packeta Pick-up Point carrier in countries with external pickup points.
+
+= 1.8.2 =
+Added: Now the user has the possibility to force which type of checkout he uses (block-based or classic).
+
+= 1.8.1 =
+Fixed: Error in bulk label printing.
+
+= 1.8.0 =
+Added: [Block-based checkout](https://woocommerce.com/checkout-blocks/) support.
+Added: Calculation of the shipping price according to the order value.
+Added: Important information about the packet (submission or cancellation of the packet, label printing, creation of a claims assistant) will now be recorded in the internal order note.
+Added: Required fields (e.g., packet weight and dimensions when required by the carrier) are now highlighted if missing from the order.
+Added: An option to set multiple payment methods as cash on delivery (COD).
+Added: Displaying the shipment status in the order detail.
+Updated: When changing a carrier, the name created by the user is applied.
+Updated: Removed the dependency on Guzzle and used the WordPress native methods instead.
+Updated: Removed all mentions of Alzaboxes.
+
 = 1.7.6 =
 Updated: When changing the carrier, the name entered by the user is used.
 

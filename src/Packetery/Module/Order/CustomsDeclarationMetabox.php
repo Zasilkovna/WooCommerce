@@ -11,14 +11,14 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
-use Packetery\Core\Helper;
-use Packetery\Module;
+use Packetery\Core\CoreHelper;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRules;
 use Packetery\Module\Message;
 use Packetery\Module\MessageManager;
 use Packetery\Latte\Engine;
+use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\BaseControl;
 use Packetery\Nette\Forms\Controls\Checkbox;
@@ -149,7 +149,7 @@ class CustomsDeclarationMetabox {
 			'packetery_customs_declaration_metabox',
 			__( 'Customs declaration', 'packeta' ),
 			[ $this, 'render' ],
-			Module\Helper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
+			ModuleHelper::isHposEnabled() ? wc_get_page_screen_id( 'shop-order' ) : 'shop_order',
 			'advanced',
 			'high'
 		);
@@ -494,7 +494,7 @@ class CustomsDeclarationMetabox {
 				->addRule( ...FormRules::getGreaterThanParameters( 0 ) )
 				->addFilter(
 					static function ( float $value ): float {
-						return Helper::simplifyWeight( $value );
+						return CoreHelper::simplifyWeight( $value );
 					}
 				)
 				->addRule( ...FormRules::getGreaterThanParameters( 0 ) );

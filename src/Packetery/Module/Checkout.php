@@ -18,9 +18,10 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product\ProductEntityFactory;
@@ -86,9 +87,9 @@ class Checkout {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider Options provider.
+	 * @var OptionsProvider Options provider.
 	 */
-	private $options_provider;
+	private $optionsProvider;
 
 	/**
 	 * Carrier repository.
@@ -204,7 +205,7 @@ class Checkout {
 	 * @param ProductCategoryEntityFactory $productCategoryEntityFactory    Product category entity factory.
 	 * @param CarrierOptionsFactory        $carrierOptionsFactory   Carrier options factory.
 	 * @param Engine                       $latte_engine            PacketeryLatte engine.
-	 * @param Provider                     $options_provider        Options provider.
+	 * @param OptionsProvider              $optionsProvider         Options provider.
 	 * @param Carrier\Repository           $carrierRepository       Carrier repository.
 	 * @param Request                      $httpRequest             Http request.
 	 * @param Order\Repository             $orderRepository         Order repository.
@@ -228,7 +229,7 @@ class Checkout {
 		ProductCategoryEntityFactory $productCategoryEntityFactory,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		Engine $latte_engine,
-		Provider $options_provider,
+		OptionsProvider $optionsProvider,
 		Carrier\Repository $carrierRepository,
 		Request $httpRequest,
 		Order\Repository $orderRepository,
@@ -251,7 +252,7 @@ class Checkout {
 		$this->productCategoryEntiyFactory = $productCategoryEntityFactory;
 		$this->carrierOptionsFactory       = $carrierOptionsFactory;
 		$this->latte_engine                = $latte_engine;
-		$this->options_provider            = $options_provider;
+		$this->optionsProvider             = $optionsProvider;
 		$this->carrierRepository           = $carrierRepository;
 		$this->httpRequest                 = $httpRequest;
 		$this->orderRepository             = $orderRepository;
@@ -402,8 +403,8 @@ class Checkout {
 			'carDeliveryCarriers'        => Entity\Carrier::CAR_DELIVERY_CARRIERS,
 			'expeditionDay'              => $this->getExpeditionDay(),
 			'appIdentity'                => Plugin::getAppIdentity(),
-			'packeteryApiKey'            => $this->options_provider->get_api_key(),
-			'widgetAutoOpen'             => $this->options_provider->shouldWidgetOpenAutomatically(),
+			'packeteryApiKey'            => $this->optionsProvider->get_api_key(),
+			'widgetAutoOpen'             => $this->optionsProvider->shouldWidgetOpenAutomatically(),
 			'saveSelectedPickupPointUrl' => $this->apiRouter->getSaveSelectedPickupPointUrl(),
 			'saveValidatedAddressUrl'    => $this->apiRouter->getSaveValidatedAddressUrl(),
 			'saveCarDeliveryDetailsUrl'  => $this->apiRouter->getSaveCarDeliveryDetailsUrl(),
@@ -459,6 +460,8 @@ class Checkout {
 
 	/**
 	 * Checks if all pickup point attributes are set, sets an error otherwise.
+	 *
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function validateCheckoutData(): void {
 		$chosenShippingMethod = $this->getChosenMethod();
@@ -642,7 +645,7 @@ class Checkout {
 					$propsToSave[ $attrName ] = $attrValue;
 				}
 
-				if ( $this->options_provider->replaceShippingAddressWithPickupPointAddress() ) {
+				if ( $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
 					$this->mapper->toWcOrderShippingAddress( $wcOrder, $attrName, (string) $attrValue );
 				}
 			}
@@ -675,20 +678,20 @@ class Checkout {
 			$orderEntity->setCarDeliveryId( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] );
 		}
 
-		if ( 0.0 === $this->getCartWeightKg() && true === $this->options_provider->isDefaultWeightEnabled() ) {
-			$orderEntity->setWeight( $this->options_provider->getDefaultWeight() + $this->options_provider->getPackagingWeight() );
+		if ( 0.0 === $this->getCartWeightKg() && true === $this->optionsProvider->isDefaultWeightEnabled() ) {
+			$orderEntity->setWeight( $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() );
 		}
 
 		$carrierEntity = $this->carrierEntityRepository->getAnyById( $carrierId );
 		if (
 			null !== $carrierEntity &&
 			true === $carrierEntity->requiresSize() &&
-			true === $this->options_provider->isDefaultDimensionsEnabled()
+			true === $this->optionsProvider->isDefaultDimensionsEnabled()
 		) {
 			$size = new Entity\Size(
-				$this->options_provider->getDefaultLength(),
-				$this->options_provider->getDefaultWidth(),
-				$this->options_provider->getDefaultHeight()
+				$this->optionsProvider->getDefaultLength(),
+				$this->optionsProvider->getDefaultWidth(),
+				$this->optionsProvider->getDefaultHeight()
 			);
 
 			$orderEntity->setSize( $size );
@@ -708,8 +711,24 @@ class Checkout {
 	 * @return bool
 	 */
 	public function areBlocksUsedInCheckout(): bool {
-		// It is possible to use CartCheckoutUtils::is_checkout_block_default as alternative.
-		if ( has_block( 'woocommerce/checkout', get_post_field( 'post_content', wc_get_page_id( 'checkout' ) ) ) ) {
+		$checkoutDetection = $this->optionsProvider->getCheckoutDetection();
+
+		if ( OptionsProvider::BLOCK_CHECKOUT_DETECTION === $checkoutDetection ) {
+			return true;
+		}
+
+		if ( OptionsProvider::CLASSIC_CHECKOUT_DETECTION === $checkoutDetection ) {
+			return false;
+		}
+
+		if (
+			$this->wpAdapter->hasBlock(
+				'woocommerce/checkout',
+				$this->wpAdapter->getPostField(
+					'post_content',
+					$this->wcAdapter->getPageId( 'checkout' )
+				)
+			) ) {
 			return true;
 		}
 
@@ -740,7 +759,7 @@ class Checkout {
 				 *
 				 * @since 1.3.0
 				 */
-				if ( $this->options_provider->getCheckoutWidgetButtonLocation() === 'after_transport_methods' ) {
+				if ( $this->optionsProvider->getCheckoutWidgetButtonLocation() === 'after_transport_methods' ) {
 					add_action( 'woocommerce_review_order_after_shipping', [ $this, 'renderWidgetButtonTableRow' ] );
 				} else {
 					add_action( 'woocommerce_after_shipping_rate', [ $this, 'renderWidgetButtonAfterShippingRate' ] );
@@ -826,7 +845,7 @@ class Checkout {
 		$weight   = $this->wcAdapter->cartGetCartContentsWeight();
 		$weightKg = $this->wcAdapter->getWeight( $weight, 'kg' );
 		if ( $weightKg ) {
-			$weightKg += $this->options_provider->getPackagingWeight();
+			$weightKg += $this->optionsProvider->getPackagingWeight();
 		}
 
 		return $weightKg;
@@ -863,6 +882,7 @@ class Checkout {
 	 * Calculates fees.
 	 *
 	 * @return void
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function calculateFees(): void {
 		$chosenShippingMethod = $this->calculateShipping();
@@ -885,7 +905,7 @@ class Checkout {
 			$this->isAgeVerification18PlusRequired()
 		) {
 			$feeAmount = $this->currencySwitcherFacade->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
-			if ( false !== $maxTaxClass && $feeAmount > 0 && $this->options_provider->arePricesTaxInclusive() ) {
+			if ( false !== $maxTaxClass && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 				$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
 			}
 
@@ -911,7 +931,7 @@ class Checkout {
 			return;
 		}
 
-		if ( false !== $maxTaxClass && $this->options_provider->arePricesTaxInclusive() ) {
+		if ( false !== $maxTaxClass && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
 		}
 
@@ -941,6 +961,7 @@ class Checkout {
 	 * @param array|null $allowedCarrierNames List of allowed carrier names.
 	 *
 	 * @return array
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function getShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry           = $this->getCustomerCountry();
@@ -988,14 +1009,14 @@ class Checkout {
 			$cost = $this->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
 			if ( null !== $cost ) {
 				$carrierName = $this->getFormattedShippingMethodName( $carrierName, $cost );
-				if ( $this->options_provider->isWcCarrierConfigEnabled() ) {
+				if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 					$rateId = BaseShippingMethod::PACKETA_METHOD_PREFIX . $carrier->getId() . ':' . $optionId;
 				} else {
 					$rateId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
 				}
 				$taxes = null;
 
-				if ( $cost > 0 && $this->options_provider->arePricesTaxInclusive() ) {
+				if ( $cost > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 					$rates            = $this->wcAdapter->taxGetShippingTaxRates();
 					$taxes            = $this->wcAdapter->taxCalcInclusiveTax( $cost, $rates );
 					$taxExclusiveCost = $cost - array_sum( $taxes );
@@ -1045,7 +1066,7 @@ class Checkout {
 	 * @return string
 	 */
 	private function getFormattedShippingMethodName( string $name, float $cost ): string {
-		if ( 0.0 === $cost && $this->options_provider->isFreeShippingShown() ) {
+		if ( 0.0 === $cost && $this->optionsProvider->isFreeShippingShown() ) {
 			return sprintf( '%s: %s', $name, __( 'Free', 'packeta' ) );
 		}
 
@@ -1244,7 +1265,7 @@ class Checkout {
 	 * @return string
 	 */
 	private function removeShippingMethodPrefix( string $chosenMethod ): string {
-		if ( $this->options_provider->isWcCarrierConfigEnabled() ) {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			return preg_replace( '/^' . BaseShippingMethod::PACKETA_METHOD_PREFIX . '\w+:(.+)$/', '$1', $chosenMethod );
 		}
 
@@ -1275,6 +1296,7 @@ class Checkout {
 	 * Gets disallowed shipping rate ids.
 	 *
 	 * @return array
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function getDisallowedShippingRateIds(): array {
 		$cartProducts = $this->wcAdapter->cartGetCartContent();
@@ -1297,6 +1319,7 @@ class Checkout {
 	 * Tells if age verification is required by products in cart.
 	 *
 	 * @return bool
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function isAgeVerification18PlusRequired(): bool {
 		if ( ! $this->wpAdapter->didAction( 'wp_loaded' ) ) {
@@ -1319,6 +1342,7 @@ class Checkout {
 	 * Returns tax_class with the highest tax_rate of cart products, false if no product is taxable.
 	 *
 	 * @return false|string
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function getTaxClassWithMaxRate() {
 		$products   = $this->wcAdapter->cartGetCartContent();
@@ -1326,6 +1350,9 @@ class Checkout {
 
 		foreach ( $products as $cartProduct ) {
 			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
+			if ( ! ( $product instanceof \WC_Product ) ) {
+				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
+			}
 			if ( $product->is_taxable() ) {
 				$taxClasses[] = $product->get_tax_class();
 			}
@@ -1376,6 +1403,7 @@ class Checkout {
 	 * @param array  $cartProducts Array of cart products.
 	 *
 	 * @return bool
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	private function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
 		if ( ! $cartProducts ) {
@@ -1386,7 +1414,10 @@ class Checkout {
 			if ( ! isset( $cartProduct['product_id'] ) ) {
 				continue;
 			}
-			$product            = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
+			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
+			if ( ! ( $product instanceof \WC_Product ) ) {
+				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
+			}
 			$productCategoryIds = $product->get_category_ids();
 
 			foreach ( $productCategoryIds as $productCategoryId ) {
@@ -1595,6 +1626,7 @@ class Checkout {
 	 * @param \WC_Cart $cart WC cart.
 	 *
 	 * @return void
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function applyCodSurgarche( \WC_Cart $cart ): void {
 		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {

@@ -161,7 +161,7 @@ export const useView = ( cart ) => {
 		const rateCarrierConfig = carrierConfig[ rateId ];
 		const addressValidationSetting = rateCarrierConfig.address_validation || 'none';
 		if ( addressValidationSetting === 'none' ) {
-			skipView = true;
+			return null;
 		} else if ( addressValidationSetting === 'optional' ) {
 			inputRequired = false;
 		}
@@ -180,5 +180,5 @@ export const useView = ( cart ) => {
 		};
 	}
 
-	return {};
+	return null;
 };

@@ -14,7 +14,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\CronService;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\Shipping\ShippingMethodGenerator;
 use Packetery\Nette\Forms\Form;
@@ -62,7 +62,7 @@ class CountryListingPage {
 	/**
 	 * Options provider
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -122,7 +122,7 @@ class CountryListingPage {
 	 * @param Repository                $carrierRepository             Carrier repository.
 	 * @param Downloader                $downloader                    Carrier downloader.
 	 * @param Request                   $httpRequest                   Http request.
-	 * @param Provider                  $optionsProvider               Options provider.
+	 * @param OptionsProvider           $optionsProvider               Options provider.
 	 * @param Log\Page                  $logPage                       Log page.
 	 * @param PacketaPickupPointsConfig $pickupPointsConfig            Internal pickup points config.
 	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
@@ -136,7 +136,7 @@ class CountryListingPage {
 		Repository $carrierRepository,
 		Downloader $downloader,
 		Request $httpRequest,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		Log\Page $logPage,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,

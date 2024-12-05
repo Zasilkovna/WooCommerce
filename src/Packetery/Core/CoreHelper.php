@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Helper
+ * Class CoreHelper
  *
  * @package Packetery
  */
@@ -13,11 +13,11 @@ namespace Packetery\Core;
 use DateTimeImmutable;
 
 /**
- * Class Helper
+ * Class CoreHelper
  *
  * @package Packetery
  */
-class Helper {
+class CoreHelper {
 	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
 	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	public const MYSQL_DATE_FORMAT     = 'Y-m-d';
@@ -55,12 +55,20 @@ class Helper {
 	 * Trims the decimals to a desired format.
 	 *
 	 * @param float $value Value.
-	 * @param int   $position Position of a decimal.
+	 * @param int   $decimals Position of a decimal.
 	 *
 	 * @return string
 	 */
-	public static function trimDecimalPlaces( float $value, int $position ): string {
-		return rtrim( number_format( $value, $position, '.', '' ), '0.' );
+	public static function trimDecimalPlaces( float $value, int $decimals ): string {
+		$formattedValue = number_format( $value, $decimals, '.', '' );
+
+		if ( $decimals > 0 ) {
+			$valueWithoutTrailingZeros = rtrim( $formattedValue, '0' );
+
+			return rtrim( $valueWithoutTrailingZeros, '.' );
+		}
+
+		return $formattedValue;
 	}
 
 	/**

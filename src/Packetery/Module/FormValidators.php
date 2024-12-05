@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Packetery\Module;
 
 use DateTimeImmutable;
-use Packetery\Core;
+use Packetery\Core\CoreHelper;
 use Packetery\Nette\Forms\Controls\BaseControl;
 
 /**
@@ -53,7 +53,7 @@ class FormValidators {
 	 */
 	public static function dateIsInMysqlFormat( BaseControl $input ): bool {
 		$date = DateTimeImmutable::createFromFormat(
-			Core\Helper::MYSQL_DATE_FORMAT,
+			CoreHelper::MYSQL_DATE_FORMAT,
 			$input->getValue()
 		);
 
@@ -61,7 +61,7 @@ class FormValidators {
 			return false;
 		}
 
-		return ( $input->getValue() === $date->format( Core\Helper::MYSQL_DATE_FORMAT ) );
+		return ( $input->getValue() === $date->format( CoreHelper::MYSQL_DATE_FORMAT ) );
 	}
 
 	/**

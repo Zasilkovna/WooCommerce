@@ -10,14 +10,15 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Exception;
-use Packetery\Core;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Entity\PickupPoint;
-use Packetery\Module;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\WpdbAdapter;
 use WC_Order;
@@ -45,11 +46,18 @@ class Repository {
 	private $builder;
 
 	/**
-	 * Helper.
+	 * CoreHelper.
 	 *
-	 * @var Core\Helper
+	 * @var CoreHelper
 	 */
-	private $helper;
+	private $coreHelper;
+
+	/**
+	 * Internal pickup points config.
+	 *
+	 * @var PacketaPickupPointsConfig
+	 */
+	private $pickupPointsConfig;
 
 	/**
 	 * Carrier repository.
@@ -70,20 +78,23 @@ class Repository {
 	 *
 	 * @param WpdbAdapter                   $wpdbAdapter                  WpdbAdapter.
 	 * @param Builder                       $orderFactory                 Order factory.
-	 * @param Core\Helper                   $helper                       Helper.
+	 * @param CoreHelper                    $coreHelper                   CoreHelper.
+	 * @param PacketaPickupPointsConfig     $pickupPointsConfig           Internal pickup points config.
 	 * @param Carrier\EntityRepository      $carrierRepository            Carrier repository.
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 */
 	public function __construct(
 		WpdbAdapter $wpdbAdapter,
 		Builder $orderFactory,
-		Core\Helper $helper,
+		CoreHelper $coreHelper,
+		PacketaPickupPointsConfig $pickupPointsConfig,
 		Carrier\EntityRepository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository
 	) {
 		$this->wpdbAdapter                  = $wpdbAdapter;
 		$this->builder                      = $orderFactory;
-		$this->helper                       = $helper;
+		$this->coreHelper                   = $coreHelper;
+		$this->pickupPointsConfig           = $pickupPointsConfig;
 		$this->carrierRepository            = $carrierRepository;
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 	}
@@ -112,7 +123,7 @@ class Repository {
 			return;
 		}
 
-		if ( Module\Helper::isHposEnabled() ) {
+		if ( ModuleHelper::isHposEnabled() ) {
 			$clauses['where'] .= sprintf( ' AND `%s`.`status` NOT IN (%s)', $this->wpdbAdapter->wc_orders, $this->wpdbAdapter->prepareInClause( $orderStatusesToExclude ) );
 		} else {
 			$clauses['where'] .= sprintf( ' AND `%s`.`post_status` NOT IN (%s)', $this->wpdbAdapter->posts, $this->wpdbAdapter->prepareInClause( $orderStatusesToExclude ) );
@@ -129,7 +140,7 @@ class Repository {
 	 * @return array
 	 */
 	public function processClauses( array $clauses, ?\WP_Query $queryObject, array $paramValues ): array {
-		if ( Module\Helper::isHposEnabled() ) {
+		if ( ModuleHelper::isHposEnabled() ) {
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdbAdapter->packetery_order . '` ON `' . $this->wpdbAdapter->packetery_order . '`.`id` = `' . $this->wpdbAdapter->wc_orders . '`.`id`';
 		} else {
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdbAdapter->packetery_order . '` ON `' . $this->wpdbAdapter->packetery_order . '`.`id` = `' . $this->wpdbAdapter->posts . '`.`id`';
@@ -324,7 +335,7 @@ class Repository {
 
 		$apiErrorDateTime = $order->getLastApiErrorDateTime();
 		if ( null !== $apiErrorDateTime ) {
-			$apiErrorDateTime = $apiErrorDateTime->format( Core\Helper::MYSQL_DATETIME_FORMAT );
+			$apiErrorDateTime = $apiErrorDateTime->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 		}
 
 		$data = [
@@ -355,7 +366,7 @@ class Repository {
 			'value'                 => $order->getValue(),
 			'api_error_message'     => $order->getLastApiErrorMessage(),
 			'api_error_date'        => $apiErrorDateTime,
-			'deliver_on'            => $this->helper->getStringFromDateTime( $order->getDeliverOn(), $this->helper::DATEPICKER_FORMAT ),
+			'deliver_on'            => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), $this->coreHelper::DATEPICKER_FORMAT ),
 		];
 
 		return $data;
@@ -443,7 +454,7 @@ class Repository {
 		$packeteryOrdersResult = $wpdbAdapter->get_results(
 			$wpdbAdapter->prepare(
 				'SELECT * FROM `' . $wpdbAdapter->packetery_order . '` 
-				 WHERE `id` IN (' . $ordersIdsPlaceholder . ')',
+				WHERE `id` IN (' . $ordersIdsPlaceholder . ')',
 				$orderIds
 			),
 			OBJECT_K
@@ -476,13 +487,14 @@ class Repository {
 	 * @param int   $maxDays               Max number of days of single packet sync.
 	 * @param int   $limit                 Number of records.
 	 *
-	 * @return iterable|Order[]
+	 * @return \Generator<int>
+	 * @throws Exception Exception.
 	 */
-	public function findStatusSyncingOrders( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): iterable {
-		$dateLimit = Core\Helper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
+	public function findStatusSyncingOrderIds( array $allowedPacketStatuses, array $allowedOrderStatuses, int $maxDays, int $limit ): \Generator {
+		$dateLimit = CoreHelper::now()->modify( '- ' . $maxDays . ' days' )->format( 'Y-m-d H:i:s' );
 
 		$andWhere    = [ '`o`.`packet_id` IS NOT NULL' ];
-		$hposEnabled = Module\Helper::isHposEnabled();
+		$hposEnabled = ModuleHelper::isHposEnabled();
 
 		if ( $hposEnabled ) {
 			$andWhere[] = $this->wpdbAdapter->prepare( '`wc_o`.`date_created_gmt` >= %s', $dateLimit );
@@ -522,7 +534,7 @@ class Repository {
 
 		$sql = $this->wpdbAdapter->prepare(
 			'
-			SELECT `o`.* FROM `' . $this->wpdbAdapter->packetery_order . '` `o` 
+			SELECT `o`.`id` FROM `' . $this->wpdbAdapter->packetery_order . '` `o` 
 			' . $this->getWcOrderJoinClause() . '
 			' . $where . '
 			' . $orderBy . '
@@ -538,11 +550,7 @@ class Repository {
 				continue;
 			}
 
-			try {
-				yield $this->builder->build( $wcOrder, $row );
-			} catch ( InvalidCarrierException $exception ) {
-				continue;
-			}
+			yield (int) $row->id;
 		}
 	}
 
@@ -574,7 +582,7 @@ class Repository {
 	private function countOrders( array $params ): int {
 		$clauses = [ 'join' => '' ];
 
-		if ( Module\Helper::isHposEnabled() ) {
+		if ( ModuleHelper::isHposEnabled() ) {
 			$clauses['select'] = ' SELECT COUNT(DISTINCT `' . $this->wpdbAdapter->wc_orders . '`.`id`) ';
 			$clauses['from']   = ' FROM `' . $this->wpdbAdapter->wc_orders . '` ';
 		} else {
@@ -601,7 +609,7 @@ class Repository {
 	public function getWcOrderJoinClause(): string {
 		$packeteryTableAlias = 'o';
 
-		if ( Module\Helper::isHposEnabled() ) {
+		if ( ModuleHelper::isHposEnabled() ) {
 			$sourceTableAlias = 'wc_o';
 			return sprintf(
 				'JOIN `%s` `%s` ON `%s`.`id` = `%s`.`id`',
@@ -628,7 +636,7 @@ class Repository {
 	 * @return void
 	 */
 	public function deleteOrphans(): void {
-		if ( Module\Helper::isHposEnabled() ) {
+		if ( ModuleHelper::isHposEnabled() ) {
 			$this->wpdbAdapter->query(
 				'DELETE `' . $this->wpdbAdapter->packetery_order . '` FROM `' . $this->wpdbAdapter->packetery_order . '`
 			LEFT JOIN `' . $this->wpdbAdapter->wc_orders . '` ON `' . $this->wpdbAdapter->wc_orders . '`.`id` = `' . $this->wpdbAdapter->packetery_order . '`.`id`

@@ -8,15 +8,15 @@ use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
-use Packetery\Module\Options\FeatureFlagManager;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
 
@@ -29,22 +29,22 @@ class OptionsPageTest extends TestCase {
 		$request                = $this->createMock( Request::class );
 		$countryListingPageMock = $this->createMock( CountryListingPage::class );
 		$messageManagerMock     = $this->createMock( MessageManager::class );
-		$featureFlagManagerMock = $this->createMock( FeatureFlagManager::class );
+		$featureFlagProviderMock = $this->createMock( FeatureFlagProvider::class );
+		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
 		$carDeliveryConfigMock  = $this->createMock( CarDeliveryConfig::class );
-		$carrierOptionsFactory  = $this->createMock( CarrierOptionsFactory::class );
-		$optionsProvider        = $this->createMock( Provider::class );
+		$carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
+		$optionsProvider        = $this->createMock( OptionsProvider::class );
 
 		$compoundCarrierFactory  = new CompoundCarrierCollectionFactory();
 		$vendorCollectionFactory = new VendorCollectionFactory();
-		$featureFlagMock         = $this->createMock( FeatureFlagManager::class );
 
 		$packetaPickupPointsConfig = new PacketaPickupPointsConfig(
 			$compoundCarrierFactory,
 			$vendorCollectionFactory,
-			$featureFlagMock
+			$featureFlagProviderMock
 		);
 
-		$optionsPage = new OptionsPage(
+		$optionsPage             = new OptionsPage(
 			$latteEngineMock,
 			$carrierRepositoryMock,
 			$formFactoryMock,
@@ -52,13 +52,11 @@ class OptionsPageTest extends TestCase {
 			$countryListingPageMock,
 			$messageManagerMock,
 			$packetaPickupPointsConfig,
-			$featureFlagManagerMock,
+			$featureFlagProviderMock,
 			$carDeliveryConfigMock,
-			$carrierOptionsFactory,
-			$optionsProvider,
 		);
 
-		$featureFlagMock->method( 'isSplitActive' )->willReturn( true );
+		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointcz' ) );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointsk' ) );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointhu' ) );

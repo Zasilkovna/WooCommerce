@@ -34,7 +34,7 @@ class PickupPointValidateTest extends TestCase {
 	public function testValidateFail(): void {
 		$webRequestClientMock = $this->getWebRequestClientMock();
 		$webRequestClientMock->method( 'post' )
-		               ->willThrowException( new Exception( 'dummyException' ) );
+			->willThrowException( new Exception( 'dummyException' ) );
 		$validator = new PickupPointValidate( $webRequestClientMock, 'dummyApiKey' );
 
 		$this->expectException( RestException::class );

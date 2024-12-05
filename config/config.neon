@@ -1,12 +1,14 @@
 parameters:
-    latteTempFolder: %tempDir%/cache/view
-    surveyConfig:
-        active: true
-        validTo: 2023-03-31 23:59:59
-        url: https://forms.office.com/e/2YjCu9ZEt0
-    carDeliveryConfig:
-        sample: false
-        enabled: false
+	latteTempFolder: %tempDir%/cache/view
+	surveyConfig:
+		active: true
+		validTo: 2023-03-31 23:59:59
+		url: https://forms.office.com/e/2YjCu9ZEt0
+	carDeliveryConfig:
+		sample: false
+		enabled: false
+	featureFlagConfig:
+		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -18,7 +20,7 @@ services:
 	- Packetery\Module\ContextResolver
 	- Packetery\Module\Order\PacketCanceller
 	- Packetery\Module\EntityFactory\Address
-	- Packetery\Module\Helper
+	- Packetery\Module\ModuleHelper
 	- Packetery\Module\Payment\PaymentHelper
 	- Packetery\Module\Log\Purger
 	- Packetery\Module\Log\Repository
@@ -29,7 +31,7 @@ services:
 	- Packetery\Module\Product\ProductEntityFactory
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
-	- Packetery\Core\Helper
+	- Packetery\Core\CoreHelper
 	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
@@ -39,7 +41,7 @@ services:
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	- Packetery\Module\Options\Page
-	optionsProvider: Packetery\Module\Options\Provider
+	optionsProvider: Packetery\Module\Options\OptionsProvider
 	- Packetery\Module\Carrier\Downloader
 	- Packetery\Module\Carrier\Updater
 	- Packetery\Module\Carrier\Repository
@@ -68,8 +70,9 @@ services:
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
-	validatorTranslations: Packetery\Module\Order\ValidatorTranslations
-	- Packetery\Core\Validator\Order(translations: @validatorTranslations::get())
+	- Packetery\Module\Order\ValidatorTranslations
+	- Packetery\Module\Order\OrderValidatorFactory
+	- Packetery\Core\Validator\Order
 	- Packetery\Module\Options\Repository
 	- Packetery\Module\CustomsDeclaration\Repository
 	- Packetery\Module\Api\Internal\OrderController
@@ -100,7 +103,10 @@ services:
 	- Packetery\Module\WidgetOptionsBuilder
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
 	- Packetery\Core\PickupPointProvider\VendorCollectionFactory
-	- Packetery\Module\Options\FeatureFlagManager
+	- Packetery\Module\Options\FlagManager\FeatureFlagProvider
+	- Packetery\Module\Options\FlagManager\FeatureFlagNotice
+	- Packetery\Module\Options\FlagManager\FeatureFlagDownloader(endpointUrl: %featureFlagConfig.url%)
+	- Packetery\Module\Options\FlagManager\FeatureFlagStorage
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository

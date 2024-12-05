@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Exception\ProductNotFoundException;
+
 /**
  * Packeta shipping method class.
  */
@@ -75,6 +77,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 	 * @param array $package Order information.
 	 *
 	 * @return void
+	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function calculate_shipping( $package = [] ): void {
 		$allowedCarrierNames = null;

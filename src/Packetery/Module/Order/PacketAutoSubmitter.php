@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\PaymentGatewayHelper;
 use WC_Payment_Gateway;
 
@@ -29,7 +29,7 @@ class PacketAutoSubmitter {
 	/**
 	 * Options provider.
 	 *
-	 * @var Module\Options\Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -50,12 +50,12 @@ class PacketAutoSubmitter {
 	/**
 	 * Constructor.
 	 *
-	 * @param Module\Options\Provider $optionsProvider Options provider.
-	 * @param PacketSubmitter         $packetSubmitter Packet submitter.
-	 * @param Repository              $orderRepository Order repository.
+	 * @param OptionsProvider $optionsProvider Options provider.
+	 * @param PacketSubmitter $packetSubmitter Packet submitter.
+	 * @param Repository      $orderRepository Order repository.
 	 */
 	public function __construct(
-		Module\Options\Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		PacketSubmitter $packetSubmitter,
 		Repository $orderRepository
 	) {

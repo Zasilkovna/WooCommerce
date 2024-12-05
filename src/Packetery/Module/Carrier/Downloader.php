@@ -11,7 +11,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Api\WebRequestException;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\WebRequestClient;
 
 /**
@@ -33,9 +33,9 @@ class Downloader {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider Options provider.
+	 * @var OptionsProvider Options provider.
 	 */
-	private $options_provider;
+	private $optionsProvider;
 
 	/**
 	 * HTTP client.
@@ -55,18 +55,18 @@ class Downloader {
 	 * Downloader constructor.
 	 *
 	 * @param Updater          $carrier_updater  Carrier updater.
-	 * @param Provider         $options_provider Options provider.
+	 * @param OptionsProvider  $optionsProvider  Options provider.
 	 * @param WebRequestClient $webRequestClient HTTP client.
 	 * @param WpAdapter        $wpAdapter        WP adapter.
 	 */
 	public function __construct(
 		Updater $carrier_updater,
-		Provider $options_provider,
+		OptionsProvider $optionsProvider,
 		WebRequestClient $webRequestClient,
 		WpAdapter $wpAdapter
 	) {
 		$this->carrier_updater  = $carrier_updater;
-		$this->options_provider = $options_provider;
+		$this->optionsProvider  = $optionsProvider;
 		$this->webRequestClient = $webRequestClient;
 		$this->wpAdapter        = $wpAdapter;
 	}
@@ -155,7 +155,7 @@ class Downloader {
 		return $this->webRequestClient->get(
 			sprintf(
 				self::API_URL,
-				$this->options_provider->get_api_key(),
+				$this->optionsProvider->get_api_key(),
 				( $language ? $language : substr( $this->wpAdapter->getLocale(), 0, 2 ) )
 			)
 		);

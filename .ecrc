@@ -1,0 +1,24 @@
+{
+	"Exclude": [
+		"^vendor\/",
+		"^node_modules\/",
+		"^.git\/",
+		"^deps\/",
+		"^tests-coverage\/",
+		"^phpstan\/vendor\/",
+		"^public\/libs\/",
+		"^public\/block\/index.asset.php",
+		"^public\/block\/index.js",
+		"^public\/js\/live-form-validation-extension.js",
+		"^languages\/",
+		"LICENSE$",
+		"^temp\/",
+		"^\\.idea\/",
+		"^.phpunit.result.cache$",
+		"\\.DS_Store$",
+		"\\.phar$"
+	],
+	"Disable": {
+		"MaxLineLength": true
+	}
+}

@@ -11,10 +11,9 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout;
-use Packetery\Module\CurrencySwitcherFacade;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
 use Packetery\Module\Payment\PaymentHelper;
@@ -30,6 +29,58 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class CheckoutTest extends TestCase {
+
+	private WpAdapter|MockObject $wpAdapter;
+	private WpAdapter|MockObject $wcAdapter;
+	private WpAdapter|MockObject $productEntityFactory;
+	private WpAdapter|MockObject $productCategoryEntityFactory;
+	private WpAdapter|MockObject $carrierOptionsFactory;
+	private WpAdapter|MockObject $currencySwitcherFacade;
+	private WpAdapter|MockObject $carrierEntityRepository;
+	private WpAdapter|MockObject $carDeliveryConfig;
+	private WpAdapter|MockObject $provider;
+	private Carrier\ActivityBridge|MockObject $activityBridge;
+
+	private Checkout $checkout;
+
+	private function createCheckoutMock(): void {
+		$this->wpAdapter = MockFactory::createWpAdapter( $this );
+		$this->wcAdapter = $this->createMock( WcAdapter::class );
+		$this->productEntityFactory = $this->createMock( ProductEntityFactory::class );
+		$this->productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
+		$this->carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
+		$this->currencySwitcherFacade = MockFactory::createCurrencySwitcherFacade( $this );
+		$this->carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
+		$this->carDeliveryConfig = $this->createMock( CarDeliveryConfig::class );
+		$this->provider = $this->createMock( OptionsProvider::class );
+		$this->activityBridge = $this->createMock( Carrier\ActivityBridge::class );
+
+		$this->checkout = new Checkout(
+			$this->wpAdapter,
+			$this->wcAdapter,
+			$this->productEntityFactory,
+			$this->productCategoryEntityFactory,
+			$this->carrierOptionsFactory,
+			$this->createMock( Engine::class ),
+			$this->provider,
+			$this->createMock( Carrier\Repository::class ),
+			$this->createMock( Request::class ),
+			$this->createMock( Order\Repository::class ),
+			$this->currencySwitcherFacade,
+			$this->createMock( Order\PacketAutoSubmitter::class ),
+			$this->createMock( PickupPointValidator::class ),
+			$this->createMock( Order\AttributeMapper::class ),
+			new RateCalculator( $this->wpAdapter, $this->currencySwitcherFacade ),
+			$this->createMock( PacketaPickupPointsConfig::class ),
+			$this->createMock( WidgetOptionsBuilder::class ),
+			$this->carrierEntityRepository,
+			$this->createMock( Api\Internal\CheckoutRouter::class ),
+			$this->carDeliveryConfig,
+			$this->createMock(PaymentHelper::class),
+			$this->activityBridge,
+		);
+
+	}
 
 	public static function rateCreationDataProvider(): array {
 		return [
@@ -415,11 +466,12 @@ class CheckoutTest extends TestCase {
 		bool $isAgeVerificationRequiredByProduct,
 		float $cartWeightKg
 	): void {
-		$wpAdapter = MockFactory::createWpAdapter( $this );
-		$wpAdapter
+		$this->createCheckoutMock();
+
+		$this->wpAdapter
 			->expects( self::atLeast( $expectedRateCount ) )
 			->method( 'applyFilters' );
-		$wpAdapter
+		$this->wpAdapter
 			->method( 'didAction' )
 			->willReturn( 1 );
 
@@ -427,8 +479,7 @@ class CheckoutTest extends TestCase {
 		$cart
 			->method( 'get_coupons' )
 			->willReturn( [] );
-		$wcAdapter = $this->createMock( WcAdapter::class );
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'cart' )
 			->willReturn( $cart );
 
@@ -439,7 +490,7 @@ class CheckoutTest extends TestCase {
 		$wcProduct
 			->method( 'get_category_ids' )
 			->willReturn( [ 1 ] );
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'productFactoryGetProduct' )
 			->willReturn( $wcProduct );
 
@@ -448,26 +499,26 @@ class CheckoutTest extends TestCase {
 			'quantity'   => 1,
 			'data'       => $wcProduct,
 		];
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'cartGetCartContents' )
 			->willReturn( [ $cartItem ] );
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'cartGetCartContent' )
 			->willReturn( [ $cartItem ] );
 
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'customerGetShippingCountry' )
 			->willReturn( 'cz' );
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'cartGetCartContentsTotal' )
 			->willReturn( 100.0 );
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'cartGetCartContentsTax' )
 			->willReturn( 21.0 );
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'cartGetCartContentsWeight' )
 			->willReturn( $cartWeightKg );
-		$wcAdapter
+		$this->wcAdapter
 			->method( 'getWeight' )
 			->willReturn( $cartWeightKg );
 
@@ -481,8 +532,7 @@ class CheckoutTest extends TestCase {
 		$productEntity
 			->method( 'getDisallowedShippingRateIds' )
 			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedOnProduct' ) ], $productDisallowedRateIds ) );
-		$productEntityFactory = $this->createMock( ProductEntityFactory::class );
-		$productEntityFactory
+		$this->productEntityFactory
 			->method( 'fromPostId' )
 			->willReturn( $productEntity );
 
@@ -490,13 +540,12 @@ class CheckoutTest extends TestCase {
 		$productCategory
 			->method( 'getDisallowedShippingRateIds' )
 			->willReturn( array_merge( [ Carrier\OptionPrefixer::getOptionId( 'anyDisallowedByProductCategory' ) ], $productCategoryDisallowedRateIds ) );
-		$productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
-		$productCategoryEntityFactory
+		$this->productCategoryEntityFactory = $this->createMock( ProductCategoryEntityFactory::class );
+		$this->productCategoryEntityFactory
 			->method( 'fromTermId' )
 			->willReturn( $productCategory );
 
-		$carrierOptionsFactory = $this->createMock( CarrierOptionsFactory::class );
-		$carrierOptionsFactory
+		$this->carrierOptionsFactory
 			->method( 'createByOptionId' )
 			->willReturnCallback( function ( $optionId ) use ( $carriersOptions ) {
 				$carrierOptions = $carriersOptions[ $optionId ];
@@ -507,78 +556,52 @@ class CheckoutTest extends TestCase {
 				);
 			} );
 
-		$currencySwitcherFacade = MockFactory::createCurrencySwitcherFacade( $this );
-
-		$carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
-		$carrierEntityRepository
+		$this->carrierEntityRepository
 			->method( 'getByCountryIncludingNonFeed' )
 			->willReturn( $carriers );
 
-		$carDeliveryConfig = $this->createMock( CarDeliveryConfig::class );
-		$carDeliveryConfig
+		$this->carDeliveryConfig
 			->method( 'isDisabled' )
 			->willReturn( ! $isCarDeliveryEnabled );
 
-		$activityBridge = $this->createMock( Carrier\ActivityBridge::class );
-		$activityBridge
+		$this->activityBridge
 			->method( 'isActive' )
 			->willReturnOnConsecutiveCalls( ...array_column( $carriersOptions, 'active' ) );
 
-		$checkout = $this->createCheckoutMock(
-			$wpAdapter,
-			$wcAdapter,
-			$productEntityFactory,
-			$productCategoryEntityFactory,
-			$carrierOptionsFactory,
-			$currencySwitcherFacade,
-			$carrierEntityRepository,
-			$carDeliveryConfig,
-			$activityBridge
-		);
-
-		$rates = $checkout->getShippingRates( $allowedCarrierNames );
+		$rates = $this->checkout->getShippingRates( $allowedCarrierNames );
 
 		self::assertCount( $expectedRateCount, $rates );
 	}
 
-	/**
-	 * @throws \PHPUnit\Framework\MockObject\Exception
-	 */
-	private function createCheckoutMock(
-		MockObject|WpAdapter $wpAdapter,
-		MockObject|WcAdapter $wcAdapter,
-		MockObject|ProductEntityFactory $productEntityFactory,
-		MockObject|ProductCategoryEntityFactory $productCategoryEntityFactory,
-		MockObject|CarrierOptionsFactory $carrierOptionsFactory,
-		MockObject|CurrencySwitcherFacade $currencySwitcherFacade,
-		MockObject|Carrier\EntityRepository $carrierEntityRepository,
-		MockObject|CarDeliveryConfig $carDeliveryConfig,
-		MockObject|Carrier\ActivityBridge $activityBridge
-	): Checkout {
-		return new Checkout(
-			$wpAdapter,
-			$wcAdapter,
-			$productEntityFactory,
-			$productCategoryEntityFactory,
-			$carrierOptionsFactory,
-			$this->createMock( Engine::class ),
-			$this->createMock( Provider::class ),
-			$this->createMock( Carrier\Repository::class ),
-			$this->createMock( Request::class ),
-			$this->createMock( Order\Repository::class ),
-			$currencySwitcherFacade,
-			$this->createMock( Order\PacketAutoSubmitter::class ),
-			$this->createMock( PickupPointValidator::class ),
-			$this->createMock( Order\AttributeMapper::class ),
-			new RateCalculator( $wpAdapter, $currencySwitcherFacade ),
-			$this->createMock( PacketaPickupPointsConfig::class ),
-			$this->createMock( WidgetOptionsBuilder::class ),
-			$carrierEntityRepository,
-			$this->createMock( Api\Internal\CheckoutRouter::class ),
-			$carDeliveryConfig,
-			$this->createMock( PaymentHelper::class ),
-			$activityBridge,
-		);
+	public function testAreBlocksUsedInCheckoutBlockDetection(): void {
+		$this->createCheckoutMock();
+
+		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::BLOCK_CHECKOUT_DETECTION );
+		$this->assertTrue( $this->checkout->areBlocksUsedInCheckout() );
 	}
 
+	public function testAreBlocksUsedInCheckoutClassicDetection(): void {
+		$this->createCheckoutMock();
+
+		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::CLASSIC_CHECKOUT_DETECTION);
+		$this->assertFalse($this->checkout->areBlocksUsedInCheckout());
+	}
+
+	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithBlock(): void {
+		$this->createCheckoutMock();
+
+		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION);
+
+		$this->wpAdapter->method('hasBlock')->willReturn( true );
+		$this->assertTrue($this->checkout->areBlocksUsedInCheckout());
+	}
+
+	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithoutBlock(): void {
+		$this->createCheckoutMock();
+
+		$this->provider->method('getCheckoutDetection')->willReturn(OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION);
+
+		$this->wpAdapter->method('hasBlock')->willReturn( false );
+		$this->assertFalse($this->checkout->areBlocksUsedInCheckout());
+	}
 }

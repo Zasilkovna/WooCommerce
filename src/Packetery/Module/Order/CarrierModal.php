@@ -12,9 +12,9 @@ namespace Packetery\Module\Order;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
-use Packetery\Module\Helper;
+use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Forms;
-use Packetery\Module\Options\Provider;
+use Packetery\Module\Options\OptionsProvider;
 use RuntimeException;
 
 /**
@@ -64,7 +64,7 @@ class CarrierModal {
 	/**
 	 * Options provider.
 	 *
-	 * @var Provider
+	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
@@ -83,7 +83,7 @@ class CarrierModal {
 	 * @param CarrierModalFormFactory  $carrierModalFormFactory  Carrier Modal form factory.
 	 * @param Repository               $orderRepository          Order repository.
 	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
-	 * @param Provider                 $optionsProvider          Options provider.
+	 * @param OptionsProvider          $optionsProvider          Options provider.
 	 * @param CarrierOptionsFactory    $carrierOptionsFactory    Carrier options factory.
 	 */
 	public function __construct(
@@ -92,7 +92,7 @@ class CarrierModal {
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		Provider $optionsProvider,
+		OptionsProvider $optionsProvider,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine             = $latteEngine;
@@ -175,7 +175,7 @@ class CarrierModal {
 		$this->updateOrderDeliveryTitle( $orderId, $carrierTitle );
 
 		// Without it, the widget cannot be opened and metabox has no values. Needed even in case no change was made.
-		if ( wp_safe_redirect( Helper::getOrderDetailUrl( $orderId ) ) ) {
+		if ( wp_safe_redirect( ModuleHelper::getOrderDetailUrl( $orderId ) ) ) {
 			exit;
 		}
 	}
@@ -232,7 +232,7 @@ class CarrierModal {
 			return [];
 		}
 
-		$shippingCountry = Helper::getWcOrderCountry( $wcOrder );
+		$shippingCountry = ModuleHelper::getWcOrderCountry( $wcOrder );
 		if ( empty( $shippingCountry ) ) {
 			return [];
 		}
