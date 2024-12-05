@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * The exception occured during Latte compilation.
- * @internal
  */
 class CompileException extends \Exception
 {
@@ -35,7 +34,6 @@ class CompileException extends \Exception
 }
 /**
  * The exception that indicates error of the last Regexp execution.
- * @internal
  */
 class RegexpException extends \Exception
 {
@@ -47,12 +45,10 @@ class RegexpException extends \Exception
 }
 /**
  * Exception thrown when a not allowed construction is used in a template.
- * @internal
  */
 class SecurityViolationException extends \Exception
 {
 }
-/** @internal */
 class RuntimeException extends \RuntimeException
 {
 }

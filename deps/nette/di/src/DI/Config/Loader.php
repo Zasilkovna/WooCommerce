@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Utils\Validators;
 /**
  * Configuration file loader.
- * @internal
  */
 class Loader
 {

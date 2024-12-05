@@ -10,7 +10,6 @@ namespace Packetery\Nette\Forms\Controls;
 use Packetery\Nette;
 /**
  * Hidden form control used to store a non-displayed value.
- * @internal
  */
 class HiddenField extends BaseControl
 {

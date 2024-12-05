@@ -11,7 +11,6 @@ use Packetery\Nette;
 /**
  * PHP directives definition.
  * @deprecated  use \Packetery\Nette\Bootstrap\Extensions\PhpExtension
- * @internal
  */
 final class PhpExtension extends \Packetery\Nette\DI\CompilerExtension
 {
