@@ -1,3 +1,6 @@
 parameters:
+	phpVersion:
+		min: 70200
+		max: 80300
 	fileExtensions:
 		- php
