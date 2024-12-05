@@ -72,7 +72,7 @@ class PickupPointValidator {
 	 * @return PickupPointValidateResponse
 	 */
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
-		$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $this->optionsProvider->get_api_key() );
+		$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $this->optionsProvider->get_api_key() ?? '' );
 
 		try {
 			// We do not log successful requests.
