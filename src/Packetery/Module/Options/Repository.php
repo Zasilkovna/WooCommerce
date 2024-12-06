@@ -35,15 +35,6 @@ class Repository {
 	}
 
 	/**
-	 * Get all packetery related options.
-	 *
-	 * @return object[]|null
-	 */
-	public function getPluginOptions(): ?array {
-		return $this->wpdbAdapter->get_results( 'SELECT `option_name` FROM `' . $this->wpdbAdapter->options . "` WHERE `option_name` LIKE 'packetery%'" );
-	}
-
-	/**
 	 * Fork of delete_expired_transients.
 	 *
 	 * @param string $prefix Custom transient prefix.
@@ -64,6 +55,36 @@ class Repository {
 				$this->wpdbAdapter->escLike( $transientPrefix ) . '%',
 				$this->wpdbAdapter->escLike( $transientTimeoutPrefix ) . '%',
 				time()
+			)
+		);
+	}
+
+	/**
+	 * Delete transients by prefix.
+	 *
+	 * @param string $prefix Custom transient prefix.
+	 *
+	 * @return int|bool
+	 */
+	public function deleteTransientsByPrefix( string $prefix ) {
+		$transientPrefix = sprintf( '_transient_%s', $prefix );
+
+		return $this->deleteByPrefix( $transientPrefix );
+	}
+
+	/**
+	 * Delete options by prefix.
+	 *
+	 * @param string $prefix Custom transient prefix.
+	 *
+	 * @return int|bool
+	 */
+	public function deleteByPrefix( string $prefix ) {
+		return $this->wpdbAdapter->query(
+			$this->wpdbAdapter->prepare(
+				"DELETE FROM {$this->wpdbAdapter->options}
+				WHERE option_name LIKE %s",
+				$this->wpdbAdapter->escLike( $prefix ) . '%',
 			)
 		);
 	}

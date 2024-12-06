@@ -55,8 +55,4 @@ trait HookTrait {
 	public function registerDeactivationHook( string $file, callable $callback ): void {
 		register_deactivation_hook( $file, $callback );
 	}
-
-	public function registerUninstallHook( string $file, callable $callback ): void {
-		register_uninstall_hook( $file, $callback );
-	}
 }
