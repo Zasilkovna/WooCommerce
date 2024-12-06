@@ -9,13 +9,13 @@ php --version | head -1
 echo "ℹ︎ Composer version:"
 composer --version
 
-echo "➤ Installing woocommerce/woocommerce-sniffs:"
-composer --no-interaction --quiet --no-dev install
+echo "➤ Installing dependencies..."
+composer --no-interaction --quiet install
 
 echo "➤ Running sniffer:"
-./vendor/bin/phpcs -s | tee /tmp/sniffer.log
+./vendor/bin/phpcs -s 2>&1 | tee /tmp/sniffer.log
 
-if grep -q '| ERROR' /tmp/sniffer.log; then
+if grep -q 'ERROR' /tmp/sniffer.log; then
 	echo "🛑 Sniffer found errors, fix them."
 	exit 1
 fi
