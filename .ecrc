@@ -13,6 +13,7 @@
 		"^languages\/",
 		"LICENSE$",
 		"^temp\/",
+		"^log\/",
 		"^\\.idea\/",
 		"^.phpunit.result.cache$",
 		"\\.DS_Store$",

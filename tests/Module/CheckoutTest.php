@@ -41,7 +41,6 @@ class CheckoutTest extends TestCase {
 	private WpAdapter|MockObject $carDeliveryConfig;
 	private WpAdapter|MockObject $provider;
 	private Carrier\ActivityBridge|MockObject $activityBridge;
-
 	private Checkout $checkout;
 
 	private function createCheckoutMock(): void {

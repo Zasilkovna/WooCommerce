@@ -16,7 +16,6 @@ use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\Plugin;
 use Packetery\Module\Shipping\ShippingMethodGenerator;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Form;
@@ -221,8 +220,9 @@ class CountryListingPage {
 		$hasCarriers = false;
 		$countries   = $this->getActiveCountries();
 		foreach ( $countries as $country ) {
-			if ( ! empty( $country['allCarriers'] ) ) {
+			if ( isset( $country['allCarriers'] ) ) {
 				$hasCarriers = true;
+
 				break;
 			}
 		}

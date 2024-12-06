@@ -67,7 +67,7 @@ class OptionsProvider {
 	/**
 	 * Advanced data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	private $advancedData;
 
@@ -91,7 +91,7 @@ class OptionsProvider {
 		}
 
 		$advancedData = get_option( self::OPTION_NAME_PACKETERY_ADVANCED );
-		if ( ! $advancedData ) {
+		if ( false === $advancedData || null === $advancedData ) {
 			$advancedData = [];
 		}
 

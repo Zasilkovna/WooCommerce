@@ -65,7 +65,7 @@ class Downloader {
 		WebRequestClient $webRequestClient,
 		WpAdapter $wpAdapter
 	) {
-		$this->carrierUpdater  = $carrierUpdater;
+		$this->carrierUpdater   = $carrierUpdater;
 		$this->optionsProvider  = $optionsProvider;
 		$this->webRequestClient = $webRequestClient;
 		$this->wpAdapter        = $wpAdapter;
@@ -158,7 +158,7 @@ class Downloader {
 			sprintf(
 				self::API_URL,
 				$this->optionsProvider->get_api_key(),
-				( $language ? $language : substr( $this->wpAdapter->getLocale(), 0, 2 ) )
+				$language ?? substr( $this->wpAdapter->getLocale(), 0, 2 )
 			)
 		);
 	}

@@ -116,6 +116,11 @@ class OptionsPage {
 	 */
 	private $urlBuilder;
 
+	/**
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
@@ -127,7 +132,8 @@ class OptionsPage {
 		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
 		ModuleHelper $moduleHelper,
-		UrlBuilder $urlBuilder
+		UrlBuilder $urlBuilder,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine           = $latteEngine;
 		$this->carrierRepository     = $carrierRepository;
@@ -140,6 +146,7 @@ class OptionsPage {
 		$this->carDeliveryConfig     = $carDeliveryConfig;
 		$this->moduleHelper          = $moduleHelper;
 		$this->urlBuilder            = $urlBuilder;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
@@ -442,6 +449,9 @@ class OptionsPage {
 		if ( count( $newVendors ) > 0 ) {
 			$options['vendor_groups'] = $newVendors;
 		}
+
+		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
+		$persistedOptionsArray = $persistedOptions->toArray();
 
 		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );

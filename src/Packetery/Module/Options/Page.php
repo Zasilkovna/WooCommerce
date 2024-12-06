@@ -791,21 +791,26 @@ class Page {
 		}
 
 		$packetStatusSyncForm = $this->createPacketStatusSyncForm();
-		if ( $packetStatusSyncForm['save'] instanceof SubmitButton &&
+		if (
+			$packetStatusSyncForm['save'] instanceof SubmitButton &&
 			$packetStatusSyncForm['save']->isSubmittedBy()
 		) {
 			$packetStatusSyncForm->fireEvents();
 		}
 
 		$autoSubmissionForm = $this->createAutoSubmissionForm();
-		if ( $autoSubmissionForm['save'] instanceof SubmitButton &&
+		if (
+			$autoSubmissionForm['save'] instanceof SubmitButton &&
 			$autoSubmissionForm['save']->isSubmittedBy()
 		) {
 			$autoSubmissionForm->fireEvents();
 		}
 
 		$advancedForm = $this->createAdvancedForm();
-		if ( $advancedForm['save']->isSubmittedBy() ) {
+		if (
+			$advancedForm['save'] instanceof SubmitButton &&
+			$advancedForm['save']->isSubmittedBy()
+		) {
 			$advancedForm->fireEvents();
 		}
 	}

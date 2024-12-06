@@ -20,9 +20,9 @@
         "build:deps": "bash build-deps.sh",
         "build:pot": "vendor/bin/wp i18n make-pot . languages/packeta.pot --allow-root",
         "check:ec": "vendor/bin/ec .",
-        "generate-carrier-classes": [
+        "build:carriers": [
             "rm -rf temp/cache",
-            "php cli/generate-carrier-classes.php"
+            "php cli/build-carrier-classes.php"
         ],
         "wpify-scoper": "wpify-scoper",
         "check:phpcs": "vendor/bin/phpcs",

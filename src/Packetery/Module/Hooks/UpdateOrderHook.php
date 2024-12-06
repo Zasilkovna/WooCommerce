@@ -10,8 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Hooks;
 
 use Packetery\Module\Order;
-use Packetery\Module\ShippingMethod;
-
 use Packetery\Module\Shipping\ShippingProvider;
 
 /**

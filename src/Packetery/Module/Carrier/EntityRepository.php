@@ -64,29 +64,26 @@ class EntityRepository {
 	private $activityBridge;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Repository                $repository           Carrier repository.
-	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
-	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
-	 * @param ActivityBridge            $activityBridge       Carrier activity checker.
+	 * @var ShippingZoneRepository
 	 */
+	private $shippingZoneRepository;
+
 	public function __construct(
 		Repository $repository,
 		EntityFactory\Carrier $carrierEntityFactory,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CarDeliveryConfig $carDeliveryConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		ActivityBridge $activityBridge
+		ActivityBridge $activityBridge,
+		ShippingZoneRepository $shippingZoneRepository
 	) {
-		$this->repository            = $repository;
-		$this->carrierEntityFactory  = $carrierEntityFactory;
-		$this->pickupPointsConfig    = $pickupPointsConfig;
-		$this->carDeliveryConfig     = $carDeliveryConfig;
-		$this->carrierOptionsFactory = $carrierOptionsFactory;
-		$this->activityBridge        = $activityBridge;
+		$this->repository             = $repository;
+		$this->carrierEntityFactory   = $carrierEntityFactory;
+		$this->pickupPointsConfig     = $pickupPointsConfig;
+		$this->carDeliveryConfig      = $carDeliveryConfig;
+		$this->carrierOptionsFactory  = $carrierOptionsFactory;
+		$this->activityBridge         = $activityBridge;
+		$this->shippingZoneRepository = $shippingZoneRepository;
 	}
 
 	/**
@@ -278,8 +275,7 @@ class EntityRepository {
 	 * @return Carrier[]
 	 */
 	public function getCarriersForShippingRate( string $rateId ): array {
-		$shippingZoneRepository = new ShippingZoneRepository();
-		$countries              = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
+		$countries = $this->shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
 		if ( count( $countries ) === 0 ) {
 			return [];
 		}
@@ -289,7 +285,7 @@ class EntityRepository {
 			$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
 		}
 
-		if ( [] === $availableCarriersToMerge ) {
+		if ( count( $availableCarriersToMerge ) === 0 ) {
 			return $this->getActiveCarriers();
 		}
 

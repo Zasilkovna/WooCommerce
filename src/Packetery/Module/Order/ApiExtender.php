@@ -10,7 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Order;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Shipping\ShippingProvider;
 use WC_Data;
 use WC_Order;

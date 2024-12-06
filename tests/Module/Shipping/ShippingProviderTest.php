@@ -10,7 +10,6 @@ use Packetery\Module\ShippingMethod;
 use PHPUnit\Framework\TestCase;
 
 class ShippingProviderTest extends TestCase {
-
 	/**
 	 * @return array
 	 */
@@ -49,5 +48,4 @@ class ShippingProviderTest extends TestCase {
 	public function testIsPacketaMethod( $methodId, $isPacketaMethod ): void {
 		self::assertEquals( $isPacketaMethod, ShippingProvider::isPacketaMethod( $methodId ) );
 	}
-
 }

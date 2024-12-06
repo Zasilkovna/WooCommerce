@@ -1,9 +1,4 @@
 <?php
-/**
- * Class DashboardWidget
- *
- * @package Packetery\Module
- */
 
 declare( strict_types=1 );
 
@@ -19,82 +14,52 @@ use WC_Data_Store;
 use WC_Shipping_Zone;
 use WC_Shipping_Zone_Data_Store;
 
-/**
- * Class DashboardWidget
- *
- * @package Packetery\Module
- */
 class DashboardWidget {
 
 	/**
-	 * Latte engine.
-	 *
 	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Carrier repository.
-	 *
 	 * @var Carrier\Repository
 	 */
 	private $carrierRepository;
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Carrier options page.
-	 *
 	 * @var Carrier\OptionsPage
 	 */
 	private $carrierOptionsPage;
 
 	/**
-	 * Options page.
-	 *
 	 * @var Options\Page
 	 */
 	private $optionsPage;
 
 	/**
-	 * Survey config.
-	 *
 	 * @var array<string, bool|string>
 	 */
 	private $surveyConfig;
 
 	/**
-	 * Carrier entity repository.
-	 *
 	 * @var Carrier\EntityRepository
 	 */
 	private $carrierEntityRepository;
 
 	/**
-	 * ModuleHelper.
-	 *
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
 
 	/**
-	 * Carrier options factory.
-	 *
 	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
-
-	/**
-	 * Carrier activity checker.
-	 *
-	 * @var Carrier\ActivityBridge
-	 */
-	private $carrierActivityBridge;
 
 	/**
 	 * @var UrlBuilder
@@ -102,8 +67,6 @@ class DashboardWidget {
 	private $urlBuilder;
 
 	/**
-	 * Carrier activity checker.
-	 *
 	 * @var Carrier\ActivityBridge
 	 */
 	private $carrierActivityBridge;

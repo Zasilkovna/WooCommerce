@@ -13,9 +13,9 @@ use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms;
 use Packetery\Nette\Forms\Controls\SubmitButton;
-use Packetery\Module\Options\OptionsProvider;
 use RuntimeException;
 use WC_Order_Item_Shipping;
 

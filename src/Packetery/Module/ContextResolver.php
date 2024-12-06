@@ -147,12 +147,15 @@ class ContextResolver {
 	 * @return bool
 	 */
 	private function isShippingZoneDetailPage(): bool {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $plugin_page;
 
 		return (
 			'admin.php' === $pagenow &&
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			'wc-settings' === $plugin_page &&
 			'shipping' === $this->request->getQuery( 'tab' ) &&
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			$this->request->getQuery( 'zone_id' ) > 0
 		);
 	}
