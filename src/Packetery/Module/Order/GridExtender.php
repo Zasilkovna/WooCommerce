@@ -11,6 +11,7 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\Size;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
@@ -18,6 +19,7 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
 use WC_Order;
@@ -371,6 +373,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                            => $order,
+						'dimensions'                       => $this->getSizeInSetDimensionUnit( $order ),
 						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
 						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
 						'storedUntil'                      => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
@@ -454,5 +457,27 @@ class GridExtender {
 		$metaKey = 'packetery_packet_stored_until';
 
 		return wp_parse_args( [ 'packetery_packet_stored_until' => $metaKey ], $columns );
+	}
+
+	/**
+	 * Gets the size in the configured dimension unit.
+	 *
+	 * @param Core\Entity\Order $order Order entity.
+	 *
+	 * @return Size
+	 */
+	public function getSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
+		$length = $order->getLength();
+		$width  = $order->getWidth();
+		$height = $order->getHeight();
+		foreach ( [ $length, $width, $height ] as $dimension ) {
+			if ( null !== $dimension && OptionsProvider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
+				$size[] = ModuleHelper::convertToCentimeters( (int) $dimension );
+			} else {
+				$size[] = $dimension;
+			}
+		}
+
+		return new Size( ...$size );
 	}
 }
