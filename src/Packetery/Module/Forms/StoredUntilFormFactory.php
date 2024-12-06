@@ -12,11 +12,6 @@ namespace Packetery\Module\Forms;
 use Packetery\Module\FormFactory;
 use Packetery\Nette\Forms\Form;
 
-/**
- * Class StoredUntilFormFactory.
- *
- * @package Packetery
- */
 class StoredUntilFormFactory {
 
 	/**
