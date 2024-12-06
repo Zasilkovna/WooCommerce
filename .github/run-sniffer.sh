@@ -13,7 +13,7 @@ echo "➤ Installing woocommerce/woocommerce-sniffs:"
 composer --no-interaction --quiet --no-dev install
 
 echo "➤ Running sniffer:"
-./vendor/bin/phpcs -s | tee /tmp/sniffer.log
+./vendor/bin/phpcs -s 2>&1 | tee /tmp/sniffer.log
 
 if grep -q '| ERROR' /tmp/sniffer.log; then
 	echo "🛑 Sniffer found errors, fix them."
