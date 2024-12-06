@@ -36,9 +36,6 @@ class DbLogger implements ILogger {
 		$this->logRepository = $logRepository;
 	}
 
-	/**
-	 * @param Record $record
-	 */
 	public function add( Record $record ): void {
 		if ( null === $record->date ) {
 			$record->date = CoreHelper::now();
