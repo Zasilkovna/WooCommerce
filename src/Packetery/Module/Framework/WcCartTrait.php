@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use WC_Cart;
 use WC_Customer;
 
 /**
@@ -65,9 +66,9 @@ trait WcCartTrait {
 	/**
 	 * Gets cart instance.
 	 *
-	 * @return \WC_Cart|null
+	 * @return WC_Cart|null
 	 */
-	public function cart(): ?\WC_Cart {
+	public function cart(): ?WC_Cart {
 		return WC()->cart;
 	}
 

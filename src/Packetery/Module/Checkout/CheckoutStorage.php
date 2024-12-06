@@ -37,11 +37,17 @@ class CheckoutStorage {
 		$this->wcAdapter   = $wcAdapter;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getFromTransient() {
 		return $this->wpAdapter->getTransient( $this->getTransientNamePacketaCheckoutData() );
 	}
 
-	public function setTransient( $savedData ): void {
+	/**
+	 * @param array<string, array<string, mixed>> $savedData
+	 */
+	public function setTransient( array $savedData ): void {
 		$this->wpAdapter->setTransient(
 			$this->getTransientNamePacketaCheckoutData(),
 			$savedData,

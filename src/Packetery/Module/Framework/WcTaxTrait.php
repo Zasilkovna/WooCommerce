@@ -21,6 +21,9 @@ trait WcTaxTrait {
 		return WC_Tax::get_rates( $taxClass, $customer );
 	}
 
+	/**
+	 * @return array|array{}
+	 */
 	public function taxGetShippingTaxRates(): array {
 		return (array) WC_Tax::get_shipping_tax_rates();
 	}

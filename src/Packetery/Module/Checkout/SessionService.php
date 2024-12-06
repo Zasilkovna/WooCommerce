@@ -69,8 +69,9 @@ class SessionService {
 	 * @return array
 	 */
 	public function filterUpdateShippingPackages( array $packages ): array {
-		foreach ( $packages as &$package ) {
+		foreach ( $packages as $key => $package ) {
 			$package['packetery_payment_method'] = $this->getChosenPaymentMethod();
+			$packages[ $key ]                    = $package;
 		}
 
 		return $packages;

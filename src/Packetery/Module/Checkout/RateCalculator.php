@@ -165,12 +165,12 @@ class RateCalculator {
 	}
 
 	/**
-	 * @param string            $name             Name.
-	 * @param string            $optionId         Option ID.
-	 * @param float             $taxExclusiveCost Cost.
-	 * @param array<float>|null $taxes            Taxes. It is going to be calculated if null.
+	 * @param string       $name
+	 * @param string       $optionId
+	 * @param float        $taxExclusiveCost
+	 * @param float[]|null $taxes Taxes. It is going to be calculated if null.
 	 *
-	 * @return array
+	 * @return array<string, string|float|array>
 	 */
 	public function createShippingRate( string $name, string $optionId, float $taxExclusiveCost, ?array $taxes ): array {
 		return [
@@ -185,11 +185,15 @@ class RateCalculator {
 	/**
 	 * Tells if free shipping coupon is applied.
 	 *
-	 * @param WC_Cart|WC_Order $cartOrOrder Cart or order.
+	 * @param WC_Cart|WC_Order|null $cartOrOrder Cart or order.
 	 *
 	 * @return bool
 	 */
 	public function isFreeShippingCouponApplied( $cartOrOrder ): bool {
+		if ( null === $cartOrOrder ) {
+			return false;
+		}
+
 		$coupons = $cartOrOrder->get_coupons();
 		foreach ( $coupons as $coupon ) {
 			if ( method_exists( $coupon, 'get_free_shipping' ) && $coupon->get_free_shipping() ) {

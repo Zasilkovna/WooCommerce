@@ -24,6 +24,13 @@ trait TransientTrait {
 		return get_transient( $transientName );
 	}
 
+	/**
+	 * @param string $transientName
+	 * @param mixed  $transientValue
+	 * @param int    $expiration
+	 *
+	 * @return bool
+	 */
 	public function setTransient( string $transientName, $transientValue, int $expiration = 0 ): bool {
 		return set_transient( $transientName, $transientValue, $expiration );
 	}

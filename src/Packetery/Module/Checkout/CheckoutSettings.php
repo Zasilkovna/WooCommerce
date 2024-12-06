@@ -156,11 +156,11 @@ class CheckoutSettings {
 		return [
 			'language'                   => $language,
 			'logo'                       => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
-			'country'                    => $this->checkoutService->getCustomerCountryOrEmpty(),
+			'country'                    => $this->checkoutService->getCustomerCountry() ?? '',
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
 			'isCarDeliverySampleEnabled' => $this->carDeliveryConfig->isSampleEnabled(),
-			'isAgeVerificationRequired'  => $this->cartService->isAgeVerification18PlusRequired(),
+			'isAgeVerificationRequired'  => $this->cartService->isAgeVerificationRequired(),
 			'pickupPointAttrs'           => Order\Attribute::$pickupPointAttrs,
 			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttrs,
 			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttrs,
@@ -174,7 +174,7 @@ class CheckoutSettings {
 			'saveCarDeliveryDetailsUrl'  => $this->apiRouter->getSaveCarDeliveryDetailsUrl(),
 			'removeSavedDataUrl'         => $this->apiRouter->getRemoveSavedDataUrl(),
 			'adminAjaxUrl'               => $this->wpAdapter->adminUrl( 'admin-ajax.php' ),
-			'nonce'                      => $this->wpAdapter->createNonce( 'wp_rest' ),
+			'nonce'                      => (string) $this->wpAdapter->createNonce( 'wp_rest' ),
 			'savedData'                  => $this->storage->getFromTransient(),
 			'translations'               => [
 				'packeta'                       => $this->wpAdapter->__( 'Packeta', 'packeta' ),
@@ -198,7 +198,7 @@ class CheckoutSettings {
 	public function actionCreateSettingsAjax(): void {
 		$settings = [];
 		if ( $this->wcAdapter->cart() instanceof WC_Cart ) {
-			$settings['isAgeVerificationRequired'] = $this->cartService->isAgeVerification18PlusRequired();
+			$settings['isAgeVerificationRequired'] = $this->cartService->isAgeVerificationRequired();
 		}
 
 		$this->wpAdapter->sendJson( $settings );

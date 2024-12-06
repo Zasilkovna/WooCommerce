@@ -79,9 +79,9 @@ class CheckoutService {
 	/**
 	 * Calculates shipping without using POST data and returns id of chosen shipping rate.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function calculateShippingAndGetId(): string {
+	public function calculateShippingAndGetId(): ?string {
 		$chosenShippingRates = $this->wcAdapter->cartCalculateShipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
@@ -89,15 +89,15 @@ class CheckoutService {
 			return $this->removeShippingMethodPrefix( $chosenShippingRate->get_id() );
 		}
 
-		return '';
+		return null;
 	}
 
 	/**
 	 * Get chosen shipping rate id.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function resolveChosenMethod(): string {
+	public function resolveChosenMethod(): ?string {
 		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
 
 		if ( null !== $postedShippingMethodArray ) {
@@ -148,13 +148,23 @@ class CheckoutService {
 		return Carrier\OptionPrefixer::removePrefix( $optionId );
 	}
 
+	public function getCarrierIdFromPacketeryShippingMethod( string $chosenMethod ): string {
+		$optionId = $this->removeShippingMethodPrefix( $chosenMethod );
+
+		return Carrier\OptionPrefixer::removePrefix( $optionId );
+	}
+
 	/**
 	 * Check if chosen shipping rate is bound with Packeta pickup points
 	 *
 	 * @return bool
 	 */
 	public function isPickupPointOrder(): bool {
-		$carrierId = $this->getCarrierIdFromShippingMethod( $this->resolveChosenMethod() );
+		$chosenMethod = $this->resolveChosenMethod();
+		if ( null === $chosenMethod ) {
+			return false;
+		}
+		$carrierId = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
 		return null !== $carrierId && $this->isPickupPointCarrier( $carrierId );
 	}
@@ -181,7 +191,10 @@ class CheckoutService {
 	 */
 	public function isHomeDeliveryOrder(): bool {
 		$chosenMethod = $this->resolveChosenMethod();
-		$carrierId    = $this->getCarrierIdFromShippingMethod( $chosenMethod );
+		if ( null === $chosenMethod ) {
+			return false;
+		}
+		$carrierId = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
 		return null !== $carrierId && $this->carrierEntityRepository->isHomeDeliveryCarrier( $carrierId );
 	}
@@ -193,7 +206,10 @@ class CheckoutService {
 	 */
 	public function isCarDeliveryOrder(): bool {
 		$chosenMethod = $this->resolveChosenMethod();
-		$carrierId    = $this->getCarrierIdFromShippingMethod( $chosenMethod );
+		if ( null === $chosenMethod ) {
+			return false;
+		}
+		$carrierId = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
 		return null !== $carrierId && $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId );
 	}
@@ -201,17 +217,20 @@ class CheckoutService {
 	/**
 	 * Gets customer country from WC cart.
 	 *
-	 * @return string
+	 * @return string|null
 	 */
-	public function getCustomerCountryOrEmpty(): string {
-		$country = '';
-		if ( null !== $this->wcAdapter->customerGetShippingCountry() ) {
-			$country = strtolower( $this->wcAdapter->customerGetShippingCountry() );
-		} elseif ( null !== $this->wcAdapter->customerGetBillingCountry() ) {
-			$country = strtolower( $this->wcAdapter->customerGetBillingCountry() );
+	public function getCustomerCountry(): ?string {
+		$shippingCountry = $this->wcAdapter->customerGetShippingCountry();
+		if ( null !== $shippingCountry ) {
+			return strtolower( $shippingCountry );
 		}
 
-		return $country;
+		$billingCountry = $this->wcAdapter->customerGetBillingCountry();
+		if ( null !== $billingCountry ) {
+			return strtolower( $billingCountry );
+		}
+
+		return null;
 	}
 
 	/**
