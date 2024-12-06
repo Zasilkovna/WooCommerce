@@ -9,7 +9,7 @@ php --version | head -1
 echo "ℹ︎ Composer version:"
 composer --version
 
-echo "➤ Installing woocommerce/woocommerce-sniffs:"
+echo "➤ Installing dependencies..."
 composer --no-interaction --quiet install
 
 echo "➤ Running sniffer:"
