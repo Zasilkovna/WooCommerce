@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
-Tested up to: 6.6.2
-Stable tag: 1.8.6
+Tested up to: 6.7
+Stable tag: 1.8.7
 Requires PHP: 7.2
 WC requires at least: 4.5
-WC tested up to: 9.3.3
+WC tested up to: 9.4.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,10 +64,7 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
-= 1.8.6 =
-Fixed: In the plugin settings, the default shipment weight was incorrectly stored if it contained a number ending in zero.
-Fixed: Failed to save plugin settings if default weight or default dimensions were disabled and hidden settings field contained invalid data.
-Fixed: TypeError when getting cart product instance that could appear at checkout.
-Updated: Syncing order statuses one by one instead of a single batch.
+= 1.8.7 =
+Updated: Added compatibility with WordPress 6.7 - premature use of translation function prevented.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

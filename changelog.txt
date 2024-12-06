@@ -1,4 +1,7 @@
 == Changelog ==
+= 1.8.7 =
+Updated: Added compatibility with WordPress 6.7 - premature use of translation function prevented.
+
 = 1.8.6 =
 Fixed: In the plugin settings, the default shipment weight was incorrectly stored if it contained a number ending in zero.
 Fixed: Failed to save plugin settings if default weight or default dimensions were disabled and hidden settings field contained invalid data.
