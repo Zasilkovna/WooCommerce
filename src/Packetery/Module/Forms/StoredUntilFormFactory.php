@@ -1,9 +1,4 @@
 <?php
-/**
- * Class StoredUntilFormFactory.
- *
- * @package Packetery\Forms
- */
 
 declare( strict_types=1 );
 
