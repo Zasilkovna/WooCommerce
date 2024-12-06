@@ -42,5 +42,4 @@ class InvalidRequestException extends \Exception {
 	public function getMessages(): array {
 		return $this->messages;
 	}
-
 }

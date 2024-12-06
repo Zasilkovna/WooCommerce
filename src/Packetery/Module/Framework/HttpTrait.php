@@ -17,7 +17,6 @@ use WP_Error;
  * @package Packetery
  */
 trait HttpTrait {
-
 	/**
 	 * Performs an HTTP request using the GET method and returns its response.
 	 *
@@ -39,5 +38,4 @@ trait HttpTrait {
 	public function remoteRetrieveBody( $response ): string {
 		return wp_remote_retrieve_body( $response );
 	}
-
 }

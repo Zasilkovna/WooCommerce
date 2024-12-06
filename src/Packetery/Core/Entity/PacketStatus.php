@@ -93,5 +93,4 @@ class PacketStatus {
 	public function hasDefaultSynchronization(): bool {
 		return $this->defaultSynchronization;
 	}
-
 }

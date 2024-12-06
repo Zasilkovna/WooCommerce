@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Core\Log;
 
 /**
@@ -33,6 +32,7 @@ class Record {
 	public const ACTION_PACKET_CANCEL                              = 'packet-cancel';
 	public const ACTION_PICKUP_POINT_VALIDATE                      = 'pickup-point-validate';
 	public const ACTION_ORDER_STATUS_CHANGE                        = 'order-status-change';
+	public const ACTION_STORED_UNTIL_CHANGE                        = 'action-stored-until-change';
 
 	public const STATUS_SUCCESS = 'success';
 	public const STATUS_ERROR   = 'error';

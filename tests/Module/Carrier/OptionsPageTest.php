@@ -8,20 +8,19 @@ use Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory;
 use Packetery\Core\PickupPointProvider\VendorCollectionFactory;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
-use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
-use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\TestCase;
 
 class OptionsPageTest extends TestCase {
-
 	public function testIsAvailableVendorsCountLowByCarrierId(): void {
 		$latteEngineMock        = $this->createMock( Engine::class );
 		$carrierRepositoryMock  = $this->createMock( EntityRepository::class );
@@ -32,8 +31,6 @@ class OptionsPageTest extends TestCase {
 		$featureFlagProviderMock = $this->createMock( FeatureFlagProvider::class );
 		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
 		$carDeliveryConfigMock  = $this->createMock( CarDeliveryConfig::class );
-		$carrierOptionsFactory   = $this->createMock( CarrierOptionsFactory::class );
-		$optionsProvider        = $this->createMock( OptionsProvider::class );
 
 		$compoundCarrierFactory  = new CompoundCarrierCollectionFactory();
 		$vendorCollectionFactory = new VendorCollectionFactory();
@@ -44,7 +41,7 @@ class OptionsPageTest extends TestCase {
 			$featureFlagProviderMock
 		);
 
-		$optionsPage             = new OptionsPage(
+		$optionsPage           = new OptionsPage(
 			$latteEngineMock,
 			$carrierRepositoryMock,
 			$formFactoryMock,
@@ -54,6 +51,8 @@ class OptionsPageTest extends TestCase {
 			$packetaPickupPointsConfig,
 			$featureFlagProviderMock,
 			$carDeliveryConfigMock,
+			$this->createMock( ModuleHelper::class ),
+			$this->createMock( UrlBuilder::class ),
 		);
 
 		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );
@@ -62,5 +61,4 @@ class OptionsPageTest extends TestCase {
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointhu' ) );
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointro' ) );
 	}
-
 }

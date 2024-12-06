@@ -1,0 +1,45 @@
+<script type="text/template" id="tmpl-{$id}">
+	<div class="wc-backbone-modal" data-packetery-stored-until-modal>
+		{form $form, 'id' => 'order-stored-until-form', 'data-order-id' => "{{ data.order.id }}", 'data-nonce' => $nonce, 'data-stored-until-save-url' => $storedUntilSaveUrl}
+			<div class="wc-backbone-modal-content">
+				<section class="wc-backbone-modal-main" role="main">
+					<header class="wc-backbone-modal-header">
+						<h1>{php esc_html_e( sprintf( $translations['order#%s'], '{{ data.order.custom_number }}' ) )}</h1>
+						<div class="modal-close modal-close-link dashicons dashicons-no-alt">
+							<span class="screen-reader-text">{$translations['closeModalPanel']}</span>
+						</div>
+					</header>
+					<div class="notice is-dismissible hidden">
+						<p></p>
+						<button type="button" class="notice-dismiss">
+							<span class="screen-reader-text"></span>
+						</button>
+					</div>
+					<article>
+						<div class="wc-order-preview-table-wrapper">
+							<table>
+								<tbody>
+								<tr>
+									<td>{label packetery_stored_until /}</td>
+									<td>{input packetery_stored_until value: '{{ data.order.packetery_stored_until }}'}</td>
+									{input packet_id value: '{{ data.order.id }}'}
+								</tr>
+								</tbody>
+							</table>
+						</div>
+					</article>
+					<footer>
+						<div class="inner">
+							<div id="publishing-action">
+								<span class="spinner"></span>
+								{input cancel, 'class' => 'button button-large modal-close modal-close-link'}
+								{input submit, 'class' => 'button button-primary button-large'}
+							</div>
+						</div>
+					</footer>
+				</section>
+			</div>
+		{/form}
+	</div>
+	<div class="wc-backbone-modal-backdrop modal-close"></div>
+</script>

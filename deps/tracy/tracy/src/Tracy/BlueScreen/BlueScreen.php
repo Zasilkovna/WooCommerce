@@ -9,7 +9,6 @@ namespace Packetery\Tracy;
 
 /**
  * Red BlueScreen.
- * @internal
  */
 class BlueScreen
 {

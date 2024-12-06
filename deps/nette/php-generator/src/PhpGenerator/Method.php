@@ -12,7 +12,6 @@ use Packetery\Nette;
  * Class method.
  *
  * @property string|null $body
- * @internal
  */
 final class Method
 {

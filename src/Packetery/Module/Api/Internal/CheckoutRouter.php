@@ -72,5 +72,4 @@ class CheckoutRouter extends BaseRouter {
 	public function getRemoveSavedDataUrl(): string {
 		return $this->getRouteUrl( self::PATH_REMOVE_SAVED_DATA );
 	}
-
 }

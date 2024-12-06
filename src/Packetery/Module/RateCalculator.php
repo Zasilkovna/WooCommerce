@@ -73,6 +73,7 @@ class RateCalculator {
 			foreach ( $carrierOptions[ Carrier\OptionsPage::FORM_FIELD_WEIGHT_LIMITS ] as $weightLimit ) {
 				if ( $cartWeight <= $weightLimit['weight'] ) {
 					$cost = $weightLimit['price'];
+
 					break;
 				}
 			}
@@ -82,6 +83,7 @@ class RateCalculator {
 			foreach ( $carrierOptions[ Carrier\OptionsPage::FORM_FIELD_PRODUCT_VALUE_LIMITS ] as $productValueLimit ) {
 				if ( $totalCartProductValue <= $productValueLimit['value'] ) {
 					$cost = $productValueLimit['price'];
+
 					break;
 				}
 			}
@@ -136,5 +138,4 @@ class RateCalculator {
 
 		return false;
 	}
-
 }

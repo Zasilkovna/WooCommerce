@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Payment;
 
 use Packetery\Module\Options\OptionsProvider;
@@ -43,7 +42,7 @@ class PaymentHelper {
 	 * @return bool
 	 */
 	public function isCodPaymentMethod( string $paymentMethod ): bool {
-		if ( empty( $paymentMethod ) ) {
+		if ( '' === $paymentMethod ) {
 			return false;
 		}
 

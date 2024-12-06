@@ -37,18 +37,18 @@ class HelperTest extends TestCase {
 
 	public static function simplifyWeightProvider(): array {
 		return [
-			'float-with-3-decimals' => [
-					'expected' => 10.222,
-					'weight' => 10.2222
+			'float-with-3-decimals'        => [
+				'expected' => 10.222,
+				'weight'   => 10.2222,
 			],
 			'full-number-without-decimals' => [
-					'expected' => 1,
-					'weight' => 1.000000
+				'expected' => 1,
+				'weight'   => 1.000000,
 			],
-			'null' => [
-					'expected' => null,
-					'weight' => null
-			]
+			'null'                         => [
+				'expected' => null,
+				'weight'   => null,
+			],
 		];
 	}
 
@@ -61,35 +61,35 @@ class HelperTest extends TestCase {
 
 	public static function trimDecimalPlacesProvider(): array {
 		return [
-			'float-with-3-decimals' => [
+			'float-with-3-decimals'                     => [
 				'expected' => '4.123',
-				'value' => 4.1234566778,
-				'decimals' => 3
+				'value'    => 4.1234566778,
+				'decimals' => 3,
 			],
 			'single-digit-full-number-without-decimals' => [
 				'expected' => '4',
-				'value' => 4.1234566778,
-				'decimals' => 0
+				'value'    => 4.1234566778,
+				'decimals' => 0,
 			],
-			'full-number-without-3-decimals' => [
+			'full-number-without-3-decimals'            => [
 				'expected' => '20',
-				'value' => 20.0,
-				'decimals' => 3
+				'value'    => 20.0,
+				'decimals' => 3,
 			],
-			'full-number-without-decimals' => [
+			'full-number-without-decimals'              => [
 				'expected' => '10',
-				'value' => 10.0,
-				'decimals' => 0
+				'value'    => 10.0,
+				'decimals' => 0,
 			],
-			'negative-float-with-3-decimals' => [
+			'negative-float-with-3-decimals'            => [
 				'expected' => '-4.123',
-				'value' => - 4.1234566778,
-				'decimals' => 3
+				'value'    => - 4.1234566778,
+				'decimals' => 3,
 			],
 			'negative-single-digit-full-number-without-decimals' => [
 				'expected' => '-4',
-				'value' => - 4.1234566778,
-				'decimals' => 0
+				'value'    => - 4.1234566778,
+				'decimals' => 0,
 			],
 		];
 	}
@@ -97,8 +97,7 @@ class HelperTest extends TestCase {
 	/**
 	 * @dataProvider trimDecimalPlacesProvider
 	 */
-	public function testTrimDecimalPlaces( string $expected, float $value, int $decimals): void {
+	public function testTrimDecimalPlaces( string $expected, float $value, int $decimals ): void {
 		self::assertSame( $expected, CoreHelper::trimDecimalPlaces( $value, $decimals ) );
 	}
-
 }

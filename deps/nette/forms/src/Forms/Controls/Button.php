@@ -10,7 +10,6 @@ namespace Packetery\Nette\Forms\Controls;
 use Packetery\Nette\Utils\Html;
 /**
  * Push button control with no default behavior.
- * @internal
  */
 class Button extends BaseControl
 {

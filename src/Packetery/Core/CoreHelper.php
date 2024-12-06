@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Core;
 
 use DateTimeImmutable;
@@ -74,12 +73,12 @@ class CoreHelper {
 	/**
 	 * Returns tracking URL.
 	 *
-	 * @param string $packet_id Packet ID.
+	 * @param string $packetId Packet ID.
 	 *
 	 * @return string
 	 */
-	public function get_tracking_url( string $packet_id ): string {
-		return sprintf( self::TRACKING_URL, rawurlencode( $packet_id ) );
+	public function get_tracking_url( string $packetId ): string {
+		return sprintf( self::TRACKING_URL, rawurlencode( $packetId ) );
 	}
 
 	/**
@@ -101,7 +100,7 @@ class CoreHelper {
 	 * @return string|null
 	 */
 	public function getStringFromDateTime( ?DateTimeImmutable $date, string $format ): ?string {
-		return $date ? $date->format( $format ) : null;
+		return null !== $date ? $date->format( $format ) : null;
 	}
 
 	/**
@@ -113,6 +112,6 @@ class CoreHelper {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
-		return $date ? new DateTimeImmutable( $date ) : null;
+		return null !== $date ? new DateTimeImmutable( $date ) : null;
 	}
 }

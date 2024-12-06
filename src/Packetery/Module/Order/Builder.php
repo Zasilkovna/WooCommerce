@@ -22,13 +22,15 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Payment\PaymentHelper;
-use Packetery\Module\WeightCalculator;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product;
+use Packetery\Module\WeightCalculator;
 use stdClass;
 use WC_Order;
+use WC_Order_Item_Product;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 /**
  * Class Builder
  *
@@ -125,7 +127,7 @@ class Builder {
 	 */
 	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
 		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( empty( $country ) ) {
+		if ( '' === $country ) {
 			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
 		}
 
@@ -154,6 +156,7 @@ class Builder {
 		$order->setIsLabelPrinted( (bool) $result->is_label_printed );
 		$order->setCarrierNumber( $result->carrier_number );
 		$order->setPacketStatus( $result->packet_status );
+		$order->setStoredUntil( $this->coreHelper->getDateTimeFromString( $result->stored_until ) );
 		$order->setAddressValidated( (bool) $result->address_validated );
 		$order->setAdultContent( $this->parseBool( $result->adult_content ) );
 		$order->setValue( $this->parseFloat( $result->value ) );
@@ -233,11 +236,11 @@ class Builder {
 
 		// Shipping address phone is optional.
 		$order->setPhone( $orderData['billing']['phone'] );
-		if ( ! empty( $contactInfo['phone'] ) ) {
+		if ( isset( $contactInfo['phone'] ) && '' !== $contactInfo['phone'] ) {
 			$order->setPhone( $contactInfo['phone'] );
 		}
 		// Additional address information.
-		if ( ! empty( $contactInfo['address_2'] ) ) {
+		if ( isset( $contactInfo['address_2'] ) && '' !== $contactInfo['address_2'] ) {
 			$order->setNote( $contactInfo['address_2'] );
 		}
 
@@ -268,11 +271,13 @@ class Builder {
 	 */
 	private function containsAdultContent( WC_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_items() as $item ) {
-			$product = $item->get_product();
-			if ( $product ) {
-				$productEntity = new Product\Entity( $product );
-				if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
-					return true;
+			if ( $item instanceof WC_Order_Item_Product ) {
+				$product = $item->get_product();
+				if ( $product ) {
+					$productEntity = new Product\Entity( $product );
+					if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
+						return true;
+					}
 				}
 			}
 		}
@@ -309,5 +314,4 @@ class Builder {
 
 		return (bool) $value;
 	}
-
 }

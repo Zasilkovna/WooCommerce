@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Core\Log;
 
 /**
@@ -16,12 +15,6 @@ namespace Packetery\Core\Log;
  * @package Packetery\Log
  */
 interface ILogger {
-
-	/**
-	 * Registers log driver.
-	 */
-	public function register(): void;
-
 	/**
 	 * Adds log record.
 	 *
@@ -32,22 +25,22 @@ interface ILogger {
 	/**
 	 * Get logs.
 	 *
-	 * @param mixed                 $orderId Order ID.
+	 * @param int|null              $orderId Order ID.
 	 * @param string|null           $action  Action.
 	 * @param array<string, string> $sorting Sorting config.
 	 * @param int                   $limit   Limit.
 	 *
 	 * @return iterable<Record>
 	 */
-	public function getRecords( $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable;
+	public function getRecords( ?int $orderId, ?string $action, array $sorting = [], int $limit = 100 ): iterable;
 
 	/**
 	 * Counts records.
 	 *
-	 * @param mixed       $orderId Order ID.
+	 * @param int|null    $orderId Order ID.
 	 * @param string|null $action  Action.
 	 *
 	 * @return int
 	 */
-	public function countRecords( $orderId = null, ?string $action = null): int;
+	public function countRecords( ?int $orderId = null, ?string $action = null ): int;
 }

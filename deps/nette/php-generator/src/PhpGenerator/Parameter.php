@@ -13,7 +13,6 @@ use Packetery\Nette\Utils\Type;
  * Function/Method parameter description.
  *
  * @property mixed $defaultValue
- * @internal
  */
 class Parameter
 {

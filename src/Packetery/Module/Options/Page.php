@@ -9,17 +9,24 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use DateTime;
+use Packetery\Core\Api;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Log;
+use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
-use Packetery\Latte\Engine;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
+use Packetery\Nette\Forms\Controls\BaseControl;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 use Packetery\Nette\Forms\Form;
-use Packetery\Core\CoreHelper;
+use Packetery\Nette\Http;
 
 /**
  * Class Page
@@ -50,7 +57,7 @@ class Page {
 	 *
 	 * @var Engine PacketeryLatte engine.
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Options Provider
@@ -69,7 +76,7 @@ class Page {
 	/**
 	 * Packeta client.
 	 *
-	 * @var \Packetery\Core\Api\Soap\Client
+	 * @var Api\Soap\Client
 	 */
 	private $packetaClient;
 
@@ -88,39 +95,40 @@ class Page {
 	private $messageManager;
 
 	/**
-	 * HTTP request.
-	 *
-	 * @var \Packetery\Nette\Http\Request
+	 * @var Http\Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * Plugin constructor.
-	 *
-	 * @param Engine                          $latte_engine       PacketeryLatte_engine.
-	 * @param OptionsProvider                 $optionsProvider    Options provider.
-	 * @param FormFactory                     $formFactory        Form factory.
-	 * @param \Packetery\Core\Api\Soap\Client $packetaClient      Packeta Client.
-	 * @param Log\ILogger                     $logger             Logger.
-	 * @param MessageManager                  $messageManager     Message manager.
-	 * @param \Packetery\Nette\Http\Request   $httpRequest        HTTP request.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
 	public function __construct(
-		Engine $latte_engine,
+		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
 		FormFactory $formFactory,
-		\Packetery\Core\Api\Soap\Client $packetaClient,
+		Api\Soap\Client $packetaClient,
 		Log\ILogger $logger,
 		MessageManager $messageManager,
-		\Packetery\Nette\Http\Request $httpRequest
+		Http\Request $httpRequest,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder
 	) {
-		$this->latte_engine    = $latte_engine;
+		$this->latteEngine     = $latteEngine;
 		$this->optionsProvider = $optionsProvider;
 		$this->formFactory     = $formFactory;
 		$this->packetaClient   = $packetaClient;
 		$this->logger          = $logger;
 		$this->messageManager  = $messageManager;
 		$this->httpRequest     = $httpRequest;
+		$this->moduleHelper    = $moduleHelper;
+		$this->urlBuilder      = $urlBuilder;
 	}
 
 	/**
@@ -134,7 +142,7 @@ class Page {
 			__( 'Packeta', 'packeta' ),
 			'manage_options',
 			self::SLUG,
-			'',
+			function () {},
 			$icon
 		);
 		add_submenu_page(
@@ -235,7 +243,7 @@ class Page {
 	/**
 	 * Gets order statuses for form.
 	 *
-	 * @return array
+	 * @return array<string, array<string, int|string>>
 	 */
 	public static function getOrderStatusesChoiceData(): array {
 		$orderStatuses            = wc_get_order_statuses();
@@ -605,7 +613,7 @@ class Page {
 	public function admin_init(): void {
 		add_filter( 'pre_update_option_packetery', [ $this, 'validatePacketeryOptions' ] );
 		register_setting( self::FORM_FIELDS_CONTAINER, self::FORM_FIELDS_CONTAINER, [ $this, 'sanitizePacketeryOptions' ] );
-		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), '', self::SLUG );
+		add_settings_section( 'packetery_main', __( 'Main Settings', 'packeta' ), function () {}, self::SLUG );
 	}
 
 	/**
@@ -635,7 +643,7 @@ class Page {
 		}
 
 		$apiPassword = $packeteryContainer['api_password'];
-		if ( $apiPassword->hasErrors() === false ) {
+		if ( $apiPassword instanceof BaseControl && $apiPassword->hasErrors() === false ) {
 			$this->packetaClient->setApiPassword( $apiPassword->getValue() );
 		}
 
@@ -670,19 +678,28 @@ class Page {
 			}
 		}
 
-		$api_password = $packeteryContainer['api_password'];
-		if ( $api_password->hasErrors() === false ) {
-			$api_pass           = $api_password->getValue();
-			$options['api_key'] = substr( $api_pass, 0, 16 );
-			$this->packetaClient->setApiPassword( $api_pass );
+		$apiPassword = $packeteryContainer['api_password'];
+
+		if ( $apiPassword instanceof BaseControl && $apiPassword->hasErrors() === false ) {
+			$apiPass            = $apiPassword->getValue();
+			$options['api_key'] = substr( $apiPass, 0, 16 );
+			$this->packetaClient->setApiPassword( $apiPass );
 		} else {
 			$options['api_key'] = '';
 		}
 
-		$defaultWeight                  = $packeteryContainer['default_weight']->getValue();
-		$options['default_weight']      = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
-		$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
-		$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
+		if ( $packeteryContainer['default_weight'] instanceof BaseControl ) {
+			$defaultWeight             = $packeteryContainer['default_weight']->getValue();
+			$options['default_weight'] = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
+		}
+
+		if ( $packeteryContainer['force_packet_cancel'] instanceof BaseControl ) {
+			$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
+		}
+
+		if ( $packeteryContainer['free_shipping_shown'] instanceof BaseControl ) {
+			$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
+		}
 
 		$previousOptions = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
 		if ( ! isset( $options['default_weight_enabled'] ) ) {
@@ -774,12 +791,16 @@ class Page {
 		}
 
 		$packetStatusSyncForm = $this->createPacketStatusSyncForm();
-		if ( $packetStatusSyncForm['save']->isSubmittedBy() ) {
+		if ( $packetStatusSyncForm['save'] instanceof SubmitButton &&
+			$packetStatusSyncForm['save']->isSubmittedBy()
+		) {
 			$packetStatusSyncForm->fireEvents();
 		}
 
 		$autoSubmissionForm = $this->createAutoSubmissionForm();
-		if ( $autoSubmissionForm['save']->isSubmittedBy() ) {
+		if ( $autoSubmissionForm['save'] instanceof SubmitButton &&
+			$autoSubmissionForm['save']->isSubmittedBy()
+		) {
 			$autoSubmissionForm->fireEvents();
 		}
 
@@ -810,7 +831,7 @@ class Page {
 			$latteParams['error'] = __( 'This plugin requires an active SOAP library for proper operation. Contact your web hosting administrator.', 'packeta' );
 		}
 
-		$latteParams['apiPasswordLink'] = trim( $this->latte_engine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
+		$latteParams['apiPasswordLink'] = trim( $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/help-block-link.latte', [ 'href' => 'https://client.packeta.com/support' ] ) );
 
 		$latteParams['exportLink'] = add_query_arg(
 			[
@@ -839,18 +860,21 @@ class Page {
 		$lastExport       = null;
 		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );
 		if ( false !== $lastExportOption ) {
-			$date = \DateTime::createFromFormat( DATE_ATOM, $lastExportOption );
+			$date = DateTime::createFromFormat( DATE_ATOM, $lastExportOption );
 			if ( false !== $date ) {
 				$date->setTimezone( wp_timezone() );
 				$lastExport = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 			}
 		}
-		if ( $lastExport ) {
+		if ( null !== $lastExport ) {
 			$latteParams['lastExport'] = $lastExport;
 		}
 
 		$latteParams['forcePacketCancelDescription'] = __( 'Cancel the packet for an order even if the cancellation in the Packeta system will not be successful.', 'packeta' );
 		$latteParams['messages']                     = $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+		$latteParams['isCzechLocale']                = $this->moduleHelper->isCzechLocale();
+		$latteParams['logoZasilkovna']               = $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' );
+		$latteParams['logoPacketa']                  = $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' );
 		$latteParams['translations']                 = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
 			'title'                                  => __( 'Options', 'packeta' ),
@@ -900,7 +924,7 @@ class Page {
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
 		];
 
-		$this->latte_engine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
+		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
 	}
 
 	/**

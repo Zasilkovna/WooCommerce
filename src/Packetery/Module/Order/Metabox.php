@@ -9,9 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity;
 use Packetery\Core\Validator;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Log;
@@ -21,7 +22,6 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms;
 use Packetery\Nette\Http\Request;
 use WC_Data_Exception;
@@ -42,14 +42,14 @@ class Metabox {
 	 *
 	 * @var Engine
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
 	 * Message manager.
 	 *
 	 * @var MessageManager
 	 */
-	private $message_manager;
+	private $messageManager;
 
 	/**
 	 * CoreHelper.
@@ -145,8 +145,8 @@ class Metabox {
 	/**
 	 * Metabox constructor.
 	 *
-	 * @param Engine                $latte_engine          PacketeryLatte engine.
-	 * @param MessageManager        $message_manager       Message manager.
+	 * @param Engine                $latteEngine           PacketeryLatte engine.
+	 * @param MessageManager        $messageManager        Message manager.
 	 * @param CoreHelper            $coreHelper            CoreHelper.
 	 * @param Request               $request               Http request.
 	 * @param OptionsProvider       $optionsProvider       Options provider.
@@ -161,8 +161,8 @@ class Metabox {
 	 * @param CarrierModal          $carrierModal          Carrier change modal.
 	 */
 	public function __construct(
-		Engine $latte_engine,
-		MessageManager $message_manager,
+		Engine $latteEngine,
+		MessageManager $messageManager,
 		CoreHelper $coreHelper,
 		Request $request,
 		OptionsProvider $optionsProvider,
@@ -176,8 +176,8 @@ class Metabox {
 		Form $orderForm,
 		CarrierModal $carrierModal
 	) {
-		$this->latte_engine         = $latte_engine;
-		$this->message_manager      = $message_manager;
+		$this->latteEngine          = $latteEngine;
+		$this->messageManager       = $messageManager;
 		$this->coreHelper           = $coreHelper;
 		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
@@ -192,16 +192,10 @@ class Metabox {
 		$this->carrierModal         = $carrierModal;
 	}
 
-	/**
-	 *  Registers related hooks.
-	 */
 	public function register(): void {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 
-	/**
-	 *  Add metaboxes
-	 */
 	public function add_meta_boxes(): void {
 		if ( ! $this->detailCommonLogic->isPacketeryOrder() ) {
 			return;
@@ -210,7 +204,7 @@ class Metabox {
 		$this->initializeForm();
 		$parts = $this->prepareMetaboxParts();
 
-		if ( ! empty( $parts ) ) {
+		if ( count( $parts ) > 0 ) {
 			add_meta_box(
 				'packetery_metabox',
 				__( 'Packeta', 'packeta' ),
@@ -225,9 +219,6 @@ class Metabox {
 		}
 	}
 
-	/**
-	 * Renders metabox content.
-	 */
 	public function render_metabox(): void {
 		$parts = $this->prepareMetaboxParts();
 
@@ -249,7 +240,7 @@ class Metabox {
 	}
 
 	/**
-	 * Prepares metabox parts.
+	 * @return array<string, string>
 	 */
 	private function prepareMetaboxParts(): array {
 		static $partsCache;
@@ -269,7 +260,7 @@ class Metabox {
 			$order = $this->orderRepository->getById( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			$partsCache = [
-				self::PART_ERROR => $this->latte_engine->renderToString(
+				self::PART_ERROR => $this->latteEngine->renderToString(
 					PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
 					[
 						'errorMessage' => $exception->getMessage(),
@@ -303,7 +294,7 @@ class Metabox {
 
 		$packetClaimCancelUrl   = null;
 		$packetClaimTrackingUrl = null;
-		if ( $order->getPacketClaimId() ) {
+		if ( null !== $order->getPacketClaimId() ) {
 			$packetClaimCancelUrl   = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -315,7 +306,7 @@ class Metabox {
 		}
 
 		$packetId = $order->getPacketId();
-		if ( $packetId ) {
+		if ( null !== $packetId ) {
 			$packetCancelLink = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -325,7 +316,7 @@ class Metabox {
 			);
 
 			$packetStatusTranslatedName = PacketStatusResolver::getTranslatedName( $order->getPacketStatus() );
-
+			/** @var array<string, string> $statusClasses */
 			$statusClasses = [
 				'received data'         => 'received-data',
 				'unknown'               => 'unknown',
@@ -342,7 +333,7 @@ class Metabox {
 				$statusClass = $statusClasses[ $statusType ];
 			}
 
-			$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
+			$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                      => $order,
@@ -356,6 +347,7 @@ class Metabox {
 					'showLogsLink'               => $showLogsLink,
 					'packetClaimUrl'             => $packetClaimUrl,
 					'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+					'storedUntil'                => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
 					'translations'               => [
 						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
 						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
@@ -374,6 +366,7 @@ class Metabox {
 						'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
 						'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
 						'submissionPassword'        => __( 'submission password', 'packeta' ),
+						'setStoredUntil'            => __( 'Set the pickup date extension', 'packeta' ),
 					],
 				]
 			);
@@ -396,9 +389,9 @@ class Metabox {
 			$this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT )
 		);
 
-		$prev_invalid_values = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
-		if ( $prev_invalid_values ) {
-			$this->form->setValues( $prev_invalid_values );
+		$prevInvalidValues = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
+		if ( null !== $prevInvalidValues && false !== $prevInvalidValues ) {
+			$this->form->setValues( $prevInvalidValues );
 			$this->form->validate();
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
@@ -416,7 +409,7 @@ class Metabox {
 		) {
 			if ( $order->isPickupPointDelivery() ) {
 				$showWidgetButton = false;
-				if ( empty( $shippingCountry ) ) {
+				if ( null === $shippingCountry ) {
 					$widgetButtonError = __(
 						'The pickup point cannot be changed because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
@@ -433,7 +426,7 @@ class Metabox {
 				}
 			} elseif ( in_array( $order->getCarrier()->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$showHdWidget = false;
-				if ( empty( $shippingCountry ) ) {
+				if ( null === $shippingCountry ) {
 					$widgetButtonError = __(
 						'The address cannot be validated because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
@@ -451,7 +444,7 @@ class Metabox {
 			}
 		}
 
-		$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
+		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
 				'form'                       => $this->form,
@@ -520,22 +513,22 @@ class Metabox {
 		}
 
 		if ( false === $this->form->isValid() ) {
-			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( true ) );
-			$this->message_manager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
+			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( 'array' ) );
+			$this->messageManager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
-
+		/** @var array<string, string|float|int|true|null> $formValues */
 		$formValues = $this->form->getValues( 'array' );
 
 		if ( ! wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) ) {
-			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
 
 		if ( ! current_user_can( 'edit_post', $orderId ) ) {
-			$this->message_manager->flash_message( __( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( __( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
@@ -557,7 +550,7 @@ class Metabox {
 				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
 				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
-					if ( ! empty( $formValues[ Attribute::CARRIER_ID ] ) ) {
+					if ( isset( $formValues[ Attribute::CARRIER_ID ] ) && '' !== $formValues[ Attribute::CARRIER_ID ] ) {
 						$pickupPointValue = $formValues[ Attribute::CARRIER_ID ];
 					} else {
 						$pickupPointValue = $order->getCarrier()->getId();
@@ -595,7 +588,7 @@ class Metabox {
 	/**
 	 * Creates pickup point picker settings.
 	 *
-	 * @return array|null
+	 * @return array<string, array<string, null|array<string, string|bool>|string>>|null
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
@@ -615,7 +608,7 @@ class Metabox {
 	/**
 	 * Creates address picker settings.
 	 *
-	 * @return array|null
+	 * @return mixed[]|null
 	 */
 	public function getAddressWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
@@ -680,5 +673,4 @@ class Metabox {
 		$this->form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
 		$this->form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
 	}
-
 }

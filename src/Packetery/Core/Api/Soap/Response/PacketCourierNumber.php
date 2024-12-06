@@ -40,5 +40,4 @@ class PacketCourierNumber extends BaseResponse {
 	public function getNumber(): string {
 		return $this->number;
 	}
-
 }

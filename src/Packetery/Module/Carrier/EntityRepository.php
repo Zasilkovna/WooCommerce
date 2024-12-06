@@ -146,7 +146,6 @@ class EntityRepository {
 		return $entities;
 	}
 
-
 	/**
 	 * Gets all active carriers.
 	 *
@@ -243,7 +242,7 @@ class EntityRepository {
 		if ( ! is_numeric( $carrierId ) ) {
 			$compoundCarriers = $this->pickupPointsConfig->getCompoundCarriers();
 
-			return ( ! empty( $compoundCarriers[ $customerCountry ] ) );
+			return ( isset( $compoundCarriers[ $customerCountry ] ) );
 		}
 
 		$carrier = $this->getById( (int) $carrierId );
@@ -281,8 +280,7 @@ class EntityRepository {
 	public function getCarriersForShippingRate( string $rateId ): array {
 		$shippingZoneRepository = new ShippingZoneRepository();
 		$countries              = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
-
-		if ( empty( $countries ) ) {
+		if ( count( $countries ) === 0 ) {
 			return [];
 		}
 
@@ -297,5 +295,4 @@ class EntityRepository {
 
 		return array_merge( ...$availableCarriersToMerge );
 	}
-
 }

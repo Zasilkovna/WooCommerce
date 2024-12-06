@@ -64,5 +64,4 @@ class VendorProvider extends BaseProvider {
 	public function getGroup(): string {
 		return $this->group;
 	}
-
 }

@@ -10,7 +10,6 @@ namespace Packetery\Nette\PhpGenerator;
 use Packetery\Nette;
 /**
  * PHP code generator utils.
- * @internal
  */
 final class Dumper
 {

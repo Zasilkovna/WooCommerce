@@ -50,5 +50,4 @@ class OptionPrefixer {
 	public static function removePrefix( string $optionId ): string {
 		return str_replace( self::CARRIER_OPTION_PREFIX, '', $optionId );
 	}
-
 }

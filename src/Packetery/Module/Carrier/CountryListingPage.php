@@ -14,9 +14,11 @@ use Packetery\Latte\Engine;
 use Packetery\Module\CronService;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\Shipping\ShippingMethodGenerator;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
 
@@ -95,6 +97,23 @@ class CountryListingPage {
 	private $carDeliveryConfig;
 
 	/**
+	 * Carrier options factory.
+	 *
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
+	/**
 	 * Form factory.
 	 *
 	 * @var FormFactory
@@ -108,29 +127,6 @@ class CountryListingPage {
 	 */
 	private $carrierActivityBridge;
 
-	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
-	/**
-	 * CountryListingPage constructor.
-	 *
-	 * @param Engine                    $latteEngine                   PacketeryLatte engine.
-	 * @param Repository                $carrierRepository             Carrier repository.
-	 * @param Downloader                $downloader                    Carrier downloader.
-	 * @param Request                   $httpRequest                   Http request.
-	 * @param OptionsProvider           $optionsProvider               Options provider.
-	 * @param Log\Page                  $logPage                       Log page.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig            Internal pickup points config.
-	 * @param EntityRepository          $carrierEntityRepository       Carrier repository.
-	 * @param CarDeliveryConfig         $carDeliveryConfig             Car delivery config.
-	 * @param FormFactory               $formFactory                   Form Factory.
-	 * @param ActivityBridge            $carrierActivityBridge         Carrier activity checker.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory         Carrier options factory.
-	 */
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
@@ -141,9 +137,11 @@ class CountryListingPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder,
 		FormFactory $formFactory,
-		ActivityBridge $carrierActivityBridge,
-		CarrierOptionsFactory $carrierOptionsFactory
+		ActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;
@@ -154,9 +152,11 @@ class CountryListingPage {
 		$this->pickupPointsConfig      = $pickupPointsConfig;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->moduleHelper            = $moduleHelper;
+		$this->urlBuilder              = $urlBuilder;
 		$this->formFactory             = $formFactory;
 		$this->carrierActivityBridge   = $carrierActivityBridge;
-		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 	}
 
 	/**
@@ -164,13 +164,13 @@ class CountryListingPage {
 	 */
 	public function render(): void {
 		$carriersUpdateParams = [];
-		if ( $this->httpRequest->getQuery( 'update_carriers' ) ) {
+		if ( null !== $this->httpRequest->getQuery( 'update_carriers' ) ) {
 			set_transient( 'packetery_run_update_carriers', true );
 			if ( wp_safe_redirect( add_query_arg( [ 'page' => OptionsPage::SLUG ], get_admin_url( null, 'admin.php' ) ) ) ) {
 				exit;
 			}
 		}
-		if ( get_transient( 'packetery_run_update_carriers' ) ) {
+		if ( false !== get_transient( 'packetery_run_update_carriers' ) ) {
 			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
 			$carriersUpdateParams                           = [
 				'result'      => $carrierUpdaterResult,
@@ -210,7 +210,7 @@ class CountryListingPage {
 
 		$carrierChanges         = get_transient( self::TRANSIENT_CARRIER_CHANGES );
 		$settingsChangedMessage = null;
-		if ( $carrierChanges ) {
+		if ( false !== $carrierChanges ) {
 			$settingsChangedMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'The carrier settings have changed since the last carrier update. %1$sShow logs%2$s', 'packeta' ),
 				'<a href="' . $this->logPage->createLogListUrl( null, Record::ACTION_CARRIER_LIST_UPDATE ) . '">',
@@ -252,13 +252,6 @@ class CountryListingPage {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte';
 		} else {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte';
-			array_merge(
-				$translations,
-				[
-					'countryCode'       => __( 'Country code', 'packeta' ),
-					'noActiveCountries' => __( 'No active countries.', 'packeta' ),
-				]
-			);
 		}
 
 		$this->latteEngine->render(
@@ -269,6 +262,9 @@ class CountryListingPage {
 				$isApiPasswordSet,
 				$nextScheduledRun,
 				$settingsChangedMessage,
+				$this->moduleHelper->isCzechLocale(),
+				$this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
+				$this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 				$translations,
 				$hasCarriers,
 				$form
@@ -309,7 +305,7 @@ class CountryListingPage {
 				),
 				'activeCarriers'            => $activeCarriers,
 				'allCarriers'               => $allCarriers,
-				'flag'                      => Plugin::buildAssetUrl( sprintf( 'public/images/flags/%s.png', $country ) ),
+				'flag'                      => $this->urlBuilder->buildAssetUrl( sprintf( 'public/images/flags/%s.png', $country ) ),
 			];
 		}
 

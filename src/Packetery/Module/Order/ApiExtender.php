@@ -50,12 +50,12 @@ class ApiExtender {
 	 * Extends WooCommerce API response with plugin data.
 	 *
 	 * @param WP_REST_Response $response Response.
-	 * @param WC_Data          $object   Object.
+	 * @param WC_Data          $wcData   Object.
 	 *
 	 * @return object
 	 */
-	public function extendResponse( WP_REST_Response $response, WC_Data $object ): object {
-		if ( ! $object instanceof WC_Order ) {
+	public function extendResponse( WP_REST_Response $response, WC_Data $wcData ): object {
+		if ( ! $wcData instanceof WC_Order ) {
 			return $response;
 		}
 
@@ -64,12 +64,7 @@ class ApiExtender {
 			return $response;
 		}
 
-		try {
-			$order = $this->orderRepository->getByWcOrder( $object );
-		} catch ( InvalidCarrierException $invalidCarrierException ) {
-			return $response;
-		}
-
+		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcData );
 		if ( null === $order ) {
 			return $response;
 		}
@@ -89,7 +84,7 @@ class ApiExtender {
 	 *
 	 * @param Order $order Packetery Order.
 	 *
-	 * @return array
+	 * @return array<string, string|null>
 	 */
 	private function getPacketaItemsToShippingLines( Order $order ): array {
 		$items = [

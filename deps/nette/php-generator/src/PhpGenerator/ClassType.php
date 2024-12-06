@@ -13,7 +13,6 @@ use Packetery\Nette;
  *
  * @property Method[] $methods
  * @property Property[] $properties
- * @internal
  */
 final class ClassType
 {

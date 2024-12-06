@@ -51,12 +51,14 @@ class PacketSynchronizerTest extends TestCase {
 
 		$response = $this->createMock( PacketStatus::class );
 		$response->method( 'hasFault' )->willReturn( false );
+		$response->method( 'getStoredUntil' )->willReturn( $storedUntil );
 		$response->method( 'getCodeText' )->willReturn( $packetStatus );
 
 		$this->client->method( 'packetStatus' )->willReturn( $response );
 
 		$this->packetSynchronizer->syncStatus( $order );
 
+		$this->assertSame( $storedUntil, $order->getStoredUntil() );
 		$this->assertSame( $packetStatus, $order->getPacketStatus() );
 	}
 
@@ -69,13 +71,14 @@ class PacketSynchronizerTest extends TestCase {
 		$response = $this->createMock( PacketStatus::class );
 		$response->method( 'hasFault' )->willReturn( true );
 		$response->method( 'getFaultString' )->willReturn( 'Error message' );
+		$response->expects( $this->never() )->method( 'getStoredUntil' );
 		$response->expects( $this->never() )->method( 'getCodeText' );
 
 		$this->client->method( 'packetStatus' )->willReturn( $response );
 
 		$this->packetSynchronizer->syncStatus( $order );
 
-		$this->assertTrue( true ); // No exceptions thrown
+		$this->assertTrue( true ); // No exceptions thrown.
 	}
 
 	public function testSynchronizationHasWrongPassword(): void {
@@ -87,6 +90,7 @@ class PacketSynchronizerTest extends TestCase {
 		$response = $this->createMock( PacketStatus::class );
 		$response->method( 'hasFault' )->willReturn( true );
 		$response->method( 'hasWrongPassword' )->willReturn( true );
+		$response->expects( $this->never() )->method( 'getStoredUntil' );
 		$response->expects( $this->never() )->method( 'getCodeText' );
 
 		$this->client->method( 'packetStatus' )->willReturn( $response );

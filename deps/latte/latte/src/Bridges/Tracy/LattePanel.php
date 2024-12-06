@@ -12,7 +12,6 @@ use Packetery\Latte\Runtime\Template;
 use Packetery\Tracy;
 /**
  * Bar panel for Tracy 2.x
- * @internal
  */
 class LattePanel implements Tracy\IBarPanel
 {

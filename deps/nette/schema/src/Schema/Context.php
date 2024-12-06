@@ -8,7 +8,6 @@ declare (strict_types=1);
 namespace Packetery\Nette\Schema;
 
 use Packetery\Nette;
-/** @internal */
 final class Context
 {
     use \Packetery\Nette\SmartObject;

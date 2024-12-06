@@ -69,9 +69,9 @@ class BulkActions {
 	/**
 	 * Adds custom actions to dropdown in admin order list.
 	 *
-	 * @param array $actions Array of action.
+	 * @param array<string, string> $actions Array of action.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function addActions( array $actions ): array {
 		$actions['submit_to_api']                                  = __( 'Submit orders to Packeta', 'packeta' );
@@ -87,7 +87,7 @@ class BulkActions {
 	 *
 	 * @param string $redirectTo Url.
 	 * @param string $action Action id.
-	 * @param array  $postIds Order ids.
+	 * @param int[]  $postIds Order ids.
 	 *
 	 * @return string
 	 */
@@ -148,7 +148,7 @@ class BulkActions {
 	 */
 	public function renderPacketsExportResult(): void {
 		$get = $this->httpRequest->getQuery();
-		if ( empty( $get['submit_to_api'] ) ) {
+		if ( ! isset( $get['submit_to_api'] ) ) {
 			return;
 		}
 

@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Entity;
 
-use Packetery\Core\CoreHelper;
 use DateTimeImmutable;
+use Packetery\Core\CoreHelper;
 
 /**
  * Class Order
@@ -244,6 +244,13 @@ class Order {
 	private $customsDeclaration;
 
 	/**
+	 * Stored until.
+	 *
+	 * @var DateTimeImmutable|null
+	 */
+	private $storedUntil;
+
+	/**
 	 * Order entity constructor.
 	 *
 	 * @param string  $number  Order id.
@@ -419,6 +426,12 @@ class Order {
 
 		// Typing to int is safe in case of internal pickup points.
 		return (int) $this->pickupPoint->getId();
+	}
+
+	public function hasPickupPointOrCarrierId(): bool {
+		$pickupPointOrCarrierId = $this->getPickupPointOrCarrierId();
+
+		return null !== $pickupPointOrCarrierId && 0 !== $pickupPointOrCarrierId;
 	}
 
 	/**
@@ -603,6 +616,15 @@ class Order {
 	}
 
 	/**
+	 * Sets stored until date.
+	 *
+	 * @param \DateTimeImmutable|null $storedUntil Stored until.
+	 */
+	public function setStoredUntil( ?DateTimeImmutable $storedUntil ): void {
+		$this->storedUntil = $storedUntil;
+	}
+
+	/**
 	 * Sets is exported flag.
 	 *
 	 * @param bool $isExported Packet id.
@@ -750,7 +772,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketBarcode(): ?string {
-		return $this->packetId ? 'Z' . $this->packetId : null;
+		return null !== $this->packetId ? 'Z' . $this->packetId : null;
 	}
 
 	/**
@@ -759,7 +781,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketClaimBarcode(): ?string {
-		return $this->packetClaimId ? 'Z' . $this->packetClaimId : null;
+		return null !== $this->packetClaimId ? 'Z' . $this->packetClaimId : null;
 	}
 
 	/**
@@ -768,7 +790,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketTrackingUrl(): ?string {
-		return $this->packetId ? sprintf( CoreHelper::TRACKING_URL, $this->packetId ) : null;
+		return null !== $this->packetId ? sprintf( CoreHelper::TRACKING_URL, $this->packetId ) : null;
 	}
 
 	/**
@@ -777,7 +799,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketClaimTrackingUrl(): ?string {
-		return $this->packetClaimId ? sprintf( CoreHelper::TRACKING_URL, $this->packetClaimId ) : null;
+		return null !== $this->packetClaimId ? sprintf( CoreHelper::TRACKING_URL, $this->packetClaimId ) : null;
 	}
 
 	/**
@@ -805,6 +827,26 @@ class Order {
 	 */
 	public function getPacketStatus(): ?string {
 		return $this->packetStatus;
+	}
+
+	/**
+	 * Get stored until date.
+	 *
+	 * @return \DateTimeImmutable|null
+	 */
+	public function getStoredUntil(): ?\DateTimeImmutable {
+		return $this->storedUntil;
+	}
+
+	/**
+	 * Tells it's possible to extend the package pickup date.
+	 *
+	 * @return bool
+	 */
+	public function isPossibleExtendPacketPickUpDate(): bool {
+		return PacketStatus::READY_FOR_PICKUP === $this->packetStatus &&
+			null !== $this->storedUntil &&
+			$this->isPacketaInternalPickupPoint();
 	}
 
 	/**
@@ -890,7 +932,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getLength(): ?float {
-		if ( empty( $this->size ) ) {
+		if ( null === $this->size ) {
 			return null;
 		}
 
@@ -903,7 +945,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getWidth(): ?float {
-		if ( empty( $this->size ) ) {
+		if ( null === $this->size ) {
 			return null;
 		}
 
@@ -916,7 +958,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getHeight(): ?float {
-		if ( empty( $this->size ) ) {
+		if ( null === $this->size ) {
 			return null;
 		}
 
@@ -942,12 +984,30 @@ class Order {
 	}
 
 	/**
+	 * Has order id.
+	 *
+	 * @return bool
+	 */
+	public function hasNumber(): bool {
+		return null !== $this->number && '' !== $this->number;
+	}
+
+	/**
 	 * Gets customer name.
 	 *
 	 * @return string|null
 	 */
 	public function getName(): ?string {
 		return $this->name;
+	}
+
+	/**
+	 * Has customer name.
+	 *
+	 * @return bool
+	 */
+	public function hasName(): bool {
+		return null !== $this->name && '' !== $this->name;
 	}
 
 	/**
@@ -969,6 +1029,15 @@ class Order {
 	}
 
 	/**
+	 * Has order value.
+	 *
+	 * @return bool
+	 */
+	public function hasValue(): bool {
+		return null !== $this->value;
+	}
+
+	/**
 	 * Gets order COD value.
 	 *
 	 * @return float|null
@@ -984,6 +1053,15 @@ class Order {
 	 */
 	public function getEshop(): ?string {
 		return $this->eshop;
+	}
+
+	/**
+	 * Has sender label.
+	 *
+	 * @return bool
+	 */
+	public function hasEshop(): bool {
+		return null !== $this->eshop && '' !== $this->eshop;
 	}
 
 	/**
@@ -1105,7 +1183,10 @@ class Order {
 	 */
 	public function updateApiErrorMessage( ?string $errorMessage ): void {
 		$this->setLastApiErrorMessage( $errorMessage );
-		$this->setLastApiErrorDateTime( $errorMessage ? CoreHelper::now() : null );
+		$this->setLastApiErrorDateTime( null !== $errorMessage ? CoreHelper::now() : null );
 	}
 
+	public function getCustomNumberOrNumber(): ?string {
+		return $this->getCustomNumber() ?? $this->getNumber();
+	}
 }

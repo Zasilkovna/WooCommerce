@@ -1,0 +1,17 @@
+parameters:
+	bootstrapFiles:
+		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
+		- ../constants.php
+	level: 6
+	ignoreErrors:
+		- '#Method .*::.*\(\) has parameter \$\w+ with no value type specified in iterable type array#'
+		- '#Method .*::.*\(\) return type has no value type specified in iterable type array#'
+	paths:
+		- ../src/Packetery/Module
+	treatPhpDocTypesAsCertain: false
+	strictRules:
+		allRules: true
+	scanDirectories:
+		- ../src/Packetery/Core
+		- ../deps

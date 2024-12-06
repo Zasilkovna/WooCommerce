@@ -45,21 +45,22 @@ class OptionsProvider {
 	/**
 	 *  Options data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	private $data;
 
 	/**
 	 * Sync data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
+	 * }
 	 */
 	private $syncData;
 
 	/**
 	 * Auto submission data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	private $autoSubmissionData;
 
@@ -75,17 +76,17 @@ class OptionsProvider {
 	 */
 	public function __construct() {
 		$data = get_option( self::OPTION_NAME_PACKETERY );
-		if ( ! $data ) {
+		if ( false === $data || null === $data ) {
 			$data = array();
 		}
 
 		$syncData = get_option( self::OPTION_NAME_PACKETERY_SYNC );
-		if ( ! $syncData ) {
+		if ( false === $syncData || null === $syncData ) {
 			$syncData = [];
 		}
 
 		$autoSubmissionData = get_option( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
-		if ( ! $autoSubmissionData ) {
+		if ( false === $autoSubmissionData || null === $autoSubmissionData ) {
 			$autoSubmissionData = [];
 		}
 
@@ -139,7 +140,7 @@ class OptionsProvider {
 	 * @return bool Has any data.
 	 */
 	public function has_any( string $optionName ): bool {
-		return ! empty( $this->getOptionsByName( $optionName ) );
+		return count( $this->getOptionsByName( $optionName ) ) > 0;
 	}
 
 	/**
@@ -214,7 +215,7 @@ class OptionsProvider {
 	 */
 	public function getCodPaymentMethods(): array {
 		$value = $this->get( 'cod_payment_methods' );
-		if ( ! $value ) {
+		if ( null === $value ) {
 			return [];
 		}
 
@@ -228,7 +229,7 @@ class OptionsProvider {
 	 */
 	public function getCheckoutWidgetButtonLocation(): ?string {
 		$value = $this->get( 'checkout_widget_button_location' );
-		if ( ! $value ) {
+		if ( null === $value ) {
 			return null;
 		}
 
@@ -242,7 +243,7 @@ class OptionsProvider {
 	 */
 	public function getCheckoutDetection(): string {
 		$value = $this->get( 'checkout_detection' );
-		if ( ! $value ) {
+		if ( null === $value ) {
 			return self::AUTOMATIC_CHECKOUT_DETECTION;
 		}
 
@@ -276,6 +277,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_weight' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_weight' );
 	}
 
@@ -297,6 +299,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_length' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_length' );
 	}
 
@@ -309,6 +312,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_height' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_height' );
 	}
 
@@ -321,6 +325,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_width' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_width' );
 	}
 
@@ -685,7 +690,7 @@ class OptionsProvider {
 	public function getEmailHook(): string {
 		$emailHook = $this->get( 'email_hook' );
 
-		return ( null !== $emailHook ? $emailHook : self::EMAIL_HOOK_DEFAULT );
+		return $emailHook ?? self::EMAIL_HOOK_DEFAULT;
 	}
 
 	/**
@@ -699,5 +704,4 @@ class OptionsProvider {
 	public function sanitizePaymentGatewayId( string $id ): string {
 		return preg_replace( '/\W/', '_', $id );
 	}
-
 }

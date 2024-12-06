@@ -4,11 +4,10 @@ declare( strict_types=1 );
 
 namespace Tests\Core\Entity;
 
-use Tests\Core\DummyFactory;
 use PHPUnit\Framework\TestCase;
+use Tests\Core\DummyFactory;
 
 class SizeTest extends TestCase {
-
 	public function testSettersAndGetters(): void {
 		$size = DummyFactory::createSize();
 
@@ -24,5 +23,4 @@ class SizeTest extends TestCase {
 		$size->setHeight( $height );
 		self::assertSame( $height, $size->getHeight() );
 	}
-
 }

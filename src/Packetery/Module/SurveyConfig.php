@@ -47,5 +47,4 @@ class SurveyConfig {
 		$this->url    = $url;
 		$this->image  = $image;
 	}
-
 }

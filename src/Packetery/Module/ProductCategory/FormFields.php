@@ -7,15 +7,14 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\ProductCategory;
 
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\FormFactory;
 use Packetery\Module\ProductCategory;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -118,7 +117,7 @@ class FormFields {
 
 		$form->setDefaults(
 			[
-				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory ? $productCategory->getDisallowedShippingRateChoices() : [],
+				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => null !== $productCategory ? $productCategory->getDisallowedShippingRateChoices() : [],
 			]
 		);
 
@@ -134,7 +133,8 @@ class FormFields {
 	 */
 	public function render( $term ): void {
 		$isProductCategoryObject = ( is_object( $term ) && get_class( $term ) === \WP_Term::class );
-		$productCategory         = $isProductCategoryObject ? $this->productCategoryEntityFactory->fromTermId( $term->term_id ) : null;
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$productCategory = $isProductCategoryObject ? $this->productCategoryEntityFactory->fromTermId( $term->term_id ) : null;
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[
