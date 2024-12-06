@@ -101,4 +101,52 @@ class WpAdapter {
 	public function isAdmin(): bool {
 		return is_admin();
 	}
+
+	/**
+	 * Phpdoc is not reliable.
+	 *
+	 * @return string|false
+	 */
+	public function createNonce( string $action ) {
+		return wp_create_nonce( $action );
+	}
+
+	public function sendJson( array $settings ): void {
+		wp_send_json( $settings );
+	}
+
+	public function isUserLoggedIn(): bool {
+		return is_user_logged_in();
+	}
+
+	public function getSessionToken(): string {
+		return wp_get_session_token();
+	}
+
+	/**
+	 * @param mixed $data
+	 *
+	 * @return false|string
+	 */
+	public function jsonEncode( $data ) {
+		return wp_json_encode( $data );
+	}
+
+	public function isMultisite(): bool {
+		return is_multisite();
+	}
+
+	/**
+	 * @return array<string, array<string, string|bool>>
+	 */
+	public function getMuPlugins(): array {
+		return get_mu_plugins();
+	}
+
+	/**
+	 * @return false|mixed
+	 */
+	public function getSiteOption( string $option ) {
+		return get_site_option( $option );
+	}
 }

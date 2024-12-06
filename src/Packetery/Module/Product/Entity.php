@@ -49,7 +49,7 @@ class Entity {
 	 *
 	 * @return bool
 	 */
-	public function isAgeVerification18PlusRequired(): bool {
+	public function isAgeVerificationRequired(): bool {
 		return (string) $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
 	}
 
