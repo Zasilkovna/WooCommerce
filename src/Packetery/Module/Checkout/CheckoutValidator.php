@@ -93,7 +93,10 @@ class CheckoutValidator {
 		$chosenShippingMethod = $this->checkoutService->resolveChosenMethod();
 		$this->wcAdapter->sessionSet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
-		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
+		if (
+			null === $chosenShippingMethod ||
+			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) === false
+		) {
 			return;
 		}
 
@@ -105,8 +108,7 @@ class CheckoutValidator {
 			return;
 		}
 
-		// Cannot be null because of previous condition.
-		$carrierId      = $this->checkoutService->getCarrierIdFromShippingMethod( $chosenShippingMethod );
+		$carrierId      = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod );
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		$paymentMethod  = $this->sessionService->getChosenPaymentMethod();
 
@@ -118,15 +120,19 @@ class CheckoutValidator {
 
 		if ( $this->checkoutService->isPickupPointOrder() ) {
 			$this->validatePickupPoint( $checkoutData, $carrierId, $chosenShippingMethod );
+
+			return;
 		}
 
 		if ( $this->checkoutService->isHomeDeliveryOrder() ) {
 			$this->validateHomeDelivery( $checkoutData, $carrierId );
+
+			return;
 		}
 
 		if (
-			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] )
-			&& $this->checkoutService->isCarDeliveryOrder()
+			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) &&
+			$this->checkoutService->isCarDeliveryOrder()
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 		}
@@ -134,11 +140,7 @@ class CheckoutValidator {
 
 	private function validatePickupPoint( array $checkoutData, ?string $carrierId, string $chosenShippingMethod ): void {
 		$error = false;
-		/**
-		 * Returns array always.
-		 *
-		 * @var array $requiredAttrs
-		 */
+
 		$requiredAttrs = array_filter(
 			array_combine(
 				array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
@@ -155,11 +157,20 @@ class CheckoutValidator {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Pickup point is not chosen.', 'packeta' ), 'error' );
 		}
 
+		$customerCountry = $this->checkoutService->getCustomerCountry();
+		if (
+			! $error &&
+			null === $customerCountry
+		) {
+			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Customer country could not be obtained.', 'packeta' ), 'error' );
+			$error = true;
+		}
+
 		if (
 			! $error &&
 			! $this->carrierEntityRepository->isValidForCountry(
 				$carrierId,
-				$this->checkoutService->getCustomerCountryOrEmpty()
+				$customerCountry
 			)
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
@@ -202,12 +213,12 @@ class CheckoutValidator {
 			$pickupPointId,
 			$carrierId,
 			$pointCarrierId,
-			$this->checkoutService->getCustomerCountryOrEmpty(),
-			$this->checkoutService->getCarrierIdFromShippingMethod( $chosenShippingMethod ),
+			$this->checkoutService->getCustomerCountry(),
+			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod ),
 			false,
 			false,
 			$this->cartService->getCartWeightKg(),
-			$this->cartService->isAgeVerification18PlusRequired(),
+			$this->cartService->isAgeVerificationRequired(),
 			null
 		);
 	}

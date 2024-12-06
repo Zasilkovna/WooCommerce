@@ -54,12 +54,9 @@ class CartService {
 	}
 
 	/**
-	 * Tells if age verification is required by products in cart.
-	 *
-	 * @return bool
-	 * @throws ProductNotFoundException Product not found.
+	 * @throws ProductNotFoundException
 	 */
-	public function isAgeVerification18PlusRequired(): bool {
+	public function isAgeVerificationRequired(): bool {
 		if ( $this->wpAdapter->didAction( 'wp_loaded' ) === 0 ) {
 			return false;
 		}
@@ -68,7 +65,7 @@ class CartService {
 
 		foreach ( $products as $product ) {
 			$productEntity = $this->productEntityFactory->fromPostId( $product['product_id'] );
-			if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
+			if ( $productEntity->isPhysical() && $productEntity->isAgeVerificationRequired() ) {
 				return true;
 			}
 		}
@@ -76,11 +73,6 @@ class CartService {
 		return false;
 	}
 
-	/**
-	 * Gets cart contents weight in kg.
-	 *
-	 * @return float
-	 */
 	public function getCartWeightKg(): float {
 		if ( $this->wpAdapter->didAction( 'wp_loaded' ) === 0 ) {
 			return 0.0;
@@ -96,11 +88,6 @@ class CartService {
 		return $weightKg;
 	}
 
-	/**
-	 * Gets total cart product value.
-	 *
-	 * @return float
-	 */
 	public function getTotalCartProductValue(): float {
 		$totalProductPrice = 0.0;
 
@@ -112,15 +99,12 @@ class CartService {
 	}
 
 	/**
-	 * Gets disallowed shipping rate ids.
-	 *
-	 * @return array
-	 * @throws ProductNotFoundException Product not found.
+	 * @throws ProductNotFoundException
 	 */
 	public function getDisallowedShippingRateIds(): array {
 		$cartProducts = $this->wcAdapter->cartGetCartContent();
 
-		$arraysToMerge = [];
+		$disallowedShippingRateIds = [];
 		foreach ( $cartProducts as $cartProduct ) {
 			$productEntity = $this->productEntityFactory->fromPostId( $cartProduct['product_id'] );
 
@@ -128,17 +112,17 @@ class CartService {
 				continue;
 			}
 
-			$arraysToMerge[] = $productEntity->getDisallowedShippingRateIds();
+			$disallowedShippingRateIds[] = $productEntity->getDisallowedShippingRateIds();
 		}
 
-		return array_unique( array_merge( [], ...$arraysToMerge ) );
+		return array_unique( array_merge( [], ...$disallowedShippingRateIds ) );
 	}
 
 	/**
 	 * Returns tax_class with the highest tax_rate of cart products, false if no product is taxable.
 	 *
-	 * @return false|string
-	 * @throws ProductNotFoundException Product not found.
+	 * @return string|null
+	 * @throws ProductNotFoundException
 	 */
 	public function getTaxClassWithMaxRate() {
 		$products   = $this->wcAdapter->cartGetCartContent();
@@ -155,11 +139,11 @@ class CartService {
 		}
 
 		if ( count( $taxClasses ) === 0 ) {
-			return false;
+			return null;
 		}
 
 		$taxClasses = array_unique( $taxClasses );
-		if ( 1 === count( $taxClasses ) ) {
+		if ( count( $taxClasses ) === 1 ) {
 			return $taxClasses[0];
 		}
 
@@ -183,23 +167,12 @@ class CartService {
 		return $resultTaxClass;
 	}
 
-	/**
-	 * Tells cart contents total price including tax and discounts.
-	 *
-	 * @return float
-	 */
 	public function getCartContentsTotalIncludingTax(): float {
 		return $this->wcAdapter->cartGetCartContentsTotal() + $this->wcAdapter->cartGetCartContentsTax();
 	}
 
 	/**
-	 * Check if given carrier is disabled in products categories in cart
-	 *
-	 * @param string $shippingRate Shipping rate.
-	 * @param array  $cartProducts Array of cart products.
-	 *
-	 * @return bool
-	 * @throws ProductNotFoundException Product not found.
+	 * @throws ProductNotFoundException
 	 */
 	public function isShippingRateRestrictedByProductsCategory( string $shippingRate, array $cartProducts ): bool {
 		if ( count( $cartProducts ) === 0 ) {

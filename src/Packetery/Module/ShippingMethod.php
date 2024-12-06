@@ -39,8 +39,6 @@ class ShippingMethod extends \WC_Shipping_Method {
 	private $container;
 
 	/**
-	 * Checkout object.
-	 *
 	 * @var ShippingRateFactory
 	 */
 	private $shippingRateFactory;

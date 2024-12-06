@@ -42,13 +42,13 @@ class CartServiceTest extends TestCase {
 		);
 	}
 
-	public function testIsAgeVerification18PlusRequiredWithoutWpLoaded(): void {
+	public function testIsAgeVerificationRequiredWithoutWpLoaded(): void {
 		$this->createCartServiceMock();
 		$this->wpAdapter->method( 'didAction' )->willReturn( 0 );
-		$this->assertFalse( $this->cartService->isAgeVerification18PlusRequired() );
+		$this->assertFalse( $this->cartService->isAgeVerificationRequired() );
 	}
 
-	public function testIsAgeVerification18PlusRequiredWithNonPhysicalProduct(): void {
+	public function testIsAgeVerificationRequiredWithNonPhysicalProduct(): void {
 		$this->createCartServiceMock();
 
 		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
@@ -62,10 +62,10 @@ class CartServiceTest extends TestCase {
 		$productMock->method( 'isPhysical' )->willReturn( false );
 
 		$this->productEntityFactory->method( 'fromPostId' )->willReturn( $productMock );
-		$this->assertFalse( $this->cartService->isAgeVerification18PlusRequired() );
+		$this->assertFalse( $this->cartService->isAgeVerificationRequired() );
 	}
 
-	public function testIsAgeVerification18PlusRequiredWithVerification(): void {
+	public function testIsAgeVerificationRequiredWithVerification(): void {
 		$this->createCartServiceMock();
 
 		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
@@ -77,13 +77,13 @@ class CartServiceTest extends TestCase {
 
 		$productMock = $this->createMock( Product\Entity::class );
 		$productMock->method( 'isPhysical' )->willReturn( true );
-		$productMock->method( 'isAgeVerification18PlusRequired' )->willReturn( true );
+		$productMock->method( 'isAgeVerificationRequired' )->willReturn( true );
 
 		$this->productEntityFactory->method( 'fromPostId' )->willReturn( $productMock );
-		$this->assertTrue( $this->cartService->isAgeVerification18PlusRequired() );
+		$this->assertTrue( $this->cartService->isAgeVerificationRequired() );
 	}
 
-	public function testIsAgeVerification18PlusRequiredWithoutVerification(): void {
+	public function testIsAgeVerificationRequiredWithoutVerification(): void {
 		$this->createCartServiceMock();
 
 		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
@@ -95,10 +95,10 @@ class CartServiceTest extends TestCase {
 
 		$productMock = $this->createMock( Product\Entity::class );
 		$productMock->method( 'isPhysical' )->willReturn( true );
-		$productMock->method( 'isAgeVerification18PlusRequired' )->willReturn( false );
+		$productMock->method( 'isAgeVerificationRequired' )->willReturn( false );
 
 		$this->productEntityFactory->method( 'fromPostId' )->willReturn( $productMock );
-		$this->assertFalse( $this->cartService->isAgeVerification18PlusRequired() );
+		$this->assertFalse( $this->cartService->isAgeVerificationRequired() );
 	}
 
 	public function testGetCartWeightKgWithEmptyCart(): void {
@@ -258,7 +258,7 @@ class CartServiceTest extends TestCase {
 						->method( 'productFactoryGetProduct' )
 						->with( $this->equalTo( 1 ) )
 						->willReturn( $product );
-		$this->assertFalse( $this->cartService->getTaxClassWithMaxRate() );
+		$this->assertNull( $this->cartService->getTaxClassWithMaxRate() );
 	}
 
 	public function testGetTaxClassWithMaxRateWithSingleTaxableProduct(): void {

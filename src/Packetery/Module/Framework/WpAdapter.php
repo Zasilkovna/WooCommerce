@@ -102,7 +102,12 @@ class WpAdapter {
 		return is_admin();
 	}
 
-	public function createNonce( string $action ): string {
+	/**
+	 * Phpdoc is not reliable.
+	 *
+	 * @return string|false
+	 */
+	public function createNonce( string $action ) {
 		return wp_create_nonce( $action );
 	}
 
@@ -119,6 +124,8 @@ class WpAdapter {
 	}
 
 	/**
+	 * @param mixed $data
+	 *
 	 * @return false|string
 	 */
 	public function jsonEncode( $data ) {
@@ -129,6 +136,9 @@ class WpAdapter {
 		return is_multisite();
 	}
 
+	/**
+	 * @return array<string, array<string, string|bool>>
+	 */
 	public function getMuPlugins(): array {
 		return get_mu_plugins();
 	}
