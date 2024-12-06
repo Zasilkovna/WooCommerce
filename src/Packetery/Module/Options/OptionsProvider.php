@@ -20,11 +20,6 @@ use Packetery\Module\ModuleHelper;
  */
 class OptionsProvider {
 
-	public const OPTION_NAME_PACKETERY                 = 'packetery';
-	public const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
-	public const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
-	public const OPTION_NAME_PACKETERY_ADVANCED        = 'packetery_advanced';
-
 	public const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
 	public const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
 	public const DEFAULT_VALUE_CARRIER_SETTINGS            = false;
@@ -74,22 +69,22 @@ class OptionsProvider {
 	private $advancedData;
 
 	public function __construct( WpAdapter $wpAdapter ) {
-		$data = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY );
+		$data = $wpAdapter->getOption( OptionNames::PACKETERY );
 		if ( $data === false || $data === null ) {
 			$data = array();
 		}
 
-		$syncData = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY_SYNC );
+		$syncData = $wpAdapter->getOption( OptionNames::PACKETERY_SYNC );
 		if ( $syncData === false || $syncData === null ) {
 			$syncData = [];
 		}
 
-		$autoSubmissionData = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		$autoSubmissionData = $wpAdapter->getOption( OptionNames::PACKETERY_AUTO_SUBMISSION );
 		if ( $autoSubmissionData === false || $autoSubmissionData === null ) {
 			$autoSubmissionData = [];
 		}
 
-		$advancedData = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY_ADVANCED );
+		$advancedData = $wpAdapter->getOption( OptionNames::PACKETERY_ADVANCED );
 		if ( $advancedData === false || $advancedData === null ) {
 			$advancedData = [];
 		}
@@ -124,10 +119,10 @@ class OptionsProvider {
 	 */
 	public function getAllOptions(): array {
 		return [
-			self::OPTION_NAME_PACKETERY                 => $this->data,
-			self::OPTION_NAME_PACKETERY_SYNC            => $this->syncData,
-			self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
-			self::OPTION_NAME_PACKETERY_ADVANCED        => $this->advancedData,
+			OptionNames::PACKETERY                 => $this->data,
+			OptionNames::PACKETERY_SYNC            => $this->syncData,
+			OptionNames::PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
+			OptionNames::PACKETERY_ADVANCED        => $this->advancedData,
 		];
 	}
 

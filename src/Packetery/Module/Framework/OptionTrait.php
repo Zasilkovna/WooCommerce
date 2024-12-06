@@ -38,4 +38,8 @@ trait OptionTrait {
 	public function updateOption( string $optionId, $newValue ): bool {
 		return update_option( $optionId, $newValue );
 	}
+
+	public function deleteOption( string $optionName ): bool {
+		return delete_option( $optionName );
+	}
 }

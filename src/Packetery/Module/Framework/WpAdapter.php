@@ -127,6 +127,14 @@ class WpAdapter {
 		return is_multisite();
 	}
 
+	public function switchToBlog( int $site ): bool {
+		return switch_to_blog( $site );
+	}
+
+	public function restoreCurrentBlog(): bool {
+		return restore_current_blog();
+	}
+
 	/**
 	 * @return array<string, array<string, string|bool>>
 	 */

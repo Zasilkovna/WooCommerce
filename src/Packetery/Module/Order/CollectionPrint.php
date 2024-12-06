@@ -17,6 +17,7 @@ use Packetery\Latte\Engine;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
+use Packetery\Module\Transients;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http;
 
@@ -26,6 +27,7 @@ use Packetery\Nette\Http;
  * @package Packetery\Order
  */
 class CollectionPrint {
+
 	const ACTION_PRINT_ORDER_COLLECTION = 'packetery_print_order_collection';
 	const PAGE_SLUG                     = 'packeta-order-collection-print';
 
@@ -109,7 +111,7 @@ class CollectionPrint {
 	 * @return string
 	 */
 	public static function getOrderIdsTransientName(): string {
-		return 'packetery_order_collection_print_order_ids_' . wp_get_session_token();
+		return Transients::ORDER_COLLECTION_PRINT_ORDER_IDS_PREFIX . wp_get_session_token();
 	}
 
 	/**

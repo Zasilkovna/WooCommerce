@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Upgrade\Version_1_4_2;
 
@@ -130,7 +131,7 @@ class Upgrade {
 	 * @return void
 	 */
 	public function check(): void {
-		$oldVersion = get_option( 'packetery_version' );
+		$oldVersion = get_option( OptionNames::VERSION );
 		if ( $oldVersion === Plugin::VERSION ) {
 			return;
 		}
@@ -194,7 +195,7 @@ class Upgrade {
 			if ( version_compare( $oldVersion, '1.7.0', '<' ) ) {
 				$orderStatusAutoChange = $this->optionsProvider->isOrderStatusAutoChangeEnabled();
 				$autoOrderStatus       = $this->optionsProvider->getAutoOrderStatus();
-				$syncSettings          = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
+				$syncSettings          = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY_SYNC );
 				if ( $orderStatusAutoChange ) {
 					$syncSettings['allow_order_status_change'] = true;
 				}
@@ -204,32 +205,32 @@ class Upgrade {
 					];
 				}
 
-				update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
+				update_option( OptionNames::PACKETERY_SYNC, $syncSettings );
 			}
 
 			if ( version_compare( $oldVersion, '1.7.1', '<' ) ) {
-				$syncSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
+				$syncSettings = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY_SYNC );
 				if (
 					isset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] ) &&
 					$syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] === ''
 				) {
 					unset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] );
-					update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
+					update_option( OptionNames::PACKETERY_SYNC, $syncSettings );
 				}
 			}
 
 			if ( version_compare( $oldVersion, '1.8.0', '<' ) ) {
-				$generalSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
+				$generalSettings = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY );
 				if ( isset( $generalSettings['cod_payment_method'] ) ) {
 					$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
 					unset( $generalSettings['cod_payment_method'] );
 				}
 
-				update_option( OptionsProvider::OPTION_NAME_PACKETERY, $generalSettings );
+				update_option( OptionNames::PACKETERY, $generalSettings );
 			}
 		}
 
-		update_option( 'packetery_version', Plugin::VERSION );
+		update_option( OptionNames::VERSION, Plugin::VERSION );
 	}
 
 	/**

@@ -11,6 +11,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Api\WebRequestException;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\WebRequestClient;
 
@@ -20,8 +21,7 @@ use Packetery\Module\WebRequestClient;
  * @package Packetery
  */
 class Downloader {
-	private const API_URL                   = 'https://pickup-point.api.packeta.com/v5/%s/carrier/json?lang=%s';
-	public const OPTION_LAST_CARRIER_UPDATE = 'packetery_last_carrier_update';
+	private const API_URL = 'https://pickup-point.api.packeta.com/v5/%s/carrier/json?lang=%s';
 
 	/**
 	 * Carrier updater.
@@ -113,7 +113,7 @@ class Downloader {
 			];
 		}
 		$this->carrierUpdater->save( $carriers );
-		update_option( self::OPTION_LAST_CARRIER_UPDATE, gmdate( DATE_ATOM ) );
+		update_option( OptionNames::LAST_CARRIER_UPDATE, gmdate( DATE_ATOM ) );
 
 		return [
 			__( 'Carriers were updated.', 'packeta' ),

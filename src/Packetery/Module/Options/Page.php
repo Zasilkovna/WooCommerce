@@ -302,7 +302,7 @@ class Page {
 	public function createAutoSubmissionForm(): Form {
 		$gateways = PaymentGatewayHelper::getAvailablePaymentGateways();
 		$form     = $this->formFactory->create( 'packetery_auto_submission_form' );
-		$defaults = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		$defaults = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY_AUTO_SUBMISSION );
 
 		$form->addCheckbox( 'allow', __( 'Allow packet auto-submission', 'packeta' ) )
 				->setRequired( false )
@@ -342,7 +342,7 @@ class Page {
 	 * @return void
 	 */
 	public function onAutoSubmissionFormSuccess( Form $form, array $values ): void {
-		update_option( OptionsProvider::OPTION_NAME_PACKETERY_AUTO_SUBMISSION, $values );
+		update_option( OptionNames::PACKETERY_AUTO_SUBMISSION, $values );
 
 		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 
@@ -358,7 +358,7 @@ class Page {
 	 */
 	private function createPacketStatusSyncForm(): Form {
 		$form     = $this->formFactory->create( 'packetery_packet_status_sync_form' );
-		$settings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
+		$settings = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY_SYNC );
 
 		$form->addText( 'max_status_syncing_packets', __( 'Number of orders synced during one cron call', 'packeta' ) )
 				->setRequired( false )
@@ -455,7 +455,7 @@ class Page {
 			unset( $values['max_days_of_packet_status_syncing'] );
 		}
 
-		update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $values );
+		update_option( OptionNames::PACKETERY_SYNC, $values );
 
 		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 
@@ -466,7 +466,7 @@ class Page {
 
 	public function createAdvancedForm(): Form {
 		$form     = $this->formFactory->create( 'packetery_advanced_form' );
-		$defaults = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED );
+		$defaults = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY_ADVANCED );
 
 		$form->addCheckbox( 'new_carrier_settings_enabled', __( 'Advanced carrier settings', 'packeta' ) )
 			->setRequired( false )
@@ -482,7 +482,7 @@ class Page {
 	}
 
 	public function onAdvancedFormSuccess( Form $form, array $values ): void {
-		update_option( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED, $values );
+		update_option( OptionNames::PACKETERY_ADVANCED, $values );
 
 		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 
@@ -648,8 +648,8 @@ class Page {
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
-		if ( $this->optionsProvider->has_any( OptionsProvider::OPTION_NAME_PACKETERY ) ) {
-			$container->setDefaults( $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY ) );
+		if ( $this->optionsProvider->has_any( OptionNames::PACKETERY ) ) {
+			$container->setDefaults( $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY ) );
 		}
 
 		return $form;
@@ -686,7 +686,7 @@ class Page {
 					continue;
 				}
 
-				add_settings_error( OptionsProvider::OPTION_NAME_PACKETERY, esc_attr( $control->getName() ), "{$control->getCaption()}: {$control->getError()}" );
+				add_settings_error( OptionNames::PACKETERY, esc_attr( $control->getName() ), "{$control->getCaption()}: {$control->getError()}" );
 			}
 		}
 
@@ -757,7 +757,7 @@ class Page {
 			$options['free_shipping_shown'] = (int) $packeteryContainer['free_shipping_shown']->getValue();
 		}
 
-		$previousOptions = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
+		$previousOptions = $this->optionsProvider->getOptionsByName( OptionNames::PACKETERY );
 		if ( ! isset( $options['default_weight_enabled'] ) ) {
 			if ( isset( $previousOptions['default_weight'] ) ) {
 				$options['default_weight'] = $previousOptions['default_weight'];
@@ -919,7 +919,7 @@ class Page {
 		);
 
 		$lastExport       = null;
-		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );
+		$lastExportOption = get_option( OptionNames::LAST_SETTINGS_EXPORT );
 		if ( $lastExportOption !== false ) {
 			$date = DateTime::createFromFormat( DATE_ATOM, $lastExportOption );
 			if ( $date !== false ) {
