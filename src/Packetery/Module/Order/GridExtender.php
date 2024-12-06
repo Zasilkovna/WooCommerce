@@ -14,6 +14,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
+use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
@@ -97,6 +98,11 @@ class GridExtender {
 	private $moduleHelper;
 
 	/**
+	 * @var SizeFactory
+	 */
+	private $sizeFactory;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -108,6 +114,7 @@ class GridExtender {
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 * @param WpAdapter             $wpAdapter             WordPress adapter.
 	 * @param ModuleHelper          $moduleHelper          Module helper.
+	 * @param SizeFactory           $sizeFactory           Size factory.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -118,7 +125,8 @@ class GridExtender {
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		WpAdapter $wpAdapter,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		SizeFactory $sizeFactory
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -129,6 +137,7 @@ class GridExtender {
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->wpAdapter             = $wpAdapter;
 		$this->moduleHelper          = $moduleHelper;
+		$this->sizeFactory           = $sizeFactory;
 	}
 
 	/**
@@ -371,6 +380,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                            => $order,
+						'dimensions'                       => $this->sizeFactory->createSizeInSetDimensionUnit( $order ),
 						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
 						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
 						'storedUntil'                      => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
