@@ -11,20 +11,17 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap;
+use Packetery\Core\Api\Soap\CreatePacketMapper;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
-use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
-use Packetery\Core\Api\Soap\CreatePacketMapper;
-use Packetery\Module\Carrier\CarrierOptionsFactory;
+use Packetery\Module;
 use Packetery\Module\CustomsDeclaration;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 use WC_Order;
-use Packetery\Module;
 
 /**
  * Class PacketSubmitter
@@ -119,13 +116,6 @@ class PacketSubmitter {
 	private $moduleHelper;
 
 	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
-	/**
 	 * OrderApi constructor.
 	 *
 	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
@@ -140,7 +130,6 @@ class PacketSubmitter {
 	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
 	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
 	 * @param ModuleHelper                  $moduleHelper                 ModuleHelper.
-	 * @param CarrierOptionsFactory         $carrierOptionsFactory        Carrier options factory.
 	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
@@ -154,8 +143,7 @@ class PacketSubmitter {
 		PacketActionsCommonLogic $commonLogic,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketSynchronizer $packetSynchronizer,
-		ModuleHelper $moduleHelper,
-		CarrierOptionsFactory $carrierOptionsFactory
+		ModuleHelper $moduleHelper
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidatorFactory->create();
@@ -169,7 +157,6 @@ class PacketSubmitter {
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
 		$this->moduleHelper                 = $moduleHelper;
-		$this->carrierOptionsFactory        = $carrierOptionsFactory;
 	}
 
 	/**
@@ -256,11 +243,7 @@ class PacketSubmitter {
 	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
 		if ( null === $order ) {
-			try {
-				$order = $this->orderRepository->getByWcOrder( $wcOrder );
-			} catch ( InvalidCarrierException $exception ) {
-				$order = null;
-			}
+			$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		}
 		if ( null === $order ) {
 			$submissionResult->increaseIgnoredCount();
@@ -430,21 +413,16 @@ class PacketSubmitter {
 	 * Prepares packet attributes.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 * @return array
+	 * @return array<string, string|null|bool>
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
 		$validationErrors = $this->orderValidator->validate( $order );
-		if ( ! empty( $validationErrors ) ) {
+		if ( count( $validationErrors ) > 0 ) {
 			throw new InvalidRequestException( 'All required order attributes are not set.', $validationErrors );
 		}
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
-		if ( ! empty( $createPacketData['cod'] ) ) {
-			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
-			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );
-			$createPacketData['cod'] = $roundedCod;
-		}
 
 		/**
 		 * Allows to update CreatePacket request data.
@@ -459,10 +437,10 @@ class PacketSubmitter {
 	/**
 	 * Gets translated messages by submission result.
 	 *
-	 * @param array    $submissionResult Submission result.
-	 * @param int|null $orderId Order ID.
+	 * @param array<string, int> $submissionResult Submission result.
+	 * @param int|null           $orderId Order ID.
 	 *
-	 * @return array
+	 * @return array<string, null|string>
 	 */
 	public function getTranslatedSubmissionMessages( array $submissionResult, ?int $orderId ): array {
 		$success = null;
@@ -509,7 +487,7 @@ class PacketSubmitter {
 				);
 			}
 		} elseif ( isset( $submissionResult['errors'] ) ) {
-			$errors = esc_html( $submissionResult['errors'] );
+			$errors = esc_html( (string) $submissionResult['errors'] );
 		}
 
 		if ( is_numeric( $submissionResult['statusUnchanged'] ) && $submissionResult['statusUnchanged'] > 0 ) {
@@ -532,7 +510,7 @@ class PacketSubmitter {
 		add_action(
 			self::HOOK_PACKET_STATUS_SYNC,
 			function ( string $orderId ): void {
-				$order = $this->orderRepository->getById( (int) $orderId, true );
+				$order = $this->orderRepository->getByIdWithValidCarrier( (int) $orderId );
 				if ( null === $order ) {
 					return;
 				}
@@ -542,5 +520,4 @@ class PacketSubmitter {
 			1
 		);
 	}
-
 }

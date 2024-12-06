@@ -12,13 +12,7 @@ require_once __DIR__ . '/../../../../wp-load.php';
 
 $container = require __DIR__ . '/../bootstrap-cli.php';
 
-/**
- * Shipping provider.
- *
- * @var ShippingProvider $shippingProvider
- */
-$shippingProvider = $container->getByType( ShippingProvider::class );
-$shippingProvider->loadAllClasses();
+ShippingProvider::loadAllClasses();
 
 /**
  * Shipping method generator.

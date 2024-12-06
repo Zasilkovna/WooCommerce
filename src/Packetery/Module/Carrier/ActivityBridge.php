@@ -78,5 +78,4 @@ class ActivityBridge {
 
 		return $carrierOptions->isActive();
 	}
-
 }

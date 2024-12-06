@@ -9,7 +9,6 @@ namespace Packetery\Nette\Neon;
 
 /**
  * @implements \IteratorAggregate<Node>
- * @internal
  */
 abstract class Node implements \IteratorAggregate
 {

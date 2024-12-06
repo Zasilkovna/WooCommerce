@@ -80,5 +80,4 @@ class CarDeliveryConfig {
 	public function isCarDeliveryCarrierDisabled( string $carrierId ): bool {
 		return $this->isCarDeliveryCarrier( $carrierId ) && $this->isDisabled();
 	}
-
 }

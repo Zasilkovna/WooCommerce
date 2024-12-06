@@ -76,5 +76,4 @@ class PacketsCourierLabelsPdf {
 	public function getOffset(): int {
 		return $this->offset;
 	}
-
 }

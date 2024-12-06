@@ -96,7 +96,7 @@ class PickupPointValidator {
 	/**
 	 * Returns translated validation errors.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function getTranslatedError(): array {
 		return [

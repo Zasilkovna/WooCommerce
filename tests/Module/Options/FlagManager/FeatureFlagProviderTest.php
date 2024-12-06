@@ -10,7 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Module\MockFactory;
 
 class FeatureFlagProviderTest extends TestCase {
-
 	public static function shouldShowSplitActivationNoticeDataProvider(): array {
 		return [
 			[
@@ -42,9 +41,11 @@ class FeatureFlagProviderTest extends TestCase {
 		$downloader = $this->createMock( FeatureFlagDownloader::class );
 		$downloader
 			->method( 'getFlags' )
-			->willReturn( [
-				FeatureFlagProvider::FLAG_SPLIT_ACTIVE => $isSplitActive,
-			] );
+			->willReturn(
+				[
+					FeatureFlagProvider::FLAG_SPLIT_ACTIVE => $isSplitActive,
+				]
+			);
 
 		$manager = new FeatureFlagProvider(
 			$wpAdapter,
@@ -53,5 +54,4 @@ class FeatureFlagProviderTest extends TestCase {
 
 		self::assertEquals( $expectedResult, $manager->shouldShowSplitActivationNotice() );
 	}
-
 }

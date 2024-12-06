@@ -52,5 +52,4 @@ class TransientPurger {
 			$this->optionsRepository->deleteExpiredTransientsByPrefix( Checkout::TRANSIENT_CHECKOUT_DATA_PREFIX );
 		}
 	}
-
 }

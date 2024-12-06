@@ -7,7 +7,6 @@
 declare (strict_types=1);
 namespace Packetery\Tracy;
 
-/** @internal */
 interface SessionStorage
 {
     function isAvailable() : bool;

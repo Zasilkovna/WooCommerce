@@ -13,7 +13,6 @@ use Packetery\Nette;
  *
  * @property   array $items
  * @property-read array $selectedItems
- * @internal
  */
 abstract class MultiChoiceControl extends BaseControl
 {

@@ -24,7 +24,6 @@ class FeatureFlagProvider {
 
 	private const TRANSIENT_SPLIT_MESSAGE_DISMISSED = 'packeta_split_message_dismissed';
 
-
 	/**
 	 * WP adapter;
 	 *
@@ -33,24 +32,14 @@ class FeatureFlagProvider {
 	private $wpAdapter;
 
 	/**
-	 * Feature flag downloader.
-	 *
-	 * @var FeatureFlagDownloader
-	 */
-	private $featureFlagDownloader;
-
-	/**
 	 * Constructor.
 	 *
-	 * @param WpAdapter             $wpAdapter WP adapter.
-	 * @param FeatureFlagDownloader $featureFlagDownloader Feature flag downloader.
+	 * @param WpAdapter $wpAdapter WP adapter.
 	 */
 	public function __construct(
-		WpAdapter $wpAdapter,
-		FeatureFlagDownloader $featureFlagDownloader
+		WpAdapter $wpAdapter
 	) {
-		$this->wpAdapter             = $wpAdapter;
-		$this->featureFlagDownloader = $featureFlagDownloader;
+		$this->wpAdapter = $wpAdapter;
 	}
 
 	/**
@@ -84,5 +73,4 @@ class FeatureFlagProvider {
 			'yes' !== $this->wpAdapter->getTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED )
 		);
 	}
-
 }

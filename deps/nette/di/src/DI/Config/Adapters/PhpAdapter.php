@@ -10,7 +10,6 @@ namespace Packetery\Nette\DI\Config\Adapters;
 use Packetery\Nette;
 /**
  * Reading and generating PHP files.
- * @internal
  */
 final class PhpAdapter implements \Packetery\Nette\DI\Config\Adapter
 {

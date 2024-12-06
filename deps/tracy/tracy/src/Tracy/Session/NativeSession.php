@@ -7,7 +7,6 @@
 declare (strict_types=1);
 namespace Packetery\Tracy;
 
-/** @internal */
 class NativeSession implements SessionStorage
 {
     public function isAvailable() : bool

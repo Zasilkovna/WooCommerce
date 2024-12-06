@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class PickupPointTest extends TestCase {
-
 	public function testSettersAndGetters(): void {
 		$pickupPoint = DummyFactory::createPickupPoint();
 
@@ -38,5 +37,4 @@ class PickupPointTest extends TestCase {
 
 		self::assertIsString( $pickupPoint->getFullAddress() );
 	}
-
 }

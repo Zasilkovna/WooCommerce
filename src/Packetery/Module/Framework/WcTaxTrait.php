@@ -15,7 +15,6 @@ namespace Packetery\Module\Framework;
  * @package Packetery
  */
 trait WcTaxTrait {
-
 	/**
 	 * Gets an array of matching shipping tax rates for a given class.
 	 *
@@ -36,5 +35,4 @@ trait WcTaxTrait {
 	public function taxCalcInclusiveTax( float $cost, array $rates ): array {
 		return \WC_Tax::calc_inclusive_tax( $cost, $rates );
 	}
-
 }

@@ -14,7 +14,6 @@ use Packetery\Nette\DI;
 use Packetery\Tracy;
 /**
  * Initial system DI container generator.
- * @internal
  */
 class Configurator
 {

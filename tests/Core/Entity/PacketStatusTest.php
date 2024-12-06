@@ -8,7 +8,6 @@ use Packetery\Core\Entity\PacketStatus;
 use PHPUnit\Framework\TestCase;
 
 class PacketStatusTest extends TestCase {
-
 	public function testGetters(): void {
 		$dummyName           = 'Dummy name';
 		$dummyTranslatedName = 'Dummy translated name';
@@ -21,5 +20,4 @@ class PacketStatusTest extends TestCase {
 		self::assertSame( $dummyTranslatedName, $packetStatus->getTranslatedName() );
 		self::assertFalse( $packetStatus->hasDefaultSynchronization() );
 	}
-
 }

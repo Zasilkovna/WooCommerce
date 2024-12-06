@@ -16,7 +16,6 @@ use Packetery\Nette\InvalidStateException;
  * - namespace statement
  * - variable amount of use statements
  * - one or more class declarations
- * @internal
  */
 final class PhpNamespace
 {

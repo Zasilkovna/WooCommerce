@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\DI\Definitions\Definition;
 /**
  * Container builder.
- * @internal
  */
 class ContainerBuilder
 {

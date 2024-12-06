@@ -11,10 +11,10 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
 use Packetery\Core\Log;
+use Packetery\Module;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http\Request;
-use Packetery\Module;
 
 /**
  * Class PacketClaimSubmitter.

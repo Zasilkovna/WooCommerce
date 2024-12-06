@@ -19,7 +19,7 @@ class PacketSubmissionResult {
 	/**
 	 * Submission result counter.
 	 *
-	 * @var int[]
+	 * @var array<string, int>
 	 */
 	private $counter = [
 		'success'         => 0,
@@ -35,7 +35,7 @@ class PacketSubmissionResult {
 	 * @return void
 	 */
 	public function increaseSuccessCount(): void {
-		$this->counter['success'] ++;
+		$this->counter['success']++;
 	}
 
 	/**
@@ -44,7 +44,7 @@ class PacketSubmissionResult {
 	 * @return void
 	 */
 	public function increaseIgnoredCount(): void {
-		$this->counter['ignored'] ++;
+		$this->counter['ignored']++;
 	}
 
 	/**
@@ -53,7 +53,7 @@ class PacketSubmissionResult {
 	 * @return void
 	 */
 	public function increaseErrorsCount(): void {
-		$this->counter['errors'] ++;
+		$this->counter['errors']++;
 	}
 
 	/**
@@ -62,7 +62,7 @@ class PacketSubmissionResult {
 	 * @return void
 	 */
 	public function increaseLogsCount(): void {
-		$this->counter['logs'] ++;
+		$this->counter['logs']++;
 	}
 
 	/**
@@ -71,7 +71,7 @@ class PacketSubmissionResult {
 	 * @return void
 	 */
 	public function increaseStatusUnchangedCount(): void {
-		$this->counter['statusUnchanged'] ++;
+		$this->counter['statusUnchanged']++;
 	}
 
 	/**
@@ -93,7 +93,7 @@ class PacketSubmissionResult {
 	/**
 	 * Gets counter.
 	 *
-	 * @return array
+	 * @return array<string, int>
 	 */
 	public function getCounter(): array {
 		return $this->counter;

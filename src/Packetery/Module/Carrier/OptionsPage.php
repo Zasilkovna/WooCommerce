@@ -9,15 +9,17 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Core\Entity\Carrier;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Control;
 use Packetery\Nette\Forms\Form;
@@ -105,18 +107,20 @@ class OptionsPage {
 	private $carDeliveryConfig;
 
 	/**
-	 * OptionsPage constructor.
-	 *
-	 * @param Engine                    $latteEngine           PacketeryLatte_engine.
-	 * @param EntityRepository          $carrierRepository     Carrier repository.
-	 * @param FormFactory               $formFactory           Form factory.
-	 * @param Request                   $httpRequest           Packetery\Nette Request.
-	 * @param CountryListingPage        $countryListingPage    CountryListingPage.
-	 * @param MessageManager            $messageManager        Message manager.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
-	 * @param FeatureFlagProvider       $featureFlagProvider   Feature flag.
-	 * @param CarDeliveryConfig         $carDeliveryConfig     Car delivery config.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
+	/**
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
@@ -126,17 +130,23 @@ class OptionsPage {
 		MessageManager $messageManager,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagProvider $featureFlagProvider,
-		CarDeliveryConfig $carDeliveryConfig
+		CarDeliveryConfig $carDeliveryConfig,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->latteEngine         = $latteEngine;
-		$this->carrierRepository   = $carrierRepository;
-		$this->formFactory         = $formFactory;
-		$this->httpRequest         = $httpRequest;
-		$this->countryListingPage  = $countryListingPage;
-		$this->messageManager      = $messageManager;
-		$this->pickupPointsConfig  = $pickupPointsConfig;
-		$this->featureFlagProvider = $featureFlagProvider;
-		$this->carDeliveryConfig   = $carDeliveryConfig;
+		$this->latteEngine           = $latteEngine;
+		$this->carrierRepository     = $carrierRepository;
+		$this->formFactory           = $formFactory;
+		$this->httpRequest           = $httpRequest;
+		$this->countryListingPage    = $countryListingPage;
+		$this->messageManager        = $messageManager;
+		$this->pickupPointsConfig    = $pickupPointsConfig;
+		$this->featureFlagProvider   = $featureFlagProvider;
+		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->moduleHelper          = $moduleHelper;
+		$this->urlBuilder            = $urlBuilder;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
@@ -179,8 +189,8 @@ class OptionsPage {
 
 		$carrierOptions = get_option( $optionId );
 		if ( $this->featureFlagProvider->isSplitActive() ) {
-			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
-			if ( $vendorCheckboxes ) {
+			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( false !== $carrierOptions ? $carrierOptions : null ) );
+			if ( count( $vendorCheckboxes ) > 0 ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
 				foreach ( $vendorCheckboxes as $checkboxConfig ) {
 					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
@@ -210,7 +220,7 @@ class OptionsPage {
 				->toggle( $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ) );
 
 		$weightLimits = $form->addContainer( self::FORM_FIELD_WEIGHT_LIMITS );
-		if ( empty( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) || count( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) === 0 ) {
 			$this->addWeightLimit( $weightLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] as $index => $limit ) {
@@ -219,7 +229,7 @@ class OptionsPage {
 		}
 
 		$productValueLimits = $form->addContainer( self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
-		if ( empty( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) || count( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) === 0 ) {
 			$this->addProductValueLimit( $productValueLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] as $index => $limit ) {
@@ -237,7 +247,7 @@ class OptionsPage {
 				->addRule( Form::MIN, null, 0 );
 
 			$surchargeLimits = $form->addContainer( 'surcharge_limits' );
-			if ( ! empty( $carrierData['surcharge_limits'] ) ) {
+			if ( isset( $carrierData['surcharge_limits'] ) && count( $carrierData['surcharge_limits'] ) > 0 ) {
 				foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
 					$this->addSurchargeLimit( $surchargeLimits, $index );
 				}
@@ -376,6 +386,7 @@ class OptionsPage {
 	public function validateOptions( Form $form ): void {
 		if ( $form->hasErrors() ) {
 			add_settings_error( '', '', esc_attr( __( 'Some carrier data is invalid', 'packeta' ) ) );
+
 			return;
 		}
 
@@ -435,9 +446,12 @@ class OptionsPage {
 	public function updateOptions( Form $form ): void {
 		$options    = $form->getValues( 'array' );
 		$newVendors = $this->getCheckedVendors( $options );
-		if ( $newVendors ) {
+		if ( count( $newVendors ) > 0 ) {
 			$options['vendor_groups'] = $newVendors;
 		}
+
+		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
+		$persistedOptionsArray = $persistedOptions->toArray();
 
 		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );
@@ -489,7 +503,7 @@ class OptionsPage {
 		}
 
 		$post = $this->httpRequest->getPost();
-		if ( ! empty( $post ) && $post['id'] === $carrier->getId() ) {
+		if ( isset( $post['id'] ) && $post['id'] === $carrier->getId() ) {
 			$formTemplate = $this->createFormTemplate( $post );
 			$form         = $this->createForm( $post );
 			if ( $form->isSubmitted() ) {
@@ -525,6 +539,9 @@ class OptionsPage {
 		$commonTemplateParams = [
 			'globalCurrency' => get_woocommerce_currency_symbol(),
 			'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+			'isCzechLocale'  => $this->moduleHelper->isCzechLocale(),
+			'logoZasilkovna' => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
+			'logoPacketa'    => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
 			'translations'   => [
 				'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
 				'delete'                                 => __( 'Delete', 'packeta' ),
@@ -550,7 +567,7 @@ class OptionsPage {
 			],
 		];
 
-		if ( $carrierId ) {
+		if ( null !== $carrierId ) {
 			$carrier             = $this->carrierRepository->getAnyById( $carrierId );
 			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
 			if ( null === $carrier || null === $carrierTemplateData ) {
@@ -572,7 +589,7 @@ class OptionsPage {
 				)
 			);
 
-		} elseif ( $countryIso ) {
+		} elseif ( null !== $countryIso ) {
 			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
 			foreach ( $countryCarriers as $carrier ) {
@@ -708,7 +725,7 @@ class OptionsPage {
 	 * @return void
 	 */
 	private function addProductValueLimit( Container $productValueLimits, $index ): void {
-		/** Pricing type control. @var Control $pricingTypeControl */
+		/** @var Control $pricingTypeControl */
 		$pricingTypeControl = $productValueLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
 		$limit              = $productValueLimits->addContainer( (string) $index );
 		$item               = $limit->addText( 'value', __( 'Product value up to', 'packeta' ) . ':' );
@@ -785,7 +802,7 @@ class OptionsPage {
 	 */
 	private function getCheckedVendors( array $options ): array {
 		$vendorCodes = [];
-		if ( ! empty( $options['vendor_groups'] ) ) {
+		if ( isset( $options['vendor_groups'] ) ) {
 			$vendorCodes = $options['vendor_groups'];
 		}
 
@@ -880,6 +897,7 @@ class OptionsPage {
 	 */
 	public function isAvailableVendorsCountLowByCarrierId( string $carrierId ): bool {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
+
 		return is_array( $availableVendors ) && $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors );
 	}
 }

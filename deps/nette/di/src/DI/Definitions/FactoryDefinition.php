@@ -15,7 +15,6 @@ use Packetery\Nette\Utils\Reflection;
 use Packetery\Nette\Utils\Type;
 /**
  * Definition of standard service.
- * @internal
  */
 final class FactoryDefinition extends Definition
 {

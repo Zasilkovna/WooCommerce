@@ -9,7 +9,6 @@ namespace Packetery\Nette\DI\Config;
 
 /**
  * Adapter for reading and writing configuration files.
- * @internal
  */
 interface Adapter
 {

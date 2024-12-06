@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Forms\Form;
 /**
  * Single line text input control.
- * @internal
  */
 class TextInput extends TextBase
 {

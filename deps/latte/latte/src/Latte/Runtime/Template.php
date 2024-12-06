@@ -12,7 +12,6 @@ use Packetery\Latte\Engine;
 use Packetery\Latte\Policy;
 /**
  * Template.
- * @internal
  */
 class Template
 {

@@ -9,7 +9,6 @@ namespace Packetery\Nette\Forms;
 
 /**
  * Defines method that must be implemented to allow a control to submit web form.
- * @internal
  */
 interface SubmitterControl extends Control
 {

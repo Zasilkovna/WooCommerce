@@ -4,13 +4,12 @@ declare( strict_types=1 );
 
 namespace Tests\Core\Entity;
 
-use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\PacketStatus;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class OrderTest extends TestCase {
-
 	public function testSettersAndGetters(): void {
 		$order             = DummyFactory::createOrderCzPp();
 		$carDeliveryOrder  = DummyFactory::createOrderCzCdIncomplete();
@@ -145,5 +144,4 @@ class OrderTest extends TestCase {
 		self::assertIsFloat( $order->getWidth() );
 		self::assertIsFloat( $order->getHeight() );
 	}
-
 }

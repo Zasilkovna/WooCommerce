@@ -10,7 +10,6 @@ namespace Packetery\Nette\Http;
 /**
  * HTTP response interface.
  * @method self deleteHeader(string $name)
- * @internal
  */
 interface IResponse
 {

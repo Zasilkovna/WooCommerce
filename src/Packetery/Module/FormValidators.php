@@ -19,7 +19,6 @@ use Packetery\Nette\Forms\Controls\BaseControl;
  * @package Packetery\Module
  */
 class FormValidators {
-
 	/**
 	 * Tests if input value is greater than argument.
 	 *
@@ -80,5 +79,4 @@ class FormValidators {
 
 		return true;
 	}
-
 }

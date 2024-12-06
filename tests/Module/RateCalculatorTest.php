@@ -9,7 +9,6 @@ use Packetery\Module\RateCalculator;
 use PHPUnit\Framework\TestCase;
 
 class RateCalculatorTest extends TestCase {
-
 	/**
 	 * @return array
 	 */
@@ -137,5 +136,4 @@ class RateCalculatorTest extends TestCase {
 
 		self::assertEquals( $expectedCost, $cost );
 	}
-
 }

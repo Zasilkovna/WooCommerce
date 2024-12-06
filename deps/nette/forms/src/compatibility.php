@@ -8,9 +8,7 @@ declare (strict_types=1);
 namespace Packetery\Nette\Forms;
 
 if (\false) {
-    /** @deprecated use \Packetery\Nette\Forms\Control
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\Forms\Control */
     class IControl extends Control
     {
     }
@@ -18,9 +16,7 @@ if (\false) {
     \class_alias(Control::class, IControl::class);
 }
 if (\false) {
-    /** @deprecated use \Packetery\Nette\Forms\FormRenderer
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\Forms\FormRenderer */
     class IFormRenderer extends FormRenderer
     {
     }
@@ -28,9 +24,7 @@ if (\false) {
     \class_alias(FormRenderer::class, IFormRenderer::class);
 }
 if (\false) {
-    /** @deprecated use \Packetery\Nette\Forms\SubmitterControl
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\Forms\SubmitterControl */
     class ISubmitterControl extends SubmitterControl
     {
     }

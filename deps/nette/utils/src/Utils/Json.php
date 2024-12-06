@@ -10,7 +10,6 @@ namespace Packetery\Nette\Utils;
 use Packetery\Nette;
 /**
  * JSON encoder and decoder.
- * @internal
  */
 final class Json
 {

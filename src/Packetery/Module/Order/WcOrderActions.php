@@ -111,5 +111,4 @@ class WcOrderActions {
 
 		$wcOrder->update_status( $validAutoOrderStatus );
 	}
-
 }

@@ -10,7 +10,6 @@ namespace Packetery\Nette\PhpGenerator;
 use Packetery\Nette;
 /**
  * Enum case.
- * @internal
  */
 final class EnumCase
 {

@@ -56,7 +56,7 @@ class Version_1_4_2 {
 		$productIds              = $this->getDisallowedCarriersProductsIds( $duplicatedCarrierPrefix );
 		foreach ( $productIds as $productId ) {
 			$oldMeta = get_post_meta( $productId, Product\Entity::META_DISALLOWED_SHIPPING_RATES, true );
-			if ( ! is_array( $oldMeta ) || empty( $oldMeta ) ) {
+			if ( ! is_array( $oldMeta ) || count( $oldMeta ) === 0 ) {
 				continue;
 			}
 
@@ -91,5 +91,4 @@ class Version_1_4_2 {
 
 		return array_map( 'intval', $productIds );
 	}
-
 }

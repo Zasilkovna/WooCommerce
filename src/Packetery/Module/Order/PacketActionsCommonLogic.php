@@ -10,11 +10,10 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
-use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
-
 
 /**
  * Class PacketActionsBrain
@@ -149,7 +148,7 @@ class PacketActionsCommonLogic {
 	public function getOrder(): ?Entity\Order {
 		$orderId = $this->getOrderId();
 		if ( null !== $orderId ) {
-			return $this->orderRepository->getById( $orderId, true );
+			return $this->orderRepository->getByIdWithValidCarrier( $orderId );
 		}
 
 		return null;

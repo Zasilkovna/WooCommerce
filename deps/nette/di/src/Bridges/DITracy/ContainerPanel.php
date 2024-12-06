@@ -12,7 +12,6 @@ use Packetery\Nette\DI\Container;
 use Packetery\Tracy;
 /**
  * Dependency injection container panel for Debugger Bar.
- * @internal
  */
 class ContainerPanel implements Tracy\IBarPanel
 {

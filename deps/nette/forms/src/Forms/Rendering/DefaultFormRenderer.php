@@ -12,7 +12,6 @@ use Packetery\Nette\HtmlStringable;
 use Packetery\Nette\Utils\Html;
 /**
  * Converts a Form into the HTML output.
- * @internal
  */
 class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
 {

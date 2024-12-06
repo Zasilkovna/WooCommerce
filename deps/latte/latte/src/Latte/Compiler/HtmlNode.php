@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * HTML element node.
- * @internal
  */
 class HtmlNode
 {

@@ -12,7 +12,6 @@ use Packetery\Nette\Schema\Context;
 use Packetery\Nette\Schema\DynamicParameter;
 use Packetery\Nette\Schema\Helpers;
 use Packetery\Nette\Schema\Schema;
-/** @internal */
 final class Type implements Schema
 {
     use Base;

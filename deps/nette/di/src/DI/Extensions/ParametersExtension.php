@@ -14,7 +14,6 @@ use Packetery\Nette\DI\Helpers;
 use Packetery\Nette\PhpGenerator\Method;
 /**
  * Parameters.
- * @internal
  */
 final class ParametersExtension extends \Packetery\Nette\DI\CompilerExtension
 {

@@ -10,7 +10,6 @@ namespace Packetery\Nette\Http;
 use Packetery\Nette;
 /**
  * Session section.
- * @internal
  */
 class SessionSection implements \IteratorAggregate, \ArrayAccess
 {

@@ -9,14 +9,13 @@ declare(strict_types=1);
 
 namespace Packetery\Module\EntityFactory;
 
-use Packetery\Core\Entity;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity;
 
 /**
  * Class CustomsDeclaration.
  */
 class CustomsDeclaration {
-
 	/**
 	 * Creates customs declaration entity from standard structure.
 	 *
@@ -47,7 +46,7 @@ class CustomsDeclaration {
 	/**
 	 * Creates item from standardized structure.
 	 *
-	 * @param array $data Data.
+	 * @param array<string, string> $data Data.
 	 * @return Entity\CustomsDeclarationItem
 	 */
 	public function createItemFromStandardizedStructure( array $data ): Entity\CustomsDeclarationItem {

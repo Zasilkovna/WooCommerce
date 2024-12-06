@@ -12,7 +12,6 @@ namespace Packetery\Tracy;
  *
  * @see http://firelogger.binaryage.com
  * @see https://chrome.google.com/webstore/detail/firelogger-for-chrome/hmagilfopmdjkeomnjpchokglfdfjfeh
- * @internal
  */
 class FireLogger implements ILogger
 {

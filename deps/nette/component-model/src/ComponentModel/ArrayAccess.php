@@ -10,7 +10,6 @@ namespace Packetery\Nette\ComponentModel;
 use Packetery\Nette;
 /**
  * Implementation of \ArrayAccess for IContainer.
- * @internal
  */
 trait ArrayAccess
 {

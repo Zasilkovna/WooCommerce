@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * Latte parser.
- * @internal
  */
 class Parser
 {

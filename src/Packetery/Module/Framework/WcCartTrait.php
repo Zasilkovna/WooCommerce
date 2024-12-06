@@ -15,11 +15,10 @@ namespace Packetery\Module\Framework;
  * @package Packetery
  */
 trait WcCartTrait {
-
 	/**
 	 * Gets cart contents.
 	 *
-	 * @return array of cart items
+	 * @return array<string|int, mixed> of cart items
 	 */
 	public function cartGetCartContents(): array {
 		return WC()->cart->get_cart_contents();
@@ -70,4 +69,7 @@ trait WcCartTrait {
 		return WC()->cart;
 	}
 
+	public function cartCalculateTotals(): void {
+		WC()->cart->calculate_totals();
+	}
 }

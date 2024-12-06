@@ -37,7 +37,7 @@ class MessageManager {
 	/**
 	 * Messages to be displayed.
 	 *
-	 * @var array
+	 * @var array<array<string, string>>
 	 */
 	private $messages = [];
 
@@ -55,7 +55,7 @@ class MessageManager {
 	 */
 	public function init(): void {
 		$messages = get_transient( $this->getTransientName() );
-		if ( ! $messages ) {
+		if ( false === $messages ) {
 			$messages = [];
 		}
 
@@ -153,6 +153,7 @@ class MessageManager {
 		}
 
 		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );
+
 		return $output;
 	}
 }

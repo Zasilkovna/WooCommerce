@@ -30,9 +30,5 @@ jobs:
             -   name: Install Composer dependencies
                 run: composer install
 
-            -   name: Install Composer dev dependencies
-                working-directory: phpstan
-                run: composer install
-
             -   name: Run PHPUnit
                 run: composer run tests-unit

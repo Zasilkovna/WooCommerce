@@ -21,7 +21,6 @@ use Packetery\Latte\PhpWriter;
  * - {inputError name}
  * - {formContainer name} ... {/formContainer}
  * - {formContext name} ... {/formContext}
- * @internal
  */
 final class FormMacros extends MacroSet
 {

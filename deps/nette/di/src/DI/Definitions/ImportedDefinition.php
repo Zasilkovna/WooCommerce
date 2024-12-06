@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\DI\PhpGenerator;
 /**
  * Imported service injected to the container.
- * @internal
  */
 final class ImportedDefinition extends Definition
 {

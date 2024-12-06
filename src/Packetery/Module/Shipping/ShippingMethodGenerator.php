@@ -65,7 +65,7 @@ class ShippingMethodGenerator {
 			$allCarriers[ $feedCarrier['id'] ] = $feedCarrier['name'];
 		}
 
-		if ( ! $allCarriers ) {
+		if ( count( $allCarriers ) === 0 ) {
 			return;
 		}
 
@@ -103,7 +103,7 @@ class ShippingMethodGenerator {
 
 		$filePath = __DIR__ . '/Generated/' . $className . '.php';
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents
 		file_put_contents( $filePath, $file );
 	}
 
@@ -128,5 +128,4 @@ class ShippingMethodGenerator {
 	public static function classExists( string $carrierId ): bool {
 		return class_exists( self::TARGET_NAMESPACE . '\\' . self::getClassnameFromCarrierId( $carrierId ) );
 	}
-
 }

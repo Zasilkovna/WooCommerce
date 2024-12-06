@@ -10,7 +10,6 @@ namespace Packetery\Nette\PhpGenerator;
 use Packetery\Nette;
 /**
  * use Trait
- * @internal
  */
 final class TraitUse
 {

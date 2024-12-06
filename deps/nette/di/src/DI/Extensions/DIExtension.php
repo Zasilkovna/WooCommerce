@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Tracy;
 /**
  * DI extension.
- * @internal
  */
 final class DIExtension extends \Packetery\Nette\DI\CompilerExtension
 {

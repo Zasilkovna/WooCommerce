@@ -28,9 +28,12 @@ class CustomsDeclarationTest extends TestCase {
 		$customsDeclaration->setEad( $dummyEad );
 		self::assertSame( $dummyEad, $customsDeclaration->getEad() );
 
-		$customsDeclaration->setEadFile( function () {
-			return self::DUMMY_FILE_CONTENT;
-		}, true );
+		$customsDeclaration->setEadFile(
+			function () {
+				return self::DUMMY_FILE_CONTENT;
+			},
+			true
+		);
 		self::assertSame( self::DUMMY_FILE_CONTENT, $customsDeclaration->getEadFile() );
 		self::assertTrue( $customsDeclaration->hasEadFileContent() );
 
@@ -39,9 +42,12 @@ class CustomsDeclarationTest extends TestCase {
 		self::assertSame( $dummyEadFileId, $customsDeclaration->getEadFileId() );
 
 		self::assertNull( $customsDeclaration->getInvoiceFile() );
-		$customsDeclaration->setInvoiceFile( function () {
-			return self::DUMMY_FILE_CONTENT;
-		}, true );
+		$customsDeclaration->setInvoiceFile(
+			function () {
+				return self::DUMMY_FILE_CONTENT;
+			},
+			true
+		);
 		self::assertSame( self::DUMMY_FILE_CONTENT, $customsDeclaration->getInvoiceFile() );
 		self::assertTrue( $customsDeclaration->hasInvoiceFileContent() );
 
@@ -63,5 +69,4 @@ class CustomsDeclarationTest extends TestCase {
 
 		self::assertIsString( $customsDeclaration->getOrderId() );
 	}
-
 }

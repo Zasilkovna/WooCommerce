@@ -11,7 +11,6 @@ use Packetery\Nette;
 /**
  * Constant definitions.
  * @deprecated  use \Packetery\Nette\Bootstrap\Extensions\ConstantsExtension
- * @internal
  */
 final class ConstantsExtension extends \Packetery\Nette\DI\CompilerExtension
 {

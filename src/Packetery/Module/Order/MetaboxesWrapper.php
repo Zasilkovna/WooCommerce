@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Order;
 
 use WC_Order;
@@ -74,7 +73,7 @@ class MetaboxesWrapper {
 	 * @return void
 	 */
 	public function beforeOrderSave( WC_Order $wcOrder ): void {
-		$order = $this->orderRepository->getById( $wcOrder->get_id(), true );
+		$order = $this->orderRepository->getByIdWithValidCarrier( $wcOrder->get_id() );
 		if ( null === $order ) {
 			return;
 		}
@@ -91,7 +90,7 @@ class MetaboxesWrapper {
 	 * @throws \WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	public function saveFields( $wcOrderId ): void {
-		$order = $this->orderRepository->getById( (int) $wcOrderId, true );
+		$order = $this->orderRepository->getByIdWithValidCarrier( (int) $wcOrderId );
 
 		if ( null === $order ) {
 			return;

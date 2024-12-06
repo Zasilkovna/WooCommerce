@@ -30,7 +30,6 @@ if ($argc < 2) {
 }
 $ok = scanPath($argv[1]);
 exit($ok ? 0 : 1);
-/** @internal */
 function scanPath(string $path) : bool
 {
     echo "Scanning {$path}\n";
@@ -47,7 +46,6 @@ function scanPath(string $path) : bool
     echo "Done.\n";
     return $success;
 }
-/** @internal */
 function lintFile(string $file) : bool
 {
     \set_error_handler(function (int $severity, string $message) use($file) {

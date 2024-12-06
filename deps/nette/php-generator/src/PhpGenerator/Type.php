@@ -9,7 +9,6 @@ namespace Packetery\Nette\PhpGenerator;
 
 /**
  * PHP return, property and parameter types.
- * @internal
  */
 class Type
 {

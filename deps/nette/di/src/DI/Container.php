@@ -10,7 +10,6 @@ namespace Packetery\Nette\DI;
 use Packetery\Nette;
 /**
  * The dependency injection container default implementation.
- * @internal
  */
 class Container
 {

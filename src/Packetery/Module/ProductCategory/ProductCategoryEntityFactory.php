@@ -46,5 +46,4 @@ class ProductCategoryEntityFactory {
 
 		return new Entity( $product );
 	}
-
 }

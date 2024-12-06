@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
 
 use Packetery\Latte;
@@ -74,6 +73,7 @@ class WpdbTracyPanel implements Tracy\IBarPanel {
 			$count++;
 			if ( $count >= $maxQueries ) {
 				yield false;
+
 				break;
 			}
 		}

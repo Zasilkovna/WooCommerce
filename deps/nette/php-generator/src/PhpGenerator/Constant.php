@@ -10,7 +10,6 @@ namespace Packetery\Nette\PhpGenerator;
 use Packetery\Nette;
 /**
  * Class constant.
- * @internal
  */
 final class Constant
 {

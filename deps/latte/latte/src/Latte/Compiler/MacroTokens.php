@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * Macro tag tokenizer.
- * @internal
  */
 class MacroTokens extends TokenIterator
 {

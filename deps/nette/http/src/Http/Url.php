@@ -36,7 +36,6 @@ use Packetery\Nette;
  * @property-read string $baseUrl
  * @property-read string $relativeUrl
  * @property-read array $queryParameters
- * @internal
  */
 class Url implements \JsonSerializable
 {

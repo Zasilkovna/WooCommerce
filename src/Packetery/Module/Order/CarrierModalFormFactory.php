@@ -9,8 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Nette\Forms\Form;
 use Packetery\Module\FormFactory;
+use Packetery\Nette\Forms\Form;
 
 /**
  * Class CarrierModalFormFactory
@@ -63,6 +63,7 @@ class CarrierModalFormFactory {
 						self::FIELD_CARRIER_ID => $currentCarrier,
 					]
 				);
+
 				break;
 			}
 		}
@@ -72,5 +73,4 @@ class CarrierModalFormFactory {
 
 		return $form;
 	}
-
 }

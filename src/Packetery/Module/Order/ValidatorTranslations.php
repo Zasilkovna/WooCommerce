@@ -18,11 +18,10 @@ use Packetery\Core\Validator;
  * @package Packetery
  */
 class ValidatorTranslations implements ValidatorTranslationsInterface {
-
 	/**
 	 * Translations with specified keys.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function get(): array {
 		return [
@@ -39,5 +38,4 @@ class ValidatorTranslations implements ValidatorTranslationsInterface {
 			Validator\Order::ERROR_TRANSLATION_KEY_CUSTOMS_DECLARATION => __( 'Customs declaration is not set.', 'packeta' ),
 		];
 	}
-
 }

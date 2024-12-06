@@ -8,7 +8,6 @@ declare (strict_types=1);
 namespace Packetery\Nette\Utils;
 
 use Packetery\Nette;
-/** @internal */
 class Helpers
 {
     /**

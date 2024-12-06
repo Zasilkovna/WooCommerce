@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class VendorProviderTest extends TestCase {
-
 	public function testBaseProvider(): void {
 		$vendor = DummyFactory::createVendor();
 		$vendor->setTranslatedName( 'Dummy vendor translated' );
@@ -25,5 +24,4 @@ class VendorProviderTest extends TestCase {
 		$vendor = DummyFactory::createVendor();
 		self::assertIsString( $vendor->getGroup() );
 	}
-
 }

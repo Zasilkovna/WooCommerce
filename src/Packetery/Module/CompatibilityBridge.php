@@ -41,5 +41,4 @@ class CompatibilityBridge {
 	public static function getContainer(): Container {
 		return self::$diContainer;
 	}
-
 }

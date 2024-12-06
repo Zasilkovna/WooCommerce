@@ -10,7 +10,6 @@ namespace Packetery\Nette\Neon;
 /**
  * Simple parser & generator for Nette Object Notation.
  * @see https://ne-on.org
- * @internal
  */
 final class Neon
 {

@@ -89,7 +89,6 @@ use Packetery\Nette;
  * @property-read int $width
  * @property-read int $height
  * @property-read resource|\GdImage $imageResource
- * @internal
  */
 class Image
 {

@@ -9,7 +9,6 @@ namespace Packetery\Tracy;
 
 /**
  * Debug Bar.
- * @internal
  */
 class Bar
 {

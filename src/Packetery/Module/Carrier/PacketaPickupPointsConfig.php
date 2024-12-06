@@ -96,7 +96,7 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param string $carrierId Carrier id.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCompoundCarrierVendorGroups( string $carrierId ): array {
 		$vendorGroups              = [];
@@ -178,6 +178,7 @@ class PacketaPickupPointsConfig {
 	 */
 	public function isVendorCarrierId( string $carrierId ): bool {
 		$vendorCarriers = $this->getVendorCarriers();
+
 		return isset( $vendorCarriers[ $carrierId ] );
 	}
 
@@ -197,7 +198,7 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param string $country Country.
 	 *
-	 * @return array
+	 * @return array<int<0, max>, BaseProvider>
 	 */
 	public function getNonFeedCarriersByCountry( string $country ): array {
 		$filteredCarriers = [];
@@ -228,7 +229,7 @@ class PacketaPickupPointsConfig {
 	 * @param string $carrierId Carrier id.
 	 * @param string $country Lowercase country.
 	 *
-	 * @return string|null Null in case of split vendor when split is off.
+	 * @return string
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getFixedCarrierId( string $carrierId, string $country ): string {
@@ -250,5 +251,4 @@ class PacketaPickupPointsConfig {
 
 		return $carrierId;
 	}
-
 }

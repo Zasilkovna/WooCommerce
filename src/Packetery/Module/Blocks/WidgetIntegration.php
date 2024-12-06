@@ -29,7 +29,7 @@ class WidgetIntegration implements IntegrationInterface {
 	/**
 	 * Settings.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	public $settings;
 
@@ -96,7 +96,7 @@ class WidgetIntegration implements IntegrationInterface {
 	/**
 	 * Gets script data.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function get_script_data(): array {
 		return $this->settings;

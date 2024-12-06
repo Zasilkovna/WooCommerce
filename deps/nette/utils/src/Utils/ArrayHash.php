@@ -11,7 +11,6 @@ use Packetery\Nette;
 /**
  * Provides objects to work as array.
  * @template T
- * @internal
  */
 class ArrayHash extends \stdClass implements \ArrayAccess, \Countable, \IteratorAggregate
 {

@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Utils\Reflection;
 /**
  * Creates a representation based on reflection.
- * @internal
  */
 final class Factory
 {

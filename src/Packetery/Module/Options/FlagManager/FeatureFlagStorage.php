@@ -19,7 +19,7 @@ class FeatureFlagStorage {
 	/**
 	 * Static cache.
 	 *
-	 * @var array|null
+	 * @var array<string, string>|null
 	 */
 	private static $flags;
 
@@ -33,16 +33,14 @@ class FeatureFlagStorage {
 	/**
 	 * Gets flags.
 	 *
-	 * @return array|null
+	 * @return array<string, string>|null
 	 */
 	public function getFlags(): ?array {
 		return self::$flags;
 	}
 
 	/**
-	 * Gets flags.
-	 *
-	 * @param array $flags Flags.
+	 * @param array $flags
 	 */
 	public function setFlags( array $flags ): void {
 		self::$flags = $flags;
@@ -51,12 +49,11 @@ class FeatureFlagStorage {
 	/**
 	 * Gets flag.
 	 *
-	 * @param array|false|null $key Key.
+	 * @param string $key Key.
 	 *
-	 * @return mixed|null
+	 * @return string|null
 	 */
-	public function getFlag( $key ) {
+	public function getFlag( string $key ): ?string {
 		return self::$flags[ $key ] ?? null;
 	}
-
 }

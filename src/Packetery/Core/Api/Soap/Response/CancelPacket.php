@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Core\Api\Soap\Response;
 
 /**
@@ -16,7 +15,6 @@ namespace Packetery\Core\Api\Soap\Response;
  * @package Packetery\Core\Api\Soap\Response
  */
 class CancelPacket extends BaseResponse {
-
 	/**
 	 * Checks if cancel is possible.
 	 *

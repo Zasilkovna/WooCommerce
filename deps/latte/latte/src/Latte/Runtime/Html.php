@@ -10,7 +10,6 @@ namespace Packetery\Latte\Runtime;
 use Packetery\Latte;
 /**
  * HTML literal.
- * @internal
  */
 class Html implements HtmlStringable
 {

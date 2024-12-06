@@ -23,7 +23,7 @@ class ShippingZoneRepository {
 	/**
 	 * Shipping zone data store.
 	 *
-	 * @var WC_Shipping_Zone_Data_Store_Interface|null
+	 * @var WC_Shipping_Zone_Data_Store_Interface|WC_Data_Store|null
 	 */
 	private $dataStore = null;
 
@@ -57,10 +57,11 @@ class ShippingZoneRepository {
 	/**
 	 * Gets all zones.
 	 *
-	 * @return array
+	 * @return WC_Shipping_Zone[]
 	 */
 	private function getAllShippingZones(): array {
 		$rawZones = $this->getDataStore()->get_zones();
+		$zones    = [];
 		foreach ( $rawZones as $rawZone ) {
 			$zones[] = new WC_Shipping_Zone( $rawZone );
 		}
@@ -75,7 +76,7 @@ class ShippingZoneRepository {
 	 *
 	 * @param string $methodRateId Method rate id.
 	 *
-	 * @return array|null
+	 * @return stdClass[]|null
 	 */
 	private function getLocationsForShippingRate( string $methodRateId ): ?array {
 		/**
@@ -94,6 +95,7 @@ class ShippingZoneRepository {
 			 * @var stdClass $rawMethod
 			 */
 			foreach ( $rawMethods as $rawMethod ) {
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				$rawMethodId = sprintf( '%s:%s', $rawMethod->method_id, $rawMethod->instance_id );
 				if ( $methodRateId === $rawMethodId ) {
 					return $zone->get_zone_locations();
@@ -109,7 +111,7 @@ class ShippingZoneRepository {
 	 *
 	 * @param string $rateId Rate id.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCountryCodesForShippingRate( string $rateId ): array {
 		return $this->getCountryCodesFromZoneLocations( $this->getLocationsForShippingRate( $rateId ) );
@@ -123,7 +125,7 @@ class ShippingZoneRepository {
 	 * @return array
 	 */
 	private function getCountryCodesFromZoneLocations( ?array $zoneLocations ): array {
-		if ( empty( $zoneLocations ) ) {
+		if ( null === $zoneLocations ) {
 			return [];
 		}
 
@@ -162,5 +164,4 @@ class ShippingZoneRepository {
 
 		return ( $this->getCountryCodesFromZoneLocations( $zone->get_zone_locations() ) );
 	}
-
 }

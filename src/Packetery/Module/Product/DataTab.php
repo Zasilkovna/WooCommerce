@@ -7,16 +7,15 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Product;
 
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Product;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -100,9 +99,9 @@ class DataTab {
 	/**
 	 * Registers tab.
 	 *
-	 * @param array $tabs Tabs definition array.
+	 * @param string[] $tabs Tabs definition array.
 	 *
-	 * @return array
+	 * @return array<string, array<string, string|string[]>>
 	 */
 	public function registerTab( array $tabs ): array {
 		$tabs[ self::NAME ] = [
@@ -175,7 +174,7 @@ class DataTab {
 		}
 
 		$form              = $this->createForm( $product );
-		$form->onSuccess[] = function( Form $form, array $values ) use ( $product ) {
+		$form->onSuccess[] = function ( Form $form, array $values ) use ( $product ) {
 			$this->processFormData( $product->getId(), $values );
 		};
 
@@ -187,8 +186,8 @@ class DataTab {
 	/**
 	 * Process form data.
 	 *
-	 * @param int   $productId Product ID.
-	 * @param array $values    Form values.
+	 * @param int                                    $productId Product ID.
+	 * @param array<string, bool|array<string,bool>> $values    Form values.
 	 */
 	public function processFormData( int $productId, array $values ): void {
 		foreach ( $values as $attr => $value ) {

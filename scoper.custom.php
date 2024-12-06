@@ -13,6 +13,7 @@
  * @return array
  */
 function customize_php_scoper_config( array $config ): array {
+	$config['tag-declarations-as-internal'] = false;
 	$config['patchers'][] = static function ( string $filePath, string $prefix, string $content ): string {
 		$regexForPrefix = "([\\s\"'\\[(<@|])";
 		if ( str_contains( $filePath, 'latte/latte' ) ) {

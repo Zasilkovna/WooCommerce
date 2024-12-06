@@ -57,5 +57,4 @@ class BaseRouter {
 	public function registerRoute( string $path, array $params ): void {
 		register_rest_route( $this->namespace, $this->getRoute( $path ), $params );
 	}
-
 }

@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Utils\Strings;
 /**
  * Generates PHP code.
- * @internal
  */
 class Printer
 {

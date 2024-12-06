@@ -8,7 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class AddressTest extends TestCase {
-
 	public function testSettersAndGetters(): void {
 		$address = DummyFactory::createAddress();
 
@@ -35,5 +34,4 @@ class AddressTest extends TestCase {
 		self::assertIsString( $address->getFullAddress() );
 		self::assertIsArray( $address->export() );
 	}
-
 }

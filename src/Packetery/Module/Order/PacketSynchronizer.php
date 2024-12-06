@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api;
@@ -173,12 +172,22 @@ class PacketSynchronizer {
 			return;
 		}
 
-		if ( $response->getCodeText() === $order->getPacketStatus() ) {
+		$storedUntilResponse = $response->getStoredUntil();
+		$storedUntilOrder    = $order->getStoredUntil();
+
+		if ( $storedUntilResponse === $storedUntilOrder && $response->getCodeText() === $order->getPacketStatus() ) {
 			return;
 		}
 
-		$order->setPacketStatus( $response->getCodeText() );
-		$this->wcOrderActions->updateOrderStatus( $order->getNumber(), $response->getCodeText() );
+		if ( $storedUntilResponse !== $storedUntilOrder ) {
+			$order->setStoredUntil( $storedUntilResponse );
+		}
+
+		if ( $response->getCodeText() !== $order->getPacketStatus() ) {
+			$order->setPacketStatus( $response->getCodeText() );
+			$this->wcOrderActions->updateOrderStatus( $order->getNumber(), $response->getCodeText() );
+		}
+
 		$this->orderRepository->save( $order );
 	}
 

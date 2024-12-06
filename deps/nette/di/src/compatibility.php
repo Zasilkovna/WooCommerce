@@ -8,9 +8,7 @@ declare (strict_types=1);
 namespace Packetery\Nette\DI\Config;
 
 if (\false) {
-    /** @deprecated use \Packetery\Nette\DI\Config\Adapter
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\DI\Config\Adapter */
     interface IAdapter
     {
     }
@@ -20,9 +18,7 @@ if (\false) {
 namespace Packetery\Nette\DI;
 
 if (\false) {
-    /** @deprecated use \Packetery\Nette\DI\Definitions\ServiceDefinition
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\DI\Definitions\ServiceDefinition */
     class ServiceDefinition
     {
     }
@@ -30,9 +26,7 @@ if (\false) {
     \class_alias(Definitions\ServiceDefinition::class, ServiceDefinition::class);
 }
 if (\false) {
-    /** @deprecated use \Packetery\Nette\DI\Definitions\Statement
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\DI\Definitions\Statement */
     class Statement
     {
     }

@@ -1,12 +1,6 @@
 <?php
-/**
- * Class DashboardWidget
- *
- * @package Packetery\Module
- */
 
 declare( strict_types=1 );
-
 
 namespace Packetery\Module;
 
@@ -15,100 +9,68 @@ use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\ShippingProvider;
+use Packetery\Module\Views\UrlBuilder;
 use WC_Data_Store;
 use WC_Shipping_Zone;
+use WC_Shipping_Zone_Data_Store;
 
-/**
- * Class DashboardWidget
- *
- * @package Packetery\Module
- */
 class DashboardWidget {
 
 	/**
-	 * Latte engine.
-	 *
 	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Carrier repository.
-	 *
 	 * @var Carrier\Repository
 	 */
 	private $carrierRepository;
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Carrier options page.
-	 *
 	 * @var Carrier\OptionsPage
 	 */
 	private $carrierOptionsPage;
 
 	/**
-	 * Options page.
-	 *
 	 * @var Options\Page
 	 */
 	private $optionsPage;
 
 	/**
-	 * Survey config.
-	 *
-	 * @var array
+	 * @var array<string, bool|string>
 	 */
 	private $surveyConfig;
 
 	/**
-	 * Carrier entity repository.
-	 *
 	 * @var Carrier\EntityRepository
 	 */
 	private $carrierEntityRepository;
 
 	/**
-	 * ModuleHelper.
-	 *
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
 
 	/**
-	 * Carrier options factory.
-	 *
 	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
 
 	/**
-	 * Carrier activity checker.
-	 *
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
+	/**
 	 * @var Carrier\ActivityBridge
 	 */
 	private $carrierActivityBridge;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Engine                   $latteEngine             Latte engine.
-	 * @param Carrier\Repository       $carrierRepository       Carrier repository.
-	 * @param OptionsProvider          $optionsProvider         Options provider.
-	 * @param Carrier\OptionsPage      $carrierOptionsPage      Carrier options page.
-	 * @param Options\Page             $optionsPage             Options page.
-	 * @param array                    $surveyConfig            Survey config.
-	 * @param Carrier\EntityRepository $carrierEntityRepository Carrier repository.
-	 * @param ModuleHelper             $moduleHelper                  Helper.
-	 * @param CarrierOptionsFactory    $carrierOptionsFactory   Carrier options factory.
-	 * @param Carrier\ActivityBridge   $carrierActivityBridge   Carrier activity checker.
-	 */
 	public function __construct(
 		Engine $latteEngine,
 		Carrier\Repository $carrierRepository,
@@ -119,6 +81,7 @@ class DashboardWidget {
 		Carrier\EntityRepository $carrierEntityRepository,
 		ModuleHelper $moduleHelper,
 		CarrierOptionsFactory $carrierOptionsFactory,
+		UrlBuilder $urlBuilder,
 		Carrier\ActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
@@ -130,6 +93,7 @@ class DashboardWidget {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->moduleHelper            = $moduleHelper;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->urlBuilder              = $urlBuilder;
 		$this->carrierActivityBridge   = $carrierActivityBridge;
 	}
 
@@ -157,6 +121,7 @@ class DashboardWidget {
 	 * @return bool
 	 */
 	private function isPacketaShippingMethodActive(): bool {
+		/** @var WC_Shipping_Zone_Data_Store $shippingDataStore */
 		$shippingDataStore = WC_Data_Store::load( 'shipping-zone' );
 		$shippingZones     = $shippingDataStore->get_zones();
 
@@ -215,7 +180,7 @@ class DashboardWidget {
 				'survey'             => new SurveyConfig(
 					( $this->surveyConfig['active'] && new \DateTimeImmutable( 'now' ) <= $this->surveyConfig['validTo'] ),
 					$this->surveyConfig['url'],
-					Plugin::buildAssetUrl( 'public/images/survey-illustration.png' )
+					$this->urlBuilder->buildAssetUrl( 'public/images/survey-illustration.png' )
 				),
 				'translations'       => [
 					'packeta'                => __( 'Packeta', 'packeta' ),

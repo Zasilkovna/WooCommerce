@@ -40,9 +40,9 @@ class PacketsLabelsPdf {
 	/**
 	 * PacketsLabelsPdf constructor.
 	 *
-	 * @param array<string, string> $packetIds   Packet ids.
-	 * @param string                $labelFormat Label format.
-	 * @param int                   $offset      Offset.
+	 * @param string[] $packetIds   Packet ids.
+	 * @param string   $labelFormat Label format.
+	 * @param int      $offset      Offset.
 	 */
 	public function __construct( array $packetIds, string $labelFormat, int $offset ) {
 		$this->packetIds   = $packetIds;

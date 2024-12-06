@@ -159,7 +159,7 @@ class CreatePacket {
 	 */
 	public function __construct( Entity\Order $order ) {
 		// Required attributes.
-		$this->number    = ( $order->getCustomNumber() ?? $order->getNumber() );
+		$this->number    = $order->getCustomNumberOrNumber();
 		$this->name      = $order->getName();
 		$this->surname   = $order->getSurname();
 		$this->value     = $order->getValue();
@@ -185,7 +185,7 @@ class CreatePacket {
 				$this->street = $address->getStreet();
 				$this->city   = $address->getCity();
 				$this->zip    = $address->getZip();
-				if ( $address->getHouseNumber() ) {
+				if ( null !== $address->getHouseNumber() ) {
 					$this->houseNumber = $address->getHouseNumber();
 				}
 			}
@@ -212,5 +212,4 @@ class CreatePacket {
 	public function getSubmittableData(): array {
 		return array_filter( get_object_vars( $this ) );
 	}
-
 }

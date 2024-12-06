@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * PHP code generator helpers.
- * @internal
  */
 class PhpWriter
 {

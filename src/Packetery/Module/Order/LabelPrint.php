@@ -13,14 +13,14 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\ILabelResponse;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
-use Packetery\Core\Log;
 use Packetery\Core\Entity\Order;
+use Packetery\Core\Log;
+use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
 
@@ -186,7 +186,7 @@ class LabelPrint {
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
 
 		$orderIdsTransient = $this->getOrderIdsTransient();
-		if ( $orderIdsTransient ) {
+		if ( null !== $orderIdsTransient ) {
 			$orderIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 			$count    = count( $orderIds );
 		} else {
@@ -235,22 +235,23 @@ class LabelPrint {
 
 		$fallbackToPacketaLabel = false;
 		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$idParam                = $this->httpRequest->getQuery( 'id' ) ? (int) $this->httpRequest->getQuery( 'id' ) : null;
+		$idParam                = null !== $this->httpRequest->getQuery( 'id' ) ? (int) $this->httpRequest->getQuery( 'id' ) : null;
 		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
 		if ( null !== $idParam && null !== $packetIdParam ) {
 			$fallbackToPacketaLabel = true;
 			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
 			$orderIdsTransient = $this->getOrderIdsTransient();
-			if ( ! $orderIdsTransient ) {
+			if ( null === $orderIdsTransient ) {
 				return;
 			}
 
 			$packetIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 		}
-		if ( ! $packetIds ) {
+		if ( count( $packetIds ) === 0 ) {
 			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+
 			return;
 		}
 
@@ -276,10 +277,8 @@ class LabelPrint {
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
-		if ( ! $response || $response->hasFault() ) {
-			$message = ( null !== $response && $response->hasFault() ) ?
-				__( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' ) :
-				__( 'You selected orders that were not submitted yet', 'packeta' );
+		if ( $response->hasFault() ) {
+			$message = __( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' );
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
@@ -287,6 +286,7 @@ class LabelPrint {
 				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
 			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+
 			return;
 		}
 
@@ -316,7 +316,7 @@ class LabelPrint {
 		$form = $this->formFactory->create( $name );
 
 		$availableOffsets = [];
-		for ( $i = 0; $i <= $maxOffset; $i ++ ) {
+		for ( $i = 0; $i <= $maxOffset; $i++ ) {
 			$availableOffsets[ $i ] = ( 0 === $i ?
 				__( "don't skip any field on a print sheet", 'packeta' ) :
 				// translators: %s is offset.
@@ -360,12 +360,12 @@ class LabelPrint {
 	/**
 	 * Prepares labels.
 	 *
-	 * @param int   $offset Offset value.
-	 * @param array $packetIds Packet ids.
+	 * @param int      $offset Offset value.
+	 * @param string[] $packetIds Packet ids.
 	 *
-	 * @return Response\PacketsLabelsPdf|null
+	 * @return Response\PacketsLabelsPdf
 	 */
-	private function requestPacketaLabels( int $offset, array $packetIds ): ?Response\PacketsLabelsPdf {
+	private function requestPacketaLabels( int $offset, array $packetIds ): Response\PacketsLabelsPdf {
 		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
@@ -374,7 +374,7 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getById( $orderId, true );
+			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
 				if ( null !== $order ) {
@@ -412,8 +412,8 @@ class LabelPrint {
 	/**
 	 * Prepares carrier labels.
 	 *
-	 * @param int   $offset Offset value.
-	 * @param array $packetIds Packet ids.
+	 * @param int      $offset Offset value.
+	 * @param string[] $packetIds Packet ids.
 	 *
 	 * @return Response\PacketsCourierLabelsPdf
 	 */
@@ -426,7 +426,7 @@ class LabelPrint {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_CARRIER_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getById( $orderId, true );
+			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
 				if ( null !== $order ) {
@@ -475,8 +475,8 @@ class LabelPrint {
 	/**
 	 * Gets saved packet ids.
 	 *
-	 * @param array $orderIds Order IDs from transient.
-	 * @param bool  $isCarrierLabels Are carrier labels requested?.
+	 * @param string[] $orderIds Order IDs from transient.
+	 * @param bool     $isCarrierLabels Are carrier labels requested?.
 	 *
 	 * @return string[]
 	 */
@@ -498,7 +498,7 @@ class LabelPrint {
 	/**
 	 * Gets order IDs transient.
 	 *
-	 * @return array|null
+	 * @return string[]|null
 	 */
 	private function getOrderIdsTransient(): ?array {
 		$orderIds = get_transient( self::getOrderIdsTransientName() );
@@ -514,7 +514,7 @@ class LabelPrint {
 	 *
 	 * @param string[] $packetIds List of packet ids.
 	 *
-	 * @return array[]
+	 * @return array<int, array{packetId: string, courierNumber: string}>
 	 */
 	private function getPacketIdsWithCourierNumbers( array $packetIds ): array {
 		$pairs = [];
@@ -538,11 +538,12 @@ class LabelPrint {
 				];
 				$record->orderId = $orderId;
 				$this->logger->add( $record );
-				$order = $this->orderRepository->getById( $orderId, true );
+				$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 				if ( null !== $order ) {
 					$order->updateApiErrorMessage( $response->getFaultString() );
 					$this->orderRepository->save( $order );
 				}
+
 				continue;
 			}
 			$pairs[ $orderId ] = [
@@ -596,5 +597,4 @@ class LabelPrint {
 		);
 		$wcOrder->save();
 	}
-
 }

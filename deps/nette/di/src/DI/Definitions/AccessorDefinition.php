@@ -12,7 +12,6 @@ use Packetery\Nette\DI\Helpers;
 use Packetery\Nette\Utils\Type;
 /**
  * Accessor definition.
- * @internal
  */
 final class AccessorDefinition extends Definition
 {

@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Utils\DateTime;
 /**
  * Rendering helpers for HTTP.
- * @internal
  */
 final class Helpers
 {

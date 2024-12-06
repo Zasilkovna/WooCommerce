@@ -14,15 +14,17 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class PickupPointValidateTest extends TestCase {
-
 	public function testValidateOk(): void {
 		$webRequestClientMock = $this->getWebRequestClientMock();
-		$expectedResponse = json_encode([
-			'isValid' => true,
-			'errors'  => [],
-		]);
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		$expectedResponse = json_encode(
+			[
+				'isValid' => true,
+				'errors'  => [],
+			]
+		);
 		$webRequestClientMock->method( 'post' )
-			->willReturn($expectedResponse);
+			->willReturn( $expectedResponse );
 		$validator = new PickupPointValidate( $webRequestClientMock, 'dummyApiKey' );
 
 		self::assertInstanceOf(
@@ -44,5 +46,4 @@ class PickupPointValidateTest extends TestCase {
 	private function getWebRequestClientMock(): MockObject|IWebRequestClient {
 		return $this->createMock( IWebRequestClient::class );
 	}
-
 }

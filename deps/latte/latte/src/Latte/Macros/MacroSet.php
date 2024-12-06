@@ -12,7 +12,6 @@ use Packetery\Latte\CompileException;
 use Packetery\Latte\MacroNode;
 /**
  * Base Macro implementation. Allows add multiple macros.
- * @internal
  */
 class MacroSet implements \Packetery\Latte\Macro
 {

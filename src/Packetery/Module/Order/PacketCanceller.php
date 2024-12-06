@@ -13,8 +13,8 @@ use Packetery\Core\Api\Soap;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
-use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Http\Request;
 
@@ -148,6 +148,7 @@ class PacketCanceller {
 
 			$this->messageManager->flash_message( __( 'Order not found', 'packeta' ), MessageManager::TYPE_ERROR );
 			$this->commonLogic->redirectTo( $redirectTo, $order );
+
 			return;
 		}
 
@@ -182,6 +183,7 @@ class PacketCanceller {
 			$this->logger->add( $record );
 
 			$this->messageManager->flash_message( __( 'Packet could not be cancelled', 'packeta' ), MessageManager::TYPE_ERROR );
+
 			return;
 		}
 

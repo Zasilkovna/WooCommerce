@@ -172,5 +172,4 @@ class Rounder {
 
 		return $newNumber;
 	}
-
 }

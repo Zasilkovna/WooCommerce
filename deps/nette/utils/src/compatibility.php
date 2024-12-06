@@ -9,9 +9,7 @@ namespace Packetery\Nette\Utils;
 
 use Packetery\Nette;
 if (\false) {
-    /** @deprecated use \Packetery\Nette\HtmlStringable
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\HtmlStringable */
     interface IHtmlString extends \Packetery\Nette\HtmlStringable
     {
     }
@@ -21,9 +19,7 @@ if (\false) {
 namespace Packetery\Nette\Localization;
 
 if (\false) {
-    /** @deprecated use \Packetery\Nette\Localization\Translator
-     * @internal
-     */
+    /** @deprecated use \Packetery\Nette\Localization\Translator */
     interface ITranslator extends Translator
     {
     }

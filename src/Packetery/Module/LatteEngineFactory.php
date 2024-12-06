@@ -10,9 +10,6 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
-use Packetery\Latte\MacroNode;
-use Packetery\Latte\Macros\MacroSet;
-use Packetery\Latte\PhpWriter;
 use Packetery\Nette\Bridges\FormsLatte\FormMacros;
 
 /**
@@ -21,17 +18,16 @@ use Packetery\Nette\Bridges\FormsLatte\FormMacros;
  * @package Packetery
  */
 class LatteEngineFactory {
-
 	/**
 	 * Creates latte engine factory
 	 *
-	 * @param string $temp_dir Temporary folder.
+	 * @param string $tempDir Temporary folder.
 	 *
 	 * @return Engine
 	 */
-	public function create( string $temp_dir ): Engine {
+	public function create( string $tempDir ): Engine {
 		$engine = new Engine();
-		$engine->setTempDirectory( $temp_dir );
+		$engine->setTempDirectory( $tempDir );
 		FormMacros::install( $engine->getCompiler() );
 		$engine->addFilter(
 			'wpDateTime',
@@ -40,17 +36,6 @@ class LatteEngineFactory {
 			}
 		);
 
-		$macroSet = new MacroSet( $engine->getCompiler() );
-		$macroSet->addMacro(
-			'phpComment',
-			function ( MacroNode $node, PhpWriter $writer ) {
-				$output = trim( $node->args, "'" );
-				$output = preg_replace( '~/~', '|', $output );
-				return $writer->write( '/* ' . $output . ' */' );
-			}
-		);
-
-		$engine->addMacro( 'packetery-macro-set', $macroSet );
 		return $engine;
 	}
 }

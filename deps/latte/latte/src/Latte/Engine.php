@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * Templating engine Latte.
- * @internal
  */
 class Engine
 {

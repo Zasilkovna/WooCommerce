@@ -22,7 +22,7 @@ class Updater {
 	/**
 	 * Log messages.
 	 *
-	 * @var array
+	 * @var string[]
 	 */
 	private $logMessages = [];
 
@@ -31,7 +31,7 @@ class Updater {
 	 *
 	 * @var Repository
 	 */
-	private $carrier_repository;
+	private $carrierRepository;
 
 	/**
 	 * Logger.
@@ -43,18 +43,18 @@ class Updater {
 	/**
 	 * CarrierUpdater constructor.
 	 *
-	 * @param Repository $carrier_repository Carrier repository.
+	 * @param Repository $carrierRepository Carrier repository.
 	 * @param ILogger    $logger             Logger.
 	 */
-	public function __construct( Repository $carrier_repository, ILogger $logger ) {
-		$this->carrier_repository = $carrier_repository;
-		$this->logger             = $logger;
+	public function __construct( Repository $carrierRepository, ILogger $logger ) {
+		$this->carrierRepository = $carrierRepository;
+		$this->logger            = $logger;
 	}
 
 	/**
 	 * Validates data from API.
 	 *
-	 * @param array $carriers Data retrieved from API.
+	 * @param non-empty-array<int, array<string, string>> $carriers
 	 *
 	 * @return bool
 	 */
@@ -85,14 +85,14 @@ class Updater {
 	/**
 	 * Maps input data to storage structure.
 	 *
-	 * @param array $carriers Validated data retrieved from API.
+	 * @param array<int, array<string, string>> $carriers $carriers Validated data retrieved from API.
 	 *
-	 * @return array data to store in db
+	 * @return array<int, array<string, string|float|bool>> data to store in db
 	 */
 	private function carriers_mapper( array $carriers ): array {
-		$mapped_data = array();
+		$mappedData = array();
 
-		$carrier_boolean_params = array(
+		$carrierBooleanParams = array(
 			'is_pickup_points'         => 'pickupPoints',
 			'has_carrier_direct_label' => 'apiAllowed',
 			'separate_house_number'    => 'separateHouseNumber',
@@ -104,36 +104,36 @@ class Updater {
 		);
 
 		foreach ( $carriers as $carrier ) {
-			$carrier_id   = (int) $carrier['id'];
-			$carrier_data = array(
+			$carrierId   = (int) $carrier['id'];
+			$carrierData = array(
 				'name'       => $carrier['name'],
 				'country'    => $carrier['country'],
 				'currency'   => $carrier['currency'],
 				'max_weight' => (float) $carrier['maxWeight'],
 				'deleted'    => false,
 			);
-			foreach ( $carrier_boolean_params as $column_name => $param_name ) {
-				$carrier_data[ $column_name ] = ( 'true' === $carrier[ $param_name ] );
+			foreach ( $carrierBooleanParams as $columnName => $paramName ) {
+				$carrierData[ $columnName ] = ( 'true' === $carrier[ $paramName ] );
 			}
-			$mapped_data[ $carrier_id ] = $carrier_data;
+			$mappedData[ $carrierId ] = $carrierData;
 		}
 
-		return $mapped_data;
+		return $mappedData;
 	}
 
 	/**
 	 * Saves carriers.
 	 *
-	 * @param array $carriers Validated data retrieved from API.
+	 * @param array<int, array<string, string>> $carriers Validated data retrieved from API.
 	 */
 	public function save( array $carriers ): void {
-		$mapped_data  = $this->carriers_mapper( $carriers );
-		$carriersInDb = $this->carrier_repository->getAllRawIndexed();
-		foreach ( $mapped_data as $carrier_id => $carrier ) {
-			if ( ! empty( $carriersInDb[ $carrier_id ] ) ) {
-				$this->carrier_repository->update( $carrier, (int) $carrier_id );
-				$differences = $this->getArrayDifferences( $carriersInDb[ $carrier_id ], $carrier );
-				if ( ! empty( $differences ) ) {
+		$mappedData   = $this->carriers_mapper( $carriers );
+		$carriersInDb = $this->carrierRepository->getAllRawIndexed();
+		foreach ( $mappedData as $carrierId => $carrier ) {
+			if ( isset( $carriersInDb[ $carrierId ] ) ) {
+				$this->carrierRepository->update( $carrier, $carrierId );
+				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
+				if ( count( $differences ) > 0 ) {
 					$this->addLogEntry(
 						// translators: %s is carrier name.
 						sprintf( __( 'Carrier parameters changed for carrier "%s".', 'packeta' ), $carrier['name'] ) . ' ' .
@@ -141,10 +141,10 @@ class Updater {
 						__( 'New parameters', 'packeta' ) . ': ' . implode( ', ', $differences )
 					);
 				}
-				unset( $carriersInDb[ $carrier_id ] );
+				unset( $carriersInDb[ $carrierId ] );
 			} else {
-				$carrier['id'] = $carrier_id;
-				$this->carrier_repository->insert( $carrier );
+				$carrier['id'] = $carrierId;
+				$this->carrierRepository->insert( $carrier );
 				$this->addLogEntry(
 					// translators: %s is carrier name.
 					sprintf( __( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
@@ -152,8 +152,8 @@ class Updater {
 			}
 		}
 
-		if ( ! empty( $carriersInDb ) ) {
-			$this->carrier_repository->set_as_deleted( array_keys( $carriersInDb ) );
+		if ( count( $carriersInDb ) > 0 ) {
+			$this->carrierRepository->set_as_deleted( array_keys( $carriersInDb ) );
 			foreach ( $carriersInDb as $deletedCarrier ) {
 				if ( true === (bool) $deletedCarrier['deleted'] ) {
 					continue;
@@ -165,7 +165,7 @@ class Updater {
 			}
 		}
 
-		if ( ! empty( $this->logMessages ) ) {
+		if ( count( $this->logMessages ) > 0 ) {
 			set_transient( CountryListingPage::TRANSIENT_CARRIER_CHANGES, true );
 		} else {
 			delete_transient( CountryListingPage::TRANSIENT_CARRIER_CHANGES );
@@ -175,28 +175,29 @@ class Updater {
 	/**
 	 * Gets array changes as array of strings.
 	 *
-	 * @param array $old Previous version.
-	 * @param array $new New version.
+	 * @param array<string, string>            $oldData Previous version.
+	 * @param array<string, string|float|bool> $newData New version.
 	 *
-	 * @return string[]
+	 * @return array<string, string>
 	 */
-	private function getArrayDifferences( array $old, array $new ): array {
+	private function getArrayDifferences( array $oldData, array $newData ): array {
 		$differences    = [];
 		$columnSettings = $this->getColumnSettings();
 
-		foreach ( $old as $key => $oldValue ) {
+		foreach ( $oldData as $key => $oldValue ) {
 			if ( 'id' === $key ) {
 				continue;
 			}
 
 			if ( 'deleted' === $key ) {
-				if ( '1' === (string) $oldValue && isset( $new['name'] ) ) {
+				if ( '1' === (string) $oldValue && isset( $newData['name'] ) ) {
 					$differences[ $key ] = __( 'carrier was re-enabled', 'packeta' );
 				}
+
 				continue;
 			}
 
-			$newValue = (string) $new[ $key ];
+			$newValue = (string) $newData[ $key ];
 			if ( $columnSettings[ $key ]['isBoolean'] ) {
 				$newValue = ( '1' === $newValue ? $newValue : '0' );
 				$oldValue = ( '1' === (string) $oldValue ? (string) $oldValue : '0' );
@@ -235,7 +236,7 @@ class Updater {
 	/**
 	 * Gets translations and isBoolean properties for column names.
 	 *
-	 * @return array[]
+	 * @return array<string, array<string, string|bool>>
 	 */
 	private function getColumnSettings(): array {
 		return [
@@ -289,5 +290,4 @@ class Updater {
 			],
 		];
 	}
-
 }

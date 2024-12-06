@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Schema\Expect;
 /**
  * PHP directives definition.
- * @internal
  */
 final class PhpExtension extends \Packetery\Nette\DI\CompilerExtension
 {

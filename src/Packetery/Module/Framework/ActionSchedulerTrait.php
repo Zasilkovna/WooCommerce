@@ -15,7 +15,6 @@ namespace Packetery\Module\Framework;
  * @package Packetery
  */
 trait ActionSchedulerTrait {
-
 	/**
 	 * Schedule an action to run one time.
 	 *
@@ -28,5 +27,4 @@ trait ActionSchedulerTrait {
 	public function asScheduleSingleAction( int $timestamp, string $hook, array $args = [] ): void {
 		as_schedule_single_action( $timestamp, $hook, $args );
 	}
-
 }

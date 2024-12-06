@@ -106,10 +106,11 @@ class ShippingProvider {
 
 	/**
 	 * Loads generated shipping methods, including split ones when split is off.
+	 * Used in CLI generator.
 	 *
 	 * @return void
 	 */
-	public function loadAllClasses(): void {
+	public static function loadAllClasses(): void {
 		$generatedClassesPath = __DIR__ . '/Generated';
 		foreach ( scandir( $generatedClassesPath ) as $filename ) {
 			if ( preg_match( '/\.php$/', $filename ) ) {
@@ -217,6 +218,7 @@ class ShippingProvider {
 				foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
 					if ( $carrier->getId() === $fullyQualifiedClassname::CARRIER_ID ) {
 						$methods = $this->addActiveCarrierMethod( $fullyQualifiedClassname, $methods );
+
 						break;
 					}
 				}
@@ -277,11 +279,11 @@ class ShippingProvider {
 				$objectA = new $classA();
 				$objectB = new $classB();
 
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				return strcmp( $objectA->method_title, $objectB->method_title );
 			}
 		);
 
 		return $methods;
 	}
-
 }

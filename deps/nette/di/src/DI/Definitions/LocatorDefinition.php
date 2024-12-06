@@ -10,7 +10,6 @@ namespace Packetery\Nette\DI\Definitions;
 use Packetery\Nette;
 /**
  * Multi accessor/factory definition.
- * @internal
  */
 final class LocatorDefinition extends Definition
 {

@@ -65,6 +65,7 @@ class FormFactory {
 		$form = new Form( $name );
 		$form->setHttpRequest( $this->request );
 		$form->allowCrossOrigin();
+
 		return $form;
 	}
 }

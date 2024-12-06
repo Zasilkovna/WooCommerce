@@ -25,7 +25,6 @@ use Packetery\Nette;
  * @property-read int $offset
  * @property-read int|null $countdownOffset
  * @property-read int $length
- * @internal
  */
 class Paginator
 {

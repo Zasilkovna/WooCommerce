@@ -9,7 +9,6 @@ namespace Packetery\Latte\Tools;
 
 use Packetery\Latte;
 use Packetery\Nette;
-/** @internal */
 final class Linter
 {
     use \Packetery\Latte\Strict;

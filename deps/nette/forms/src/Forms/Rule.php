@@ -10,7 +10,6 @@ namespace Packetery\Nette\Forms;
 use Packetery\Nette;
 /**
  * Single validation rule or condition represented as value object.
- * @internal
  */
 class Rule
 {

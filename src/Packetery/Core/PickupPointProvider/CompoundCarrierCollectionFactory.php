@@ -15,7 +15,6 @@ namespace Packetery\Core\PickupPointProvider;
  * @package Packetery
  */
 class CompoundCarrierCollectionFactory {
-
 	/**
 	 * Creates collection.
 	 * TODO: take into account that not all types of pickup points support age verification.
@@ -79,5 +78,4 @@ class CompoundCarrierCollectionFactory {
 			),
 		];
 	}
-
 }

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Module\Options\OptionsProvider;
+use WC_Order_Item_Product;
 
 /**
  * Class WeightCalculator
@@ -45,16 +46,18 @@ class WeightCalculator {
 		$weight = 0;
 		foreach ( $order->get_items() as $item ) {
 			$quantity = $item->get_quantity();
-			$product  = $item->get_product();
+			if ( $item instanceof WC_Order_Item_Product ) {
+				$product = $item->get_product();
 
-			if ( is_object( $product ) && method_exists( $product, 'get_weight' ) ) {
-				$productWeight = (float) $product->get_weight();
-				$weight       += ( $productWeight * $quantity );
+				if ( is_object( $product ) && method_exists( $product, 'get_weight' ) ) {
+					$productWeight = (float) $product->get_weight();
+					$weight       += ( $productWeight * $quantity );
+				}
 			}
 		}
 
 		$weightKg = \wc_get_weight( $weight, 'kg' );
-		if ( $weightKg ) {
+		if ( is_numeric( $weightKg ) ) {
 			$weightKg += $this->optionsProvider->getPackagingWeight();
 		}
 

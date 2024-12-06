@@ -14,7 +14,6 @@ use Packetery\Nette\Utils\ObjectHelpers;
  * - access to undeclared members throws exceptions
  * - support for @property annotations
  * - support for calling event handlers stored in $onEvent via onEvent()
- * @internal
  */
 trait SmartObject
 {

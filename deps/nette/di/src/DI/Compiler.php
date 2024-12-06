@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Nette\Schema;
 /**
  * DI container compiler.
- * @internal
  */
 class Compiler
 {

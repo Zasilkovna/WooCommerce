@@ -12,7 +12,6 @@ use Packetery\Nette;
  * Closure.
  *
  * @property string $body
- * @internal
  */
 final class Closure
 {

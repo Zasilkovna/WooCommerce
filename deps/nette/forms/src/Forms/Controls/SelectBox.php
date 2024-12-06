@@ -10,7 +10,6 @@ namespace Packetery\Nette\Forms\Controls;
 use Packetery\Nette;
 /**
  * Select box control that allows single item selection.
- * @internal
  */
 class SelectBox extends ChoiceControl
 {

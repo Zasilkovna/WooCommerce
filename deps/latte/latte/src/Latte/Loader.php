@@ -9,7 +9,6 @@ namespace Packetery\Latte;
 
 /**
  * Template loader.
- * @internal
  */
 interface Loader
 {

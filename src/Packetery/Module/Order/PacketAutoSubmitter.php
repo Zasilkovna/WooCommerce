@@ -74,7 +74,7 @@ class PacketAutoSubmitter {
 			return;
 		}
 
-		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 3 );
+		add_action( self::HOOK_NAME_HANDLE_EVENT, [ $this, 'handleEvent' ], 10, 2 );
 
 		$mappedEvents = $this->optionsProvider->getPacketAutoSubmissionMappedUniqueEvents();
 		foreach ( $mappedEvents as $mappedEvent ) {
@@ -85,6 +85,7 @@ class PacketAutoSubmitter {
 						$this->handleEvent( self::EVENT_ON_ORDER_COMPLETED, $orderId );
 					}
 				);
+
 				continue;
 			}
 
@@ -147,5 +148,4 @@ class PacketAutoSubmitter {
 		}
 		as_schedule_single_action( time(), self::HOOK_NAME_HANDLE_EVENT, [ $event, $orderId, is_admin() === false ] );
 	}
-
 }

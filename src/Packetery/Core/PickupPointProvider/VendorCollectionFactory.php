@@ -17,7 +17,6 @@ use Packetery\Core\Entity;
  * @package Packetery
  */
 class VendorCollectionFactory {
-
 	/**
 	 * Creates collection.
 	 *
@@ -110,5 +109,4 @@ class VendorCollectionFactory {
 			),
 		];
 	}
-
 }
