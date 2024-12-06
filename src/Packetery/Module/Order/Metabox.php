@@ -192,16 +192,10 @@ class Metabox {
 		$this->carrierModal         = $carrierModal;
 	}
 
-	/**
-	 *  Registers related hooks.
-	 */
 	public function register(): void {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 
-	/**
-	 *  Add metaboxes
-	 */
 	public function add_meta_boxes(): void {
 		if ( ! $this->detailCommonLogic->isPacketeryOrder() ) {
 			return;
@@ -225,9 +219,6 @@ class Metabox {
 		}
 	}
 
-	/**
-	 * Renders metabox content.
-	 */
 	public function render_metabox(): void {
 		$parts = $this->prepareMetaboxParts();
 
@@ -249,7 +240,7 @@ class Metabox {
 	}
 
 	/**
-	 * Prepares metabox parts.
+	 * @return array<string, string>
 	 */
 	private function prepareMetaboxParts(): array {
 		static $partsCache;
@@ -325,7 +316,7 @@ class Metabox {
 			);
 
 			$packetStatusTranslatedName = PacketStatusResolver::getTranslatedName( $order->getPacketStatus() );
-
+			/** @var array<string, string> $statusClasses */
 			$statusClasses = [
 				'received data'         => 'received-data',
 				'unknown'               => 'unknown',
@@ -597,7 +588,7 @@ class Metabox {
 	/**
 	 * Creates pickup point picker settings.
 	 *
-	 * @return array|null
+	 * @return array<string, array<string, null|array<string, string|bool>|string>>|null
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
@@ -617,7 +608,7 @@ class Metabox {
 	/**
 	 * Creates address picker settings.
 	 *
-	 * @return array|null
+	 * @return mixed[]|null
 	 */
 	public function getAddressWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();

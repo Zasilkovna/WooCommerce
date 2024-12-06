@@ -29,7 +29,7 @@ class Options {
 	/**
 	 * Options.
 	 *
-	 * @var array
+	 * @var array<string, string|bool|array<string, string|bool>>
 	 */
 	private $options;
 
@@ -82,13 +82,7 @@ class Options {
 	 * @return string
 	 */
 	public function getAddressValidation(): string {
-		$none  = 'none';
-		$value = $this->options['address_validation'] ?? $none;
-		if ( $value ) {
-			return $value;
-		}
-
-		return $none;
+		return $this->options['address_validation'] ?? 'none';
 	}
 
 	/**

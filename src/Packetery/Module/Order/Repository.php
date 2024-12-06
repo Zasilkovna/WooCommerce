@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use DateTimeImmutable;
 use Exception;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
@@ -102,9 +103,9 @@ class Repository {
 	/**
 	 * Applies custom order status filter.
 	 *
-	 * @param array          $clauses     Query clauses.
-	 * @param \WP_Query|null $queryObject WP Query.
-	 * @param array          $paramValues Param values.
+	 * @param array<string, string> $clauses     Query clauses.
+	 * @param \WP_Query|null        $queryObject WP Query.
+	 * @param array<string, string> $paramValues Param values.
 	 *
 	 * @return void
 	 */
@@ -133,11 +134,11 @@ class Repository {
 	/**
 	 * Extends SQL query clauses.
 	 *
-	 * @param array          $clauses Clauses.
-	 * @param \WP_Query|null $queryObject Query object.
-	 * @param array          $paramValues Param values.
+	 * @param array<string, string>      $clauses Clauses.
+	 * @param \WP_Query|null             $queryObject Query object.
+	 * @param array<string, string|null> $paramValues Param values.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function processClauses( array $clauses, ?\WP_Query $queryObject, array $paramValues ): array {
 		if ( ModuleHelper::isHposEnabled() ) {
@@ -346,7 +347,7 @@ class Repository {
 	 *
 	 * @param Order $order Order.
 	 *
-	 * @return array
+	 * @return array<string, string|null|DateTimeImmutable>
 	 */
 	private function orderToDbArray( Order $order ): array {
 		$point = $order->getPickupPoint();
@@ -413,7 +414,7 @@ class Repository {
 	/**
 	 * Saves order data.
 	 *
-	 * @param array $orderData Order data.
+	 * @param array<string, string|null|DateTimeImmutable> $orderData Order data.
 	 *
 	 * @return void
 	 */
@@ -425,7 +426,7 @@ class Repository {
 	/**
 	 * Calls logic before order data replace/insert.
 	 *
-	 * @param array $orderData Order data.
+	 * @param array<string, string|null|DateTimeImmutable> $orderData Order data.
 	 * @return void
 	 */
 	private function onBeforeDataInsertion( array $orderData ): void {
@@ -467,7 +468,7 @@ class Repository {
 	/**
 	 * Loads order entities by list of ids.
 	 *
-	 * @param array $orderIds Order ids.
+	 * @param string[] $orderIds Order ids.
 	 *
 	 * @return Order[]
 	 */
@@ -509,10 +510,10 @@ class Repository {
 	/**
 	 * Finds orders.
 	 *
-	 * @param array $allowedPacketStatuses Allowed packet statuses.
-	 * @param array $allowedOrderStatuses  Allowed order statuses.
-	 * @param int   $maxDays               Max number of days of single packet sync.
-	 * @param int   $limit                 Number of records.
+	 * @param string[] $allowedPacketStatuses Allowed packet statuses.
+	 * @param string[] $allowedOrderStatuses  Allowed order statuses.
+	 * @param int      $maxDays               Max number of days of single packet sync.
+	 * @param int      $limit                 Number of records.
 	 *
 	 * @return \Generator<int>
 	 * @throws Exception Exception.
@@ -602,7 +603,7 @@ class Repository {
 	/**
 	 * Counts orders by given params.
 	 *
-	 * @param array $params Params.
+	 * @param array<string, string> $params Params.
 	 *
 	 * @return int
 	 */

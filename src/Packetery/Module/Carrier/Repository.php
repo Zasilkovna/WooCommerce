@@ -106,7 +106,7 @@ class Repository {
 	 *
 	 * @param int $carrierId Carrier id.
 	 *
-	 * @return array|null
+	 * @return array<string, string>|null
 	 */
 	public function getById( int $carrierId ): ?array {
 		return $this->wpdbAdapter->get_row(
@@ -153,7 +153,7 @@ class Repository {
 	/**
 	 * Gets all carriers.
 	 *
-	 * @return array[]
+	 * @return array<int, array<string, string|float|bool>>
 	 */
 	public function getAllRawIndexed(): array {
 		$unIndexedResult = $this->wpdbAdapter->get_results(

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
+use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
 use Packetery\Module;
 use Packetery\Module\Carrier\CountryListingPage;
@@ -157,7 +158,7 @@ class Exporter {
 	/**
 	 * Format plugins.
 	 *
-	 * @param array $plugins Plugins.
+	 * @param array<string, array<string, string>> $plugins Plugins.
 	 *
 	 * @return string
 	 */
@@ -181,11 +182,8 @@ class Exporter {
 	}
 
 	/**
-	 * Remaps log records.
-	 *
-	 * @param iterable $logs Logs.
-	 *
-	 * @return array
+	 * @param \Generator<Record>|array{} $logs
+	 * @return array<array<string, string>>
 	 */
 	private function remapLogRecords( iterable $logs ): array {
 		$result = [];

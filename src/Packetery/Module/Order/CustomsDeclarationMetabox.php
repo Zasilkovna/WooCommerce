@@ -513,7 +513,7 @@ class CustomsDeclarationMetabox {
 	 * @param string    $relatedFileIdKey Related file id key.
 	 * @param array     $containerValues  Container values.
 	 * @param Container $formContainer    Form container.
-	 * @param array     $fieldsToOmit     Fields to omit.
+	 * @param string[]  $fieldsToOmit     Fields to omit.
 	 *
 	 * @return void
 	 */

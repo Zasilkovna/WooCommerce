@@ -29,7 +29,7 @@ class Carrier {
 	/**
 	 * Carrier factory.
 	 *
-	 * @param array $dbResult Data from db.
+	 * @param array<string, string> $dbResult Data from db.
 	 *
 	 * @return Entity\Carrier
 	 */

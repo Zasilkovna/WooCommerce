@@ -134,9 +134,9 @@ class GridExtender {
 	/**
 	 * Adds custom filtering links to order grid.
 	 *
-	 * @param array $htmlLinks Array of html links.
+	 * @param string[] $htmlLinks Array of html links.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function addFilterLinks( array $htmlLinks ): array {
 		$latteParams = [
@@ -221,7 +221,7 @@ class GridExtender {
 	 *
 	 * @param Core\Entity\Order $order Order.
 	 *
-	 * @return array
+	 * @return array{orderNumber: null|string, weight: null|float}
 	 */
 	private function getWeightCellContentParams( Core\Entity\Order $order ): array {
 		return [

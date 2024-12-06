@@ -55,10 +55,10 @@ class DbLogger implements ILogger {
 	/**
 	 * Gets records.
 	 *
-	 * @param int|null    $orderId Order ID.
-	 * @param string|null $action  Action.
-	 * @param array       $sorting Sorting config.
-	 * @param int         $limit   Limit.
+	 * @param int|null              $orderId Order ID.
+	 * @param string|null           $action  Action.
+	 * @param array<string, string> $sorting Sorting config.
+	 * @param int                   $limit   Limit.
 	 *
 	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.
@@ -99,7 +99,7 @@ class DbLogger implements ILogger {
 	/**
 	 * Gets logs for given period as array.
 	 *
-	 * @param array $dateQuery Date_query compatible array.
+	 * @param array<array<string, string>> $dateQuery Date_query compatible array.
 	 *
 	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.

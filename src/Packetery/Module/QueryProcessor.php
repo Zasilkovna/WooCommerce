@@ -65,10 +65,10 @@ class QueryProcessor {
 	 *
 	 * @link https://wordpress.stackexchange.com/questions/50305/how-to-extend-wp-query-to-include-custom-table-in-query
 	 *
-	 * @param array     $clauses     Clauses.
-	 * @param \WP_Query $queryObject WP_Query.
+	 * @param array<string, string> $clauses     Clauses.
+	 * @param \WP_Query             $queryObject WP_Query.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function processClauses( array $clauses, \WP_Query $queryObject ): array {
 		if ( false === $this->contextResolver->isOrderGridPage() ) {
@@ -95,9 +95,9 @@ class QueryProcessor {
 	/**
 	 * Extends High-Performance order storage grid filters.
 	 *
-	 * @param array $clauses Clauses.
+	 * @param array<string, string> $clauses Clauses.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function processHposClauses( array $clauses ): array {
 		if ( false === $this->contextResolver->isOrderGridPage() ) {
@@ -114,7 +114,7 @@ class QueryProcessor {
 	/**
 	 * Gets param values.
 	 *
-	 * @return null[]
+	 * @return array<string,null>
 	 */
 	private function getParamValues(): array {
 		$paramValues = [

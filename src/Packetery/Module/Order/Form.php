@@ -141,7 +141,7 @@ class Form {
 	 *
 	 * @param array<string, string> $validationResult Validation result.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public static function getInvalidFieldsFromValidationResult( array $validationResult ): array {
 		$validationFormInputMapping = [

@@ -128,7 +128,7 @@ class Message {
 	/**
 	 * Converts object to array.
 	 *
-	 * @return array
+	 * @return array<string, string|bool>
 	 */
 	public function toArray(): array {
 		return get_object_vars( $this );
