@@ -15,7 +15,7 @@ composer --no-interaction --quiet --no-dev install
 echo "➤ Running sniffer:"
 ./vendor/bin/phpcs -s 2>&1 | tee /tmp/sniffer.log
 
-if grep -q '| ERROR' /tmp/sniffer.log; then
+if grep -q 'ERROR' /tmp/sniffer.log; then
 	echo "🛑 Sniffer found errors, fix them."
 	exit 1
 fi
