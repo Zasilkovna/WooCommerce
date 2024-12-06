@@ -15,12 +15,8 @@ use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Views\UrlBuilder;
 use WC_Data_Store;
-use WC_Object_Data_Store_Interface;
 use WC_Shipping_Zone;
 use WC_Shipping_Zone_Data_Store;
-use WC_Shipping_Zone_Data_Store_Interface;
-use function Packetery\dump;
-use function PHPStan\dumpType;
 
 /**
  * Class DashboardWidget
