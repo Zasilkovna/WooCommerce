@@ -142,6 +142,26 @@ class CheckoutServiceTest extends TestCase {
 		$this->assertNull( $this->checkoutService->getCarrierIdFromShippingMethod( '' ) );
 	}
 
+	public function testGetCarrierIdFromPacketeryShippingMethod(): void {
+		$this->createCheckoutServiceMock();
+		$expected = 'zpointcz';
+		$this->assertEquals(
+			$expected,
+			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod(
+				self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS
+			)
+		);
+	}
+
+	public function testIsPickupPointOrderWhenNoMethod(): void {
+		$this->createCheckoutServiceMock();
+
+		$this->httpRequest->method( 'getPost' )->willReturn( null );
+		$this->wcAdapter->method( 'cartCalculateShipping' )->willReturn( [] );
+
+		$this->assertFalse( $this->checkoutService->isPickupPointOrder() );
+	}
+
 	public function testIsPickupPointOrderWhenItIsNot(): void {
 		$this->createCheckoutServiceMock();
 		$this->httpRequest->method( 'getPost' )->willReturn( [ 'dummy_method' ] );
@@ -243,7 +263,7 @@ class CheckoutServiceTest extends TestCase {
 		$expectedCountry = 'cz';
 		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( strtoupper( $expectedCountry ) );
 
-		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountryOrEmpty() );
+		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
 	}
 
 	public function testGetCustomerCountryWhenCustomerShippingCountryIsNull(): void {
@@ -253,7 +273,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
 		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( strtoupper( $expectedCountry ) );
 
-		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountryOrEmpty() );
+		$this->assertEquals( $expectedCountry, $this->checkoutService->getCustomerCountry() );
 	}
 
 	public function testGetCustomerCountryWhenCustomerShippingCountryAndCustomerBillingCountryAreNull(): void {
@@ -262,7 +282,7 @@ class CheckoutServiceTest extends TestCase {
 		$this->wcAdapter->method( 'customerGetShippingCountry' )->willReturn( null );
 		$this->wcAdapter->method( 'customerGetBillingCountry' )->willReturn( null );
 
-		$this->assertEquals( '', $this->checkoutService->getCustomerCountryOrEmpty() );
+		$this->assertEquals( '', $this->checkoutService->getCustomerCountry() );
 	}
 
 	public function testAreBlocksUsedInCheckoutBlockDetection(): void {

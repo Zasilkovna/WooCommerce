@@ -37,6 +37,7 @@ class ShippingRateFactoryTest extends TestCase {
 	private WpAdapter|MockObject $carDeliveryConfig;
 	private WpAdapter|MockObject $provider;
 	private CartService|MockObject $cartService;
+	private CheckoutService|MockObject $checkoutService;
 	private ShippingRateFactory $shippingRateFactory;
 
 	private function createShippingRateFactoryMock(): void {
@@ -50,9 +51,10 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
 		$this->provider                     = $this->createMock( OptionsProvider::class );
 		$this->cartService                  = $this->createMock( CartService::class );
+		$this->checkoutService              = $this->createMock( CheckoutService::class );
 
 		$this->shippingRateFactory = new ShippingRateFactory(
-			$this->createMock( CheckoutService::class ),
+			$this->checkoutService,
 			$this->carrierEntityRepository,
 			$this->wcAdapter,
 			$this->cartService,
@@ -488,8 +490,8 @@ class ShippingRateFactoryTest extends TestCase {
 			->method( 'cartGetCartContent' )
 			->willReturn( [ $cartItem ] );
 
-		$this->wcAdapter
-			->method( 'customerGetShippingCountry' )
+		$this->checkoutService
+			->method( 'getCustomerCountry' )
 			->willReturn( 'cz' );
 		$this->wcAdapter
 			->method( 'cartGetCartContentsTotal' )
@@ -506,7 +508,7 @@ class ShippingRateFactoryTest extends TestCase {
 			->method( 'isPhysical' )
 			->willReturn( true );
 		$productEntity
-			->method( 'isAgeVerification18PlusRequired' )
+			->method( 'isAgeVerificationRequired' )
 			->willReturn( $isAgeVerificationRequiredByProduct );
 		$productEntity
 			->method( 'getDisallowedShippingRateIds' )
@@ -515,7 +517,7 @@ class ShippingRateFactoryTest extends TestCase {
 			->method( 'fromPostId' )
 			->willReturn( $productEntity );
 		$this->cartService
-			->method( 'isAgeVerification18PlusRequired' )
+			->method( 'isAgeVerificationRequired' )
 			->willReturn( $isAgeVerificationRequiredByProduct );
 
 		$productCategory = $this->createMock( ProductCategory\Entity::class );

@@ -13,14 +13,49 @@ use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\ShippingMethod;
 
 class ShippingRateFactory {
+	/**
+	 * @var CheckoutService
+	 */
 	private $checkoutService;
+
+	/**
+	 * @var Carrier\EntityRepository
+	 */
 	private $carrierEntityRepository;
+
+	/**
+	 * @var WcAdapter
+	 */
 	private $wcAdapter;
+
+	/**
+	 * @var CartService
+	 */
 	private $cartService;
+
+	/**
+	 * @var Carrier\CarrierOptionsFactory
+	 */
 	private $carrierOptionsFactory;
+
+	/**
+	 * @var Carrier\CarDeliveryConfig
+	 */
 	private $carDeliveryConfig;
+
+	/**
+	 * @var RateCalculator
+	 */
 	private $rateCalculator;
+
+	/**
+	 * @var OptionsProvider
+	 */
 	private $optionsProvider;
+
+	/**
+	 * @var WpAdapter
+	 */
 	private $wpAdapter;
 
 	public function __construct(
@@ -50,11 +85,14 @@ class ShippingRateFactory {
 	 *
 	 * @param array|null $allowedCarrierNames List of allowed carrier names.
 	 *
-	 * @return array
+	 * @return array<string, array<string, string|float|array>>
 	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function createShippingRates( ?array $allowedCarrierNames ): array {
-		$customerCountry   = $this->checkoutService->getCustomerCountryOrEmpty();
+		$customerCountry = $this->checkoutService->getCustomerCountry();
+		if ( null === $customerCountry ) {
+			return [];
+		}
 		$availableCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
 
 		$customRates = [];
@@ -111,7 +149,7 @@ class ShippingRateFactory {
 		?array $allowedCarrierNames,
 		string $optionId
 	): bool {
-		$isAgeVerificationRequired = $this->cartService->isAgeVerification18PlusRequired();
+		$isAgeVerificationRequired = $this->cartService->isAgeVerificationRequired();
 		if ( $isAgeVerificationRequired && ! $carrier->supportsAgeVerification() ) {
 			return false;
 		}

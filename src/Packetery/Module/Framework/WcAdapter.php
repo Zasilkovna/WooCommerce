@@ -105,8 +105,4 @@ class WcAdapter {
 	public function getLogger() {
 		return wc_get_logger();
 	}
-
-	public function initializeSession(): void {
-		WC()->initialize_session();
-	}
 }

@@ -209,13 +209,17 @@ class Checkout {
 	 */
 	public function actionCalculateFees(): void {
 		$chosenShippingMethod = $this->checkoutService->calculateShippingAndGetId();
-		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) ) {
+		if (
+			null === $chosenShippingMethod ||
+			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) === false
+		) {
 			return;
 		}
 
 		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
-		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->checkoutService->getCarrierIdFromShippingMethod( $chosenShippingMethod ) );
+		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->cartService->getTaxClassWithMaxRate();
+		$isTaxable      = null !== $maxTaxClass;
 
 		if (
 			$carrierOptions->hasCouponFreeShippingForFeesAllowed() &&
@@ -224,28 +228,37 @@ class Checkout {
 			return;
 		}
 
-		if (
-			null !== $chosenCarrier &&
-			$chosenCarrier->supportsAgeVerification() &&
-			null !== $carrierOptions->getAgeVerificationFee() &&
-			$this->cartService->isAgeVerification18PlusRequired()
-		) {
-			$feeAmount = $this->currencySwitcherService->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
-			if ( false !== $maxTaxClass && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
-				$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
-			}
+		$this->addAgeVerificationFee( $chosenCarrier, $carrierOptions, $isTaxable, $maxTaxClass );
+		$this->addCodSurchargeFee( $carrierOptions, $isTaxable, $maxTaxClass );
+	}
 
-			$this->wcAdapter->cartFeesApiAddFee(
-				[
-					'id'        => 'packetery-age-verification-fee',
-					'name'      => $this->wpAdapter->__( 'Age verification fee', 'packeta' ),
-					'amount'    => $feeAmount,
-					'taxable'   => ! ( false === $maxTaxClass ),
-					'tax_class' => $maxTaxClass,
-				]
-			);
+	private function addAgeVerificationFee( ?Entity\Carrier $chosenCarrier, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
+		if (
+			null === $chosenCarrier ||
+			! $chosenCarrier->supportsAgeVerification() ||
+			null === $carrierOptions->getAgeVerificationFee() ||
+			! $this->cartService->isAgeVerificationRequired()
+		) {
+			return;
+		}
+		$feeAmount = $this->currencySwitcherService->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
+
+		if ( $isTaxable && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
+			$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
 		}
 
+		$this->wcAdapter->cartFeesApiAddFee(
+			[
+				'id'        => 'packetery-age-verification-fee',
+				'name'      => $this->wpAdapter->__( 'Age verification fee', 'packeta' ),
+				'amount'    => $feeAmount,
+				'taxable'   => $isTaxable,
+				'tax_class' => $maxTaxClass,
+			]
+		);
+	}
+
+	private function addCodSurchargeFee( Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
 		$paymentMethod = $this->sessionService->getChosenPaymentMethod();
 		if ( null === $paymentMethod || false === $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) ) {
 			return;
@@ -260,7 +273,7 @@ class Checkout {
 			return;
 		}
 
-		if ( false !== $maxTaxClass && $this->optionsProvider->arePricesTaxInclusive() ) {
+		if ( $isTaxable && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
 		}
 
@@ -268,7 +281,7 @@ class Checkout {
 			'id'        => 'packetery-cod-surcharge',
 			'name'      => $this->wpAdapter->__( 'COD surcharge', 'packeta' ),
 			'amount'    => $applicableSurcharge,
-			'taxable'   => ! ( false === $maxTaxClass ),
+			'taxable'   => $isTaxable,
 			'tax_class' => $maxTaxClass,
 		];
 
@@ -324,7 +337,7 @@ class Checkout {
 			return $availableGateways;
 		}
 
-		$carrierId = $this->checkoutService->getCarrierIdFromShippingMethod( $chosenMethod );
+		$carrierId = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenMethod );
 		$carrier   = $this->carrierEntityRepository->getAnyById( $carrierId );
 		if ( null === $carrier ) {
 			return $availableGateways;
@@ -378,7 +391,7 @@ class Checkout {
 		);
 
 		$maxTaxClass = $this->cartService->getTaxClassWithMaxRate();
-		$taxable     = ! ( false === $maxTaxClass );
+		$taxable     = ! ( null === $maxTaxClass );
 
 		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
 	}

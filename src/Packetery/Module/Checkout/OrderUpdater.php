@@ -15,15 +15,54 @@ use WC_Data_Exception;
 use WC_Order;
 
 class OrderUpdater {
+	/**
+	 * @var Order\Repository
+	 */
 	private $orderRepository;
+
+	/**
+	 * @var CheckoutService
+	 */
 	private $checkoutService;
+
+	/**
+	 * @var CheckoutStorage
+	 */
 	private $storage;
+
+	/**
+	 * @var WcAdapter
+	 */
 	private $wcAdapter;
+
+	/**
+	 * @var WpAdapter
+	 */
 	private $wpAdapter;
+
+	/**
+	 * @var OptionsProvider
+	 */
 	private $optionsProvider;
+
+	/**
+	 * @var Order\AttributeMapper
+	 */
 	private $mapper;
+
+	/**
+	 * @var Carrier\EntityRepository
+	 */
 	private $carrierEntityRepository;
+
+	/**
+	 * @var CartService
+	 */
 	private $cartService;
+
+	/**
+	 * @var Order\PacketAutoSubmitter
+	 */
 	private $packetAutoSubmitter;
 
 	public function __construct(
@@ -71,13 +110,16 @@ class OrderUpdater {
 	 */
 	public function actionUpdateOrder( WC_Order $wcOrder ): void {
 		$chosenMethod = $this->checkoutService->resolveChosenMethod();
-		if ( false === $this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) ) {
+		if (
+			null === $chosenMethod ||
+			$this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) === false
+		) {
 			return;
 		}
 
 		$checkoutData           = $this->storage->getPostDataIncludingStoredData( $chosenMethod, $wcOrder->get_id() );
 		$propsToSave            = [];
-		$carrierId              = $this->checkoutService->getCarrierIdFromShippingMethod( $chosenMethod );
+		$carrierId              = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenMethod );
 		$orderHasUnsavedChanges = false;
 
 		$propsToSave[ Order\Attribute::CARRIER_ID ] = $carrierId;
@@ -93,11 +135,15 @@ class OrderUpdater {
 			$orderHasUnsavedChanges = true;
 		}
 
-		$orderEntity = new Entity\Order( (string) $wcOrder->get_id(), $this->carrierEntityRepository->getAnyById( $carrierId ) );
+		$carrier = $this->carrierEntityRepository->getAnyById( $carrierId );
+		if ( null === $carrier ) {
+			return;
+		}
+		$order = new Entity\Order( (string) $wcOrder->get_id(), $carrier );
 
 		$orderHasUnsavedChanges = $this->updateHomeDelivery(
 			$checkoutData,
-			$orderEntity,
+			$order,
 			$wcOrder,
 			$orderHasUnsavedChanges
 		);
@@ -105,16 +151,14 @@ class OrderUpdater {
 			$wcOrder->save();
 		}
 
-		$this->updateCarDelivery( $checkoutData, $orderEntity );
+		$this->updateCarDelivery( $checkoutData, $order );
 
 		if ( 0.0 === $this->cartService->getCartWeightKg() && true === $this->optionsProvider->isDefaultWeightEnabled() ) {
-			$orderEntity->setWeight( $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() );
+			$order->setWeight( $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() );
 		}
 
-		$carrierEntity = $this->carrierEntityRepository->getAnyById( $carrierId );
 		if (
-			null !== $carrierEntity &&
-			true === $carrierEntity->requiresSize() &&
+			true === $carrier->requiresSize() &&
 			true === $this->optionsProvider->isDefaultDimensionsEnabled()
 		) {
 			$size = new Entity\Size(
@@ -123,14 +167,14 @@ class OrderUpdater {
 				$this->optionsProvider->getDefaultHeight()
 			);
 
-			$orderEntity->setSize( $size );
+			$order->setSize( $size );
 		}
 
-		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $orderEntity, $propsToSave );
-		$orderEntity->setPickupPoint( $pickupPoint );
+		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
+		$order->setPickupPoint( $pickupPoint );
 
 		$this->storage->deleteTransient();
-		$this->orderRepository->save( $orderEntity );
+		$this->orderRepository->save( $order );
 		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $wcOrder->get_id() );
 	}
 
