@@ -81,21 +81,17 @@ class PacketActionsCommonLogic {
 	public function checkAction( string $action, Entity\Order $order ): void {
 		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
 
-		if ( wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( $action, $order->getNumber() ?? '' ) ) !== 1 ) {
+		if ( wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( $action, $order->getNumber() ) ) !== 1 ) {
 			$this->messageManager->flash_message( __( 'Link has expired. Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 			$this->redirectTo( $redirectTo, $order );
 		}
 	}
 
-	/**
-	 * Creates nonce action name.
-	 *
-	 * @param string $action      Action.
-	 * @param string $orderNumber Order number.
-	 *
-	 * @return string
-	 */
-	public static function createNonceAction( string $action, string $orderNumber ): string {
+	public static function createNonceAction( string $action, ?string $orderNumber ): string {
+		if ( $orderNumber === null ) {
+			return '';
+		}
+
 		return $action . '_' . $orderNumber;
 	}
 
