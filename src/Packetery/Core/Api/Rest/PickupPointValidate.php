@@ -28,19 +28,14 @@ class PickupPointValidate {
 	private $webRequestClient;
 
 	/**
-	 * API key.
-	 *
-	 * @var string
+	 * @var null|string
 	 */
 	private $apiKey;
 
-	/**
-	 * PickupPointValidate constructor.
-	 *
-	 * @param IWebRequestClient $webRequestClient HTTP Client.
-	 * @param string            $apiKey           API key.
-	 */
-	public function __construct( IWebRequestClient $webRequestClient, string $apiKey ) {
+	public function __construct( IWebRequestClient $webRequestClient, ?string $apiKey ) {
+		if ( null === $apiKey ) {
+			throw new \InvalidArgumentException( 'API key cannot be null.' );
+		}
 		$this->webRequestClient = $webRequestClient;
 		$this->apiKey           = $apiKey;
 	}

@@ -14,6 +14,22 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class PickupPointValidateTest extends TestCase {
+	public function testConstructWithValidApiKey(): void {
+		$webRequestClientMock = $this->getWebRequestClientMock();
+		$validator            = new PickupPointValidate( $webRequestClientMock, 'dummyApiKey' );
+
+		self::assertNotNull( $validator );
+	}
+
+	public function testConstructWithNullApiKey(): void {
+		$webRequestClientMock = $this->getWebRequestClientMock();
+
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( 'API key cannot be null.' );
+
+		new PickupPointValidate( $webRequestClientMock, null );
+	}
+
 	public function testValidateOk(): void {
 		$webRequestClientMock = $this->getWebRequestClientMock();
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
