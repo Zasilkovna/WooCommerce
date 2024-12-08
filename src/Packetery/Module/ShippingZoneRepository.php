@@ -58,11 +58,6 @@ class ShippingZoneRepository {
 	 * @return stdClass[]|null
 	 */
 	private function getLocationsForShippingRate( string $methodRateId ): ?array {
-		/**
-		 * Zone.
-		 *
-		 * @var WC_Shipping_Zone $zone
-		 */
 		foreach ( $this->getAllShippingZones() as $zone ) {
 			$enabledOnly = true;
 			// Can't use get_shipping_methods because of infinite recursion.

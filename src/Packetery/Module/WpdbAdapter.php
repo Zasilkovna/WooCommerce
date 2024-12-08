@@ -99,8 +99,6 @@ class WpdbAdapter {
 	}
 
 	/**
-	 * Gets row.
-	 *
 	 * @param string $query  SQL query.
 	 * @param string $output Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
 	 *                       correspond to an stdClass object, an associative array, or a numeric array,

@@ -72,7 +72,23 @@ class PickupPointValidator {
 	 * @return PickupPointValidateResponse
 	 */
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
-		$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $this->optionsProvider->get_api_key() );
+		$apiKey = $this->optionsProvider->get_api_key();
+
+		try {
+			$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $apiKey );
+		} catch ( \InvalidArgumentException $exception ) {
+			$record         = new Record();
+			$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
+			$record->status = Record::STATUS_ERROR;
+			$record->title  = __( 'Pickup point could not be validated.', 'packeta' );
+			$record->params = [
+				'errorMessage' => $exception->getMessage(),
+				'apiKey'       => $apiKey,
+			];
+			$this->logger->add( $record );
+
+			return new PickupPointValidateResponse( true, [] );
+		}
 
 		try {
 			// We do not log successful requests.

@@ -183,7 +183,7 @@ class Exporter {
 
 	/**
 	 * @param \Generator<Record>|array{} $logs
-	 * @return array<array<string, string>>
+	 * @return array<array<string, array<string, mixed>|string>>
 	 */
 	private function remapLogRecords( iterable $logs ): array {
 		$result = [];
