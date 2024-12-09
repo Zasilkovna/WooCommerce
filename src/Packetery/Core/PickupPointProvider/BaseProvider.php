@@ -22,36 +22,42 @@ abstract class BaseProvider {
 	 * @var string
 	 */
 	protected $id;
+
 	/**
 	 * Country.
 	 *
 	 * @var string
 	 */
 	protected $country;
+
 	/**
 	 * Name.
 	 *
 	 * @var string
 	 */
 	protected $name;
+
 	/**
 	 * Supports COD?.
 	 *
 	 * @var bool
 	 */
 	protected $supportsCod;
+
 	/**
 	 * Supports age verification?.
 	 *
 	 * @var bool
 	 */
 	protected $supportsAgeVerification;
+
 	/**
 	 * Currency.
 	 *
 	 * @var string
 	 */
 	protected $currency;
+
 	/**
 	 * Has pickup points?.
 	 *
@@ -158,5 +164,4 @@ abstract class BaseProvider {
 	public function hasPickupPoints(): bool {
 		return $this->hasPickupPoints;
 	}
-
 }

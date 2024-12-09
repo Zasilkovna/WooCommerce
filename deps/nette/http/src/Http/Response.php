@@ -13,7 +13,6 @@ use Packetery\Nette\Utils\DateTime;
  * HttpResponse class.
  *
  * @property-read array $headers
- * @internal
  */
 final class Response implements IResponse
 {

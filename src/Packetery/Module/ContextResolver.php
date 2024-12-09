@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
 
 use Packetery\Nette\Http\Request;
@@ -41,9 +40,11 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderGridPage(): bool {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $typenow, $plugin_page;
 
 		if ( ModuleHelper::isHposEnabled() ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && false === in_array( $this->request->getQuery( 'action' ), [ 'edit', 'new' ], true );
 		}
 
@@ -56,9 +57,11 @@ class ContextResolver {
 	 * @return bool
 	 */
 	public function isOrderDetailPage(): bool {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $typenow, $plugin_page;
 
 		if ( ModuleHelper::isHposEnabled() ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && 'edit' === $this->request->getQuery( 'action' );
 		}
 
@@ -101,7 +104,7 @@ class ContextResolver {
 	 *
 	 * @return bool
 	 */
-	public function isPacketeryConfirmPage(): bool {
+	public function isConfirmModalPage(): bool {
 		return $this->isOrderDetailPage() || $this->isOrderGridPage();
 	}
 
@@ -144,12 +147,15 @@ class ContextResolver {
 	 * @return bool
 	 */
 	private function isShippingZoneDetailPage(): bool {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $plugin_page;
 
 		return (
 			'admin.php' === $pagenow &&
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			'wc-settings' === $plugin_page &&
 			'shipping' === $this->request->getQuery( 'tab' ) &&
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			$this->request->getQuery( 'zone_id' ) > 0
 		);
 	}
@@ -166,5 +172,4 @@ class ContextResolver {
 
 		return null;
 	}
-
 }

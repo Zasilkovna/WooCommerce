@@ -7,14 +7,12 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Core\Api\Soap\Response;
 
 /**
  * SenderGetReturnRouting
  */
 class SenderGetReturnRouting extends BaseResponse {
-
 	/**
 	 * Checks if sender exists.
 	 *

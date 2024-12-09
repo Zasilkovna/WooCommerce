@@ -21,14 +21,14 @@ class CountryListingTemplateParams {
 	/**
 	 * Carriers Update params.
 	 *
-	 * @var array
+	 * @var array<string, string|array<string, string>>
 	 */
 	public $carriersUpdate;
 
 	/**
 	 * Countries.
 	 *
-	 * @var array
+	 * @var mixed[]
 	 */
 	public $countries;
 
@@ -56,9 +56,24 @@ class CountryListingTemplateParams {
 	/**
 	 * Translations.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	public $translations;
+
+	/**
+	 * @var bool
+	 */
+	public $isCzechLocale;
+
+	/**
+	 * @var string|null
+	 */
+	public $logoZasilkovna;
+
+	/**
+	 * @var string|null
+	 */
+	public $logoPacketa;
 
 	/**
 	 * Tells if countries contain any carriers.
@@ -74,24 +89,15 @@ class CountryListingTemplateParams {
 	 */
 	public $form;
 
-	/**
-	 * CountryListingTemplateParams constructor.
-	 *
-	 * @param array       $carriersUpdate         Carriers update params.
-	 * @param array       $countries              Countries.
-	 * @param bool        $isApiPasswordSet       Tells whether API password is set, or not.
-	 * @param string|null $nextScheduledRun       Next update run.
-	 * @param string|null $settingsChangedMessage Settings changed message.
-	 * @param array       $translations           Translations.
-	 * @param bool        $hasCarriers            Tells if any country has carriers.
-	 * @param Form        $form                   Filter form.
-	 */
 	public function __construct(
 		array $carriersUpdate,
 		array $countries,
 		bool $isApiPasswordSet,
 		?string $nextScheduledRun,
 		?string $settingsChangedMessage,
+		bool $isCzechLocale,
+		?string $logoZasilkovna,
+		?string $logoPacketa,
 		array $translations,
 		bool $hasCarriers,
 		Form $form
@@ -101,6 +107,9 @@ class CountryListingTemplateParams {
 		$this->isApiPasswordSet       = $isApiPasswordSet;
 		$this->nextScheduledRun       = $nextScheduledRun;
 		$this->settingsChangedMessage = $settingsChangedMessage;
+		$this->isCzechLocale          = $isCzechLocale;
+		$this->logoZasilkovna         = $logoZasilkovna;
+		$this->logoPacketa            = $logoPacketa;
 		$this->translations           = $translations;
 		$this->hasCarriers            = $hasCarriers;
 		$this->form                   = $form;

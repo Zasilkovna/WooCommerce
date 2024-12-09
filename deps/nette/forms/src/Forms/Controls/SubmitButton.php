@@ -12,7 +12,6 @@ use Packetery\Nette;
  * Submittable button control.
  *
  * @property-read bool $submittedBy
- * @internal
  */
 class SubmitButton extends Button implements \Packetery\Nette\Forms\SubmitterControl
 {

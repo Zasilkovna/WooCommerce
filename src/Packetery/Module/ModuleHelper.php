@@ -10,7 +10,11 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
+use DateTimeImmutable;
+use Packetery\Core\CoreHelper;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\Utils\Html;
+use WC_DateTime;
 
 /**
  * Class ModuleHelper
@@ -18,6 +22,15 @@ use Packetery\Nette\Utils\Html;
  * @package Packetery\Module
  */
 class ModuleHelper {
+
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	public function __construct( WpAdapter $wpAdapter ) {
+		$this->wpAdapter = $wpAdapter;
+	}
 
 	/**
 	 * Gets order detail url.
@@ -96,7 +109,7 @@ class ModuleHelper {
 	 * @return void
 	 */
 	public static function transformGlobalCookies(): void {
-		if ( empty( $_COOKIE ) ) {
+		if ( count( $_COOKIE ) === 0 ) {
 			return;
 		}
 		foreach ( $_COOKIE as $key => $value ) {
@@ -118,8 +131,14 @@ class ModuleHelper {
 			return null;
 		}
 
-		$version = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', [ 'Version' => 'Version' ], 'plugin' )['Version'];
-		if ( ! $version ) {
+		$version  = '';
+		$fileData = get_file_data( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php', [ 'Version' => 'Version' ], 'plugin' );
+
+		if ( isset( $fileData['Version'] ) ) {
+			$version = $fileData['Version'];
+		}
+
+		if ( '' === $version ) {
 			return null;
 		}
 
@@ -129,13 +148,13 @@ class ModuleHelper {
 	/**
 	 * Renders string.
 	 *
-	 * @param string $string String to render.
+	 * @param string $inputString String to render.
 	 *
 	 * @return void
 	 */
-	public static function renderString( string $string ): void {
+	public static function renderString( string $inputString ): void {
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo $string;
+		echo $inputString;
 	}
 
 	/**
@@ -147,7 +166,7 @@ class ModuleHelper {
 	 */
 	public static function getWcOrderCountry( \WC_Order $wcOrder ): string {
 		$country = $wcOrder->get_shipping_country();
-		if ( empty( $country ) ) {
+		if ( null === $country || '' === $country ) {
 			$country = $wcOrder->get_billing_country();
 		}
 
@@ -163,7 +182,7 @@ class ModuleHelper {
 		if ( false === class_exists( 'Automattic\\WooCommerce\\Utilities\\OrderUtil' ) ) {
 			return false;
 		}
-
+		// @phpstan-ignore-next-line (This method was probably added in WC version 6.9.0, backward compatibility)
 		if ( false === method_exists( OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) ) {
 			return false;
 		}
@@ -171,17 +190,16 @@ class ModuleHelper {
 		return OrderUtil::custom_orders_table_usage_is_enabled();
 	}
 
-
 	/**
 	 * Converts all float values within an array to strings.
 	 *
-	 * @param array $array Array with parameters.
+	 * @param array $inputArray Array with parameters.
 	 *
 	 * @return array
 	 */
-	public static function convertArrayFloatsToStrings( array $array ): array {
+	public static function convertArrayFloatsToStrings( array $inputArray ): array {
 		array_walk_recursive(
-			$array,
+			$inputArray,
 			static function ( &$item ) {
 				if ( is_float( $item ) ) {
 					$item = (string) $item;
@@ -189,7 +207,7 @@ class ModuleHelper {
 			}
 		);
 
-		return $array;
+		return $inputArray;
 	}
 
 	/**
@@ -213,22 +231,71 @@ class ModuleHelper {
 	 *
 	 * @param string      $href Href.
 	 * @param string|null $target Target.
-	 * @param string|null $class Class.
+	 * @param string|null $className Class.
 	 *
 	 * @return string[]
 	 */
-	public function createLinkParts( string $href, string $target = null, string $class = null ): array {
+	public function createLinkParts( string $href, string $target = null, string $className = null ): array {
 		$link = Html::el( 'a' )->href( $href );
 
 		if ( null !== $target ) {
 			$link->target( $target );
 		}
 
-		if ( null !== $class ) {
-			$link->class( $class );
+		if ( null !== $className ) {
+			$link->class( $className );
 		}
 
 		return [ $link->startTag(), $link->endTag() ];
 	}
 
+	/**
+	 * Creates translated Date
+	 *
+	 * @param DateTimeImmutable|null $date   Datetime.
+	 *
+	 * @return string|null
+	 */
+	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
+		if ( null !== $date ) {
+			return ( new WC_DateTime( CoreHelper::MYSQL_DATETIME_FORMAT ) )->date_i18n(
+				/**
+				 * Applies woocommerce_admin_order_date_format filters.
+				 *
+				 * @since 1.8.3
+				 */
+				apply_filters( 'woocommerce_admin_order_date_format', __( 'M j, Y', 'woocommerce' ) ) //phpcs:ignore WordPress.WP.I18n.TextDomainMismatch
+			);
+		}
+
+		return null;
+	}
+
+	public static function isWooCommercePluginActive(): bool {
+		return self::isPluginActive( 'woocommerce/woocommerce.php' );
+	}
+
+	public static function getPluginMainFilePath(): string {
+		return PACKETERY_PLUGIN_DIR . '/packeta.php';
+	}
+
+	/**
+	 * Gets current locale.
+	 */
+	public function getLocale(): string {
+		/**
+		 * Applies plugin_locale filters.
+		 *
+		 * @since 1.0.0
+		 */
+		return (string) $this->wpAdapter->applyFilters(
+			'plugin_locale',
+			( $this->wpAdapter->isAdmin() ? $this->wpAdapter->getUserLocale() : $this->wpAdapter->getLocale() ),
+			Plugin::DOMAIN
+		);
+	}
+
+	public function isCzechLocale(): bool {
+		return $this->getLocale() === 'cs_CZ';
+	}
 }

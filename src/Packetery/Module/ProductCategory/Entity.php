@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\ProductCategory;
 
 /**
@@ -30,16 +29,16 @@ class Entity {
 	/**
 	 * Entity constructor.
 	 *
-	 * @param \WP_term $category Category.
+	 * @param \WP_Term $category Category.
 	 */
-	public function __construct( \WP_term $category ) {
+	public function __construct( \WP_Term $category ) {
 		$this->category = $category;
 	}
 
 	/**
 	 * Disallowed carrier choices.
 	 *
-	 * @return array
+	 * @return array<string, bool>
 	 */
 	public function getDisallowedShippingRateChoices(): array {
 		$choices = get_term_meta( $this->category->term_id, self::META_DISALLOWED_SHIPPING_RATES, true );
@@ -53,7 +52,7 @@ class Entity {
 	/**
 	 * Disallowed carrier choices.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getDisallowedShippingRateIds(): array {
 		return array_keys( $this->getDisallowedShippingRateChoices() );

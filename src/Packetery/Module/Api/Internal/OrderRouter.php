@@ -18,7 +18,8 @@ use Packetery\Module\Api\BaseRouter;
  */
 final class OrderRouter extends BaseRouter {
 
-	public const PATH_SAVE_MODAL = '/save-modal';
+	public const PATH_SAVE_MODAL        = '/save-modal';
+	public const PATH_SAVE_STORED_UNTIL = '/save-stored-until';
 
 	/**
 	 * Namespace.
@@ -43,4 +44,12 @@ final class OrderRouter extends BaseRouter {
 		return $this->getRouteUrl( self::PATH_SAVE_MODAL );
 	}
 
+	/**
+	 * Gets endpoint URL.
+	 *
+	 * @return string
+	 */
+	public function getSaveStoredUntilUrl(): string {
+		return $this->getRouteUrl( self::PATH_SAVE_STORED_UNTIL );
+	}
 }

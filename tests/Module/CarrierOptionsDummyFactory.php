@@ -7,7 +7,6 @@ namespace Tests\Module;
 use Packetery\Module\Carrier\Options;
 
 class CarrierOptionsDummyFactory {
-
 	private static function getDefaultOptionsArray(): array {
 		return [
 			'id'                   => '106',
@@ -89,5 +88,4 @@ class CarrierOptionsDummyFactory {
 			)
 		);
 	}
-
 }

@@ -73,5 +73,4 @@ class PickupPointValidate {
 			throw new RestException( $exception->getMessage() );
 		}
 	}
-
 }

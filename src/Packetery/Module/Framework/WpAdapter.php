@@ -9,8 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use DateTimeZone;
 use WP_Error;
 use WP_Post;
+use WP_Screen;
 use WP_Term;
 
 /**
@@ -19,10 +21,13 @@ use WP_Term;
  * @package Packetery
  */
 class WpAdapter {
+	use AssetTrait;
+	use EscapingTrait;
 	use HookTrait;
 	use HttpTrait;
 	use OptionTrait;
 	use TransientTrait;
+	use TranslationTrait;
 	use PostTrait;
 
 	/**
@@ -70,11 +75,33 @@ class WpAdapter {
 		return has_block( $blockName, $post );
 	}
 
+	public function getCurrentScree(): ?WP_Screen {
+		return get_current_screen();
+	}
+
 	/**
-	 * Retrieves the current locale.
-	 *
-	 * @return string
+	 * @return false|string
 	 */
+	public function date( string $format, ?int $timestamp = null, ?DateTimeZone $timezone = null ) {
+		return wp_date( $format, $timestamp, $timezone );
+	}
+
+	public function adminUrl( string $path = '', string $scheme = 'admin' ): ?string {
+		return admin_url( $path, $scheme );
+	}
+
+	public function doingAjax(): bool {
+		return wp_doing_ajax();
+	}
+
+	public function pluginBasename( string $file ): string {
+		return plugin_basename( $file );
+	}
+
+	public function isAdmin(): bool {
+		return is_admin();
+	}
+
 	public function getLocale(): string {
 		return get_locale();
 	}
@@ -90,17 +117,7 @@ class WpAdapter {
 		return absint( $maybeint );
 	}
 
-	/**
-	 * Return admin url.
-	 *
-	 * @param int|null $blogId Blog id.
-	 * @param string   $path   Path.
-	 * @param string   $scheme Scheme.
-	 *
-	 * @return string
-	 */
 	public function getAdminUrl( ?int $blogId = null, string $path = '', string $scheme = 'admin' ): string {
 		return get_admin_url( $blogId, $path, $scheme );
 	}
-
 }

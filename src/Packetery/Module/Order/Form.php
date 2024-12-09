@@ -9,10 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
-use Packetery\Core\CoreHelper;
 use Packetery\Nette\Forms;
 
 /**
@@ -141,7 +141,7 @@ class Form {
 	 *
 	 * @param array<string, string> $validationResult Validation result.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public static function getInvalidFieldsFromValidationResult( array $validationResult ): array {
 		$validationFormInputMapping = [

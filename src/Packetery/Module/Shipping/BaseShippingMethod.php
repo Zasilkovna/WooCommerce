@@ -16,6 +16,8 @@ use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\DI\Container;
+
+use function is_array;
 use function sprintf;
 
 /**
@@ -24,44 +26,35 @@ use function sprintf;
 abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	public const PACKETA_METHOD_PREFIX = 'packeta_method_';
 
+	// Will be overwritten.
+	public const CARRIER_ID = '';
+
 	/**
-	 * Options.
-	 *
-	 * @var null|array|false
+	 * @var null|false|array<string, string|null>
 	 */
 	private $options;
 
 	/**
-	 * DI container.
-	 *
 	 * @var Container
 	 */
 	private $container;
 
 	/**
-	 * Checkout object.
-	 *
 	 * @var Checkout
 	 */
 	private $checkout;
 
 	/**
-	 * CarrierRepository
-	 *
 	 * @var Carrier\EntityRepository|null
 	 */
 	protected $carrierRepository;
 
 	/**
-	 * WP adapter.
-	 *
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
 
 	/**
-	 * WC adapter.
-	 *
 	 * @var WcAdapter
 	 */
 	private $wcAdapter;
@@ -69,9 +62,9 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	/**
 	 * Constructor for Packeta shipping class
 	 *
-	 * @param int $instance_id Shipping method instance id.
+	 * @param int $instanceId Shipping method instance id.
 	 */
-	public function __construct( int $instance_id = 0 ) {
+	public function __construct( int $instanceId = 0 ) {
 		parent::__construct();
 
 		$this->container         = CompatibilityBridge::getContainer();
@@ -79,28 +72,33 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->wpAdapter         = $this->container->getByType( WpAdapter::class );
 		$this->wcAdapter         = $this->container->getByType( WcAdapter::class );
 
-		$this->id          = static::getShippingMethodId();
-		$this->instance_id = $this->wpAdapter->absint( $instance_id );
-
-		$this->method_title       = __( 'Packeta', 'packeta' );
-		$this->title              = __( 'Packeta', 'packeta' );
+		$this->id = static::getShippingMethodId();
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->instance_id = $this->wpAdapter->absint( $instanceId );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->method_title = __( 'Packeta', 'packeta' );
+		$this->title        = __( 'Packeta', 'packeta' );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
-		$carrier                  = $this->carrierRepository->getAnyById( static::CARRIER_ID );
+
+		$carrier = $this->carrierRepository->getAnyById( static::CARRIER_ID );
 		if ( null !== $carrier ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->method_title = $carrier->getName();
 			$this->title        = $carrier->getName();
 			// translators: %s is carrier name.
-			$this->method_description = sprintf( __( 'Allows customers to use %s carrier delivery', 'packeta' ), $carrier->getName() );
+			$this->method_description = sprintf( __( 'Allows customers to use %s carrier delivery', 'packeta' ), $carrier->getName() ); // phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		}
 
 		$this->enabled  = 'yes'; // This can be added as a setting.
 		$this->supports = [
 			'shipping-zones',
+			'instance-settings',
+			'instance-settings-modal',
 		];
 
-		$this->supports[] = 'instance-settings';
-		$this->supports[] = 'instance-settings-modal';
-		$this->options    = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->options = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
 
 		$this->init();
 		$this->checkout = $this->container->getByType( Checkout::class );
@@ -110,6 +108,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	 * Init user set variables. Derived from WC_Shipping_Flat_Rate.
 	 */
 	public function init(): void {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->instance_form_fields = $this->get_instance_form_fields();
 		$this->title                = $this->get_option( 'title' );
 	}
@@ -137,7 +136,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$allowedCarrierNames = [];
 		$zone                = $this->wcAdapter->shippingZonesGetZoneMatchingPackage( $package );
 		$shippingMethods     = $zone->get_shipping_methods( true );
-		if ( $shippingMethods ) {
+		if ( is_array( $shippingMethods ) && count( $shippingMethods ) > 0 ) {
 			foreach ( $shippingMethods as $shippingMethod ) {
 				if ( $shippingMethod instanceof self ) {
 					$allowedCarrierNames[ $shippingMethod::CARRIER_ID ] = $shippingMethod->options['title'] ?? $shippingMethod->get_title();
@@ -180,6 +179,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 				'title'       => __( 'Method title', 'packeta' ),
 				'type'        => 'text',
 				'description' => __( 'This controls the title which the user sees during checkout.', 'packeta' ),
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				'default'     => $this->method_title,
 				'desc_tip'    => true,
 			],
@@ -205,5 +205,4 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	public static function getShippingMethodId(): string {
 		return self::PACKETA_METHOD_PREFIX . static::CARRIER_ID;
 	}
-
 }

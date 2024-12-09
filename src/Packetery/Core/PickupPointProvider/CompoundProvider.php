@@ -62,5 +62,4 @@ class CompoundProvider extends BaseProvider {
 	public function getVendorCodes(): array {
 		return $this->vendorCodes;
 	}
-
 }

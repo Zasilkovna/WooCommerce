@@ -101,5 +101,4 @@ class BaseResponse {
 	public function getFaultString(): ?string {
 		return $this->faultString;
 	}
-
 }

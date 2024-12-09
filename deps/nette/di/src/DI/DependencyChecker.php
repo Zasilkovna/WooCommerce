@@ -14,7 +14,6 @@ use ReflectionClass;
 use ReflectionMethod;
 /**
  * Cache dependencies checker.
- * @internal
  */
 class DependencyChecker
 {

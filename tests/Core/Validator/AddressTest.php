@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class AddressTest extends TestCase {
-
 	public function testValidate(): void {
 		$validator = new Address();
 
@@ -19,5 +18,4 @@ class AddressTest extends TestCase {
 		$dummyAddressInvalid = DummyFactory::createInvalidAddress();
 		self::assertFalse( $validator->validate( $dummyAddressInvalid ) );
 	}
-
 }

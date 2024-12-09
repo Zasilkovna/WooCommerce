@@ -10,9 +10,13 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Order;
+use Packetery\Core\Entity\PickupPoint;
 use Packetery\Module;
+use Packetery\Module\ContextResolver;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\ShippingProvider;
-use Packetery\Nette;
+use Packetery\Nette\Http;
 
 /**
  * Class DetailCommonLogic.
@@ -29,16 +33,12 @@ class DetailCommonLogic {
 	private $order;
 
 	/**
-	 * Context resolver.
-	 *
-	 * @var Module\ContextResolver
+	 * @var ContextResolver
 	 */
 	private $contextResolver;
 
 	/**
-	 * Request.
-	 *
-	 * @var Nette\Http\Request
+	 * @var Http\Request
 	 */
 	private $request;
 
@@ -50,20 +50,27 @@ class DetailCommonLogic {
 	private $orderRepository;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Module\ContextResolver $contextResolver Context resolver.
-	 * @param Nette\Http\Request     $request         Request.
-	 * @param Repository             $orderRepository Order repository.
+	 * @var OptionsProvider
 	 */
+	private $optionsProvider;
+
+	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
 	public function __construct(
-		Module\ContextResolver $contextResolver,
-		Nette\Http\Request $request,
-		Repository $orderRepository
+		ContextResolver $contextResolver,
+		Http\Request $request,
+		Repository $orderRepository,
+		OptionsProvider $optionsProvider,
+		WcAdapter $wcAdapter
 	) {
 		$this->contextResolver = $contextResolver;
 		$this->request         = $request;
 		$this->orderRepository = $orderRepository;
+		$this->optionsProvider = $optionsProvider;
+		$this->wcAdapter       = $wcAdapter;
 	}
 
 	/**
@@ -81,7 +88,7 @@ class DetailCommonLogic {
 			return null;
 		}
 
-		$this->order = $this->orderRepository->getById( $orderId, true );
+		$this->order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 		return $this->order;
 	}
@@ -129,4 +136,24 @@ class DetailCommonLogic {
 		return true;
 	}
 
+	/**
+	 * Tells if pickup point info should be displayed.
+	 *
+	 * @return bool
+	 */
+	public function shouldDisplayPickupPointInfo(): bool {
+		return (
+			! $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ||
+			$this->wcAdapter->shipToBillingAddressOnly()
+		);
+	}
+
+	/**
+	 * Determines if a Packeta order should be displayed.
+	 */
+	public function shouldHidePacketaInfo( Order $order ): bool {
+		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && $order->getPickupPoint() instanceof PickupPoint;
+
+		return ( ! $isPickupPointInfoVisible ) && false === $order->isExported();
+	}
 }

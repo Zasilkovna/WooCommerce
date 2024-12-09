@@ -13,7 +13,6 @@ use Packetery\Nette\DI\Definitions\Statement;
 use Packetery\Nette\DI\Helpers;
 /**
  * Services definitions loader.
- * @internal
  */
 final class ServicesExtension extends \Packetery\Nette\DI\CompilerExtension
 {

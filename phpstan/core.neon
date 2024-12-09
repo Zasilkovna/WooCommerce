@@ -1,0 +1,7 @@
+parameters:
+	level: 8
+	paths:
+		- ../src/Packetery/Core
+	treatPhpDocTypesAsCertain: false
+	strictRules:
+		allRules: true

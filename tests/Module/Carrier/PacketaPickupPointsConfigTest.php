@@ -11,7 +11,6 @@ use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use PHPUnit\Framework\TestCase;
 
 class PacketaPickupPointsConfigTest extends TestCase {
-
 	public static function compoundCarrierGroupsProvider(): array {
 		return [
 			'CZ'           => [
@@ -19,28 +18,28 @@ class PacketaPickupPointsConfigTest extends TestCase {
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'SK'           => [
 				'carrierId'      => 'zpointsk',
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'HU'           => [
 				'carrierId'      => 'zpointhu',
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'RO'           => [
 				'carrierId'      => 'zpointro',
 				'expectedGroups' => [
 					'zpoint',
 					'zbox',
-				]
+				],
 			],
 			'numeric'      => [
 				'carrierId'      => '106',
@@ -69,5 +68,4 @@ class PacketaPickupPointsConfigTest extends TestCase {
 
 		self::assertEquals( $expectedGroups, $packetaPickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId ) );
 	}
-
 }

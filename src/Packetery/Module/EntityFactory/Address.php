@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\EntityFactory;
 
 use Packetery\Core\Entity;
@@ -18,7 +17,6 @@ use Packetery\Core\Entity;
  * @package Packetery\Module\EntityFactory
  */
 class Address {
-
 	/**
 	 * Return WC store default address.
 	 *
