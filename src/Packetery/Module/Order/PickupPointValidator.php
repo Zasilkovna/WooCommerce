@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Api\Rest\Exception\InvalidApiKeyException;
 use Packetery\Core\Api\Rest\PickupPointValidate;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
@@ -76,7 +77,7 @@ class PickupPointValidator {
 
 		try {
 			$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $apiKey );
-		} catch ( \InvalidArgumentException $exception ) {
+		} catch ( InvalidApiKeyException $exception ) {
 			$record         = new Record();
 			$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
 			$record->status = Record::STATUS_ERROR;

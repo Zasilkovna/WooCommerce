@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Core\Api\Rest;
 
 use Exception;
+use Packetery\Core\Api\Rest\Exception\InvalidApiKeyException;
 use Packetery\Core\Api\Rest\PickupPointValidate;
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
@@ -24,8 +25,8 @@ class PickupPointValidateTest extends TestCase {
 	public function testConstructWithNullApiKey(): void {
 		$webRequestClientMock = $this->getWebRequestClientMock();
 
-		$this->expectException( \InvalidArgumentException::class );
-		$this->expectExceptionMessage( 'API key cannot be null.' );
+		$this->expectException( InvalidApiKeyException::class );
+		$this->expectExceptionMessage( 'API key is missing' );
 
 		new PickupPointValidate( $webRequestClientMock, null );
 	}

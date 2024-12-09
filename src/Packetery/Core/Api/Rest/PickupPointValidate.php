@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Rest;
 
+use Packetery\Core\Api\Rest\Exception\InvalidApiKeyException;
 use Packetery\Core\Interfaces\IWebRequestClient;
 
 /**
@@ -34,7 +35,7 @@ class PickupPointValidate {
 
 	public function __construct( IWebRequestClient $webRequestClient, ?string $apiKey ) {
 		if ( null === $apiKey ) {
-			throw new \InvalidArgumentException( 'API key cannot be null.' );
+			throw InvalidApiKeyException::createFromMissingKey();
 		}
 		$this->webRequestClient = $webRequestClient;
 		$this->apiKey           = $apiKey;
