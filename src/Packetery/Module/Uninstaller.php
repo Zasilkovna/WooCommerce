@@ -1,9 +1,4 @@
 <?php
-/**
- * Uninstaller class.
- *
- * @package Packetery
- */
 
 declare(strict_types=1);
 
@@ -11,32 +6,18 @@ namespace Packetery\Module;
 
 use Packetery\Module\Options\OptionsProvider;
 
-/**
- * Uninstaller class.
- *
- * @package Packetery
- */
 class Uninstaller {
+
 	/**
-	 * Options repository.
-	 *
 	 * @var Options\Repository
 	 */
 	private $optionsRepository;
 
 	/**
-	 * Wpdb adapter.
-	 *
 	 * @var WpdbAdapter
 	 */
 	private $wpdbAdapter;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Options\Repository $optionsRepository Options repository.
-	 * @param WpdbAdapter        $wpdbAdapter       Wpdb adapter.
-	 */
 	public function __construct(
 		Options\Repository $optionsRepository,
 		WpdbAdapter $wpdbAdapter
@@ -62,8 +43,6 @@ class Uninstaller {
 
 	/**
 	 * Drops all plugin tables when Multisite is enabled.
-	 *
-	 * @return void
 	 */
 	private function cleanUpForMultisite(): void {
 		$sites = Plugin::getSites();
@@ -77,8 +56,6 @@ class Uninstaller {
 
 	/**
 	 * Drops all plugin tables for a single site.
-	 *
-	 * @return void
 	 */
 	private function cleanUp(): void {
 		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryLog . '`' );
@@ -87,8 +64,10 @@ class Uninstaller {
 		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclarationItem . '`' );
 		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '`' );
 
-		$this->optionsRepository->deleteTransientsByPrefix( 'packetery_' );
-		$this->optionsRepository->deleteTransientsByPrefix( 'packeta_' );
+		$this->optionsRepository->deleteTransientRowsByPrefix( 'packetery_' );
+		$this->optionsRepository->deleteTransientRowsByPrefix( 'packeta_' );
+		$this->optionsRepository->deleteTransientRowsByPrefix( 'timeout_packeta_' );
+		$this->optionsRepository->deleteTransientRowsByPrefix( 'timeout_packetery_' );
 
 		$this->optionsRepository->deleteByPrefix( 'packetery_' );
 		$this->optionsRepository->deleteByPrefix( 'packeta_' );

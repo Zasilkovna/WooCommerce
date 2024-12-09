@@ -60,23 +60,15 @@ class Repository {
 	}
 
 	/**
-	 * Delete transients by prefix.
-	 *
-	 * @param string $prefix Custom transient prefix.
-	 *
 	 * @return int|bool
 	 */
-	public function deleteTransientsByPrefix( string $prefix ) {
+	public function deleteTransientRowsByPrefix( string $prefix ) {
 		$transientPrefix = sprintf( '_transient_%s', $prefix );
 
 		return $this->deleteByPrefix( $transientPrefix );
 	}
 
 	/**
-	 * Delete options by prefix.
-	 *
-	 * @param string $prefix Custom transient prefix.
-	 *
 	 * @return int|bool
 	 */
 	public function deleteByPrefix( string $prefix ) {
