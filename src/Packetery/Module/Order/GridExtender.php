@@ -11,7 +11,6 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core;
 use Packetery\Core\CoreHelper;
-use Packetery\Core\Entity\Size;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
@@ -20,7 +19,6 @@ use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
 use WC_Order;
@@ -100,13 +98,6 @@ class GridExtender {
 	private $moduleHelper;
 
 	/**
-	 * Settings provider.
-	 *
-	 * @var OptionsProvider
-	 */
-	private $optionsProvider;
-
-	/**
 	 * @var SizeFactory
 	 */
 	private $sizeFactory;
@@ -123,7 +114,6 @@ class GridExtender {
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 * @param WpAdapter             $wpAdapter             WordPress adapter.
 	 * @param ModuleHelper          $moduleHelper          Module helper.
-	 * @param OptionsProvider       $optionsProvider       Settings provider.
 	 * @param SizeFactory           $sizeFactory           Size factory.
 	 */
 	public function __construct(
@@ -136,7 +126,6 @@ class GridExtender {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		WpAdapter $wpAdapter,
 		ModuleHelper $moduleHelper,
-		OptionsProvider $optionsProvider,
 		SizeFactory $sizeFactory
 	) {
 		$this->coreHelper            = $coreHelper;
@@ -148,7 +137,6 @@ class GridExtender {
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->wpAdapter             = $wpAdapter;
 		$this->moduleHelper          = $moduleHelper;
-		$this->optionsProvider       = $optionsProvider;
 		$this->sizeFactory           = $sizeFactory;
 	}
 
@@ -476,22 +464,5 @@ class GridExtender {
 		$metaKey = 'packetery_packet_stored_until';
 
 		return wp_parse_args( [ 'packetery_packet_stored_until' => $metaKey ], $columns );
-	}
-
-	public function createSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
-		$dimensions = [
-			$order->getLength(),
-			$order->getWidth(),
-			$order->getHeight(),
-		];
-
-		$size = [];
-		foreach ( $dimensions as $dimension ) {
-			$size[] = null !== $dimension && $this->optionsProvider->getDimensionsUnit() === OptionsProvider::DIMENSIONS_UNIT_CM
-				? ModuleHelper::convertToCentimeters( (int) $dimension )
-				: $dimension;
-		}
-
-		return new Size( ...$size );
 	}
 }
