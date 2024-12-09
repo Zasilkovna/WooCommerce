@@ -14,6 +14,7 @@
 	<file>src/Packetery</file>
 	<file>bootstrap.php</file>
 	<file>packeta.php</file>
+	<file>uninstall.php</file>
 	<file>tests</file>
 
 	<!-- Configs -->
