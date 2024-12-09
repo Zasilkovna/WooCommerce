@@ -72,16 +72,6 @@ class FormFactory {
 		return $form;
 	}
 
-	/**
-	 * Dimension form control
-	 *
-	 * @param Container $container Container.
-	 * @param string    $name Name.
-	 * @param string    $label Label.
-	 * @param string    $unit Unit of measurement.
-	 *
-	 * @return TextInput
-	 */
 	public function addDimension( Container $container, string $name, string $label, string $unit ): TextInput {
 		$textInput = $container->addText( $name, sprintf( '%s (%s)', $label, $unit ) );
 
@@ -94,13 +84,6 @@ class FormFactory {
 		return $textInput;
 	}
 
-	/**
-	 * Sets field's number type
-	 *
-	 * @param string $unit Unit of measurement.
-	 *
-	 * @return string
-	 */
 	private function setNumType( string $unit ): string {
 		if ( OptionsProvider::DIMENSIONS_UNIT_CM === $unit ) {
 			return Form::FLOAT;
@@ -109,13 +92,6 @@ class FormFactory {
 		return Form::INTEGER;
 	}
 
-	/**
-	 * Sets the minimum of allowed value.
-	 *
-	 * @param string $unit Unit of measurement.
-	 *
-	 * @return float
-	 */
 	private function setMinValue( string $unit ): float {
 		if ( OptionsProvider::DIMENSIONS_UNIT_CM === $unit ) {
 			return 0.1;

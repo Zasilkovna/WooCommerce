@@ -10,6 +10,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
+use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
@@ -76,9 +77,10 @@ class GridExtenderTest extends TestCase {
 			$this->createMock( WpAdapter::class ),
 			$this->createMock( ModuleHelper::class ),
 			$optionsProvider,
+			$this->createMock( SizeFactory::class )
 		);
 
-		$result = $gridExtender->getSizeInSetDimensionUnit( $order );
+		$result = $gridExtender->createSizeInSetDimensionUnit( $order );
 
 		$this->assertEquals( $expectedSize, $result );
 	}

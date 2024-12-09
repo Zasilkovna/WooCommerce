@@ -15,6 +15,7 @@ use Packetery\Core\Entity\Size;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
+use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
@@ -106,6 +107,11 @@ class GridExtender {
 	private $optionsProvider;
 
 	/**
+	 * @var SizeFactory
+	 */
+	private $sizeFactory;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -118,6 +124,7 @@ class GridExtender {
 	 * @param WpAdapter             $wpAdapter             WordPress adapter.
 	 * @param ModuleHelper          $moduleHelper          Module helper.
 	 * @param OptionsProvider       $optionsProvider       Settings provider.
+	 * @param SizeFactory           $sizeFactory           Size factory.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -129,7 +136,8 @@ class GridExtender {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		WpAdapter $wpAdapter,
 		ModuleHelper $moduleHelper,
-		OptionsProvider $optionsProvider
+		OptionsProvider $optionsProvider,
+		SizeFactory $sizeFactory
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -141,6 +149,7 @@ class GridExtender {
 		$this->wpAdapter             = $wpAdapter;
 		$this->moduleHelper          = $moduleHelper;
 		$this->optionsProvider       = $optionsProvider;
+		$this->sizeFactory           = $sizeFactory;
 	}
 
 	/**
@@ -383,7 +392,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                            => $order,
-						'dimensions'                       => $this->getSizeInSetDimensionUnit( $order ),
+						'dimensions'                       => $this->sizeFactory->createSizeInSetDimensionUnit( $order ),
 						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
 						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
 						'storedUntil'                      => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
@@ -469,14 +478,7 @@ class GridExtender {
 		return wp_parse_args( [ 'packetery_packet_stored_until' => $metaKey ], $columns );
 	}
 
-	/**
-	 * Gets the size in the configured dimension unit.
-	 *
-	 * @param Core\Entity\Order $order Order entity.
-	 *
-	 * @return Size
-	 */
-	public function getSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
+	public function createSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
 		$dimensions = [
 			$order->getLength(),
 			$order->getWidth(),

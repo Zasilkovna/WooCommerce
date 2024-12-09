@@ -210,13 +210,6 @@ class ModuleHelper {
 		return $inputArray;
 	}
 
-	/**
-	 * Converts a number to centimeters
-	 *
-	 * @param int $number Number.
-	 *
-	 * @return float|null
-	 */
 	public static function convertToCentimeters( int $number ): ?float {
 		return 1 > $number ? null : ( $number * 0.1 );
 	}
@@ -237,13 +230,6 @@ class ModuleHelper {
 			->setAttribute( 'target', $target );
 	}
 
-	/**
-	 * Converts a number to millimeters
-	 *
-	 * @param float $number Number.
-	 *
-	 * @return float|null
-	 */
 	public static function convertToMillimeters( float $number ): ?float {
 		return 0.1 > $number ? null : ( $number * 10 );
 	}

@@ -7,7 +7,7 @@ namespace Tests\Module;
 use Packetery\Module\ModuleHelper;
 use PHPUnit\Framework\TestCase;
 
-class HelperTest extends TestCase {
+class ModuleHelperTest extends TestCase {
 	public static function convertToCentimetersProvider(): array {
 		return [
 			[

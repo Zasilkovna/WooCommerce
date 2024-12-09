@@ -7,7 +7,7 @@ namespace Tests\Module\Options;
 use Packetery\Module\Options\OptionsProvider;
 use PHPUnit\Framework\TestCase;
 
-class ProviderTest extends TestCase {
+class OptionsProviderTest extends TestCase {
 	public static function dimensionsUnitProvider(): array {
 		return [
 			[

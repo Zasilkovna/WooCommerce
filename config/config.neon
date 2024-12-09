@@ -70,6 +70,7 @@ services:
 	- Packetery\Module\Order\PacketClaimSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\CustomsDeclaration
+	- Packetery\Module\EntityFactory\SizeFactory
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size

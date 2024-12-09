@@ -677,6 +677,14 @@ class Page {
 			$options['default_weight'] = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
 		}
 
+		foreach ( [ 'default_length', 'default_width', 'default_height' ] as $dimension ) {
+			if ( $packeteryContainer[ $dimension ] instanceof BaseControl ) {
+				$options[ $dimension ] = is_numeric( $packeteryContainer[ $dimension ]->getValue() )
+					? CoreHelper::trimDecimalPlaces( (float) $packeteryContainer[ $dimension ]->getValue(), 1 )
+					: $packeteryContainer[ $dimension ]->getValue();
+			}
+		}
+
 		if ( $packeteryContainer['force_packet_cancel'] instanceof BaseControl ) {
 			$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 		}
