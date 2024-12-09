@@ -657,13 +657,7 @@ class Checkout {
 			true === $carrierEntity->requiresSize() &&
 			true === $this->optionsProvider->isDefaultDimensionsEnabled()
 		) {
-			$size = new Entity\Size(
-				$this->optionsProvider->getDefaultLength(),
-				$this->optionsProvider->getDefaultWidth(),
-				$this->optionsProvider->getDefaultHeight()
-			);
-
-			$orderEntity->setSize( $size );
+			$orderEntity->setSize( $this->optionsProvider->setDefaultSize() );
 		}
 
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $orderEntity, $propsToSave );

@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Core\Entity\Size;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketSynchronizer;
 
@@ -359,6 +360,19 @@ class OptionsProvider {
 		}
 
 		return (float) $this->get( 'default_width' );
+	}
+
+	/**
+	 * Sets default size based on used dimension unit.
+	 *
+	 * @return Size
+	 */
+	public function setDefaultSize(): Size {
+		$length = $this->getDimensionsUnit() === self::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToMillimeters( $this->getDefaultLength() ) : $this->getDefaultLength();
+		$width  = $this->getDimensionsUnit() === self::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToMillimeters( $this->getDefaultWidth() ) : $this->getDefaultWidth();
+		$height = $this->getDimensionsUnit() === self::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToMillimeters( $this->getDefaultHeight() ) : $this->getDefaultHeight();
+
+		return new Size( $length, $width, $height );
 	}
 
 	/**
