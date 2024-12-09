@@ -11,6 +11,7 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout;
+use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -75,7 +76,8 @@ class CheckoutTest extends TestCase {
 			$this->createMock( Api\Internal\CheckoutRouter::class ),
 			$this->carDeliveryConfig,
 			$this->createMock( PaymentHelper::class ),
-			$this->createMock( UrlBuilder::class )
+			$this->createMock( UrlBuilder::class ),
+			$this->createMock( SizeFactory::class )
 		);
 	}
 

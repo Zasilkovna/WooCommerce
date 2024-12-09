@@ -18,6 +18,7 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -194,6 +195,11 @@ class Checkout {
 	 */
 	private $urlBuilder;
 
+	/**
+	 * @var SizeFactory
+	 */
+	private $sizeFactory;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
@@ -216,7 +222,8 @@ class Checkout {
 		Api\Internal\CheckoutRouter $apiRouter,
 		CarDeliveryConfig $carDeliveryConfig,
 		PaymentHelper $paymentHelper,
-		UrlBuilder $urlBuilder
+		UrlBuilder $urlBuilder,
+		SizeFactory $sizeFactory
 	) {
 		$this->wpAdapter                   = $wpAdapter;
 		$this->wcAdapter                   = $wcAdapter;
@@ -240,6 +247,7 @@ class Checkout {
 		$this->carDeliveryConfig           = $carDeliveryConfig;
 		$this->paymentHelper               = $paymentHelper;
 		$this->urlBuilder                  = $urlBuilder;
+		$this->sizeFactory                 = $sizeFactory;
 	}
 
 	/**
@@ -657,13 +665,7 @@ class Checkout {
 			true === $carrierEntity->requiresSize() &&
 			true === $this->optionsProvider->isDefaultDimensionsEnabled()
 		) {
-			$size = new Entity\Size(
-				$this->optionsProvider->getDefaultLength(),
-				$this->optionsProvider->getDefaultWidth(),
-				$this->optionsProvider->getDefaultHeight()
-			);
-
-			$orderEntity->setSize( $size );
+			$orderEntity->setSize( $this->sizeFactory->createDefaultSizeForNewOrder() );
 		}
 
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $orderEntity, $propsToSave );

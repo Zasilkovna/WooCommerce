@@ -13,6 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms;
 
 /**
@@ -40,12 +41,21 @@ class Form {
 	private $formFactory;
 
 	/**
+	 * Class Provider
+	 *
+	 * @var OptionsProvider
+	 */
+	private $options;
+
+	/**
 	 * FormFactory constructor
 	 *
-	 * @param FormFactory $formFactory Form factory.
+	 * @param FormFactory     $formFactory Form factory.
+	 * @param OptionsProvider $options Options provider.
 	 */
-	public function __construct( FormFactory $formFactory ) {
+	public function __construct( FormFactory $formFactory, OptionsProvider $options ) {
 		$this->formFactory = $formFactory;
+		$this->options     = $options;
 	}
 
 	/**
@@ -55,24 +65,16 @@ class Form {
 	 */
 	public function create(): Forms\Form {
 		$form = $this->formFactory->create();
+		$unit = $this->options->getDimensionsUnit();
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
 			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
-			->setRequired( false )
-			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
-			->setRequired( false )
-			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
-			->setRequired( false )
-			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$this->formFactory->addDimension( $form, self::FIELD_LENGTH, __( 'Length', 'packeta' ), $unit );
+		$this->formFactory->addDimension( $form, self::FIELD_WIDTH, __( 'Width', 'packeta' ), $unit );
+		$this->formFactory->addDimension( $form, self::FIELD_HEIGHT, __( 'Height', 'packeta' ), $unit );
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
