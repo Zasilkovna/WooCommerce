@@ -1,9 +1,4 @@
 <?php
-/**
- * Class StoredUntilFormFactory.
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
@@ -12,11 +7,6 @@ namespace Packetery\Module\Forms;
 use Packetery\Module\FormFactory;
 use Packetery\Nette\Forms\Form;
 
-/**
- * Class StoredUntilFormFactory.
- *
- * @package Packetery
- */
 class StoredUntilFormFactory {
 
 	/**
