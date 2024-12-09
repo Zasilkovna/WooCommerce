@@ -16,6 +16,7 @@ use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\WebRequestClient;
 
@@ -53,16 +54,26 @@ class PickupPointValidator {
 	private $webRequestClient;
 
 	/**
-	 * PickupPointValidator constructor.
-	 *
-	 * @param OptionsProvider  $optionsProvider Options provider.
-	 * @param ILogger          $logger Logger.
-	 * @param WebRequestClient $webRequestClient HTTP client.
+	 * @var WpAdapter
 	 */
-	public function __construct( OptionsProvider $optionsProvider, ILogger $logger, WebRequestClient $webRequestClient ) {
+	private $wpAdapter;
+
+	/**
+	 * @param OptionsProvider  $optionsProvider
+	 * @param ILogger          $logger
+	 * @param WebRequestClient $webRequestClient
+	 * @param WpAdapter        $wpAdapter
+	 */
+	public function __construct(
+		OptionsProvider $optionsProvider,
+		ILogger $logger,
+		WebRequestClient $webRequestClient,
+		WpAdapter $wpAdapter
+	) {
 		$this->optionsProvider  = $optionsProvider;
 		$this->logger           = $logger;
 		$this->webRequestClient = $webRequestClient;
+		$this->wpAdapter        = $wpAdapter;
 	}
 
 	/**
@@ -73,20 +84,13 @@ class PickupPointValidator {
 	 * @return PickupPointValidateResponse
 	 */
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
-		$apiKey = $this->optionsProvider->get_api_key();
+		$apiKey     = $this->optionsProvider->get_api_key();
+		$errorTitle = $this->wpAdapter->__( 'Pickup point could not be validated.', 'packeta' );
 
 		try {
 			$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $apiKey );
 		} catch ( InvalidApiKeyException $exception ) {
-			$record         = new Record();
-			$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Pickup point could not be validated.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $exception->getMessage(),
-				'apiKey'       => $apiKey,
-			];
-			$this->logger->add( $record );
+			$this->logErrorRecord( $exception->getMessage(), $apiKey, $errorTitle );
 
 			return new PickupPointValidateResponse( true, [] );
 		}
@@ -95,19 +99,30 @@ class PickupPointValidator {
 			// We do not log successful requests.
 			return $pickupPointValidate->validate( $request );
 		} catch ( RestException $exception ) {
-			$record         = new Record();
-			$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Pickup point could not be validated.', 'packeta' );
-			$record->params = [
-				'errorMessage' => $exception->getMessage(),
-				'request'      => $request->getSubmittableData(),
-			];
-			$this->logger->add( $record );
+			$this->logErrorRecord( $exception->getMessage(), $request->getSubmittableData(), $errorTitle );
 			WC()->session->set( self::VALIDATION_HTTP_ERROR_SESSION_KEY, $exception->getMessage() );
 
 			return new PickupPointValidateResponse( true, [] );
 		}
+	}
+
+	/**
+	 * @param string                                            $exceptionMessage
+	 * @param null|string|array<string, string|bool|float|null> $details
+	 * @param string                                            $errorTitle
+	 *
+	 * @return void
+	 */
+	private function logErrorRecord( string $exceptionMessage, $details, string $errorTitle ): void {
+		$record         = new Record();
+		$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
+		$record->status = Record::STATUS_ERROR;
+		$record->title  = $errorTitle;
+		$record->params = [
+			'errorMessage' => $exceptionMessage,
+			'details'      => $details,
+		];
+		$this->logger->add( $record );
 	}
 
 	/**
