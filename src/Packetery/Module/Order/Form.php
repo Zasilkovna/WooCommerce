@@ -50,7 +50,7 @@ class Form {
 	/**
 	 * FormFactory constructor
 	 *
-	 * @param FormFactory $formFactory Form factory.
+	 * @param FormFactory     $formFactory Form factory.
 	 * @param OptionsProvider $options Options provider.
 	 */
 	public function __construct( FormFactory $formFactory, OptionsProvider $options ) {

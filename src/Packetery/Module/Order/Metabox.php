@@ -534,6 +534,7 @@ class Metabox {
 			return;
 		}
 
+		$propsToSave = [];
 		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
 			$propsToSave[ $dimension ] = $this->optionsProvider->getSanitizedDimensionValueInMm( $formValues[ $dimension ] );
 		}

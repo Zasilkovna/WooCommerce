@@ -99,6 +99,13 @@ class GridExtender {
 	private $moduleHelper;
 
 	/**
+	 * Settings provider.
+	 *
+	 * @var OptionsProvider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -110,6 +117,7 @@ class GridExtender {
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 * @param WpAdapter             $wpAdapter             WordPress adapter.
 	 * @param ModuleHelper          $moduleHelper          Module helper.
+	 * @param OptionsProvider       $optionsProvider       Settings provider.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -120,7 +128,8 @@ class GridExtender {
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		WpAdapter $wpAdapter,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		OptionsProvider $optionsProvider
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -131,6 +140,7 @@ class GridExtender {
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->wpAdapter             = $wpAdapter;
 		$this->moduleHelper          = $moduleHelper;
+		$this->optionsProvider       = $optionsProvider;
 	}
 
 	/**
@@ -467,15 +477,17 @@ class GridExtender {
 	 * @return Size
 	 */
 	public function getSizeInSetDimensionUnit( Core\Entity\Order $order ): Size {
-		$length = $order->getLength();
-		$width  = $order->getWidth();
-		$height = $order->getHeight();
-		foreach ( [ $length, $width, $height ] as $dimension ) {
-			if ( null !== $dimension && OptionsProvider::DIMENSIONS_UNIT_CM === $this->optionsProvider->getDimensionsUnit() ) {
-				$size[] = ModuleHelper::convertToCentimeters( (int) $dimension );
-			} else {
-				$size[] = $dimension;
-			}
+		$dimensions = [
+			$order->getLength(),
+			$order->getWidth(),
+			$order->getHeight(),
+		];
+
+		$size = [];
+		foreach ( $dimensions as $dimension ) {
+			$size[] = null !== $dimension && $this->optionsProvider->getDimensionsUnit() === OptionsProvider::DIMENSIONS_UNIT_CM
+				? ModuleHelper::convertToCentimeters( (int) $dimension )
+				: $dimension;
 		}
 
 		return new Size( ...$size );

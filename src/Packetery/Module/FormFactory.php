@@ -72,7 +72,6 @@ class FormFactory {
 		return $form;
 	}
 
-
 	/**
 	 * Dimension form control
 	 *

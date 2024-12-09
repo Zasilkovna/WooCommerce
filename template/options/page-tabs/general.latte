@@ -12,7 +12,7 @@
 				<input n:name=packetery-api_password>
 				<div class="packetery-help-block">
 					<p>
-						{phpComment 'translators: %s represents URL.'}
+						{* translators: %s represents URL. *}
 						{sprintf( $translations['apiPasswordCanBeFoundAt%sUrl'], $apiPasswordLink )|noescape}
 					</p>
 				</div>
@@ -111,13 +111,13 @@
 			</th>
 			<td class="packetery-dimensions-block">
 				<label n:name=packetery-default_length />
-				<input type="number" step="0" n:name=packetery-default_length>
+				<input type="number" step="0.1" n:name=packetery-default_length>
 				<br>
 				<label n:name=packetery-default_width />
-				<input type="number" step="0" n:name=packetery-default_width>
+				<input type="number" step="0.1" n:name=packetery-default_width>
 				<br>
 				<label n:name=packetery-default_height />
-				<input type="number" step="0" n:name=packetery-default_height>
+				<input type="number" step="0.1" n:name=packetery-default_height>
 				<br>
 				<div class="packetery-help-block">
 					<p>{$translations['defaultDimensionsDescription']}</p>
