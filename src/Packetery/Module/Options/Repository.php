@@ -60,24 +60,47 @@ class Repository {
 	}
 
 	/**
-	 * @return int|bool
+	 * @param array<string> $prefixes
+	 *
+	 * @return string[]
 	 */
-	public function deleteTransientRowsByPrefix( string $prefix ) {
-		$transientPrefix = sprintf( '_transient_%s', $prefix );
+	public function getAllTransientsByPrefixes( array $prefixes ) {
+		if ( [] === $prefixes ) {
+			return [];
+		}
 
-		return $this->deleteByPrefix( $transientPrefix );
+		$optionPrefixes = [];
+		foreach ( $prefixes as $prefix ) {
+			$optionPrefixes[] = '_transient_' . $prefix;
+		}
+
+		$transientNames = [];
+		$result         = $this->getAllOptionNamesByPrefixes( $optionPrefixes );
+
+		foreach ( $result as $optionName ) {
+			$transientNames[] = preg_replace( '~^_transient_~', '', $optionName, 1 );
+		}
+
+		return $transientNames;
 	}
 
 	/**
-	 * @return int|bool
+	 * @param array<string> $prefixes
+	 *
+	 * @return string[]
 	 */
-	public function deleteByPrefix( string $prefix ) {
-		return $this->wpdbAdapter->query(
-			$this->wpdbAdapter->prepare(
-				"DELETE FROM {$this->wpdbAdapter->options}
-				WHERE option_name LIKE %s",
-				$this->wpdbAdapter->escLike( $prefix ) . '%',
-			)
-		);
+	public function getAllOptionNamesByPrefixes( array $prefixes ) {
+		if ( [] === $prefixes ) {
+			return [];
+		}
+
+		$prefixWhere = [];
+		foreach ( $prefixes as $prefix ) {
+			$prefixWhere[] = sprintf( '`option_name` LIKE "%s"', $this->wpdbAdapter->escLike( $prefix ) . '%' );
+		}
+
+		$prefixWhereDisjunction = implode( ' OR ', $prefixWhere );
+
+		return $this->wpdbAdapter->get_col( "SELECT `option_name` FROM {$this->wpdbAdapter->options} WHERE $prefixWhereDisjunction" );
 	}
 }

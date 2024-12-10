@@ -64,13 +64,27 @@ class Uninstaller {
 		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclarationItem . '`' );
 		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '`' );
 
-		$this->optionsRepository->deleteTransientRowsByPrefix( 'packetery_' );
-		$this->optionsRepository->deleteTransientRowsByPrefix( 'packeta_' );
-		$this->optionsRepository->deleteTransientRowsByPrefix( 'timeout_packeta_' );
-		$this->optionsRepository->deleteTransientRowsByPrefix( 'timeout_packetery_' );
+		$transientsToDelete = $this->optionsRepository->getAllTransientsByPrefixes(
+			[
+				'packetery_',
+				'packeta_',
+			]
+		);
 
-		$this->optionsRepository->deleteByPrefix( 'packetery_' );
-		$this->optionsRepository->deleteByPrefix( 'packeta_' );
+		foreach ( $transientsToDelete as $optionName ) {
+			delete_transient( $optionName );
+		}
+
+		$optionNamesToDelete = $this->optionsRepository->getAllOptionNamesByPrefixes(
+			[
+				'packetery_',
+				'packeta_',
+			]
+		);
+
+		foreach ( $optionNamesToDelete as $optionName ) {
+			delete_option( $optionName );
+		}
 
 		delete_option( OptionsProvider::OPTION_NAME_PACKETERY );
 	}
