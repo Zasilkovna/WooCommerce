@@ -11,6 +11,7 @@ namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\WcSettingsConfig;
+use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\DI\Container;
@@ -38,11 +39,9 @@ class ShippingMethod extends \WC_Shipping_Method {
 	private $container;
 
 	/**
-	 * Checkout object.
-	 *
-	 * @var Checkout
+	 * @var ShippingRateFactory
 	 */
-	private $checkout;
+	private $shippingRateFactory;
 
 	/**
 	 * CarrierRepository
@@ -104,7 +103,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 		}
 
 		$this->init();
-		$this->checkout = $this->container->getByType( Checkout::class );
+		$this->shippingRateFactory = $this->container->getByType( ShippingRateFactory::class );
 	}
 
 	/**
@@ -165,7 +164,7 @@ class ShippingMethod extends \WC_Shipping_Method {
 			}
 		}
 
-		$customRates = $this->checkout->getShippingRates( $allowedCarrierNames );
+		$customRates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
 		foreach ( $customRates as $customRate ) {
 			$this->add_rate( $customRate );
 		}

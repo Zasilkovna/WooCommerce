@@ -11,8 +11,8 @@ namespace Packetery\Module\Options;
 
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
-use Packetery\Module;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Checkout\CurrencySwitcherService;
 use Packetery\Module\Log\DbLogger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http;
@@ -29,61 +29,49 @@ class Exporter {
 	public const ACTION_EXPORT_SETTINGS      = 'export-settings';
 
 	/**
-	 * Http request.
-	 *
 	 * @var Http\Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * Latte engine.
-	 *
 	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Country listing page.
-	 *
 	 * @var CountryListingPage
 	 */
 	private $countryListingPage;
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Logger.
-	 *
 	 * @var DbLogger
 	 */
 	private $dbLogger;
 
 	/**
-	 * Exporter constructor.
-	 *
-	 * @param Http\Request       $httpRequest        Http request.
-	 * @param Engine             $latteEngine        Latte engine.
-	 * @param CountryListingPage $countryListingPage Country listing page.
-	 * @param OptionsProvider    $optionsProvider    Options provider.
-	 * @param DbLogger           $dbLogger           Logger.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
 		OptionsProvider $optionsProvider,
-		DbLogger $dbLogger
+		DbLogger $dbLogger,
+		ModuleHelper $moduleHelper
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
 		$this->countryListingPage = $countryListingPage;
 		$this->optionsProvider    = $optionsProvider;
 		$this->dbLogger           = $dbLogger;
+		$this->moduleHelper       = $moduleHelper;
 	}
 
 	/**
@@ -140,7 +128,7 @@ class Exporter {
 			 */
 			'plugins'           => $this->getFormattedPlugins( (array) apply_filters( 'all_plugins', get_plugins() ) ),
 			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
-			'currencySwitchers' => $this->formatVariable( Module\CurrencySwitcherFacade::$supportedCurrencySwitchers ),
+			'currencySwitchers' => $this->formatVariable( CurrencySwitcherService::$supportedCurrencySwitchers ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
@@ -167,7 +155,7 @@ class Exporter {
 
 		foreach ( $plugins as $relativePath => $plugin ) {
 			$item = [
-				'Active' => wc_bool_to_string( ModuleHelper::isPluginActive( $relativePath ) ),
+				'Active' => wc_bool_to_string( $this->moduleHelper->isPluginActive( $relativePath ) ),
 			];
 
 			$options = [ 'Name', 'PluginURI', 'Version', 'WC tested up to', 'WC requires at least', 'AuthorName', 'RequiresPHP' ];

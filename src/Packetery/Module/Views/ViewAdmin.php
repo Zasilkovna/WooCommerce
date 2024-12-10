@@ -41,12 +41,18 @@ class ViewAdmin {
 	 */
 	private $carrierOptionsFactory;
 
+	/**
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
 	public function __construct(
 		ContextResolver $contextResolver,
 		Engine $latteEngine,
 		WpAdapter $wpAdapter,
 		Order\Repository $orderRepository,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ModuleHelper $moduleHelper
 	) {
 
 		$this->contextResolver       = $contextResolver;
@@ -54,6 +60,7 @@ class ViewAdmin {
 		$this->wpAdapter             = $wpAdapter;
 		$this->orderRepository       = $orderRepository;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->moduleHelper          = $moduleHelper;
 	}
 
 	/**
@@ -114,7 +121,7 @@ class ViewAdmin {
 	 * @return void
 	 */
 	public function echoInactiveWooCommerceNotice(): void {
-		if ( ModuleHelper::isWooCommercePluginActive() === true ) {
+		if ( $this->moduleHelper->isWooCommercePluginActive() === true ) {
 			// When Packeta plugin is active and WooCommerce plugin is inactive.
 			// If user decides to activate WooCommerce plugin then invalid notice will not be rendered.
 			// Packeta plugin probably bootstraps twice in such case.
