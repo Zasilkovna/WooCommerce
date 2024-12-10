@@ -17,7 +17,7 @@ use Tests\Core\DummyFactory;
 class PickupPointValidateTest extends TestCase {
 	public function testConstructWithValidApiKey(): void {
 		$webRequestClientMock = $this->getWebRequestClientMock();
-		$validator            = new PickupPointValidate( $webRequestClientMock, 'dummyApiKey' );
+		$validator            = PickupPointValidate::createWithValidApiKey( $webRequestClientMock, 'dummyApiKey' );
 
 		self::assertNotNull( $validator );
 	}
@@ -28,7 +28,7 @@ class PickupPointValidateTest extends TestCase {
 		$this->expectException( InvalidApiKeyException::class );
 		$this->expectExceptionMessage( 'API key is missing' );
 
-		new PickupPointValidate( $webRequestClientMock, null );
+		PickupPointValidate::createWithValidApiKey( $webRequestClientMock, null );
 	}
 
 	public function testValidateOk(): void {
@@ -42,7 +42,7 @@ class PickupPointValidateTest extends TestCase {
 		);
 		$webRequestClientMock->method( 'post' )
 			->willReturn( $expectedResponse );
-		$validator = new PickupPointValidate( $webRequestClientMock, 'dummyApiKey' );
+		$validator = PickupPointValidate::createWithValidApiKey( $webRequestClientMock, 'dummyApiKey' );
 
 		self::assertInstanceOf(
 			PickupPointValidateResponse::class,
@@ -54,7 +54,7 @@ class PickupPointValidateTest extends TestCase {
 		$webRequestClientMock = $this->getWebRequestClientMock();
 		$webRequestClientMock->method( 'post' )
 			->willThrowException( new Exception( 'dummyException' ) );
-		$validator = new PickupPointValidate( $webRequestClientMock, 'dummyApiKey' );
+		$validator = PickupPointValidate::createWithValidApiKey( $webRequestClientMock, 'dummyApiKey' );
 
 		$this->expectException( RestException::class );
 		$validator->validate( DummyFactory::getEmptyPickupPointValidateRequest() );

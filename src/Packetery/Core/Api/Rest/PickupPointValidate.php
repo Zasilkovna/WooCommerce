@@ -29,7 +29,7 @@ class PickupPointValidate {
 	private $webRequestClient;
 
 	/**
-	 * @var null|string
+	 * @var string
 	 */
 	private $apiKey;
 
