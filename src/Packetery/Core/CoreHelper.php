@@ -50,14 +50,6 @@ class CoreHelper {
 		return (float) number_format( $value, $maxDecimalPlaces, '.', '' );
 	}
 
-	/**
-	 * Trims the decimals to a desired format.
-	 *
-	 * @param float $value Value.
-	 * @param int   $decimals Position of a decimal.
-	 *
-	 * @return string
-	 */
 	public static function trimDecimalPlaces( float $value, int $decimals ): string {
 		$formattedValue = number_format( $value, $decimals, '.', '' );
 
