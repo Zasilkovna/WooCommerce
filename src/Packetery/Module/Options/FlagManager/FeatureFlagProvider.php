@@ -9,7 +9,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options\FlagManager;
 
-use Exception;
 use Packetery\Module\Framework\WpAdapter;
 
 /**
@@ -46,7 +45,6 @@ class FeatureFlagProvider {
 	 * Tells if split is active.
 	 *
 	 * @return bool
-	 * @throws Exception From DateTimeImmutable.
 	 */
 	public function isSplitActive(): bool {
 		// Enabled for all users. Method will be removed later.

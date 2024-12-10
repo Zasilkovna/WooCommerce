@@ -73,12 +73,6 @@ class CoreHelper {
 		return sprintf( self::TRACKING_URL, rawurlencode( $packetId ) );
 	}
 
-	/**
-	 * Creates UTC DateTime.
-	 *
-	 * @return DateTimeImmutable
-	 * @throws \Exception From DateTimeImmutable.
-	 */
 	public static function now(): DateTimeImmutable {
 		return new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 	}
