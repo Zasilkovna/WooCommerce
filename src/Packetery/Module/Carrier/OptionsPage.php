@@ -15,6 +15,7 @@ use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
@@ -131,6 +132,11 @@ class OptionsPage {
 	 */
 	private $urlBuilder;
 
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
@@ -144,7 +150,8 @@ class OptionsPage {
 		WcSettingsConfig $wcSettingsConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
-		UrlBuilder $urlBuilder
+		UrlBuilder $urlBuilder,
+		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine           = $latteEngine;
 		$this->carrierRepository     = $carrierRepository;
@@ -159,6 +166,7 @@ class OptionsPage {
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->moduleHelper          = $moduleHelper;
 		$this->urlBuilder            = $urlBuilder;
+		$this->wpAdapter             = $wpAdapter;
 	}
 
 	/**
@@ -632,27 +640,27 @@ class OptionsPage {
 	 */
 	private function getTranslations(): array {
 		return [
-			'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
-			'delete'                                 => __( 'Delete', 'packeta' ),
-			'weightRules'                            => __( 'Weight rules', 'packeta' ),
-			'productValueRules'                      => __( 'Product value rules', 'packeta' ),
-			'addWeightRule'                          => __( 'Add weight rule', 'packeta' ),
-			'addProductValueRule'                    => __( 'Add product value rule', 'packeta' ),
-			'codSurchargeRules'                      => __( 'COD surcharge rules', 'packeta' ),
-			'addCodSurchargeRule'                    => __( 'Add COD surcharge rule', 'packeta' ),
-			'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
-			'daysUntilShipping'                      => __( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
-			'shippingTimeCutOff'                     => __( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
-			'addressValidationDescription'           => __( 'Customer address validation.', 'packeta' ),
-			'roundingDescription'                    => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
-			'saveChanges'                            => __( 'Save changes', 'packeta' ),
-			'packeta'                                => __( 'Packeta', 'packeta' ),
-			'noKnownCarrierForThisCountry'           => __( 'No carriers available for this country.', 'packeta' ),
-			'ageVerificationSupportedNotification'   => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
-			'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
-			'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
-			'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
-			'lowAvailableVendorsCount'               => __( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
+			'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => $this->wpAdapter->__( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
+			'delete'                                 => $this->wpAdapter->__( 'Delete', 'packeta' ),
+			'weightRules'                            => $this->wpAdapter->__( 'Weight rules', 'packeta' ),
+			'productValueRules'                      => $this->wpAdapter->__( 'Product value rules', 'packeta' ),
+			'addWeightRule'                          => $this->wpAdapter->__( 'Add weight rule', 'packeta' ),
+			'addProductValueRule'                    => $this->wpAdapter->__( 'Add product value rule', 'packeta' ),
+			'codSurchargeRules'                      => $this->wpAdapter->__( 'COD surcharge rules', 'packeta' ),
+			'addCodSurchargeRule'                    => $this->wpAdapter->__( 'Add COD surcharge rule', 'packeta' ),
+			'afterExceedingThisAmountShippingIsFree' => $this->wpAdapter->__( 'After exceeding this amount, shipping is free.', 'packeta' ),
+			'daysUntilShipping'                      => $this->wpAdapter->__( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
+			'shippingTimeCutOff'                     => $this->wpAdapter->__( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
+			'addressValidationDescription'           => $this->wpAdapter->__( 'Customer address validation.', 'packeta' ),
+			'roundingDescription'                    => $this->wpAdapter->__( 'COD rounding for submitting data to Packeta', 'packeta' ),
+			'saveChanges'                            => $this->wpAdapter->__( 'Save changes', 'packeta' ),
+			'packeta'                                => $this->wpAdapter->__( 'Packeta', 'packeta' ),
+			'noKnownCarrierForThisCountry'           => $this->wpAdapter->__( 'No carriers available for this country.', 'packeta' ),
+			'ageVerificationSupportedNotification'   => $this->wpAdapter->__( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
+			'carrierDoesNotSupportCod'               => $this->wpAdapter->__( 'This carrier does not support COD payment.', 'packeta' ),
+			'allowedPickupPointTypes'                => $this->wpAdapter->__( 'Pickup point types', 'packeta' ),
+			'checkAtLeastTwo'                        => $this->wpAdapter->__( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+			'lowAvailableVendorsCount'               => $this->wpAdapter->__( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
 		];
 	}
 
