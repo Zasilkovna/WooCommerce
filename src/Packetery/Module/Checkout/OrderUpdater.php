@@ -6,6 +6,7 @@ namespace Packetery\Module\Checkout;
 
 use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
+use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -65,6 +66,11 @@ class OrderUpdater {
 	 */
 	private $packetAutoSubmitter;
 
+	/**
+	 * @var SizeFactory
+	 */
+	private $sizeFactory;
+
 	public function __construct(
 		Order\Repository $orderRepository,
 		CheckoutService $checkoutService,
@@ -75,7 +81,8 @@ class OrderUpdater {
 		Order\AttributeMapper $attributeMapper,
 		Carrier\EntityRepository $carrierEntityRepository,
 		CartService $cartService,
-		Order\PacketAutoSubmitter $packetAutoSubmitter
+		Order\PacketAutoSubmitter $packetAutoSubmitter,
+		SizeFactory $sizeFactory
 	) {
 		$this->orderRepository         = $orderRepository;
 		$this->checkoutService         = $checkoutService;
@@ -87,6 +94,7 @@ class OrderUpdater {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->cartService             = $cartService;
 		$this->packetAutoSubmitter     = $packetAutoSubmitter;
+		$this->sizeFactory             = $sizeFactory;
 	}
 
 	/**
@@ -167,7 +175,7 @@ class OrderUpdater {
 				$this->optionsProvider->getDefaultHeight()
 			);
 
-			$order->setSize( $size );
+			$order->setSize( $this->sizeFactory->createDefaultSizeForNewOrder() );
 		}
 
 		$pickupPoint = $this->mapper->toOrderEntityPickupPoint( $order, $propsToSave );
@@ -181,7 +189,7 @@ class OrderUpdater {
 	private function addPickupPointValidationError( WC_Order $wcOrder ): void {
 		// @phpstan-ignore-next-line
 		if ( PickupPointValidator::IS_ACTIVE ) {
-			$pickupPointValidationError = $this->wcAdapter->sessionGet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
+			$pickupPointValidationError = $this->wcAdapter->sessionGetString( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
 			if ( null !== $pickupPointValidationError ) {
 				// translators: %s: Message from downloader.
 				$wcOrder->add_order_note(
@@ -199,7 +207,7 @@ class OrderUpdater {
 	 * @throws WC_Data_Exception When invalid data are passed during shipping address update.
 	 */
 	private function getPropsFromCheckoutData( array $checkoutData, array $propsToSave, WC_Order $wcOrder ): array {
-		foreach ( Order\Attribute::$pickupPointAttrs as $attr ) {
+		foreach ( Order\Attribute::$pickupPointAttributes as $attr ) {
 			$attrName = $attr['name'];
 			if ( ! isset( $checkoutData[ $attrName ] ) ) {
 				continue;

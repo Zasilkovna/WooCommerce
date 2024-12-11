@@ -141,13 +141,13 @@ class CheckoutValidator {
 	private function validatePickupPoint( array $checkoutData, ?string $carrierId, string $chosenShippingMethod ): void {
 		$error = false;
 
-		$requiredAttrs = array_filter(
+		$requiredAttributes = array_filter(
 			array_combine(
-				array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
-				array_column( Order\Attribute::$pickupPointAttrs, 'required' )
+				array_column( Order\Attribute::$pickupPointAttributes, 'name' ),
+				array_column( Order\Attribute::$pickupPointAttributes, 'required' )
 			)
 		);
-		foreach ( $requiredAttrs as $attr => $required ) {
+		foreach ( $requiredAttributes as $attr => $required ) {
 			$attrValue = $checkoutData[ $attr ] ?? null;
 			if ( ! $attrValue ) {
 				$error = true;

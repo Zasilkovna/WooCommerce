@@ -56,9 +56,9 @@ class CheckoutRenderer {
 			[
 				'fields' => array_unique(
 					array_merge(
-						array_column( Order\Attribute::$pickupPointAttrs, 'name' ),
-						array_column( Order\Attribute::$homeDeliveryAttrs, 'name' ),
-						array_column( Order\Attribute::$carDeliveryAttrs, 'name' )
+						array_column( Order\Attribute::$pickupPointAttributes, 'name' ),
+						array_column( Order\Attribute::$homeDeliveryAttributes, 'name' ),
+						array_column( Order\Attribute::$carDeliveryAttributes, 'name' )
 					)
 				),
 			]

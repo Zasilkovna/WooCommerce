@@ -61,9 +61,7 @@ class CurrencySwitcherService {
 		 *
 		 * @since 1.4
 		 */
-		$price = (float) $this->wpAdapter->applyFilters( 'packetery_price', $price );
-
-		return $price;
+		return (float) $this->wpAdapter->applyFilters( 'packetery_price', $price );
 	}
 
 	/**

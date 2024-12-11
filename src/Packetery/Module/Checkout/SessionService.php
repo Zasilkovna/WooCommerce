@@ -27,7 +27,7 @@ class SessionService {
 	public function getChosenMethodFromSession(): string {
 		$chosenShippingRate = null;
 		if ( null !== $this->wcAdapter->session() ) {
-			$chosenShippingRates = $this->wcAdapter->sessionGet( 'chosen_shipping_methods' );
+			$chosenShippingRates = $this->wcAdapter->sessionGetArray( 'chosen_shipping_methods' );
 			if ( is_array( $chosenShippingRates ) && count( $chosenShippingRates ) > 0 ) {
 				$chosenShippingRate = $chosenShippingRates[0];
 			}
@@ -42,7 +42,7 @@ class SessionService {
 	 * @return string|null
 	 */
 	public function getChosenPaymentMethod(): ?string {
-		$paymentMethod = $this->wcAdapter->sessionGet( 'chosen_payment_method' );
+		$paymentMethod = $this->wcAdapter->sessionGetString( 'chosen_payment_method' );
 
 		return is_string( $paymentMethod ) ? $paymentMethod : null;
 	}

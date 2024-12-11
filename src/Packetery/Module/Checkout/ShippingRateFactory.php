@@ -162,12 +162,12 @@ class ShippingRateFactory {
 		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
 		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 
-		return ! (
-			( null === $allowedCarrierNames && ! $carrierOptions->isActive() ) ||
-			( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) ||
-			in_array( $optionId, $disallowedShippingRateIds, true ) ||
-			$this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts )
-		);
+		$isCarrierOptionInactive = null === $allowedCarrierNames && ! $carrierOptions->isActive();
+		$isCarDeliveryDisabled   = $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled();
+		$isOptionDisallowed      = in_array( $optionId, $disallowedShippingRateIds, true );
+		$isRestrictedByCategory  = $this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts );
+
+		return ! ( $isCarrierOptionInactive || $isCarDeliveryDisabled || $isOptionDisallowed || $isRestrictedByCategory );
 	}
 
 	/**
@@ -175,7 +175,13 @@ class ShippingRateFactory {
 	 * @param float  $cost
 	 * @param string $rateId
 	 *
-	 * @return array
+	 * @return array{
+	 *      label: string,
+	 *      id: string,
+	 *      cost: float,
+	 *      taxes: array<int, float>,
+	 *      calc_tax: string
+	 *  }
 	 */
 	private function createShippingRateAndApplyTaxes( string $carrierName, float $cost, string $rateId ): array {
 		if ( $this->isFreeShippingApplicable( $cost ) ) {

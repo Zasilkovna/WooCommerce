@@ -92,7 +92,7 @@ class CartService {
 		$totalProductPrice = 0.0;
 
 		foreach ( $this->wcAdapter->cartGetCartContent() as $cartItem ) {
-			$totalProductPrice += (float) $cartItem['data']->get_price( 'raw' ) * $cartItem['quantity'];
+			$totalProductPrice += (float) $cartItem['data']->get_price( 'raw' ) * (float) $cartItem['quantity'];
 		}
 
 		return $totalProductPrice;

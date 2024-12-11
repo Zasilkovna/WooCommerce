@@ -7,6 +7,9 @@ namespace Packetery\Module\Framework;
 use WC_Session;
 use WC_Session_Handler;
 
+use function is_array;
+use function is_string;
+
 trait WcSessionTrait {
 	public function initializeSession(): void {
 		WC()->initialize_session();
@@ -24,8 +27,32 @@ trait WcSessionTrait {
 	 *
 	 * @return mixed
 	 */
-	public function sessionGet( string $key ) {
+	private function sessionGet( string $key ) {
 		return WC()->session->get( $key );
+	}
+
+	/**
+	 * Minimal logic to ensure strict typing.
+	 */
+	public function sessionGetString( string $key ): ?string {
+		$sessionValue = $this->sessionGet( $key );
+		if ( is_string( $sessionValue ) ) {
+			return $sessionValue;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Minimal logic to ensure strict typing.
+	 */
+	public function sessionGetArray( string $key ): ?array {
+		$sessionValue = $this->sessionGet( $key );
+		if ( is_array( $sessionValue ) ) {
+			return $sessionValue;
+		}
+
+		return null;
 	}
 
 	/**

@@ -27,7 +27,7 @@ class SessionServiceTest extends TestCase {
 			->willReturn( true );
 
 		$this->wcAdapter
-			->method( 'sessionGet' )
+			->method( 'sessionGetArray' )
 			->with( $this->equalTo( 'chosen_shipping_methods' ) )
 			->willReturn( [ 'dummy_shipping_method' ] );
 
@@ -42,7 +42,7 @@ class SessionServiceTest extends TestCase {
 			->willReturn( true );
 
 		$this->wcAdapter
-			->method( 'sessionGet' )
+			->method( 'sessionGetArray' )
 			->with( $this->equalTo( 'chosen_shipping_methods' ) )
 			->willReturn( [] );
 
@@ -63,7 +63,7 @@ class SessionServiceTest extends TestCase {
 		$this->createSessionServiceMock();
 
 		$this->wcAdapter
-			->method( 'sessionGet' )
+			->method( 'sessionGetString' )
 			->with( $this->equalTo( 'chosen_payment_method' ) )
 			->willReturn( 'dummy_shipping_method' );
 
@@ -74,7 +74,7 @@ class SessionServiceTest extends TestCase {
 		$this->createSessionServiceMock();
 
 		$this->wcAdapter
-			->method( 'sessionGet' )
+			->method( 'sessionGetString' )
 			->with( $this->equalTo( 'chosen_payment_method' ) )
 			->willReturn( null );
 
@@ -101,7 +101,7 @@ class SessionServiceTest extends TestCase {
 		$this->createSessionServiceMock();
 
 		$this->wcAdapter
-			->method( 'sessionGet' )
+			->method( 'sessionGetString' )
 			->with( $this->equalTo( 'chosen_payment_method' ) )
 			->willReturn( 'dummy_payment_method' );
 
@@ -131,7 +131,7 @@ class SessionServiceTest extends TestCase {
 		$this->createSessionServiceMock();
 
 		$this->wcAdapter
-			->method( 'sessionGet' )
+			->method( 'sessionGetString' )
 			->with( $this->equalTo( 'chosen_payment_method' ) )
 			->willReturn( null );
 

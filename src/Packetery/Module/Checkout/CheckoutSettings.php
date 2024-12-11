@@ -123,7 +123,7 @@ class CheckoutSettings {
 	 * @return array
 	 */
 	public function createSettings(): array {
-		if ( ! ( $this->wcAdapter->cart() instanceof WC_Cart ) ) {
+		if ( ! $this->wcAdapter->cart() instanceof WC_Cart ) {
 			return [];
 		}
 
@@ -161,9 +161,9 @@ class CheckoutSettings {
 			'carrierConfig'              => $carriersConfigForWidget,
 			'isCarDeliverySampleEnabled' => $this->carDeliveryConfig->isSampleEnabled(),
 			'isAgeVerificationRequired'  => $this->cartService->isAgeVerificationRequired(),
-			'pickupPointAttrs'           => Order\Attribute::$pickupPointAttrs,
-			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttrs,
-			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttrs,
+			'pickupPointAttrs'           => Order\Attribute::$pickupPointAttributes,
+			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttributes,
+			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttributes,
 			'carDeliveryCarriers'        => Entity\Carrier::CAR_DELIVERY_CARRIERS,
 			'expeditionDay'              => $this->getCarDeliveryExpeditionDay(),
 			'appIdentity'                => Plugin::getAppIdentity(),

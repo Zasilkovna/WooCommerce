@@ -34,101 +34,101 @@ class RateCalculatorTest extends TestCase {
 	public static function calculationDataProvider(): array {
 		return [
 			[
-				'expectedCost'      => 11,
+				'expectedCost'      => 11.0,
 				CarrierOptionsDummyFactory::getDefaultCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 0,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 0.0,
 				'isCouponApplied'   => false,
 			],
 			[
-				'expectedCost'      => 22,
+				'expectedCost'      => 22.0,
 				CarrierOptionsDummyFactory::getDefaultCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 15,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 15.0,
 				'isCouponApplied'   => false,
 			],
 			[
-				'expectedCost'      => 22,
+				'expectedCost'      => 22.0,
 				CarrierOptionsDummyFactory::getDefaultCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 20,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 20.0,
 				'isCouponApplied'   => false,
 			],
 			[
-				'expectedCost'      => 33,
+				'expectedCost'      => 33.0,
 				CarrierOptionsDummyFactory::getDefaultCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 25,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 25.0,
 				'isCouponApplied'   => false,
 			],
 			[
 				'expectedCost'      => null,
 				CarrierOptionsDummyFactory::getDefaultCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 31,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 31.0,
 				'isCouponApplied'   => false,
 			],
 			[
-				'expectedCost'      => 111,
+				'expectedCost'      => 111.0,
 				CarrierOptionsDummyFactory::getProductValuePricingCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 1,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 1.0,
 				'isCouponApplied'   => false,
 			],
 			[
-				'expectedCost'      => 222,
+				'expectedCost'      => 222.0,
 				CarrierOptionsDummyFactory::getProductValuePricingCarrier(),
-				'totalProductValue' => 150,
-				'cartWeightKg'      => 15,
+				'totalProductValue' => 150.0,
+				'cartWeightKg'      => 15.0,
 				'isCouponApplied'   => false,
 			],
 			[
-				'expectedCost'      => 222,
+				'expectedCost'      => 222.0,
 				CarrierOptionsDummyFactory::getProductValuePricingCarrier(),
-				'totalProductValue' => 200,
-				'cartWeightKg'      => 20,
+				'totalProductValue' => 200.0,
+				'cartWeightKg'      => 20.0,
 				'isCouponApplied'   => false,
 			],
 			[
-				'expectedCost'      => 333,
+				'expectedCost'      => 333.0,
 				CarrierOptionsDummyFactory::getProductValuePricingCarrier(),
-				'totalProductValue' => 300,
-				'cartWeightKg'      => 25,
+				'totalProductValue' => 300.0,
+				'cartWeightKg'      => 25.0,
 				'isCouponApplied'   => false,
 			],
 			[
 				'expectedCost'      => null,
 				CarrierOptionsDummyFactory::getProductValuePricingCarrier(),
-				'totalProductValue' => 400,
-				'cartWeightKg'      => 31,
+				'totalProductValue' => 400.0,
+				'cartWeightKg'      => 31.0,
 				'isCouponApplied'   => false,
 			],
 			'free shipping threshold must be reached'     => [
-				'expectedCost'      => 0,
+				'expectedCost'      => 0.0,
 				CarrierOptionsDummyFactory::getDefaultCarrier(),
-				'totalProductValue' => 15000,
-				'cartWeightKg'      => 25,
+				'totalProductValue' => 15000.0,
+				'cartWeightKg'      => 25.0,
 				'isCouponApplied'   => false,
 			],
 			'free shipping threshold must not be reached' => [
-				'expectedCost'      => 33,
+				'expectedCost'      => 33.0,
 				CarrierOptionsDummyFactory::getNoFreeShippingLimitCarrier(),
-				'totalProductValue' => 15000,
-				'cartWeightKg'      => 25,
+				'totalProductValue' => 15000.0,
+				'cartWeightKg'      => 25.0,
 				'isCouponApplied'   => false,
 			],
 			'free shipping coupon must affect cost'       => [
-				'expectedCost'      => 0,
+				'expectedCost'      => 0.0,
 				CarrierOptionsDummyFactory::getDefaultCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 25,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 25.0,
 				'isCouponApplied'   => true,
 			],
 			'free shipping coupon must not affect cost'   => [
-				'expectedCost'      => 33,
+				'expectedCost'      => 33.0,
 				CarrierOptionsDummyFactory::getNoCouponCarrier(),
-				'totalProductValue' => 100,
-				'cartWeightKg'      => 25,
+				'totalProductValue' => 100.0,
+				'cartWeightKg'      => 25.0,
 				'isCouponApplied'   => true,
 			],
 		];
@@ -155,7 +155,7 @@ class RateCalculatorTest extends TestCase {
 		$this->createRateCalculatorMock();
 
 		$carrierOptions = [];
-		$cartPrice      = 100;
+		$cartPrice      = 100.0;
 
 		$surcharge = $this->rateCalculator->getCODSurcharge( $carrierOptions, $cartPrice );
 
@@ -165,8 +165,8 @@ class RateCalculatorTest extends TestCase {
 	public function testGetCODSurchargeWithDefault(): void {
 		$this->createRateCalculatorMock();
 
-		$carrierOptions = [ 'default_COD_surcharge' => 15 ];
-		$cartPrice      = 100;
+		$carrierOptions = [ 'default_COD_surcharge' => 15.0 ];
+		$cartPrice      = 100.0;
 
 		$surcharge = $this->rateCalculator->getCODSurcharge( $carrierOptions, $cartPrice );
 
@@ -179,17 +179,17 @@ class RateCalculatorTest extends TestCase {
 		$carrierOptions = [
 			'surcharge_limits'      => [
 				[
-					'order_price' => 50,
-					'surcharge'   => 10,
+					'order_price' => 50.0,
+					'surcharge'   => 10.0,
 				],
 				[
-					'order_price' => 150,
-					'surcharge'   => 5,
+					'order_price' => 150.0,
+					'surcharge'   => 5.0,
 				],
 			],
-			'default_COD_surcharge' => 15,
+			'default_COD_surcharge' => 15.0,
 		];
-		$cartPrice      = 100;
+		$cartPrice      = 100.0;
 
 		$surcharge = $this->rateCalculator->getCODSurcharge( $carrierOptions, $cartPrice );
 
@@ -202,21 +202,21 @@ class RateCalculatorTest extends TestCase {
 		$carrierOptions = [
 			'surcharge_limits'      => [
 				[
-					'order_price' => 50,
-					'surcharge'   => 10,
+					'order_price' => 50.0,
+					'surcharge'   => 10.45,
 				],
 				[
-					'order_price' => 150,
-					'surcharge'   => 5,
+					'order_price' => 150.0,
+					'surcharge'   => 5.0,
 				],
 			],
-			'default_COD_surcharge' => 15,
+			'default_COD_surcharge' => 15.0,
 		];
-		$cartPrice      = 40;
+		$cartPrice      = 40.0;
 
 		$surcharge = $this->rateCalculator->getCODSurcharge( $carrierOptions, $cartPrice );
 
-		self::assertEquals( 10.0, $surcharge );
+		self::assertEquals( 10.45, $surcharge );
 	}
 
 	public function testIsFreeShippingCouponAppliedReturnsFalseWhenCartOrOrderIsNull(): void {

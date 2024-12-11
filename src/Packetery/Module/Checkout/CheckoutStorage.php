@@ -78,22 +78,7 @@ class CheckoutStorage {
 				( is_array( $savedCheckoutData ) && count( $checkoutData ) === 0 )
 			)
 		) {
-			$wcLogger  = $this->wcAdapter->getLogger();
-			$dataToLog = [
-				'chosenShippingMethod' => $chosenShippingMethod,
-				'checkoutData'         => $checkoutData,
-				'savedCheckoutData'    => $savedCheckoutData,
-			];
-			if ( null !== $orderId ) {
-				$dataToLog['orderId'] = $orderId;
-			}
-			$wcLogger->warning(
-				sprintf(
-					'Data of the order to be validated or saved are not set: %s',
-					$this->wpAdapter->jsonEncode( $dataToLog )
-				),
-				[ 'source' => 'packeta' ]
-			);
+			$this->logInvalidOrderData( $chosenShippingMethod, $checkoutData, $savedCheckoutData, $orderId );
 
 			return [];
 		}
@@ -107,37 +92,25 @@ class CheckoutStorage {
 		}
 
 		$savedCarrierData = $savedCheckoutData[ $chosenShippingMethod ];
-		if (
-			( ! isset( $checkoutData[ Order\Attribute::POINT_ID ] ) || '' === $checkoutData[ Order\Attribute::POINT_ID ] ) &&
-			( isset( $savedCarrierData[ Order\Attribute::POINT_ID ] ) || '' !== $savedCarrierData[ Order\Attribute::POINT_ID ] )
-		) {
-			foreach ( Order\Attribute::$pickupPointAttrs as $attribute ) {
+		if ( $this->isKeyPresentInSavedDataButNotInPostData( $checkoutData, $savedCarrierData, Order\Attribute::POINT_ID ) ) {
+			foreach ( Order\Attribute::$pickupPointAttributes as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
 			}
 		}
 
-		if (
-			( ! isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) || '' === $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
-			( isset( $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) || '' !== $savedCarrierData[ Order\Attribute::ADDRESS_IS_VALIDATED ] )
-		) {
-			foreach ( Order\Attribute::$homeDeliveryAttrs as $attribute ) {
+		if ( $this->isKeyPresentInSavedDataButNotInPostData( $checkoutData, $savedCarrierData, Order\Attribute::ADDRESS_IS_VALIDATED ) ) {
+			foreach ( Order\Attribute::$homeDeliveryAttributes as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
 			}
 		}
 
-		if (
-			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) &&
-			( isset( $savedCarrierData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' !== $savedCarrierData[ Order\Attribute::CAR_DELIVERY_ID ] )
-		) {
-			foreach ( Order\Attribute::$carDeliveryAttrs as $attribute ) {
+		if ( $this->isKeyPresentInSavedDataButNotInPostData( $checkoutData, $savedCarrierData, Order\Attribute::CAR_DELIVERY_ID ) ) {
+			foreach ( Order\Attribute::$carDeliveryAttributes as $attribute ) {
 				$checkoutData[ $attribute['name'] ] = $savedCarrierData[ $attribute['name'] ];
 			}
 		}
 
-		if (
-			( ! isset( $checkoutData[ Order\Attribute::CARRIER_ID ] ) || '' === $checkoutData[ Order\Attribute::CARRIER_ID ] ) &&
-			( isset( $savedCarrierData[ Order\Attribute::CARRIER_ID ] ) || '' !== $savedCarrierData[ Order\Attribute::CARRIER_ID ] )
-		) {
+		if ( $this->isKeyPresentInSavedDataButNotInPostData( $checkoutData, $savedCarrierData, Order\Attribute::CARRIER_ID ) ) {
 			$checkoutData[ Order\Attribute::CARRIER_ID ] = $savedCarrierData[ Order\Attribute::CARRIER_ID ];
 		}
 
@@ -156,5 +129,35 @@ class CheckoutStorage {
 		}
 
 		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
+	}
+
+	/**
+	 * @param string     $chosenShippingMethod
+	 * @param array|null $checkoutData
+	 * @param mixed      $savedCheckoutData Data from transient.
+	 * @param int|null   $orderId
+	 */
+	private function logInvalidOrderData( string $chosenShippingMethod, ?array $checkoutData, $savedCheckoutData, ?int $orderId ): void {
+		$wcLogger  = $this->wcAdapter->getLogger();
+		$dataToLog = [
+			'chosenShippingMethod' => $chosenShippingMethod,
+			'checkoutData'         => $checkoutData,
+			'savedCheckoutData'    => $savedCheckoutData,
+		];
+		if ( null !== $orderId ) {
+			$dataToLog['orderId'] = $orderId;
+		}
+		$wcLogger->warning(
+			sprintf(
+				'Data of the order to be validated or saved are not set: %s',
+				$this->wpAdapter->jsonEncode( $dataToLog )
+			),
+			[ 'source' => 'packeta' ]
+		);
+	}
+
+	private function isKeyPresentInSavedDataButNotInPostData( array $checkoutData, array $savedCarrierData, string $key ): bool {
+		return ( ! isset( $checkoutData[ $key ] ) || '' === $checkoutData[ $key ] ) &&
+				( isset( $savedCarrierData[ $key ] ) || '' !== $savedCarrierData[ $key ] );
 	}
 }

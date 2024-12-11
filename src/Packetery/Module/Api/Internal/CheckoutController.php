@@ -95,7 +95,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveSelectedPickupPoint( WP_REST_Request $request ): WP_REST_Response {
-		$this->save( $request, Attribute::$pickupPointAttrs );
+		$this->save( $request, Attribute::$pickupPointAttributes );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -107,7 +107,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveValidatedAddress( WP_REST_Request $request ): WP_REST_Response {
-		$this->save( $request, Attribute::$homeDeliveryAttrs );
+		$this->save( $request, Attribute::$homeDeliveryAttributes );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -119,7 +119,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveCarDeliveryDetails( WP_REST_Request $request ): WP_REST_Response {
-		$this->save( $request, Attribute::$carDeliveryAttrs );
+		$this->save( $request, Attribute::$carDeliveryAttributes );
 
 		return new WP_REST_Response( [], 200 );
 	}

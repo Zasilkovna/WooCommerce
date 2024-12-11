@@ -22,7 +22,7 @@ trait WcTaxTrait {
 	}
 
 	/**
-	 * @return array|array{}
+	 * @return array<int, array<string, string|float>>|array{}
 	 */
 	public function taxGetShippingTaxRates(): array {
 		return (array) WC_Tax::get_shipping_tax_rates();

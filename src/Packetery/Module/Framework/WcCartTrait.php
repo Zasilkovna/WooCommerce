@@ -9,8 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use stdClass;
 use WC_Cart;
 use WC_Customer;
+use WP_Error;
 
 /**
  * Trait WcCartTrait.
@@ -91,7 +93,12 @@ trait WcCartTrait {
 		return WC()->cart->calculate_shipping();
 	}
 
-	public function cartFeesApiAddFee( array $args ): void {
-		WC()->cart->fees_api()->add_fee( $args );
+	/**
+	 * @param array $args
+	 *
+	 * @return stdClass|WP_Error Either a fee object if added, or a WP_Error if it failed.
+	 */
+	public function cartFeesApiAddFee( array $args ): object {
+		return WC()->cart->fees_api()->add_fee( $args );
 	}
 }

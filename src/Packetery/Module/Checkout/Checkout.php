@@ -13,7 +13,9 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
+use stdClass;
 use WC_Cart;
+use WP_Error;
 
 class Checkout {
 
@@ -247,15 +249,16 @@ class Checkout {
 			$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
 		}
 
-		$this->wcAdapter->cartFeesApiAddFee(
-			[
-				'id'        => 'packetery-age-verification-fee',
-				'name'      => $this->wpAdapter->__( 'Age verification fee', 'packeta' ),
-				'amount'    => $feeAmount,
-				'taxable'   => $isTaxable,
-				'tax_class' => $maxTaxClass,
-			]
+		$addFeeResult = $this->wcAdapter->cartFeesApiAddFee(
+			$this->createFeeArray(
+				'packetery-age-verification-fee',
+				$this->wpAdapter->__( 'Age verification fee', 'packeta' ),
+				$feeAmount,
+				$isTaxable,
+				$maxTaxClass
+			)
 		);
+		$this->handleAddFeeError( $addFeeResult );
 	}
 
 	private function addCodSurchargeFee( Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
@@ -277,15 +280,41 @@ class Checkout {
 			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
 		}
 
-		$fee = [
-			'id'        => 'packetery-cod-surcharge',
-			'name'      => $this->wpAdapter->__( 'COD surcharge', 'packeta' ),
-			'amount'    => $applicableSurcharge,
-			'taxable'   => $isTaxable,
-			'tax_class' => $maxTaxClass,
-		];
+		$addFeeResult = $this->wcAdapter->cartFeesApiAddFee(
+			$this->createFeeArray(
+				'packetery-cod-surcharge',
+				$this->wpAdapter->__( 'COD surcharge', 'packeta' ),
+				$applicableSurcharge,
+				$isTaxable,
+				$maxTaxClass
+			)
+		);
+		$this->handleAddFeeError( $addFeeResult );
+	}
 
-		$this->wcAdapter->cartFeesApiAddFee( $fee );
+	/**
+	 * @return array{id: string, name: string, amount: float, taxable: bool, tax_class: string|null}
+	 */
+	private function createFeeArray( string $id, string $name, float $amount, bool $taxable, ?string $taxClass ): array {
+		return [
+			'id'        => $id,
+			'name'      => $name,
+			'amount'    => $amount,
+			'taxable'   => $taxable,
+			'tax_class' => $taxClass,
+		];
+	}
+
+	/**
+	 * @param stdClass|WP_Error $addFeeResult Either a fee object if added, or a WP_Error if it failed.
+	 *
+	 * @return void
+	 */
+	private function handleAddFeeError( object $addFeeResult ): void {
+		if ( ! $addFeeResult instanceof WP_Error ) {
+			return;
+		}
+		$this->wcAdapter->addNotice( $addFeeResult->get_error_message(), 'notice' );
 	}
 
 	/**
@@ -372,11 +401,11 @@ class Checkout {
 		if ( ! defined( 'DOING_AJAX' ) && $this->wpAdapter->isAdmin() ) {
 			return;
 		}
-		$chosenPaymentMethod = $this->wcAdapter->sessionGet( 'packetery_checkout_payment_method' );
+		$chosenPaymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
 		if ( null !== $chosenPaymentMethod && ! $this->paymentHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
 			return;
 		}
-		$chosenShippingRate = $this->wcAdapter->sessionGet( 'packetery_checkout_shipping_method' );
+		$chosenShippingRate = $this->wcAdapter->sessionGetString( 'packetery_checkout_shipping_method' );
 		if ( null === $chosenShippingRate ) {
 			return;
 		}
