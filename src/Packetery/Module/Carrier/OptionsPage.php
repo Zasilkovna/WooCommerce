@@ -46,78 +46,56 @@ class OptionsPage {
 	public const MINIMUM_CHECKED_VENDORS = 2;
 
 	/**
-	 * PacketeryLatte_engine.
-	 *
-	 * @var Engine PacketeryLatte engine.
+	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Carrier repository.
-	 *
-	 * @var EntityRepository Carrier repository.
+	 * @var EntityRepository
 	 */
 	private $carrierRepository;
 
 	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory Form factory.
+	 * @var FormFactory
 	 */
 	private $formFactory;
 
 	/**
-	 * Packetery\Nette Request.
-	 *
-	 * @var Request Packetery\Nette Request.
+	 * @var Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * CountryListingPage.
-	 *
-	 * @var CountryListingPage CountryListingPage.
+	 * @var CountryListingPage
 	 */
 	private $countryListingPage;
 
 	/**
-	 * Message manager.
-	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
 
 	/**
-	 * Internal pickup points config.
-	 *
 	 * @var PacketaPickupPointsConfig
 	 */
 	private $pickupPointsConfig;
 
 	/**
-	 * Feature flag.
-	 *
 	 * @var FeatureFlagProvider
 	 */
 	private $featureFlagProvider;
 
 	/**
-	 * Car delivery config.
-	 *
 	 * @var CarDeliveryConfig
 	 */
 	private $carDeliveryConfig;
 
 	/**
-	 * WC Native carrier settings config.
-	 *
 	 * @var WcSettingsConfig
 	 */
 	private $wcSettingsConfig;
 
 	/**
-	 * Carrier options factory.
-	 *
 	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
