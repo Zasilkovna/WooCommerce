@@ -64,7 +64,7 @@ class Repository {
 	 *
 	 * @return string[]
 	 */
-	public function getAllTransientsByPrefixes( array $prefixes ) {
+	public function getAllTransientsByPrefixes( array $prefixes ): array {
 		if ( [] === $prefixes ) {
 			return [];
 		}
@@ -78,7 +78,7 @@ class Repository {
 		$result         = $this->getAllOptionNamesByPrefixes( $optionPrefixes );
 
 		foreach ( $result as $optionName ) {
-			$transientNames[] = preg_replace( '~^_transient_~', '', $optionName, 1 );
+			$transientNames[] = preg_replace( '~^_transient_~', '', $optionName );
 		}
 
 		return $transientNames;
@@ -89,7 +89,7 @@ class Repository {
 	 *
 	 * @return string[]
 	 */
-	public function getAllOptionNamesByPrefixes( array $prefixes ) {
+	public function getAllOptionNamesByPrefixes( array $prefixes ): array {
 		if ( [] === $prefixes ) {
 			return [];
 		}
