@@ -480,7 +480,7 @@ class ShippingRateFactoryTest extends TestCase {
 
 		$cartItem = [
 			'product_id' => 1,
-			'quantity'   => 1,
+			'quantity'   => 1.0,
 			'data'       => $wcProduct,
 		];
 		$this->wcAdapter

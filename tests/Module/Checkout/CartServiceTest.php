@@ -137,9 +137,9 @@ class CartServiceTest extends TestCase {
 	public function testGetTotalCartProductValue(): void {
 		$this->createCartServiceMock();
 		$cartItem1Price    = 10.0;
-		$cartItem1Quantity = 2;
+		$cartItem1Quantity = 2.0;
 		$cartItem2Price    = 20.0;
-		$cartItem2Quantity = 1;
+		$cartItem2Quantity = 1.0;
 		$item1DataMock     = $this->createMock( WC_Product::class );
 		$item1DataMock->method( 'get_price' )->willReturn( $cartItem1Price );
 		$item2DataMock = $this->createMock( WC_Product::class );
@@ -370,7 +370,7 @@ class CartServiceTest extends TestCase {
 	public function testIsShippingRateRestrictedByProductsCategoryWithProductWithoutId(): void {
 		$this->createCartServiceMock();
 
-		$this->assertFalse( $this->cartService->isShippingRateRestrictedByProductsCategory( 'testRate', [ [ 'quantity' => 1 ] ] ) );
+		$this->assertFalse( $this->cartService->isShippingRateRestrictedByProductsCategory( 'testRate', [ [ 'quantity' => 1.0 ] ] ) );
 	}
 
 	public function testIsShippingRateRestrictedByProductsCategoryWithNoProductCategories(): void {
