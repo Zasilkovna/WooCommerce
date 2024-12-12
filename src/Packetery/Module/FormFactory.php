@@ -14,7 +14,6 @@ use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Controls\TextInput;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Forms\Validator;
-use Packetery\Nette\Http\Request;
 
 /**
  * Class FormFactory
@@ -22,20 +21,7 @@ use Packetery\Nette\Http\Request;
  * @package Packetery
  */
 class FormFactory {
-
-	/**
-	 * HTTP Request.
-	 *
-	 * @var Request
-	 */
-	private $request;
-
-	/**
-	 * Plugin constructor.
-	 *
-	 * @param Request $request HTTP request.
-	 */
-	public function __construct( Request $request ) {
+	public function __construct() {
 		add_action(
 			'init',
 			function () {
@@ -54,7 +40,6 @@ class FormFactory {
 			},
 			11
 		);
-		$this->request = $request;
 	}
 
 	/**
@@ -66,7 +51,6 @@ class FormFactory {
 	 */
 	public function create( ?string $name = null ): Form {
 		$form = new Form( $name );
-		$form->setHttpRequest( $this->request );
 		$form->allowCrossOrigin();
 
 		return $form;
