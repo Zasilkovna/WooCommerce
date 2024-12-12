@@ -225,7 +225,6 @@ final class OrderController extends WP_REST_Controller {
 		$order->setAdultContent( $values[ Form::FIELD_ADULT_CONTENT ] );
 		$order->setValue( $values[ Form::FIELD_VALUE ] );
 		$order->setSize( $size );
-		// TODO: Find out why are we using this variable and not form value.
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $packeteryDeliverOn ) );
 
 		$this->orderRepository->save( $order );
