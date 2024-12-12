@@ -63,12 +63,12 @@ class FormFactory {
 			->setHtmlType( 'number' )
 			->setHtmlAttribute( 'step', 'any' )
 			->addRule( Form::MIN, null, $this->setMinValue( $unit ) )
-			->addRule( $this->setNumType( $unit ), __( 'Enter a numeric value in the correct format!', 'packeta' ) );
+			->addRule( $this->getNumType( $unit ), __( 'Enter a numeric value in the correct format!', 'packeta' ) );
 
 		return $textInput;
 	}
 
-	private function setNumType( string $unit ): string {
+	private function getNumType( string $unit ): string {
 		if ( $unit === OptionsProvider::DIMENSIONS_UNIT_CM ) {
 			return Form::FLOAT;
 		}
