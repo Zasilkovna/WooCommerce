@@ -57,15 +57,27 @@ class FormFactory {
 	}
 
 	public function addDimension( Container $container, string $name, string $label, string $unit ): TextInput {
-		$textInput = $container->addText( $name, sprintf( '%s (%s)', $label, $unit ) );
+		$numberInputType = $this->getNumType( $unit );
 
-		$textInput
+		switch ( $numberInputType ) {
+			case Form::INTEGER:
+				$numberInput = $container->addInteger( $name, sprintf( '%s (%s)', $label, $unit ) );
+
+				break;
+			case Form::FLOAT:
+				$numberInput = $container->addText( $name, sprintf( '%s (%s)', $label, $unit ) )->addRule( Form::FLOAT );
+
+				break;
+			default:
+				throw new \InvalidArgumentException( 'Unsupported number input type: ' . $numberInputType );
+		}
+
+		$numberInput
 			->setHtmlType( 'number' )
 			->setHtmlAttribute( 'step', 'any' )
-			->addRule( Form::MIN, null, $this->setMinValue( $unit ) )
-			->addRule( $this->getNumType( $unit ), __( 'Enter a numeric value in the correct format!', 'packeta' ) );
+			->addRule( Form::MIN, null, $this->setMinValue( $unit ) );
 
-		return $textInput;
+		return $numberInput;
 	}
 
 	private function getNumType( string $unit ): string {
