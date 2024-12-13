@@ -249,6 +249,7 @@ class PacketCanceller {
 			$order->setPacketStatus( null );
 			$this->wcOrderActions->updateOrderStatus( $order->getNumber(), PacketStatus::CANCELLED );
 			$order->setPacketId( null );
+			$order->setPacketTrackingUrl( null );
 			$order->updateApiErrorMessage( null );
 
 			if ( $result->hasFault() ) {
@@ -262,6 +263,7 @@ class PacketCanceller {
 
 		if ( $packetId === $order->getPacketClaimId() && $this->shouldRevertSubmission( $result ) ) {
 			$order->setPacketClaimId( null );
+			$order->setPacketClaimTrackingUrl( null );
 			$order->setPacketClaimPassword( null );
 			$order->updateApiErrorMessage( null );
 

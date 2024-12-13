@@ -12,6 +12,7 @@ parameters:
 	featureFlagConfig:
 		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
+	trackingUrl: https://tracking.app.packeta.com/%s
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -34,7 +35,7 @@ services:
 	- Packetery\Module\Product\ProductEntityFactory
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
-	- Packetery\Core\CoreHelper
+	- Packetery\Core\CoreHelper(trackingUrl: %trackingUrl%)
 	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox

@@ -302,7 +302,7 @@ class Metabox {
 					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
 				]
 			);
-			$packetClaimTrackingUrl = $this->coreHelper->get_tracking_url( $order->getPacketClaimId() );
+			$packetClaimTrackingUrl = $this->coreHelper->getTrackingUrl( $order->getPacketClaimId() );
 		}
 
 		$packetId = $order->getPacketId();
@@ -342,7 +342,7 @@ class Metabox {
 					'isPacketSubmissionPossible' => false,
 					'orderWarningFields'         => [],
 					'packetCancelLink'           => $packetCancelLink,
-					'packetTrackingUrl'          => $this->coreHelper->get_tracking_url( $packetId ),
+					'packetTrackingUrl'          => $this->coreHelper->getTrackingUrl( $packetId ),
 					'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
 					'showLogsLink'               => $showLogsLink,
 					'packetClaimUrl'             => $packetClaimUrl,

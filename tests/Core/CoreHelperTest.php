@@ -8,25 +8,29 @@ use DateTimeImmutable;
 use Packetery\Core\CoreHelper;
 use PHPUnit\Framework\TestCase;
 
-class HelperTest extends TestCase {
+class CoreHelperTest extends TestCase {
 
-	private CoreHelper $helper;
+	private CoreHelper $coreHelper;
 
 	public function __construct( string $name ) {
 		parent::__construct( $name );
-		$this->helper = new CoreHelper();
+		$this->coreHelper = new CoreHelper( 'dummyTrackingUrl' );
 	}
 
 	public function testGetTrackingUrl(): void {
-		self::assertIsString( $this->helper->get_tracking_url( 'dummyPacketId' ) );
+		self::assertIsString( $this->coreHelper->getTrackingUrl( 'dummyPacketId' ) );
+	}
+
+	public function testGetTrackingUrlNull(): void {
+		self::assertNull( $this->coreHelper->getTrackingUrl( null ) );
 	}
 
 	public function testGetStringFromDateTime(): void {
 		$dummyDateString = '2023-11-17';
-		$dummyDate       = $this->helper->getDateTimeFromString( $dummyDateString );
+		$dummyDate       = $this->coreHelper->getDateTimeFromString( $dummyDateString );
 
 		self::assertSame(
-			$this->helper->getStringFromDateTime( $dummyDate, CoreHelper::MYSQL_DATE_FORMAT ),
+			$this->coreHelper->getStringFromDateTime( $dummyDate, CoreHelper::MYSQL_DATE_FORMAT ),
 			$dummyDateString
 		);
 	}

@@ -328,11 +328,11 @@ class GridExtender {
 				];
 
 				if ( $packetId !== null ) {
-					$latteParams['packetIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetId );
+					$latteParams['packetIdTrackingUrl'] = $this->coreHelper->getTrackingUrl( $packetId );
 				}
 
 				if ( $packetClaimId !== null ) {
-					$latteParams['packetClaimIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetClaimId );
+					$latteParams['packetClaimIdTrackingUrl'] = $this->coreHelper->getTrackingUrl( $packetClaimId );
 				}
 
 				$this->latteEngine->render(
@@ -388,7 +388,7 @@ class GridExtender {
 						'packetSubmitUrl'                  => $packetSubmitUrl,
 						'packetCancelLink'                 => $packetCancelLink,
 						'printLink'                        => $printLink,
-						'helper'                           => new CoreHelper(),
+						'helper'                           => $this->coreHelper,
 						'datePickerFormat'                 => CoreHelper::DATEPICKER_FORMAT,
 						'logPurgerDatetimeModifier'        => $this->wpAdapter->getOption( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
 						'packetDeliverOn'                  => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),

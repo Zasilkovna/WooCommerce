@@ -153,11 +153,21 @@ class Order {
 	private $packetId;
 
 	/**
+	 * @var string|null
+	 */
+	private $packetTrackingUrl;
+
+	/**
 	 * Packet ID.
 	 *
 	 * @var string|null
 	 */
 	private $packetClaimId;
+
+	/**
+	 * @var string|null
+	 */
+	private $packetClaimTrackingUrl;
 
 	/**
 	 * Packet password.
@@ -582,6 +592,10 @@ class Order {
 		$this->packetId = $packetId;
 	}
 
+	public function setPacketTrackingUrl( ?string $trackingUrl ): void {
+		$this->packetTrackingUrl = $trackingUrl;
+	}
+
 	/**
 	 * Sets packet claim ID.
 	 *
@@ -591,6 +605,10 @@ class Order {
 	 */
 	public function setPacketClaimId( ?string $packetClaimId ): void {
 		$this->packetClaimId = $packetClaimId;
+	}
+
+	public function setPacketClaimTrackingUrl( ?string $trackingUrl ): void {
+		$this->packetClaimTrackingUrl = $trackingUrl;
 	}
 
 	/**
@@ -784,22 +802,12 @@ class Order {
 		return $this->packetClaimId !== null ? 'Z' . $this->packetClaimId : null;
 	}
 
-	/**
-	 * Get packet tracking url
-	 *
-	 * @return string|null
-	 */
 	public function getPacketTrackingUrl(): ?string {
-		return $this->packetId !== null ? sprintf( CoreHelper::TRACKING_URL, $this->packetId ) : null;
+		return $this->packetTrackingUrl;
 	}
 
-	/**
-	 * Get packet claim tracking url.
-	 *
-	 * @return string|null
-	 */
 	public function getPacketClaimTrackingUrl(): ?string {
-		return $this->packetClaimId !== null ? sprintf( CoreHelper::TRACKING_URL, $this->packetClaimId ) : null;
+		return $this->packetClaimTrackingUrl;
 	}
 
 	/**
