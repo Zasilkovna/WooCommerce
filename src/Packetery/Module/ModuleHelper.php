@@ -127,7 +127,7 @@ class ModuleHelper {
 	 * @return string|null
 	 */
 	public static function getWooCommerceVersion(): ?string {
-		if ( false === file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
+		if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) === false ) {
 			return null;
 		}
 
@@ -138,7 +138,7 @@ class ModuleHelper {
 			$version = $fileData['Version'];
 		}
 
-		if ( '' === $version ) {
+		if ( $version === '' ) {
 			return null;
 		}
 
@@ -166,7 +166,7 @@ class ModuleHelper {
 	 */
 	public static function getWcOrderCountry( \WC_Order $wcOrder ): string {
 		$country = $wcOrder->get_shipping_country();
-		if ( null === $country || '' === $country ) {
+		if ( $country === null || $country === '' ) {
 			$country = $wcOrder->get_billing_country();
 		}
 
@@ -179,11 +179,11 @@ class ModuleHelper {
 	 * @return bool
 	 */
 	public static function isHposEnabled(): bool {
-		if ( false === class_exists( 'Automattic\\WooCommerce\\Utilities\\OrderUtil' ) ) {
+		if ( class_exists( 'Automattic\\WooCommerce\\Utilities\\OrderUtil' ) === false ) {
 			return false;
 		}
 		// @phpstan-ignore-next-line (This method was probably added in WC version 6.9.0, backward compatibility)
-		if ( false === method_exists( OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) ) {
+		if ( method_exists( OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) === false ) {
 			return false;
 		}
 
@@ -211,7 +211,7 @@ class ModuleHelper {
 	}
 
 	public static function convertToCentimeters( int $number ): ?float {
-		return 1 > $number ? null : ( $number * 0.1 );
+		return $number < 1 ? null : ( $number * 0.1 );
 	}
 
 	/**
@@ -231,7 +231,7 @@ class ModuleHelper {
 	}
 
 	public static function convertToMillimeters( float $number ): ?float {
-		return 0.1 > $number ? null : ( $number * 10 );
+		return $number < 0.1 ? null : ( $number * 10 );
 	}
 
 	/**
@@ -246,11 +246,11 @@ class ModuleHelper {
 	public function createLinkParts( string $href, string $target = null, string $className = null ): array {
 		$link = Html::el( 'a' )->href( $href );
 
-		if ( null !== $target ) {
+		if ( $target !== null ) {
 			$link->target( $target );
 		}
 
-		if ( null !== $className ) {
+		if ( $className !== null ) {
 			$link->class( $className );
 		}
 
@@ -265,7 +265,7 @@ class ModuleHelper {
 	 * @return string|null
 	 */
 	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
-		if ( null !== $date ) {
+		if ( $date !== null ) {
 			return ( new WC_DateTime( CoreHelper::MYSQL_DATETIME_FORMAT ) )->date_i18n(
 				/**
 				 * Applies woocommerce_admin_order_date_format filters.

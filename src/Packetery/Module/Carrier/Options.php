@@ -152,7 +152,7 @@ class Options {
 	 * @return bool
 	 */
 	public function hasAnyCodSurchargeSetting(): bool {
-		if ( null !== $this->getDefaultCODSurcharge() ) {
+		if ( $this->getDefaultCODSurcharge() !== null ) {
 			return true;
 		}
 

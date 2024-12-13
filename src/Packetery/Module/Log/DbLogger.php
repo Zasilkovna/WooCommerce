@@ -45,7 +45,7 @@ class DbLogger implements ILogger {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function add( Record $record ): void {
-		if ( null === $record->date ) {
+		if ( $record->date === null ) {
 			$record->date = CoreHelper::now();
 		}
 
@@ -72,7 +72,7 @@ class DbLogger implements ILogger {
 		if ( is_numeric( $orderId ) ) {
 			$arguments['order_id'] = $orderId;
 		}
-		if ( null !== $action ) {
+		if ( $action !== null ) {
 			$arguments['action'] = $action;
 		}
 

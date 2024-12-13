@@ -190,7 +190,7 @@ class OptionsPage {
 
 		$form = $this->formFactory->create( $optionId );
 
-		if ( false === $this->wcSettingsConfig->isActive() ) {
+		if ( $this->wcSettingsConfig->isActive() === false ) {
 			$form->addCheckbox(
 				self::FORM_FIELD_ACTIVE,
 				__( 'Active carrier', 'packeta' ) . ':'
@@ -202,15 +202,15 @@ class OptionsPage {
 
 		$carrierOptions = get_option( $optionId );
 		if ( $this->featureFlagProvider->isSplitActive() ) {
-			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( false !== $carrierOptions ? $carrierOptions : null ) );
+			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions !== false ? $carrierOptions : null ) );
 			if ( count( $vendorCheckboxes ) > 0 ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
 				foreach ( $vendorCheckboxes as $checkboxConfig ) {
 					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
-					if ( true === $checkboxConfig['disabled'] ) {
+					if ( $checkboxConfig['disabled'] === true ) {
 						$checkboxControl->setDisabled()->setOmitted( false );
 					}
-					if ( true === $checkboxConfig['default'] ) {
+					if ( $checkboxConfig['default'] === true ) {
 						$checkboxControl->setDefaultValue( true );
 					}
 				}
@@ -253,7 +253,7 @@ class OptionsPage {
 		// We don't expect id to be empty in this situation. This would indicate a data save error.
 		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
 
-		if ( null !== $carrier && $carrier->supportsCod() ) {
+		if ( $carrier !== null && $carrier->supportsCod() ) {
 			$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )
 				->setRequired( false )
 				->addRule( Form::FLOAT )
@@ -302,8 +302,8 @@ class OptionsPage {
 		$form->addSubmit( 'save' );
 
 		if (
-			false === $carrier->isCarDelivery() &&
-			false === $carrier->hasPickupPoints() &&
+			$carrier->isCarDelivery() === false &&
+			$carrier->hasPickupPoints() === false &&
 			in_array( $carrier->getCountry(), Carrier::ADDRESS_VALIDATION_COUNTRIES, true )
 		) {
 			$addressValidationOptions = [
@@ -331,7 +331,7 @@ class OptionsPage {
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
-		if ( false === $carrierOptions ) {
+		if ( $carrierOptions === false ) {
 			$carrierOptions = [
 				'id'                  => $carrierData['id'],
 				self::FORM_FIELD_NAME => $carrierData['name'],
@@ -418,7 +418,7 @@ class OptionsPage {
 			}
 		}
 
-		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {
 			$this->checkOverlapping(
 				$form,
 				$options,
@@ -428,7 +428,7 @@ class OptionsPage {
 			);
 		}
 
-		if ( Options::PRICING_TYPE_BY_PRODUCT_VALUE === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_PRODUCT_VALUE ) {
 			$this->checkOverlapping(
 				$form,
 				$options,
@@ -469,14 +469,14 @@ class OptionsPage {
 			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();
 		}
 
-		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );
 			$options = $this->sortLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS, 'weight' );
 
 			$options[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ?? [];
 		}
 
-		if ( Options::PRICING_TYPE_BY_PRODUCT_VALUE === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_PRODUCT_VALUE ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
 			$options = $this->sortLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS, 'value' );
 
@@ -510,7 +510,7 @@ class OptionsPage {
 	 * @return array|null
 	 */
 	private function getCarrierTemplateData( ?Carrier $carrier ): ?array {
-		if ( null === $carrier ) {
+		if ( $carrier === null ) {
 			return null;
 		}
 
@@ -528,7 +528,7 @@ class OptionsPage {
 		} else {
 			$carrierData = $carrier->__toArray();
 			$options     = get_option( OptionPrefixer::getOptionId( $carrier->getId() ) );
-			if ( false !== $options ) {
+			if ( $options !== false ) {
 				$carrierData += $options;
 			}
 			$formTemplate = $this->createFormTemplate( $carrierData );
@@ -583,10 +583,10 @@ class OptionsPage {
 			],
 		];
 
-		if ( null !== $carrierId ) {
+		if ( $carrierId !== null ) {
 			$carrier             = $this->carrierRepository->getAnyById( $carrierId );
 			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
-			if ( null === $carrier || null === $carrierTemplateData ) {
+			if ( $carrier === null || $carrierTemplateData === null ) {
 				$this->countryListingPage->render();
 
 				return;
@@ -605,12 +605,12 @@ class OptionsPage {
 				)
 			);
 
-		} elseif ( null !== $countryIso ) {
+		} elseif ( $countryIso !== null ) {
 			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
 			$carriersData    = [];
 			foreach ( $countryCarriers as $carrier ) {
 				$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
-				if ( null !== $carrierTemplateData ) {
+				if ( $carrierTemplateData !== null ) {
 					$carriersData[] = $carrierTemplateData;
 				}
 			}
@@ -650,7 +650,7 @@ class OptionsPage {
 				if ( is_int( $key ) ) {
 					$newOptions[ $key ] = $option;
 				}
-				if ( 0 === strpos( (string) $key, 'new_' ) ) {
+				if ( strpos( (string) $key, 'new_' ) === 0 ) {
 					$newOptions[] = $option;
 				}
 			}
@@ -796,11 +796,11 @@ class OptionsPage {
 			'page' => self::SLUG,
 		];
 
-		if ( null !== $countryCode ) {
+		if ( $countryCode !== null ) {
 			$params[ self::PARAMETER_COUNTRY_CODE ] = $countryCode;
 		}
 
-		if ( null !== $carrierId ) {
+		if ( $carrierId !== null ) {
 			$params[ self::PARAMETER_CARRIER_ID ] = $carrierId;
 		}
 
@@ -866,7 +866,7 @@ class OptionsPage {
 	 */
 	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null === $availableVendors || $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors ) ) {
+		if ( $availableVendors === null || $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors ) ) {
 			return [];
 		}
 

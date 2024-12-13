@@ -162,7 +162,7 @@ class Repository {
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
 		if ( $paramValues['packetery_order_type'] ?? false ) {
-			if ( Entity\Carrier::INTERNAL_PICKUP_POINTS_ID === $paramValues['packetery_order_type'] ) {
+			if ( $paramValues['packetery_order_type'] === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 				$comparison = 'IN';
 			} else {
 				$comparison = 'NOT IN';
@@ -172,11 +172,11 @@ class Repository {
 			$clauses['where']  .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`carrier_id` ' . $comparison . ' (' . $this->wpdbAdapter->prepareInClause( $internalCarriers ) . ')';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
-		if ( isset( $paramValues['orderby'] ) && 'packetery_packet_stored_until' === $paramValues['orderby'] ) {
-			if ( 'asc' === $paramValues['order'] ) {
+		if ( isset( $paramValues['orderby'] ) && $paramValues['orderby'] === 'packetery_packet_stored_until' ) {
+			if ( $paramValues['order'] === 'asc' ) {
 				$clauses['orderby'] = '`' . $this->wpdbAdapter->packeteryOrder . '`.`stored_until` ASC';
 			}
-			if ( 'desc' === $paramValues['order'] ) {
+			if ( $paramValues['order'] === 'desc' ) {
 				$clauses['orderby'] = '`' . $this->wpdbAdapter->packeteryOrder . '`.`stored_until` DESC';
 			}
 		}
@@ -238,7 +238,7 @@ class Repository {
 	 */
 	public function getById( int $id ): ?Order {
 		$wcOrder = $this->getWcOrderById( $id );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return null;
 		}
 
@@ -250,7 +250,7 @@ class Repository {
 	 */
 	public function getByIdWithValidCarrier( int $id ): ?Order {
 		$wcOrder = $this->getWcOrderById( $id );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return null;
 		}
 
@@ -266,12 +266,12 @@ class Repository {
 	 */
 	public function findById( int $id ): ?Order {
 		$wcOrder = $this->getWcOrderById( $id );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return null;
 		}
 
 		$result = $this->getDataById( $wcOrder->get_id() );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			return null;
 		}
 
@@ -319,7 +319,7 @@ class Repository {
 	 */
 	public function getByWcOrder( WC_Order $wcOrder ): ?Order {
 		$packeteryOrderData = $this->getDataByWcOrder( $wcOrder );
-		if ( null === $packeteryOrderData ) {
+		if ( $packeteryOrderData === null ) {
 			return null;
 		}
 
@@ -331,7 +331,7 @@ class Repository {
 	 */
 	public function getByWcOrderWithValidCarrier( WC_Order $wcOrder ): ?Order {
 		$packeteryOrderData = $this->getDataByWcOrder( $wcOrder );
-		if ( null === $packeteryOrderData ) {
+		if ( $packeteryOrderData === null ) {
 			return null;
 		}
 
@@ -351,17 +351,17 @@ class Repository {
 	 */
 	private function orderToDbArray( Order $order ): array {
 		$point = $order->getPickupPoint();
-		if ( null === $point ) {
+		if ( $point === null ) {
 			$point = new PickupPoint();
 		}
 
 		$deliveryAddress = null;
-		if ( $order->isAddressValidated() && null !== $order->getDeliveryAddress() ) {
+		if ( $order->isAddressValidated() && $order->getDeliveryAddress() !== null ) {
 			$deliveryAddress = wp_json_encode( $order->getDeliveryAddress()->export() );
 		}
 
 		$apiErrorDateTime = $order->getLastApiErrorDateTime();
-		if ( null !== $apiErrorDateTime ) {
+		if ( $apiErrorDateTime !== null ) {
 			$apiErrorDateTime = $apiErrorDateTime->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 		}
 
@@ -439,7 +439,7 @@ class Repository {
 		 */
 		$isLoggingActive = (bool) apply_filters( 'packeta_enable_debug_logs', false );
 
-		if ( ( null !== $pointId && '' !== $pointId ) || ! $isLoggingActive || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
+		if ( ( $pointId !== null && $pointId !== '' ) || ! $isLoggingActive || ! $this->pickupPointsConfig->isInternalPickupPointCarrier( $carrierId ) ) {
 			return;
 		}
 
@@ -495,7 +495,7 @@ class Repository {
 			}
 
 			$wcOrder = $this->getWcOrderById( (int) $orderId );
-			assert( null !== $wcOrder, 'WC order has to be present' );
+			assert( $wcOrder !== null, 'WC order has to be present' );
 
 			try {
 				$orderEntities[ $orderId ] = $this->builder->build( $wcOrder, $packeteryOrdersResult[ $orderId ] );
@@ -543,7 +543,7 @@ class Repository {
 
 		if ( count( $allowedOrderStatuses ) > 0 && $hposEnabled ) {
 			$andWhere[] = '`wc_o`.`status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
-		} elseif ( count( $allowedOrderStatuses ) > 0 && false === $hposEnabled ) {
+		} elseif ( count( $allowedOrderStatuses ) > 0 && $hposEnabled === false ) {
 			$andWhere[] = '`wp_p`.`post_status` IN (' . $this->wpdbAdapter->prepareInClause( $allowedOrderStatuses ) . ')';
 		} else {
 			$andWhere[] = '1 = 0';
@@ -574,7 +574,7 @@ class Repository {
 
 		foreach ( $rows as $row ) {
 			$wcOrder = $this->getWcOrderById( (int) $row->id );
-			if ( null === $wcOrder || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+			if ( $wcOrder === null || ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
 				continue;
 			}
 
@@ -705,7 +705,7 @@ class Repository {
 	 */
 	public function deletedPostHook( int $postId, WP_Post $post ): void {
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-		if ( 'shop_order' === $post->post_type ) {
+		if ( $post->post_type === 'shop_order' ) {
 			$this->delete( $postId );
 		}
 	}

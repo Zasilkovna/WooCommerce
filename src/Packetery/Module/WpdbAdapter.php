@@ -111,7 +111,7 @@ class WpdbAdapter {
 	public function get_row( string $query, string $output = OBJECT ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_row( $query, $output );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			$this->handleError();
 		}
 
@@ -129,7 +129,7 @@ class WpdbAdapter {
 	public function prepare( string $query, ...$args ): string {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->prepare( $query, ...$args );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			$this->logError( 'Query to prepare is invalid. Likely due placeholder count mismatch.' );
 		}
 
@@ -147,7 +147,7 @@ class WpdbAdapter {
 	public function query( string $query ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->query( $query );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -166,7 +166,7 @@ class WpdbAdapter {
 	 */
 	public function insertReplaceHelper( string $table, array $data, ?array $format = null, string $type = 'INSERT' ) {
 		$result = $this->wpdb->_insert_replace_helper( $table, $data, $format, $type );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -184,7 +184,7 @@ class WpdbAdapter {
 	 */
 	public function delete( string $table, array $where, ?string $whereFormat = null ) {
 		$result = $this->wpdb->delete( $table, $where, $whereFormat );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -201,7 +201,7 @@ class WpdbAdapter {
 	 */
 	public function insert( string $table, array $data ) {
 		$result = $this->wpdb->insert( $table, $data );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -219,7 +219,7 @@ class WpdbAdapter {
 	 */
 	public function update( string $table, array $data, array $where ) {
 		$result = $this->wpdb->update( $table, $data, $where );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -261,7 +261,7 @@ class WpdbAdapter {
 	public function get_var( string $query ): ?string {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_var( $query );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			$this->handleError();
 		}
 
@@ -276,7 +276,7 @@ class WpdbAdapter {
 	 * @return bool
 	 */
 	private function isPacketeryTableQueried( string $query ): bool {
-		return 1 === preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?' . preg_quote( $this->getPacketeryPrefix(), '~' ) . '~i', $query );
+		return preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?' . preg_quote( $this->getPacketeryPrefix(), '~' ) . '~i', $query ) === 1;
 	}
 
 	/**
@@ -305,7 +305,7 @@ class WpdbAdapter {
 	 * @return void
 	 */
 	private function handleError(): void {
-		if ( '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
+		if ( $this->getLastWpdbError() !== '' && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
 			$this->logError( $this->getLastWpdbError() );
 		}
 	}
@@ -325,7 +325,7 @@ class WpdbAdapter {
 	 * @return \Generator
 	 */
 	public function getWpdbQueries(): \Generator {
-		if ( null !== $this->wpdb->queries ) {
+		if ( $this->wpdb->queries !== null ) {
 			foreach ( $this->wpdb->queries as $queryInfo ) {
 				yield $queryInfo;
 			}
@@ -344,7 +344,7 @@ class WpdbAdapter {
 	public function get_col( string $query, int $columnOffset = 0 ): array {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_col( $query, $columnOffset );
-		if ( [] === $result ) {
+		if ( $result === [] ) {
 			$this->handleError();
 		}
 
@@ -440,7 +440,7 @@ class WpdbAdapter {
 	 * @return string|null
 	 */
 	public function getLastInsertId(): ?string {
-		if ( 0 === $this->wpdb->insert_id ) {
+		if ( $this->wpdb->insert_id === 0 ) {
 			return null;
 		}
 

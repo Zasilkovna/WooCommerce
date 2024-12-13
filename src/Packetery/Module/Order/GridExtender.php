@@ -183,17 +183,17 @@ class GridExtender {
 	 * Adds select to order grid.
 	 */
 	public function renderOrderTypeSelect(): void {
-		if ( false === $this->contextResolver->isOrderGridPage() ) {
+		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return;
 		}
 
 		$linkFilters = [];
 
-		if ( null !== $this->httpRequest->getQuery( 'packetery_to_submit' ) ) {
+		if ( $this->httpRequest->getQuery( 'packetery_to_submit' ) !== null ) {
 			$linkFilters['packetery_to_submit'] = '1';
 		}
 
-		if ( null !== $this->httpRequest->getQuery( 'packetery_to_print' ) ) {
+		if ( $this->httpRequest->getQuery( 'packetery_to_print' ) !== null ) {
 			$linkFilters['packetery_to_print'] = '1';
 		}
 
@@ -264,7 +264,7 @@ class GridExtender {
 	 * @param WC_Order|int|mixed $wcOrder WC Order.
 	 */
 	public function fillCustomOrderListColumns( $column, $wcOrder ): void {
-		if ( false === is_string( $column ) ) {
+		if ( is_string( $column ) === false ) {
 			return;
 		}
 
@@ -279,13 +279,13 @@ class GridExtender {
 		try {
 			$order = $this->getOrderByIdCached( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
-			if ( 'packetery' === $column ) {
+			if ( $column === 'packetery' ) {
 				echo esc_html( $exception->getMessage() );
 			}
 
 			return;
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 
@@ -299,7 +299,7 @@ class GridExtender {
 				break;
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
-				if ( null !== $pickupPoint ) {
+				if ( $pickupPoint !== null ) {
 					$pointName = $pickupPoint->getName();
 					$pointId   = $pickupPoint->getId();
 					if ( ! $order->isExternalCarrier() ) {
@@ -327,11 +327,11 @@ class GridExtender {
 					],
 				];
 
-				if ( null !== $packetId ) {
+				if ( $packetId !== null ) {
 					$latteParams['packetIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetId );
 				}
 
-				if ( null !== $packetClaimId ) {
+				if ( $packetClaimId !== null ) {
 					$latteParams['packetClaimIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetClaimId );
 				}
 
@@ -440,7 +440,7 @@ class GridExtender {
 		foreach ( $columns as $columnName => $columnInfo ) {
 			$newColumns[ $columnName ] = $columnInfo;
 
-			if ( 'order_total' === $columnName ) {
+			if ( $columnName === 'order_total' ) {
 				$newColumns['packetery_weight']              = __( 'Weight', 'packeta' );
 				$newColumns['packetery']                     = __( 'Packeta', 'packeta' );
 				$newColumns['packetery_packet_id']           = __( 'Tracking No.', 'packeta' );

@@ -79,12 +79,12 @@ class DetailCommonLogic {
 	 * @return Order|null
 	 */
 	public function getOrder(): ?Order {
-		if ( null !== $this->order ) {
+		if ( $this->order !== null ) {
 			return $this->order;
 		}
 
 		$orderId = $this->getOrderId();
-		if ( null === $orderId ) {
+		if ( $orderId === null ) {
 			return null;
 		}
 
@@ -101,12 +101,12 @@ class DetailCommonLogic {
 	public function getOrderId(): ?int {
 		global $post;
 
-		if ( false === $this->contextResolver->isOrderDetailPage() ) {
+		if ( $this->contextResolver->isOrderDetailPage() === false ) {
 			return null;
 		}
 
 		$idParam = $this->request->getQuery( 'id' );
-		if ( null !== $idParam && Module\ModuleHelper::isHposEnabled() ) {
+		if ( $idParam !== null && Module\ModuleHelper::isHposEnabled() ) {
 			return (int) $idParam;
 		}
 
@@ -120,12 +120,12 @@ class DetailCommonLogic {
 	 */
 	public function isPacketeryOrder(): bool {
 		$orderId = $this->getOrderId();
-		if ( null === $orderId ) {
+		if ( $orderId === null ) {
 			return false;
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return false;
 		}
 
@@ -154,6 +154,6 @@ class DetailCommonLogic {
 	public function shouldHidePacketaInfo( Order $order ): bool {
 		$isPickupPointInfoVisible = $this->shouldDisplayPickupPointInfo() && $order->getPickupPoint() instanceof PickupPoint;
 
-		return ( ! $isPickupPointInfoVisible ) && false === $order->isExported();
+		return ( ! $isPickupPointInfoVisible ) && $order->isExported() === false;
 	}
 }

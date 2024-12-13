@@ -92,25 +92,25 @@ class CronService {
 					return;
 				}
 
-				if ( false === as_has_scheduled_action( self::CRON_LOG_AUTO_DELETION_HOOK ) ) {
+				if ( as_has_scheduled_action( self::CRON_LOG_AUTO_DELETION_HOOK ) === false ) {
 					as_schedule_recurring_action( ( new \DateTime( 'next day 02:00', wp_timezone() ) )->getTimestamp(), DAY_IN_SECONDS, self::CRON_LOG_AUTO_DELETION_HOOK );
 				}
-				if ( false === as_has_scheduled_action( self::CRON_PURGE_TRANSIENTS ) ) {
+				if ( as_has_scheduled_action( self::CRON_PURGE_TRANSIENTS ) === false ) {
 					as_schedule_recurring_action(
 						( new \DateTime( 'next day 02:10', wp_timezone() ) )->getTimestamp(),
 						DAY_IN_SECONDS,
 						self::CRON_PURGE_TRANSIENTS
 					);
 				}
-				if ( false === as_has_scheduled_action( self::CRON_CARRIERS_HOOK ) ) {
+				if ( as_has_scheduled_action( self::CRON_CARRIERS_HOOK ) === false ) {
 					as_schedule_recurring_action( ( new \DateTime( 'next day 09:10', wp_timezone() ) )->getTimestamp(), DAY_IN_SECONDS, self::CRON_CARRIERS_HOOK );
 				}
-				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK ) ) {
+				if ( as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK ) === false ) {
 					// phpcs:ignore Squiz.PHP.CommentedOutCode.Found
 					// Monday to Friday at 02:10, 06:10, 10:10, 14:10, 18:10, 22:10.
 					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 2,6,10,14,18,22 * * 1-5', self::CRON_PACKET_STATUS_SYNC_HOOK );
 				}
-				if ( false === as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND ) ) {
+				if ( as_has_scheduled_action( self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND ) === false ) {
 					// Saturday, Sunday at 03:10.
 					as_schedule_cron_action( ( new \DateTime() )->getTimestamp(), '10 3 * * 6,0', self::CRON_PACKET_STATUS_SYNC_HOOK_WEEKEND );
 				}

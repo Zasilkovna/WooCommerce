@@ -95,14 +95,14 @@ class ShippingZoneRepository {
 	public function getCountryCodesForShippingRate( string $rateId ): array {
 		$countries     = [];
 		$zoneLocations = $this->getLocationsForShippingRate( $rateId );
-		if ( null !== $zoneLocations ) {
+		if ( $zoneLocations !== null ) {
 			/**
 			 * Zone location.
 			 *
 			 * @var stdClass $zoneLocation
 			 */
 			foreach ( $zoneLocations as $zoneLocation ) {
-				if ( 'country' === $zoneLocation->type ) {
+				if ( $zoneLocation->type === 'country' ) {
 					$countries[] = strtolower( $zoneLocation->code );
 				}
 			}

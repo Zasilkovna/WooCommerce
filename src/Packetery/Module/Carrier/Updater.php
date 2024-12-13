@@ -113,7 +113,7 @@ class Updater {
 				'deleted'    => false,
 			);
 			foreach ( $carrierBooleanParams as $columnName => $paramName ) {
-				$carrierData[ $columnName ] = ( 'true' === $carrier[ $paramName ] );
+				$carrierData[ $columnName ] = ( $carrier[ $paramName ] === 'true' );
 			}
 			$mappedData[ $carrierId ] = $carrierData;
 		}
@@ -155,7 +155,7 @@ class Updater {
 		if ( count( $carriersInDb ) > 0 ) {
 			$this->carrierRepository->set_as_deleted( array_keys( $carriersInDb ) );
 			foreach ( $carriersInDb as $deletedCarrier ) {
-				if ( true === (bool) $deletedCarrier['deleted'] ) {
+				if ( (bool) $deletedCarrier['deleted'] === true ) {
 					continue;
 				}
 				$this->addLogEntry(
@@ -185,12 +185,12 @@ class Updater {
 		$columnSettings = $this->getColumnSettings();
 
 		foreach ( $oldData as $key => $oldValue ) {
-			if ( 'id' === $key ) {
+			if ( $key === 'id' ) {
 				continue;
 			}
 
-			if ( 'deleted' === $key ) {
-				if ( '1' === (string) $oldValue && isset( $newData['name'] ) ) {
+			if ( $key === 'deleted' ) {
+				if ( (string) $oldValue === '1' && isset( $newData['name'] ) ) {
 					$differences[ $key ] = __( 'carrier was re-enabled', 'packeta' );
 				}
 
@@ -199,15 +199,15 @@ class Updater {
 
 			$newValue = (string) $newData[ $key ];
 			if ( $columnSettings[ $key ]['isBoolean'] ) {
-				$newValue = ( '1' === $newValue ? $newValue : '0' );
-				$oldValue = ( '1' === (string) $oldValue ? (string) $oldValue : '0' );
+				$newValue = ( $newValue === '1' ? $newValue : '0' );
+				$oldValue = ( (string) $oldValue === '1' ? (string) $oldValue : '0' );
 			}
 			if ( (string) $oldValue === $newValue ) {
 				continue;
 			}
 			if ( $columnSettings[ $key ]['isBoolean'] ) {
-				$newValue = ( '1' === $newValue ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
-				$oldValue = ( '1' === $oldValue ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
+				$newValue = ( $newValue === '1' ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
+				$oldValue = ( $oldValue === '1' ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
 			}
 			$differences[ $key ] = $columnSettings[ $key ]['label'] . ': ' . $oldValue . ' => ' . $newValue;
 		}

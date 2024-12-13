@@ -92,7 +92,7 @@ class BulkActions {
 	 * @return string
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
-		if ( CollectionPrint::ACTION_PRINT_ORDER_COLLECTION === $action ) {
+		if ( $action === CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ) {
 			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
 
 			return add_query_arg(
@@ -116,11 +116,11 @@ class BulkActions {
 			);
 		}
 
-		if ( 'submit_to_api' === $action ) {
+		if ( $action === 'submit_to_api' ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
 				$wcOrder = $this->orderRepository->getWcOrderById( $postId );
-				if ( null !== $wcOrder ) {
+				if ( $wcOrder !== null ) {
 					$submissionResult = $this->packetSubmitter->submitPacket(
 						$wcOrder,
 						null,

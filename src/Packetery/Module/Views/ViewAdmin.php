@@ -63,7 +63,7 @@ class ViewAdmin {
 	 */
 	public function renderDeliveryDetail( WC_Order $wcOrder ): void {
 		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 

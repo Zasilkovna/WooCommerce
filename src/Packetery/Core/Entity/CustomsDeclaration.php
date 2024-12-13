@@ -181,7 +181,7 @@ class CustomsDeclaration {
 	 * @return string|null
 	 */
 	public function getEadFile(): ?string {
-		if ( null === $this->eadFile ) {
+		if ( $this->eadFile === null ) {
 			return null;
 		}
 
@@ -247,7 +247,7 @@ class CustomsDeclaration {
 	 * @return string|null
 	 */
 	public function getInvoiceFile(): ?string {
-		if ( null === $this->invoiceFile ) {
+		if ( $this->invoiceFile === null ) {
 			return null;
 		}
 

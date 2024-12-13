@@ -64,12 +64,12 @@ class ApiExtender {
 		}
 
 		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcData );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return $response;
 		}
 
 		foreach ( $responseData['shipping_lines'] as $key => $shippingLine ) {
-			if ( ShippingMethod::PACKETERY_METHOD_ID !== $shippingLine['method_id'] ) {
+			if ( $shippingLine['method_id'] !== ShippingMethod::PACKETERY_METHOD_ID ) {
 				continue;
 			}
 			$response->data['shipping_lines'][ $key ]['packeta'] = $this->getPacketaItemsToShippingLines( $order );
@@ -92,7 +92,7 @@ class ApiExtender {
 			'point_name' => null,
 		];
 
-		if ( null !== $order->getPickupPoint() ) {
+		if ( $order->getPickupPoint() !== null ) {
 			$items['point_id']   = $order->getPickupPoint()->getId();
 			$items['point_name'] = $order->getPickupPoint()->getName();
 		}

@@ -117,7 +117,7 @@ class FormFields {
 
 		$form->setDefaults(
 			[
-				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => null !== $productCategory ? $productCategory->getDisallowedShippingRateChoices() : [],
+				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory !== null ? $productCategory->getDisallowedShippingRateChoices() : [],
 			]
 		);
 
@@ -156,7 +156,7 @@ class FormFields {
 	 * @return void
 	 */
 	public function saveData( int $termId, int $termTaxonomyId, string $taxonomy = '' ): void {
-		if ( ProductCategory\Entity::TAXONOMY_NAME !== $taxonomy ) {
+		if ( $taxonomy !== ProductCategory\Entity::TAXONOMY_NAME ) {
 			return;
 		}
 		$productCategory = $this->productCategoryEntityFactory->fromTermId( $termId );

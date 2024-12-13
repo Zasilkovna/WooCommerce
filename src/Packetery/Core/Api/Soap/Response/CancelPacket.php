@@ -21,6 +21,6 @@ class CancelPacket extends BaseResponse {
 	 * @return bool
 	 */
 	public function hasCancelNotAllowedFault(): bool {
-		return ( 'CancelNotAllowedFault' === $this->fault );
+		return ( $this->fault === 'CancelNotAllowedFault' );
 	}
 }

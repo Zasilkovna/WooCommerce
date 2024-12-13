@@ -250,7 +250,7 @@ class Metabox {
 		}
 
 		$orderId = $this->detailCommonLogic->getOrderId();
-		if ( null === $orderId ) {
+		if ( $orderId === null ) {
 			$partsCache = [];
 
 			return $partsCache;
@@ -276,7 +276,7 @@ class Metabox {
 			$parts[ self::PART_CARRIER_CHANGE ] = $this->carrierModal->getMetaboxHtml();
 		}
 
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$partsCache = $parts;
 
 			return $partsCache;
@@ -294,7 +294,7 @@ class Metabox {
 
 		$packetClaimCancelUrl   = null;
 		$packetClaimTrackingUrl = null;
-		if ( null !== $order->getPacketClaimId() ) {
+		if ( $order->getPacketClaimId() !== null ) {
 			$packetClaimCancelUrl   = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -306,7 +306,7 @@ class Metabox {
 		}
 
 		$packetId = $order->getPacketId();
-		if ( null !== $packetId ) {
+		if ( $packetId !== null ) {
 			$packetCancelLink = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -381,9 +381,9 @@ class Metabox {
 			$this->form,
 			$order->getFinalWeight(),
 			$order->getFinalWeight(),
-			OptionsProvider::DIMENSIONS_UNIT_CM === $unit ? ModuleHelper::convertToCentimeters( (int) $order->getLength() ) : $order->getLength(),
-			OptionsProvider::DIMENSIONS_UNIT_CM === $unit ? ModuleHelper::convertToCentimeters( (int) $order->getWidth() ) : $order->getWidth(),
-			OptionsProvider::DIMENSIONS_UNIT_CM === $unit ? ModuleHelper::convertToCentimeters( (int) $order->getHeight() ) : $order->getHeight(),
+			$unit === OptionsProvider::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToCentimeters( (int) $order->getLength() ) : $order->getLength(),
+			$unit === OptionsProvider::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToCentimeters( (int) $order->getWidth() ) : $order->getWidth(),
+			$unit === OptionsProvider::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToCentimeters( (int) $order->getHeight() ) : $order->getHeight(),
 			$order->getCod(),
 			$order->getValue(),
 			$order->containsAdultContent(),
@@ -391,7 +391,7 @@ class Metabox {
 		);
 
 		$prevInvalidValues = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
-		if ( null !== $prevInvalidValues && false !== $prevInvalidValues ) {
+		if ( $prevInvalidValues !== null && $prevInvalidValues !== false ) {
 			$this->form->setValues( $prevInvalidValues );
 			$this->form->validate();
 		}
@@ -405,12 +405,12 @@ class Metabox {
 		$shippingCountry   = $order->getShippingCountry();
 		$showHdWidget      = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		if (
-			null === $shippingCountry ||
+			$shippingCountry === null ||
 			! $this->carrierRepository->isValidForCountry( $order->getCarrier()->getId(), $shippingCountry )
 		) {
 			if ( $order->isPickupPointDelivery() ) {
 				$showWidgetButton = false;
-				if ( null === $shippingCountry ) {
+				if ( $shippingCountry === null ) {
 					$widgetButtonError = __(
 						'The pickup point cannot be changed because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
@@ -427,7 +427,7 @@ class Metabox {
 				}
 			} elseif ( in_array( $order->getCarrier()->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$showHdWidget = false;
-				if ( null === $shippingCountry ) {
+				if ( $shippingCountry === null ) {
 					$widgetButtonError = __(
 						'The address cannot be validated because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
@@ -508,12 +508,12 @@ class Metabox {
 		$orderId = (int) $order->getNumber();
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
-			null === $this->request->getPost( 'packetery_order_metabox_nonce' )
+			$this->request->getPost( 'packetery_order_metabox_nonce' ) === null
 		) {
 			return;
 		}
 
-		if ( false === $this->form->isValid() ) {
+		if ( $this->form->isValid() === false ) {
 			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( 'array' ) );
 			$this->messageManager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
@@ -549,8 +549,8 @@ class Metabox {
 			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
 				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
-				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
-					if ( isset( $formValues[ Attribute::CARRIER_ID ] ) && '' !== $formValues[ Attribute::CARRIER_ID ] ) {
+				if ( $pickupPointAttr['name'] === Attribute::CARRIER_ID ) {
+					if ( isset( $formValues[ Attribute::CARRIER_ID ] ) && $formValues[ Attribute::CARRIER_ID ] !== '' ) {
 						$pickupPointValue = $formValues[ Attribute::CARRIER_ID ];
 					} else {
 						$pickupPointValue = $order->getCarrier()->getId();
@@ -565,7 +565,7 @@ class Metabox {
 			}
 		}
 
-		if ( '1' === $formValues[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+		if ( $formValues[ Attribute::ADDRESS_IS_VALIDATED ] === '1' && $order->isHomeDelivery() ) {
 			$address = $this->mapper->toValidatedAddress( $formValues );
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );
@@ -592,7 +592,7 @@ class Metabox {
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || false === $order->isPickupPointDelivery() || null === $order->getShippingCountry() ) {
+		if ( $order === null || $order->isPickupPointDelivery() === false || $order->getShippingCountry() === null ) {
 			return null;
 		}
 
@@ -612,7 +612,7 @@ class Metabox {
 	 */
 	public function getAddressWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || false === $order->isHomeDelivery() ) {
+		if ( $order === null || $order->isHomeDelivery() === false ) {
 			return null;
 		}
 

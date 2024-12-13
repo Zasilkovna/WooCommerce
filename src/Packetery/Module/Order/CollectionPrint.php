@@ -120,7 +120,7 @@ class CollectionPrint {
 			return;
 		}
 
-		if ( false === get_transient( self::getOrderIdsTransientName() ) ) {
+		if ( get_transient( self::getOrderIdsTransientName() ) === false ) {
 			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), 'info' );
 			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
@@ -131,7 +131,7 @@ class CollectionPrint {
 		$wpOrders  = [];
 
 		foreach ( $orders as $order ) {
-			if ( null === $order->getPacketId() ) {
+			if ( $order->getPacketId() === null ) {
 				continue;
 			}
 

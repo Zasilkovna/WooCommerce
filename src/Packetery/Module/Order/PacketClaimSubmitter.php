@@ -120,7 +120,7 @@ class PacketClaimSubmitter {
 
 		$record         = new Log\Record();
 		$record->action = Log\Record::ACTION_PACKET_CLAIM_SENDING;
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$record->status  = Log\Record::STATUS_ERROR;
 			$record->orderId = null;
 			$record->title   = __( 'Packet claim submission error', 'packeta' );
@@ -140,7 +140,7 @@ class PacketClaimSubmitter {
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM, $order );
 
 		$record->orderId = $order->getNumber();
-		if ( false === $order->isPacketClaimCreationPossible() ) {
+		if ( $order->isPacketClaimCreationPossible() === false ) {
 			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Packet claim submission error', 'packeta' );
 			$record->params = [
@@ -203,7 +203,7 @@ class PacketClaimSubmitter {
 			$this->orderRepository->save( $order );
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
-			if ( null !== $wcOrder ) {
+			if ( $wcOrder !== null ) {
 				$wcOrder->add_order_note(
 					sprintf(
 						// translators: %s represents a packet tracking link.

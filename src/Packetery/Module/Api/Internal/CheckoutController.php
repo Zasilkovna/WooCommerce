@@ -144,13 +144,13 @@ final class CheckoutController extends WP_REST_Controller {
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function removeSavedData( WP_REST_Request $request ): WP_REST_Response {
 		$params = $request->get_params();
-		if ( ! isset( $params['carrierId'] ) || '' === $params['carrierId'] ) {
+		if ( ! isset( $params['carrierId'] ) || $params['carrierId'] === '' ) {
 			delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 		} else {
 			$savedData = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 			// False when does not exist, empty string when improperly saved.
 			if ( ! is_array( $savedData ) ) {
-				if ( '' === $savedData ) {
+				if ( $savedData === '' ) {
 					delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
 				}
 

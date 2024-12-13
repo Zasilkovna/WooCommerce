@@ -32,7 +32,7 @@ class AttributeMapper {
 	 */
 	public function toOrderEntityPickupPoint( Entity\Order $orderEntity, array $propsToSave ): Entity\PickupPoint {
 		$pickupPoint = $orderEntity->getPickupPoint();
-		if ( null === $pickupPoint ) {
+		if ( $pickupPoint === null ) {
 			$pickupPoint = new Entity\PickupPoint();
 		}
 
@@ -79,17 +79,17 @@ class AttributeMapper {
 	 * @throws WC_Data_Exception When shipping input is invalid.
 	 */
 	public function toWcOrderShippingAddress( WC_Order $wcOrder, string $attributeName, string $value ): void {
-		if ( Attribute::POINT_STREET === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_STREET ) {
 			$wcOrder->set_shipping_address_1( $value );
 			$wcOrder->set_shipping_address_2( '' );
 		}
-		if ( Attribute::POINT_PLACE === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_PLACE ) {
 			$wcOrder->set_shipping_company( $value );
 		}
-		if ( Attribute::POINT_CITY === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_CITY ) {
 			$wcOrder->set_shipping_city( $value );
 		}
-		if ( Attribute::POINT_ZIP === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_ZIP ) {
 			$wcOrder->set_shipping_postcode( $value );
 		}
 	}
@@ -123,7 +123,7 @@ class AttributeMapper {
 	 */
 	public function toOrderSize( Entity\Order $order, array $propsToSave ): Entity\Size {
 		$orderSize = $order->getSize();
-		if ( null === $orderSize ) {
+		if ( $orderSize === null ) {
 			$orderSize = new Entity\Size();
 		}
 

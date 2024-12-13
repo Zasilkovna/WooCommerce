@@ -127,13 +127,13 @@ class Builder {
 	 */
 	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
 		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( '' === $country ) {
+		if ( $country === '' ) {
 			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
 		}
 
 		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
 		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
-		if ( null === $carrier ) {
+		if ( $carrier === null ) {
 			throw new InvalidCarrierException(
 				sprintf(
 				// translators: %s is carrier id.
@@ -145,7 +145,7 @@ class Builder {
 
 		$order       = new Order( $result->id, $carrier );
 		$orderWeight = $this->parseFloat( $result->weight );
-		if ( null !== $orderWeight ) {
+		if ( $orderWeight !== null ) {
 			$order->setWeight( $orderWeight );
 		}
 		$order->setPacketId( $result->packet_id );
@@ -164,7 +164,7 @@ class Builder {
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $result->deliver_on ) );
 		$order->setLastApiErrorMessage( $result->api_error_message );
 		$order->setLastApiErrorDateTime(
-			( null === $result->api_error_date )
+			( $result->api_error_date === null )
 				? null
 				: DateTimeImmutable::createFromFormat(
 					CoreHelper::MYSQL_DATETIME_FORMAT,
@@ -193,7 +193,7 @@ class Builder {
 			$order->setCarDeliveryId( $result->car_delivery_id );
 		}
 
-		if ( null !== $result->point_id ) {
+		if ( $result->point_id !== null ) {
 			$pickUpPoint = new PickupPoint(
 				$result->point_id,
 				$result->point_name,
@@ -208,7 +208,7 @@ class Builder {
 
 		$order->setCalculatedWeight( $this->calculator->calculateOrderWeight( $wcOrder ) );
 
-		if ( null === $order->containsAdultContent() ) {
+		if ( $order->containsAdultContent() === null ) {
 			$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		}
 
@@ -221,12 +221,12 @@ class Builder {
 		$order->setSurname( $contactInfo['last_name'] );
 		$order->setEshop( $this->optionsProvider->get_sender() );
 
-		if ( null === $order->getValue() ) {
+		if ( $order->getValue() === null ) {
 			$order->setValue( (float) $wcOrder->get_total( 'raw' ) );
 		}
 
 		$address = $order->getDeliveryAddress();
-		if ( null === $address ) {
+		if ( $address === null ) {
 			$order->setAddressValidated( false );
 			$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		}
@@ -236,17 +236,17 @@ class Builder {
 
 		// Shipping address phone is optional.
 		$order->setPhone( $orderData['billing']['phone'] );
-		if ( isset( $contactInfo['phone'] ) && '' !== $contactInfo['phone'] ) {
+		if ( isset( $contactInfo['phone'] ) && $contactInfo['phone'] !== '' ) {
 			$order->setPhone( $contactInfo['phone'] );
 		}
 		// Additional address information.
-		if ( isset( $contactInfo['address_2'] ) && '' !== $contactInfo['address_2'] ) {
+		if ( isset( $contactInfo['address_2'] ) && $contactInfo['address_2'] !== '' ) {
 			$order->setNote( $contactInfo['address_2'] );
 		}
 
 		$order->setEmail( $orderData['billing']['email'] );
 		$hasCodPaymentMethod = $this->paymentHelper->isCodPaymentMethod( $orderData['payment_method'] );
-		if ( $hasCodPaymentMethod && null === $order->getCod() ) {
+		if ( $hasCodPaymentMethod && $order->getCod() === null ) {
 			$order->setCod( $order->getValue() );
 		}
 
@@ -293,7 +293,7 @@ class Builder {
 	 * @return float|null
 	 */
 	private function parseFloat( $value ): ?float {
-		if ( null === $value || '' === $value ) {
+		if ( $value === null || $value === '' ) {
 			return null;
 		}
 
@@ -308,7 +308,7 @@ class Builder {
 	 * @return bool|null
 	 */
 	private function parseBool( $value ): ?bool {
-		if ( null === $value || '' === $value ) {
+		if ( $value === null || $value === '' ) {
 			return null;
 		}
 

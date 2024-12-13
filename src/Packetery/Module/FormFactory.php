@@ -85,7 +85,7 @@ class FormFactory {
 	}
 
 	private function setNumType( string $unit ): string {
-		if ( OptionsProvider::DIMENSIONS_UNIT_CM === $unit ) {
+		if ( $unit === OptionsProvider::DIMENSIONS_UNIT_CM ) {
 			return Form::FLOAT;
 		}
 
@@ -93,7 +93,7 @@ class FormFactory {
 	}
 
 	private function setMinValue( string $unit ): float {
-		if ( OptionsProvider::DIMENSIONS_UNIT_CM === $unit ) {
+		if ( $unit === OptionsProvider::DIMENSIONS_UNIT_CM ) {
 			return 0.1;
 		}
 

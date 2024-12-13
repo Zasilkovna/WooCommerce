@@ -169,7 +169,7 @@ class DataTab {
 	 */
 	public function saveData( $postId ): void {
 		$product = $this->productEntityFactory->fromPostId( $postId );
-		if ( false === $product->isPhysical() ) {
+		if ( $product->isPhysical() === false ) {
 			return;
 		}
 
@@ -195,7 +195,7 @@ class DataTab {
 				$value = $value ? '1' : '0';
 			}
 
-			if ( Product\Entity::META_DISALLOWED_SHIPPING_RATES === $attr ) {
+			if ( $attr === Product\Entity::META_DISALLOWED_SHIPPING_RATES ) {
 				$value = array_filter( $value );
 			}
 
