@@ -6,6 +6,8 @@ namespace Packetery\Module\Checkout;
 
 use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
+use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -34,12 +36,12 @@ class ShippingRateFactory {
 	private $cartService;
 
 	/**
-	 * @var Carrier\CarrierOptionsFactory
+	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
 
 	/**
-	 * @var Carrier\CarDeliveryConfig
+	 * @var CarDeliveryConfig
 	 */
 	private $carDeliveryConfig;
 
@@ -63,8 +65,8 @@ class ShippingRateFactory {
 		Carrier\EntityRepository $carrierEntityRepository,
 		WcAdapter $wcAdapter,
 		CartService $cartService,
-		Carrier\CarrierOptionsFactory $carrierOptionsFactory,
-		Carrier\CarDeliveryConfig $carDeliveryConfig,
+		CarrierOptionsFactory $carrierOptionsFactory,
+		CarDeliveryConfig $carDeliveryConfig,
 		RateCalculator $rateCalculator,
 		OptionsProvider $optionsProvider,
 		WpAdapter $wpAdapter
