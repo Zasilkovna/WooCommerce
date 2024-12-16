@@ -87,15 +87,11 @@ class PacketActionsCommonLogic {
 		}
 	}
 
-	/**
-	 * Creates nonce action name.
-	 *
-	 * @param string $action      Action.
-	 * @param string $orderNumber Order number.
-	 *
-	 * @return string
-	 */
-	public static function createNonceAction( string $action, string $orderNumber ): string {
+	public static function createNonceAction( string $action, ?string $orderNumber ): string {
+		if ( $orderNumber === null ) {
+			return '';
+		}
+
 		return $action . '_' . $orderNumber;
 	}
 

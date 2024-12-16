@@ -177,7 +177,7 @@ class WidgetOptionsBuilder {
 			$widgetOptions['carriers'] = $this->getCarriersParam( $order->isPickupPointDelivery(), $order->getCarrier()->getId() );
 		}
 
-		if ( $order->containsAdultContent() ) {
+		if ( $order->containsAdultContent() === true ) {
 			$widgetOptions += [ 'livePickupPoint' => true ];
 		}
 

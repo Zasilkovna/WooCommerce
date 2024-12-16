@@ -36,14 +36,6 @@ class DbLogger implements ILogger {
 		$this->logRepository = $logRepository;
 	}
 
-	/**
-	 * Adds record.
-	 *
-	 * @param Record $record Record.
-	 *
-	 * @return void
-	 * @throws \Exception From DateTimeImmutable.
-	 */
 	public function add( Record $record ): void {
 		if ( $record->date === null ) {
 			$record->date = CoreHelper::now();

@@ -148,7 +148,12 @@ class OptionsProvider {
 	 * @return string|null Content.
 	 */
 	public function get_api_key(): ?string {
-		return $this->get( 'api_key' );
+		$apiKey = $this->get( 'api_key' );
+		if ( $apiKey !== null && $apiKey !== '' && $apiKey !== false ) {
+			return $apiKey;
+		}
+
+		return null;
 	}
 
 	/**

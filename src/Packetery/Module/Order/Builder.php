@@ -29,6 +29,7 @@ use Packetery\Module\WeightCalculator;
 use stdClass;
 use WC_Order;
 use WC_Order_Item_Product;
+use WC_Product;
 
 // phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 /**
@@ -273,7 +274,7 @@ class Builder {
 		foreach ( $wcOrder->get_items() as $item ) {
 			if ( $item instanceof WC_Order_Item_Product ) {
 				$product = $item->get_product();
-				if ( $product ) {
+				if ( $product instanceof WC_Product ) {
 					$productEntity = new Product\Entity( $product );
 					if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
 						return true;

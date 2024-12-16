@@ -135,8 +135,23 @@ class Repository {
 		if ( $customsDeclarationId === null ) {
 			return [];
 		}
-		/** @var null|array<string, string[]> $customsDeclarationItemRows */
-		$customsDeclarationItemRows = $this->wpdbAdapter->get_results(
+
+		$customsDeclarationItemRows = $this->getCustomsDeclarationItemRows( $customsDeclarationId );
+
+		if ( $customsDeclarationItemRows === null ) {
+			return [];
+		}
+
+		$customsDeclarationItems = [];
+		foreach ( $customsDeclarationItemRows as $row ) {
+			$customsDeclarationItems[] = $this->entityFactory->createItemFromStandardizedStructure( $row );
+		}
+
+		return $customsDeclarationItems;
+	}
+
+	public function getCustomsDeclarationItemRows( ?string $customsDeclarationId ): ?array {
+		return $this->wpdbAdapter->get_results(
 			sprintf(
 				'SELECT
 					`id`,
@@ -156,17 +171,6 @@ class Repository {
 			),
 			ARRAY_A
 		);
-
-		if ( $customsDeclarationItemRows === null ) {
-			return [];
-		}
-
-		$customsDeclarationItems = [];
-		foreach ( $customsDeclarationItemRows as $row ) {
-			$customsDeclarationItems[] = $this->entityFactory->createItemFromStandardizedStructure( $row );
-		}
-
-		return $customsDeclarationItems;
 	}
 
 	/**

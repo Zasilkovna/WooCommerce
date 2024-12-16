@@ -24,6 +24,7 @@
 	<!-- Rules -->
 	<rule ref="WooCommerce-Core">
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+		<exclude name="Generic.CodeAnalysis.UselessOverridingMethod"/>
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found"/>
 		<exclude name="Universal.Operators.DisallowShortTernary.Found"/>
 		<exclude name="Universal.Operators.DisallowStandalonePostIncrementDecrement.PostIncrementFound"/>

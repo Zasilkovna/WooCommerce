@@ -18,6 +18,7 @@ use Packetery\Module\FormValidators;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
+use Packetery\Module\Options\Page;
 use Packetery\Module\PaymentGatewayHelper;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
@@ -165,7 +166,7 @@ class OptionsPage {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			\Packetery\Module\Options\Page::SLUG,
+			Page::SLUG,
 			__( 'Carrier settings', 'packeta' ),
 			__( 'Carrier settings', 'packeta' ),
 			'manage_options',
@@ -277,7 +278,7 @@ class OptionsPage {
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
 		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 
-		if ( $carrier->isCarDelivery() ) {
+		if ( $carrier !== null && $carrier->isCarDelivery() ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )
@@ -696,66 +697,93 @@ class OptionsPage {
 	}
 
 	/**
-	 * Adds limit fields to form.
+	 * @param Container  $weightLimits
+	 * @param int|string $index
 	 *
-	 * @param Container  $weightLimits Container.
-	 * @param int|string $index Index.
-	 *
-	 * @return void
+	 * @throws \RuntimeException
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
-		/**
-		 * Pricing type control.
-		 *
-		 * @var Control $pricingTypeControl
-		 */
-		$pricingTypeControl = $weightLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
-		$limit              = $weightLimits->addContainer( (string) $index );
-		$item               = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
-		$itemRules          = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		// translators: %d is numeric threshold.
-		$itemRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+		$form = $weightLimits->getForm();
+		if ( $form === null ) {
+			throw new \RuntimeException( 'Form is not attached to the container.' );
+		}
 
-		$itemRules->addFilter(
+		$pricingTypeComponent = $form->getComponent( self::FORM_FIELD_PRICING_TYPE, false );
+
+		if ( ! $pricingTypeComponent instanceof Control ) {
+			throw new \RuntimeException(
+				sprintf(
+					'Component "%s" must be an instance of %s, %s given.',
+					self::FORM_FIELD_PRICING_TYPE,
+					Control::class,
+					is_object( $pricingTypeComponent ) ? get_class( $pricingTypeComponent ) : gettype( $pricingTypeComponent )
+				)
+			);
+		}
+
+		$limit       = $weightLimits->addContainer( (string) $index );
+		$weightField = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
+		$weightRules = $weightField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
+		$weightRules->setRequired();
+		$weightRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		// translators: %d is numeric threshold.
+		$weightRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+
+		$weightRules->addFilter(
 			function ( float $value ) {
 				return CoreHelper::simplifyWeight( $value );
 			}
 		);
-		// translators: %d is numeric threshold.
-		$itemRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
-		$item      = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
-		$itemRules = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		$itemRules->addRule( Form::MIN, null, 0 );
+		$priceField = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
+		$priceRules = $priceField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
+		$priceRules->setRequired();
+		$priceRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		$priceRules->addRule( Form::MIN, null, 0 );
+		// translators: %d is numeric threshold.
+		$weightRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 	}
 
 	/**
-	 * Adds product value limit fields to form.
+	 * @param Container  $productValueLimits
+	 * @param int|string $index
 	 *
-	 * @param Container  $productValueLimits Container.
-	 * @param int|string $index Index.
-	 *
-	 * @return void
+	 * @throws \RuntimeException
 	 */
 	private function addProductValueLimit( Container $productValueLimits, $index ): void {
-		/** @var Control $pricingTypeControl */
-		$pricingTypeControl = $productValueLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
-		$limit              = $productValueLimits->addContainer( (string) $index );
-		$item               = $limit->addText( 'value', __( 'Product value up to', 'packeta' ) . ':' );
-		$itemRules          = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		$itemRules->addRule( Form::MIN, null, 0 );
+		$form = $productValueLimits->getForm();
+		if ( $form === null ) {
+			throw new \RuntimeException( 'Form is not attached to the container.' );
+		}
 
-		$item      = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
-		$itemRules = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		$itemRules->addRule( Form::MIN, null, 0 );
+		$pricingTypeComponent = $form->getComponent( self::FORM_FIELD_PRICING_TYPE, false );
+
+		if ( ! $pricingTypeComponent instanceof Control ) {
+			throw new \RuntimeException(
+				sprintf(
+					'Component "%s" must be an instance of %s, %s given.',
+					self::FORM_FIELD_PRICING_TYPE,
+					Control::class,
+					is_object( $pricingTypeComponent ) ? get_class( $pricingTypeComponent ) : gettype( $pricingTypeComponent )
+				)
+			);
+		}
+
+		$limit = $productValueLimits->addContainer( $index );
+
+		$valueField = $limit->addText( 'value', __( 'Product value up to', 'packeta' ) . ':' );
+		$valueRules = $valueField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
+		$valueRules->setRequired();
+		$valueRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		// translators: %d is numeric threshold.
+		$valueRules->addRule( Form::MIN, __( 'Value must be at least %d.', 'packeta' ), 0.0 );
+
+		$priceField = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
+		$priceRules = $priceField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
+		$priceRules->setRequired();
+		$priceRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		// translators: %d is numeric threshold.
+		$priceRules->addRule( Form::MIN, __( 'Price must be at least %d.', 'packeta' ), 0.0 );
 	}
 
 	/**

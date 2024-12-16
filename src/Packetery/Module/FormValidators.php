@@ -72,8 +72,9 @@ class FormValidators {
 	public static function hasClockTimeFormat( BaseControl $input ): bool {
 		$value   = $input->getValue();
 		$pattern = '/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/';
+		$result  = preg_match( $pattern, $value );
 
-		if ( ! preg_match( $pattern, $value ) ) {
+		if ( $result === 0 || $result === false ) {
 			return false;
 		}
 

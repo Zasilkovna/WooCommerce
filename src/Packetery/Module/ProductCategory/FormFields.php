@@ -152,8 +152,6 @@ class FormFields {
 	 * @param int    $termId         Post ID.
 	 * @param int    $termTaxonomyId Term taxonomy ID.
 	 * @param string $taxonomy       Taxonomy slug.
-	 *
-	 * @return void
 	 */
 	public function saveData( int $termId, int $termTaxonomyId, string $taxonomy = '' ): void {
 		if ( $taxonomy !== ProductCategory\Entity::TAXONOMY_NAME ) {
@@ -162,7 +160,7 @@ class FormFields {
 		$productCategory = $this->productCategoryEntityFactory->fromTermId( $termId );
 		$form            = $this->createForm( $productCategory );
 
-		$form->onSuccess[] = function ( Form $form, array $shippingRates ) use ( $productCategory ): void {
+		$form->onSuccess[] = static function ( Form $form, array $shippingRates ) use ( $productCategory ): void {
 			if ( isset( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] ) ) {
 				$disallowedShippingRates = array_filter( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] );
 				update_term_meta( $productCategory->getId(), Entity::META_DISALLOWED_SHIPPING_RATES, $disallowedShippingRates );

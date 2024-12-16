@@ -175,8 +175,8 @@ class Updater {
 	/**
 	 * Gets array changes as array of strings.
 	 *
-	 * @param array<string, string>            $oldData Previous version.
-	 * @param array<string, string|float|bool> $newData New version.
+	 * @param array<string, bool|float|string> $oldData Previous version.
+	 * @param array<string, bool|float|string> $newData New version.
 	 *
 	 * @return array<string, string>
 	 */
@@ -198,14 +198,14 @@ class Updater {
 			}
 
 			$newValue = (string) $newData[ $key ];
-			if ( $columnSettings[ $key ]['isBoolean'] ) {
+			if ( $columnSettings[ $key ]['isBoolean'] === true ) {
 				$newValue = ( $newValue === '1' ? $newValue : '0' );
 				$oldValue = ( (string) $oldValue === '1' ? (string) $oldValue : '0' );
 			}
 			if ( (string) $oldValue === $newValue ) {
 				continue;
 			}
-			if ( $columnSettings[ $key ]['isBoolean'] ) {
+			if ( $columnSettings[ $key ]['isBoolean'] === true ) {
 				$newValue = ( $newValue === '1' ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
 				$oldValue = ( $oldValue === '1' ? __( 'yes', 'packeta' ) : __( 'no', 'packeta' ) );
 			}

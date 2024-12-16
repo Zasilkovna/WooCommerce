@@ -103,9 +103,9 @@ class Repository {
 	/**
 	 * Applies custom order status filter.
 	 *
-	 * @param array<string, string> $clauses     Query clauses.
-	 * @param \WP_Query|null        $queryObject WP Query.
-	 * @param array<string, string> $paramValues Param values.
+	 * @param array<string, string|null> $clauses     Query clauses.
+	 * @param \WP_Query|null             $queryObject WP Query.
+	 * @param array<string, string|null> $paramValues Param values.
 	 *
 	 * @return void
 	 */
@@ -147,21 +147,21 @@ class Repository {
 			$clauses['join'] .= ' LEFT JOIN `' . $this->wpdbAdapter->packeteryOrder . '` ON `' . $this->wpdbAdapter->packeteryOrder . '`.`id` = `' . $this->wpdbAdapter->posts . '`.`id`';
 		}
 
-		if ( $paramValues['packetery_carrier_id'] ?? false ) {
+		if ( isset( $paramValues['packetery_carrier_id'] ) && $paramValues['packetery_carrier_id'] !== '' ) {
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`carrier_id` = "' . esc_sql( $paramValues['packetery_carrier_id'] ) . '"';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
-		if ( $paramValues['packetery_to_submit'] ?? false ) {
+		if ( isset( $paramValues['packetery_to_submit'] ) && $paramValues['packetery_to_submit'] !== '' ) {
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`carrier_id` IS NOT NULL ';
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`is_exported` = false ';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
-		if ( $paramValues['packetery_to_print'] ?? false ) {
+		if ( isset( $paramValues['packetery_to_print'] ) && $paramValues['packetery_to_print'] !== '' ) {
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`packet_id` IS NOT NULL ';
 			$clauses['where'] .= ' AND `' . $this->wpdbAdapter->packeteryOrder . '`.`is_label_printed` = false ';
 			$this->applyCustomFilters( $clauses, $queryObject, $paramValues );
 		}
-		if ( $paramValues['packetery_order_type'] ?? false ) {
+		if ( isset( $paramValues['packetery_order_type'] ) && $paramValues['packetery_order_type'] !== '' ) {
 			if ( $paramValues['packetery_order_type'] === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 				$comparison = 'IN';
 			} else {
@@ -347,7 +347,7 @@ class Repository {
 	 *
 	 * @param Order $order Order.
 	 *
-	 * @return array<string, string|null|DateTimeImmutable>
+	 * @return array<string, bool|float|int|string|null>
 	 */
 	private function orderToDbArray( Order $order ): array {
 		$point = $order->getPickupPoint();
@@ -414,7 +414,7 @@ class Repository {
 	/**
 	 * Saves order data.
 	 *
-	 * @param array<string, string|null|DateTimeImmutable> $orderData Order data.
+	 * @param array<string, int|string|null|DateTimeImmutable> $orderData Order data.
 	 *
 	 * @return void
 	 */
