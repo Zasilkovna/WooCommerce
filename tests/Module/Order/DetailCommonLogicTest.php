@@ -207,7 +207,7 @@ class DetailCommonLogicTest extends TestCase {
 		$this->wcAdapter->method( 'shipToBillingAddressOnly' )->willReturn( $shipToBillingAddressOnly );
 
 		$dummyOrder = DummyFactory::createOrderCzPp();
-		if ( null !== $orderPickupPoint ) {
+		if ( $orderPickupPoint !== null ) {
 			$dummyOrder->setPickupPoint( $orderPickupPoint );
 		}
 		$dummyOrder->setIsExported( $orderExported );

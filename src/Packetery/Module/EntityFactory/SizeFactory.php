@@ -32,7 +32,7 @@ class SizeFactory {
 
 		$size = [];
 		foreach ( $dimensions as $dimension ) {
-			$size[] = null !== $dimension && $this->optionsProvider->getDimensionsUnit() === OptionsProvider::DIMENSIONS_UNIT_CM
+			$size[] = $dimension !== null && $this->optionsProvider->getDimensionsUnit() === OptionsProvider::DIMENSIONS_UNIT_CM
 				? ModuleHelper::convertToCentimeters( (int) $dimension )
 				: $dimension;
 		}

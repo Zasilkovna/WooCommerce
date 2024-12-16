@@ -69,7 +69,7 @@ class PacketStatus extends BaseResponse {
 	 * @return void
 	 */
 	public function setStoredUntil( ?string $storedUntil ): void {
-		if ( null === $storedUntil ) {
+		if ( $storedUntil === null ) {
 			$this->storedUntil = null;
 
 			return;

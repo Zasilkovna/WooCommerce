@@ -71,17 +71,17 @@ class QueryProcessor {
 	 * @return array<string, string>
 	 */
 	public function processClauses( array $clauses, \WP_Query $queryObject ): array {
-		if ( false === $this->contextResolver->isOrderGridPage() ) {
+		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return $clauses;
 		}
 
 		$isOrderPostQueryCall =
 			isset( $queryObject->query['post_type'] ) &&
 			(
-				'shop_order' === $queryObject->query['post_type'] ||
+				$queryObject->query['post_type'] === 'shop_order' ||
 				( is_array( $queryObject->query['post_type'] ) && in_array( 'shop_order', $queryObject->query['post_type'], true ) )
 			);
-		if ( false === $isOrderPostQueryCall ) {
+		if ( $isOrderPostQueryCall === false ) {
 			return $clauses;
 		}
 
@@ -100,7 +100,7 @@ class QueryProcessor {
 	 * @return array<string, string>
 	 */
 	public function processHposClauses( array $clauses ): array {
-		if ( false === $this->contextResolver->isOrderGridPage() ) {
+		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return $clauses;
 		}
 

@@ -149,7 +149,7 @@ class DashboardWidget {
 			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );
 			$shippingZoneMethods = $shippingZone->get_shipping_methods( true );
 			foreach ( $shippingZoneMethods as $method ) {
-				if ( ShippingMethod::PACKETERY_METHOD_ID === $method->id ) {
+				if ( $method->id === ShippingMethod::PACKETERY_METHOD_ID ) {
 					return true;
 				}
 			}
@@ -172,11 +172,11 @@ class DashboardWidget {
 			$country        = $carrier->getCountry();
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-			if ( false === $carrierOptions->isActive() ) {
+			if ( $carrierOptions->isActive() === false ) {
 				continue;
 			}
 
-			if ( false === $isCodSettingNeeded && $this->optionsProvider->getCodPaymentMethods() === [] && $carrierOptions->hasAnyCodSurchargeSetting() ) {
+			if ( $isCodSettingNeeded === false && $this->optionsProvider->getCodPaymentMethods() === [] && $carrierOptions->hasAnyCodSurchargeSetting() ) {
 				$isCodSettingNeeded = true;
 			}
 

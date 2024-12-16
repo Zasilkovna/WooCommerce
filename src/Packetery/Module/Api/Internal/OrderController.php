@@ -185,14 +185,14 @@ final class OrderController extends WP_REST_Controller {
 				Form::FIELD_WIDTH           => $parameters['packeteryWidth'] ?? null,
 				Form::FIELD_LENGTH          => $parameters['packeteryLength'] ?? null,
 				Form::FIELD_HEIGHT          => $parameters['packeteryHeight'] ?? null,
-				Form::FIELD_ADULT_CONTENT   => isset( $parameters['hasPacketeryAdultContent'] ) && 'true' === $parameters['hasPacketeryAdultContent'],
+				Form::FIELD_ADULT_CONTENT   => isset( $parameters['hasPacketeryAdultContent'] ) && $parameters['hasPacketeryAdultContent'] === 'true',
 				Form::FIELD_COD             => $parameters['packeteryCOD'] ?? null,
 				Form::FIELD_VALUE           => $parameters['packeteryValue'],
 				Form::FIELD_DELIVER_ON      => $packeteryDeliverOn,
 			]
 		);
 
-		if ( false === $form->isValid() ) {
+		if ( $form->isValid() === false ) {
 			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
@@ -201,7 +201,7 @@ final class OrderController extends WP_REST_Controller {
 		} catch ( InvalidCarrierException $exception ) {
 			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
@@ -270,7 +270,7 @@ final class OrderController extends WP_REST_Controller {
 			]
 		);
 
-		if ( false === $form->isValid() ) {
+		if ( $form->isValid() === false ) {
 			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
@@ -279,13 +279,13 @@ final class OrderController extends WP_REST_Controller {
 		} catch ( InvalidCarrierException $exception ) {
 			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
 		$errorMessage = $this->packetSetStoredUntil->setStoredUntil( $order, $order->getPacketId(), $this->coreHelper->getDateTimeFromString( $storedUntil ) );
 
-		if ( null !== $errorMessage ) {
+		if ( $errorMessage !== null ) {
 			return new WP_Error( 'packetery_fault', $errorMessage, 400 );
 		}
 

@@ -214,7 +214,7 @@ class Exporter {
 		$output = '';
 		if ( is_array( $variable ) ) {
 			foreach ( $variable as $key => $value ) {
-				if ( 0 === $level && $addSeparator ) {
+				if ( $level === 0 && $addSeparator ) {
 					$output .= '----------------------' . PHP_EOL;
 				}
 				$output .= str_repeat( '    ', $level );

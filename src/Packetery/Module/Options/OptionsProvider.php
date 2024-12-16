@@ -71,17 +71,17 @@ class OptionsProvider {
 	 */
 	public function __construct() {
 		$data = get_option( self::OPTION_NAME_PACKETERY );
-		if ( false === $data || null === $data ) {
+		if ( $data === false || $data === null ) {
 			$data = array();
 		}
 
 		$syncData = get_option( self::OPTION_NAME_PACKETERY_SYNC );
-		if ( false === $syncData || null === $syncData ) {
+		if ( $syncData === false || $syncData === null ) {
 			$syncData = [];
 		}
 
 		$autoSubmissionData = get_option( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
-		if ( false === $autoSubmissionData || null === $autoSubmissionData ) {
+		if ( $autoSubmissionData === false || $autoSubmissionData === null ) {
 			$autoSubmissionData = [];
 		}
 
@@ -203,7 +203,7 @@ class OptionsProvider {
 	 */
 	public function getCodPaymentMethods(): array {
 		$value = $this->get( 'cod_payment_methods' );
-		if ( null === $value ) {
+		if ( $value === null ) {
 			return [];
 		}
 
@@ -217,7 +217,7 @@ class OptionsProvider {
 	 */
 	public function getCheckoutWidgetButtonLocation(): ?string {
 		$value = $this->get( 'checkout_widget_button_location' );
-		if ( null === $value ) {
+		if ( $value === null ) {
 			return null;
 		}
 
@@ -231,7 +231,7 @@ class OptionsProvider {
 	 */
 	public function getCheckoutDetection(): string {
 		$value = $this->get( 'checkout_detection' );
-		if ( null === $value ) {
+		if ( $value === null ) {
 			return self::AUTOMATIC_CHECKOUT_DETECTION;
 		}
 
@@ -254,7 +254,7 @@ class OptionsProvider {
 	}
 
 	public function getDimensionsNumberOfDecimals(): int {
-		if ( self::DIMENSIONS_UNIT_CM === $this->getDimensionsUnit() ) {
+		if ( $this->getDimensionsUnit() === self::DIMENSIONS_UNIT_CM ) {
 			return 1;
 		}
 
@@ -274,7 +274,7 @@ class OptionsProvider {
 		}
 
 		$sanitizedValue = (float) number_format( (float) $value, $this->getDimensionsNumberOfDecimals(), '.', '' );
-		if ( self::DIMENSIONS_UNIT_CM === $this->getDimensionsUnit() ) {
+		if ( $this->getDimensionsUnit() === self::DIMENSIONS_UNIT_CM ) {
 			return ModuleHelper::convertToMillimeters( $sanitizedValue );
 		}
 
@@ -420,7 +420,7 @@ class OptionsProvider {
 			array_filter(
 				PacketSynchronizer::getPacketStatuses(),
 				static function ( PacketStatus $packetStatus ): bool {
-					return true === $packetStatus->hasDefaultSynchronization();
+					return $packetStatus->hasDefaultSynchronization() === true;
 				}
 			)
 		);
@@ -442,7 +442,7 @@ class OptionsProvider {
 	 */
 	public function isFreeShippingShown(): bool {
 		$freeShippingStatus = $this->get( 'free_shipping_shown' );
-		if ( null !== $freeShippingStatus ) {
+		if ( $freeShippingStatus !== null ) {
 			return (bool) $freeShippingStatus;
 		}
 
@@ -456,7 +456,7 @@ class OptionsProvider {
 	 */
 	public function arePricesTaxInclusive(): bool {
 		$pricesIncludeTax = $this->get( 'prices_include_tax' );
-		if ( null !== $pricesIncludeTax ) {
+		if ( $pricesIncludeTax !== null ) {
 			return (bool) $pricesIncludeTax;
 		}
 
@@ -470,7 +470,7 @@ class OptionsProvider {
 	 */
 	public function isPacketCancellationForced(): bool {
 		$value = $this->get( 'force_packet_cancel' );
-		if ( null !== $value ) {
+		if ( $value !== null ) {
 			return (bool) $value;
 		}
 
@@ -520,7 +520,7 @@ class OptionsProvider {
 	 */
 	public function isPacketAutoSubmissionEnabled(): bool {
 		$value = $this->autoSubmissionData['allow'] ?? null;
-		if ( null !== $value ) {
+		if ( $value !== null ) {
 			return (bool) $value;
 		}
 
@@ -575,7 +575,7 @@ class OptionsProvider {
 	 * @return int
 	 */
 	public function getLabelMaxOffset( string $format ): int {
-		if ( '' === $format ) {
+		if ( $format === '' ) {
 			return 0;
 		}
 		$availableFormats = $this->getLabelFormats();
@@ -603,7 +603,7 @@ class OptionsProvider {
 		$availableFormats    = $this->getLabelFormats();
 		$carrierLabelFormats = [];
 		foreach ( $availableFormats as $format => $formatData ) {
-			if ( true === $formatData['directLabels'] ) {
+			if ( $formatData['directLabels'] === true ) {
 				$carrierLabelFormats[ $format ] = $formatData['name'];
 			}
 		}
@@ -618,7 +618,7 @@ class OptionsProvider {
 	 */
 	public function shouldWidgetOpenAutomatically(): bool {
 		$value = $this->get( 'widget_auto_open' );
-		if ( null !== $value ) {
+		if ( $value !== null ) {
 			return (bool) $value;
 		}
 
@@ -632,7 +632,7 @@ class OptionsProvider {
 	 */
 	public function isOrderStatusAutoChangeEnabled(): bool {
 		$orderStatusAutoChange = $this->get( 'order_status_auto_change' );
-		if ( null !== $orderStatusAutoChange ) {
+		if ( $orderStatusAutoChange !== null ) {
 			return (bool) $orderStatusAutoChange;
 		}
 
@@ -646,7 +646,7 @@ class OptionsProvider {
 	 */
 	public function isOrderStatusChangeAllowed(): bool {
 		$allowOrderStatusChange = ( $this->syncData['allow_order_status_change'] ?? null );
-		if ( null !== $allowOrderStatusChange ) {
+		if ( $allowOrderStatusChange !== null ) {
 			return (bool) $allowOrderStatusChange;
 		}
 

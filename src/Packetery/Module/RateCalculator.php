@@ -55,7 +55,7 @@ class RateCalculator {
 	 * @param float           $cartPrice                   Price.
 	 * @param float           $totalCartProductValue       Total cart product value.
 	 * @param float|int       $cartWeight                  Weight.
-	 * @param bool            $isFreeShippingCouponApplied Is free shipping coupon applied?.
+	 * @param bool            $isFreeShippingCouponApplied Is free shipping coupon applied?
 	 *
 	 * @return ?float
 	 */
@@ -89,7 +89,7 @@ class RateCalculator {
 			}
 		}
 
-		if ( null === $cost ) {
+		if ( $cost === null ) {
 			return null;
 		}
 
@@ -101,7 +101,7 @@ class RateCalculator {
 			}
 		}
 
-		if ( 0 !== $cost && $isFreeShippingCouponApplied && $options->hasCouponFreeShippingActive() ) {
+		if ( $cost !== 0 && $isFreeShippingCouponApplied && $options->hasCouponFreeShippingActive() ) {
 			$cost = 0;
 		}
 

@@ -338,7 +338,7 @@ class HookRegistrar {
 	}
 
 	private function registerBackEnd(): void {
-		if ( false === $this->wpAdapter->doingAjax() ) {
+		if ( $this->wpAdapter->doingAjax() === false ) {
 			$this->wpAdapter->addAction( 'init', [ $this->messageManager, 'init' ] );
 			$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->assetManager, 'enqueueAdminAssets' ] );
 			$this->wpAdapter->addAction(
@@ -356,7 +356,7 @@ class HookRegistrar {
 			$orderListScreenId = 'woocommerce_page_wc-orders';
 
 			$wooCommerceVersion = ModuleHelper::getWooCommerceVersion();
-			if ( null !== $wooCommerceVersion && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
+			if ( $wooCommerceVersion !== null && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
 				$this->wpAdapter->addFilter( sprintf( 'views_%s', $orderListScreenId ), [ $this->gridExtender, 'addFilterLinks' ] );
 				$this->wpAdapter->addAction(
 					'woocommerce_order_list_table_restrict_manage_orders',
@@ -488,7 +488,7 @@ class HookRegistrar {
 		$this->wpAdapter->addAction( $wcEmailHook, [ $this->viewMail, 'renderEmailFooter' ] );
 
 		$this->wpAdapter->addAction( 'wp_enqueue_scripts', [ $this->assetManager, 'enqueueFrontAssets' ] );
-		if ( false === $this->wpAdapter->doingAjax() ) {
+		if ( $this->wpAdapter->doingAjax() === false ) {
 			$this->wpAdapter->addAction( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurcharge' ], 20 );
 			$this->wpAdapter->addAction( 'woocommerce_order_details_after_order_table', [ $this->viewFrontend, 'renderOrderDetail' ] );
 

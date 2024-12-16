@@ -231,7 +231,7 @@ class PacketaPickupPointsConfig {
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getFixedCarrierId( string $carrierId, string $country ): string {
-		if ( Entity\Carrier::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+		if ( $carrierId === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 			$compoundCarriers = $this->getCompoundCarriers();
 
 			if ( ! isset( $compoundCarriers[ $country ] ) ) {

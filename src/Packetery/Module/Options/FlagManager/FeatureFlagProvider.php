@@ -70,7 +70,7 @@ class FeatureFlagProvider {
 	public function shouldShowSplitActivationNotice(): bool {
 		return (
 			$this->isSplitActive() &&
-			'yes' !== $this->wpAdapter->getTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED )
+			$this->wpAdapter->getTransient( self::TRANSIENT_SPLIT_MESSAGE_DISMISSED ) !== 'yes'
 		);
 	}
 }

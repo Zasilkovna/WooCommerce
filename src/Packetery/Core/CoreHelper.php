@@ -43,7 +43,7 @@ class CoreHelper {
 	 * @return float|null
 	 */
 	public static function simplifyFloat( ?float $value, int $maxDecimalPlaces ): ?float {
-		if ( null === $value ) {
+		if ( $value === null ) {
 			return null;
 		}
 
@@ -92,7 +92,7 @@ class CoreHelper {
 	 * @return string|null
 	 */
 	public function getStringFromDateTime( ?DateTimeImmutable $date, string $format ): ?string {
-		return null !== $date ? $date->format( $format ) : null;
+		return $date !== null ? $date->format( $format ) : null;
 	}
 
 	/**
@@ -104,6 +104,6 @@ class CoreHelper {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
-		return null !== $date ? new DateTimeImmutable( $date ) : null;
+		return $date !== null ? new DateTimeImmutable( $date ) : null;
 	}
 }

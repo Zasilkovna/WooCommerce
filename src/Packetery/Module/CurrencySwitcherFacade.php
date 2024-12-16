@@ -51,7 +51,7 @@ class CurrencySwitcherFacade {
 	 * @return float
 	 */
 	private function applyFilterWoocsExchangeValue( float $value ): float {
-		if ( 0 < $value ) {
+		if ( $value > 0 ) {
 			/**
 			 * Applies woocs_exchange_value filters.
 			 *

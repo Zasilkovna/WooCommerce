@@ -41,7 +41,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isPhysical(): bool {
-		return false === $this->product->is_virtual() && false === $this->product->is_downloadable();
+		return $this->product->is_virtual() === false && $this->product->is_downloadable() === false;
 	}
 
 	/**

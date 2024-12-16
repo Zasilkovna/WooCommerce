@@ -25,6 +25,6 @@ class Address {
 	 * @return bool
 	 */
 	public function validate( Entity\Address $address ): bool {
-		return ( null !== $address->getStreet() && null !== $address->getCity() && null !== $address->getZip() );
+		return ( $address->getStreet() !== null && $address->getCity() !== null && $address->getZip() !== null );
 	}
 }

@@ -1,80 +1,46 @@
 <?php
-/**
- * Class BaseProvider
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Core\PickupPointProvider;
 
-/**
- * Class BaseProvider
- *
- * @package Packetery
- */
 abstract class BaseProvider {
 
 	/**
-	 * Id.
-	 *
 	 * @var string
 	 */
 	protected $id;
 
 	/**
-	 * Country.
-	 *
 	 * @var string
 	 */
 	protected $country;
 
 	/**
-	 * Name.
-	 *
 	 * @var string
 	 */
 	protected $name;
 
 	/**
-	 * Supports COD?.
-	 *
 	 * @var bool
 	 */
 	protected $supportsCod;
 
 	/**
-	 * Supports age verification?.
-	 *
 	 * @var bool
 	 */
 	protected $supportsAgeVerification;
 
 	/**
-	 * Currency.
-	 *
 	 * @var string
 	 */
 	protected $currency;
 
 	/**
-	 * Has pickup points?.
-	 *
 	 * @var bool
 	 */
 	protected $hasPickupPoints;
 
-	/**
-	 * BaseProvider constructor.
-	 *
-	 * @param string $id                      Id.
-	 * @param string $country                 Country.
-	 * @param bool   $supportsCod             Supports COD.
-	 * @param bool   $supportsAgeVerification Supports age verification.
-	 * @param string $currency                Currency.
-	 * @param bool   $hasPickupPoints         Is pickup points?.
-	 */
 	public function __construct(
 		string $id,
 		string $country,

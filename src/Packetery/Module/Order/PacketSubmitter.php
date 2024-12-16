@@ -168,7 +168,7 @@ class PacketSubmitter {
 		$order      = $this->commonLogic->getOrder();
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_SENDING;
 			$record->status  = Log\Record::STATUS_ERROR;
@@ -242,10 +242,10 @@ class PacketSubmitter {
 		bool $immediatePacketStatusCheck = false
 	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$submissionResult->increaseIgnoredCount();
 
 			return $submissionResult;
@@ -257,12 +257,12 @@ class PacketSubmitter {
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $order->isExported() ) {
+		if ( $shippingMethodId === ShippingMethod::PACKETERY_METHOD_ID && ! $order->isExported() ) {
 
 			$customsDeclaration = $order->getCustomsDeclaration();
 			if (
-				null !== $customsDeclaration &&
-				null === $customsDeclaration->getInvoiceFileId() &&
+				$customsDeclaration !== null &&
+				$customsDeclaration->getInvoiceFileId() === null &&
 				$customsDeclaration->hasInvoiceFileContent()
 			) {
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
@@ -297,8 +297,8 @@ class PacketSubmitter {
 			}
 
 			if (
-				null !== $customsDeclaration &&
-				null === $customsDeclaration->getEadFileId() &&
+				$customsDeclaration !== null &&
+				$customsDeclaration->getEadFileId() === null &&
 				$customsDeclaration->hasEadFileContent()
 			) {
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
@@ -512,7 +512,7 @@ class PacketSubmitter {
 			self::HOOK_PACKET_STATUS_SYNC,
 			function ( string $orderId ): void {
 				$order = $this->orderRepository->getByIdWithValidCarrier( (int) $orderId );
-				if ( null === $order ) {
+				if ( $order === null ) {
 					return;
 				}
 				$this->packetSynchronizer->syncStatus( $order );

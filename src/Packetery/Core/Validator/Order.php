@@ -130,7 +130,7 @@ class Order {
 	 * @return string
 	 */
 	private function getTranslation( string $key ): string {
-		if ( null === $this->translations ) {
+		if ( $this->translations === null ) {
 			$this->translations = $this->validatorTranslations->get();
 		}
 
@@ -147,7 +147,7 @@ class Order {
 	private function validateAddress( Entity\Order $order ): bool {
 		if ( $order->isHomeDelivery() ) {
 			$address = $order->getDeliveryAddress();
-			if ( null === $address ) {
+			if ( $address === null ) {
 				return false;
 			}
 
@@ -165,7 +165,7 @@ class Order {
 	 * @return bool
 	 */
 	private function validateFinalWeight( Entity\Order $order ): bool {
-		return null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
+		return $order->getFinalWeight() !== null && $order->getFinalWeight() > 0;
 	}
 
 	/**
@@ -178,7 +178,7 @@ class Order {
 	private function validateSize( Entity\Order $order ): SizeReport {
 		if ( $order->getCarrier()->requiresSize() ) {
 			$size = $order->getSize();
-			if ( null === $size ) {
+			if ( $size === null ) {
 				return new SizeReport( false, false, false );
 			}
 

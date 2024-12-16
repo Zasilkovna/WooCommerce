@@ -56,7 +56,7 @@ class FormValidators {
 			$input->getValue()
 		);
 
-		if ( false === $date ) {
+		if ( $date === false ) {
 			return false;
 		}
 

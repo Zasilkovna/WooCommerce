@@ -194,7 +194,7 @@ class Client {
 				$invalidPacketIdsFiltered = [];
 
 				foreach ( $invalidPacketIds as $invalidPacketId ) {
-					if ( ! is_string( $invalidPacketId ) || '' === $invalidPacketId ) {
+					if ( ! is_string( $invalidPacketId ) || $invalidPacketId === '' ) {
 						continue;
 					}
 
