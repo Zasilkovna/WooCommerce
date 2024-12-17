@@ -63,7 +63,8 @@ class OrderTest extends TestCase {
 		$order->setPacketId( $dummyPacketId );
 		self::assertSame( $dummyPacketId, $order->getPacketId() );
 		self::assertSame( 'Z' . $dummyPacketId, $order->getPacketBarcode() );
-		self::assertIsString( $order->getPacketTrackingUrl() );
+		$order->setPacketTrackingUrl( 'dummyUrl' );
+		self::assertSame( 'dummyUrl', $order->getPacketTrackingUrl() );
 
 		$dummyPacketStatus = PacketStatus::DELIVERED;
 		$order->setPacketStatus( $dummyPacketStatus );
@@ -75,6 +76,8 @@ class OrderTest extends TestCase {
 		self::assertSame( $dummyPacketClaimId, $order->getPacketClaimId() );
 		self::assertSame( 'Z' . $dummyPacketClaimId, $order->getPacketClaimBarcode() );
 		self::assertTrue( $order->isPacketClaimLabelPrintPossible() );
+		$order->setPacketClaimTrackingUrl( 'dummyUrl' );
+		self::assertSame( 'dummyUrl', $order->getPacketClaimTrackingUrl() );
 
 		$dummyPacketClaimPassword = 'dummyPassword';
 		$order->setPacketClaimPassword( $dummyPacketClaimPassword );

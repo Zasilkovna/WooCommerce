@@ -17,11 +17,19 @@ use DateTimeImmutable;
  * @package Packetery
  */
 class CoreHelper {
-	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
 	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	public const MYSQL_DATE_FORMAT     = 'Y-m-d';
 	public const DATEPICKER_FORMAT     = 'Y-m-d';
 	public const DATEPICKER_FORMAT_JS  = 'yy-mm-dd';
+
+	/**
+	 * @var string
+	 */
+	private $trackingUrl;
+
+	public function __construct( string $trackingUrl ) {
+		$this->trackingUrl = $trackingUrl;
+	}
 
 	/**
 	 * Simplifies weight.
@@ -62,15 +70,12 @@ class CoreHelper {
 		return $formattedValue;
 	}
 
-	/**
-	 * Returns tracking URL.
-	 *
-	 * @param string $packetId Packet ID.
-	 *
-	 * @return string
-	 */
-	public function get_tracking_url( string $packetId ): string {
-		return sprintf( self::TRACKING_URL, rawurlencode( $packetId ) );
+	public function getTrackingUrl( ?string $packetId ): ?string {
+		if ( $packetId === null ) {
+			return null;
+		}
+
+		return sprintf( $this->trackingUrl, rawurlencode( $packetId ) );
 	}
 
 	public static function now(): DateTimeImmutable {
