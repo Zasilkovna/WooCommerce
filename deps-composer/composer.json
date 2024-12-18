@@ -6,7 +6,7 @@
         "nette/php-generator": "3.5.4",
         "nette/neon": "3.3.3",
         "nette/utils": "3.2.8",
-        "nette/forms": "3.1.4",
+        "nette/forms": "3.1.6",
         "nette/bootstrap": "3.1.4",
         "latte/latte": "2.11.7",
         "tracy/tracy": "2.9.7"

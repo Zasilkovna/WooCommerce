@@ -266,7 +266,7 @@ class DefaultFormRenderer implements \Packetery\Nette\Forms\FormRenderer
         $s = [];
         foreach ($controls as $control) {
             if (!$control instanceof \Packetery\Nette\Forms\Control) {
-                throw new \Packetery\Nette\InvalidArgumentException('Argument must be array of \\Packetery\\Nette\\Forms\\IControl instances.');
+                throw new \Packetery\Nette\InvalidArgumentException('Argument must be array of \\Packetery\\Nette\\Forms\\Control instances.');
             }
             $description = $control->getOption('description');
             if ($description instanceof HtmlStringable) {

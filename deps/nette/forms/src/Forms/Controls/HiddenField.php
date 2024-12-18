@@ -58,15 +58,6 @@ class HiddenField extends BaseControl
         $this->nullable = $value;
         return $this;
     }
-    /**
-     * Appends input string filter callback.
-     * @return static
-     */
-    public function addFilter(callable $filter)
-    {
-        $this->getRules()->addFilter($filter);
-        return $this;
-    }
     public function getControl() : \Packetery\Nette\Utils\Html
     {
         $this->setOption('rendered', \true);

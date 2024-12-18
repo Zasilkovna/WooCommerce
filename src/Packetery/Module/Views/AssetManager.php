@@ -294,11 +294,6 @@ class AssetManager {
 			$pickupPointPickerSettings = $this->orderMetabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->orderMetabox->getAddressWidgetSettings();
 
-			$detailPageSettings = [
-				'translations' => [
-					'packetSubmissionNotPossible' => $this->wpAdapter->__( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
-				],
-			];
 			$this->enqueueScript(
 				'packetery-admin-stored-until-modal-js',
 				'public/js/admin-stored-until-modal.js',
@@ -310,11 +305,6 @@ class AssetManager {
 				]
 			);
 
-			$this->wpAdapter->localizeScript(
-				'packetery-admin-stored-until-modal-js',
-				'datePickerSettings',
-				$detailPageSettings
-			);
 		}
 
 		if ( $pickupPointPickerSettings !== null || $addressPickerSettings !== null ) {

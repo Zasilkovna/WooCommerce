@@ -5,7 +5,7 @@
 	{formContext $form}
 		<div class="packetery-table">
 			<input n:name=packetery_order_metabox_nonce />
-			<input n:name=packetery_original_weight />
+			<input n:name=packeteryOriginalWeight />
 			{foreach [
 			Packetery\Module\Order\Form::FIELD_WEIGHT,
 			Packetery\Module\Order\Form::FIELD_LENGTH,
@@ -43,10 +43,10 @@
 			{if $isPacketaPickupPoint}
 				<div class="packetery-table-row">
 					<div class="packetery-table-cell packetery-order-metabox-label-cell">
-						<label n:name='packetery_deliver_on' />
+						<label n:name='packeteryDeliverOn' />
 					</div>
 					<div class="packetery-table-cell">
-						<input n:name='packetery_deliver_on' class="date-picker packetery-order-metabox-input">
+						<input n:name='packeteryDeliverOn' class="date-picker packetery-order-metabox-input">
 					</div>
 				</div>
 			{/if}
