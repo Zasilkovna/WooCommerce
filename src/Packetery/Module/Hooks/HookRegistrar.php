@@ -478,6 +478,10 @@ class HookRegistrar {
 
 			$this->wpAdapter->addAction( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
 			$this->dashboardWidget->register();
+		} else {
+			// For blocks, used at frontend.
+			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
+			$this->wpAdapter->addAction( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 		}
 	}
 
@@ -495,10 +499,6 @@ class HookRegistrar {
 			$this->wpAdapter->addAction( 'init', [ $this->blockHooks, 'register' ] );
 			// Cannot be moved to BlockHooks register.
 			$this->wpAdapter->addAction( 'woocommerce_blocks_loaded', [ $this->blockHooks, 'orderUpdateCallback' ] );
-		} else {
-			// For blocks.
-			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
-			$this->wpAdapter->addAction( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 		}
 	}
 
