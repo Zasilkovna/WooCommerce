@@ -472,15 +472,6 @@ class Order {
 	}
 
 	/**
-	 * Sets number.
-	 *
-	 * @param string $number Number.
-	 */
-	public function setNumber( string $number ): void {
-		$this->number = $number;
-	}
-
-	/**
 	 * Sets phone.
 	 *
 	 * @param string $name Name.
@@ -985,9 +976,9 @@ class Order {
 	/**
 	 * Gets order id.
 	 *
-	 * @return string|null
+	 * @return string
 	 */
-	public function getNumber(): ?string {
+	public function getNumber(): string {
 		return $this->number;
 	}
 
@@ -997,7 +988,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasNumber(): bool {
-		return $this->number !== null && $this->number !== '';
+		return $this->number !== '';
 	}
 
 	/**

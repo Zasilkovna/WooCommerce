@@ -28,6 +28,10 @@ class DummyFactory {
 		return new Size( 300.0, 200.0, 100.0 );
 	}
 
+	public static function createOrderWithInvalidNumber(): Order {
+		return new Order( '', self::createCarrierCzechPp() );
+	}
+
 	public static function createOrderCzPp(): Order {
 		$order = new Order( 'dummyNumber123', self::createCarrierCzechPp() );
 		$order->setName( 'Customer name' );

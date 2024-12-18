@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Tests\Core\Validator;
+namespace Tests\Packetery\Core\Validator;
 
 use Packetery\Core\Interfaces\ValidatorTranslationsInterface;
 use Packetery\Core\Validator\Address;
@@ -39,13 +39,12 @@ class OrderTest extends TestCase {
 		self::assertSame( [], $validator->validate( $dummyOrder ) );
 		self::assertTrue( $validator->isValid( $dummyOrder ) );
 
-		$dummyOrder->setNumber( '' );
-		$dummyOrder->setName( '' );
-		$validationResult = $validator->validate( $dummyOrder );
+		$dummyOrderInvalid = DummyFactory::createOrderWithInvalidNumber();
+		$validationResult  = $validator->validate( $dummyOrderInvalid );
 		self::assertArrayHasKey( Order::ERROR_TRANSLATION_KEY_NUMBER, $validationResult );
 		self::assertArrayHasKey( Order::ERROR_TRANSLATION_KEY_NAME, $validationResult );
-		self::assertCount( 2, $validationResult );
-		self::assertFalse( $validator->isValid( $dummyOrder ) );
+		self::assertCount( 6, $validationResult );
+		self::assertFalse( $validator->isValid( $dummyOrderInvalid ) );
 
 		$dummyOrderHd        = DummyFactory::createOrderCzHdIncomplete();
 		$dummyOrderHdInvalid = clone $dummyOrderHd;
@@ -57,6 +56,6 @@ class OrderTest extends TestCase {
 
 		$validatorTranslationsMock->method( 'get' )->willReturn( [ Order::ERROR_TRANSLATION_KEY_NAME => '' ] );
 		$validator = new Order( $addressValidator, $sizeValidator, $validatorTranslationsMock );
-		self::assertFalse( $validator->isValid( $dummyOrder ) );
+		self::assertFalse( $validator->isValid( $dummyOrderInvalid ) );
 	}
 }

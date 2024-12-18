@@ -46,7 +46,6 @@ class PacketSynchronizerTest extends TestCase {
 		$storedUntil  = new \DateTimeImmutable( 'now' );
 		$packetStatus = 'some packet status';
 		$order        = DummyFactory::createOrderCzPp();
-		$order->setNumber( 'some number' );
 		$order->setPacketId( 'some packet id' );
 
 		$response = $this->createMock( PacketStatus::class );
