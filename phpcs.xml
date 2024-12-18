@@ -47,6 +47,7 @@
 		<exclude name="Squiz.Commenting.FunctionComment.EmptyThrows"/>
 		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
 		<exclude name="Squiz.Commenting.FunctionComment.ThrowsNoFullStop"/>
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
 		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
 		<exclude name="PSR2.Classes.ClassDeclaration.CloseBraceAfterBody"/>
 		<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>
