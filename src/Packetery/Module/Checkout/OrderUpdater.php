@@ -104,7 +104,7 @@ class OrderUpdater {
 	 */
 	public function actionUpdateOrderById( int $orderId ): void {
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return;
 		}
 
@@ -119,7 +119,7 @@ class OrderUpdater {
 	public function actionUpdateOrder( WC_Order $wcOrder ): void {
 		$chosenMethod = $this->checkoutService->resolveChosenMethod();
 		if (
-			null === $chosenMethod ||
+			$chosenMethod === null ||
 			$this->checkoutService->isPacketeryShippingMethod( $chosenMethod ) === false
 		) {
 			return;
@@ -144,7 +144,7 @@ class OrderUpdater {
 		}
 
 		$carrier = $this->carrierEntityRepository->getAnyById( $carrierId );
-		if ( null === $carrier ) {
+		if ( $carrier === null ) {
 			return;
 		}
 		$order = new Entity\Order( (string) $wcOrder->get_id(), $carrier );
@@ -161,13 +161,13 @@ class OrderUpdater {
 
 		$this->updateCarDelivery( $checkoutData, $order );
 
-		if ( 0.0 === $this->cartService->getCartWeightKg() && true === $this->optionsProvider->isDefaultWeightEnabled() ) {
+		if ( $this->cartService->getCartWeightKg() === 0.0 && $this->optionsProvider->isDefaultWeightEnabled() === true ) {
 			$order->setWeight( $this->optionsProvider->getDefaultWeight() + $this->optionsProvider->getPackagingWeight() );
 		}
 
 		if (
-			true === $carrier->requiresSize() &&
-			true === $this->optionsProvider->isDefaultDimensionsEnabled()
+			$carrier->requiresSize() === true &&
+			$this->optionsProvider->isDefaultDimensionsEnabled() === true
 		) {
 			$order->setSize( $this->sizeFactory->createDefaultSizeForNewOrder() );
 		}
@@ -184,7 +184,7 @@ class OrderUpdater {
 		// @phpstan-ignore-next-line
 		if ( PickupPointValidator::IS_ACTIVE ) {
 			$pickupPointValidationError = $this->wcAdapter->sessionGetString( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
-			if ( null !== $pickupPointValidationError ) {
+			if ( $pickupPointValidationError !== null ) {
 				// translators: %s: Message from downloader.
 				$wcOrder->add_order_note(
 					sprintf(
@@ -210,8 +210,8 @@ class OrderUpdater {
 
 			$saveMeta = true;
 			if (
-				Order\Attribute::CARRIER_ID === $attrName ||
-				( Order\Attribute::POINT_URL === $attrName && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
+				$attrName === Order\Attribute::CARRIER_ID ||
+				( $attrName === Order\Attribute::POINT_URL && ! filter_var( $attrValue, FILTER_VALIDATE_URL ) )
 			) {
 				$saveMeta = false;
 			}
@@ -230,7 +230,7 @@ class OrderUpdater {
 	private function updateHomeDelivery( array $checkoutData, Entity\Order $orderEntity, WC_Order $wcOrder, bool $orderHasUnsavedChanges ): bool {
 		if (
 			! isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) ||
-			'1' !== $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ||
+			$checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] !== '1' ||
 			! $this->checkoutService->isHomeDeliveryOrder()
 		) {
 			return $orderHasUnsavedChanges;

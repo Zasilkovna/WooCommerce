@@ -92,7 +92,7 @@ class ShippingRateFactory {
 	 */
 	public function createShippingRates( ?array $allowedCarrierNames ): array {
 		$customerCountry = $this->checkoutService->getCustomerCountry();
-		if ( null === $customerCountry ) {
+		if ( $customerCountry === null ) {
 			return [];
 		}
 		$availableCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
@@ -108,7 +108,7 @@ class ShippingRateFactory {
 				$rateId
 			);
 
-			if ( null !== $shippingRate ) {
+			if ( $shippingRate !== null ) {
 				$customRates[ $rateId ] = $shippingRate;
 			}
 		}
@@ -140,7 +140,7 @@ class ShippingRateFactory {
 		$totalCartProductValue = $this->cartService->getTotalCartProductValue();
 		$cost                  = $this->rateCalculator->getRateCost( $options, $cartPrice, $totalCartProductValue, $cartWeight );
 
-		return null !== $cost ? $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId ) : null;
+		return $cost !== null ? $this->createShippingRateAndApplyTaxes( $carrierName, $cost, $rateId ) : null;
 	}
 
 	/**
@@ -156,7 +156,7 @@ class ShippingRateFactory {
 			return false;
 		}
 
-		if ( null !== $allowedCarrierNames && ! array_key_exists( $carrier->getId(), $allowedCarrierNames ) ) {
+		if ( $allowedCarrierNames !== null && ! array_key_exists( $carrier->getId(), $allowedCarrierNames ) ) {
 			return false;
 		}
 
@@ -164,7 +164,7 @@ class ShippingRateFactory {
 		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
 		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 
-		$isCarrierOptionInactive = null === $allowedCarrierNames && ! $carrierOptions->isActive();
+		$isCarrierOptionInactive = $allowedCarrierNames === null && ! $carrierOptions->isActive();
 		$isCarDeliveryDisabled   = $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled();
 		$isOptionDisallowed      = in_array( $optionId, $disallowedShippingRateIds, true );
 		$isRestrictedByCategory  = $this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts );
@@ -220,6 +220,6 @@ class ShippingRateFactory {
 	}
 
 	private function isFreeShippingApplicable( float $cost ): bool {
-		return 0.0 === $cost && $this->optionsProvider->isFreeShippingShown();
+		return $cost === 0.0 && $this->optionsProvider->isFreeShippingShown();
 	}
 }

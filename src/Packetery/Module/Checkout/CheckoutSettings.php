@@ -212,7 +212,7 @@ class CheckoutSettings {
 	private function getCarDeliveryExpeditionDay(): ?string {
 		$chosenShippingMethod = $this->sessionService->getChosenMethodFromSession();
 		$carrierId            = OptionPrefixer::removePrefix( $chosenShippingMethod );
-		if ( false === $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) {
+		if ( $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) === false ) {
 			return null;
 		}
 
@@ -222,7 +222,7 @@ class CheckoutSettings {
 		$cutoffTime     = $carrierOptions['shipping_time_cut_off'];
 
 		// Check if a cut-off time is provided and if the current time is after the cut-off time.
-		if ( null !== $cutoffTime ) {
+		if ( $cutoffTime !== null ) {
 			$currentTime = $today->format( 'H:i' );
 			if ( $currentTime > $cutoffTime ) {
 				// If after cut-off time, move to the next day.

@@ -81,7 +81,7 @@ class CartService {
 		$weight   = $this->wcAdapter->cartGetCartContentsWeight();
 		$weightKg = $this->wcAdapter->getWeight( $weight, 'kg' );
 
-		if ( 0.0 !== $weightKg ) {
+		if ( $weightKg !== 0.0 ) {
 			$weightKg += $this->optionsProvider->getPackagingWeight();
 		}
 
@@ -108,7 +108,7 @@ class CartService {
 		foreach ( $cartProducts as $cartProduct ) {
 			$productEntity = $this->productEntityFactory->fromPostId( $cartProduct['product_id'] );
 
-			if ( false === $productEntity->isPhysical() ) {
+			if ( $productEntity->isPhysical() === false ) {
 				continue;
 			}
 

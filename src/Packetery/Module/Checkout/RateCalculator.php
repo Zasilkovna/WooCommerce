@@ -190,7 +190,7 @@ class RateCalculator {
 	 * @return bool
 	 */
 	public function isFreeShippingCouponApplied( $cartOrOrder ): bool {
-		if ( null === $cartOrOrder ) {
+		if ( $cartOrOrder === null ) {
 			return false;
 		}
 

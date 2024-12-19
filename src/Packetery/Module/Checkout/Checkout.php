@@ -212,7 +212,7 @@ class Checkout {
 	public function actionCalculateFees(): void {
 		$chosenShippingMethod = $this->checkoutService->calculateShippingAndGetId();
 		if (
-			null === $chosenShippingMethod ||
+			$chosenShippingMethod === null ||
 			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) === false
 		) {
 			return;
@@ -221,7 +221,7 @@ class Checkout {
 		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
 		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod ) );
 		$maxTaxClass    = $this->cartService->getTaxClassWithMaxRate();
-		$isTaxable      = null !== $maxTaxClass;
+		$isTaxable      = $maxTaxClass !== null;
 
 		if (
 			$carrierOptions->hasCouponFreeShippingForFeesAllowed() &&
@@ -236,9 +236,9 @@ class Checkout {
 
 	private function addAgeVerificationFee( ?Entity\Carrier $chosenCarrier, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
 		if (
-			null === $chosenCarrier ||
+			$chosenCarrier === null ||
 			! $chosenCarrier->supportsAgeVerification() ||
-			null === $carrierOptions->getAgeVerificationFee() ||
+			$carrierOptions->getAgeVerificationFee() === null ||
 			! $this->cartService->isAgeVerificationRequired()
 		) {
 			return;
@@ -263,7 +263,7 @@ class Checkout {
 
 	private function addCodSurchargeFee( Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
 		$paymentMethod = $this->sessionService->getChosenPaymentMethod();
-		if ( null === $paymentMethod || false === $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) ) {
+		if ( $paymentMethod === null || $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) === false ) {
 			return;
 		}
 
@@ -272,7 +272,7 @@ class Checkout {
 			$this->wcAdapter->cartGetSubtotal()
 		);
 		$applicableSurcharge = $this->currencySwitcherService->getConvertedPrice( $applicableSurcharge );
-		if ( 0 >= $applicableSurcharge ) {
+		if ( $applicableSurcharge <= 0 ) {
 			return;
 		}
 
@@ -367,7 +367,7 @@ class Checkout {
 
 		$carrierId = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenMethod );
 		$carrier   = $this->carrierEntityRepository->getAnyById( $carrierId );
-		if ( null === $carrier ) {
+		if ( $carrier === null ) {
 			return $availableGateways;
 		}
 
@@ -401,11 +401,11 @@ class Checkout {
 			return;
 		}
 		$chosenPaymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
-		if ( null !== $chosenPaymentMethod && ! $this->paymentHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
+		if ( $chosenPaymentMethod !== null && ! $this->paymentHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
 			return;
 		}
 		$chosenShippingRate = $this->wcAdapter->sessionGetString( 'packetery_checkout_shipping_method' );
-		if ( null === $chosenShippingRate ) {
+		if ( $chosenShippingRate === null ) {
 			return;
 		}
 		if ( ! $this->checkoutService->isPacketeryShippingMethod( $chosenShippingRate ) ) {
@@ -419,7 +419,7 @@ class Checkout {
 		);
 
 		$maxTaxClass = $this->cartService->getTaxClassWithMaxRate();
-		$taxable     = ! ( null === $maxTaxClass );
+		$taxable     = ! ( $maxTaxClass === null );
 
 		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
 	}

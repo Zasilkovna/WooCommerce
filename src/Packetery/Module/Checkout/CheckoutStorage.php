@@ -71,7 +71,7 @@ class CheckoutStorage {
 	 */
 	public function getPostDataIncludingStoredData( string $chosenShippingMethod, int $orderId = null ): array {
 		$checkoutData = $this->httpRequest->getPost();
-		if ( null !== $checkoutData && ! is_array( $checkoutData ) ) {
+		if ( $checkoutData !== null && ! is_array( $checkoutData ) ) {
 			$checkoutData = null;
 		}
 		$savedCheckoutData = $this->getFromTransient();
@@ -79,7 +79,7 @@ class CheckoutStorage {
 		if (
 			! isset( $savedCheckoutData[ $chosenShippingMethod ] ) &&
 			(
-				null === $checkoutData ||
+				$checkoutData === null ||
 				( is_array( $savedCheckoutData ) && count( $checkoutData ) === 0 )
 			)
 		) {
@@ -149,7 +149,7 @@ class CheckoutStorage {
 			'checkoutData'         => $checkoutData,
 			'savedCheckoutData'    => $savedCheckoutData,
 		];
-		if ( null !== $orderId ) {
+		if ( $orderId !== null ) {
 			$dataToLog['orderId'] = $orderId;
 		}
 		$wcLogger->warning(
@@ -162,7 +162,7 @@ class CheckoutStorage {
 	}
 
 	private function isKeyPresentInSavedDataButNotInPostData( array $checkoutData, array $savedCarrierData, string $key ): bool {
-		return ( ! isset( $checkoutData[ $key ] ) || '' === $checkoutData[ $key ] ) &&
-				( isset( $savedCarrierData[ $key ] ) || '' !== $savedCarrierData[ $key ] );
+		return ( ! isset( $checkoutData[ $key ] ) || $checkoutData[ $key ] === '' ) &&
+				( isset( $savedCarrierData[ $key ] ) || $savedCarrierData[ $key ] !== '' );
 	}
 }

@@ -26,7 +26,7 @@ class SessionService {
 	 */
 	public function getChosenMethodFromSession(): string {
 		$chosenShippingRate = null;
-		if ( null !== $this->wcAdapter->session() ) {
+		if ( $this->wcAdapter->session() !== null ) {
 			$chosenShippingRates = $this->wcAdapter->sessionGetArray( 'chosen_shipping_methods' );
 			if ( is_array( $chosenShippingRates ) && count( $chosenShippingRates ) > 0 ) {
 				$chosenShippingRate = $chosenShippingRates[0];

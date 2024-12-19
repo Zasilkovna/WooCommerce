@@ -215,10 +215,10 @@ class CartServiceTest extends TestCase {
 		$this->productEntityFactory->method( 'fromPostId' )
 									->willReturnCallback(
 										function ( $id ) use ( $productMockPhysical, $productMockNonPhysical ) {
-											if ( 1 === $id ) {
+											if ( $id === 1 ) {
 												return $productMockPhysical;
 											}
-											if ( 2 === $id ) {
+											if ( $id === 2 ) {
 												return $productMockNonPhysical;
 											}
 
@@ -306,11 +306,11 @@ class CartServiceTest extends TestCase {
 						->willReturnCallback(
 							function ( $arg ) use ( $product1, $product2, &$index ) {
 								$index++;
-								if ( 1 === $arg && 1 === $index ) {
+								if ( $arg === 1 && $index === 1 ) {
 									return $product1;
 								}
 
-								if ( 2 === $arg && 2 === $index ) {
+								if ( $arg === 2 && $index === 2 ) {
 									return $product2;
 								}
 

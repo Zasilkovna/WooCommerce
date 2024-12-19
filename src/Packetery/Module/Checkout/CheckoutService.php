@@ -100,7 +100,7 @@ class CheckoutService {
 	public function resolveChosenMethod(): ?string {
 		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
 
-		if ( null !== $postedShippingMethodArray ) {
+		if ( $postedShippingMethodArray !== null ) {
 			return $this->removeShippingMethodPrefix( current( $postedShippingMethodArray ) );
 		}
 
@@ -161,12 +161,12 @@ class CheckoutService {
 	 */
 	public function isPickupPointOrder(): bool {
 		$chosenMethod = $this->resolveChosenMethod();
-		if ( null === $chosenMethod ) {
+		if ( $chosenMethod === null ) {
 			return false;
 		}
 		$carrierId = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
-		return null !== $carrierId && $this->isPickupPointCarrier( $carrierId );
+		return $carrierId !== null && $this->isPickupPointCarrier( $carrierId );
 	}
 
 	/**
@@ -191,12 +191,12 @@ class CheckoutService {
 	 */
 	public function isHomeDeliveryOrder(): bool {
 		$chosenMethod = $this->resolveChosenMethod();
-		if ( null === $chosenMethod ) {
+		if ( $chosenMethod === null ) {
 			return false;
 		}
 		$carrierId = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
-		return null !== $carrierId && $this->carrierEntityRepository->isHomeDeliveryCarrier( $carrierId );
+		return $carrierId !== null && $this->carrierEntityRepository->isHomeDeliveryCarrier( $carrierId );
 	}
 
 	/**
@@ -206,12 +206,12 @@ class CheckoutService {
 	 */
 	public function isCarDeliveryOrder(): bool {
 		$chosenMethod = $this->resolveChosenMethod();
-		if ( null === $chosenMethod ) {
+		if ( $chosenMethod === null ) {
 			return false;
 		}
 		$carrierId = $this->getCarrierIdFromShippingMethod( $chosenMethod );
 
-		return null !== $carrierId && $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId );
+		return $carrierId !== null && $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId );
 	}
 
 	/**
@@ -221,12 +221,12 @@ class CheckoutService {
 	 */
 	public function getCustomerCountry(): ?string {
 		$shippingCountry = $this->wcAdapter->customerGetShippingCountry();
-		if ( null !== $shippingCountry ) {
+		if ( $shippingCountry !== null ) {
 			return strtolower( $shippingCountry );
 		}
 
 		$billingCountry = $this->wcAdapter->customerGetBillingCountry();
-		if ( null !== $billingCountry ) {
+		if ( $billingCountry !== null ) {
 			return strtolower( $billingCountry );
 		}
 
@@ -241,11 +241,11 @@ class CheckoutService {
 	public function areBlocksUsedInCheckout(): bool {
 		$checkoutDetection = $this->optionsProvider->getCheckoutDetection();
 
-		if ( OptionsProvider::BLOCK_CHECKOUT_DETECTION === $checkoutDetection ) {
+		if ( $checkoutDetection === OptionsProvider::BLOCK_CHECKOUT_DETECTION ) {
 			return true;
 		}
 
-		if ( OptionsProvider::CLASSIC_CHECKOUT_DETECTION === $checkoutDetection ) {
+		if ( $checkoutDetection === OptionsProvider::CLASSIC_CHECKOUT_DETECTION ) {
 			return false;
 		}
 

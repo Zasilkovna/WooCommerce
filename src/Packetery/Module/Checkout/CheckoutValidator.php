@@ -94,7 +94,7 @@ class CheckoutValidator {
 		$this->wcAdapter->sessionSet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
 		if (
-			null === $chosenShippingMethod ||
+			$chosenShippingMethod === null ||
 			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) === false
 		) {
 			return;
@@ -112,7 +112,7 @@ class CheckoutValidator {
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 		$paymentMethod  = $this->sessionService->getChosenPaymentMethod();
 
-		if ( null !== $paymentMethod && $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
+		if ( $paymentMethod !== null && $carrierOptions->hasCheckoutPaymentMethodDisallowed( $paymentMethod ) ) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Chosen delivery method is no longer available. Please choose another delivery method.', 'packeta' ), 'error' );
 
 			return;
@@ -131,7 +131,7 @@ class CheckoutValidator {
 		}
 
 		if (
-			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || '' === $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) &&
+			( ! isset( $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] ) || $checkoutData[ Order\Attribute::CAR_DELIVERY_ID ] === '' ) &&
 			$this->checkoutService->isCarDeliveryOrder()
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
@@ -160,7 +160,7 @@ class CheckoutValidator {
 		$customerCountry = $this->checkoutService->getCustomerCountry();
 		if (
 			! $error &&
-			null === $customerCountry
+			$customerCountry === null
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Customer country could not be obtained.', 'packeta' ), 'error' );
 			$error = true;
@@ -177,10 +177,10 @@ class CheckoutValidator {
 			$error = true;
 		}
 		// @phpstan-ignore-next-line
-		if ( false === $error && PickupPointValidator::IS_ACTIVE ) {
+		if ( $error === false && PickupPointValidator::IS_ACTIVE ) {
 			$pickupPointId         = $checkoutData[ Order\Attribute::POINT_ID ];
 			$carriersForValidation = $chosenShippingMethod;
-			if ( '' === $carrierId ) {
+			if ( $carrierId === '' ) {
 				$carrierId             = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
 				$carriersForValidation = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
 			}
@@ -228,15 +228,15 @@ class CheckoutValidator {
 		$carrierOption = $this->wpAdapter->getOption( $optionId );
 
 		$addressValidation = 'none';
-		if ( false !== $carrierOption ) {
+		if ( $carrierOption !== false ) {
 			$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 		}
 
 		if (
-			'required' === $addressValidation &&
+			$addressValidation === 'required' &&
 			(
 				! isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) ||
-				'1' !== $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ]
+				$checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] !== '1'
 			)
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
