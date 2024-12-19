@@ -38,8 +38,23 @@ export const useOnWidgetButtonClicked = (
 		if ( carrierConfig[ rateId ].vendors ) {
 			widgetOptions.vendors = carrierConfig[ rateId ].vendors;
 		}
-		if ( dynamicSettings && dynamicSettings.isAgeVerificationRequired ) {
-			widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+
+		if ( dynamicSettings ) {
+			if ( dynamicSettings.isAgeVerificationRequired ) {
+				widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+			}
+
+			if ( dynamicSettings.biggestProductSize ) {
+				if ( dynamicSettings.biggestProductSize.length ) {
+					widgetOptions.lenght = dynamicSettings.biggestProductSize.length;
+				}
+				if ( dynamicSettings.biggestProductSize.width ) {
+					widgetOptions.width = dynamicSettings.biggestProductSize.width;
+				}
+				if ( dynamicSettings.biggestProductSize.depth ) {
+					widgetOptions.depth = dynamicSettings.biggestProductSize.depth;
+				}
+			}
 		}
 
 		console.log( 'Pickup point widget options: apiKey: ' + packeteryApiKey + ', ' + stringifyOptions( widgetOptions ) );
