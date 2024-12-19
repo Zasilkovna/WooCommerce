@@ -180,6 +180,7 @@ class OrderUpdater {
 		$this->packetAutoSubmitter->handleEventAsync( Order\PacketAutoSubmitter::EVENT_ON_ORDER_CREATION_FE, $wcOrder->get_id() );
 	}
 
+	/** @phpstan-ignore-next-line */
 	private function addPickupPointValidationError( WC_Order $wcOrder ): void {
 		// @phpstan-ignore-next-line
 		if ( PickupPointValidator::IS_ACTIVE ) {
