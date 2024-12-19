@@ -285,6 +285,57 @@ class OptionsPage {
 							->addConditionOn( $form['coupon_free_shipping']['active'], Form::FILLED )
 							->toggle( $this->createCouponFreeShippingForFeesContainerId( $form ) );
 
+		$dimensionsRestrictions = $form->addContainer( 'dimensions_restrictions' );
+		$dimensionsRestrictions->addCheckbox( 'active', $this->wpAdapter->__( 'Maximum package size', 'packeta' ) );
+		if (
+			strpos( $carrier->getId(), Carrier::VENDOR_GROUP_ZBOX ) !== false ||
+			strpos( $carrier->getId(), Carrier::VENDOR_GROUP_ZPOINT ) === 0 ||
+			( $carrier->hasPickupPoints() && is_numeric( $carrier->getId() ) )
+		) {
+			$dimensionsRestrictions->addText( 'length', $this->wpAdapter->__( 'Length (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+			$dimensionsRestrictions->addText( 'width', $this->wpAdapter->__( 'Width (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+			$dimensionsRestrictions->addText( 'height', $this->wpAdapter->__( 'Height (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+		} else {
+			$dimensionsRestrictions->addText( 'maximum_length', $this->wpAdapter->__( 'Maximum length (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+			$dimensionsRestrictions->addText( 'dimensions_sum', $this->wpAdapter->__( 'Sum of dimensions (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+
+			if ( $form['dimensions_restrictions']['active']->getValue() === true ) {
+				$maximumLength = $form['dimensions_restrictions']['maximum_length']->getValue();
+				$dimensionsSum = $form['dimensions_restrictions']['dimensions_sum']->getValue();
+
+				$hasSomeValue = ( isset( $maximumLength ) && (int) $maximumLength > 0 ) || ( isset( $dimensionsSum ) && (int) $dimensionsSum > 0 );
+				if ( $hasSomeValue === false ) {
+					$form['dimensions_restrictions']['maximum_length']->addRule(
+						Form::FILLED,
+						$this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' )
+					);
+				}
+			}
+		}
+
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
@@ -338,6 +389,10 @@ class OptionsPage {
 	 */
 	private function createCouponFreeShippingForFeesContainerId( Form $form ): string {
 		return sprintf( '%s_apply_free_shipping_coupon_allow_for_fees', $form->getName() );
+	}
+
+	private function createDimensionRestrictionContainerId( Form $form ): string {
+		return sprintf( '%s_dimension_restrictions', $form->getName() );
 	}
 
 	/**
@@ -527,6 +582,7 @@ class OptionsPage {
 			'formTemplate'                         => $formTemplate,
 			'carrier'                              => $carrier,
 			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
+			'dimensionRestrictionContainerId'      => $this->createDimensionRestrictionContainerId( $form ),
 			'weightLimitsContainerId'              => $this->createFieldContainerId( $form, self::FORM_FIELD_WEIGHT_LIMITS ),
 			'productValueLimitsContainerId'        => $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ),
 			'isAvailableVendorsCountLow'           => $this->isAvailableVendorsCountLowByCarrierId( $carrier->getId() ),
@@ -590,7 +646,7 @@ class OptionsPage {
 					'translations' => [
 						'title' => sprintf(
 							// translators: %s is country code.
-							__( 'Country options: %s', 'packeta' ),
+							$this->wpAdapter->__( 'Country options: %s', 'packeta' ),
 							strtoupper( $countryIso )
 						),
 					],

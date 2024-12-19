@@ -529,6 +529,18 @@ var packeteryLoadCheckout = function( $, settings ) {
 					widgetOptions.livePickupPoint = true; // Pickup points with real person only.
 				}
 
+				if ( settings.biggestProductSize ) {
+					if ( settings.biggestProductSize.length ) {
+						widgetOptions.lenght = settings.biggestProductSize.length;
+					}
+					if ( settings.biggestProductSize.width ) {
+						widgetOptions.width = settings.biggestProductSize.width;
+					}
+					if ( settings.biggestProductSize.depth ) {
+						widgetOptions.depth = settings.biggestProductSize.depth;
+					}
+				}
+
 				console.log('Pickup point widget options: apiKey: ' + settings.packeteryApiKey + ', ' + stringifyOptions(widgetOptions));
 				Packeta.Widget.pick( settings.packeteryApiKey, function( pickupPoint ) {
 					if ( pickupPoint == null ) {
