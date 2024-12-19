@@ -135,7 +135,7 @@ class DataTab {
 
 		$form->setDefaults(
 			[
-				Product\Entity::META_AGE_VERIFICATION_18_PLUS  => $product->isAgeVerification18PlusRequired(),
+				Product\Entity::META_AGE_VERIFICATION_18_PLUS  => $product->isAgeVerificationRequired(),
 				Product\Entity::META_DISALLOWED_SHIPPING_RATES => $product->getDisallowedShippingRateChoices(),
 			]
 		);

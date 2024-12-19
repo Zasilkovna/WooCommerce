@@ -18,10 +18,6 @@ use function get_transient;
  */
 trait TransientTrait {
 	/**
-	 * Gets transient value.
-	 *
-	 * @param string $transientName Transient name.
-	 *
 	 * @return mixed
 	 */
 	public function getTransient( string $transientName ) {
@@ -29,15 +25,17 @@ trait TransientTrait {
 	}
 
 	/**
-	 * Sets transient.
-	 *
-	 * @param string $transientName Transient name.
-	 * @param mixed  $transientValue Transient value.
-	 * @param int    $expiration Expiration in seconds.
+	 * @param string $transientName
+	 * @param mixed  $transientValue
+	 * @param int    $expiration
 	 *
 	 * @return bool
 	 */
 	public function setTransient( string $transientName, $transientValue, int $expiration = 0 ): bool {
 		return set_transient( $transientName, $transientValue, $expiration );
+	}
+
+	public function deleteTransient( string $transientName ): bool {
+		return delete_transient( $transientName );
 	}
 }

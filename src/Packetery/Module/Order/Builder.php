@@ -278,7 +278,7 @@ class Builder {
 				$product = $item->get_product();
 				if ( $product instanceof WC_Product ) {
 					$productEntity = new Product\Entity( $product );
-					if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
+					if ( $productEntity->isPhysical() && $productEntity->isAgeVerificationRequired() ) {
 						return true;
 					}
 				}
