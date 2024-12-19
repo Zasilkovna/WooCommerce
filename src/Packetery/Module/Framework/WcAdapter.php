@@ -19,7 +19,6 @@ use WC_Logger;
  */
 class WcAdapter {
 	use ActionSchedulerTrait;
-	use WcCustomerTrait;
 	use WcCartTrait;
 	use WcCustomerTrait;
 	use WcPageTrait;

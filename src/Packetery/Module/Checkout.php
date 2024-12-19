@@ -377,6 +377,7 @@ class Checkout {
 			'isCarDeliverySampleEnabled' => $this->carDeliveryConfig->isSampleEnabled(),
 			// TODO: Settings are not updated on AJAX checkout update. Needs rework due to possible checkout solutions allowing cart update.
 			'isAgeVerificationRequired'  => $this->isAgeVerification18PlusRequired(),
+			'biggestProductSize'         => $this->getBiggestProductSizeByLength(),
 			'pickupPointAttrs'           => Order\Attribute::$pickupPointAttrs,
 			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttrs,
 			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttrs,
@@ -415,6 +416,7 @@ class Checkout {
 		$settings = [];
 		if ( WC()->cart instanceof \WC_Cart ) {
 			$settings['isAgeVerificationRequired'] = $this->isAgeVerification18PlusRequired();
+			$settings['biggestProductSize']        = $this->getBiggestProductSizeByLength();
 		}
 
 		wp_send_json( $settings );
@@ -974,6 +976,10 @@ class Checkout {
 			}
 
 			if ( in_array( $optionId, $disallowedShippingRateIds, true ) ) {
+				continue;
+			}
+
+			if ( $this->cartContainsProductOversizedForCarrier( $options ) ) {
 				continue;
 			}
 
@@ -1621,5 +1627,132 @@ class Checkout {
 		$taxable     = ! ( $maxTaxClass === false );
 
 		$cart->add_fee( __( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
+	}
+
+	private function getBiggestProductSizeByLength(): ?array {
+		if ( $this->wpAdapter->didAction( 'wp_loaded' ) === 0 ) {
+			return null;
+		}
+
+		$products = $this->wcAdapter->cartGetCartContent();
+		$maxSizes = [
+			'length' => 0,
+			'width'  => 0,
+			'depth'  => 0,
+		];
+
+		foreach ( $products as $product ) {
+			$productEntity = $this->productEntiyFactory->fromPostId( $product['product_id'] );
+			if ( $productEntity->isPhysical() && (
+					$productEntity->getLengthInCm( $this->wpAdapter ) > 0 ||
+					$productEntity->getWidthInCm( $this->wpAdapter ) > 0 ||
+					$productEntity->getHeightInCm( $this->wpAdapter ) > 0
+				)
+			) {
+				$productSizes = [
+					$productEntity->getLengthInCm( $this->wpAdapter ),
+					$productEntity->getWidthInCm( $this->wpAdapter ),
+					$productEntity->getHeightInCm( $this->wpAdapter ),
+				];
+				rsort( $productSizes, SORT_NUMERIC );
+				if ( $productSizes[0] > $maxSizes['length'] ) {
+					$maxSizes = [
+						'length' => $productSizes[0],
+						'width'  => $productSizes[1],
+						'depth'  => $productSizes[2],
+					];
+				}
+			}
+		}
+
+		if ( $maxSizes['length'] === 0 ) {
+			return null;
+		}
+
+		return $maxSizes;
+	}
+
+	private function getBiggestProductSizeBySum(): ?array {
+		if ( $this->wpAdapter->didAction( 'wp_loaded' ) === 0 ) {
+			return null;
+		}
+
+		$products = $this->wcAdapter->cartGetCartContent();
+		$maxSizes = [
+			'length' => 0,
+			'width'  => 0,
+			'depth'  => 0,
+		];
+
+		foreach ( $products as $product ) {
+			$productEntity = $this->productEntiyFactory->fromPostId( $product['product_id'] );
+			if ( $productEntity->isPhysical() && (
+					$productEntity->getLengthInCm( $this->wpAdapter ) > 0 ||
+					$productEntity->getWidthInCm( $this->wpAdapter ) > 0 ||
+					$productEntity->getHeightInCm( $this->wpAdapter ) > 0
+				)
+			) {
+				$productSizeSum =
+					$productEntity->getLengthInCm( $this->wpAdapter ) +
+					$productEntity->getWidthInCm( $this->wpAdapter ) +
+					$productEntity->getHeightInCm( $this->wpAdapter );
+				if ( $productSizeSum > array_sum( $maxSizes ) ) {
+					$maxSizes = [
+						'length' => $productEntity->getLengthInCm( $this->wpAdapter ),
+						'width'  => $productEntity->getWidthInCm( $this->wpAdapter ),
+						'depth'  => $productEntity->getHeightInCm( $this->wpAdapter ),
+					];
+				}
+			}
+		}
+
+		if ( $maxSizes['length'] === 0 ) {
+			return null;
+		}
+
+		return $maxSizes;
+	}
+
+	private function cartContainsProductOversizedForCarrier( Carrier\Options $carrierOptions ): bool {
+		$sizeRestrictions = $carrierOptions->getSizeRestrictions();
+		if ( $sizeRestrictions === null ) {
+			return false;
+		}
+		$biggestProductSizeBySum    = $this->getBiggestProductSizeBySum();
+		$biggestProductSizeByLength = $this->getBiggestProductSizeByLength();
+		if ( $biggestProductSizeBySum === null || $biggestProductSizeByLength === null ) {
+			return false;
+		}
+
+		if ( isset( $sizeRestrictions['max_length'] ) ) {
+			$productMax = max( $biggestProductSizeByLength );
+			if ( $productMax > $sizeRestrictions['max_length'] ) {
+				return true;
+			}
+		}
+		if ( isset( $sizeRestrictions['dimensions_sum'] ) ) {
+			$productSum = array_sum( $biggestProductSizeBySum );
+			if ( $productSum > $sizeRestrictions['dimensions_sum'] ) {
+				return true;
+			}
+		}
+
+		if ( isset( $sizeRestrictions['length'], $sizeRestrictions['width'], $sizeRestrictions['height'] ) ) {
+			$dimensions = [
+				$sizeRestrictions['length'],
+				$sizeRestrictions['width'],
+				$sizeRestrictions['height'],
+			];
+			rsort( $dimensions, SORT_NUMERIC );
+			rsort( $biggestProductSizeByLength, SORT_NUMERIC );
+
+			foreach ( $dimensions as $index => $dimension ) {
+				if ( $biggestProductSizeByLength[ $index ] > $dimension ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }
