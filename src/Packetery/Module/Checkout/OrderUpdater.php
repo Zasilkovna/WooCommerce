@@ -169,12 +169,6 @@ class OrderUpdater {
 			true === $carrier->requiresSize() &&
 			true === $this->optionsProvider->isDefaultDimensionsEnabled()
 		) {
-			$size = new Entity\Size(
-				$this->optionsProvider->getDefaultLength(),
-				$this->optionsProvider->getDefaultWidth(),
-				$this->optionsProvider->getDefaultHeight()
-			);
-
 			$order->setSize( $this->sizeFactory->createDefaultSizeForNewOrder() );
 		}
 

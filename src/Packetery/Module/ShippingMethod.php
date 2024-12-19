@@ -15,11 +15,12 @@ use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\DI\Container;
+use WC_Shipping_Method;
 
 /**
  * Packeta shipping method class.
  */
-class ShippingMethod extends \WC_Shipping_Method {
+class ShippingMethod extends WC_Shipping_Method {
 
 	public const PACKETERY_METHOD_ID = 'packetery_shipping_method';
 	public const OPTION_CARRIER_ID   = 'carrier_id';

@@ -15,6 +15,8 @@ use WP_Post;
 use WP_Screen;
 use WP_Term;
 
+use function is_string;
+
 /**
  * Class WpAdapter.
  *
@@ -126,10 +128,12 @@ class WpAdapter {
 	/**
 	 * @param mixed $data
 	 *
-	 * @return false|string
+	 * @return string
 	 */
-	public function jsonEncode( $data ) {
-		return wp_json_encode( $data );
+	public function jsonEncode( $data ): string {
+		$encodedData = wp_json_encode( $data );
+
+		return is_string( $encodedData ) ? $encodedData : '';
 	}
 
 	public function isMultisite(): bool {

@@ -124,7 +124,7 @@ class CartService {
 	 * @return string|null
 	 * @throws ProductNotFoundException
 	 */
-	public function getTaxClassWithMaxRate() {
+	public function getTaxClassWithMaxRate(): ?string {
 		$products   = $this->wcAdapter->cartGetCartContent();
 		$taxClasses = [];
 

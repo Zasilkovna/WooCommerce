@@ -36,15 +36,8 @@ class SessionService {
 		return $chosenShippingRate ?? '';
 	}
 
-	/**
-	 * Gets chosen payment method.
-	 *
-	 * @return string|null
-	 */
 	public function getChosenPaymentMethod(): ?string {
-		$paymentMethod = $this->wcAdapter->sessionGetString( 'chosen_payment_method' );
-
-		return is_string( $paymentMethod ) ? $paymentMethod : null;
+		return $this->wcAdapter->sessionGetString( 'chosen_payment_method' );
 	}
 
 	/**
@@ -53,8 +46,8 @@ class SessionService {
 	 */
 	public function actionUpdateShippingRates(): void {
 		$packages = $this->wcAdapter->shippingGetPackages();
-		foreach ( $packages as $i => $package ) {
-			$this->wcAdapter->sessionSet( 'shipping_for_package_' . $i, false );
+		foreach ( $packages as $index => $package ) {
+			$this->wcAdapter->sessionSet( 'shipping_for_package_' . $index, false );
 		}
 	}
 

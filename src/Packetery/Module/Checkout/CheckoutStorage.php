@@ -9,6 +9,8 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order;
 use Packetery\Nette\Http\Request;
 
+use function is_array;
+
 class CheckoutStorage {
 	public const TRANSIENT_CHECKOUT_DATA_PREFIX = 'packeta_checkout_data_';
 
@@ -68,7 +70,10 @@ class CheckoutStorage {
 	 * @return array
 	 */
 	public function getPostDataIncludingStoredData( string $chosenShippingMethod, int $orderId = null ): array {
-		$checkoutData      = $this->httpRequest->getPost();
+		$checkoutData = $this->httpRequest->getPost();
+		if ( null !== $checkoutData && ! is_array( $checkoutData ) ) {
+			$checkoutData = null;
+		}
 		$savedCheckoutData = $this->getFromTransient();
 
 		if (

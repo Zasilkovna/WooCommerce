@@ -207,7 +207,7 @@ class CheckoutSettings {
 	/**
 	 * Calculates and returns Expedition Day
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	private function getCarDeliveryExpeditionDay(): ?string {
 		$chosenShippingMethod = $this->sessionService->getChosenMethodFromSession();

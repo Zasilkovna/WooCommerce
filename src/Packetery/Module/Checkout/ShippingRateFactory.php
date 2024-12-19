@@ -16,6 +16,16 @@ use Packetery\Module\ShippingMethod;
 
 class ShippingRateFactory {
 	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
+	/**
 	 * @var CheckoutService
 	 */
 	private $checkoutService;
@@ -24,11 +34,6 @@ class ShippingRateFactory {
 	 * @var Carrier\EntityRepository
 	 */
 	private $carrierEntityRepository;
-
-	/**
-	 * @var WcAdapter
-	 */
-	private $wcAdapter;
 
 	/**
 	 * @var CartService
@@ -55,31 +60,26 @@ class ShippingRateFactory {
 	 */
 	private $optionsProvider;
 
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
-
 	public function __construct(
+		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter,
 		CheckoutService $checkoutService,
 		Carrier\EntityRepository $carrierEntityRepository,
-		WcAdapter $wcAdapter,
 		CartService $cartService,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		CarDeliveryConfig $carDeliveryConfig,
 		RateCalculator $rateCalculator,
-		OptionsProvider $optionsProvider,
-		WpAdapter $wpAdapter
+		OptionsProvider $optionsProvider
 	) {
+		$this->wpAdapter               = $wpAdapter;
+		$this->wcAdapter               = $wcAdapter;
 		$this->checkoutService         = $checkoutService;
 		$this->carrierEntityRepository = $carrierEntityRepository;
-		$this->wcAdapter               = $wcAdapter;
 		$this->cartService             = $cartService;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
 		$this->rateCalculator          = $rateCalculator;
 		$this->optionsProvider         = $optionsProvider;
-		$this->wpAdapter               = $wpAdapter;
 	}
 
 	/**

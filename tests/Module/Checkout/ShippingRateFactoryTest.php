@@ -54,15 +54,15 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->checkoutService              = $this->createMock( CheckoutService::class );
 
 		$this->shippingRateFactory = new ShippingRateFactory(
+			$this->wpAdapter,
+			$this->wcAdapter,
 			$this->checkoutService,
 			$this->carrierEntityRepository,
-			$this->wcAdapter,
 			$this->cartService,
 			$this->carrierOptionsFactory,
 			$this->carDeliveryConfig,
 			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade ),
 			$this->provider,
-			$this->wpAdapter,
 		);
 	}
 

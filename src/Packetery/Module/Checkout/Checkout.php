@@ -13,8 +13,8 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
-use stdClass;
 use WC_Cart;
+use WC_Payment_Gateway;
 use WP_Error;
 
 class Checkout {
@@ -306,15 +306,14 @@ class Checkout {
 	}
 
 	/**
-	 * @param stdClass|WP_Error $addFeeResult Either a fee object if added, or a WP_Error if it failed.
+	 * @param object $addFeeResult Either a fee stdClass if added, or a WP_Error if it failed.
 	 *
 	 * @return void
 	 */
 	private function handleAddFeeError( object $addFeeResult ): void {
-		if ( ! $addFeeResult instanceof WP_Error ) {
-			return;
+		if ( $addFeeResult instanceof WP_Error ) {
+			$this->wcAdapter->addNotice( $addFeeResult->get_error_message(), 'notice' );
 		}
-		$this->wcAdapter->addNotice( $addFeeResult->get_error_message(), 'notice' );
 	}
 
 	/**
@@ -338,9 +337,9 @@ class Checkout {
 	/**
 	 * Filters out payment methods, that can not be used.
 	 *
-	 * @param array $availableGateways Available gateways.
+	 * @param WC_Payment_Gateway[] $availableGateways Available gateways.
 	 *
-	 * @return array
+	 * @return WC_Payment_Gateway[]
 	 */
 	public function filterPaymentGateways( array $availableGateways ): array {
 		global $wp;
