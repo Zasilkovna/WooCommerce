@@ -630,6 +630,7 @@ class Checkout {
 		}
 
 		$orderEntity = new Core\Entity\Order( (string) $wcOrder->get_id(), $this->carrierEntityRepository->getAnyById( $carrierId ) );
+		$orderEntity->setAdultContent( false );
 		if (
 			isset( $checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] ) &&
 			$checkoutData[ Order\Attribute::ADDRESS_IS_VALIDATED ] === '1' &&

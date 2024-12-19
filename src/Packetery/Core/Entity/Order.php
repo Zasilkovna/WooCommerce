@@ -565,13 +565,8 @@ class Order {
 		$this->note = $note;
 	}
 
-	/**
-	 * Sets adult content presence flag.
-	 *
-	 * @param bool|null $adultContent Adult content presence flag.
-	 */
 	public function setAdultContent( ?bool $adultContent ): void {
-		$this->adultContent = $adultContent;
+		$this->adultContent = $adultContent ?? false;
 	}
 
 	/**
