@@ -82,13 +82,6 @@ class Repository {
 	}
 
 	/**
-	 * Drop table used to store carriers.
-	 */
-	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCarrier . '`' );
-	}
-
-	/**
 	 * Gets is_pickup_point attribute of a carrier.
 	 *
 	 * @param int $carrierId Carrier id.

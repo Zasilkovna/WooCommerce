@@ -35,15 +35,6 @@ class Repository {
 	}
 
 	/**
-	 * Get all packetery related options.
-	 *
-	 * @return object[]|null
-	 */
-	public function getPluginOptions(): ?array {
-		return $this->wpdbAdapter->get_results( 'SELECT `option_name` FROM `' . $this->wpdbAdapter->options . "` WHERE `option_name` LIKE 'packetery%'" );
-	}
-
-	/**
 	 * Fork of delete_expired_transients.
 	 *
 	 * @param string $prefix Custom transient prefix.
@@ -66,5 +57,50 @@ class Repository {
 				time()
 			)
 		);
+	}
+
+	/**
+	 * @param array<string> $prefixes
+	 *
+	 * @return string[]
+	 */
+	public function getAllTransientsByPrefixes( array $prefixes ): array {
+		if ( [] === $prefixes ) {
+			return [];
+		}
+
+		$optionPrefixes = [];
+		foreach ( $prefixes as $prefix ) {
+			$optionPrefixes[] = '_transient_' . $prefix;
+		}
+
+		$transientNames = [];
+		$result         = $this->getAllOptionNamesByPrefixes( $optionPrefixes );
+
+		foreach ( $result as $optionName ) {
+			$transientNames[] = preg_replace( '~^_transient_~', '', $optionName );
+		}
+
+		return $transientNames;
+	}
+
+	/**
+	 * @param array<string> $prefixes
+	 *
+	 * @return string[]
+	 */
+	public function getAllOptionNamesByPrefixes( array $prefixes ): array {
+		if ( [] === $prefixes ) {
+			return [];
+		}
+
+		$prefixWhere = [];
+		foreach ( $prefixes as $prefix ) {
+			$prefixWhere[] = sprintf( '`option_name` LIKE "%s"', $this->wpdbAdapter->escLike( $prefix ) . '%' );
+		}
+
+		$prefixWhereDisjunction = implode( ' OR ', $prefixWhere );
+
+		return $this->wpdbAdapter->get_col( "SELECT `option_name` FROM {$this->wpdbAdapter->options} WHERE $prefixWhereDisjunction" );
 	}
 }

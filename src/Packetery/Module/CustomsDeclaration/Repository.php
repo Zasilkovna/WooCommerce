@@ -407,18 +407,4 @@ class Repository {
 
 		return $this->wpdbAdapter->dbDelta( $createItemTableQuery, $this->wpdbAdapter->packeteryCustomsDeclarationItem );
 	}
-
-	/**
-	 * Drop table used to store customs declarations items.
-	 */
-	public function dropItems(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclarationItem . '`' );
-	}
-
-	/**
-	 * Drop table used to store customs declarations.
-	 */
-	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '`' );
-	}
 }
