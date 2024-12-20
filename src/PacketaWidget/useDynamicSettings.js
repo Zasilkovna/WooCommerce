@@ -24,10 +24,11 @@ export const useDynamicSettings = ( adminAjaxUrl ) => {
 			} )
 				.then( ( response ) => response.json() )
 				.then( ( data ) => {
-					const { isAgeVerificationRequired } = data;
+					const { isAgeVerificationRequired, biggestProductSize } = data;
 					setDynamicSettings( prevState => ( {
 						...prevState,
 						isAgeVerificationRequired,
+						biggestProductSize,
 					} ) );
 				} )
 				.catch( ( error ) => {

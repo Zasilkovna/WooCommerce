@@ -161,6 +161,7 @@ class CheckoutSettings {
 			'carrierConfig'              => $carriersConfigForWidget,
 			'isCarDeliverySampleEnabled' => $this->carDeliveryConfig->isSampleEnabled(),
 			'isAgeVerificationRequired'  => $this->cartService->isAgeVerificationRequired(),
+			'biggestProductSize'         => $this->cartService->getBiggestProductSize(),
 			'pickupPointAttrs'           => Order\Attribute::$pickupPointAttributes,
 			'homeDeliveryAttrs'          => Order\Attribute::$homeDeliveryAttributes,
 			'carDeliveryAttrs'           => Order\Attribute::$carDeliveryAttributes,

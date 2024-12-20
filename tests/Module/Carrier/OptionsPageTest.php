@@ -15,6 +15,7 @@ use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
@@ -59,6 +60,7 @@ class OptionsPageTest extends TestCase {
 			$carrierOptionsFactory,
 			$this->createMock( ModuleHelper::class ),
 			$this->createMock( UrlBuilder::class ),
+			$this->createMock( WpAdapter::class ),
 		);
 
 		self::assertTrue( $optionsPage->isAvailableVendorsCountLowByCarrierId( 'zpointcz' ) );

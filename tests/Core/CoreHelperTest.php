@@ -104,4 +104,121 @@ class CoreHelperTest extends TestCase {
 	public function testTrimDecimalPlaces( string $expected, float $value, int $decimals ): void {
 		self::assertSame( $expected, CoreHelper::trimDecimalPlaces( $value, $decimals ) );
 	}
+
+	public static function convertToCentimetersProvider(): array {
+		return [
+			[
+				'input'     => 0,
+				'inputUnit' => 'mm',
+				'expected'  => 0,
+			],
+			[
+				'input'     => 1,
+				'inputUnit' => 'mm',
+				'expected'  => 0.1,
+			],
+			[
+				'input'     => 10,
+				'inputUnit' => 'mm',
+				'expected'  => 1.0,
+			],
+			[
+				'input'     => - 1,
+				'inputUnit' => 'mm',
+				'expected'  => - 0.1,
+			],
+
+			[
+				'input'     => 0,
+				'inputUnit' => 'cm',
+				'expected'  => 0,
+			],
+			[
+				'input'     => 1,
+				'inputUnit' => 'cm',
+				'expected'  => 1,
+			],
+			[
+				'input'     => 10,
+				'inputUnit' => 'cm',
+				'expected'  => 10,
+			],
+			[
+				'input'     => - 1,
+				'inputUnit' => 'cm',
+				'expected'  => - 1,
+			],
+
+			[
+				'input'     => 0,
+				'inputUnit' => 'm',
+				'expected'  => 0,
+			],
+			[
+				'input'     => 1,
+				'inputUnit' => 'm',
+				'expected'  => 100,
+			],
+			[
+				'input'     => 10,
+				'inputUnit' => 'm',
+				'expected'  => 1000,
+			],
+			[
+				'input'     => - 1,
+				'inputUnit' => 'm',
+				'expected'  => - 100,
+			],
+
+			[
+				'input'     => 0,
+				'inputUnit' => 'in',
+				'expected'  => 0,
+			],
+			[
+				'input'     => 1,
+				'inputUnit' => 'in',
+				'expected'  => 2.54,
+			],
+			[
+				'input'     => 10,
+				'inputUnit' => 'in',
+				'expected'  => 25.4,
+			],
+			[
+				'input'     => - 1,
+				'inputUnit' => 'in',
+				'expected'  => - 2.54,
+			],
+
+			[
+				'input'     => 0,
+				'inputUnit' => 'yd',
+				'expected'  => 0,
+			],
+			[
+				'input'     => 1,
+				'inputUnit' => 'yd',
+				'expected'  => 91.44,
+			],
+			[
+				'input'     => 10,
+				'inputUnit' => 'yd',
+				'expected'  => 914.4,
+			],
+			[
+				'input'     => - 1,
+				'inputUnit' => 'yd',
+				'expected'  => - 91.44,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider convertToCentimetersProvider
+	 */
+	public function testConvertToCentimeters( int $input, string $inputUnit, ?float $expected ): void {
+		$result = CoreHelper::convertToCentimeters( $input, $inputUnit );
+		$this->assertSame( $expected, $result );
+	}
 }
