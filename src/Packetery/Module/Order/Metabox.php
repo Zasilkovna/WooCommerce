@@ -546,7 +546,7 @@ class Metabox {
 		}
 
 		if ( $formValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
-			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
+			foreach ( Attribute::$pickupPointAttributes as $pickupPointAttr ) {
 				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
 				if ( $pickupPointAttr['name'] === Attribute::CARRIER_ID ) {
@@ -600,7 +600,7 @@ class Metabox {
 
 		return [
 			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
-			'pickupPointAttrs' => Attribute::$pickupPointAttrs,
+			'pickupPointAttrs' => Attribute::$pickupPointAttributes,
 			'widgetOptions'    => $widgetOptions,
 		];
 	}
@@ -620,7 +620,7 @@ class Metabox {
 
 		return [
 			'packeteryApiKey'   => $this->optionsProvider->get_api_key(),
-			'homeDeliveryAttrs' => Attribute::$homeDeliveryAttrs,
+			'homeDeliveryAttrs' => Attribute::$homeDeliveryAttributes,
 			'widgetOptions'     => $widgetOptions,
 			'translations'      => [
 				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order.', 'packeta' ),
@@ -662,11 +662,11 @@ class Metabox {
 		$this->form->addHidden( 'packetery_order_metabox_nonce' );
 		$this->form->setDefaults( [ 'packetery_order_metabox_nonce' => wp_create_nonce() ] );
 
-		foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
+		foreach ( Attribute::$pickupPointAttributes as $pickupPointAttr ) {
 			$this->form->addHidden( $pickupPointAttr['name'] );
 		}
 
-		foreach ( Attribute::$homeDeliveryAttrs as $homeDeliveryAttr ) {
+		foreach ( Attribute::$homeDeliveryAttributes as $homeDeliveryAttr ) {
 			$this->form->addHidden( $homeDeliveryAttr['name'] );
 		}
 

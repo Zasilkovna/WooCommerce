@@ -2,35 +2,30 @@
 
 declare( strict_types=1 );
 
-namespace Tests\Module;
+namespace Tests\Module\Checkout;
 
-use Packetery\Latte\Engine;
-use Packetery\Module\Api;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
-use Packetery\Module\Carrier\PacketaPickupPointsConfig;
-use Packetery\Module\Checkout;
-use Packetery\Module\EntityFactory\SizeFactory;
+use Packetery\Module\Checkout\CartService;
+use Packetery\Module\Checkout\CheckoutService;
+use Packetery\Module\Checkout\RateCalculator;
+use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\Order;
-use Packetery\Module\Order\PickupPointValidator;
-use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
-use Packetery\Module\RateCalculator;
-use Packetery\Module\Views\UrlBuilder;
-use Packetery\Module\WidgetOptionsBuilder;
-use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
+use Tests\Module\MockFactory;
+use WC_Cart;
+use WC_Product;
 
-class CheckoutTest extends TestCase {
+class ShippingRateFactoryTest extends TestCase {
 
 	private WpAdapter|MockObject $wpAdapter;
 	private WpAdapter|MockObject $wcAdapter;
@@ -41,9 +36,11 @@ class CheckoutTest extends TestCase {
 	private WpAdapter|MockObject $carrierEntityRepository;
 	private WpAdapter|MockObject $carDeliveryConfig;
 	private WpAdapter|MockObject $provider;
-	private Checkout $checkout;
+	private CartService|MockObject $cartService;
+	private CheckoutService|MockObject $checkoutService;
+	private ShippingRateFactory $shippingRateFactory;
 
-	private function createCheckoutMock(): void {
+	private function createShippingRateFactoryMock(): void {
 		$this->wpAdapter                    = MockFactory::createWpAdapter( $this );
 		$this->wcAdapter                    = $this->createMock( WcAdapter::class );
 		$this->productEntityFactory         = $this->createMock( ProductEntityFactory::class );
@@ -53,31 +50,19 @@ class CheckoutTest extends TestCase {
 		$this->carrierEntityRepository      = $this->createMock( Carrier\EntityRepository::class );
 		$this->carDeliveryConfig            = $this->createMock( CarDeliveryConfig::class );
 		$this->provider                     = $this->createMock( OptionsProvider::class );
+		$this->cartService                  = $this->createMock( CartService::class );
+		$this->checkoutService              = $this->createMock( CheckoutService::class );
 
-		$this->checkout = new Checkout(
+		$this->shippingRateFactory = new ShippingRateFactory(
 			$this->wpAdapter,
 			$this->wcAdapter,
-			$this->productEntityFactory,
-			$this->productCategoryEntityFactory,
-			$this->carrierOptionsFactory,
-			$this->createMock( Engine::class ),
-			$this->provider,
-			$this->createMock( Carrier\Repository::class ),
-			$this->createMock( Request::class ),
-			$this->createMock( Order\Repository::class ),
-			$this->currencySwitcherFacade,
-			$this->createMock( Order\PacketAutoSubmitter::class ),
-			$this->createMock( PickupPointValidator::class ),
-			$this->createMock( Order\AttributeMapper::class ),
-			new RateCalculator( $this->wpAdapter, $this->currencySwitcherFacade ),
-			$this->createMock( PacketaPickupPointsConfig::class ),
-			$this->createMock( WidgetOptionsBuilder::class ),
+			$this->checkoutService,
 			$this->carrierEntityRepository,
-			$this->createMock( Api\Internal\CheckoutRouter::class ),
+			$this->cartService,
+			$this->carrierOptionsFactory,
 			$this->carDeliveryConfig,
-			$this->createMock( PaymentHelper::class ),
-			$this->createMock( UrlBuilder::class ),
-			$this->createMock( SizeFactory::class )
+			new RateCalculator( $this->wpAdapter, $this->wcAdapter, $this->currencySwitcherFacade ),
+			$this->provider,
 		);
 	}
 
@@ -454,7 +439,7 @@ class CheckoutTest extends TestCase {
 	 * @dataProvider rateCreationDataProvider
 	 * @throws \PHPUnit\Framework\MockObject\Exception
 	 */
-	public function testGetShippingRates(
+	public function testCreateShippingRates(
 		int $expectedRateCount,
 		array $carriers,
 		array $carriersOptions,
@@ -465,7 +450,7 @@ class CheckoutTest extends TestCase {
 		bool $isAgeVerificationRequiredByProduct,
 		float $cartWeightKg
 	): void {
-		$this->createCheckoutMock();
+		$this->createShippingRateFactoryMock();
 
 		$this->wpAdapter
 			->expects( self::atLeast( $expectedRateCount ) )
@@ -474,7 +459,7 @@ class CheckoutTest extends TestCase {
 			->method( 'didAction' )
 			->willReturn( 1 );
 
-		$cart = $this->createMock( \WC_Cart::class );
+		$cart = $this->createMock( WC_Cart::class );
 		$cart
 			->method( 'get_coupons' )
 			->willReturn( [] );
@@ -482,7 +467,7 @@ class CheckoutTest extends TestCase {
 			->method( 'cart' )
 			->willReturn( $cart );
 
-		$wcProduct = $this->createMock( \WC_Product::class );
+		$wcProduct = $this->createMock( WC_Product::class );
 		$wcProduct
 			->method( 'get_price' )
 			->willReturn( '100.00' );
@@ -495,7 +480,7 @@ class CheckoutTest extends TestCase {
 
 		$cartItem = [
 			'product_id' => 1,
-			'quantity'   => 1,
+			'quantity'   => 1.0,
 			'data'       => $wcProduct,
 		];
 		$this->wcAdapter
@@ -505,8 +490,8 @@ class CheckoutTest extends TestCase {
 			->method( 'cartGetCartContent' )
 			->willReturn( [ $cartItem ] );
 
-		$this->wcAdapter
-			->method( 'customerGetShippingCountry' )
+		$this->checkoutService
+			->method( 'getCustomerCountry' )
 			->willReturn( 'cz' );
 		$this->wcAdapter
 			->method( 'cartGetCartContentsTotal' )
@@ -514,11 +499,8 @@ class CheckoutTest extends TestCase {
 		$this->wcAdapter
 			->method( 'cartGetCartContentsTax' )
 			->willReturn( 21.0 );
-		$this->wcAdapter
-			->method( 'cartGetCartContentsWeight' )
-			->willReturn( $cartWeightKg );
-		$this->wcAdapter
-			->method( 'getWeight' )
+		$this->cartService
+			->method( 'getCartWeightKg' )
 			->willReturn( $cartWeightKg );
 
 		$productEntity = $this->createMock( Product\Entity::class );
@@ -526,7 +508,7 @@ class CheckoutTest extends TestCase {
 			->method( 'isPhysical' )
 			->willReturn( true );
 		$productEntity
-			->method( 'isAgeVerification18PlusRequired' )
+			->method( 'isAgeVerificationRequired' )
 			->willReturn( $isAgeVerificationRequiredByProduct );
 		$productEntity
 			->method( 'getDisallowedShippingRateIds' )
@@ -534,6 +516,9 @@ class CheckoutTest extends TestCase {
 		$this->productEntityFactory
 			->method( 'fromPostId' )
 			->willReturn( $productEntity );
+		$this->cartService
+			->method( 'isAgeVerificationRequired' )
+			->willReturn( $isAgeVerificationRequiredByProduct );
 
 		$productCategory = $this->createMock( ProductCategory\Entity::class );
 		$productCategory
@@ -565,40 +550,8 @@ class CheckoutTest extends TestCase {
 			->method( 'isDisabled' )
 			->willReturn( ! $isCarDeliveryEnabled );
 
-		$rates = $this->checkout->getShippingRates( $allowedCarrierNames );
+		$rates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
 
 		self::assertCount( $expectedRateCount, $rates );
-	}
-
-	public function testAreBlocksUsedInCheckoutBlockDetection(): void {
-		$this->createCheckoutMock();
-
-		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::BLOCK_CHECKOUT_DETECTION );
-		$this->assertTrue( $this->checkout->areBlocksUsedInCheckout() );
-	}
-
-	public function testAreBlocksUsedInCheckoutClassicDetection(): void {
-		$this->createCheckoutMock();
-
-		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::CLASSIC_CHECKOUT_DETECTION );
-		$this->assertFalse( $this->checkout->areBlocksUsedInCheckout() );
-	}
-
-	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithBlock(): void {
-		$this->createCheckoutMock();
-
-		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
-
-		$this->wpAdapter->method( 'hasBlock' )->willReturn( true );
-		$this->assertTrue( $this->checkout->areBlocksUsedInCheckout() );
-	}
-
-	public function testAreBlocksUsedInCheckoutAutomaticDetectionWithoutBlock(): void {
-		$this->createCheckoutMock();
-
-		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
-
-		$this->wpAdapter->method( 'hasBlock' )->willReturn( false );
-		$this->assertFalse( $this->checkout->areBlocksUsedInCheckout() );
 	}
 }

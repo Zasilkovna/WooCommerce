@@ -83,9 +83,9 @@ class ModuleHelper {
 	 *
 	 * @return bool
 	 */
-	public static function isPluginActive( string $pluginRelativePath ): bool {
-		if ( is_multisite() ) {
-			$plugins = get_site_option( 'active_sitewide_plugins' );
+	public function isPluginActive( string $pluginRelativePath ): bool {
+		if ( $this->wpAdapter->isMultisite() ) {
+			$plugins = $this->wpAdapter->getSiteOption( 'active_sitewide_plugins' );
 			if ( isset( $plugins[ $pluginRelativePath ] ) ) {
 				return true;
 			}
@@ -95,12 +95,12 @@ class ModuleHelper {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$muPlugins = get_mu_plugins();
+		$muPlugins = $this->wpAdapter->getMuPlugins();
 		if ( isset( $muPlugins[ $pluginRelativePath ] ) ) {
 			return true;
 		}
 
-		return in_array( $pluginRelativePath, (array) get_option( 'active_plugins', [] ), true );
+		return in_array( $pluginRelativePath, (array) $this->wpAdapter->getOption( 'active_plugins', [] ), true );
 	}
 
 	/**
@@ -279,8 +279,8 @@ class ModuleHelper {
 		return null;
 	}
 
-	public static function isWooCommercePluginActive(): bool {
-		return self::isPluginActive( 'woocommerce/woocommerce.php' );
+	public function isWooCommercePluginActive(): bool {
+		return $this->isPluginActive( 'woocommerce/woocommerce.php' );
 	}
 
 	public static function getPluginMainFilePath(): string {

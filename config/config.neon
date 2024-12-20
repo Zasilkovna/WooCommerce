@@ -54,7 +54,16 @@ services:
 	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\Carrier\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
 	- Packetery\Module\Carrier\WcSettingsConfig(active: %wcCarrierSettingsConfig.active%)
-	- Packetery\Module\Checkout
+	- Packetery\Module\Checkout\Checkout
+	- Packetery\Module\Checkout\CheckoutService
+	- Packetery\Module\Checkout\CheckoutRenderer
+	- Packetery\Module\Checkout\CheckoutStorage
+	- Packetery\Module\Checkout\CheckoutSettings
+	- Packetery\Module\Checkout\CheckoutValidator
+	- Packetery\Module\Checkout\CartService
+	- Packetery\Module\Checkout\SessionService
+	- Packetery\Module\Checkout\ShippingRateFactory
+	- Packetery\Module\Checkout\OrderUpdater
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
@@ -97,10 +106,10 @@ services:
 	- Packetery\Module\Upgrade\Version_1_4_2
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
-	- Packetery\Module\CurrencySwitcherFacade
+	- Packetery\Module\Checkout\CurrencySwitcherService
 	- Packetery\Core\Api\Soap\CreatePacketMapper
 	- Packetery\Module\Order\PickupPointValidator
-	- Packetery\Module\RateCalculator
+	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig
 	- Packetery\Module\Carrier\EntityRepository
 	- Packetery\Module\Order\AttributeMapper

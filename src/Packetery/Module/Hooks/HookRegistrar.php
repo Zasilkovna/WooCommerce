@@ -7,7 +7,8 @@ namespace Packetery\Module\Hooks;
 use Packetery\Module\Api;
 use Packetery\Module\Blocks\BlockHooks;
 use Packetery\Module\Carrier\OptionsPage;
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\Checkout;
+use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\CronService;
 use Packetery\Module\DashboardWidget;
 use Packetery\Module\Framework\WpAdapter;
@@ -222,6 +223,16 @@ class HookRegistrar {
 	 */
 	private $packetSynchronizer;
 
+	/**
+	 * @var CheckoutSettings
+	 */
+	private $checkoutSettings;
+
+	/**
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -258,7 +269,9 @@ class HookRegistrar {
 		Log\Page $logPage,
 		Options\Page $optionsPage,
 		WpAdapter $wpAdapter,
-		PacketSynchronizer $packetSynchronizer
+		PacketSynchronizer $packetSynchronizer,
+		CheckoutSettings $checkoutSettings,
+		ModuleHelper $moduleHelper
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
@@ -296,12 +309,14 @@ class HookRegistrar {
 		$this->optionsPage               = $optionsPage;
 		$this->wpAdapter                 = $wpAdapter;
 		$this->packetSynchronizer        = $packetSynchronizer;
+		$this->checkoutSettings          = $checkoutSettings;
+		$this->moduleHelper              = $moduleHelper;
 	}
 
 	public function register(): void {
 		$this->wpAdapter->addAction( 'init', [ $this->pluginHooks, 'loadTranslation' ] );
 
-		if ( ModuleHelper::isWooCommercePluginActive() === false ) {
+		if ( $this->moduleHelper->isWooCommercePluginActive() === false ) {
 			if ( $this->wpAdapter->isAdmin() ) {
 				$this->wpAdapter->addAction( 'admin_notices', [ $this->viewAdmin, 'echoInactiveWooCommerceNotice' ] );
 			}
@@ -480,8 +495,14 @@ class HookRegistrar {
 			$this->dashboardWidget->register();
 		} else {
 			// For blocks, used at frontend.
-			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
-			$this->wpAdapter->addAction( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
+			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkoutSettings, 'actionCreateSettingsAjax' ] );
+			$this->wpAdapter->addAction(
+				'wp_ajax_nopriv_get_settings',
+				[
+					$this->checkoutSettings,
+					'actionCreateSettingsAjax',
+				]
+			);
 		}
 	}
 
@@ -493,7 +514,14 @@ class HookRegistrar {
 
 		$this->wpAdapter->addAction( 'wp_enqueue_scripts', [ $this->assetManager, 'enqueueFrontAssets' ] );
 		if ( $this->wpAdapter->doingAjax() === false ) {
-			$this->wpAdapter->addAction( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurcharge' ], 20 );
+			$this->wpAdapter->addAction(
+				'woocommerce_cart_calculate_fees',
+				[
+					$this->checkout,
+					'actionApplyCodSurcharge',
+				],
+				20
+			);
 			$this->wpAdapter->addAction( 'woocommerce_order_details_after_order_table', [ $this->viewFrontend, 'renderOrderDetail' ] );
 
 			$this->wpAdapter->addAction( 'init', [ $this->blockHooks, 'register' ] );
