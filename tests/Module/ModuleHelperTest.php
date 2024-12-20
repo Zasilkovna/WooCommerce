@@ -8,6 +8,43 @@ use Packetery\Module\ModuleHelper;
 use PHPUnit\Framework\TestCase;
 
 class ModuleHelperTest extends TestCase {
+	public static function convertToCentimetersProvider(): array {
+		return [
+			[
+				'input'    => 0,
+				'expected' => null,
+			],
+			[
+				'input'    => 1,
+				'expected' => 0.1,
+			],
+			[
+				'input'    => 10,
+				'expected' => 1.0,
+			],
+			[
+				'input'    => 100,
+				'expected' => 10.0,
+			],
+			[
+				'input'    => - 1,
+				'expected' => null,
+			],
+			[
+				'input'    => 1000,
+				'expected' => 100.0,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider convertToCentimetersProvider
+	 */
+	public function testConvertToCentimeters( int $input, ?float $expected ): void {
+		$result = ModuleHelper::convertToCentimeters( $input );
+		$this->assertSame( $expected, $result );
+	}
+
 	public static function convertToMillimetersProvider(): array {
 		return [
 			[

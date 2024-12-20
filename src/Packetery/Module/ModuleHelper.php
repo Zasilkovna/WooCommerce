@@ -210,6 +210,10 @@ class ModuleHelper {
 		return $inputArray;
 	}
 
+	public static function convertToCentimeters( int $number ): ?float {
+		return $number < 1 ? null : ( $number * 0.1 );
+	}
+
 	/**
 	 * Creates a named tracking URL for packet.
 	 *
