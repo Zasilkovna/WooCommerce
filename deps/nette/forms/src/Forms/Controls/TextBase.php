@@ -80,15 +80,6 @@ abstract class TextBase extends BaseControl
         $this->control->maxlength = $length;
         return $this;
     }
-    /**
-     * Appends input string filter callback.
-     * @return static
-     */
-    public function addFilter(callable $filter)
-    {
-        $this->getRules()->addFilter($filter);
-        return $this;
-    }
     public function getControl() : \Packetery\Nette\Utils\Html
     {
         $el = parent::getControl();

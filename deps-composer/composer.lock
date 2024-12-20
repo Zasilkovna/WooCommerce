@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4285938469ce75db63c8949632e19570",
+    "content-hash": "df39301e9a7a5c86d8fcea606fc8776d",
     "packages": [
         {
             "name": "latte/latte",
@@ -374,16 +374,16 @@
         },
         {
             "name": "nette/forms",
-            "version": "v3.1.4",
+            "version": "v3.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/forms.git",
-                "reference": "3883b688d6bc3b7ff0054996a9df9059a8768c4d"
+                "reference": "4ed52434b61d7e532cb3bc77b048717703b91b0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/forms/zipball/3883b688d6bc3b7ff0054996a9df9059a8768c4d",
-                "reference": "3883b688d6bc3b7ff0054996a9df9059a8768c4d",
+                "url": "https://api.github.com/repos/nette/forms/zipball/4ed52434b61d7e532cb3bc77b048717703b91b0b",
+                "reference": "4ed52434b61d7e532cb3bc77b048717703b91b0b",
                 "shasum": ""
             },
             "require": {
@@ -443,9 +443,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/forms/issues",
-                "source": "https://github.com/nette/forms/tree/v3.1.4"
+                "source": "https://github.com/nette/forms/tree/v3.1.6"
             },
-            "time": "2021-08-25T15:04:36+00:00"
+            "time": "2021-11-09T11:56:09+00:00"
         },
         {
             "name": "nette/http",

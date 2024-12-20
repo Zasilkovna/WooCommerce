@@ -9,7 +9,7 @@ namespace Packetery\Nette\Forms;
 
 if (\false) {
     /** @deprecated use \Packetery\Nette\Forms\Control */
-    class IControl extends Control
+    interface IControl extends Control
     {
     }
 } elseif (!\interface_exists(IControl::class)) {
@@ -17,7 +17,7 @@ if (\false) {
 }
 if (\false) {
     /** @deprecated use \Packetery\Nette\Forms\FormRenderer */
-    class IFormRenderer extends FormRenderer
+    interface IFormRenderer extends FormRenderer
     {
     }
 } elseif (!\interface_exists(IFormRenderer::class)) {
@@ -25,7 +25,7 @@ if (\false) {
 }
 if (\false) {
     /** @deprecated use \Packetery\Nette\Forms\SubmitterControl */
-    class ISubmitterControl extends SubmitterControl
+    interface ISubmitterControl extends SubmitterControl
     {
     }
 } elseif (!\interface_exists(ISubmitterControl::class)) {

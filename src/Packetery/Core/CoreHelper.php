@@ -58,7 +58,11 @@ class CoreHelper {
 		return (float) number_format( $value, $maxDecimalPlaces, '.', '' );
 	}
 
-	public static function trimDecimalPlaces( float $value, int $decimals ): string {
+	public static function trimDecimalPlaces( ?float $value, int $decimals ): ?string {
+		if ( $value === null ) {
+			return null;
+		}
+
 		$formattedValue = number_format( $value, $decimals, '.', '' );
 
 		if ( $decimals > 0 ) {
