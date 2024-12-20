@@ -453,71 +453,94 @@ class CartServiceTest extends TestCase {
 		);
 	}
 
-	public function testCartContainsProductOversizedForCarrierWithValidSizeRestrictions(): void {
-		$this->createCartServiceMock();
-		$carrierOptionsMock = $this->createMock( Carrier\Options::class );
-		$carrierOptionsMock->method( 'getSizeRestrictions' )->willReturn(
-			[
-				'max_length'     => 100,
-				'dimensions_sum' => 200,
-				'length'         => 50,
-				'width'          => 40,
-				'height'         => 30,
-			]
-		);
-
-		$productMock1 = $this->createMock( Product\Entity::class );
-		$productMock1->method( 'isPhysical' )->willReturn( true );
-		$productMock1->method( 'getLengthInCm' )->willReturn( 30.5 ); // Float value
-		$productMock1->method( 'getWidthInCm' )->willReturn( 20.7 );  // Float value
-		$productMock1->method( 'getHeightInCm' )->willReturn( 10.3 ); // Float value
-
-		$productMock2 = $this->createMock( Product\Entity::class );
-		$productMock2->method( 'isPhysical' )->willReturn( true );
-		$productMock2->method( 'getLengthInCm' )->willReturn( 35.2 ); // Float value
-		$productMock2->method( 'getWidthInCm' )->willReturn( 18.6 );  // Float value
-		$productMock2->method( 'getHeightInCm' )->willReturn( 12.4 ); // Float value
-
-		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
-			[
-				[ 'product_id' => 1 ],
-				[ 'product_id' => 2 ],
-			]
-		);
-		$this->productEntityFactory
-			->method( 'fromPostId' )
-			->willReturnOnConsecutiveCalls( $productMock1, $productMock2, $productMock1, $productMock2 );
-
-		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
-
-		$result = $this->cartService->cartContainsProductOversizedForCarrier( $carrierOptionsMock );
-		$this->assertFalse( $result );
+	public static function cartContainsProductOversizedForCarrier(): array {
+		return [
+			'all-ok'            => [
+				'sizeRestrictions'   => [
+					'max_length'     => 100,
+					'dimensions_sum' => 180,
+					'length'         => 100,
+					'width'          => 50,
+					'height'         => 30,
+				],
+				'productDimensions1' => [ 80.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 30.0, 40.0, 80.0 ],
+				'expectedResult'     => false,
+			],
+			'size-exceeds'      => [
+				'sizeRestrictions'   => [
+					'length' => 100,
+					'width'  => 50,
+					'height' => 30,
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => true,
+			],
+			'size-exceeds-v2'   => [
+				'sizeRestrictions'   => [
+					'length' => 100,
+					'width'  => 50,
+					'height' => 30,
+				],
+				'productDimensions1' => [ 80.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 10.0, 40.0, 110.0 ],
+				'expectedResult'     => true,
+			],
+			'sum-exceeds'       => [
+				'sizeRestrictions'   => [
+					'max_length'     => 100,
+					'dimensions_sum' => 180,
+				],
+				'productDimensions1' => [ 80.0, 80.0, 80.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => true,
+			],
+			'length-exceeds'    => [
+				'sizeRestrictions'   => [
+					'max_length'     => 100,
+					'dimensions_sum' => 180,
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => true,
+			],
+			'length-exceeds-v2' => [
+				'sizeRestrictions'   => [
+					'max_length'     => 100,
+					'dimensions_sum' => 180,
+				],
+				'productDimensions1' => [ 80.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 10.0, 40.0, 110.0 ],
+				'expectedResult'     => true,
+			],
+		];
 	}
 
-	public function testCartContainsProductOversizedForCarrierWithExceededSize(): void {
+	/**
+	 * @dataProvider cartContainsProductOversizedForCarrier
+	 */
+	public function testCartContainsProductOversizedForCarrier(
+		array $sizeRestrictions,
+		array $productDimensions1,
+		array $productDimensions2,
+		bool $expectedResult,
+	): void {
 		$this->createCartServiceMock();
 		$carrierOptionsMock = $this->createMock( Carrier\Options::class );
-		$carrierOptionsMock->method( 'getSizeRestrictions' )->willReturn(
-			[
-				'max_length'     => 100,
-				'dimensions_sum' => 200,
-				'length'         => 50,
-				'width'          => 40,
-				'height'         => 30,
-			]
-		);
+		$carrierOptionsMock->method( 'getSizeRestrictions' )->willReturn( $sizeRestrictions );
 
 		$productMock1 = $this->createMock( Product\Entity::class );
 		$productMock1->method( 'isPhysical' )->willReturn( true );
-		$productMock1->method( 'getLengthInCm' )->willReturn( 60.5 ); // Float value
-		$productMock1->method( 'getWidthInCm' )->willReturn( 50.2 ); // Float value
-		$productMock1->method( 'getHeightInCm' )->willReturn( 20.1 ); // Float value
+		$productMock1->method( 'getLengthInCm' )->willReturn( $productDimensions1[0] );
+		$productMock1->method( 'getWidthInCm' )->willReturn( $productDimensions1[1] );
+		$productMock1->method( 'getHeightInCm' )->willReturn( $productDimensions1[2] );
 
 		$productMock2 = $this->createMock( Product\Entity::class );
 		$productMock2->method( 'isPhysical' )->willReturn( true );
-		$productMock2->method( 'getLengthInCm' )->willReturn( 35.8 ); // Float value
-		$productMock2->method( 'getWidthInCm' )->willReturn( 15.7 ); // Float value
-		$productMock2->method( 'getHeightInCm' )->willReturn( 8.5 );  // Float value
+		$productMock2->method( 'getLengthInCm' )->willReturn( $productDimensions2[0] );
+		$productMock2->method( 'getWidthInCm' )->willReturn( $productDimensions2[1] );
+		$productMock2->method( 'getHeightInCm' )->willReturn( $productDimensions2[2] );
 
 		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
 			[
@@ -532,6 +555,6 @@ class CartServiceTest extends TestCase {
 		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
 
 		$result = $this->cartService->cartContainsProductOversizedForCarrier( $carrierOptionsMock );
-		$this->assertTrue( $result );
+		$this->assertSame( $result, $expectedResult );
 	}
 }
