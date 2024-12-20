@@ -311,29 +311,26 @@ class OptionsPage {
 				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
 				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
 		} else {
-			$dimensionsRestrictions->addText( 'maximum_length', $this->wpAdapter->__( 'Maximum length (cm)', 'packeta' ) )
-				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
-				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
-				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
-				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
-			$dimensionsRestrictions->addText( 'dimensions_sum', $this->wpAdapter->__( 'Sum of dimensions (cm)', 'packeta' ) )
-				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
-				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
-				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
-				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
 
-			if ( $form['dimensions_restrictions']['active']->getValue() === true ) {
-				$maximumLength = $form['dimensions_restrictions']['maximum_length']->getValue();
-				$dimensionsSum = $form['dimensions_restrictions']['dimensions_sum']->getValue();
+			$maximumLength = $dimensionsRestrictions->addText( 'maximum_length', $this->wpAdapter->__( 'Maximum length (cm)', 'packeta' ) );
+			$maximumLength->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+							->addRule( Form::MIN, $this->wpAdapter->__( 'Value must be greater than 0', 'packeta' ), 1 );
 
-				$hasSomeValue = ( isset( $maximumLength ) && (int) $maximumLength > 0 ) || ( isset( $dimensionsSum ) && (int) $dimensionsSum > 0 );
-				if ( $hasSomeValue === false ) {
-					$form['dimensions_restrictions']['maximum_length']->addRule(
-						Form::FILLED,
-						$this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' )
-					);
-				}
-			}
+			$dimensionsSum = $dimensionsRestrictions->addText( 'dimensions_sum', $this->wpAdapter->__( 'Sum of dimensions (cm)', 'packeta' ) );
+			$dimensionsSum->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+							->addRule( Form::MIN, $this->wpAdapter->__( 'Value must be greater than 0', 'packeta' ), 1 );
+
+			$maximumLength->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->addConditionOn( $dimensionsSum, Form::BLANK )
+								->addRule( Form::FILLED, $this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' ) );
+
+			$dimensionsSum->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->addConditionOn( $maximumLength, Form::BLANK )
+								->addRule( Form::FILLED, $this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' ) );
 		}
 
 		$form->addHidden( 'id' )->setRequired();
