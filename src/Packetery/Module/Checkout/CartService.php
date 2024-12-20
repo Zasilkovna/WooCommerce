@@ -15,6 +15,9 @@ use WC_Product;
 
 class CartService {
 
+	private const CRITERIA_BY_LENGTH = 1;
+	private const CRITERIA_BY_SUM    = 2;
+
 	/**
 	 * @var WpAdapter
 	 */
@@ -202,7 +205,7 @@ class CartService {
 		return false;
 	}
 
-	public function getBiggestProductSizeByLength(): ?array {
+	public function getBiggestProductSize( int $mode = self::CRITERIA_BY_LENGTH ): ?array {
 		if ( $this->wpAdapter->didAction( 'wp_loaded' ) === 0 ) {
 			return null;
 		}
@@ -222,59 +225,32 @@ class CartService {
 					$productEntity->getHeightInCm( $this->wpAdapter ) > 0
 				)
 			) {
-				$productSizes = [
-					$productEntity->getLengthInCm( $this->wpAdapter ),
-					$productEntity->getWidthInCm( $this->wpAdapter ),
-					$productEntity->getHeightInCm( $this->wpAdapter ),
-				];
-				rsort( $productSizes, SORT_NUMERIC );
-				if ( $productSizes[0] > $maxSizes['length'] ) {
-					$maxSizes = [
-						'length' => $productSizes[0],
-						'width'  => $productSizes[1],
-						'depth'  => $productSizes[2],
+				if ( $mode === self::CRITERIA_BY_SUM ) {
+					$productSizeSum =
+						$productEntity->getLengthInCm( $this->wpAdapter ) +
+						$productEntity->getWidthInCm( $this->wpAdapter ) +
+						$productEntity->getHeightInCm( $this->wpAdapter );
+					if ( $productSizeSum > array_sum( $maxSizes ) ) {
+						$maxSizes = [
+							'length' => $productEntity->getLengthInCm( $this->wpAdapter ),
+							'width'  => $productEntity->getWidthInCm( $this->wpAdapter ),
+							'depth'  => $productEntity->getHeightInCm( $this->wpAdapter ),
+						];
+					}
+				} else {
+					$productSizes = [
+						$productEntity->getLengthInCm( $this->wpAdapter ),
+						$productEntity->getWidthInCm( $this->wpAdapter ),
+						$productEntity->getHeightInCm( $this->wpAdapter ),
 					];
-				}
-			}
-		}
-
-		if ( $maxSizes['length'] === 0 ) {
-			return null;
-		}
-
-		return $maxSizes;
-	}
-
-	public function getBiggestProductSizeBySum(): ?array {
-		if ( $this->wpAdapter->didAction( 'wp_loaded' ) === 0 ) {
-			return null;
-		}
-
-		$products = $this->wcAdapter->cartGetCartContent();
-		$maxSizes = [
-			'length' => 0,
-			'width'  => 0,
-			'depth'  => 0,
-		];
-
-		foreach ( $products as $product ) {
-			$productEntity = $this->productEntityFactory->fromPostId( $product['product_id'] );
-			if ( $productEntity->isPhysical() && (
-					$productEntity->getLengthInCm( $this->wpAdapter ) > 0 ||
-					$productEntity->getWidthInCm( $this->wpAdapter ) > 0 ||
-					$productEntity->getHeightInCm( $this->wpAdapter ) > 0
-				)
-			) {
-				$productSizeSum =
-					$productEntity->getLengthInCm( $this->wpAdapter ) +
-					$productEntity->getWidthInCm( $this->wpAdapter ) +
-					$productEntity->getHeightInCm( $this->wpAdapter );
-				if ( $productSizeSum > array_sum( $maxSizes ) ) {
-					$maxSizes = [
-						'length' => $productEntity->getLengthInCm( $this->wpAdapter ),
-						'width'  => $productEntity->getWidthInCm( $this->wpAdapter ),
-						'depth'  => $productEntity->getHeightInCm( $this->wpAdapter ),
-					];
+					rsort( $productSizes, SORT_NUMERIC );
+					if ( $productSizes[0] > $maxSizes['length'] ) {
+						$maxSizes = [
+							'length' => $productSizes[0],
+							'width'  => $productSizes[1],
+							'depth'  => $productSizes[2],
+						];
+					}
 				}
 			}
 		}
@@ -291,8 +267,8 @@ class CartService {
 		if ( $sizeRestrictions === null ) {
 			return false;
 		}
-		$biggestProductSizeBySum    = $this->getBiggestProductSizeBySum();
-		$biggestProductSizeByLength = $this->getBiggestProductSizeByLength();
+		$biggestProductSizeBySum    = $this->getBiggestProductSize( self::CRITERIA_BY_SUM );
+		$biggestProductSizeByLength = $this->getBiggestProductSize();
 		if ( $biggestProductSizeBySum === null || $biggestProductSizeByLength === null ) {
 			return false;
 		}
