@@ -377,24 +377,33 @@
 						</td>
 					</tr>
 					<tr id="{$carrier_data['dimensionRestrictionContainerId']}">
-						<th scope="row">
-						</th>
-						<td>
-							{* todo 2328 CSS *}
-							{if isset($form['dimensions_restrictions-length'])}
-								<label n:name=dimensions_restrictions-length />
-								<input n:name=dimensions_restrictions-length><br>
-								<label n:name=dimensions_restrictions-width />
-								<input n:name=dimensions_restrictions-width><br>
-								<label n:name=dimensions_restrictions-height />
-								<input n:name=dimensions_restrictions-height>
-							{/if}
-							{if isset($form['dimensions_restrictions-maximum_length'])}
-								<label n:name=dimensions_restrictions-maximum_length />
-								<input n:name=dimensions_restrictions-maximum_length><br>
-								<label n:name=dimensions_restrictions-dimensions_sum />
-								<input n:name=dimensions_restrictions-dimensions_sum>
-							{/if}
+						<td colspan="2">
+							<table class="packetery-table">
+								{if isset($form['dimensions_restrictions-length'])}
+									<tr>
+										<th><label n:name=dimensions_restrictions-length /></th>
+										<td><input n:name=dimensions_restrictions-length></td>
+									</tr>
+									<tr>
+										<th><label n:name=dimensions_restrictions-width /></th>
+										<td><input n:name=dimensions_restrictions-width></td>
+									</tr>
+									<tr>
+										<th><label n:name=dimensions_restrictions-height /></th>
+										<td><input n:name=dimensions_restrictions-height></td>
+									</tr>
+								{/if}
+								{if isset($form['dimensions_restrictions-maximum_length'])}
+									<tr>
+										<th><label n:name=dimensions_restrictions-maximum_length /></th>
+										<td><input n:name=dimensions_restrictions-maximum_length></td>
+									</tr>
+									<tr>
+										<th><label n:name=dimensions_restrictions-dimensions_sum /></th>
+										<td><input n:name=dimensions_restrictions-dimensions_sum></td>
+									</tr>
+								{/if}
+							</table>
 						</td>
 					</tr>
 
