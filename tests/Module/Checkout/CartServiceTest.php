@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Tests\Module\Checkout;
 
 use Exception;
+use Packetery\Module\Carrier;
 use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
@@ -405,5 +406,132 @@ class CartServiceTest extends TestCase {
 		$this->productCategoryEntityFactory->method( 'fromTermId' )->willReturn( $productCategoryEntityMock );
 
 		$this->assertTrue( $this->cartService->isShippingRateRestrictedByProductsCategory( 'testRate', [ [ 'product_id' => 1 ] ] ) );
+	}
+
+	public function testGetBiggestProductSizeBySum(): void {
+		$this->createCartServiceMock();
+		$productMock1 = $this->createMock( Product\Entity::class );
+		$productMock1->method( 'isPhysical' )->willReturn( true );
+		$productMock1->method( 'getLengthInCm' )->willReturn( 15.5 );
+		$productMock1->method( 'getWidthInCm' )->willReturn( 25.2 );
+		$productMock1->method( 'getHeightInCm' )->willReturn( 10.7 );
+
+		$productMock2 = $this->createMock( Product\Entity::class );
+		$productMock2->method( 'isPhysical' )->willReturn( true );
+		$productMock2->method( 'getLengthInCm' )->willReturn( 35.8 );
+		$productMock2->method( 'getWidthInCm' )->willReturn( 20.1 );
+		$productMock2->method( 'getHeightInCm' )->willReturn( 5.4 );
+
+		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
+			[
+				[ 'product_id' => 1 ],
+				[ 'product_id' => 2 ],
+			]
+		);
+
+		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
+			[
+				[ 'product_id' => 1 ],
+				[ 'product_id' => 2 ],
+			]
+		);
+
+		$this->productEntityFactory
+			->method( 'fromPostId' )
+			->willReturnOnConsecutiveCalls( $productMock1, $productMock2 );
+
+		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
+
+		$result = $this->cartService->getBiggestProductSize( CartService::CRITERIA_BY_SUM );
+		$this->assertEquals(
+			[
+				'length' => 35.8,
+				'width'  => 20.1,
+				'depth'  => 5.4,
+			],
+			$result
+		);
+	}
+
+	public function testCartContainsProductOversizedForCarrierWithValidSizeRestrictions(): void {
+		$this->createCartServiceMock();
+		$carrierOptionsMock = $this->createMock( Carrier\Options::class );
+		$carrierOptionsMock->method( 'getSizeRestrictions' )->willReturn(
+			[
+				'max_length'     => 100,
+				'dimensions_sum' => 200,
+				'length'         => 50,
+				'width'          => 40,
+				'height'         => 30,
+			]
+		);
+
+		$productMock1 = $this->createMock( Product\Entity::class );
+		$productMock1->method( 'isPhysical' )->willReturn( true );
+		$productMock1->method( 'getLengthInCm' )->willReturn( 30.5 ); // Float value
+		$productMock1->method( 'getWidthInCm' )->willReturn( 20.7 );  // Float value
+		$productMock1->method( 'getHeightInCm' )->willReturn( 10.3 ); // Float value
+
+		$productMock2 = $this->createMock( Product\Entity::class );
+		$productMock2->method( 'isPhysical' )->willReturn( true );
+		$productMock2->method( 'getLengthInCm' )->willReturn( 35.2 ); // Float value
+		$productMock2->method( 'getWidthInCm' )->willReturn( 18.6 );  // Float value
+		$productMock2->method( 'getHeightInCm' )->willReturn( 12.4 ); // Float value
+
+		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
+			[
+				[ 'product_id' => 1 ],
+				[ 'product_id' => 2 ],
+			]
+		);
+		$this->productEntityFactory
+			->method( 'fromPostId' )
+			->willReturnOnConsecutiveCalls( $productMock1, $productMock2, $productMock1, $productMock2 );
+
+		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
+
+		$result = $this->cartService->cartContainsProductOversizedForCarrier( $carrierOptionsMock );
+		$this->assertFalse( $result );
+	}
+
+	public function testCartContainsProductOversizedForCarrierWithExceededSize(): void {
+		$this->createCartServiceMock();
+		$carrierOptionsMock = $this->createMock( Carrier\Options::class );
+		$carrierOptionsMock->method( 'getSizeRestrictions' )->willReturn(
+			[
+				'max_length'     => 100,
+				'dimensions_sum' => 200,
+				'length'         => 50,
+				'width'          => 40,
+				'height'         => 30,
+			]
+		);
+
+		$productMock1 = $this->createMock( Product\Entity::class );
+		$productMock1->method( 'isPhysical' )->willReturn( true );
+		$productMock1->method( 'getLengthInCm' )->willReturn( 60.5 ); // Float value
+		$productMock1->method( 'getWidthInCm' )->willReturn( 50.2 ); // Float value
+		$productMock1->method( 'getHeightInCm' )->willReturn( 20.1 ); // Float value
+
+		$productMock2 = $this->createMock( Product\Entity::class );
+		$productMock2->method( 'isPhysical' )->willReturn( true );
+		$productMock2->method( 'getLengthInCm' )->willReturn( 35.8 ); // Float value
+		$productMock2->method( 'getWidthInCm' )->willReturn( 15.7 ); // Float value
+		$productMock2->method( 'getHeightInCm' )->willReturn( 8.5 );  // Float value
+
+		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
+			[
+				[ 'product_id' => 1 ],
+				[ 'product_id' => 2 ],
+			]
+		);
+		$this->productEntityFactory
+			->method( 'fromPostId' )
+			->willReturnOnConsecutiveCalls( $productMock1, $productMock2, $productMock1, $productMock2 );
+
+		$this->wpAdapter->method( 'didAction' )->willReturn( 1 );
+
+		$result = $this->cartService->cartContainsProductOversizedForCarrier( $carrierOptionsMock );
+		$this->assertTrue( $result );
 	}
 }
