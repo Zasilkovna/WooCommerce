@@ -127,44 +127,40 @@ class Builder {
 	 * @throws InvalidCarrierException In case Carrier entity could not be created.
 	 */
 	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
-		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( $country === '' ) {
-			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
-		}
+		$country = $this->getCountryFromWcOrder( $wcOrder );
+		$carrier = $this->getCarrier( $result->carrier_id, $country );
+		$size    = new Size(
+			$this->parseFloat( $result->length ),
+			$this->parseFloat( $result->width ),
+			$this->parseFloat( $result->height )
+		);
 
-		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
-		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
-		if ( $carrier === null ) {
-			throw new InvalidCarrierException(
-				sprintf(
-				// translators: %s is carrier id.
-					__( 'Order carrier is invalid (%s). Please contact Packeta support.', 'packeta' ),
-					$carrierId
-				)
-			);
-		}
-
-		$order       = new Order( $result->id, $carrier );
+		$order       = Order::createOrderFromWcOrder(
+			$result->id,
+			$carrier,
+			$result->packet_id,
+			$this->coreHelper->getTrackingUrl( $result->packet_id ),
+			$result->packet_claim_id,
+			$this->coreHelper->getTrackingUrl( $result->packet_claim_id ),
+			$result->packet_claim_password,
+			(bool) $result->is_exported,
+			(bool) $result->is_label_printed,
+			$size,
+			$result->packet_status,
+			$this->coreHelper->getDateTimeFromString( $result->stored_until ),
+			(bool) $result->address_validated,
+			$this->parseBool( $result->adult_content ),
+			$this->parseFloat( $result->value ),
+			$this->parseFloat( $result->cod ),
+			$this->coreHelper->getDateTimeFromString( $result->deliver_on ),
+			$this->optionsProvider->get_sender()
+		);
 		$orderWeight = $this->parseFloat( $result->weight );
 		if ( $orderWeight !== null ) {
 			$order->setWeight( $orderWeight );
 		}
-		$order->setPacketId( $result->packet_id );
-		$order->setPacketTrackingUrl( $this->coreHelper->getTrackingUrl( $result->packet_id ) );
-		$order->setPacketClaimId( $result->packet_claim_id );
-		$order->setPacketClaimTrackingUrl( $this->coreHelper->getTrackingUrl( $result->packet_claim_id ) );
-		$order->setPacketClaimPassword( $result->packet_claim_password );
-		$order->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
-		$order->setIsExported( (bool) $result->is_exported );
-		$order->setIsLabelPrinted( (bool) $result->is_label_printed );
-		$order->setCarrierNumber( $result->carrier_number );
-		$order->setPacketStatus( $result->packet_status );
-		$order->setStoredUntil( $this->coreHelper->getDateTimeFromString( $result->stored_until ) );
-		$order->setAddressValidated( (bool) $result->address_validated );
-		$order->setAdultContent( $this->parseBool( $result->adult_content ) );
-		$order->setValue( $this->parseFloat( $result->value ) );
-		$order->setCod( $this->parseFloat( $result->cod ) );
-		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $result->deliver_on ) );
+
+		// $order->setCarrierNumber( $result->carrier_number );
 		$order->setLastApiErrorMessage( $result->api_error_message );
 		$order->setLastApiErrorDateTime(
 			( $result->api_error_date === null )
@@ -176,21 +172,7 @@ class Builder {
 				)->setTimezone( wp_timezone() )
 		);
 
-		if ( $result->delivery_address ) {
-			$deliveryAddressDecoded = json_decode( $result->delivery_address, false );
-			$deliveryAddress        = new Address(
-				$deliveryAddressDecoded->street,
-				$deliveryAddressDecoded->city,
-				$deliveryAddressDecoded->zip
-			);
-
-			$deliveryAddress->setHouseNumber( $deliveryAddressDecoded->houseNumber );
-			$deliveryAddress->setLongitude( $deliveryAddressDecoded->longitude );
-			$deliveryAddress->setLatitude( $deliveryAddressDecoded->latitude );
-			$deliveryAddress->setCounty( $deliveryAddressDecoded->county );
-
-			$order->setDeliveryAddress( $deliveryAddress );
-		}
+		$this->setAddressDetails( $order, $result );
 
 		if ( $result->car_delivery_id ) {
 			$order->setCarDeliveryId( $result->car_delivery_id );
@@ -257,7 +239,7 @@ class Builder {
 			$order->setCod( null );
 		}
 
-		$order->setSize( $order->getSize() );
+		//$order->setSize( $order->getSize() );
 		$order->setCurrency( $wcOrder->get_currency() );
 
 		$order->setCustomsDeclaration( $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() ) );
@@ -316,5 +298,38 @@ class Builder {
 		}
 
 		return (bool) $value;
+	}
+
+	private function getCountryFromWcOrder( WC_Order $wcOrder ): string {
+		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
+		if ( $country === '' ) {
+			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
+		}
+
+		return $country;
+	}
+
+	private function getCarrier( string $carrierId, string $country ): Entity\Carrier {
+		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $carrierId, $country );
+		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
+		if ( $carrier === null ) {
+			throw new InvalidCarrierException(
+				sprintf( __( 'Order carrier is invalid (%s). Please contact Packeta support.', 'packeta' ), $carrierId )
+			);
+		}
+
+		return $carrier;
+	}
+
+	private function setAddressDetails( Order $order, stdClass $result ): void {
+		if ( $result->delivery_address ) {
+			$decoded         = json_decode( $result->delivery_address, false );
+			$deliveryAddress = new Address( $decoded->street, $decoded->city, $decoded->zip );
+			$deliveryAddress->setHouseNumber( $decoded->houseNumber );
+			$deliveryAddress->setLongitude( $decoded->longitude );
+			$deliveryAddress->setLatitude( $decoded->latitude );
+			$deliveryAddress->setCounty( $decoded->county );
+			$order->setDeliveryAddress( $deliveryAddress );
+		}
 	}
 }

@@ -260,21 +260,68 @@ class Order {
 	 */
 	private $storedUntil;
 
-	/**
-	 * Order entity constructor.
-	 *
-	 * @param string  $number  Order id.
-	 * @param Carrier $carrier Carrier entity.
-	 */
 	public function __construct(
 		string $number,
-		Carrier $carrier
+		Carrier $carrier,
+		bool $isExported,
+		string $name,
+		?float $value,
+		string $eshop
 	) {
 		$this->number           = $number;
 		$this->carrier          = $carrier;
-		$this->isExported       = false;
+		$this->isExported       = $isExported;
+		$this->name             = $name;
+		$this->value            = $value;
+		$this->eshop            = $eshop;
 		$this->isLabelPrinted   = false;
 		$this->addressValidated = false;
+	}
+
+	public static function createOrderFromWcOrder(
+		string $orderNumber,
+		Carrier $carrier,
+		?string $packetId,
+		?string $packetTrackingUrl,
+		?string $packetClaimId,
+		?string $packetClaimTrackingUrl,
+		?string $packetClaimPassword,
+		bool $isExported,
+		bool $isLabePrinted,
+		Size $size,
+		?string $packetStatus,
+		?DateTimeImmutable $storedUntil,
+		bool $addressValidated,
+		?bool $adultContent,
+		?float $value,
+		?float $cod,
+		?DateTimeImmutable $deliverOn,
+		string $eshop
+
+	): Order {
+		$order = new self(
+			$orderNumber,
+			$carrier,
+			$isExported,
+			'random name',
+			$value,
+			$eshop
+		);
+
+		$order->packetId = $packetId;
+		$order->setPacketTrackingUrl( $packetTrackingUrl );
+		$order->setPacketClaimId( $packetClaimId );
+		$order->setPacketClaimTrackingUrl( $packetClaimTrackingUrl );
+		$order->setPacketClaimPassword( $packetClaimPassword );
+		$order->setPacketStatus( $packetStatus );
+		$order->setStoredUntil( $storedUntil );
+		$order->setAddressValidated( $addressValidated );
+		$order->setCod( $cod );
+		$order->setDeliverOn( $deliverOn );
+		$order->setSize( $size );
+		$order->setAdultContent( $adultContent );
+
+		return $order;
 	}
 
 	/**
