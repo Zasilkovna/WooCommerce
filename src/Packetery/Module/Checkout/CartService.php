@@ -16,7 +16,7 @@ use WC_Product;
 class CartService {
 
 	private const CRITERIA_BY_LENGTH = 1;
-	private const CRITERIA_BY_SUM    = 2;
+	public const CRITERIA_BY_SUM     = 2;
 
 	/**
 	 * @var WpAdapter
