@@ -210,6 +210,13 @@ class ModuleHelper {
 		return $inputArray;
 	}
 
+	/**
+	 * Returns null for value lesser than 1.
+	 *
+	 * @param int $number Value (mm).
+	 *
+	 * @return float|null
+	 */
 	public static function convertToCentimeters( int $number ): ?float {
 		return $number < 1 ? null : ( $number * 0.1 );
 	}
@@ -230,6 +237,13 @@ class ModuleHelper {
 			->setAttribute( 'target', $target );
 	}
 
+	/**
+	 * Returns null for value lesser than 0.1.
+	 *
+	 * @param float $number Value (cm).
+	 *
+	 * @return float|null
+	 */
 	public static function convertToMillimeters( float $number ): ?float {
 		return $number < 0.1 ? null : ( $number * 10 );
 	}

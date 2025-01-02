@@ -15,6 +15,7 @@ use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
@@ -45,78 +46,56 @@ class OptionsPage {
 	public const MINIMUM_CHECKED_VENDORS = 2;
 
 	/**
-	 * PacketeryLatte_engine.
-	 *
-	 * @var Engine PacketeryLatte engine.
+	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Carrier repository.
-	 *
-	 * @var EntityRepository Carrier repository.
+	 * @var EntityRepository
 	 */
 	private $carrierRepository;
 
 	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory Form factory.
+	 * @var FormFactory
 	 */
 	private $formFactory;
 
 	/**
-	 * Packetery\Nette Request.
-	 *
-	 * @var Request Packetery\Nette Request.
+	 * @var Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * CountryListingPage.
-	 *
-	 * @var CountryListingPage CountryListingPage.
+	 * @var CountryListingPage
 	 */
 	private $countryListingPage;
 
 	/**
-	 * Message manager.
-	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
 
 	/**
-	 * Internal pickup points config.
-	 *
 	 * @var PacketaPickupPointsConfig
 	 */
 	private $pickupPointsConfig;
 
 	/**
-	 * Feature flag.
-	 *
 	 * @var FeatureFlagProvider
 	 */
 	private $featureFlagProvider;
 
 	/**
-	 * Car delivery config.
-	 *
 	 * @var CarDeliveryConfig
 	 */
 	private $carDeliveryConfig;
 
 	/**
-	 * WC Native carrier settings config.
-	 *
 	 * @var WcSettingsConfig
 	 */
 	private $wcSettingsConfig;
 
 	/**
-	 * Carrier options factory.
-	 *
 	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
@@ -131,6 +110,11 @@ class OptionsPage {
 	 */
 	private $urlBuilder;
 
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
@@ -144,7 +128,8 @@ class OptionsPage {
 		WcSettingsConfig $wcSettingsConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
-		UrlBuilder $urlBuilder
+		UrlBuilder $urlBuilder,
+		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine           = $latteEngine;
 		$this->carrierRepository     = $carrierRepository;
@@ -159,6 +144,7 @@ class OptionsPage {
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->moduleHelper          = $moduleHelper;
 		$this->urlBuilder            = $urlBuilder;
+		$this->wpAdapter             = $wpAdapter;
 	}
 
 	/**
@@ -299,6 +285,54 @@ class OptionsPage {
 							->addConditionOn( $form['coupon_free_shipping']['active'], Form::FILLED )
 							->toggle( $this->createCouponFreeShippingForFeesContainerId( $form ) );
 
+		$dimensionsRestrictions = $form->addContainer( 'dimensions_restrictions' );
+		$dimensionsRestrictions->addCheckbox( 'active', $this->wpAdapter->__( 'Maximum package size', 'packeta' ) );
+		if (
+			strpos( $carrier->getId(), Carrier::VENDOR_GROUP_ZBOX ) !== false ||
+			strpos( $carrier->getId(), Carrier::VENDOR_GROUP_ZPOINT ) === 0 ||
+			( $carrier->hasPickupPoints() && is_numeric( $carrier->getId() ) )
+		) {
+			$dimensionsRestrictions->addText( 'length', $this->wpAdapter->__( 'Length (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+			$dimensionsRestrictions->addText( 'width', $this->wpAdapter->__( 'Width (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+			$dimensionsRestrictions->addText( 'height', $this->wpAdapter->__( 'Height (cm)', 'packeta' ) )
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+		} else {
+
+			$maximumLength = $dimensionsRestrictions->addText( 'maximum_length', $this->wpAdapter->__( 'Maximum length (cm)', 'packeta' ) );
+			$maximumLength->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+							->addRule( Form::MIN, $this->wpAdapter->__( 'Value must be greater than 0', 'packeta' ), 1 );
+
+			$dimensionsSum = $dimensionsRestrictions->addText( 'dimensions_sum', $this->wpAdapter->__( 'Sum of dimensions (cm)', 'packeta' ) );
+			$dimensionsSum->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+							->addRule( Form::MIN, $this->wpAdapter->__( 'Value must be greater than 0', 'packeta' ), 1 );
+
+			$maximumLength->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->addConditionOn( $dimensionsSum, Form::BLANK )
+								->addRule( Form::FILLED, $this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' ) );
+
+			$dimensionsSum->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->addConditionOn( $maximumLength, Form::BLANK )
+								->addRule( Form::FILLED, $this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' ) );
+		}
+
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
@@ -352,6 +386,10 @@ class OptionsPage {
 	 */
 	private function createCouponFreeShippingForFeesContainerId( Form $form ): string {
 		return sprintf( '%s_apply_free_shipping_coupon_allow_for_fees', $form->getName() );
+	}
+
+	private function createDimensionRestrictionContainerId( Form $form ): string {
+		return sprintf( '%s_dimension_restrictions', $form->getName() );
 	}
 
 	/**
@@ -541,99 +579,120 @@ class OptionsPage {
 			'formTemplate'                         => $formTemplate,
 			'carrier'                              => $carrier,
 			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
+			'dimensionRestrictionContainerId'      => $this->createDimensionRestrictionContainerId( $form ),
 			'weightLimitsContainerId'              => $this->createFieldContainerId( $form, self::FORM_FIELD_WEIGHT_LIMITS ),
 			'productValueLimitsContainerId'        => $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ),
 			'isAvailableVendorsCountLow'           => $this->isAvailableVendorsCountLowByCarrierId( $carrier->getId() ),
 		];
 	}
 
-	/**
-	 *  Renders page.
-	 */
 	public function render(): void {
-		$countryIso           = $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE );
-		$carrierId            = $this->httpRequest->getQuery( self::PARAMETER_CARRIER_ID );
-		$commonTemplateParams = [
+		$countryIso = $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE );
+		$carrierId  = $this->httpRequest->getQuery( self::PARAMETER_CARRIER_ID );
+
+		if ( $carrierId !== null ) {
+			$this->renderCarrierDetail( $carrierId );
+		} elseif ( $countryIso !== null ) {
+			$this->renderCountryCarriers( $countryIso );
+		} else {
+			$this->countryListingPage->render();
+		}
+	}
+
+	private function renderCarrierDetail( string $carrierId ): void {
+		$carrier             = $this->carrierRepository->getAnyById( $carrierId );
+		$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
+
+		if ( $carrier === null || $carrierTemplateData === null ) {
+			$this->countryListingPage->render();
+
+			return;
+		}
+
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/carrier/detail.latte',
+			array_merge_recursive(
+				$this->getCommonTemplateParams(),
+				[
+					'carrierTemplateData' => $carrierTemplateData,
+					'translations'        => [
+						'title' => $carrier->getName(),
+					],
+				]
+			)
+		);
+	}
+
+	private function renderCountryCarriers( string $countryIso ): void {
+		$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
+		$carriersData    = [];
+		foreach ( $countryCarriers as $carrier ) {
+			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
+			if ( $carrierTemplateData !== null ) {
+				$carriersData[] = $carrierTemplateData;
+			}
+		}
+
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
+			array_merge_recursive(
+				$this->getCommonTemplateParams(),
+				[
+					'forms'        => $carriersData,
+					'country_iso'  => $countryIso,
+					'translations' => [
+						'title' => sprintf(
+							// translators: %s is country code.
+							$this->wpAdapter->__( 'Country options: %s', 'packeta' ),
+							strtoupper( $countryIso )
+						),
+					],
+				]
+			)
+		);
+	}
+
+	/**
+	 * @return array<string, null|string|bool|array<string, string>>
+	 */
+	private function getCommonTemplateParams(): array {
+		return [
 			'globalCurrency' => get_woocommerce_currency_symbol(),
 			'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
 			'isCzechLocale'  => $this->moduleHelper->isCzechLocale(),
 			'logoZasilkovna' => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
 			'logoPacketa'    => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
-			'translations'   => [
-				'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
-				'delete'                                 => __( 'Delete', 'packeta' ),
-				'weightRules'                            => __( 'Weight rules', 'packeta' ),
-				'productValueRules'                      => __( 'Product value rules', 'packeta' ),
-				'addWeightRule'                          => __( 'Add weight rule', 'packeta' ),
-				'addProductValueRule'                    => __( 'Add product value rule', 'packeta' ),
-				'codSurchargeRules'                      => __( 'COD surcharge rules', 'packeta' ),
-				'addCodSurchargeRule'                    => __( 'Add COD surcharge rule', 'packeta' ),
-				'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
-				'daysUntilShipping'                      => __( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
-				'shippingTimeCutOff'                     => __( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
-				'addressValidationDescription'           => __( 'Customer address validation.', 'packeta' ),
-				'roundingDescription'                    => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
-				'saveChanges'                            => __( 'Save changes', 'packeta' ),
-				'packeta'                                => __( 'Packeta', 'packeta' ),
-				'noKnownCarrierForThisCountry'           => __( 'No carriers available for this country.', 'packeta' ),
-				'ageVerificationSupportedNotification'   => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
-				'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
-				'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
-				'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
-				'lowAvailableVendorsCount'               => __( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
-			],
+			'translations'   => $this->getTranslations(),
 		];
+	}
 
-		if ( $carrierId !== null ) {
-			$carrier             = $this->carrierRepository->getAnyById( $carrierId );
-			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
-			if ( $carrier === null || $carrierTemplateData === null ) {
-				$this->countryListingPage->render();
-
-				return;
-			}
-
-			$this->latteEngine->render(
-				PACKETERY_PLUGIN_DIR . '/template/carrier/detail.latte',
-				array_merge_recursive(
-					$commonTemplateParams,
-					[
-						'carrierTemplateData' => $carrierTemplateData,
-						'translations'        => [
-							'title' => $carrier->getName(),
-						],
-					]
-				)
-			);
-
-		} elseif ( $countryIso !== null ) {
-			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
-			$carriersData    = [];
-			foreach ( $countryCarriers as $carrier ) {
-				$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
-				if ( $carrierTemplateData !== null ) {
-					$carriersData[] = $carrierTemplateData;
-				}
-			}
-
-			$this->latteEngine->render(
-				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
-				array_merge_recursive(
-					$commonTemplateParams,
-					[
-						'forms'        => $carriersData,
-						'country_iso'  => $countryIso,
-						'translations' => [
-							// translators: %s is country code.
-							'title' => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
-
-						],
-					]
-				)
-			);
-		} else {
-			$this->countryListingPage->render();
-		}
+	/**
+	 * @return array<string, string>
+	 */
+	private function getTranslations(): array {
+		return [
+			'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => $this->wpAdapter->__( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
+			'delete'                                 => $this->wpAdapter->__( 'Delete', 'packeta' ),
+			'weightRules'                            => $this->wpAdapter->__( 'Weight rules', 'packeta' ),
+			'productValueRules'                      => $this->wpAdapter->__( 'Product value rules', 'packeta' ),
+			'addWeightRule'                          => $this->wpAdapter->__( 'Add weight rule', 'packeta' ),
+			'addProductValueRule'                    => $this->wpAdapter->__( 'Add product value rule', 'packeta' ),
+			'codSurchargeRules'                      => $this->wpAdapter->__( 'COD surcharge rules', 'packeta' ),
+			'addCodSurchargeRule'                    => $this->wpAdapter->__( 'Add COD surcharge rule', 'packeta' ),
+			'afterExceedingThisAmountShippingIsFree' => $this->wpAdapter->__( 'After exceeding this amount, shipping is free.', 'packeta' ),
+			'daysUntilShipping'                      => $this->wpAdapter->__( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
+			'shippingTimeCutOff'                     => $this->wpAdapter->__( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
+			'addressValidationDescription'           => $this->wpAdapter->__( 'Customer address validation.', 'packeta' ),
+			'roundingDescription'                    => $this->wpAdapter->__( 'COD rounding for submitting data to Packeta', 'packeta' ),
+			'saveChanges'                            => $this->wpAdapter->__( 'Save changes', 'packeta' ),
+			'packeta'                                => $this->wpAdapter->__( 'Packeta', 'packeta' ),
+			'noKnownCarrierForThisCountry'           => $this->wpAdapter->__( 'No carriers available for this country.', 'packeta' ),
+			'ageVerificationSupportedNotification'   => $this->wpAdapter->__( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
+			'carrierDoesNotSupportCod'               => $this->wpAdapter->__( 'This carrier does not support COD payment.', 'packeta' ),
+			'allowedPickupPointTypes'                => $this->wpAdapter->__( 'Pickup point types', 'packeta' ),
+			'checkAtLeastTwo'                        => $this->wpAdapter->__( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+			'lowAvailableVendorsCount'               => $this->wpAdapter->__( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
+		];
 	}
 
 	/**

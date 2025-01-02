@@ -165,12 +165,13 @@ class ShippingRateFactory {
 		$disallowedShippingRateIds = $this->cartService->getDisallowedShippingRateIds();
 		$cartProducts              = $this->wcAdapter->cartGetCartContents();
 
-		$isCarrierOptionInactive = $allowedCarrierNames === null && ! $carrierOptions->isActive();
-		$isCarDeliveryDisabled   = $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled();
-		$isOptionDisallowed      = in_array( $optionId, $disallowedShippingRateIds, true );
-		$isRestrictedByCategory  = $this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts );
+		$isCarrierOptionInactive  = $allowedCarrierNames === null && ! $carrierOptions->isActive();
+		$isCarDeliveryDisabled    = $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled();
+		$isOptionDisallowed       = in_array( $optionId, $disallowedShippingRateIds, true );
+		$containsOversizedProduct = $this->cartService->cartContainsProductOversizedForCarrier( $carrierOptions );
+		$isRestrictedByCategory   = $this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts );
 
-		return ! ( $isCarrierOptionInactive || $isCarDeliveryDisabled || $isOptionDisallowed || $isRestrictedByCategory );
+		return ! ( $isCarrierOptionInactive || $isCarDeliveryDisabled || $isOptionDisallowed || $containsOversizedProduct || $isRestrictedByCategory );
 	}
 
 	/**

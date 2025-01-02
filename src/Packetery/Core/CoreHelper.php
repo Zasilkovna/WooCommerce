@@ -109,4 +109,21 @@ class CoreHelper {
 	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
 		return $date !== null ? new DateTimeImmutable( $date ) : null;
 	}
+
+	public static function convertToCentimeters( float $value, string $fromUnit ): float {
+		$conversionFactors = [
+			'cm' => 1,
+			'm'  => 100,
+			'mm' => 0.1,
+			'in' => 2.54,
+			'yd' => 91.44,
+		];
+
+		if ( ! isset( $conversionFactors[ $fromUnit ] ) ) {
+			// Do not convert unknown values.
+			return $value;
+		}
+
+		return $value * $conversionFactors[ $fromUnit ];
+	}
 }
