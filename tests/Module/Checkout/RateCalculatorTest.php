@@ -137,14 +137,14 @@ class RateCalculatorTest extends TestCase {
 	/**
 	 * @dataProvider calculationDataProvider
 	 */
-	public function testGetShippingRateCost( ?float $expectedCost, Options $carrierOptions, float $totalProductValue, float $cartWeight, bool $isCouponApplied ): void {
+	public function testGetShippingRateCost( ?float $expectedCost, Options $carrierOptions, float $totalProductValue, float $cartWeightKg, bool $isCouponApplied ): void {
 		$this->createRateCalculatorMock();
 
 		$cost = $this->rateCalculator->getShippingRateCost(
 			$carrierOptions,
 			$totalProductValue,
 			$totalProductValue,
-			$cartWeight,
+			$cartWeightKg,
 			$isCouponApplied
 		);
 
