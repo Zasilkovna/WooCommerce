@@ -8,6 +8,7 @@
 		displayDetailsOnTestsThatTriggerWarnings="true"
 		displayDetailsOnPhpunitDeprecations="true"
 		bootstrap="tests/bootstrap.php"
+		cacheResultFile="temp/.phpunit.result.cache"
 >
 	<php>
 		<ini name="error_reporting" value="-1"/>

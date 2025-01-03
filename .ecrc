@@ -15,7 +15,6 @@
 		"LICENSE$",
 		"^temp\/",
 		"^\\.idea\/",
-		"^.phpunit.result.cache$",
 		"\\.DS_Store$",
 		"\\.phar$"
 	],
