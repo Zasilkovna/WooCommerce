@@ -16,7 +16,8 @@
         "phpstan/phpstan": "^2.0",
         "squizlabs/php_codesniffer": "^3.11",
         "woocommerce/woocommerce-sniffs": "^1.0",
-        "phpstan/phpstan-nette": "^2.0"
+        "phpstan/phpstan-nette": "^2.0",
+        "php-stubs/wordpress-stubs": "^6.7"
     },
     "scripts": {
         "build:deps": "bash build-deps.sh",
