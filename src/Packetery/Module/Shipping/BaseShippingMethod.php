@@ -11,7 +11,7 @@ namespace Packetery\Module\Shipping;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier;
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -40,9 +40,9 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	private $container;
 
 	/**
-	 * @var Checkout
+	 * @var ShippingRateFactory
 	 */
-	private $checkout;
+	private $shippingRateFactory;
 
 	/**
 	 * @var Carrier\EntityRepository|null
@@ -82,7 +82,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->method_description = __( 'Allows to choose one of Packeta delivery methods', 'packeta' );
 
 		$carrier = $this->carrierRepository->getAnyById( static::CARRIER_ID );
-		if ( null !== $carrier ) {
+		if ( $carrier !== null ) {
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 			$this->method_title = $carrier->getName();
 			$this->title        = $carrier->getName();
@@ -101,7 +101,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->options = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
 
 		$this->init();
-		$this->checkout = $this->container->getByType( Checkout::class );
+		$this->shippingRateFactory = $this->container->getByType( ShippingRateFactory::class );
 	}
 
 	/**
@@ -144,7 +144,7 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 			}
 		}
 
-		$customRates = $this->checkout->getShippingRates( $allowedCarrierNames );
+		$customRates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
 		foreach ( $customRates as $customRate ) {
 			$this->add_rate( $customRate );
 		}

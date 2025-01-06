@@ -47,7 +47,7 @@ class ShippingZoneRepository {
 	 * Lazy data store getter.
 	 */
 	public function getDataStore(): WC_Shipping_Zone_Data_Store_Interface {
-		if ( null === $this->dataStore ) {
+		if ( $this->dataStore === null ) {
 			$this->dataStore = WC_Data_Store::load( 'shipping-zone' );
 		}
 

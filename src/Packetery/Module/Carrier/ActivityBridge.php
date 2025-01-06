@@ -54,7 +54,7 @@ class ActivityBridge {
 			$shippingMethods = $shippingZone['shipping_methods'];
 
 			foreach ( $shippingMethods as $shippingMethod ) {
-				if ( $shippingMethod instanceof BaseShippingMethod && 'yes' === $shippingMethod->enabled ) {
+				if ( $shippingMethod instanceof BaseShippingMethod && $shippingMethod->enabled === 'yes' ) {
 					$activeMethods[] = $shippingMethod::CARRIER_ID;
 				}
 			}

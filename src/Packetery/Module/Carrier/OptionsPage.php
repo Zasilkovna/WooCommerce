@@ -110,11 +110,6 @@ class OptionsPage {
 	 */
 	private $wpAdapter;
 
-	/**
-	 * @var CarrierOptionsFactory
-	 */
-	private $carrierOptionsFactory;
-
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
@@ -125,10 +120,10 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
+		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
-		WpAdapter $wpAdapter,
-		CarrierOptionsFactory $carrierOptionsFactory
+		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine           = $latteEngine;
 		$this->carrierRepository     = $carrierRepository;
@@ -139,10 +134,10 @@ class OptionsPage {
 		$this->pickupPointsConfig    = $pickupPointsConfig;
 		$this->featureFlagProvider   = $featureFlagProvider;
 		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->moduleHelper          = $moduleHelper;
 		$this->urlBuilder            = $urlBuilder;
 		$this->wpAdapter             = $wpAdapter;
-		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**

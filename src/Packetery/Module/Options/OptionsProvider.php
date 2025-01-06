@@ -95,7 +95,7 @@ class OptionsProvider {
 		}
 
 		$advancedData = get_option( self::OPTION_NAME_PACKETERY_ADVANCED );
-		if ( false === $advancedData || null === $advancedData ) {
+		if ( $advancedData === false || $advancedData === null ) {
 			$advancedData = [];
 		}
 
@@ -681,7 +681,7 @@ class OptionsProvider {
 	 */
 	public function isWcCarrierConfigEnabled(): bool {
 		$isEnabled = ( $this->advancedData['new_carrier_settings_enabled'] ?? null );
-		if ( null !== $isEnabled ) {
+		if ( $isEnabled !== null ) {
 			return (bool) $isEnabled;
 		}
 

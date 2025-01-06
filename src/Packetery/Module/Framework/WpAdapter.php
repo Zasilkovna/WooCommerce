@@ -154,10 +154,6 @@ class WpAdapter {
 		return get_site_option( $option );
 	}
 
-	public function getLocale(): string {
-		return get_locale();
-	}
-
 	/**
 	 * Returns non-negative int.
 	 *

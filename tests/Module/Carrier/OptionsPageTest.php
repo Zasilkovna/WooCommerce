@@ -53,10 +53,10 @@ class OptionsPageTest extends TestCase {
 			$packetaPickupPointsConfig,
 			$featureFlagProviderMock,
 			$carDeliveryConfigMock,
+			$this->createMock( CarrierOptionsFactory::class ),
 			$this->createMock( ModuleHelper::class ),
 			$this->createMock( UrlBuilder::class ),
 			$this->createMock( WpAdapter::class ),
-			$this->createMock( CarrierOptionsFactory::class ),
 		);
 
 		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );

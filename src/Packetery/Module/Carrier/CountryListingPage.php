@@ -400,7 +400,7 @@ class CountryListingPage {
 				continue;
 			}
 
-			if ( '' !== $keyword && false === stripos( $carrier->getName(), $keyword ) ) {
+			if ( $keyword !== '' && stripos( $carrier->getName(), $keyword ) === false ) {
 				continue;
 			}
 

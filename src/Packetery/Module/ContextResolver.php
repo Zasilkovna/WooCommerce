@@ -151,10 +151,10 @@ class ContextResolver {
 		global $pagenow, $plugin_page;
 
 		return (
-			'admin.php' === $pagenow &&
+			$pagenow === 'admin.php' &&
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-			'wc-settings' === $plugin_page &&
-			'shipping' === $this->request->getQuery( 'tab' ) &&
+			$plugin_page === 'wc-settings' &&
+			$this->request->getQuery( 'tab' ) === 'shipping' &&
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			$this->request->getQuery( 'zone_id' ) > 0
 		);
