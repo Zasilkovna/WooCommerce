@@ -116,7 +116,7 @@ class ShippingRateFactoryTest extends TestCase {
 						],
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 5.0,
+					'cartWeightKg'                       => 5.0,
 				],
 			'car delivery carrier must not be present in rates' =>
 				[
@@ -162,7 +162,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'allowedCarrierNames'                => null,
 					'isCarDeliveryEnabled'               => false,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 			'only one carrier is active'                   =>
 				[
@@ -208,7 +208,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'allowedCarrierNames'                => null,
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 			'carrier not supporting over-weight cart must be omitted' =>
 				[
@@ -242,7 +242,7 @@ class ShippingRateFactoryTest extends TestCase {
 						],
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 21.0,
+					'cartWeightKg'                       => 21.0,
 				],
 			'inactive carrier must be omitted'             =>
 				[
@@ -273,7 +273,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'allowedCarrierNames'                => [],
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 			'carrier disallowed by product must be omitted' =>
 				[
@@ -302,7 +302,7 @@ class ShippingRateFactoryTest extends TestCase {
 						],
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 			'carrier disallowed by product category must be omitted' =>
 				[
@@ -331,7 +331,7 @@ class ShippingRateFactoryTest extends TestCase {
 						],
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 			'car delivery carriers must be supported'      =>
 				[
@@ -365,7 +365,7 @@ class ShippingRateFactoryTest extends TestCase {
 						],
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 			'carrier not supporting age verification must be omitted' =>
 				[
@@ -399,7 +399,7 @@ class ShippingRateFactoryTest extends TestCase {
 						],
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => true,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 			'allowed carrier names argument must support null' =>
 				[
@@ -430,7 +430,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'allowedCarrierNames'                => null,
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
-					'cartWeight'                         => 1.0,
+					'cartWeightKg'                       => 1.0,
 				],
 		];
 	}
