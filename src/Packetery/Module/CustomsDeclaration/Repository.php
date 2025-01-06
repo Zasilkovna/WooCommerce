@@ -90,7 +90,7 @@ class Repository {
 			ARRAY_A
 		);
 
-		if ( null === $customsDeclarationRow ) {
+		if ( $customsDeclarationRow === null ) {
 			return null;
 		}
 
@@ -132,11 +132,26 @@ class Repository {
 	 * @return CustomsDeclarationItem[]
 	 */
 	public function getItemsByCustomsDeclarationId( ?string $customsDeclarationId ): array {
-		if ( null === $customsDeclarationId ) {
+		if ( $customsDeclarationId === null ) {
 			return [];
 		}
-		/** @var null|array<string, string[]> $customsDeclarationItemRows */
-		$customsDeclarationItemRows = $this->wpdbAdapter->get_results(
+
+		$customsDeclarationItemRows = $this->getCustomsDeclarationItemRows( $customsDeclarationId );
+
+		if ( $customsDeclarationItemRows === null ) {
+			return [];
+		}
+
+		$customsDeclarationItems = [];
+		foreach ( $customsDeclarationItemRows as $row ) {
+			$customsDeclarationItems[] = $this->entityFactory->createItemFromStandardizedStructure( $row );
+		}
+
+		return $customsDeclarationItems;
+	}
+
+	public function getCustomsDeclarationItemRows( ?string $customsDeclarationId ): ?array {
+		return $this->wpdbAdapter->get_results(
 			sprintf(
 				'SELECT
 					`id`,
@@ -156,17 +171,6 @@ class Repository {
 			),
 			ARRAY_A
 		);
-
-		if ( null === $customsDeclarationItemRows ) {
-			return [];
-		}
-
-		$customsDeclarationItems = [];
-		foreach ( $customsDeclarationItemRows as $row ) {
-			$customsDeclarationItems[] = $this->entityFactory->createItemFromStandardizedStructure( $row );
-		}
-
-		return $customsDeclarationItems;
 	}
 
 	/**
@@ -177,7 +181,7 @@ class Repository {
 	 * @return void
 	 */
 	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [ 'invoice_file', 'ead_file' ] ): void {
-		if ( null === $customsDeclaration->getId() ) {
+		if ( $customsDeclaration->getId() === null ) {
 			$this->wpdbAdapter->insertReplaceHelper(
 				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$this->declarationToDbArray( $customsDeclaration, $fieldsToOmit )
@@ -192,7 +196,7 @@ class Repository {
 		}
 
 		$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
-		if ( false === $omitInvoiceFile && $customsDeclaration->hasInvoiceFileContent() ) {
+		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `invoice_file` = %s WHERE `id` = %d',
@@ -202,7 +206,7 @@ class Repository {
 			);
 		}
 
-		if ( false === $omitInvoiceFile && false === $customsDeclaration->hasInvoiceFileContent() ) {
+		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() === false ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `invoice_file` = NULL WHERE `id` = %d',
@@ -212,7 +216,7 @@ class Repository {
 		}
 
 		$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
-		if ( false === $omitEadFile && $customsDeclaration->hasEadFileContent() ) {
+		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `ead_file` = %s WHERE `id` = %d',
@@ -222,7 +226,7 @@ class Repository {
 			);
 		}
 
-		if ( false === $omitEadFile && false === $customsDeclaration->hasEadFileContent() ) {
+		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() === false ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
 					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `ead_file` = NULL WHERE `id` = %d',
@@ -239,7 +243,7 @@ class Repository {
 	 * @return void
 	 */
 	public function saveItem( CustomsDeclarationItem $customsDeclarationItem ): void {
-		if ( null === $customsDeclarationItem->getId() ) {
+		if ( $customsDeclarationItem->getId() === null ) {
 			$this->wpdbAdapter->insert(
 				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$this->declarationItemToDbArray( $customsDeclarationItem )
@@ -291,7 +295,7 @@ class Repository {
 	public function delete( string $orderId ): void {
 		$customsDeclarationId = $this->getIdByOrderNumber( $orderId );
 
-		if ( null === $customsDeclarationId ) {
+		if ( $customsDeclarationId === null ) {
 			return;
 		}
 

@@ -11,6 +11,7 @@ namespace Packetery\Module\Framework;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use WC_Logger;
+use WC_Logger_Interface;
 use WC_Product;
 use WC_Shipping_Zone;
 use WC_Shipping_Zones;
@@ -22,7 +23,6 @@ use WC_Shipping_Zones;
  */
 class WcAdapter {
 	use ActionSchedulerTrait;
-	use WcCustomerTrait;
 	use WcCartTrait;
 	use WcCustomerTrait;
 	use WcPageTrait;
@@ -91,6 +91,21 @@ class WcAdapter {
 
 	public function shipToBillingAddressOnly(): bool {
 		return wc_ship_to_billing_address_only();
+	}
+
+	public function shippingGetPackages(): array {
+		return WC()->shipping()->get_packages();
+	}
+
+	public function addNotice( string $message, string $noticeType ): void {
+		wc_add_notice( $message, $noticeType );
+	}
+
+	/**
+	 * @return WC_Logger|WC_Logger_Interface
+	 */
+	public function getLogger() {
+		return wc_get_logger();
 	}
 
 	public function countriesGetContinents(): array {

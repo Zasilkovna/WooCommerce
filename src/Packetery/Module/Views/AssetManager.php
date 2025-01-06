@@ -6,7 +6,8 @@ namespace Packetery\Module\Views;
 
 use Packetery\Core\CoreHelper;
 use Packetery\Module\Carrier;
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\CheckoutService;
+use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
@@ -48,9 +49,9 @@ class AssetManager {
 	private $request;
 
 	/**
-	 * @var Checkout
+	 * @var CheckoutSettings
 	 */
-	private $checkout;
+	private $checkoutSettings;
 
 	/**
 	 * @var WpAdapter
@@ -62,15 +63,21 @@ class AssetManager {
 	 */
 	private $wcAdapter;
 
+	/**
+	 * @var CheckoutService
+	 */
+	private $checkoutService;
+
 	public function __construct(
 		ContextResolver $contextResolver,
 		FeatureFlagProvider $featureFlagProvider,
 		FeatureFlagNotice $featureFlagNotice,
 		Metabox $orderMetabox,
 		Request $request,
-		Checkout $checkout,
+		CheckoutSettings $checkoutSettings,
 		WpAdapter $wpAdapter,
-		WcAdapter $wcAdapter
+		WcAdapter $wcAdapter,
+		CheckoutService $checkoutService
 	) {
 
 		$this->contextResolver     = $contextResolver;
@@ -78,9 +85,10 @@ class AssetManager {
 		$this->featureFlagNotice   = $featureFlagNotice;
 		$this->orderMetabox        = $orderMetabox;
 		$this->request             = $request;
-		$this->checkout            = $checkout;
+		$this->checkoutSettings    = $checkoutSettings;
 		$this->wpAdapter           = $wpAdapter;
 		$this->wcAdapter           = $wcAdapter;
+		$this->checkoutService     = $checkoutService;
 	}
 
 	/**
@@ -121,11 +129,11 @@ class AssetManager {
 	 */
 	public function enqueueFrontAssets(): void {
 		if ( $this->wcAdapter->isCheckout() ) {
-			if ( false === $this->wpAdapter->doingAjax() ) {
+			if ( $this->wpAdapter->doingAjax() === false ) {
 				$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
 				$this->enqueueStyle( 'packetery-custom-front-styles', 'public/css/custom-front.css' );
 			}
-			if ( $this->checkout->areBlocksUsedInCheckout() ) {
+			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 				$this->wpAdapter->enqueueScript(
 					'packetery-widget-library',
 					'https://widget.packeta.com/v6/www/js/library.js',
@@ -133,9 +141,9 @@ class AssetManager {
 					Plugin::VERSION,
 					false
 				);
-			} elseif ( false === $this->wpAdapter->doingAjax() ) {
+			} elseif ( $this->wpAdapter->doingAjax() === false ) {
 				$this->enqueueScript( 'packetery-checkout', 'public/js/checkout.js', true, [ 'jquery' ] );
-				$this->wpAdapter->localizeScript( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkout->createSettings() );
+				$this->wpAdapter->localizeScript( 'packetery-checkout', 'packeteryCheckoutSettings', $this->checkoutSettings->createSettings() );
 			}
 		}
 	}
@@ -171,7 +179,7 @@ class AssetManager {
 			$this->enqueueScript( 'packetery-select2', 'public/libs/select2-4.0.13/dist.min.js', true, [ 'jquery' ] );
 		}
 
-		if ( Carrier\OptionsPage::SLUG === $page ) {
+		if ( $page === Carrier\OptionsPage::SLUG ) {
 			$this->enqueueScript(
 				'packetery-multiplier',
 				'public/js/multiplier.js',
@@ -193,7 +201,7 @@ class AssetManager {
 			);
 		}
 
-		if ( Options\Page::SLUG === $page ) {
+		if ( $page === Options\Page::SLUG ) {
 			$this->enqueueScript(
 				'packetery-admin-options',
 				'public/js/admin-options.js',
@@ -209,7 +217,7 @@ class AssetManager {
 		$isPageDetail  = $this->contextResolver->isPageDetail();
 
 		$screen      = $this->wpAdapter->getCurrentScree();
-		$isDashboard = ( null !== $screen && 'dashboard' === $screen->id );
+		$isDashboard = ( $screen !== null && $screen->id === 'dashboard' );
 
 		if (
 			$isOrderGridPage || $isOrderDetailPage || $isProductPage || $isProductCategoryPage || $isDashboard || $isPageDetail ||
@@ -294,11 +302,6 @@ class AssetManager {
 			$pickupPointPickerSettings = $this->orderMetabox->getPickupPointWidgetSettings();
 			$addressPickerSettings     = $this->orderMetabox->getAddressWidgetSettings();
 
-			$detailPageSettings = [
-				'translations' => [
-					'packetSubmissionNotPossible' => $this->wpAdapter->__( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
-				],
-			];
 			$this->enqueueScript(
 				'packetery-admin-stored-until-modal-js',
 				'public/js/admin-stored-until-modal.js',
@@ -310,18 +313,13 @@ class AssetManager {
 				]
 			);
 
-			$this->wpAdapter->localizeScript(
-				'packetery-admin-stored-until-modal-js',
-				'datePickerSettings',
-				$detailPageSettings
-			);
 		}
 
-		if ( null !== $pickupPointPickerSettings || null !== $addressPickerSettings ) {
+		if ( $pickupPointPickerSettings !== null || $addressPickerSettings !== null ) {
 			$this->wpAdapter->enqueueScript( 'packetery-widget-library', 'https://widget.packeta.com/v6/www/js/library.js', [], Plugin::VERSION, true );
 		}
 
-		if ( null !== $pickupPointPickerSettings ) {
+		if ( $pickupPointPickerSettings !== null ) {
 			$this->enqueueScript(
 				'packetery-admin-pickup-point-picker',
 				'public/js/admin-pickup-point-picker.js',
@@ -339,7 +337,7 @@ class AssetManager {
 			);
 		}
 
-		if ( null !== $addressPickerSettings ) {
+		if ( $addressPickerSettings !== null ) {
 			$this->enqueueScript(
 				'packetery-admin-address-picker',
 				'public/js/admin-address-picker.js',

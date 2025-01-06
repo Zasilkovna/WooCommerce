@@ -72,12 +72,12 @@ class WcOrderActions {
 		}
 
 		$autoOrderStatus = $this->optionsProvider->getAutoOrderStatusFromMapping( $packetStatus );
-		if ( null === $autoOrderStatus ) {
+		if ( $autoOrderStatus === null ) {
 			return;
 		}
 
 		$validAutoOrderStatus = $this->optionsProvider->getValidAutoOrderStatusFromMapping( $packetStatus );
-		if ( '' === $validAutoOrderStatus ) {
+		if ( $validAutoOrderStatus === '' ) {
 			$record         = new Log\Record();
 			$record->action = Log\Record::ACTION_ORDER_STATUS_CHANGE;
 			$record->status = Log\Record::STATUS_ERROR;
@@ -97,7 +97,7 @@ class WcOrderActions {
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( (int) $orderId );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			/**
 			 * WC logger.
 			 *

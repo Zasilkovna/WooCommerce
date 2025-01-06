@@ -175,17 +175,17 @@ class CreatePacket {
 		$this->phone        = $order->getPhone();
 
 		$pickupPoint = $order->getPickupPoint();
-		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {
+		if ( $pickupPoint !== null && $order->isExternalCarrier() ) {
 			$this->carrierPickupPoint = $pickupPoint->getId();
 		}
 
 		if ( $order->isHomeDelivery() || $order->isCarDelivery() ) {
 			$address = $order->getDeliveryAddress();
-			if ( null !== $address ) {
+			if ( $address !== null ) {
 				$this->street = $address->getStreet();
 				$this->city   = $address->getCity();
 				$this->zip    = $address->getZip();
-				if ( null !== $address->getHouseNumber() ) {
+				if ( $address->getHouseNumber() !== null ) {
 					$this->houseNumber = $address->getHouseNumber();
 				}
 			}
@@ -194,7 +194,7 @@ class CreatePacket {
 		$carrier = $order->getCarrier();
 		if ( $carrier->requiresSize() ) {
 			$size = $order->getSize();
-			if ( null !== $size ) {
+			if ( $size !== null ) {
 				$this->size = [
 					'length' => $size->getLength(),
 					'width'  => $size->getWidth(),

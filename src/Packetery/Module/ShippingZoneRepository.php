@@ -47,7 +47,7 @@ class ShippingZoneRepository {
 	 * Lazy data store getter.
 	 */
 	public function getDataStore(): WC_Shipping_Zone_Data_Store_Interface {
-		if ( null === $this->dataStore ) {
+		if ( $this->dataStore === null ) {
 			$this->dataStore = WC_Data_Store::load( 'shipping-zone' );
 		}
 
@@ -79,11 +79,6 @@ class ShippingZoneRepository {
 	 * @return stdClass[]|null
 	 */
 	private function getLocationsForShippingRate( string $methodRateId ): ?array {
-		/**
-		 * Zone.
-		 *
-		 * @var WC_Shipping_Zone $zone
-		 */
 		foreach ( $this->getAllShippingZones() as $zone ) {
 			$enabledOnly = true;
 			// Can't use get_shipping_methods because of infinite recursion.
@@ -125,7 +120,7 @@ class ShippingZoneRepository {
 	 * @return array
 	 */
 	private function getCountryCodesFromZoneLocations( ?array $zoneLocations ): array {
-		if ( null === $zoneLocations ) {
+		if ( $zoneLocations === null ) {
 			return [];
 		}
 
@@ -138,11 +133,11 @@ class ShippingZoneRepository {
 		 * @var stdClass $zoneLocation
 		 */
 		foreach ( $zoneLocations as $zoneLocation ) {
-			if ( 'country' === $zoneLocation->type ) {
+			if ( $zoneLocation->type === 'country' ) {
 				$countries[] = strtolower( $zoneLocation->code );
 			}
 
-			if ( 'continent' === $zoneLocation->type && isset( $continents[ $zoneLocation->code ]['countries'] ) ) {
+			if ( $zoneLocation->type === 'continent' && isset( $continents[ $zoneLocation->code ]['countries'] ) ) {
 				foreach ( $continents[ $zoneLocation->code ]['countries'] as $countryCode ) {
 					$countries[] = strtolower( $countryCode );
 				}

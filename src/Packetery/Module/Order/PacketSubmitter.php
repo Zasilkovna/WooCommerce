@@ -1,9 +1,4 @@
 <?php
-/**
- * Class PacketSubmitter
- *
- * @package Packetery\Module\Order
- */
 
 declare( strict_types=1 );
 
@@ -12,6 +7,7 @@ namespace Packetery\Module\Order;
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap;
 use Packetery\Core\Api\Soap\CreatePacketMapper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
 use Packetery\Core\Validator;
@@ -23,114 +19,74 @@ use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 
-/**
- * Class PacketSubmitter
- *
- * @package Packetery\Module\Order
- */
 class PacketSubmitter {
 	const HOOK_PACKET_STATUS_SYNC = 'packetery_packet_status_sync_hook';
 
 	/**
-	 * SOAP API Client.
-	 *
-	 * @var Soap\Client SOAP API Client.
+	 * @var Soap\Client
 	 */
 	private $soapApiClient;
 
 	/**
-	 * Order validator.
-	 *
 	 * @var Validator\Order
 	 */
 	private $orderValidator;
 
 	/**
-	 * ILogger.
-	 *
 	 * @var Log\ILogger
 	 */
 	private $logger;
 
 	/**
-	 * Order repository.
-	 *
 	 * @var Repository
 	 */
 	private $orderRepository;
 
 	/**
-	 * CreatePacketMapper.
-	 *
 	 * @var CreatePacketMapper
 	 */
 	private $createPacketMapper;
 
 	/**
-	 * Request.
-	 *
 	 * @var Request
 	 */
 	private $request;
 
 	/**
-	 * Message manager.
-	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
 
 	/**
-	 * Log page.
-	 *
 	 * @var Module\Log\Page
 	 */
 	private $logPage;
 
 	/**
-	 * Common logic.
-	 *
 	 * @var PacketActionsCommonLogic
 	 */
 	private $commonLogic;
 
 	/**
-	 * Customs declaration repository.
-	 *
 	 * @var CustomsDeclaration\Repository
 	 */
 	private $customsDeclarationRepository;
 
 	/**
-	 * Packet synchronizer.
-	 *
 	 * @var PacketSynchronizer
 	 */
 	private $packetSynchronizer;
 
 	/**
-	 * ModuleHelper.
-	 *
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
 
 	/**
-	 * OrderApi constructor.
-	 *
-	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
-	 * @param OrderValidatorFactory         $orderValidatorFactory Order validator.
-	 * @param Log\ILogger                   $logger                       Logger.
-	 * @param Repository                    $orderRepository              Order repository.
-	 * @param CreatePacketMapper            $createPacketMapper           CreatePacketMapper.
-	 * @param Request                       $request                      Request.
-	 * @param MessageManager                $messageManager               Message manager.
-	 * @param Module\Log\Page               $logPage                      Log page.
-	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
-	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
-	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
-	 * @param ModuleHelper                  $moduleHelper                 ModuleHelper.
+	 * @var CoreHelper
 	 */
+	private $coreHelper;
+
 	public function __construct(
 		Soap\Client $soapApiClient,
 		OrderValidatorFactory $orderValidatorFactory,
@@ -143,7 +99,8 @@ class PacketSubmitter {
 		PacketActionsCommonLogic $commonLogic,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketSynchronizer $packetSynchronizer,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		CoreHelper $coreHelper
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidatorFactory->create();
@@ -157,6 +114,7 @@ class PacketSubmitter {
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
 		$this->moduleHelper                 = $moduleHelper;
+		$this->coreHelper                   = $coreHelper;
 	}
 
 	/**
@@ -168,7 +126,7 @@ class PacketSubmitter {
 		$order      = $this->commonLogic->getOrder();
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_SENDING;
 			$record->status  = Log\Record::STATUS_ERROR;
@@ -242,10 +200,10 @@ class PacketSubmitter {
 		bool $immediatePacketStatusCheck = false
 	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$submissionResult->increaseIgnoredCount();
 
 			return $submissionResult;
@@ -260,8 +218,8 @@ class PacketSubmitter {
 		if ( ShippingProvider::isPacketaMethod( $shippingMethodId ) && ! $order->isExported() ) {
 			$customsDeclaration = $order->getCustomsDeclaration();
 			if (
-				null !== $customsDeclaration &&
-				null === $customsDeclaration->getInvoiceFileId() &&
+				$customsDeclaration !== null &&
+				$customsDeclaration->getInvoiceFileId() === null &&
 				$customsDeclaration->hasInvoiceFileContent()
 			) {
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
@@ -296,8 +254,8 @@ class PacketSubmitter {
 			}
 
 			if (
-				null !== $customsDeclaration &&
-				null === $customsDeclaration->getEadFileId() &&
+				$customsDeclaration !== null &&
+				$customsDeclaration->getEadFileId() === null &&
 				$customsDeclaration->hasEadFileContent()
 			) {
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
@@ -368,6 +326,7 @@ class PacketSubmitter {
 			} else {
 				$order->setIsExported( true );
 				$order->setPacketId( $response->getId() );
+				$order->setPacketTrackingUrl( $this->coreHelper->getTrackingUrl( $response->getId() ) );
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -511,7 +470,7 @@ class PacketSubmitter {
 			self::HOOK_PACKET_STATUS_SYNC,
 			function ( string $orderId ): void {
 				$order = $this->orderRepository->getByIdWithValidCarrier( (int) $orderId );
-				if ( null === $order ) {
+				if ( $order === null ) {
 					return;
 				}
 				$this->packetSynchronizer->syncStatus( $order );

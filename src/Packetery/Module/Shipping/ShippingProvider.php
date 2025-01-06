@@ -189,7 +189,7 @@ class ShippingProvider {
 	 */
 	public static function isPacketaMethod( string $methodId ): bool {
 		return (
-			ShippingMethod::PACKETERY_METHOD_ID === $methodId ||
+			$methodId === ShippingMethod::PACKETERY_METHOD_ID ||
 			strpos( $methodId, BaseShippingMethod::PACKETA_METHOD_PREFIX ) === 0
 		);
 	}
@@ -203,12 +203,12 @@ class ShippingProvider {
 	 */
 	public function addMethods( array $methods ): array {
 		$zoneId = $this->contextResolver->getShippingZoneId();
-		if ( null === $zoneId ) {
+		if ( $zoneId === null ) {
 			return $this->addAllMethods( $methods );
 		}
 
 		$allowedCountries = $this->shippingZoneRepository->getCountryCodesForShippingZone( $zoneId );
-		if ( [] === $allowedCountries ) {
+		if ( $allowedCountries === [] ) {
 			return $this->addAllMethods( $methods );
 		}
 
@@ -257,6 +257,7 @@ class ShippingProvider {
 		 *
 		 * @var BaseShippingMethod $fullyQualifiedClassname
 		 */
+		// @phpstan-ignore-next-line
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $fullyQualifiedClassname::CARRIER_ID );
 		if ( $carrierOptions->isActive() ) {
 			$methods[ $fullyQualifiedClassname::getShippingMethodId() ] = $fullyQualifiedClassname;

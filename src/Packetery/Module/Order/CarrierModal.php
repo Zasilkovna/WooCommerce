@@ -122,8 +122,8 @@ class CarrierModal {
 	 */
 	public function renderCarrierModal(): void {
 		if (
-			false === $this->detailCommonLogic->isPacketeryOrder() ||
-			false === $this->canBeDisplayed()
+			$this->detailCommonLogic->isPacketeryOrder() === false ||
+			$this->canBeDisplayed() === false
 		) {
 			return;
 		}
@@ -165,12 +165,12 @@ class CarrierModal {
 		$values       = $form->getValues();
 		$orderId      = $this->detailCommonLogic->getOrderId();
 		$newCarrierId = (string) $values[ CarrierModalFormFactory::FIELD_CARRIER_ID ];
-		if ( null === $orderId ) {
+		if ( $orderId === null ) {
 			throw new RuntimeException( 'Packeta: Failed to process carrier change, new carrier id ' . $newCarrierId );
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null !== $order && $order->getCarrier()->getId() !== $newCarrierId ) {
+		if ( $order !== null && $order->getCarrier()->getId() !== $newCarrierId ) {
 			$this->orderRepository->delete( (int) $order->getNumber() );
 		}
 
@@ -195,7 +195,7 @@ class CarrierModal {
 	 */
 	private function createNewCarrierOrder( int $orderId, string $newCarrierId ): string {
 		$newCarrier = $this->carrierRepository->getAnyById( $newCarrierId );
-		if ( null === $newCarrier ) {
+		if ( $newCarrier === null ) {
 			throw new RuntimeException( 'Packeta: Failed to get instance of carrier with id ' . $newCarrierId );
 		}
 		$this->orderRepository->saveData(
@@ -226,17 +226,17 @@ class CarrierModal {
 		}
 
 		$wcOrderId = $this->detailCommonLogic->getOrderId();
-		if ( null === $wcOrderId ) {
+		if ( $wcOrderId === null ) {
 			return [];
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( $wcOrderId );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return [];
 		}
 
 		$shippingCountry = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( '' === $shippingCountry ) {
+		if ( $shippingCountry === '' ) {
 			return [];
 		}
 
@@ -260,7 +260,7 @@ class CarrierModal {
 	 */
 	public function canBeDisplayed(): bool {
 		$carrierOptions = $this->getCarrierOptionsByCountry();
-		if ( [] === $carrierOptions ) {
+		if ( $carrierOptions === [] ) {
 			return false;
 		}
 
@@ -270,7 +270,7 @@ class CarrierModal {
 
 		$order = $this->detailCommonLogic->getOrder();
 
-		return ( null === $order || null === $order->getPacketId() );
+		return ( $order === null || $order->getPacketId() === null );
 	}
 
 	/**
@@ -296,7 +296,7 @@ class CarrierModal {
 	 */
 	private function getCurrentCarrier(): ?string {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return null;
 		}
 
@@ -313,7 +313,7 @@ class CarrierModal {
 	 */
 	private function updateOrderDeliveryTitle( int $orderId, string $carrierTitle ): void {
 		$order = $this->orderRepository->getWcOrderById( $orderId );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 		$shippingItems = $order->get_items( 'shipping' );

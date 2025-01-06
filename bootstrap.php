@@ -22,7 +22,7 @@ $configurator = new Configurator();
 $configurator->setDebugMode( PACKETERY_DEBUG );
 
 Debugger::$logDirectory = PACKETERY_PLUGIN_DIR . '/log';
-if ( $configurator->isDebugMode() && false === wp_doing_cron() ) {
+if ( $configurator->isDebugMode() && wp_doing_cron() === false ) {
 	$configurator->enableDebugger( Debugger::$logDirectory );
 	Debugger::$strictMode = false;
 }

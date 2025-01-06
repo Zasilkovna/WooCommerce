@@ -9,6 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Product;
 
+use Packetery\Core\CoreHelper;
+use Packetery\Module\Framework\WpAdapter;
+
 /**
  * Class Entity
  *
@@ -41,7 +44,7 @@ class Entity {
 	 * @return bool
 	 */
 	public function isPhysical(): bool {
-		return false === $this->product->is_virtual() && false === $this->product->is_downloadable();
+		return $this->product->is_virtual() === false && $this->product->is_downloadable() === false;
 	}
 
 	/**
@@ -49,7 +52,7 @@ class Entity {
 	 *
 	 * @return bool
 	 */
-	public function isAgeVerification18PlusRequired(): bool {
+	public function isAgeVerificationRequired(): bool {
 		return (string) $this->product->get_meta( self::META_AGE_VERIFICATION_18_PLUS ) === '1';
 	}
 
@@ -84,5 +87,32 @@ class Entity {
 	 */
 	public function getId(): int {
 		return $this->product->get_id();
+	}
+
+	public function getLengthInCm( WpAdapter $wpAdapter ): float {
+		return round(
+			CoreHelper::convertToCentimeters(
+				(float) $this->product->get_length(),
+				(string) $wpAdapter->getOption( 'woocommerce_dimension_unit' )
+			)
+		);
+	}
+
+	public function getWidthInCm( WpAdapter $wpAdapter ): float {
+		return round(
+			CoreHelper::convertToCentimeters(
+				(float) $this->product->get_width(),
+				(string) $wpAdapter->getOption( 'woocommerce_dimension_unit' )
+			)
+		);
+	}
+
+	public function getHeightInCm( WpAdapter $wpAdapter ): float {
+		return round(
+			CoreHelper::convertToCentimeters(
+				(float) $this->product->get_height(),
+				(string) $wpAdapter->getOption( 'woocommerce_dimension_unit' )
+			)
+		);
 	}
 }

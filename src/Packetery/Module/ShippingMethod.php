@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Checkout\ShippingRateFactory;
 use Packetery\Module\Exception\ProductNotFoundException;
 use WC_Shipping_Method;
 
@@ -12,9 +13,9 @@ class ShippingMethod extends WC_Shipping_Method {
 	public const PACKETERY_METHOD_ID = 'packetery_shipping_method';
 
 	/**
-	 * @var Checkout
+	 * @var ShippingRateFactory
 	 */
-	private $checkout;
+	private $shippingRateFactory;
 
 	public function __construct( int $instanceId = 0 ) {
 		parent::__construct();
@@ -32,8 +33,8 @@ class ShippingMethod extends WC_Shipping_Method {
 
 		$this->init();
 
-		$container      = CompatibilityBridge::getContainer();
-		$this->checkout = $container->getByType( Checkout::class );
+		$container                 = CompatibilityBridge::getContainer();
+		$this->shippingRateFactory = $container->getByType( ShippingRateFactory::class );
 	}
 
 	/**
@@ -61,7 +62,7 @@ class ShippingMethod extends WC_Shipping_Method {
 	public function calculate_shipping( $package = [] ): void {
 		$allowedCarrierNames = null;
 
-		$customRates = $this->checkout->getShippingRates( $allowedCarrierNames );
+		$customRates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
 		foreach ( $customRates as $customRate ) {
 			$this->add_rate( $customRate );
 		}

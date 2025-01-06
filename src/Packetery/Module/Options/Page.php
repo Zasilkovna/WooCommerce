@@ -173,7 +173,7 @@ class Page {
 	public function customMenuOrder( array $menuOrder ): array {
 		$currentPosition = array_search( self::SLUG, $menuOrder, true );
 
-		if ( false !== $currentPosition ) {
+		if ( $currentPosition !== false ) {
 			unset( $menuOrder[ $currentPosition ] );
 			$menuOrder[] = self::SLUG;
 		}
@@ -373,7 +373,7 @@ class Page {
 			$item         = $orderStatusChangePacketStatuses->addSelect( $packetStatusHash, $packetStatusData['label'], $orderStatuses )
 				->setPrompt( __( 'Order status', 'packeta' ) );
 			$targetStatus = $settings['order_status_change_packet_statuses'][ $packetStatusData['key'] ] ?? null;
-			if ( null !== $targetStatus && array_key_exists( $targetStatus, $orderStatuses ) ) {
+			if ( $targetStatus !== null && array_key_exists( $targetStatus, $orderStatuses ) ) {
 				$item->setDefaultValue( $targetStatus );
 			}
 		}
@@ -411,11 +411,11 @@ class Page {
 			$values['order_status_change_packet_statuses']
 		);
 
-		if ( '' === $values['max_status_syncing_packets'] ) {
+		if ( $values['max_status_syncing_packets'] === '' ) {
 			unset( $values['max_status_syncing_packets'] );
 		}
 
-		if ( '' === $values['max_days_of_packet_status_syncing'] ) {
+		if ( $values['max_days_of_packet_status_syncing'] === '' ) {
 			unset( $values['max_days_of_packet_status_syncing'] );
 		}
 
@@ -525,27 +525,52 @@ class Page {
 				->addRule( Form::FLOAT )
 				->addRule( Form::MIN, null, 0.1 );
 
+		$container->addSelect(
+			'dimensions_unit',
+			__( 'Units used for dimensions', 'packeta' ),
+			[
+				OptionsProvider::DIMENSIONS_UNIT_CM => 'cm',
+				OptionsProvider::DEFAULT_DIMENSIONS_UNIT_MM => 'mm',
+			]
+		)
+		->setDefaultValue( $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM );
+
 		$container->addCheckbox( 'default_dimensions_enabled', __( 'Enable default dimensions', 'packeta' ) )
 			->addCondition( Form::EQUAL, true )
 				->toggle( '#packetery-default-dimensions-value' );
 
-		$container->addText( 'default_length', __( 'Length', 'packeta' ) . ' (mm)' )
+		$container->addText( 'default_length', __( 'Length', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 				->setRequired()
-				->addRule( Form::INTEGER )
-				->addRule( Form::MIN, null, 0 );
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( Form::INTEGER, __( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 )
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a decimal value!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 0.1 )
+			->endCondition();
 
-		$container->addText( 'default_height', __( 'Height', 'packeta' ) . ' (mm)' )
+		$container->addText( 'default_height', __( 'Height', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
 				->setRequired()
-				->addRule( Form::INTEGER )
-				->addRule( Form::MIN, null, 0 );
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( Form::INTEGER, __( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 )
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a decimal value!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 0.1 )
+			->endCondition();
 
-		$container->addText( 'default_width', __( 'Width', 'packeta' ) . ' (mm)' )
+		$container->addText( 'default_width', __( 'Width', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-				->setRequired()
-				->addRule( Form::INTEGER )
-				->addRule( Form::MIN, null, 0 );
+				->setRequired( 'Width is required when default dimensions are enabled.' )
+			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
+				->addRule( Form::INTEGER, __( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 )
+			->elseCondition()
+				->addRule( Form::FLOAT, __( 'Provide a decimal value!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 0.1 )
+			->endCondition();
 
 		// TODO: Packet status sync.
 
@@ -693,6 +718,14 @@ class Page {
 			$options['default_weight'] = is_numeric( $defaultWeight ) ? CoreHelper::trimDecimalPlaces( (float) $defaultWeight, 3 ) : $defaultWeight;
 		}
 
+		foreach ( [ 'default_length', 'default_width', 'default_height' ] as $dimension ) {
+			if ( $packeteryContainer[ $dimension ] instanceof BaseControl ) {
+				$options[ $dimension ] = is_numeric( $packeteryContainer[ $dimension ]->getValue() )
+					? CoreHelper::trimDecimalPlaces( (float) $packeteryContainer[ $dimension ]->getValue(), 1 )
+					: $packeteryContainer[ $dimension ]->getValue();
+			}
+		}
+
 		if ( $packeteryContainer['force_packet_cancel'] instanceof BaseControl ) {
 			$options['force_packet_cancel'] = (int) $packeteryContainer['force_packet_cancel']->getValue();
 		}
@@ -751,11 +784,11 @@ class Page {
 
 		$senderExists = $senderValidationResponse->senderExists();
 
-		if ( false === $senderExists ) {
+		if ( $senderExists === false ) {
 			$this->messageManager->flash_message( __( 'Specified sender does not exist', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		}
 
-		if ( null === $senderExists ) {
+		if ( $senderExists === null ) {
 			$this->messageManager->flash_message( __( 'Unable to check specified sender', 'packeta' ), MessageManager::TYPE_INFO, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 		}
 
@@ -769,10 +802,10 @@ class Page {
 	 */
 	public function processActions(): void {
 		$action = $this->httpRequest->getQuery( 'action' );
-		if ( self::ACTION_VALIDATE_SENDER === $action ) {
+		if ( $action === self::ACTION_VALIDATE_SENDER ) {
 			$result = $this->validateSender( $this->optionsProvider->get_sender() );
 
-			if ( true === $result ) {
+			if ( $result === true ) {
 				$this->messageManager->flash_message( __( 'Specified sender has been validated.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
 			}
 
@@ -822,13 +855,13 @@ class Page {
 		$activeTab = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
 
 		$latteParams = [];
-		if ( self::TAB_PACKET_STATUS_SYNC === $activeTab ) {
+		if ( $activeTab === self::TAB_PACKET_STATUS_SYNC ) {
 			$latteParams = [ 'form' => $this->createPacketStatusSyncForm() ];
-		} elseif ( self::TAB_AUTO_SUBMISSION === $activeTab ) {
+		} elseif ( $activeTab === self::TAB_AUTO_SUBMISSION ) {
 			$latteParams = [ 'form' => $this->createAutoSubmissionForm() ];
-		} elseif ( self::TAB_ADVANCED === $activeTab ) {
+		} elseif ( $activeTab === self::TAB_ADVANCED ) {
 			$latteParams = [ 'form' => $this->createAdvancedForm() ];
-		} elseif ( self::TAB_GENERAL === $activeTab ) {
+		} elseif ( $activeTab === self::TAB_GENERAL ) {
 			$latteParams = [ 'form' => $this->create_form() ];
 		}
 
@@ -864,14 +897,14 @@ class Page {
 
 		$lastExport       = null;
 		$lastExportOption = get_option( Exporter::OPTION_LAST_SETTINGS_EXPORT );
-		if ( false !== $lastExportOption ) {
+		if ( $lastExportOption !== false ) {
 			$date = DateTime::createFromFormat( DATE_ATOM, $lastExportOption );
-			if ( false !== $date ) {
+			if ( $date !== false ) {
 				$date->setTimezone( wp_timezone() );
 				$lastExport = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 			}
 		}
-		if ( null !== $lastExport ) {
+		if ( $lastExport !== null ) {
 			$latteParams['lastExport'] = $lastExport;
 		}
 
@@ -943,7 +976,7 @@ class Page {
 			'page' => self::SLUG,
 		];
 
-		if ( null !== $tab ) {
+		if ( $tab !== null ) {
 			$params[ self::PARAM_TAB ] = $tab;
 		}
 

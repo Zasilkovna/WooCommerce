@@ -19,10 +19,10 @@ class SenderGetReturnRouting extends BaseResponse {
 	 * @return bool|null
 	 */
 	public function senderExists(): ?bool {
-		if ( null === $this->fault ) {
+		if ( $this->fault === null ) {
 			return true;
 		}
-		if ( 'SenderNotExists' === $this->fault ) {
+		if ( $this->fault === 'SenderNotExists' ) {
 			return false;
 		}
 

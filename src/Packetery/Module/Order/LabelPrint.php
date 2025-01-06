@@ -186,7 +186,7 @@ class LabelPrint {
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
 
 		$orderIdsTransient = $this->getOrderIdsTransient();
-		if ( null !== $orderIdsTransient ) {
+		if ( $orderIdsTransient !== null ) {
 			$orderIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 			$count    = count( $orderIds );
 		} else {
@@ -235,14 +235,14 @@ class LabelPrint {
 
 		$fallbackToPacketaLabel = false;
 		$isCarrierLabels        = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
-		$idParam                = null !== $this->httpRequest->getQuery( 'id' ) ? (int) $this->httpRequest->getQuery( 'id' ) : null;
+		$idParam                = $this->httpRequest->getQuery( 'id' ) !== null ? (int) $this->httpRequest->getQuery( 'id' ) : null;
 		$packetIdParam          = $this->httpRequest->getQuery( 'packet_id' );
-		if ( null !== $idParam && null !== $packetIdParam ) {
+		if ( $idParam !== null && $packetIdParam !== null ) {
 			$fallbackToPacketaLabel = true;
 			$packetIds              = [ $idParam => $packetIdParam ];
 		} else {
 			$orderIdsTransient = $this->getOrderIdsTransient();
-			if ( null === $orderIdsTransient ) {
+			if ( $orderIdsTransient === null ) {
 				return;
 			}
 
@@ -258,9 +258,9 @@ class LabelPrint {
 		$maxOffset   = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
 		$form        = $this->createForm( $maxOffset );
 		$offsetParam = $this->httpRequest->getQuery( 'offset' );
-		if ( 0 === $maxOffset ) {
+		if ( $maxOffset === 0 ) {
 			$offset = 0;
-		} elseif ( null !== $offsetParam ) {
+		} elseif ( $offsetParam !== null ) {
 			$offset = (int) $offsetParam;
 		} elseif ( $form->isSubmitted() ) {
 			$data   = $form->getValues( 'array' );
@@ -282,7 +282,7 @@ class LabelPrint {
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
-			if ( PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL === $redirectTo && null !== $idParam ) {
+			if ( $redirectTo === PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL && $idParam !== null ) {
 				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
 			}
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
@@ -317,7 +317,7 @@ class LabelPrint {
 
 		$availableOffsets = [];
 		for ( $i = 0; $i <= $maxOffset; $i++ ) {
-			$availableOffsets[ $i ] = ( 0 === $i ?
+			$availableOffsets[ $i ] = ( $i === 0 ?
 				__( "don't skip any field on a print sheet", 'packeta' ) :
 				// translators: %s is offset.
 				sprintf( __( 'skip %s fields on first sheet', 'packeta' ), $i )
@@ -377,7 +377,7 @@ class LabelPrint {
 			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
-				if ( null !== $order ) {
+				if ( $order !== null ) {
 					$order->setIsLabelPrinted( true );
 				}
 
@@ -400,7 +400,7 @@ class LabelPrint {
 
 			$this->logger->add( $record );
 
-			if ( null !== $order ) {
+			if ( $order !== null ) {
 				$order->updateApiErrorMessage( $response->getFaultString() );
 				$this->orderRepository->save( $order );
 			}
@@ -429,7 +429,7 @@ class LabelPrint {
 			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
-				if ( null !== $order ) {
+				if ( $order !== null ) {
 					$order->setIsLabelPrinted( true );
 					$order->setCarrierNumber( $pairItem['courierNumber'] );
 				}
@@ -454,7 +454,7 @@ class LabelPrint {
 			}
 			$this->logger->add( $record );
 
-			if ( null !== $order ) {
+			if ( $order !== null ) {
 				$order->updateApiErrorMessage( $response->getFaultString() );
 				$this->orderRepository->save( $order );
 			}
@@ -476,7 +476,7 @@ class LabelPrint {
 	 * Gets saved packet ids.
 	 *
 	 * @param string[] $orderIds Order IDs from transient.
-	 * @param bool     $isCarrierLabels Are carrier labels requested?.
+	 * @param bool     $isCarrierLabels Are carrier labels requested?
 	 *
 	 * @return string[]
 	 */
@@ -484,7 +484,7 @@ class LabelPrint {
 		$orders    = $this->orderRepository->getByIds( $orderIds );
 		$packetIds = [];
 		foreach ( $orders as $order ) {
-			if ( null === $order->getPacketId() ) {
+			if ( $order->getPacketId() === null ) {
 				continue;
 			}
 			if ( ! $isCarrierLabels || $order->isExternalCarrier() ) {
@@ -539,7 +539,7 @@ class LabelPrint {
 				$record->orderId = $orderId;
 				$this->logger->add( $record );
 				$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
-				if ( null !== $order ) {
+				if ( $order !== null ) {
 					$order->updateApiErrorMessage( $response->getFaultString() );
 					$this->orderRepository->save( $order );
 				}
@@ -567,7 +567,7 @@ class LabelPrint {
 	private function addLabelCreationInfoToWcOrderNote( int $orderId, string $packetId, ILabelResponse $response ): void {
 		$order   = $this->orderRepository->findById( $orderId );
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-		if ( null === $wcOrder || null === $order ) {
+		if ( $wcOrder === null || $order === null ) {
 			return;
 		}
 

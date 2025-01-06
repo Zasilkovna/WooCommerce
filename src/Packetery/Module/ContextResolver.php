@@ -45,10 +45,10 @@ class ContextResolver {
 
 		if ( ModuleHelper::isHposEnabled() ) {
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && false === in_array( $this->request->getQuery( 'action' ), [ 'edit', 'new' ], true );
+			return $pagenow === 'admin.php' && $plugin_page === 'wc-orders' && in_array( $this->request->getQuery( 'action' ), [ 'edit', 'new' ], true ) === false;
 		}
 
-		return 'edit.php' === $pagenow && 'shop_order' === $typenow;
+		return $pagenow === 'edit.php' && $typenow === 'shop_order';
 	}
 
 	/**
@@ -62,10 +62,10 @@ class ContextResolver {
 
 		if ( ModuleHelper::isHposEnabled() ) {
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-			return 'admin.php' === $pagenow && 'wc-orders' === $plugin_page && 'edit' === $this->request->getQuery( 'action' );
+			return $pagenow === 'admin.php' && $plugin_page === 'wc-orders' && $this->request->getQuery( 'action' ) === 'edit';
 		}
 
-		return 'post.php' === $pagenow && 'shop_order' === $typenow;
+		return $pagenow === 'post.php' && $typenow === 'shop_order';
 	}
 
 	/**
@@ -76,7 +76,7 @@ class ContextResolver {
 	private function isProductDetailPage(): bool {
 		global $pagenow, $typenow;
 
-		return 'post.php' === $pagenow && 'product' === $typenow;
+		return $pagenow === 'post.php' && $typenow === 'product';
 	}
 
 	/**
@@ -87,7 +87,7 @@ class ContextResolver {
 	private function isProductCreatePage(): bool {
 		global $pagenow, $typenow;
 
-		return 'post-new.php' === $pagenow && 'product' === $typenow;
+		return $pagenow === 'post-new.php' && $typenow === 'product';
 	}
 
 	/**
@@ -116,7 +116,7 @@ class ContextResolver {
 	public function isProductCategoryGridPage(): bool {
 		global $pagenow;
 
-		return 'edit-tags.php' === $pagenow && ProductCategory\Entity::TAXONOMY_NAME === $this->request->getQuery( 'taxonomy' );
+		return $pagenow === 'edit-tags.php' && $this->request->getQuery( 'taxonomy' ) === ProductCategory\Entity::TAXONOMY_NAME;
 	}
 
 	/**
@@ -127,7 +127,7 @@ class ContextResolver {
 	public function isProductCategoryDetailPage(): bool {
 		global $pagenow;
 
-		return 'term.php' === $pagenow && ProductCategory\Entity::TAXONOMY_NAME === $this->request->getQuery( 'taxonomy' );
+		return $pagenow === 'term.php' && $this->request->getQuery( 'taxonomy' ) === ProductCategory\Entity::TAXONOMY_NAME;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class ContextResolver {
 	public function isPageDetail(): bool {
 		global $pagenow, $typenow;
 
-		return 'post.php' === $pagenow && 'page' === $typenow;
+		return $pagenow === 'post.php' && $typenow === 'page';
 	}
 
 	/**
@@ -151,10 +151,10 @@ class ContextResolver {
 		global $pagenow, $plugin_page;
 
 		return (
-			'admin.php' === $pagenow &&
+			$pagenow === 'admin.php' &&
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-			'wc-settings' === $plugin_page &&
-			'shipping' === $this->request->getQuery( 'tab' ) &&
+			$plugin_page === 'wc-settings' &&
+			$this->request->getQuery( 'tab' ) === 'shipping' &&
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			$this->request->getQuery( 'zone_id' ) > 0
 		);

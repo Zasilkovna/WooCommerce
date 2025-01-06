@@ -37,7 +37,7 @@ class PaymentGatewayHelper {
 		$availableGateways = [];
 
 		foreach ( WC()->payment_gateways()->payment_gateways() as $gateway ) {
-			if ( 'yes' === $gateway->enabled ) {
+			if ( $gateway->enabled === 'yes' ) {
 				$availableGateways[ $gateway->id ] = $gateway;
 			}
 		}

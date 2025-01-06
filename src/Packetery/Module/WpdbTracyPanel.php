@@ -60,7 +60,7 @@ class WpdbTracyPanel implements Tracy\IBarPanel {
 		foreach ( $queries as $queryInfo ) {
 			[ $query, $timeSpent, $funcList ] = $queryInfo;
 
-			if ( false === strpos( $funcList, 'Packetery\\' ) && false === strpos( $funcList, '/plugins/packeta/' ) ) {
+			if ( strpos( $funcList, 'Packetery\\' ) === false && strpos( $funcList, '/plugins/packeta/' ) === false ) {
 				continue;
 			}
 

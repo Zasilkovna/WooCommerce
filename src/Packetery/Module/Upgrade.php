@@ -131,7 +131,7 @@ class Upgrade {
 	 */
 	public function check(): void {
 		$oldVersion = get_option( 'packetery_version' );
-		if ( Plugin::VERSION === $oldVersion ) {
+		if ( $oldVersion === Plugin::VERSION ) {
 			return;
 		}
 
@@ -141,7 +141,7 @@ class Upgrade {
 		$this->createCustomsDeclarationTables();
 
 		// If no previous version detected, no upgrade will be run.
-		if ( null !== $oldVersion && false !== $oldVersion ) {
+		if ( $oldVersion !== null && $oldVersion !== false ) {
 			if ( version_compare( $oldVersion, '1.2.0', '<' ) ) {
 				$logEntries = get_posts(
 					[
@@ -198,7 +198,7 @@ class Upgrade {
 				if ( $orderStatusAutoChange ) {
 					$syncSettings['allow_order_status_change'] = true;
 				}
-				if ( null !== $autoOrderStatus ) {
+				if ( $autoOrderStatus !== null ) {
 					$syncSettings['order_status_change_packet_statuses'] = [
 						Core\Entity\PacketStatus::RECEIVED_DATA => $autoOrderStatus,
 					];
@@ -211,7 +211,7 @@ class Upgrade {
 				$syncSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_SYNC );
 				if (
 					isset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] ) &&
-					'' === $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ]
+					$syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] === ''
 				) {
 					unset( $syncSettings['order_status_change_packet_statuses'][ Core\Entity\PacketStatus::RECEIVED_DATA ] );
 					update_option( OptionsProvider::OPTION_NAME_PACKETERY_SYNC, $syncSettings );
@@ -230,7 +230,7 @@ class Upgrade {
 		}
 
 		// TODO: Update version on new release.
-		if ( null !== $oldVersion && version_compare( $oldVersion, '1.7.7', '<' ) ) {
+		if ( $oldVersion !== null && version_compare( $oldVersion, '1.7.7', '<' ) ) {
 			$generalSettings = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY );
 			if ( isset( $generalSettings['cod_payment_method'] ) ) {
 				$generalSettings['cod_payment_methods'] = [ $generalSettings['cod_payment_method'] ];
@@ -306,7 +306,7 @@ class Upgrade {
 			$order->delete_meta_data( self::META_WIDTH );
 			$order->delete_meta_data( self::META_HEIGHT );
 
-			if ( null !== $this->getMetaAsNullableString( $order, self::META_POINT_ID ) ) {
+			if ( $this->getMetaAsNullableString( $order, self::META_POINT_ID ) !== null ) {
 				$orderEntity->setPickupPoint(
 					new Core\Entity\PickupPoint(
 						$this->getMetaAsNullableString( $order, self::META_POINT_ID ),
@@ -326,7 +326,7 @@ class Upgrade {
 			$order->delete_meta_data( self::META_POINT_URL );
 
 			$validatedAddressId = $this->getValidatedAddressIdByOrderId( (int) $order->get_id() );
-			if ( null !== $validatedAddressId ) {
+			if ( $validatedAddressId !== null ) {
 				$validatedAddress = $this->createAddressFromPostId( $validatedAddressId );
 				$orderEntity->setAddressValidated( true );
 				$orderEntity->setDeliveryAddress( $validatedAddress );
@@ -395,7 +395,7 @@ class Upgrade {
 	private function getMetaAsNullableString( \WC_Order $order, string $key ): ?string {
 		$value = $order->get_meta( $key, true );
 
-		return ( ( null !== $value && '' !== $value ) ? (string) $value : null );
+		return ( ( $value !== null && $value !== '' ) ? (string) $value : null );
 	}
 
 	/**
@@ -409,7 +409,7 @@ class Upgrade {
 	private function getMetaAsNullableFloat( \WC_Order $order, string $key ): ?float {
 		$value = $order->get_meta( $key, true );
 
-		return ( ( null !== $value && '' !== $value ) ? (float) $value : null );
+		return ( ( $value !== null && $value !== '' ) ? (float) $value : null );
 	}
 
 	/**
@@ -418,7 +418,7 @@ class Upgrade {
 	 * @return void
 	 */
 	private function createLogTable(): void {
-		if ( false === $this->logRepository->createOrAlterTable() ) {
+		if ( $this->logRepository->createOrAlterTable() === false ) {
 			$this->messageManager->flash_message(
 				// translators: %s: Short table name.
 				sprintf( __( 'Database %s table could not be created or altered, more information might be found in WooCommerce logs.', 'packeta' ), 'log' ),
@@ -433,7 +433,7 @@ class Upgrade {
 	 * @return void
 	 */
 	private function createCarrierTable(): void {
-		if ( false === $this->carrierRepository->createOrAlterTable() ) {
+		if ( $this->carrierRepository->createOrAlterTable() === false ) {
 			$this->flashAndLog( 'carrier', Record::ACTION_CARRIER_TABLE_NOT_CREATED );
 		}
 	}
@@ -444,7 +444,7 @@ class Upgrade {
 	 * @return void
 	 */
 	private function createOrderTable(): void {
-		if ( false === $this->orderRepository->createOrAlterTable() ) {
+		if ( $this->orderRepository->createOrAlterTable() === false ) {
 			$this->flashAndLog( 'order', Record::ACTION_ORDER_TABLE_NOT_CREATED );
 		}
 	}
@@ -455,11 +455,11 @@ class Upgrade {
 	 * @return void
 	 */
 	private function createCustomsDeclarationTables(): void {
-		if ( false === $this->customsDeclarationRepository->createOrAlterTable() ) {
+		if ( $this->customsDeclarationRepository->createOrAlterTable() === false ) {
 			$this->flashAndLog( 'customs_declaration', Record::ACTION_CUSTOMS_DECLARATION_TABLE_NOT_CREATED );
 		}
 
-		if ( false === $this->customsDeclarationRepository->createOrAlterItemTable() ) {
+		if ( $this->customsDeclarationRepository->createOrAlterItemTable() === false ) {
 			$this->flashAndLog( 'customs_declaration_item', Record::ACTION_CUSTOMS_DECLARATION_ITEM_TABLE_NOT_CREATED );
 		}
 	}

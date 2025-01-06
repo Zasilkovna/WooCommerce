@@ -13,6 +13,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Validator\Order;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms;
 
 /**
@@ -22,15 +23,15 @@ use Packetery\Nette\Forms;
  */
 class Form {
 
-	public const FIELD_WEIGHT          = 'packetery_weight';
-	public const FIELD_ORIGINAL_WEIGHT = 'packetery_original_weight';
-	public const FIELD_VALUE           = 'packetery_value';
-	public const FIELD_LENGTH          = 'packetery_length';
-	public const FIELD_WIDTH           = 'packetery_width';
-	public const FIELD_HEIGHT          = 'packetery_height';
-	public const FIELD_ADULT_CONTENT   = 'packetery_adult_content';
-	public const FIELD_COD             = 'packetery_COD';
-	public const FIELD_DELIVER_ON      = 'packetery_deliver_on';
+	public const FIELD_WEIGHT          = 'packeteryWeight';
+	public const FIELD_ORIGINAL_WEIGHT = 'packeteryOriginalWeight';
+	public const FIELD_VALUE           = 'packeteryValue';
+	public const FIELD_LENGTH          = 'packeteryLength';
+	public const FIELD_WIDTH           = 'packeteryWidth';
+	public const FIELD_HEIGHT          = 'packeteryHeight';
+	public const FIELD_ADULT_CONTENT   = 'packeteryAdultContent';
+	public const FIELD_COD             = 'packeteryCOD';
+	public const FIELD_DELIVER_ON      = 'packeteryDeliverOn';
 
 	/**
 	 * Class FormFactory
@@ -40,12 +41,21 @@ class Form {
 	private $formFactory;
 
 	/**
+	 * Class Provider
+	 *
+	 * @var OptionsProvider
+	 */
+	private $options;
+
+	/**
 	 * FormFactory constructor
 	 *
-	 * @param FormFactory $formFactory Form factory.
+	 * @param FormFactory     $formFactory Form factory.
+	 * @param OptionsProvider $options Options provider.
 	 */
-	public function __construct( FormFactory $formFactory ) {
+	public function __construct( FormFactory $formFactory, OptionsProvider $options ) {
 		$this->formFactory = $formFactory;
+		$this->options     = $options;
 	}
 
 	/**
@@ -55,34 +65,26 @@ class Form {
 	 */
 	public function create(): Forms\Form {
 		$form = $this->formFactory->create();
+		$unit = $this->options->getDimensionsUnit();
 
 		$form->addText( self::FIELD_WEIGHT, __( 'Weight (kg)', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+			->addRule( Forms\Form::FLOAT );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$form->addText( self::FIELD_WIDTH, __( 'Width (mm)', 'packeta' ) )
-			->setRequired( false )
-			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_LENGTH, __( 'Length (mm)', 'packeta' ) )
-			->setRequired( false )
-			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
-		$form->addText( self::FIELD_HEIGHT, __( 'Height (mm)', 'packeta' ) )
-			->setRequired( false )
-			->setNullable()
-			->addRule( $form::FLOAT, __( 'Provide numeric value!', 'packeta' ) );
+		$this->formFactory->addDimension( $form, self::FIELD_LENGTH, __( 'Length', 'packeta' ), $unit );
+		$this->formFactory->addDimension( $form, self::FIELD_WIDTH, __( 'Width', 'packeta' ), $unit );
+		$this->formFactory->addDimension( $form, self::FIELD_HEIGHT, __( 'Height', 'packeta' ), $unit );
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT );
+			->addRule( Forms\Form::FLOAT );
 		$form->addText( self::FIELD_VALUE, __( 'Order value', 'packeta' ) )
 			->setRequired( false )
 			->setNullable()
-			->addRule( $form::FLOAT );
+			->addRule( Forms\Form::FLOAT );
 		$form->addText( self::FIELD_DELIVER_ON, __( 'Planned dispatch', 'packeta' ) )
 			->setHtmlAttribute( 'class', 'date-picker' )
 			->setHtmlAttribute( 'autocomplete', 'off' )

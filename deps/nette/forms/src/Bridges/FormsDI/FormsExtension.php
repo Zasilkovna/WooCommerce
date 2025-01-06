@@ -21,13 +21,6 @@ class FormsExtension extends \Packetery\Nette\DI\CompilerExtension
             public $messages = [];
         };
     }
-    public function beforeCompile()
-    {
-        $builder = $this->getContainerBuilder();
-        if ($builder->findByType(\Packetery\Nette\Http\IRequest::class)) {
-            $builder->addDefinition($this->prefix('factory'))->setFactory(\Packetery\Nette\Forms\FormFactory::class);
-        }
-    }
     public function afterCompile(\Packetery\Nette\PhpGenerator\ClassType $class)
     {
         $initialize = $this->initialization ?? $class->getMethod('initialize');

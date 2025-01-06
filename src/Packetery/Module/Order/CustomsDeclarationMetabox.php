@@ -140,8 +140,8 @@ class CustomsDeclarationMetabox {
 		$order = $this->detailCommonLogic->getOrder();
 
 		if (
-			null === $order ||
-			false === $order->getCarrier()->requiresCustomsDeclarations()
+			$order === null ||
+			$order->getCarrier()->requiresCustomsDeclarations() === false
 		) {
 			return;
 		}
@@ -187,7 +187,7 @@ class CustomsDeclarationMetabox {
 	public function saveFields( Order $order ): void {
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
-			null === $this->request->getPost( self::FORM_CONTAINER_NAME )
+			$this->request->getPost( self::FORM_CONTAINER_NAME ) === null
 		) {
 			return;
 		}
@@ -209,14 +209,14 @@ class CustomsDeclarationMetabox {
 	 */
 	public function render(): void {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 
 		$customsDeclaration = $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() );
 
 		$formData = [];
-		if ( null !== $customsDeclaration ) {
+		if ( $customsDeclaration !== null ) {
 			$formData                                       = [
 				self::FORM_CONTAINER_NAME => $this->customsDeclarationRepository->declarationToDbArray(
 					$customsDeclaration,
@@ -234,8 +234,8 @@ class CustomsDeclarationMetabox {
 		$form = $this->createForm( $formData, $customsDeclaration );
 		$form->setDefaults( $formData );
 
-		$hasInvoiceFile = null !== $customsDeclaration && $customsDeclaration->hasInvoiceFileContent();
-		$hasEadFile     = null !== $customsDeclaration && $customsDeclaration->hasEadFileContent();
+		$hasInvoiceFile = $customsDeclaration !== null && $customsDeclaration->hasInvoiceFileContent();
+		$hasEadFile     = $customsDeclaration !== null && $customsDeclaration->hasEadFileContent();
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
@@ -303,7 +303,7 @@ class CustomsDeclarationMetabox {
 		$invoiceFile = $prefixContainer->addUpload( 'invoice_file', __( 'Invoice PDF file', 'packeta' ) )
 			->setRequired( false );
 
-		if ( null === $customsDeclaration || false === $customsDeclaration->hasInvoiceFileContent() ) {
+		if ( $customsDeclaration === null || $customsDeclaration->hasInvoiceFileContent() === false ) {
 			$invoiceFile
 				->addConditionOn( $activator, Form::FILLED )
 					->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
@@ -326,7 +326,7 @@ class CustomsDeclarationMetabox {
 			->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
 				->toggle( 'customs-declaration-own-field-ead_file' );
 
-		if ( null === $customsDeclaration || false === $customsDeclaration->hasEadFileContent() ) {
+		if ( $customsDeclaration === null || $customsDeclaration->hasEadFileContent() === false ) {
 			$eadFile
 				->addConditionOn( $activator, Form::FILLED )
 					->addConditionOn( $ead, Form::EQUAL, self::EAD_OWN )
@@ -337,10 +337,12 @@ class CustomsDeclarationMetabox {
 
 		$items = $prefixContainer->addContainer( 'items' );
 
-		if ( count( $structureData[ self::FORM_CONTAINER_NAME ]['items'] ) === 0 ) {
+		$itemsData = $structureData[ self::FORM_CONTAINER_NAME ]['items'] ?? null;
+
+		if ( $itemsData === null ) {
 			$this->addCustomsDeclarationItem( $activator, $items, 'new_0' );
 		} else {
-			foreach ( $structureData[ self::FORM_CONTAINER_NAME ]['items'] as $itemId => $itemDefaults ) {
+			foreach ( $itemsData as $itemId => $itemDefaults ) {
 				$this->addCustomsDeclarationItem( $activator, $items, (string) $itemId );
 			}
 		}
@@ -381,7 +383,7 @@ class CustomsDeclarationMetabox {
 	 */
 	public function onFormSuccess( Form $form ): void {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 
@@ -393,7 +395,7 @@ class CustomsDeclarationMetabox {
 		$items                       = $containerValues['items'];
 		unset( $containerValues['items'] );
 
-		if ( false === $prefixedValues[ self::FORM_ACTIVATOR_NAME ] ) {
+		if ( $prefixedValues[ self::FORM_ACTIVATOR_NAME ] === false ) {
 			return;
 		}
 
@@ -413,13 +415,13 @@ class CustomsDeclarationMetabox {
 			$fieldsToOmit
 		);
 
-		if ( '' === $containerValues['mrn'] ) {
+		if ( $containerValues['mrn'] === '' ) {
 			$containerValues['mrn'] = null;
 		}
 
 		$containerValues['id'] = null;
 		$oldCustomsDeclaration = $this->customsDeclarationRepository->getByOrderNumber( $order->getNumber() );
-		if ( null !== $oldCustomsDeclaration ) {
+		if ( $oldCustomsDeclaration !== null ) {
 			$containerValues['id'] = $oldCustomsDeclaration->getId();
 		}
 
@@ -438,7 +440,7 @@ class CustomsDeclarationMetabox {
 		}
 
 		foreach ( $items as $itemId => $item ) {
-			if ( 0 === strpos( (string) $itemId, 'new_' ) ) {
+			if ( strpos( (string) $itemId, 'new_' ) === 0 ) {
 				$itemId = null;
 			} else {
 				$itemId = (string) $itemId;
@@ -522,7 +524,7 @@ class CustomsDeclarationMetabox {
 		$uploadControl = $formContainer[ $key ];
 
 		if ( $uploadControl instanceof UploadControl ) {
-			if ( $fileUpload->hasFile() && 0 >= $fileUpload->getSize() ) {
+			if ( $fileUpload->hasFile() && $fileUpload->getSize() <= 0 ) {
 				$uploadControl->addError( __( 'Uploaded file is empty.', 'packeta' ) );
 				$fileUpload = new FileUpload( null );
 			}
@@ -540,7 +542,7 @@ class CustomsDeclarationMetabox {
 				$containerValues[ $relatedFileIdKey ] = null;
 			}
 
-			if ( $fileUpload->hasFile() && false === $fileUpload->isOk() ) {
+			if ( $fileUpload->hasFile() && $fileUpload->isOk() === false ) {
 				$containerValues[ $key ]              = null;
 				$containerValues[ $relatedFileIdKey ] = null;
 				$uploadControl->addError( __( 'File failed to upload.', 'packeta' ) );

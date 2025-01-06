@@ -44,7 +44,7 @@ class Attribute {
 	 *
 	 * @var array<string, array<string, string|bool>>
 	 */
-	public static $pickupPointAttrs = [
+	public static $pickupPointAttributes = [
 		'id'        => [
 			'name'     => self::POINT_ID,
 			'required' => true,
@@ -84,7 +84,7 @@ class Attribute {
 	 *
 	 * @var array<string, array<string, string|bool>>
 	 */
-	public static $homeDeliveryAttrs = [
+	public static $homeDeliveryAttributes = [
 		'isValidated' => [
 			'name'                => self::ADDRESS_IS_VALIDATED,
 			// Name of checkout hidden form field. Must be unique in entire form.
@@ -124,7 +124,7 @@ class Attribute {
 	 *
 	 * @var array<string, array<string, string|bool>>
 	 */
-	public static $carDeliveryAttrs = [
+	public static $carDeliveryAttributes = [
 		'carDeliveryId'           => [
 			'name'                => self::CAR_DELIVERY_ID,
 			'isWidgetResultField' => false,

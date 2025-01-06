@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Api\Internal;
 
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Order\Attribute;
 use WP_REST_Controller;
 use WP_REST_Request;
@@ -26,28 +26,18 @@ final class CheckoutController extends WP_REST_Controller {
 	private const RATE_ID = 'packetery_rate_id';
 
 	/**
-	 * Router.
-	 *
 	 * @var CheckoutRouter
 	 */
 	private $router;
 
 	/**
-	 * Checkout.
-	 *
-	 * @var Checkout
+	 * @var CheckoutStorage
 	 */
-	private $checkout;
+	private $checkoutStorage;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param CheckoutRouter $router   Router.
-	 * @param Checkout       $checkout Checkout.
-	 */
-	public function __construct( CheckoutRouter $router, Checkout $checkout ) {
-		$this->router   = $router;
-		$this->checkout = $checkout;
+	public function __construct( CheckoutRouter $router, CheckoutStorage $checkoutStorage ) {
+		$this->router          = $router;
+		$this->checkoutStorage = $checkoutStorage;
 	}
 
 	/**
@@ -105,7 +95,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveSelectedPickupPoint( WP_REST_Request $request ): WP_REST_Response {
-		$this->save( $request, Attribute::$pickupPointAttrs );
+		$this->save( $request, Attribute::$pickupPointAttributes );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -117,7 +107,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveValidatedAddress( WP_REST_Request $request ): WP_REST_Response {
-		$this->save( $request, Attribute::$homeDeliveryAttrs );
+		$this->save( $request, Attribute::$homeDeliveryAttributes );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -129,7 +119,7 @@ final class CheckoutController extends WP_REST_Controller {
 	 */
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function saveCarDeliveryDetails( WP_REST_Request $request ): WP_REST_Response {
-		$this->save( $request, Attribute::$carDeliveryAttrs );
+		$this->save( $request, Attribute::$carDeliveryAttributes );
 
 		return new WP_REST_Response( [], 200 );
 	}
@@ -144,25 +134,22 @@ final class CheckoutController extends WP_REST_Controller {
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	public function removeSavedData( WP_REST_Request $request ): WP_REST_Response {
 		$params = $request->get_params();
-		if ( ! isset( $params['carrierId'] ) || '' === $params['carrierId'] ) {
-			delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+		if ( ! isset( $params['carrierId'] ) || $params['carrierId'] === '' ) {
+			$this->checkoutStorage->deleteTransient();
 		} else {
-			$savedData = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+			$savedData = $this->checkoutStorage->getFromTransient();
 			// False when does not exist, empty string when improperly saved.
 			if ( ! is_array( $savedData ) ) {
-				if ( '' === $savedData ) {
-					delete_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+				if ( $savedData === '' ) {
+					$this->checkoutStorage->deleteTransient();
 				}
 
 				return new WP_REST_Response( [], 200 );
 			}
 
 			unset( $savedData[ $params['carrierId'] ] );
-			set_transient(
-				$this->checkout->getTransientNamePacketaCheckoutData(),
-				$savedData,
-				DAY_IN_SECONDS
-			);
+
+			$this->checkoutStorage->setTransient( $savedData );
 		}
 
 		return new WP_REST_Response( [], 200 );
@@ -179,7 +166,7 @@ final class CheckoutController extends WP_REST_Controller {
 	// phpcs:ignore Squiz.Commenting.FunctionComment.IncorrectTypeHint
 	private function save( WP_REST_Request $request, array $carrierAttrs ): void {
 		$parameters = $request->get_body_params();
-		$savedData  = get_transient( $this->checkout->getTransientNamePacketaCheckoutData() );
+		$savedData  = $this->checkoutStorage->getFromTransient();
 		if ( ! is_array( $savedData ) ) {
 			$savedData = [];
 		}
@@ -189,10 +176,6 @@ final class CheckoutController extends WP_REST_Controller {
 			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
 		}
 
-		set_transient(
-			$this->checkout->getTransientNamePacketaCheckoutData(),
-			$savedData,
-			DAY_IN_SECONDS
-		);
+		$this->checkoutStorage->setTransient( $savedData );
 	}
 }

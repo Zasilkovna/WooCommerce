@@ -95,12 +95,12 @@ class LabelPrintModal {
 	 * Renders packet modal.
 	 */
 	public function renderPacketModal(): void {
-		if ( false === $this->contextResolver->isOrderDetailPage() ) {
+		if ( $this->contextResolver->isOrderDetailPage() === false ) {
 			return;
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || null === $order->getPacketId() ) {
+		if ( $order === null || $order->getPacketId() === null ) {
 			return;
 		}
 
@@ -115,12 +115,12 @@ class LabelPrintModal {
 	 * Renders packet claim modal.
 	 */
 	public function renderPacketClaimModal(): void {
-		if ( false === $this->contextResolver->isOrderDetailPage() ) {
+		if ( $this->contextResolver->isOrderDetailPage() === false ) {
 			return;
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || null === $order->getPacketClaimId() ) {
+		if ( $order === null || $order->getPacketClaimId() === null ) {
 			return;
 		}
 
@@ -193,7 +193,7 @@ class LabelPrintModal {
 	 */
 	public function onFormSuccess( Form $form ): void {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 

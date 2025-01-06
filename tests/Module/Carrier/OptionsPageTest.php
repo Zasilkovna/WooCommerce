@@ -14,6 +14,7 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
@@ -52,9 +53,10 @@ class OptionsPageTest extends TestCase {
 			$packetaPickupPointsConfig,
 			$featureFlagProviderMock,
 			$carDeliveryConfigMock,
+			$this->createMock( CarrierOptionsFactory::class ),
 			$this->createMock( ModuleHelper::class ),
 			$this->createMock( UrlBuilder::class ),
-			$this->createMock( CarrierOptionsFactory::class ),
+			$this->createMock( WpAdapter::class ),
 		);
 
 		$featureFlagProviderMock->method( 'isSplitActive' )->willReturn( true );

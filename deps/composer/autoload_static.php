@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit38dc713122f9547c989e91f998054631
+class ComposerStaticInitc565d9f804ece6eb62e4821ef4e6957c
 {
     public static $files = array (
         'packeteryd507e002f7fce7f0c6dbf1f22edcb902' => __DIR__ . '/..' . '/tracy/tracy/src/Tracy/functions.php',
@@ -145,13 +145,14 @@ class ComposerStaticInit38dc713122f9547c989e91f998054631
         'Packetery\\Nette\\Forms\\Controls\\TextInput' => __DIR__ . '/..' . '/nette/forms/src/Forms/Controls/TextInput.php',
         'Packetery\\Nette\\Forms\\Controls\\UploadControl' => __DIR__ . '/..' . '/nette/forms/src/Forms/Controls/UploadControl.php',
         'Packetery\\Nette\\Forms\\Form' => __DIR__ . '/..' . '/nette/forms/src/Forms/Form.php',
-        'Packetery\\Nette\\Forms\\FormFactory' => __DIR__ . '/..' . '/nette/forms/src/Forms/FormFactory.php',
         'Packetery\\Nette\\Forms\\FormRenderer' => __DIR__ . '/..' . '/nette/forms/src/Forms/FormRenderer.php',
         'Packetery\\Nette\\Forms\\Helpers' => __DIR__ . '/..' . '/nette/forms/src/Forms/Helpers.php',
         'Packetery\\Nette\\Forms\\IControl' => __DIR__ . '/..' . '/nette/forms/src/compatibility.php',
         'Packetery\\Nette\\Forms\\IFormRenderer' => __DIR__ . '/..' . '/nette/forms/src/compatibility.php',
         'Packetery\\Nette\\Forms\\ISubmitterControl' => __DIR__ . '/..' . '/nette/forms/src/compatibility.php',
+        'Packetery\\Nette\\Forms\\Rendering\\DataClassGenerator' => __DIR__ . '/..' . '/nette/forms/src/Forms/Rendering/DataClassGenerator.php',
         'Packetery\\Nette\\Forms\\Rendering\\DefaultFormRenderer' => __DIR__ . '/..' . '/nette/forms/src/Forms/Rendering/DefaultFormRenderer.php',
+        'Packetery\\Nette\\Forms\\Rendering\\LatteRenderer' => __DIR__ . '/..' . '/nette/forms/src/Forms/Rendering/LatteRenderer.php',
         'Packetery\\Nette\\Forms\\Rule' => __DIR__ . '/..' . '/nette/forms/src/Forms/Rule.php',
         'Packetery\\Nette\\Forms\\Rules' => __DIR__ . '/..' . '/nette/forms/src/Forms/Rules.php',
         'Packetery\\Nette\\Forms\\SubmitterControl' => __DIR__ . '/..' . '/nette/forms/src/Forms/SubmitterControl.php',
@@ -301,7 +302,7 @@ class ComposerStaticInit38dc713122f9547c989e91f998054631
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->classMap = ComposerStaticInit38dc713122f9547c989e91f998054631::$classMap;
+            $loader->classMap = ComposerStaticInitc565d9f804ece6eb62e4821ef4e6957c::$classMap;
 
         }, null, ClassLoader::class);
     }

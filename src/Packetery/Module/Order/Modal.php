@@ -36,7 +36,7 @@ class Modal {
 	/**
 	 * Order router.
 	 *
-	 * @var OrderRouter;
+	 * @var OrderRouter
 	 */
 	private $apiRouter;
 

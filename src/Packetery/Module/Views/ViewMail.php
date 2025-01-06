@@ -60,12 +60,12 @@ class ViewMail {
 			$wcOrder = $email;
 		}
 
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return;
 		}
 
 		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 

@@ -70,7 +70,7 @@ class PacketAutoSubmitter {
 	 * @return void
 	 */
 	public function register(): void {
-		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
+		if ( $this->optionsProvider->isPacketAutoSubmissionEnabled() === false ) {
 			return;
 		}
 
@@ -78,7 +78,7 @@ class PacketAutoSubmitter {
 
 		$mappedEvents = $this->optionsProvider->getPacketAutoSubmissionMappedUniqueEvents();
 		foreach ( $mappedEvents as $mappedEvent ) {
-			if ( self::EVENT_ON_ORDER_COMPLETED === $mappedEvent ) {
+			if ( $mappedEvent === self::EVENT_ON_ORDER_COMPLETED ) {
 				add_action(
 					'woocommerce_order_status_completed',
 					function ( int $orderId ): void {
@@ -89,7 +89,7 @@ class PacketAutoSubmitter {
 				continue;
 			}
 
-			if ( self::EVENT_ON_ORDER_PROCESSING === $mappedEvent ) {
+			if ( $mappedEvent === self::EVENT_ON_ORDER_PROCESSING ) {
 				add_action(
 					'woocommerce_order_status_processing',
 					function ( int $orderId ): void {
@@ -109,17 +109,17 @@ class PacketAutoSubmitter {
 	 * @return void
 	 */
 	public function handleEvent( string $event, int $orderId ): void {
-		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
+		if ( $this->optionsProvider->isPacketAutoSubmissionEnabled() === false ) {
 			return;
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
-		assert( null !== $wcOrder, 'WC order has to be present' );
+		assert( $wcOrder !== null, 'WC order has to be present' );
 
 		$paymentGateway = wc_get_payment_gateway_by_order( $wcOrder );
 		if (
 			! $paymentGateway instanceof WC_Payment_Gateway ||
-			false === array_key_exists( $paymentGateway->id, PaymentGatewayHelper::getAvailablePaymentGateways() )
+			array_key_exists( $paymentGateway->id, PaymentGatewayHelper::getAvailablePaymentGateways() ) === false
 		) {
 			return;
 		}
@@ -127,7 +127,7 @@ class PacketAutoSubmitter {
 		$mappingEventForGateway = $this->optionsProvider->getPacketAutoSubmissionEventForPaymentGateway(
 			$this->optionsProvider->sanitizePaymentGatewayId( $paymentGateway->id )
 		);
-		if ( null === $mappingEventForGateway || $mappingEventForGateway !== $event ) {
+		if ( $mappingEventForGateway === null || $mappingEventForGateway !== $event ) {
 			return;
 		}
 
@@ -143,7 +143,7 @@ class PacketAutoSubmitter {
 	 * @return void
 	 */
 	public function handleEventAsync( string $event, int $orderId ): void {
-		if ( false === $this->optionsProvider->isPacketAutoSubmissionEnabled() ) {
+		if ( $this->optionsProvider->isPacketAutoSubmissionEnabled() === false ) {
 			return;
 		}
 		as_schedule_single_action( time(), self::HOOK_NAME_HANDLE_EVENT, [ $event, $orderId, is_admin() === false ] );

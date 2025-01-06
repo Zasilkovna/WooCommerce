@@ -17,11 +17,19 @@ use DateTimeImmutable;
  * @package Packetery
  */
 class CoreHelper {
-	public const TRACKING_URL          = 'https://tracking.packeta.com/?id=%s';
 	public const MYSQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	public const MYSQL_DATE_FORMAT     = 'Y-m-d';
 	public const DATEPICKER_FORMAT     = 'Y-m-d';
 	public const DATEPICKER_FORMAT_JS  = 'yy-mm-dd';
+
+	/**
+	 * @var string
+	 */
+	private $trackingUrl;
+
+	public function __construct( string $trackingUrl ) {
+		$this->trackingUrl = $trackingUrl;
+	}
 
 	/**
 	 * Simplifies weight.
@@ -43,22 +51,18 @@ class CoreHelper {
 	 * @return float|null
 	 */
 	public static function simplifyFloat( ?float $value, int $maxDecimalPlaces ): ?float {
-		if ( null === $value ) {
+		if ( $value === null ) {
 			return null;
 		}
 
 		return (float) number_format( $value, $maxDecimalPlaces, '.', '' );
 	}
 
-	/**
-	 * Trims the decimals to a desired format.
-	 *
-	 * @param float $value Value.
-	 * @param int   $decimals Position of a decimal.
-	 *
-	 * @return string
-	 */
-	public static function trimDecimalPlaces( float $value, int $decimals ): string {
+	public static function trimDecimalPlaces( ?float $value, int $decimals ): ?string {
+		if ( $value === null ) {
+			return null;
+		}
+
 		$formattedValue = number_format( $value, $decimals, '.', '' );
 
 		if ( $decimals > 0 ) {
@@ -70,23 +74,14 @@ class CoreHelper {
 		return $formattedValue;
 	}
 
-	/**
-	 * Returns tracking URL.
-	 *
-	 * @param string $packetId Packet ID.
-	 *
-	 * @return string
-	 */
-	public function get_tracking_url( string $packetId ): string {
-		return sprintf( self::TRACKING_URL, rawurlencode( $packetId ) );
+	public function getTrackingUrl( ?string $packetId ): ?string {
+		if ( $packetId === null ) {
+			return null;
+		}
+
+		return sprintf( $this->trackingUrl, rawurlencode( $packetId ) );
 	}
 
-	/**
-	 * Creates UTC DateTime.
-	 *
-	 * @return DateTimeImmutable
-	 * @throws \Exception From DateTimeImmutable.
-	 */
 	public static function now(): DateTimeImmutable {
 		return new DateTimeImmutable( 'now', new \DateTimeZone( 'UTC' ) );
 	}
@@ -100,7 +95,7 @@ class CoreHelper {
 	 * @return string|null
 	 */
 	public function getStringFromDateTime( ?DateTimeImmutable $date, string $format ): ?string {
-		return null !== $date ? $date->format( $format ) : null;
+		return $date !== null ? $date->format( $format ) : null;
 	}
 
 	/**
@@ -112,6 +107,23 @@ class CoreHelper {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
-		return null !== $date ? new DateTimeImmutable( $date ) : null;
+		return $date !== null ? new DateTimeImmutable( $date ) : null;
+	}
+
+	public static function convertToCentimeters( float $value, string $fromUnit ): float {
+		$conversionFactors = [
+			'cm' => 1,
+			'm'  => 100,
+			'mm' => 0.1,
+			'in' => 2.54,
+			'yd' => 91.44,
+		];
+
+		if ( ! isset( $conversionFactors[ $fromUnit ] ) ) {
+			// Do not convert unknown values.
+			return $value;
+		}
+
+		return $value * $conversionFactors[ $fromUnit ];
 	}
 }

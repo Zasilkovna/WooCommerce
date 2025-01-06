@@ -7,7 +7,8 @@ namespace Packetery\Module\Hooks;
 use Packetery\Module\Api;
 use Packetery\Module\Blocks\BlockHooks;
 use Packetery\Module\Carrier\OptionsPage;
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\Checkout;
+use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\CronService;
 use Packetery\Module\DashboardWidget;
 use Packetery\Module\Framework\WpAdapter;
@@ -224,6 +225,16 @@ class HookRegistrar {
 	private $packetSynchronizer;
 
 	/**
+	 * @var CheckoutSettings
+	 */
+	private $checkoutSettings;
+
+	/**
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
+	/**
 	 * @var ShippingProvider
 	 */
 	private $shippingProvider;
@@ -265,6 +276,8 @@ class HookRegistrar {
 		Options\Page $optionsPage,
 		WpAdapter $wpAdapter,
 		PacketSynchronizer $packetSynchronizer,
+		CheckoutSettings $checkoutSettings,
+		ModuleHelper $moduleHelper,
 		ShippingProvider $shippingProvider
 	) {
 		$this->messageManager            = $messageManager;
@@ -303,13 +316,15 @@ class HookRegistrar {
 		$this->optionsPage               = $optionsPage;
 		$this->wpAdapter                 = $wpAdapter;
 		$this->packetSynchronizer        = $packetSynchronizer;
+		$this->checkoutSettings          = $checkoutSettings;
+		$this->moduleHelper              = $moduleHelper;
 		$this->shippingProvider          = $shippingProvider;
 	}
 
 	public function register(): void {
 		$this->wpAdapter->addAction( 'init', [ $this->pluginHooks, 'loadTranslation' ] );
 
-		if ( ModuleHelper::isWooCommercePluginActive() === false ) {
+		if ( $this->moduleHelper->isWooCommercePluginActive() === false ) {
 			if ( $this->wpAdapter->isAdmin() ) {
 				$this->wpAdapter->addAction( 'admin_notices', [ $this->viewAdmin, 'echoInactiveWooCommerceNotice' ] );
 			}
@@ -348,7 +363,7 @@ class HookRegistrar {
 	}
 
 	private function registerBackEnd(): void {
-		if ( false === $this->wpAdapter->doingAjax() ) {
+		if ( $this->wpAdapter->doingAjax() === false ) {
 			$this->wpAdapter->addAction( 'init', [ $this->messageManager, 'init' ] );
 			$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->assetManager, 'enqueueAdminAssets' ] );
 			$this->wpAdapter->addAction(
@@ -366,7 +381,7 @@ class HookRegistrar {
 			$orderListScreenId = 'woocommerce_page_wc-orders';
 
 			$wooCommerceVersion = ModuleHelper::getWooCommerceVersion();
-			if ( null !== $wooCommerceVersion && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
+			if ( $wooCommerceVersion !== null && version_compare( $wooCommerceVersion, '7.9.0', '>=' ) ) {
 				$this->wpAdapter->addFilter( sprintf( 'views_%s', $orderListScreenId ), [ $this->gridExtender, 'addFilterLinks' ] );
 				$this->wpAdapter->addAction(
 					'woocommerce_order_list_table_restrict_manage_orders',
@@ -488,6 +503,16 @@ class HookRegistrar {
 
 			$this->wpAdapter->addAction( 'deleted_post', [ $this->orderRepository, 'deletedPostHook' ], 10, 2 );
 			$this->dashboardWidget->register();
+		} else {
+			// For blocks, used at frontend.
+			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkoutSettings, 'actionCreateSettingsAjax' ] );
+			$this->wpAdapter->addAction(
+				'wp_ajax_nopriv_get_settings',
+				[
+					$this->checkoutSettings,
+					'actionCreateSettingsAjax',
+				]
+			);
 		}
 	}
 
@@ -498,17 +523,20 @@ class HookRegistrar {
 		$this->wpAdapter->addAction( $wcEmailHook, [ $this->viewMail, 'renderEmailFooter' ] );
 
 		$this->wpAdapter->addAction( 'wp_enqueue_scripts', [ $this->assetManager, 'enqueueFrontAssets' ] );
-		if ( false === $this->wpAdapter->doingAjax() ) {
-			$this->wpAdapter->addAction( 'woocommerce_cart_calculate_fees', [ $this->checkout, 'applyCodSurcharge' ], 20 );
+		if ( $this->wpAdapter->doingAjax() === false ) {
+			$this->wpAdapter->addAction(
+				'woocommerce_cart_calculate_fees',
+				[
+					$this->checkout,
+					'actionApplyCodSurcharge',
+				],
+				20
+			);
 			$this->wpAdapter->addAction( 'woocommerce_order_details_after_order_table', [ $this->viewFrontend, 'renderOrderDetail' ] );
 
 			$this->wpAdapter->addAction( 'init', [ $this->blockHooks, 'register' ] );
 			// Cannot be moved to BlockHooks register.
 			$this->wpAdapter->addAction( 'woocommerce_blocks_loaded', [ $this->blockHooks, 'orderUpdateCallback' ] );
-		} else {
-			// For blocks.
-			$this->wpAdapter->addAction( 'wp_ajax_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
-			$this->wpAdapter->addAction( 'wp_ajax_nopriv_get_settings', [ $this->checkout, 'createSettingsAjax' ] );
 		}
 	}
 
