@@ -64,7 +64,7 @@ class ApiExtender {
 		}
 
 		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcData );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return $response;
 		}
 
@@ -92,7 +92,7 @@ class ApiExtender {
 			'point_name' => null,
 		];
 
-		if ( null !== $order->getPickupPoint() ) {
+		if ( $order->getPickupPoint() !== null ) {
 			$items['point_id']   = $order->getPickupPoint()->getId();
 			$items['point_name'] = $order->getPickupPoint()->getName();
 		}

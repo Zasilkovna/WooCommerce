@@ -9,6 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Framework;
 
+use stdClass;
+use WC_Cart;
+use WC_Customer;
+use WP_Error;
+
 /**
  * Trait WcCartTrait.
  *
@@ -63,13 +68,37 @@ trait WcCartTrait {
 	/**
 	 * Gets cart instance.
 	 *
-	 * @return \WC_Cart|null
+	 * @return WC_Cart|null
 	 */
-	public function cart(): ?\WC_Cart {
+	public function cart(): ?WC_Cart {
 		return WC()->cart;
 	}
 
 	public function cartCalculateTotals(): void {
 		WC()->cart->calculate_totals();
+	}
+
+	/**
+	 * Value is cast to float because PHPDoc is not reliable.
+	 */
+	public function cartGetSubtotal(): float {
+		return (float) WC()->cart->get_subtotal();
+	}
+
+	public function cartGetCustomer(): WC_Customer {
+		return WC()->cart->get_customer();
+	}
+
+	public function cartCalculateShipping(): array {
+		return WC()->cart->calculate_shipping();
+	}
+
+	/**
+	 * @param array $args
+	 *
+	 * @return stdClass|WP_Error Either a fee object if added, or a WP_Error if it failed.
+	 */
+	public function cartFeesApiAddFee( array $args ): object {
+		return WC()->cart->fees_api()->add_fee( $args );
 	}
 }

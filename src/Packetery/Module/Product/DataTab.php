@@ -101,7 +101,7 @@ class DataTab {
 	 *
 	 * @param string[] $tabs Tabs definition array.
 	 *
-	 * @return array<string, array<string, string|string[]>>
+	 * @return array<array<string,string[]|string>|string>
 	 */
 	public function registerTab( array $tabs ): array {
 		$tabs[ self::NAME ] = [
@@ -135,7 +135,7 @@ class DataTab {
 
 		$form->setDefaults(
 			[
-				Product\Entity::META_AGE_VERIFICATION_18_PLUS  => $product->isAgeVerification18PlusRequired(),
+				Product\Entity::META_AGE_VERIFICATION_18_PLUS  => $product->isAgeVerificationRequired(),
 				Product\Entity::META_DISALLOWED_SHIPPING_RATES => $product->getDisallowedShippingRateChoices(),
 			]
 		);
@@ -169,7 +169,7 @@ class DataTab {
 	 */
 	public function saveData( $postId ): void {
 		$product = $this->productEntityFactory->fromPostId( $postId );
-		if ( false === $product->isPhysical() ) {
+		if ( $product->isPhysical() === false ) {
 			return;
 		}
 
@@ -195,7 +195,7 @@ class DataTab {
 				$value = $value ? '1' : '0';
 			}
 
-			if ( Product\Entity::META_DISALLOWED_SHIPPING_RATES === $attr ) {
+			if ( $attr === Product\Entity::META_DISALLOWED_SHIPPING_RATES ) {
 				$value = array_filter( $value );
 			}
 

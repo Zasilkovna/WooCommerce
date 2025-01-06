@@ -83,9 +83,9 @@ class ModuleHelper {
 	 *
 	 * @return bool
 	 */
-	public static function isPluginActive( string $pluginRelativePath ): bool {
-		if ( is_multisite() ) {
-			$plugins = get_site_option( 'active_sitewide_plugins' );
+	public function isPluginActive( string $pluginRelativePath ): bool {
+		if ( $this->wpAdapter->isMultisite() ) {
+			$plugins = $this->wpAdapter->getSiteOption( 'active_sitewide_plugins' );
 			if ( isset( $plugins[ $pluginRelativePath ] ) ) {
 				return true;
 			}
@@ -95,12 +95,12 @@ class ModuleHelper {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$muPlugins = get_mu_plugins();
+		$muPlugins = $this->wpAdapter->getMuPlugins();
 		if ( isset( $muPlugins[ $pluginRelativePath ] ) ) {
 			return true;
 		}
 
-		return in_array( $pluginRelativePath, (array) get_option( 'active_plugins', [] ), true );
+		return in_array( $pluginRelativePath, (array) $this->wpAdapter->getOption( 'active_plugins', [] ), true );
 	}
 
 	/**
@@ -127,7 +127,7 @@ class ModuleHelper {
 	 * @return string|null
 	 */
 	public static function getWooCommerceVersion(): ?string {
-		if ( false === file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) ) {
+		if ( file_exists( WP_PLUGIN_DIR . '/woocommerce/woocommerce.php' ) === false ) {
 			return null;
 		}
 
@@ -138,7 +138,7 @@ class ModuleHelper {
 			$version = $fileData['Version'];
 		}
 
-		if ( '' === $version ) {
+		if ( $version === '' ) {
 			return null;
 		}
 
@@ -166,7 +166,7 @@ class ModuleHelper {
 	 */
 	public static function getWcOrderCountry( \WC_Order $wcOrder ): string {
 		$country = $wcOrder->get_shipping_country();
-		if ( null === $country || '' === $country ) {
+		if ( $country === null || $country === '' ) {
 			$country = $wcOrder->get_billing_country();
 		}
 
@@ -179,11 +179,11 @@ class ModuleHelper {
 	 * @return bool
 	 */
 	public static function isHposEnabled(): bool {
-		if ( false === class_exists( 'Automattic\\WooCommerce\\Utilities\\OrderUtil' ) ) {
+		if ( class_exists( 'Automattic\\WooCommerce\\Utilities\\OrderUtil' ) === false ) {
 			return false;
 		}
 		// @phpstan-ignore-next-line (This method was probably added in WC version 6.9.0, backward compatibility)
-		if ( false === method_exists( OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) ) {
+		if ( method_exists( OrderUtil::class, 'custom_orders_table_usage_is_enabled' ) === false ) {
 			return false;
 		}
 
@@ -211,6 +211,17 @@ class ModuleHelper {
 	}
 
 	/**
+	 * Returns null for value lesser than 1.
+	 *
+	 * @param int $number Value (mm).
+	 *
+	 * @return float|null
+	 */
+	public static function convertToCentimeters( int $number ): ?float {
+		return $number < 1 ? null : ( $number * 0.1 );
+	}
+
+	/**
 	 * Creates a named tracking URL for packet.
 	 *
 	 * @param string $trackingUrl Tracking URL.
@@ -227,6 +238,17 @@ class ModuleHelper {
 	}
 
 	/**
+	 * Returns null for value lesser than 0.1.
+	 *
+	 * @param float $number Value (cm).
+	 *
+	 * @return float|null
+	 */
+	public static function convertToMillimeters( float $number ): ?float {
+		return $number < 0.1 ? null : ( $number * 10 );
+	}
+
+	/**
 	 * Creates HTML link parts in array.
 	 *
 	 * @param string      $href Href.
@@ -238,11 +260,11 @@ class ModuleHelper {
 	public function createLinkParts( string $href, string $target = null, string $className = null ): array {
 		$link = Html::el( 'a' )->href( $href );
 
-		if ( null !== $target ) {
+		if ( $target !== null ) {
 			$link->target( $target );
 		}
 
-		if ( null !== $className ) {
+		if ( $className !== null ) {
 			$link->class( $className );
 		}
 
@@ -257,7 +279,7 @@ class ModuleHelper {
 	 * @return string|null
 	 */
 	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
-		if ( null !== $date ) {
+		if ( $date !== null ) {
 			return ( new WC_DateTime( CoreHelper::MYSQL_DATETIME_FORMAT ) )->date_i18n(
 				/**
 				 * Applies woocommerce_admin_order_date_format filters.
@@ -271,8 +293,8 @@ class ModuleHelper {
 		return null;
 	}
 
-	public static function isWooCommercePluginActive(): bool {
-		return self::isPluginActive( 'woocommerce/woocommerce.php' );
+	public function isWooCommercePluginActive(): bool {
+		return $this->isPluginActive( 'woocommerce/woocommerce.php' );
 	}
 
 	public static function getPluginMainFilePath(): string {

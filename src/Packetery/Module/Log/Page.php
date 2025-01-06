@@ -165,7 +165,7 @@ class Page {
 	 */
 	private function getAction(): ?string {
 		$action = $this->request->getQuery( self::PARAM_ACTION );
-		if ( null !== ( $action ) ) {
+		if ( $action !== null ) {
 			return (string) $action;
 		}
 
@@ -208,10 +208,10 @@ class Page {
 			'page' => self::SLUG,
 		];
 
-		if ( null !== $orderId ) {
+		if ( $orderId !== null ) {
 			$params[ self::PARAM_ORDER_ID ] = $orderId;
 		}
-		if ( null !== $action ) {
+		if ( $action !== null ) {
 			$params[ self::PARAM_ACTION ] = $action;
 		}
 

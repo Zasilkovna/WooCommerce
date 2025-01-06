@@ -82,7 +82,7 @@ class PluginHooks {
 	 * @return void
 	 */
 	public function declareWooCommerceCompability(): void {
-		if ( false === class_exists( FeaturesUtil::class ) ) {
+		if ( class_exists( FeaturesUtil::class ) === false ) {
 			return;
 		}
 
@@ -136,7 +136,7 @@ class PluginHooks {
 	 * @return array
 	 */
 	public function addPluginRowMeta( array $links, string $pluginFileName ): array {
-		if ( ! strpos( $pluginFileName, basename( ModuleHelper::getPluginMainFilePath() ) ) ) {
+		if ( strpos( $pluginFileName, basename( ModuleHelper::getPluginMainFilePath() ) ) === false ) {
 			return $links;
 		}
 		$links[] = '<a href="' . $this->wpAdapter->escUrl( 'https://github.com/Zasilkovna/WooCommerce/wiki' ) . '" aria-label="' .
@@ -154,19 +154,19 @@ class PluginHooks {
 	public function handleActions(): void {
 		$action = $this->request->getQuery( Plugin::PARAM_PACKETERY_ACTION );
 
-		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET === $action ) {
+		if ( $action === Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET ) {
 			$this->packetSubmitter->processAction();
 		}
 
-		if ( Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM === $action ) {
+		if ( $action === Order\PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM ) {
 			$this->packetClaimSubmitter->processAction();
 		}
 
-		if ( Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET === $action ) {
+		if ( $action === Order\PacketActionsCommonLogic::ACTION_CANCEL_PACKET ) {
 			$this->packetCanceller->processAction();
 		}
 
-		if ( FeatureFlagNotice::ACTION_HIDE_SPLIT_MESSAGE === $action ) {
+		if ( $action === FeatureFlagNotice::ACTION_HIDE_SPLIT_MESSAGE ) {
 			$this->featureFlagProvider->dismissSplitActivationNotice();
 		}
 	}

@@ -122,8 +122,10 @@ class DashboardWidget {
 	 */
 	private function isPacketaShippingMethodActive(): bool {
 		/** @var WC_Shipping_Zone_Data_Store $shippingDataStore */
+		/** @phpstan-ignore varTag.type */
 		$shippingDataStore = WC_Data_Store::load( 'shipping-zone' );
-		$shippingZones     = $shippingDataStore->get_zones();
+
+		$shippingZones = $shippingDataStore->get_zones();
 
 		foreach ( $shippingZones as $shippingZoneId ) {
 			$shippingZone        = new WC_Shipping_Zone( $shippingZoneId );
@@ -152,11 +154,11 @@ class DashboardWidget {
 			$country        = $carrier->getCountry();
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-			if ( false === $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
+			if ( $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) === false ) {
 				continue;
 			}
 
-			if ( false === $isCodSettingNeeded && $this->optionsProvider->getCodPaymentMethods() === [] && $carrierOptions->hasAnyCodSurchargeSetting() ) {
+			if ( $isCodSettingNeeded === false && $this->optionsProvider->getCodPaymentMethods() === [] && $carrierOptions->hasAnyCodSurchargeSetting() ) {
 				$isCodSettingNeeded = true;
 			}
 

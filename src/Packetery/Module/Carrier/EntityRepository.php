@@ -95,7 +95,7 @@ class EntityRepository {
 	 */
 	public function getById( int $carrierId ): ?Entity\Carrier {
 		$result = $this->repository->getById( $carrierId );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			return null;
 		}
 
@@ -243,7 +243,7 @@ class EntityRepository {
 		}
 
 		$carrier = $this->getById( (int) $carrierId );
-		if ( null === $carrier || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
+		if ( $carrier === null || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
 			return false;
 		}
 
@@ -264,7 +264,7 @@ class EntityRepository {
 			return false;
 		}
 
-		return false === ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) );
+		return ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) === false;
 	}
 
 	/**

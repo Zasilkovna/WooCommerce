@@ -1,18 +1,39 @@
 <?php
 /**
- * Class CurrencySwitcherFacade
+ * Class CurrencySwitcherService
  *
  * @package Packetery\Module
  */
 
 declare( strict_types=1 );
 
-namespace Packetery\Module;
+namespace Packetery\Module\Checkout;
+
+use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\ModuleHelper;
 
 /**
- * Class CurrencySwitcherFacade.
+ * Class CurrencySwitcherService.
  */
-class CurrencySwitcherFacade {
+class CurrencySwitcherService {
+
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
+	 * @var ModuleHelper
+	 */
+	private $moduleHelper;
+
+	public function __construct(
+		WpAdapter $wpAdapter,
+		ModuleHelper $moduleHelper
+	) {
+		$this->wpAdapter    = $wpAdapter;
+		$this->moduleHelper = $moduleHelper;
+	}
 
 	/**
 	 * List of supported plugins for options export.
@@ -31,7 +52,7 @@ class CurrencySwitcherFacade {
 	 * @return float
 	 */
 	public function getConvertedPrice( float $price ): float {
-		if ( ModuleHelper::isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
+		if ( $this->moduleHelper->isPluginActive( 'woocommerce-currency-switcher/index.php' ) ) {
 			return $this->applyFilterWoocsExchangeValue( $price );
 		}
 
@@ -40,7 +61,7 @@ class CurrencySwitcherFacade {
 		 *
 		 * @since 1.4
 		 */
-		return (float) apply_filters( 'packetery_price', $price );
+		return (float) $this->wpAdapter->applyFilters( 'packetery_price', $price );
 	}
 
 	/**
@@ -51,13 +72,13 @@ class CurrencySwitcherFacade {
 	 * @return float
 	 */
 	private function applyFilterWoocsExchangeValue( float $value ): float {
-		if ( 0 < $value ) {
+		if ( $value > 0 ) {
 			/**
 			 * Applies woocs_exchange_value filters.
 			 *
 			 * @since 1.2.7
 			 */
-			$value = (float) apply_filters( 'woocs_exchange_value', $value );
+			$value = (float) $this->wpAdapter->applyFilters( 'woocs_exchange_value', $value );
 		}
 
 		return $value;

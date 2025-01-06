@@ -119,10 +119,10 @@ class FeatureFlagDownloaderTest extends TestCase {
 			->method( 'getOption' )
 			->willReturnCallback(
 				function ( $option ) use ( $dataInOptions, $errors ) {
-					if ( FeatureFlagDownloader::FLAGS_OPTION_ID === $option ) {
+					if ( $option === FeatureFlagDownloader::FLAGS_OPTION_ID ) {
 						return $dataInOptions;
 					}
-					if ( FeatureFlagDownloader::DISABLED_DUE_ERRORS_OPTION_ID === $option ) {
+					if ( $option === FeatureFlagDownloader::DISABLED_DUE_ERRORS_OPTION_ID ) {
 						return $errors;
 					}
 					self::fail( 'unexpected option: ' . $option );

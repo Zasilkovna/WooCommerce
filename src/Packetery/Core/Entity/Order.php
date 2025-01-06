@@ -153,11 +153,21 @@ class Order {
 	private $packetId;
 
 	/**
+	 * @var string|null
+	 */
+	private $packetTrackingUrl;
+
+	/**
 	 * Packet ID.
 	 *
 	 * @var string|null
 	 */
 	private $packetClaimId;
+
+	/**
+	 * @var string|null
+	 */
+	private $packetClaimTrackingUrl;
 
 	/**
 	 * Packet password.
@@ -312,7 +322,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasCustomsDeclaration(): bool {
-		return null !== $this->customsDeclaration && [] !== $this->customsDeclaration->getItems();
+		return $this->customsDeclaration !== null && $this->customsDeclaration->getItems() !== [];
 	}
 
 	/**
@@ -322,7 +332,7 @@ class Order {
 	 */
 	public function hasToFillCustomsDeclaration(): bool {
 		return $this->carrier->requiresCustomsDeclarations() &&
-			false === $this->hasCustomsDeclaration();
+			$this->hasCustomsDeclaration() === false;
 	}
 
 	/**
@@ -420,7 +430,7 @@ class Order {
 			return (int) $this->getCarrier()->getId();
 		}
 
-		if ( null === $this->pickupPoint ) {
+		if ( $this->pickupPoint === null ) {
 			return null;
 		}
 
@@ -431,7 +441,7 @@ class Order {
 	public function hasPickupPointOrCarrierId(): bool {
 		$pickupPointOrCarrierId = $this->getPickupPointOrCarrierId();
 
-		return null !== $pickupPointOrCarrierId && 0 !== $pickupPointOrCarrierId;
+		return $pickupPointOrCarrierId !== null && $pickupPointOrCarrierId !== 0;
 	}
 
 	/**
@@ -582,6 +592,10 @@ class Order {
 		$this->packetId = $packetId;
 	}
 
+	public function setPacketTrackingUrl( ?string $trackingUrl ): void {
+		$this->packetTrackingUrl = $trackingUrl;
+	}
+
 	/**
 	 * Sets packet claim ID.
 	 *
@@ -591,6 +605,10 @@ class Order {
 	 */
 	public function setPacketClaimId( ?string $packetClaimId ): void {
 		$this->packetClaimId = $packetClaimId;
+	}
+
+	public function setPacketClaimTrackingUrl( ?string $trackingUrl ): void {
+		$this->packetClaimTrackingUrl = $trackingUrl;
 	}
 
 	/**
@@ -685,7 +703,7 @@ class Order {
 	 * @return void
 	 */
 	public function setShippingCountry( string $shippingCountry ): void {
-		if ( '' === $shippingCountry ) {
+		if ( $shippingCountry === '' ) {
 			$this->shippingCountry = null;
 		} else {
 			$this->shippingCountry = $shippingCountry;
@@ -772,7 +790,7 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketBarcode(): ?string {
-		return null !== $this->packetId ? 'Z' . $this->packetId : null;
+		return $this->packetId !== null ? 'Z' . $this->packetId : null;
 	}
 
 	/**
@@ -781,25 +799,15 @@ class Order {
 	 * @return string|null
 	 */
 	public function getPacketClaimBarcode(): ?string {
-		return null !== $this->packetClaimId ? 'Z' . $this->packetClaimId : null;
+		return $this->packetClaimId !== null ? 'Z' . $this->packetClaimId : null;
 	}
 
-	/**
-	 * Get packet tracking url
-	 *
-	 * @return string|null
-	 */
 	public function getPacketTrackingUrl(): ?string {
-		return null !== $this->packetId ? sprintf( CoreHelper::TRACKING_URL, $this->packetId ) : null;
+		return $this->packetTrackingUrl;
 	}
 
-	/**
-	 * Get packet claim tracking url.
-	 *
-	 * @return string|null
-	 */
 	public function getPacketClaimTrackingUrl(): ?string {
-		return null !== $this->packetClaimId ? sprintf( CoreHelper::TRACKING_URL, $this->packetClaimId ) : null;
+		return $this->packetClaimTrackingUrl;
 	}
 
 	/**
@@ -844,8 +852,8 @@ class Order {
 	 * @return bool
 	 */
 	public function isPossibleExtendPacketPickUpDate(): bool {
-		return PacketStatus::READY_FOR_PICKUP === $this->packetStatus &&
-			null !== $this->storedUntil &&
+		return $this->packetStatus === PacketStatus::READY_FOR_PICKUP &&
+			$this->storedUntil !== null &&
 			$this->isPacketaInternalPickupPoint();
 	}
 
@@ -855,8 +863,8 @@ class Order {
 	 * @return bool
 	 */
 	public function isPacketClaimCreationPossible(): bool {
-		return PacketStatus::DELIVERED === $this->packetStatus &&
-			null === $this->packetClaimId;
+		return $this->packetStatus === PacketStatus::DELIVERED &&
+			$this->packetClaimId === null;
 	}
 
 	/**
@@ -876,9 +884,9 @@ class Order {
 	 * @return bool
 	 */
 	public function isPacketClaimLabelPrintPossible(): bool {
-		return null !== $this->packetClaimId &&
-			false === $this->isExternalCarrier() &&
-			null !== $this->pickupPoint;
+		return $this->packetClaimId !== null &&
+			$this->isExternalCarrier() === false &&
+			$this->pickupPoint !== null;
 	}
 
 	/**
@@ -905,7 +913,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasManualWeight(): bool {
-		return null !== $this->weight;
+		return $this->weight !== null;
 	}
 
 	/**
@@ -932,7 +940,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getLength(): ?float {
-		if ( null === $this->size ) {
+		if ( $this->size === null ) {
 			return null;
 		}
 
@@ -945,7 +953,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getWidth(): ?float {
-		if ( null === $this->size ) {
+		if ( $this->size === null ) {
 			return null;
 		}
 
@@ -958,7 +966,7 @@ class Order {
 	 * @return float|null
 	 */
 	public function getHeight(): ?float {
-		if ( null === $this->size ) {
+		if ( $this->size === null ) {
 			return null;
 		}
 
@@ -989,7 +997,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasNumber(): bool {
-		return null !== $this->number && '' !== $this->number;
+		return $this->number !== null && $this->number !== '';
 	}
 
 	/**
@@ -1007,7 +1015,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasName(): bool {
-		return null !== $this->name && '' !== $this->name;
+		return $this->name !== null && $this->name !== '';
 	}
 
 	/**
@@ -1034,7 +1042,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasValue(): bool {
-		return null !== $this->value;
+		return $this->value !== null;
 	}
 
 	/**
@@ -1061,7 +1069,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasEshop(): bool {
-		return null !== $this->eshop && '' !== $this->eshop;
+		return $this->eshop !== null && $this->eshop !== '';
 	}
 
 	/**
@@ -1124,7 +1132,7 @@ class Order {
 	 * @return bool
 	 */
 	public function hasCod(): bool {
-		return ( null !== $this->getCod() );
+		return ( $this->getCod() !== null );
 	}
 
 	/**
@@ -1183,7 +1191,7 @@ class Order {
 	 */
 	public function updateApiErrorMessage( ?string $errorMessage ): void {
 		$this->setLastApiErrorMessage( $errorMessage );
-		$this->setLastApiErrorDateTime( null !== $errorMessage ? CoreHelper::now() : null );
+		$this->setLastApiErrorDateTime( $errorMessage !== null ? CoreHelper::now() : null );
 	}
 
 	public function getCustomNumberOrNumber(): ?string {

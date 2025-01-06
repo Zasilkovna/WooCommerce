@@ -74,7 +74,7 @@ class MetaboxesWrapper {
 	 */
 	public function beforeOrderSave( WC_Order $wcOrder ): void {
 		$order = $this->orderRepository->getByIdWithValidCarrier( $wcOrder->get_id() );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 
@@ -92,7 +92,7 @@ class MetaboxesWrapper {
 	public function saveFields( $wcOrderId ): void {
 		$order = $this->orderRepository->getByIdWithValidCarrier( (int) $wcOrderId );
 
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 

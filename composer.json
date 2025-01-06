@@ -1,7 +1,6 @@
 {
     "require": {
-        "php": "~8.1.0",
-        "woocommerce/woocommerce-sniffs": "1.0.0"
+        "php": "~8.1.0"
     },
     "require-dev": {
         "composer/composer": "^2.6",
@@ -12,9 +11,12 @@
         "slevomat/coding-standard": "^8.15",
         "wp-cli/wp-cli-bundle": "^2.11",
         "phpstan/extension-installer": "^1.4",
-        "szepeviktor/phpstan-wordpress": "^1.3",
-        "phpstan/phpstan-strict-rules": "^1.6",
-        "phpstan/phpstan": "^1.2"
+        "szepeviktor/phpstan-wordpress": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "phpstan/phpstan": "^2.0",
+        "squizlabs/php_codesniffer": "^3.11",
+        "woocommerce/woocommerce-sniffs": "^1.0",
+        "phpstan/phpstan-nette": "^2.0"
     },
     "scripts": {
         "build:deps": "bash build-deps.sh",
@@ -27,53 +29,18 @@
         "wpify-scoper": "wpify-scoper",
         "check:phpcs": "vendor/bin/phpcs",
         "fix:phpcbf": "vendor/bin/phpcbf",
-        "phpstan:php72": [
-            "@phpstan:php72-core",
-            "@phpstan:php72-module"
+        "phpstan:all": [
+            "@phpstan:core",
+            "@phpstan:module"
         ],
-        "phpstan:php74": [
-            "@phpstan:php74-core",
-            "@phpstan:php74-module"
-        ],
-        "phpstan:php80": [
-            "@phpstan:php80-core",
-            "@phpstan:php80-module"
-        ],
-        "phpstan:php81": [
-            "@phpstan:php81-core",
-            "@phpstan:php81-module"
-        ],
-        "phpstan:php82": [
-            "@phpstan:php82-core",
-            "@phpstan:php82-module"
-        ],
-        "phpstan:php83": [
-            "@phpstan:php83-core",
-            "@phpstan:php83-module"
-        ],
-        "phpstan:php72-core": "phpstan analyse -c phpstan/php72-core.neon",
-        "phpstan:php74-core": "phpstan analyse -c phpstan/php74-core.neon",
-        "phpstan:php80-core": "phpstan analyse -c phpstan/php80-core.neon",
-        "phpstan:php81-core": "phpstan analyse -c phpstan/php81-core.neon",
-        "phpstan:php82-core": "phpstan analyse -c phpstan/php82-core.neon",
-        "phpstan:php83-core": "phpstan analyse -c phpstan/php83-core.neon",
-        "phpstan:php72-module": "phpstan analyse -c phpstan/php72-module.neon --memory-limit 2G",
-        "phpstan:php74-module": "phpstan analyse -c phpstan/php74-module.neon --memory-limit 2G",
-        "phpstan:php80-module": "phpstan analyse -c phpstan/php80-module.neon --memory-limit 2G",
-        "phpstan:php81-module": "phpstan analyse -c phpstan/php81-module.neon --memory-limit 2G",
-        "phpstan:php82-module": "phpstan analyse -c phpstan/php82-module.neon --memory-limit 2G",
-        "phpstan:php83-module": "phpstan analyse -c phpstan/php83-module.neon --memory-limit 2G",
+        "phpstan:core": "phpstan analyse -c phpstan/core.neon",
+        "phpstan:module": "phpstan analyse -c phpstan/module.neon --memory-limit 2G",
         "tests-unit": "vendor/bin/phpunit tests",
         "tests-coverage": "export XDEBUG_MODE=coverage && php -d memory_limit=200M ./vendor/bin/phpunit tests --coverage-html ./tests-coverage",
         "check:all": [
             "@check:ec",
             "@check:phpcs",
-            "@phpstan:php72",
-            "@phpstan:php74",
-            "@phpstan:php80",
-            "@phpstan:php81",
-            "@phpstan:php82",
-            "@phpstan:php83",
+            "@phpstan:all",
             "@tests-unit"
         ]
     },

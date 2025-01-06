@@ -131,7 +131,7 @@ class PacketSynchronizer {
 	 */
 	public function syncStatusById( int $orderId ): void {
 		$order = $this->orderRepository->getById( $orderId );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 

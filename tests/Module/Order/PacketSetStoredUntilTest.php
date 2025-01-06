@@ -28,7 +28,7 @@ class PacketSetStoredUntilTest extends TestCase {
 		$this->packetSetStoredUntil = new PacketSetStoredUntil(
 			$this->client,
 			$this->loggerMock,
-			new CoreHelper(),
+			new CoreHelper( 'dummyUrl' ),
 		);
 	}
 

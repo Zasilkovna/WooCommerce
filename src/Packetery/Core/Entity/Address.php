@@ -87,7 +87,7 @@ class Address {
 		return sprintf(
 			'%s%s, %s %s',
 			$this->street,
-			( null !== $this->houseNumber ? ' ' . $this->houseNumber : '' ),
+			( $this->houseNumber !== null ? ' ' . $this->houseNumber : '' ),
 			$this->city,
 			$this->zip
 		);

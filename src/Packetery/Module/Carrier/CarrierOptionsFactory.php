@@ -41,7 +41,7 @@ class CarrierOptionsFactory {
 	 */
 	public function createByOptionId( string $optionId ): Options {
 		$options = $this->wpAdapter->getOption( $optionId );
-		if ( ! isset( $options ) || false === $options ) {
+		if ( ! isset( $options ) || $options === false ) {
 			$options = [];
 		}
 

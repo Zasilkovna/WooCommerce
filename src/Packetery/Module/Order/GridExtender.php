@@ -14,6 +14,7 @@ use Packetery\Core\CoreHelper;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ContextResolver;
+use Packetery\Module\EntityFactory\SizeFactory;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\Purger;
@@ -97,6 +98,11 @@ class GridExtender {
 	private $moduleHelper;
 
 	/**
+	 * @var SizeFactory
+	 */
+	private $sizeFactory;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -108,6 +114,7 @@ class GridExtender {
 	 * @param CarrierOptionsFactory $carrierOptionsFactory Carrier options factory.
 	 * @param WpAdapter             $wpAdapter             WordPress adapter.
 	 * @param ModuleHelper          $moduleHelper          Module helper.
+	 * @param SizeFactory           $sizeFactory           Size factory.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -118,7 +125,8 @@ class GridExtender {
 		ContextResolver $contextResolver,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		WpAdapter $wpAdapter,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		SizeFactory $sizeFactory
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -129,6 +137,7 @@ class GridExtender {
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->wpAdapter             = $wpAdapter;
 		$this->moduleHelper          = $moduleHelper;
+		$this->sizeFactory           = $sizeFactory;
 	}
 
 	/**
@@ -174,17 +183,17 @@ class GridExtender {
 	 * Adds select to order grid.
 	 */
 	public function renderOrderTypeSelect(): void {
-		if ( false === $this->contextResolver->isOrderGridPage() ) {
+		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return;
 		}
 
 		$linkFilters = [];
 
-		if ( null !== $this->httpRequest->getQuery( 'packetery_to_submit' ) ) {
+		if ( $this->httpRequest->getQuery( 'packetery_to_submit' ) !== null ) {
 			$linkFilters['packetery_to_submit'] = '1';
 		}
 
-		if ( null !== $this->httpRequest->getQuery( 'packetery_to_print' ) ) {
+		if ( $this->httpRequest->getQuery( 'packetery_to_print' ) !== null ) {
 			$linkFilters['packetery_to_print'] = '1';
 		}
 
@@ -255,7 +264,7 @@ class GridExtender {
 	 * @param WC_Order|int|mixed $wcOrder WC Order.
 	 */
 	public function fillCustomOrderListColumns( $column, $wcOrder ): void {
-		if ( false === is_string( $column ) ) {
+		if ( is_string( $column ) === false ) {
 			return;
 		}
 
@@ -270,13 +279,13 @@ class GridExtender {
 		try {
 			$order = $this->getOrderByIdCached( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
-			if ( 'packetery' === $column ) {
+			if ( $column === 'packetery' ) {
 				echo esc_html( $exception->getMessage() );
 			}
 
 			return;
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 
@@ -290,7 +299,7 @@ class GridExtender {
 				break;
 			case 'packetery_destination':
 				$pickupPoint = $order->getPickupPoint();
-				if ( null !== $pickupPoint ) {
+				if ( $pickupPoint !== null ) {
 					$pointName = $pickupPoint->getName();
 					$pointId   = $pickupPoint->getId();
 					if ( ! $order->isExternalCarrier() ) {
@@ -318,12 +327,12 @@ class GridExtender {
 					],
 				];
 
-				if ( null !== $packetId ) {
-					$latteParams['packetIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetId );
+				if ( $packetId !== null ) {
+					$latteParams['packetIdTrackingUrl'] = $this->coreHelper->getTrackingUrl( $packetId );
 				}
 
-				if ( null !== $packetClaimId ) {
-					$latteParams['packetClaimIdTrackingUrl'] = $this->coreHelper->get_tracking_url( $packetClaimId );
+				if ( $packetClaimId !== null ) {
+					$latteParams['packetClaimIdTrackingUrl'] = $this->coreHelper->getTrackingUrl( $packetClaimId );
 				}
 
 				$this->latteEngine->render(
@@ -371,6 +380,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-packetery.latte',
 					[
 						'order'                            => $order,
+						'dimensions'                       => $this->sizeFactory->createSizeInSetDimensionUnit( $order ),
 						'orderIsSubmittable'               => $this->orderValidator->isValid( $order ),
 						'isPossibleExtendPacketPickUpDate' => $order->isPossibleExtendPacketPickUpDate(),
 						'storedUntil'                      => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
@@ -378,7 +388,7 @@ class GridExtender {
 						'packetSubmitUrl'                  => $packetSubmitUrl,
 						'packetCancelLink'                 => $packetCancelLink,
 						'printLink'                        => $printLink,
-						'helper'                           => new CoreHelper(),
+						'helper'                           => $this->coreHelper,
 						'datePickerFormat'                 => CoreHelper::DATEPICKER_FORMAT,
 						'logPurgerDatetimeModifier'        => $this->wpAdapter->getOption( Purger::PURGER_OPTION_NAME, Purger::PURGER_MODIFIER_DEFAULT ),
 						'packetDeliverOn'                  => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
@@ -430,7 +440,7 @@ class GridExtender {
 		foreach ( $columns as $columnName => $columnInfo ) {
 			$newColumns[ $columnName ] = $columnInfo;
 
-			if ( 'order_total' === $columnName ) {
+			if ( $columnName === 'order_total' ) {
 				$newColumns['packetery_weight']              = __( 'Weight', 'packeta' );
 				$newColumns['packetery']                     = __( 'Packeta', 'packeta' );
 				$newColumns['packetery_packet_id']           = __( 'Tracking No.', 'packeta' );

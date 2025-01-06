@@ -13,7 +13,9 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Size;
 use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Forms\FormData\OrderFormData;
 use Packetery\Module\Forms\StoredUntilFormFactory;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
 use Packetery\Module\Order\GridExtender;
@@ -90,6 +92,13 @@ final class OrderController extends WP_REST_Controller {
 	private $packetSetStoredUntil;
 
 	/**
+	 * Options provider.
+	 *
+	 * @var OptionsProvider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param OrderRouter            $router                 Router.
@@ -100,6 +109,7 @@ final class OrderController extends WP_REST_Controller {
 	 * @param Form                   $orderForm              Order form.
 	 * @param StoredUntilFormFactory $storedUntilFormFactory Stored until Form Factory.
 	 * @param PacketSetStoredUntil   $packetSetStoredUntil   Packet Set Stored Until.
+	 * @param OptionsProvider        $optionsProvider        Options provider.
 	 */
 	public function __construct(
 		OrderRouter $router,
@@ -109,7 +119,8 @@ final class OrderController extends WP_REST_Controller {
 		CoreHelper $coreHelper,
 		Form $orderForm,
 		StoredUntilFormFactory $storedUntilFormFactory,
-		PacketSetStoredUntil $packetSetStoredUntil
+		PacketSetStoredUntil $packetSetStoredUntil,
+		OptionsProvider $optionsProvider
 	) {
 		$this->orderForm              = $orderForm;
 		$this->orderRepository        = $orderRepository;
@@ -119,6 +130,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->router                 = $router;
 		$this->storedUntilFormFactory = $storedUntilFormFactory;
 		$this->packetSetStoredUntil   = $packetSetStoredUntil;
+		$this->optionsProvider        = $optionsProvider;
 	}
 
 	/**
@@ -174,14 +186,14 @@ final class OrderController extends WP_REST_Controller {
 				Form::FIELD_WIDTH           => $parameters['packeteryWidth'] ?? null,
 				Form::FIELD_LENGTH          => $parameters['packeteryLength'] ?? null,
 				Form::FIELD_HEIGHT          => $parameters['packeteryHeight'] ?? null,
-				Form::FIELD_ADULT_CONTENT   => isset( $parameters['hasPacketeryAdultContent'] ) && 'true' === $parameters['hasPacketeryAdultContent'],
+				Form::FIELD_ADULT_CONTENT   => isset( $parameters['hasPacketeryAdultContent'] ) && $parameters['hasPacketeryAdultContent'] === 'true',
 				Form::FIELD_COD             => $parameters['packeteryCOD'] ?? null,
 				Form::FIELD_VALUE           => $parameters['packeteryValue'],
 				Form::FIELD_DELIVER_ON      => $packeteryDeliverOn,
 			]
 		);
 
-		if ( false === $form->isValid() ) {
+		if ( $form->isValid() === false ) {
 			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
@@ -190,27 +202,26 @@ final class OrderController extends WP_REST_Controller {
 		} catch ( InvalidCarrierException $exception ) {
 			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
-
-		$values = $form->getValues( 'array' );
+		/** @var OrderFormData $orderFormData */
+		$orderFormData = $form->getValues( OrderFormData::class );
 
 		$size = new Size(
-			$values[ Form::FIELD_LENGTH ],
-			$values[ Form::FIELD_WIDTH ],
-			$values[ Form::FIELD_HEIGHT ]
+			$this->optionsProvider->getSanitizedDimensionValueInMm( $orderFormData->packeteryLength ),
+			$this->optionsProvider->getSanitizedDimensionValueInMm( $orderFormData->packeteryWidth ),
+			$this->optionsProvider->getSanitizedDimensionValueInMm( $orderFormData->packeteryHeight )
 		);
 
-		if ( $values[ Form::FIELD_WEIGHT ] !== (float) $values[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
-			$order->setWeight( $values[ Form::FIELD_WEIGHT ] );
+		if ( $orderFormData->packeteryWeight !== (float) $orderFormData->packeteryOriginalWeight ) {
+			$order->setWeight( $orderFormData->packeteryWeight );
 		}
 
-		$order->setCod( $values[ Form::FIELD_COD ] );
-		$order->setAdultContent( $values[ Form::FIELD_ADULT_CONTENT ] );
-		$order->setValue( $values[ Form::FIELD_VALUE ] );
+		$order->setCod( $orderFormData->packeteryCOD );
+		$order->setAdultContent( $orderFormData->packeteryAdultContent );
+		$order->setValue( $orderFormData->packeteryValue );
 		$order->setSize( $size );
-		// TODO: Find out why are we using this variable and not form value.
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $packeteryDeliverOn ) );
 
 		$this->orderRepository->save( $order );
@@ -221,9 +232,9 @@ final class OrderController extends WP_REST_Controller {
 				sprintf( '[data-packetery-order-id="%d"][data-packetery-order-grid-cell-weight]', $orderId ) => $this->gridExtender->getWeightCellContent( $order ),
 			],
 			Form::FIELD_WEIGHT        => $order->getFinalWeight(),
-			Form::FIELD_LENGTH        => $order->getLength(),
-			Form::FIELD_WIDTH         => $order->getWidth(),
-			Form::FIELD_HEIGHT        => $order->getHeight(),
+			Form::FIELD_LENGTH        => CoreHelper::trimDecimalPlaces( $orderFormData->packeteryLength, $this->optionsProvider->getDimensionsNumberOfDecimals() ),
+			Form::FIELD_WIDTH         => CoreHelper::trimDecimalPlaces( $orderFormData->packeteryWidth, $this->optionsProvider->getDimensionsNumberOfDecimals() ),
+			Form::FIELD_HEIGHT        => CoreHelper::trimDecimalPlaces( $orderFormData->packeteryHeight, $this->optionsProvider->getDimensionsNumberOfDecimals() ),
 			Form::FIELD_ADULT_CONTENT => $order->containsAdultContent(),
 			Form::FIELD_COD           => $order->getCod(),
 			Form::FIELD_VALUE         => $order->getValue(),
@@ -255,7 +266,7 @@ final class OrderController extends WP_REST_Controller {
 			]
 		);
 
-		if ( false === $form->isValid() ) {
+		if ( $form->isValid() === false ) {
 			return new WP_Error( 'form_invalid', implode( ', ', $form->getErrors() ), 400 );
 		}
 
@@ -264,13 +275,13 @@ final class OrderController extends WP_REST_Controller {
 		} catch ( InvalidCarrierException $exception ) {
 			return new WP_Error( 'order_not_loaded', $exception->getMessage(), 400 );
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return new WP_Error( 'order_not_loaded', __( 'Order could not be loaded.', 'packeta' ), 400 );
 		}
 
 		$errorMessage = $this->packetSetStoredUntil->setStoredUntil( $order, $order->getPacketId(), $this->coreHelper->getDateTimeFromString( $storedUntil ) );
 
-		if ( null !== $errorMessage ) {
+		if ( $errorMessage !== null ) {
 			return new WP_Error( 'packetery_fault', $errorMessage, 400 );
 		}
 

@@ -10,6 +10,7 @@ parameters:
 	featureFlagConfig:
 		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
+	trackingUrl: https://tracking.app.packeta.com/%s
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -32,7 +33,7 @@ services:
 	- Packetery\Module\Product\ProductEntityFactory
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
-	- Packetery\Core\CoreHelper
+	- Packetery\Core\CoreHelper(trackingUrl: %trackingUrl%)
 	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
@@ -50,7 +51,16 @@ services:
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\Carrier\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
-	- Packetery\Module\Checkout
+	- Packetery\Module\Checkout\Checkout
+	- Packetery\Module\Checkout\CheckoutService
+	- Packetery\Module\Checkout\CheckoutRenderer
+	- Packetery\Module\Checkout\CheckoutStorage
+	- Packetery\Module\Checkout\CheckoutSettings
+	- Packetery\Module\Checkout\CheckoutValidator
+	- Packetery\Module\Checkout\CartService
+	- Packetery\Module\Checkout\SessionService
+	- Packetery\Module\Checkout\ShippingRateFactory
+	- Packetery\Module\Checkout\OrderUpdater
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
@@ -67,6 +77,7 @@ services:
 	- Packetery\Module\Order\PacketClaimSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\CustomsDeclaration
+	- Packetery\Module\EntityFactory\SizeFactory
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
@@ -92,10 +103,10 @@ services:
 	- Packetery\Module\Upgrade\Version_1_4_2
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
-	- Packetery\Module\CurrencySwitcherFacade
+	- Packetery\Module\Checkout\CurrencySwitcherService
 	- Packetery\Core\Api\Soap\CreatePacketMapper
 	- Packetery\Module\Order\PickupPointValidator
-	- Packetery\Module\RateCalculator
+	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig
 	- Packetery\Module\Carrier\EntityRepository
 	- Packetery\Module\Carrier\ActivityBridge

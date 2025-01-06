@@ -367,6 +367,46 @@
 							<select data-packetery-select2 n:name="disallowed_checkout_payment_methods"></select>
 						</td>
 					</tr>
+
+					<tr>
+						<th scope="row">
+							<label n:name=dimensions_restrictions-active />
+						</th>
+						<td>
+							<input n:name=dimensions_restrictions-active>
+						</td>
+					</tr>
+					<tr id="{$carrier_data['dimensionRestrictionContainerId']}">
+						<td colspan="2">
+							<table class="packetery-table">
+								{if isset($form['dimensions_restrictions-length'])}
+									<tr>
+										<th><label n:name=dimensions_restrictions-length /></th>
+										<td><input n:name=dimensions_restrictions-length></td>
+									</tr>
+									<tr>
+										<th><label n:name=dimensions_restrictions-width /></th>
+										<td><input n:name=dimensions_restrictions-width></td>
+									</tr>
+									<tr>
+										<th><label n:name=dimensions_restrictions-height /></th>
+										<td><input n:name=dimensions_restrictions-height></td>
+									</tr>
+								{/if}
+								{if isset($form['dimensions_restrictions-maximum_length'])}
+									<tr>
+										<th><label n:name=dimensions_restrictions-maximum_length /></th>
+										<td><input n:name=dimensions_restrictions-maximum_length></td>
+									</tr>
+									<tr>
+										<th><label n:name=dimensions_restrictions-dimensions_sum /></th>
+										<td><input n:name=dimensions_restrictions-dimensions_sum></td>
+									</tr>
+								{/if}
+							</table>
+						</td>
+					</tr>
+
 				</table>
 
 				<p class="submit">

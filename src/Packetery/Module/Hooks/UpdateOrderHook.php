@@ -64,12 +64,12 @@ class UpdateOrderHook {
 	public function updateOrder( $wcOrderId ): void {
 		static $hasBeenRun;
 
-		if ( isset( $hasBeenRun ) && true === $hasBeenRun ) {
+		if ( isset( $hasBeenRun ) && $hasBeenRun === true ) {
 			return;
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( (int) $wcOrderId );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return;
 		}
 

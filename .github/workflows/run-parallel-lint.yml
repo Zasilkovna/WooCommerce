@@ -1,0 +1,35 @@
+name: PHP parallel lint
+
+on:
+    push:
+        branches: [ main ]
+    pull_request:
+
+jobs:
+    php-parallel-lint:
+        runs-on: ubuntu-24.04
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php-version: [ '7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3' ]
+
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v2
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php-version }}
+                    extensions: mbstring, intl
+                    coverage: none
+
+            -   name: php version
+                run: php -v
+
+            -   name: Install php-parallel-lint
+                run: composer create-project php-parallel-lint/php-parallel-lint ./temp/php-parallel-lint --no-dev
+
+            -   name: Run PHP parallel lint
+                run: ./temp/php-parallel-lint/parallel-lint . --exclude ./tests

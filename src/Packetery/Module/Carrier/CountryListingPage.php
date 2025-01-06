@@ -163,13 +163,13 @@ class CountryListingPage {
 	 */
 	public function render(): void {
 		$carriersUpdateParams = [];
-		if ( null !== $this->httpRequest->getQuery( 'update_carriers' ) ) {
+		if ( $this->httpRequest->getQuery( 'update_carriers' ) !== null ) {
 			set_transient( 'packetery_run_update_carriers', true );
 			if ( wp_safe_redirect( add_query_arg( [ 'page' => OptionsPage::SLUG ], get_admin_url( null, 'admin.php' ) ) ) ) {
 				exit;
 			}
 		}
-		if ( false !== get_transient( 'packetery_run_update_carriers' ) ) {
+		if ( get_transient( 'packetery_run_update_carriers' ) !== false ) {
 			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
 			$carriersUpdateParams                           = [
 				'result'      => $carrierUpdaterResult,
@@ -194,7 +194,7 @@ class CountryListingPage {
 		$form->addSubmit( 'filter', __( 'Filter', 'packeta' ) );
 
 		$isApiPasswordSet = false;
-		if ( null !== $this->optionsProvider->get_api_password() ) {
+		if ( $this->optionsProvider->get_api_password() !== null ) {
 			$isApiPasswordSet = true;
 		}
 
@@ -209,7 +209,7 @@ class CountryListingPage {
 
 		$carrierChanges         = get_transient( self::TRANSIENT_CARRIER_CHANGES );
 		$settingsChangedMessage = null;
-		if ( false !== $carrierChanges ) {
+		if ( $carrierChanges !== false ) {
 			$settingsChangedMessage = sprintf( // translators: 1: link start 2: link end.
 				esc_html__( 'The carrier settings have changed since the last carrier update. %1$sShow logs%2$s', 'packeta' ),
 				'<a href="' . $this->logPage->createLogListUrl( null, Record::ACTION_CARRIER_LIST_UPDATE ) . '">',
@@ -312,16 +312,16 @@ class CountryListingPage {
 		usort(
 			$countriesFinal,
 			static function ( $a, $b ) {
-				if ( 'cz' === $a[ self::DATA_KEY_COUNTRY_CODE ] ) {
+				if ( $a[ self::DATA_KEY_COUNTRY_CODE ] === 'cz' ) {
 					return - 1;
 				}
-				if ( 'cz' === $b[ self::DATA_KEY_COUNTRY_CODE ] ) {
+				if ( $b[ self::DATA_KEY_COUNTRY_CODE ] === 'cz' ) {
 					return 1;
 				}
-				if ( 'sk' === $a[ self::DATA_KEY_COUNTRY_CODE ] ) {
+				if ( $a[ self::DATA_KEY_COUNTRY_CODE ] === 'sk' ) {
 					return - 1;
 				}
-				if ( 'sk' === $b[ self::DATA_KEY_COUNTRY_CODE ] ) {
+				if ( $b[ self::DATA_KEY_COUNTRY_CODE ] === 'sk' ) {
 					return 1;
 				}
 
@@ -339,9 +339,9 @@ class CountryListingPage {
 	 */
 	public function getLastUpdate(): ?string {
 		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
-		if ( false !== $lastCarrierUpdate ) {
+		if ( $lastCarrierUpdate !== false ) {
 			$date = \DateTime::createFromFormat( DATE_ATOM, $lastCarrierUpdate );
-			if ( false !== $date ) {
+			if ( $date !== false ) {
 				$date->setTimezone( wp_timezone() );
 
 				return $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
@@ -363,7 +363,7 @@ class CountryListingPage {
 			$carrierId      = $carrier->getId();
 			$optionId       = OptionPrefixer::getOptionId( $carrierId );
 			$carrierOptions = get_option( $optionId );
-			if ( false !== $carrierOptions ) {
+			if ( $carrierOptions !== false ) {
 				unset( $carrierOptions['id'] );
 				$originalName = $carrier->getName();
 				$cartName     = $carrierOptions['name'];

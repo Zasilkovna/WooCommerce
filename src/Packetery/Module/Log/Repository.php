@@ -208,14 +208,14 @@ class Repository {
 	 */
 	public function save( Record $record ): void {
 		$date = $record->date;
-		if ( null === $date ) {
+		if ( $date === null ) {
 			$date = CoreHelper::now();
 		}
 
 		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$paramsString = '';
-		if ( null !== $record->params && count( $record->params ) > 0 ) {
+		if ( $record->params !== null && count( $record->params ) > 0 ) {
 			$params       = ModuleHelper::convertArrayFloatsToStrings( $record->params );
 			$paramsString = wp_json_encode( $params );
 		}
@@ -251,7 +251,7 @@ class Repository {
 		if ( is_numeric( $orderId ) ) {
 			$where[] = $this->wpdbAdapter->prepare( '`order_id` = %d', $orderId );
 		}
-		if ( null !== $action ) {
+		if ( $action !== null ) {
 			$where[] = $this->wpdbAdapter->prepare( '`action` = %s', $action );
 		}
 

@@ -152,7 +152,7 @@ class Options {
 	 * @return bool
 	 */
 	public function hasAnyCodSurchargeSetting(): bool {
-		if ( null !== $this->getDefaultCODSurcharge() ) {
+		if ( $this->getDefaultCODSurcharge() !== null ) {
 			return true;
 		}
 
@@ -184,5 +184,16 @@ class Options {
 	 */
 	public function hasOptions(): bool {
 		return count( $this->options ) > 0;
+	}
+
+	public function getSizeRestrictions(): ?array {
+		if (
+			isset( $this->options['dimensions_restrictions']['active'] ) &&
+			$this->options['dimensions_restrictions']['active'] === true
+		) {
+			return $this->options['dimensions_restrictions'];
+		}
+
+		return null;
 	}
 }

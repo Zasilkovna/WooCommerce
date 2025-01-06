@@ -133,7 +133,7 @@ class PacketCanceller {
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 		$packetId   = $this->request->getQuery( PacketActionsCommonLogic::PARAM_PACKET_ID );
 
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status  = Log\Record::STATUS_ERROR;
@@ -167,7 +167,7 @@ class PacketCanceller {
 	 * @return void
 	 */
 	public function cancelPacket( Entity\Order $order, ?string $packetId ): void {
-		if ( null === $packetId ) {
+		if ( $packetId === null ) {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_CANCEL;
 			$record->status  = Log\Record::STATUS_ERROR;
@@ -205,7 +205,7 @@ class PacketCanceller {
 			$errorMessage = null;
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
-			if ( null !== $wcOrder ) {
+			if ( $wcOrder !== null ) {
 				// translators: %s represents a packet tracking link.
 				$message     = __( 'Packeta: Packet %s has been cancelled', 'packeta' );
 				$trackingUrl = $order->getPacketTrackingUrl();
@@ -249,6 +249,7 @@ class PacketCanceller {
 			$order->setPacketStatus( null );
 			$this->wcOrderActions->updateOrderStatus( $order->getNumber(), PacketStatus::CANCELLED );
 			$order->setPacketId( null );
+			$order->setPacketTrackingUrl( null );
 			$order->updateApiErrorMessage( null );
 
 			if ( $result->hasFault() ) {
@@ -262,6 +263,7 @@ class PacketCanceller {
 
 		if ( $packetId === $order->getPacketClaimId() && $this->shouldRevertSubmission( $result ) ) {
 			$order->setPacketClaimId( null );
+			$order->setPacketClaimTrackingUrl( null );
 			$order->setPacketClaimPassword( null );
 			$order->updateApiErrorMessage( null );
 
@@ -289,7 +291,7 @@ class PacketCanceller {
 	 * @return bool
 	 */
 	public function shouldRevertSubmission( ?Soap\Response\CancelPacket $result ): bool {
-		if ( null === $result ) {
+		if ( $result === null ) {
 			return false;
 		}
 
