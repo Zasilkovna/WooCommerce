@@ -16,7 +16,6 @@
 		"^temp\/",
 		"^log\/",
 		"^\\.idea\/",
-		"^.phpunit.result.cache$",
 		"\\.DS_Store$",
 		"\\.phar$"
 	],

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
+<!-- https://docs.phpunit.de/en/10.5/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
+		xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
 		backupGlobals="false"
 		colors="true"
 		displayDetailsOnTestsThatTriggerWarnings="true"
-bootstrap="tests/bootstrap.php"
+		displayDetailsOnPhpunitDeprecations="true"
+		bootstrap="tests/bootstrap.php"
+		cacheResultFile="temp/.phpunit.result.cache"
 >
 	<php>
 		<ini name="error_reporting" value="-1"/>
