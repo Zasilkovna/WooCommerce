@@ -531,7 +531,7 @@ var packeteryLoadCheckout = function( $, settings ) {
 
 				if ( settings.biggestProductSize ) {
 					if ( settings.biggestProductSize.length ) {
-						widgetOptions.lenght = settings.biggestProductSize.length;
+						widgetOptions.length = settings.biggestProductSize.length;
 					}
 					if ( settings.biggestProductSize.width ) {
 						widgetOptions.width = settings.biggestProductSize.width;
