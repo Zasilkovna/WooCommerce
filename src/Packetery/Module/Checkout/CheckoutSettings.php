@@ -199,6 +199,7 @@ class CheckoutSettings {
 	public function actionCreateSettingsAjax(): void {
 		$settings = [];
 		if ( $this->wcAdapter->cart() instanceof WC_Cart ) {
+			$settings['biggestProductSize']        = $this->cartService->getBiggestProductSize();
 			$settings['isAgeVerificationRequired'] = $this->cartService->isAgeVerificationRequired();
 		}
 
