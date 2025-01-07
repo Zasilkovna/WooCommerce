@@ -120,9 +120,7 @@ class CountryListingPage {
 	private $formFactory;
 
 	/**
-	 * Carrier activity checker.
-	 *
-	 * @var ActivityBridge
+	 * @var CarrierActivityBridge
 	 */
 	private $carrierActivityBridge;
 
@@ -140,7 +138,7 @@ class CountryListingPage {
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
 		FormFactory $formFactory,
-		ActivityBridge $carrierActivityBridge
+		CarrierActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;

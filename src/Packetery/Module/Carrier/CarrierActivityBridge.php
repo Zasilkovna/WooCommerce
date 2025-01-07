@@ -1,9 +1,4 @@
 <?php
-/**
- * ActivityBridge.
- *
- * @package Packetery
- */
 
 namespace Packetery\Module\Carrier;
 
@@ -12,12 +7,7 @@ use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\BaseShippingMethod;
 use WC_Shipping_Zones;
 
-/**
- * ActivityBridge.
- *
- * @package Packetery
- */
-class ActivityBridge {
+class CarrierActivityBridge {
 
 	/**
 	 * Options provider.

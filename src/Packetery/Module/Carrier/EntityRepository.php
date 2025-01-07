@@ -57,11 +57,9 @@ class EntityRepository {
 	private $carrierOptionsFactory;
 
 	/**
-	 * Carrier activity checker.
-	 *
-	 * @var ActivityBridge
+	 * @var CarrierActivityBridge
 	 */
-	private $activityBridge;
+	private $carrierActivityBridge;
 
 	/**
 	 * @var ShippingZoneRepository
@@ -74,7 +72,7 @@ class EntityRepository {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CarDeliveryConfig $carDeliveryConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		ActivityBridge $activityBridge,
+		CarrierActivityBridge $carrierActivityBridge,
 		ShippingZoneRepository $shippingZoneRepository
 	) {
 		$this->repository             = $repository;
@@ -82,7 +80,7 @@ class EntityRepository {
 		$this->pickupPointsConfig     = $pickupPointsConfig;
 		$this->carDeliveryConfig      = $carDeliveryConfig;
 		$this->carrierOptionsFactory  = $carrierOptionsFactory;
-		$this->activityBridge         = $activityBridge;
+		$this->carrierActivityBridge  = $carrierActivityBridge;
 		$this->shippingZoneRepository = $shippingZoneRepository;
 	}
 
@@ -215,7 +213,7 @@ class EntityRepository {
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
-			if ( $this->activityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
+			if ( $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
 					'label'     => $carrierOptions->getName(),
@@ -249,7 +247,7 @@ class EntityRepository {
 
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-		return $this->activityBridge->isActive( $carrier->getId(), $carrierOptions );
+		return $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions );
 	}
 
 	/**
