@@ -1,9 +1,4 @@
 <?php
-/**
- * Class ShippingMethodGenerator.
- *
- * @package Packetery
- */
 
 namespace Packetery\Module\Shipping;
 
@@ -11,34 +6,19 @@ use Packetery\Module\Carrier\Downloader;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Nette\PhpGenerator\PhpFile;
 
-/**
- * Class ShippingMethodGenerator.
- *
- * @package Packetery
- */
 class ShippingMethodGenerator {
 	private const TARGET_NAMESPACE = 'Packetery\Module\Shipping\Generated';
 
 	/**
-	 * Pickup point config.
-	 *
 	 * @var PacketaPickupPointsConfig
 	 */
 	private $pickupPointConfig;
 
 	/**
-	 * Carrier downloader.
-	 *
 	 * @var Downloader
 	 */
 	private $carrierDownloader;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param PacketaPickupPointsConfig $pickupPointConfig Pickup point config.
-	 * @param Downloader                $carrierDownloader Carrier downloader.
-	 */
 	public function __construct(
 		PacketaPickupPointsConfig $pickupPointConfig,
 		Downloader $carrierDownloader
@@ -47,11 +27,6 @@ class ShippingMethodGenerator {
 		$this->carrierDownloader = $carrierDownloader;
 	}
 
-	/**
-	 * Generates classes for all carriers in feed.
-	 *
-	 * @return void
-	 */
 	public function generateClasses(): void {
 		$allCarriers = [];
 
@@ -77,14 +52,7 @@ class ShippingMethodGenerator {
 	}
 
 	/**
-	 * Generates class source code.
-	 *
 	 * @link https://doc.nette.org/en/php-generator
-	 *
-	 * @param string $carrierId   Carrier id.
-	 * @param string $carrierName Carrier name.
-	 *
-	 * @return void
 	 */
 	private function generateClass( string $carrierId, string $carrierName ): void {
 		$file = new PhpFile();
@@ -107,24 +75,10 @@ class ShippingMethodGenerator {
 		file_put_contents( $filePath, $file );
 	}
 
-	/**
-	 * Returns carrier shipping method classname.
-	 *
-	 * @param string $carrierId Carrier id.
-	 *
-	 * @return string
-	 */
 	private static function getClassnameFromCarrierId( string $carrierId ): string {
 		return 'ShippingMethod_' . $carrierId;
 	}
 
-	/**
-	 * Checks if carrier class exists.
-	 *
-	 * @param string $carrierId Carrier id.
-	 *
-	 * @return bool
-	 */
 	public static function classExists( string $carrierId ): bool {
 		return class_exists( self::TARGET_NAMESPACE . '\\' . self::getClassnameFromCarrierId( $carrierId ) );
 	}

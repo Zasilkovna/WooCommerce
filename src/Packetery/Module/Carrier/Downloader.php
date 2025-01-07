@@ -45,8 +45,6 @@ class Downloader {
 	private $webRequestClient;
 
 	/**
-	 * WP adapter.
-	 *
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;

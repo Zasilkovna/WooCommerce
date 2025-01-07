@@ -21,24 +21,15 @@ use WC_Shipping_Zone_Data_Store_Interface;
 class ShippingZoneRepository {
 
 	/**
-	 * Shipping zone data store.
-	 *
 	 * @var WC_Shipping_Zone_Data_Store_Interface|WC_Data_Store|null
 	 */
 	private $dataStore = null;
 
 	/**
-	 * WC adapter.
-	 *
 	 * @var WcAdapter
 	 */
 	private $wcAdapter;
 
-	/**
-	 * ShippingZoneRepository constructor.
-	 *
-	 * @param WcAdapter $wcAdapter WC adapter.
-	 */
 	public function __construct( WcAdapter $wcAdapter ) {
 		$this->wcAdapter = $wcAdapter;
 	}
@@ -112,13 +103,6 @@ class ShippingZoneRepository {
 		return $this->getCountryCodesFromZoneLocations( $this->getLocationsForShippingRate( $rateId ) );
 	}
 
-	/**
-	 * Gets country codes from zone locations.
-	 *
-	 * @param array|null $zoneLocations Zone locations.
-	 *
-	 * @return array
-	 */
 	private function getCountryCodesFromZoneLocations( ?array $zoneLocations ): array {
 		if ( $zoneLocations === null ) {
 			return [];
@@ -128,8 +112,6 @@ class ShippingZoneRepository {
 		$continents = $this->wcAdapter->countriesGetContinents();
 
 		/**
-		 * Zone location.
-		 *
 		 * @var stdClass $zoneLocation
 		 */
 		foreach ( $zoneLocations as $zoneLocation ) {
@@ -147,13 +129,6 @@ class ShippingZoneRepository {
 		return $countries;
 	}
 
-	/**
-	 * Gets country codes for shipping zone.
-	 *
-	 * @param int $zoneId Zone id.
-	 *
-	 * @return array
-	 */
 	public function getCountryCodesForShippingZone( int $zoneId ): array {
 		$zone = new WC_Shipping_Zone( $zoneId );
 

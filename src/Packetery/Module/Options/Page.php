@@ -428,11 +428,6 @@ class Page {
 		}
 	}
 
-	/**
-	 * Creates advanced form.
-	 *
-	 * @return Form
-	 */
 	public function createAdvancedForm(): Form {
 		$form     = $this->formFactory->create( 'packetery_advanced_form' );
 		$defaults = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED );
@@ -450,14 +445,6 @@ class Page {
 		return $form;
 	}
 
-	/**
-	 * On advanced form success.
-	 *
-	 * @param Form  $form Form.
-	 * @param array $values Form values.
-	 *
-	 * @return void
-	 */
 	public function onAdvancedFormSuccess( Form $form, array $values ): void {
 		update_option( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED, $values );
 

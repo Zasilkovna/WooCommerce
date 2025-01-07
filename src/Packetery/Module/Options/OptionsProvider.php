@@ -69,8 +69,6 @@ class OptionsProvider {
 	private $autoSubmissionData;
 
 	/**
-	 * Advanced data.
-	 *
 	 * @var array<string, mixed>
 	 */
 	private $advancedData;
@@ -674,11 +672,6 @@ class OptionsProvider {
 		return false;
 	}
 
-	/**
-	 * Tells whether the WC Carrier settings is enabled.
-	 *
-	 * @return bool
-	 */
 	public function isWcCarrierConfigEnabled(): bool {
 		$isEnabled = ( $this->advancedData['new_carrier_settings_enabled'] ?? null );
 		if ( $isEnabled !== null ) {

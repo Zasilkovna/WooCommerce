@@ -1,9 +1,4 @@
 <?php
-/**
- * Class ShippingProvider.
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
@@ -18,74 +13,45 @@ use Packetery\Module\ContextResolver;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\ShippingZoneRepository;
+use WC_Order;
 
-/**
- * Class ShippingProvider.
- *
- * @package Packetery
- */
 class ShippingProvider {
 
 	/**
-	 * Feature flag provider.
-	 *
 	 * @var FeatureFlagProvider
 	 */
 	private $featureFlagProvider;
 
 	/**
-	 * Pickup point config.
-	 *
 	 * @var PacketaPickupPointsConfig
 	 */
 	private $pickupPointConfig;
 
 	/**
-	 * Car delivery config.
-	 *
 	 * @var CarDeliveryConfig
 	 */
 	private $carDeliveryConfig;
 
 	/**
-	 * Context resolver.
-	 *
 	 * @var ContextResolver
 	 */
 	private $contextResolver;
 
 	/**
-	 * Shipping zone repository.
-	 *
 	 * @var ShippingZoneRepository
 	 */
 	private $shippingZoneRepository;
 
 	/**
-	 * Entity repository.
-	 *
 	 * @var EntityRepository
 	 */
 	private $carrierRepository;
 
 	/**
-	 * Carrier options factory.
-	 *
 	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param FeatureFlagProvider       $featureFlagProvider    Feature flag manager.
-	 * @param PacketaPickupPointsConfig $pickupPointConfig      Pickup point config.
-	 * @param CarDeliveryConfig         $carDeliveryConfig      Car delivery config.
-	 * @param ContextResolver           $contextResolver        Context resolver.
-	 * @param ShippingZoneRepository    $shippingZoneRepository Shipping zone repository.
-	 * @param EntityRepository          $carrierRepository      Carrier repository.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory  Carrier options factory.
-	 */
 	public function __construct(
 		FeatureFlagProvider $featureFlagProvider,
 		PacketaPickupPointsConfig $pickupPointConfig,
@@ -107,8 +73,6 @@ class ShippingProvider {
 	/**
 	 * Loads generated shipping methods, including split ones when split is off.
 	 * Used in CLI generator.
-	 *
-	 * @return void
 	 */
 	public static function loadAllClasses(): void {
 		$generatedClassesPath = __DIR__ . '/Generated';
@@ -121,8 +85,6 @@ class ShippingProvider {
 
 	/**
 	 * Loads generated shipping methods.
-	 *
-	 * @return void
 	 */
 	public function loadClasses(): void {
 		$generatedClassesPath = __DIR__ . '/Generated';
@@ -149,8 +111,6 @@ class ShippingProvider {
 
 	/**
 	 * Gets all full classnames of generated shipping methods.
-	 *
-	 * @return array
 	 */
 	private function getGeneratedClassnames(): array {
 		$namespace = __NAMESPACE__ . '\Generated';
@@ -165,12 +125,8 @@ class ShippingProvider {
 
 	/**
 	 * Checks if provided order uses our shipping method like native has_shipping_method method.
-	 *
-	 * @param \WC_Order $wcOrder WC order.
-	 *
-	 * @return bool
 	 */
-	public static function wcOrderHasOurMethod( \WC_Order $wcOrder ): bool {
+	public static function wcOrderHasOurMethod( WC_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_shipping_methods() as $shippingMethod ) {
 			if ( self::isPacketaMethod( $shippingMethod->get_method_id() ) ) {
 				return true;
@@ -182,10 +138,6 @@ class ShippingProvider {
 
 	/**
 	 * Checks if provided shipping method id belongs to one of Packeta methods.
-	 *
-	 * @param string $methodId Method id.
-	 *
-	 * @return bool
 	 */
 	public static function isPacketaMethod( string $methodId ): bool {
 		return (
@@ -197,9 +149,9 @@ class ShippingProvider {
 	/**
 	 * Loads shipping methods, uses different approach for zone setting page.
 	 *
-	 * @param array $methods Previous state.
+	 * @param array<string, string> $methods Previous state.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function addMethods( array $methods ): array {
 		$zoneId = $this->contextResolver->getShippingZoneId();
@@ -231,9 +183,9 @@ class ShippingProvider {
 	/**
 	 * Add shipping methods to array.
 	 *
-	 * @param array $methods Array.
+	 * @param array<string, string> $methods Array.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	private function addAllMethods( array $methods ): array {
 		foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
@@ -246,10 +198,10 @@ class ShippingProvider {
 	/**
 	 * Adds shipping method to array in case the carrier is active.
 	 *
-	 * @param string $fullyQualifiedClassname Fully qualified classname.
-	 * @param array  $methods                 Methods.
+	 * @param string                $fullyQualifiedClassname Fully qualified classname.
+	 * @param array<string, string> $methods                 Methods.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	private function addActiveCarrierMethod( string $fullyQualifiedClassname, array $methods ): array {
 		/**
@@ -269,9 +221,9 @@ class ShippingProvider {
 	/**
 	 * Sort classnames by method_title property.
 	 *
-	 * @param array $methods Methods to sort.
+	 * @param array<string, string> $methods Methods to sort.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function sortMethods( array $methods ): array {
 		uasort(

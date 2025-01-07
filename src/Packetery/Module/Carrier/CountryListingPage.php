@@ -113,8 +113,6 @@ class CountryListingPage {
 	private $urlBuilder;
 
 	/**
-	 * Form factory.
-	 *
 	 * @var FormFactory
 	 */
 	private $formFactory;

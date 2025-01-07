@@ -76,15 +76,11 @@ class CountryListingTemplateParams {
 	public $logoPacketa;
 
 	/**
-	 * Tells if countries contain any carriers.
-	 *
 	 * @var bool
 	 */
 	public $hasCarriers;
 
 	/**
-	 * Form.
-	 *
 	 * @var Form
 	 */
 	public $form;

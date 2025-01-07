@@ -15,8 +15,6 @@ $container = require __DIR__ . '/../bootstrap-cli.php';
 ShippingProvider::loadAllClasses();
 
 /**
- * Shipping method generator.
- *
  * @var ShippingMethodGenerator $generator
  */
 $generator = $container->getByType( ShippingMethodGenerator::class );

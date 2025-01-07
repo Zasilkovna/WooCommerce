@@ -141,11 +141,6 @@ class ContextResolver {
 		return $pagenow === 'post.php' && $typenow === 'page';
 	}
 
-	/**
-	 * Tells if current page is a shipping zone detail page.
-	 *
-	 * @return bool
-	 */
 	private function isShippingZoneDetailPage(): bool {
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $plugin_page;
@@ -159,11 +154,6 @@ class ContextResolver {
 		);
 	}
 
-	/**
-	 * Gets id shipping zone id.
-	 *
-	 * @return int|null
-	 */
 	public function getShippingZoneId(): ?int {
 		if ( $this->isShippingZoneDetailPage() ) {
 			return (int) $this->request->getQuery( 'zone_id' );
