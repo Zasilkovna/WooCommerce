@@ -10,9 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
-use Packetery\Core\Entity\Carrier;
 use Packetery\Module\EntityFactory;
-use Packetery\Module\ShippingZoneRepository;
 
 /**
  * Class EntityRepository
@@ -61,27 +59,20 @@ class EntityRepository {
 	 */
 	private $carrierActivityBridge;
 
-	/**
-	 * @var ShippingZoneRepository
-	 */
-	private $shippingZoneRepository;
-
 	public function __construct(
 		Repository $repository,
 		EntityFactory\Carrier $carrierEntityFactory,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CarDeliveryConfig $carDeliveryConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		CarrierActivityBridge $carrierActivityBridge,
-		ShippingZoneRepository $shippingZoneRepository
+		CarrierActivityBridge $carrierActivityBridge
 	) {
-		$this->repository             = $repository;
-		$this->carrierEntityFactory   = $carrierEntityFactory;
-		$this->pickupPointsConfig     = $pickupPointsConfig;
-		$this->carDeliveryConfig      = $carDeliveryConfig;
-		$this->carrierOptionsFactory  = $carrierOptionsFactory;
-		$this->carrierActivityBridge  = $carrierActivityBridge;
-		$this->shippingZoneRepository = $shippingZoneRepository;
+		$this->repository            = $repository;
+		$this->carrierEntityFactory  = $carrierEntityFactory;
+		$this->pickupPointsConfig    = $pickupPointsConfig;
+		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->carrierActivityBridge = $carrierActivityBridge;
 	}
 
 	/**
@@ -263,30 +254,5 @@ class EntityRepository {
 		}
 
 		return ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) === false;
-	}
-
-	/**
-	 * Gets carriers available for specific shipping rate.
-	 *
-	 * @param string $rateId Rate id.
-	 *
-	 * @return Carrier[]
-	 */
-	public function getCarriersForShippingRate( string $rateId ): array {
-		$countries = $this->shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
-		if ( count( $countries ) === 0 ) {
-			return [];
-		}
-
-		$availableCarriersToMerge = [];
-		foreach ( $countries as $countryCode ) {
-			$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
-		}
-
-		if ( count( $availableCarriersToMerge ) === 0 ) {
-			return $this->getActiveCarriers();
-		}
-
-		return array_merge( ...$availableCarriersToMerge );
 	}
 }

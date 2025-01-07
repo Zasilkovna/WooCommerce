@@ -108,6 +108,12 @@ class WcAdapter {
 		return wc_get_logger();
 	}
 
+	/**
+	 * @return array<string, array{
+	 *      name: string,
+	 *      countries: array<int, string>
+	 *  }>
+	 */
 	public function countriesGetContinents(): array {
 		return WC()->countries->get_continents();
 	}
