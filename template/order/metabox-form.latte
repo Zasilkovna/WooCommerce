@@ -59,8 +59,8 @@
 			</div>
 		{/if}
 		{if $showWidgetButton}
-			{foreach Packetery\Module\Order\Attribute::$pickupPointAttrs as $attr}
-				<input n:name=$attr[name] />
+			{foreach $pickupPointAttributes as $attribute}
+				<input n:name=$attribute[name] />
 			{/foreach}
 			<div id="packetery-widget-button-wrapper">
 				<div class="packetery-widget-button-row">
@@ -72,8 +72,8 @@
 		{/if}
 
 		{if $showHdWidget}
-			{foreach Packetery\Module\Order\Attribute::$homeDeliveryAttrs as $attr}
-				<input n:name=$attr[name] />
+			{foreach $homeDeliveryAttributes as $attribute}
+				<input n:name=$attribute[name] />
 			{/foreach}
 			<div id="packetery-widget-button-wrapper">
 				<div class="packetery-widget-button-row">

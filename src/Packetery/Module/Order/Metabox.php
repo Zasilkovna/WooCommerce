@@ -470,6 +470,8 @@ class Metabox {
 				'showLogsLink'               => $showLogsLink,
 				'hasOrderManualWeight'       => $order->hasManualWeight(),
 				'isPacketaPickupPoint'       => $order->isPacketaInternalPickupPoint(),
+				'pickupPointAttributes'      => Attribute::$pickupPointAttributes,
+				'homeDeliveryAttributes'     => Attribute::$homeDeliveryAttributes,
 				'translations'               => [
 					'packetSubmissionValidationErrorTooltip' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
 					'showLogs'                  => __( 'Show logs', 'packeta' ),
