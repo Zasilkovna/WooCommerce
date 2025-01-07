@@ -132,6 +132,6 @@ class ShippingZoneRepository {
 	public function getCountryCodesForShippingZone( int $zoneId ): array {
 		$zone = new WC_Shipping_Zone( $zoneId );
 
-		return ( $this->getCountryCodesFromZoneLocations( $zone->get_zone_locations() ) );
+		return $this->getCountryCodesFromZoneLocations( $zone->get_zone_locations() );
 	}
 }
