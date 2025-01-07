@@ -22,11 +22,11 @@
     "scripts": {
         "build:deps": "bash build-deps.sh",
         "build:pot": "vendor/bin/wp i18n make-pot . languages/packeta.pot --allow-root",
-        "check:ec": "vendor/bin/ec .",
         "build:carriers": [
             "rm -rf temp/cache",
             "php cli/build-carrier-classes.php"
         ],
+        "check:ec": "vendor/bin/ec .",
         "wpify-scoper": "wpify-scoper",
         "check:phpcs": "vendor/bin/phpcs",
         "fix:phpcbf": "vendor/bin/phpcbf",

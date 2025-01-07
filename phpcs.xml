@@ -13,11 +13,12 @@
 
 	<file>cli</file>
 	<file>src/Packetery</file>
-	<exclude-pattern>src/Packetery/Module/Shipping/Generated/</exclude-pattern>
 	<file>bootstrap.php</file>
 	<file>bootstrap-cli.php</file>
 	<file>packeta.php</file>
 	<file>tests</file>
+
+	<exclude-pattern>src/Packetery/Module/Shipping/Generated/</exclude-pattern>
 
 	<!-- Configs -->
 	<config name="minimum_supported_wp_version" value="5.5"/>
