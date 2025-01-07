@@ -13,6 +13,7 @@ use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use WC_Logger;
 use WC_Logger_Interface;
 use WC_Product;
+use WC_Shipping_Rate;
 use WC_Shipping_Zone;
 use WC_Shipping_Zones;
 
@@ -118,6 +119,11 @@ class WcAdapter {
 		return WC()->countries->get_continents();
 	}
 
+	/**
+	 * @param array{contents: array<string, array<string, mixed>>, contents_cost: float, applied_coupons: array, user: array{ID: int}, destination: array<string, string>, cart_subtotal: float, packetery_payment_method: mixed, rates: array<string, WC_Shipping_Rate>} $package
+	 *
+	 * @return WC_Shipping_Zone
+	 */
 	public function shippingZonesGetZoneMatchingPackage( array $package ): WC_Shipping_Zone {
 		return WC_Shipping_Zones::get_zone_matching_package( $package );
 	}
