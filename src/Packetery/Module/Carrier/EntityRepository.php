@@ -10,9 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
-use Packetery\Core\Entity\Carrier;
 use Packetery\Module\EntityFactory;
-use Packetery\Module\ShippingZoneRepository;
 
 /**
  * Class EntityRepository
@@ -57,16 +55,9 @@ class EntityRepository {
 	private $carrierOptionsFactory;
 
 	/**
-	 * Carrier activity checker.
-	 *
-	 * @var ActivityBridge
+	 * @var CarrierActivityBridge
 	 */
-	private $activityBridge;
-
-	/**
-	 * @var ShippingZoneRepository
-	 */
-	private $shippingZoneRepository;
+	private $carrierActivityBridge;
 
 	public function __construct(
 		Repository $repository,
@@ -74,16 +65,14 @@ class EntityRepository {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CarDeliveryConfig $carDeliveryConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
-		ActivityBridge $activityBridge,
-		ShippingZoneRepository $shippingZoneRepository
+		CarrierActivityBridge $carrierActivityBridge
 	) {
-		$this->repository             = $repository;
-		$this->carrierEntityFactory   = $carrierEntityFactory;
-		$this->pickupPointsConfig     = $pickupPointsConfig;
-		$this->carDeliveryConfig      = $carDeliveryConfig;
-		$this->carrierOptionsFactory  = $carrierOptionsFactory;
-		$this->activityBridge         = $activityBridge;
-		$this->shippingZoneRepository = $shippingZoneRepository;
+		$this->repository            = $repository;
+		$this->carrierEntityFactory  = $carrierEntityFactory;
+		$this->pickupPointsConfig    = $pickupPointsConfig;
+		$this->carDeliveryConfig     = $carDeliveryConfig;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->carrierActivityBridge = $carrierActivityBridge;
 	}
 
 	/**
@@ -215,7 +204,7 @@ class EntityRepository {
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
-			if ( $this->activityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
+			if ( $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
 					'label'     => $carrierOptions->getName(),
@@ -249,7 +238,7 @@ class EntityRepository {
 
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-		return $this->activityBridge->isActive( $carrier->getId(), $carrierOptions );
+		return $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions );
 	}
 
 	/**
@@ -265,30 +254,5 @@ class EntityRepository {
 		}
 
 		return ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) === false;
-	}
-
-	/**
-	 * Gets carriers available for specific shipping rate.
-	 *
-	 * @param string $rateId Rate id.
-	 *
-	 * @return Carrier[]
-	 */
-	public function getCarriersForShippingRate( string $rateId ): array {
-		$countries = $this->shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
-		if ( count( $countries ) === 0 ) {
-			return [];
-		}
-
-		$availableCarriersToMerge = [];
-		foreach ( $countries as $countryCode ) {
-			$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
-		}
-
-		if ( count( $availableCarriersToMerge ) === 0 ) {
-			return $this->getActiveCarriers();
-		}
-
-		return array_merge( ...$availableCarriersToMerge );
 	}
 }

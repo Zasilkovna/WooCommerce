@@ -551,9 +551,9 @@ class HookRegistrar {
 	/**
 	 * Adds Packeta method to available shipping methods.
 	 *
-	 * @param array $methods Previous state.
+	 * @param array<string, string> $methods Previous state.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function addShippingMethods( array $methods ): array {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {

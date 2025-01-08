@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Latte\Engine;
+use Packetery\Latte;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\ModuleHelper;
@@ -31,7 +31,7 @@ class CarrierModal {
 	/**
 	 * Latte engine.
 	 *
-	 * @var Engine
+	 * @var Latte\Engine
 	 */
 	private $latteEngine;
 
@@ -64,8 +64,6 @@ class CarrierModal {
 	private $orderRepository;
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
@@ -77,19 +75,8 @@ class CarrierModal {
 	 */
 	private $carrierOptionsFactory;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Engine                   $latteEngine              Latte engine.
-	 * @param DetailCommonLogic        $detailCommonLogic        Detail common logic.
-	 * @param CarrierModalFormFactory  $carrierModalFormFactory  Carrier Modal form factory.
-	 * @param Repository               $orderRepository          Order repository.
-	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
-	 * @param OptionsProvider          $optionsProvider          Options provider.
-	 * @param CarrierOptionsFactory    $carrierOptionsFactory    Carrier options factory.
-	 */
 	public function __construct(
-		Engine $latteEngine,
+		Latte\Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,

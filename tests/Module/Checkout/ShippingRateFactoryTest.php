@@ -6,6 +6,7 @@ namespace Tests\Module\Checkout;
 
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierActivityBridge;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\CheckoutService;
@@ -39,7 +40,7 @@ class ShippingRateFactoryTest extends TestCase {
 	private CartService|MockObject $cartService;
 	private CheckoutService|MockObject $checkoutService;
 	private ShippingRateFactory $shippingRateFactory;
-	private Carrier\ActivityBridge|MockObject $activityBridge;
+	private CarrierActivityBridge|MockObject $carrierActivityBridge;
 
 	private function createShippingRateFactoryMock(): void {
 		$this->wpAdapter                    = MockFactory::createWpAdapter( $this );
@@ -53,7 +54,7 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->provider                     = $this->createMock( OptionsProvider::class );
 		$this->cartService                  = $this->createMock( CartService::class );
 		$this->checkoutService              = $this->createMock( CheckoutService::class );
-		$this->activityBridge               = $this->createMock( Carrier\ActivityBridge::class );
+		$this->carrierActivityBridge        = $this->createMock( CarrierActivityBridge::class );
 
 		$this->shippingRateFactory = new ShippingRateFactory(
 			$this->wpAdapter,
@@ -552,7 +553,7 @@ class ShippingRateFactoryTest extends TestCase {
 			->method( 'isDisabled' )
 			->willReturn( ! $isCarDeliveryEnabled );
 
-		$this->activityBridge
+		$this->carrierActivityBridge
 			->method( 'isActive' )
 			->willReturnOnConsecutiveCalls( ...array_column( $carriersOptions, 'active' ) );
 

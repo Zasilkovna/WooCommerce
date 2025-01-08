@@ -45,8 +45,6 @@ class Downloader {
 	private $webRequestClient;
 
 	/**
-	 * WP adapter.
-	 *
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
@@ -78,7 +76,7 @@ class Downloader {
 	 */
 	public function run(): array {
 		try {
-			$carriers = $this->fetch_as_array();
+			$carriers = $this->fetch_as_array( substr( $this->wpAdapter->getLocale(), 0, 2 ) );
 		} catch ( \Exception $e ) {
 			return [
 				strtr(
@@ -134,12 +132,12 @@ class Downloader {
 	/**
 	 * Downloads carriers and returns in array.
 	 *
-	 * @param string|null $language Two-letter code.
+	 * @param string $language Two-letter code.
 	 *
 	 * @return array<int, array<string, string>>|null
 	 * @throws WebRequestException DownloadException.
 	 */
-	public function fetch_as_array( ?string $language = null ): ?array {
+	public function fetch_as_array( string $language ): ?array {
 		$json = $this->download_json( $language );
 
 		return $this->get_from_json( $json );
@@ -148,17 +146,17 @@ class Downloader {
 	/**
 	 * Downloads carriers in JSON.
 	 *
-	 * @param string|null $language Two-letter code.
+	 * @param string $language Two-letter code.
 	 *
 	 * @return string
 	 * @throws WebRequestException DownloadException.
 	 */
-	private function download_json( ?string $language = null ): string {
+	private function download_json( string $language ): string {
 		return $this->webRequestClient->get(
 			sprintf(
 				self::API_URL,
 				$this->optionsProvider->get_api_key(),
-				$language ?? substr( $this->wpAdapter->getLocale(), 0, 2 )
+				$language
 			)
 		);
 	}

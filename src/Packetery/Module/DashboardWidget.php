@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CarrierActivityBridge;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Options\OptionsProvider;
@@ -67,7 +68,7 @@ class DashboardWidget {
 	private $urlBuilder;
 
 	/**
-	 * @var Carrier\ActivityBridge
+	 * @var CarrierActivityBridge
 	 */
 	private $carrierActivityBridge;
 
@@ -82,7 +83,7 @@ class DashboardWidget {
 		ModuleHelper $moduleHelper,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		UrlBuilder $urlBuilder,
-		Carrier\ActivityBridge $carrierActivityBridge
+		CarrierActivityBridge $carrierActivityBridge
 	) {
 		$this->latteEngine             = $latteEngine;
 		$this->carrierRepository       = $carrierRepository;

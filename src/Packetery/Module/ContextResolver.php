@@ -141,11 +141,6 @@ class ContextResolver {
 		return $pagenow === 'post.php' && $typenow === 'page';
 	}
 
-	/**
-	 * Tells if current page is a shipping zone detail page.
-	 *
-	 * @return bool
-	 */
 	private function isShippingZoneDetailPage(): bool {
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		global $pagenow, $plugin_page;
@@ -155,16 +150,10 @@ class ContextResolver {
 			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			$plugin_page === 'wc-settings' &&
 			$this->request->getQuery( 'tab' ) === 'shipping' &&
-			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 			$this->request->getQuery( 'zone_id' ) > 0
 		);
 	}
 
-	/**
-	 * Gets id shipping zone id.
-	 *
-	 * @return int|null
-	 */
 	public function getShippingZoneId(): ?int {
 		if ( $this->isShippingZoneDetailPage() ) {
 			return (int) $this->request->getQuery( 'zone_id' );

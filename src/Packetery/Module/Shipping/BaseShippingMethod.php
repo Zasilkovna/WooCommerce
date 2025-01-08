@@ -1,9 +1,4 @@
 <?php
-/**
- * Packeta shipping method class.
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
@@ -20,9 +15,6 @@ use Packetery\Nette\DI\Container;
 use function is_array;
 use function sprintf;
 
-/**
- * Packeta shipping method class.
- */
 abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	public const PACKETA_METHOD_PREFIX = 'packeta_method_';
 
@@ -60,8 +52,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 	private $wcAdapter;
 
 	/**
-	 * Constructor for Packeta shipping class
-	 *
 	 * @param int $instanceId Shipping method instance id.
 	 */
 	public function __construct( int $instanceId = 0 ) {
@@ -113,11 +103,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->title                = $this->get_option( 'title' );
 	}
 
-	/**
-	 * Returns admin options as a html string.
-	 *
-	 * @return string
-	 */
 	public function get_admin_options_html(): string {
 		$settingsHtml = $this->generate_settings_html( $this->get_instance_form_fields(), false );
 

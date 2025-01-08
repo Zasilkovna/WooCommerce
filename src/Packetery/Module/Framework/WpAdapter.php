@@ -157,12 +157,12 @@ class WpAdapter {
 	/**
 	 * Returns non-negative int.
 	 *
-	 * @param mixed $maybeint Value.
+	 * @param mixed $maybeInt
 	 *
 	 * @return int
 	 */
-	public function absint( $maybeint ): int {
-		return absint( $maybeint );
+	public function absint( $maybeInt ): int {
+		return absint( $maybeInt );
 	}
 
 	public function getAdminUrl( ?int $blogId = null, string $path = '', string $scheme = 'admin' ): string {
