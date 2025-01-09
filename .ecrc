@@ -17,7 +17,8 @@
 		"^log\/",
 		"^\\.idea\/",
 		"\\.DS_Store$",
-		"\\.phar$"
+		"\\.phar$",
+		"^soap-php-bugfix-dev.wsdl$"
 	],
 	"Disable": {
 		"MaxLineLength": true

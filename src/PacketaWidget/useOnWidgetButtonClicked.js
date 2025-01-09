@@ -46,7 +46,7 @@ export const useOnWidgetButtonClicked = (
 
 			if ( dynamicSettings.biggestProductSize ) {
 				if ( dynamicSettings.biggestProductSize.length ) {
-					widgetOptions.lenght = dynamicSettings.biggestProductSize.length;
+					widgetOptions.length = dynamicSettings.biggestProductSize.length;
 				}
 				if ( dynamicSettings.biggestProductSize.width ) {
 					widgetOptions.width = dynamicSettings.biggestProductSize.width;
