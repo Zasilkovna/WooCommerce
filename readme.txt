@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.7
-Stable tag: 1.8.7
+Stable tag: 2.0.0
 Requires PHP: 7.2
 WC requires at least: 4.5
 WC tested up to: 9.4.1
