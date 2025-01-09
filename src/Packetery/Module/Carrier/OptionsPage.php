@@ -91,11 +91,6 @@ class OptionsPage {
 	private $carDeliveryConfig;
 
 	/**
-	 * @var WcSettingsConfig
-	 */
-	private $wcSettingsConfig;
-
-	/**
 	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
@@ -125,7 +120,6 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
-		WcSettingsConfig $wcSettingsConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
@@ -140,7 +134,6 @@ class OptionsPage {
 		$this->pickupPointsConfig    = $pickupPointsConfig;
 		$this->featureFlagProvider   = $featureFlagProvider;
 		$this->carDeliveryConfig     = $carDeliveryConfig;
-		$this->wcSettingsConfig      = $wcSettingsConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
 		$this->moduleHelper          = $moduleHelper;
 		$this->urlBuilder            = $urlBuilder;
@@ -177,12 +170,10 @@ class OptionsPage {
 
 		$form = $this->formFactory->create( $optionId );
 
-		if ( $this->wcSettingsConfig->isActive() === false ) {
-			$form->addCheckbox(
-				self::FORM_FIELD_ACTIVE,
-				__( 'Active carrier', 'packeta' ) . ':'
-			);
-		}
+		$form->addCheckbox(
+			self::FORM_FIELD_ACTIVE,
+			__( 'Active carrier', 'packeta' ) . ':'
+		);
 
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
@@ -504,9 +495,6 @@ class OptionsPage {
 
 		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
 		$persistedOptionsArray = $persistedOptions->toArray();
-		if ( $this->wcSettingsConfig->isActive() ) {
-			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();
-		}
 
 		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );

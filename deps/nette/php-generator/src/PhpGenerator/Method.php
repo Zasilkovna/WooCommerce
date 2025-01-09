@@ -49,7 +49,7 @@ final class Method
         }
     }
     /** @return static */
-    public function setBody(?string $code, array $args = null) : self
+    public function setBody(?string $code, ?array $args = null) : self
     {
         $this->body = $args === null || $code === null ? $code : (new Dumper())->format($code, ...$args);
         return $this;
@@ -102,8 +102,8 @@ final class Method
     /** @throws \Packetery\Nette\InvalidStateException */
     public function validate() : void
     {
-        if ($this->abstract && ($this->final || $this->visibility === ClassType::VISIBILITY_PRIVATE)) {
-            throw new \Packetery\Nette\InvalidStateException('Method cannot be abstract and final or private.');
+        if ($this->abstract && ($this->final || $this->visibility === ClassType::VisibilityPrivate)) {
+            throw new \Packetery\Nette\InvalidStateException("Method {$this->name}() cannot be abstract and final or private at the same time.");
         }
     }
 }

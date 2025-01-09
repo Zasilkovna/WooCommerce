@@ -140,4 +140,25 @@ class ContextResolver {
 
 		return $pagenow === 'post.php' && $typenow === 'page';
 	}
+
+	private function isShippingZoneDetailPage(): bool {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+		global $pagenow, $plugin_page;
+
+		return (
+			$pagenow === 'admin.php' &&
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+			$plugin_page === 'wc-settings' &&
+			$this->request->getQuery( 'tab' ) === 'shipping' &&
+			$this->request->getQuery( 'zone_id' ) > 0
+		);
+	}
+
+	public function getShippingZoneId(): ?int {
+		if ( $this->isShippingZoneDetailPage() ) {
+			return (int) $this->request->getQuery( 'zone_id' );
+		}
+
+		return null;
+	}
 }

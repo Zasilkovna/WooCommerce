@@ -8,6 +8,7 @@ declare (strict_types=1);
 namespace Packetery\Nette\PhpGenerator;
 
 use Packetery\Nette;
+use Packetery\Nette\Utils\Type;
 /**
  * Function/Method parameter description.
  *
@@ -41,27 +42,25 @@ class Parameter
     /** @return static */
     public function setType(?string $type) : self
     {
-        if ($type && $type[0] === '?') {
-            $type = \substr($type, 1);
-            $this->nullable = \true;
-        }
-        $this->type = $type;
+        $this->type = Helpers::validateType($type, $this->nullable);
         return $this;
     }
-    public function getType() : ?string
+    /**
+     * @return Type|string|null
+     */
+    public function getType(bool $asObject = \false)
     {
-        return $this->type;
+        return $asObject && $this->type ? Type::fromString($this->type) : $this->type;
     }
     /** @deprecated  use setType() */
     public function setTypeHint(?string $type) : self
     {
-        $this->type = $type;
-        return $this;
+        return $this->setType($type);
     }
     /** @deprecated  use getType() */
     public function getTypeHint() : ?string
     {
-        return $this->type;
+        return $this->getType();
     }
     /**
      * @deprecated  just use setDefaultValue()
@@ -97,5 +96,8 @@ class Parameter
     public function hasDefaultValue() : bool
     {
         return $this->hasDefaultValue;
+    }
+    public function validate() : void
+    {
     }
 }

@@ -138,10 +138,12 @@ export const useView = ( cart ) => {
 		}
 	};
 
+	let skipView = false;
 	let inputRequired = true;
 
 	if ( packetaPickupPointShippingRate ) {
 		return {
+			skipView,
 			buttonCallback: onWidgetButtonClicked,
 			buttonLabel: translations.choosePickupPoint,
 			buttonInfo: viewState && viewState.pickupPoint && viewState.pickupPoint.name,
@@ -165,6 +167,7 @@ export const useView = ( cart ) => {
 		}
 
 		return {
+			skipView,
 			buttonCallback: onHDWidgetButtonClicked,
 			buttonLabel: translations.chooseAddress,
 			buttonInfo: viewState && viewState.deliveryAddressInfo,

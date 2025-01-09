@@ -12,6 +12,10 @@ namespace Packetery\Module\Framework;
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use WC_Logger;
 use WC_Logger_Interface;
+use WC_Product;
+use WC_Shipping_Rate;
+use WC_Shipping_Zone;
+use WC_Shipping_Zones;
 
 /**
  * Class WcAdapter.
@@ -43,11 +47,11 @@ class WcAdapter {
 	 *
 	 * @param mixed $productId Product ID.
 	 *
-	 * @return \WC_Product|null
+	 * @return WC_Product|null
 	 */
 	public function productFactoryGetProduct( $productId ): ?\WC_Product {
 		$product = WC()->product_factory->get_product( $productId );
-		if ( $product instanceof \WC_Product ) {
+		if ( $product instanceof WC_Product ) {
 			return $product;
 		}
 
@@ -59,7 +63,7 @@ class WcAdapter {
 	 *
 	 * @param mixed $theProduct Post id or object.
 	 *
-	 * @return false|\WC_Product|null
+	 * @return false|WC_Product|null
 	 */
 	public function getProduct( $theProduct ) {
 		return wc_get_product( $theProduct );
@@ -103,5 +107,24 @@ class WcAdapter {
 	 */
 	public function getLogger() {
 		return wc_get_logger();
+	}
+
+	/**
+	 * @return array<string, array{
+	 *      name: string,
+	 *      countries: array<int, string>
+	 *  }>
+	 */
+	public function countriesGetContinents(): array {
+		return WC()->countries->get_continents();
+	}
+
+	/**
+	 * @param array{contents: array<string, array<string, mixed>>, contents_cost: float, applied_coupons: array, user: array{ID: int}, destination: array<string, string>, cart_subtotal: float, packetery_payment_method: mixed, rates: array<string, WC_Shipping_Rate>} $package
+	 *
+	 * @return WC_Shipping_Zone
+	 */
+	public function shippingZonesGetZoneMatchingPackage( array $package ): WC_Shipping_Zone {
+		return WC_Shipping_Zones::get_zone_matching_package( $package );
 	}
 }

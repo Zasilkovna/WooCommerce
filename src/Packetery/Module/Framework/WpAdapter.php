@@ -153,4 +153,19 @@ class WpAdapter {
 	public function getSiteOption( string $option ) {
 		return get_site_option( $option );
 	}
+
+	/**
+	 * Returns non-negative int.
+	 *
+	 * @param mixed $maybeInt
+	 *
+	 * @return int
+	 */
+	public function absint( $maybeInt ): int {
+		return absint( $maybeInt );
+	}
+
+	public function getAdminUrl( ?int $blogId = null, string $path = '', string $scheme = 'admin' ): string {
+		return get_admin_url( $blogId, $path, $scheme );
+	}
 }

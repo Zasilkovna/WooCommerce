@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Nette\Forms\Form;
+
 /**
  * Class CountryListingTemplateParams
  *
@@ -73,6 +75,16 @@ class CountryListingTemplateParams {
 	 */
 	public $logoPacketa;
 
+	/**
+	 * @var bool
+	 */
+	public $hasCarriers;
+
+	/**
+	 * @var Form
+	 */
+	public $form;
+
 	public function __construct(
 		array $carriersUpdate,
 		array $countries,
@@ -82,7 +94,9 @@ class CountryListingTemplateParams {
 		bool $isCzechLocale,
 		?string $logoZasilkovna,
 		?string $logoPacketa,
-		array $translations
+		array $translations,
+		bool $hasCarriers,
+		Form $form
 	) {
 		$this->carriersUpdate         = $carriersUpdate;
 		$this->countries              = $countries;
@@ -93,5 +107,7 @@ class CountryListingTemplateParams {
 		$this->logoZasilkovna         = $logoZasilkovna;
 		$this->logoPacketa            = $logoPacketa;
 		$this->translations           = $translations;
+		$this->hasCarriers            = $hasCarriers;
+		$this->form                   = $form;
 	}
 }

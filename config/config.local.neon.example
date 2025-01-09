@@ -2,6 +2,4 @@ parameters:
 	carDeliveryConfig:
 		sample: false # Change to true in order to enable testing sample cars for Packeta Car Delivery
 		enabled: false
-	wcCarrierSettingsConfig:
-		active: false # Change to true in order to activate native Packeta carrier settings
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl # for dev testing file://%appDir%/soap-php-bugfix-dev.wsdl

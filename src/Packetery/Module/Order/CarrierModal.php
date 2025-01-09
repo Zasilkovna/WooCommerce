@@ -9,11 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Latte\Engine;
+use Packetery\Latte;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
-use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms;
 use Packetery\Nette\Forms\Controls\SubmitButton;
 use RuntimeException;
@@ -31,7 +31,7 @@ class CarrierModal {
 	/**
 	 * Latte engine.
 	 *
-	 * @var Engine
+	 * @var Latte\Engine
 	 */
 	private $latteEngine;
 
@@ -64,11 +64,9 @@ class CarrierModal {
 	private $orderRepository;
 
 	/**
-	 * Native Carrier settings.
-	 *
-	 * @var WcSettingsConfig
+	 * @var OptionsProvider
 	 */
-	private $wcNativeCarrierSettings;
+	private $optionsProvider;
 
 	/**
 	 * Carrier options factory.
@@ -77,24 +75,13 @@ class CarrierModal {
 	 */
 	private $carrierOptionsFactory;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Engine                   $latteEngine              Latte engine.
-	 * @param DetailCommonLogic        $detailCommonLogic        Detail common logic.
-	 * @param CarrierModalFormFactory  $carrierModalFormFactory  Carrier Modal form factory.
-	 * @param Repository               $orderRepository          Order repository.
-	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
-	 * @param WcSettingsConfig         $wcNativeCarrierSettings  Native Carrier settings.
-	 * @param CarrierOptionsFactory    $carrierOptionsFactory    Carrier options factory.
-	 */
 	public function __construct(
-		Engine $latteEngine,
+		Latte\Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		WcSettingsConfig $wcNativeCarrierSettings,
+		OptionsProvider $optionsProvider,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine             = $latteEngine;
@@ -102,7 +89,7 @@ class CarrierModal {
 		$this->carrierModalFormFactory = $carrierModalFormFactory;
 		$this->orderRepository         = $orderRepository;
 		$this->carrierRepository       = $carrierRepository;
-		$this->wcNativeCarrierSettings = $wcNativeCarrierSettings;
+		$this->optionsProvider         = $optionsProvider;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 	}
 
@@ -264,7 +251,7 @@ class CarrierModal {
 			return false;
 		}
 
-		if ( $this->wcNativeCarrierSettings->isActive() ) {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			return false;
 		}
 

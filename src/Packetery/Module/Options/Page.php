@@ -45,6 +45,7 @@ class Page {
 	public const SLUG = 'packeta-options';
 
 	public const TAB_GENERAL            = 'general';
+	public const TAB_ADVANCED           = 'advanced';
 	public const TAB_SUPPORT            = 'support';
 	public const TAB_PACKET_STATUS_SYNC = 'packet-status-sync';
 	public const TAB_AUTO_SUBMISSION    = 'auto-submission';
@@ -427,6 +428,33 @@ class Page {
 		}
 	}
 
+	public function createAdvancedForm(): Form {
+		$form     = $this->formFactory->create( 'packetery_advanced_form' );
+		$defaults = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED );
+
+		$form->addCheckbox( 'new_carrier_settings_enabled', __( 'Allow new carrier settings', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::DEFAULT_VALUE_CARRIER_SETTINGS );
+
+		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
+
+		$form->setDefaults( $defaults );
+
+		$form->onSuccess[] = [ $this, 'onAdvancedFormSuccess' ];
+
+		return $form;
+	}
+
+	public function onAdvancedFormSuccess( Form $form, array $values ): void {
+		update_option( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED, $values );
+
+		$this->messageManager->flash_message( __( 'Settings saved.', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'plugin-options' );
+
+		if ( wp_safe_redirect( $this->createLink( self::TAB_ADVANCED ) ) ) {
+			exit;
+		}
+	}
+
 	/**
 	 * Creates settings form.
 	 *
@@ -783,17 +811,27 @@ class Page {
 		}
 
 		$packetStatusSyncForm = $this->createPacketStatusSyncForm();
-		if ( $packetStatusSyncForm['save'] instanceof SubmitButton &&
+		if (
+			$packetStatusSyncForm['save'] instanceof SubmitButton &&
 			$packetStatusSyncForm['save']->isSubmittedBy()
 		) {
 			$packetStatusSyncForm->fireEvents();
 		}
 
 		$autoSubmissionForm = $this->createAutoSubmissionForm();
-		if ( $autoSubmissionForm['save'] instanceof SubmitButton &&
+		if (
+			$autoSubmissionForm['save'] instanceof SubmitButton &&
 			$autoSubmissionForm['save']->isSubmittedBy()
 		) {
 			$autoSubmissionForm->fireEvents();
+		}
+
+		$advancedForm = $this->createAdvancedForm();
+		if (
+			$advancedForm['save'] instanceof SubmitButton &&
+			$advancedForm['save']->isSubmittedBy()
+		) {
+			$advancedForm->fireEvents();
 		}
 	}
 
@@ -808,6 +846,8 @@ class Page {
 			$latteParams = [ 'form' => $this->createPacketStatusSyncForm() ];
 		} elseif ( $activeTab === self::TAB_AUTO_SUBMISSION ) {
 			$latteParams = [ 'form' => $this->createAutoSubmissionForm() ];
+		} elseif ( $activeTab === self::TAB_ADVANCED ) {
+			$latteParams = [ 'form' => $this->createAdvancedForm() ];
 		} elseif ( $activeTab === self::TAB_GENERAL ) {
 			$latteParams = [ 'form' => $this->create_form() ];
 		}
@@ -828,6 +868,7 @@ class Page {
 
 		$latteParams['activeTab']               = ( $this->httpRequest->getQuery( self::PARAM_TAB ) ?? self::TAB_GENERAL );
 		$latteParams['generalTabLink']          = $this->createLink();
+		$latteParams['advancedTabLink']         = $this->createLink( self::TAB_ADVANCED );
 		$latteParams['supportTabLink']          = $this->createLink( self::TAB_SUPPORT );
 		$latteParams['packetStatusSyncTabLink'] = $this->createLink( self::TAB_PACKET_STATUS_SYNC );
 		$latteParams['autoSubmissionTabLink']   = $this->createLink( self::TAB_AUTO_SUBMISSION );
@@ -870,6 +911,7 @@ class Page {
 
 			'saveChanges'                            => __( 'Save changes', 'packeta' ),
 			'validateSender'                         => __( 'Validate sender', 'packeta' ),
+			'advanced'                               => __( 'Advanced', 'packeta' ),
 			'support'                                => __( 'Support', 'packeta' ),
 			'optionsExportInfo1'                     => __(
 				'By clicking the button, you will export the settings of your plugin into a separate file. The export does not contain any sensitive information about your e-shop. Please send the resulting file to the technical support of Packeta (you can find the e-mail address here:',

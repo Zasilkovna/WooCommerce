@@ -15,7 +15,7 @@ use Packetery\Module;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 use WC_Order;
 
@@ -215,8 +215,7 @@ class PacketSubmitter {
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if ( $shippingMethodId === ShippingMethod::PACKETERY_METHOD_ID && ! $order->isExported() ) {
-
+		if ( ShippingProvider::isPacketaMethod( $shippingMethodId ) && ! $order->isExported() ) {
 			$customsDeclaration = $order->getCustomsDeclaration();
 			if (
 				$customsDeclaration !== null &&

@@ -32,6 +32,7 @@ use Packetery\Module\Plugin;
 use Packetery\Module\Product;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\QueryProcessor;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Module\Upgrade;
 use Packetery\Module\Views\AssetManager;
@@ -233,6 +234,11 @@ class HookRegistrar {
 	 */
 	private $moduleHelper;
 
+	/**
+	 * @var ShippingProvider
+	 */
+	private $shippingProvider;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -271,7 +277,8 @@ class HookRegistrar {
 		WpAdapter $wpAdapter,
 		PacketSynchronizer $packetSynchronizer,
 		CheckoutSettings $checkoutSettings,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		ShippingProvider $shippingProvider
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
@@ -311,6 +318,7 @@ class HookRegistrar {
 		$this->packetSynchronizer        = $packetSynchronizer;
 		$this->checkoutSettings          = $checkoutSettings;
 		$this->moduleHelper              = $moduleHelper;
+		$this->shippingProvider          = $shippingProvider;
 	}
 
 	public function register(): void {
@@ -343,13 +351,15 @@ class HookRegistrar {
 			$this->registerFrontEnd();
 		}
 
-		$this->wpAdapter->addFilter( 'woocommerce_shipping_methods', [ $this, 'addShippingMethod' ] );
+		$this->wpAdapter->addFilter( 'woocommerce_shipping_methods', [ $this, 'addShippingMethods' ] );
 		$this->cronService->register();
 		$this->packetAutoSubmitter->register();
 		$this->apiExtender->register();
 		$this->updateOrderHook->register();
 		$this->packetSubmitter->registerCronAction();
 		$this->packetSynchronizer->register();
+
+		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );
 	}
 
 	private function registerBackEnd(): void {
@@ -541,11 +551,17 @@ class HookRegistrar {
 	/**
 	 * Adds Packeta method to available shipping methods.
 	 *
-	 * @param array $methods Previous state.
+	 * @param array<string, string> $methods Previous state.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
-	public function addShippingMethod( array $methods ): array {
+	public function addShippingMethods( array $methods ): array {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
+			$unsortedMethods = $this->shippingProvider->addMethods( $methods );
+
+			return $this->shippingProvider->sortMethods( $unsortedMethods );
+		}
+
 		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
 
 		return $methods;

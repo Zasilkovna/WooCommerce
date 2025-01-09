@@ -23,9 +23,11 @@ class OptionsProvider {
 	public const OPTION_NAME_PACKETERY                 = 'packetery';
 	public const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
 	public const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
+	public const OPTION_NAME_PACKETERY_ADVANCED        = 'packetery_advanced';
 
 	public const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
 	public const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	public const DEFAULT_VALUE_CARRIER_SETTINGS            = false;
 	public const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
 	public const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 	public const FORCE_PACKET_CANCEL_DEFAULT               = true;
@@ -67,6 +69,11 @@ class OptionsProvider {
 	private $autoSubmissionData;
 
 	/**
+	 * @var array<string, mixed>
+	 */
+	private $advancedData;
+
+	/**
 	 * OptionsProvider constructor.
 	 */
 	public function __construct() {
@@ -85,9 +92,15 @@ class OptionsProvider {
 			$autoSubmissionData = [];
 		}
 
+		$advancedData = get_option( self::OPTION_NAME_PACKETERY_ADVANCED );
+		if ( $advancedData === false || $advancedData === null ) {
+			$advancedData = [];
+		}
+
 		$this->data               = $data;
 		$this->syncData           = $syncData;
 		$this->autoSubmissionData = $autoSubmissionData;
+		$this->advancedData       = $advancedData;
 	}
 
 	/**
@@ -117,6 +130,7 @@ class OptionsProvider {
 			self::OPTION_NAME_PACKETERY                 => $this->data,
 			self::OPTION_NAME_PACKETERY_SYNC            => $this->syncData,
 			self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
+			self::OPTION_NAME_PACKETERY_ADVANCED        => $this->advancedData,
 		];
 	}
 
@@ -653,6 +667,15 @@ class OptionsProvider {
 		$allowOrderStatusChange = ( $this->syncData['allow_order_status_change'] ?? null );
 		if ( $allowOrderStatusChange !== null ) {
 			return (bool) $allowOrderStatusChange;
+		}
+
+		return false;
+	}
+
+	public function isWcCarrierConfigEnabled(): bool {
+		$isEnabled = ( $this->advancedData['new_carrier_settings_enabled'] ?? null );
+		if ( $isEnabled !== null ) {
+			return (bool) $isEnabled;
 		}
 
 		return false;

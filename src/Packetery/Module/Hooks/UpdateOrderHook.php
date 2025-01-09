@@ -10,7 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Hooks;
 
 use Packetery\Module\Order;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 
 /**
  * Class UpdateOrderHook.
@@ -73,7 +73,7 @@ class UpdateOrderHook {
 			return;
 		}
 
-		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+		if ( ! ShippingProvider::wcOrderHasOurMethod( $wcOrder ) ) {
 			$this->orderRepository->delete( (int) $wcOrderId );
 			$hasBeenRun = true;
 

@@ -6,6 +6,7 @@ namespace Tests\Module\Checkout;
 
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
+use Packetery\Module\Carrier\CarrierActivityBridge;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\CheckoutService;
@@ -28,17 +29,18 @@ use WC_Product;
 class ShippingRateFactoryTest extends TestCase {
 
 	private WpAdapter|MockObject $wpAdapter;
-	private WpAdapter|MockObject $wcAdapter;
-	private WpAdapter|MockObject $productEntityFactory;
-	private WpAdapter|MockObject $productCategoryEntityFactory;
-	private WpAdapter|MockObject $carrierOptionsFactory;
+	private WcAdapter|MockObject $wcAdapter;
+	private ProductEntityFactory|MockObject $productEntityFactory;
+	private ProductCategoryEntityFactory|MockObject $productCategoryEntityFactory;
+	private CarrierOptionsFactory|MockObject $carrierOptionsFactory;
 	private WpAdapter|MockObject $currencySwitcherFacade;
-	private WpAdapter|MockObject $carrierEntityRepository;
-	private WpAdapter|MockObject $carDeliveryConfig;
-	private WpAdapter|MockObject $provider;
+	private Carrier\EntityRepository|MockObject $carrierEntityRepository;
+	private CarDeliveryConfig|MockObject $carDeliveryConfig;
+	private OptionsProvider|MockObject $provider;
 	private CartService|MockObject $cartService;
 	private CheckoutService|MockObject $checkoutService;
 	private ShippingRateFactory $shippingRateFactory;
+	private CarrierActivityBridge|MockObject $carrierActivityBridge;
 
 	private function createShippingRateFactoryMock(): void {
 		$this->wpAdapter                    = MockFactory::createWpAdapter( $this );
@@ -52,6 +54,7 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->provider                     = $this->createMock( OptionsProvider::class );
 		$this->cartService                  = $this->createMock( CartService::class );
 		$this->checkoutService              = $this->createMock( CheckoutService::class );
+		$this->carrierActivityBridge        = $this->createMock( CarrierActivityBridge::class );
 
 		$this->shippingRateFactory = new ShippingRateFactory(
 			$this->wpAdapter,
@@ -549,6 +552,10 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->carDeliveryConfig
 			->method( 'isDisabled' )
 			->willReturn( ! $isCarDeliveryEnabled );
+
+		$this->carrierActivityBridge
+			->method( 'isActive' )
+			->willReturnOnConsecutiveCalls( ...array_column( $carriersOptions, 'active' ) );
 
 		$rates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
 

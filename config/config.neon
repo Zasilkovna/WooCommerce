@@ -7,8 +7,6 @@ parameters:
 	carDeliveryConfig:
 		sample: false
 		enabled: false
-	wcCarrierSettingsConfig:
-		active: false
 	featureFlagConfig:
 		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
@@ -53,7 +51,6 @@ services:
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\Carrier\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
-	- Packetery\Module\Carrier\WcSettingsConfig(active: %wcCarrierSettingsConfig.active%)
 	- Packetery\Module\Checkout\Checkout
 	- Packetery\Module\Checkout\CheckoutService
 	- Packetery\Module\Checkout\CheckoutRenderer
@@ -112,6 +109,7 @@ services:
 	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig
 	- Packetery\Module\Carrier\EntityRepository
+	- Packetery\Module\Carrier\CarrierActivityBridge
 	- Packetery\Module\Order\AttributeMapper
 	- Packetery\Module\WidgetOptionsBuilder
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
@@ -135,3 +133,5 @@ services:
 	- Packetery\Module\Views\ViewFrontend
 	- Packetery\Module\Views\ViewMail
 	- Packetery\Module\Views\AssetManager
+	- Packetery\Module\Shipping\ShippingProvider
+	- Packetery\Module\Shipping\ShippingMethodGenerator

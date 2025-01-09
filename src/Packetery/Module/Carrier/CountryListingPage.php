@@ -12,10 +12,13 @@ namespace Packetery\Module\Carrier;
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
 use Packetery\Module\CronService;
+use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Shipping\ShippingMethodGenerator;
 use Packetery\Module\Views\UrlBuilder;
+use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
 
 /**
@@ -27,6 +30,7 @@ class CountryListingPage {
 
 	public const TRANSIENT_CARRIER_CHANGES = 'packetery_carrier_changes';
 	public const DATA_KEY_COUNTRY_CODE     = 'countryCode';
+	public const PARAM_CARRIER_FILTER      = 'carrier_query_filter';
 
 	/**
 	 * PacketeryLatteEngine.
@@ -92,13 +96,6 @@ class CountryListingPage {
 	private $carDeliveryConfig;
 
 	/**
-	 * WC native carrier settings config.
-	 *
-	 * @var WcSettingsConfig
-	 */
-	private $wcNativeCarrierSettingsConfig;
-
-	/**
 	 * Carrier options factory.
 	 *
 	 * @var CarrierOptionsFactory
@@ -115,6 +112,16 @@ class CountryListingPage {
 	 */
 	private $urlBuilder;
 
+	/**
+	 * @var FormFactory
+	 */
+	private $formFactory;
+
+	/**
+	 * @var CarrierActivityBridge
+	 */
+	private $carrierActivityBridge;
+
 	public function __construct(
 		Engine $latteEngine,
 		Repository $carrierRepository,
@@ -125,24 +132,26 @@ class CountryListingPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		EntityRepository $carrierEntityRepository,
 		CarDeliveryConfig $carDeliveryConfig,
-		WcSettingsConfig $wcNativeCarrierSettingsConfig,
 		CarrierOptionsFactory $carrierOptionsFactory,
 		ModuleHelper $moduleHelper,
-		UrlBuilder $urlBuilder
+		UrlBuilder $urlBuilder,
+		FormFactory $formFactory,
+		CarrierActivityBridge $carrierActivityBridge
 	) {
-		$this->latteEngine                   = $latteEngine;
-		$this->carrierRepository             = $carrierRepository;
-		$this->downloader                    = $downloader;
-		$this->httpRequest                   = $httpRequest;
-		$this->optionsProvider               = $optionsProvider;
-		$this->logPage                       = $logPage;
-		$this->pickupPointsConfig            = $pickupPointsConfig;
-		$this->carrierEntityRepository       = $carrierEntityRepository;
-		$this->carDeliveryConfig             = $carDeliveryConfig;
-		$this->wcNativeCarrierSettingsConfig = $wcNativeCarrierSettingsConfig;
-		$this->carrierOptionsFactory         = $carrierOptionsFactory;
-		$this->moduleHelper                  = $moduleHelper;
-		$this->urlBuilder                    = $urlBuilder;
+		$this->latteEngine             = $latteEngine;
+		$this->carrierRepository       = $carrierRepository;
+		$this->downloader              = $downloader;
+		$this->httpRequest             = $httpRequest;
+		$this->optionsProvider         = $optionsProvider;
+		$this->logPage                 = $logPage;
+		$this->pickupPointsConfig      = $pickupPointsConfig;
+		$this->carrierEntityRepository = $carrierEntityRepository;
+		$this->carDeliveryConfig       = $carDeliveryConfig;
+		$this->carrierOptionsFactory   = $carrierOptionsFactory;
+		$this->moduleHelper            = $moduleHelper;
+		$this->urlBuilder              = $urlBuilder;
+		$this->formFactory             = $formFactory;
+		$this->carrierActivityBridge   = $carrierActivityBridge;
 	}
 
 	/**
@@ -174,6 +183,12 @@ class CountryListingPage {
 		);
 		$carriersUpdateParams['lastUpdate'] = $this->getLastUpdate();
 
+		$form = $this->formFactory->create();
+		$form->setAction( 'admin.php?page=' . OptionsPage::SLUG );
+		$form->setMethod( Form::GET );
+		$form->addText( self::PARAM_CARRIER_FILTER );
+		$form->addSubmit( 'filter', __( 'Filter', 'packeta' ) );
+
 		$isApiPasswordSet = false;
 		if ( $this->optionsProvider->get_api_password() !== null ) {
 			$isApiPasswordSet = true;
@@ -198,7 +213,16 @@ class CountryListingPage {
 			);
 		}
 
-		$countries    = $this->getActiveCountries();
+		$hasCarriers = false;
+		$countries   = $this->getActiveCountries();
+		foreach ( $countries as $country ) {
+			if ( isset( $country['allCarriers'] ) ) {
+				$hasCarriers = true;
+
+				break;
+			}
+		}
+
 		$translations = [
 			'packeta'                    => __( 'Packeta', 'packeta' ),
 			'title'                      => __( 'Carriers', 'packeta' ),
@@ -211,6 +235,8 @@ class CountryListingPage {
 			'countryCode'                => __( 'Country code', 'packeta' ),
 			'setUp'                      => __( 'Set up', 'packeta' ),
 			'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
+			'noCarriersFound'            => __( 'No results found!', 'packeta' ),
+			'searchPlaceholder'          => __( 'Search carriers', 'packeta' ),
 			'lastCarrierUpdateDatetime'  => __( 'Date of the last update of carriers', 'packeta' ),
 			'carrierListNeverDownloaded' => __( 'Carrier list was not yet downloaded. Continue by clicking the Run update of carriers button.', 'packeta' ),
 			'runCarrierUpdate'           => __( 'Run update of carriers', 'packeta' ),
@@ -218,7 +244,7 @@ class CountryListingPage {
 			'nextScheduledRunPlannedAt'  => __( 'The next automatic update will occur at', 'packeta' ),
 		];
 
-		if ( $this->wcNativeCarrierSettingsConfig->isActive() ) {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/wcNativeSettings.latte';
 		} else {
 			$settingsTemplate = PACKETERY_PLUGIN_DIR . '/template/carrier/countries.latte';
@@ -235,7 +261,9 @@ class CountryListingPage {
 				$this->moduleHelper->isCzechLocale(),
 				$this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
 				$this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
-				$translations
+				$translations,
+				$hasCarriers,
+				$form
 			)
 		);
 	}
@@ -357,9 +385,18 @@ class CountryListingPage {
 	 */
 	private function getCarriersDataByCountry( string $countryCode ): array {
 		$carrierNames    = [];
+		$keyword         = $this->httpRequest->getQuery( self::PARAM_CARRIER_FILTER ) ?? '';
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
 			if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
+				continue;
+			}
+
+			if ( $this->optionsProvider->isWcCarrierConfigEnabled() && ! ShippingMethodGenerator::classExists( $carrier->getId() ) ) {
+				continue;
+			}
+
+			if ( $keyword !== '' && stripos( $carrier->getName(), $keyword ) === false ) {
 				continue;
 			}
 
@@ -368,7 +405,7 @@ class CountryListingPage {
 
 			$carrierNames[ $carrierId ] = [
 				'name'      => $carrier->getName(),
-				'isActive'  => $carrierOptions->isActive(),
+				'isActive'  => $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ),
 				'detailUrl' => add_query_arg(
 					[
 						'page'                            => OptionsPage::SLUG,

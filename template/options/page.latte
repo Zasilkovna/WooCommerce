@@ -22,6 +22,12 @@
 			{$translations['packetAutoSubmission']}
 		</a>
 		<a
+				href="{$advancedTabLink}"
+				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_ADVANCED} nav-tab-active{/if}"
+		>
+			{$translations['advanced']}
+		</a>
+		<a
 				href="{$supportTabLink}"
 				class="nav-tab{if $activeTab === Packetery\Module\Options\Page::TAB_SUPPORT} nav-tab-active{/if}"
 		>

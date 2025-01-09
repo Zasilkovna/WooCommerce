@@ -15,7 +15,7 @@ use Packetery\Module;
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http;
 
 /**
@@ -129,7 +129,7 @@ class DetailCommonLogic {
 			return false;
 		}
 
-		if ( ! $wcOrder->has_shipping_method( ShippingMethod::PACKETERY_METHOD_ID ) ) {
+		if ( ! ShippingProvider::wcOrderHasOurMethod( $wcOrder ) ) {
 			return false;
 		}
 
