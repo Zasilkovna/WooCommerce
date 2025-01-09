@@ -18,7 +18,7 @@ use Packetery\Module\Hooks\HookRegistrar;
  */
 class Plugin {
 
-	public const VERSION                = '1.8.7';
+	public const VERSION                = '2.0.0';
 	public const DOMAIN                 = 'packeta';
 	public const PARAM_PACKETERY_ACTION = 'packetery_action';
 	public const PARAM_NONCE            = '_wpnonce';
