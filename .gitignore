@@ -9,3 +9,4 @@
 /config/config.local.neon
 /node_modules/
 phpunit.xml
+soap-php-bugfix-dev.wsdl
