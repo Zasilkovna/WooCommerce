@@ -107,7 +107,7 @@ class CoreHelper {
 	 * @throws \Exception From DateTimeImmutable.
 	 */
 	public function getDateTimeFromString( ?string $date ): ?DateTimeImmutable {
-		return $date !== null ? new DateTimeImmutable( $date ) : null;
+		return $date !== null && $date !== '' ? new DateTimeImmutable( $date ) : null;
 	}
 
 	public static function convertToCentimeters( float $value, string $fromUnit ): float {
