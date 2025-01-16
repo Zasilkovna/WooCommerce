@@ -72,9 +72,12 @@ class Form {
 			->setNullable()
 			->addRule( Forms\Form::FLOAT );
 		$form->addHidden( self::FIELD_ORIGINAL_WEIGHT );
-		$this->formFactory->addDimension( $form, self::FIELD_LENGTH, __( 'Length', 'packeta' ), $unit );
-		$this->formFactory->addDimension( $form, self::FIELD_WIDTH, __( 'Width', 'packeta' ), $unit );
-		$this->formFactory->addDimension( $form, self::FIELD_HEIGHT, __( 'Height', 'packeta' ), $unit );
+		$this->formFactory->addDimension( $form, self::FIELD_LENGTH, __( 'Length', 'packeta' ), $unit )
+			->setNullable();
+		$this->formFactory->addDimension( $form, self::FIELD_WIDTH, __( 'Width', 'packeta' ), $unit )
+			->setNullable();
+		$this->formFactory->addDimension( $form, self::FIELD_HEIGHT, __( 'Height', 'packeta' ), $unit )
+			->setNullable();
 		$form->addCheckbox( self::FIELD_ADULT_CONTENT, __( 'Adult content', 'packeta' ) )
 			->setRequired( false );
 		$form->addText( self::FIELD_COD, __( 'Cash on delivery', 'packeta' ) )
