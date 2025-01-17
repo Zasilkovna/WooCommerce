@@ -550,7 +550,7 @@ class Page {
 
 		$container->addText( 'default_width', __( 'Width', 'packeta' ) )
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['default_dimensions_enabled'], Form::EQUAL, true )
-				->setRequired( 'Width is required when default dimensions are enabled.' )
+				->setRequired()
 			->addConditionOn( $form[ self::FORM_FIELDS_CONTAINER ]['dimensions_unit'], Form::EQUAL, $this->optionsProvider::DEFAULT_DIMENSIONS_UNIT_MM )
 				->addRule( Form::INTEGER, __( 'Provide a full number!', 'packeta' ) )
 				->addRule( Form::MIN, 'Value must be greater than 0', 1 )
