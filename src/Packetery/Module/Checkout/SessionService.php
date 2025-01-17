@@ -33,6 +33,10 @@ class SessionService {
 			}
 		}
 
+		if ( $chosenShippingRate === false ) {
+			return '';
+		}
+
 		return $chosenShippingRate ?? '';
 	}
 

@@ -49,6 +49,21 @@ class SessionServiceTest extends TestCase {
 		$this->assertEquals( '', $this->sessionService->getChosenMethodFromSession() );
 	}
 
+	public function testGetChosenMethodFromSessionWithoutShippingMethods(): void {
+		$this->createSessionServiceMock();
+
+		$this->wcAdapter
+			->method( 'session' )
+			->willReturn( true );
+
+		$this->wcAdapter
+			->method( 'sessionGetArray' )
+			->with( $this->equalTo( 'chosen_shipping_methods' ) )
+			->willReturn( [ false ] );
+
+		$this->assertEquals( '', $this->sessionService->getChosenMethodFromSession() );
+	}
+
 	public function testGetChosenMethodFromSessionWithoutSession(): void {
 		$this->createSessionServiceMock();
 
