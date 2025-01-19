@@ -7,6 +7,13 @@
 		colors="true"
 		displayDetailsOnTestsThatTriggerWarnings="true"
 		displayDetailsOnPhpunitDeprecations="true"
+		displayDetailsOnTestsThatTriggerDeprecations="true"
+		displayDetailsOnTestsThatTriggerErrors="true"
+		displayDetailsOnTestsThatTriggerNotices="true"
+		failOnWarning="true"
+		failOnRisky="true"
+		failOnPhpunitDeprecation="true"
+		failOnDeprecation="true"
 		bootstrap="tests/bootstrap.php"
 		cacheResultFile="temp/.phpunit.result.cache"
 >
