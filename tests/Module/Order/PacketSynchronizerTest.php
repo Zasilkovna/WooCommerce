@@ -26,7 +26,7 @@ class PacketSynchronizerTest extends TestCase {
 	private function createPacketSynchronize(): void {
 		$this->client    = $this->createMock( Client::class );
 		$logger          = $this->createMock( ILogger::class );
-		$this->provider  = $this->createMock( OptionsProvider::class );
+		$provider        = $this->createMock( OptionsProvider::class );
 		$orderRepository = $this->createMock( Repository::class );
 		$wcOrderActions  = $this->createMock( WcOrderActions::class );
 		$wcAdapter       = $this->createMock( WcAdapter::class );
@@ -34,7 +34,7 @@ class PacketSynchronizerTest extends TestCase {
 		$this->packetSynchronizer = new PacketSynchronizer(
 			$this->client,
 			$logger,
-			$this->provider,
+			$provider,
 			$orderRepository,
 			$wcOrderActions,
 			$wcAdapter,
