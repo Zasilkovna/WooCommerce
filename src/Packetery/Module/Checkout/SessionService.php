@@ -28,13 +28,13 @@ class SessionService {
 		$chosenShippingRate = null;
 		if ( $this->wcAdapter->session() !== null ) {
 			$chosenShippingRates = $this->wcAdapter->sessionGetArray( 'chosen_shipping_methods' );
-			if ( is_array( $chosenShippingRates ) && count( $chosenShippingRates ) > 0 ) {
+			if (
+				is_array( $chosenShippingRates ) &&
+				count( $chosenShippingRates ) > 0 &&
+				$chosenShippingRates[0] !== false
+			) {
 				$chosenShippingRate = $chosenShippingRates[0];
 			}
-		}
-
-		if ( $chosenShippingRate === false ) {
-			return '';
 		}
 
 		return $chosenShippingRate ?? '';
