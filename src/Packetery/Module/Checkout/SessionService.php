@@ -31,7 +31,7 @@ class SessionService {
 			if (
 				is_array( $chosenShippingRates ) &&
 				count( $chosenShippingRates ) > 0 &&
-				$chosenShippingRates[0] !== false
+				is_string( $chosenShippingRates[0] )
 			) {
 				$chosenShippingRate = $chosenShippingRates[0];
 			}
