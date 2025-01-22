@@ -163,7 +163,9 @@ class CheckoutStorage {
 	}
 
 	private function isKeyPresentInSavedDataButNotInPostData( array $checkoutData, array $savedCarrierData, string $key ): bool {
-		return ( ! isset( $checkoutData[ $key ] ) || $checkoutData[ $key ] === '' ) &&
-				( isset( $savedCarrierData[ $key ] ) || $savedCarrierData[ $key ] !== '' );
+		$isKeyMissingInCheckoutData     = ! isset( $checkoutData[ $key ] ) || $checkoutData[ $key ] === '';
+		$isKeyPresentInSavedCarrierData = isset( $savedCarrierData[ $key ] ) && $savedCarrierData[ $key ] !== '';
+
+		return $isKeyMissingInCheckoutData && $isKeyPresentInSavedCarrierData;
 	}
 }
