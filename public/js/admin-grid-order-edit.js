@@ -22,7 +22,9 @@
 				$(document.body).trigger( 'wc-init-datepickers' );
 				$( 'input[name="packeteryDeliverOn"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
 
-				if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
+				if ( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
+					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
+				} else if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
 					var orderWarningFields = $lastModalButtonClicked.data( 'order-data' ).orderWarningFields;
 					for ( var invalidFieldNameKey in orderWarningFields ) {
 						if ( ! orderWarningFields.hasOwnProperty( invalidFieldNameKey ) ) {
@@ -33,10 +35,6 @@
 					}
 
 					flashMessage( packeteryModal, 'warning', settings.translations.packetSubmissionNotPossible );
-				}
-
-				if ( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
-					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
 				}
 			}
 		} ).on( 'click', '[data-packetery-order-inline-edit]', function( e ) {
