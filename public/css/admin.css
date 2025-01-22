@@ -753,6 +753,19 @@ tbody .packetery-log-column-note {
   border: 1px solid #FF8C00;
 }
 
+.packetery-carrier-status {
+  text-align: center;
+  width: 100px;
+}
+
+.packetery-carrier-status-active {
+  color: green;
+}
+
+.packetery-carrier-status-inactive {
+  color: #ba1b02;
+}
+
 .packetery-flex-container {
   display: flex;
   flex-flow: row wrap;

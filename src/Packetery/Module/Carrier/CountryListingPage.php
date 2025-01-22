@@ -234,6 +234,9 @@ class CountryListingPage {
 			'carrier'                    => __( 'Carrier', 'packeta' ),
 			'countryCode'                => __( 'Country code', 'packeta' ),
 			'setUp'                      => __( 'Set up', 'packeta' ),
+			'status'                     => __( 'Status', 'packeta' ),
+			'active'                     => __( 'Active', 'packeta' ),
+			'inactive'                   => __( 'Inactive', 'packeta' ),
 			'noActiveCountries'          => __( 'No active countries.', 'packeta' ),
 			'noCarriersFound'            => __( 'No results found!', 'packeta' ),
 			'searchPlaceholder'          => __( 'Search carriers', 'packeta' ),
@@ -384,7 +387,7 @@ class CountryListingPage {
 	 * @return array
 	 */
 	private function getCarriersDataByCountry( string $countryCode ): array {
-		$carrierNames    = [];
+		$carriersData    = [];
 		$keyword         = $this->httpRequest->getQuery( self::PARAM_CARRIER_FILTER ) ?? '';
 		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
 		foreach ( $countryCarriers as $carrier ) {
@@ -403,10 +406,11 @@ class CountryListingPage {
 			$carrierId      = $carrier->getId();
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
 
-			$carrierNames[ $carrierId ] = [
-				'name'      => $carrier->getName(),
-				'isActive'  => $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ),
-				'detailUrl' => add_query_arg(
+			$carriersData[ $carrierId ] = [
+				'name'              => $carrier->getName(),
+				'isActivatedByUser' => $carrierOptions->isActive(),
+				'isActive'          => $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ),
+				'detailUrl'         => add_query_arg(
 					[
 						'page'                            => OptionsPage::SLUG,
 						OptionsPage::PARAMETER_CARRIER_ID => $carrierId,
@@ -416,6 +420,6 @@ class CountryListingPage {
 			];
 		}
 
-		return $carrierNames;
+		return $carriersData;
 	}
 }

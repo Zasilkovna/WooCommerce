@@ -872,6 +872,19 @@ tbody .packetery-log-column-note {
 	border: 1px solid #FF8C00;
 }
 
+.packetery-carrier-status {
+	text-align: center;
+	width: 100px;
+}
+
+.packetery-carrier-status-active {
+	color: green;
+}
+
+.packetery-carrier-status-inactive {
+	color: $color-packeta;
+}
+
 @import 'admin/custom-declaration.scss';
 @import 'admin/widget-button.scss';
 @import 'admin/order-status.scss';
