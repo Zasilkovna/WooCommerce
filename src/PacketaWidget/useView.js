@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { useSelect } from '@wordpress/data';
 import { getSetting } from '@woocommerce/settings';
@@ -35,6 +35,20 @@ export const useView = ( cart ) => {
 		packetaHomeDeliveryShippingRate = null,
 		chosenShippingRate = null,
 	} = filteredShippingRates || {};
+
+	const previousRateIdRef = useRef();
+	useEffect( () => {
+		const previousRateId = previousRateIdRef.current;
+
+		if (
+			previousRateId !== undefined &&
+			previousRateId !== chosenShippingRate?.rate_id
+		) {
+			setViewState( null );
+		}
+
+		previousRateIdRef.current = chosenShippingRate?.rate_id;
+	}, [ chosenShippingRate, setViewState ] );
 
 	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 
