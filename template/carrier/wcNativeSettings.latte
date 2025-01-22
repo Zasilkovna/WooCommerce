@@ -23,10 +23,13 @@
 			<table class="packeta_country_list">
 				<tr>
 					<th>{$translations['carrier']}</th>
+					<th>{$translations['status']}</th>
 					<th>{$translations['action']}</th>
 				</tr>
 				<tr n:foreach="$country['allCarriers'] as $carrier" class="packeta_country_list_item">
 					<td>{$carrier['name']}</td>
+					<td class="packetery-carrier-status {if $carrier['isActivatedByUser']}packetery-carrier-status-active{else}packetery-carrier-status-inactive{/if}">
+						{$carrier['isActivatedByUser'] ? $translations['active'] : $translations['inactive']}</td>
 					<td>
 						<a class="button button-small" href="{$carrier['detailUrl']}">{$translations['setUp']}</a>
 					</td>
