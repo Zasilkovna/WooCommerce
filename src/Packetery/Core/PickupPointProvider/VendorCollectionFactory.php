@@ -39,7 +39,7 @@ class VendorCollectionFactory {
 				'czzbox',
 				'cz',
 				true,
-				true,
+				false,
 				'CZK',
 				true,
 				Entity\Carrier::VENDOR_GROUP_ZBOX
@@ -60,7 +60,7 @@ class VendorCollectionFactory {
 				'skzbox',
 				'sk',
 				true,
-				true,
+				false,
 				'EUR',
 				true,
 				Entity\Carrier::VENDOR_GROUP_ZBOX
@@ -81,7 +81,7 @@ class VendorCollectionFactory {
 				'huzbox',
 				'hu',
 				true,
-				true,
+				false,
 				'HUF',
 				true,
 				Entity\Carrier::VENDOR_GROUP_ZBOX
@@ -102,7 +102,7 @@ class VendorCollectionFactory {
 				'rozbox',
 				'ro',
 				true,
-				true,
+				false,
 				'RON',
 				true,
 				Entity\Carrier::VENDOR_GROUP_ZBOX
