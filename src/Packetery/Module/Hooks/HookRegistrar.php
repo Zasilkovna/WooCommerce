@@ -557,9 +557,7 @@ class HookRegistrar {
 	 */
 	public function addShippingMethods( array $methods ): array {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
-			$unsortedMethods = $this->shippingProvider->addMethods( $methods );
-
-			return $this->shippingProvider->sortMethods( $unsortedMethods );
+			return $this->shippingProvider->addMethods( $methods );
 		}
 
 		$methods[ ShippingMethod::PACKETERY_METHOD_ID ] = ShippingMethod::class;
