@@ -151,6 +151,8 @@ class Checkout {
 		// Must not be registered at backend.
 		$this->wpAdapter->addFilter( 'woocommerce_available_payment_gateways', [ $this, 'filterPaymentGateways' ] );
 
+		//add_filter( 'woocommerce_package_rates', [ $this, 'preserveShippingMethodsOrder' ], 10, 2 );
+
 		$this->wpAdapter->addAction(
 			'woocommerce_review_order_before_shipping',
 			[
@@ -259,6 +261,17 @@ class Checkout {
 			)
 		);
 		$this->handleAddFeeError( $addFeeResult );
+	}
+
+	public function preserveShippingMethodsOrder( $rates ) {
+		uasort(
+			$rates,
+			function ( $a, $b ) {
+				return $a->get_instance_id() <=> $b->get_instance_id();
+			}
+		);
+
+		return $rates;
 	}
 
 	private function addCodSurchargeFee( Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
