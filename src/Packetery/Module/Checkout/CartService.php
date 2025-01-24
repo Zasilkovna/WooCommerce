@@ -273,20 +273,25 @@ class CartService {
 			return false;
 		}
 
-		if ( isset( $sizeRestrictions['max_length'] ) ) {
+		if ( isset( $sizeRestrictions['maximum_length'] ) && is_numeric( trim( (string) $sizeRestrictions['maximum_length'] ) ) ) {
 			$productMax = max( $biggestProductSizeByLength );
-			if ( $productMax > $sizeRestrictions['max_length'] ) {
+			if ( $productMax > $sizeRestrictions['maximum_length'] ) {
 				return true;
 			}
 		}
-		if ( isset( $sizeRestrictions['dimensions_sum'] ) ) {
+		if ( isset( $sizeRestrictions['dimensions_sum'] ) && is_numeric( trim( (string) $sizeRestrictions['dimensions_sum'] ) ) ) {
 			$productSum = array_sum( $biggestProductSizeBySum );
 			if ( $productSum > $sizeRestrictions['dimensions_sum'] ) {
 				return true;
 			}
 		}
 
-		if ( isset( $sizeRestrictions['length'], $sizeRestrictions['width'], $sizeRestrictions['height'] ) ) {
+		if (
+			isset( $sizeRestrictions['length'], $sizeRestrictions['width'], $sizeRestrictions['height'] )
+			&& is_numeric( trim( (string) $sizeRestrictions['length'] ) )
+			&& is_numeric( trim( (string) $sizeRestrictions['width'] ) )
+			&& is_numeric( trim( (string) $sizeRestrictions['height'] ) )
+		) {
 			$dimensions = [
 				$sizeRestrictions['length'],
 				$sizeRestrictions['width'],

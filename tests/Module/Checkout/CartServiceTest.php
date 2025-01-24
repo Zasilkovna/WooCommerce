@@ -455,9 +455,9 @@ class CartServiceTest extends TestCase {
 
 	public static function cartContainsProductOversizedForCarrier(): array {
 		return [
-			'all-ok'            => [
+			'all-ok'                            => [
 				'sizeRestrictions'   => [
-					'max_length'     => 100,
+					'maximum_length' => 100,
 					'dimensions_sum' => 180,
 					'length'         => 100,
 					'width'          => 50,
@@ -467,7 +467,7 @@ class CartServiceTest extends TestCase {
 				'productDimensions2' => [ 30.0, 40.0, 80.0 ],
 				'expectedResult'     => false,
 			],
-			'size-exceeds'      => [
+			'size-exceeds'                      => [
 				'sizeRestrictions'   => [
 					'length' => 100,
 					'width'  => 50,
@@ -477,7 +477,7 @@ class CartServiceTest extends TestCase {
 				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
 				'expectedResult'     => true,
 			],
-			'size-exceeds-v2'   => [
+			'size-exceeds-v2'                   => [
 				'sizeRestrictions'   => [
 					'length' => 100,
 					'width'  => 50,
@@ -487,27 +487,99 @@ class CartServiceTest extends TestCase {
 				'productDimensions2' => [ 10.0, 40.0, 110.0 ],
 				'expectedResult'     => true,
 			],
-			'sum-exceeds'       => [
+			'sum-exceeds'                       => [
 				'sizeRestrictions'   => [
-					'max_length'     => 100,
+					'maximum_length' => 100,
 					'dimensions_sum' => 180,
 				],
 				'productDimensions1' => [ 80.0, 80.0, 80.0 ],
 				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
 				'expectedResult'     => true,
 			],
-			'length-exceeds'    => [
+			'length-exceeds'                    => [
 				'sizeRestrictions'   => [
-					'max_length'     => 100,
+					'maximum_length' => 100,
 					'dimensions_sum' => 180,
 				],
 				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
 				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
 				'expectedResult'     => true,
 			],
-			'length-exceeds-v2' => [
+			'length-exceeds-by-unclean-numeric' => [
 				'sizeRestrictions'   => [
-					'max_length'     => 100,
+					'maximum_length' => ' 100',
+					'dimensions_sum' => '180 ',
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => true,
+			],
+			'empty-maximum-length'              => [
+				'sizeRestrictions'   => [
+					'maximum_length' => '',
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => false,
+			],
+			'empty-maximum-length-with-other'   => [
+				'sizeRestrictions'   => [
+					'maximum_length' => '',
+					'dimensions_sum' => 180,
+				],
+				'productDimensions1' => [ 10.0, 10.0, 10.0 ],
+				'productDimensions2' => [ 8.0, 4.0, 5.0 ],
+				'expectedResult'     => false,
+			],
+			'empty-dimensions-sum'              => [
+				'sizeRestrictions'   => [
+					'dimensions_sum' => '',
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => false,
+			],
+			'empty-dimensions-sum-with-other'   => [
+				'sizeRestrictions'   => [
+					'maximum_length' => 100,
+					'dimensions_sum' => '',
+				],
+				'productDimensions1' => [ 100.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => false,
+			],
+			'empty-restrictions-hd'             => [
+				'sizeRestrictions'   => [
+					'maximum_length' => '',
+					'dimensions_sum' => '',
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => false,
+			],
+			'empty-restrictions-zbox'           => [
+				'sizeRestrictions'   => [
+					'length' => '',
+					'width'  => '',
+					'height' => '',
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => false,
+			],
+			'semi-empty-restrictions-zbox'      => [
+				'sizeRestrictions'   => [
+					'length' => 100,
+					'width'  => '',
+					'height' => '',
+				],
+				'productDimensions1' => [ 110.0, 40.0, 30.0 ],
+				'productDimensions2' => [ 80.0, 40.0, 30.0 ],
+				'expectedResult'     => false,
+			],
+			'length-exceeds-v2'                 => [
+				'sizeRestrictions'   => [
+					'maximum_length' => 100,
 					'dimensions_sum' => 180,
 				],
 				'productDimensions1' => [ 80.0, 40.0, 30.0 ],
