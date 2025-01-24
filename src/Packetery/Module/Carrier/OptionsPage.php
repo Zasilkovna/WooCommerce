@@ -284,18 +284,21 @@ class OptionsPage {
 			( $carrier->hasPickupPoints() && is_numeric( $carrier->getId() ) )
 		) {
 			$dimensionsRestrictions->addText( 'length', $this->wpAdapter->__( 'Length (cm)', 'packeta' ) )
+				->setNullable()
 				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
 				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
 				->setRequired()
 				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
 				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
 			$dimensionsRestrictions->addText( 'width', $this->wpAdapter->__( 'Width (cm)', 'packeta' ) )
+				->setNullable()
 				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
 				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
 				->setRequired()
 				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
 				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
 			$dimensionsRestrictions->addText( 'height', $this->wpAdapter->__( 'Height (cm)', 'packeta' ) )
+				->setNullable()
 				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
 				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
 				->setRequired()
@@ -304,12 +307,14 @@ class OptionsPage {
 		} else {
 
 			$maximumLength = $dimensionsRestrictions->addText( 'maximum_length', $this->wpAdapter->__( 'Maximum length (cm)', 'packeta' ) );
+			$maximumLength->setNullable();
 			$maximumLength->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
 							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
 							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
 							->addRule( Form::MIN, $this->wpAdapter->__( 'Value must be greater than 0', 'packeta' ), 1 );
 
 			$dimensionsSum = $dimensionsRestrictions->addText( 'dimensions_sum', $this->wpAdapter->__( 'Sum of dimensions (cm)', 'packeta' ) );
+			$dimensionsSum->setNullable();
 			$dimensionsSum->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
 							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
 							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
