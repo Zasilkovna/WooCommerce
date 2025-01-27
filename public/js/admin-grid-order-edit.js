@@ -24,9 +24,7 @@
 
 				if ( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
 					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
-				}
-
-				if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
+				} else if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
 					var orderWarningFields = $lastModalButtonClicked.data( 'order-data' ).orderWarningFields;
 					for ( var invalidFieldNameKey in orderWarningFields ) {
 						if ( ! orderWarningFields.hasOwnProperty( invalidFieldNameKey ) ) {
