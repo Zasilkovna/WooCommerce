@@ -12,6 +12,7 @@ use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Module\ShippingMethod;
 
 class ShippingRateFactory {
@@ -87,21 +88,33 @@ class ShippingRateFactory {
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @param array|null $allowedCarrierNames List of allowed carrier names.
+	 * @param string     $methodId            Shipping method id.
 	 *
 	 * @return array<string, array<string, string|float|array>>
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function createShippingRates( ?array $allowedCarrierNames ): array {
+	public function createShippingRates( ?array $allowedCarrierNames, string $methodId ): array {
 		$customerCountry = $this->checkoutService->getCustomerCountry();
 		if ( $customerCountry === null ) {
 			return [];
 		}
-		$availableCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
+
+		if ( $methodId === ShippingMethod::PACKETERY_METHOD_ID ) {
+			$availableCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
+		} else {
+			$availableCarriers = [];
+			$carrierEntity     = $this->carrierEntityRepository->getAnyById(
+				str_replace( BaseShippingMethod::PACKETA_METHOD_PREFIX, '', $methodId )
+			);
+			if ( $carrierEntity !== null && $carrierEntity->getCountry() === $customerCountry ) {
+				$availableCarriers[] = $carrierEntity;
+			}
+		}
 
 		$customRates = [];
 		foreach ( $availableCarriers as $carrier ) {
 			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
-			$rateId       = ShippingMethod::PACKETERY_METHOD_ID . ':' . $optionId;
+			$rateId       = $methodId . ':' . $optionId;
 			$shippingRate = $this->createShippingRateOfCarrier(
 				$carrier,
 				$allowedCarrierNames,

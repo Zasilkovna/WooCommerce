@@ -9,6 +9,7 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
 use WC_Shipping_Rate;
@@ -107,6 +108,12 @@ class CheckoutService {
 	 * @return string
 	 */
 	public function removeShippingMethodPrefix( string $chosenMethod ): string {
+		if ( strpos( $chosenMethod, BaseShippingMethod::PACKETA_METHOD_PREFIX ) === 0 ) {
+			[ $methodId, $optionId ] = explode( ':', $chosenMethod );
+
+			return $optionId;
+		}
+
 		return str_replace( ShippingMethod::PACKETERY_METHOD_ID . ':', '', $chosenMethod );
 	}
 
