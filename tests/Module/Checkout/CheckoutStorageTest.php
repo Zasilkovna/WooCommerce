@@ -1,7 +1,10 @@
 <?php
 
-namespace Packetery\Module\Checkout;
+declare( strict_types=1 );
 
+namespace Tests\Module\Checkout;
+
+use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\Http\Request;

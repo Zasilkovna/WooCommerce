@@ -2,7 +2,7 @@
 
 declare( strict_types=1 );
 
-namespace Packetery\Module\Checkout;
+namespace Tests\Module\Checkout;
 
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
