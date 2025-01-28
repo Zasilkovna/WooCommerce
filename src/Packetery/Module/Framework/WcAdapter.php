@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use WC_Blocks_Utils;
 use WC_Logger;
 use WC_Logger_Interface;
 use WC_Product;
@@ -126,5 +127,9 @@ class WcAdapter {
 	 */
 	public function shippingZonesGetZoneMatchingPackage( array $package ): WC_Shipping_Zone {
 		return WC_Shipping_Zones::get_zone_matching_package( $package );
+	}
+
+	public function hasBlockInPage( int $page, string $blockName ): bool {
+		return WC_Blocks_Utils::has_block_in_page( $page, $blockName );
 	}
 }

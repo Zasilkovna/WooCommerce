@@ -11,7 +11,6 @@ namespace Packetery\Module\Framework;
 
 use DateTimeZone;
 use WP_Error;
-use WP_Post;
 use WP_Screen;
 use WP_Term;
 
@@ -63,18 +62,6 @@ class WpAdapter {
 	 */
 	public function isWpError( $thing ): bool {
 		return is_wp_error( $thing );
-	}
-
-	/**
-	 * Determines whether a $post or a string contains a specific block type.
-	 *
-	 * @param string                  $blockName Full block type to look for.
-	 * @param int|string|WP_Post|null $post Optional. Post content, post ID, or post object.
-	 *
-	 * @return bool
-	 */
-	public function hasBlock( string $blockName, $post ): bool {
-		return has_block( $blockName, $post );
 	}
 
 	public function getCurrentScree(): ?WP_Screen {

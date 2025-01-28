@@ -8,18 +8,12 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Framework\WcAdapter;
-use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
 use WC_Shipping_Rate;
 
 class CheckoutService {
-
-	/**
-	 * @var WpAdapter
-	 */
-	private $wpAdapter;
 
 	/**
 	 * @var WcAdapter
@@ -57,7 +51,6 @@ class CheckoutService {
 	private $optionsProvider;
 
 	public function __construct(
-		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
 		Request $httpRequest,
 		CarDeliveryConfig $carDeliveryConfig,
@@ -66,7 +59,6 @@ class CheckoutService {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		OptionsProvider $optionsProvider
 	) {
-		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
 		$this->httpRequest             = $httpRequest;
 		$this->carDeliveryConfig       = $carDeliveryConfig;
@@ -250,12 +242,9 @@ class CheckoutService {
 		}
 
 		if (
-			$this->wpAdapter->hasBlock(
-				'woocommerce/checkout',
-				$this->wpAdapter->getPostField(
-					'post_content',
-					$this->wcAdapter->getPageId( 'checkout' )
-				)
+			$this->wcAdapter->hasBlockInPage(
+				$this->wcAdapter->getPageId( 'checkout' ),
+				'woocommerce/checkout'
 			) ) {
 			return true;
 		}
