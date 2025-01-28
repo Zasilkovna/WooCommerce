@@ -9,20 +9,17 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Framework\WcAdapter;
-use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Tests\Module\MockFactory;
 use WC_Shipping_Rate;
 
 class CheckoutServiceTest extends TestCase {
 
 	const SHIPPING_RATE_INTERNAL_PICKUP_POINTS = 'packetery_carrier_zpointcz';
 
-	private WpAdapter|MockObject $wpAdapter;
 	private WcAdapter|MockObject $wcAdapter;
 	private Carrier\Repository|MockObject $carrierRepository;
 	private Carrier\EntityRepository|MockObject $carrierEntityRepository;
@@ -33,7 +30,6 @@ class CheckoutServiceTest extends TestCase {
 	private CheckoutService $checkoutService;
 
 	private function createCheckoutServiceMock(): void {
-		$this->wpAdapter               = MockFactory::createWpAdapter( $this );
 		$this->wcAdapter               = $this->createMock( WcAdapter::class );
 		$this->carrierRepository       = $this->createMock( Carrier\Repository::class );
 		$this->carrierEntityRepository = $this->createMock( Carrier\EntityRepository::class );
@@ -43,7 +39,6 @@ class CheckoutServiceTest extends TestCase {
 		$this->pickupPointsConfig      = $this->createMock( PacketaPickupPointsConfig::class );
 
 		$this->checkoutService = new CheckoutService(
-			$this->wpAdapter,
 			$this->wcAdapter,
 			$this->httpRequest,
 			$this->carDeliveryConfig,
@@ -304,7 +299,7 @@ class CheckoutServiceTest extends TestCase {
 
 		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
 
-		$this->wpAdapter->method( 'hasBlock' )->willReturn( true );
+		$this->wcAdapter->method( 'hasBlockInPage' )->willReturn( true );
 		$this->assertTrue( $this->checkoutService->areBlocksUsedInCheckout() );
 	}
 
@@ -313,7 +308,7 @@ class CheckoutServiceTest extends TestCase {
 
 		$this->provider->method( 'getCheckoutDetection' )->willReturn( OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION );
 
-		$this->wpAdapter->method( 'hasBlock' )->willReturn( false );
+		$this->wcAdapter->method( 'hasBlockInPage' )->willReturn( false );
 		$this->assertFalse( $this->checkoutService->areBlocksUsedInCheckout() );
 	}
 }
