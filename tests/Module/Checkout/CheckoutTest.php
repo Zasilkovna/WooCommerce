@@ -1,6 +1,6 @@
 <?php
 
-namespace Packetery\Module\Checkout;
+namespace Tests\Module\Checkout;
 
 use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
