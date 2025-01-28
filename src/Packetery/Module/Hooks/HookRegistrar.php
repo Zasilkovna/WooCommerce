@@ -523,15 +523,15 @@ class HookRegistrar {
 		$this->wpAdapter->addAction( $wcEmailHook, [ $this->viewMail, 'renderEmailFooter' ] );
 
 		$this->wpAdapter->addAction( 'wp_enqueue_scripts', [ $this->assetManager, 'enqueueFrontAssets' ] );
+		$this->wpAdapter->addAction(
+			'woocommerce_cart_calculate_fees',
+			[
+				$this->checkout,
+				'actionCalculateFees',
+			],
+			20
+		);
 		if ( $this->wpAdapter->doingAjax() === false ) {
-			$this->wpAdapter->addAction(
-				'woocommerce_cart_calculate_fees',
-				[
-					$this->checkout,
-					'actionApplyCodSurcharge',
-				],
-				20
-			);
 			$this->wpAdapter->addAction( 'woocommerce_order_details_after_order_table', [ $this->viewFrontend, 'renderOrderDetail' ] );
 
 			$this->wpAdapter->addAction( 'init', [ $this->blockHooks, 'register' ] );

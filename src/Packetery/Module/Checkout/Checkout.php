@@ -13,7 +13,6 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
-use WC_Cart;
 use WC_Payment_Gateway;
 use WP_Error;
 
@@ -165,7 +164,6 @@ class Checkout {
 				'filterUpdateShippingPackages',
 			]
 		);
-		$this->wpAdapter->addAction( 'woocommerce_cart_calculate_fees', [ $this, 'actionCalculateFees' ] );
 		$this->wpAdapter->addAction(
 			'init',
 			function () {
@@ -211,6 +209,7 @@ class Checkout {
 	 */
 	public function actionCalculateFees(): void {
 		$chosenShippingMethod = $this->checkoutService->calculateShippingAndGetId();
+
 		if (
 			$chosenShippingMethod === null ||
 			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) === false
@@ -219,7 +218,9 @@ class Checkout {
 		}
 
 		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
-		$chosenCarrier  = $this->carrierEntityRepository->getAnyById( $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod ) );
+		$chosenCarrier  = $this->carrierEntityRepository->getAnyById(
+			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod )
+		);
 		$maxTaxClass    = $this->cartService->getTaxClassWithMaxRate();
 		$isTaxable      = $maxTaxClass !== null;
 
@@ -262,7 +263,12 @@ class Checkout {
 	}
 
 	private function addCodSurchargeFee( Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
-		$paymentMethod = $this->sessionService->getChosenPaymentMethod();
+		if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
+			$paymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
+		} else {
+			$paymentMethod = $this->sessionService->getChosenPaymentMethod();
+		}
+
 		if ( $paymentMethod === null || $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) === false ) {
 			return;
 		}
@@ -386,41 +392,5 @@ class Checkout {
 		}
 
 		return $availableGateways;
-	}
-
-	/**
-	 * Applies surcharge if needed.
-	 *
-	 * @param WC_Cart $cart WC cart.
-	 *
-	 * @return void
-	 * @throws ProductNotFoundException Product not found.
-	 */
-	public function actionApplyCodSurcharge( WC_Cart $cart ): void {
-		if ( ! defined( 'DOING_AJAX' ) && $this->wpAdapter->isAdmin() ) {
-			return;
-		}
-		$chosenPaymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
-		if ( $chosenPaymentMethod !== null && ! $this->paymentHelper->isCodPaymentMethod( $chosenPaymentMethod ) ) {
-			return;
-		}
-		$chosenShippingRate = $this->wcAdapter->sessionGetString( 'packetery_checkout_shipping_method' );
-		if ( $chosenShippingRate === null ) {
-			return;
-		}
-		if ( ! $this->checkoutService->isPacketeryShippingMethod( $chosenShippingRate ) ) {
-			return;
-		}
-		$chosenShippingMethod = $this->checkoutService->removeShippingMethodPrefix( $chosenShippingRate );
-		$carrierOptions       = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
-		$surcharge            = $this->rateCalculator->getCODSurcharge(
-			$carrierOptions->toArray(),
-			$this->wcAdapter->cartGetSubtotal()
-		);
-
-		$maxTaxClass = $this->cartService->getTaxClassWithMaxRate();
-		$taxable     = ! ( $maxTaxClass === null );
-
-		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $surcharge, $taxable );
 	}
 }
