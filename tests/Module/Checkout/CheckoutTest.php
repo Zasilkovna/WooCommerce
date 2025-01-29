@@ -22,6 +22,7 @@ use Packetery\Module\Order\Repository;
 use Packetery\Module\Payment\PaymentHelper;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use WC_Cart;
 
 class CheckoutTest extends TestCase {
 	private WpAdapter|MockObject $wpAdapter;
@@ -40,6 +41,7 @@ class CheckoutTest extends TestCase {
 	private CheckoutValidator|MockObject $checkoutValidator;
 	private OrderUpdater|MockObject $orderUpdater;
 	private Checkout $checkout;
+	private WC_Cart|MockObject $WCCart;
 
 	protected function creatCheckout(): void {
 		$this->wpAdapter               = $this->createMock( WpAdapter::class );
@@ -57,6 +59,7 @@ class CheckoutTest extends TestCase {
 		$this->sessionService          = $this->createMock( SessionService::class );
 		$this->checkoutValidator       = $this->createMock( CheckoutValidator::class );
 		$this->orderUpdater            = $this->createMock( OrderUpdater::class );
+		$this->WCCart                  = $this->createMock( WC_Cart::class );
 
 		$this->checkout = new Checkout(
 			$this->wpAdapter,
@@ -83,7 +86,7 @@ class CheckoutTest extends TestCase {
 
 		$this->rateCalculator->expects( $this->never() )->method( 'getCODSurcharge' );
 
-		$this->checkout->actionCalculateFees();
+		$this->checkout->actionCalculateFees( $this->WCCart );
 	}
 
 	public function testDoesNothingIfShippingMethodNotPacketery(): void {
@@ -93,7 +96,7 @@ class CheckoutTest extends TestCase {
 
 		$this->rateCalculator->expects( $this->never() )->method( 'getCODSurcharge' );
 
-		$this->checkout->actionCalculateFees();
+		$this->checkout->actionCalculateFees( $this->WCCart );
 	}
 
 	public function testSkipsWhenCouponAllowsFreeShipping(): void {
@@ -108,7 +111,7 @@ class CheckoutTest extends TestCase {
 		$this->rateCalculator->method( 'isFreeShippingCouponApplied' )->willReturn( true );
 
 		$this->rateCalculator->expects( $this->never() )->method( 'getCODSurcharge' );
-		$this->checkout->actionCalculateFees();
+		$this->checkout->actionCalculateFees( $this->WCCart );
 	}
 
 	public function testAddsFeesSuccessfully(): void {
@@ -140,8 +143,8 @@ class CheckoutTest extends TestCase {
 		$this->currencySwitcherService->method( 'getConvertedPrice' )->willReturn( 10.0 );
 		$this->wpAdapter->method( '__' )->willReturn( 'COD surcharge' );
 
-		$this->wcAdapter->expects( self::exactly( 2 ) )->method( 'cartFeesApiAddFee' );
+		$this->WCCart->expects( self::exactly( 2 ) )->method( 'add_fee' );
 
-		$this->checkout->actionCalculateFees();
+		$this->checkout->actionCalculateFees( $this->WCCart );
 	}
 }

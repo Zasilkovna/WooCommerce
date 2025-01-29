@@ -13,8 +13,8 @@ use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Payment\PaymentHelper;
+use WC_Cart;
 use WC_Payment_Gateway;
-use WP_Error;
 
 class Checkout {
 
@@ -207,7 +207,7 @@ class Checkout {
 	 * @return void
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function actionCalculateFees(): void {
+	public function actionCalculateFees( WC_Cart $cart ): void {
 		$chosenShippingMethod = $this->checkoutService->calculateShippingAndGetId();
 
 		if (
@@ -231,11 +231,11 @@ class Checkout {
 			return;
 		}
 
-		$this->addAgeVerificationFee( $chosenCarrier, $carrierOptions, $isTaxable, $maxTaxClass );
-		$this->addCodSurchargeFee( $carrierOptions, $isTaxable, $maxTaxClass );
+		$this->addAgeVerificationFee( $cart, $chosenCarrier, $carrierOptions, $isTaxable, $maxTaxClass );
+		$this->addCodSurchargeFee( $cart, $carrierOptions, $isTaxable, $maxTaxClass );
 	}
 
-	private function addAgeVerificationFee( ?Entity\Carrier $chosenCarrier, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
+	private function addAgeVerificationFee( WC_Cart $cart, ?Entity\Carrier $chosenCarrier, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
 		if (
 			$chosenCarrier === null ||
 			! $chosenCarrier->supportsAgeVerification() ||
@@ -249,20 +249,10 @@ class Checkout {
 		if ( $isTaxable && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
 		}
-
-		$addFeeResult = $this->wcAdapter->cartFeesApiAddFee(
-			$this->createFeeArray(
-				'packetery-age-verification-fee',
-				$this->wpAdapter->__( 'Age verification fee', 'packeta' ),
-				$feeAmount,
-				$isTaxable,
-				$maxTaxClass
-			)
-		);
-		$this->handleAddFeeError( $addFeeResult );
+		$cart->add_fee( $this->wpAdapter->__( 'Age verification fee', 'packeta' ), $feeAmount, $isTaxable, $maxTaxClass );
 	}
 
-	private function addCodSurchargeFee( Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
+	private function addCodSurchargeFee( WC_Cart $cart, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
 		if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 			$paymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
 		} else {
@@ -286,40 +276,7 @@ class Checkout {
 			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
 		}
 
-		$addFeeResult = $this->wcAdapter->cartFeesApiAddFee(
-			$this->createFeeArray(
-				'packetery-cod-surcharge',
-				$this->wpAdapter->__( 'COD surcharge', 'packeta' ),
-				$applicableSurcharge,
-				$isTaxable,
-				$maxTaxClass
-			)
-		);
-		$this->handleAddFeeError( $addFeeResult );
-	}
-
-	/**
-	 * @return array{id: string, name: string, amount: float, taxable: bool, tax_class: string|null}
-	 */
-	private function createFeeArray( string $id, string $name, float $amount, bool $taxable, ?string $taxClass ): array {
-		return [
-			'id'        => $id,
-			'name'      => $name,
-			'amount'    => $amount,
-			'taxable'   => $taxable,
-			'tax_class' => $taxClass,
-		];
-	}
-
-	/**
-	 * @param object $addFeeResult Either a fee stdClass if added, or a WP_Error if it failed.
-	 *
-	 * @return void
-	 */
-	private function handleAddFeeError( object $addFeeResult ): void {
-		if ( $addFeeResult instanceof WP_Error ) {
-			$this->wcAdapter->addNotice( $addFeeResult->get_error_message(), 'notice' );
-		}
+		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $applicableSurcharge, $isTaxable, $maxTaxClass );
 	}
 
 	/**
