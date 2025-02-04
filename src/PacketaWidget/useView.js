@@ -88,7 +88,7 @@ export const useView = ( cart ) => {
 			return;
 		}
 
-		const shippingCountry = shippingAddress.country.toLowerCase()
+		const shippingCountry = shippingAddress.country.toLowerCase();
 
 		if ( ! dynamicSettings.lastCountry ) {
 			setDynamicSettings( {
@@ -157,7 +157,6 @@ export const useView = ( cart ) => {
 
 	if ( packetaPickupPointShippingRate ) {
 		return {
-			skipView,
 			buttonCallback: onWidgetButtonClicked,
 			buttonLabel: translations.choosePickupPoint,
 			buttonInfo: viewState && viewState.pickupPoint && viewState.pickupPoint.name,
@@ -181,7 +180,6 @@ export const useView = ( cart ) => {
 		}
 
 		return {
-			skipView,
 			buttonCallback: onHDWidgetButtonClicked,
 			buttonLabel: translations.chooseAddress,
 			buttonInfo: viewState && viewState.deliveryAddressInfo,
