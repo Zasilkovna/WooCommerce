@@ -37,6 +37,7 @@ export const View = ( { cart } ) => {
 			placeholderText={ translations.placeholderText }
 		>
 			<ValidatedTextInput
+				key={ inputRequired ? 'required' : 'optional' }
 				value={ inputValue }
 				required={ inputRequired }
 				errorMessage={ errorMessage }
