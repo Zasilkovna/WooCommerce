@@ -4,6 +4,8 @@
  * @package Packetery
  */
 
+import { getShippingMethodOptionId } from "./getShippingMethodOptionId";
+
 export const usePacketaShippingRate = ( shippingRates, carrierConfig ) => {
 	if ( ! shippingRates || shippingRates.length === 0 ) {
 		return null;
@@ -20,7 +22,7 @@ export const usePacketaShippingRate = ( shippingRates, carrierConfig ) => {
 					return false;
 				}
 
-				const rateId = rate_id.split( ':' ).pop();
+				const rateId = getShippingMethodOptionId( rate_id );
 				const rateCarrierConfig = carrierConfig[ rateId ];
 				if ( ! rateCarrierConfig ) {
 					return false;

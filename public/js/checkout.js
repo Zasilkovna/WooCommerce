@@ -74,20 +74,24 @@ var packeteryLoadCheckout = function( $, settings ) {
 			return rateAttrValues[ carrierRateId ][ attribute ];
 		};
 
-		var shortenShippingRateId = function( rateId ) {
-			var rateIdArray = rateId.split(":");
-			return rateIdArray[rateIdArray.length - 1];
+		var getShippingMethodOptionId = function ( rateId ) {
+			if ( rateId.startsWith( 'packeta_method_' ) ) {
+				var [ methodId, instanceId ] = rateId.split( ':' );
+				return 'packetery_carrier_' + methodId.replace( 'packeta_method_', '' );
+			}
+
+			return rateId.replace( 'packetery_shipping_method:', '' );
 		};
 
 		var getShippingRateId = function() {
 			var $selectedRadio = $( '#shipping_method input[type="radio"]:checked' );
 			if ( $selectedRadio.length ) {
-				return shortenShippingRateId( $selectedRadio.val() );
+				return getShippingMethodOptionId( $selectedRadio.val() );
 			}
 
 			var $selectedHiddenInput = $( '#shipping_method input[type="hidden"]' );
 			if ( $selectedHiddenInput.length ) {
-				return shortenShippingRateId( $selectedHiddenInput.val() );
+				return getShippingMethodOptionId( $selectedHiddenInput.val() );
 			}
 
 			return null;

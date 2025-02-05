@@ -615,9 +615,11 @@ class ShippingRateFactoryTest extends TestCase {
 			->method( 'isActive' )
 			->willReturnOnConsecutiveCalls( ...array_column( $carriersOptions, 'active' ) );
 
-		$rates = $this->shippingRateFactory->createShippingRates(
+		$dummyInstanceId = 11;
+		$rates           = $this->shippingRateFactory->createShippingRates(
 			$allowedCarrierNames,
 			$shippingMethod,
+			$dummyInstanceId,
 		);
 
 		self::assertCount( $expectedRateCount, $rates );

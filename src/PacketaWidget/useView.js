@@ -7,6 +7,7 @@ import { usePacketaShippingRate } from "./usePacketaShippingRate";
 import { useDynamicSettings } from "./useDynamicSettings";
 import { useOnWidgetButtonClicked } from "./useOnWidgetButtonClicked";
 import { useOnHDWidgetButtonClicked } from "./useOnHDWidgetButtonClicked";
+import { getShippingMethodOptionId } from "./getShippingMethodOptionId";
 
 const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
 
@@ -170,7 +171,7 @@ export const useView = ( cart ) => {
 	}
 
 	if ( packetaHomeDeliveryShippingRate ) {
-		const rateId = packetaHomeDeliveryShippingRate.rate_id.split( ':' ).pop();
+		const rateId = getShippingMethodOptionId( packetaHomeDeliveryShippingRate.rate_id );
 		const rateCarrierConfig = carrierConfig[ rateId ];
 		const addressValidationSetting = rateCarrierConfig.address_validation || 'none';
 		if ( addressValidationSetting === 'none' ) {

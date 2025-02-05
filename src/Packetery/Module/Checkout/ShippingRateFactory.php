@@ -88,17 +88,19 @@ class ShippingRateFactory {
 	 * Prepare shipping rates based on cart properties.
 	 *
 	 * @param array|null $allowedCarrierNames List of allowed carrier names.
-	 * @param string     $methodId            Shipping method id.
+	 * @param string     $methodId            Shipping method class id.
+	 * @param int        $instanceId          Shipping method instance id.
 	 *
 	 * @return array<string, array<string, string|float|array>>
 	 * @throws ProductNotFoundException Product not found.
 	 */
-	public function createShippingRates( ?array $allowedCarrierNames, string $methodId ): array {
+	public function createShippingRates( ?array $allowedCarrierNames, string $methodId, int $instanceId ): array {
 		$customerCountry = $this->checkoutService->getCustomerCountry();
 		if ( $customerCountry === null ) {
 			return [];
 		}
 
+		$rateId = null;
 		if ( $methodId === ShippingMethod::PACKETERY_METHOD_ID ) {
 			$availableCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $customerCountry );
 		} else {
@@ -109,12 +111,15 @@ class ShippingRateFactory {
 			if ( $carrierEntity !== null && $carrierEntity->getCountry() === $customerCountry ) {
 				$availableCarriers[] = $carrierEntity;
 			}
+			$rateId = $methodId . ':' . $instanceId;
 		}
 
 		$customRates = [];
 		foreach ( $availableCarriers as $carrier ) {
-			$optionId     = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
-			$rateId       = $methodId . ':' . $optionId;
+			$optionId = Carrier\OptionPrefixer::getOptionId( $carrier->getId() );
+			if ( $methodId === ShippingMethod::PACKETERY_METHOD_ID ) {
+				$rateId = $methodId . ':' . $optionId;
+			}
 			$shippingRate = $this->createShippingRateOfCarrier(
 				$carrier,
 				$allowedCarrierNames,

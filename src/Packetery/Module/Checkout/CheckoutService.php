@@ -74,12 +74,12 @@ class CheckoutService {
 	 *
 	 * @return string|null
 	 */
-	public function calculateShippingAndGetId(): ?string {
+	public function calculateShippingAndGetOptionId(): ?string {
 		$chosenShippingRates = $this->wcAdapter->cartCalculateShipping();
 		$chosenShippingRate  = array_shift( $chosenShippingRates );
 
 		if ( $chosenShippingRate instanceof WC_Shipping_Rate ) {
-			return $this->removeShippingMethodPrefix( $chosenShippingRate->get_id() );
+			return $this->getShippingMethodOptionId( $chosenShippingRate->get_id() );
 		}
 
 		return null;
@@ -94,10 +94,10 @@ class CheckoutService {
 		$postedShippingMethodArray = $this->httpRequest->getPost( 'shipping_method' );
 
 		if ( $postedShippingMethodArray !== null ) {
-			return $this->removeShippingMethodPrefix( current( $postedShippingMethodArray ) );
+			return $this->getShippingMethodOptionId( current( $postedShippingMethodArray ) );
 		}
 
-		return $this->calculateShippingAndGetId();
+		return $this->calculateShippingAndGetOptionId();
 	}
 
 	/**
@@ -107,11 +107,11 @@ class CheckoutService {
 	 *
 	 * @return string
 	 */
-	public function removeShippingMethodPrefix( string $chosenMethod ): string {
+	public function getShippingMethodOptionId( string $chosenMethod ): string {
 		if ( strpos( $chosenMethod, BaseShippingMethod::PACKETA_METHOD_PREFIX ) === 0 ) {
-			[ $methodId, $optionId ] = explode( ':', $chosenMethod );
+			[ $methodId, $instanceId ] = explode( ':', $chosenMethod );
 
-			return $optionId;
+			return Carrier\OptionPrefixer::getOptionId( str_replace( BaseShippingMethod::PACKETA_METHOD_PREFIX, '', $methodId ) );
 		}
 
 		return str_replace( ShippingMethod::PACKETERY_METHOD_ID . ':', '', $chosenMethod );
@@ -125,7 +125,11 @@ class CheckoutService {
 	 * @return bool
 	 */
 	public function isPacketeryShippingMethod( string $chosenMethod ): bool {
-		$optionId = $this->removeShippingMethodPrefix( $chosenMethod );
+		if ( strpos( $chosenMethod, ':' ) !== false ) {
+			$optionId = $this->getShippingMethodOptionId( $chosenMethod );
+		} else {
+			$optionId = $chosenMethod;
+		}
 
 		return Carrier\OptionPrefixer::isOptionId( $optionId );
 	}
@@ -142,13 +146,13 @@ class CheckoutService {
 			return null;
 		}
 
-		$optionId = $this->removeShippingMethodPrefix( $chosenMethod );
+		$optionId = $this->getShippingMethodOptionId( $chosenMethod );
 
 		return Carrier\OptionPrefixer::removePrefix( $optionId );
 	}
 
 	public function getCarrierIdFromPacketeryShippingMethod( string $chosenMethod ): string {
-		$optionId = $this->removeShippingMethodPrefix( $chosenMethod );
+		$optionId = $this->getShippingMethodOptionId( $chosenMethod );
 
 		return Carrier\OptionPrefixer::removePrefix( $optionId );
 	}
