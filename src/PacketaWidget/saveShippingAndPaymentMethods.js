@@ -4,7 +4,7 @@ const { extensionCartUpdate } = wc.blocksCheckout;
 export const saveShippingAndPaymentMethods = function ( shipping, payment ) {
 	let paymentId = null;
 	if ( payment ) {
-		paymentId = payment.value;
+		paymentId = payment.value || payment.paymentMethodSlug;
 	} else {
 		const paymentMethodInput = document.querySelector( 'input[name="radio-control-wc-payment-method-options"]:checked' );
 		if ( paymentMethodInput !== null ) {
