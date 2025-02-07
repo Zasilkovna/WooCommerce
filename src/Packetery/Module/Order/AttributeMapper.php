@@ -25,8 +25,8 @@ class AttributeMapper {
 	/**
 	 * Updates order entity from props to save.
 	 *
-	 * @param Entity\Order          $orderEntity Order entity.
-	 * @param array<string, string> $propsToSave Props to save.
+	 * @param Entity\Order                              $orderEntity Order entity.
+	 * @param array<string, string|float|int|true|null> $propsToSave Props to save.
 	 *
 	 * @return Entity\PickupPoint
 	 */
@@ -116,8 +116,8 @@ class AttributeMapper {
 	/**
 	 * From prepared properties to order Size.
 	 *
-	 * @param Entity\Order $order       Order.
-	 * @param array        $propsToSave Prepared properties.
+	 * @param Entity\Order                              $order       Order.
+	 * @param array<string, string|float|int|true|null> $propsToSave Prepared properties.
 	 *
 	 * @return Entity\Size
 	 */

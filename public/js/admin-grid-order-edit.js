@@ -65,7 +65,9 @@
 			var packeteryHeight = $packeteryModal.find( '[name="packeteryHeight"]' ).val();
 			var packeteryDeliverOn = $packeteryModal.find( '[name="packeteryDeliverOn"]' ).val();
 			var packeteryCOD = $packeteryModal.find( '[name="packeteryCOD"]' ).val();
+			var packeteryCalculatedCod = $packeteryModal.find( '[name="packeteryCalculatedCod"]' ).val();
 			var packeteryValue = $packeteryModal.find( '[name="packeteryValue"]' ).val();
+			var packeteryCalculatedValue = $packeteryModal.find( '[name="packeteryCalculatedValue"]' ).val();
 			var hasPacketeryAdultContent = $packeteryModal.find('[name="packeteryAdultContent"]').prop('checked');
 
 			$packeteryModal.find( '.spinner' ).addClass( 'is-active' );
@@ -86,7 +88,9 @@
 					packeteryHeight : packeteryHeight,
 					packeteryDeliverOn : packeteryDeliverOn,
 					packeteryCOD : packeteryCOD,
+					packeteryCalculatedCod : packeteryCalculatedCod,
 					packeteryValue : packeteryValue,
+					packeteryCalculatedValue : packeteryCalculatedValue,
 					hasPacketeryAdultContent : hasPacketeryAdultContent,
 				}
 			} ).fail( function( response ) {
@@ -97,17 +101,21 @@
 
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
 				orderData.packeteryWeight = response.data.packeteryWeight;
-				orderData.packeteryOriginalWeight = response.data.packeteryWeight;
+				orderData.packeteryOriginalWeight = response.data.packeteryOriginalWeight;
 				orderData.packeteryLength = response.data.packeteryLength;
 				orderData.packeteryWidth = response.data.packeteryWidth;
 				orderData.packeteryHeight = response.data.packeteryHeight;
 				orderData.packeteryDeliverOn = response.data.packeteryDeliverOn;
 				orderData.packeteryCOD = response.data.packeteryCOD;
+				orderData.packeteryCalculatedCod = response.data.packeteryCalculatedCod;
 				orderData.packeteryValue = response.data.packeteryValue;
+				orderData.packeteryCalculatedValue = response.data.packeteryCalculatedValue;
 				orderData.packeteryAdultContent = response.data.packeteryAdultContent;
 				orderData.orderIsSubmittable = response.data.orderIsSubmittable;
 				orderData.orderWarningFields = response.data.orderWarningFields;
 				orderData.manualWeightIconExtraClass = response.data.hasOrderManualWeight === true ? '' : 'packetery-hidden ';
+				orderData.manualCodIconExtraClass = response.data.hasOrderManualCod === true ? '' : 'packetery-hidden ';
+				orderData.manualValueIconExtraClass = response.data.hasOrderManualValue === true ? '' : 'packetery-hidden ';
 				$lastModalButtonClicked.data( 'order-data', orderData );
 
 				replaceFragmentsWith( response.data.fragments );

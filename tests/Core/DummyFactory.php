@@ -31,7 +31,7 @@ class DummyFactory {
 	public static function createOrderCzPp(): Order {
 		$order = new Order( 'dummyNumber123', self::createCarrierCzechPp() );
 		$order->setName( 'Customer name' );
-		$order->setValue( 123.5 );
+		$order->setManualValue( 123.5 );
 		$order->setEshop( 'Sender label' );
 		$order->setWeight( 1.25 );
 
@@ -41,7 +41,7 @@ class DummyFactory {
 	public static function createOrderCzHdIncomplete(): Order {
 		$order = new Order( 'dummyNumber123', self::createCarrierCzechHdRequiresSize() );
 		$order->setName( 'Customer name' );
-		$order->setValue( 123.5 );
+		$order->setManualValue( 123.5 );
 		$order->setEshop( 'Sender label' );
 		$order->setWeight( 1.25 );
 
@@ -51,7 +51,7 @@ class DummyFactory {
 	public static function createOrderCzCdIncomplete(): Order {
 		$order = new Order( 'dummyNumber123', self::createCarDeliveryCarrier() );
 		$order->setName( 'Customer name' );
-		$order->setValue( 123.5 );
+		$order->setManualValue( 123.5 );
 		$order->setEshop( 'Sender label' );
 		$order->setWeight( 1.25 );
 

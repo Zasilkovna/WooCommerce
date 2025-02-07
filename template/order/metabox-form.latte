@@ -6,6 +6,8 @@
 		<div class="packetery-table">
 			<input n:name=packetery_order_metabox_nonce />
 			<input n:name=packeteryOriginalWeight />
+			<input n:name=packeteryCalculatedCod />
+			<input n:name=packeteryCalculatedValue />
 			{foreach [
 			Packetery\Module\Order\Form::FIELD_WEIGHT,
 			Packetery\Module\Order\Form::FIELD_LENGTH,
@@ -26,6 +28,11 @@
 				{var $suffix = ''}
 				{if in_array( $inputName, [ Packetery\Module\Order\Form::FIELD_COD, Packetery\Module\Order\Form::FIELD_VALUE ] )}
 					{var $suffix = "($orderCurrency)"}
+					{if $inputName === Packetery\Module\Order\Form::FIELD_COD && $hasOrderManualCod}
+						{var $suffix .= sprintf('<span title="%s" class="dashicons dashicons-lock"></span>', $translations['codIsManual'])}
+					{elseif $inputName === Packetery\Module\Order\Form::FIELD_VALUE && $hasOrderManualValue}
+						{var $suffix .= sprintf('<span title="%s" class="dashicons dashicons-lock"></span>', $translations['valueIsManual'])}
+					{/if}
 				{elseif $inputName === Packetery\Module\Order\Form::FIELD_WEIGHT && $hasOrderManualWeight}
 					{var $suffix = sprintf('<span title="%s" class="dashicons dashicons-lock"></span>', $translations['weightIsManual'])}
 				{/if}

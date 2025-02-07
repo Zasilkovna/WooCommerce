@@ -162,8 +162,8 @@ class Builder {
 		$order->setStoredUntil( $this->coreHelper->getDateTimeFromString( $result->stored_until ) );
 		$order->setAddressValidated( (bool) $result->address_validated );
 		$order->setAdultContent( $this->parseBool( $result->adult_content ) );
-		$order->setValue( $this->parseFloat( $result->value ) );
-		$order->setCod( $this->parseFloat( $result->cod ) );
+		$order->setManualValue( $this->parseFloat( $result->value ) );
+		$order->setManualCod( $this->parseFloat( $result->cod ) );
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $result->deliver_on ) );
 		$order->setLastApiErrorMessage( $result->api_error_message );
 		$order->setLastApiErrorDateTime(
@@ -224,9 +224,7 @@ class Builder {
 		$order->setSurname( $contactInfo['last_name'] );
 		$order->setEshop( $this->optionsProvider->get_sender() );
 
-		if ( $order->getValue() === null ) {
-			$order->setValue( (float) $wcOrder->get_total( 'raw' ) );
-		}
+		$order->setCalculatedValue( (float) $wcOrder->get_total( 'raw' ) );
 
 		$address = $order->getDeliveryAddress();
 		if ( $address === null ) {
@@ -249,12 +247,12 @@ class Builder {
 
 		$order->setEmail( $orderData['billing']['email'] );
 		$hasCodPaymentMethod = $this->paymentHelper->isCodPaymentMethod( $orderData['payment_method'] );
-		if ( $hasCodPaymentMethod && $order->getCod() === null ) {
-			$order->setCod( $order->getValue() );
-		}
-
-		if ( ! $hasCodPaymentMethod ) {
-			$order->setCod( null );
+		if ( $hasCodPaymentMethod ) {
+			$order->setCalculatedCod( $order->getCalculatedValue() );
+			// manual COD is set from DB directly
+		} else {
+			$order->setCalculatedCod( null );
+			$order->setManualCod( null );
 		}
 
 		$order->setSize( $order->getSize() );

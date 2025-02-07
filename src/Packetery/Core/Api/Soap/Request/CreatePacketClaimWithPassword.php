@@ -83,7 +83,7 @@ class CreatePacketClaimWithPassword {
 		$this->number              = $order->getCustomNumberOrNumber();
 		$this->email               = $order->getEmail();
 		$this->phone               = $order->getPhone();
-		$this->value               = $order->getValue();
+		$this->value               = $order->getFinalValue();
 		$this->currency            = $order->getCurrency();
 		$this->eshop               = $order->getEshop();
 		$this->consignCountry      = $order->getShippingCountry();
