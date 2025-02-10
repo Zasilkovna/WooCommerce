@@ -253,7 +253,9 @@ class OptionsPage {
 		}
 
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
-		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		$item->setRequired( false )
+			->addRule( Form::FLOAT )
+			->addRule( Form::MIN, null, 0 );
 
 		if ( $carrier !== null && $carrier->isCarDelivery() ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
@@ -778,6 +780,7 @@ class OptionsPage {
 		$weightRules = $weightField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
 		$weightRules->setRequired();
 		$weightRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		$weightRules->addRule( Form::MIN, null, 0 );
 		// translators: %d is numeric threshold.
 		$weightRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
@@ -828,14 +831,16 @@ class OptionsPage {
 		$valueRules->setRequired();
 		$valueRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 		// translators: %d is numeric threshold.
-		$valueRules->addRule( Form::MIN, __( 'Value must be at least %d.', 'packeta' ), 0.0 );
+		$valueRules->addRule( Form::MIN, null, 0.0 );
+		// translators: %d is numeric threshold.
+		$valueRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
 		$priceField = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
 		$priceRules = $priceField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
 		$priceRules->setRequired();
 		$priceRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
 		// translators: %d is numeric threshold.
-		$priceRules->addRule( Form::MIN, __( 'Price must be at least %d.', 'packeta' ), 0.0 );
+		$priceRules->addRule( Form::MIN, null, 0.0 );
 	}
 
 	/**
