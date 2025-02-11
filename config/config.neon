@@ -11,6 +11,7 @@ parameters:
 		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
 	trackingUrl: https://tracking.app.packeta.com/Z%s
+	supportEmailAddress: e-commerce.support@packeta.com
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -41,7 +42,7 @@ services:
 	- Packetery\Module\Plugin
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
-	- Packetery\Module\Options\Page
+	- Packetery\Module\Options\Page(supportEmailAddress: %supportEmailAddress%)
 	optionsProvider: Packetery\Module\Options\OptionsProvider
 	- Packetery\Module\Carrier\Downloader
 	- Packetery\Module\Carrier\Updater
