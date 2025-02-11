@@ -7,6 +7,7 @@
 import { useCallback } from 'react';
 import { fillRateAttrValues } from './fillRateAttrValues';
 import { stringifyOptions } from "./stringifyOptions";
+import { getShippingMethodOptionId } from "./getShippingMethodOptionId";
 
 export const useOnWidgetButtonClicked = (
 	packetaShippingRate,
@@ -27,7 +28,7 @@ export const useOnWidgetButtonClicked = (
 	} = settings;
 
 	const onWidgetButtonClicked = useCallback( () => {
-		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
+		const rateId = getShippingMethodOptionId( packetaShippingRate.rate_id );
 
 		let weight = +( cartItemsWeight / 1000 ).toFixed( 2 );
 		let widgetOptions = { language, appIdentity, weight };

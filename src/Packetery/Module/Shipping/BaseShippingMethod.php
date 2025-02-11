@@ -129,7 +129,12 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 			}
 		}
 
-		$customRates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
+		$customRates = $this->shippingRateFactory->createShippingRates(
+			$allowedCarrierNames,
+			$this->id,
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			$this->instance_id
+		);
 		foreach ( $customRates as $customRate ) {
 			$this->add_rate( $customRate );
 		}

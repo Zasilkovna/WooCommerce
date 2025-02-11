@@ -208,18 +208,18 @@ class Checkout {
 	 * @throws ProductNotFoundException Product not found.
 	 */
 	public function actionCalculateFees( WC_Cart $cart ): void {
-		$chosenShippingMethod = $this->checkoutService->calculateShippingAndGetId();
+		$chosenShippingMethodOptionId = $this->checkoutService->calculateShippingAndGetOptionId();
 
 		if (
-			$chosenShippingMethod === null ||
-			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethod ) === false
+			$chosenShippingMethodOptionId === null ||
+			$this->checkoutService->isPacketeryShippingMethod( $chosenShippingMethodOptionId ) === false
 		) {
 			return;
 		}
 
-		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethod );
+		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethodOptionId );
 		$chosenCarrier  = $this->carrierEntityRepository->getAnyById(
-			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod )
+			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethodOptionId )
 		);
 		$maxTaxClass    = $this->cartService->getTaxClassWithMaxRate();
 		$isTaxable      = $maxTaxClass !== null;

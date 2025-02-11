@@ -19,6 +19,9 @@ use Packetery\Module\Product;
 use Packetery\Module\Product\ProductEntityFactory;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\ProductCategory\ProductCategoryEntityFactory;
+use Packetery\Module\Shipping\BaseShippingMethod;
+use Packetery\Module\Shipping\Generated\ShippingMethod_zpointcz;
+use Packetery\Module\ShippingMethod;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
@@ -41,6 +44,25 @@ class ShippingRateFactoryTest extends TestCase {
 	private CheckoutService|MockObject $checkoutService;
 	private ShippingRateFactory $shippingRateFactory;
 	private CarrierActivityBridge|MockObject $carrierActivityBridge;
+
+	/**
+	 * @return array
+	 */
+	private static function createDummyZpointCzCarrierOptions(): array {
+		return [
+			'id'                  => 'zpoint-cz',
+			'name'                => 'zpoint-cz',
+			'active'              => true,
+			'free_shipping_limit' => null,
+			'weight_limits'       =>
+				[
+					[
+						'weight' => 20.0,
+						'price'  => 234.34,
+					],
+				],
+		];
+	}
 
 	private function createShippingRateFactoryMock(): void {
 		$this->wpAdapter                    = MockFactory::createWpAdapter( $this );
@@ -82,19 +104,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'carriersOptions'                    =>
 						[
 							'packetery_carrier_zpoint-cz' =>
-								[
-									'id'                  => 'zpoint-cz',
-									'name'                => 'zpoint-cz',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 234.34,
-											],
-										],
-								],
+								self::createDummyZpointCzCarrierOptions(),
 							'packetery_carrier_106'       =>
 								[
 									'id'                  => '106',
@@ -120,6 +130,65 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 5.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
+				],
+			'new style carrier'                            =>
+				[
+					'expectedRateCount'                  => 1,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarrierCzechPp(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_zpoint-cz' =>
+								self::createDummyZpointCzCarrierOptions(),
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                =>
+						[
+							'zpoint-cz' => 'zpoint-cz',
+						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeightKg'                       => 5.0,
+					'shippingMethod'                     => BaseShippingMethod::PACKETA_METHOD_PREFIX . ShippingMethod_zpointcz::CARRIER_ID,
+				],
+			'new style carrier country mismatch'           =>
+				[
+					'expectedRateCount'                  => 0,
+					'carriers'                           =>
+						[
+							DummyFactory::createCarrierSlovakPp(),
+						],
+					'carriersOptions'                    =>
+						[
+							'packetery_carrier_zpoint-sk' =>
+								[
+									'id'                  => 'zpoint-sk',
+									'name'                => 'zpoint-sk',
+									'active'              => true,
+									'free_shipping_limit' => null,
+									'weight_limits'       =>
+										[
+											[
+												'weight' => 20.0,
+												'price'  => 234.34,
+											],
+										],
+								],
+						],
+					'productDisallowedRateIds'           => [],
+					'productCategoryDisallowedRateIds'   => [],
+					'allowedCarrierNames'                =>
+						[
+							'zpoint-cz' => 'zpoint-cz',
+						],
+					'isCarDeliveryEnabled'               => true,
+					'isAgeVerificationRequiredByProduct' => false,
+					'cartWeightKg'                       => 5.0,
+					'shippingMethod'                     => BaseShippingMethod::PACKETA_METHOD_PREFIX . ShippingMethod_zpointcz::CARRIER_ID,
 				],
 			'car delivery carrier must not be present in rates' =>
 				[
@@ -132,19 +201,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'carriersOptions'                    =>
 						[
 							'packetery_carrier_zpoint-cz' =>
-								[
-									'id'                  => 'zpoint-cz',
-									'name'                => 'zpoint-cz',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 234.34,
-											],
-										],
-								],
+								self::createDummyZpointCzCarrierOptions(),
 							'packetery_carrier_25061'     =>
 								[
 									'id'                  => '25061',
@@ -166,6 +223,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => false,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'only one carrier is active'                   =>
 				[
@@ -178,19 +236,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'carriersOptions'                    =>
 						[
 							'packetery_carrier_zpoint-cz' =>
-								[
-									'id'                  => 'zpoint-cz',
-									'name'                => 'zpoint-cz',
-									'active'              => true,
-									'free_shipping_limit' => null,
-									'weight_limits'       =>
-										[
-											[
-												'weight' => 20.0,
-												'price'  => 234.34,
-											],
-										],
-								],
+								self::createDummyZpointCzCarrierOptions(),
 							'packetery_carrier_106'       =>
 								[
 									'id'                  => '106',
@@ -212,6 +258,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'carrier not supporting over-weight cart must be omitted' =>
 				[
@@ -246,6 +293,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 21.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'inactive carrier must be omitted'             =>
 				[
@@ -277,6 +325,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'carrier disallowed by product must be omitted' =>
 				[
@@ -306,6 +355,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'carrier disallowed by product category must be omitted' =>
 				[
@@ -335,6 +385,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'car delivery carriers must be supported'      =>
 				[
@@ -369,6 +420,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'carrier not supporting age verification must be omitted' =>
 				[
@@ -403,6 +455,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => true,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 			'allowed carrier names argument must support null' =>
 				[
@@ -434,6 +487,7 @@ class ShippingRateFactoryTest extends TestCase {
 					'isCarDeliveryEnabled'               => true,
 					'isAgeVerificationRequiredByProduct' => false,
 					'cartWeightKg'                       => 1.0,
+					'shippingMethod'                     => ShippingMethod::PACKETERY_METHOD_ID,
 				],
 		];
 	}
@@ -451,7 +505,8 @@ class ShippingRateFactoryTest extends TestCase {
 		?array $allowedCarrierNames,
 		bool $isCarDeliveryEnabled,
 		bool $isAgeVerificationRequiredByProduct,
-		float $cartWeightKg
+		float $cartWeightKg,
+		string $shippingMethod,
 	): void {
 		$this->createShippingRateFactoryMock();
 
@@ -548,6 +603,9 @@ class ShippingRateFactoryTest extends TestCase {
 		$this->carrierEntityRepository
 			->method( 'getByCountryIncludingNonFeed' )
 			->willReturn( $carriers );
+		$this->carrierEntityRepository
+			->method( 'getAnyById' )
+			->willReturn( $carriers[0] );
 
 		$this->carDeliveryConfig
 			->method( 'isDisabled' )
@@ -557,7 +615,12 @@ class ShippingRateFactoryTest extends TestCase {
 			->method( 'isActive' )
 			->willReturnOnConsecutiveCalls( ...array_column( $carriersOptions, 'active' ) );
 
-		$rates = $this->shippingRateFactory->createShippingRates( $allowedCarrierNames );
+		$dummyInstanceId = 11;
+		$rates           = $this->shippingRateFactory->createShippingRates(
+			$allowedCarrierNames,
+			$shippingMethod,
+			$dummyInstanceId,
+		);
 
 		self::assertCount( $expectedRateCount, $rates );
 	}

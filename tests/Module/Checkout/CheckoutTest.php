@@ -82,7 +82,7 @@ class CheckoutTest extends TestCase {
 
 	public function testDoesNothingIfNoChosenShippingMethod(): void {
 		$this->creatCheckout();
-		$this->checkoutService->method( 'calculateShippingAndGetId' )->willReturn( null );
+		$this->checkoutService->method( 'calculateShippingAndGetOptionId' )->willReturn( null );
 
 		$this->rateCalculator->expects( $this->never() )->method( 'getCODSurcharge' );
 
@@ -91,7 +91,7 @@ class CheckoutTest extends TestCase {
 
 	public function testDoesNothingIfShippingMethodNotPacketery(): void {
 		$this->creatCheckout();
-		$this->checkoutService->method( 'calculateShippingAndGetId' )->willReturn( 'non_packetery_method' );
+		$this->checkoutService->method( 'calculateShippingAndGetOptionId' )->willReturn( 'non_packetery_method' );
 		$this->checkoutService->method( 'isPacketeryShippingMethod' )->willReturn( false );
 
 		$this->rateCalculator->expects( $this->never() )->method( 'getCODSurcharge' );
@@ -101,7 +101,7 @@ class CheckoutTest extends TestCase {
 
 	public function testSkipsWhenCouponAllowsFreeShipping(): void {
 		$this->creatCheckout();
-		$this->checkoutService->method( 'calculateShippingAndGetId' )->willReturn( 'packetery_method' );
+		$this->checkoutService->method( 'calculateShippingAndGetOptionId' )->willReturn( 'packetery_method' );
 		$this->checkoutService->method( 'isPacketeryShippingMethod' )->willReturn( true );
 
 		$carrierOptions = $this->createMock( Options::class );
@@ -116,7 +116,7 @@ class CheckoutTest extends TestCase {
 
 	public function testAddsFeesSuccessfully(): void {
 		$this->creatCheckout();
-		$this->checkoutService->method( 'calculateShippingAndGetId' )->willReturn( 'packetery_method' );
+		$this->checkoutService->method( 'calculateShippingAndGetOptionId' )->willReturn( 'packetery_method' );
 		$this->checkoutService->method( 'isPacketeryShippingMethod' )->willReturn( true );
 
 		$carrierOptions = $this->createMock( Options::class );

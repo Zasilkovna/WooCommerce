@@ -49,14 +49,14 @@ class CheckoutServiceTest extends TestCase {
 		);
 	}
 
-	public function testCalculateShippingAndGetIdReturnsEmptyStringWhenNoShippingRatesExists(): void {
+	public function testCalculateShippingAndGetOptionIdReturnsEmptyStringWhenNoShippingRatesExists(): void {
 		$this->createCheckoutServiceMock();
 
 		$this->wcAdapter->method( 'cartCalculateShipping' )->willReturn( [] );
-		$this->assertEquals( '', $this->checkoutService->calculateShippingAndGetId() );
+		$this->assertEquals( '', $this->checkoutService->calculateShippingAndGetOptionId() );
 	}
 
-	public function testCalculateShippingAndGetIdReturnsShippingRateIdStrippedOfPrefix(): void {
+	public function testCalculateShippingAndGetOptionIdReturnsShippingRateIdStrippedOfPrefix(): void {
 		$this->createCheckoutServiceMock();
 
 		$shippingRateId     = self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS;
@@ -65,7 +65,7 @@ class CheckoutServiceTest extends TestCase {
 		$mockedShippingRate->method( 'get_id' )->willReturn( $shippingRateFullId );
 		$this->wcAdapter->method( 'cartCalculateShipping' )->willReturn( [ $mockedShippingRate ] );
 
-		$this->assertEquals( $shippingRateId, $this->checkoutService->calculateShippingAndGetId() );
+		$this->assertEquals( $shippingRateId, $this->checkoutService->calculateShippingAndGetOptionId() );
 	}
 
 	public function testGetChosenMethodWhenPostShippingMethodIsNull(): void {
@@ -86,22 +86,22 @@ class CheckoutServiceTest extends TestCase {
 		$this->assertEquals( $shippingRateId, $this->checkoutService->resolveChosenMethod() );
 	}
 
-	public function testRemoveShippingMethodPrefixWithValueNotContainingPrefix(): void {
+	public function testGetShippingMethodOptionIdWithValueNotContainingPrefix(): void {
 		$this->createCheckoutServiceMock();
 		$chosenMethod = 'dummyRate';
-		$this->assertEquals( 'dummyRate', $this->checkoutService->removeShippingMethodPrefix( $chosenMethod ) );
+		$this->assertEquals( 'dummyRate', $this->checkoutService->getShippingMethodOptionId( $chosenMethod ) );
 	}
 
-	public function testRemoveShippingMethodPrefixWithValueContainingPrefix(): void {
+	public function testGetShippingMethodOptionIdWithValueContainingPrefix(): void {
 		$this->createCheckoutServiceMock();
 		$shippingRateId     = self::SHIPPING_RATE_INTERNAL_PICKUP_POINTS;
 		$shippingRateFullId = ShippingMethod::PACKETERY_METHOD_ID . ':' . $shippingRateId;
-		$this->assertEquals( $shippingRateId, $this->checkoutService->removeShippingMethodPrefix( $shippingRateFullId ) );
+		$this->assertEquals( $shippingRateId, $this->checkoutService->getShippingMethodOptionId( $shippingRateFullId ) );
 	}
 
-	public function testRemoveShippingMethodPrefixWithEmptyValue(): void {
+	public function testGetShippingMethodOptionIdWithEmptyValue(): void {
 		$this->createCheckoutServiceMock();
-		$this->assertEquals( '', $this->checkoutService->removeShippingMethodPrefix( '' ) );
+		$this->assertEquals( '', $this->checkoutService->getShippingMethodOptionId( '' ) );
 	}
 
 	public function testIsPacketeryShippingMethodReturnsFalseWhenGivenInvalidOptionId(): void {

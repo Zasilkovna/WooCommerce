@@ -78,6 +78,26 @@ class DummyFactory {
 		);
 	}
 
+	public static function createCarrierSlovakPp(): Carrier {
+		return new Carrier(
+			'zpoint-sk',
+			'zpoint-sk',
+			true,
+			false,
+			false,
+			false,
+			true,
+			true,
+			false,
+			true,
+			'sk',
+			'EUR',
+			5.0,
+			false,
+			true,
+		);
+	}
+
 	public static function createCarDeliveryCarrier(): Carrier {
 		return new Carrier(
 			'25061',

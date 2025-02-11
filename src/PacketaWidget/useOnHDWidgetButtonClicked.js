@@ -7,6 +7,7 @@
 import { useCallback } from 'react';
 import { fillRateAttrValues } from './fillRateAttrValues';
 import { stringifyOptions } from "./stringifyOptions";
+import { getShippingMethodOptionId } from "./getShippingMethodOptionId";
 
 export const useOnHDWidgetButtonClicked = (
 	packetaShippingRate,
@@ -27,7 +28,7 @@ export const useOnHDWidgetButtonClicked = (
 	} = settings;
 
 	const onHDWidgetButtonClicked = useCallback( () => {
-		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
+		const rateId = getShippingMethodOptionId( packetaShippingRate.rate_id );
 
 		let widgetOptions = { language, appIdentity };
 		widgetOptions.layout = 'hd';
