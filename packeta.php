@@ -17,7 +17,7 @@
  * Requires PHP: 7.2
  *
  * Tested up to: 6.7
- * WC requires at least: 4.5
+ * WC requires at least: 5.1
  * WC tested up to: 9.4.1
  *
  * License: GNU General Public License v3.0

@@ -312,7 +312,7 @@ class LabelPrint {
 	 *
 	 * @return Form
 	 */
-	public function createForm( int $maxOffset, string $name = null ): Form {
+	public function createForm( int $maxOffset, ?string $name = null ): Form {
 		$form = $this->formFactory->create( $name );
 
 		$availableOffsets = [];

@@ -5,7 +5,7 @@ Requires at least: 5.5
 Tested up to: 6.7
 Stable tag: 2.0.0
 Requires PHP: 7.2
-WC requires at least: 4.5
+WC requires at least: 5.1
 WC tested up to: 9.4.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -53,7 +53,7 @@ Yes. All functions of our plugin are completely free. No need to purchase any pr
 
 = What are the minimum required versions of WordPress and PHP? =
 
-In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 5.5+ and PHP 7.2 - 8.2.
+In order to be able to use modern development procedures and continue to expand the functions of the plugin, it is necessary to run the plugin on WordPress 5.5+ and PHP 7.2 - 8.4.
 
 = I'm missing a feature I would like to see, what should I do? =
 

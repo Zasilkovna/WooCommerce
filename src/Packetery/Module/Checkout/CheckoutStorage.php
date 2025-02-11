@@ -70,7 +70,7 @@ class CheckoutStorage {
 	 *
 	 * @return array
 	 */
-	public function getPostDataIncludingStoredData( string $chosenShippingMethod, int $orderId = null ): array {
+	public function getPostDataIncludingStoredData( string $chosenShippingMethod, ?int $orderId = null ): array {
 		$checkoutData = $this->httpRequest->getPost();
 		if ( $checkoutData !== null && ! is_array( $checkoutData ) ) {
 			$checkoutData = null;

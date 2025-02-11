@@ -257,7 +257,7 @@ class ModuleHelper {
 	 *
 	 * @return string[]
 	 */
-	public function createLinkParts( string $href, string $target = null, string $className = null ): array {
+	public function createLinkParts( string $href, ?string $target = null, ?string $className = null ): array {
 		$link = Html::el( 'a' )->href( $href );
 
 		if ( $target !== null ) {
