@@ -18,6 +18,9 @@ use WC_Payment_Gateway;
 
 class Checkout {
 
+	public const COD_FEE_TRANSLATION              = 'COD surcharge';
+	public const AGE_VERIFICATION_FEE_TRANSLATION = 'Age verification fee';
+
 	/**
 	 * @var WpAdapter
 	 */
@@ -249,7 +252,7 @@ class Checkout {
 		if ( $isTaxable && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
 		}
-		$cart->add_fee( $this->wpAdapter->__( 'Age verification fee', 'packeta' ), $feeAmount, $isTaxable, $maxTaxClass );
+		$cart->add_fee( $this->wpAdapter->__( self::AGE_VERIFICATION_FEE_TRANSLATION, 'packeta' ), $feeAmount, $isTaxable, $maxTaxClass );
 	}
 
 	private function addCodSurchargeFee( WC_Cart $cart, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
@@ -276,7 +279,7 @@ class Checkout {
 			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
 		}
 
-		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $applicableSurcharge, $isTaxable, $maxTaxClass );
+		$cart->add_fee( $this->wpAdapter->__( self::COD_FEE_TRANSLATION, 'packeta' ), $applicableSurcharge, $isTaxable, $maxTaxClass );
 	}
 
 	/**
