@@ -141,6 +141,7 @@ class Checkout {
 		);
 
 		$this->wpAdapter->addAction( 'woocommerce_checkout_process', [ $this->validator, 'actionValidateCheckoutData' ] );
+		$this->wpAdapter->addAction( 'woocommerce_store_api_checkout_order_processed', [ $this->validator, 'validatePacketeryFeesInOrder' ] );
 		$this->wpAdapter->addAction( 'woocommerce_checkout_update_order_meta', [ $this->orderUpdater, 'actionUpdateOrderById' ] );
 		$this->wpAdapter->addAction(
 			'woocommerce_store_api_checkout_order_processed',

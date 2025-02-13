@@ -14,6 +14,7 @@ use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order;
 use Packetery\Module\Order\PickupPointValidator;
+use WC_Order;
 
 class CheckoutValidator {
 
@@ -241,5 +242,52 @@ class CheckoutValidator {
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'Delivery address has not been verified. Verification of delivery address is required by this carrier.', 'packeta' ), 'error' );
 		}
+	}
+
+	public function validatePacketeryFeesInOrder( WC_Order $order ): void {
+		$chosenShippingMethod = $this->checkoutService->resolveChosenMethod();
+		$carrierId            = $this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod );
+		$carrierOptions       = $this->carrierOptionsFactory->createByCarrierId( $carrierId );
+		$chosenPaymentMethod  = $this->sessionService->getChosenPaymentMethod();
+
+		$chosenCarrier = $this->carrierEntityRepository->getAnyById( $carrierId );
+		if ( $chosenCarrier === null ) {
+			return;
+		}
+
+		$orderFees = $order->get_fees();
+		foreach ( $orderFees as $key => $fee ) {
+			$feeName = $fee->get_name();
+			if (
+				$feeName === $this->wpAdapter->__( Checkout::COD_FEE_TRANSLATION, 'packeta' )
+
+			) {
+				$appliedSurcharge = $this->checkoutService->getApplicableSurcharge( $chosenPaymentMethod, $carrierOptions );
+				if ( $appliedSurcharge <= 0 ) {
+					$this->removeFeeFromOrder( $order, $key );
+				}
+			}
+
+			if ( $feeName === $this->wpAdapter->__( Checkout::AGE_VERIFICATION_FEE_TRANSLATION, 'packeta' ) ) {
+				if (
+					! $chosenCarrier->supportsAgeVerification() ||
+					$carrierOptions->getAgeVerificationFee() === null ||
+					! $this->cartService->isAgeVerificationRequired()
+				) {
+					$this->removeFeeFromOrder( $order, $key );
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param WC_Order $order
+	 * @param int      $key
+	 *
+	 * @return void
+	 */
+	private function removeFeeFromOrder( WC_Order $order, int $key ): void {
+		$order->remove_item( $key );
+		$order->calculate_totals();
 	}
 }
