@@ -109,6 +109,11 @@ class Page {
 	 */
 	private $urlBuilder;
 
+	/**
+	 * @var string
+	 */
+	private $supportEmailAddress;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
@@ -118,17 +123,19 @@ class Page {
 		MessageManager $messageManager,
 		Http\Request $httpRequest,
 		ModuleHelper $moduleHelper,
-		UrlBuilder $urlBuilder
+		UrlBuilder $urlBuilder,
+		string $supportEmailAddress
 	) {
-		$this->latteEngine     = $latteEngine;
-		$this->optionsProvider = $optionsProvider;
-		$this->formFactory     = $formFactory;
-		$this->packetaClient   = $packetaClient;
-		$this->logger          = $logger;
-		$this->messageManager  = $messageManager;
-		$this->httpRequest     = $httpRequest;
-		$this->moduleHelper    = $moduleHelper;
-		$this->urlBuilder      = $urlBuilder;
+		$this->latteEngine         = $latteEngine;
+		$this->optionsProvider     = $optionsProvider;
+		$this->formFactory         = $formFactory;
+		$this->packetaClient       = $packetaClient;
+		$this->logger              = $logger;
+		$this->messageManager      = $messageManager;
+		$this->httpRequest         = $httpRequest;
+		$this->moduleHelper        = $moduleHelper;
+		$this->urlBuilder          = $urlBuilder;
+		$this->supportEmailAddress = $supportEmailAddress;
 	}
 
 	/**
@@ -432,7 +439,7 @@ class Page {
 		$form     = $this->formFactory->create( 'packetery_advanced_form' );
 		$defaults = $this->optionsProvider->getOptionsByName( OptionsProvider::OPTION_NAME_PACKETERY_ADVANCED );
 
-		$form->addCheckbox( 'new_carrier_settings_enabled', __( 'Allow new carrier settings', 'packeta' ) )
+		$form->addCheckbox( 'new_carrier_settings_enabled', __( 'Advanced carrier settings', 'packeta' ) )
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::DEFAULT_VALUE_CARRIER_SETTINGS );
 
@@ -900,7 +907,13 @@ class Page {
 		$latteParams['isCzechLocale']                = $this->moduleHelper->isCzechLocale();
 		$latteParams['logoZasilkovna']               = $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' );
 		$latteParams['logoPacketa']                  = $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' );
-		$latteParams['translations']                 = [
+		$advancedCarrierSettingsDescription          = sprintf(
+			// translators: first %s is line break, second one is e-mail address
+			__( 'BETA: Once enabled, Packeta carriers will appear as separate shipping methods in WooCommerce - Settings - Shipping. After enabling this feature, you will need to set up shipping methods in WooCommerce again.%1$sThis is an experimental feature. If you experience any issues, please email us at %2$s with a description of the issue.', 'packeta' ),
+			'<br>',
+			'<a href="mailto:' . $this->supportEmailAddress . '">' . $this->supportEmailAddress . '</a>'
+		);
+		$latteParams['translations'] = [
 			'packeta'                                => __( 'Packeta', 'packeta' ),
 			'title'                                  => __( 'Options', 'packeta' ),
 			'general'                                => __( 'General', 'packeta' ),
@@ -932,6 +945,7 @@ class Page {
 				'<a href="https://client.packeta.com/senders" target="_blank">',
 				'</a>'
 			),
+			'advancedCarrierSettingsDescription'     => $advancedCarrierSettingsDescription,
 			'packagingWeightDescription'             => __( 'This parameter is used to determine the weight of the packaging material. This value is automatically added to the total weight of each order that contains products with non-zero weight. This value is also taken into account when evaluating the weight rules in the cart.', 'packeta' ),
 			'defaultWeightDescription'               => __( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
 			'defaultDimensionsDescription'           => __( 'These dimensions will be applied to the packet by default, if required by the carrier.', 'packeta' ),

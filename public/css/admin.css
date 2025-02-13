@@ -69,7 +69,7 @@
   padding-top: 20px;
   padding-bottom: 15px;
   vertical-align: top;
-  min-width: 200px;
+  min-width: 240px;
 }
 .packetery-carrier-options-page .form-table input[type=text] {
   width: 100%;
@@ -617,6 +617,9 @@ tbody .packetery-log-column-note {
   border-right: 1px solid #e8e8e8;
   border-bottom: 1px solid #e8e8e8;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+}
+.packeta_tab_content .form-table th {
+  width: 360px;
 }
 
 .packeta_log {
