@@ -256,21 +256,8 @@ class Checkout {
 	}
 
 	private function addCodSurchargeFee( WC_Cart $cart, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
-		if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
-			$paymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
-		} else {
-			$paymentMethod = $this->sessionService->getChosenPaymentMethod();
-		}
-
-		if ( $paymentMethod === null || $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) === false ) {
-			return;
-		}
-
-		$applicableSurcharge = $this->rateCalculator->getCODSurcharge(
-			$carrierOptions->toArray(),
-			$this->wcAdapter->cartGetSubtotal()
-		);
-		$applicableSurcharge = $this->currencySwitcherService->getConvertedPrice( $applicableSurcharge );
+		$paymentMethod       = $this->sessionService->getChosenPaymentMethod();
+		$applicableSurcharge = $this->checkoutService->getApplicableSurcharge( $paymentMethod, $carrierOptions );
 		if ( $applicableSurcharge <= 0 ) {
 			return;
 		}

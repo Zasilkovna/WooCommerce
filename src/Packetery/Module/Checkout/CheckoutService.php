@@ -9,6 +9,7 @@ use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Shipping\BaseShippingMethod;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
@@ -51,6 +52,21 @@ class CheckoutService {
 	 */
 	private $optionsProvider;
 
+	/**
+	 * @var PaymentHelper
+	 */
+	private $paymentHelper;
+
+	/**
+	 * @var RateCalculator
+	 */
+	private $rateCalculator;
+
+	/**
+	 * @var CurrencySwitcherService
+	 */
+	private $currencySwitcherService;
+
 	public function __construct(
 		WcAdapter $wcAdapter,
 		Request $httpRequest,
@@ -58,7 +74,10 @@ class CheckoutService {
 		Carrier\Repository $carrierRepository,
 		Carrier\EntityRepository $carrierEntityRepository,
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		OptionsProvider $optionsProvider
+		OptionsProvider $optionsProvider,
+		PaymentHelper $paymentHelper,
+		RateCalculator $rateCalculator,
+		CurrencySwitcherService $currencySwitcherService
 	) {
 		$this->wcAdapter               = $wcAdapter;
 		$this->httpRequest             = $httpRequest;
@@ -67,6 +86,9 @@ class CheckoutService {
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->pickupPointsConfig      = $pickupPointsConfig;
 		$this->optionsProvider         = $optionsProvider;
+		$this->paymentHelper           = $paymentHelper;
+		$this->rateCalculator          = $rateCalculator;
+		$this->currencySwitcherService = $currencySwitcherService;
 	}
 
 	/**
@@ -261,5 +283,18 @@ class CheckoutService {
 		}
 
 		return false;
+	}
+
+	public function getApplicableSurcharge( ?string $paymentMethod, Carrier\Options $carrierOptions ): float {
+		if ( $paymentMethod === null || $this->paymentHelper->isCodPaymentMethod( $paymentMethod ) === false ) {
+			return 0.0;
+		}
+
+		$applicableSurcharge = $this->rateCalculator->getCODSurcharge(
+			$carrierOptions->toArray(),
+			$this->wcAdapter->cartGetSubtotal()
+		);
+
+		return $this->currencySwitcherService->getConvertedPrice( $applicableSurcharge );
 	}
 }

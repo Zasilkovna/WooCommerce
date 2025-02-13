@@ -138,10 +138,7 @@ class CheckoutTest extends TestCase {
 		$carrierOptions->method( 'getAgeVerificationFee' )->willReturn( 10.0 );
 		$this->cartService->method( 'isAgeVerificationRequired' )->willReturn( true );
 
-		$this->sessionService->method( 'getChosenPaymentMethod' )->willReturn( 'cod' );
-		$this->paymentHelper->method( 'isCodPaymentMethod' )->willReturn( true );
-		$this->currencySwitcherService->method( 'getConvertedPrice' )->willReturn( 10.0 );
-		$this->wpAdapter->method( '__' )->willReturn( 'COD surcharge' );
+		$this->checkoutService->method( 'getApplicableSurcharge' )->willReturn( 10.0 );
 
 		$this->WCCart->expects( self::exactly( 2 ) )->method( 'add_fee' );
 

@@ -8,8 +8,11 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\Checkout\CheckoutService;
+use Packetery\Module\Checkout\CurrencySwitcherService;
+use Packetery\Module\Checkout\RateCalculator;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\ShippingMethod;
 use Packetery\Nette\Http\Request;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -37,6 +40,9 @@ class CheckoutServiceTest extends TestCase {
 		$this->provider                = $this->createMock( OptionsProvider::class );
 		$this->httpRequest             = $this->createMock( Request::class );
 		$this->pickupPointsConfig      = $this->createMock( PacketaPickupPointsConfig::class );
+		$paymentHelper                 = $this->createMock( PaymentHelper::class );
+		$rateCalculator                = $this->createMock( RateCalculator::class );
+		$currencySwitcherService       = $this->createMock( CurrencySwitcherService::class );
 
 		$this->checkoutService = new CheckoutService(
 			$this->wcAdapter,
@@ -46,6 +52,9 @@ class CheckoutServiceTest extends TestCase {
 			$this->carrierEntityRepository,
 			$this->pickupPointsConfig,
 			$this->provider,
+			$paymentHelper,
+			$rateCalculator,
+			$currencySwitcherService
 		);
 	}
 
