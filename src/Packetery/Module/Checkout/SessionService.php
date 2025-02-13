@@ -13,10 +13,17 @@ class SessionService {
 	 */
 	private $wcAdapter;
 
+	/**
+	 * @var CheckoutService
+	 */
+	private $checkoutService;
+
 	public function __construct(
-		WcAdapter $wcAdapter
+		WcAdapter $wcAdapter,
+		CheckoutService $checkoutService
 	) {
-		$this->wcAdapter = $wcAdapter;
+		$this->wcAdapter       = $wcAdapter;
+		$this->checkoutService = $checkoutService;
 	}
 
 	/**
@@ -37,7 +44,13 @@ class SessionService {
 	}
 
 	public function getChosenPaymentMethod(): ?string {
-		return $this->wcAdapter->sessionGetString( 'chosen_payment_method' );
+		if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
+			$paymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
+		} else {
+			$paymentMethod = $this->wcAdapter->sessionGetString( 'chosen_payment_method' );
+		}
+
+		return $paymentMethod;
 	}
 
 	/**

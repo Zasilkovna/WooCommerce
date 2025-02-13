@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Checkout;
 
+use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\SessionService;
 use Packetery\Module\Framework\WcAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,7 +17,8 @@ class SessionServiceTest extends TestCase {
 
 	private function createSessionServiceMock(): void {
 		$this->wcAdapter      = $this->createMock( WcAdapter::class );
-		$this->sessionService = new SessionService( $this->wcAdapter );
+		$checkoutService      = $this->createMock( CheckoutService::class );
+		$this->sessionService = new SessionService( $this->wcAdapter, $checkoutService );
 	}
 
 	public function testGetChosenMethodFromSession(): void {
