@@ -1,34 +1,86 @@
 name: PHPUnit tests
 
 on:
-    push:
-        branches: [ main ]
-    pull_request:
+  push:
+    branches: [ main ]
+  pull_request:
 
 jobs:
-    phpunit:
-        runs-on: ubuntu-24.04
+  phpunit:
+    runs-on: ubuntu-24.04
 
-        strategy:
-            matrix:
-                php-version: [ '8.1' ]
+    strategy:
+      matrix:
+        php-version: [ '8.1' ]
 
-        steps:
-            -   name: Checkout code
-                uses: actions/checkout@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-            -   name: Setup PHP
-                uses: shivammathur/setup-php@v2
-                with:
-                    php-version: ${{ matrix.php-version }}
-                    extensions: mbstring, intl
-                    coverage: yes
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, intl
+          coverage: yes
 
-            -   name: php version
-                run: php -v
+      - name: php version
+        run: php -v
 
-            -   name: Install Composer dependencies
-                run: composer install
+      - name: Install Composer dependencies
+        run: composer install
 
-            -   name: Run PHPUnit
-                run: composer run tests-unit
+      - name: Run PHPUnit
+        run: composer run tests-unit
+
+      - name: Run PHPUnit with code coverage
+        run: |
+          composer run tests-coverage
+          cat tests-coverage/coverage.txt > tests-coverage/coverage-summary.txt
+
+      - name: Post coverage report as comment in PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const coverageSummary = fs.readFileSync('tests-coverage/coverage-summary.txt', 'utf8');
+            
+            const commentBody = `
+            ## :bar_chart: Code Coverage Report
+            \`\`\`
+            ${coverageSummary}
+            \`\`\`
+            `;
+            
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+            
+            const existingComment = comments.find(comment => comment.body.includes(':bar_chart: Code Coverage Report'));
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existingComment.id,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.payload.pull_request.number,
+                body: commentBody,
+              });
+            }
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-results
+          path: ./tests-coverage/log/junit.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./tests-coverage/coverage/cobertura.xml

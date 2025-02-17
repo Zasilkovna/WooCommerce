@@ -18,6 +18,7 @@
 		"^\\.idea\/",
 		"\\.DS_Store$",
 		"\\.phar$",
+		"\\.phpunit.result.cache$",
 		"^soap-php-bugfix-dev.wsdl$"
 	],
 	"Disable": {
