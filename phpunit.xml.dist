@@ -45,5 +45,5 @@
 		</include>
 	</source>
 
-	<coverage includeUncoveredFiles="false"/>
+	<coverage/>
 </phpunit>
