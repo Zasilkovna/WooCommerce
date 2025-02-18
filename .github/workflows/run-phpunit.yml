@@ -83,4 +83,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ./tests-coverage/coverage/cobertura.xml
+          path: ./tests-coverage/cobertura.xml
