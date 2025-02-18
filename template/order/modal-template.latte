@@ -20,7 +20,8 @@
 							<table>
 								<tbody>
 								<tr>
-									<td>{label packeteryWeight /}
+									<td>
+										{label packeteryWeight /}
 										<span title="{$translations['weightIsManual']}" class="{{ data.order.manualWeightIconExtraClass }}dashicons dashicons-lock"></span>
 									</td>
 									<td>
@@ -56,13 +57,25 @@
 								<# } #>
 								<# if ( data.order.hasCod ) { #>
 								<tr>
-									<td>{label packeteryCOD /}</td>
-									<td>{input packeteryCOD value:'{{ data.order.packeteryCOD }}'}</td>
+									<td>
+										{label packeteryCOD /}
+										<span title="{$translations['codIsManual']}" class="{{ data.order.manualCodIconExtraClass }}dashicons dashicons-lock"></span>
+									</td>
+									<td>
+										{input packeteryCOD value:'{{ data.order.packeteryCOD }}'}
+										{input packeteryCalculatedCod value:'{{ data.order.packeteryCalculatedCod }}'}
+									</td>
 								</tr>
 								<# } #>
 								<tr>
-									<td>{label packeteryValue /}</td>
-									<td>{input packeteryValue value:'{{ data.order.packeteryValue }}'}</td>
+									<td>
+										{label packeteryValue /}
+										<span title="{$translations['valueIsManual']}" class="{{ data.order.manualValueIconExtraClass }}dashicons dashicons-lock"></span>
+									</td>
+									<td>
+										{input packeteryValue value:'{{ data.order.packeteryValue }}'}
+										{input packeteryCalculatedValue value:'{{ data.order.packeteryCalculatedValue }}'}
+									</td>
 								</tr>
 								<# if ( data.order.hasDeliverOn ) { #>
 								<tr class="{{ data.order.packeteryDeliverOnClass }}">

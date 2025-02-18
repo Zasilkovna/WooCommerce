@@ -83,11 +83,14 @@ class Order {
 	private $phone;
 
 	/**
-	 * Order value.
-	 *
 	 * @var float|null
 	 */
-	private $value;
+	private $calculatedValue;
+
+	/**
+	 * @var float|null
+	 */
+	private $manualValue;
 
 	/**
 	 * Sender label.
@@ -125,11 +128,14 @@ class Order {
 	private $calculatedWeight;
 
 	/**
-	 * Cash on delivery value.
-	 *
 	 * @var float|null
 	 */
-	private $cod;
+	private $calculatedCod;
+
+	/**
+	 * @var float|null
+	 */
+	private $manualCod;
 
 	/**
 	 * Packet note.
@@ -527,22 +533,20 @@ class Order {
 		$this->phone = $phone;
 	}
 
-	/**
-	 * Sets value.
-	 *
-	 * @param float|null $value Value.
-	 */
-	public function setValue( ?float $value ): void {
-		$this->value = $value;
+	public function setManualValue( ?float $value ): void {
+		$this->manualValue = $value;
 	}
 
-	/**
-	 * Sets COD.
-	 *
-	 * @param float|null $cod COD.
-	 */
-	public function setCod( ?float $cod ): void {
-		$this->cod = $cod;
+	public function setCalculatedValue( ?float $value ): void {
+		$this->calculatedValue = $value;
+	}
+
+	public function setManualCod( ?float $cod ): void {
+		$this->manualCod = $cod;
+	}
+
+	public function setCalculatedCod( ?float $cod ): void {
+		$this->calculatedCod = $cod;
 	}
 
 	/**
@@ -1027,31 +1031,40 @@ class Order {
 		return $this->surname;
 	}
 
-	/**
-	 * Gets order value.
-	 *
-	 * @return float|null
-	 */
-	public function getValue(): ?float {
-		return $this->value;
+	public function getManualValue(): ?float {
+		return $this->manualValue;
 	}
 
-	/**
-	 * Has order value.
-	 *
-	 * @return bool
-	 */
-	public function hasValue(): bool {
-		return $this->value !== null;
+	public function hasManualValue(): bool {
+		return $this->manualValue !== null;
 	}
 
-	/**
-	 * Gets order COD value.
-	 *
-	 * @return float|null
-	 */
-	public function getCod(): ?float {
-		return $this->cod;
+	public function getCalculatedValue(): ?float {
+		return $this->calculatedValue;
+	}
+
+	public function getFinalValue(): ?float {
+		return $this->manualValue ?? $this->calculatedValue;
+	}
+
+	public function hasFinalValue(): bool {
+		return $this->getFinalValue() !== null;
+	}
+
+	public function getManualCod(): ?float {
+		return $this->manualCod;
+	}
+
+	public function hasManualCod(): bool {
+		return $this->manualCod !== null;
+	}
+
+	public function getCalculatedCod(): ?float {
+		return $this->calculatedCod;
+	}
+
+	public function getFinalCod(): ?float {
+		return $this->manualCod ?? $this->calculatedCod;
 	}
 
 	/**
@@ -1126,13 +1139,8 @@ class Order {
 		return $this->shippingCountry;
 	}
 
-	/**
-	 * Tells if order has COD.
-	 *
-	 * @return bool
-	 */
 	public function hasCod(): bool {
-		return ( $this->getCod() !== null );
+		return $this->getFinalCod() !== null;
 	}
 
 	/**

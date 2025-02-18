@@ -162,13 +162,13 @@ class CreatePacket {
 		$this->number    = $order->getCustomNumberOrNumber();
 		$this->name      = $order->getName();
 		$this->surname   = $order->getSurname();
-		$this->value     = $order->getValue();
+		$this->value     = $order->getFinalValue();
 		$this->weight    = $order->getFinalWeight();
 		$this->addressId = $order->getPickupPointOrCarrierId();
 		$this->eshop     = $order->getEshop();
 		// Optional attributes.
 		$this->adultContent = (int) $order->containsAdultContent();
-		$this->cod          = $order->getCod();
+		$this->cod          = $order->getFinalCod();
 		$this->currency     = $order->getCurrency();
 		$this->email        = $order->getEmail();
 		$this->note         = $order->getNote();

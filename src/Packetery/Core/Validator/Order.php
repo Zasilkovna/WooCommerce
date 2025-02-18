@@ -99,7 +99,7 @@ class Order {
 		$errors     = [
 			self::ERROR_TRANSLATION_KEY_NUMBER  => ! $order->hasNumber(),
 			self::ERROR_TRANSLATION_KEY_NAME    => ! $order->hasName(),
-			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->hasValue(),
+			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->hasFinalValue(),
 			self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => ! $order->hasPickupPointOrCarrierId(),
 			self::ERROR_TRANSLATION_KEY_ESHOP   => ! $order->hasEshop(),
 			self::ERROR_TRANSLATION_KEY_WEIGHT  => ! $this->validateFinalWeight( $order ),

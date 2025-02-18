@@ -57,7 +57,7 @@ class CreatePacketMapper {
 			'number'       => $order->getCustomNumberOrNumber(),
 			'name'         => $order->getName(),
 			'surname'      => $order->getSurname(),
-			'value'        => $order->getValue(),
+			'value'        => $order->getFinalValue(),
 			'weight'       => $order->getFinalWeight(),
 			'addressId'    => $order->getPickupPointOrCarrierId(),
 			'eshop'        => $order->getEshop(),
@@ -71,7 +71,7 @@ class CreatePacketMapper {
 			'deliverOn'    => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 		];
 
-		$codValue = $order->getCod();
+		$codValue = $order->getFinalCod();
 		if ( $codValue !== null ) {
 			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
 			$roundedCod              = Rounder::roundByCurrency( $codValue, $createPacketData['currency'], $roundingType );
