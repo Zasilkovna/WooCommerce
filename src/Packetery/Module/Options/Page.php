@@ -619,6 +619,10 @@ class Page {
 			]
 		);
 
+		$container->addCheckbox( 'hide_checkout_logo', __( 'Hide Packeta checkout logo', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::HIDE_CHECKOUT_LOGO_DEFAULT );
+
 		$container->addSelect(
 			'email_hook',
 			__( 'Hook used to view information in email', 'packeta' ),
