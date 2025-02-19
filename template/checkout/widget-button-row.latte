@@ -1,6 +1,6 @@
 <tr class="packetery-widget-button-table-row packetery-hidden">
 	<th>
-		<img class="packetery-widget-button-logo" src="{$logo}" alt="{$translations['packeta']}">
+		<img n:if=!$hideLogo class="packetery-widget-button-logo" src="{$logo}" alt="{$translations['packeta']}">
 	</th>
 	<td>
 		{include 'widget-button.latte'}

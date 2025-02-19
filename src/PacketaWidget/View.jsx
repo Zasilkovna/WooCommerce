@@ -16,6 +16,7 @@ export const View = ( { cart } ) => {
 		inputValue,
 		inputRequired,
 		errorMessage,
+		hideLogo,
 		logo,
 		translations,
 		loading,
@@ -30,6 +31,7 @@ export const View = ( { cart } ) => {
 		<PacketaWidget
 			onClick={ buttonCallback }
 			buttonLabel={ buttonLabel }
+			hideLogo={ hideLogo }
 			logoSrc={ logo }
 			logoAlt={ translations.packeta }
 			info={ buttonInfo }

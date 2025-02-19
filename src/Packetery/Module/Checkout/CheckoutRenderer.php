@@ -6,6 +6,7 @@ namespace Packetery\Module\Checkout;
 
 use Packetery\Latte\Engine;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Views\UrlBuilder;
 use WC_Shipping_Rate;
@@ -31,6 +32,11 @@ class CheckoutRenderer {
 	private $checkoutService;
 
 	/**
+	 * @var OptionsProvider
+	 */
+	private $optionsProvider;
+
+	/**
 	 * @var WpAdapter
 	 */
 	private $wpAdapter;
@@ -39,11 +45,13 @@ class CheckoutRenderer {
 		Engine $latteEngine,
 		UrlBuilder $urlBuilder,
 		CheckoutService $checkoutService,
+		OptionsProvider $optionsProvider,
 		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->urlBuilder      = $urlBuilder;
 		$this->checkoutService = $checkoutService;
+		$this->optionsProvider = $optionsProvider;
 		$this->wpAdapter       = $wpAdapter;
 	}
 
@@ -84,6 +92,7 @@ class CheckoutRenderer {
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
 				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'hideLogo'     => $this->optionsProvider->isCheckoutLogoHidden(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				],
@@ -106,6 +115,7 @@ class CheckoutRenderer {
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
 				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'hideLogo'     => $this->optionsProvider->isCheckoutLogoHidden(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				],
