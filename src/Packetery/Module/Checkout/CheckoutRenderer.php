@@ -92,7 +92,7 @@ class CheckoutRenderer {
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
 				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
-				'hideLogo'     => $this->optionsProvider->isCheckoutLogoHidden(),
+				'showLogo'     => ! $this->optionsProvider->isCheckoutLogoHidden(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				],
@@ -115,7 +115,7 @@ class CheckoutRenderer {
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
 				'logo'         => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
-				'hideLogo'     => $this->optionsProvider->isCheckoutLogoHidden(),
+				'showLogo'     => ! $this->optionsProvider->isCheckoutLogoHidden(),
 				'translations' => [
 					'packeta' => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				],

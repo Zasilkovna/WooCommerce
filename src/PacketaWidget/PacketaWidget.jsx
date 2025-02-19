@@ -1,7 +1,7 @@
 export const PacketaWidget = ( {
 	children,
 	buttonLabel,
-	hideLogo,
+	showLogo,
 	logoSrc,
 	logoAlt,
 	info,
@@ -19,7 +19,7 @@ export const PacketaWidget = ( {
 			{ ! loading && (
 				<div className="form-row packeta-widget blocks">
 					<div className="packetery-widget-button-row packeta-widget-button">
-						{ ! hideLogo && (
+						{ showLogo && (
 							<img
 								className="packetery-widget-button-logo"
 								src={logoSrc}
