@@ -1,6 +1,7 @@
 export const PacketaWidget = ( {
 	children,
 	buttonLabel,
+	hideLogo,
 	logoSrc,
 	logoAlt,
 	info,
@@ -18,13 +19,15 @@ export const PacketaWidget = ( {
 			{ ! loading && (
 				<div className="form-row packeta-widget blocks">
 					<div className="packetery-widget-button-row packeta-widget-button">
-						<img
-							className="packetery-widget-button-logo"
-							src={ logoSrc }
-							alt={ logoAlt }
-						/>
+						{ ! hideLogo && (
+							<img
+								className="packetery-widget-button-logo"
+								src={logoSrc}
+								alt={logoAlt}
+							/>
+						)}
 						<a
-							onClick={ onClick }
+							onClick={onClick}
 							className="button alt components-button wc-block-components-button wp-element-button contained"
 						>
 							{ buttonLabel }

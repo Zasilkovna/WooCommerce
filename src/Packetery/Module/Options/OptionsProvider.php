@@ -35,6 +35,7 @@ class OptionsProvider {
 	public const AUTO_ORDER_STATUS                         = 'auto_order_status';
 	public const DISPLAY_FREE_SHIPPING_IN_CHECKOUT_DEFAULT = true;
 	public const PRICES_INCLUDE_TAX_DEFAULT                = false;
+	public const HIDE_CHECKOUT_LOGO_DEFAULT                = false;
 
 	public const AUTOMATIC_CHECKOUT_DETECTION = 'automatic_checkout_detection';
 	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
@@ -418,6 +419,15 @@ class OptionsProvider {
 		}
 
 		return self::PRICES_INCLUDE_TAX_DEFAULT;
+	}
+
+	public function isCheckoutLogoHidden(): bool {
+		$hideCheckoutLogo = $this->get( 'hide_checkout_logo' );
+		if ( $hideCheckoutLogo !== null ) {
+			return (bool) $hideCheckoutLogo;
+		}
+
+		return self::HIDE_CHECKOUT_LOGO_DEFAULT;
 	}
 
 	/**

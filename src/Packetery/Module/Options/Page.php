@@ -549,6 +549,10 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::PRICES_INCLUDE_TAX_DEFAULT );
 
+		$container->addCheckbox( 'hide_checkout_logo', __( 'Hide Packeta checkout logo', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::HIDE_CHECKOUT_LOGO_DEFAULT );
+
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
 		if ( $this->optionsProvider->has_any( OptionsProvider::OPTION_NAME_PACKETERY ) ) {
