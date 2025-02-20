@@ -95,7 +95,7 @@ class StoredUntilModal {
 				'storedUntilSaveUrl' => $storedUntilSaveUrl,
 				'translations'       => [
 					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
-					// translators: %s Order number.
+					// translators: %s: Order number.
 					'order#%s'        => __( 'Order #%s', 'packeta' ),
 				],
 			]
