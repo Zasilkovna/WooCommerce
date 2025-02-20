@@ -10,7 +10,7 @@ parameters:
 	featureFlagConfig:
 		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
-	trackingUrl: https://tracking.app.packeta.com/Z%s
+	trackingUrl: https://tracking.packeta.com/Z%s
 	supportEmailAddress: e-commerce.support@packeta.com
 
 services:
