@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Tests\Module\Options;
 
+use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -34,6 +36,7 @@ class OptionsProviderTest extends TestCase {
 	 */
 	public function testGetDimensionsNumberOfDecimals( string $unit, int $expectedDecimals ): void {
 		$provider = $this->getMockBuilder( OptionsProvider::class )
+			->disableOriginalConstructor()
 			->onlyMethods( [ 'getDimensionsUnit' ] )
 			->getMock();
 
@@ -95,6 +98,7 @@ class OptionsProviderTest extends TestCase {
 		string $unit
 	): void {
 		$provider = $this->getMockBuilder( OptionsProvider::class )
+			->disableOriginalConstructor()
 			->onlyMethods( [ 'getDimensionsNumberOfDecimals', 'getDimensionsUnit' ] )
 			->getMock();
 
@@ -106,5 +110,32 @@ class OptionsProviderTest extends TestCase {
 
 		$result = $provider->getSanitizedDimensionValueInMm( $dimensionValue );
 		$this->assertEquals( $expectedValue, $result );
+	}
+
+	public function testStatusSyncingPacketStatuses(): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock
+			->method( 'getOption' )
+			->willReturnCallback(
+				static function ( string $key ): array {
+					if ( $key === OptionsProvider::OPTION_NAME_PACKETERY_SYNC ) {
+						return [ 'status_syncing_packet_statuses' => [ PacketStatus::DEPARTED, PacketStatus::UNKNOWN ] ];
+					}
+
+					return [];
+				}
+			);
+
+		$provider = new OptionsProvider(
+			$wpAdapterMock
+		);
+
+		$result = $provider->getStatusSyncingPacketStatuses(
+			[
+				new PacketStatus( PacketStatus::DEPARTED, PacketStatus::DEPARTED, true ),
+				new PacketStatus( PacketStatus::ARRIVED, PacketStatus::ARRIVED, true ),
+			]
+		);
+		$this->assertSame( [ PacketStatus::DEPARTED ], $result );
 	}
 }

@@ -108,6 +108,11 @@ class Metabox {
 	 */
 	private $wpAdapter;
 
+	/**
+	 * @var PacketStatusResolver
+	 */
+	private $packetStatusResolver;
+
 	public function __construct(
 		Engine $latteEngine,
 		MessageManager $messageManager,
@@ -123,7 +128,8 @@ class Metabox {
 		DetailCommonLogic $detailCommonLogic,
 		Form $orderForm,
 		CarrierModal $carrierModal,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		PacketStatusResolver $packetStatusResolver
 	) {
 		$this->latteEngine          = $latteEngine;
 		$this->messageManager       = $messageManager;
@@ -140,6 +146,7 @@ class Metabox {
 		$this->orderForm            = $orderForm;
 		$this->carrierModal         = $carrierModal;
 		$this->wpAdapter            = $wpAdapter;
+		$this->packetStatusResolver = $packetStatusResolver;
 	}
 
 	public function register(): void {
@@ -265,7 +272,7 @@ class Metabox {
 				]
 			);
 
-			$packetStatusTranslatedName = PacketStatusResolver::getTranslatedName( $order->getPacketStatus() );
+			$packetStatusTranslatedName = $this->packetStatusResolver->getTranslatedName( $order->getPacketStatus() );
 			/** @var array<string, string> $statusClasses */
 			$statusClasses = [
 				'received data'         => 'received-data',

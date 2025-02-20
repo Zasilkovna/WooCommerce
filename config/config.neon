@@ -96,6 +96,7 @@ services:
 	- Packetery\Module\Order\LabelPrintModal
 	- Packetery\Module\Options\Exporter
 	- Packetery\Module\Order\CollectionPrint
+	- Packetery\Module\Order\PacketStatusResolver
 	- Packetery\Module\Order\PacketSynchronizer
 	- Packetery\Module\Order\PacketAutoSubmitter
 	requestFactory: Packetery\Nette\Http\RequestFactory
