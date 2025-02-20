@@ -187,9 +187,9 @@ class OrderUpdater {
 		if ( PickupPointValidator::IS_ACTIVE ) {
 			$pickupPointValidationError = $this->wcAdapter->sessionGetString( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY );
 			if ( $pickupPointValidationError !== null ) {
-				// translators: %s: Message from downloader.
 				$wcOrder->add_order_note(
 					sprintf(
+						// translators: %s: Message from downloader.
 						$this->wpAdapter->__( 'The selected Packeta pickup point could not be validated, reason: %s.', 'packeta' ),
 						$pickupPointValidationError
 					)
