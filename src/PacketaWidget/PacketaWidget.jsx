@@ -22,12 +22,12 @@ export const PacketaWidget = ( {
 						{ showLogo && (
 							<img
 								className="packetery-widget-button-logo"
-								src={logoSrc}
-								alt={logoAlt}
+								src={ logoSrc }
+								alt={ logoAlt }
 							/>
 						)}
 						<a
-							onClick={onClick}
+							onClick={ onClick }
 							className="button alt components-button wc-block-components-button wp-element-button contained"
 						>
 							{ buttonLabel }

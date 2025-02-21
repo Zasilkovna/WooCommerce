@@ -522,6 +522,10 @@ class Page {
 			]
 		);
 
+		$container->addCheckbox( 'hide_checkout_logo', __( 'Hide Packeta checkout logo', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::HIDE_CHECKOUT_LOGO_DEFAULT );
+
 		$container->addSelect(
 			'email_hook',
 			__( 'Hook used to view information in email', 'packeta' ),
@@ -548,10 +552,6 @@ class Page {
 		$container->addCheckbox( 'prices_include_tax', __( 'Prices include tax', 'packeta' ) )
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::PRICES_INCLUDE_TAX_DEFAULT );
-
-		$container->addCheckbox( 'hide_checkout_logo', __( 'Hide Packeta checkout logo', 'packeta' ) )
-			->setRequired( false )
-			->setDefaultValue( OptionsProvider::HIDE_CHECKOUT_LOGO_DEFAULT );
 
 		$form->addSubmit( 'save', __( 'Save changes', 'packeta' ) );
 
