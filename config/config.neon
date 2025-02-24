@@ -136,3 +136,4 @@ services:
 	- Packetery\Module\Views\AssetManager
 	- Packetery\Module\Shipping\ShippingProvider
 	- Packetery\Module\Shipping\ShippingMethodGenerator
+	- Packetery\Module\Views\WizardAssetManager

@@ -99,7 +99,7 @@ class AssetManager {
 	 * @param bool   $inFooter Tells where to include script.
 	 * @param array  $deps Script dependencies.
 	 */
-	private function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
+	public function enqueueScript( string $name, string $file, bool $inFooter, array $deps = [] ): void {
 		$this->wpAdapter->enqueueScript(
 			$name,
 			$this->wpAdapter->pluginDirUrl( ModuleHelper::getPluginMainFilePath() ) . $file,
@@ -115,7 +115,7 @@ class AssetManager {
 	 * @param string $name Name of script.
 	 * @param string $file Relative file path.
 	 */
-	private function enqueueStyle( string $name, string $file ): void {
+	public function enqueueStyle( string $name, string $file ): void {
 		$this->wpAdapter->enqueueStyle(
 			$name,
 			$this->wpAdapter->pluginDirUrl( ModuleHelper::getPluginMainFilePath() ) . $file,
