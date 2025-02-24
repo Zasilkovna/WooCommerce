@@ -310,6 +310,7 @@ class Checkout {
 			[
 				'renderer'     => self::BUTTON_RENDERER_TABLE_ROW,
 				'logo'         => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'showLogo'     => $this->optionsProvider->isCheckoutLogoShown(),
 				'translations' => [
 					'packeta' => __( 'Packeta', 'packeta' ),
 				],
@@ -336,6 +337,7 @@ class Checkout {
 			[
 				'renderer'     => self::BUTTON_RENDERER_AFTER_RATE,
 				'logo'         => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
+				'showLogo'     => $this->optionsProvider->isCheckoutLogoShown(),
 				'translations' => [
 					'packeta' => __( 'Packeta', 'packeta' ),
 				],
@@ -380,6 +382,7 @@ class Checkout {
 			 */
 			'language'                   => (string) apply_filters( 'packeta_widget_language', substr( get_locale(), 0, 2 ) ),
 			'logo'                       => Plugin::buildAssetUrl( 'public/images/packeta-symbol.png' ),
+			'showLogo'                   => $this->optionsProvider->isCheckoutLogoShown(),
 			'country'                    => $this->getCustomerCountry(),
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,

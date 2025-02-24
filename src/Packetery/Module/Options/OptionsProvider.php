@@ -430,6 +430,11 @@ class OptionsProvider {
 		return self::HIDE_CHECKOUT_LOGO_DEFAULT;
 	}
 
+
+	public function isCheckoutLogoShown(): bool {
+		return ! $this->isCheckoutLogoHidden();
+	}
+
 	/**
 	 * Tells if packet cancellation should be forced.
 	 *
