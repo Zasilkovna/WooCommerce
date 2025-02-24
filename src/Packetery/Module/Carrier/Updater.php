@@ -11,6 +11,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Transients;
 
 /**
@@ -42,14 +43,25 @@ class Updater {
 	private $logger;
 
 	/**
-	 * CarrierUpdater constructor.
-	 *
-	 * @param Repository $carrierRepository Carrier repository.
-	 * @param ILogger    $logger             Logger.
+	 * @var CarrierOptionsFactory
 	 */
-	public function __construct( Repository $carrierRepository, ILogger $logger ) {
-		$this->carrierRepository = $carrierRepository;
-		$this->logger            = $logger;
+	private $carrierOptionsFactory;
+
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	public function __construct(
+		Repository $carrierRepository,
+		ILogger $logger,
+		CarrierOptionsFactory $carrierOptionsFactory,
+		WpAdapter $wpAdapter
+	) {
+		$this->carrierRepository     = $carrierRepository;
+		$this->logger                = $logger;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->wpAdapter             = $wpAdapter;
 	}
 
 	/**
@@ -102,6 +114,7 @@ class Updater {
 			'requires_phone'           => 'requiresPhone',
 			'requires_size'            => 'requiresSize',
 			'disallows_cod'            => 'disallowsCod',
+			'available'                => 'available',
 		);
 
 		foreach ( $carriers as $carrier ) {
@@ -134,6 +147,16 @@ class Updater {
 			if ( isset( $carriersInDb[ $carrierId ] ) ) {
 				$this->carrierRepository->update( $carrier, $carrierId );
 				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
+				if ( isset( $differences['available'] ) ) {
+					$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( (string) $carrierId );
+					if ( $carrierOptions->isActive() ) {
+						$this->wpAdapter->updateOption(
+							$carrierOptions->getOptionId(),
+							array_merge( $carrierOptions->toArray(), [ 'active' => false ] )
+						);
+					}
+				}
+
 				if ( count( $differences ) > 0 ) {
 					$this->addLogEntry(
 						// translators: %s is carrier name.
@@ -288,6 +311,10 @@ class Updater {
 			'max_weight'               => [
 				'label'     => __( 'maximum weight (kg)', 'packeta' ),
 				'isBoolean' => false,
+			],
+			'available'                => [
+				'label'     => __( 'available', 'packeta' ),
+				'isBoolean' => true,
 			],
 		];
 	}

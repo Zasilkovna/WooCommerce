@@ -619,7 +619,7 @@ class OptionsPage {
 	}
 
 	private function renderCountryCarriers( string $countryIso ): void {
-		$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
+		$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso, true );
 		$carriersData    = [];
 		foreach ( $countryCarriers as $carrier ) {
 			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
@@ -687,6 +687,7 @@ class OptionsPage {
 			'allowedPickupPointTypes'                => $this->wpAdapter->__( 'Pickup point types', 'packeta' ),
 			'checkAtLeastTwo'                        => $this->wpAdapter->__( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
 			'lowAvailableVendorsCount'               => $this->wpAdapter->__( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
+			'carrierUnavailable'                     => $this->wpAdapter->__( 'This carrier is unavailable.', 'packeta' ),
 		];
 	}
 
