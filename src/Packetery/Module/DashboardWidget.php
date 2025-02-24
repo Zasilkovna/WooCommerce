@@ -155,7 +155,7 @@ class DashboardWidget {
 			$country        = $carrier->getCountry();
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-			if ( $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) === false ) {
+			if ( $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ) === false ) {
 				continue;
 			}
 

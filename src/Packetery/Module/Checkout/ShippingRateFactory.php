@@ -189,7 +189,7 @@ class ShippingRateFactory {
 		$containsOversizedProduct = $this->cartService->cartContainsProductOversizedForCarrier( $carrierOptions );
 		$isRestrictedByCategory   = $this->cartService->isShippingRateRestrictedByProductsCategory( $optionId, $cartProducts );
 
-		return ! ( $isCarrierOptionInactive || $isCarDeliveryDisabled || $isOptionDisallowed || $containsOversizedProduct || $isRestrictedByCategory );
+		return $carrier->isAvailable() && ! ( $isCarrierOptionInactive || $isCarDeliveryDisabled || $isOptionDisallowed || $containsOversizedProduct || $isRestrictedByCategory );
 	}
 
 	/**

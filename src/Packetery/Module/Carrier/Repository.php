@@ -34,6 +34,7 @@ class Repository {
 		'currency',
 		'max_weight',
 		'deleted',
+		'available',
 	];
 
 	/**
@@ -74,6 +75,7 @@ class Repository {
 			`country` varchar(255) NOT NULL,
 			`currency` varchar(255) NOT NULL,
 			`max_weight` float NOT NULL,
+			`available` tinyint(1) NOT NULL DEFAULT 1,
 			`deleted` tinyint(1) NOT NULL,
 			PRIMARY KEY  (`id`)
 		) ' . $this->wpdbAdapter->get_charset_collate();
@@ -123,14 +125,16 @@ class Repository {
 	 * Gets all active carriers for a country.
 	 *
 	 * @param string $country ISO code.
+	 * @param bool   $includeUnavailable Include unavailable carriers.
 	 *
 	 * @return array|null
 	 */
-	public function getByCountry( string $country ): ?array {
+	public function getByCountry( string $country, bool $includeUnavailable = false ): ?array {
 		return $this->wpdbAdapter->get_results(
 			$this->wpdbAdapter->prepare(
 				'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
-				FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `country` = %s AND `deleted` = false',
+				FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `country` = %s AND `deleted` = false' .
+				( $includeUnavailable ? '' : ' AND `available` = true' ),
 				$country
 			),
 			ARRAY_A
@@ -145,7 +149,7 @@ class Repository {
 	public function getActiveCarriers(): ?array {
 		return $this->wpdbAdapter->get_results(
 			'SELECT `' . implode( '`, `', self::COLUMN_NAMES ) . '`
-			FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `deleted` = false',
+			FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `deleted` = false AND `available` = true',
 			ARRAY_A
 		);
 	}
@@ -171,7 +175,7 @@ class Repository {
 	 * @return bool
 	 */
 	public function hasAnyActiveFeedCarrier(): bool {
-		return (bool) $this->wpdbAdapter->get_var( 'SELECT 1 FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `deleted` = false LIMIT 1' );
+		return (bool) $this->wpdbAdapter->get_var( 'SELECT 1 FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `deleted` = false AND `available` = true LIMIT 1' );
 	}
 
 	/**
@@ -180,7 +184,7 @@ class Repository {
 	 * @return array
 	 */
 	public function getCountries(): array {
-		return $this->wpdbAdapter->get_col( 'SELECT `country` FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `deleted` = false GROUP BY `country` ORDER BY `country`' );
+		return $this->wpdbAdapter->get_col( 'SELECT `country` FROM `' . $this->wpdbAdapter->packeteryCarrier . '` WHERE `deleted` = false AND `available` = true GROUP BY `country` ORDER BY `country`' );
 	}
 
 	/**
