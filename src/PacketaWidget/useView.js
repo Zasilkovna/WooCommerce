@@ -21,6 +21,7 @@ export const useView = ( cart ) => {
 	const {
 		carrierConfig,
 		translations,
+		showLogo,
 		logo,
 		widgetAutoOpen,
 		adminAjaxUrl,
@@ -148,6 +149,7 @@ export const useView = ( cart ) => {
 			inputValue: viewState && viewState.pickupPoint ? viewState.pickupPoint.name : '',
 			inputRequired,
 			errorMessage: getPickupPointErrorMessage( viewState ),
+			showLogo,
 			logo,
 			translations,
 			loading,
@@ -171,6 +173,7 @@ export const useView = ( cart ) => {
 			inputValue: viewState && viewState.deliveryAddressInfo ? viewState.deliveryAddressInfo : '',
 			inputRequired,
 			errorMessage: getHomeDeliveryErrorMessage( viewState, addressValidationSetting ),
+			showLogo,
 			logo,
 			translations,
 			loading,
