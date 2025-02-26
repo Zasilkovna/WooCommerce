@@ -218,6 +218,8 @@ final class OrderController extends WP_REST_Controller {
 
 		if ( $orderFormData->packeteryWeight !== (float) $orderFormData->packeteryOriginalWeight ) {
 			$order->setWeight( $orderFormData->packeteryWeight );
+		} else {
+			$order->setWeight( null );
 		}
 
 		if ( $orderFormData->packeteryCOD !== (float) $orderFormData->packeteryCalculatedCod ) {
