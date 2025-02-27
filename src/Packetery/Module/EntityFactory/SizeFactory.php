@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\EntityFactory;
 
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
@@ -33,7 +34,10 @@ class SizeFactory {
 		$size = [];
 		foreach ( $dimensions as $dimension ) {
 			$size[] = $dimension !== null && $this->optionsProvider->getDimensionsUnit() === OptionsProvider::DIMENSIONS_UNIT_CM
-				? ModuleHelper::convertToCentimeters( (int) $dimension )
+				? CoreHelper::simplifyFloat(
+					ModuleHelper::convertToCentimeters( (int) $dimension ),
+					$this->optionsProvider->getDimensionsNumberOfDecimals()
+				)
 				: $dimension;
 		}
 

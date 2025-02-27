@@ -19,10 +19,12 @@ class SizeFactoryTest extends TestCase {
 		?float $width,
 		?float $height,
 		string $dimensionsUnit,
-		array $expectedResult
+		int $decimals,
+		array $expectedResult,
 	): void {
 		$optionsProvider = $this->createMock( OptionsProvider::class );
 		$optionsProvider->method( 'getDimensionsUnit' )->willReturn( $dimensionsUnit );
+		$optionsProvider->method( 'getDimensionsNumberOfDecimals' )->willReturn( $decimals );
 
 		$sizeFactory = new SizeFactory( $optionsProvider );
 
@@ -41,10 +43,38 @@ class SizeFactoryTest extends TestCase {
 
 	public static function provideDataForCreateSizeInSetDimensionUnit(): array {
 		return [
-			[ 100, 200, 300, OptionsProvider::DIMENSIONS_UNIT_CM, [ 10.0, 20.0, 30.0 ] ],
-			[ 150, null, 375, OptionsProvider::DIMENSIONS_UNIT_CM, [ 15.0, null, 37.5 ] ],
-			[ 100, 200, 300, OptionsProvider::DEFAULT_DIMENSIONS_UNIT_MM, [ 100.0, 200.0, 300.0 ] ],
-			[ 125.5, 250.7, 375.9, OptionsProvider::DEFAULT_DIMENSIONS_UNIT_MM, [ 125.5, 250.7, 375.9 ] ],
+			[
+				'width'    => 100,
+				'height'   => 200,
+				'length'   => 300,
+				'unit'     => OptionsProvider::DIMENSIONS_UNIT_CM,
+				'decimals' => 1,
+				'expected' => [ 10.0, 20.0, 30.0 ],
+			],
+			[
+				'width'    => 150,
+				'height'   => null,
+				'length'   => 375,
+				'unit'     => OptionsProvider::DIMENSIONS_UNIT_CM,
+				'decimals' => 1,
+				'expected' => [ 15.0, null, 37.5 ],
+			],
+			[
+				'width'    => 100,
+				'height'   => 200,
+				'length'   => 300,
+				'unit'     => OptionsProvider::DEFAULT_DIMENSIONS_UNIT_MM,
+				'decimals' => 0,
+				'expected' => [ 100.0, 200.0, 300.0 ],
+			],
+			[
+				'width'    => 125.5,
+				'height'   => 250.7,
+				'length'   => 375.9,
+				'unit'     => OptionsProvider::DEFAULT_DIMENSIONS_UNIT_MM,
+				'decimals' => 0,
+				'expected' => [ 125.5, 250.7, 375.9 ],
+			],
 		];
 	}
 
