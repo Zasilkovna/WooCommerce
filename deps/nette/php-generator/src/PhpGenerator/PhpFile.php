@@ -15,7 +15,6 @@ use Packetery\Nette;
  * - opening tag (<?php)
  * - doc comments
  * - one or more namespaces
- * @internal
  */
 final class PhpFile
 {
@@ -25,6 +24,10 @@ final class PhpFile
     private $namespaces = [];
     /** @var bool */
     private $strictTypes = \false;
+    public static function fromCode(string $code) : self
+    {
+        return (new Factory())->fromCode($code);
+    }
     public function addClass(string $name) : ClassType
     {
         return $this->addNamespace(Helpers::extractNamespace($name))->addClass(Helpers::extractShortName($name));
@@ -36,6 +39,10 @@ final class PhpFile
     public function addTrait(string $name) : ClassType
     {
         return $this->addNamespace(Helpers::extractNamespace($name))->addTrait(Helpers::extractShortName($name));
+    }
+    public function addEnum(string $name) : ClassType
+    {
+        return $this->addNamespace(Helpers::extractNamespace($name))->addEnum(Helpers::extractShortName($name));
     }
     /** @param  string|PhpNamespace  $namespace */
     public function addNamespace($namespace) : PhpNamespace
@@ -52,15 +59,43 @@ final class PhpFile
         }
         return $res;
     }
+    public function addFunction(string $name) : GlobalFunction
+    {
+        return $this->addNamespace(Helpers::extractNamespace($name))->addFunction(Helpers::extractShortName($name));
+    }
     /** @return PhpNamespace[] */
     public function getNamespaces() : array
     {
         return $this->namespaces;
     }
-    /** @return static */
-    public function addUse(string $name, string $alias = null) : self
+    /** @return ClassType[] */
+    public function getClasses() : array
     {
-        $this->addNamespace('')->addUse($name, $alias);
+        $classes = [];
+        foreach ($this->namespaces as $n => $namespace) {
+            $n .= $n ? '\\' : '';
+            foreach ($namespace->getClasses() as $c => $class) {
+                $classes[$n . $c] = $class;
+            }
+        }
+        return $classes;
+    }
+    /** @return GlobalFunction[] */
+    public function getFunctions() : array
+    {
+        $functions = [];
+        foreach ($this->namespaces as $n => $namespace) {
+            $n .= $n ? '\\' : '';
+            foreach ($namespace->getFunctions() as $f => $function) {
+                $functions[$n . $f] = $function;
+            }
+        }
+        return $functions;
+    }
+    /** @return static */
+    public function addUse(string $name, ?string $alias = null, string $of = PhpNamespace::NameNormal) : self
+    {
+        $this->addNamespace('')->addUse($name, $alias, $of);
         return $this;
     }
     /**

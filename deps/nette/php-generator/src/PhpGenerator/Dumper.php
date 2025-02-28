@@ -10,15 +10,16 @@ namespace Packetery\Nette\PhpGenerator;
 use Packetery\Nette;
 /**
  * PHP code generator utils.
- * @internal
  */
 final class Dumper
 {
-    private const INDENT_LENGTH = 4;
+    private const IndentLength = 4;
     /** @var int */
     public $maxDepth = 50;
     /** @var int */
     public $wrapLength = 120;
+    /** @var string */
+    public $indentation = "\t";
     /**
      * Returns a PHP representation of a variable.
      */
@@ -34,10 +35,9 @@ final class Dumper
             return $this->dumpString($var);
         } elseif (\is_array($var)) {
             return $this->dumpArray($var, $parents, $level, $column);
+        } elseif ($var instanceof Literal) {
+            return $this->dumpLiteral($var, $level);
         } elseif (\is_object($var)) {
-            if ($var instanceof Literal || $var instanceof Closure) {
-                return \ltrim(\Packetery\Nette\Utils\Strings::indent(\trim((string) $var), $level), "\t");
-            }
             return $this->dumpObject($var, $parents, $level);
         } elseif (\is_resource($var)) {
             throw new \Packetery\Nette\InvalidArgumentException('Cannot dump resource.');
@@ -45,33 +45,36 @@ final class Dumper
             return \var_export($var, \true);
         }
     }
-    private function dumpString(string $var) : string
+    private function dumpString(string $s) : string
     {
-        if (\preg_match('#[^\\x09\\x20-\\x7E\\xA0-\\x{10FFFF}]#u', $var) || \preg_last_error()) {
-            static $table;
-            if ($table === null) {
-                foreach (\array_merge(\range("\x00", "\x1f"), \range("", "\xff")) as $ch) {
-                    $table[$ch] = '\\x' . \str_pad(\dechex(\ord($ch)), 2, '0', \STR_PAD_LEFT);
-                }
-                $table['\\'] = '\\\\';
-                $table["\r"] = '\\r';
-                $table["\n"] = '\\n';
-                $table["\t"] = '\\t';
-                $table['$'] = '\\$';
-                $table['"'] = '\\"';
-            }
-            return '"' . \strtr($var, $table) . '"';
+        static $special = ["\r" => '\\r', "\n" => '\\n', "\t" => '\\t', "\x1b" => '\\e', '\\' => '\\\\'];
+        $utf8 = \preg_match('##u', $s);
+        $escaped = \preg_replace_callback($utf8 ? '#[\\p{C}\\\\]#u' : '#[\\x00-\\x1F\\x7F-\\xFF\\\\]#', function ($m) use($special) {
+            return $special[$m[0]] ?? (\strlen($m[0]) === 1 ? '\\x' . \str_pad(\strtoupper(\dechex(\ord($m[0]))), 2, '0', \STR_PAD_LEFT) . '' : '\\u{' . \strtoupper(\ltrim(\dechex(self::utf8Ord($m[0])), '0')) . '}');
+        }, $s);
+        return $s === \str_replace('\\\\', '\\', $escaped) ? "'" . \preg_replace('#\'|\\\\(?=[\'\\\\]|$)#D', '\\\\$0', $s) . "'" : '"' . \addcslashes($escaped, '"$') . '"';
+    }
+    private static function utf8Ord(string $c) : int
+    {
+        $ord0 = \ord($c[0]);
+        if ($ord0 < 0x80) {
+            return $ord0;
+        } elseif ($ord0 < 0xe0) {
+            return ($ord0 << 6) + \ord($c[1]) - 0x3080;
+        } elseif ($ord0 < 0xf0) {
+            return ($ord0 << 12) + (\ord($c[1]) << 6) + \ord($c[2]) - 0xe2080;
+        } else {
+            return ($ord0 << 18) + (\ord($c[1]) << 12) + (\ord($c[2]) << 6) + \ord($c[3]) - 0x3c82080;
         }
-        return "'" . \preg_replace('#\'|\\\\(?=[\'\\\\]|$)#D', '\\\\$0', $var) . "'";
     }
     private function dumpArray(array &$var, array $parents, int $level, int $column) : string
     {
         if (empty($var)) {
             return '[]';
-        } elseif ($level > $this->maxDepth || \in_array($var, $parents ?? [], \true)) {
+        } elseif ($level > $this->maxDepth || \in_array($var, $parents, \true)) {
             throw new \Packetery\Nette\InvalidArgumentException('Nesting level too deep or recursive dependency.');
         }
-        $space = \str_repeat("\t", $level);
+        $space = \str_repeat($this->indentation, $level);
         $outInline = '';
         $outWrapped = "\n{$space}";
         $parents[] = $var;
@@ -82,18 +85,24 @@ final class Dumper
             $counter = \is_int($k) ? \max($k + 1, $counter) : $counter;
             $outInline .= ($outInline === '' ? '' : ', ') . $keyPart;
             $outInline .= $this->dumpVar($v, $parents, 0, $column + \strlen($outInline));
-            $outWrapped .= "\t" . $keyPart . $this->dumpVar($v, $parents, $level + 1, \strlen($keyPart)) . ",\n{$space}";
+            $outWrapped .= $this->indentation . $keyPart . $this->dumpVar($v, $parents, $level + 1, \strlen($keyPart)) . ",\n{$space}";
         }
         \array_pop($parents);
-        $wrap = \strpos($outInline, "\n") !== \false || $level * self::INDENT_LENGTH + $column + \strlen($outInline) + 3 > $this->wrapLength;
+        $wrap = \strpos($outInline, "\n") !== \false || $level * self::IndentLength + $column + \strlen($outInline) + 3 > $this->wrapLength;
         // 3 = [],
         return '[' . ($wrap ? $outWrapped : $outInline) . ']';
     }
-    private function dumpObject(&$var, array $parents, int $level) : string
+    private function dumpObject($var, array $parents, int $level) : string
     {
         if ($var instanceof \Serializable) {
             return 'unserialize(' . $this->dumpString(\serialize($var)) . ')';
+        } elseif ($var instanceof \UnitEnum) {
+            return '\\' . \get_class($var) . '::' . $var->name;
         } elseif ($var instanceof \Closure) {
+            $inner = \Packetery\Nette\Utils\Callback::unwrap($var);
+            if (\Packetery\Nette\Utils\Callback::isStatic($inner)) {
+                return \PHP_VERSION_ID < 80100 ? '\\Closure::fromCallable(' . $this->dump($inner) . ')' : \implode('::', (array) $inner) . '(...)';
+            }
             throw new \Packetery\Nette\InvalidArgumentException('Cannot dump closure.');
         }
         $class = \get_class($var);
@@ -103,8 +112,8 @@ final class Dumper
             return $this->format("new \\{$class}(?, new \\DateTimeZone(?))", $var->format('Y-m-d H:i:s.u'), $var->getTimeZone()->getName());
         }
         $arr = (array) $var;
-        $space = \str_repeat("\t", $level);
-        if ($level > $this->maxDepth || \in_array($var, $parents ?? [], \true)) {
+        $space = \str_repeat($this->indentation, $level);
+        if ($level > $this->maxDepth || \in_array($var, $parents, \true)) {
             throw new \Packetery\Nette\InvalidArgumentException('Nesting level too deep or recursive dependency.');
         }
         $out = "\n";
@@ -116,19 +125,25 @@ final class Dumper
         }
         foreach ($arr as $k => &$v) {
             if (!isset($props) || isset($props[$k])) {
-                $out .= "{$space}\t" . ($keyPart = $this->dumpVar($k) . ' => ') . $this->dumpVar($v, $parents, $level + 1, \strlen($keyPart)) . ",\n";
+                $out .= $space . $this->indentation . ($keyPart = $this->dumpVar($k) . ' => ') . $this->dumpVar($v, $parents, $level + 1, \strlen($keyPart)) . ",\n";
             }
         }
         \array_pop($parents);
         $out .= $space;
         return $class === \stdClass::class ? "(object) [{$out}]" : '\\' . self::class . "::createObject('{$class}', [{$out}])";
     }
+    private function dumpLiteral(Literal $var, int $level) : string
+    {
+        $s = $var->formatWith($this);
+        $s = \Packetery\Nette\Utils\Strings::indent(\trim($s), $level, $this->indentation);
+        return \ltrim($s, $this->indentation);
+    }
     /**
-     * Generates PHP statement.
+     * Generates PHP statement. Supports placeholders: ?  \?  $?  ->?  ::?  ...?  ...?:  ?*
      */
     public function format(string $statement, ...$args) : string
     {
-        $tokens = \preg_split('#(\\.\\.\\.\\?:?|\\$\\?|->\\?|::\\?|\\\\\\?|\\?\\*|\\?)#', $statement, -1, \PREG_SPLIT_DELIM_CAPTURE);
+        $tokens = \preg_split('#(\\.\\.\\.\\?:?|\\$\\?|->\\?|::\\?|\\\\\\?|\\?\\*|\\?(?!\\w))#', $statement, -1, \PREG_SPLIT_DELIM_CAPTURE);
         $res = '';
         foreach ($tokens as $n => $token) {
             if ($n % 2 === 0) {
@@ -166,15 +181,14 @@ final class Dumper
             $k = !$named || \is_int($k) ? '' : $k . ': ';
             $outInline .= $outInline === '' ? '' : ', ';
             $outInline .= $k . $this->dumpVar($v, [$var], 0, $column + \strlen($outInline));
-            $outWrapped .= ($outWrapped === '' ? '' : ',') . "\n\t" . $k . $this->dumpVar($v, [$var], 1);
+            $outWrapped .= ($outWrapped === '' ? '' : ',') . "\n" . $this->indentation . $k . $this->dumpVar($v, [$var], 1);
         }
         return \count($var) > 1 && (\strpos($outInline, "\n") !== \false || $column + \strlen($outInline) > $this->wrapLength) ? $outWrapped . "\n" : $outInline;
     }
     /**
-     * @return object
      * @internal
      */
-    public static function createObject(string $class, array $props)
+    public static function createObject(string $class, array $props) : object
     {
         return \unserialize('O' . \substr(\serialize($class), 1, -1) . \substr(\serialize($props), 1));
     }

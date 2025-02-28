@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Nette\Forms\Form;
+
 /**
  * Class CountryListingTemplateParams
  *
@@ -19,14 +21,14 @@ class CountryListingTemplateParams {
 	/**
 	 * Carriers Update params.
 	 *
-	 * @var array
+	 * @var array<string, string|array<string, string>>
 	 */
 	public $carriersUpdate;
 
 	/**
 	 * Countries.
 	 *
-	 * @var array
+	 * @var mixed[]
 	 */
 	public $countries;
 
@@ -54,33 +56,58 @@ class CountryListingTemplateParams {
 	/**
 	 * Translations.
 	 *
-	 * @var array
+	 * @var array<string, string>
 	 */
 	public $translations;
 
 	/**
-	 * CountryListingTemplateParams constructor.
-	 *
-	 * @param array       $carriersUpdate         Carriers update params.
-	 * @param array       $countries              Countries.
-	 * @param bool        $isApiPasswordSet       Tells whether API password is set, or not.
-	 * @param string|null $nextScheduledRun       Next update run.
-	 * @param string|null $settingsChangedMessage Settings changed message.
-	 * @param array       $translations           Translations.
+	 * @var bool
 	 */
+	public $isCzechLocale;
+
+	/**
+	 * @var string|null
+	 */
+	public $logoZasilkovna;
+
+	/**
+	 * @var string|null
+	 */
+	public $logoPacketa;
+
+	/**
+	 * @var bool
+	 */
+	public $hasCarriers;
+
+	/**
+	 * @var Form
+	 */
+	public $form;
+
 	public function __construct(
 		array $carriersUpdate,
 		array $countries,
 		bool $isApiPasswordSet,
 		?string $nextScheduledRun,
 		?string $settingsChangedMessage,
-		array $translations
+		bool $isCzechLocale,
+		?string $logoZasilkovna,
+		?string $logoPacketa,
+		array $translations,
+		bool $hasCarriers,
+		Form $form
 	) {
 		$this->carriersUpdate         = $carriersUpdate;
 		$this->countries              = $countries;
 		$this->isApiPasswordSet       = $isApiPasswordSet;
 		$this->nextScheduledRun       = $nextScheduledRun;
 		$this->settingsChangedMessage = $settingsChangedMessage;
+		$this->isCzechLocale          = $isCzechLocale;
+		$this->logoZasilkovna         = $logoZasilkovna;
+		$this->logoPacketa            = $logoPacketa;
 		$this->translations           = $translations;
+		$this->hasCarriers            = $hasCarriers;
+		$this->form                   = $form;
 	}
 }

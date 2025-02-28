@@ -10,11 +10,10 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity;
-use Packetery\Module\ModuleHelper;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Plugin;
 use Packetery\Nette\Http\Request;
-
 
 /**
  * Class PacketActionsBrain
@@ -82,21 +81,17 @@ class PacketActionsCommonLogic {
 	public function checkAction( string $action, Entity\Order $order ): void {
 		$redirectTo = $this->request->getQuery( self::PARAM_REDIRECT_TO );
 
-		if ( 1 !== wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( $action, $order->getNumber() ) ) ) {
+		if ( wp_verify_nonce( $this->request->getQuery( Plugin::PARAM_NONCE ), self::createNonceAction( $action, $order->getNumber() ) ) !== 1 ) {
 			$this->messageManager->flash_message( __( 'Link has expired. Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 			$this->redirectTo( $redirectTo, $order );
 		}
 	}
 
-	/**
-	 * Creates nonce action name.
-	 *
-	 * @param string $action      Action.
-	 * @param string $orderNumber Order number.
-	 *
-	 * @return string
-	 */
-	public static function createNonceAction( string $action, string $orderNumber ): string {
+	public static function createNonceAction( string $action, ?string $orderNumber ): string {
+		if ( $orderNumber === null ) {
+			return '';
+		}
+
 		return $action . '_' . $orderNumber;
 	}
 
@@ -109,7 +104,7 @@ class PacketActionsCommonLogic {
 	 * @return void
 	 */
 	public function redirectTo( string $redirectTo, ?Entity\Order $order = null ): void {
-		if ( self::REDIRECT_TO_ORDER_GRID === $redirectTo ) {
+		if ( $redirectTo === self::REDIRECT_TO_ORDER_GRID ) {
 			$queryVars = [];
 			parse_str( $this->request->getQuery( self::PARAM_ORDER_GRID_PARAMS ) ?? '', $queryVars );
 
@@ -119,8 +114,8 @@ class PacketActionsCommonLogic {
 		}
 
 		if (
-			self::REDIRECT_TO_ORDER_DETAIL === $redirectTo &&
-			null !== $order &&
+			$redirectTo === self::REDIRECT_TO_ORDER_DETAIL &&
+			$order !== null &&
 			wp_safe_redirect( ModuleHelper::getOrderDetailUrl( (int) $order->getNumber() ) )
 		) {
 			exit;
@@ -148,8 +143,8 @@ class PacketActionsCommonLogic {
 	 */
 	public function getOrder(): ?Entity\Order {
 		$orderId = $this->getOrderId();
-		if ( null !== $orderId ) {
-			return $this->orderRepository->getById( $orderId, true );
+		if ( $orderId !== null ) {
+			return $this->orderRepository->getByIdWithValidCarrier( $orderId );
 		}
 
 		return null;

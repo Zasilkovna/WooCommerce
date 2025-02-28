@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Core\Api\Soap\Response;
 
 /**
@@ -16,13 +15,12 @@ namespace Packetery\Core\Api\Soap\Response;
  * @package Packetery\Core\Api\Soap\Response
  */
 class CancelPacket extends BaseResponse {
-
 	/**
 	 * Checks if cancel is possible.
 	 *
 	 * @return bool
 	 */
 	public function hasCancelNotAllowedFault(): bool {
-		return ( 'CancelNotAllowedFault' === $this->fault );
+		return ( $this->fault === 'CancelNotAllowedFault' );
 	}
 }

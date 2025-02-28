@@ -9,9 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module;
 use Packetery\Latte\Engine;
+use Packetery\Module;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -94,12 +95,12 @@ class LabelPrintModal {
 	 * Renders packet modal.
 	 */
 	public function renderPacketModal(): void {
-		if ( false === $this->contextResolver->isOrderDetailPage() ) {
+		if ( $this->contextResolver->isOrderDetailPage() === false ) {
 			return;
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || null === $order->getPacketId() ) {
+		if ( $order === null || $order->getPacketId() === null ) {
 			return;
 		}
 
@@ -114,12 +115,12 @@ class LabelPrintModal {
 	 * Renders packet claim modal.
 	 */
 	public function renderPacketClaimModal(): void {
-		if ( false === $this->contextResolver->isOrderDetailPage() ) {
+		if ( $this->contextResolver->isOrderDetailPage() === false ) {
 			return;
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || null === $order->getPacketClaimId() ) {
+		if ( $order === null || $order->getPacketClaimId() === null ) {
 			return;
 		}
 
@@ -140,8 +141,11 @@ class LabelPrintModal {
 	 * @return void
 	 */
 	private function renderModal( string $id, string $format, string $packetId ): void {
-		$form = $this->createForm( sprintf( '%s_form', $id ), $format, $packetId );
-		if ( $form['submit']->isSubmittedBy() ) {
+		$form         = $this->createForm( sprintf( '%s_form', $id ), $format, $packetId );
+		$submitButton = $form['submit'];
+		if ( $submitButton instanceof SubmitButton &&
+			$submitButton->isSubmittedBy()
+		) {
 			$form->fireEvents();
 		}
 
@@ -189,7 +193,7 @@ class LabelPrintModal {
 	 */
 	public function onFormSuccess( Form $form ): void {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 

@@ -1,9 +1,4 @@
 <?php
-/**
- * Class PacketSubmitter
- *
- * @package Packetery\Module\Order
- */
 
 declare( strict_types=1 );
 
@@ -11,137 +6,87 @@ namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\InvalidRequestException;
 use Packetery\Core\Api\Soap;
+use Packetery\Core\Api\Soap\CreatePacketMapper;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity;
 use Packetery\Core\Log;
-use Packetery\Core\Rounder;
 use Packetery\Core\Validator;
-use Packetery\Core\Api\Soap\CreatePacketMapper;
-use Packetery\Module\Carrier\CarrierOptionsFactory;
+use Packetery\Module;
 use Packetery\Module\CustomsDeclaration;
-use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 use WC_Order;
-use Packetery\Module;
 
-/**
- * Class PacketSubmitter
- *
- * @package Packetery\Module\Order
- */
 class PacketSubmitter {
 	const HOOK_PACKET_STATUS_SYNC = 'packetery_packet_status_sync_hook';
 
 	/**
-	 * SOAP API Client.
-	 *
-	 * @var Soap\Client SOAP API Client.
+	 * @var Soap\Client
 	 */
 	private $soapApiClient;
 
 	/**
-	 * Order validator.
-	 *
 	 * @var Validator\Order
 	 */
 	private $orderValidator;
 
 	/**
-	 * ILogger.
-	 *
 	 * @var Log\ILogger
 	 */
 	private $logger;
 
 	/**
-	 * Order repository.
-	 *
 	 * @var Repository
 	 */
 	private $orderRepository;
 
 	/**
-	 * CreatePacketMapper.
-	 *
 	 * @var CreatePacketMapper
 	 */
 	private $createPacketMapper;
 
 	/**
-	 * Request.
-	 *
 	 * @var Request
 	 */
 	private $request;
 
 	/**
-	 * Message manager.
-	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
 
 	/**
-	 * Log page.
-	 *
 	 * @var Module\Log\Page
 	 */
 	private $logPage;
 
 	/**
-	 * Common logic.
-	 *
 	 * @var PacketActionsCommonLogic
 	 */
 	private $commonLogic;
 
 	/**
-	 * Customs declaration repository.
-	 *
 	 * @var CustomsDeclaration\Repository
 	 */
 	private $customsDeclarationRepository;
 
 	/**
-	 * Packet synchronizer.
-	 *
 	 * @var PacketSynchronizer
 	 */
 	private $packetSynchronizer;
 
 	/**
-	 * ModuleHelper.
-	 *
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
 
 	/**
-	 * Carrier options factory.
-	 *
-	 * @var CarrierOptionsFactory
+	 * @var CoreHelper
 	 */
-	private $carrierOptionsFactory;
+	private $coreHelper;
 
-	/**
-	 * OrderApi constructor.
-	 *
-	 * @param Soap\Client                   $soapApiClient                SOAP API Client.
-	 * @param OrderValidatorFactory         $orderValidatorFactory Order validator.
-	 * @param Log\ILogger                   $logger                       Logger.
-	 * @param Repository                    $orderRepository              Order repository.
-	 * @param CreatePacketMapper            $createPacketMapper           CreatePacketMapper.
-	 * @param Request                       $request                      Request.
-	 * @param MessageManager                $messageManager               Message manager.
-	 * @param Module\Log\Page               $logPage                      Log page.
-	 * @param PacketActionsCommonLogic      $commonLogic                  Common logic.
-	 * @param CustomsDeclaration\Repository $customsDeclarationRepository Customs declaration repository.
-	 * @param PacketSynchronizer            $packetSynchronizer           Packet synchronizer.
-	 * @param ModuleHelper                  $moduleHelper                 ModuleHelper.
-	 * @param CarrierOptionsFactory         $carrierOptionsFactory        Carrier options factory.
-	 */
 	public function __construct(
 		Soap\Client $soapApiClient,
 		OrderValidatorFactory $orderValidatorFactory,
@@ -155,7 +100,7 @@ class PacketSubmitter {
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		PacketSynchronizer $packetSynchronizer,
 		ModuleHelper $moduleHelper,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CoreHelper $coreHelper
 	) {
 		$this->soapApiClient                = $soapApiClient;
 		$this->orderValidator               = $orderValidatorFactory->create();
@@ -169,7 +114,7 @@ class PacketSubmitter {
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->packetSynchronizer           = $packetSynchronizer;
 		$this->moduleHelper                 = $moduleHelper;
-		$this->carrierOptionsFactory        = $carrierOptionsFactory;
+		$this->coreHelper                   = $coreHelper;
 	}
 
 	/**
@@ -181,7 +126,7 @@ class PacketSubmitter {
 		$order      = $this->commonLogic->getOrder();
 		$redirectTo = $this->request->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
 
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$record          = new Log\Record();
 			$record->action  = Log\Record::ACTION_PACKET_SENDING;
 			$record->status  = Log\Record::STATUS_ERROR;
@@ -255,14 +200,10 @@ class PacketSubmitter {
 		bool $immediatePacketStatusCheck = false
 	): PacketSubmissionResult {
 		$submissionResult = new PacketSubmissionResult();
-		if ( null === $order ) {
-			try {
-				$order = $this->orderRepository->getByWcOrder( $wcOrder );
-			} catch ( InvalidCarrierException $exception ) {
-				$order = null;
-			}
+		if ( $order === null ) {
+			$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
 		}
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$submissionResult->increaseIgnoredCount();
 
 			return $submissionResult;
@@ -274,12 +215,11 @@ class PacketSubmitter {
 
 		$shippingMethodData = $shippingMethod->get_data();
 		$shippingMethodId   = $shippingMethodData['method_id'];
-		if ( ShippingMethod::PACKETERY_METHOD_ID === $shippingMethodId && ! $order->isExported() ) {
-
+		if ( ShippingProvider::isPacketaMethod( $shippingMethodId ) && ! $order->isExported() ) {
 			$customsDeclaration = $order->getCustomsDeclaration();
 			if (
-				null !== $customsDeclaration &&
-				null === $customsDeclaration->getInvoiceFileId() &&
+				$customsDeclaration !== null &&
+				$customsDeclaration->getInvoiceFileId() === null &&
 				$customsDeclaration->hasInvoiceFileContent()
 			) {
 				$invoiceFileResponse = $this->soapApiClient->createStorageFile(
@@ -314,8 +254,8 @@ class PacketSubmitter {
 			}
 
 			if (
-				null !== $customsDeclaration &&
-				null === $customsDeclaration->getEadFileId() &&
+				$customsDeclaration !== null &&
+				$customsDeclaration->getEadFileId() === null &&
 				$customsDeclaration->hasEadFileContent()
 			) {
 				$eadFileResponse = $this->soapApiClient->createStorageFile(
@@ -386,6 +326,7 @@ class PacketSubmitter {
 			} else {
 				$order->setIsExported( true );
 				$order->setPacketId( $response->getId() );
+				$order->setPacketTrackingUrl( $this->coreHelper->getTrackingUrl( $response->getId() ) );
 
 				$record          = new Log\Record();
 				$record->action  = Log\Record::ACTION_PACKET_SENDING;
@@ -431,21 +372,16 @@ class PacketSubmitter {
 	 * Prepares packet attributes.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 * @return array
+	 * @return array<string, string|null|bool>
 	 * @throws InvalidRequestException For the case request is not eligible to be sent to API.
 	 */
 	private function preparePacketData( Entity\Order $order ): array {
 		$validationErrors = $this->orderValidator->validate( $order );
-		if ( ! empty( $validationErrors ) ) {
+		if ( count( $validationErrors ) > 0 ) {
 			throw new InvalidRequestException( 'All required order attributes are not set.', $validationErrors );
 		}
 
 		$createPacketData = $this->createPacketMapper->fromOrderToArray( $order );
-		if ( ! empty( $createPacketData['cod'] ) ) {
-			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
-			$roundedCod              = Rounder::roundByCurrency( $createPacketData['cod'], $createPacketData['currency'], $roundingType );
-			$createPacketData['cod'] = $roundedCod;
-		}
 
 		/**
 		 * Allows to update CreatePacket request data.
@@ -460,10 +396,10 @@ class PacketSubmitter {
 	/**
 	 * Gets translated messages by submission result.
 	 *
-	 * @param array    $submissionResult Submission result.
-	 * @param int|null $orderId Order ID.
+	 * @param array<string, int> $submissionResult Submission result.
+	 * @param int|null           $orderId Order ID.
 	 *
-	 * @return array
+	 * @return array<string, null|string>
 	 */
 	public function getTranslatedSubmissionMessages( array $submissionResult, ?int $orderId ): array {
 		$success = null;
@@ -510,7 +446,7 @@ class PacketSubmitter {
 				);
 			}
 		} elseif ( isset( $submissionResult['errors'] ) ) {
-			$errors = esc_html( $submissionResult['errors'] );
+			$errors = esc_html( (string) $submissionResult['errors'] );
 		}
 
 		if ( is_numeric( $submissionResult['statusUnchanged'] ) && $submissionResult['statusUnchanged'] > 0 ) {
@@ -533,8 +469,8 @@ class PacketSubmitter {
 		add_action(
 			self::HOOK_PACKET_STATUS_SYNC,
 			function ( string $orderId ): void {
-				$order = $this->orderRepository->getById( (int) $orderId, true );
-				if ( null === $order ) {
+				$order = $this->orderRepository->getByIdWithValidCarrier( (int) $orderId );
+				if ( $order === null ) {
 					return;
 				}
 				$this->packetSynchronizer->syncStatus( $order );
@@ -543,5 +479,4 @@ class PacketSubmitter {
 			1
 		);
 	}
-
 }

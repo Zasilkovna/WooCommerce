@@ -159,33 +159,33 @@ class CreatePacket {
 	 */
 	public function __construct( Entity\Order $order ) {
 		// Required attributes.
-		$this->number    = ( $order->getCustomNumber() ?? $order->getNumber() );
+		$this->number    = $order->getCustomNumberOrNumber();
 		$this->name      = $order->getName();
 		$this->surname   = $order->getSurname();
-		$this->value     = $order->getValue();
+		$this->value     = $order->getFinalValue();
 		$this->weight    = $order->getFinalWeight();
 		$this->addressId = $order->getPickupPointOrCarrierId();
 		$this->eshop     = $order->getEshop();
 		// Optional attributes.
 		$this->adultContent = (int) $order->containsAdultContent();
-		$this->cod          = $order->getCod();
+		$this->cod          = $order->getFinalCod();
 		$this->currency     = $order->getCurrency();
 		$this->email        = $order->getEmail();
 		$this->note         = $order->getNote();
 		$this->phone        = $order->getPhone();
 
 		$pickupPoint = $order->getPickupPoint();
-		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {
+		if ( $pickupPoint !== null && $order->isExternalCarrier() ) {
 			$this->carrierPickupPoint = $pickupPoint->getId();
 		}
 
 		if ( $order->isHomeDelivery() || $order->isCarDelivery() ) {
 			$address = $order->getDeliveryAddress();
-			if ( null !== $address ) {
+			if ( $address !== null ) {
 				$this->street = $address->getStreet();
 				$this->city   = $address->getCity();
 				$this->zip    = $address->getZip();
-				if ( $address->getHouseNumber() ) {
+				if ( $address->getHouseNumber() !== null ) {
 					$this->houseNumber = $address->getHouseNumber();
 				}
 			}
@@ -194,7 +194,7 @@ class CreatePacket {
 		$carrier = $order->getCarrier();
 		if ( $carrier->requiresSize() ) {
 			$size = $order->getSize();
-			if ( null !== $size ) {
+			if ( $size !== null ) {
 				$this->size = [
 					'length' => $size->getLength(),
 					'width'  => $size->getWidth(),
@@ -212,5 +212,4 @@ class CreatePacket {
 	public function getSubmittableData(): array {
 		return array_filter( get_object_vars( $this ) );
 	}
-
 }

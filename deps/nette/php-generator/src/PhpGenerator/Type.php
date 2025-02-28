@@ -9,11 +9,12 @@ namespace Packetery\Nette\PhpGenerator;
 
 /**
  * PHP return, property and parameter types.
- * @internal
  */
 class Type
 {
-    public const STRING = 'string', INT = 'int', FLOAT = 'float', BOOL = 'bool', ARRAY = 'array', OBJECT = 'object', CALLABLE = 'callable', ITERABLE = 'iterable', VOID = 'void', MIXED = 'mixed', FALSE = 'false', NULL = 'null', SELF = 'self', PARENT = 'parent', STATIC = 'static';
+    public const String = 'string', Int = 'int', Float = 'float', Bool = 'bool', Array = 'array', Object = 'object', Callable = 'callable', Iterable = 'iterable', Void = 'void', Never = 'never', Mixed = 'mixed', False = 'false', Null = 'null', Self = 'self', Parent = 'parent', Static = 'static';
+    /** @deprecated */
+    public const STRING = self::String, INT = self::Int, FLOAT = self::Float, BOOL = self::Bool, ARRAY = self::Array, OBJECT = self::Object, CALLABLE = self::Callable, ITERABLE = self::Iterable, VOID = self::Void, NEVER = self::Never, MIXED = self::Mixed, FALSE = self::False, NULL = self::Null, SELF = self::Self, PARENT = self::Parent, STATIC = self::Static;
     public static function nullable(string $type, bool $state = \true) : string
     {
         return ($state ? '?' : '') . \ltrim($type, '?');
@@ -21,6 +22,10 @@ class Type
     public static function union(string ...$types) : string
     {
         return \implode('|', $types);
+    }
+    public static function intersection(string ...$types) : string
+    {
+        return \implode('&', $types);
     }
     public static function getType($value) : ?string
     {

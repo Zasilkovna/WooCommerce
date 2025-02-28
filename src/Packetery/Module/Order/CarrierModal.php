@@ -9,13 +9,15 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Latte\Engine;
+use Packetery\Latte;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
-use Packetery\Module\Carrier\WcSettingsConfig;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms;
+use Packetery\Nette\Forms\Controls\SubmitButton;
 use RuntimeException;
+use WC_Order_Item_Shipping;
 
 /**
  * Class CarrierModal.
@@ -29,7 +31,7 @@ class CarrierModal {
 	/**
 	 * Latte engine.
 	 *
-	 * @var Engine
+	 * @var Latte\Engine
 	 */
 	private $latteEngine;
 
@@ -62,11 +64,9 @@ class CarrierModal {
 	private $orderRepository;
 
 	/**
-	 * Native Carrier settings.
-	 *
-	 * @var WcSettingsConfig
+	 * @var OptionsProvider
 	 */
-	private $wcNativeCarrierSettings;
+	private $optionsProvider;
 
 	/**
 	 * Carrier options factory.
@@ -75,24 +75,13 @@ class CarrierModal {
 	 */
 	private $carrierOptionsFactory;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Engine                   $latteEngine              Latte engine.
-	 * @param DetailCommonLogic        $detailCommonLogic        Detail common logic.
-	 * @param CarrierModalFormFactory  $carrierModalFormFactory  Carrier Modal form factory.
-	 * @param Repository               $orderRepository          Order repository.
-	 * @param Carrier\EntityRepository $carrierRepository        Carrier repository.
-	 * @param WcSettingsConfig         $wcNativeCarrierSettings  Native Carrier settings.
-	 * @param CarrierOptionsFactory    $carrierOptionsFactory    Carrier options factory.
-	 */
 	public function __construct(
-		Engine $latteEngine,
+		Latte\Engine $latteEngine,
 		DetailCommonLogic $detailCommonLogic,
 		CarrierModalFormFactory $carrierModalFormFactory,
 		Repository $orderRepository,
 		Carrier\EntityRepository $carrierRepository,
-		WcSettingsConfig $wcNativeCarrierSettings,
+		OptionsProvider $optionsProvider,
 		CarrierOptionsFactory $carrierOptionsFactory
 	) {
 		$this->latteEngine             = $latteEngine;
@@ -100,7 +89,7 @@ class CarrierModal {
 		$this->carrierModalFormFactory = $carrierModalFormFactory;
 		$this->orderRepository         = $orderRepository;
 		$this->carrierRepository       = $carrierRepository;
-		$this->wcNativeCarrierSettings = $wcNativeCarrierSettings;
+		$this->optionsProvider         = $optionsProvider;
 		$this->carrierOptionsFactory   = $carrierOptionsFactory;
 	}
 
@@ -120,8 +109,8 @@ class CarrierModal {
 	 */
 	public function renderCarrierModal(): void {
 		if (
-			false === $this->detailCommonLogic->isPacketeryOrder() ||
-			false === $this->canBeDisplayed()
+			$this->detailCommonLogic->isPacketeryOrder() === false ||
+			$this->canBeDisplayed() === false
 		) {
 			return;
 		}
@@ -132,7 +121,8 @@ class CarrierModal {
 		);
 		$form->onSuccess[] = [ $this, 'onFormSuccess' ];
 
-		if ( $form['submit']->isSubmittedBy() ) {
+		$submitButton = $form['submit'];
+		if ( $submitButton instanceof SubmitButton && $submitButton->isSubmittedBy() ) {
 			$form->fireEvents();
 		}
 
@@ -162,12 +152,12 @@ class CarrierModal {
 		$values       = $form->getValues();
 		$orderId      = $this->detailCommonLogic->getOrderId();
 		$newCarrierId = (string) $values[ CarrierModalFormFactory::FIELD_CARRIER_ID ];
-		if ( null === $orderId ) {
+		if ( $orderId === null ) {
 			throw new RuntimeException( 'Packeta: Failed to process carrier change, new carrier id ' . $newCarrierId );
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null !== $order && $order->getCarrier()->getId() !== $newCarrierId ) {
+		if ( $order !== null && $order->getCarrier()->getId() !== $newCarrierId ) {
 			$this->orderRepository->delete( (int) $order->getNumber() );
 		}
 
@@ -192,7 +182,7 @@ class CarrierModal {
 	 */
 	private function createNewCarrierOrder( int $orderId, string $newCarrierId ): string {
 		$newCarrier = $this->carrierRepository->getAnyById( $newCarrierId );
-		if ( null === $newCarrier ) {
+		if ( $newCarrier === null ) {
 			throw new RuntimeException( 'Packeta: Failed to get instance of carrier with id ' . $newCarrierId );
 		}
 		$this->orderRepository->saveData(
@@ -223,17 +213,17 @@ class CarrierModal {
 		}
 
 		$wcOrderId = $this->detailCommonLogic->getOrderId();
-		if ( null === $wcOrderId ) {
+		if ( $wcOrderId === null ) {
 			return [];
 		}
 
 		$wcOrder = $this->orderRepository->getWcOrderById( $wcOrderId );
-		if ( null === $wcOrder ) {
+		if ( $wcOrder === null ) {
 			return [];
 		}
 
 		$shippingCountry = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( empty( $shippingCountry ) ) {
+		if ( $shippingCountry === '' ) {
 			return [];
 		}
 
@@ -257,17 +247,17 @@ class CarrierModal {
 	 */
 	public function canBeDisplayed(): bool {
 		$carrierOptions = $this->getCarrierOptionsByCountry();
-		if ( [] === $carrierOptions ) {
+		if ( $carrierOptions === [] ) {
 			return false;
 		}
 
-		if ( $this->wcNativeCarrierSettings->isActive() ) {
+		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
 			return false;
 		}
 
 		$order = $this->detailCommonLogic->getOrder();
 
-		return ( null === $order || null === $order->getPacketId() );
+		return ( $order === null || $order->getPacketId() === null );
 	}
 
 	/**
@@ -293,7 +283,7 @@ class CarrierModal {
 	 */
 	private function getCurrentCarrier(): ?string {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return null;
 		}
 
@@ -310,17 +300,18 @@ class CarrierModal {
 	 */
 	private function updateOrderDeliveryTitle( int $orderId, string $carrierTitle ): void {
 		$order = $this->orderRepository->getWcOrderById( $orderId );
-		if ( null === $order ) {
+		if ( $order === null ) {
 			return;
 		}
 		$shippingItems = $order->get_items( 'shipping' );
-		if ( count( $shippingItems ) > 0 ) {
-			$firstItem = array_shift( $shippingItems );
-			$firstItem->set_method_title( $carrierTitle );
-			$firstItem->save();
-			$order->calculate_totals();
-			$order->save();
+		if ( is_array( $shippingItems ) && count( $shippingItems ) > 0 ) {
+			$firstItem = reset( $shippingItems );
+			if ( $firstItem instanceof WC_Order_Item_Shipping ) {
+				$firstItem->set_method_title( $carrierTitle );
+				$firstItem->save();
+				$order->calculate_totals();
+				$order->save();
+			}
 		}
 	}
-
 }

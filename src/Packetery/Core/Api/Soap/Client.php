@@ -19,8 +19,6 @@ use SoapFault;
  */
 class Client {
 
-	private const WSDL_URL = 'http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl';
-
 	/**
 	 * API password.
 	 *
@@ -29,12 +27,21 @@ class Client {
 	private $apiPassword;
 
 	/**
+	 * WSDL Url.
+	 *
+	 * @var string
+	 */
+	public $wsdlUrl;
+
+	/**
 	 * Client constructor.
 	 *
 	 * @param string|null $apiPassword Api password.
+	 * @param string      $wsdlUrl WSDL url.
 	 */
-	public function __construct( ?string $apiPassword ) {
+	public function __construct( ?string $apiPassword, string $wsdlUrl ) {
 		$this->apiPassword = $apiPassword;
+		$this->wsdlUrl     = $wsdlUrl;
 	}
 
 	/**
@@ -57,7 +64,7 @@ class Client {
 	public function createStorageFile( Request\CreateStorageFile $request ): Response\CreateStorageFile {
 		$response = new Response\CreateStorageFile();
 		try {
-			$soapClient  = new SoapClient( self::WSDL_URL );
+			$soapClient  = new SoapClient( $this->wsdlUrl );
 			$storageFile = $soapClient->createStorageFile(
 				$this->apiPassword,
 				[
@@ -85,7 +92,7 @@ class Client {
 	public function createPacket( array $requestData ): Response\CreatePacket {
 		$response = new Response\CreatePacket();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$packet     = $soapClient->createPacket( $this->apiPassword, $requestData );
 			$response->setId( $packet->id );
 		} catch ( SoapFault $exception ) {
@@ -107,7 +114,7 @@ class Client {
 	public function createPacketClaimWithPassword( Request\CreatePacketClaimWithPassword $request ): Response\CreatePacketClaimWithPassword {
 		$response = new Response\CreatePacketClaimWithPassword();
 		try {
-			$soapClient              = new SoapClient( self::WSDL_URL );
+			$soapClient              = new SoapClient( $this->wsdlUrl );
 			$packetClaimWithPassword = $soapClient->createPacketClaimWithPassword( $this->apiPassword, $request->getSubmittableData() );
 			$response->setId( $packetClaimWithPassword->id );
 			$response->setPassword( $packetClaimWithPassword->password );
@@ -130,7 +137,7 @@ class Client {
 	public function cancelPacket( Request\CancelPacket $request ): Response\CancelPacket {
 		$response = new Response\CancelPacket();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$soapClient->cancelPacket( $this->apiPassword, $request->getPacketId() );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
@@ -150,9 +157,10 @@ class Client {
 	public function packetStatus( Request\PacketStatus $request ): Response\PacketStatus {
 		$response = new Response\PacketStatus();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$result     = $soapClient->packetStatus( $this->apiPassword, $request->getPacketId() );
 			$response->setCodeText( $result->codeText );
+			$response->setStoredUntil( $result->storedUntil );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );
@@ -171,7 +179,7 @@ class Client {
 	public function createShipment( Request\CreateShipment $request ): Response\CreateShipment {
 		$response = new Response\CreateShipment();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$shipment   = $soapClient->createShipment( $this->apiPassword, $request->getPacketIds(), $request->getCustomBarcode() );
 			$response->setId( (string) $shipment->id );
 			$response->setChecksum( $shipment->checksum );
@@ -186,7 +194,7 @@ class Client {
 				$invalidPacketIdsFiltered = [];
 
 				foreach ( $invalidPacketIds as $invalidPacketId ) {
-					if ( empty( $invalidPacketId ) ) {
+					if ( ! is_string( $invalidPacketId ) || $invalidPacketId === '' ) {
 						continue;
 					}
 
@@ -210,7 +218,7 @@ class Client {
 	public function barcodePng( Request\BarcodePng $request ): Response\BarcodePng {
 		$response = new Response\BarcodePng();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$data       = $soapClient->barcodePng( $this->apiPassword, $request->getBarcode() );
 			$response->setImageContent( $data );
 		} catch ( SoapFault $exception ) {
@@ -231,7 +239,7 @@ class Client {
 	public function packetsLabelsPdf( Request\PacketsLabelsPdf $request ): Response\PacketsLabelsPdf {
 		$response = new Response\PacketsLabelsPdf();
 		try {
-			$soapClient  = new SoapClient( self::WSDL_URL );
+			$soapClient  = new SoapClient( $this->wsdlUrl );
 			$pdfContents = $soapClient->packetsLabelsPdf( $this->apiPassword, $request->getPacketIds(), $request->getFormat(), $request->getOffset() );
 			$response->setPdfContents( $pdfContents );
 		} catch ( SoapFault $exception ) {
@@ -256,7 +264,7 @@ class Client {
 	public function packetsCarrierLabelsPdf( Request\PacketsCourierLabelsPdf $request ): Response\PacketsCourierLabelsPdf {
 		$response = new Response\PacketsCourierLabelsPdf();
 		try {
-			$soapClient  = new SoapClient( self::WSDL_URL );
+			$soapClient  = new SoapClient( $this->wsdlUrl );
 			$pdfContents = $soapClient->packetsCourierLabelsPdf( $this->apiPassword, $request->getPacketIdsWithCourierNumbers(), $request->getOffset(), $request->getFormat() );
 			$response->setPdfContents( $pdfContents );
 		} catch ( SoapFault $exception ) {
@@ -284,7 +292,7 @@ class Client {
 	public function packetCourierNumber( Request\PacketCourierNumber $request ): Response\PacketCourierNumber {
 		$response = new Response\PacketCourierNumber();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$number     = $soapClient->packetCourierNumber( $this->apiPassword, $request->getPacketId() );
 			$response->setNumber( $number );
 		} catch ( SoapFault $exception ) {
@@ -305,9 +313,29 @@ class Client {
 	public function senderGetReturnRouting( Request\SenderGetReturnRouting $request ): Response\SenderGetReturnRouting {
 		$response = new Response\SenderGetReturnRouting();
 		try {
-			$soapClient = new SoapClient( self::WSDL_URL );
+			$soapClient = new SoapClient( $this->wsdlUrl );
 			$soapClient->senderGetReturnRouting( $this->apiPassword, $request->getSenderLabel() );
 			// TODO: Set return routing strings.
+		} catch ( SoapFault $exception ) {
+			$response->setFault( $this->getFaultIdentifier( $exception ) );
+			$response->setFaultString( $exception->faultstring );
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Sets new stored until date.
+	 *
+	 * @param Request\PacketSetStoredUntil $request Request.
+	 *
+	 * @return Response\PacketSetStoredUntil
+	 */
+	public function packetSetStoredUntil( Request\PacketSetStoredUntil $request ): Response\PacketSetStoredUntil {
+		$response = new Response\PacketSetStoredUntil();
+		try {
+			$soapClient = new SoapClient( $this->wsdlUrl );
+			$soapClient->packetSetStoredUntil( $this->apiPassword, $request->getPacketId(), $request->getStoredUntil() );
 		} catch ( SoapFault $exception ) {
 			$response->setFault( $this->getFaultIdentifier( $exception ) );
 			$response->setFaultString( $exception->faultstring );

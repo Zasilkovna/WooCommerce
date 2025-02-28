@@ -84,7 +84,7 @@
 			padding-top: 20px;
 			padding-bottom: 15px;
 			vertical-align: top;
-			min-width: 200px;
+			min-width: 240px;
 		}
 
 		input[type="text"] {
@@ -726,6 +726,12 @@ tbody .packetery-log-column-note {
 	border-right: 1px solid #e8e8e8;
 	border-bottom: 1px solid #e8e8e8;
 	box-shadow: 0 0 40px rgba(0, 0, 0, .1);
+
+	.form-table {
+		th {
+			width: 360px;
+		}
+	}
 }
 
 .packeta_log {
@@ -870,6 +876,19 @@ tbody .packetery-log-column-note {
 .packetery-has-warning[name],
 .packetery-has-warning[name]:focus {
 	border: 1px solid #FF8C00;
+}
+
+.packetery-carrier-status {
+	text-align: center;
+	width: 100px;
+}
+
+.packetery-carrier-status-active {
+	color: green;
+}
+
+.packetery-carrier-status-inactive {
+	color: $color-packeta;
 }
 
 @import 'admin/custom-declaration.scss';

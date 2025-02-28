@@ -10,7 +10,6 @@ namespace Packetery\Nette\Forms\Controls;
 use Packetery\Nette;
 /**
  * Hidden form control used to store a non-displayed value.
- * @internal
  */
 class HiddenField extends BaseControl
 {
@@ -57,15 +56,6 @@ class HiddenField extends BaseControl
     public function setNullable(bool $value = \true)
     {
         $this->nullable = $value;
-        return $this;
-    }
-    /**
-     * Appends input string filter callback.
-     * @return static
-     */
-    public function addFilter(callable $filter)
-    {
-        $this->getRules()->addFilter($filter);
         return $this;
     }
     public function getControl() : \Packetery\Nette\Utils\Html

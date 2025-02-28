@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
 
 use Packetery\Latte;
@@ -61,7 +60,7 @@ class WpdbTracyPanel implements Tracy\IBarPanel {
 		foreach ( $queries as $queryInfo ) {
 			[ $query, $timeSpent, $funcList ] = $queryInfo;
 
-			if ( false === strpos( $funcList, 'Packetery\\' ) && false === strpos( $funcList, '/plugins/packeta/' ) ) {
+			if ( strpos( $funcList, 'Packetery\\' ) === false && strpos( $funcList, '/plugins/packeta/' ) === false ) {
 				continue;
 			}
 
@@ -74,6 +73,7 @@ class WpdbTracyPanel implements Tracy\IBarPanel {
 			$count++;
 			if ( $count >= $maxQueries ) {
 				yield false;
+
 				break;
 			}
 		}

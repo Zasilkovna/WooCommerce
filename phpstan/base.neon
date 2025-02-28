@@ -1,13 +1,6 @@
 parameters:
-	bootstrapFiles:
-		- vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
-		- vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
-		- ../constants.php
-	level: 8
+	phpVersion:
+		min: 70200
+		max: 80300
 	fileExtensions:
 		- php
-	paths:
-		- ../src/Packetery/Core
-	scanDirectories:
-		- ../deps
-		- ../src/Packetery/Module

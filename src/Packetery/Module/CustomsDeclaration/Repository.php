@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Packetery\Module\CustomsDeclaration;
 
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\CustomsDeclaration;
 use Packetery\Core\Entity\CustomsDeclarationItem;
-use Packetery\Core\CoreHelper;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\WpdbAdapter;
 
@@ -54,7 +54,7 @@ class Repository {
 	private function getIdByOrderNumber( string $orderNumber ): ?string {
 		return $this->wpdbAdapter->get_var(
 			$this->wpdbAdapter->prepare(
-				'SELECT `id` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+				'SELECT `id` FROM `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` WHERE `order_id` = %d',
 				$orderNumber
 			)
 		);
@@ -84,13 +84,13 @@ class Repository {
 					`ead_file` IS NOT NULL AS `has_ead_file_content`
 				FROM `%s`
 				WHERE `order_id` = %d',
-				$this->wpdbAdapter->packetery_customs_declaration,
+				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$orderNumber
 			),
 			ARRAY_A
 		);
 
-		if ( null === $customsDeclarationRow ) {
+		if ( $customsDeclarationRow === null ) {
 			return null;
 		}
 
@@ -100,7 +100,7 @@ class Repository {
 			function () use ( $orderNumber ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
-						'SELECT `invoice_file` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+						'SELECT `invoice_file` FROM `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` WHERE `order_id` = %d',
 						$orderNumber
 					)
 				);
@@ -112,7 +112,7 @@ class Repository {
 			function () use ( $orderNumber ): ?string {
 				return $this->wpdbAdapter->get_var(
 					$this->wpdbAdapter->prepare(
-						'SELECT `ead_file` FROM `' . $this->wpdbAdapter->packetery_customs_declaration . '` WHERE `order_id` = %d',
+						'SELECT `ead_file` FROM `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` WHERE `order_id` = %d',
 						$orderNumber
 					)
 				);
@@ -132,11 +132,26 @@ class Repository {
 	 * @return CustomsDeclarationItem[]
 	 */
 	public function getItemsByCustomsDeclarationId( ?string $customsDeclarationId ): array {
-		if ( null === $customsDeclarationId ) {
+		if ( $customsDeclarationId === null ) {
 			return [];
 		}
 
-		$customsDeclarationItemRows = $this->wpdbAdapter->get_results(
+		$customsDeclarationItemRows = $this->getCustomsDeclarationItemRows( $customsDeclarationId );
+
+		if ( $customsDeclarationItemRows === null ) {
+			return [];
+		}
+
+		$customsDeclarationItems = [];
+		foreach ( $customsDeclarationItemRows as $row ) {
+			$customsDeclarationItems[] = $this->entityFactory->createItemFromStandardizedStructure( $row );
+		}
+
+		return $customsDeclarationItems;
+	}
+
+	public function getCustomsDeclarationItemRows( ?string $customsDeclarationId ): ?array {
+		return $this->wpdbAdapter->get_results(
 			sprintf(
 				'SELECT
 					`id`,
@@ -151,22 +166,11 @@ class Repository {
 					`is_food_or_book`,
 					`is_voc`
 				FROM `%s` WHERE `customs_declaration_id` = %d',
-				$this->wpdbAdapter->packetery_customs_declaration_item,
+				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$customsDeclarationId
 			),
 			ARRAY_A
 		);
-
-		if ( null === $customsDeclarationItemRows ) {
-			return [];
-		}
-
-		$customsDeclarationItems = [];
-		foreach ( $customsDeclarationItemRows as $row ) {
-			$customsDeclarationItems[] = $this->entityFactory->createItemFromStandardizedStructure( $row );
-		}
-
-		return $customsDeclarationItems;
 	}
 
 	/**
@@ -177,55 +181,55 @@ class Repository {
 	 * @return void
 	 */
 	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [ 'invoice_file', 'ead_file' ] ): void {
-		if ( null === $customsDeclaration->getId() ) {
+		if ( $customsDeclaration->getId() === null ) {
 			$this->wpdbAdapter->insertReplaceHelper(
-				$this->wpdbAdapter->packetery_customs_declaration,
+				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$this->declarationToDbArray( $customsDeclaration, $fieldsToOmit )
 			);
 			$customsDeclaration->setId( $this->wpdbAdapter->getLastInsertId() );
 		} else {
 			$this->wpdbAdapter->update(
-				$this->wpdbAdapter->packetery_customs_declaration,
+				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$this->declarationToDbArray( $customsDeclaration, $fieldsToOmit ),
 				[ 'id' => (int) $customsDeclaration->getId() ]
 			);
 		}
 
 		$omitInvoiceFile = in_array( 'invoice_file', $fieldsToOmit, true );
-		if ( false === $omitInvoiceFile && $customsDeclaration->hasInvoiceFileContent() ) {
+		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
-					'UPDATE `' . $this->wpdbAdapter->packetery_customs_declaration . '` SET `invoice_file` = %s WHERE `id` = %d',
+					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `invoice_file` = %s WHERE `id` = %d',
 					$customsDeclaration->getInvoiceFile(),
 					$customsDeclaration->getId()
 				)
 			);
 		}
 
-		if ( false === $omitInvoiceFile && false === $customsDeclaration->hasInvoiceFileContent() ) {
+		if ( $omitInvoiceFile === false && $customsDeclaration->hasInvoiceFileContent() === false ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
-					'UPDATE ' . $this->wpdbAdapter->packetery_customs_declaration . ' SET `invoice_file` = NULL WHERE `id` = %d',
+					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `invoice_file` = NULL WHERE `id` = %d',
 					$customsDeclaration->getId()
 				)
 			);
 		}
 
 		$omitEadFile = in_array( 'ead_file', $fieldsToOmit, true );
-		if ( false === $omitEadFile && $customsDeclaration->hasEadFileContent() ) {
+		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
-					'UPDATE `' . $this->wpdbAdapter->packetery_customs_declaration . '` SET `ead_file` = %s WHERE `id` = %d',
+					'UPDATE `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '` SET `ead_file` = %s WHERE `id` = %d',
 					$customsDeclaration->getEadFile(),
 					$customsDeclaration->getId()
 				)
 			);
 		}
 
-		if ( false === $omitEadFile && false === $customsDeclaration->hasEadFileContent() ) {
+		if ( $omitEadFile === false && $customsDeclaration->hasEadFileContent() === false ) {
 			$this->wpdbAdapter->query(
 				$this->wpdbAdapter->prepare(
-					'UPDATE ' . $this->wpdbAdapter->packetery_customs_declaration . ' SET `ead_file` = NULL WHERE `id` = %d',
+					'UPDATE ' . $this->wpdbAdapter->packeteryCustomsDeclaration . ' SET `ead_file` = NULL WHERE `id` = %d',
 					$customsDeclaration->getId()
 				)
 			);
@@ -239,15 +243,15 @@ class Repository {
 	 * @return void
 	 */
 	public function saveItem( CustomsDeclarationItem $customsDeclarationItem ): void {
-		if ( null === $customsDeclarationItem->getId() ) {
+		if ( $customsDeclarationItem->getId() === null ) {
 			$this->wpdbAdapter->insert(
-				$this->wpdbAdapter->packetery_customs_declaration_item,
+				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$this->declarationItemToDbArray( $customsDeclarationItem )
 			);
 			$customsDeclarationItem->setId( $this->wpdbAdapter->getLastInsertId() );
 		} else {
 			$this->wpdbAdapter->update(
-				$this->wpdbAdapter->packetery_customs_declaration_item,
+				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$this->declarationItemToDbArray( $customsDeclarationItem ),
 				[ 'id' => (int) $customsDeclarationItem->getId() ]
 			);
@@ -261,7 +265,7 @@ class Repository {
 	 * @return void
 	 */
 	public function deleteItem( int $itemId ): void {
-		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_customs_declaration_item, [ 'id' => $itemId ], '%d' );
+		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclarationItem, [ 'id' => $itemId ], '%d' );
 	}
 
 	/**
@@ -273,7 +277,7 @@ class Repository {
 	private function deleteItems( string $customsDeclarationId ): void {
 		$items = $this->getItemsByCustomsDeclarationId( $customsDeclarationId );
 
-		if ( empty( $items ) ) {
+		if ( count( $items ) === 0 ) {
 			return;
 		}
 
@@ -291,12 +295,12 @@ class Repository {
 	public function delete( string $orderId ): void {
 		$customsDeclarationId = $this->getIdByOrderNumber( $orderId );
 
-		if ( null === $customsDeclarationId ) {
+		if ( $customsDeclarationId === null ) {
 			return;
 		}
 
 		$this->deleteItems( $customsDeclarationId );
-		$this->wpdbAdapter->delete( $this->wpdbAdapter->packetery_customs_declaration, [ 'id' => $customsDeclarationId ], '%d' );
+		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclaration, [ 'id' => $customsDeclarationId ], '%d' );
 	}
 
 	/**
@@ -369,11 +373,11 @@ class Repository {
 				`ead_file_id` varchar(255) NULL DEFAULT NULL,
 			PRIMARY KEY (`id`)
 		) %s',
-			$this->wpdbAdapter->packetery_customs_declaration,
+			$this->wpdbAdapter->packeteryCustomsDeclaration,
 			$this->wpdbAdapter->get_charset_collate()
 		);
 
-		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_customs_declaration );
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packeteryCustomsDeclaration );
 	}
 
 	/**
@@ -397,24 +401,24 @@ class Repository {
 				`is_voc` tinyint(1) NOT NULL,
 			PRIMARY KEY (`id`)
 		) %s',
-			$this->wpdbAdapter->packetery_customs_declaration_item,
+			$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 			$this->wpdbAdapter->get_charset_collate()
 		);
 
-		return $this->wpdbAdapter->dbDelta( $createItemTableQuery, $this->wpdbAdapter->packetery_customs_declaration_item );
+		return $this->wpdbAdapter->dbDelta( $createItemTableQuery, $this->wpdbAdapter->packeteryCustomsDeclarationItem );
 	}
 
 	/**
 	 * Drop table used to store customs declarations items.
 	 */
 	public function dropItems(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packetery_customs_declaration_item . '`' );
+		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclarationItem . '`' );
 	}
 
 	/**
 	 * Drop table used to store customs declarations.
 	 */
 	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packetery_customs_declaration . '`' );
+		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryCustomsDeclaration . '`' );
 	}
 }

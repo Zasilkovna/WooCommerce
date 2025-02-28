@@ -1,19 +1,16 @@
 <?php
-/**
- * Class Metabox
- *
- * @package Packetery\Order
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Core\Entity;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity;
 use Packetery\Core\Validator;
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Exception\InvalidCarrierException;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
 use Packetery\Module\Log\Page;
 use Packetery\Module\MessageManager;
@@ -21,148 +18,99 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\WidgetOptionsBuilder;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms;
 use Packetery\Nette\Http\Request;
 use WC_Data_Exception;
 use WC_Order;
 
-/**
- * Class Metabox
- *
- * @package Packetery\Order
- */
 class Metabox {
 	private const PART_ERROR          = 'error';
 	private const PART_CARRIER_CHANGE = 'carrierChange';
 	private const PART_MAIN           = 'main';
 
 	/**
-	 * PacketeryLatte engine.
-	 *
 	 * @var Engine
 	 */
-	private $latte_engine;
+	private $latteEngine;
 
 	/**
-	 * Message manager.
-	 *
 	 * @var MessageManager
 	 */
-	private $message_manager;
+	private $messageManager;
 
 	/**
-	 * CoreHelper.
-	 *
 	 * @var CoreHelper
 	 */
 	private $coreHelper;
 
 	/**
-	 * HTTP request.
-	 *
 	 * @var Request
 	 */
 	private $request;
 
 	/**
-	 * Order form.
-	 *
 	 * @var Forms\Form
 	 */
 	private $form;
 
 	/**
-	 * OrderDetails
-	 *
 	 * @var Form
 	 */
 	private $orderForm;
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Repository.
-	 *
 	 * @var Repository
 	 */
 	private $orderRepository;
 
 	/**
-	 * Log page.
-	 *
 	 * @var Log\Page
 	 */
 	private $logPage;
 
 	/**
-	 * OrderFacade.
-	 *
 	 * @var AttributeMapper
 	 */
 	private $mapper;
 
 	/**
-	 * Widget options builder.
-	 *
 	 * @var WidgetOptionsBuilder
 	 */
 	private $widgetOptionsBuilder;
 
 	/**
-	 * Carrier repository.
-	 *
 	 * @var EntityRepository
 	 */
 	private $carrierRepository;
 
 	/**
-	 * Order validator.
-	 *
 	 * @var Validator\Order
 	 */
 	private $orderValidator;
 
 	/**
-	 * Order detail common logic.
-	 *
 	 * @var DetailCommonLogic
 	 */
 	private $detailCommonLogic;
 
 	/**
-	 * Carrier modal.
-	 *
 	 * @var CarrierModal
 	 */
 	private $carrierModal;
 
 	/**
-	 * Metabox constructor.
-	 *
-	 * @param Engine                $latte_engine          PacketeryLatte engine.
-	 * @param MessageManager        $message_manager       Message manager.
-	 * @param CoreHelper            $coreHelper            CoreHelper.
-	 * @param Request               $request               Http request.
-	 * @param OptionsProvider       $optionsProvider       Options provider.
-	 * @param Repository            $orderRepository       Order repository.
-	 * @param Page                  $logPage               Log page.
-	 * @param AttributeMapper       $mapper                AttributeMapper.
-	 * @param WidgetOptionsBuilder  $widgetOptionsBuilder  Widget options builder.
-	 * @param EntityRepository      $carrierRepository     Carrier repository.
-	 * @param OrderValidatorFactory $orderValidatorFactory Order validator.
-	 * @param DetailCommonLogic     $detailCommonLogic     Detail common logic.
-	 * @param Form                  $orderForm             Order details.
-	 * @param CarrierModal          $carrierModal          Carrier change modal.
+	 * @var WpAdapter
 	 */
+	private $wpAdapter;
+
 	public function __construct(
-		Engine $latte_engine,
-		MessageManager $message_manager,
+		Engine $latteEngine,
+		MessageManager $messageManager,
 		CoreHelper $coreHelper,
 		Request $request,
 		OptionsProvider $optionsProvider,
@@ -174,10 +122,11 @@ class Metabox {
 		OrderValidatorFactory $orderValidatorFactory,
 		DetailCommonLogic $detailCommonLogic,
 		Form $orderForm,
-		CarrierModal $carrierModal
+		CarrierModal $carrierModal,
+		WpAdapter $wpAdapter
 	) {
-		$this->latte_engine         = $latte_engine;
-		$this->message_manager      = $message_manager;
+		$this->latteEngine          = $latteEngine;
+		$this->messageManager       = $messageManager;
 		$this->coreHelper           = $coreHelper;
 		$this->request              = $request;
 		$this->optionsProvider      = $optionsProvider;
@@ -190,18 +139,13 @@ class Metabox {
 		$this->detailCommonLogic    = $detailCommonLogic;
 		$this->orderForm            = $orderForm;
 		$this->carrierModal         = $carrierModal;
+		$this->wpAdapter            = $wpAdapter;
 	}
 
-	/**
-	 *  Registers related hooks.
-	 */
 	public function register(): void {
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 	}
 
-	/**
-	 *  Add metaboxes
-	 */
 	public function add_meta_boxes(): void {
 		if ( ! $this->detailCommonLogic->isPacketeryOrder() ) {
 			return;
@@ -210,10 +154,10 @@ class Metabox {
 		$this->initializeForm();
 		$parts = $this->prepareMetaboxParts();
 
-		if ( ! empty( $parts ) ) {
+		if ( count( $parts ) > 0 ) {
 			add_meta_box(
 				'packetery_metabox',
-				__( 'Packeta', 'packeta' ),
+				$this->wpAdapter->__( 'Packeta', 'packeta' ),
 				array(
 					$this,
 					'render_metabox',
@@ -225,9 +169,6 @@ class Metabox {
 		}
 	}
 
-	/**
-	 * Renders metabox content.
-	 */
 	public function render_metabox(): void {
 		$parts = $this->prepareMetaboxParts();
 
@@ -249,7 +190,7 @@ class Metabox {
 	}
 
 	/**
-	 * Prepares metabox parts.
+	 * @return array<string, string>
 	 */
 	private function prepareMetaboxParts(): array {
 		static $partsCache;
@@ -259,7 +200,7 @@ class Metabox {
 		}
 
 		$orderId = $this->detailCommonLogic->getOrderId();
-		if ( null === $orderId ) {
+		if ( $orderId === null ) {
 			$partsCache = [];
 
 			return $partsCache;
@@ -269,7 +210,7 @@ class Metabox {
 			$order = $this->orderRepository->getById( $orderId );
 		} catch ( InvalidCarrierException $exception ) {
 			$partsCache = [
-				self::PART_ERROR => $this->latte_engine->renderToString(
+				self::PART_ERROR => $this->latteEngine->renderToString(
 					PACKETERY_PLUGIN_DIR . '/template/order/metabox-form-error.latte',
 					[
 						'errorMessage' => $exception->getMessage(),
@@ -285,7 +226,7 @@ class Metabox {
 			$parts[ self::PART_CARRIER_CHANGE ] = $this->carrierModal->getMetaboxHtml();
 		}
 
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$partsCache = $parts;
 
 			return $partsCache;
@@ -303,7 +244,7 @@ class Metabox {
 
 		$packetClaimCancelUrl   = null;
 		$packetClaimTrackingUrl = null;
-		if ( $order->getPacketClaimId() ) {
+		if ( $order->getPacketClaimId() !== null ) {
 			$packetClaimCancelUrl   = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -311,11 +252,11 @@ class Metabox {
 					PacketActionsCommonLogic::PARAM_PACKET_ID => $order->getPacketClaimId(),
 				]
 			);
-			$packetClaimTrackingUrl = $this->coreHelper->get_tracking_url( $order->getPacketClaimId() );
+			$packetClaimTrackingUrl = $this->coreHelper->getTrackingUrl( $order->getPacketClaimId() );
 		}
 
 		$packetId = $order->getPacketId();
-		if ( $packetId ) {
+		if ( $packetId !== null ) {
 			$packetCancelLink = $this->getOrderActionLink(
 				$order,
 				PacketActionsCommonLogic::ACTION_CANCEL_PACKET,
@@ -325,7 +266,7 @@ class Metabox {
 			);
 
 			$packetStatusTranslatedName = PacketStatusResolver::getTranslatedName( $order->getPacketStatus() );
-
+			/** @var array<string, string> $statusClasses */
 			$statusClasses = [
 				'received data'         => 'received-data',
 				'unknown'               => 'unknown',
@@ -342,7 +283,7 @@ class Metabox {
 				$statusClass = $statusClasses[ $statusType ];
 			}
 
-			$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
+			$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 				PACKETERY_PLUGIN_DIR . '/template/order/metabox-common.latte',
 				[
 					'order'                      => $order,
@@ -351,29 +292,31 @@ class Metabox {
 					'isPacketSubmissionPossible' => false,
 					'orderWarningFields'         => [],
 					'packetCancelLink'           => $packetCancelLink,
-					'packetTrackingUrl'          => $this->coreHelper->get_tracking_url( $packetId ),
+					'packetTrackingUrl'          => $this->coreHelper->getTrackingUrl( $packetId ),
 					'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
 					'showLogsLink'               => $showLogsLink,
 					'packetClaimUrl'             => $packetClaimUrl,
 					'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+					'storedUntil'                => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
 					'translations'               => [
-						'packetTrackingOnline'      => __( 'Packet tracking online', 'packeta' ),
-						'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
-						'showLogs'                  => __( 'Show logs', 'packeta' ),
+						'packetTrackingOnline'      => $this->wpAdapter->__( 'Packet tracking online', 'packeta' ),
+						'packetClaimTrackingOnline' => $this->wpAdapter->__( 'Packet claim tracking', 'packeta' ),
+						'showLogs'                  => $this->wpAdapter->__( 'Show logs', 'packeta' ),
 						// translators: %s: Order number.
-						'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
+						'reallyCancelPacketHeading' => sprintf( $this->wpAdapter->__( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 						// translators: %s: Packet number.
-						'reallyCancelPacket'        => sprintf( __( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
+						'reallyCancelPacket'        => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel parcel number %s?', 'packeta' ), $packetId ),
 						// translators: %s: Packet claim number.
-						'reallyCancelPacketClaim'   => sprintf( __( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
+						'reallyCancelPacketClaim'   => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
 
-						'cancelPacket'              => __( 'Cancel packet', 'packeta' ),
-						'createPacketClaim'         => __( 'Create packet claim', 'packeta' ),
-						'printPacketLabel'          => __( 'Print packet label', 'packeta' ),
-						'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
-						'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
-						'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
-						'submissionPassword'        => __( 'submission password', 'packeta' ),
+						'cancelPacket'              => $this->wpAdapter->__( 'Cancel packet', 'packeta' ),
+						'createPacketClaim'         => $this->wpAdapter->__( 'Create packet claim', 'packeta' ),
+						'printPacketLabel'          => $this->wpAdapter->__( 'Print packet label', 'packeta' ),
+						'printPacketClaimLabel'     => $this->wpAdapter->__( 'Print packet claim label', 'packeta' ),
+						'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
+						'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
+						'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
+						'setStoredUntil'            => $this->wpAdapter->__( 'Set the pickup date extension', 'packeta' ),
 					],
 				]
 			);
@@ -383,22 +326,25 @@ class Metabox {
 			return $partsCache;
 		}
 
+		$unit = $this->optionsProvider->getDimensionsUnit();
 		$this->orderForm->setDefaults(
 			$this->form,
 			$order->getFinalWeight(),
-			$order->getFinalWeight(),
-			$order->getLength(),
-			$order->getWidth(),
-			$order->getHeight(),
-			$order->getCod(),
-			$order->getValue(),
+			$order->getCalculatedWeight(),
+			$unit === OptionsProvider::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToCentimeters( (int) $order->getLength() ) : $order->getLength(),
+			$unit === OptionsProvider::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToCentimeters( (int) $order->getWidth() ) : $order->getWidth(),
+			$unit === OptionsProvider::DIMENSIONS_UNIT_CM ? ModuleHelper::convertToCentimeters( (int) $order->getHeight() ) : $order->getHeight(),
+			$order->getFinalCod(),
+			$order->getCalculatedCod(),
+			$order->getFinalValue(),
+			$order->getCalculatedValue(),
 			$order->containsAdultContent(),
 			$this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT )
 		);
 
-		$prev_invalid_values = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
-		if ( $prev_invalid_values ) {
-			$this->form->setValues( $prev_invalid_values );
+		$prevInvalidValues = get_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
+		if ( $prevInvalidValues !== null && $prevInvalidValues !== false ) {
+			$this->form->setValues( $prevInvalidValues );
 			$this->form->validate();
 		}
 		delete_transient( 'packetery_metabox_nette_form_prev_invalid_values' );
@@ -411,20 +357,20 @@ class Metabox {
 		$shippingCountry   = $order->getShippingCountry();
 		$showHdWidget      = $order->isHomeDelivery() && in_array( $shippingCountry, Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true );
 		if (
-			null === $shippingCountry ||
+			$shippingCountry === null ||
 			! $this->carrierRepository->isValidForCountry( $order->getCarrier()->getId(), $shippingCountry )
 		) {
 			if ( $order->isPickupPointDelivery() ) {
 				$showWidgetButton = false;
-				if ( empty( $shippingCountry ) ) {
-					$widgetButtonError = __(
+				if ( $shippingCountry === null ) {
+					$widgetButtonError = $this->wpAdapter->__(
 						'The pickup point cannot be changed because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
 					);
 				} else {
 					$widgetButtonError = sprintf(
 					// translators: %s is country code.
-						__(
+						$this->wpAdapter->__(
 							'The pickup point cannot be changed because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
 							'packeta'
 						),
@@ -433,15 +379,15 @@ class Metabox {
 				}
 			} elseif ( in_array( $order->getCarrier()->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$showHdWidget = false;
-				if ( empty( $shippingCountry ) ) {
-					$widgetButtonError = __(
+				if ( $shippingCountry === null ) {
+					$widgetButtonError = $this->wpAdapter->__(
 						'The address cannot be validated because the shipping address has no country set. First, change the country of delivery in the shipping address.',
 						'packeta'
 					);
 				} else {
 					$widgetButtonError = sprintf(
 					// translators: %s is country code.
-						__(
+						$this->wpAdapter->__(
 							'The address cannot be validated because the selected carrier does not deliver to country "%s". First, change the country of delivery in the shipping address.',
 							'packeta'
 						),
@@ -451,7 +397,7 @@ class Metabox {
 			}
 		}
 
-		$parts[ self::PART_MAIN ] = $this->latte_engine->renderToString(
+		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
 				'form'                       => $this->form,
@@ -475,21 +421,27 @@ class Metabox {
 				'logo'                       => plugin_dir_url( PACKETERY_PLUGIN_DIR . '/packeta.php' ) . 'public/images/packeta-symbol.png',
 				'showLogsLink'               => $showLogsLink,
 				'hasOrderManualWeight'       => $order->hasManualWeight(),
+				'hasOrderManualCod'          => $order->hasManualCod(),
+				'hasOrderManualValue'        => $order->hasManualValue(),
 				'isPacketaPickupPoint'       => $order->isPacketaInternalPickupPoint(),
+				'pickupPointAttributes'      => Attribute::$pickupPointAttributes,
+				'homeDeliveryAttributes'     => Attribute::$homeDeliveryAttributes,
 				'translations'               => [
-					'packetSubmissionValidationErrorTooltip' => __( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
-					'showLogs'                  => __( 'Show logs', 'packeta' ),
-					'weightIsManual'            => __( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
-					'submitPacket'              => __( 'Submit to Packeta', 'packeta' ),
-					'packetClaimTrackingOnline' => __( 'Packet claim tracking', 'packeta' ),
-					'printPacketClaimLabel'     => __( 'Print packet claim label', 'packeta' ),
-					'cancelPacketClaim'         => __( 'Cancel packet claim', 'packeta' ),
-					'packetClaimPassword'       => __( 'Packet claim password', 'packeta' ),
-					'submissionPassword'        => __( 'submission password', 'packeta' ),
+					'packetSubmissionValidationErrorTooltip' => $this->wpAdapter->__( 'It is not possible to submit the shipment because all the information required for this shipment is not filled.', 'packeta' ),
+					'showLogs'                  => $this->wpAdapter->__( 'Show logs', 'packeta' ),
+					'weightIsManual'            => $this->wpAdapter->__( 'Weight is manually set. To calculate weight remove field content and save.', 'packeta' ),
+					'codIsManual'               => $this->wpAdapter->__( 'COD value is manually set. To calculate the value remove field content and save.', 'packeta' ),
+					'valueIsManual'             => $this->wpAdapter->__( 'Order value is manually set. To calculate the value remove field content and save.', 'packeta' ),
+					'submitPacket'              => $this->wpAdapter->__( 'Submit to Packeta', 'packeta' ),
+					'packetClaimTrackingOnline' => $this->wpAdapter->__( 'Packet claim tracking', 'packeta' ),
+					'printPacketClaimLabel'     => $this->wpAdapter->__( 'Print packet claim label', 'packeta' ),
+					'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),
+					'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
+					'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
 					// translators: %s: Order number.
-					'reallyCancelPacketHeading' => sprintf( __( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
+					'reallyCancelPacketHeading' => sprintf( $this->wpAdapter->__( 'Order #%s', 'packeta' ), $order->getCustomNumber() ),
 					// translators: %s: Packet claim number.
-					'reallyCancelPacketClaim'   => sprintf( __( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
+					'reallyCancelPacketClaim'   => sprintf( $this->wpAdapter->__( 'Do you really wish to cancel packet claim number %s?', 'packeta' ), $order->getPacketClaimId() ),
 				],
 			]
 		);
@@ -514,50 +466,50 @@ class Metabox {
 		$orderId = (int) $order->getNumber();
 		if (
 			( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) ||
-			null === $this->request->getPost( 'packetery_order_metabox_nonce' )
+			$this->request->getPost( 'packetery_order_metabox_nonce' ) === null
 		) {
 			return;
 		}
 
-		if ( false === $this->form->isValid() ) {
-			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( true ) );
-			$this->message_manager->flash_message( __( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
+		if ( $this->form->isValid() === false ) {
+			set_transient( 'packetery_metabox_nette_form_prev_invalid_values', $this->form->getValues( 'array' ) );
+			$this->messageManager->flash_message( $this->wpAdapter->__( 'Packeta: entered data is not valid!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
-
+		/** @var array<string, string|float|int|true|null> $formValues */
 		$formValues = $this->form->getValues( 'array' );
 
-		if ( ! wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) ) {
-			$this->message_manager->flash_message( __( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
+		if ( wp_verify_nonce( $formValues['packetery_order_metabox_nonce'] ) !== 1 ) {
+			$this->messageManager->flash_message( $this->wpAdapter->__( 'Session has expired! Please try again.', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
 
 		if ( ! current_user_can( 'edit_post', $orderId ) ) {
-			$this->message_manager->flash_message( __( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
+			$this->messageManager->flash_message( $this->wpAdapter->__( 'You do not have sufficient rights to make changes!', 'packeta' ), MessageManager::TYPE_ERROR );
 
 			return;
 		}
 
-		$propsToSave = [
-			Form::FIELD_WIDTH  => ( is_numeric( $formValues[ Form::FIELD_WIDTH ] ) ? (float) number_format( $formValues[ Form::FIELD_WIDTH ], 0, '.', '' ) : null ),
-			Form::FIELD_LENGTH => ( is_numeric( $formValues[ Form::FIELD_LENGTH ] ) ? (float) number_format( $formValues[ Form::FIELD_LENGTH ], 0, '.', '' ) : null ),
-			Form::FIELD_HEIGHT => ( is_numeric( $formValues[ Form::FIELD_HEIGHT ] ) ? (float) number_format( $formValues[ Form::FIELD_HEIGHT ], 0, '.', '' ) : null ),
-		];
+		$propsToSave = [];
+		foreach ( [ Form::FIELD_LENGTH, Form::FIELD_WIDTH, Form::FIELD_HEIGHT ] as $dimension ) {
+			$propsToSave[ $dimension ] = $this->optionsProvider->getSanitizedDimensionValueInMm( $formValues[ $dimension ] );
+		}
 
-		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) ) {
+		$formWeightEqualsToCalculated = (float) $formValues[ Form::FIELD_WEIGHT ] === (float) $formValues[ Form::FIELD_ORIGINAL_WEIGHT ];
+		if ( ! is_numeric( $formValues[ Form::FIELD_WEIGHT ] ) || $formWeightEqualsToCalculated ) {
 			$propsToSave[ Form::FIELD_WEIGHT ] = null;
-		} elseif ( (float) $formValues[ Form::FIELD_WEIGHT ] !== (float) $formValues[ Form::FIELD_ORIGINAL_WEIGHT ] ) {
+		} else {
 			$propsToSave[ Form::FIELD_WEIGHT ] = (float) $formValues[ Form::FIELD_WEIGHT ];
 		}
 
 		if ( $formValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
-			foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
+			foreach ( Attribute::$pickupPointAttributes as $pickupPointAttr ) {
 				$pickupPointValue = $formValues[ $pickupPointAttr['name'] ];
 
-				if ( Attribute::CARRIER_ID === $pickupPointAttr['name'] ) {
-					if ( ! empty( $formValues[ Attribute::CARRIER_ID ] ) ) {
+				if ( $pickupPointAttr['name'] === Attribute::CARRIER_ID ) {
+					if ( isset( $formValues[ Attribute::CARRIER_ID ] ) && $formValues[ Attribute::CARRIER_ID ] !== '' ) {
 						$pickupPointValue = $formValues[ Attribute::CARRIER_ID ];
 					} else {
 						$pickupPointValue = $order->getCarrier()->getId();
@@ -572,15 +524,28 @@ class Metabox {
 			}
 		}
 
-		if ( '1' === $formValues[ Attribute::ADDRESS_IS_VALIDATED ] && $order->isHomeDelivery() ) {
+		if ( $formValues[ Attribute::ADDRESS_IS_VALIDATED ] === '1' && $order->isHomeDelivery() ) {
 			$address = $this->mapper->toValidatedAddress( $formValues );
 			$order->setDeliveryAddress( $address );
 			$order->setAddressValidated( true );
 		}
 
 		$order->setAdultContent( $formValues[ Form::FIELD_ADULT_CONTENT ] );
-		$order->setCod( is_numeric( $formValues[ Form::FIELD_COD ] ) ? CoreHelper::simplifyFloat( $formValues[ Form::FIELD_COD ], 10 ) : null );
-		$order->setValue( is_numeric( $formValues[ Form::FIELD_VALUE ] ) ? CoreHelper::simplifyFloat( $formValues[ Form::FIELD_VALUE ], 10 ) : null );
+
+		$formCodEqualsToCalculated = (float) $formValues[ Form::FIELD_COD ] === (float) $formValues[ Form::FIELD_CALCULATED_COD ];
+		if ( ! is_numeric( $formValues[ Form::FIELD_COD ] ) || $formCodEqualsToCalculated ) {
+			$order->setManualCod( null );
+		} else {
+			$order->setManualCod( is_numeric( $formValues[ Form::FIELD_COD ] ) ? CoreHelper::simplifyFloat( $formValues[ Form::FIELD_COD ], 10 ) : null );
+		}
+
+		$formValueEqualsToCalculated = (float) $formValues[ Form::FIELD_VALUE ] === (float) $formValues[ Form::FIELD_CALCULATED_VALUE ];
+		if ( ! is_numeric( $formValues[ Form::FIELD_VALUE ] ) || $formValueEqualsToCalculated ) {
+			$order->setManualValue( null );
+		} else {
+			$order->setManualValue( is_numeric( $formValues[ Form::FIELD_VALUE ] ) ? CoreHelper::simplifyFloat( $formValues[ Form::FIELD_VALUE ], 10 ) : null );
+		}
+
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $formValues[ Form::FIELD_DELIVER_ON ] ) );
 
 		$orderSize = $this->mapper->toOrderSize( $order, $propsToSave );
@@ -595,11 +560,11 @@ class Metabox {
 	/**
 	 * Creates pickup point picker settings.
 	 *
-	 * @return array|null
+	 * @return array<string, array|string|null>
 	 */
 	public function getPickupPointWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || false === $order->isPickupPointDelivery() || null === $order->getShippingCountry() ) {
+		if ( $order === null || $order->isPickupPointDelivery() === false || $order->getShippingCountry() === null ) {
 			return null;
 		}
 
@@ -607,7 +572,7 @@ class Metabox {
 
 		return [
 			'packeteryApiKey'  => $this->optionsProvider->get_api_key(),
-			'pickupPointAttrs' => Attribute::$pickupPointAttrs,
+			'pickupPointAttrs' => Attribute::$pickupPointAttributes,
 			'widgetOptions'    => $widgetOptions,
 		];
 	}
@@ -615,11 +580,11 @@ class Metabox {
 	/**
 	 * Creates address picker settings.
 	 *
-	 * @return array|null
+	 * @return mixed[]|null
 	 */
 	public function getAddressWidgetSettings(): ?array {
 		$order = $this->detailCommonLogic->getOrder();
-		if ( null === $order || false === $order->isHomeDelivery() ) {
+		if ( $order === null || $order->isHomeDelivery() === false ) {
 			return null;
 		}
 
@@ -627,11 +592,11 @@ class Metabox {
 
 		return [
 			'packeteryApiKey'   => $this->optionsProvider->get_api_key(),
-			'homeDeliveryAttrs' => Attribute::$homeDeliveryAttrs,
+			'homeDeliveryAttrs' => Attribute::$homeDeliveryAttributes,
 			'widgetOptions'     => $widgetOptions,
 			'translations'      => [
-				'addressValidationIsOutOfOrder' => __( 'Address validation is out of order.', 'packeta' ),
-				'invalidAddressCountrySelected' => __( 'The selected country does not correspond to the destination country.', 'packeta' ),
+				'addressValidationIsOutOfOrder' => $this->wpAdapter->__( 'Address validation is out of order.', 'packeta' ),
+				'invalidAddressCountrySelected' => $this->wpAdapter->__( 'The selected country does not correspond to the destination country.', 'packeta' ),
 			],
 		];
 	}
@@ -669,16 +634,21 @@ class Metabox {
 		$this->form->addHidden( 'packetery_order_metabox_nonce' );
 		$this->form->setDefaults( [ 'packetery_order_metabox_nonce' => wp_create_nonce() ] );
 
-		foreach ( Attribute::$pickupPointAttrs as $pickupPointAttr ) {
+		foreach ( Attribute::$pickupPointAttributes as $pickupPointAttr ) {
 			$this->form->addHidden( $pickupPointAttr['name'] );
 		}
 
-		foreach ( Attribute::$homeDeliveryAttrs as $homeDeliveryAttr ) {
+		foreach ( Attribute::$homeDeliveryAttributes as $homeDeliveryAttr ) {
 			$this->form->addHidden( $homeDeliveryAttr['name'] );
 		}
 
-		$this->form->addButton( 'packetery_pick_pickup_point', __( 'Choose pickup point', 'packeta' ) );
-		$this->form->addButton( 'packetery_pick_address', __( 'Check shipping address', 'packeta' ) );
+		$this->form->addButton(
+			'packetery_pick_pickup_point',
+			$this->wpAdapter->__( 'Choose pickup point', 'packeta' )
+		);
+		$this->form->addButton(
+			'packetery_pick_address',
+			$this->wpAdapter->__( 'Check shipping address', 'packeta' )
+		);
 	}
-
 }

@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
 
 use Packetery\Nette\Http\Request;
@@ -66,23 +65,23 @@ class QueryProcessor {
 	 *
 	 * @link https://wordpress.stackexchange.com/questions/50305/how-to-extend-wp-query-to-include-custom-table-in-query
 	 *
-	 * @param array     $clauses     Clauses.
-	 * @param \WP_Query $queryObject WP_Query.
+	 * @param array<string, string> $clauses     Clauses.
+	 * @param \WP_Query             $queryObject WP_Query.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function processClauses( array $clauses, \WP_Query $queryObject ): array {
-		if ( false === $this->contextResolver->isOrderGridPage() ) {
+		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return $clauses;
 		}
 
 		$isOrderPostQueryCall =
 			isset( $queryObject->query['post_type'] ) &&
 			(
-				'shop_order' === $queryObject->query['post_type'] ||
+				$queryObject->query['post_type'] === 'shop_order' ||
 				( is_array( $queryObject->query['post_type'] ) && in_array( 'shop_order', $queryObject->query['post_type'], true ) )
 			);
-		if ( false === $isOrderPostQueryCall ) {
+		if ( $isOrderPostQueryCall === false ) {
 			return $clauses;
 		}
 
@@ -96,12 +95,12 @@ class QueryProcessor {
 	/**
 	 * Extends High-Performance order storage grid filters.
 	 *
-	 * @param array $clauses Clauses.
+	 * @param array<string, string> $clauses Clauses.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function processHposClauses( array $clauses ): array {
-		if ( false === $this->contextResolver->isOrderGridPage() ) {
+		if ( $this->contextResolver->isOrderGridPage() === false ) {
 			return $clauses;
 		}
 
@@ -115,7 +114,7 @@ class QueryProcessor {
 	/**
 	 * Gets param values.
 	 *
-	 * @return null[]
+	 * @return array<string,null>
 	 */
 	private function getParamValues(): array {
 		$paramValues = [
@@ -123,6 +122,8 @@ class QueryProcessor {
 			'packetery_to_submit'  => null,
 			'packetery_to_print'   => null,
 			'packetery_order_type' => null,
+			'orderby'              => null,
+			'order'                => null,
 		];
 
 		foreach ( $paramValues as $key => $value ) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { useSelect } from '@wordpress/data';
 import { getSetting } from '@woocommerce/settings';
@@ -7,6 +7,7 @@ import { usePacketaShippingRate } from "./usePacketaShippingRate";
 import { useDynamicSettings } from "./useDynamicSettings";
 import { useOnWidgetButtonClicked } from "./useOnWidgetButtonClicked";
 import { useOnHDWidgetButtonClicked } from "./useOnHDWidgetButtonClicked";
+import { getShippingMethodOptionId } from "./getShippingMethodOptionId";
 
 const { PAYMENT_STORE_KEY } = window.wc.wcBlocksData;
 
@@ -35,6 +36,20 @@ export const useView = ( cart ) => {
 		packetaHomeDeliveryShippingRate = null,
 		chosenShippingRate = null,
 	} = filteredShippingRates || {};
+
+	const previousRateIdRef = useRef();
+	useEffect( () => {
+		const previousRateId = previousRateIdRef.current;
+
+		if (
+			previousRateId !== undefined &&
+			previousRateId !== chosenShippingRate?.rate_id
+		) {
+			setViewState( null );
+		}
+
+		previousRateIdRef.current = chosenShippingRate?.rate_id;
+	}, [ chosenShippingRate, setViewState ] );
 
 	const [ dynamicSettings, setDynamicSettings, loading ] = useDynamicSettings( adminAjaxUrl );
 
@@ -74,7 +89,7 @@ export const useView = ( cart ) => {
 			return;
 		}
 
-		const shippingCountry = shippingAddress.country.toLowerCase()
+		const shippingCountry = shippingAddress.country.toLowerCase();
 
 		if ( ! dynamicSettings.lastCountry ) {
 			setDynamicSettings( {
@@ -138,6 +153,7 @@ export const useView = ( cart ) => {
 		}
 	};
 
+	let skipView = false;
 	let inputRequired = true;
 
 	if ( packetaPickupPointShippingRate ) {
@@ -155,7 +171,7 @@ export const useView = ( cart ) => {
 	}
 
 	if ( packetaHomeDeliveryShippingRate ) {
-		const rateId = packetaHomeDeliveryShippingRate.rate_id.split( ':' ).pop();
+		const rateId = getShippingMethodOptionId( packetaHomeDeliveryShippingRate.rate_id );
 		const rateCarrierConfig = carrierConfig[ rateId ];
 		const addressValidationSetting = rateCarrierConfig.address_validation || 'none';
 		if ( addressValidationSetting === 'none' ) {

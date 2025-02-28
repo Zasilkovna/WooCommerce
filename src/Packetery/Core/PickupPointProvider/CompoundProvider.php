@@ -31,7 +31,7 @@ class CompoundProvider extends BaseProvider {
 	 * @param bool     $supportsCod             Supports COD.
 	 * @param bool     $supportsAgeVerification Supports age verification.
 	 * @param string   $currency                Currency.
-	 * @param bool     $hasPickupPoints         Is pickup points?.
+	 * @param bool     $hasPickupPoints         Is pickup points?
 	 * @param string[] $vendorCodes             Vendor codes.
 	 */
 	public function __construct(
@@ -62,5 +62,4 @@ class CompoundProvider extends BaseProvider {
 	public function getVendorCodes(): array {
 		return $this->vendorCodes;
 	}
-
 }

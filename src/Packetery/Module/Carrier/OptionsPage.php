@@ -9,15 +9,19 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Carrier;
 
-use Packetery\Core\Entity\Carrier;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\Carrier;
 use Packetery\Core\Rounder;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormValidators;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
+use Packetery\Module\Options\Page;
 use Packetery\Module\PaymentGatewayHelper;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Container;
 use Packetery\Nette\Forms\Control;
 use Packetery\Nette\Forms\Form;
@@ -42,97 +46,70 @@ class OptionsPage {
 	public const MINIMUM_CHECKED_VENDORS = 2;
 
 	/**
-	 * PacketeryLatte_engine.
-	 *
-	 * @var Engine PacketeryLatte engine.
+	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Carrier repository.
-	 *
-	 * @var EntityRepository Carrier repository.
+	 * @var EntityRepository
 	 */
 	private $carrierRepository;
 
 	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory Form factory.
+	 * @var FormFactory
 	 */
 	private $formFactory;
 
 	/**
-	 * Packetery\Nette Request.
-	 *
-	 * @var Request Packetery\Nette Request.
+	 * @var Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * CountryListingPage.
-	 *
-	 * @var CountryListingPage CountryListingPage.
+	 * @var CountryListingPage
 	 */
 	private $countryListingPage;
 
 	/**
-	 * Message manager.
-	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
 
 	/**
-	 * Internal pickup points config.
-	 *
 	 * @var PacketaPickupPointsConfig
 	 */
 	private $pickupPointsConfig;
 
 	/**
-	 * Feature flag.
-	 *
 	 * @var FeatureFlagProvider
 	 */
 	private $featureFlagProvider;
 
 	/**
-	 * Car delivery config.
-	 *
 	 * @var CarDeliveryConfig
 	 */
 	private $carDeliveryConfig;
 
 	/**
-	 * WC Native carrier settings config.
-	 *
-	 * @var WcSettingsConfig
-	 */
-	private $wcSettingsConfig;
-
-	/**
-	 * Carrier options factory.
-	 *
 	 * @var CarrierOptionsFactory
 	 */
 	private $carrierOptionsFactory;
 
 	/**
-	 * OptionsPage constructor.
-	 *
-	 * @param Engine                    $latteEngine           PacketeryLatte_engine.
-	 * @param EntityRepository          $carrierRepository     Carrier repository.
-	 * @param FormFactory               $formFactory           Form factory.
-	 * @param Request                   $httpRequest           Packetery\Nette Request.
-	 * @param CountryListingPage        $countryListingPage    CountryListingPage.
-	 * @param MessageManager            $messageManager        Message manager.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig    Internal pickup points config.
-	 * @param FeatureFlagProvider       $featureFlagProvider   Feature flag.
-	 * @param CarDeliveryConfig         $carDeliveryConfig     Car delivery config.
-	 * @param WcSettingsConfig          $wcSettingsConfig      WC Native carrier settings config.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
+	/**
+	 * @var UrlBuilder
+	 */
+	private $urlBuilder;
+
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Engine $latteEngine,
 		EntityRepository $carrierRepository,
@@ -143,8 +120,10 @@ class OptionsPage {
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		FeatureFlagProvider $featureFlagProvider,
 		CarDeliveryConfig $carDeliveryConfig,
-		WcSettingsConfig $wcSettingsConfig,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		ModuleHelper $moduleHelper,
+		UrlBuilder $urlBuilder,
+		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine           = $latteEngine;
 		$this->carrierRepository     = $carrierRepository;
@@ -155,8 +134,10 @@ class OptionsPage {
 		$this->pickupPointsConfig    = $pickupPointsConfig;
 		$this->featureFlagProvider   = $featureFlagProvider;
 		$this->carDeliveryConfig     = $carDeliveryConfig;
-		$this->wcSettingsConfig      = $wcSettingsConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->moduleHelper          = $moduleHelper;
+		$this->urlBuilder            = $urlBuilder;
+		$this->wpAdapter             = $wpAdapter;
 	}
 
 	/**
@@ -164,7 +145,7 @@ class OptionsPage {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			\Packetery\Module\Options\Page::SLUG,
+			Page::SLUG,
 			__( 'Carrier settings', 'packeta' ),
 			__( 'Carrier settings', 'packeta' ),
 			'manage_options',
@@ -189,27 +170,25 @@ class OptionsPage {
 
 		$form = $this->formFactory->create( $optionId );
 
-		if ( false === $this->wcSettingsConfig->isActive() ) {
-			$form->addCheckbox(
-				self::FORM_FIELD_ACTIVE,
-				__( 'Active carrier', 'packeta' ) . ':'
-			);
-		}
+		$form->addCheckbox(
+			self::FORM_FIELD_ACTIVE,
+			__( 'Active carrier', 'packeta' ) . ':'
+		);
 
 		$form->addText( self::FORM_FIELD_NAME, __( 'Display name', 'packeta' ) . ':' )
 			->setRequired();
 
 		$carrierOptions = get_option( $optionId );
 		if ( $this->featureFlagProvider->isSplitActive() ) {
-			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions ? $carrierOptions : null ) );
-			if ( $vendorCheckboxes ) {
+			$vendorCheckboxes = $this->getVendorCheckboxesConfig( $carrierData['id'], ( $carrierOptions !== false ? $carrierOptions : null ) );
+			if ( count( $vendorCheckboxes ) > 0 ) {
 				$vendorsContainer = $form->addContainer( 'vendor_groups' );
 				foreach ( $vendorCheckboxes as $checkboxConfig ) {
 					$checkboxControl = $vendorsContainer->addCheckbox( $checkboxConfig['group'], $checkboxConfig['name'] );
-					if ( true === $checkboxConfig['disabled'] ) {
+					if ( $checkboxConfig['disabled'] === true ) {
 						$checkboxControl->setDisabled()->setOmitted( false );
 					}
-					if ( true === $checkboxConfig['default'] ) {
+					if ( $checkboxConfig['default'] === true ) {
 						$checkboxControl->setDefaultValue( true );
 					}
 				}
@@ -232,7 +211,7 @@ class OptionsPage {
 				->toggle( $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ) );
 
 		$weightLimits = $form->addContainer( self::FORM_FIELD_WEIGHT_LIMITS );
-		if ( empty( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) || count( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] ) === 0 ) {
 			$this->addWeightLimit( $weightLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_WEIGHT_LIMITS ] as $index => $limit ) {
@@ -241,7 +220,7 @@ class OptionsPage {
 		}
 
 		$productValueLimits = $form->addContainer( self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
-		if ( empty( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) ) {
+		if ( ! isset( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) || count( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ) === 0 ) {
 			$this->addProductValueLimit( $productValueLimits, 0 );
 		} else {
 			foreach ( $carrierData[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] as $index => $limit ) {
@@ -252,14 +231,14 @@ class OptionsPage {
 		// We don't expect id to be empty in this situation. This would indicate a data save error.
 		$carrier = $this->carrierRepository->getAnyById( (string) $carrierData['id'] );
 
-		if ( null !== $carrier && $carrier->supportsCod() ) {
+		if ( $carrier !== null && $carrier->supportsCod() ) {
 			$form->addText( 'default_COD_surcharge', __( 'Default COD surcharge', 'packeta' ) . ':' )
 				->setRequired( false )
 				->addRule( Form::FLOAT )
 				->addRule( Form::MIN, null, 0 );
 
 			$surchargeLimits = $form->addContainer( 'surcharge_limits' );
-			if ( ! empty( $carrierData['surcharge_limits'] ) ) {
+			if ( isset( $carrierData['surcharge_limits'] ) && count( $carrierData['surcharge_limits'] ) > 0 ) {
 				foreach ( $carrierData['surcharge_limits'] as $index => $limit ) {
 					$this->addSurchargeLimit( $surchargeLimits, $index );
 				}
@@ -274,9 +253,11 @@ class OptionsPage {
 		}
 
 		$item = $form->addText( 'free_shipping_limit', __( 'Free shipping limit', 'packeta' ) . ':' );
-		$item->addRule( $form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		$item->setRequired( false )
+			->addRule( Form::FLOAT )
+			->addRule( Form::MIN, null, 0 );
 
-		if ( $carrier->isCarDelivery() ) {
+		if ( $carrier !== null && $carrier->isCarDelivery() ) {
 			$daysUntilShipping = $form->addText( 'days_until_shipping', __( 'Number of days until shipping', 'packeta' ) . ':' );
 			$daysUntilShipping->setRequired()
 				->addRule( $form::INTEGER, __( 'Please, enter a full number.', 'packeta' ) )
@@ -297,12 +278,65 @@ class OptionsPage {
 							->addConditionOn( $form['coupon_free_shipping']['active'], Form::FILLED )
 							->toggle( $this->createCouponFreeShippingForFeesContainerId( $form ) );
 
+		$dimensionsRestrictions = $form->addContainer( 'dimensions_restrictions' );
+		$dimensionsRestrictions->addCheckbox( 'active', $this->wpAdapter->__( 'Maximum package size', 'packeta' ) );
+		if (
+			strpos( $carrier->getId(), Carrier::VENDOR_GROUP_ZBOX ) !== false ||
+			strpos( $carrier->getId(), Carrier::VENDOR_GROUP_ZPOINT ) === 0 ||
+			( $carrier->hasPickupPoints() && is_numeric( $carrier->getId() ) )
+		) {
+			$dimensionsRestrictions->addText( 'length', $this->wpAdapter->__( 'Length (cm)', 'packeta' ) )
+				->setNullable()
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+			$dimensionsRestrictions->addText( 'width', $this->wpAdapter->__( 'Width (cm)', 'packeta' ) )
+				->setNullable()
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+			$dimensionsRestrictions->addText( 'height', $this->wpAdapter->__( 'Height (cm)', 'packeta' ) )
+				->setNullable()
+				->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+				->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+				->setRequired()
+				->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+				->addRule( Form::MIN, 'Value must be greater than 0', 1 );
+		} else {
+
+			$maximumLength = $dimensionsRestrictions->addText( 'maximum_length', $this->wpAdapter->__( 'Maximum length (cm)', 'packeta' ) );
+			$maximumLength->setNullable();
+			$maximumLength->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+							->addRule( Form::MIN, $this->wpAdapter->__( 'Value must be greater than 0', 'packeta' ), 1 );
+
+			$dimensionsSum = $dimensionsRestrictions->addText( 'dimensions_sum', $this->wpAdapter->__( 'Sum of dimensions (cm)', 'packeta' ) );
+			$dimensionsSum->setNullable();
+			$dimensionsSum->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->toggle( $this->createDimensionRestrictionContainerId( $form ) )
+							->addRule( Form::INTEGER, $this->wpAdapter->__( 'Provide a full number!', 'packeta' ) )
+							->addRule( Form::MIN, $this->wpAdapter->__( 'Value must be greater than 0', 'packeta' ), 1 );
+
+			$maximumLength->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->addConditionOn( $dimensionsSum, Form::BLANK )
+								->addRule( Form::FILLED, $this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' ) );
+
+			$dimensionsSum->addConditionOn( $form['dimensions_restrictions']['active'], Form::FILLED )
+							->addConditionOn( $maximumLength, Form::BLANK )
+								->addRule( Form::FILLED, $this->wpAdapter->__( 'You have to fill in Maximum length or Sum of dimensions', 'packeta' ) );
+		}
+
 		$form->addHidden( 'id' )->setRequired();
 		$form->addSubmit( 'save' );
 
 		if (
-			false === $carrier->isCarDelivery() &&
-			false === $carrier->hasPickupPoints() &&
+			$carrier->isCarDelivery() === false &&
+			$carrier->hasPickupPoints() === false &&
 			in_array( $carrier->getCountry(), Carrier::ADDRESS_VALIDATION_COUNTRIES, true )
 		) {
 			$addressValidationOptions = [
@@ -330,7 +364,7 @@ class OptionsPage {
 		$form->onValidate[] = [ $this, 'validateOptions' ];
 		$form->onSuccess[]  = [ $this, 'updateOptions' ];
 
-		if ( false === $carrierOptions ) {
+		if ( $carrierOptions === false ) {
 			$carrierOptions = [
 				'id'                  => $carrierData['id'],
 				self::FORM_FIELD_NAME => $carrierData['name'],
@@ -350,6 +384,10 @@ class OptionsPage {
 	 */
 	private function createCouponFreeShippingForFeesContainerId( Form $form ): string {
 		return sprintf( '%s_apply_free_shipping_coupon_allow_for_fees', $form->getName() );
+	}
+
+	private function createDimensionRestrictionContainerId( Form $form ): string {
+		return sprintf( '%s_dimension_restrictions', $form->getName() );
 	}
 
 	/**
@@ -398,6 +436,7 @@ class OptionsPage {
 	public function validateOptions( Form $form ): void {
 		if ( $form->hasErrors() ) {
 			add_settings_error( '', '', esc_attr( __( 'Some carrier data is invalid', 'packeta' ) ) );
+
 			return;
 		}
 
@@ -416,7 +455,7 @@ class OptionsPage {
 			}
 		}
 
-		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {
 			$this->checkOverlapping(
 				$form,
 				$options,
@@ -426,7 +465,7 @@ class OptionsPage {
 			);
 		}
 
-		if ( Options::PRICING_TYPE_BY_PRODUCT_VALUE === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_PRODUCT_VALUE ) {
 			$this->checkOverlapping(
 				$form,
 				$options,
@@ -457,24 +496,21 @@ class OptionsPage {
 	public function updateOptions( Form $form ): void {
 		$options    = $form->getValues( 'array' );
 		$newVendors = $this->getCheckedVendors( $options );
-		if ( $newVendors ) {
+		if ( count( $newVendors ) > 0 ) {
 			$options['vendor_groups'] = $newVendors;
 		}
 
 		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
 		$persistedOptionsArray = $persistedOptions->toArray();
-		if ( $this->wcSettingsConfig->isActive() ) {
-			$options[ self::FORM_FIELD_ACTIVE ] = $persistedOptions->isActive();
-		}
 
-		if ( Options::PRICING_TYPE_BY_WEIGHT === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );
 			$options = $this->sortLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS, 'weight' );
 
 			$options[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ?? [];
 		}
 
-		if ( Options::PRICING_TYPE_BY_PRODUCT_VALUE === $options[ self::FORM_FIELD_PRICING_TYPE ] ) {
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_PRODUCT_VALUE ) {
 			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
 			$options = $this->sortLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS, 'value' );
 
@@ -508,7 +544,7 @@ class OptionsPage {
 	 * @return array|null
 	 */
 	private function getCarrierTemplateData( ?Carrier $carrier ): ?array {
-		if ( null === $carrier ) {
+		if ( $carrier === null ) {
 			return null;
 		}
 
@@ -517,7 +553,7 @@ class OptionsPage {
 		}
 
 		$post = $this->httpRequest->getPost();
-		if ( ! empty( $post ) && $post['id'] === $carrier->getId() ) {
+		if ( isset( $post['id'] ) && $post['id'] === $carrier->getId() ) {
 			$formTemplate = $this->createFormTemplate( $post );
 			$form         = $this->createForm( $post );
 			if ( $form->isSubmitted() ) {
@@ -526,7 +562,7 @@ class OptionsPage {
 		} else {
 			$carrierData = $carrier->__toArray();
 			$options     = get_option( OptionPrefixer::getOptionId( $carrier->getId() ) );
-			if ( false !== $options ) {
+			if ( $options !== false ) {
 				$carrierData += $options;
 			}
 			$formTemplate = $this->createFormTemplate( $carrierData );
@@ -538,96 +574,120 @@ class OptionsPage {
 			'formTemplate'                         => $formTemplate,
 			'carrier'                              => $carrier,
 			'couponFreeShippingForFeesContainerId' => $this->createCouponFreeShippingForFeesContainerId( $form ),
+			'dimensionRestrictionContainerId'      => $this->createDimensionRestrictionContainerId( $form ),
 			'weightLimitsContainerId'              => $this->createFieldContainerId( $form, self::FORM_FIELD_WEIGHT_LIMITS ),
 			'productValueLimitsContainerId'        => $this->createFieldContainerId( $form, self::FORM_FIELD_PRODUCT_VALUE_LIMITS ),
 			'isAvailableVendorsCountLow'           => $this->isAvailableVendorsCountLowByCarrierId( $carrier->getId() ),
 		];
 	}
 
-	/**
-	 *  Renders page.
-	 */
 	public function render(): void {
-		$countryIso           = $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE );
-		$carrierId            = $this->httpRequest->getQuery( self::PARAMETER_CARRIER_ID );
-		$commonTemplateParams = [
-			'globalCurrency' => get_woocommerce_currency_symbol(),
-			'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
-			'translations'   => [
-				'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => __( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
-				'delete'                                 => __( 'Delete', 'packeta' ),
-				'weightRules'                            => __( 'Weight rules', 'packeta' ),
-				'productValueRules'                      => __( 'Product value rules', 'packeta' ),
-				'addWeightRule'                          => __( 'Add weight rule', 'packeta' ),
-				'addProductValueRule'                    => __( 'Add product value rule', 'packeta' ),
-				'codSurchargeRules'                      => __( 'COD surcharge rules', 'packeta' ),
-				'addCodSurchargeRule'                    => __( 'Add COD surcharge rule', 'packeta' ),
-				'afterExceedingThisAmountShippingIsFree' => __( 'After exceeding this amount, shipping is free.', 'packeta' ),
-				'daysUntilShipping'                      => __( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
-				'shippingTimeCutOff'                     => __( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
-				'addressValidationDescription'           => __( 'Customer address validation.', 'packeta' ),
-				'roundingDescription'                    => __( 'COD rounding for submitting data to Packeta', 'packeta' ),
-				'saveChanges'                            => __( 'Save changes', 'packeta' ),
-				'packeta'                                => __( 'Packeta', 'packeta' ),
-				'noKnownCarrierForThisCountry'           => __( 'No carriers available for this country.', 'packeta' ),
-				'ageVerificationSupportedNotification'   => __( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
-				'carrierDoesNotSupportCod'               => __( 'This carrier does not support COD payment.', 'packeta' ),
-				'allowedPickupPointTypes'                => __( 'Pickup point types', 'packeta' ),
-				'checkAtLeastTwo'                        => __( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
-				'lowAvailableVendorsCount'               => __( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
-			],
-		];
+		$countryIso = $this->httpRequest->getQuery( self::PARAMETER_COUNTRY_CODE );
+		$carrierId  = $this->httpRequest->getQuery( self::PARAMETER_CARRIER_ID );
 
-		if ( $carrierId ) {
-			$carrier             = $this->carrierRepository->getAnyById( $carrierId );
-			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
-			if ( null === $carrier || null === $carrierTemplateData ) {
-				$this->countryListingPage->render();
-
-				return;
-			}
-
-			$this->latteEngine->render(
-				PACKETERY_PLUGIN_DIR . '/template/carrier/detail.latte',
-				array_merge_recursive(
-					$commonTemplateParams,
-					[
-						'carrierTemplateData' => $carrierTemplateData,
-						'translations'        => [
-							'title' => $carrier->getName(),
-						],
-					]
-				)
-			);
-
-		} elseif ( $countryIso ) {
-			$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
-			$carriersData    = [];
-			foreach ( $countryCarriers as $carrier ) {
-				$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
-				if ( null !== $carrierTemplateData ) {
-					$carriersData[] = $carrierTemplateData;
-				}
-			}
-
-			$this->latteEngine->render(
-				PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
-				array_merge_recursive(
-					$commonTemplateParams,
-					[
-						'forms'        => $carriersData,
-						'country_iso'  => $countryIso,
-						'translations' => [
-							// translators: %s is country code.
-							'title' => sprintf( __( 'Country options: %s', 'packeta' ), strtoupper( $countryIso ) ),
-
-						],
-					]
-				)
-			);
+		if ( $carrierId !== null ) {
+			$this->renderCarrierDetail( $carrierId );
+		} elseif ( $countryIso !== null ) {
+			$this->renderCountryCarriers( $countryIso );
 		} else {
 			$this->countryListingPage->render();
 		}
+	}
+
+	private function renderCarrierDetail( string $carrierId ): void {
+		$carrier             = $this->carrierRepository->getAnyById( $carrierId );
+		$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
+
+		if ( $carrier === null || $carrierTemplateData === null ) {
+			$this->countryListingPage->render();
+
+			return;
+		}
+
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/carrier/detail.latte',
+			array_merge_recursive(
+				$this->getCommonTemplateParams(),
+				[
+					'carrierTemplateData' => $carrierTemplateData,
+					'translations'        => [
+						'title' => $carrier->getName(),
+					],
+				]
+			)
+		);
+	}
+
+	private function renderCountryCarriers( string $countryIso ): void {
+		$countryCarriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryIso );
+		$carriersData    = [];
+		foreach ( $countryCarriers as $carrier ) {
+			$carrierTemplateData = $this->getCarrierTemplateData( $carrier );
+			if ( $carrierTemplateData !== null ) {
+				$carriersData[] = $carrierTemplateData;
+			}
+		}
+
+		$this->latteEngine->render(
+			PACKETERY_PLUGIN_DIR . '/template/carrier/country.latte',
+			array_merge_recursive(
+				$this->getCommonTemplateParams(),
+				[
+					'forms'        => $carriersData,
+					'country_iso'  => $countryIso,
+					'translations' => [
+						'title' => sprintf(
+							// translators: %s is country code.
+							$this->wpAdapter->__( 'Country options: %s', 'packeta' ),
+							strtoupper( $countryIso )
+						),
+					],
+				]
+			)
+		);
+	}
+
+	/**
+	 * @return array<string, null|string|bool|array<string, string>>
+	 */
+	private function getCommonTemplateParams(): array {
+		return [
+			'globalCurrency' => get_woocommerce_currency_symbol(),
+			'flashMessages'  => $this->messageManager->renderToString( MessageManager::RENDERER_PACKETERY, 'carrier-country' ),
+			'isCzechLocale'  => $this->moduleHelper->isCzechLocale(),
+			'logoZasilkovna' => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
+			'logoPacketa'    => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
+			'translations'   => $this->getTranslations(),
+		];
+	}
+
+	/**
+	 * @return array<string, string>
+	 */
+	private function getTranslations(): array {
+		return [
+			'cannotUseThisCarrierBecauseRequiresCustomsDeclaration' => $this->wpAdapter->__( 'This carrier cannot be used, because it requires a customs declaration.', 'packeta' ),
+			'delete'                                 => $this->wpAdapter->__( 'Delete', 'packeta' ),
+			'weightRules'                            => $this->wpAdapter->__( 'Weight rules', 'packeta' ),
+			'productValueRules'                      => $this->wpAdapter->__( 'Product value rules', 'packeta' ),
+			'addWeightRule'                          => $this->wpAdapter->__( 'Add weight rule', 'packeta' ),
+			'addProductValueRule'                    => $this->wpAdapter->__( 'Add product value rule', 'packeta' ),
+			'codSurchargeRules'                      => $this->wpAdapter->__( 'COD surcharge rules', 'packeta' ),
+			'addCodSurchargeRule'                    => $this->wpAdapter->__( 'Add COD surcharge rule', 'packeta' ),
+			'afterExceedingThisAmountShippingIsFree' => $this->wpAdapter->__( 'After exceeding this amount, shipping is free.', 'packeta' ),
+			'daysUntilShipping'                      => $this->wpAdapter->__( 'Number of business days it might take to process an order before shipping out a package.', 'packeta' ),
+			'shippingTimeCutOff'                     => $this->wpAdapter->__( 'A time of a day you stop taking in more orders for the next round of shipping.', 'packeta' ),
+			'addressValidationDescription'           => $this->wpAdapter->__( 'Customer address validation.', 'packeta' ),
+			'roundingDescription'                    => $this->wpAdapter->__( 'COD rounding for submitting data to Packeta', 'packeta' ),
+			'saveChanges'                            => $this->wpAdapter->__( 'Save changes', 'packeta' ),
+			'packeta'                                => $this->wpAdapter->__( 'Packeta', 'packeta' ),
+			'noKnownCarrierForThisCountry'           => $this->wpAdapter->__( 'No carriers available for this country.', 'packeta' ),
+			'ageVerificationSupportedNotification'   => $this->wpAdapter->__( 'When shipping via this carrier, you can order the Age Verification service. The service will get ordered automatically if there is at least 1 product in the order with the age verification setting.', 'packeta' ),
+			'carrierDoesNotSupportCod'               => $this->wpAdapter->__( 'This carrier does not support COD payment.', 'packeta' ),
+			'allowedPickupPointTypes'                => $this->wpAdapter->__( 'Pickup point types', 'packeta' ),
+			'checkAtLeastTwo'                        => $this->wpAdapter->__( 'Check at least two types of pickup points or use a carrier which delivers to the desired pickup point type.', 'packeta' ),
+			'lowAvailableVendorsCount'               => $this->wpAdapter->__( 'This carrier displays all types of pickup points at the same time in the checkout (retail store pickup points, Z-boxes).', 'packeta' ),
+		];
 	}
 
 	/**
@@ -645,7 +705,7 @@ class OptionsPage {
 				if ( is_int( $key ) ) {
 					$newOptions[ $key ] = $option;
 				}
-				if ( 0 === strpos( (string) $key, 'new_' ) ) {
+				if ( strpos( (string) $key, 'new_' ) === 0 ) {
 					$newOptions[] = $option;
 				}
 			}
@@ -691,66 +751,96 @@ class OptionsPage {
 	}
 
 	/**
-	 * Adds limit fields to form.
+	 * @param Container  $weightLimits
+	 * @param int|string $index
 	 *
-	 * @param Container  $weightLimits Container.
-	 * @param int|string $index Index.
-	 *
-	 * @return void
+	 * @throws \RuntimeException
 	 */
 	private function addWeightLimit( Container $weightLimits, $index ): void {
-		/**
-		 * Pricing type control.
-		 *
-		 * @var Control $pricingTypeControl
-		 */
-		$pricingTypeControl = $weightLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
-		$limit              = $weightLimits->addContainer( (string) $index );
-		$item               = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
-		$itemRules          = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		// translators: %d is numeric threshold.
-		$itemRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+		$form = $weightLimits->getForm();
+		if ( $form === null ) {
+			throw new \RuntimeException( 'Form is not attached to the container.' );
+		}
 
-		$itemRules->addFilter(
+		$pricingTypeComponent = $form->getComponent( self::FORM_FIELD_PRICING_TYPE, false );
+
+		if ( ! $pricingTypeComponent instanceof Control ) {
+			throw new \RuntimeException(
+				sprintf(
+					'Component "%s" must be an instance of %s, %s given.',
+					self::FORM_FIELD_PRICING_TYPE,
+					Control::class,
+					is_object( $pricingTypeComponent ) ? get_class( $pricingTypeComponent ) : gettype( $pricingTypeComponent )
+				)
+			);
+		}
+
+		$limit       = $weightLimits->addContainer( (string) $index );
+		$weightField = $limit->addText( 'weight', __( 'Weight up to', 'packeta' ) . ':' );
+		$weightRules = $weightField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
+		$weightRules->setRequired();
+		$weightRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		$weightRules->addRule( Form::MIN, null, 0 );
+		// translators: %d is numeric threshold.
+		$weightRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+
+		$weightRules->addFilter(
 			function ( float $value ) {
 				return CoreHelper::simplifyWeight( $value );
 			}
 		);
-		// translators: %d is numeric threshold.
-		$itemRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 
-		$item      = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
-		$itemRules = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		$itemRules->addRule( Form::MIN, null, 0 );
+		$priceField = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
+		$priceRules = $priceField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_WEIGHT );
+		$priceRules->setRequired();
+		$priceRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		$priceRules->addRule( Form::MIN, null, 0 );
+		// translators: %d is numeric threshold.
+		$weightRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
 	}
 
 	/**
-	 * Adds product value limit fields to form.
+	 * @param Container  $productValueLimits
+	 * @param int|string $index
 	 *
-	 * @param Container  $productValueLimits Container.
-	 * @param int|string $index Index.
-	 *
-	 * @return void
+	 * @throws \RuntimeException
 	 */
 	private function addProductValueLimit( Container $productValueLimits, $index ): void {
-		/** Pricing type control. @var Control $pricingTypeControl */
-		$pricingTypeControl = $productValueLimits->getForm()->getComponent( self::FORM_FIELD_PRICING_TYPE );
-		$limit              = $productValueLimits->addContainer( (string) $index );
-		$item               = $limit->addText( 'value', __( 'Product value up to', 'packeta' ) . ':' );
-		$itemRules          = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		$itemRules->addRule( Form::MIN, null, 0 );
+		$form = $productValueLimits->getForm();
+		if ( $form === null ) {
+			throw new \RuntimeException( 'Form is not attached to the container.' );
+		}
 
-		$item      = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
-		$itemRules = $item->addConditionOn( $pricingTypeControl, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
-		$itemRules->setRequired();
-		$itemRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
-		$itemRules->addRule( Form::MIN, null, 0 );
+		$pricingTypeComponent = $form->getComponent( self::FORM_FIELD_PRICING_TYPE, false );
+
+		if ( ! $pricingTypeComponent instanceof Control ) {
+			throw new \RuntimeException(
+				sprintf(
+					'Component "%s" must be an instance of %s, %s given.',
+					self::FORM_FIELD_PRICING_TYPE,
+					Control::class,
+					is_object( $pricingTypeComponent ) ? get_class( $pricingTypeComponent ) : gettype( $pricingTypeComponent )
+				)
+			);
+		}
+
+		$limit = $productValueLimits->addContainer( $index );
+
+		$valueField = $limit->addText( 'value', __( 'Product value up to', 'packeta' ) . ':' );
+		$valueRules = $valueField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
+		$valueRules->setRequired();
+		$valueRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		// translators: %d is numeric threshold.
+		$valueRules->addRule( Form::MIN, null, 0.0 );
+		// translators: %d is numeric threshold.
+		$valueRules->addRule( [ FormValidators::class, 'greaterThan' ], __( 'Enter number greater than %d', 'packeta' ), 0.0 );
+
+		$priceField = $limit->addText( 'price', __( 'Price', 'packeta' ) . ':' );
+		$priceRules = $priceField->addConditionOn( $pricingTypeComponent, Form::EQUAL, Options::PRICING_TYPE_BY_PRODUCT_VALUE );
+		$priceRules->setRequired();
+		$priceRules->addRule( Form::FLOAT, __( 'Please enter a valid decimal number.', 'packeta' ) );
+		// translators: %d is numeric threshold.
+		$priceRules->addRule( Form::MIN, null, 0.0 );
 	}
 
 	/**
@@ -791,11 +881,11 @@ class OptionsPage {
 			'page' => self::SLUG,
 		];
 
-		if ( null !== $countryCode ) {
+		if ( $countryCode !== null ) {
 			$params[ self::PARAMETER_COUNTRY_CODE ] = $countryCode;
 		}
 
-		if ( null !== $carrierId ) {
+		if ( $carrierId !== null ) {
 			$params[ self::PARAMETER_CARRIER_ID ] = $carrierId;
 		}
 
@@ -814,7 +904,7 @@ class OptionsPage {
 	 */
 	private function getCheckedVendors( array $options ): array {
 		$vendorCodes = [];
-		if ( ! empty( $options['vendor_groups'] ) ) {
+		if ( isset( $options['vendor_groups'] ) ) {
 			$vendorCodes = $options['vendor_groups'];
 		}
 
@@ -861,7 +951,7 @@ class OptionsPage {
 	 */
 	private function getVendorCheckboxesConfig( string $carrierId, ?array $carrierOptions ): array {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
-		if ( null === $availableVendors || $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors ) ) {
+		if ( $availableVendors === null || $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors ) ) {
 			return [];
 		}
 
@@ -909,6 +999,7 @@ class OptionsPage {
 	 */
 	public function isAvailableVendorsCountLowByCarrierId( string $carrierId ): bool {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
+
 		return is_array( $availableVendors ) && $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors );
 	}
 }

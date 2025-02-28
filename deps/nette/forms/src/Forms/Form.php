@@ -19,7 +19,6 @@ use Packetery\Nette\Utils\Html;
  * @property-read FormRenderer $renderer
  * @property string $action
  * @property string $method
- * @internal
  */
 class Form extends Container implements \Packetery\Nette\HtmlStringable
 {
@@ -50,9 +49,9 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
     protected $crossOrigin = \false;
     /** @var \Packetery\Nette\Http\IRequest */
     private static $defaultHttpRequest;
-    /** @var mixed or null meaning: not detected yet */
+    /** @var SubmitterControl|bool */
     private $submittedBy;
-    /** @var array */
+    /** @var array|null */
     private $httpData;
     /** @var Html  element <form> */
     private $element;
@@ -239,7 +238,7 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
      */
     public function isSubmitted()
     {
-        if ($this->submittedBy === null) {
+        if ($this->httpData === null) {
             $this->getHttpData();
         }
         return $this->submittedBy;
@@ -307,7 +306,7 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
         }
         Arrays::invoke($this->onSubmit, $this);
         if (!$handled) {
-            \trigger_error('Form was submitted but there are no associated handlers.', \E_USER_WARNING);
+            \trigger_error("Form was submitted but there are no associated handlers (form '{$this->getName()}').", \E_USER_WARNING);
         }
     }
     private function invokeHandlers(iterable $handlers, $button = null) : void
@@ -521,11 +520,6 @@ class Form extends Container implements \Packetery\Nette\HtmlStringable
             }
             \Packetery\Nette\Http\Helpers::initCookie(self::$defaultHttpRequest, new \Packetery\Nette\Http\Response());
         }
-    }
-    /** @internal */
-    public function setHttpRequest(\Packetery\Nette\Http\IRequest $request)
-    {
-        $this->httpRequest = $request;
     }
     private function getHttpRequest() : \Packetery\Nette\Http\IRequest
     {

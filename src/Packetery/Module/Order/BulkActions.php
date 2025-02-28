@@ -69,9 +69,9 @@ class BulkActions {
 	/**
 	 * Adds custom actions to dropdown in admin order list.
 	 *
-	 * @param array $actions Array of action.
+	 * @param array<string, string> $actions Array of action.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function addActions( array $actions ): array {
 		$actions['submit_to_api']                                  = __( 'Submit orders to Packeta', 'packeta' );
@@ -87,12 +87,12 @@ class BulkActions {
 	 *
 	 * @param string $redirectTo Url.
 	 * @param string $action Action id.
-	 * @param array  $postIds Order ids.
+	 * @param int[]  $postIds Order ids.
 	 *
 	 * @return string
 	 */
 	public function handleActions( string $redirectTo, string $action, array $postIds ): string {
-		if ( CollectionPrint::ACTION_PRINT_ORDER_COLLECTION === $action ) {
+		if ( $action === CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ) {
 			set_transient( CollectionPrint::getOrderIdsTransientName(), $postIds );
 
 			return add_query_arg(
@@ -116,11 +116,11 @@ class BulkActions {
 			);
 		}
 
-		if ( 'submit_to_api' === $action ) {
+		if ( $action === 'submit_to_api' ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
 				$wcOrder = $this->orderRepository->getWcOrderById( $postId );
-				if ( null !== $wcOrder ) {
+				if ( $wcOrder !== null ) {
 					$submissionResult = $this->packetSubmitter->submitPacket(
 						$wcOrder,
 						null,
@@ -148,7 +148,7 @@ class BulkActions {
 	 */
 	public function renderPacketsExportResult(): void {
 		$get = $this->httpRequest->getQuery();
-		if ( empty( $get['submit_to_api'] ) ) {
+		if ( ! isset( $get['submit_to_api'] ) ) {
 			return;
 		}
 

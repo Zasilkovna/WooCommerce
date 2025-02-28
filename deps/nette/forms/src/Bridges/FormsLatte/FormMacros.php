@@ -21,7 +21,6 @@ use Packetery\Latte\PhpWriter;
  * - {inputError name}
  * - {formContainer name} ... {/formContainer}
  * - {formContext name} ... {/formContext}
- * @internal
  */
 final class FormMacros extends MacroSet
 {
@@ -36,6 +35,7 @@ final class FormMacros extends MacroSet
         $me->addMacro('name', [$me, 'macroName'], [$me, 'macroNameEnd'], [$me, 'macroNameAttr']);
         $me->addMacro('inputError', [$me, 'macroInputError']);
         $me->addMacro('formPrint', [$me, 'macroFormPrint']);
+        $me->addMacro('formClassPrint', [$me, 'macroFormPrint']);
     }
     /********************* macros ****************d*g**/
     /**
@@ -204,7 +204,8 @@ final class FormMacros extends MacroSet
         }
     }
     /**
-     * {formPrint [ClassName]}
+     * {formPrint ClassName}
+     * {formClassPrint ClassName}
      */
     public function macroFormPrint(MacroNode $node, PhpWriter $writer)
     {
@@ -214,6 +215,6 @@ final class FormMacros extends MacroSet
             throw new CompileException('Missing form name in ' . $node->getNotation());
         }
         $node->tokenizer->reset();
-        return $writer->write('\\Packetery\\Nette\\Bridges\\FormsLatte\\Runtime::renderBlueprint(' . ($name[0] === '$' ? 'is_object(%node.word) ? %node.word : ' : '') . '$this->global->uiControl[%node.word]); exit;');
+        return $writer->write('\\Packetery\\Nette\\Bridges\\FormsLatte\\Runtime::render' . $node->name . '(' . ($name[0] === '$' ? 'is_object(%node.word) ? %node.word : ' : '') . '$this->global->uiControl[%node.word]); exit;');
     }
 }

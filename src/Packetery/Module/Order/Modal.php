@@ -1,56 +1,45 @@
 <?php
-/**
- * Class Modal
- *
- * @package Packetery\Module\Order
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
-use Packetery\Module\Api\Internal\OrderRouter;
 use Packetery\Latte\Engine;
+use Packetery\Module\Api\Internal\OrderRouter;
+use Packetery\Module\Framework\WpAdapter;
 
-/**
- * Class Modal
- *
- * @package Packetery\Module\Order
- */
 class Modal {
 
 	/**
-	 * Latte engine.
-	 *
 	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Order details form.
-	 *
 	 * @var Form
 	 */
 	private $orderForm;
 
 	/**
-	 * Order router.
-	 *
-	 * @var OrderRouter;
+	 * @var OrderRouter
 	 */
 	private $apiRouter;
 
 	/**
-	 * Modal constructor.
-	 *
-	 * @param Engine      $latteEngine Latte engine.
-	 * @param Form        $orderForm Order form.
-	 * @param OrderRouter $apiRouter API router.
+	 * @var WpAdapter
 	 */
-	public function __construct( Engine $latteEngine, Form $orderForm, OrderRouter $apiRouter ) {
+	private $wpAdapter;
+
+	public function __construct(
+		Engine $latteEngine,
+		Form $orderForm,
+		OrderRouter $apiRouter,
+		WpAdapter $wpAdapter
+	) {
 		$this->latteEngine = $latteEngine;
 		$this->orderForm   = $orderForm;
 		$this->apiRouter   = $apiRouter;
+		$this->wpAdapter   = $wpAdapter;
 	}
 
 	/**
@@ -68,8 +57,8 @@ class Modal {
 		$orderSaveUrl = $this->apiRouter->getSaveModalUrl();
 
 		$form = $this->orderForm->create();
-		$form->addSubmit( 'submit', __( 'Save', 'packeta' ) );
-		$form->addButton( 'cancel', __( 'Cancel', 'packeta' ) );
+		$form->addSubmit( 'submit', $this->wpAdapter->__( 'Save', 'packeta' ) );
+		$form->addButton( 'cancel', $this->wpAdapter->__( 'Cancel', 'packeta' ) );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/modal-template.latte',
@@ -79,11 +68,13 @@ class Modal {
 				'form'         => $form,
 				'translations' => [
 					// translators: %s: Order number.
-					'order#%s'        => __( 'Order #%s', 'packeta' ),
+					'order#%s'        => $this->wpAdapter->__( 'Order #%s', 'packeta' ),
 
-					'closeModalPanel' => __( 'Close modal panel', 'packeta' ),
-					'weightIsManual'  => __( 'Weight is manually set. To calculate weight remove the field content and save.', 'packeta' ),
-					'adultContent'    => __( 'Adult content', 'packeta' ),
+					'closeModalPanel' => $this->wpAdapter->__( 'Close modal panel', 'packeta' ),
+					'weightIsManual'  => $this->wpAdapter->__( 'Weight is manually set. To calculate weight remove the field content and save.', 'packeta' ),
+					'codIsManual'     => $this->wpAdapter->__( 'COD value is manually set. To calculate the value remove field content and save.', 'packeta' ),
+					'valueIsManual'   => $this->wpAdapter->__( 'Order value is manually set. To calculate the value remove field content and save.', 'packeta' ),
+					'adultContent'    => $this->wpAdapter->__( 'Adult content', 'packeta' ),
 				],
 			]
 		);

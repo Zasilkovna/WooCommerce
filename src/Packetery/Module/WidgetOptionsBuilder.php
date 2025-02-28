@@ -68,12 +68,12 @@ class WidgetOptionsBuilder {
 			];
 		}
 
-		if ( empty( $vendorGroups ) ) {
+		if ( ! isset( $vendorGroups ) || count( $vendorGroups ) === 0 ) {
 			if ( $this->pickupPointsConfig->isCompoundCarrierId( $carrierId ) ) {
 				$vendorGroups = $this->pickupPointsConfig->getCompoundCarrierVendorGroups( $carrierId );
 			} else {
 				$vendorCarriers = $this->pickupPointsConfig->getVendorCarriers();
-				if ( ! empty( $vendorCarriers[ $carrierId ] ) ) {
+				if ( isset( $vendorCarriers[ $carrierId ] ) ) {
 					$vendorGroups = [ $vendorCarriers[ $carrierId ]->getGroup() ];
 				}
 			}
@@ -85,7 +85,7 @@ class WidgetOptionsBuilder {
 				'selected' => true,
 				'country'  => $country,
 			];
-			if ( Entity\Carrier::VENDOR_GROUP_ZPOINT !== $code ) {
+			if ( $code !== Entity\Carrier::VENDOR_GROUP_ZPOINT ) {
 				$groupSettings['group'] = $code;
 			}
 			$vendorsParam[] = $groupSettings;
@@ -130,7 +130,7 @@ class WidgetOptionsBuilder {
 				$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
 					$carrier->getId(),
 					$carrier->getCountry(),
-					( ( $carrierOption && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
+					( ( ( $carrierOption !== null && $carrierOption !== false ) && isset( $carrierOption['vendor_groups'] ) ) ? $carrierOption['vendor_groups'] : null )
 				);
 			} else {
 				$carrierConfigForWidget['carriers'] = $this->getCarriersParam( true, $carrier->getId() );
@@ -139,7 +139,7 @@ class WidgetOptionsBuilder {
 
 		if ( ! $carrier->hasPickupPoints() ) {
 			$addressValidation = 'none';
-			if ( $carrierOption && in_array( $carrier->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
+			if ( ( $carrierOption !== null && $carrierOption !== false ) && in_array( $carrier->getCountry(), Entity\Carrier::ADDRESS_VALIDATION_COUNTRIES, true ) ) {
 				$addressValidation = ( $carrierOption['address_validation'] ?? $addressValidation );
 			}
 
@@ -154,7 +154,7 @@ class WidgetOptionsBuilder {
 	 *
 	 * @param Order $order Order.
 	 *
-	 * @return array|null
+	 * @return array
 	 */
 	public function createPickupPointForAdmin( Order $order ): array {
 		$widgetOptions = [
@@ -177,7 +177,7 @@ class WidgetOptionsBuilder {
 			$widgetOptions['carriers'] = $this->getCarriersParam( $order->isPickupPointDelivery(), $order->getCarrier()->getId() );
 		}
 
-		if ( $order->containsAdultContent() ) {
+		if ( $order->containsAdultContent() === true ) {
 			$widgetOptions += [ 'livePickupPoint' => true ];
 		}
 
@@ -208,11 +208,11 @@ class WidgetOptionsBuilder {
 			'postcode'    => $deliveryAddress->getZip(),
 		];
 
-		if ( $deliveryAddress->getHouseNumber() ) {
+		if ( $deliveryAddress->getHouseNumber() !== null ) {
 			$widgetOptions += [ 'houseNumber' => $deliveryAddress->getHouseNumber() ];
 		}
 
-		if ( $deliveryAddress->getCounty() ) {
+		if ( $deliveryAddress->getCounty() !== null ) {
 			$widgetOptions += [ 'county' => $deliveryAddress->getCounty() ];
 		}
 
@@ -222,5 +222,4 @@ class WidgetOptionsBuilder {
 
 		return $widgetOptions;
 	}
-
 }

@@ -10,7 +10,6 @@ namespace Packetery\Nette\Forms;
 use Packetery\Nette;
 /**
  * List of validation & condition rules.
- * @internal
  */
 class Rules implements \IteratorAggregate
 {
@@ -231,6 +230,7 @@ class Rules implements \IteratorAggregate
     }
     /**
      * Iterates over complete ruleset.
+     * @return \ArrayIterator<int, Rule>
      */
     public function getIterator() : \Iterator
     {

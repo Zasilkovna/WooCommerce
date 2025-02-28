@@ -17,7 +17,6 @@ use Packetery\Core\Entity;
  * @package Packetery
  */
 class VendorCollectionFactory {
-
 	/**
 	 * Creates collection.
 	 *
@@ -40,10 +39,10 @@ class VendorCollectionFactory {
 				'czzbox',
 				'cz',
 				true,
-				true,
+				false,
 				'CZK',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 
 			// SK Packeta internal pickup points.
@@ -61,10 +60,10 @@ class VendorCollectionFactory {
 				'skzbox',
 				'sk',
 				true,
-				true,
+				false,
 				'EUR',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 
 			// HU Packeta internal pickup points.
@@ -82,10 +81,10 @@ class VendorCollectionFactory {
 				'huzbox',
 				'hu',
 				true,
-				true,
+				false,
 				'HUF',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 
 			// RO Packeta internal pickup points.
@@ -103,12 +102,11 @@ class VendorCollectionFactory {
 				'rozbox',
 				'ro',
 				true,
-				true,
+				false,
 				'RON',
 				true,
-				'zbox'
+				Entity\Carrier::VENDOR_GROUP_ZBOX
 			),
 		];
 	}
-
 }

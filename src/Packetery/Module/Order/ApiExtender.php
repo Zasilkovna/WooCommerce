@@ -10,8 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Entity\Order;
-use Packetery\Module\Exception\InvalidCarrierException;
-use Packetery\Module\ShippingMethod;
+use Packetery\Module\Shipping\ShippingProvider;
 use WC_Data;
 use WC_Order;
 use WP_REST_Response;
@@ -50,12 +49,12 @@ class ApiExtender {
 	 * Extends WooCommerce API response with plugin data.
 	 *
 	 * @param WP_REST_Response $response Response.
-	 * @param WC_Data          $object   Object.
+	 * @param WC_Data          $wcData   Object.
 	 *
 	 * @return object
 	 */
-	public function extendResponse( WP_REST_Response $response, WC_Data $object ): object {
-		if ( ! $object instanceof WC_Order ) {
+	public function extendResponse( WP_REST_Response $response, WC_Data $wcData ): object {
+		if ( ! $wcData instanceof WC_Order ) {
 			return $response;
 		}
 
@@ -64,18 +63,13 @@ class ApiExtender {
 			return $response;
 		}
 
-		try {
-			$order = $this->orderRepository->getByWcOrder( $object );
-		} catch ( InvalidCarrierException $invalidCarrierException ) {
-			return $response;
-		}
-
-		if ( null === $order ) {
+		$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcData );
+		if ( $order === null ) {
 			return $response;
 		}
 
 		foreach ( $responseData['shipping_lines'] as $key => $shippingLine ) {
-			if ( ShippingMethod::PACKETERY_METHOD_ID !== $shippingLine['method_id'] ) {
+			if ( ! ShippingProvider::isPacketaMethod( $shippingLine['method_id'] ) ) {
 				continue;
 			}
 			$response->data['shipping_lines'][ $key ]['packeta'] = $this->getPacketaItemsToShippingLines( $order );
@@ -89,7 +83,7 @@ class ApiExtender {
 	 *
 	 * @param Order $order Packetery Order.
 	 *
-	 * @return array
+	 * @return array<string, string|null>
 	 */
 	private function getPacketaItemsToShippingLines( Order $order ): array {
 		$items = [
@@ -98,7 +92,7 @@ class ApiExtender {
 			'point_name' => null,
 		];
 
-		if ( null !== $order->getPickupPoint() ) {
+		if ( $order->getPickupPoint() !== null ) {
 			$items['point_id']   = $order->getPickupPoint()->getId();
 			$items['point_name'] = $order->getPickupPoint()->getName();
 		}

@@ -96,7 +96,7 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param string $carrierId Carrier id.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCompoundCarrierVendorGroups( string $carrierId ): array {
 		$vendorGroups              = [];
@@ -117,10 +117,12 @@ class PacketaPickupPointsConfig {
 	/**
 	 * Gets vendor carriers settings.
 	 *
+	 * @param bool $forceReturnVendorCarriers Set true to get vendor carriers if split is disabled.
+	 *
 	 * @return VendorProvider[]
 	 */
-	public function getVendorCarriers(): array {
-		if ( ! $this->featureFlagProvider->isSplitActive() ) {
+	public function getVendorCarriers( bool $forceReturnVendorCarriers = false ): array {
+		if ( ! $forceReturnVendorCarriers && ! $this->featureFlagProvider->isSplitActive() ) {
 			return [];
 		}
 
@@ -176,6 +178,7 @@ class PacketaPickupPointsConfig {
 	 */
 	public function isVendorCarrierId( string $carrierId ): bool {
 		$vendorCarriers = $this->getVendorCarriers();
+
 		return isset( $vendorCarriers[ $carrierId ] );
 	}
 
@@ -195,7 +198,7 @@ class PacketaPickupPointsConfig {
 	 *
 	 * @param string $country Country.
 	 *
-	 * @return array
+	 * @return array<int<0, max>, BaseProvider>
 	 */
 	public function getNonFeedCarriersByCountry( string $country ): array {
 		$filteredCarriers = [];
@@ -226,11 +229,11 @@ class PacketaPickupPointsConfig {
 	 * @param string $carrierId Carrier id.
 	 * @param string $country Lowercase country.
 	 *
-	 * @return string|null Null in case of split vendor when split is off.
+	 * @return string
 	 * @throws InvalidCarrierException InvalidCarrierException.
 	 */
 	public function getFixedCarrierId( string $carrierId, string $country ): string {
-		if ( Entity\Carrier::INTERNAL_PICKUP_POINTS_ID === $carrierId ) {
+		if ( $carrierId === Entity\Carrier::INTERNAL_PICKUP_POINTS_ID ) {
 			$compoundCarriers = $this->getCompoundCarriers();
 
 			if ( ! isset( $compoundCarriers[ $country ] ) ) {
@@ -248,5 +251,4 @@ class PacketaPickupPointsConfig {
 
 		return $carrierId;
 	}
-
 }

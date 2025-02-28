@@ -20,7 +20,6 @@ use Packetery\Nette;
  * @property-read int $error
  * @property-read bool $ok
  * @property-read string|null $contents
- * @internal
  */
 final class FileUpload
 {

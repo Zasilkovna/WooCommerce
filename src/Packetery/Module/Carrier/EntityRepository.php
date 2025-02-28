@@ -10,9 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
-use Packetery\Core\Entity\Carrier;
 use Packetery\Module\EntityFactory;
-use Packetery\Module\ShippingZoneRepository;
 
 /**
  * Class EntityRepository
@@ -57,26 +55,24 @@ class EntityRepository {
 	private $carrierOptionsFactory;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Repository                $repository           Carrier repository.
-	 * @param EntityFactory\Carrier     $carrierEntityFactory Carrier Entity Factory.
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig   Internal pickup points config.
-	 * @param CarDeliveryConfig         $carDeliveryConfig    Car delivery config.
-	 * @param CarrierOptionsFactory     $carrierOptionsFactory Carrier options factory.
+	 * @var CarrierActivityBridge
 	 */
+	private $carrierActivityBridge;
+
 	public function __construct(
 		Repository $repository,
 		EntityFactory\Carrier $carrierEntityFactory,
 		PacketaPickupPointsConfig $pickupPointsConfig,
 		CarDeliveryConfig $carDeliveryConfig,
-		CarrierOptionsFactory $carrierOptionsFactory
+		CarrierOptionsFactory $carrierOptionsFactory,
+		CarrierActivityBridge $carrierActivityBridge
 	) {
 		$this->repository            = $repository;
 		$this->carrierEntityFactory  = $carrierEntityFactory;
 		$this->pickupPointsConfig    = $pickupPointsConfig;
 		$this->carDeliveryConfig     = $carDeliveryConfig;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->carrierActivityBridge = $carrierActivityBridge;
 	}
 
 	/**
@@ -88,7 +84,7 @@ class EntityRepository {
 	 */
 	public function getById( int $carrierId ): ?Entity\Carrier {
 		$result = $this->repository->getById( $carrierId );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			return null;
 		}
 
@@ -135,7 +131,6 @@ class EntityRepository {
 
 		return $entities;
 	}
-
 
 	/**
 	 * Gets all active carriers.
@@ -209,7 +204,7 @@ class EntityRepository {
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
-			if ( $carrierOptions->isActive() ) {
+			if ( $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
 					'label'     => $carrierOptions->getName(),
@@ -233,15 +228,17 @@ class EntityRepository {
 		if ( ! is_numeric( $carrierId ) ) {
 			$compoundCarriers = $this->pickupPointsConfig->getCompoundCarriers();
 
-			return ( ! empty( $compoundCarriers[ $customerCountry ] ) );
+			return ( isset( $compoundCarriers[ $customerCountry ] ) );
 		}
 
 		$carrier = $this->getById( (int) $carrierId );
-		if ( null === $carrier || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
+		if ( $carrier === null || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
 			return false;
 		}
 
-		return $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() )->isActive();
+		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
+
+		return $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions );
 	}
 
 	/**
@@ -256,27 +253,6 @@ class EntityRepository {
 			return false;
 		}
 
-		return false === ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) );
+		return ( $this->repository->hasPickupPoints( (int) $carrierId ) || $this->carDeliveryConfig->isCarDeliveryCarrier( $carrierId ) ) === false;
 	}
-
-	/**
-	 * Gets carriers available for specific shipping rate.
-	 *
-	 * @param string $rateId Rate id.
-	 *
-	 * @return Carrier[]
-	 */
-	public function getCarriersForShippingRate( string $rateId ): array {
-		$shippingZoneRepository   = new ShippingZoneRepository();
-		$countries                = $shippingZoneRepository->getCountryCodesForShippingRate( $rateId );
-		$availableCarriersToMerge = [];
-		if ( ! empty( $countries ) ) {
-			foreach ( $countries as $countryCode ) {
-				$availableCarriersToMerge[] = $this->getByCountryIncludingNonFeed( $countryCode );
-			}
-		}
-
-		return array_merge( ...$availableCarriersToMerge );
-	}
-
 }

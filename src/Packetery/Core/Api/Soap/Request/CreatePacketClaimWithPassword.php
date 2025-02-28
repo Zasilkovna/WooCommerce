@@ -80,10 +80,10 @@ class CreatePacketClaimWithPassword {
 	 * @param Entity\Order $order Order entity.
 	 */
 	public function __construct( Entity\Order $order ) {
-		$this->number              = ( $order->getCustomNumber() ?? $order->getNumber() );
+		$this->number              = $order->getCustomNumberOrNumber();
 		$this->email               = $order->getEmail();
 		$this->phone               = $order->getPhone();
-		$this->value               = $order->getValue();
+		$this->value               = $order->getFinalValue();
 		$this->currency            = $order->getCurrency();
 		$this->eshop               = $order->getEshop();
 		$this->consignCountry      = $order->getShippingCountry();
@@ -98,5 +98,4 @@ class CreatePacketClaimWithPassword {
 	public function getSubmittableData(): array {
 		return array_filter( get_object_vars( $this ) );
 	}
-
 }

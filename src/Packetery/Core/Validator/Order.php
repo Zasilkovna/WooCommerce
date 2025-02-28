@@ -84,7 +84,7 @@ class Order {
 	 * @return bool
 	 */
 	public function isValid( Entity\Order $order ): bool {
-		return empty( $this->validate( $order ) );
+		return count( $this->validate( $order ) ) === 0;
 	}
 
 	/**
@@ -97,11 +97,11 @@ class Order {
 	public function validate( Entity\Order $order ): array {
 		$sizeReport = $this->validateSize( $order );
 		$errors     = [
-			self::ERROR_TRANSLATION_KEY_NUMBER  => ! $order->getNumber(),
-			self::ERROR_TRANSLATION_KEY_NAME    => ! $order->getName(),
-			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->getValue(),
-			self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => ! $order->getPickupPointOrCarrierId(),
-			self::ERROR_TRANSLATION_KEY_ESHOP   => ! $order->getEshop(),
+			self::ERROR_TRANSLATION_KEY_NUMBER  => ! $order->hasNumber(),
+			self::ERROR_TRANSLATION_KEY_NAME    => ! $order->hasName(),
+			self::ERROR_TRANSLATION_KEY_VALUE   => ! $order->hasFinalValue(),
+			self::ERROR_TRANSLATION_KEY_PICKUP_POINT_OR_CARRIER_ID => ! $order->hasPickupPointOrCarrierId(),
+			self::ERROR_TRANSLATION_KEY_ESHOP   => ! $order->hasEshop(),
 			self::ERROR_TRANSLATION_KEY_WEIGHT  => ! $this->validateFinalWeight( $order ),
 			self::ERROR_TRANSLATION_KEY_ADDRESS => ! $this->validateAddress( $order ),
 			self::ERROR_TRANSLATION_KEY_HEIGHT  => ! $sizeReport->isHeightValid(),
@@ -130,15 +130,11 @@ class Order {
 	 * @return string
 	 */
 	private function getTranslation( string $key ): string {
-		if ( null === $this->translations ) {
+		if ( $this->translations === null ) {
 			$this->translations = $this->validatorTranslations->get();
 		}
 
-		if ( empty( $this->translations[ $key ] ) ) {
-			return $key;
-		}
-
-		return $this->translations[ $key ];
+		return $this->translations[ $key ] ?? $key;
 	}
 
 	/**
@@ -151,7 +147,7 @@ class Order {
 	private function validateAddress( Entity\Order $order ): bool {
 		if ( $order->isHomeDelivery() ) {
 			$address = $order->getDeliveryAddress();
-			if ( null === $address ) {
+			if ( $address === null ) {
 				return false;
 			}
 
@@ -169,7 +165,7 @@ class Order {
 	 * @return bool
 	 */
 	private function validateFinalWeight( Entity\Order $order ): bool {
-		return null !== $order->getFinalWeight() && $order->getFinalWeight() > 0;
+		return $order->getFinalWeight() !== null && $order->getFinalWeight() > 0;
 	}
 
 	/**
@@ -182,7 +178,7 @@ class Order {
 	private function validateSize( Entity\Order $order ): SizeReport {
 		if ( $order->getCarrier()->requiresSize() ) {
 			$size = $order->getSize();
-			if ( null === $size ) {
+			if ( $size === null ) {
 				return new SizeReport( false, false, false );
 			}
 
@@ -191,5 +187,4 @@ class Order {
 
 		return new SizeReport( true, true, true );
 	}
-
 }

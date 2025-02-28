@@ -1,4 +1,0 @@
-includes:
-	- base.neon
-parameters:
-	phpVersion: 70400

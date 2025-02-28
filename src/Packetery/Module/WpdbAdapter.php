@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module;
 
 use Packetery\Tracy\Debugger;
@@ -25,42 +24,42 @@ class WpdbAdapter {
 	 *
 	 * @var string
 	 */
-	public $packetery_carrier;
+	public $packeteryCarrier;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_order;
+	public $packeteryOrder;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_log;
+	public $packeteryLog;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_customs_declaration;
+	public $packeteryCustomsDeclaration;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $packetery_customs_declaration_item;
+	public $packeteryCustomsDeclarationItem;
 
 	/**
 	 * Table name.
 	 *
 	 * @var string
 	 */
-	public $wc_orders;
+	public $wcOrders;
 
 	/**
 	 * Table name.
@@ -100,19 +99,17 @@ class WpdbAdapter {
 	}
 
 	/**
-	 * Gets row.
-	 *
 	 * @param string $query  SQL query.
 	 * @param string $output Optional. The required return type. One of OBJECT, ARRAY_A, or ARRAY_N, which
 	 *                       correspond to an stdClass object, an associative array, or a numeric array,
 	 *                       respectively. Default OBJECT.
 	 *
-	 * @return array|object|null Database query result or null on failure.
+	 * @return array<string, mixed>|object|null Database query result or null on failure.
 	 */
 	public function get_row( string $query, string $output = OBJECT ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_row( $query, $output );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			$this->handleError();
 		}
 
@@ -130,7 +127,7 @@ class WpdbAdapter {
 	public function prepare( string $query, ...$args ): string {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->prepare( $query, ...$args );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			$this->logError( 'Query to prepare is invalid. Likely due placeholder count mismatch.' );
 		}
 
@@ -148,7 +145,7 @@ class WpdbAdapter {
 	public function query( string $query ) {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->query( $query );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -158,16 +155,16 @@ class WpdbAdapter {
 	/**
 	 * Helper function for insert and replace.
 	 *
-	 * @param string     $table  Table name.
-	 * @param array      $data   Data to insert (in column => value pairs).
-	 * @param array|null $format Optional. An array of formats to be mapped to each of the value in $data.
-	 * @param string     $type   Optional. Type of operation. Possible values include 'INSERT' or 'REPLACE'.
+	 * @param string               $table  Table name.
+	 * @param array<string, mixed> $data   Data to insert (in column => value pairs).
+	 * @param string[]|null        $format Optional. An array of formats to be mapped to each of the value in $data.
+	 * @param string               $type   Optional. Type of operation. Possible values include 'INSERT' or 'REPLACE'.
 	 *
 	 * @return int|false The number of rows affected, or false on error.
 	 */
 	public function insertReplaceHelper( string $table, array $data, ?array $format = null, string $type = 'INSERT' ) {
 		$result = $this->wpdb->_insert_replace_helper( $table, $data, $format, $type );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -177,15 +174,15 @@ class WpdbAdapter {
 	/**
 	 * Deletes a row in the table.
 	 *
-	 * @param string      $table       Table name.
-	 * @param array       $where       A named array of WHERE clauses (in column => value pairs).
-	 * @param string|null $whereFormat Optional. An array of formats to be mapped to each of the values in $where.
+	 * @param string                    $table       Table name.
+	 * @param array<string, int|string> $where       A named array of WHERE clauses (in column => value pairs).
+	 * @param string|null               $whereFormat Optional. An array of formats to be mapped to each of the values in $where.
 	 *
 	 * @return int|false The number of rows updated, or false on error.
 	 */
 	public function delete( string $table, array $where, ?string $whereFormat = null ) {
 		$result = $this->wpdb->delete( $table, $where, $whereFormat );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -195,14 +192,14 @@ class WpdbAdapter {
 	/**
 	 * Inserts a row into the table.
 	 *
-	 * @param string $table Table name.
-	 * @param array  $data  Data to insert (in column => value pairs).
+	 * @param string               $table Table name.
+	 * @param array<string, mixed> $data  Data to insert (in column => value pairs).
 	 *
 	 * @return int|false The number of rows inserted, or false on error.
 	 */
 	public function insert( string $table, array $data ) {
 		$result = $this->wpdb->insert( $table, $data );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -212,15 +209,15 @@ class WpdbAdapter {
 	/**
 	 * Updates a row in the table.
 	 *
-	 * @param string $table Table name.
-	 * @param array  $data  Data to update (in column => value pairs).
-	 * @param array  $where A named array of WHERE clauses (in column => value pairs).
+	 * @param string                                    $table Table name.
+	 * @param array<string, int|float|string|null|bool> $data  Data to update (in column => value pairs).
+	 * @param array<string, int|string>                 $where A named array of WHERE clauses (in column => value pairs).
 	 *
 	 * @return int|false The number of rows updated, or false on error.
 	 */
 	public function update( string $table, array $data, array $where ) {
 		$result = $this->wpdb->update( $table, $data, $where );
-		if ( false === $result ) {
+		if ( $result === false ) {
 			$this->handleError();
 		}
 
@@ -262,7 +259,7 @@ class WpdbAdapter {
 	public function get_var( string $query ): ?string {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 		$result = $this->wpdb->get_var( $query );
-		if ( null === $result ) {
+		if ( $result === null ) {
 			$this->handleError();
 		}
 
@@ -277,7 +274,7 @@ class WpdbAdapter {
 	 * @return bool
 	 */
 	private function isPacketeryTableQueried( string $query ): bool {
-		return 1 === preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?' . preg_quote( $this->getPacketeryPrefix(), '~' ) . '~i', $query );
+		return preg_match( '~\s*(FROM|JOIN|INTO|UPDATE|TABLE)\s*`?' . preg_quote( $this->getPacketeryPrefix(), '~' ) . '~i', $query ) === 1;
 	}
 
 	/**
@@ -306,7 +303,7 @@ class WpdbAdapter {
 	 * @return void
 	 */
 	private function handleError(): void {
-		if ( '' !== $this->getLastWpdbError() && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
+		if ( $this->getLastWpdbError() !== '' && $this->isPacketeryTableQueried( (string) $this->wpdb->last_query ) ) {
 			$this->logError( $this->getLastWpdbError() );
 		}
 	}
@@ -326,7 +323,7 @@ class WpdbAdapter {
 	 * @return \Generator
 	 */
 	public function getWpdbQueries(): \Generator {
-		if ( ! empty( $this->wpdb->queries ) ) {
+		if ( $this->wpdb->queries !== null ) {
 			foreach ( $this->wpdb->queries as $queryInfo ) {
 				yield $queryInfo;
 			}
@@ -338,14 +335,14 @@ class WpdbAdapter {
 	 * only the specified column will be returned, but the entire result is cached for later use.
 	 *
 	 * @param string $query The query you wish to execute. Setting this parameter to null will return the specified column from the cached results of the previous query.
-	 * @param int    $column_offset The desired column (0 being the first). Defaults to 0.
+	 * @param int    $columnOffset The desired column (0 being the first). Defaults to 0.
 	 *
-	 * @return array Returns an empty array if no result is found.
+	 * @return array<int|float|string|null|bool>  Returns an empty array if no result is found.
 	 */
-	public function get_col( string $query, int $column_offset = 0 ): array {
+	public function get_col( string $query, int $columnOffset = 0 ): array {
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$result = $this->wpdb->get_col( $query, $column_offset );
-		if ( [] === $result ) {
+		$result = $this->wpdb->get_col( $query, $columnOffset );
+		if ( $result === [] ) {
 			$this->handleError();
 		}
 
@@ -355,9 +352,9 @@ class WpdbAdapter {
 	/**
 	 * Quote array of strings.
 	 *
-	 * @param array $input Input.
+	 * @param string[] $input Input.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	private function quoteArrayOfStrings( array $input ): array {
 		return array_map(
@@ -371,7 +368,7 @@ class WpdbAdapter {
 	/**
 	 * Prepare IN clause from array of strings.
 	 *
-	 * @param array $input Input array.
+	 * @param string[] $input Input array.
 	 *
 	 * @return string
 	 */
@@ -419,9 +416,9 @@ class WpdbAdapter {
 	/**
 	 * Parses the output given by dbDelta and returns information about it. Taken from DatabaseUtil 7.5.1.
 	 *
-	 * @param array $dbdeltaOutput The output from the execution of dbDelta.
+	 * @param array<int|string, string> $dbdeltaOutput The output from the execution of dbDelta.
 	 *
-	 * @return array[] An array containing a 'created_tables' key whose value is an array with the names of the tables that have been (or would have been) created.
+	 * @return array{created_tables: array<int<0, max>, (int|string)>} An array containing a 'created_tables' key whose value is an array with the names of the tables that have been (or would have been) created.
 	 */
 	private function parseDbdeltaOutput( array $dbdeltaOutput ): array {
 		$createdTables = [];
@@ -441,7 +438,7 @@ class WpdbAdapter {
 	 * @return string|null
 	 */
 	public function getLastInsertId(): ?string {
-		if ( 0 === $this->wpdb->insert_id ) {
+		if ( $this->wpdb->insert_id === 0 ) {
 			return null;
 		}
 
@@ -458,5 +455,4 @@ class WpdbAdapter {
 	public function escLike( string $text ): string {
 		return $this->wpdb->esc_like( $text );
 	}
-
 }

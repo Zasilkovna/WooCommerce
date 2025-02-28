@@ -9,12 +9,14 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
+use Packetery\Core\Api\Rest\Exception\InvalidApiKeyException;
 use Packetery\Core\Api\Rest\PickupPointValidate;
 use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\Api\Rest\PickupPointValidateResponse;
 use Packetery\Core\Api\Rest\RestException;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\WebRequestClient;
 
@@ -52,16 +54,26 @@ class PickupPointValidator {
 	private $webRequestClient;
 
 	/**
-	 * PickupPointValidator constructor.
-	 *
-	 * @param OptionsProvider  $optionsProvider Options provider.
-	 * @param ILogger          $logger Logger.
-	 * @param WebRequestClient $webRequestClient HTTP client.
+	 * @var WpAdapter
 	 */
-	public function __construct( OptionsProvider $optionsProvider, ILogger $logger, WebRequestClient $webRequestClient ) {
+	private $wpAdapter;
+
+	/**
+	 * @param OptionsProvider  $optionsProvider
+	 * @param ILogger          $logger
+	 * @param WebRequestClient $webRequestClient
+	 * @param WpAdapter        $wpAdapter
+	 */
+	public function __construct(
+		OptionsProvider $optionsProvider,
+		ILogger $logger,
+		WebRequestClient $webRequestClient,
+		WpAdapter $wpAdapter
+	) {
 		$this->optionsProvider  = $optionsProvider;
 		$this->logger           = $logger;
 		$this->webRequestClient = $webRequestClient;
+		$this->wpAdapter        = $wpAdapter;
 	}
 
 	/**
@@ -72,20 +84,30 @@ class PickupPointValidator {
 	 * @return PickupPointValidateResponse
 	 */
 	public function validate( PickupPointValidateRequest $request ): PickupPointValidateResponse {
-		$pickupPointValidate = new PickupPointValidate( $this->webRequestClient, $this->optionsProvider->get_api_key() );
+		$apiKey = $this->optionsProvider->get_api_key();
+		try {
+			$pickupPointValidate = PickupPointValidate::createWithValidApiKey( $this->webRequestClient, $apiKey );
+		} catch ( InvalidApiKeyException $exception ) {
+			$record         = $this->createPickUpPointValidateErrorRecord();
+			$record->params = [
+				'errorMessage' => $this->wpAdapter->__( 'API credentials are not set correctly.', 'packeta' ),
+			];
+
+			$this->logger->add( $record );
+
+			return new PickupPointValidateResponse( true, [] );
+		}
 
 		try {
 			// We do not log successful requests.
 			return $pickupPointValidate->validate( $request );
 		} catch ( RestException $exception ) {
-			$record         = new Record();
-			$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
-			$record->status = Record::STATUS_ERROR;
-			$record->title  = __( 'Pickup point could not be validated.', 'packeta' );
+			$record         = $this->createPickUpPointValidateErrorRecord();
 			$record->params = [
 				'errorMessage' => $exception->getMessage(),
 				'request'      => $request->getSubmittableData(),
 			];
+
 			$this->logger->add( $record );
 			WC()->session->set( self::VALIDATION_HTTP_ERROR_SESSION_KEY, $exception->getMessage() );
 
@@ -93,10 +115,19 @@ class PickupPointValidator {
 		}
 	}
 
+	private function createPickUpPointValidateErrorRecord(): Record {
+		$record         = new Record();
+		$record->action = Record::ACTION_PICKUP_POINT_VALIDATE;
+		$record->status = Record::STATUS_ERROR;
+		$record->title  = $this->wpAdapter->__( 'Pickup point could not be validated.', 'packeta' );
+
+		return $record;
+	}
+
 	/**
 	 * Returns translated validation errors.
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function getTranslatedError(): array {
 		return [

@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Rounder;
@@ -30,7 +29,7 @@ class Options {
 	/**
 	 * Options.
 	 *
-	 * @var array
+	 * @var array<string, string|bool|array<string, string|bool>>
 	 */
 	private $options;
 
@@ -83,13 +82,7 @@ class Options {
 	 * @return string
 	 */
 	public function getAddressValidation(): string {
-		$none  = 'none';
-		$value = $this->options['address_validation'] ?? $none;
-		if ( $value ) {
-			return $value;
-		}
-
-		return $none;
+		return $this->options['address_validation'] ?? 'none';
 	}
 
 	/**
@@ -159,11 +152,11 @@ class Options {
 	 * @return bool
 	 */
 	public function hasAnyCodSurchargeSetting(): bool {
-		if ( null !== $this->getDefaultCODSurcharge() ) {
+		if ( $this->getDefaultCODSurcharge() !== null ) {
 			return true;
 		}
 
-		return ! empty( $this->options['surcharge_limits'] );
+		return isset( $this->options['surcharge_limits'] );
 	}
 
 	/**
@@ -190,7 +183,17 @@ class Options {
 	 * @return bool
 	 */
 	public function hasOptions(): bool {
-		return ! empty( $this->options );
+		return count( $this->options ) > 0;
 	}
 
+	public function getSizeRestrictions(): ?array {
+		if (
+			isset( $this->options['dimensions_restrictions']['active'] ) &&
+			$this->options['dimensions_restrictions']['active'] === true
+		) {
+			return $this->options['dimensions_restrictions'];
+		}
+
+		return null;
+	}
 }

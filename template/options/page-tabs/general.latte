@@ -3,7 +3,7 @@
 <form n:name=$form>
 	{php settings_fields('packetery')}
 
-	<table class="form-table" role="presentation">
+	<table class="form-table packetery_settings" role="presentation">
 		<tr>
 			<th scope="row">
 				<label n:name=packetery-api_password />
@@ -12,7 +12,6 @@
 				<input n:name=packetery-api_password>
 				<div class="packetery-help-block">
 					<p>
-						{phpComment 'translators: %s represents URL.'}
 						{sprintf( $translations['apiPasswordCanBeFoundAt%sUrl'], $apiPasswordLink )|noescape}
 					</p>
 				</div>
@@ -87,6 +86,14 @@
 						{$translations['defaultWeightDescription']}
 					</p>
 				</div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">
+				<label n:name=packetery-dimensions_unit />
+			</th>
+			<td>
+				<select n:name=packetery-dimensions_unit></select>
 			</td>
 		</tr>
 		<tr>

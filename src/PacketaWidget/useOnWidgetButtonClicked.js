@@ -7,6 +7,7 @@
 import { useCallback } from 'react';
 import { fillRateAttrValues } from './fillRateAttrValues';
 import { stringifyOptions } from "./stringifyOptions";
+import { getShippingMethodOptionId } from "./getShippingMethodOptionId";
 
 export const useOnWidgetButtonClicked = (
 	packetaShippingRate,
@@ -27,7 +28,7 @@ export const useOnWidgetButtonClicked = (
 	} = settings;
 
 	const onWidgetButtonClicked = useCallback( () => {
-		const rateId = packetaShippingRate.rate_id.split( ':' ).pop();
+		const rateId = getShippingMethodOptionId( packetaShippingRate.rate_id );
 
 		let weight = +( cartItemsWeight / 1000 ).toFixed( 2 );
 		let widgetOptions = { language, appIdentity, weight };
@@ -38,8 +39,23 @@ export const useOnWidgetButtonClicked = (
 		if ( carrierConfig[ rateId ].vendors ) {
 			widgetOptions.vendors = carrierConfig[ rateId ].vendors;
 		}
-		if ( dynamicSettings && dynamicSettings.isAgeVerificationRequired ) {
-			widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+
+		if ( dynamicSettings ) {
+			if ( dynamicSettings.isAgeVerificationRequired ) {
+				widgetOptions.livePickupPoint = true; // Pickup points with real person only.
+			}
+
+			if ( dynamicSettings.biggestProductSize ) {
+				if ( dynamicSettings.biggestProductSize.length ) {
+					widgetOptions.length = dynamicSettings.biggestProductSize.length;
+				}
+				if ( dynamicSettings.biggestProductSize.width ) {
+					widgetOptions.width = dynamicSettings.biggestProductSize.width;
+				}
+				if ( dynamicSettings.biggestProductSize.depth ) {
+					widgetOptions.depth = dynamicSettings.biggestProductSize.depth;
+				}
+			}
 		}
 
 		console.log( 'Pickup point widget options: apiKey: ' + packeteryApiKey + ', ' + stringifyOptions( widgetOptions ) );

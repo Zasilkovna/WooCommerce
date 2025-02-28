@@ -1,94 +1,64 @@
 <?php
-/**
- * Class PacketClaimSubmitter.
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
 namespace Packetery\Module\Order;
 
 use Packetery\Core\Api\Soap;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Log;
+use Packetery\Module;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http\Request;
-use Packetery\Module;
 
-/**
- * Class PacketClaimSubmitter.
- */
 class PacketClaimSubmitter {
 
 	/**
-	 * SOAP API Client.
-	 *
-	 * @var Soap\Client SOAP API Client.
+	 * @var Soap\Client
 	 */
 	private $soapApiClient;
 
 	/**
-	 * ILogger.
-	 *
 	 * @var Log\ILogger
 	 */
 	private $logger;
 
 	/**
-	 * Order repository.
-	 *
 	 * @var Repository
 	 */
 	private $orderRepository;
 
 	/**
-	 * Request.
-	 *
 	 * @var Request
 	 */
 	private $request;
 
 	/**
-	 * Message manager.
-	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
 
 	/**
-	 * Log page.
-	 *
 	 * @var Module\Log\Page
 	 */
 	private $logPage;
 
 	/**
-	 * Common logic.
-	 *
 	 * @var PacketActionsCommonLogic
 	 */
 	private $commonLogic;
 
 	/**
-	 * ModuleHelper.
-	 *
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
 
 	/**
-	 * OrderApi constructor.
-	 *
-	 * @param Soap\Client              $soapApiClient   SOAP API Client.
-	 * @param Log\ILogger              $logger          Logger.
-	 * @param Repository               $orderRepository Order repository.
-	 * @param Request                  $request         Request.
-	 * @param MessageManager           $messageManager  Message manager.
-	 * @param Module\Log\Page          $logPage         Log page.
-	 * @param PacketActionsCommonLogic $commonLogic     Common logic.
-	 * @param ModuleHelper             $moduleHelper          ModuleHelper.
+	 * @var CoreHelper
 	 */
+	private $coreHelper;
+
 	public function __construct(
 		Soap\Client $soapApiClient,
 		Log\ILogger $logger,
@@ -97,7 +67,8 @@ class PacketClaimSubmitter {
 		MessageManager $messageManager,
 		Module\Log\Page $logPage,
 		PacketActionsCommonLogic $commonLogic,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		CoreHelper $coreHelper
 	) {
 		$this->soapApiClient   = $soapApiClient;
 		$this->logger          = $logger;
@@ -107,6 +78,7 @@ class PacketClaimSubmitter {
 		$this->logPage         = $logPage;
 		$this->commonLogic     = $commonLogic;
 		$this->moduleHelper    = $moduleHelper;
+		$this->coreHelper      = $coreHelper;
 	}
 
 	/**
@@ -120,7 +92,7 @@ class PacketClaimSubmitter {
 
 		$record         = new Log\Record();
 		$record->action = Log\Record::ACTION_PACKET_CLAIM_SENDING;
-		if ( null === $order ) {
+		if ( $order === null ) {
 			$record->status  = Log\Record::STATUS_ERROR;
 			$record->orderId = null;
 			$record->title   = __( 'Packet claim submission error', 'packeta' );
@@ -140,7 +112,7 @@ class PacketClaimSubmitter {
 		$this->commonLogic->checkAction( PacketActionsCommonLogic::ACTION_SUBMIT_PACKET_CLAIM, $order );
 
 		$record->orderId = $order->getNumber();
-		if ( false === $order->isPacketClaimCreationPossible() ) {
+		if ( $order->isPacketClaimCreationPossible() === false ) {
 			$record->status = Log\Record::STATUS_ERROR;
 			$record->title  = __( 'Packet claim submission error', 'packeta' );
 			$record->params = [
@@ -199,11 +171,12 @@ class PacketClaimSubmitter {
 			];
 
 			$order->setPacketClaimId( $response->getId() );
+			$order->setPacketClaimTrackingUrl( $this->coreHelper->getTrackingUrl( $response->getId() ) );
 			$order->setPacketClaimPassword( $response->getPassword() );
 			$this->orderRepository->save( $order );
 
 			$wcOrder = $this->orderRepository->getWcOrderById( (int) $order->getNumber() );
-			if ( null !== $wcOrder ) {
+			if ( $wcOrder !== null ) {
 				$wcOrder->add_order_note(
 					sprintf(
 						// translators: %s represents a packet tracking link.

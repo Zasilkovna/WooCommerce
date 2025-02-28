@@ -11,7 +11,6 @@ use Packetery\Nette;
 use Packetery\Tracy;
 /**
  * Session panel for Debugger Bar.
- * @internal
  */
 class SessionPanel implements Tracy\IBarPanel
 {

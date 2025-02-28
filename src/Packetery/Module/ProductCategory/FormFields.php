@@ -7,15 +7,14 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\ProductCategory;
 
+use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CarDeliveryConfig;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionPrefixer;
 use Packetery\Module\FormFactory;
 use Packetery\Module\ProductCategory;
-use Packetery\Latte\Engine;
 use Packetery\Nette\Forms\Form;
 
 /**
@@ -118,7 +117,7 @@ class FormFields {
 
 		$form->setDefaults(
 			[
-				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory ? $productCategory->getDisallowedShippingRateChoices() : [],
+				ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES => $productCategory !== null ? $productCategory->getDisallowedShippingRateChoices() : [],
 			]
 		);
 
@@ -134,7 +133,8 @@ class FormFields {
 	 */
 	public function render( $term ): void {
 		$isProductCategoryObject = ( is_object( $term ) && get_class( $term ) === \WP_Term::class );
-		$productCategory         = $isProductCategoryObject ? $this->productCategoryEntityFactory->fromTermId( $term->term_id ) : null;
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$productCategory = $isProductCategoryObject ? $this->productCategoryEntityFactory->fromTermId( $term->term_id ) : null;
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/product_category/form-fields.latte',
 			[
@@ -152,17 +152,15 @@ class FormFields {
 	 * @param int    $termId         Post ID.
 	 * @param int    $termTaxonomyId Term taxonomy ID.
 	 * @param string $taxonomy       Taxonomy slug.
-	 *
-	 * @return void
 	 */
 	public function saveData( int $termId, int $termTaxonomyId, string $taxonomy = '' ): void {
-		if ( ProductCategory\Entity::TAXONOMY_NAME !== $taxonomy ) {
+		if ( $taxonomy !== ProductCategory\Entity::TAXONOMY_NAME ) {
 			return;
 		}
 		$productCategory = $this->productCategoryEntityFactory->fromTermId( $termId );
 		$form            = $this->createForm( $productCategory );
 
-		$form->onSuccess[] = function ( Form $form, array $shippingRates ) use ( $productCategory ): void {
+		$form->onSuccess[] = static function ( Form $form, array $shippingRates ) use ( $productCategory ): void {
 			if ( isset( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] ) ) {
 				$disallowedShippingRates = array_filter( $shippingRates[ ProductCategory\Entity::META_DISALLOWED_SHIPPING_RATES ] );
 				update_term_meta( $productCategory->getId(), Entity::META_DISALLOWED_SHIPPING_RATES, $disallowedShippingRates );

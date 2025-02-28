@@ -15,7 +15,6 @@ use Packetery\Nette\DI\ServiceCreationException;
  * @property string|null $class
  * @property Statement $factory
  * @property Statement[] $setup
- * @internal
  */
 final class ServiceDefinition extends Definition
 {

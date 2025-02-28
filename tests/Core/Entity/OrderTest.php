@@ -4,13 +4,12 @@ declare( strict_types=1 );
 
 namespace Tests\Core\Entity;
 
-use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\PacketStatus;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class OrderTest extends TestCase {
-
 	public function testSettersAndGetters(): void {
 		$order             = DummyFactory::createOrderCzPp();
 		$carDeliveryOrder  = DummyFactory::createOrderCzCdIncomplete();
@@ -64,7 +63,8 @@ class OrderTest extends TestCase {
 		$order->setPacketId( $dummyPacketId );
 		self::assertSame( $dummyPacketId, $order->getPacketId() );
 		self::assertSame( 'Z' . $dummyPacketId, $order->getPacketBarcode() );
-		self::assertIsString( $order->getPacketTrackingUrl() );
+		$order->setPacketTrackingUrl( 'dummyUrl' );
+		self::assertSame( 'dummyUrl', $order->getPacketTrackingUrl() );
 
 		$dummyPacketStatus = PacketStatus::DELIVERED;
 		$order->setPacketStatus( $dummyPacketStatus );
@@ -76,6 +76,8 @@ class OrderTest extends TestCase {
 		self::assertSame( $dummyPacketClaimId, $order->getPacketClaimId() );
 		self::assertSame( 'Z' . $dummyPacketClaimId, $order->getPacketClaimBarcode() );
 		self::assertTrue( $order->isPacketClaimLabelPrintPossible() );
+		$order->setPacketClaimTrackingUrl( 'dummyUrl' );
+		self::assertSame( 'dummyUrl', $order->getPacketClaimTrackingUrl() );
 
 		$dummyPacketClaimPassword = 'dummyPassword';
 		$order->setPacketClaimPassword( $dummyPacketClaimPassword );
@@ -120,9 +122,20 @@ class OrderTest extends TestCase {
 
 		self::assertFalse( $order->hasCod() );
 		$dummyCod = 1234.5;
-		$order->setCod( $dummyCod );
-		self::assertSame( $dummyCod, $order->getCod() );
+		$order->setManualCod( $dummyCod );
+		$order->setCalculatedCod( $dummyCod );
+		self::assertSame( $dummyCod, $order->getFinalCod() );
+		self::assertTrue( $order->hasManualCod() );
+		self::assertSame( $dummyCod, $order->getManualCod() );
+		self::assertSame( $dummyCod, $order->getCalculatedCod() );
 		self::assertTrue( $order->hasCod() );
+
+		$dummyValue = 1234.5;
+		$order->setCalculatedValue( $dummyValue );
+		$order->setManualValue( $dummyValue );
+		self::assertSame( $dummyValue, $order->getCalculatedValue() );
+		self::assertTrue( $order->hasManualValue() );
+		self::assertSame( $dummyValue, $order->getManualValue() );
 
 		$dummyDateImmutable = CoreHelper::now();
 		$order->setDeliverOn( $dummyDateImmutable );
@@ -145,5 +158,4 @@ class OrderTest extends TestCase {
 		self::assertIsFloat( $order->getWidth() );
 		self::assertIsFloat( $order->getHeight() );
 	}
-
 }

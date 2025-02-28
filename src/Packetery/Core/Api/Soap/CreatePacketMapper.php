@@ -9,8 +9,10 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Soap;
 
-use Packetery\Core\Entity;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity;
+use Packetery\Core\Rounder;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 
 /**
  * Class CreatePacketMapper.
@@ -27,33 +29,41 @@ class CreatePacketMapper {
 	private $coreHelper;
 
 	/**
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * CreatePacketMapper constructor.
 	 *
-	 * @param CoreHelper $coreHelper CoreHelper.
+	 * @param CoreHelper            $coreHelper
+	 * @param CarrierOptionsFactory $carrierOptionsFactory
 	 */
-	public function __construct( CoreHelper $coreHelper ) {
-		$this->coreHelper = $coreHelper;
+	public function __construct( CoreHelper $coreHelper, CarrierOptionsFactory $carrierOptionsFactory ) {
+		$this->coreHelper            = $coreHelper;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
 	 * Maps order data to CreatePacket structure.
 	 *
 	 * @param Entity\Order $order Order entity.
-	 * @return array<string, mixed>
+	 *
+	 * @return array<string, array<int<0, max>|string, array<string, array<int, array<string, bool|float|int|string|null>>|float|string|null>|float|null>|float|int|string|null>
 	 */
 	public function fromOrderToArray( Entity\Order $order ): array {
 		$createPacketData = [
 			// Required attributes.
-			'number'       => ( $order->getCustomNumber() ?? $order->getNumber() ),
+			'number'       => $order->getCustomNumberOrNumber(),
 			'name'         => $order->getName(),
 			'surname'      => $order->getSurname(),
-			'value'        => $order->getValue(),
+			'value'        => $order->getFinalValue(),
 			'weight'       => $order->getFinalWeight(),
 			'addressId'    => $order->getPickupPointOrCarrierId(),
 			'eshop'        => $order->getEshop(),
 			// Optional attributes.
 			'adultContent' => (int) $order->containsAdultContent(),
-			'cod'          => $order->getCod(),
+			'cod'          => null,
 			'currency'     => $order->getCurrency(),
 			'email'        => $order->getEmail(),
 			'note'         => $order->getNote(),
@@ -61,18 +71,25 @@ class CreatePacketMapper {
 			'deliverOn'    => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
 		];
 
+		$codValue = $order->getFinalCod();
+		if ( $codValue !== null ) {
+			$roundingType            = $this->carrierOptionsFactory->createByCarrierId( $order->getCarrier()->getId() )->getCodRoundingType();
+			$roundedCod              = Rounder::roundByCurrency( $codValue, $createPacketData['currency'], $roundingType );
+			$createPacketData['cod'] = $roundedCod;
+		}
+
 		$pickupPoint = $order->getPickupPoint();
-		if ( null !== $pickupPoint && $order->isExternalCarrier() ) {
+		if ( $pickupPoint !== null && $order->isExternalCarrier() ) {
 			$createPacketData['carrierPickupPoint'] = $pickupPoint->getId();
 		}
 
 		if ( $order->isHomeDelivery() || $order->isCarDelivery() ) {
 			$address = $order->getDeliveryAddress();
-			if ( null !== $address ) {
+			if ( $address !== null ) {
 				$createPacketData['street'] = $address->getStreet();
 				$createPacketData['city']   = $address->getCity();
 				$createPacketData['zip']    = $address->getZip();
-				if ( $address->getHouseNumber() ) {
+				if ( $address->getHouseNumber() !== null ) {
 					$createPacketData['houseNumber'] = $address->getHouseNumber();
 				}
 			}
@@ -81,7 +98,7 @@ class CreatePacketMapper {
 		$carrier = $order->getCarrier();
 		if ( $carrier->requiresSize() ) {
 			$size = $order->getSize();
-			if ( null !== $size ) {
+			if ( $size !== null ) {
 				$createPacketData['size'] = [
 					'length' => $size->getLength(),
 					'width'  => $size->getWidth(),
@@ -99,12 +116,12 @@ class CreatePacketMapper {
 			];
 		}
 
-		if ( false === $carrier->requiresCustomsDeclarations() ) {
+		if ( $carrier->requiresCustomsDeclarations() === false ) {
 			return $createPacketData;
 		}
 
 		$customsDeclaration = $order->getCustomsDeclaration();
-		if ( null === $customsDeclaration ) {
+		if ( $customsDeclaration === null ) {
 			return $createPacketData;
 		}
 
@@ -169,21 +186,21 @@ class CreatePacketMapper {
 			'value' => $customsDeclaration->getInvoiceIssueDate()->format( 'Y-m-d' ),
 		];
 
-		if ( null !== $customsDeclaration->getMrn() ) {
+		if ( $customsDeclaration->getMrn() !== null ) {
 			$createPacketData['attributes'][] = [
 				'key'   => 'mrn',
 				'value' => $customsDeclaration->getMrn(),
 			];
 		}
 
-		if ( null !== $customsDeclaration->getEadFileId() ) {
+		if ( $customsDeclaration->getEadFileId() !== null ) {
 			$createPacketData['attributes'][] = [
 				'key'   => 'eadFile',
 				'value' => $customsDeclaration->getEadFileId(),
 			];
 		}
 
-		if ( null !== $customsDeclaration->getInvoiceFileId() ) {
+		if ( $customsDeclaration->getInvoiceFileId() !== null ) {
 			$createPacketData['attributes'][] = [
 				'key'   => 'invoiceFile',
 				'value' => $customsDeclaration->getInvoiceFileId(),
@@ -192,5 +209,4 @@ class CreatePacketMapper {
 
 		return $createPacketData;
 	}
-
 }

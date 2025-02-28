@@ -122,11 +122,11 @@ class Rounder {
 			);
 		}
 
-		if ( 'CZK' === $currencyCode ) {
+		if ( $currencyCode === 'CZK' ) {
 			return self::round( $amount, $roundingType, 0 );
 		}
 
-		if ( 'HUF' === $currencyCode ) {
+		if ( $currencyCode === 'HUF' ) {
 			return self::roundToMultipleOfNumber( $amount, $roundingType, 5 );
 		}
 
@@ -142,10 +142,10 @@ class Rounder {
 	 * @return float
 	 */
 	private static function roundFloat( float $amount, int $roundingType ): float {
-		if ( self::ROUND_DOWN === $roundingType ) {
+		if ( $roundingType === self::ROUND_DOWN ) {
 			return floor( self::sanitizeFloat( $amount ) );
 		}
-		if ( self::ROUND_UP === $roundingType ) {
+		if ( $roundingType === self::ROUND_UP ) {
 			return ceil( self::sanitizeFloat( $amount ) );
 		}
 
@@ -162,15 +162,14 @@ class Rounder {
 	 */
 	private static function sanitizeFloat( float $number ): float {
 		$oldLocale = setlocale( LC_NUMERIC, '0' );
-		if ( false !== $oldLocale ) {
+		if ( $oldLocale !== false ) {
 			setlocale( LC_NUMERIC, 'C' );
 		}
 		$newNumber = (float) ( (string) $number );
-		if ( false !== $oldLocale ) {
+		if ( $oldLocale !== false ) {
 			setlocale( LC_NUMERIC, $oldLocale );
 		}
 
 		return $newNumber;
 	}
-
 }

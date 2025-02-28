@@ -4,19 +4,22 @@
 		"^node_modules\/",
 		"^.git\/",
 		"^deps\/",
+		"^log\/",
 		"^tests-coverage\/",
-		"^phpstan\/vendor\/",
 		"^public\/libs\/",
 		"^public\/block\/index.asset.php",
 		"^public\/block\/index.js",
+		"^public\/block\/block.json",
 		"^public\/js\/live-form-validation-extension.js",
 		"^languages\/",
 		"LICENSE$",
 		"^temp\/",
+		"^log\/",
 		"^\\.idea\/",
-		"^.phpunit.result.cache$",
 		"\\.DS_Store$",
-		"\\.phar$"
+		"\\.phar$",
+		"\\.phpunit.result.cache$",
+		"^soap-php-bugfix-dev.wsdl$"
 	],
 	"Disable": {
 		"MaxLineLength": true

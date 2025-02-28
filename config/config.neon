@@ -7,10 +7,11 @@ parameters:
 	carDeliveryConfig:
 		sample: false
 		enabled: false
-	wcCarrierSettingsConfig:
-		active: false
 	featureFlagConfig:
 		url: https://pes-features-prod-pes.prod.packeta-com.codenow.com/v1/wp
+	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
+	trackingUrl: https://tracking.packeta.com/Z%s
+	supportEmailAddress: e-commerce.support@packeta.com
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -33,16 +34,15 @@ services:
 	- Packetery\Module\Product\ProductEntityFactory
 	- Packetery\Module\ProductCategory\ProductCategoryEntityFactory
 	- Packetery\Module\ProductCategory\FormFields
-	- Packetery\Core\CoreHelper
+	- Packetery\Core\CoreHelper(trackingUrl: %trackingUrl%)
 	- Packetery\Module\WebRequestClient
 	- Packetery\Module\MessageManager
 	- Packetery\Module\Order\Metabox
 	- Packetery\Module\Order\CustomsDeclarationMetabox
 	- Packetery\Module\Plugin
-	- Packetery\Module\HookHandler
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
-	- Packetery\Module\Options\Page
+	- Packetery\Module\Options\Page(supportEmailAddress: %supportEmailAddress%)
 	optionsProvider: Packetery\Module\Options\OptionsProvider
 	- Packetery\Module\Carrier\Downloader
 	- Packetery\Module\Carrier\Updater
@@ -52,8 +52,16 @@ services:
 	- @wpdbAdapterFactory::create()
 	- Packetery\Module\WpdbTracyPanel
 	- Packetery\Module\Carrier\CarDeliveryConfig(sample: %carDeliveryConfig.sample%, enabled: %carDeliveryConfig.enabled%)
-	- Packetery\Module\Carrier\WcSettingsConfig(active: %wcCarrierSettingsConfig.active%)
-	- Packetery\Module\Checkout
+	- Packetery\Module\Checkout\Checkout
+	- Packetery\Module\Checkout\CheckoutService
+	- Packetery\Module\Checkout\CheckoutRenderer
+	- Packetery\Module\Checkout\CheckoutStorage
+	- Packetery\Module\Checkout\CheckoutSettings
+	- Packetery\Module\Checkout\CheckoutValidator
+	- Packetery\Module\Checkout\CartService
+	- Packetery\Module\Checkout\SessionService
+	- Packetery\Module\Checkout\ShippingRateFactory
+	- Packetery\Module\Checkout\OrderUpdater
 	- Packetery\Module\Carrier\OptionsPage
 	- Packetery\Module\FormFactory
 	- Packetery\Module\DashboardWidget(surveyConfig: %surveyConfig%)
@@ -63,13 +71,14 @@ services:
 	- Packetery\Module\Order\LabelPrint
 	- Packetery\Module\Order\ApiExtender
 	- Packetery\Module\Order\GridExtender
-	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password())
+	- Packetery\Core\Api\Soap\Client(@optionsProvider::get_api_password(), wsdlUrl: %wsdlUrl%)
 	- Packetery\Module\Order\DetailCommonLogic
 	- Packetery\Module\Order\PacketActionsCommonLogic
 	- Packetery\Module\Order\PacketSubmitter
 	- Packetery\Module\Order\PacketClaimSubmitter
 	- Packetery\Module\EntityFactory\Carrier
 	- Packetery\Module\EntityFactory\CustomsDeclaration
+	- Packetery\Module\EntityFactory\SizeFactory
 	- Packetery\Module\Order\Builder
 	- Packetery\Core\Validator\Address
 	- Packetery\Core\Validator\Size
@@ -95,12 +104,13 @@ services:
 	- Packetery\Module\Upgrade\Version_1_4_2
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
-	- Packetery\Module\CurrencySwitcherFacade
+	- Packetery\Module\Checkout\CurrencySwitcherService
 	- Packetery\Core\Api\Soap\CreatePacketMapper
 	- Packetery\Module\Order\PickupPointValidator
-	- Packetery\Module\RateCalculator
+	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig
 	- Packetery\Module\Carrier\EntityRepository
+	- Packetery\Module\Carrier\CarrierActivityBridge
 	- Packetery\Module\Order\AttributeMapper
 	- Packetery\Module\WidgetOptionsBuilder
 	- Packetery\Core\PickupPointProvider\CompoundCarrierCollectionFactory
@@ -112,3 +122,17 @@ services:
 	- Packetery\Module\Options\TransientPurger
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
+	- Packetery\Module\Forms\StoredUntilFormFactory
+	- Packetery\Module\Order\StoredUntilModal
+	- Packetery\Module\Order\PacketSetStoredUntil
+	- Packetery\Module\Hooks\HookRegistrar
+	- Packetery\Module\Blocks\BlockHooks
+	- Packetery\Module\Hooks\PluginHooks
+	- Packetery\Module\Hooks\UpdateOrderHook
+	- Packetery\Module\Views\UrlBuilder
+	- Packetery\Module\Views\ViewAdmin
+	- Packetery\Module\Views\ViewFrontend
+	- Packetery\Module\Views\ViewMail
+	- Packetery\Module\Views\AssetManager
+	- Packetery\Module\Shipping\ShippingProvider
+	- Packetery\Module\Shipping\ShippingMethodGenerator

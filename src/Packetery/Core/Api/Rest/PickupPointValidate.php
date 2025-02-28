@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Core\Api\Rest;
 
+use Packetery\Core\Api\Rest\Exception\InvalidApiKeyException;
 use Packetery\Core\Interfaces\IWebRequestClient;
 
 /**
@@ -28,21 +29,21 @@ class PickupPointValidate {
 	private $webRequestClient;
 
 	/**
-	 * API key.
-	 *
 	 * @var string
 	 */
 	private $apiKey;
 
-	/**
-	 * PickupPointValidate constructor.
-	 *
-	 * @param IWebRequestClient $webRequestClient HTTP Client.
-	 * @param string            $apiKey           API key.
-	 */
-	public function __construct( IWebRequestClient $webRequestClient, string $apiKey ) {
+	private function __construct( IWebRequestClient $webRequestClient, string $apiKey ) {
 		$this->webRequestClient = $webRequestClient;
 		$this->apiKey           = $apiKey;
+	}
+
+	public static function createWithValidApiKey( IWebRequestClient $webRequestClient, ?string $apiKey ): PickupPointValidate {
+		if ( $apiKey === null ) {
+			throw InvalidApiKeyException::createFromMissingKey();
+		}
+
+		return new self( $webRequestClient, $apiKey );
 	}
 
 	/**
@@ -73,5 +74,4 @@ class PickupPointValidate {
 			throw new RestException( $exception->getMessage() );
 		}
 	}
-
 }

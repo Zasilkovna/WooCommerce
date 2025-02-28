@@ -132,5 +132,4 @@ class PickupPointValidateRequest {
 	public function getSubmittableData(): array {
 		return array_filter( get_object_vars( $this ) );
 	}
-
 }

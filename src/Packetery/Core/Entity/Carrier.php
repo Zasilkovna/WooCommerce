@@ -18,6 +18,7 @@ class Carrier {
 
 	public const INTERNAL_PICKUP_POINTS_ID    = 'packeta';
 	public const VENDOR_GROUP_ZPOINT          = 'zpoint';
+	public const VENDOR_GROUP_ZBOX            = 'zbox';
 	public const ADDRESS_VALIDATION_COUNTRIES = [ 'cz', 'sk' ];
 	public const CAR_DELIVERY_CARRIERS        = [ '25061' ];
 
@@ -331,5 +332,4 @@ class Carrier {
 	public function isCarDelivery(): bool {
 		return in_array( $this->id, self::CAR_DELIVERY_CARRIERS, true );
 	}
-
 }

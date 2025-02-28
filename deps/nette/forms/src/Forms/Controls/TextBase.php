@@ -12,7 +12,6 @@ use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Utils\Strings;
 /**
  * Implements the basic functionality common to text input controls.
- * @internal
  */
 abstract class TextBase extends BaseControl
 {
@@ -79,15 +78,6 @@ abstract class TextBase extends BaseControl
     public function setMaxLength(int $length)
     {
         $this->control->maxlength = $length;
-        return $this;
-    }
-    /**
-     * Appends input string filter callback.
-     * @return static
-     */
-    public function addFilter(callable $filter)
-    {
-        $this->getRules()->addFilter($filter);
         return $this;
     }
     public function getControl() : \Packetery\Nette\Utils\Html

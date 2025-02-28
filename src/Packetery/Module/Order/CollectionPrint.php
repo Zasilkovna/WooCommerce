@@ -13,10 +13,11 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Entity\Order;
+use Packetery\Latte\Engine;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
-use Packetery\Latte\Engine;
+use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http;
 
 /**
@@ -78,16 +79,10 @@ class CollectionPrint {
 	private $commonLogic;
 
 	/**
-	 * LabelPrint constructor.
-	 *
-	 * @param Engine                   $latteEngine              Latte Engine.
-	 * @param Http\Request             $httpRequest              Http Request.
-	 * @param Client                   $soapApiClient            SOAP API Client.
-	 * @param MessageManager           $messageManager           Message Manager.
-	 * @param EntityFactory\Address    $addressFactory           Address factory.
-	 * @param Repository               $orderRepository          Order repository.
-	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Common logic.
+	 * @var UrlBuilder
 	 */
+	private $urlBuilder;
+
 	public function __construct(
 		Engine $latteEngine,
 		Http\Request $httpRequest,
@@ -95,7 +90,8 @@ class CollectionPrint {
 		MessageManager $messageManager,
 		EntityFactory\Address $addressFactory,
 		Repository $orderRepository,
-		PacketActionsCommonLogic $packetActionsCommonLogic
+		PacketActionsCommonLogic $packetActionsCommonLogic,
+		UrlBuilder $urlBuilder
 	) {
 		$this->latteEngine     = $latteEngine;
 		$this->httpRequest     = $httpRequest;
@@ -104,6 +100,7 @@ class CollectionPrint {
 		$this->addressFactory  = $addressFactory;
 		$this->orderRepository = $orderRepository;
 		$this->commonLogic     = $packetActionsCommonLogic;
+		$this->urlBuilder      = $urlBuilder;
 	}
 
 	/**
@@ -123,7 +120,7 @@ class CollectionPrint {
 			return;
 		}
 
-		if ( ! get_transient( self::getOrderIdsTransientName() ) ) {
+		if ( get_transient( self::getOrderIdsTransientName() ) === false ) {
 			$this->messageManager->flash_message( __( 'No orders were selected', 'packeta' ), 'info' );
 			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
@@ -134,7 +131,7 @@ class CollectionPrint {
 		$wpOrders  = [];
 
 		foreach ( $orders as $order ) {
-			if ( null === $order->getPacketId() ) {
+			if ( $order->getPacketId() === null ) {
 				continue;
 			}
 
@@ -143,14 +140,14 @@ class CollectionPrint {
 			$wpOrders[ $orderNumber ]  = $this->orderRepository->getWcOrderById( (int) $orderNumber );
 		}
 
-		if ( ! $packetIds ) {
+		if ( count( $packetIds ) === 0 ) {
 			delete_transient( self::getOrderIdsTransientName() );
 			$this->messageManager->flash_message( __( 'Selected orders were not yet submitted to Packeta.', 'packeta' ), 'info' );
 			$this->commonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 		}
 
 		$shipmentResult = $this->requestShipment( $packetIds );
-		if ( $shipmentResult->hasFault() && $shipmentResult->getInvalidPacketIds() ) {
+		if ( $shipmentResult->hasFault() && count( $shipmentResult->getInvalidPacketIds() ) > 0 ) {
 			$this->logApiErrorMessageFromCreateShipmentResponse( $shipmentResult, $orders );
 			$packetIds      = array_diff( $packetIds, $shipmentResult->getInvalidPacketIds() );
 			$shipmentResult = $this->requestShipment( $packetIds );
@@ -182,7 +179,7 @@ class CollectionPrint {
 				'wpOrders'            => $wpOrders,
 				'orderCount'          => count( $packetIds ),
 				'printedAt'           => ( new \DateTimeImmutable() )->setTimezone( wp_timezone() ),
-				'stylesheet'          => Plugin::buildAssetUrl( 'public/css/order-collection-print.css' ),
+				'stylesheet'          => $this->urlBuilder->buildAssetUrl( 'public/css/order-collection-print.css' ),
 				'translations'        => [
 					'handoverPacketsHeading' => __( 'Handover packets', 'packeta' ),
 					'packetCount'            => __( 'Packet count', 'packeta' ),
@@ -230,12 +227,13 @@ class CollectionPrint {
 	/**
 	 * Request shipment.
 	 *
-	 * @param array $packetIds Packet ids.
+	 * @param string[] $packetIds Packet ids.
 	 *
 	 * @return Response\CreateShipment
 	 */
 	private function requestShipment( array $packetIds ): Response\CreateShipment {
 		$request = new Request\CreateShipment( array_values( $packetIds ) );
+
 		return $this->soapApiClient->createShipment( $request );
 	}
 
@@ -248,6 +246,7 @@ class CollectionPrint {
 	 */
 	private function requestBarcodePng( string $barcode ): Response\BarcodePng {
 		$request = new Request\BarcodePng( $barcode );
+
 		return $this->soapApiClient->barcodePng( $request );
 	}
 

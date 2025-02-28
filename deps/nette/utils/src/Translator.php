@@ -9,7 +9,6 @@ namespace Packetery\Nette\Localization;
 
 /**
  * Translator adapter.
- * @internal
  */
 interface Translator
 {

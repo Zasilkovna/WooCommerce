@@ -90,7 +90,7 @@ class FeatureFlagDownloader {
 	/**
 	 * Downloads flags.
 	 *
-	 * @return array
+	 * @return array<string, bool|string>
 	 * @throws Exception From DateTimeImmutable.
 	 */
 	private function fetchFlags(): array {
@@ -128,23 +128,23 @@ class FeatureFlagDownloader {
 	/**
 	 * Gets or downloads flags.
 	 *
-	 * @return array
-	 * @throws Exception From DateTimeImmutable.
+	 * @return array<string, string>|null
+	 * @throws Exception
 	 */
-	public function getFlags(): array {
-		if ( empty( $this->featureFlagStorage->getFlags() ) ) {
+	public function getFlags(): ?array {
+		if ( $this->featureFlagStorage->getFlags() === null || count( $this->featureFlagStorage->getFlags() ) === 0 ) {
 			$flagsFromOptions = $this->wpAdapter->getOption( self::FLAGS_OPTION_ID );
 			if ( is_array( $flagsFromOptions ) ) {
 				$this->featureFlagStorage->setFlags( $flagsFromOptions );
 			}
 		}
 
-		if ( true === $this->wpAdapter->getOption( self::DISABLED_DUE_ERRORS_OPTION_ID ) ) {
-			return $this->featureFlagStorage->getFlags() ? $this->featureFlagStorage->getFlags() : [];
+		if ( $this->wpAdapter->getOption( self::DISABLED_DUE_ERRORS_OPTION_ID ) === true ) {
+			return $this->featureFlagStorage->getFlags() ?? [];
 		}
 
-		$hasApiKey = ( null !== $this->optionsProvider->get_api_key() );
-		if ( null === $this->featureFlagStorage->getFlags() ) {
+		$hasApiKey = ( $this->optionsProvider->get_api_key() !== null );
+		if ( $this->featureFlagStorage->getFlags() === null ) {
 			if ( ! $hasApiKey ) {
 				$this->featureFlagStorage->setFlags( [] );
 
@@ -169,7 +169,7 @@ class FeatureFlagDownloader {
 	 * @return bool
 	 */
 	private function isLastDownloadValid(): bool {
-		if ( null === $this->featureFlagStorage->getFlag( FeatureFlagProvider::FLAG_LAST_DOWNLOAD ) ) {
+		if ( $this->featureFlagStorage->getFlag( FeatureFlagProvider::FLAG_LAST_DOWNLOAD ) === null ) {
 			// This should not happen, because the datetime is always set when fetching flags.
 			// But we want it not to be prone to errors.
 			return true;
@@ -184,5 +184,4 @@ class FeatureFlagDownloader {
 
 		return $now->getTimestamp() <= ( $lastUpdate->getTimestamp() + self::VALID_FOR_SECONDS );
 	}
-
 }

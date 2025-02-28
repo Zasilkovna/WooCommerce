@@ -10,7 +10,6 @@ namespace Packetery\Nette\Bridges\FormsDI;
 use Packetery\Nette;
 /**
  * Forms extension for Nette DI.
- * @internal
  */
 class FormsExtension extends \Packetery\Nette\DI\CompilerExtension
 {
@@ -21,13 +20,6 @@ class FormsExtension extends \Packetery\Nette\DI\CompilerExtension
             /** @var string[] */
             public $messages = [];
         };
-    }
-    public function beforeCompile()
-    {
-        $builder = $this->getContainerBuilder();
-        if ($builder->findByType(\Packetery\Nette\Http\IRequest::class)) {
-            $builder->addDefinition($this->prefix('factory'))->setFactory(\Packetery\Nette\Forms\FormFactory::class);
-        }
     }
     public function afterCompile(\Packetery\Nette\PhpGenerator\ClassType $class)
     {

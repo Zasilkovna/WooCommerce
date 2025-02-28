@@ -9,10 +9,11 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
-use Packetery\Core\Log\ILogger;
+use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
-use Packetery\Module;
 use Packetery\Module\Carrier\CountryListingPage;
+use Packetery\Module\Checkout\CurrencySwitcherService;
+use Packetery\Module\Log\DbLogger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http;
 use Packetery\Tracy\Debugger;
@@ -28,61 +29,49 @@ class Exporter {
 	public const ACTION_EXPORT_SETTINGS      = 'export-settings';
 
 	/**
-	 * Http request.
-	 *
 	 * @var Http\Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * Latte engine.
-	 *
 	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Country listing page.
-	 *
 	 * @var CountryListingPage
 	 */
 	private $countryListingPage;
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Logger.
-	 *
-	 * @var ILogger
+	 * @var DbLogger
 	 */
-	private $logger;
+	private $dbLogger;
 
 	/**
-	 * Exporter constructor.
-	 *
-	 * @param Http\Request       $httpRequest        Http request.
-	 * @param Engine             $latteEngine        Latte engine.
-	 * @param CountryListingPage $countryListingPage Country listing page.
-	 * @param OptionsProvider    $optionsProvider    Options provider.
-	 * @param ILogger            $logger             Logger.
+	 * @var ModuleHelper
 	 */
+	private $moduleHelper;
+
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
 		OptionsProvider $optionsProvider,
-		ILogger $logger
+		DbLogger $dbLogger,
+		ModuleHelper $moduleHelper
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
 		$this->countryListingPage = $countryListingPage;
 		$this->optionsProvider    = $optionsProvider;
-		$this->logger             = $logger;
+		$this->dbLogger           = $dbLogger;
+		$this->moduleHelper       = $moduleHelper;
 	}
 
 	/**
@@ -99,7 +88,7 @@ class Exporter {
 		}
 
 		$globalSettings = $this->optionsProvider->getAllOptions();
-		if ( ! empty( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
+		if ( isset( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
 			$globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
 				'%s...%s (%s)',
 				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], 0, 16 ),
@@ -130,7 +119,7 @@ class Exporter {
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
 			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
-			'lastFiveDaysLogs'  => $this->formatVariable( $this->remapLogRecords( $this->logger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ) ),
+			'lastFiveDaysLogs'  => $this->formatVariable( $this->remapLogRecords( $this->dbLogger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ) ),
 			'generated'         => gmdate( 'Y-m-d H:i:s' ),
 			/**
 			 * Filter all_plugins filters the full array of plugins.
@@ -139,7 +128,7 @@ class Exporter {
 			 */
 			'plugins'           => $this->getFormattedPlugins( (array) apply_filters( 'all_plugins', get_plugins() ) ),
 			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
-			'currencySwitchers' => $this->formatVariable( Module\CurrencySwitcherFacade::$supportedCurrencySwitchers ),
+			'currencySwitchers' => $this->formatVariable( CurrencySwitcherService::$supportedCurrencySwitchers ),
 		];
 		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
@@ -157,7 +146,7 @@ class Exporter {
 	/**
 	 * Format plugins.
 	 *
-	 * @param array $plugins Plugins.
+	 * @param array<string, array<string, string>> $plugins Plugins.
 	 *
 	 * @return string
 	 */
@@ -166,7 +155,7 @@ class Exporter {
 
 		foreach ( $plugins as $relativePath => $plugin ) {
 			$item = [
-				'Active' => wc_bool_to_string( ModuleHelper::isPluginActive( $relativePath ) ),
+				'Active' => wc_bool_to_string( $this->moduleHelper->isPluginActive( $relativePath ) ),
 			];
 
 			$options = [ 'Name', 'PluginURI', 'Version', 'WC tested up to', 'WC requires at least', 'AuthorName', 'RequiresPHP' ];
@@ -181,11 +170,8 @@ class Exporter {
 	}
 
 	/**
-	 * Remaps log records.
-	 *
-	 * @param iterable $logs Logs.
-	 *
-	 * @return array
+	 * @param \Generator<Record>|array{} $logs
+	 * @return array<array<string, array<string, mixed>|string>>
 	 */
 	private function remapLogRecords( iterable $logs ): array {
 		$result = [];
@@ -216,7 +202,7 @@ class Exporter {
 		$output = '';
 		if ( is_array( $variable ) ) {
 			foreach ( $variable as $key => $value ) {
-				if ( 0 === $level && $addSeparator ) {
+				if ( $level === 0 && $addSeparator ) {
 					$output .= '----------------------' . PHP_EOL;
 				}
 				$output .= str_repeat( '    ', $level );
@@ -237,6 +223,7 @@ class Exporter {
 		} elseif ( $variable instanceof \WC_Shipping_Method ) {
 			$methodInfo = [
 				'id'           => $variable->id,
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				'method_title' => $variable->method_title,
 				'enabled'      => $variable->enabled,
 			];

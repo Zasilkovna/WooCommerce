@@ -17,16 +17,14 @@
 			var $target = $( e.target );
 			var packeteryModal = $target.find( '[data-packetery-modal]' );
 			if ( packeteryModal.length > 0 ) {
-				packeteryModal.find( '[name="packetery_weight"]' ).focus().select();
+				packeteryModal.find( '[name="packeteryWeight"]' ).focus().select();
 				Nette.init();
 				$(document.body).trigger( 'wc-init-datepickers' );
-				$( 'input[name="packetery_deliver_on"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
+				$( 'input[name="packeteryDeliverOn"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
 
 				if ( $lastModalButtonClicked.data( 'order-data' ).hasToFillCustomsDeclaration ) {
 					flashMessage( packeteryModal, 'error', settings.translations.hasToFillCustomsDeclaration )
-				}
-
-				if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
+				} else if ( ! $lastModalButtonClicked.data( 'order-data' ).orderIsSubmittable ) {
 					var orderWarningFields = $lastModalButtonClicked.data( 'order-data' ).orderWarningFields;
 					for ( var invalidFieldNameKey in orderWarningFields ) {
 						if ( ! orderWarningFields.hasOwnProperty( invalidFieldNameKey ) ) {
@@ -60,15 +58,17 @@
 			var orderSaveUrl = $target.data( 'order-save-url' );
 			var nonce = $target.data( 'nonce' );
 			var $packeteryModal = $target.closest( '[data-packetery-modal]' );
-			var packeteryWeight = $packeteryModal.find( '[name="packetery_weight"]' ).val();
-			var packeteryOriginalWeight = $packeteryModal.find( '[name="packetery_original_weight"]' ).val();
-			var packeteryLength = $packeteryModal.find( '[name="packetery_length"]' ).val();
-			var packeteryWidth  = $packeteryModal.find( '[name="packetery_width"]' ).val();
-			var packeteryHeight = $packeteryModal.find( '[name="packetery_height"]' ).val();
-			var packeteryDeliverOn = $packeteryModal.find( '[name="packetery_deliver_on"]' ).val();
-			var packeteryCOD = $packeteryModal.find( '[name="packetery_COD"]' ).val();
-			var packeteryValue = $packeteryModal.find( '[name="packetery_value"]' ).val();
-			var hasPacketeryAdultContent = $packeteryModal.find('[name="packetery_adult_content"]').prop('checked');
+			var packeteryWeight = $packeteryModal.find( '[name="packeteryWeight"]' ).val();
+			var packeteryOriginalWeight = $packeteryModal.find( '[name="packeteryOriginalWeight"]' ).val();
+			var packeteryLength = $packeteryModal.find( '[name="packeteryLength"]' ).val();
+			var packeteryWidth  = $packeteryModal.find( '[name="packeteryWidth"]' ).val();
+			var packeteryHeight = $packeteryModal.find( '[name="packeteryHeight"]' ).val();
+			var packeteryDeliverOn = $packeteryModal.find( '[name="packeteryDeliverOn"]' ).val();
+			var packeteryCOD = $packeteryModal.find( '[name="packeteryCOD"]' ).val();
+			var packeteryCalculatedCod = $packeteryModal.find( '[name="packeteryCalculatedCod"]' ).val();
+			var packeteryValue = $packeteryModal.find( '[name="packeteryValue"]' ).val();
+			var packeteryCalculatedValue = $packeteryModal.find( '[name="packeteryCalculatedValue"]' ).val();
+			var hasPacketeryAdultContent = $packeteryModal.find('[name="packeteryAdultContent"]').prop('checked');
 
 			$packeteryModal.find( '.spinner' ).addClass( 'is-active' );
 			$target.addClass( 'disabled' );
@@ -88,7 +88,9 @@
 					packeteryHeight : packeteryHeight,
 					packeteryDeliverOn : packeteryDeliverOn,
 					packeteryCOD : packeteryCOD,
+					packeteryCalculatedCod : packeteryCalculatedCod,
 					packeteryValue : packeteryValue,
+					packeteryCalculatedValue : packeteryCalculatedValue,
 					hasPacketeryAdultContent : hasPacketeryAdultContent,
 				}
 			} ).fail( function( response ) {
@@ -98,18 +100,22 @@
 				flashMessage( $packeteryModal, 'success', response.message );
 
 				var orderData = $lastModalButtonClicked.data( 'order-data' );
-				orderData.packetery_weight = response.data.packetery_weight;
-				orderData.packetery_original_weight = response.data.packetery_weight;
-				orderData.packetery_length = response.data.packetery_length;
-				orderData.packetery_width = response.data.packetery_width;
-				orderData.packetery_height = response.data.packetery_height;
-				orderData.packetery_deliver_on = response.data.packetery_deliver_on;
-				orderData.packetery_COD = response.data.packetery_COD;
-				orderData.packetery_value = response.data.packetery_value;
-				orderData.packetery_adult_content = response.data.packetery_adult_content;
+				orderData.packeteryWeight = response.data.packeteryWeight;
+				orderData.packeteryOriginalWeight = response.data.packeteryOriginalWeight;
+				orderData.packeteryLength = response.data.packeteryLength;
+				orderData.packeteryWidth = response.data.packeteryWidth;
+				orderData.packeteryHeight = response.data.packeteryHeight;
+				orderData.packeteryDeliverOn = response.data.packeteryDeliverOn;
+				orderData.packeteryCOD = response.data.packeteryCOD;
+				orderData.packeteryCalculatedCod = response.data.packeteryCalculatedCod;
+				orderData.packeteryValue = response.data.packeteryValue;
+				orderData.packeteryCalculatedValue = response.data.packeteryCalculatedValue;
+				orderData.packeteryAdultContent = response.data.packeteryAdultContent;
 				orderData.orderIsSubmittable = response.data.orderIsSubmittable;
 				orderData.orderWarningFields = response.data.orderWarningFields;
 				orderData.manualWeightIconExtraClass = response.data.hasOrderManualWeight === true ? '' : 'packetery-hidden ';
+				orderData.manualCodIconExtraClass = response.data.hasOrderManualCod === true ? '' : 'packetery-hidden ';
+				orderData.manualValueIconExtraClass = response.data.hasOrderManualValue === true ? '' : 'packetery-hidden ';
 				$lastModalButtonClicked.data( 'order-data', orderData );
 
 				replaceFragmentsWith( response.data.fragments );

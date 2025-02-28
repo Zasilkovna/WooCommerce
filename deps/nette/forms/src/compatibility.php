@@ -8,30 +8,24 @@ declare (strict_types=1);
 namespace Packetery\Nette\Forms;
 
 if (\false) {
-    /** @deprecated use \Packetery\Nette\Forms\Control
-     * @internal
-     */
-    class IControl extends Control
+    /** @deprecated use \Packetery\Nette\Forms\Control */
+    interface IControl extends Control
     {
     }
 } elseif (!\interface_exists(IControl::class)) {
     \class_alias(Control::class, IControl::class);
 }
 if (\false) {
-    /** @deprecated use \Packetery\Nette\Forms\FormRenderer
-     * @internal
-     */
-    class IFormRenderer extends FormRenderer
+    /** @deprecated use \Packetery\Nette\Forms\FormRenderer */
+    interface IFormRenderer extends FormRenderer
     {
     }
 } elseif (!\interface_exists(IFormRenderer::class)) {
     \class_alias(FormRenderer::class, IFormRenderer::class);
 }
 if (\false) {
-    /** @deprecated use \Packetery\Nette\Forms\SubmitterControl
-     * @internal
-     */
-    class ISubmitterControl extends SubmitterControl
+    /** @deprecated use \Packetery\Nette\Forms\SubmitterControl */
+    interface ISubmitterControl extends SubmitterControl
     {
     }
 } elseif (!\interface_exists(ISubmitterControl::class)) {

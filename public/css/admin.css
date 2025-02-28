@@ -69,7 +69,7 @@
   padding-top: 20px;
   padding-bottom: 15px;
   vertical-align: top;
-  min-width: 200px;
+  min-width: 240px;
 }
 .packetery-carrier-options-page .form-table input[type=text] {
   width: 100%;
@@ -618,6 +618,9 @@ tbody .packetery-log-column-note {
   border-bottom: 1px solid #e8e8e8;
   box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
 }
+.packeta_tab_content .form-table th {
+  width: 360px;
+}
 
 .packeta_log {
   max-width: 100%;
@@ -751,6 +754,19 @@ tbody .packetery-log-column-note {
 .packetery-has-warning[name],
 .packetery-has-warning[name]:focus {
   border: 1px solid #FF8C00;
+}
+
+.packetery-carrier-status {
+  text-align: center;
+  width: 100px;
+}
+
+.packetery-carrier-status-active {
+  color: green;
+}
+
+.packetery-carrier-status-inactive {
+  color: #ba1b02;
 }
 
 .packetery-flex-container {

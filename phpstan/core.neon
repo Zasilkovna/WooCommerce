@@ -1,0 +1,12 @@
+includes:
+	- base.neon
+parameters:
+	level: 8
+	treatPhpDocTypesAsCertain: false
+	strictRules:
+		allRules: true
+	ignoreErrors:
+		-
+			identifier: arrayFilter.strict
+	paths:
+		- ../src/Packetery/Core

@@ -9,7 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
-use Packetery\Module\Checkout;
+use Packetery\Module\Checkout\CheckoutStorage;
 use Packetery\Module\Plugin;
 
 /**
@@ -45,12 +45,11 @@ class TransientPurger {
 			$sites = Plugin::getSites();
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site );
-				$this->optionsRepository->deleteExpiredTransientsByPrefix( Checkout::TRANSIENT_CHECKOUT_DATA_PREFIX );
+				$this->optionsRepository->deleteExpiredTransientsByPrefix( CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX );
 				restore_current_blog();
 			}
 		} else {
-			$this->optionsRepository->deleteExpiredTransientsByPrefix( Checkout::TRANSIENT_CHECKOUT_DATA_PREFIX );
+			$this->optionsRepository->deleteExpiredTransientsByPrefix( CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX );
 		}
 	}
-
 }

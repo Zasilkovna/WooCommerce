@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketSynchronizer;
 
 /**
@@ -22,9 +23,11 @@ class OptionsProvider {
 	public const OPTION_NAME_PACKETERY                 = 'packetery';
 	public const OPTION_NAME_PACKETERY_SYNC            = 'packetery_sync';
 	public const OPTION_NAME_PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
+	public const OPTION_NAME_PACKETERY_ADVANCED        = 'packetery_advanced';
 
 	public const DEFAULT_VALUE_PACKETA_LABEL_FORMAT        = 'A6 on A4';
 	public const DEFAULT_VALUE_CARRIER_LABEL_FORMAT        = self::DEFAULT_VALUE_PACKETA_LABEL_FORMAT;
+	public const DEFAULT_VALUE_CARRIER_SETTINGS            = false;
 	public const MAX_STATUS_SYNCING_PACKETS_DEFAULT        = 100;
 	public const MAX_DAYS_OF_PACKET_STATUS_SYNCING_DEFAULT = 14;
 	public const FORCE_PACKET_CANCEL_DEFAULT               = true;
@@ -40,49 +43,64 @@ class OptionsProvider {
 	public const BLOCK_CHECKOUT_DETECTION     = 'block_checkout_detection';
 	public const CLASSIC_CHECKOUT_DETECTION   = 'classic_checkout_detection';
 
+	public const DEFAULT_DIMENSIONS_UNIT_MM = 'mm';
+	public const DIMENSIONS_UNIT_CM         = 'cm';
+
 	/**
 	 *  Options data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	private $data;
 
 	/**
 	 * Sync data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
+	 * }
 	 */
 	private $syncData;
 
 	/**
 	 * Auto submission data.
 	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
 	private $autoSubmissionData;
+
+	/**
+	 * @var array<string, mixed>
+	 */
+	private $advancedData;
 
 	/**
 	 * OptionsProvider constructor.
 	 */
 	public function __construct() {
 		$data = get_option( self::OPTION_NAME_PACKETERY );
-		if ( ! $data ) {
+		if ( $data === false || $data === null ) {
 			$data = array();
 		}
 
 		$syncData = get_option( self::OPTION_NAME_PACKETERY_SYNC );
-		if ( ! $syncData ) {
+		if ( $syncData === false || $syncData === null ) {
 			$syncData = [];
 		}
 
 		$autoSubmissionData = get_option( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
-		if ( ! $autoSubmissionData ) {
+		if ( $autoSubmissionData === false || $autoSubmissionData === null ) {
 			$autoSubmissionData = [];
+		}
+
+		$advancedData = get_option( self::OPTION_NAME_PACKETERY_ADVANCED );
+		if ( $advancedData === false || $advancedData === null ) {
+			$advancedData = [];
 		}
 
 		$this->data               = $data;
 		$this->syncData           = $syncData;
 		$this->autoSubmissionData = $autoSubmissionData;
+		$this->advancedData       = $advancedData;
 	}
 
 	/**
@@ -112,6 +130,7 @@ class OptionsProvider {
 			self::OPTION_NAME_PACKETERY                 => $this->data,
 			self::OPTION_NAME_PACKETERY_SYNC            => $this->syncData,
 			self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION => $this->autoSubmissionData,
+			self::OPTION_NAME_PACKETERY_ADVANCED        => $this->advancedData,
 		];
 	}
 
@@ -123,7 +142,7 @@ class OptionsProvider {
 	 * @return bool Has any data.
 	 */
 	public function has_any( string $optionName ): bool {
-		return ! empty( $this->getOptionsByName( $optionName ) );
+		return count( $this->getOptionsByName( $optionName ) ) > 0;
 	}
 
 	/**
@@ -143,7 +162,12 @@ class OptionsProvider {
 	 * @return string|null Content.
 	 */
 	public function get_api_key(): ?string {
-		return $this->get( 'api_key' );
+		$apiKey = $this->get( 'api_key' );
+		if ( $apiKey !== null && $apiKey !== '' && $apiKey !== false ) {
+			return $apiKey;
+		}
+
+		return null;
 	}
 
 	/**
@@ -198,7 +222,7 @@ class OptionsProvider {
 	 */
 	public function getCodPaymentMethods(): array {
 		$value = $this->get( 'cod_payment_methods' );
-		if ( ! $value ) {
+		if ( $value === null ) {
 			return [];
 		}
 
@@ -212,7 +236,7 @@ class OptionsProvider {
 	 */
 	public function getCheckoutWidgetButtonLocation(): ?string {
 		$value = $this->get( 'checkout_widget_button_location' );
-		if ( ! $value ) {
+		if ( $value === null ) {
 			return null;
 		}
 
@@ -226,7 +250,7 @@ class OptionsProvider {
 	 */
 	public function getCheckoutDetection(): string {
 		$value = $this->get( 'checkout_detection' );
-		if ( ! $value ) {
+		if ( $value === null ) {
 			return self::AUTOMATIC_CHECKOUT_DETECTION;
 		}
 
@@ -240,6 +264,40 @@ class OptionsProvider {
 	 */
 	public function getPackagingWeight(): float {
 		return (float) $this->get( 'packaging_weight' );
+	}
+
+	public function getDimensionsUnit(): string {
+		$value = $this->get( 'dimensions_unit' );
+
+		return $value ?? self::DEFAULT_DIMENSIONS_UNIT_MM;
+	}
+
+	public function getDimensionsNumberOfDecimals(): int {
+		if ( $this->getDimensionsUnit() === self::DIMENSIONS_UNIT_CM ) {
+			return 1;
+		}
+
+		return 0;
+	}
+
+	/**
+	 * Sanitises and formats a dimension value.
+	 *
+	 * @param string|float $value Dimension value.
+	 *
+	 * @return float|null
+	 */
+	public function getSanitizedDimensionValueInMm( $value ): ?float {
+		if ( ! is_numeric( $value ) ) {
+			return null;
+		}
+
+		$sanitizedValue = (float) number_format( (float) $value, $this->getDimensionsNumberOfDecimals(), '.', '' );
+		if ( $this->getDimensionsUnit() === self::DIMENSIONS_UNIT_CM ) {
+			return ModuleHelper::convertToMillimeters( $sanitizedValue );
+		}
+
+		return $sanitizedValue;
 	}
 
 	/**
@@ -260,6 +318,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_weight' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_weight' );
 	}
 
@@ -281,6 +340,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_length' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_length' );
 	}
 
@@ -293,6 +353,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_height' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_height' );
 	}
 
@@ -305,6 +366,7 @@ class OptionsProvider {
 		if ( $this->get( 'default_width' ) === null ) {
 			return 0.0;
 		}
+
 		return (float) $this->get( 'default_width' );
 	}
 
@@ -377,7 +439,7 @@ class OptionsProvider {
 			array_filter(
 				PacketSynchronizer::getPacketStatuses(),
 				static function ( PacketStatus $packetStatus ): bool {
-					return true === $packetStatus->hasDefaultSynchronization();
+					return $packetStatus->hasDefaultSynchronization() === true;
 				}
 			)
 		);
@@ -399,7 +461,7 @@ class OptionsProvider {
 	 */
 	public function isFreeShippingShown(): bool {
 		$freeShippingStatus = $this->get( 'free_shipping_shown' );
-		if ( null !== $freeShippingStatus ) {
+		if ( $freeShippingStatus !== null ) {
 			return (bool) $freeShippingStatus;
 		}
 
@@ -413,7 +475,7 @@ class OptionsProvider {
 	 */
 	public function arePricesTaxInclusive(): bool {
 		$pricesIncludeTax = $this->get( 'prices_include_tax' );
-		if ( null !== $pricesIncludeTax ) {
+		if ( $pricesIncludeTax !== null ) {
 			return (bool) $pricesIncludeTax;
 		}
 
@@ -427,7 +489,7 @@ class OptionsProvider {
 	 */
 	public function isPacketCancellationForced(): bool {
 		$value = $this->get( 'force_packet_cancel' );
-		if ( null !== $value ) {
+		if ( $value !== null ) {
 			return (bool) $value;
 		}
 
@@ -477,7 +539,7 @@ class OptionsProvider {
 	 */
 	public function isPacketAutoSubmissionEnabled(): bool {
 		$value = $this->autoSubmissionData['allow'] ?? null;
-		if ( null !== $value ) {
+		if ( $value !== null ) {
 			return (bool) $value;
 		}
 
@@ -532,7 +594,7 @@ class OptionsProvider {
 	 * @return int
 	 */
 	public function getLabelMaxOffset( string $format ): int {
-		if ( '' === $format ) {
+		if ( $format === '' ) {
 			return 0;
 		}
 		$availableFormats = $this->getLabelFormats();
@@ -560,7 +622,7 @@ class OptionsProvider {
 		$availableFormats    = $this->getLabelFormats();
 		$carrierLabelFormats = [];
 		foreach ( $availableFormats as $format => $formatData ) {
-			if ( true === $formatData['directLabels'] ) {
+			if ( $formatData['directLabels'] === true ) {
 				$carrierLabelFormats[ $format ] = $formatData['name'];
 			}
 		}
@@ -575,7 +637,7 @@ class OptionsProvider {
 	 */
 	public function shouldWidgetOpenAutomatically(): bool {
 		$value = $this->get( 'widget_auto_open' );
-		if ( null !== $value ) {
+		if ( $value !== null ) {
 			return (bool) $value;
 		}
 
@@ -589,7 +651,7 @@ class OptionsProvider {
 	 */
 	public function isOrderStatusAutoChangeEnabled(): bool {
 		$orderStatusAutoChange = $this->get( 'order_status_auto_change' );
-		if ( null !== $orderStatusAutoChange ) {
+		if ( $orderStatusAutoChange !== null ) {
 			return (bool) $orderStatusAutoChange;
 		}
 
@@ -603,8 +665,17 @@ class OptionsProvider {
 	 */
 	public function isOrderStatusChangeAllowed(): bool {
 		$allowOrderStatusChange = ( $this->syncData['allow_order_status_change'] ?? null );
-		if ( null !== $allowOrderStatusChange ) {
+		if ( $allowOrderStatusChange !== null ) {
 			return (bool) $allowOrderStatusChange;
+		}
+
+		return false;
+	}
+
+	public function isWcCarrierConfigEnabled(): bool {
+		$isEnabled = ( $this->advancedData['new_carrier_settings_enabled'] ?? null );
+		if ( $isEnabled !== null ) {
+			return (bool) $isEnabled;
 		}
 
 		return false;
@@ -655,7 +726,7 @@ class OptionsProvider {
 	public function getEmailHook(): string {
 		$emailHook = $this->get( 'email_hook' );
 
-		return ( null !== $emailHook ? $emailHook : self::EMAIL_HOOK_DEFAULT );
+		return $emailHook ?? self::EMAIL_HOOK_DEFAULT;
 	}
 
 	/**
@@ -669,5 +740,4 @@ class OptionsProvider {
 	public function sanitizePaymentGatewayId( string $id ): string {
 		return preg_replace( '/\W/', '_', $id );
 	}
-
 }

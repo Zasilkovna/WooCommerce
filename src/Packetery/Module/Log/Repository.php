@@ -7,7 +7,6 @@
 
 declare( strict_types=1 );
 
-
 namespace Packetery\Module\Log;
 
 use Packetery\Core\CoreHelper;
@@ -48,18 +47,19 @@ class Repository {
 	 */
 	public function countRows( ?int $orderId, ?string $action ): int {
 		$whereClause = $this->getWhereClause( [], $orderId, $action );
-		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packetery_log . '`' . $whereClause );
+
+		return (int) $this->wpdbAdapter->get_var( 'SELECT COUNT(*) FROM `' . $this->wpdbAdapter->packeteryLog . '`' . $whereClause );
 	}
 
 	/**
 	 * Finds logs.
 	 *
-	 * @param array $arguments Search arguments.
+	 * @param array<string, string|int|bool|float|null|array<string,mixed>> $arguments Search arguments.
 	 *
-	 * @return iterable|Record[]
+	 * @return \Generator<Record>|array{}
 	 * @throws \Exception From DateTimeImmutable.
 	 */
-	public function find( array $arguments ): iterable {
+	public function find( array $arguments ) {
 		$orderId   = $arguments['order_id'] ?? null;
 		$action    = $arguments['action'] ?? null;
 		$orderBy   = $arguments['orderby'] ?? [];
@@ -67,16 +67,18 @@ class Repository {
 		$dateQuery = $arguments['date_query'] ?? [];
 
 		$orderByTransformed = [];
-		foreach ( $orderBy as $orderByKey => $orderByValue ) {
-			if ( ! in_array( $orderByValue, [ 'ASC', 'DESC' ], true ) ) {
-				$orderByValue = 'ASC';
-			}
+		if ( count( $orderBy ) > 0 ) {
+			foreach ( $orderBy as $orderByKey => $orderByValue ) {
+				if ( ! in_array( $orderByValue, [ 'ASC', 'DESC' ], true ) ) {
+					$orderByValue = 'ASC';
+				}
 
-			$orderByTransformed[] = '`' . $orderByKey . '` ' . $orderByValue;
+				$orderByTransformed[] = '`' . $orderByKey . '` ' . $orderByValue;
+			}
 		}
 
 		$orderByClause = '';
-		if ( $orderByTransformed ) {
+		if ( count( $orderByTransformed ) > 0 ) {
 			$orderByClause = ' ORDER BY ' . implode( ', ', $orderByTransformed );
 		}
 
@@ -86,15 +88,17 @@ class Repository {
 		}
 
 		$where = [];
-		foreach ( $dateQuery as $dateQueryItem ) {
-			if ( isset( $dateQueryItem['after'] ) ) {
-				$where[] = $this->wpdbAdapter->prepare( '`date` > %s', CoreHelper::now()->modify( $dateQueryItem['after'] )->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
+		if ( count( $dateQuery ) > 0 ) {
+			foreach ( $dateQuery as $dateQueryItem ) {
+				if ( isset( $dateQueryItem['after'] ) ) {
+					$where[] = $this->wpdbAdapter->prepare( '`date` > %s', CoreHelper::now()->modify( $dateQueryItem['after'] )->format( CoreHelper::MYSQL_DATETIME_FORMAT ) );
+				}
 			}
 		}
 
 		$whereClause = $this->getWhereClause( $where, $orderId, $action );
 
-		$result = $this->wpdbAdapter->get_results( 'SELECT * FROM `' . $this->wpdbAdapter->packetery_log . '` ' . $whereClause . $orderByClause . $limitClause );
+		$result = $this->wpdbAdapter->get_results( 'SELECT * FROM `' . $this->wpdbAdapter->packeteryLog . '` ' . $whereClause . $orderByClause . $limitClause );
 		if ( is_iterable( $result ) ) {
 			return $this->remapToRecord( $result );
 		}
@@ -112,18 +116,18 @@ class Repository {
 	public function deleteOld( string $before ): void {
 		$dateToFormatted = CoreHelper::now()->modify( $before )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 		$this->wpdbAdapter->query(
-			$this->wpdbAdapter->prepare( 'DELETE FROM `' . $this->wpdbAdapter->packetery_log . '` WHERE `date` < %s', $dateToFormatted )
+			$this->wpdbAdapter->prepare( 'DELETE FROM `' . $this->wpdbAdapter->packeteryLog . '` WHERE `date` < %s', $dateToFormatted )
 		);
 	}
 
 	/**
 	 * Remaps logs.
 	 *
-	 * @param iterable $logs Logs.
+	 * @param array $logs Logs.
 	 *
-	 * @return \Generator|Record[]
+	 * @return \Generator<Record>
 	 */
-	public function remapToRecord( iterable $logs ): \Generator {
+	public function remapToRecord( array $logs ): \Generator {
 		foreach ( $logs as $log ) {
 			$record         = new Record();
 			$record->id     = $log->id;
@@ -159,7 +163,7 @@ class Repository {
 			array_filter(
 				[
 					$title,
-					( $params ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
+					( count( $params ) > 0 ? 'Data: ' . wp_json_encode( $params, JSON_UNESCAPED_UNICODE ) : '' ),
 				]
 			)
 		);
@@ -171,7 +175,7 @@ class Repository {
 	 * @return bool
 	 */
 	public function createOrAlterTable(): bool {
-		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packetery_log . " (
+		$createTableQuery = 'CREATE TABLE ' . $this->wpdbAdapter->packeteryLog . " (
 			`id` int(11) NOT NULL AUTO_INCREMENT,
 			`order_id` bigint(20) unsigned NULL,
 			`title` varchar(255) NOT NULL DEFAULT '',
@@ -182,7 +186,7 @@ class Repository {
 			PRIMARY KEY  (`id`)
 		) " . $this->wpdbAdapter->get_charset_collate();
 
-		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packetery_log );
+		return $this->wpdbAdapter->dbDelta( $createTableQuery, $this->wpdbAdapter->packeteryLog );
 	}
 
 	/**
@@ -191,7 +195,7 @@ class Repository {
 	 * @return void
 	 */
 	public function drop(): void {
-		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packetery_log . '`' );
+		$this->wpdbAdapter->query( 'DROP TABLE IF EXISTS `' . $this->wpdbAdapter->packeteryLog . '`' );
 	}
 
 	/**
@@ -204,14 +208,14 @@ class Repository {
 	 */
 	public function save( Record $record ): void {
 		$date = $record->date;
-		if ( null === $date ) {
+		if ( $date === null ) {
 			$date = CoreHelper::now();
 		}
 
 		$dateString = $date->setTimezone( new \DateTimeZone( 'UTC' ) )->format( CoreHelper::MYSQL_DATETIME_FORMAT );
 
 		$paramsString = '';
-		if ( $record->params ) {
+		if ( $record->params !== null && count( $record->params ) > 0 ) {
 			$params       = ModuleHelper::convertArrayFloatsToStrings( $record->params );
 			$paramsString = wp_json_encode( $params );
 		}
@@ -224,14 +228,14 @@ class Repository {
 		$data = [
 			'id'       => $record->id,
 			'order_id' => $orderId,
-			'title'    => ( $record->title ?? '' ),
-			'status'   => ( $record->status ?? '' ),
-			'action'   => ( $record->action ?? '' ),
+			'title'    => $record->title,
+			'status'   => $record->status,
+			'action'   => $record->action,
 			'params'   => $paramsString,
 			'date'     => $dateString,
 		];
 
-		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packetery_log, $data, null, 'REPLACE' );
+		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryLog, $data, null, 'REPLACE' );
 	}
 
 	/**
@@ -247,16 +251,15 @@ class Repository {
 		if ( is_numeric( $orderId ) ) {
 			$where[] = $this->wpdbAdapter->prepare( '`order_id` = %d', $orderId );
 		}
-		if ( null !== $action ) {
+		if ( $action !== null ) {
 			$where[] = $this->wpdbAdapter->prepare( '`action` = %s', $action );
 		}
 
 		$whereClause = '';
-		if ( $where ) {
+		if ( count( $where ) > 0 ) {
 			$whereClause = ' WHERE ' . implode( ' AND ', $where );
 		}
 
 		return $whereClause;
 	}
-
 }

@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Framework\WcAdapter;
 use stdClass;
 use WC_Data_Store;
 use WC_Shipping_Zone;
@@ -20,26 +21,38 @@ use WC_Shipping_Zone_Data_Store_Interface;
 class ShippingZoneRepository {
 
 	/**
-	 * Shipping zone data store.
-	 *
-	 * @var WC_Shipping_Zone_Data_Store_Interface
+	 * @var WC_Shipping_Zone_Data_Store_Interface|WC_Data_Store|null
 	 */
-	private $dataStore;
+	private $dataStore = null;
 
 	/**
-	 * ShippingZoneRepository constructor.
+	 * @var WcAdapter
 	 */
-	public function __construct() {
-		$this->dataStore = WC_Data_Store::load( 'shipping-zone' );
+	private $wcAdapter;
+
+	public function __construct( WcAdapter $wcAdapter ) {
+		$this->wcAdapter = $wcAdapter;
+	}
+
+	/**
+	 * Lazy data store getter.
+	 */
+	public function getDataStore(): WC_Shipping_Zone_Data_Store_Interface {
+		if ( $this->dataStore === null ) {
+			$this->dataStore = WC_Data_Store::load( 'shipping-zone' );
+		}
+
+		return $this->dataStore;
 	}
 
 	/**
 	 * Gets all zones.
 	 *
-	 * @return array
+	 * @return WC_Shipping_Zone[]
 	 */
 	private function getAllShippingZones(): array {
-		$rawZones = $this->dataStore->get_zones();
+		$rawZones = $this->getDataStore()->get_zones();
+		$zones    = [];
 		foreach ( $rawZones as $rawZone ) {
 			$zones[] = new WC_Shipping_Zone( $rawZone );
 		}
@@ -54,18 +67,13 @@ class ShippingZoneRepository {
 	 *
 	 * @param string $methodRateId Method rate id.
 	 *
-	 * @return array|null
+	 * @return stdClass[]|null
 	 */
 	private function getLocationsForShippingRate( string $methodRateId ): ?array {
-		/**
-		 * Zone.
-		 *
-		 * @var WC_Shipping_Zone $zone
-		 */
 		foreach ( $this->getAllShippingZones() as $zone ) {
 			$enabledOnly = true;
 			// Can't use get_shipping_methods because of infinite recursion.
-			$rawMethods = $this->dataStore->get_methods( $zone->get_id(), $enabledOnly );
+			$rawMethods = $this->getDataStore()->get_methods( $zone->get_id(), $enabledOnly );
 
 			/**
 			 * Raw method.
@@ -73,6 +81,7 @@ class ShippingZoneRepository {
 			 * @var stdClass $rawMethod
 			 */
 			foreach ( $rawMethods as $rawMethod ) {
+				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				$rawMethodId = sprintf( '%s:%s', $rawMethod->method_id, $rawMethod->instance_id );
 				if ( $methodRateId === $rawMethodId ) {
 					return $zone->get_zone_locations();
@@ -88,20 +97,31 @@ class ShippingZoneRepository {
 	 *
 	 * @param string $rateId Rate id.
 	 *
-	 * @return array
+	 * @return string[]
 	 */
 	public function getCountryCodesForShippingRate( string $rateId ): array {
-		$countries     = [];
-		$zoneLocations = $this->getLocationsForShippingRate( $rateId );
-		if ( ! empty( $zoneLocations ) ) {
-			/**
-			 * Zone location.
-			 *
-			 * @var stdClass $zoneLocation
-			 */
-			foreach ( $zoneLocations as $zoneLocation ) {
-				if ( 'country' === $zoneLocation->type ) {
-					$countries[] = strtolower( $zoneLocation->code );
+		return $this->getCountryCodesFromZoneLocations( $this->getLocationsForShippingRate( $rateId ) );
+	}
+
+	private function getCountryCodesFromZoneLocations( ?array $zoneLocations ): array {
+		if ( $zoneLocations === null ) {
+			return [];
+		}
+
+		$countries  = [];
+		$continents = $this->wcAdapter->countriesGetContinents();
+
+		/**
+		 * @var stdClass $zoneLocation
+		 */
+		foreach ( $zoneLocations as $zoneLocation ) {
+			if ( $zoneLocation->type === 'country' ) {
+				$countries[] = strtolower( $zoneLocation->code );
+			}
+
+			if ( $zoneLocation->type === 'continent' && isset( $continents[ $zoneLocation->code ]['countries'] ) ) {
+				foreach ( $continents[ $zoneLocation->code ]['countries'] as $countryCode ) {
+					$countries[] = strtolower( $countryCode );
 				}
 			}
 		}
@@ -109,4 +129,9 @@ class ShippingZoneRepository {
 		return $countries;
 	}
 
+	public function getCountryCodesForShippingZone( int $zoneId ): array {
+		$zone = new WC_Shipping_Zone( $zoneId );
+
+		return $this->getCountryCodesFromZoneLocations( $zone->get_zone_locations() );
+	}
 }

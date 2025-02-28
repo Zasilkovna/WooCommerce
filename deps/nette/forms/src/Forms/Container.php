@@ -15,7 +15,6 @@ use Packetery\Nette\Utils\ArrayHash;
  * @property   ArrayHash $values
  * @property-read \Iterator $controls
  * @property-read Form|null $form
- * @internal
  */
 class Container extends \Packetery\Nette\ComponentModel\Container implements \ArrayAccess
 {
@@ -30,8 +29,8 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
     protected $currentGroup;
     /** @var callable[]  extension methods */
     private static $extMethods = [];
-    /** @var bool */
-    private $validated;
+    /** @var ?bool */
+    private $validated = \false;
     /** @var ?string */
     private $mappedType;
     /********************* data exchange ****************d*g**/
@@ -90,8 +89,10 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
     {
         $form = $this->getForm(\false);
         if ($form && ($submitter = $form->isSubmitted())) {
-            if (!$this->isValid()) {
-                \trigger_error(__METHOD__ . '() invoked but the form is not valid.', \E_USER_WARNING);
+            if ($this->validated === null) {
+                throw new \Packetery\Nette\InvalidStateException('You cannot call getValues() during the validation process. Use getUnsafeValues() instead.');
+            } elseif (!$this->isValid()) {
+                \trigger_error(__METHOD__ . "() invoked but the form is not valid (form '{$this->getName()}').", \E_USER_WARNING);
             }
             if ($controls === null && $submitter instanceof SubmitterControl) {
                 $controls = $submitter->getValidationScope();
@@ -110,11 +111,17 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
     {
         if (\is_object($returnType)) {
             $obj = $returnType;
+            $rc = new \ReflectionClass($obj);
         } else {
             $returnType = $returnType ?? $this->mappedType ?? ArrayHash::class;
-            $obj = $returnType === self::ARRAY ? new \stdClass() : new $returnType();
+            $rc = new \ReflectionClass($returnType === self::ARRAY ? \stdClass::class : $returnType);
+            if ($rc->hasMethod('__construct') && $rc->getMethod('__construct')->getNumberOfRequiredParameters()) {
+                $obj = new \stdClass();
+                $useConstructor = \true;
+            } else {
+                $obj = $rc->newInstance();
+            }
         }
-        $rc = new \ReflectionClass($obj);
         foreach ($this->getComponents() as $name => $control) {
             $allowed = $controls === null || \in_array($control, $controls, \true);
             $name = (string) $name;
@@ -124,6 +131,9 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
                 $type = $returnType === self::ARRAY && !$control->mappedType ? self::ARRAY : ($rc->hasProperty($name) ? \Packetery\Nette\Utils\Reflection::getPropertyType($rc->getProperty($name)) : null);
                 $obj->{$name} = $control->getUnsafeValues($type, $allowed ? null : $controls);
             }
+        }
+        if (isset($useConstructor)) {
+            return new $returnType(...(array) $obj);
         }
         return $returnType === self::ARRAY ? (array) $obj : $obj;
     }
@@ -139,7 +149,9 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      */
     public function isValid() : bool
     {
-        if (!$this->validated) {
+        if ($this->validated === null) {
+            throw new \Packetery\Nette\InvalidStateException('You cannot call isValid() during the validation process.');
+        } elseif (!$this->validated) {
             if ($this->getErrors()) {
                 return \false;
             }
@@ -153,6 +165,7 @@ class Container extends \Packetery\Nette\ComponentModel\Container implements \Ar
      */
     public function validate(array $controls = null) : void
     {
+        $this->validated = null;
         foreach ($controls ?? $this->getComponents() as $control) {
             if ($control instanceof Control || $control instanceof self) {
                 $control->validate();

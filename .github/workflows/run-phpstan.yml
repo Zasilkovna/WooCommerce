@@ -11,7 +11,7 @@ jobs:
 
         strategy:
             matrix:
-                php-version: [ '8.1', '8.2', '8.3' ]
+                php-version: [ '8.1', '8.2', '8.3', '8.4' ]
 
         steps:
             -   name: Checkout code
@@ -28,23 +28,7 @@ jobs:
                 run: php -v
 
             -   name: Install Composer dependencies
-                working-directory: phpstan
                 run: composer install
 
-            -   name: Run PHPStan with phpversion 7.2
-                run: composer run phpstan-72
-
-            -   name: Run PHPStan with phpversion 7.4
-                run: composer run phpstan-74
-
-            -   name: Run PHPStan with phpversion 8.0
-                run: composer run phpstan-80
-
-            -   name: Run PHPStan with phpversion 8.1
-                run: composer run phpstan-81
-
-            -   name: Run PHPStan with phpversion 8.2
-                run: composer run phpstan-82
-
-            -   name: Run PHPStan with phpversion 8.3
-                run: composer run phpstan-83
+            -   name: Run PHPStan with PHP version 7.2 - 8.3
+                run: composer run phpstan:all

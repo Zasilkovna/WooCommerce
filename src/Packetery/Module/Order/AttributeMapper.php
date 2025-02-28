@@ -25,14 +25,14 @@ class AttributeMapper {
 	/**
 	 * Updates order entity from props to save.
 	 *
-	 * @param Entity\Order $orderEntity Order entity.
-	 * @param array        $propsToSave Props to save.
+	 * @param Entity\Order                              $orderEntity Order entity.
+	 * @param array<string, string|float|int|true|null> $propsToSave Props to save.
 	 *
 	 * @return Entity\PickupPoint
 	 */
 	public function toOrderEntityPickupPoint( Entity\Order $orderEntity, array $propsToSave ): Entity\PickupPoint {
 		$pickupPoint = $orderEntity->getPickupPoint();
-		if ( null === $pickupPoint ) {
+		if ( $pickupPoint === null ) {
 			$pickupPoint = new Entity\PickupPoint();
 		}
 
@@ -40,21 +40,27 @@ class AttributeMapper {
 			switch ( $attrName ) {
 				case Attribute::POINT_ID:
 					$pickupPoint->setId( $attrValue );
+
 					break;
 				case Attribute::POINT_NAME:
 					$pickupPoint->setName( $attrValue );
+
 					break;
 				case Attribute::POINT_URL:
 					$pickupPoint->setUrl( $attrValue );
+
 					break;
 				case Attribute::POINT_STREET:
 					$pickupPoint->setStreet( $attrValue );
+
 					break;
 				case Attribute::POINT_ZIP:
 					$pickupPoint->setZip( $attrValue );
+
 					break;
 				case Attribute::POINT_CITY:
 					$pickupPoint->setCity( $attrValue );
+
 					break;
 			}
 		}
@@ -73,17 +79,17 @@ class AttributeMapper {
 	 * @throws WC_Data_Exception When shipping input is invalid.
 	 */
 	public function toWcOrderShippingAddress( WC_Order $wcOrder, string $attributeName, string $value ): void {
-		if ( Attribute::POINT_STREET === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_STREET ) {
 			$wcOrder->set_shipping_address_1( $value );
 			$wcOrder->set_shipping_address_2( '' );
 		}
-		if ( Attribute::POINT_PLACE === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_PLACE ) {
 			$wcOrder->set_shipping_company( $value );
 		}
-		if ( Attribute::POINT_CITY === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_CITY ) {
 			$wcOrder->set_shipping_city( $value );
 		}
-		if ( Attribute::POINT_ZIP === $attributeName ) {
+		if ( $attributeName === Attribute::POINT_ZIP ) {
 			$wcOrder->set_shipping_postcode( $value );
 		}
 	}
@@ -110,14 +116,14 @@ class AttributeMapper {
 	/**
 	 * From prepared properties to order Size.
 	 *
-	 * @param Entity\Order $order       Order.
-	 * @param array        $propsToSave Prepared properties.
+	 * @param Entity\Order                              $order       Order.
+	 * @param array<string, string|float|int|true|null> $propsToSave Prepared properties.
 	 *
 	 * @return Entity\Size
 	 */
 	public function toOrderSize( Entity\Order $order, array $propsToSave ): Entity\Size {
 		$orderSize = $order->getSize();
-		if ( null === $orderSize ) {
+		if ( $orderSize === null ) {
 			$orderSize = new Entity\Size();
 		}
 
@@ -126,15 +132,19 @@ class AttributeMapper {
 				// TODO: Setting these values shouldn't be done here?
 				case Form::FIELD_WEIGHT:
 					$order->setWeight( $attrValue );
+
 					break;
 				case Form::FIELD_WIDTH:
 					$orderSize->setWidth( $attrValue );
+
 					break;
 				case Form::FIELD_LENGTH:
 					$orderSize->setLength( $attrValue );
+
 					break;
 				case Form::FIELD_HEIGHT:
 					$orderSize->setHeight( $attrValue );
+
 					break;
 			}
 		}
@@ -187,5 +197,4 @@ class AttributeMapper {
 			$values[ Attribute::ADDRESS_POST_CODE ]
 		);
 	}
-
 }

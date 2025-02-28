@@ -22,13 +22,16 @@ use Packetery\Module\Carrier\PacketaPickupPointsConfig;
 use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Payment\PaymentHelper;
-use Packetery\Module\WeightCalculator;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Payment\PaymentHelper;
 use Packetery\Module\Product;
+use Packetery\Module\WeightCalculator;
 use stdClass;
 use WC_Order;
+use WC_Order_Item_Product;
+use WC_Product;
 
+// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 /**
  * Class Builder
  *
@@ -125,13 +128,13 @@ class Builder {
 	 */
 	public function build( WC_Order $wcOrder, stdClass $result ): Entity\Order {
 		$country = ModuleHelper::getWcOrderCountry( $wcOrder );
-		if ( empty( $country ) ) {
+		if ( $country === '' ) {
 			throw new InvalidCarrierException( __( 'Please set the country of the delivery address first.', 'packeta' ) );
 		}
 
 		$carrierId = $this->pickupPointsConfig->getFixedCarrierId( $result->carrier_id, $country );
 		$carrier   = $this->carrierRepository->getAnyById( $carrierId );
-		if ( null === $carrier ) {
+		if ( $carrier === null ) {
 			throw new InvalidCarrierException(
 				sprintf(
 				// translators: %s is carrier id.
@@ -143,25 +146,28 @@ class Builder {
 
 		$order       = new Order( $result->id, $carrier );
 		$orderWeight = $this->parseFloat( $result->weight );
-		if ( null !== $orderWeight ) {
+		if ( $orderWeight !== null ) {
 			$order->setWeight( $orderWeight );
 		}
 		$order->setPacketId( $result->packet_id );
+		$order->setPacketTrackingUrl( $this->coreHelper->getTrackingUrl( $result->packet_id ) );
 		$order->setPacketClaimId( $result->packet_claim_id );
+		$order->setPacketClaimTrackingUrl( $this->coreHelper->getTrackingUrl( $result->packet_claim_id ) );
 		$order->setPacketClaimPassword( $result->packet_claim_password );
 		$order->setSize( new Size( $this->parseFloat( $result->length ), $this->parseFloat( $result->width ), $this->parseFloat( $result->height ) ) );
 		$order->setIsExported( (bool) $result->is_exported );
 		$order->setIsLabelPrinted( (bool) $result->is_label_printed );
 		$order->setCarrierNumber( $result->carrier_number );
 		$order->setPacketStatus( $result->packet_status );
+		$order->setStoredUntil( $this->coreHelper->getDateTimeFromString( $result->stored_until ) );
 		$order->setAddressValidated( (bool) $result->address_validated );
 		$order->setAdultContent( $this->parseBool( $result->adult_content ) );
-		$order->setValue( $this->parseFloat( $result->value ) );
-		$order->setCod( $this->parseFloat( $result->cod ) );
+		$order->setManualValue( $this->parseFloat( $result->value ) );
+		$order->setManualCod( $this->parseFloat( $result->cod ) );
 		$order->setDeliverOn( $this->coreHelper->getDateTimeFromString( $result->deliver_on ) );
 		$order->setLastApiErrorMessage( $result->api_error_message );
 		$order->setLastApiErrorDateTime(
-			( null === $result->api_error_date )
+			( $result->api_error_date === null )
 				? null
 				: DateTimeImmutable::createFromFormat(
 					CoreHelper::MYSQL_DATETIME_FORMAT,
@@ -190,7 +196,7 @@ class Builder {
 			$order->setCarDeliveryId( $result->car_delivery_id );
 		}
 
-		if ( null !== $result->point_id ) {
+		if ( $result->point_id !== null ) {
 			$pickUpPoint = new PickupPoint(
 				$result->point_id,
 				$result->point_name,
@@ -205,7 +211,7 @@ class Builder {
 
 		$order->setCalculatedWeight( $this->calculator->calculateOrderWeight( $wcOrder ) );
 
-		if ( null === $order->containsAdultContent() ) {
+		if ( $order->containsAdultContent() === null ) {
 			$order->setAdultContent( $this->containsAdultContent( $wcOrder ) );
 		}
 
@@ -218,12 +224,10 @@ class Builder {
 		$order->setSurname( $contactInfo['last_name'] );
 		$order->setEshop( $this->optionsProvider->get_sender() );
 
-		if ( null === $order->getValue() ) {
-			$order->setValue( (float) $wcOrder->get_total( 'raw' ) );
-		}
+		$order->setCalculatedValue( (float) $wcOrder->get_total( 'raw' ) );
 
 		$address = $order->getDeliveryAddress();
-		if ( null === $address ) {
+		if ( $address === null ) {
 			$order->setAddressValidated( false );
 			$address = new Address( $contactInfo['address_1'], $contactInfo['city'], $contactInfo['postcode'] );
 		}
@@ -233,22 +237,22 @@ class Builder {
 
 		// Shipping address phone is optional.
 		$order->setPhone( $orderData['billing']['phone'] );
-		if ( ! empty( $contactInfo['phone'] ) ) {
+		if ( isset( $contactInfo['phone'] ) && $contactInfo['phone'] !== '' ) {
 			$order->setPhone( $contactInfo['phone'] );
 		}
 		// Additional address information.
-		if ( ! empty( $contactInfo['address_2'] ) ) {
+		if ( isset( $contactInfo['address_2'] ) && $contactInfo['address_2'] !== '' ) {
 			$order->setNote( $contactInfo['address_2'] );
 		}
 
 		$order->setEmail( $orderData['billing']['email'] );
 		$hasCodPaymentMethod = $this->paymentHelper->isCodPaymentMethod( $orderData['payment_method'] );
-		if ( $hasCodPaymentMethod && null === $order->getCod() ) {
-			$order->setCod( $order->getValue() );
-		}
-
-		if ( ! $hasCodPaymentMethod ) {
-			$order->setCod( null );
+		if ( $hasCodPaymentMethod ) {
+			$order->setCalculatedCod( $order->getCalculatedValue() );
+			// manual COD is set from DB directly
+		} else {
+			$order->setCalculatedCod( null );
+			$order->setManualCod( null );
 		}
 
 		$order->setSize( $order->getSize() );
@@ -268,11 +272,13 @@ class Builder {
 	 */
 	private function containsAdultContent( WC_Order $wcOrder ): bool {
 		foreach ( $wcOrder->get_items() as $item ) {
-			$product = $item->get_product();
-			if ( $product ) {
-				$productEntity = new Product\Entity( $product );
-				if ( $productEntity->isPhysical() && $productEntity->isAgeVerification18PlusRequired() ) {
-					return true;
+			if ( $item instanceof WC_Order_Item_Product ) {
+				$product = $item->get_product();
+				if ( $product instanceof WC_Product ) {
+					$productEntity = new Product\Entity( $product );
+					if ( $productEntity->isPhysical() && $productEntity->isAgeVerificationRequired() ) {
+						return true;
+					}
 				}
 			}
 		}
@@ -288,7 +294,7 @@ class Builder {
 	 * @return float|null
 	 */
 	private function parseFloat( $value ): ?float {
-		if ( null === $value || '' === $value ) {
+		if ( $value === null || $value === '' ) {
 			return null;
 		}
 
@@ -303,11 +309,10 @@ class Builder {
 	 * @return bool|null
 	 */
 	private function parseBool( $value ): ?bool {
-		if ( null === $value || '' === $value ) {
+		if ( $value === null || $value === '' ) {
 			return null;
 		}
 
 		return (bool) $value;
 	}
-
 }

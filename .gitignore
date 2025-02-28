@@ -1,13 +1,12 @@
 /.idea/
 /vendor
 /phpcs/vendor
-/phpstan/vendor
 /temp/*
 !/temp/.gitignore
 /log/
 **/.DS_Store
 /tests-coverage/
-/.phpunit.result.cache
 /config/config.local.neon
 /node_modules/
 phpunit.xml
+soap-php-bugfix-dev.wsdl

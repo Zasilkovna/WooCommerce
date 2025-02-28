@@ -45,7 +45,7 @@ class BaseResponse {
 	 * @return bool
 	 */
 	public function hasWrongPassword(): bool {
-		return ( 'IncorrectApiPasswordFault' === $this->fault );
+		return ( $this->fault === 'IncorrectApiPasswordFault' );
 	}
 
 	/**
@@ -54,7 +54,7 @@ class BaseResponse {
 	 * @return bool
 	 */
 	public function hasPacketIdsFault(): bool {
-		return 'PacketIdsFault' === $this->fault;
+		return $this->fault === 'PacketIdsFault';
 	}
 
 	/**
@@ -63,7 +63,7 @@ class BaseResponse {
 	 * @return bool
 	 */
 	public function hasPacketIdFault(): bool {
-		return 'PacketIdFault' === $this->fault;
+		return $this->fault === 'PacketIdFault';
 	}
 
 	/**
@@ -72,7 +72,7 @@ class BaseResponse {
 	 * @return bool
 	 */
 	public function hasInvalidCourierNumberFault(): bool {
-		return 'InvalidCourierNumber' === $this->fault;
+		return $this->fault === 'InvalidCourierNumber';
 	}
 
 	/**
@@ -101,5 +101,4 @@ class BaseResponse {
 	public function getFaultString(): ?string {
 		return $this->faultString;
 	}
-
 }

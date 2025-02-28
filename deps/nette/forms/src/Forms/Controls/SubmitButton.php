@@ -12,7 +12,6 @@ use Packetery\Nette;
  * Submittable button control.
  *
  * @property-read bool $submittedBy
- * @internal
  */
 class SubmitButton extends Button implements \Packetery\Nette\Forms\SubmitterControl
 {
@@ -60,7 +59,7 @@ class SubmitButton extends Button implements \Packetery\Nette\Forms\SubmitterCon
             $this->validationScope = [];
             foreach ($scope ?: [] as $control) {
                 if (!$control instanceof \Packetery\Nette\Forms\Container && !$control instanceof \Packetery\Nette\Forms\Control) {
-                    throw new \Packetery\Nette\InvalidArgumentException('Validation scope accepts only \\Packetery\\Nette\\Forms\\Container or \\Packetery\\Nette\\Forms\\IControl instances.');
+                    throw new \Packetery\Nette\InvalidArgumentException('Validation scope accepts only \\Packetery\\Nette\\Forms\\Container or \\Packetery\\Nette\\Forms\\Control instances.');
                 }
                 $this->validationScope[] = $control;
             }
