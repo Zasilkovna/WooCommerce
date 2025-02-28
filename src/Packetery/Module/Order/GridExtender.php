@@ -103,6 +103,11 @@ class GridExtender {
 	private $sizeFactory;
 
 	/**
+	 * @var PacketStatusResolver
+	 */
+	private $packetStatusResolver;
+
+	/**
 	 * GridExtender constructor.
 	 *
 	 * @param CoreHelper            $coreHelper            CoreHelper.
@@ -115,6 +120,7 @@ class GridExtender {
 	 * @param WpAdapter             $wpAdapter             WordPress adapter.
 	 * @param ModuleHelper          $moduleHelper          Module helper.
 	 * @param SizeFactory           $sizeFactory           Size factory.
+	 * @param PacketStatusResolver  $packetStatusResolver  Packet status resolver.
 	 */
 	public function __construct(
 		CoreHelper $coreHelper,
@@ -126,7 +132,8 @@ class GridExtender {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		WpAdapter $wpAdapter,
 		ModuleHelper $moduleHelper,
-		SizeFactory $sizeFactory
+		SizeFactory $sizeFactory,
+		PacketStatusResolver $packetStatusResolver
 	) {
 		$this->coreHelper            = $coreHelper;
 		$this->latteEngine           = $latteEngine;
@@ -138,6 +145,7 @@ class GridExtender {
 		$this->wpAdapter             = $wpAdapter;
 		$this->moduleHelper          = $moduleHelper;
 		$this->sizeFactory           = $sizeFactory;
+		$this->packetStatusResolver  = $packetStatusResolver;
 	}
 
 	/**
@@ -411,7 +419,7 @@ class GridExtender {
 
 				break;
 			case 'packetery_packet_status':
-				echo esc_html( PacketStatusResolver::getTranslatedName( $order->getPacketStatus() ) );
+				echo esc_html( $this->packetStatusResolver->getTranslatedName( $order->getPacketStatus() ) );
 
 				break;
 			case 'packetery_packet_stored_until':

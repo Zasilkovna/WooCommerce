@@ -10,8 +10,8 @@ declare( strict_types=1 );
 namespace Packetery\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
-use Packetery\Module\Order\PacketSynchronizer;
 
 /**
  * Class OptionsProvider
@@ -73,26 +73,23 @@ class OptionsProvider {
 	 */
 	private $advancedData;
 
-	/**
-	 * OptionsProvider constructor.
-	 */
-	public function __construct() {
-		$data = get_option( self::OPTION_NAME_PACKETERY );
+	public function __construct( WpAdapter $wpAdapter ) {
+		$data = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY );
 		if ( $data === false || $data === null ) {
 			$data = array();
 		}
 
-		$syncData = get_option( self::OPTION_NAME_PACKETERY_SYNC );
+		$syncData = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY_SYNC );
 		if ( $syncData === false || $syncData === null ) {
 			$syncData = [];
 		}
 
-		$autoSubmissionData = get_option( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
+		$autoSubmissionData = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY_AUTO_SUBMISSION );
 		if ( $autoSubmissionData === false || $autoSubmissionData === null ) {
 			$autoSubmissionData = [];
 		}
 
-		$advancedData = get_option( self::OPTION_NAME_PACKETERY_ADVANCED );
+		$advancedData = $wpAdapter->getOption( self::OPTION_NAME_PACKETERY_ADVANCED );
 		if ( $advancedData === false || $advancedData === null ) {
 			$advancedData = [];
 		}
@@ -427,22 +424,24 @@ class OptionsProvider {
 	/**
 	 * Status syncing packet statuses.
 	 *
-	 * @return array
+	 * @param PacketStatus[] $expectedPacketStatuses Expected packet statuses.
+	 *
+	 * @return string[]
 	 */
-	public function getStatusSyncingPacketStatuses(): array {
-		$value = ( $this->syncData['status_syncing_packet_statuses'] ?? null );
-		if ( is_array( $value ) ) {
-			return $value;
+	public function getStatusSyncingPacketStatuses( array $expectedPacketStatuses ): array {
+		$packetStatusNames         = $this->syncData['status_syncing_packet_statuses'] ?? null;
+		$expectedPacketStatusNames = array_map(
+			static function ( PacketStatus $status ): string {
+				return $status->getName();
+			},
+			$expectedPacketStatuses
+		);
+
+		if ( is_array( $packetStatusNames ) ) {
+			return array_intersect( $packetStatusNames, $expectedPacketStatusNames );
 		}
 
-		return array_keys(
-			array_filter(
-				PacketSynchronizer::getPacketStatuses(),
-				static function ( PacketStatus $packetStatus ): bool {
-					return $packetStatus->hasDefaultSynchronization() === true;
-				}
-			)
-		);
+		return $expectedPacketStatusNames;
 	}
 
 	/**

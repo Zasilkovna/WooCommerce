@@ -15,6 +15,7 @@ use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Module\Exception\InvalidPasswordException;
 use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 
 /**
@@ -69,6 +70,13 @@ class PacketSynchronizer {
 	private $wcAdapter;
 
 	/**
+	 * WP adapter.
+	 *
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Api\Soap\Client $apiSoapClient   API soap client.
@@ -77,6 +85,7 @@ class PacketSynchronizer {
 	 * @param Repository      $orderRepository Order repository.
 	 * @param WcOrderActions  $wcOrderActions  WC order actions.
 	 * @param WcAdapter       $wcAdapter       WC adapter.
+	 * @param WpAdapter       $wpAdapter       WP adapter.
 	 */
 	public function __construct(
 		Api\Soap\Client $apiSoapClient,
@@ -84,7 +93,8 @@ class PacketSynchronizer {
 		OptionsProvider $optionsProvider,
 		Repository $orderRepository,
 		WcOrderActions $wcOrderActions,
-		WcAdapter $wcAdapter
+		WcAdapter $wcAdapter,
+		WpAdapter $wpAdapter
 	) {
 		$this->apiSoapClient   = $apiSoapClient;
 		$this->logger          = $logger;
@@ -92,6 +102,7 @@ class PacketSynchronizer {
 		$this->orderRepository = $orderRepository;
 		$this->wcOrderActions  = $wcOrderActions;
 		$this->wcAdapter       = $wcAdapter;
+		$this->wpAdapter       = $wpAdapter;
 	}
 
 	/**
@@ -111,7 +122,7 @@ class PacketSynchronizer {
 	 */
 	public function syncStatuses(): void {
 		$syncingOrderIds = $this->orderRepository->findStatusSyncingOrderIds(
-			$this->optionsProvider->getStatusSyncingPacketStatuses(),
+			$this->optionsProvider->getStatusSyncingPacketStatuses( $this->getDefaultPacketStatuses() ),
 			$this->optionsProvider->getExistingStatusSyncingOrderStatuses(),
 			$this->optionsProvider->getMaxDaysOfPacketStatusSyncing(),
 			$this->optionsProvider->getMaxStatusSyncingPackets()
@@ -192,44 +203,61 @@ class PacketSynchronizer {
 	}
 
 	/**
+	 * @return PacketStatus[]
+	 */
+	public function getDefaultPacketStatuses(): array {
+		$result = [];
+
+		foreach ( $this->getPacketStatuses() as $statusName => $status ) {
+			if ( ! $status->hasDefaultSynchronization() ) {
+				continue;
+			}
+
+			$result[ $statusName ] = $status;
+		}
+
+		return $result;
+	}
+
+	/**
 	 * Gets packet statuses and default values.
 	 *
 	 * @return PacketStatus[]
 	 */
-	public static function getPacketStatuses(): array {
+	public function getPacketStatuses(): array {
 		return [
 			PacketStatus::RECEIVED_DATA          =>
-				new PacketStatus( PacketStatus::RECEIVED_DATA, __( 'Awaiting consignment', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::RECEIVED_DATA, $this->wpAdapter->__( 'Awaiting consignment', 'packeta' ), true ),
 			PacketStatus::ARRIVED                =>
-				new PacketStatus( PacketStatus::ARRIVED, __( 'Accepted at depot', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::ARRIVED, $this->wpAdapter->__( 'Accepted at depot', 'packeta' ), true ),
 			PacketStatus::PREPARED_FOR_DEPARTURE =>
-				new PacketStatus( PacketStatus::PREPARED_FOR_DEPARTURE, __( 'On the way', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::PREPARED_FOR_DEPARTURE, $this->wpAdapter->__( 'On the way', 'packeta' ), true ),
 			PacketStatus::DEPARTED               =>
-				new PacketStatus( PacketStatus::DEPARTED, __( 'Departed from depot', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::DEPARTED, $this->wpAdapter->__( 'Departed from depot', 'packeta' ), true ),
 			PacketStatus::READY_FOR_PICKUP       =>
-				new PacketStatus( PacketStatus::READY_FOR_PICKUP, __( 'Ready for pick-up', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::READY_FOR_PICKUP, $this->wpAdapter->__( 'Ready for pick-up', 'packeta' ), true ),
 			PacketStatus::HANDED_TO_CARRIER      =>
-				new PacketStatus( PacketStatus::HANDED_TO_CARRIER, __( 'Handed over to carrier company', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::HANDED_TO_CARRIER, $this->wpAdapter->__( 'Handed over to carrier company', 'packeta' ), true ),
 			PacketStatus::DELIVERED              =>
-				new PacketStatus( PacketStatus::DELIVERED, __( 'Delivered', 'packeta' ), false ),
+				new PacketStatus( PacketStatus::DELIVERED, $this->wpAdapter->__( 'Delivered', 'packeta' ), false ),
 			PacketStatus::POSTED_BACK            =>
-				new PacketStatus( PacketStatus::POSTED_BACK, __( 'Return (on the way back)', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::POSTED_BACK, $this->wpAdapter->__( 'Return (on the way back)', 'packeta' ), true ),
 			PacketStatus::RETURNED               =>
-				new PacketStatus( PacketStatus::RETURNED, __( 'Returned to sender', 'packeta' ), false ),
+				new PacketStatus( PacketStatus::RETURNED, $this->wpAdapter->__( 'Returned to sender', 'packeta' ), false ),
 			PacketStatus::CANCELLED              =>
-				new PacketStatus( PacketStatus::CANCELLED, __( 'Cancelled', 'packeta' ), false ),
+				new PacketStatus( PacketStatus::CANCELLED, $this->wpAdapter->__( 'Cancelled', 'packeta' ), false ),
 			PacketStatus::COLLECTED              =>
-				new PacketStatus( PacketStatus::COLLECTED, __( 'Parcel has been collected', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::COLLECTED, $this->wpAdapter->__( 'Parcel has been collected', 'packeta' ), true ),
 			PacketStatus::CUSTOMS                =>
-				new PacketStatus( PacketStatus::CUSTOMS, __( 'Customs declaration process', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::CUSTOMS, $this->wpAdapter->__( 'Customs declaration process', 'packeta' ), true ),
 			PacketStatus::REVERSE_PACKET_ARRIVED =>
-				new PacketStatus( PacketStatus::REVERSE_PACKET_ARRIVED, __( 'Reverse parcel has been accepted at our pick up point', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::REVERSE_PACKET_ARRIVED, $this->wpAdapter->__( 'Reverse parcel has been accepted at our pick up point', 'packeta' ), true ),
 			PacketStatus::DELIVERY_ATTEMPT       =>
-				new PacketStatus( PacketStatus::DELIVERY_ATTEMPT, __( 'Unsuccessful delivery attempt of parcel', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::DELIVERY_ATTEMPT, $this->wpAdapter->__( 'Unsuccessful delivery attempt of parcel', 'packeta' ), true ),
 			PacketStatus::REJECTED_BY_RECIPIENT  =>
-				new PacketStatus( PacketStatus::REJECTED_BY_RECIPIENT, __( 'Rejected by recipient response', 'packeta' ), true ),
+				new PacketStatus( PacketStatus::REJECTED_BY_RECIPIENT, $this->wpAdapter->__( 'Rejected by recipient response', 'packeta' ), true ),
 			PacketStatus::UNKNOWN                =>
-				new PacketStatus( PacketStatus::UNKNOWN, __( 'Unknown parcel status', 'packeta' ), false ),
+				new PacketStatus( PacketStatus::UNKNOWN, $this->wpAdapter->__( 'Unknown parcel status', 'packeta' ), false ),
 		];
 	}
 }

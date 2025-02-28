@@ -13,6 +13,7 @@ use DateTime;
 use Packetery\Core\Api;
 use Packetery\Core\Api\Soap\Request\SenderGetReturnRouting;
 use Packetery\Core\CoreHelper;
+use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
 use Packetery\Module\FormFactory;
@@ -110,6 +111,11 @@ class Page {
 	private $urlBuilder;
 
 	/**
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
+	/**
 	 * @var string
 	 */
 	private $supportEmailAddress;
@@ -124,6 +130,7 @@ class Page {
 		Http\Request $httpRequest,
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
+		PacketSynchronizer $packetSynchronizer,
 		string $supportEmailAddress
 	) {
 		$this->latteEngine         = $latteEngine;
@@ -135,6 +142,7 @@ class Page {
 		$this->httpRequest         = $httpRequest;
 		$this->moduleHelper        = $moduleHelper;
 		$this->urlBuilder          = $urlBuilder;
+		$this->packetSynchronizer  = $packetSynchronizer;
 		$this->supportEmailAddress = $supportEmailAddress;
 	}
 
@@ -227,13 +235,33 @@ class Page {
 	}
 
 	/**
+	 * Gets status syncing packet statuses.
+	 *
+	 * @return array<string, array{key: int|string, default: bool, label:string}>
+	 */
+	public function getStatusSyncingPacketStatusesChoiceData(): array {
+		$statuses = $this->packetSynchronizer->getDefaultPacketStatuses();
+
+		return $this->createPacketStatusChoiceData( $statuses );
+	}
+
+	/**
 	 * Gets all packet statuses.
 	 *
-	 * @return array
+	 * @return array<string, array{key: int|string, default: bool, label:string}>
 	 */
-	public function getPacketStatusesChoiceData(): array {
-		$statuses = PacketSynchronizer::getPacketStatuses();
+	public function getAllPacketStatusesChoiceData(): array {
+		$statuses = $this->packetSynchronizer->getPacketStatuses();
 
+		return $this->createPacketStatusChoiceData( $statuses );
+	}
+
+	/**
+	 * @param PacketStatus[] $statuses Packet statuses.
+	 *
+	 * @return array<string, array{key: int|string, default: bool, label:string}>
+	 */
+	private function createPacketStatusChoiceData( array $statuses ): array {
 		$result = [];
 
 		foreach ( $statuses as $status => $statusEntity ) {
@@ -355,7 +383,7 @@ class Page {
 		}
 		unset( $settings['status_syncing_order_statuses'] );
 
-		$packetStatuses          = $this->getPacketStatusesChoiceData();
+		$packetStatuses          = $this->getStatusSyncingPacketStatusesChoiceData();
 		$packetStatusesContainer = $form->addContainer( 'status_syncing_packet_statuses' );
 
 		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
@@ -376,6 +404,7 @@ class Page {
 
 		$orderStatusChangePacketStatuses = $form->addContainer( 'order_status_change_packet_statuses' );
 		$orderStatuses                   = wc_get_order_statuses();
+		$packetStatuses                  = $this->getAllPacketStatusesChoiceData();
 		foreach ( $packetStatuses as $packetStatusHash => $packetStatusData ) {
 			$item         = $orderStatusChangePacketStatuses->addSelect( $packetStatusHash, $packetStatusData['label'], $orderStatuses )
 				->setPrompt( __( 'Order status', 'packeta' ) );
@@ -410,11 +439,11 @@ class Page {
 			$values['status_syncing_order_statuses']
 		);
 		$values['status_syncing_packet_statuses']      = $this->getChosenKeys(
-			$this->getPacketStatusesChoiceData(),
+			$this->getStatusSyncingPacketStatusesChoiceData(),
 			$values['status_syncing_packet_statuses']
 		);
 		$values['order_status_change_packet_statuses'] = $this->translateStatuses(
-			$this->getPacketStatusesChoiceData(),
+			$this->getAllPacketStatusesChoiceData(),
 			$values['order_status_change_packet_statuses']
 		);
 
