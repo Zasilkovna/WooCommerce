@@ -11,6 +11,7 @@ namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
+use Packetery\Module\Transients;
 
 /**
  * Class CarrierUpdater.
@@ -166,9 +167,9 @@ class Updater {
 		}
 
 		if ( count( $this->logMessages ) > 0 ) {
-			set_transient( CountryListingPage::TRANSIENT_CARRIER_CHANGES, true );
+			set_transient( Transients::CARRIER_CHANGES, true );
 		} else {
-			delete_transient( CountryListingPage::TRANSIENT_CARRIER_CHANGES );
+			delete_transient( Transients::CARRIER_CHANGES );
 		}
 	}
 

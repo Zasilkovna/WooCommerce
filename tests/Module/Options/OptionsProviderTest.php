@@ -6,6 +6,7 @@ namespace Tests\Module\Options;
 
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -118,7 +119,7 @@ class OptionsProviderTest extends TestCase {
 			->method( 'getOption' )
 			->willReturnCallback(
 				static function ( string $key ): array {
-					if ( $key === OptionsProvider::OPTION_NAME_PACKETERY_SYNC ) {
+					if ( $key === OptionNames::PACKETERY_SYNC ) {
 						return [ 'status_syncing_packet_statuses' => [ PacketStatus::DEPARTED, PacketStatus::UNKNOWN ] ];
 					}
 

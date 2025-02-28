@@ -7,13 +7,12 @@ namespace Packetery\Module\Checkout;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order;
+use Packetery\Module\Transients;
 use Packetery\Nette\Http\Request;
 
 use function is_array;
 
 class CheckoutStorage {
-
-	public const TRANSIENT_CHECKOUT_DATA_PREFIX = 'packeta_checkout_data_';
 
 	/**
 	 * @var Request
@@ -134,7 +133,7 @@ class CheckoutStorage {
 			$token = $this->wcAdapter->sessionGetCustomerId();
 		}
 
-		return self::TRANSIENT_CHECKOUT_DATA_PREFIX . $token;
+		return Transients::CHECKOUT_DATA_PREFIX . $token;
 	}
 
 	/**

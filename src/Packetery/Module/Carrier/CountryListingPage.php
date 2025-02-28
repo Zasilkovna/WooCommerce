@@ -15,8 +15,10 @@ use Packetery\Module\CronService;
 use Packetery\Module\FormFactory;
 use Packetery\Module\Log;
 use Packetery\Module\ModuleHelper;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\ShippingMethodGenerator;
+use Packetery\Module\Transients;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http\Request;
@@ -28,9 +30,8 @@ use Packetery\Nette\Http\Request;
  */
 class CountryListingPage {
 
-	public const TRANSIENT_CARRIER_CHANGES = 'packetery_carrier_changes';
-	public const DATA_KEY_COUNTRY_CODE     = 'countryCode';
-	public const PARAM_CARRIER_FILTER      = 'carrier_query_filter';
+	public const DATA_KEY_COUNTRY_CODE = 'countryCode';
+	public const PARAM_CARRIER_FILTER  = 'carrier_query_filter';
 
 	/**
 	 * PacketeryLatteEngine.
@@ -160,18 +161,18 @@ class CountryListingPage {
 	public function render(): void {
 		$carriersUpdateParams = [];
 		if ( $this->httpRequest->getQuery( 'update_carriers' ) !== null ) {
-			set_transient( 'packetery_run_update_carriers', true );
+			set_transient( Transients::RUN_UPDATE_CARRIERS, true );
 			if ( wp_safe_redirect( add_query_arg( [ 'page' => OptionsPage::SLUG ], get_admin_url( null, 'admin.php' ) ) ) ) {
 				exit;
 			}
 		}
-		if ( get_transient( 'packetery_run_update_carriers' ) !== false ) {
+		if ( get_transient( Transients::RUN_UPDATE_CARRIERS ) !== false ) {
 			[ $carrierUpdaterResult, $carrierUpdaterClass ] = $this->downloader->run();
 			$carriersUpdateParams                           = [
 				'result'      => $carrierUpdaterResult,
 				'resultClass' => $carrierUpdaterClass,
 			];
-			delete_transient( 'packetery_run_update_carriers' );
+			delete_transient( Transients::RUN_UPDATE_CARRIERS );
 		}
 
 		$carriersUpdateParams['link']       = add_query_arg(
@@ -203,7 +204,7 @@ class CountryListingPage {
 			$nextScheduledRun = $date->format( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ) );
 		}
 
-		$carrierChanges         = get_transient( self::TRANSIENT_CARRIER_CHANGES );
+		$carrierChanges         = get_transient( Transients::CARRIER_CHANGES );
 		$settingsChangedMessage = null;
 		if ( $carrierChanges !== false ) {
 			$settingsChangedMessage = sprintf( // translators: 1: link start 2: link end.
@@ -337,7 +338,7 @@ class CountryListingPage {
 	 * @return string|null
 	 */
 	public function getLastUpdate(): ?string {
-		$lastCarrierUpdate = get_option( Downloader::OPTION_LAST_CARRIER_UPDATE );
+		$lastCarrierUpdate = get_option( OptionNames::LAST_CARRIER_UPDATE );
 		if ( $lastCarrierUpdate !== false ) {
 			$date = \DateTime::createFromFormat( DATE_ATOM, $lastCarrierUpdate );
 			if ( $date !== false ) {

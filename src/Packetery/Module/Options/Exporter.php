@@ -25,8 +25,7 @@ use Packetery\Tracy\Debugger;
  */
 class Exporter {
 
-	public const OPTION_LAST_SETTINGS_EXPORT = 'packetery_last_settings_export';
-	public const ACTION_EXPORT_SETTINGS      = 'export-settings';
+	public const ACTION_EXPORT_SETTINGS = 'export-settings';
 
 	/**
 	 * @var Http\Request
@@ -88,14 +87,14 @@ class Exporter {
 		}
 
 		$globalSettings = $this->optionsProvider->getAllOptions();
-		if ( isset( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] ) ) {
-			$globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] = sprintf(
+		if ( isset( $globalSettings[ OptionNames::PACKETERY ]['api_password'] ) ) {
+			$globalSettings[ OptionNames::PACKETERY ]['api_password'] = sprintf(
 				'%s...%s (%s)',
-				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], 0, 16 ),
-				substr( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'], - 2, 2 ),
-				strlen( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_password'] )
+				substr( $globalSettings[ OptionNames::PACKETERY ]['api_password'], 0, 16 ),
+				substr( $globalSettings[ OptionNames::PACKETERY ]['api_password'], - 2, 2 ),
+				strlen( $globalSettings[ OptionNames::PACKETERY ]['api_password'] )
 			);
-			unset( $globalSettings[ OptionsProvider::OPTION_NAME_PACKETERY ]['api_key'] );
+			unset( $globalSettings[ OptionNames::PACKETERY ]['api_key'] );
 		}
 		$globalSettings['woocommerce_allowed_countries']          = get_option( 'woocommerce_allowed_countries' );
 		$globalSettings['woocommerce_specific_allowed_countries'] = get_option( 'woocommerce_specific_allowed_countries' );
@@ -130,7 +129,7 @@ class Exporter {
 			'muPlugins'         => $this->getFormattedPlugins( get_mu_plugins() ),
 			'currencySwitchers' => $this->formatVariable( CurrencySwitcherService::$supportedCurrencySwitchers ),
 		];
-		update_option( self::OPTION_LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
+		update_option( OptionNames::LAST_SETTINGS_EXPORT, gmdate( DATE_ATOM ) );
 
 		$txtContents = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/options/export.latte', $latteParams );
 		header( 'Content-Type: text/plain' );

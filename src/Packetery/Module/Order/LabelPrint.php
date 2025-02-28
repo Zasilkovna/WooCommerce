@@ -21,6 +21,7 @@ use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
+use Packetery\Module\Transients;
 use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
 
@@ -30,6 +31,7 @@ use Packetery\Nette\Http;
  * @package Packetery\Order
  */
 class LabelPrint {
+
 	public const ACTION_PACKETA_LABELS = 'print_packeta_labels';
 	public const ACTION_CARRIER_LABELS = 'print_carrier_labels';
 	public const LABEL_TYPE_PARAM      = 'label_type';
@@ -149,7 +151,7 @@ class LabelPrint {
 	 * @return string
 	 */
 	public static function getOrderIdsTransientName(): string {
-		return 'packetery_label_print_order_ids_' . wp_get_session_token();
+		return Transients::LABEL_PRINT_ORDER_IDS_PREFIX . wp_get_session_token();
 	}
 
 	/**

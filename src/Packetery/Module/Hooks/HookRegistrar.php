@@ -28,7 +28,6 @@ use Packetery\Module\Order\PacketAutoSubmitter;
 use Packetery\Module\Order\PacketSubmitter;
 use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\Order\StoredUntilModal;
-use Packetery\Module\Plugin;
 use Packetery\Module\Product;
 use Packetery\Module\ProductCategory;
 use Packetery\Module\QueryProcessor;
@@ -350,8 +349,6 @@ class HookRegistrar {
 				CronService::deactivate();
 			}
 		);
-
-		$this->wpAdapter->registerUninstallHook( ModuleHelper::getPluginMainFilePath(), [ Plugin::class, 'uninstall' ] );
 
 		if ( $this->wpAdapter->isAdmin() ) {
 			$this->registerBackEnd();

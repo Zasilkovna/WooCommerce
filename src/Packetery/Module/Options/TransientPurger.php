@@ -9,8 +9,9 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Options;
 
-use Packetery\Module\Checkout\CheckoutStorage;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Plugin;
+use Packetery\Module\Transients;
 
 /**
  * Class TransientPurger.
@@ -18,21 +19,19 @@ use Packetery\Module\Plugin;
  * @package Packetery
  */
 class TransientPurger {
-
 	/**
-	 * Repository.
-	 *
 	 * @var Repository
 	 */
 	private $optionsRepository;
 
 	/**
-	 * Constructor.
-	 *
-	 * @param Repository $optionsRepository Repository.
+	 * @var WpAdapter
 	 */
-	public function __construct( Repository $optionsRepository ) {
+	private $wpAdapter;
+
+	public function __construct( Repository $optionsRepository, WpAdapter $wpAdapter ) {
 		$this->optionsRepository = $optionsRepository;
+		$this->wpAdapter         = $wpAdapter;
 	}
 
 	/**
@@ -41,15 +40,22 @@ class TransientPurger {
 	 * @return void
 	 */
 	public function purge(): void {
-		if ( is_multisite() ) {
+		if ( $this->wpAdapter->isMultisite() ) {
 			$sites = Plugin::getSites();
 			foreach ( $sites as $site ) {
-				switch_to_blog( $site );
-				$this->optionsRepository->deleteExpiredTransientsByPrefix( CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX );
-				restore_current_blog();
+				$this->wpAdapter->switchToBlog( $site );
+				$this->purgeForSite();
+				$this->wpAdapter->restoreCurrentBlog();
 			}
 		} else {
-			$this->optionsRepository->deleteExpiredTransientsByPrefix( CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX );
+			$this->purgeForSite();
+		}
+	}
+
+	private function purgeForSite(): void {
+		$transients = $this->optionsRepository->getExpiredTransientsByPrefix( Transients::CHECKOUT_DATA_PREFIX );
+		foreach ( $transients as $transient ) {
+			$this->wpAdapter->deleteTransient( $transient );
 		}
 	}
 }

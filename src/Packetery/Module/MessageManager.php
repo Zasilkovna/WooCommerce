@@ -66,7 +66,7 @@ class MessageManager {
 	 * Gets transient name.
 	 */
 	private function getTransientName(): string {
-		return 'packetery_message_manager_messages_' . wp_get_session_token();
+		return Transients::MESSAGE_MANAGER_MESSAGES_PREFIX . wp_get_session_token();
 	}
 
 	/**
