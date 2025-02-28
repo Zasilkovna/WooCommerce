@@ -409,7 +409,7 @@ class CountryListingPage {
 			$carriersData[ $carrierId ] = [
 				'name'              => $carrier->getName(),
 				'isActivatedByUser' => $carrierOptions->isActive(),
-				'isActive'          => $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ),
+				'isActive'          => $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ),
 				'detailUrl'         => add_query_arg(
 					[
 						'page'                            => OptionsPage::SLUG,
