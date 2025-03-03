@@ -73,8 +73,9 @@ class DummyFactory {
 			'cz',
 			'CZK',
 			5.0,
-			false,
 			true,
+			false,
+			true
 		);
 	}
 
@@ -93,8 +94,9 @@ class DummyFactory {
 			'sk',
 			'EUR',
 			5.0,
-			false,
 			true,
+			false,
+			true
 		);
 	}
 
@@ -113,8 +115,9 @@ class DummyFactory {
 			'cz',
 			'CZK',
 			5.0,
+			true,
 			false,
-			false,
+			false
 		);
 	}
 
@@ -133,8 +136,9 @@ class DummyFactory {
 			'cz',
 			'CZK',
 			5.0,
-			false,
 			true,
+			true,
+			true
 		);
 	}
 
