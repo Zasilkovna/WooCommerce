@@ -227,7 +227,7 @@ class CarrierModal {
 			return [];
 		}
 
-		$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $shippingCountry );
+		$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $shippingCountry, false );
 
 		$carrierOptions = [];
 		foreach ( $carriers as $carrier ) {

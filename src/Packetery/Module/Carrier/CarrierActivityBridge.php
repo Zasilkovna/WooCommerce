@@ -2,6 +2,7 @@
 
 namespace Packetery\Module\Carrier;
 
+use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\BaseShippingMethod;
@@ -48,11 +49,11 @@ class CarrierActivityBridge {
 		return $activeMethods;
 	}
 
-	public function isActive( string $carrierId, Carrier\Options $carrierOptions ): bool {
+	public function isActive( Entity\Carrier $carrier, Carrier\Options $carrierOptions ): bool {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {
-			return in_array( $carrierId, $this->getActiveCarrierIds(), true );
+			return $carrier->isAvailable() && in_array( $carrier->getId(), $this->getActiveCarrierIds(), true );
 		}
 
-		return $carrierOptions->isActive();
+		return $carrier->isAvailable() && $carrierOptions->isActive();
 	}
 }
