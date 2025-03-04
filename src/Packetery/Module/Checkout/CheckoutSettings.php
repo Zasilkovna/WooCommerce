@@ -156,6 +156,7 @@ class CheckoutSettings {
 		return [
 			'language'                   => $language,
 			'logo'                       => $this->urlBuilder->buildAssetUrl( 'public/images/packeta-symbol.png' ),
+			'showLogo'                   => $this->optionsProvider->isCheckoutLogoShown(),
 			'country'                    => $this->checkoutService->getCustomerCountry() ?? '',
 			'weight'                     => $widgetWeight,
 			'carrierConfig'              => $carriersConfigForWidget,
