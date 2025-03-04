@@ -5,6 +5,7 @@ namespace Packetery\Module\Carrier;
 use Packetery\Module\Carrier;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\BaseShippingMethod;
+use WC_Shipping_Zone;
 use WC_Shipping_Zones;
 
 class CarrierActivityBridge {
@@ -25,8 +26,14 @@ class CarrierActivityBridge {
 			return $activeMethods;
 		}
 
-		$activeMethods = [];
-		$shippingZones = WC_Shipping_Zones::get_zones();
+		$activeMethods       = [];
+		$shippingZones       = WC_Shipping_Zones::get_zones();
+		$defaultShippingZone = WC_Shipping_Zones::get_zone_by();
+		if ( $defaultShippingZone instanceof WC_Shipping_Zone ) {
+			$shippingZones[] = [
+				'shipping_methods' => $defaultShippingZone->get_shipping_methods(),
+			];
+		}
 
 		foreach ( $shippingZones as $shippingZone ) {
 			$shippingMethods = $shippingZone['shipping_methods'];
