@@ -47,6 +47,7 @@ class ShippingMethod extends WC_Shipping_Method {
 				$this->process_admin_options();
 			}
 		);
+		$this->init_instance_settings();
 	}
 
 	public function get_admin_options_html(): string {
