@@ -131,7 +131,16 @@ class AssetManager {
 		if ( $this->wcAdapter->isCheckout() ) {
 			if ( $this->wpAdapter->doingAjax() === false ) {
 				$this->enqueueStyle( 'packetery-front-styles', 'public/css/front.css' );
-				$this->enqueueStyle( 'packetery-custom-front-styles', 'public/css/custom-front.css' );
+
+				$customFrontCssPath = WP_CONTENT_DIR . '/packeta-custom-front.css';
+				if ( file_exists( $customFrontCssPath ) ) {
+					$this->wpAdapter->enqueueStyle(
+						'packetery-custom-front-styles',
+						$customFrontCssPath,
+						[],
+						md5( (string) filemtime( $customFrontCssPath ) )
+					);
+				}
 			}
 			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 				$this->wpAdapter->enqueueScript(
