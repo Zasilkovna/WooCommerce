@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Carrier;
 
 use Packetery\Core\Entity;
+use Packetery\Core\Entity\Carrier;
 use Packetery\Module\EntityFactory;
 
 /**
@@ -121,9 +122,9 @@ class EntityRepository {
 	 *
 	 * @return Entity\Carrier[]
 	 */
-	public function getByCountry( string $country ): array {
+	public function getByCountry( string $country, bool $includeUnavailable ): array {
 		$entities        = [];
-		$countryCarriers = $this->repository->getByCountry( $country );
+		$countryCarriers = $this->repository->getByCountry( $country, $includeUnavailable );
 
 		foreach ( $countryCarriers as $carrierData ) {
 			$entities[] = $this->carrierEntityFactory->fromDbResult( $carrierData );
@@ -152,16 +153,17 @@ class EntityRepository {
 	 * Gets all active carriers for a country including internal pickup point carriers.
 	 *
 	 * @param string $country ISO code.
+	 * @param bool   $includeUnavailable Include unavailable carriers.
 	 *
-	 * @return Entity\Carrier[]
+	 * @return Carrier[]
 	 */
-	public function getByCountryIncludingNonFeed( string $country ): array {
+	public function getByCountryIncludingNonFeed( string $country, bool $includeUnavailable ): array {
 		$nonFeedCarriers       = [];
 		$nonFeedCarriersArrays = $this->pickupPointsConfig->getNonFeedCarriersByCountry( $country );
 		foreach ( $nonFeedCarriersArrays as $nonFeedCarrierData ) {
 			$nonFeedCarriers[] = $this->carrierEntityFactory->fromNonFeedCarrierData( $nonFeedCarrierData );
 		}
-		$feedCarriers = $this->getByCountry( $country );
+		$feedCarriers = $this->getByCountry( $country, $includeUnavailable );
 
 		return array_merge( $nonFeedCarriers, $feedCarriers );
 	}
@@ -204,7 +206,7 @@ class EntityRepository {
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
-			if ( $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ) ) {
+			if ( $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ) ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
 					'label'     => $carrierOptions->getName(),
@@ -232,13 +234,13 @@ class EntityRepository {
 		}
 
 		$carrier = $this->getById( (int) $carrierId );
-		if ( $carrier === null || $carrier->isDeleted() || $customerCountry !== $carrier->getCountry() ) {
+		if ( $carrier === null || $carrier->isDeleted() || ! $carrier->isAvailable() || $customerCountry !== $carrier->getCountry() ) {
 			return false;
 		}
 
 		$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-		return $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions );
+		return $this->carrierActivityBridge->isActive( $carrier, $carrierOptions );
 	}
 
 	/**
