@@ -38,6 +38,7 @@ class WizardAssetManager {
 		$isWizardGeneralSettingsTourEnabled      = $this->request->getQuery( 'wizard-general-settings-tour-enabled' ) === 'true';
 		$isWizardPacketStatusTrackingTourEnabled = $this->request->getQuery( 'wizard-packet-status-tracking-tour-enabled' ) === 'true';
 		$isWizardAutoSubmissionTourEnabled       = $this->request->getQuery( 'wizard-auto-submission-tour-enabled' ) === 'true';
+		$isWizardAdvancedEnabled                 = $this->request->getQuery( 'wizard-advanced-tour-enabled' ) === 'true';
 		$wizardTourConfig                        = [];
 
 		if ( $isWizardEnabled ) {
@@ -220,6 +221,30 @@ class WizardAssetManager {
 				$this->assetManager->enqueueScript(
 					'packetery-admin-wizard-tour',
 					'public/js/tours/admin-wizard-auto-submission-settings.js',
+					true,
+					[
+						'packetery-driverjs',
+					]
+				);
+
+				$this->wpAdapter->localizeScript( 'packetery-admin-wizard-tour', 'wizardTourConfig', $wizardTourConfig );
+			}
+
+			if ( $isWizardAdvancedEnabled ) {
+				$advancedTranslation = [
+					'translations' => [
+						'newCarrierEnabled' => [
+							'title'       => $this->wpAdapter->__( 'Advanced carrier settings', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'Here you can enable the new carrier settings to conveniently split pick up locations from Z boxes.', 'packeta' ),
+						],
+					],
+				];
+
+				$wizardTourConfig['translations'] = array_merge( $advancedTranslation['translations'], $basicTranslations );
+
+				$this->assetManager->enqueueScript(
+					'packetery-admin-wizard-tour',
+					'public/js/tours/admin-wizard-advanced-settings.js',
 					true,
 					[
 						'packetery-driverjs',
