@@ -5,7 +5,7 @@
 				<label n:name=allow />
 			</th>
 			<td>
-				<input n:name=allow>
+				<input n:name=allow class="packetery-js-wizard-auto-submission-enabled">
 			</td>
 		</tr>
 		<tr>
@@ -15,6 +15,8 @@
 				</div>
 			</td>
 		</tr>
+
+		<tbody class="packetery-js-wizard-auto-submission-mapping">
 		{foreach $form[payment_method_events]->getComponents() as $paymentMethodEvents}
 			<tr>
 				<th scope="row">
@@ -25,8 +27,10 @@
 				</td>
 			</tr>
 		{/foreach}
+		</tbody>
+
 	</table>
 	<p class="submit">
-		<button n:name=save class="button button-primary">{$translations['saveChanges']}</button>
+		<button n:name=save class="button button-primary packetery-js-wizard-settings-save-button">{$translations['saveChanges']}</button>
 	</p>
 </form>

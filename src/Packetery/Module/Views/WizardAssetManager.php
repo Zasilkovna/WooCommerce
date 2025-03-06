@@ -37,6 +37,7 @@ class WizardAssetManager {
 		$isWizardEnabled                         = $this->request->getQuery( 'wizard-enabled' ) === 'true';
 		$isWizardGeneralSettingsTourEnabled      = $this->request->getQuery( 'wizard-general-settings-tour-enabled' ) === 'true';
 		$isWizardPacketStatusTrackingTourEnabled = $this->request->getQuery( 'wizard-packet-status-tracking-tour-enabled' ) === 'true';
+		$isWizardAutoSubmissionTourEnabled       = $this->request->getQuery( 'wizard-auto-submission-tour-enabled' ) === 'true';
 		$wizardTourConfig                        = [];
 
 		if ( $isWizardEnabled ) {
@@ -191,6 +192,34 @@ class WizardAssetManager {
 				$this->assetManager->enqueueScript(
 					'packetery-admin-wizard-tour',
 					'public/js/tours/admin-wizard-packet-status-tracking-settings.js',
+					true,
+					[
+						'packetery-driverjs',
+					]
+				);
+
+				$this->wpAdapter->localizeScript( 'packetery-admin-wizard-tour', 'wizardTourConfig', $wizardTourConfig );
+			}
+
+			if ( $isWizardAutoSubmissionTourEnabled ) {
+				$autoSubmissionTranslation = [
+					'translations' => [
+						'autoSubmissionEnabled' => [
+							'title'       => $this->wpAdapter->__( 'Allow packet auto-submission', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'Here you enable automatic submission of the shipment when the order status changes.', 'packeta' ),
+						],
+						'autoSubmissionMapping' => [
+							'title'       => $this->wpAdapter->__( 'Status mapping', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'Choose events for payment methods that will trigger packet submission', 'packeta' ),
+						],
+					],
+				];
+
+				$wizardTourConfig['translations'] = array_merge( $autoSubmissionTranslation['translations'], $basicTranslations );
+
+				$this->assetManager->enqueueScript(
+					'packetery-admin-wizard-tour',
+					'public/js/tours/admin-wizard-auto-submission-settings.js',
 					true,
 					[
 						'packetery-driverjs',
