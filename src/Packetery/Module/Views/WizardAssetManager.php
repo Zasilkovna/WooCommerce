@@ -33,10 +33,11 @@ class WizardAssetManager {
 	}
 
 	public function enqueueWizardAssets(): void {
-		$page                               = $this->request->getQuery( 'page' );
-		$isWizardEnabled                    = $this->request->getQuery( 'wizard-enabled' ) === 'true';
-		$isWizardGeneralSettingsTourEnabled = $this->request->getQuery( 'wizard-general-settings-tour-enabled' ) === 'true';
-		$wizardTourConfig                   = [];
+		$page                                    = $this->request->getQuery( 'page' );
+		$isWizardEnabled                         = $this->request->getQuery( 'wizard-enabled' ) === 'true';
+		$isWizardGeneralSettingsTourEnabled      = $this->request->getQuery( 'wizard-general-settings-tour-enabled' ) === 'true';
+		$isWizardPacketStatusTrackingTourEnabled = $this->request->getQuery( 'wizard-packet-status-tracking-tour-enabled' ) === 'true';
+		$wizardTourConfig                        = [];
 
 		if ( $isWizardEnabled ) {
 			$basicTranslations = [
@@ -150,6 +151,46 @@ class WizardAssetManager {
 				$this->assetManager->enqueueScript(
 					'packetery-admin-wizard-tour',
 					'public/js/tours/admin-wizard-general-settings.js',
+					true,
+					[
+						'packetery-driverjs',
+					]
+				);
+
+				$this->wpAdapter->localizeScript( 'packetery-admin-wizard-tour', 'wizardTourConfig', $wizardTourConfig );
+			}
+
+			if ( $isWizardPacketStatusTrackingTourEnabled ) {
+				$packetStatusTrackingTranslation = [
+					'translations' => [
+						'numberOrders'            => [
+							'title'       => $this->wpAdapter->__( 'Number of orders synced during one cron call', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'The number of orders that will be checked during a single cron call.', 'packeta' ),
+						],
+						'trackingDays'            => [
+							'title'       => $this->wpAdapter->__( 'Number of days for which the order status is checked', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'Number of days after the creation of an order, during which the order status will be checked.', 'packeta' ),
+						],
+						'orderStatus'             => [
+							'title'       => $this->wpAdapter->__( 'Order statuses, for which cron will check the packet status', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'Cron will automatically track all orders with these statuses and check if the shipment status has changed.', 'packeta' ),
+						],
+						'packetStatus'            => [
+							'title'       => $this->wpAdapter->__( 'Packet statuses that are being checked', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'If an order has a shipment with one of these selected statuses, the shipment status will be tracked.', 'packeta' ),
+						],
+						'enableChangeOrderStatus' => [
+							'title'       => $this->wpAdapter->__( 'Allow order status change', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'Here you enable automatic change of order status.', 'packeta' ),
+						],
+					],
+				];
+
+				$wizardTourConfig['translations'] = array_merge( $packetStatusTrackingTranslation['translations'], $basicTranslations );
+
+				$this->assetManager->enqueueScript(
+					'packetery-admin-wizard-tour',
+					'public/js/tours/admin-wizard-packet-status-tracking-settings.js',
 					true,
 					[
 						'packetery-driverjs',
