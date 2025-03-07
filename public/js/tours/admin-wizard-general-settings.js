@@ -63,13 +63,6 @@ const driverObj = driver(
 				}
 			},
 			{
-				element: '.packetery-js-wizard-general-default-weight',
-				popover: {
-					title: wizardTourConfig.translations.defaultWeight.title,
-					description: wizardTourConfig.translations.defaultWeight.description
-				}
-			},
-			{
 				element: '.packetery-js-wizard-general-dimensions-unit',
 				popover: {
 					title: wizardTourConfig.translations.dimensionsUnit.title,

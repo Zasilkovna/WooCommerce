@@ -92,10 +92,6 @@ class WizardAssetManager {
 							'title'       => $this->wpAdapter->__( 'Enable default weight', 'packeta' ),
 							'description' => $this->wpAdapter->__( 'If no weight is set for a product, the default value specified in the settings will be used.', 'packeta' ),
 						],
-						'defaultWeight'        => [
-							'title'       => $this->wpAdapter->__( 'Default weight', 'packeta' ),
-							'description' => $this->wpAdapter->__( 'This value is automatically added to the total weight of each order that contains products with zero weight.', 'packeta' ),
-						],
 						'dimensionsUnit'       => [
 							'title'       => $this->wpAdapter->__( 'Units used for dimensions', 'packeta' ),
 							'description' => $this->wpAdapter->__( 'Units used for package dimensions, such as centimeters (cm) or millimeters (mm).', 'packeta' ),
