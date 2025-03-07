@@ -12,4 +12,5 @@ class OptionNames {
 	public const PACKETERY_SYNC            = 'packetery_sync';
 	public const PACKETERY_AUTO_SUBMISSION = 'packetery_auto_submission';
 	public const PACKETERY_ADVANCED        = 'packetery_advanced';
+	public const PACKETERY_ACTIVATED       = 'packetery_activated';
 }

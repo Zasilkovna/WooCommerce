@@ -108,6 +108,7 @@ class Uninstaller {
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_SYNC );
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_AUTO_SUBMISSION );
 		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_ADVANCED );
+		$this->wpAdapter->deleteOption( OptionNames::PACKETERY_ACTIVATED );
 
 		$this->wpdbAdapter->query(
 			$this->wpdbAdapter->prepare(

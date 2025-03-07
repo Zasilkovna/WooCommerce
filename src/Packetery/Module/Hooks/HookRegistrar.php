@@ -17,6 +17,7 @@ use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\CarrierModal;
@@ -351,6 +352,8 @@ class HookRegistrar {
 		$this->wpAdapter->addAction( 'init', [ $this->upgrade, 'check' ] );
 		$this->wpAdapter->addAction( 'rest_api_init', [ $this->apiRegistrar, 'registerRoutes' ] );
 
+		$this->wpAdapter->registerActivationHook( ModuleHelper::getPluginMainFilePath(), [ $this, 'activatePlugin' ] );
+
 		$this->wpAdapter->registerDeactivationHook(
 			ModuleHelper::getPluginMainFilePath(),
 			static function () {
@@ -377,6 +380,7 @@ class HookRegistrar {
 
 	private function registerBackEnd(): void {
 		if ( $this->wpAdapter->doingAjax() === false ) {
+			$this->wpAdapter->addAction( 'admin_init', [ $this, 'redirectAfterActivation' ] );
 			$this->wpAdapter->addAction( 'init', [ $this->messageManager, 'init' ] );
 			$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->assetManager, 'enqueueAdminAssets' ] );
 			$this->wpAdapter->addAction( 'admin_enqueue_scripts', [ $this->wizardAssetManager, 'enqueueWizardAssets' ] );
@@ -591,5 +595,17 @@ class HookRegistrar {
 		$this->labelPrint->register();
 		$this->orderCollectionPrint->register();
 		$this->logPage->register();
+	}
+
+	public function activatePlugin(): void {
+		$this->wpAdapter->updateOption( OptionNames::PACKETERY_ACTIVATED, true );
+	}
+
+	public function redirectAfterActivation(): void {
+		if ( (bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_ACTIVATED ) === true ) {
+			$this->wpAdapter->deleteOption( OptionNames::PACKETERY_ACTIVATED );
+			$this->wpAdapter->safeRedirect( $this->wpAdapter->adminUrl( 'admin.php?page=' . DashboardPage::SLUG ) );
+			exit;
+		}
 	}
 }
