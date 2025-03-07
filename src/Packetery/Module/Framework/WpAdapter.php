@@ -75,6 +75,10 @@ class WpAdapter {
 		return wp_date( $format, $timestamp, $timezone );
 	}
 
+	public function timezone(): DateTimeZone {
+		return wp_timezone();
+	}
+
 	public function adminUrl( string $path = '', string $scheme = 'admin' ): ?string {
 		return admin_url( $path, $scheme );
 	}
@@ -162,5 +166,23 @@ class WpAdapter {
 
 	public function getAdminUrl( ?int $blogId = null, string $path = '', string $scheme = 'admin' ): string {
 		return get_admin_url( $blogId, $path, $scheme );
+	}
+
+	public function addSubmenuPage(
+		string $parentSlug,
+		?string $pageTitle,
+		?string $menuTitle,
+		string $capability,
+		string $menuSlug,
+		array $callback
+	): void {
+		add_submenu_page(
+			$parentSlug,
+			$pageTitle,
+			$menuTitle,
+			$capability,
+			$menuSlug,
+			$callback
+		);
 	}
 }
