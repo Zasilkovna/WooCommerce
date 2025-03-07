@@ -138,6 +138,13 @@ const driverObj = driver(
 					title: wizardTourConfig.translations.pricesIncludeTax.title,
 					description: wizardTourConfig.translations.pricesIncludeTax.description
 				}
+			},
+			{
+				element: '.packetery-js-wizard-save-general',
+				popover: {
+					title: wizardTourConfig.translations.saveGeneral.title,
+					description: wizardTourConfig.translations.saveGeneral.description
+				}
 			}
 		],
 		onDestroyStarted: function () {

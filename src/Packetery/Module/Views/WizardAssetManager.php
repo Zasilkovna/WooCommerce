@@ -136,6 +136,10 @@ class WizardAssetManager {
 							'title'       => $this->wpAdapter->__( 'Prices include tax', 'packeta' ),
 							'description' => $this->wpAdapter->__( 'If enabled, VAT will not be added to shipping prices and surcharges.', 'packeta' ),
 						],
+						'saveGeneral'          => [
+							'title'       => $this->wpAdapter->__( 'Save all changes', 'packeta' ),
+							'description' => $this->wpAdapter->__( 'After all changes are made, it is saved using this button.', 'packeta' ),
+						],
 					],
 				];
 
