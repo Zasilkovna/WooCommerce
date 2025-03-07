@@ -1,0 +1,59 @@
+.packeta-dashboard {
+	max-width: 800px;
+	margin: 0 auto;
+
+	h2 {
+		margin-bottom: 2em;
+	}
+
+	ul {
+		li {
+			display: flex;
+			flex-wrap: wrap;
+
+			margin: 1em 1em 1em 0;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			background-color: #f9f9f9;
+			padding: 1em;
+
+			div:first-child {
+				flex: 0 0 32px;
+				width: 32px;
+				height: 32px;
+				margin-right: 1em;
+
+				border-radius: 50%;
+				background-color: $color-packeta;
+				color: white;
+
+				text-align: center;
+				line-height: 32px;
+				font-weight: bold;
+				font-size: 1.1em;
+
+				svg {
+					fill: white;
+				}
+			}
+
+			div:last-child {
+				flex: 1;
+
+				h3 {
+					margin-top: 0;
+					margin-bottom: 0.3em;
+
+					a {
+						text-decoration: none;
+					}
+				}
+
+				p {
+					margin-top: 0.3em;
+					margin-bottom: 0;
+				}
+			}
+		}
+	}
+}

@@ -11,6 +11,7 @@ namespace Packetery\Module\Options;
 
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
+use Packetery\Module\Carrier\CarrierUpdater;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Checkout\CurrencySwitcherService;
 use Packetery\Module\Log\DbLogger;
@@ -57,13 +58,19 @@ class Exporter {
 	 */
 	private $moduleHelper;
 
+	/**
+	 * @var CarrierUpdater
+	 */
+	private $carrierUpdater;
+
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
 		OptionsProvider $optionsProvider,
 		DbLogger $dbLogger,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		CarrierUpdater $carrierUpdater
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
@@ -71,6 +78,7 @@ class Exporter {
 		$this->optionsProvider    = $optionsProvider;
 		$this->dbLogger           = $dbLogger;
 		$this->moduleHelper       = $moduleHelper;
+		$this->carrierUpdater     = $carrierUpdater;
 	}
 
 	/**
@@ -115,7 +123,7 @@ class Exporter {
 			'wpDebug'           => wc_bool_to_string( WP_DEBUG ),
 			'packetaDebug'      => wc_bool_to_string( Debugger::isEnabled() ),
 			'globalSettings'    => $this->formatVariable( $globalSettings ),
-			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
+			'lastCarrierUpdate' => $this->carrierUpdater->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
 			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
 			'lastFiveDaysLogs'  => $this->formatVariable( $this->remapLogRecords( $this->dbLogger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ) ),

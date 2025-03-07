@@ -38,4 +38,8 @@ trait HttpTrait {
 	public function remoteRetrieveBody( $response ): string {
 		return wp_remote_retrieve_body( $response );
 	}
+
+	public function safeRedirect( string $location ): bool {
+		return wp_safe_redirect( $location );
+	}
 }
