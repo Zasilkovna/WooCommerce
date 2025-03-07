@@ -206,7 +206,7 @@ class EntityRepository {
 		$carriers       = $this->getAllCarriersIncludingNonFeed();
 		foreach ( $carriers as $carrier ) {
 			$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
-			if ( $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ) ) {
+			if ( $carrierOptions->isActive() ) {
 				$activeCarriers[] = [
 					'option_id' => $carrierOptions->getOptionId(),
 					'label'     => $carrierOptions->getName(),
