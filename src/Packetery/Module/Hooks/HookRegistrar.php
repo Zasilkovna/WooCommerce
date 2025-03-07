@@ -10,6 +10,7 @@ use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Checkout\Checkout;
 use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\CronService;
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DashboardWidget;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
@@ -244,6 +245,11 @@ class HookRegistrar {
 	 */
 	private $wizardAssetManager;
 
+	/**
+	 * @var DashboardPage
+	 */
+	private $dashboardPage;
+
 	public function __construct(
 		PluginHooks $pluginHooks,
 		MessageManager $messageManager,
@@ -284,7 +290,8 @@ class HookRegistrar {
 		CheckoutSettings $checkoutSettings,
 		ModuleHelper $moduleHelper,
 		ShippingProvider $shippingProvider,
-		WizardAssetManager $wizardAssetManager
+		WizardAssetManager $wizardAssetManager,
+		DashboardPage $dashboardPage
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;
@@ -326,6 +333,7 @@ class HookRegistrar {
 		$this->moduleHelper              = $moduleHelper;
 		$this->shippingProvider          = $shippingProvider;
 		$this->wizardAssetManager        = $wizardAssetManager;
+		$this->dashboardPage             = $dashboardPage;
 	}
 
 	public function register(): void {
@@ -578,6 +586,7 @@ class HookRegistrar {
 	 */
 	public function addMenuPages(): void {
 		$this->optionsPage->register();
+		$this->dashboardPage->register();
 		$this->carrierOptionsPage->register();
 		$this->labelPrint->register();
 		$this->orderCollectionPrint->register();
