@@ -278,14 +278,14 @@ class CountryListingPage {
 	 * @return array Data.
 	 */
 	private function getActiveCountries(): array {
-		$countries = $this->carrierRepository->getCountries();
+		$countries = $this->carrierRepository->getCountriesWithUnavailable();
 
 		$internalCountries = $this->pickupPointsConfig->getInternalCountries();
 		$countries         = array_unique( array_merge( $internalCountries, $countries ) );
 
 		$countriesFinal = [];
 		foreach ( $countries as $country ) {
-			$allCarriers      = $this->getCarriersDataByCountry( $country );
+			$allCarriers      = $this->getCarriersDataByCountry( $country, true );
 			$activeCarriers   = array_filter(
 				$allCarriers,
 				static function ( array $carrierData ): bool {
@@ -384,13 +384,14 @@ class CountryListingPage {
 	 * Gets array of carriers data by country code.
 	 *
 	 * @param string $countryCode Country code.
+	 * @param bool   $includeUnavailable Include unavailable carriers.
 	 *
 	 * @return array
 	 */
-	private function getCarriersDataByCountry( string $countryCode ): array {
+	private function getCarriersDataByCountry( string $countryCode, bool $includeUnavailable ): array {
 		$carriersData    = [];
 		$keyword         = $this->httpRequest->getQuery( self::PARAM_CARRIER_FILTER ) ?? '';
-		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode );
+		$countryCarriers = $this->carrierEntityRepository->getByCountryIncludingNonFeed( $countryCode, $includeUnavailable );
 		foreach ( $countryCarriers as $carrier ) {
 			if ( $carrier->isCarDelivery() && $this->carDeliveryConfig->isDisabled() ) {
 				continue;
@@ -410,7 +411,7 @@ class CountryListingPage {
 			$carriersData[ $carrierId ] = [
 				'name'              => $carrier->getName(),
 				'isActivatedByUser' => $carrierOptions->isActive(),
-				'isActive'          => $this->carrierActivityBridge->isActive( $carrier->getId(), $carrierOptions ),
+				'isActive'          => $this->carrierActivityBridge->isActive( $carrier, $carrierOptions ),
 				'detailUrl'         => add_query_arg(
 					[
 						'page'                            => OptionsPage::SLUG,

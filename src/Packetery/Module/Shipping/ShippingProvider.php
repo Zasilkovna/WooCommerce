@@ -165,7 +165,7 @@ class ShippingProvider {
 		}
 
 		foreach ( $allowedCountries as $countryCode ) {
-			$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryCode );
+			$carriers = $this->carrierRepository->getByCountryIncludingNonFeed( $countryCode, false );
 			foreach ( $carriers as $carrier ) {
 				foreach ( $this->getGeneratedClassnames() as $fullyQualifiedClassname ) {
 					if ( $carrier->getId() === $fullyQualifiedClassname::CARRIER_ID ) {
