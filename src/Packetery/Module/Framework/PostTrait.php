@@ -28,4 +28,25 @@ trait PostTrait {
 	public function getPostField( string $field, $post ): string {
 		return get_post_field( $field, $post );
 	}
+
+	/**
+	 * @return int|false
+	 */
+	public function getTheId() {
+		return get_the_ID();
+	}
+
+	/**
+	 * @param int|WP_Post $post
+	 * @param string      $context
+	 *
+	 * @return string|null
+	 */
+	public function getEditPostLink( $post, string $context ): ?string {
+		return get_edit_post_link( $post, $context );
+	}
+
+	public function resetPostdata(): void {
+		wp_reset_postdata();
+	}
 }

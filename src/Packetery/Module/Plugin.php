@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\Hooks\HookRegistrar;
 
 /**
@@ -61,10 +62,10 @@ class Plugin {
 	 */
 	public static function hideSubmenuItem( string $itemSlug ): void {
 		global $submenu;
-		if ( isset( $submenu[ Options\Page::SLUG ] ) ) {
-			foreach ( $submenu[ Options\Page::SLUG ] as $key => $menu ) {
+		if ( isset( $submenu[ DashboardPage::SLUG ] ) ) {
+			foreach ( $submenu[ DashboardPage::SLUG ] as $key => $menu ) {
 				if ( $itemSlug === $menu[2] ) {
-					unset( $submenu[ Options\Page::SLUG ][ $key ] );
+					unset( $submenu[ DashboardPage::SLUG ][ $key ] );
 				}
 			}
 		}
