@@ -22,19 +22,17 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 * delivery to Packeta pickup places (Czech Republic, Slovakian Republic, Hungary, and Romania)
 * delivery to pickup places of carriers all around Europe
 * the ability to add/modify the packet weight and dimensions before submitting the packet to Packeta
-* automatic sending of orders to Packeta with one click
+* automatic sending of orders to Packeta
 * each delivery sent to Packeta will automatically show the tracking number with a link to a website with the shipment tracking
 * the printing of labels, including direct carrier labels
 * printing of shipment lists (AWB)
 * 18+ age verification setting for your products
-
-= You can look forward to: =
-
-* automatically updated information on the current packet status
-* the ability to automatically change the order status according to the packet status
-* the filling out of customs declarations and shipping of packets to countries outside of the EU
-* the creation of claim assistant packets
-* the option to choose a pickup place during the manual creation of the packet in the administration
+* support for block checkout
+* in shipping zones, it is possible to set shipping methods for individual Packeta carriers
+* tracking the status of shipments and automatic change of order status
+* possibility to set maximum dimensions of the shipment for each carrier
+* filling in customs declarations and sending shipments outside the EU
+* possibility to create a complaint assistant for the delivered shipment
 
 == Installation ==
 
@@ -57,11 +55,11 @@ In order to be able to use modern development procedures and continue to expand 
 
 = I'm missing a feature I would like to see, what should I do? =
 
-We are constantly working on adding new features. You can find a list of features we are currently working on in the "You can look forward to" chapter. If there is a feature you would like to see added, that is missing in our list, then please contact us at technicka.podpora@zasilkovna.cz
+We are constantly working on adding new features. If there is a feature you would like to see added, that is missing in our list, then please contact us at e-commerce.support@packeta.com
 
 = I have found a mistake in the plugin or need help with the installation or set up of the plugin. =
 
-Please contact us at technicka.podpora@zasilkovna.cz .
+Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
 = 2.0.0 =
