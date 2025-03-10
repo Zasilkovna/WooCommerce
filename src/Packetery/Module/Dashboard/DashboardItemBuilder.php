@@ -9,6 +9,7 @@ use Packetery\Module\Carrier\CarrierUpdater;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Product;
 use WP_Query;
 
 class DashboardItemBuilder {
@@ -76,7 +77,7 @@ class DashboardItemBuilder {
 				$this->getNewestProductUrl(),
 				$this->getProductSettingsDescription(),
 				3,
-				false
+				$this->hasProductsWithPacketaSettings()
 			),
 			new DashboardItem(
 				$this->wpAdapter->__( 'Carriers update', 'packeta' ),
@@ -141,5 +142,40 @@ class DashboardItemBuilder {
 		}
 
 		return $this->wpAdapter->adminUrl( 'admin.php?page=' . DashboardPage::SLUG . '&update_carriers=1' );
+	}
+
+	private function hasProductsWithPacketaSettings(): bool {
+		$args = [
+			'post_type'      => 'product',
+			'posts_per_page' => 1,
+			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+			'meta_query'     => [
+				'relation' => 'OR',
+				[
+					'key'     => Product\Entity::META_AGE_VERIFICATION_18_PLUS,
+					'value'   => '1',
+					'compare' => '=',
+				],
+				[
+					'relation' => 'AND',
+					[
+						'key'     => Product\Entity::META_DISALLOWED_SHIPPING_RATES,
+						'compare' => 'EXISTS',
+					],
+					[
+						'key'     => Product\Entity::META_DISALLOWED_SHIPPING_RATES,
+						'value'   => 'a:0:{}',
+						'compare' => '!=',
+					],
+				],
+			],
+		];
+
+		$query = new WP_Query( $args );
+		if ( $query->have_posts() ) {
+			return true;
+		}
+
+		return false;
 	}
 }
