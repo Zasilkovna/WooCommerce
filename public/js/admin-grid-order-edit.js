@@ -47,6 +47,11 @@
 					"order": $target.data( 'order-data' )
 				}
 			} );
+			window.startWizardTour();
+			if (typeof startWizardTour === 'function') {
+				console.log('startWizardTour');
+				window.startWizardTour();
+			}
 
 		} ).on( 'submit', '#order-modal-edit-form', function( e ) {
 			var $target = $( e.target );

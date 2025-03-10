@@ -38,6 +38,10 @@ class WizardAssetManager {
 		$isWizardGeneralSettingsTourEnabled = $this->request->getQuery( 'wizard-general-settings-tour-enabled' ) === 'true';
 		$wizardTourConfig                   = [];
 
+		$isWizardEnabled                    = true;
+		$isWizardGeneralSettingsTourEnabled = true;
+		$page = Page::SLUG;
+
 		if ( $isWizardEnabled ) {
 			$basicTranslations = [
 				'next'       => $this->wpAdapter->__( 'Next', 'packeta' ),
@@ -149,7 +153,7 @@ class WizardAssetManager {
 
 				$this->assetManager->enqueueScript(
 					'packetery-admin-wizard-tour',
-					'public/js/tours/admin-wizard-general-settings.js',
+					'public/js/tours/admin-wizard-create-packet-modal.js',
 					true,
 					[
 						'packetery-driverjs',
