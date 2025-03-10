@@ -11,7 +11,6 @@ namespace Packetery\Module;
 
 use Automattic\WooCommerce\Utilities\OrderUtil;
 use DateTimeImmutable;
-use Packetery\Core\CoreHelper;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Nette\Utils\Html;
 use WC_DateTime;
@@ -280,7 +279,10 @@ class ModuleHelper {
 	 */
 	public function getTranslatedStringFromDateTime( ?DateTimeImmutable $date ): ?string {
 		if ( $date !== null ) {
-			return ( new WC_DateTime( CoreHelper::MYSQL_DATETIME_FORMAT ) )->date_i18n(
+			$wcDateTime = new WC_DateTime();
+			$wcDateTime->setTimestamp( $date->getTimestamp() );
+
+			return $wcDateTime->date_i18n(
 				/**
 				 * Applies woocommerce_admin_order_date_format filters.
 				 *
