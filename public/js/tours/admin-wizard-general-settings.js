@@ -1,3 +1,6 @@
+(function ($) {
+
+	$(function () {
 const driver = window.driver.js.driver;
 
 const driverObj = driver(
@@ -12,6 +15,7 @@ const driverObj = driver(
 		nextBtnText: wizardTourConfig.translations.next,
 		prevBtnText: wizardTourConfig.translations.previous,
 		doneBtnText: wizardTourConfig.translations.close,
+		popoverClass: 'driverjs-theme',
 		steps: [
 			{
 				element: '.packetery-js-wizard-general-password',
@@ -42,10 +46,13 @@ const driverObj = driver(
 				}
 			},
 			{
-				element: '.packetery-js-wizard-general-cod',
+				element: '.custom-select2-wrapper.packetery-js-wizard-general-cod',
 				popover: {
 					title: wizardTourConfig.translations.cod.title,
 					description: wizardTourConfig.translations.cod.description
+				},
+				onDeselected: () => {
+					$( '[data-packetery-select2]' ).select2( 'close' );
 				}
 			},
 			{
@@ -148,9 +155,10 @@ const driverObj = driver(
 			}
 		],
 		onDestroyStarted: function () {
-			if (!driverObj.hasNextStep() || window.confirm("Are you sure?")) {
+			if (!driverObj.hasNextStep() || window.confirm(wizardTourConfig.translations.areYouSure)) {
 				driverObj.destroy();
 			}
 		}
 	});
 driverObj.drive();
+	});})(jQuery);

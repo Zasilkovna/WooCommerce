@@ -1,9 +1,7 @@
 (function ($) {
-
 	$(function () {
 		$( '[data-packetery-select2]' ).select2({
-			containerCssClass: "packetery-js-wizard-general-cod"
+			dropdownParent: $('.custom-select2-wrapper')
 		});
 	});
-
 })(jQuery);
