@@ -25,12 +25,18 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 - delivery to pickup-points of Packeta (Czech republic, Slovakia, Hungary and Romania)
 - delivery to pickup points of external carriers all over Europe
 - the ability to fill in/change the weight and dimensions of the order before submitting it to Packeta
-- the automatic submission of orders to Packeta in one click
+- the automatic submission of orders to Packeta
 - after submitting an order to Packeta, each order gets an order number which acts as a link to a website with the tracking of the parcel
 - label printing, including direct labels
-- age verification for 18+, which can be setz up for every product. The order will then require the customer to verify his age during the parcel pickup
+- age verification for 18+, which can be set up for every product. The order will then require the customer to verify his age during the parcel pickup
 - printing of the list of parcels
 - High-Performance order storage (since WooCommerce version 7.9.0)
+- support for block checkout
+- in shipping zones, it is possible to set shipping methods for individual Packeta carriers
+- tracking the status of shipments and automatic change of order status
+- possibility to set maximum dimensions of the shipment for each carrier
+- filling in customs declarations and sending shipments outside the EU
+- possibility to create a complaint assistant for the delivered shipment
 
 #### Installation
 
