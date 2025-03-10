@@ -146,10 +146,10 @@
 						}
 					},
 					{
-						element: '.packetery-js-wizard-save-general',
+						element: '.packetery-js-wizard-settings-save-button',
 						popover: {
-							title: wizardTourConfig.translations.saveGeneral.title,
-							description: wizardTourConfig.translations.saveGeneral.description
+							title: wizardTourConfig.translations.settingsSaveButton.title,
+							description: wizardTourConfig.translations.settingsSaveButton.description
 						}
 					}
 				],

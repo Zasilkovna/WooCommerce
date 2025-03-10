@@ -40,11 +40,15 @@ class WizardAssetManager {
 
 		if ( $isWizardEnabled ) {
 			$basicTranslations = [
-				'next'       => $this->wpAdapter->__( 'Next', 'packeta' ),
-				'previous'   => $this->wpAdapter->__( 'Previous', 'packeta' ),
-				'close'      => $this->wpAdapter->__( 'Close', 'packeta' ),
-				'of'         => $this->wpAdapter->__( 'of', 'packeta' ),
-				'areYouSure' => $this->wpAdapter->__( 'Are you sure?', 'packeta' ),
+				'next'               => $this->wpAdapter->__( 'Next', 'packeta' ),
+				'previous'           => $this->wpAdapter->__( 'Previous', 'packeta' ),
+				'close'              => $this->wpAdapter->__( 'Close', 'packeta' ),
+				'of'                 => $this->wpAdapter->__( 'of', 'packeta' ),
+				'areYouSure'         => $this->wpAdapter->__( 'Are you sure?', 'packeta' ),
+				'settingsSaveButton' => [
+					'title'       => $this->wpAdapter->__( 'Save all changes', 'packeta' ),
+					'description' => $this->wpAdapter->__( 'After all changes are made, it is saved using this button.', 'packeta' ),
+				],
 			];
 		}
 
@@ -137,10 +141,6 @@ class WizardAssetManager {
 						'pricesIncludeTax'     => [
 							'title'       => $this->wpAdapter->__( 'Prices include tax', 'packeta' ),
 							'description' => $this->wpAdapter->__( 'If enabled, VAT will not be added to shipping prices and surcharges.', 'packeta' ),
-						],
-						'saveGeneral'          => [
-							'title'       => $this->wpAdapter->__( 'Save all changes', 'packeta' ),
-							'description' => $this->wpAdapter->__( 'After all changes are made, it is saved using this button.', 'packeta' ),
 						],
 					],
 				];
