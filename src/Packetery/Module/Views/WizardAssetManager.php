@@ -40,18 +40,18 @@ class WizardAssetManager {
 
 		if ( $isWizardEnabled ) {
 			$basicTranslations = [
-				'next'     => $this->wpAdapter->__( 'Next', 'packeta' ),
-				'previous' => $this->wpAdapter->__( 'Previous', 'packeta' ),
-				'close'    => $this->wpAdapter->__( 'Close', 'packeta' ),
-				'of'       => $this->wpAdapter->__( 'of', 'packeta' ),
-				'areYouSure'       => $this->wpAdapter->__( 'Are you sure?', 'packeta' ),
+				'next'       => $this->wpAdapter->__( 'Next', 'packeta' ),
+				'previous'   => $this->wpAdapter->__( 'Previous', 'packeta' ),
+				'close'      => $this->wpAdapter->__( 'Close', 'packeta' ),
+				'of'         => $this->wpAdapter->__( 'of', 'packeta' ),
+				'areYouSure' => $this->wpAdapter->__( 'Are you sure?', 'packeta' ),
 			];
 		}
 
 		if ( $page === Page::SLUG && $isWizardEnabled ) {
 			$this->assetManager->enqueueStyle( 'packetery-driverjs-css', 'public/libs/driverjs-1.3.4/driver.css' );
 			$this->assetManager->enqueueScript( 'packetery-driverjs', 'public/libs/driverjs-1.3.4/driver.js.iife.js', true );
-			$this->assetManager->enqueueStyle( 'packetery-driverjs-css-custom', 'public/css/driver.js.css', true );
+			$this->assetManager->enqueueStyle( 'packetery-driverjs-css-custom', 'public/css/driver.js.css' );
 
 			if ( $isWizardGeneralSettingsTourEnabled ) {
 				$generalSettingsTranslation = [
