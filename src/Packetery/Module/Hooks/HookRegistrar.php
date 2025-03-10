@@ -453,6 +453,7 @@ class HookRegistrar {
 				]
 			);
 
+			$this->optionsPage->register();
 			$this->wpAdapter->addAction( 'admin_menu', [ $this, 'addMenuPages' ] );
 			$this->wpAdapter->addAction( 'admin_head', [ $this->labelPrint, 'hideFromMenus' ] );
 			$this->wpAdapter->addAction( 'admin_head', [ $this->orderCollectionPrint, 'hideFromMenus' ] );
@@ -589,8 +590,9 @@ class HookRegistrar {
 	 *  Add links to left admin menu.
 	 */
 	public function addMenuPages(): void {
-		$this->optionsPage->register();
+		$this->optionsPage->registerMenuPage();
 		$this->dashboardPage->register();
+		$this->optionsPage->registerSubmenuPage();
 		$this->carrierOptionsPage->register();
 		$this->labelPrint->register();
 		$this->orderCollectionPrint->register();

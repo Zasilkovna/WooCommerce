@@ -16,7 +16,9 @@ use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\PacketStatus;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Order\PacketAutoSubmitter;
@@ -52,6 +54,8 @@ class Page {
 	public const TAB_AUTO_SUBMISSION    = 'auto-submission';
 
 	public const PARAM_TAB = 'tab';
+
+	const PACKETA_SVG_LOGO = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMzcgNDAiIHN0eWxlPSJmaWxsOiNhN2FhYWQiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiAjYTdhYWFkO30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE5LjQsMTYuMWwtMC45LDAuNGwtMC45LTAuNGwtMTMtNi41bDYuMi0yLjRsMTMuNCw2LjVMMTkuNCwxNi4xeiBNMzIuNSw5LjZsLTQuNywyLjNsLTEzLjUtNmw0LjItMS42CglMMzIuNSw5LjZ6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xOSwwbDE3LjIsNi42bC0yLjQsMS45bC0xNS4yLTZMMy4yLDguNkwwLjgsNi42TDE4LDBMMTksMEwxOSwweiBNMzQuMSw5LjFsMi44LTEuMWwtMi4xLDE3LjZsLTAuNCwwLjgKCUwxOS40LDQwbC0wLjUtMy4xbDEzLjQtMTJMMzQuMSw5LjF6IE0yLjUsMjYuNWwtMC40LTAuOEwwLDguMWwyLjgsMS4xbDEuOSwxNS43bDEzLjQsMTJMMTcuNiw0MEwyLjUsMjYuNXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTI4LjIsMTIuNGw0LjMtMi43bC0xLjcsMTQuMkwxOC42LDM1bDAuNi0xN2w1LjQtMy4zTDI0LjMsMjNsMy4zLTIuM0wyOC4yLDEyLjR6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNy43LDE3LjlsMC42LDE3bC0xMi4yLTExTDQuNCw5LjhMMTcuNywxNy45eiIvPgo8L3N2Zz4K';
 
 	/**
 	 * PacketeryLatte_engine.
@@ -116,6 +120,11 @@ class Page {
 	private $packetSynchronizer;
 
 	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * @var string
 	 */
 	private $supportEmailAddress;
@@ -131,6 +140,7 @@ class Page {
 		ModuleHelper $moduleHelper,
 		UrlBuilder $urlBuilder,
 		PacketSynchronizer $packetSynchronizer,
+		WpAdapter $wpAdapter,
 		string $supportEmailAddress
 	) {
 		$this->latteEngine         = $latteEngine;
@@ -144,26 +154,32 @@ class Page {
 		$this->urlBuilder          = $urlBuilder;
 		$this->packetSynchronizer  = $packetSynchronizer;
 		$this->supportEmailAddress = $supportEmailAddress;
+		$this->wpAdapter           = $wpAdapter;
 	}
 
-	/**
-	 * Registers WP callbacks.
-	 */
 	public function register(): void {
-		add_action( 'admin_init', array( $this, 'admin_init' ) );
-		$icon = 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDI1LjEuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IlZyc3R2YV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB2aWV3Qm94PSIwIDAgMzcgNDAiIHN0eWxlPSJmaWxsOiNhN2FhYWQiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiAjYTdhYWFkO30KPC9zdHlsZT4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTE5LjQsMTYuMWwtMC45LDAuNGwtMC45LTAuNGwtMTMtNi41bDYuMi0yLjRsMTMuNCw2LjVMMTkuNCwxNi4xeiBNMzIuNSw5LjZsLTQuNywyLjNsLTEzLjUtNmw0LjItMS42CglMMzIuNSw5LjZ6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xOSwwbDE3LjIsNi42bC0yLjQsMS45bC0xNS4yLTZMMy4yLDguNkwwLjgsNi42TDE4LDBMMTksMEwxOSwweiBNMzQuMSw5LjFsMi44LTEuMWwtMi4xLDE3LjZsLTAuNCwwLjgKCUwxOS40LDQwbC0wLjUtMy4xbDEzLjQtMTJMMzQuMSw5LjF6IE0yLjUsMjYuNWwtMC40LTAuOEwwLDguMWwyLjgsMS4xbDEuOSwxNS43bDEzLjQsMTJMMTcuNiw0MEwyLjUsMjYuNXoiLz4KPHBhdGggY2xhc3M9InN0MCIgZD0iTTI4LjIsMTIuNGw0LjMtMi43bC0xLjcsMTQuMkwxOC42LDM1bDAuNi0xN2w1LjQtMy4zTDI0LjMsMjNsMy4zLTIuM0wyOC4yLDEyLjR6Ii8+CjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0xNy43LDE3LjlsMC42LDE3bC0xMi4yLTExTDQuNCw5LjhMMTcuNywxNy45eiIvPgo8L3N2Zz4K';
-		add_menu_page(
-			__( 'Packeta', 'packeta' ),
-			__( 'Packeta', 'packeta' ),
+		add_action( 'admin_init', [ $this, 'admin_init' ] );
+		add_action( 'admin_init', [ $this, 'processActions' ] );
+		add_filter( 'custom_menu_order', '__return_true' );
+		add_filter( 'menu_order', [ $this, 'customMenuOrder' ] );
+	}
+
+	public function registerMenuPage(): void {
+		$this->wpAdapter->addMenuPage(
+			$this->wpAdapter->__( 'Packeta', 'packeta' ),
+			$this->wpAdapter->__( 'Packeta', 'packeta' ),
 			'manage_options',
-			self::SLUG,
+			DashboardPage::SLUG,
 			function () {},
-			$icon
+			self::PACKETA_SVG_LOGO
 		);
-		add_submenu_page(
-			self::SLUG,
-			__( 'Settings', 'packeta' ),
-			__( 'Settings', 'packeta' ),
+	}
+
+	public function registerSubmenuPage(): void {
+		$this->wpAdapter->addSubmenuPage(
+			DashboardPage::SLUG,
+			$this->wpAdapter->__( 'Settings', 'packeta' ),
+			$this->wpAdapter->__( 'Settings', 'packeta' ),
 			'manage_options',
 			self::SLUG,
 			array(
@@ -172,10 +188,6 @@ class Page {
 			),
 			1
 		);
-		add_action( 'admin_init', [ $this, 'processActions' ] );
-
-		add_filter( 'custom_menu_order', '__return_true' );
-		add_filter( 'menu_order', [ $this, 'customMenuOrder' ] );
 	}
 
 	/**

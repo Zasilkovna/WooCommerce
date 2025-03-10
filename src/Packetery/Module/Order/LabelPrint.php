@@ -16,6 +16,7 @@ use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Entity\Order;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\FormFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -339,7 +340,7 @@ class LabelPrint {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			\Packetery\Module\Options\Page::SLUG,
+			DashboardPage::SLUG,
 			__( 'Print labels', 'packeta' ),
 			__( 'Print labels', 'packeta' ),
 			'manage_woocommerce',

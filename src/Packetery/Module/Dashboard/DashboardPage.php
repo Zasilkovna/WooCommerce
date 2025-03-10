@@ -62,7 +62,7 @@ class DashboardPage {
 
 	public function register(): void {
 		$this->wpAdapter->addSubmenuPage(
-			\Packetery\Module\Options\Page::SLUG,
+			self::SLUG,
 			$this->wpAdapter->__( 'Home', 'packeta' ),
 			$this->wpAdapter->__( 'Home', 'packeta' ),
 			'manage_woocommerce',
