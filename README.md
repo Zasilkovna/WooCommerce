@@ -20,17 +20,17 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 
 #### Functions provided
 
-- Integration of [widget v6](https://widget.packeta.com/v6) for selection of pickup points in the e-shop cart.
-- address validation in the cart for address delivery with our widget HD
-- delivery to pickup-points of Packeta (Czech republic, Slovakia, Hungary and Romania)
+- integration of [widget v6](https://widget.packeta.com/v6) for selection of pickup points in the e-shop cart
+- address validation in the cart for address delivery with our address-picking widget (Czech Republic, Slovakia)
+- delivery to pickup points of Packeta (Czech Republic, Slovakia, Hungary, and Romania)
 - delivery to pickup points of external carriers all over Europe
-- the ability to fill in/change the weight and dimensions of the order before submitting it to Packeta
+- the ability to fill in/change the weight and dimensions of the shipment before submitting it to Packeta
 - the automatic submission of orders to Packeta
-- after submitting an order to Packeta, each order gets an order number which acts as a link to a website with the tracking of the parcel
+- after submitting an order to Packeta, each order gets an order number, which acts as a link to a URL with the tracking of the parcel
 - label printing, including direct labels
-- age verification for 18+, which can be set up for every product. The order will then require the customer to verify his age during the parcel pickup
+- age verification (18+) can be configured individually for each product. The order will then require the customer to verify his age during the parcel pickup
 - printing of the list of parcels
-- High-Performance order storage (since WooCommerce version 7.9.0)
+- support for High-Performance order storage (since WooCommerce version 7.9.0)
 - support for block checkout
 - in shipping zones, it is possible to set shipping methods for individual Packeta carriers
 - tracking the status of shipments and automatic change of order status
