@@ -11,6 +11,7 @@ use Packetery\Module\ModuleHelper;
 use Packetery\Module\Views\UrlBuilder;
 
 class DashboardPage {
+
 	public const SLUG = 'packeta-home';
 
 	/**
