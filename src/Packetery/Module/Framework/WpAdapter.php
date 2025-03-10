@@ -170,11 +170,12 @@ class WpAdapter {
 
 	public function addSubmenuPage(
 		string $parentSlug,
-		?string $pageTitle,
-		?string $menuTitle,
+		string $pageTitle,
+		string $menuTitle,
 		string $capability,
 		string $menuSlug,
-		array $callback
+		callable $callback,
+		?int $position = null
 	): void {
 		add_submenu_page(
 			$parentSlug,
@@ -182,7 +183,26 @@ class WpAdapter {
 			$menuTitle,
 			$capability,
 			$menuSlug,
-			$callback
+			$callback,
+			$position
+		);
+	}
+
+	public function addMenuPage(
+		string $pageTitle,
+		string $menuTitle,
+		string $capability,
+		string $menuSlug,
+		callable $callback,
+		string $iconUrl
+	): void {
+		add_menu_page(
+			$pageTitle,
+			$menuTitle,
+			$capability,
+			$menuSlug,
+			$callback,
+			$iconUrl
 		);
 	}
 }

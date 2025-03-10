@@ -14,6 +14,7 @@ use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
 use Packetery\Core\Entity\Order;
 use Packetery\Latte\Engine;
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\MessageManager;
 use Packetery\Module\Plugin;
@@ -206,7 +207,7 @@ class CollectionPrint {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			\Packetery\Module\Options\Page::SLUG,
+			DashboardPage::SLUG,
 			__( 'Print AWB', 'packeta' ),
 			__( 'Print AWB', 'packeta' ),
 			'manage_woocommerce',
