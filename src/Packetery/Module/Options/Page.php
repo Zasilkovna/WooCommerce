@@ -566,8 +566,6 @@ class Page {
 				->addRule( Form::MIN, 'Value must be greater than 0', 0.1 )
 			->endCondition();
 
-		// TODO: Packet status sync.
-
 		$container->addCheckbox( 'replace_shipping_address_with_pickup_point_address', __( 'Replace shipping address with pickup point address', 'packeta' ) )
 			->setRequired( false );
 

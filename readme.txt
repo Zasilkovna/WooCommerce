@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
-Tested up to: 6.7
+Tested up to: 6.7.2
 Stable tag: 2.0.0
 Requires PHP: 7.2
 WC requires at least: 5.1
-WC tested up to: 9.4.1
+WC tested up to: 9.7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -64,6 +64,17 @@ We are constantly working on adding new features. You can find a list of feature
 Please contact us at technicka.podpora@zasilkovna.cz .
 
 == Changelog ==
+= 2.0.0 =
+Added: It is now possible to enable advanced shipping settings in the plugin. In the shipping zones, it is then possible to set the shipping method for individual Packeta carriers.
+Added: It is now possible to set the maximum dimensions of the shipment for each carrier.
+Added: It is now possible to choose in the settings whether the dimensions of the shipment will be entered in mm or cm.
+Added: It is now possible to extend the deadline for picking up the shipment for an order.
+Added: The product dimensions are passed to the widget for selecting a pickup location. The widget will then only offer pickup locations to which the shipment can be delivered.
+Updated: Optimization of the packetery_order table.
+Updated: Improvement of block checkout support.
+Fixed various bugs.
+Improvement of plugin stability.
+
 = 1.8.7 =
 Updated: Added compatibility with WordPress 6.7 - premature use of translation function prevented.
 
