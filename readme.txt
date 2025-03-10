@@ -16,17 +16,17 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 
 = Plugin functions: =
 
-* the ability to choose a pickup place in your cart using our widget v6
-* the ability to change the destination pickup point of an existing order
-* the option to allow checkout address validation using our widget HD
-* delivery to Packeta pickup places (Czech Republic, Slovakian Republic, Hungary, and Romania)
-* delivery to pickup places of carriers all around Europe
-* the ability to add/modify the packet weight and dimensions before submitting the packet to Packeta
-* automatic sending of orders to Packeta
-* each delivery sent to Packeta will automatically show the tracking number with a link to a website with the shipment tracking
-* the printing of labels, including direct carrier labels
-* printing of shipment lists (AWB)
-* 18+ age verification setting for your products
+* integration of widget v6 for selection of pickup points in the e-shop cart
+* address validation in the cart for address delivery with our address-picking widget (Czech Republic, Slovakia)
+* delivery to pickup points of Packeta (Czech Republic, Slovakia, Hungary, and Romania)
+* delivery to pickup points of external carriers all over Europe
+* the ability to fill in/change the weight and dimensions of the shipment before submitting it to Packeta
+* the automatic submission of orders to Packeta
+* after submitting an order to Packeta, each order gets an order number, which acts as a link to a URL with the tracking of the parcel
+* label printing, including direct labels
+* age verification (18+) can be configured individually for each product. The order will then require the customer to verify his age during the parcel pickup
+* printing of the list of parcels
+* support for High-Performance order storage (since WooCommerce version 7.9.0)
 * support for block checkout
 * in shipping zones, it is possible to set shipping methods for individual Packeta carriers
 * tracking the status of shipments and automatic change of order status
