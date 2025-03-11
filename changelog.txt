@@ -1,4 +1,8 @@
 == Changelog ==
+= 2.0.1 =
+Fixed: In certain situations, there was an error when displaying the "Log" page
+Fixed: In the order list, there was an error when displaying the date in the "saved to" column for orders to a pickup point if the e-shop uses shipment tracking
+
 = 2.0.0 =
 Added: It is now possible to enable advanced shipping settings in the plugin. In the shipping zones, it is then possible to set the shipping method for individual Packeta carriers.
 Added: It is now possible to set the maximum dimensions of the shipment for each carrier.
