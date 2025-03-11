@@ -77,12 +77,13 @@ class DashboardPage {
 			$this->wpAdapter->getAdminUrl( null, 'admin.php' )
 		);
 		$this->carrierUpdater->startUpdate( $redirectUrl );
-		$this->carrierUpdater->runUpdate();
+		$carriersUpdateResult = $this->carrierUpdater->runUpdate();
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/dashboard/home.latte',
 			[
 				'items'          => $this->dashboardItemBuilder->buildItems(),
+				'carriersUpdate' => $carriersUpdateResult,
 				'isCzechLocale'  => $this->moduleHelper->isCzechLocale(),
 				'logoZasilkovna' => $this->urlBuilder->buildAssetUrl( 'public/images/logo-zasilkovna.svg' ),
 				'logoPacketa'    => $this->urlBuilder->buildAssetUrl( 'public/images/logo-packeta.svg' ),
