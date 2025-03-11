@@ -143,6 +143,10 @@ class Repository {
 				$record->params = [];
 			}
 
+			if ( ! is_array( $record->params ) ) {
+				$record->params = [];
+			}
+
 			$record->note = $this->getNote( $record->title, $record->params );
 
 			yield $record;
