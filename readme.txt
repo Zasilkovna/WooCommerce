@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.7.2
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 9.7.1
@@ -62,6 +62,10 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.0.1 =
+Fixed: In certain situations, there was an error when displaying the "Log" page
+Fixed: In the order list, there was an error when displaying the date in the "saved to" column for orders to a pickup point if the e-shop uses shipment tracking
+
 = 2.0.0 =
 Added: It is now possible to enable advanced shipping settings in the plugin. In the shipping zones, it is then possible to set the shipping method for individual Packeta carriers.
 Added: It is now possible to set the maximum dimensions of the shipment for each carrier.
@@ -72,8 +76,5 @@ Updated: Optimization of the packetery_order table.
 Updated: Improvement of block checkout support.
 Fixed various bugs.
 Improvement of plugin stability.
-
-= 1.8.7 =
-Updated: Added compatibility with WordPress 6.7 - premature use of translation function prevented.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)
