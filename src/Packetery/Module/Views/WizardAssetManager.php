@@ -2,6 +2,7 @@
 
 namespace Packetery\Module\Views;
 
+use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\Page;
 use Packetery\Nette\Http\Request;
@@ -22,24 +23,36 @@ class WizardAssetManager {
 	 */
 	private $request;
 
+	/**
+	 * @var ContextResolver
+	 */
+	private $contextResolver;
+
 	public function __construct(
 		AssetManager $assetManager,
 		Request $request,
-		WpAdapter $wpAdapter
+		WpAdapter $wpAdapter,
+		ContextResolver $contextResolver
 	) {
-		$this->assetManager = $assetManager;
-		$this->request      = $request;
-		$this->wpAdapter    = $wpAdapter;
+		$this->assetManager    = $assetManager;
+		$this->request         = $request;
+		$this->wpAdapter       = $wpAdapter;
+		$this->contextResolver = $contextResolver;
 	}
 
 	public function enqueueWizardAssets(): void {
-		$page            = $this->request->getQuery( 'page' );
-		$isWizardEnabled = $this->request->getQuery( 'wizard-enabled' ) === 'true';
+		$page                               = $this->request->getQuery( 'page' );
+		$isWizardEnabled                    = $this->request->getQuery( 'wizard-enabled' ) === 'true';
+		$isWizardOrderGridEditPacketEnabled = $this->request->getQuery( 'wizard-order-grid-edit-packet-enabled' ) === 'true';
 
 		if ( $isWizardEnabled ) {
 			$this->enqueueBaseAssets();
 			if ( $page === Page::SLUG ) {
 				$this->enqueueSettingsTours();
+			}
+
+			if ( $isWizardOrderGridEditPacketEnabled && $this->contextResolver->isOrderGridPage() ) {
+				$this->createOrderGridEditPacketTour( $this->getBasicTranslations() );
 			}
 		}
 	}
@@ -248,5 +261,43 @@ class WizardAssetManager {
 		];
 
 		$this->enqueueTourScript( 'admin-wizard-advanced-settings.js', array_merge( $translations, $basicTranslations ) );
+	}
+
+	private function createOrderGridEditPacketTour( array $basicTranslations ): void {
+		$translations = [
+			'modalWeight'       => [
+				'title'       => $this->wpAdapter->__( 'Weight', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'modalLength'       => [
+				'title'       => $this->wpAdapter->__( 'Length', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'modalWidth'        => [
+				'title'       => $this->wpAdapter->__( 'Width', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'modalHeight'       => [
+				'title'       => $this->wpAdapter->__( 'Height', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'modalAdultContent' => [
+				'title'       => $this->wpAdapter->__( 'Adult content', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'modalCod'          => [
+				'title'       => $this->wpAdapter->__( 'COD', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'modalValue'        => [
+				'title'       => $this->wpAdapter->__( 'Value', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'modalDeliverOn'    => [
+				'title'       => $this->wpAdapter->__( 'Deliver on', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+		];
+			$this->enqueueTourScript( 'admin-wizard-create-packet-modal.js', array_merge( $translations, $basicTranslations ) );
 	}
 }
