@@ -114,6 +114,13 @@ class Carrier {
 	private $maxWeight;
 
 	/**
+	 * Tells if carrier is available.
+	 *
+	 * @var bool
+	 */
+	private $isAvailable;
+
+	/**
 	 * Carrier isDeleted.
 	 *
 	 * @var bool
@@ -127,25 +134,6 @@ class Carrier {
 	 */
 	private $ageVerification;
 
-	/**
-	 * Carrier constructor.
-	 *
-	 * @param string $id                          Carrier id.
-	 * @param string $name                        Carrier name.
-	 * @param bool   $hasPickupPoints             Carrier hasPickupPoints.
-	 * @param bool   $hasDirectLabel              Carrier hasDirectLabel.
-	 * @param bool   $requiresSeparateHouseNumber Carrier requiresSeparateHouseNumber.
-	 * @param bool   $requiresCustomsDeclarations Carrier requiresCustomsDeclarations.
-	 * @param bool   $requiresEmail               Carrier requiresEmail.
-	 * @param bool   $requiresPhone               Carrier requiresPhone.
-	 * @param bool   $requiresSize                Carrier requiresSize.
-	 * @param bool   $supportsCod                 Carrier supportsCod.
-	 * @param string $country                     Carrier country.
-	 * @param string $currency                    Carrier currency.
-	 * @param float  $maxWeight                   Carrier maxWeight.
-	 * @param bool   $isDeleted                   Carrier isDeleted.
-	 * @param bool   $ageVerification             Carrier supports age verification.
-	 */
 	public function __construct(
 		string $id,
 		string $name,
@@ -160,6 +148,7 @@ class Carrier {
 		string $country,
 		string $currency,
 		float $maxWeight,
+		bool $isAvailable,
 		bool $isDeleted,
 		bool $ageVerification
 	) {
@@ -176,6 +165,7 @@ class Carrier {
 		$this->country                     = $country;
 		$this->currency                    = $currency;
 		$this->maxWeight                   = $maxWeight;
+		$this->isAvailable                 = $isAvailable;
 		$this->isDeleted                   = $isDeleted;
 		$this->ageVerification             = $ageVerification;
 	}
@@ -304,6 +294,10 @@ class Carrier {
 	 */
 	public function getMaxWeight(): float {
 		return $this->maxWeight;
+	}
+
+	public function isAvailable(): bool {
+		return $this->isAvailable;
 	}
 
 	/**
