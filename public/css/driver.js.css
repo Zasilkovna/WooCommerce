@@ -82,3 +82,7 @@
 .driver-active-element span.select2-dropdown.select2-dropdown--below  {
   z-index: 100000;
 }
+
+.driver-overlay {
+  z-index: 100000 !important;
+}
