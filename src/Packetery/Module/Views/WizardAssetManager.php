@@ -38,10 +38,9 @@ class WizardAssetManager {
 
 		if ( $isWizardEnabled ) {
 			$this->enqueueBaseAssets();
-		}
-
-		if ( $page === Page::SLUG ) {
-			$this->enqueueSettingsTours();
+			if ( $page === Page::SLUG ) {
+				$this->enqueueSettingsTours();
+			}
 		}
 	}
 
