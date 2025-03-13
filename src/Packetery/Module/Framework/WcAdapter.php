@@ -11,11 +11,13 @@ namespace Packetery\Module\Framework;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use WC_Blocks_Utils;
+use WC_Data_Store;
 use WC_Logger;
 use WC_Logger_Interface;
 use WC_Product;
 use WC_Shipping_Rate;
 use WC_Shipping_Zone;
+use WC_Shipping_Zone_Data_Store_Interface;
 use WC_Shipping_Zones;
 
 /**
@@ -131,5 +133,14 @@ class WcAdapter {
 
 	public function hasBlockInPage( int $page, string $blockName ): bool {
 		return WC_Blocks_Utils::has_block_in_page( $page, $blockName );
+	}
+
+	/**
+	 * @param string $objectType
+	 *
+	 * @return WC_Data_Store|WC_Shipping_Zone_Data_Store_Interface
+	 */
+	public function dataStoreLoad( string $objectType ): object {
+		return WC_Data_Store::load( $objectType );
 	}
 }

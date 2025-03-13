@@ -139,3 +139,7 @@ services:
 	- Packetery\Module\Shipping\ShippingProvider
 	- Packetery\Module\Shipping\ShippingMethodGenerator
 	- Packetery\Module\Views\WizardAssetManager
+	- Packetery\Module\Dashboard\DashboardPage
+	- Packetery\Module\Dashboard\DashboardItemBuilder
+	- Packetery\Module\Dashboard\DashboardHelper
+	- Packetery\Module\Carrier\CarrierUpdater

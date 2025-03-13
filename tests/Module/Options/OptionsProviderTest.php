@@ -139,4 +139,58 @@ class OptionsProviderTest extends TestCase {
 		);
 		$this->assertSame( [ PacketStatus::DEPARTED ], $result );
 	}
+
+	public static function wcCarrierConfigEnabledNullableProvider(): array {
+		return [
+			[
+				'inputValue'    => true,
+				'expectedValue' => true,
+			],
+			[
+				'inputValue'    => false,
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => null,
+				'expectedValue' => null,
+			],
+			[
+				'inputValue'    => 1,
+				'expectedValue' => true,
+			],
+			[
+				'inputValue'    => 0,
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => '1',
+				'expectedValue' => true,
+			],
+			[
+				'inputValue'    => '0',
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => '',
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => 'nonsense',
+				'expectedValue' => true,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider wcCarrierConfigEnabledNullableProvider
+	 */
+	public function testIsWcCarrierConfigEnabledNullable( mixed $inputValue, ?bool $expectedValue ): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock->method( 'getOption' )
+						->willReturn( [ 'new_carrier_settings_enabled' => $inputValue ] );
+
+		$provider = new OptionsProvider( $wpAdapterMock );
+
+		$this->assertSame( $expectedValue, $provider->isWcCarrierConfigEnabledNullable() );
+	}
 }

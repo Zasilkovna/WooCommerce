@@ -9,6 +9,7 @@ use Packetery\Module\Carrier;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\ContextResolver;
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
@@ -237,6 +238,7 @@ class AssetManager {
 					Carrier\OptionsPage::SLUG,
 					Log\Page::SLUG,
 					Order\LabelPrint::MENU_SLUG,
+					DashboardPage::SLUG,
 				],
 				true
 			)

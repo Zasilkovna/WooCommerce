@@ -1,0 +1,16 @@
+{include '../packeta-header.latte'}
+
+<div class="packetery_page">
+
+	{include '../carrier/carriersUpdateNotice.latte', carriersUpdate: $carriersUpdate}
+
+	<div class="packeta-dashboard">
+		<h2>{$translations['getTheMost']}</h2>
+
+		<ul>
+			{foreach $items as $item}
+				{include 'dashboard-item.latte', item: $item}
+			{/foreach}
+		</ul>
+	</div>
+</div>

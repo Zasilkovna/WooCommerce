@@ -12,6 +12,7 @@ namespace Packetery\Module\Log;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
+use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Nette\Http\Request;
@@ -80,7 +81,7 @@ class Page {
 	 */
 	public function register(): void {
 		add_submenu_page(
-			\Packetery\Module\Options\Page::SLUG,
+			DashboardPage::SLUG,
 			__( 'Log', 'packeta' ),
 			__( 'Log', 'packeta' ),
 			'manage_woocommerce',
