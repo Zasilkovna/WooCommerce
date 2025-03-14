@@ -243,7 +243,7 @@ class WizardAssetManager {
 		$translations = [
 			'newCarrierEnabled' => [
 				'title'       => $this->wpAdapter->__( 'Advanced carrier settings', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'You can enable the new carrier settings to conveniently split pick up locations from Z boxes here.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can enable the advanced carrier settings to get better support of WooCommerce features here.', 'packeta' ),
 			],
 		];
 
