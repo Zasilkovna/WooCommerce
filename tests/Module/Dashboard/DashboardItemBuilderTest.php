@@ -11,6 +11,7 @@ use Packetery\Module\Dashboard\DashboardItemBuilder;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Order\PacketSynchronizer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -31,7 +32,8 @@ class DashboardItemBuilderTest extends TestCase {
 			$this->createMock( DashboardHelper::class ),
 			$this->optionsProviderMock,
 			$this->createMock( Carrier\EntityRepository::class ),
-			$this->carrierUpdaterMock
+			$this->carrierUpdaterMock,
+			$this->createMock( PacketSynchronizer::class ),
 		);
 	}
 

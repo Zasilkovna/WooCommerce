@@ -523,6 +523,9 @@ class OptionsProvider {
 		$result  = [];
 
 		foreach ( $mapping as $gatewayMapping ) {
+			if ( $gatewayMapping['event'] === null ) {
+				continue;
+			}
 			$result[ $gatewayMapping['event'] ] = $gatewayMapping['event'];
 		}
 
