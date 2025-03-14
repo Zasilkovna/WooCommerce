@@ -62,7 +62,7 @@ class WizardAssetManager {
 			'areYouSure'         => $this->wpAdapter->__( 'Are you sure?', 'packeta' ),
 			'settingsSaveButton' => [
 				'title'       => $this->wpAdapter->__( 'Save all changes', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'After all changes are made, it is saved using this button.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Save with this button after all changes are made.', 'packeta' ),
 			],
 		];
 	}
@@ -112,7 +112,7 @@ class WizardAssetManager {
 				'title'       => $this->wpAdapter->__( 'Sender', 'packeta' ),
 				'description' => sprintf(
 				/* translators: 1: emphasis start 2: emphasis end 3: client section link start 4: client section link end */
-					esc_html__( 'Fill here %1$ssender label%2$s - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
+					esc_html__( 'Fill in the %1$ssender label%2$s here - you will find it in %3$sclient section%4$s - user information - field \'Indication\'.', 'packeta' ),
 					'<strong>',
 					'</strong>',
 					'<a href="https://client.packeta.com/senders" target="_blank">',
@@ -129,7 +129,7 @@ class WizardAssetManager {
 			],
 			'cod'                  => [
 				'title'       => $this->wpAdapter->__( 'Payment methods that represent cash on delivery', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Select the payment method that will be marked as cash on delivery. This method will be used to correctly pass information to the carrier and calculate surcharges.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Select the payment method that will be set as cash on delivery. This information will be passed to the carrier to calculate surcharges.', 'packeta' ),
 			],
 			'packagingWeight'      => [
 				'title'       => $this->wpAdapter->__( 'Weight of packaging material', 'packeta' ),
@@ -137,7 +137,7 @@ class WizardAssetManager {
 			],
 			'defaultWeightEnabled' => [
 				'title'       => $this->wpAdapter->__( 'Enable default weight', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'If no weight is set for a product, the default value specified in the settings will be used.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'If no weight is set for the products in order, this value will be used.', 'packeta' ),
 			],
 			'dimensionsUnit'       => [
 				'title'       => $this->wpAdapter->__( 'Units used for dimensions', 'packeta' ),
@@ -145,7 +145,7 @@ class WizardAssetManager {
 			],
 			'dimensionsEnabled'    => [
 				'title'       => $this->wpAdapter->__( 'Enable default dimensions', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'When enabled, it will automatically be added to the total dimensions of any order that contains products with zero dimensions.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'When enabled, these values will be automatically used for any order that contains products with zero dimensions.', 'packeta' ),
 			],
 			'pickupPointAddress'   => [
 				'title'       => $this->wpAdapter->__( 'Replace shipping address with pickup point address', 'packeta' ),
@@ -153,7 +153,7 @@ class WizardAssetManager {
 			],
 			'checkoutDetection'    => [
 				'title'       => $this->wpAdapter->__( 'Force checkout type', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'If you have trouble displaying the widget button in the checkout, you can force what type of checkout you are using.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'If you have trouble displaying the widget button in the checkout, you can set what type of checkout you are using.', 'packeta' ),
 			],
 			'widgetButtonLocation' => [
 				'title'       => $this->wpAdapter->__( 'Widget button location in checkout', 'packeta' ),
@@ -165,7 +165,7 @@ class WizardAssetManager {
 			],
 			'emailHook'            => [
 				'title'       => $this->wpAdapter->__( 'Hook used to view information in email', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'This option determines where the pickup point information will be displayed in the email. Choose the appropriate option based on the structure of emails in your e-shop.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'This option determines where the pickup point information will be displayed in the e-mail. Choose the appropriate option based on the structure of e-mails in your e-shop.', 'packeta' ),
 			],
 			'forcePacketCancel'    => [
 				'title'       => $this->wpAdapter->__( 'Force order cancellation', 'packeta' ),
@@ -211,7 +211,7 @@ class WizardAssetManager {
 			],
 			'enableChangeOrderStatus' => [
 				'title'       => $this->wpAdapter->__( 'Allow order status change', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Here you enable automatic change of order status.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can enable automatic change of order status here.', 'packeta' ),
 			],
 		];
 
@@ -225,7 +225,7 @@ class WizardAssetManager {
 		$translations = [
 			'autoSubmissionEnabled' => [
 				'title'       => $this->wpAdapter->__( 'Allow packet auto-submission', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Here you enable automatic submission of the shipment when the order status changes.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can enable automatic submission of the shipment when the order status changes here.', 'packeta' ),
 			],
 			'autoSubmissionMapping' => [
 				'title'       => $this->wpAdapter->__( 'Status mapping', 'packeta' ),
@@ -243,7 +243,7 @@ class WizardAssetManager {
 		$translations = [
 			'newCarrierEnabled' => [
 				'title'       => $this->wpAdapter->__( 'Advanced carrier settings', 'packeta' ),
-				'description' => $this->wpAdapter->__( 'Here you can enable the new carrier settings to conveniently split pick up locations from Z boxes.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'You can enable the new carrier settings to conveniently split pick up locations from Z boxes here.', 'packeta' ),
 			],
 		];
 
