@@ -16,8 +16,12 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 
 class DummyFactory {
-	public static function createAddress(): Address {
-		return new Address( 'Dummy street', 'Dummy city', '123 45' );
+	public static function createAddress( ?string $houseNumber = null, ?string $county = null ): Address {
+		$address = new Address( 'Dummy street', 'Dummy city', '123 45' );
+		$address->setHouseNumber( $houseNumber );
+		$address->setCounty( $county );
+
+		return $address;
 	}
 
 	public static function createInvalidAddress(): Address {
@@ -56,6 +60,48 @@ class DummyFactory {
 		$order->setWeight( 1.25 );
 
 		return $order;
+	}
+
+	public static function createCarrierCzzpoint(): Carrier {
+		return new Carrier(
+			'czzpoint',
+			'czzpoint',
+			true,
+			false,
+			false,
+			false,
+			true,
+			true,
+			false,
+			true,
+			'cz',
+			'CZK',
+			30.0,
+			true,
+			false,
+			true
+		);
+	}
+
+	public static function createCarrierZpointcz(): Carrier {
+		return new Carrier(
+			'zpointcz',
+			'zpointcz',
+			true,
+			false,
+			false,
+			false,
+			true,
+			true,
+			false,
+			true,
+			'cz',
+			'CZK',
+			30.0,
+			true,
+			false,
+			true
+		);
 	}
 
 	public static function createCarrierCzechPp(): Carrier {
@@ -138,6 +184,48 @@ class DummyFactory {
 			5.0,
 			true,
 			true,
+			true
+		);
+	}
+
+	public static function createCarrierGermanHd(): Carrier {
+		return new Carrier(
+			'6373',
+			'DE Hermes HD',
+			false,
+			true,
+			false,
+			false,
+			true,
+			true,
+			true,
+			true,
+			'de',
+			'EUR',
+			30.0,
+			true,
+			false,
+			true
+		);
+	}
+
+	public static function createCarrierGermanPp(): Carrier {
+		return new Carrier(
+			'6828',
+			'DE Hermes PP',
+			true,
+			true,
+			false,
+			false,
+			true,
+			true,
+			true,
+			true,
+			'de',
+			'EUR',
+			30.0,
+			true,
+			false,
 			true
 		);
 	}
