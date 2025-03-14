@@ -12,6 +12,7 @@ namespace Packetery\Module;
 use Packetery\Core\Entity;
 use Packetery\Core\Entity\Order;
 use Packetery\Module\Carrier\PacketaPickupPointsConfig;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 
 /**
@@ -36,17 +37,18 @@ class WidgetOptionsBuilder {
 	private $featureFlagProvider;
 
 	/**
-	 * WidgetOptionsBuilder constructor.
-	 *
-	 * @param PacketaPickupPointsConfig $pickupPointsConfig  Internal pickup points config.
-	 * @param FeatureFlagProvider       $featureFlagProvider Feature flag.
+	 * @var WpAdapter
 	 */
+	private $wpAdapter;
+
 	public function __construct(
 		PacketaPickupPointsConfig $pickupPointsConfig,
-		FeatureFlagProvider $featureFlagProvider
+		FeatureFlagProvider $featureFlagProvider,
+		WpAdapter $wpAdapter
 	) {
 		$this->pickupPointsConfig  = $pickupPointsConfig;
 		$this->featureFlagProvider = $featureFlagProvider;
+		$this->wpAdapter           = $wpAdapter;
 	}
 
 	/**
@@ -159,7 +161,7 @@ class WidgetOptionsBuilder {
 	public function createPickupPointForAdmin( Order $order ): array {
 		$widgetOptions = [
 			'country'     => $order->getShippingCountry(),
-			'language'    => substr( get_user_locale(), 0, 2 ),
+			'language'    => substr( $this->wpAdapter->getUserLocale(), 0, 2 ),
 			'appIdentity' => Plugin::getAppIdentity(),
 			'weight'      => $order->getFinalWeight(),
 		];

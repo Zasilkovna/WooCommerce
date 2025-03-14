@@ -58,6 +58,27 @@ class DummyFactory {
 		return $order;
 	}
 
+	public static function createCarrierZpointcz(): Carrier {
+		return new Carrier(
+			'zpointcz',
+			'zpointcz',
+			true,
+			false,
+			false,
+			false,
+			true,
+			true,
+			false,
+			true,
+			'cz',
+			'CZK',
+			30.0,
+			true,
+			false,
+			true
+		);
+	}
+
 	public static function createCarrierCzechPp(): Carrier {
 		return new Carrier(
 			'zpoint-cz',
@@ -138,6 +159,48 @@ class DummyFactory {
 			5.0,
 			true,
 			true,
+			true
+		);
+	}
+
+	public static function createCarrierGermanHd(): Carrier {
+		return new Carrier(
+			'6373',
+			'DE Hermes HD',
+			false,
+			true,
+			false,
+			false,
+			true,
+			true,
+			true,
+			true,
+			'de',
+			'EUR',
+			30.0,
+			true,
+			false,
+			true
+		);
+	}
+
+	public static function createCarrierGermanPp(): Carrier {
+		return new Carrier(
+			'6828',
+			'DE Hermes PP',
+			true,
+			true,
+			false,
+			false,
+			true,
+			true,
+			true,
+			true,
+			'de',
+			'EUR',
+			30.0,
+			true,
+			false,
 			true
 		);
 	}
