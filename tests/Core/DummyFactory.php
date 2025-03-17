@@ -16,8 +16,12 @@ use Packetery\Core\Entity\Size;
 use Packetery\Core\PickupPointProvider\VendorProvider;
 
 class DummyFactory {
-	public static function createAddress(): Address {
-		return new Address( 'Dummy street', 'Dummy city', '123 45' );
+	public static function createAddress( ?string $houseNumber = null, ?string $county = null ): Address {
+		$address = new Address( 'Dummy street', 'Dummy city', '123 45' );
+		$address->setHouseNumber( $houseNumber );
+		$address->setCounty( $county );
+
+		return $address;
 	}
 
 	public static function createInvalidAddress(): Address {

@@ -126,7 +126,7 @@ class WidgetOptionsBuilder {
 			'is_pickup_points' => (int) $carrier->hasPickupPoints(),
 		];
 
-		$carrierOption = get_option( $optionId );
+		$carrierOption = $this->wpAdapter->getOption( $optionId );
 		if ( $carrier->hasPickupPoints() ) {
 			if ( $this->featureFlagProvider->isSplitActive() ) {
 				$carrierConfigForWidget['vendors'] = $this->getWidgetVendorsParam(
@@ -202,7 +202,7 @@ class WidgetOptionsBuilder {
 		$deliveryAddress = $order->getDeliveryAddress();
 		$widgetOptions   = [
 			'country'     => $order->getShippingCountry(),
-			'language'    => substr( get_user_locale(), 0, 2 ),
+			'language'    => substr( $this->wpAdapter->getUserLocale(), 0, 2 ),
 			'layout'      => 'hd',
 			'appIdentity' => Plugin::getAppIdentity(),
 			'street'      => $deliveryAddress->getStreet(),
