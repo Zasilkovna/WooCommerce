@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
-Tested up to: 6.7
-Stable tag: 2.0.0
+Tested up to: 6.7.2
+Stable tag: 2.0.1
 Requires PHP: 7.2
 WC requires at least: 5.1
-WC tested up to: 9.4.1
+WC tested up to: 9.7.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -22,19 +22,17 @@ This is the official plugin, that allows you to choose pickup points of Packeta 
 * delivery to Packeta pickup places (Czech Republic, Slovakian Republic, Hungary, and Romania)
 * delivery to pickup places of carriers all around Europe
 * the ability to add/modify the packet weight and dimensions before submitting the packet to Packeta
-* automatic sending of orders to Packeta with one click
+* automatic sending of orders to Packeta
 * each delivery sent to Packeta will automatically show the tracking number with a link to a website with the shipment tracking
 * the printing of labels, including direct carrier labels
 * printing of shipment lists (AWB)
 * 18+ age verification setting for your products
-
-= You can look forward to: =
-
-* automatically updated information on the current packet status
-* the ability to automatically change the order status according to the packet status
-* the filling out of customs declarations and shipping of packets to countries outside of the EU
-* the creation of claim assistant packets
-* the option to choose a pickup place during the manual creation of the packet in the administration
+* support for block checkout
+* in shipping zones, it is possible to set shipping methods for individual Packeta carriers
+* tracking the status of shipments and automatic change of order status
+* possibility to set maximum dimensions of the shipment for each carrier
+* filling in customs declarations and sending shipments outside the EU
+* possibility to create a complaint assistant for the delivered shipment
 
 == Installation ==
 
@@ -57,14 +55,26 @@ In order to be able to use modern development procedures and continue to expand 
 
 = I'm missing a feature I would like to see, what should I do? =
 
-We are constantly working on adding new features. You can find a list of features we are currently working on in the "You can look forward to" chapter. If there is a feature you would like to see added, that is missing in our list, then please contact us at technicka.podpora@zasilkovna.cz
+We are constantly working on adding new features. If there is a feature you would like to see added, that is missing in our list, then please contact us at e-commerce.support@packeta.com
 
 = I have found a mistake in the plugin or need help with the installation or set up of the plugin. =
 
-Please contact us at technicka.podpora@zasilkovna.cz .
+Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
-= 1.8.7 =
-Updated: Added compatibility with WordPress 6.7 - premature use of translation function prevented.
+= 2.0.1 =
+Fixed: In certain situations, there was an error when displaying the "Log" page
+Fixed: In the order list, there was an error when displaying the date in the "saved to" column for orders to a pickup point if the e-shop uses shipment tracking
+
+= 2.0.0 =
+Added: It is now possible to enable advanced shipping settings in the plugin. In the shipping zones, it is then possible to set the shipping method for individual Packeta carriers.
+Added: It is now possible to set the maximum dimensions of the shipment for each carrier.
+Added: It is now possible to choose in the settings whether the dimensions of the shipment will be entered in mm or cm.
+Added: It is now possible to extend the deadline for picking up the shipment for an order.
+Added: The product dimensions are passed to the widget for selecting a pickup location. The widget will then only offer pickup locations to which the shipment can be delivered.
+Updated: Optimization of the packetery_order table.
+Updated: Improvement of block checkout support.
+Fixed various bugs.
+Improvement of plugin stability.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

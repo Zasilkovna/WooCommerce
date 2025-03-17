@@ -427,7 +427,7 @@ class GridExtender {
 					PACKETERY_PLUGIN_DIR . '/template/order/grid-column-stored-until.latte',
 					[
 						'orderNumber' => $order->getNumber(),
-						'storedUntil' => $this->moduleHelper->getTranslatedStringFromDateTime( $order->getStoredUntil() ),
+						'storedUntil' => $this->moduleHelper->getTranslatedStringFromDateTime( $order->getStoredUntil() ) ?? '',
 					]
 				);
 

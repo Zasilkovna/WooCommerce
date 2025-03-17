@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace Tests\Module;
 
+use DateTimeImmutable;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\ModuleHelper;
 use PHPUnit\Framework\TestCase;
 
@@ -80,5 +82,35 @@ class ModuleHelperTest extends TestCase {
 	public function testConvertToMillimeters( float $input, ?float $expected ): void {
 		$result = ModuleHelper::convertToMillimeters( $input );
 		$this->assertSame( $expected, $result );
+	}
+
+	public function testGetTranslatedStringFromDateTimeReturnsFormattedDate(): void {
+		$moduleHelper = new ModuleHelper(
+			$this->createMock( WpAdapter::class )
+		);
+
+		$dummyDateTimeImmutable = new DateTimeImmutable( '2024-03-10 15:30:00' );
+
+		add_filter(
+			'woocommerce_admin_order_date_format',
+			function () {
+				return 'M j, Y';
+			}
+		);
+
+		$expectedTranslatedString = date_i18n( 'M j, Y', $dummyDateTimeImmutable->getTimestamp() );
+
+		$this->assertEquals(
+			$expectedTranslatedString,
+			$moduleHelper->getTranslatedStringFromDateTime( $dummyDateTimeImmutable )
+		);
+	}
+
+	public function testGetTranslatedStringFromDateTimeReturnsNullForNullInput(): void {
+		$moduleHelper = new ModuleHelper(
+			$this->createMock( WpAdapter::class )
+		);
+
+		$this->assertNull( $moduleHelper->getTranslatedStringFromDateTime( null ) );
 	}
 }
