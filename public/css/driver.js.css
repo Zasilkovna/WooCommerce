@@ -17,7 +17,7 @@
   position: relative;
   transition-duration: 0.3s;
   text-shadow: none;
-  margin-left: 4px;
+  margin-left: 12px;
 }
 
 .driver-popover.driverjs-theme .driver-popover-next-btn:before, .driver-popover.driverjs-theme .driver-popover-prev-btn:before {
@@ -53,10 +53,23 @@
 }
 
 .driver-popover.driverjs-theme .driver-popover-close-btn {
-  color: #9b9b9b;
   background: none;
   margin-left: auto;
   padding: 0;
+  all: unset;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 500;
+  color: #9b9b9b;
+  z-index: 1;
+  text-align: center;
+  transition: color;
+  transition-duration: .2s;
 }
 
 .driver-popover.driverjs-theme .driver-popover-close-btn:hover {
