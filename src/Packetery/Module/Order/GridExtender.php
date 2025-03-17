@@ -168,7 +168,7 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
 		];
-		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks['js-wizard-packetery-filter-orders-to-submit'] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		$latteParams = [
 			'link'       => ModuleHelper::getOrderGridUrl(
@@ -182,7 +182,7 @@ class GridExtender {
 			'orderCount' => $this->orderRepository->countOrdersToPrint(),
 			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
 		];
-		$htmlLinks[] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$htmlLinks['js-wizard-packetery-filter-orders-to-print'] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
 		return $htmlLinks;
 	}

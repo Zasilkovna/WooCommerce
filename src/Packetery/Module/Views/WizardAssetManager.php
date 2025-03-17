@@ -43,7 +43,6 @@ class WizardAssetManager {
 	public function enqueueWizardAssets(): void {
 		$page                                 = $this->request->getQuery( 'page' );
 		$isWizardEnabled                      = $this->request->getQuery( 'wizard-enabled' ) === 'true';
-		$isWizardOrderGridEditPacketEnabled   = $this->request->getQuery( 'wizard-order-grid-edit-packet-enabled' ) === 'true';
 		$isWizardOrderDetailEditPacketEnabled = $this->request->getQuery( 'wizard-order-detail-edit-packet-enabled' ) === 'true';
 
 		if ( $isWizardEnabled ) {
@@ -52,9 +51,10 @@ class WizardAssetManager {
 				$this->enqueueSettingsTours();
 			}
 
-			if ( $isWizardOrderGridEditPacketEnabled && $this->contextResolver->isOrderGridPage() ) {
-				$this->createOrderGridEditPacketTour( $this->getBasicTranslations() );
+			if ( $this->contextResolver->isOrderGridPage() ) {
+				$this->enqueueOrderGridTours();
 			}
+
 			if ( $isWizardOrderDetailEditPacketEnabled && $this->contextResolver->isOrderDetailPage() ) {
 				$this->createOrderDetailEditPacketTour( $this->getBasicTranslations() );
 			}
@@ -101,6 +101,16 @@ class WizardAssetManager {
 
 		if ( $this->request->getQuery( 'wizard-advanced-tour-enabled' ) === 'true' ) {
 			$this->createAdvancedTour( $basicTranslations );
+		}
+	}
+
+	private function enqueueOrderGridTours(): void {
+		$basicTranslations = $this->getBasicTranslations();
+		if ( $this->request->getQuery( 'wizard-order-grid-edit-packet-enabled' ) === 'true' ) {
+			$this->createOrderGridEditPacketTour( $basicTranslations );
+		}
+		if ( $this->request->getQuery( 'wizard-order-grid-enabled' ) === 'true' ) {
+			$this->createOrderGridTour( $basicTranslations );
 		}
 	}
 
@@ -397,5 +407,51 @@ class WizardAssetManager {
 			],
 		];
 		$this->enqueueTourScript( 'admin-wizard-create-packet-metabox.js', array_merge( $translations, $basicTranslations ) );
+	}
+
+	private function createOrderGridTour( array $basicTranslations ): void {
+		$translations = [
+			'bulkActions'     => [
+				'title'       => $this->wpAdapter->__( 'Bulk actions', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'orderType'       => [
+				'title'       => $this->wpAdapter->__( 'Packeta shipping method', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'filterToSubmit'  => [
+				'title'       => $this->wpAdapter->__( 'Packeta orders to submit', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'filterToPrint'   => [
+				'title'       => $this->wpAdapter->__( 'Packeta orders to print', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'weight'          => [
+				'title'       => $this->wpAdapter->__( 'Weight', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'packeta'         => [
+				'title'       => $this->wpAdapter->__( 'Packeta', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'trackingNumber'  => [
+				'title'       => $this->wpAdapter->__( 'Tracking no.', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'status'          => [
+				'title'       => $this->wpAdapter->__( 'Packeta packet status', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'storedUntil'     => [
+				'title'       => $this->wpAdapter->__( 'Stored until', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'pickupOrCarrier' => [
+				'title'       => $this->wpAdapter->__( 'Pickup point or carrier', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+		];
+		$this->enqueueTourScript( 'admin-wizard-order-grid.js', array_merge( $translations, $basicTranslations ) );
 	}
 }
