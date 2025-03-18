@@ -13,6 +13,7 @@ use Packetery\Core;
 use Packetery\Core\Log\ILogger;
 use Packetery\Core\Log\Record;
 use Packetery\Module\Carrier\EntityRepository;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Upgrade\Version_1_4_2;
@@ -102,6 +103,11 @@ class Upgrade {
 	 */
 	private $carrierEntityRepository;
 
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Order\Repository $orderRepository,
 		MessageManager $messageManager,
@@ -111,7 +117,8 @@ class Upgrade {
 		Carrier\Repository $carrierRepository,
 		CustomsDeclaration\Repository $customsDeclarationRepository,
 		OptionsProvider $optionsProvider,
-		EntityRepository $carrierEntityRepository
+		EntityRepository $carrierEntityRepository,
+		WpAdapter $wpAdapter
 	) {
 		$this->orderRepository              = $orderRepository;
 		$this->messageManager               = $messageManager;
@@ -122,6 +129,7 @@ class Upgrade {
 		$this->customsDeclarationRepository = $customsDeclarationRepository;
 		$this->optionsProvider              = $optionsProvider;
 		$this->carrierEntityRepository      = $carrierEntityRepository;
+		$this->wpAdapter                    = $wpAdapter;
 	}
 
 	/**
@@ -131,15 +139,24 @@ class Upgrade {
 	 * @return void
 	 */
 	public function check(): void {
+
+		/**
+		 * Possibility to create or upgrade tables without version change.
+		 *
+		 * @since 2.0.2
+		 */
+		$forceCreateTables = (bool) $this->wpAdapter->applyFilters( 'packeta_force_create_tables', false );
+
 		$oldVersion = get_option( OptionNames::VERSION );
 		if ( $oldVersion === Plugin::VERSION ) {
+			if ( $forceCreateTables === true ) {
+				$this->runCreateTables();
+			}
+
 			return;
 		}
 
-		$this->createLogTable();
-		$this->createCarrierTable();
-		$this->createOrderTable();
-		$this->createCustomsDeclarationTables();
+		$this->runCreateTables();
 
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion !== null && $oldVersion !== false ) {
@@ -231,6 +248,13 @@ class Upgrade {
 		}
 
 		update_option( OptionNames::VERSION, Plugin::VERSION );
+	}
+
+	public function runCreateTables(): void {
+		$this->createLogTable();
+		$this->createCarrierTable();
+		$this->createOrderTable();
+		$this->createCustomsDeclarationTables();
 	}
 
 	/**
