@@ -140,19 +140,8 @@ class Upgrade {
 	 */
 	public function check(): void {
 
-		/**
-		 * Possibility to create or upgrade tables without version change.
-		 *
-		 * @since 2.0.2
-		 */
-		$forceCreateTables = (bool) $this->wpAdapter->applyFilters( 'packeta_force_create_tables', false );
-
 		$oldVersion = get_option( OptionNames::VERSION );
 		if ( $oldVersion === Plugin::VERSION ) {
-			if ( $forceCreateTables === true ) {
-				$this->runCreateTables();
-			}
-
 			return;
 		}
 
