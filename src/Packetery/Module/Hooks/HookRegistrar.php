@@ -376,6 +376,8 @@ class HookRegistrar {
 		$this->packetSynchronizer->register();
 
 		add_action( 'init', [ $this->shippingProvider, 'loadClasses' ] );
+
+		add_action( 'packeta_create_tables', [ $this->upgrade, 'runCreateTables' ] );
 	}
 
 	private function registerBackEnd(): void {

@@ -136,10 +136,7 @@ class Upgrade {
 			return;
 		}
 
-		$this->createLogTable();
-		$this->createCarrierTable();
-		$this->createOrderTable();
-		$this->createCustomsDeclarationTables();
+		$this->runCreateTables();
 
 		// If no previous version detected, no upgrade will be run.
 		if ( $oldVersion !== null && $oldVersion !== false ) {
@@ -231,6 +228,13 @@ class Upgrade {
 		}
 
 		update_option( OptionNames::VERSION, Plugin::VERSION );
+	}
+
+	public function runCreateTables(): void {
+		$this->createLogTable();
+		$this->createCarrierTable();
+		$this->createOrderTable();
+		$this->createCustomsDeclarationTables();
 	}
 
 	/**
