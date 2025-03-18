@@ -193,4 +193,36 @@ class OptionsProviderTest extends TestCase {
 
 		$this->assertSame( $expectedValue, $provider->isWcCarrierConfigEnabledNullable() );
 	}
+
+	public function testGetPacketAutoSubmissionMappedUniqueEvents(): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock
+			->method( 'getOption' )
+			->willReturnCallback(
+				static function ( string $key ): array {
+					if ( $key === OptionNames::PACKETERY_AUTO_SUBMISSION ) {
+						return [
+							'payment_method_events' => [
+								[
+									'event' => 'order_paid',
+								],
+								[
+									'event' => 'order_shipped',
+								],
+								[
+									'event' => null,
+								],
+							],
+						];
+					}
+
+					return [];
+				}
+			);
+
+		$provider = new OptionsProvider( $wpAdapterMock );
+
+		$result = $provider->getPacketAutoSubmissionMappedUniqueEvents();
+		$this->assertSame( [ 'order_paid', 'order_shipped' ], array_values( $result ) );
+	}
 }

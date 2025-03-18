@@ -9,6 +9,7 @@ use Packetery\Module\Carrier\CarrierUpdater;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options;
 use Packetery\Module\Options\OptionsProvider;
+use Packetery\Module\Order\PacketSynchronizer;
 use Packetery\Module\Product;
 use WP_Query;
 
@@ -39,18 +40,25 @@ class DashboardItemBuilder {
 	 */
 	private $carrierUpdater;
 
+	/**
+	 * @var PacketSynchronizer
+	 */
+	private $packetSynchronizer;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
 		DashboardHelper $dashboardHelper,
 		OptionsProvider $optionsProvider,
 		Carrier\EntityRepository $carrierEntityRepository,
-		CarrierUpdater $carrierUpdater
+		CarrierUpdater $carrierUpdater,
+		PacketSynchronizer $packetSynchronizer
 	) {
 		$this->wpAdapter               = $wpAdapter;
 		$this->dashboardHelper         = $dashboardHelper;
 		$this->optionsProvider         = $optionsProvider;
 		$this->carrierEntityRepository = $carrierEntityRepository;
 		$this->carrierUpdater          = $carrierUpdater;
+		$this->packetSynchronizer      = $packetSynchronizer;
 	}
 
 	/**
@@ -61,14 +69,14 @@ class DashboardItemBuilder {
 			new DashboardItem(
 				$this->wpAdapter->__( 'Basic settings of the Packeta plugin', 'packeta' ),
 				$this->wpAdapter->adminUrl( 'admin.php?page=' . Options\Page::SLUG . '&wizard-enabled=true&wizard-general-settings-tour-enabled=true' ),
-				'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam eget nisl. Integer in sapien.',
+				$this->wpAdapter->__( 'Start with this to start using the plugin.', 'packeta' ),
 				1,
 				$this->optionsProvider->get_api_password() !== null && $this->optionsProvider->get_sender() !== null
 			),
 			new DashboardItem(
 				$this->wpAdapter->__( 'Carrier type setting', 'packeta' ),
-				$this->wpAdapter->adminUrl( 'admin.php?page=' . Options\Page::SLUG . '&tab=advanced&wizard-enabled=true&wizard-advanced-tour-enabled=true' ),
-				'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam eget nisl. Integer in sapien.',
+				$this->wpAdapter->adminUrl( 'admin.php?page=' . Options\Page::SLUG . '&tab=' . Options\Page::TAB_ADVANCED . '&wizard-enabled=true&wizard-advanced-tour-enabled=true' ),
+				$this->wpAdapter->__( 'Here you can choose whether to use one shipping method for all carriers or separate methods for each carrier (recommended).', 'packeta' ),
 				2,
 				$this->optionsProvider->isWcCarrierConfigEnabledNullable() !== null
 			),
@@ -82,23 +90,39 @@ class DashboardItemBuilder {
 			new DashboardItem(
 				$this->wpAdapter->__( 'Carriers update', 'packeta' ),
 				$this->getCarrierUpdateUrl(),
-				'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam eget nisl. Integer in sapien.',
+				$this->wpAdapter->__( 'Load the current list of external carriers so that you can use them.', 'packeta' ),
 				4,
 				$this->carrierUpdater->getLastUpdate() !== null
 			),
 			new DashboardItem(
 				$this->wpAdapter->__( 'Carrier settings', 'packeta' ),
 				$this->wpAdapter->adminUrl( 'admin.php?page=' . Carrier\OptionsPage::SLUG ),
-				'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam eget nisl. Integer in sapien.',
+				$this->wpAdapter->__( 'Set prices, weight limits and other settings for the carriers you want to use.', 'packeta' ),
 				5,
 				count( $this->carrierEntityRepository->getAllActiveCarriersList() ) > 0
 			),
 			new DashboardItem(
 				$this->wpAdapter->__( 'Shipping zone settings', 'packeta' ),
-				'',
-				'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nullam eget nisl. Integer in sapien.',
+				$this->wpAdapter->adminUrl( 'admin.php?page=wc-settings&tab=shipping' ),
+				$this->wpAdapter->__( 'Assign shipping methods to WooCommerce zones so that they are offered at checkout.', 'packeta' ),
 				6,
 				$this->dashboardHelper->isPacketaShippingMethodActive()
+			),
+			new DashboardItem(
+				$this->wpAdapter->__( 'Set up shipment status tracking', 'packeta' ),
+				$this->wpAdapter->adminUrl( 'admin.php?page=' . Options\Page::SLUG . '&tab=' . Options\Page::TAB_PACKET_STATUS_SYNC . '&wizard-enabled=true&wizard-packet-status-tracking-tour-enabled=true' ),
+				$this->wpAdapter->__( 'Always keep an eye on the current status of your shipment. This status will be displayed in the order overview.', 'packeta' ),
+				7,
+				count( $this->optionsProvider->getStatusSyncingPacketStatuses( $this->packetSynchronizer->getDefaultPacketStatuses() ) ) > 0 &&
+				count( $this->optionsProvider->getExistingStatusSyncingOrderStatuses() ) > 0
+			),
+			new DashboardItem(
+				$this->wpAdapter->__( 'Set up automatic shipment submission', 'packeta' ),
+				$this->wpAdapter->adminUrl( 'admin.php?page=' . Options\Page::SLUG . '&tab=' . Options\Page::TAB_AUTO_SUBMISSION . '&wizard-enabled=true&wizard-auto-submission-tour-enabled=true' ),
+				$this->wpAdapter->__( 'Use this if you want to automatically submit shipments based on the order status.', 'packeta' ),
+				8,
+				$this->optionsProvider->isPacketAutoSubmissionEnabled() &&
+				count( $this->optionsProvider->getPacketAutoSubmissionMappedUniqueEvents() ) > 0
 			),
 		];
 	}
