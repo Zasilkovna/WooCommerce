@@ -120,6 +120,15 @@ class ModuleHelper {
 		}
 	}
 
+	public static function transformGlobalPost(): void {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing
+		foreach ( $_POST as $key => $value ) {
+			if ( is_int( $value ) ) {
+				$_POST[ $key ] = (string) $value;
+			}
+		}
+	}
+
 	/**
 	 * Gets WooCommerce version.
 	 *

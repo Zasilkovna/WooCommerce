@@ -17,6 +17,7 @@ require_once __DIR__ . '/deps/scoper-autoload.php';
 
 require_once __DIR__ . '/src/Packetery/Module/ModuleHelper.php';
 ModuleHelper::transformGlobalCookies();
+ModuleHelper::transformGlobalPost();
 
 $configurator = new Configurator();
 $configurator->setDebugMode( PACKETERY_DEBUG );
