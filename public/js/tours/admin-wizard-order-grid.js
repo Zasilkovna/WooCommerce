@@ -97,6 +97,10 @@ const driver = window.driver.js.driver;
 				if (!driverObj.hasNextStep() || window.confirm(wizardTourConfig.translations.areYouSure)) {
 					driverObj.destroy();
 				}
-			}
+			},
 		});
 driverObj.drive();
+
+setTimeout(() => {
+	driverObj.refresh();
+}, 1000);

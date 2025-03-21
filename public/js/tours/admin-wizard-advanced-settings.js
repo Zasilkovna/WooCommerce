@@ -36,3 +36,7 @@ const driverObj = driver(
 		}
 	});
 driverObj.drive();
+
+setTimeout(() => {
+	driverObj.refresh();
+}, 1000);

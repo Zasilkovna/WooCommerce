@@ -160,5 +160,8 @@
 				}
 			});
 		driverObj.drive();
+		setTimeout(() => {
+			driverObj.refresh();
+		}, 1000);
 	});
 })(jQuery);
