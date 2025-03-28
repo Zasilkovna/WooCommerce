@@ -696,7 +696,7 @@ class Order {
 	 * @return void
 	 */
 	public function setCalculatedWeight( ?float $weight ): void {
-		$this->calculatedWeight = CoreHelper::simplifyWeight( $weight );
+		$this->calculatedWeight = $weight;
 	}
 
 	/**
