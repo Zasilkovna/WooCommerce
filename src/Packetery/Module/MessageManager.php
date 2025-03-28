@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module;
 
 use Packetery\Latte\Engine;
+use Packetery\Module\Framework\WpAdapter;
 
 /**
  * Class Message_Manager
@@ -35,26 +36,30 @@ class MessageManager {
 	private $latteEngine;
 
 	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * Messages to be displayed.
 	 *
 	 * @var array<array<string, string>>
 	 */
 	private $messages = [];
 
-	/**
-	 * Message_Manager constructor.
-	 *
-	 * @param Engine $latteEngine PacketeryLatte engine.
-	 */
-	public function __construct( Engine $latteEngine ) {
+	public function __construct(
+		Engine $latteEngine,
+		WpAdapter $wpAdapter
+	) {
 		$this->latteEngine = $latteEngine;
+		$this->wpAdapter   = $wpAdapter;
 	}
 
 	/**
 	 * Inits manager on plugin load.
 	 */
 	public function init(): void {
-		$messages = get_transient( $this->getTransientName() );
+		$messages = $this->wpAdapter->getTransient( $this->getTransientName() );
 		if ( $messages === false ) {
 			$messages = [];
 		}
@@ -66,7 +71,7 @@ class MessageManager {
 	 * Gets transient name.
 	 */
 	private function getTransientName(): string {
-		return Transients::MESSAGE_MANAGER_MESSAGES_PREFIX . wp_get_session_token();
+		return Transients::MESSAGE_MANAGER_MESSAGES_PREFIX . $this->wpAdapter->getSessionToken();
 	}
 
 	/**
@@ -109,7 +114,7 @@ class MessageManager {
 	private function flashMessageArray( array $message ): void {
 		$this->messages[] = $message;
 
-		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );
+		$this->wpAdapter->setTransient( $this->getTransientName(), $this->messages, self::EXPIRATION );
 	}
 
 	/**
@@ -152,7 +157,7 @@ class MessageManager {
 			unset( $this->messages[ $key ] );
 		}
 
-		set_transient( $this->getTransientName(), $this->messages, self::EXPIRATION );
+		$this->wpAdapter->setTransient( $this->getTransientName(), $this->messages, self::EXPIRATION );
 
 		return $output;
 	}
