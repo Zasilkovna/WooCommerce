@@ -4,8 +4,6 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Checkout;
 
-use Packetery\Core\Api\Rest\PickupPointValidateRequest;
-use Packetery\Core\Entity;
 use Packetery\Module\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
@@ -13,14 +11,8 @@ use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WcAdapter;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order;
-use Packetery\Module\Order\PickupPointValidator;
 
 class CheckoutValidator {
-
-	/**
-	 * @var PickupPointValidator
-	 */
-	private $pickupPointValidator;
 
 	/**
 	 * @var WpAdapter
@@ -63,7 +55,6 @@ class CheckoutValidator {
 	private $carrierEntityRepository;
 
 	public function __construct(
-		PickupPointValidator $pickupPointValidator,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
 		CheckoutService $checkoutService,
@@ -73,7 +64,6 @@ class CheckoutValidator {
 		CarrierOptionsFactory $carrierOptionsFactory,
 		EntityRepository $carrierEntityRepository
 	) {
-		$this->pickupPointValidator    = $pickupPointValidator;
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
 		$this->checkoutService         = $checkoutService;
@@ -91,7 +81,6 @@ class CheckoutValidator {
 	 */
 	public function actionValidateCheckoutData(): void {
 		$chosenShippingMethod = $this->checkoutService->resolveChosenMethod();
-		$this->wcAdapter->sessionSet( PickupPointValidator::VALIDATION_HTTP_ERROR_SESSION_KEY, null );
 
 		if (
 			$chosenShippingMethod === null ||
@@ -119,7 +108,7 @@ class CheckoutValidator {
 		}
 
 		if ( $this->checkoutService->isPickupPointOrder() ) {
-			$this->validatePickupPoint( $checkoutData, $carrierId, $chosenShippingMethod );
+			$this->validatePickupPoint( $checkoutData, $carrierId );
 
 			return;
 		}
@@ -138,7 +127,7 @@ class CheckoutValidator {
 		}
 	}
 
-	private function validatePickupPoint( array $checkoutData, ?string $carrierId, string $chosenShippingMethod ): void {
+	private function validatePickupPoint( array $checkoutData, ?string $carrierId ): void {
 		$error = false;
 
 		$requiredAttributes = array_filter(
@@ -174,53 +163,7 @@ class CheckoutValidator {
 			)
 		) {
 			$this->wcAdapter->addNotice( $this->wpAdapter->__( 'The selected Packeta carrier is not available for the selected delivery country.', 'packeta' ), 'error' );
-			$error = true;
 		}
-		// @phpstan-ignore-next-line
-		if ( $error === false && PickupPointValidator::IS_ACTIVE ) {
-			$pickupPointId         = $checkoutData[ Order\Attribute::POINT_ID ];
-			$carriersForValidation = $chosenShippingMethod;
-			if ( $carrierId === '' ) {
-				$carrierId             = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
-				$carriersForValidation = Entity\Carrier::INTERNAL_PICKUP_POINTS_ID;
-			}
-			$pickupPointValidationResponse = $this->pickupPointValidator->validate(
-				$this->createPickupPointValidateRequest(
-					$pickupPointId,
-					$carrierId,
-					( is_numeric( $carrierId ) ? $pickupPointId : null ),
-					$carriersForValidation
-				)
-			);
-			if ( ! $pickupPointValidationResponse->isValid() ) {
-				$this->wcAdapter->addNotice( $this->wpAdapter->__( 'The selected Packeta pickup point could not be validated. Please select another.', 'packeta' ), 'error' );
-				foreach ( $pickupPointValidationResponse->getErrors() as $validationError ) {
-					$reason = $this->pickupPointValidator->getTranslatedError()[ $validationError['code'] ];
-					// translators: %s: Reason for validation failure.
-					$this->wcAdapter->addNotice( sprintf( $this->wpAdapter->__( 'Reason: %s', 'packeta' ), $reason ), 'error' );
-				}
-			}
-		}
-	}
-
-	private function createPickupPointValidateRequest(
-		string $pickupPointId,
-		?string $carrierId,
-		?string $pointCarrierId,
-		string $chosenShippingMethod
-	): PickupPointValidateRequest {
-		return new PickupPointValidateRequest(
-			$pickupPointId,
-			$carrierId,
-			$pointCarrierId,
-			$this->checkoutService->getCustomerCountry(),
-			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethod ),
-			false,
-			false,
-			$this->cartService->getCartWeightKg(),
-			$this->cartService->isAgeVerificationRequired(),
-			null
-		);
 	}
 
 	private function validateHomeDelivery( array $checkoutData, ?string $carrierId ): void {
