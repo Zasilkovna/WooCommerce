@@ -512,6 +512,7 @@ class Metabox {
 		} else {
 			$propsToSave[ Form::FIELD_WEIGHT ] = (float) $formValues[ Form::FIELD_WEIGHT ];
 		}
+		$order->setWeight( $propsToSave[ Form::FIELD_WEIGHT ] );
 
 		if ( $formValues[ Attribute::POINT_ID ] && $order->isPickupPointDelivery() ) {
 			foreach ( Attribute::$pickupPointAttributes as $pickupPointAttr ) {
