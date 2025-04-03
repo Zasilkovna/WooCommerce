@@ -161,4 +161,10 @@ class ContextResolver {
 
 		return null;
 	}
+
+	public function isPluginsOverviewPage(): bool {
+		global $pagenow;
+
+		return $pagenow === 'plugins.php';
+	}
 }
