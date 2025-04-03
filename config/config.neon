@@ -98,8 +98,9 @@ services:
 	- Packetery\Module\Order\CollectionPrint
 	- Packetery\Module\Order\PacketSynchronizer
 	- Packetery\Module\Order\PacketAutoSubmitter
-	requestFactory: Packetery\Nette\Http\RequestFactory
-	- @requestFactory::fromGlobals()
+	- Packetery\Nette\Http\RequestFactory
+	requestFactory: Packetery\Module\HttpRequestFactory(%consoleMode%, %disableGetPostCookieParsing%)
+	- @requestFactory::createHttpRequest()
 	- Packetery\Module\Upgrade
 	- Packetery\Module\Upgrade\Version_1_4_2
 	- Packetery\Module\QueryProcessor
