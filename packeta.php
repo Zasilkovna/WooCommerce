@@ -31,10 +31,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-if ( PHP_SAPI === 'cli' ) {
-	return;
-}
-
 /** @var Container $container */
 $container = require __DIR__ . '/bootstrap.php';
 /** @var Plugin $packetaPlugin */

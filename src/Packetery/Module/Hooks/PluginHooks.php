@@ -95,7 +95,7 @@ class PluginHooks {
 	 */
 	public function loadTranslation(): void {
 		$domain = Plugin::DOMAIN;
-		$this->wpAdapter->unloadTextDomain( $domain );
+		$this->wpAdapter->unloadTextDomain( $domain, true );
 		$locale = $this->moduleHelper->getLocale();
 		$moFile = WP_LANG_DIR . "/plugins/$domain-$locale.mo";
 

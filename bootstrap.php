@@ -6,19 +6,27 @@
  */
 
 use Packetery\Module\CompatibilityBridge;
-use Packetery\Module\ModuleHelper;
 use Packetery\Module\WpdbTracyPanel;
 use Packetery\Nette\Bootstrap\Configurator;
+use Packetery\Nette\Http\RequestFactory;
+use Packetery\Nette\InvalidStateException;
 use Packetery\Tracy\Debugger;
 
 require_once __DIR__ . '/constants.php';
 
 require_once __DIR__ . '/deps/scoper-autoload.php';
 
-require_once __DIR__ . '/src/Packetery/Module/ModuleHelper.php';
-ModuleHelper::transformGlobalCookies();
+$disableGetPostCookieParsing = false;
+try {
+	(new RequestFactory())->fromGlobals();
+} catch ( InvalidStateException $e) {
+	$disableGetPostCookieParsing = true;
+}
 
 $configurator = new Configurator();
+$configurator->addDynamicParameters([
+	'disableGetPostCookieParsing' => $disableGetPostCookieParsing,
+]);
 $configurator->setDebugMode( PACKETERY_DEBUG );
 
 Debugger::$logDirectory = PACKETERY_PLUGIN_DIR . '/log';
