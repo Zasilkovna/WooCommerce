@@ -7,13 +7,7 @@ use Packetery\Nette\Http\Request;
 use Packetery\Nette\Http\RequestFactory;
 use Packetery\Nette\Http\UrlScript;
 
-final class HttpRequestFactory
-{
-	/**
-	 * @var RequestFactory
-	 */
-	private $originalHttpRequestFactory;
-
+final class HttpRequestFactory {
 	/**
 	 * @var bool
 	 */
@@ -24,27 +18,30 @@ final class HttpRequestFactory
 	 */
 	private $binary;
 
+	/**
+	 * @var RequestFactory
+	 */
+	private $originalHttpRequestFactory;
+
 	public function __construct(
 		bool $consoleMode,
 		bool $binary,
 		RequestFactory $originalHttpRequestFactory
-	)
-	{
+	) {
+		$this->consoleMode                = $consoleMode;
+		$this->binary                     = $binary;
 		$this->originalHttpRequestFactory = $originalHttpRequestFactory;
-		$this->consoleMode = $consoleMode;
-		$this->binary = $binary;
 	}
 
+	public function createHttpRequest(): Request {
+		if ( $this->consoleMode ) {
+			$urlScript = new UrlScript( '/', '/' );
 
-	public function createHttpRequest(): Request
-	{
-		if ($this->consoleMode) {
-			$urlScript = new UrlScript('/', '/');
-			return new Request($urlScript);
+			return new Request( $urlScript );
 		}
 
-		$this->originalHttpRequestFactory->setBinary($this->binary);
+		$this->originalHttpRequestFactory->setBinary( $this->binary );
+
 		return $this->originalHttpRequestFactory->fromGlobals();
 	}
-
 }

@@ -18,15 +18,17 @@ require_once __DIR__ . '/deps/scoper-autoload.php';
 
 $disableGetPostCookieParsing = false;
 try {
-	(new RequestFactory())->fromGlobals();
-} catch ( InvalidStateException $e) {
+	( new RequestFactory() )->fromGlobals();
+} catch ( InvalidStateException $invalidStateException ) {
 	$disableGetPostCookieParsing = true;
 }
 
 $configurator = new Configurator();
-$configurator->addDynamicParameters([
-	'disableGetPostCookieParsing' => $disableGetPostCookieParsing,
-]);
+$configurator->addDynamicParameters(
+	[
+		'disableGetPostCookieParsing' => $disableGetPostCookieParsing,
+	]
+);
 $configurator->setDebugMode( PACKETERY_DEBUG );
 
 Debugger::$logDirectory = PACKETERY_PLUGIN_DIR . '/log';

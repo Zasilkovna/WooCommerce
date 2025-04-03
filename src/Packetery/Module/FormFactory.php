@@ -27,7 +27,7 @@ class FormFactory {
 	 */
 	private $request;
 
-	public function __construct(Request $request) {
+	public function __construct( Request $request ) {
 		add_action(
 			'init',
 			function () {
@@ -57,7 +57,7 @@ class FormFactory {
 	 * @return Form
 	 */
 	public function create( ?string $name = null ): Form {
-		$form = new Form( $name );
+		$form              = new Form( $name );
 		$form->httpRequest = $this->request;
 		$form->allowCrossOrigin();
 
