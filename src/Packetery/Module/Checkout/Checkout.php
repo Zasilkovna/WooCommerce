@@ -74,6 +74,11 @@ class Checkout {
 	private $renderer;
 
 	/**
+	 * @var CheckoutEventHandler
+	 */
+	private $checkoutEventHandler;
+
+	/**
 	 * @var CartService
 	 */
 	private $cartService;
@@ -105,6 +110,7 @@ class Checkout {
 		PaymentHelper $paymentHelper,
 		CheckoutService $checkoutService,
 		CheckoutRenderer $renderer,
+		CheckoutEventHandler $checkoutEventHandler,
 		CartService $cartService,
 		SessionService $sessionService,
 		CheckoutValidator $validator,
@@ -121,6 +127,7 @@ class Checkout {
 		$this->paymentHelper           = $paymentHelper;
 		$this->checkoutService         = $checkoutService;
 		$this->renderer                = $renderer;
+		$this->checkoutEventHandler    = $checkoutEventHandler;
 		$this->cartService             = $cartService;
 		$this->sessionService          = $sessionService;
 		$this->validator               = $validator;
@@ -128,6 +135,8 @@ class Checkout {
 	}
 
 	public function registerHooks(): void {
+		$this->checkoutEventHandler->register();
+
 		// This action works for both classic and Divi templates.
 		$this->wpAdapter->addAction(
 			'woocommerce_review_order_before_submit',

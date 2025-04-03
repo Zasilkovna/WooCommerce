@@ -56,6 +56,7 @@ services:
 	- Packetery\Module\Checkout\Checkout
 	- Packetery\Module\Checkout\CheckoutService
 	- Packetery\Module\Checkout\CheckoutRenderer
+	- Packetery\Module\Checkout\CheckoutEventHandler
 	- Packetery\Module\Checkout\CheckoutStorage
 	- Packetery\Module\Checkout\CheckoutSettings
 	- Packetery\Module\Checkout\CheckoutValidator

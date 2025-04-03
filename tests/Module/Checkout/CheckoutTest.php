@@ -8,6 +8,7 @@ use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\Options;
 use Packetery\Module\Checkout\CartService;
 use Packetery\Module\Checkout\Checkout;
+use Packetery\Module\Checkout\CheckoutEventHandler;
 use Packetery\Module\Checkout\CheckoutRenderer;
 use Packetery\Module\Checkout\CheckoutService;
 use Packetery\Module\Checkout\CheckoutValidator;
@@ -37,6 +38,7 @@ class CheckoutTest extends TestCase {
 	private Repository|MockObject $orderRepository;
 	private CurrencySwitcherService|MockObject $currencySwitcherService;
 	private CheckoutRenderer|MockObject $checkoutRenderer;
+	private CheckoutEventHandler|MockObject $checkoutEventHandler;
 	private SessionService|MockObject $sessionService;
 	private CheckoutValidator|MockObject $checkoutValidator;
 	private OrderUpdater|MockObject $orderUpdater;
@@ -55,6 +57,7 @@ class CheckoutTest extends TestCase {
 		$this->paymentHelper           = $this->createMock( PaymentHelper::class );
 		$this->checkoutService         = $this->createMock( CheckoutService::class );
 		$this->checkoutRenderer        = $this->createMock( CheckoutRenderer::class );
+		$this->checkoutEventHandler    = $this->createMock( CheckoutEventHandler::class );
 		$this->cartService             = $this->createMock( CartService::class );
 		$this->sessionService          = $this->createMock( SessionService::class );
 		$this->checkoutValidator       = $this->createMock( CheckoutValidator::class );
@@ -73,6 +76,7 @@ class CheckoutTest extends TestCase {
 			$this->paymentHelper,
 			$this->checkoutService,
 			$this->checkoutRenderer,
+			$this->checkoutEventHandler,
 			$this->cartService,
 			$this->sessionService,
 			$this->checkoutValidator,
