@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.7.2
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 9.7.1
@@ -62,19 +62,14 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.0.2 =
+Fixed: Fixed wp-cli compatibility issue.
+Fixed: In rare cases, translating the plugin into other languages did not work. However, we are not entirely sure that this fix will successfully resolve the issue.
+Fixed: The plugin will no longer display an error if $_POST contains invalid values from another plugin.
+Fixed: The plugin will no longer display an error if the WP methods delete_transient() or set_transient() return a different return value than the one specified in the PHPDoc.
+
 = 2.0.1 =
 Fixed: In certain situations, there was an error when displaying the "Log" page
 Fixed: In the order list, there was an error when displaying the date in the "saved to" column for orders to a pickup point if the e-shop uses shipment tracking
-
-= 2.0.0 =
-Added: It is now possible to enable advanced shipping settings in the plugin. In the shipping zones, it is then possible to set the shipping method for individual Packeta carriers.
-Added: It is now possible to set the maximum dimensions of the shipment for each carrier.
-Added: It is now possible to choose in the settings whether the dimensions of the shipment will be entered in mm or cm.
-Added: It is now possible to extend the deadline for picking up the shipment for an order.
-Added: The product dimensions are passed to the widget for selecting a pickup location. The widget will then only offer pickup locations to which the shipment can be delivered.
-Updated: Optimization of the packetery_order table.
-Updated: Improvement of block checkout support.
-Fixed various bugs.
-Improvement of plugin stability.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)
