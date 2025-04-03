@@ -209,7 +209,7 @@ class ShippingRateFactory {
 		if ( $this->isFreeShippingApplicable( $cost ) ) {
 			$carrierName = $this->formatCarrierNameWithFreeShipping( $carrierName );
 		}
-		$taxes = null;
+
 		if ( $cost > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$rates            = $this->wcAdapter->taxGetShippingTaxRates();
 			$taxes            = $this->wcAdapter->taxCalcInclusiveTax( $cost, $rates );
@@ -230,9 +230,10 @@ class ShippingRateFactory {
 			}
 
 			$cost -= array_sum( $taxes );
+			$cost  = round( $cost, wc_get_price_decimals() );
 		}
 
-		return $this->rateCalculator->createShippingRate( $carrierName, $rateId, $cost, $taxes );
+		return $this->rateCalculator->createShippingRate( $carrierName, $rateId, $cost );
 	}
 
 	private function formatCarrierNameWithFreeShipping( string $carrierName ): string {

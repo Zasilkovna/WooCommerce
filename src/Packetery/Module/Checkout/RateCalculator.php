@@ -165,20 +165,17 @@ class RateCalculator {
 	}
 
 	/**
-	 * @param string       $name
-	 * @param string       $optionId
-	 * @param float        $taxExclusiveCost
-	 * @param float[]|null $taxes Taxes. It is going to be calculated if null.
+	 * @param string $name
+	 * @param string $optionId
+	 * @param float  $taxExclusiveCost
 	 *
 	 * @return array<string, string|float|array>
 	 */
-	public function createShippingRate( string $name, string $optionId, float $taxExclusiveCost, ?array $taxes ): array {
+	public function createShippingRate( string $name, string $optionId, float $taxExclusiveCost ): array {
 		return [
-			'label'    => $name,
-			'id'       => $optionId,
-			'cost'     => $taxExclusiveCost,
-			'taxes'    => $taxes ?? '',
-			'calc_tax' => 'per_order',
+			'label' => $name,
+			'id'    => $optionId,
+			'cost'  => $taxExclusiveCost,
 		];
 	}
 
