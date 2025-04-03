@@ -35,7 +35,10 @@ trait TransientTrait {
 		return set_transient( $transientName, $transientValue, $expiration );
 	}
 
-	public function deleteTransient( string $transientName ): bool {
+	/**
+	 * @return mixed Because the function delete_transient applies hooks, it can return anything
+	 */
+	public function deleteTransient( string $transientName ) {
 		return delete_transient( $transientName );
 	}
 }
