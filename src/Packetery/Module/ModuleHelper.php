@@ -103,24 +103,6 @@ class ModuleHelper {
 	}
 
 	/**
-	 * Introduced as ManageWP Worker plugin hack fix.
-	 *
-	 * @return void
-	 */
-	public static function transformGlobalCookies(): void {
-		if ( count( $_COOKIE ) === 0 ) {
-			return;
-		}
-		foreach ( $_COOKIE as $key => $value ) {
-			// @codingStandardsIgnoreStart
-			if ( is_int( $value ) ) {
-				$_COOKIE[ $key ] = (string) $value;
-			}
-			// @codingStandardsIgnoreEnd
-		}
-	}
-
-	/**
 	 * Gets WooCommerce version.
 	 *
 	 * @return string|null

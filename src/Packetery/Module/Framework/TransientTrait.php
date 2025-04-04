@@ -29,13 +29,16 @@ trait TransientTrait {
 	 * @param mixed  $transientValue
 	 * @param int    $expiration
 	 *
-	 * @return bool
+	 * @return mixed Because the function set_transient applies hooks, it can return anything
 	 */
-	public function setTransient( string $transientName, $transientValue, int $expiration = 0 ): bool {
+	public function setTransient( string $transientName, $transientValue, int $expiration = 0 ) {
 		return set_transient( $transientName, $transientValue, $expiration );
 	}
 
-	public function deleteTransient( string $transientName ): bool {
+	/**
+	 * @return mixed Because the function delete_transient applies hooks, it can return anything
+	 */
+	public function deleteTransient( string $transientName ) {
 		return delete_transient( $transientName );
 	}
 }

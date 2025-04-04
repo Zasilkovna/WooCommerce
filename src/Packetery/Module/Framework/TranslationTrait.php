@@ -19,8 +19,8 @@ trait TranslationTrait {
 		return get_user_locale();
 	}
 
-	public function unloadTextDomain( string $domain ): void {
-		unload_textdomain( $domain );
+	public function unloadTextDomain( string $domain, bool $reloadable ): void {
+		unload_textdomain( $domain, $reloadable );
 	}
 
 	public function loadPluginTextDomain( string $domain ): void {
