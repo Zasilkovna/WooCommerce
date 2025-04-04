@@ -368,5 +368,23 @@ class AssetManager {
 		if ( $this->contextResolver->isConfirmModalPage() ) {
 			$this->enqueueScript( 'packetery-confirm', 'public/js/confirm.js', true, [ 'jquery', 'backbone' ] );
 		}
+		if ( $this->contextResolver->isPluginsOverviewPage() ) {
+			$this->enqueueScript(
+				'packetery-admin-confirm-deactivation',
+				'public/js/admin-confirm-deactivation.js',
+				true
+			);
+
+			$this->wpAdapter->localizeScript(
+				'packetery-admin-confirm-deactivation',
+				'translationsDeactivation',
+				[
+					'confirmDeactivation' => $this->wpAdapter->__(
+						'When uninstalling the plugin, ALL data and settings will be removed only if the PACKETERY_REMOVE_ALL_DATA constant is defined in wp-config.php and is set to true. This is to prevent data loss when removing the plugin from the backend and to ensure that only the site owner can perform this action.',
+						'packeta'
+					),
+				]
+			);
+		}
 	}
 }

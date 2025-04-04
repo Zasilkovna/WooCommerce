@@ -122,6 +122,14 @@ class PluginHooks {
 
 		array_unshift( $links, $settingsLink );
 
+		if ( isset( $links['deactivate'] ) && is_string( $links['deactivate'] ) === true ) {
+			$links['deactivate'] = str_replace(
+				'<a ',
+				'<a class="js-packetery-deactivate" ',
+				$links['deactivate']
+			);
+		}
+
 		return $links;
 	}
 
