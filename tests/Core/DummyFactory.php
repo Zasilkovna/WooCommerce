@@ -4,7 +4,6 @@ declare( strict_types=1 );
 
 namespace Tests\Core;
 
-use Packetery\Core\Api\Rest\PickupPointValidateRequest;
 use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Address;
 use Packetery\Core\Entity\Carrier;
@@ -276,21 +275,6 @@ class DummyFactory {
 			1,
 			'de',
 			1.25,
-		);
-	}
-
-	public static function getEmptyPickupPointValidateRequest(): PickupPointValidateRequest {
-		return new PickupPointValidateRequest(
-			'dummyPointId',
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
-			null,
 		);
 	}
 }

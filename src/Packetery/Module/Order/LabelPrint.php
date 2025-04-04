@@ -371,7 +371,6 @@ class LabelPrint {
 	private function requestPacketaLabels( int $offset, array $packetIds ): Response\PacketsLabelsPdf {
 		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
-		// TODO: is possible to merge following part of requestPacketaLabels and requestCarrierLabels?
 
 		foreach ( $packetIds as $orderId => $packetId ) {
 			$record          = new Log\Record();

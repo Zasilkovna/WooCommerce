@@ -64,7 +64,6 @@ class Entity {
 	public function getDisallowedShippingRateChoices(): array {
 		$choices = $this->product->get_meta( self::META_DISALLOWED_SHIPPING_RATES );
 		if ( ! is_array( $choices ) ) {
-			// TODO: log this event, really happened.
 			return [];
 		}
 
