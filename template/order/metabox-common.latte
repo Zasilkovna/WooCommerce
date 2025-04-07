@@ -19,6 +19,13 @@
 </ul>
 
 <div class="packetery-metabox-overview-buttons">
+	<a
+			class="button dashicons dashicons-controls-play packetery-dashicons-button-fix"
+			href="{$runWizardUrl}"
+	>
+		<span class="packetery-dashicons-button-fix-text">{$translations['runWizard']}</span>
+	</a>
+
 	<a n:if="$showLogsLink" class="button packetery-js-wizard-metabox-logs-link" href="{$showLogsLink}">{$translations['showLogs']}</a>
 	<div n:if="isset($packetSubmitUrl)" class="packetery-metabox-button-wrapper packetery-js-wizard-metabox-button-submit-packet">
 		<a
