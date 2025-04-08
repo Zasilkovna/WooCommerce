@@ -4,7 +4,10 @@ namespace Packetery\Module\Views;
 
 use Packetery\Module\ContextResolver;
 use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Options\OptionNames;
 use Packetery\Module\Options\Page;
+use Packetery\Module\Order\DetailCommonLogic;
+use Packetery\Module\Shipping\ShippingProvider;
 use Packetery\Nette\Http\Request;
 
 class WizardAssetManager {
@@ -28,24 +31,33 @@ class WizardAssetManager {
 	 */
 	private $contextResolver;
 
+	/**
+	 * @var DetailCommonLogic
+	 */
+	private $detailCommonLogic;
+
 	public function __construct(
 		AssetManager $assetManager,
 		Request $request,
 		WpAdapter $wpAdapter,
-		ContextResolver $contextResolver
+		ContextResolver $contextResolver,
+		DetailCommonLogic $detailCommonLogic
 	) {
-		$this->assetManager    = $assetManager;
-		$this->request         = $request;
-		$this->wpAdapter       = $wpAdapter;
-		$this->contextResolver = $contextResolver;
+		$this->assetManager      = $assetManager;
+		$this->request           = $request;
+		$this->wpAdapter         = $wpAdapter;
+		$this->contextResolver   = $contextResolver;
+		$this->detailCommonLogic = $detailCommonLogic;
 	}
 
 	public function enqueueWizardAssets(): void {
 		$page                                 = $this->request->getQuery( 'page' );
 		$isWizardEnabled                      = $this->request->getQuery( 'wizard-enabled' ) === 'true';
 		$isWizardOrderDetailEditPacketEnabled = $this->request->getQuery( 'wizard-order-detail-edit-packet-enabled' ) === 'true';
+		$isItFirstRunOrderDetailEditPacket    = (bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET );
+		$isItFirstRunOrderOrderGridEditPacket = (bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET );
 
-		if ( $isWizardEnabled ) {
+		if ( $isWizardEnabled || $isItFirstRunOrderDetailEditPacket || $isItFirstRunOrderOrderGridEditPacket ) {
 			$this->enqueueBaseAssets();
 			if ( $page === Page::SLUG ) {
 				$this->enqueueSettingsTours();
@@ -55,7 +67,8 @@ class WizardAssetManager {
 				$this->enqueueOrderGridTours();
 			}
 
-			if ( $isWizardOrderDetailEditPacketEnabled && $this->contextResolver->isOrderDetailPage() ) {
+			if ( ( $isWizardOrderDetailEditPacketEnabled || $isItFirstRunOrderDetailEditPacket ) && $this->detailCommonLogic->isPacketeryOrder() ) {
+				update_option( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET, 0 );
 				$this->createOrderDetailEditPacketTour( $this->getBasicTranslations() );
 			}
 		}
@@ -106,8 +119,13 @@ class WizardAssetManager {
 
 	private function enqueueOrderGridTours(): void {
 		$basicTranslations = $this->getBasicTranslations();
-		if ( $this->request->getQuery( 'wizard-order-grid-edit-packet-enabled' ) === 'true' ) {
-			$this->createOrderGridEditPacketTour( $basicTranslations );
+		if ( $this->request->getQuery( 'wizard-order-grid-edit-packet-enabled' ) === 'true' ||
+			(bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET )
+		) {
+			if ( $this->hasTableGridOurShippingMethods() ) {
+				update_option( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET, 0 );
+				$this->createOrderGridEditPacketTour( $basicTranslations );
+			}
 		}
 		if ( $this->request->getQuery( 'wizard-order-grid-enabled' ) === 'true' ) {
 			$this->createOrderGridTour( $basicTranslations );
@@ -453,5 +471,29 @@ class WizardAssetManager {
 			],
 		];
 		$this->enqueueTourScript( 'admin-wizard-order-grid.js', array_merge( $translations, $basicTranslations ) );
+	}
+
+	private function hasTableGridOurShippingMethods(): bool {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only reading paged parameter for listing
+		$page  = isset( $_GET['paged'] ) ? max( 1, (int) $_GET['paged'] ) : 1;
+		$limit = get_option( 'edit_shop_order_per_page', 20 );
+
+		$orders = wc_get_orders(
+			[
+				'limit'   => $limit,
+				'page'    => $page,
+				'status'  => array_keys( wc_get_order_statuses() ),
+				'orderby' => 'date',
+				'order'   => 'DESC',
+			]
+		);
+
+		foreach ( $orders as $order ) {
+			if ( ShippingProvider::wcOrderHasOurMethod( $order ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

@@ -225,6 +225,14 @@ class Upgrade {
 
 				update_option( OptionNames::PACKETERY, $generalSettings );
 			}
+
+			if ( version_compare( $oldVersion, '2.1.0', '<' ) ) {
+				add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET, 0 );
+				add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET, 0 );
+			}
+		} else {
+			add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET, 1 );
+			add_option( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET, 1 );
 		}
 
 		update_option( OptionNames::VERSION, Plugin::VERSION );
