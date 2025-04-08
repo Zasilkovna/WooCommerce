@@ -13,6 +13,8 @@ use Packetery\Core\Log\Record;
 use Packetery\Latte\Engine;
 use Packetery\Module\Carrier\CountryListingPage;
 use Packetery\Module\Checkout\CurrencySwitcherService;
+use Packetery\Module\Framework\WcAdapter;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log\DbLogger;
 use Packetery\Module\ModuleHelper;
 use Packetery\Nette\Http;
@@ -58,13 +60,25 @@ class Exporter {
 	 */
 	private $moduleHelper;
 
+	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
+	 * @var WcAdapter
+	 */
+	private $wcAdapter;
+
 	public function __construct(
 		Http\Request $httpRequest,
 		Engine $latteEngine,
 		CountryListingPage $countryListingPage,
 		OptionsProvider $optionsProvider,
 		DbLogger $dbLogger,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		WpAdapter $wpAdapter,
+		WcAdapter $wcAdapter
 	) {
 		$this->httpRequest        = $httpRequest;
 		$this->latteEngine        = $latteEngine;
@@ -72,6 +86,8 @@ class Exporter {
 		$this->optionsProvider    = $optionsProvider;
 		$this->dbLogger           = $dbLogger;
 		$this->moduleHelper       = $moduleHelper;
+		$this->wpAdapter          = $wpAdapter;
+		$this->wcAdapter          = $wcAdapter;
 	}
 
 	/**
@@ -102,6 +118,21 @@ class Exporter {
 		$globalSettings['woocommerce_ship_to_countries']          = get_option( 'woocommerce_ship_to_countries' );
 		$globalSettings['woocommerce_specific_ship_to_countries'] = get_option( 'woocommerce_specific_ship_to_countries' );
 
+		$shippingTaxClass = $this->wpAdapter->getOption( 'woocommerce_shipping_tax_class' );
+
+		$taxes = [
+			'calc_taxes'                  => $this->wpAdapter->getOption( 'woocommerce_calc_taxes' ),
+			'prices_include_tax'          => $this->wpAdapter->getOption( 'woocommerce_prices_include_tax' ),
+			'tax_based_on'                => $this->wpAdapter->getOption( 'woocommerce_tax_based_on' ),
+			'shipping_tax_class'          => $shippingTaxClass,
+			'tax_round_at_subtotal'       => $this->wpAdapter->getOption( 'woocommerce_tax_round_at_subtotal' ),
+			'tax_classes'                 => $this->wpAdapter->getOption( 'woocommerce_tax_classes' ),
+			'tax_display_shop'            => $this->wpAdapter->getOption( 'woocommerce_tax_display_shop' ),
+			'tax_display_cart'            => $this->wpAdapter->getOption( 'woocommerce_tax_display_cart' ),
+			'tax_total_display'           => $this->wpAdapter->getOption( 'woocommerce_tax_total_display' ),
+			'shipping_tax_class_settings' => $this->wcAdapter->taxGetRates( $shippingTaxClass ),
+		];
+
 		$activeTheme            = wp_get_theme();
 		$themeLatestVersion     = \WC_Admin_Status::get_latest_theme_version( $activeTheme );
 		$themeLatestVersionInfo = ( $themeLatestVersion !== $activeTheme->version ? ' (' . $themeLatestVersion . ' available)' : '' );
@@ -119,6 +150,7 @@ class Exporter {
 			'lastCarrierUpdate' => $this->countryListingPage->getLastUpdate(),
 			'carriers'          => $this->formatVariable( $this->countryListingPage->getCarriersForOptionsExport(), 0, true ),
 			'zones'             => $this->formatVariable( \WC_Shipping_Zones::get_zones() ),
+			'taxes'             => $this->formatVariable( $taxes ),
 			'lastFiveDaysLogs'  => $this->formatVariable( $this->remapLogRecords( $this->dbLogger->getForPeriodAsArray( [ [ 'after' => '5 days ago' ] ] ) ) ),
 			'generated'         => gmdate( 'Y-m-d H:i:s' ),
 			/**

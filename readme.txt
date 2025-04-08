@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.7.2
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 9.7.1
@@ -62,6 +62,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.0.3 =
+Added: Added taxes settings to options export.
+
 = 2.0.2 =
 Fixed: Fixed wp-cli compatibility issue.
 Fixed: In rare cases, translating the plugin into other languages did not work. However, we are not entirely sure that this fix will successfully resolve the issue.

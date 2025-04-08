@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.0.3 =
+Added: Added taxes settings to options export.
+
 = 2.0.2 =
 Fixed: Fixed wp-cli compatibility issue.
 Fixed: In rare cases, translating the plugin into other languages did not work. However, we are not entirely sure that this fix will successfully resolve the issue.
