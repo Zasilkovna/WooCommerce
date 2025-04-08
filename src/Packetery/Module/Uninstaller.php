@@ -42,11 +42,12 @@ class Uninstaller {
 		if ( defined( 'PACKETERY_DEBUG' ) && constant( 'PACKETERY_DEBUG' ) === true ) {
 			return;
 		}
-
-		if ( $this->wpAdapter->isMultisite() ) {
-			$this->cleanUpForMultisite();
-		} else {
-			$this->cleanUp();
+		if ( defined( 'PACKETERY_REMOVE_ALL_DATA' ) && constant( 'PACKETERY_REMOVE_ALL_DATA' ) === true ) {
+			if ( $this->wpAdapter->isMultisite() ) {
+				$this->cleanUpForMultisite();
+			} else {
+				$this->cleanUp();
+			}
 		}
 	}
 
