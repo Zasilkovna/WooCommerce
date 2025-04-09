@@ -64,6 +64,7 @@ Please contact us at e-commerce.support@packeta.com .
 == Changelog ==
 = 2.0.3 =
 Added: Added taxes settings to options export.
+Fixed: Resolved error occuring when running in CLI environment.
 
 = 2.0.2 =
 Fixed: Fixed wp-cli compatibility issue.

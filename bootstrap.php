@@ -17,10 +17,12 @@ require_once __DIR__ . '/constants.php';
 require_once __DIR__ . '/deps/scoper-autoload.php';
 
 $disableGetPostCookieParsing = false;
-try {
-	( new RequestFactory() )->fromGlobals();
-} catch ( InvalidStateException $invalidStateException ) {
-	$disableGetPostCookieParsing = true;
+if ( PHP_SAPI !== 'cli' ) {
+	try {
+		( new RequestFactory() )->fromGlobals();
+	} catch ( InvalidStateException $invalidStateException ) {
+		$disableGetPostCookieParsing = true;
+	}
 }
 
 $configurator = new Configurator();
