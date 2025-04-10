@@ -90,7 +90,10 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		$this->tax_status = 'taxable';
 
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-		$this->options = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+		if ( $this->instance_id !== 0 ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			$this->options = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+		}
 
 		$this->init();
 		$this->shippingRateFactory = $this->container->getByType( ShippingRateFactory::class );
@@ -159,7 +162,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		);
 
 		$latteParams = [
-			'options'             => $this->options,
 			'carrierSettingsLink' => $carrierSettingsLinkBase,
 			'translations'        => [
 				'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
