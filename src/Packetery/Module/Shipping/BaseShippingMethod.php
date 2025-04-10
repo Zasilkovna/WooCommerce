@@ -86,9 +86,14 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 			'instance-settings',
 			'instance-settings-modal',
 		];
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->tax_status = 'taxable';
 
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-		$this->options = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+		if ( $this->instance_id !== 0 ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+			$this->options = $this->wpAdapter->getOption( sprintf( 'woocommerce_%s_%s_settings', $this->id, $this->instance_id ) );
+		}
 
 		$this->init();
 		$this->shippingRateFactory = $this->container->getByType( ShippingRateFactory::class );
@@ -157,7 +162,6 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		);
 
 		$latteParams = [
-			'options'             => $this->options,
 			'carrierSettingsLink' => $carrierSettingsLinkBase,
 			'translations'        => [
 				'carrierSettingsLinkText' => __( 'Configure selected carrier', 'packeta' ),
@@ -172,6 +176,10 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				'default'     => $this->method_title,
 				'desc_tip'    => true,
+			],
+			'tax_status'  => [
+				'type'    => 'hidden',
+				'default' => 'taxable',
 			],
 			'custom_html' => [
 				'title'       => '',
