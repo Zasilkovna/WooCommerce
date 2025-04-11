@@ -184,6 +184,13 @@ class GridExtender {
 		];
 		$htmlLinks['js-wizard-packetery-filter-orders-to-print'] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
 
+		$latteParams                                     = [
+			'link'        => $this->wpAdapter->adminUrl( 'admin.php?page=wc-orders&wizard-enabled=true&wizard-order-grid-enabled=true' ),
+			'title'       => $this->wpAdapter->__( 'Use this link to start interactive tutorial', 'packeta' ),
+			'escapedText' => '&#9654; ' . htmlspecialchars( $this->wpAdapter->__( 'Run Packeta wizard', 'packeta' ) ),
+		];
+		$htmlLinks['js-wizard-packetery-order-grid-run'] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/unescaped-link.latte', $latteParams );
+
 		return $htmlLinks;
 	}
 
