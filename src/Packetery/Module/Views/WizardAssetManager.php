@@ -53,7 +53,6 @@ class WizardAssetManager {
 	public function enqueueWizardAssets(): void {
 		$page                                 = $this->request->getQuery( 'page' );
 		$isWizardEnabled                      = $this->request->getQuery( 'wizard-enabled' ) === 'true';
-		$isWizardOrderDetailEditPacketEnabled = $this->request->getQuery( 'wizard-order-detail-edit-packet-enabled' ) === 'true';
 		$isItFirstRunOrderDetailEditPacket    = (bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET );
 		$isItFirstRunOrderOrderGridEditPacket = (bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET );
 
@@ -64,12 +63,11 @@ class WizardAssetManager {
 			}
 
 			if ( $this->contextResolver->isOrderGridPage() ) {
-				$this->enqueueOrderGridTours();
+				$this->enqueueOrderGridTours( $isItFirstRunOrderOrderGridEditPacket );
 			}
 
-			if ( ( $isWizardOrderDetailEditPacketEnabled || $isItFirstRunOrderDetailEditPacket ) && $this->detailCommonLogic->isPacketeryOrder() ) {
-				update_option( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET, 0 );
-				$this->createOrderDetailEditPacketTour( $this->getBasicTranslations() );
+			if ( $this->detailCommonLogic->isPacketeryOrder() ) {
+				$this->enqueueOrderDetailTours( $isItFirstRunOrderDetailEditPacket );
 			}
 		}
 	}
@@ -117,10 +115,10 @@ class WizardAssetManager {
 		}
 	}
 
-	private function enqueueOrderGridTours(): void {
+	private function enqueueOrderGridTours( bool $isItFirstRunOrderOrderGridEditPacket ): void {
 		$basicTranslations = $this->getBasicTranslations();
 		if ( $this->request->getQuery( 'wizard-order-grid-edit-packet-enabled' ) === 'true' ||
-			(bool) $this->wpAdapter->getOption( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET )
+			$isItFirstRunOrderOrderGridEditPacket
 		) {
 			if ( $this->hasTableGridOurShippingMethods() ) {
 				update_option( OptionNames::PACKETERY_TUTORIAL_ORDER_GRID_EDIT_PACKET, 0 );
@@ -129,6 +127,16 @@ class WizardAssetManager {
 		}
 		if ( $this->request->getQuery( 'wizard-order-grid-enabled' ) === 'true' ) {
 			$this->createOrderGridTour( $basicTranslations );
+		}
+	}
+
+	private function enqueueOrderDetailTours( bool $isItFirstRunOrderDetailEditPacket ): void {
+		$basicTranslations = $this->getBasicTranslations();
+		if ( $this->request->getQuery( 'wizard-order-detail-edit-packet-enabled' ) === 'true' || $isItFirstRunOrderDetailEditPacket ) {
+			$this->createOrderDetailEditPacketTour( $basicTranslations );
+		}
+		if ( $this->request->getQuery( 'wizard-order-detail-custom-declaration-enabled' ) === 'true' ) {
+			$this->createOrderDetailCustomDeclarationTour( $basicTranslations );
 		}
 	}
 
@@ -330,7 +338,7 @@ class WizardAssetManager {
 				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
 			],
 		];
-			$this->enqueueTourScript( 'admin-wizard-create-packet-modal.js', array_merge( $translations, $basicTranslations ) );
+		$this->enqueueTourScript( 'admin-wizard-create-packet-modal.js', array_merge( $translations, $basicTranslations ) );
 	}
 
 	private function createOrderDetailEditPacketTour( array $basicTranslations ): void {
@@ -471,6 +479,80 @@ class WizardAssetManager {
 			],
 		];
 		$this->enqueueTourScript( 'admin-wizard-order-grid.js', array_merge( $translations, $basicTranslations ) );
+	}
+
+	private function createOrderDetailCustomDeclarationTour( array $basicTranslations ): void {
+		$translations = [
+			'ead'              => [
+				'title'       => $this->wpAdapter->__( 'EAD', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'cost'             => [
+				'title'       => $this->wpAdapter->__( 'Delivery cost', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'number'           => [
+				'title'       => $this->wpAdapter->__( 'Invoice number', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'invoiceIssueDate' => [
+				'title'       => $this->wpAdapter->__( 'Invoice issue date', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'invoiceFile'      => [
+				'title'       => $this->wpAdapter->__( 'Invoice PDF file', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'mrn'              => [
+				'title'       => $this->wpAdapter->__( 'MRN', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'eadFile'          => [
+				'title'       => $this->wpAdapter->__( 'EAD PDF file', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'customsCode'      => [
+				'title'       => $this->wpAdapter->__( 'Customs code', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'value'            => [
+				'title'       => $this->wpAdapter->__( 'Value', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'productNameEn'    => [
+				'title'       => $this->wpAdapter->__( 'Product name (EN)', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'productName'      => [
+				'title'       => $this->wpAdapter->__( 'Product name', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'unitsCount'       => [
+				'title'       => $this->wpAdapter->__( 'Units count', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'countryOfOrigin'  => [
+				'title'       => $this->wpAdapter->__( 'Country of origin code', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'weight'           => [
+				'title'       => $this->wpAdapter->__( 'Weight (kg)', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'isFoodOrBook'     => [
+				'title'       => $this->wpAdapter->__( 'Food or book?', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'isVOC'            => [
+				'title'       => $this->wpAdapter->__( 'Is VOC?', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+			'addDeclaration'   => [
+				'title'       => $this->wpAdapter->__( 'Add item', 'packeta' ),
+				'description' => $this->wpAdapter->__( 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ut.', 'packeta' ),
+			],
+		];
+		$this->enqueueTourScript( 'admin-wizard-custom-declaration-metabox.js', array_merge( $translations, $basicTranslations ) );
 	}
 
 	private function hasTableGridOurShippingMethods(): bool {
