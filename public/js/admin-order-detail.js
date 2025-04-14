@@ -78,6 +78,12 @@
 		} );
 
 		return false;
-	} );
+	} ).on( 'click', 'input[name="fill_customs_declaration"]', function( e ) {
+		if ( typeof startCustomsDeclarationWizardTour === 'function' && $(this).is(':checked')) {
+			setTimeout(() => {
+				window.startCustomsDeclarationWizardTour();
+			}, 100);
+		}
+	});
 
 } )( jQuery );

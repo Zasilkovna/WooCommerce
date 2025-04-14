@@ -14,12 +14,12 @@
 
 {var $formContainer = $form[Packetery\Module\Order\CustomsDeclarationMetabox::FORM_CONTAINER_NAME]}
 {formContainer $formContainer}
-	<div id="customs-declaration-container" class="packetery-customs-declaration-fields" data-replication-form-id="{Packetery\Module\Order\CustomsDeclarationMetabox::FORM_ID}">
+	<div id="customs-declaration-container" class="packetery-customs-declaration-fields js-packetery-wizard" data-replication-form-id="{Packetery\Module\Order\CustomsDeclarationMetabox::FORM_ID}">
 		<div class="packetery-flex-container">
 			<div class="packetery-customs-declaration-flex-item">
 				<div class="packetery-customs-declaration-flex-item-content">
 					<label n:name=ead />
-					<select n:name=ead data-lfv-message-id="{$formContainer[ead]->getHtmlId() . '_message'}"></select>
+					<select n:name=ead data-lfv-message-id="{$formContainer[ead]->getHtmlId() . '_message'}" class="js-packetery-ead"></select>
 					<p class="packetery-input-validation-message help-block text-danger"
 						id="{$formContainer[ead]->getHtmlId() . '_message'}">{inputError ead}</p>
 				</div>
@@ -27,7 +27,7 @@
 			<div class="packetery-customs-declaration-flex-item">
 				<div class="packetery-customs-declaration-flex-item-content">
 					<label n:name=delivery_cost />
-					<input n:name=delivery_cost data-lfv-message-id="{$formContainer[delivery_cost]->getHtmlId() . '_message'}">
+					<input n:name=delivery_cost data-lfv-message-id="{$formContainer[delivery_cost]->getHtmlId() . '_message'}" class="js-packetery-delivery-cost">
 					<p class="packetery-input-validation-message help-block text-danger"
 						id="{$formContainer[delivery_cost]->getHtmlId() . '_message'}">{inputError delivery_cost}</p>
 				</div>
@@ -35,7 +35,7 @@
 			<div class="packetery-customs-declaration-flex-item">
 				<div class="packetery-customs-declaration-flex-item-content">
 					<label n:name=invoice_number />
-					<input n:name=invoice_number data-lfv-message-id="{$formContainer[invoice_number]->getHtmlId() . '_message'}">
+					<input n:name=invoice_number data-lfv-message-id="{$formContainer[invoice_number]->getHtmlId() . '_message'}" class="js-packetery-invoice-number">
 					<p class="packetery-input-validation-message help-block text-danger"
 						id="{$formContainer[invoice_number]->getHtmlId() . '_message'}">{inputError invoice_number}</p>
 				</div>
@@ -43,7 +43,7 @@
 			<div class="packetery-customs-declaration-flex-item">
 				<div class="packetery-customs-declaration-flex-item-content">
 					<label n:name=invoice_issue_date />
-					<input n:name=invoice_issue_date autocomplete="off" data-lfv-message-id="{$formContainer[invoice_issue_date]->getHtmlId() . '_message'}">
+					<input n:name=invoice_issue_date autocomplete="off" data-lfv-message-id="{$formContainer[invoice_issue_date]->getHtmlId() . '_message'}" class="js-packetery-invoice-issue-date">
 					<p class="packetery-input-validation-message help-block text-danger"
 						id="{$formContainer[invoice_issue_date]->getHtmlId() . '_message'}">{inputError invoice_issue_date}</p>
 				</div>
@@ -51,7 +51,7 @@
 			<div class="packetery-customs-declaration-flex-item">
 				<div class="packetery-customs-declaration-flex-item-content">
 					<label n:name=invoice_file />
-					<input n:name=invoice_file accept=".pdf" data-lfv-message-id="{$formContainer[invoice_file]->getHtmlId() . '_message'}">
+					<input n:name=invoice_file accept=".pdf" data-lfv-message-id="{$formContainer[invoice_file]->getHtmlId() . '_message'}" class="js-packetery-invoice-file">
 					<p class="packetery-input-validation-message help-block text-danger"
 						id="{$formContainer[invoice_file]->getHtmlId() . '_message'}">{inputError invoice_file}</p>
 					<span n:if=$hasInvoiceFile>✓ {$translations['fileUploaded']}</span>
@@ -60,7 +60,7 @@
 			<div id="customs-declaration-own-field-mrn" class="packetery-customs-declaration-flex-item">
 				<div class="packetery-customs-declaration-flex-item-content">
 					<label n:name=mrn />
-					<input n:name=mrn data-lfv-message-id="{$formContainer[mrn]->getHtmlId() . '_message'}">
+					<input n:name=mrn data-lfv-message-id="{$formContainer[mrn]->getHtmlId() . '_message'}" class="js-packetery-mrn">
 					<p class="packetery-input-validation-message help-block text-danger"
 						id="{$formContainer[mrn]->getHtmlId() . '_message'}">{inputError mrn}</p>
 				</div>
@@ -68,7 +68,7 @@
 			<div id="customs-declaration-own-field-ead_file" class="packetery-customs-declaration-flex-item">
 				<div class="packetery-customs-declaration-flex-item-content">
 					<label n:name=ead_file />
-					<input n:name=ead_file accept=".pdf" data-lfv-message-id="{$formContainer[ead_file]->getHtmlId() . '_message'}">
+					<input n:name=ead_file accept=".pdf" data-lfv-message-id="{$formContainer[ead_file]->getHtmlId() . '_message'}" class="js-packetery-ead-file">
 					<p class="packetery-input-validation-message help-block text-danger"
 						id="{$formContainer[ead_file]->getHtmlId() . '_message'}">{inputError ead_file}</p>
 					<span n:if=$hasEadFile>✓ {$translations['fileUploaded']}</span>
@@ -85,7 +85,7 @@
 				{/foreach}
 			</div>
 
-			<button type="button" data-replication-add class="button button-small">{$translations['addCustomsDeclarationItem']}</button>
+			<button type="button" data-replication-add class="button button-small js-packetery-add-declaration">{$translations['addCustomsDeclarationItem']}</button>
 		</div>
 	</div>
 {/formContainer}
