@@ -12,6 +12,15 @@
 			}
 		);
 		$invoiceIssueDate.closest('form').attr('enctype', 'multipart/form-data');
+
+		if (
+			$( 'input[name="fill_customs_declaration"]' ).is( ':checked' ) &&
+			typeof startCustomsDeclarationWizardTour === 'function'
+		) {
+			setTimeout( () => {
+				window.startCustomsDeclarationWizardTour();
+			}, 100 );
+		}
 	}).on('change', '.packetery-customs-declaration-fields [name="packetery_customs_declaration[ead]"]', function( e ) {
 		var $form = $(e.target).closest('form');
 
