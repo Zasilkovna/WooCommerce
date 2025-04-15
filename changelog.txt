@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.0.4 =
+Fixed: Shipping tax was not displayed in the order details (fixed only for advanced carrier settings).
+
 = 2.0.3 =
 Added: Added taxes settings to options export.
 Fixed: Resolved error occuring when running in CLI environment.
