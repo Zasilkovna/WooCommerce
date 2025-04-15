@@ -189,6 +189,21 @@ add_filter( 'packeta_order_detail_show_run_wizard_button', function () {
 } );
 ```
 
+##### Filter to customize links on order list page
+
+```php
+add_filter( 'packeta_order_grid_links_settings', function ( \Packetery\Module\Order\GridLinksConfig $linkConfig ) {
+	$linkConfig->setFilterOrdersToSubmitEnabled( true );
+	$linkConfig->setFilterOrdersToSubmitTitle( 'Your title for submit filter' );
+	$linkConfig->setFilterOrdersToPrintEnabled( true );
+	$linkConfig->setFilterOrdersToPrintTitle( 'Your title for print filter' );
+	$linkConfig->setOrderGridRunWizardEnabled( true );
+	$linkConfig->setOrderGridRunWizardTitle( 'Your title for run wizard link' );
+
+	return $linkConfig;
+} );
+```
+
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions
