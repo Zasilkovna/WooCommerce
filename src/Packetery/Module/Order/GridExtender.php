@@ -156,40 +156,66 @@ class GridExtender {
 	 * @return string[]
 	 */
 	public function addFilterLinks( array $htmlLinks ): array {
-		$latteParams = [
-			'link'       => ModuleHelper::getOrderGridUrl(
-				[
-					'filter_action'       => 'packetery_filter_link',
-					'packetery_to_submit' => '1',
-					'packetery_to_print'  => false,
-				]
-			),
-			'title'      => __( 'Packeta orders to submit', 'packeta' ),
-			'orderCount' => $this->orderRepository->countOrdersToSubmit(),
-			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
-		];
-		$htmlLinks['js-wizard-packetery-filter-orders-to-submit'] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		$linkConfig         = new GridLinksConfig(
+			$this->wpAdapter->__( 'Packeta orders to submit', 'packeta' ),
+			$this->wpAdapter->__( 'Packeta orders to print', 'packeta' ),
+			$this->wpAdapter->__( 'Run Packeta wizard', 'packeta' )
+		);
+		$originalLinkConfig = clone $linkConfig;
+		$linkConfig         = $this->wpAdapter->applyFilters( 'packeta_order_grid_links_settings', $linkConfig );
+		if ( ! $linkConfig instanceof GridLinksConfig ) {
+			$linkConfig = $originalLinkConfig;
+		}
 
-		$latteParams = [
-			'link'       => ModuleHelper::getOrderGridUrl(
-				[
-					'filter_action'       => 'packetery_filter_link',
-					'packetery_to_submit' => false,
-					'packetery_to_print'  => '1',
-				]
-			),
-			'title'      => __( 'Packeta orders to print', 'packeta' ),
-			'orderCount' => $this->orderRepository->countOrdersToPrint(),
-			'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
-		];
-		$htmlLinks['js-wizard-packetery-filter-orders-to-print'] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte', $latteParams );
+		if ( $linkConfig->isFilterOrdersToSubmitEnabled() === true ) {
+			$latteParams = [
+				'link'       => ModuleHelper::getOrderGridUrl(
+					[
+						'filter_action'       => 'packetery_filter_link',
+						'packetery_to_submit' => '1',
+						'packetery_to_print'  => false,
+					]
+				),
+				'title'      => $linkConfig->getFilterOrdersToSubmitTitle(),
+				'orderCount' => $this->orderRepository->countOrdersToSubmit(),
+				'active'     => ( $this->httpRequest->getQuery( 'packetery_to_submit' ) === '1' ),
+			];
+			$htmlLinks['js-wizard-packetery-filter-orders-to-submit'] = $this->latteEngine->renderToString(
+				PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte',
+				$latteParams
+			);
+		}
 
-		$latteParams                                     = [
-			'link'        => $this->wpAdapter->adminUrl( 'admin.php?page=wc-orders&wizard-enabled=true&wizard-order-grid-enabled=true' ),
-			'title'       => $this->wpAdapter->__( 'Use this link to start interactive tutorial', 'packeta' ),
-			'escapedText' => '&#9654; ' . htmlspecialchars( $this->wpAdapter->__( 'Run Packeta wizard', 'packeta' ) ),
-		];
-		$htmlLinks['js-wizard-packetery-order-grid-run'] = $this->latteEngine->renderToString( PACKETERY_PLUGIN_DIR . '/template/order/unescaped-link.latte', $latteParams );
+		if ( $linkConfig->isFilterOrdersToPrintEnabled() === true ) {
+			$latteParams = [
+				'link'       => ModuleHelper::getOrderGridUrl(
+					[
+						'filter_action'       => 'packetery_filter_link',
+						'packetery_to_submit' => false,
+						'packetery_to_print'  => '1',
+					]
+				),
+				'title'      => $linkConfig->getFilterOrdersToPrintTitle(),
+				'orderCount' => $this->orderRepository->countOrdersToPrint(),
+				'active'     => ( $this->httpRequest->getQuery( 'packetery_to_print' ) === '1' ),
+			];
+			$htmlLinks['js-wizard-packetery-filter-orders-to-print'] = $this->latteEngine->renderToString(
+				PACKETERY_PLUGIN_DIR . '/template/order/filter-link.latte',
+				$latteParams
+			);
+		}
+
+		if ( $linkConfig->isOrderGridRunWizardEnabled() === true ) {
+			$latteParams                                     = [
+				'link'        => $this->wpAdapter->adminUrl( 'admin.php?page=wc-orders&wizard-enabled=true&wizard-order-grid-enabled=true' ),
+				'title'       => $this->wpAdapter->__( 'Use this link to start interactive tutorial', 'packeta' ),
+				'escapedText' => '&#9654; ' . htmlspecialchars( $linkConfig->getOrderGridRunWizardTitle() ),
+			];
+			$htmlLinks['js-wizard-packetery-order-grid-run'] = $this->latteEngine->renderToString(
+				PACKETERY_PLUGIN_DIR . '/template/order/unescaped-link.latte',
+				$latteParams
+			);
+		}
 
 		return $htmlLinks;
 	}
