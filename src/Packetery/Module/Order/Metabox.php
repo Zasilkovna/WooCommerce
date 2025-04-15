@@ -407,6 +407,8 @@ class Metabox {
 			}
 		}
 
+		$showRunWizardButton = (bool) $this->wpAdapter->applyFilters( 'packeta_order_detail_show_run_wizard_button', true );
+
 		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
@@ -425,6 +427,7 @@ class Metabox {
 				'packetClaimUrl'             => $packetClaimUrl,
 				'packetClaimCancelUrl'       => $packetClaimCancelUrl,
 				'runWizardUrl'               => $runWizardUrl,
+				'showRunWizardButton'        => $showRunWizardButton,
 				'orderCurrency'              => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'isCodPayment'               => $order->hasCod(),
 				'allowsAdultContent'         => $order->allowsAdultContent(),
