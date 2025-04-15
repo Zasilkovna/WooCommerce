@@ -30,6 +30,8 @@ class ShippingMethod extends WC_Shipping_Method {
 		$this->supports     = [
 			'shipping-zones',
 		];
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->tax_status = 'taxable';
 
 		$this->init();
 
