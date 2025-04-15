@@ -1,0 +1,17 @@
+name: Readme validation
+on:
+  pull_request:
+jobs:
+  sniff:
+    name: Run readme validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Running readme validation
+        shell: bash
+        run: |
+          # make file runnable, might not be necessary
+          chmod +x "${GITHUB_WORKSPACE}/.github/validate-readme.sh"
+          
+          # run script
+          "${GITHUB_WORKSPACE}/.github/validate-readme.sh"
