@@ -59,7 +59,7 @@ To register filter edit wc-includes/functions.php and add your PHP code after al
 To filter additional orders from Packeta order list when applying Packeta filter, use following sample code.
 Parameter $queryObject is nullable since plugin version 1.6.0.
 
-```
+```php
 add_filter( 'packetery_exclude_orders_with_status', function (array $statuses): array {
 	$statuses[] = 'wc-cancelled';
 	return $statuses;
@@ -72,7 +72,7 @@ To convert prices at correct moments the Packeta plugin uses WOOCS filter as onl
 To support other currency switchers please add price converting filter.
 For example, to support active CURCY - Multi Currency for WooCommerce plugin, paste following code to ```wp-includes/functions.php``` after all file includes.
 
-```
+```php
 add_filter( 'packetery_price', function ( float $price ): float {
 	return (float) wmc_get_price( $price );
 } );
@@ -82,7 +82,7 @@ add_filter( 'packetery_price', function ( float $price ): float {
 
 For example, to set the weight of all packets to 1.5 kg, you can use the following code inserted into ```wp-includes/functions.php```.
 
-```
+```php
 add_filter( 'packeta_create_packet', function ( array $createPacketData ): array {
 	$createPacketData['weight'] = 1.5;
 	return $createPacketData;
@@ -95,7 +95,7 @@ You can find description of the attributes in the [official documentation](https
 
 To update Packeta shipping rate cost in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
 
-```
+```php
 add_filter( 'packeta_shipping_price', function ( $price, $filterParameters ) {
 	$order_price = (float) WC()->cart->get_cart_contents_total() + (float) WC()->cart->get_cart_contents_tax();
 
@@ -138,7 +138,7 @@ In the `$filterParameters` variable, there are available following keys:
 
 Since 1.4.2. To set widget language in checkout, you can use the following code inserted into ```wp-includes/functions.php```.
 
-```
+```php
 add_filter( 'packeta_widget_language', static function ( string $language ): string {
 	return 'hu';
 } );
@@ -147,7 +147,7 @@ add_filter( 'packeta_widget_language', static function ( string $language ): str
 
 Since 1.6.3. If you would like to set the weight passed to the checkout widget, you can use the following code by placing it into ```wp-includes/functions.php```.
 
-```
+```php
 function packeta_widget_weight($weight) {
 	return 1;
 }
@@ -159,7 +159,7 @@ add_filter( ‘packeta_widget_weight’, ‘packeta_widget_weight’);
 
 To modify this HTML, you can use `packeta_email_footer` filter, for example to render pickup point name or simple address only:
 
-```
+```php
 add_filter( 'packeta_email_footer', 'packeta_email_footer', 20, 2 );
 function packeta_email_footer( string $footerHtml, array $templateParams ) {
 	if ( $templateParams['pickupPoint'] && $templateParams['displayPickupPointInfo'] ) {
