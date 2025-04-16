@@ -181,6 +181,14 @@ Available keys in the variable `$templateParams` are:
 * `isExternalCarrier` - true if selected delivery option is not one of Packeta Pick-up Points
 * `translations` - to examine the content, export this field during filter development
 
+##### Filter to hide "Run options wizard" button at order detail
+
+```php
+add_filter( 'packeta_order_detail_show_run_wizard_button', function () {
+	return false;
+} );
+```
+
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions
