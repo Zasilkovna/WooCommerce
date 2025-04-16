@@ -1,5 +1,7 @@
 ( function( $ ) {
 
+	let isCustomsDeclarationTourFinished = false;
+
 	$( document ).ready(function( ) {
 		$( 'input[name="packeteryDeliverOn"]' ).datepicker( 'option', 'minDate', datePickerSettings.deliverOnMinDate );
 		var $invoiceIssueDate = $( '.packetery-customs-declaration-fields input[name="packetery_customs_declaration[invoice_issue_date]"]' );
@@ -19,6 +21,7 @@
 		) {
 			setTimeout( () => {
 				window.startCustomsDeclarationWizardTour();
+				isCustomsDeclarationTourFinished = true;
 			}, 100 );
 		}
 	}).on('change', '.packetery-customs-declaration-fields [name="packetery_customs_declaration[ead]"]', function( e ) {
@@ -88,9 +91,14 @@
 
 		return false;
 	} ).on( 'click', 'input[name="fill_customs_declaration"]', function( e ) {
-		if ( typeof startCustomsDeclarationWizardTour === 'function' && $(this).is(':checked')) {
+		if (
+			typeof startCustomsDeclarationWizardTour === 'function' &&
+			$(this).is(':checked') &&
+			isCustomsDeclarationTourFinished === false
+		) {
 			setTimeout(() => {
 				window.startCustomsDeclarationWizardTour();
+				isCustomsDeclarationTourFinished = true;
 			}, 100);
 		}
 	});
