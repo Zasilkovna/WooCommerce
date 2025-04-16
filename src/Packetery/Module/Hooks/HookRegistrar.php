@@ -367,6 +367,138 @@ class HookRegistrar {
 			$this->registerFrontEnd();
 		}
 
+		/*
+		TODO: delete the folder
+		// https://github.com/woocommerce/woocommerce/blob/trunk/docs/product-editor-development/how-to-guides/custom-field-tutorial.md
+		add_action(
+			'init',
+			function () {
+				if ( isset( $_GET['page'] ) && $_GET['page'] === 'wc-admin' ) {
+					// This points to the directory that contains your block.json.
+					BlockRegistry::get_instance()->register_block_type_from_metadata( PACKETERY_PLUGIN_DIR . '/public/block-product' );
+				}
+			}
+		);
+		*/
+
+		/*
+		TODO: use group (tab) instead of shipping section?
+		// https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/src/Admin/Features/ProductBlockEditor/ProductTemplates/README.md/
+		add_action(
+			'woocommerce_block_template_area_product-form_after_add_block_general',
+			function ( BlockInterface $general_group ) {
+				$parent = $general_group->get_parent();
+
+				$parent->add_group(
+					[
+						'id'         => 'YOUR-PREFIX-group',
+						'order'      => $general_group->get_order() + 5,
+						'attributes' => [
+							'title' => __( 'My Group', 'YOUR-TEXT-DOMAIN' ),
+						],
+					]
+				);
+			}
+		);
+		*/
+
+		add_action(
+			'woocommerce_layout_template_after_instantiation',
+			function ( $layout_template_id, $layout_template_area, $layout_template ) {
+				$shippingTab = $layout_template->get_group_by_id( 'shipping' );
+
+				if ( $shippingTab ) {
+					// Creating a new section, this is optional.
+					$packetaSection = $shippingTab->add_section(
+						[
+							'id'         => 'packeta-section',
+							'order'      => 20, // TODO: use filter
+							'attributes' => [
+								'title'       => __( 'Packeta', 'packeta' ),
+								'description' => __( 'Product settings for Packeta plugin', 'packeta' ),
+							],
+						]
+					);
+
+					// https://github.com/woocommerce/woocommerce/blob/trunk/packages/js/product-editor/src/blocks/generic/README.md
+					$packetaSection->add_block(
+						[
+							'id'         => Product\Entity::META_AGE_VERIFICATION_18_PLUS,
+							'blockName'  => 'woocommerce/product-toggle-field',
+							'order'      => 15,
+							'attributes' => [
+								'property'       => Product\Entity::META_AGE_VERIFICATION_18_PLUS,
+								'checkedValue'   => true,
+								'uncheckedValue' => false,
+								'label'          => __( 'This product requires age verification', 'packeta' ),
+								'uncheckedHelp'  => __( 'TODO: Description shown when not on', 'packeta' ),
+							],
+						]
+					);
+
+					// TODO: logic from Product\DataTab for disallowed carriers
+					$carrierRestrictionCheckboxId = 'packeta_carrier_foo_disabled';
+					$packetaSection->add_block(
+						[
+							'id'         => $carrierRestrictionCheckboxId,
+							'blockName'  => 'woocommerce/product-checkbox-field',
+							'order'      => 20,
+							'attributes' => [
+								'title'          => __( 'Example carrier restriction', 'packeta' ),
+								'label'          => __( 'Carrier Foo disabled for this product', 'packeta' ),
+								'property'       => $carrierRestrictionCheckboxId,
+								'checkedValue'   => true,
+								'uncheckedValue' => false,
+								'tooltip'        => __(
+									'When checked, customers will not be able to send this product using carrier Foo.',
+									'packeta'
+								),
+							],
+						]
+					);
+				}
+			},
+			10,
+			3
+		);
+
+		// https://gist.github.com/mattsherman/8b3e67068d247f9825a4b1ca5caf2602
+		add_filter(
+			'woocommerce_rest_prepare_product_object',
+			function ( $response, $post ) {
+				$postMeta = get_post_meta( $post->get_id() );
+				// todo: why is it array?
+				$response->data[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ] =
+				isset( $postMeta[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ][0] ) ? (bool) $postMeta[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ][0] : null;
+
+				// TODO: logic from Product\DataTab for disallowed carriers
+
+				return $response;
+			},
+			10,
+			2
+		);
+
+		add_filter(
+			'woocommerce_rest_insert_product_object',
+			function ( $product, $request ) {
+				$productId = $product->get_id();
+				$params    = $request->get_params();
+				// $postMeta   = get_post_meta( $productId );
+
+				if ( isset( $params[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ] ) ) {
+					update_post_meta( $productId, Product\Entity::META_AGE_VERIFICATION_18_PLUS, (bool) $params[ Product\Entity::META_AGE_VERIFICATION_18_PLUS ] );
+				}
+				// TODO: logic from Product\DataTab for disallowed carriers
+			},
+			10,
+			2
+		);
+
+		// more good links:
+		// https://github.com/woocommerce/woocommerce/blob/trunk/plugins/woocommerce/src/Admin/Features/ProductBlockEditor/ProductTemplates/README.md/
+		// https://github.com/woocommerce/woocommerce/blob/trunk/docs/product-editor-development/how-to-guides/generic-fields-tutorial.md
+
 		$this->wpAdapter->addFilter( 'woocommerce_shipping_methods', [ $this, 'addShippingMethods' ] );
 		$this->cronService->register();
 		$this->packetAutoSubmitter->register();
@@ -570,11 +702,11 @@ class HookRegistrar {
 	}
 
 	/**
-	 * Adds Packeta method to available shipping methods.
-	 *
-	 * @param array<string, string> $methods Previous state.
-	 *
-	 * @return array<string, string>
+	Adds Packeta method to available shipping methods.
+
+	@param array<string, string> $methods Previous state.
+
+	@return array<string, string>
 	 */
 	public function addShippingMethods( array $methods ): array {
 		if ( $this->optionsProvider->isWcCarrierConfigEnabled() ) {

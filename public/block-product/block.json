@@ -1,0 +1,19 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "tutorial/new-product-form-field",
+	"title": "Product form field",
+	"category": "woocommerce",
+	"description": "A sample field for the product form",
+	"keywords": [
+		"products"
+	],
+	"attributes": {},
+	"supports": {
+		"html": false,
+		"multiple": true,
+		"inserter": false
+	},
+	"textdomain": "woocommerce",
+	"editorScript": "file:./index.js"
+}
