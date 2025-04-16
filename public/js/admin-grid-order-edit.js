@@ -51,7 +51,7 @@
 			if (typeof startWizardTour === 'function' && isWizardEnabled === true) {
 				window.startWizardTour();
 				$('a[data-wizard-enabled="true"].packetery-js-enabled-packet-edit-button').each(function() {
-					$(this).attr('data-wizard-enabled', 'false');
+					$(this).data('wizard-enabled', 'false');
 				});
 			}
 
