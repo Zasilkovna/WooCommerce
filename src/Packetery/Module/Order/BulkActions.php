@@ -74,10 +74,10 @@ class BulkActions {
 	 * @return array<string, string>
 	 */
 	public function addActions( array $actions ): array {
-		$actions['submit_to_api']                                  = __( 'Submit orders to Packeta', 'packeta' );
-		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'Print labels', 'packeta' );
-		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'Print carrier labels', 'packeta' );
-		$actions[ CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ] = __( 'Print AWB', 'packeta' );
+		$actions['submit_to_api']                                  = __( 'Packeta export', 'packeta' );
+		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'Packeta download labels', 'packeta' );
+		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'Packeta download carrier labels', 'packeta' );
+		$actions[ CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ] = __( 'Packeta AWB (delivery note)', 'packeta' );
 
 		return $actions;
 	}
