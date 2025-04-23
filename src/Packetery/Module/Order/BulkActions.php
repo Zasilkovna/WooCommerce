@@ -18,6 +18,8 @@ use Packetery\Nette\Http\Request;
  * @package Packetery\Order
  */
 class BulkActions {
+	const ACTION_SUBMIT_TO_API = 'submit_to_api';
+
 	/**
 	 * Latte engine.
 	 *
@@ -74,7 +76,7 @@ class BulkActions {
 	 * @return array<string, string>
 	 */
 	public function addActions( array $actions ): array {
-		$actions['submit_to_api']                                  = __( 'Packeta export', 'packeta' );
+		$actions[ self::ACTION_SUBMIT_TO_API ]                     = __( 'Packeta export', 'packeta' );
 		$actions[ LabelPrint::ACTION_PACKETA_LABELS ]              = __( 'Packeta download labels', 'packeta' );
 		$actions[ LabelPrint::ACTION_CARRIER_LABELS ]              = __( 'Packeta download carrier labels', 'packeta' );
 		$actions[ CollectionPrint::ACTION_PRINT_ORDER_COLLECTION ] = __( 'Packeta AWB (delivery note)', 'packeta' );
@@ -116,7 +118,7 @@ class BulkActions {
 			);
 		}
 
-		if ( $action === 'submit_to_api' ) {
+		if ( $action === self::ACTION_SUBMIT_TO_API ) {
 			$finalSubmissionResult = new PacketSubmissionResult();
 			foreach ( $postIds as $postId ) {
 				$wcOrder = $this->orderRepository->getWcOrderById( $postId );
@@ -130,8 +132,8 @@ class BulkActions {
 				}
 			}
 
-			$queryArgs                  = $finalSubmissionResult->getCounter();
-			$queryArgs['submit_to_api'] = true;
+			$queryArgs                               = $finalSubmissionResult->getCounter();
+			$queryArgs[ self::ACTION_SUBMIT_TO_API ] = true;
 
 			if ( count( $postIds ) === 1 ) {
 				$queryArgs['packetery_order_id'] = array_pop( $postIds );
@@ -148,7 +150,7 @@ class BulkActions {
 	 */
 	public function renderPacketsExportResult(): void {
 		$get = $this->httpRequest->getQuery();
-		if ( ! isset( $get['submit_to_api'] ) ) {
+		if ( ! isset( $get[ self::ACTION_SUBMIT_TO_API ] ) ) {
 			return;
 		}
 
