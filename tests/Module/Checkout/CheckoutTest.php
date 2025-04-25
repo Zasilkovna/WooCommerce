@@ -126,7 +126,6 @@ class CheckoutTest extends TestCase {
 		$this->carrierOptionsFactory->method( 'createByOptionId' )->willReturn( $carrierOptions );
 		$this->rateCalculator->method( 'isFreeShippingCouponApplied' )->willReturn( false );
 
-		$this->cartService->method( 'getTaxClassWithMaxRate' )->willReturn( 'standard' );
 		$this->rateCalculator
 			->method( 'getCODSurcharge' )
 			->with( [ 'key' => 'value' ], $this->anything() )

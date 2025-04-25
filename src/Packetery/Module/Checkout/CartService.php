@@ -122,55 +122,6 @@ class CartService {
 		return array_unique( array_merge( [], ...$disallowedShippingRateIds ) );
 	}
 
-	/**
-	 * Returns tax_class with the highest tax_rate of cart products, false if no product is taxable.
-	 *
-	 * @return string|null
-	 * @throws ProductNotFoundException
-	 */
-	public function getTaxClassWithMaxRate(): ?string {
-		$products   = $this->wcAdapter->cartGetCartContent();
-		$taxClasses = [];
-
-		foreach ( $products as $cartProduct ) {
-			$product = $this->wcAdapter->productFactoryGetProduct( $cartProduct['product_id'] );
-			if ( ! ( $product instanceof WC_Product ) ) {
-				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
-			}
-			if ( $product->is_taxable() ) {
-				$taxClasses[] = $product->get_tax_class();
-			}
-		}
-
-		if ( count( $taxClasses ) === 0 ) {
-			return null;
-		}
-
-		$taxClasses = array_unique( $taxClasses );
-		if ( count( $taxClasses ) === 1 ) {
-			return $taxClasses[0];
-		}
-
-		$taxRates = [];
-		$customer = $this->wcAdapter->cartGetCustomer();
-		foreach ( $taxClasses as $taxClass ) {
-			$taxRates[ $taxClass ] = $this->wcAdapter->taxGetRates( $taxClass, $customer );
-		}
-
-		$maxRate        = 0;
-		$resultTaxClass = false;
-		foreach ( $taxRates as $taxClassName => $taxClassRates ) {
-			foreach ( $taxClassRates as $rate ) {
-				if ( $rate['rate'] > $maxRate ) {
-					$maxRate        = $rate['rate'];
-					$resultTaxClass = $taxClassName;
-				}
-			}
-		}
-
-		return $resultTaxClass;
-	}
-
 	public function getCartContentsTotalIncludingTax(): float {
 		return $this->wcAdapter->cartGetCartContentsTotal() + $this->wcAdapter->cartGetCartContentsTax();
 	}

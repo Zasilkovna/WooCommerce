@@ -202,10 +202,7 @@ class Checkout {
 	}
 
 	/**
-	 * Calculates fees.
-	 *
-	 * @return void
-	 * @throws ProductNotFoundException Product not found.
+	 * @throws ProductNotFoundException
 	 */
 	public function actionCalculateFees( WC_Cart $cart ): void {
 		$chosenShippingMethodOptionId = $this->checkoutService->calculateShippingAndGetOptionId();
@@ -217,12 +214,11 @@ class Checkout {
 			return;
 		}
 
-		$carrierOptions = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethodOptionId );
-		$chosenCarrier  = $this->carrierEntityRepository->getAnyById(
+		$carrierOptions   = $this->carrierOptionsFactory->createByOptionId( $chosenShippingMethodOptionId );
+		$chosenCarrier    = $this->carrierEntityRepository->getAnyById(
 			$this->checkoutService->getCarrierIdFromPacketeryShippingMethod( $chosenShippingMethodOptionId )
 		);
-		$maxTaxClass    = $this->cartService->getTaxClassWithMaxRate();
-		$isTaxable      = $maxTaxClass !== null;
+		$shippingTaxClass = $this->wpAdapter->getOption( 'woocommerce_shipping_tax_class' );
 
 		if (
 			$carrierOptions->hasCouponFreeShippingForFeesAllowed() &&
@@ -231,11 +227,14 @@ class Checkout {
 			return;
 		}
 
-		$this->addAgeVerificationFee( $cart, $chosenCarrier, $carrierOptions, $isTaxable, $maxTaxClass );
-		$this->addCodSurchargeFee( $cart, $carrierOptions, $isTaxable, $maxTaxClass );
+		$this->addAgeVerificationFee( $cart, $chosenCarrier, $carrierOptions, $shippingTaxClass );
+		$this->addCodSurchargeFee( $cart, $carrierOptions, $shippingTaxClass );
 	}
 
-	private function addAgeVerificationFee( WC_Cart $cart, ?Entity\Carrier $chosenCarrier, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
+	/**
+	 * @throws ProductNotFoundException
+	 */
+	private function addAgeVerificationFee( WC_Cart $cart, ?Entity\Carrier $chosenCarrier, Carrier\Options $carrierOptions, ?string $shippingTaxClass ): void {
 		if (
 			$chosenCarrier === null ||
 			! $chosenCarrier->supportsAgeVerification() ||
@@ -246,13 +245,13 @@ class Checkout {
 		}
 		$feeAmount = $this->currencySwitcherService->getConvertedPrice( $carrierOptions->getAgeVerificationFee() );
 
-		if ( $isTaxable && $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
-			$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $maxTaxClass );
+		if ( $feeAmount > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
+			$feeAmount = $this->calcTaxExclusiveFeeAmount( $feeAmount, $shippingTaxClass );
 		}
-		$cart->add_fee( $this->wpAdapter->__( 'Age verification fee', 'packeta' ), $feeAmount, $isTaxable, $maxTaxClass );
+		$cart->add_fee( $this->wpAdapter->__( 'Age verification fee', 'packeta' ), $feeAmount, true, $shippingTaxClass );
 	}
 
-	private function addCodSurchargeFee( WC_Cart $cart, Carrier\Options $carrierOptions, bool $isTaxable, ?string $maxTaxClass ): void {
+	private function addCodSurchargeFee( WC_Cart $cart, Carrier\Options $carrierOptions, ?string $shippingTaxClass ): void {
 		if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 			$paymentMethod = $this->wcAdapter->sessionGetString( 'packetery_checkout_payment_method' );
 		} else {
@@ -272,11 +271,11 @@ class Checkout {
 			return;
 		}
 
-		if ( $isTaxable && $this->optionsProvider->arePricesTaxInclusive() ) {
-			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $maxTaxClass );
+		if ( $this->optionsProvider->arePricesTaxInclusive() ) {
+			$applicableSurcharge = $this->calcTaxExclusiveFeeAmount( $applicableSurcharge, $shippingTaxClass );
 		}
 
-		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $applicableSurcharge, $isTaxable, $maxTaxClass );
+		$cart->add_fee( $this->wpAdapter->__( 'COD surcharge', 'packeta' ), $applicableSurcharge, true, $shippingTaxClass );
 	}
 
 	/**
