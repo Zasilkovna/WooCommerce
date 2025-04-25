@@ -232,6 +232,10 @@ class ShippingRateFactory {
 			$cost -= array_sum( $taxes );
 		}
 
+		if ( WC()->cart->get_customer()->get_is_vat_exempt() ) {
+			$taxes = null;
+		}
+
 		return $this->rateCalculator->createShippingRate( $carrierName, $rateId, $cost, $taxes );
 	}
 
