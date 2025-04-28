@@ -263,6 +263,7 @@ class Metabox {
 			);
 			$packetClaimTrackingUrl = $this->coreHelper->getTrackingUrl( $order->getPacketClaimId() );
 		}
+		$runWizardUrl = $this->wpAdapter->adminUrl( "admin.php?page=wc-orders&action=edit&id={$orderId}&wizard-enabled=true&wizard-order-detail-edit-packet-enabled=true" );
 
 		$packetId = $order->getPacketId();
 		if ( $packetId !== null ) {
@@ -406,6 +407,8 @@ class Metabox {
 			}
 		}
 
+		$showRunWizardButton = (bool) $this->wpAdapter->applyFilters( 'packeta_order_detail_show_run_wizard_button', true );
+
 		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
 			[
@@ -423,6 +426,8 @@ class Metabox {
 				'packetClaimTrackingUrl'     => $packetClaimTrackingUrl,
 				'packetClaimUrl'             => $packetClaimUrl,
 				'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+				'runWizardUrl'               => $runWizardUrl,
+				'showRunWizardButton'        => $showRunWizardButton,
 				'orderCurrency'              => get_woocommerce_currency_symbol( $order->getCurrency() ),
 				'isCodPayment'               => $order->hasCod(),
 				'allowsAdultContent'         => $order->allowsAdultContent(),
@@ -442,6 +447,7 @@ class Metabox {
 					'codIsManual'               => $this->wpAdapter->__( 'COD value is manually set. To calculate the value remove field content and save.', 'packeta' ),
 					'valueIsManual'             => $this->wpAdapter->__( 'Order value is manually set. To calculate the value remove field content and save.', 'packeta' ),
 					'submitPacket'              => $this->wpAdapter->__( 'Submit to Packeta', 'packeta' ),
+					'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
 					'packetClaimTrackingOnline' => $this->wpAdapter->__( 'Packet claim tracking', 'packeta' ),
 					'printPacketClaimLabel'     => $this->wpAdapter->__( 'Print packet claim label', 'packeta' ),
 					'cancelPacketClaim'         => $this->wpAdapter->__( 'Cancel packet claim', 'packeta' ),

@@ -17,6 +17,7 @@ use Packetery\Module\CustomsDeclaration;
 use Packetery\Module\EntityFactory;
 use Packetery\Module\FormFactory;
 use Packetery\Module\FormRules;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Message;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
@@ -93,6 +94,11 @@ class CustomsDeclarationMetabox {
 	private $detailCommonLogic;
 
 	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Engine                           $latteEngine                     Latte engine.
@@ -110,7 +116,8 @@ class CustomsDeclarationMetabox {
 		EntityFactory\CustomsDeclaration $customsDeclarationEntityFactory,
 		Request $request,
 		MessageManager $messageManager,
-		DetailCommonLogic $detailCommonLogic
+		DetailCommonLogic $detailCommonLogic,
+		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine                     = $latteEngine;
 		$this->formFactory                     = $formFactory;
@@ -119,6 +126,7 @@ class CustomsDeclarationMetabox {
 		$this->request                         = $request;
 		$this->messageManager                  = $messageManager;
 		$this->detailCommonLogic               = $detailCommonLogic;
+		$this->wpAdapter                       = $wpAdapter;
 	}
 
 	/**
@@ -236,6 +244,7 @@ class CustomsDeclarationMetabox {
 
 		$hasInvoiceFile = $customsDeclaration !== null && $customsDeclaration->hasInvoiceFileContent();
 		$hasEadFile     = $customsDeclaration !== null && $customsDeclaration->hasEadFileContent();
+		$runWizardUrl   = $this->wpAdapter->adminUrl( "admin.php?page=wc-orders&action=edit&id={$order->getNumber()}&wizard-enabled=true&wizard-order-detail-custom-declaration-enabled=true#packetery_customs_declaration_metabox" );
 
 		$this->latteEngine->render(
 			PACKETERY_PLUGIN_DIR . '/template/order/customs-declaration-metabox.latte',
@@ -243,11 +252,13 @@ class CustomsDeclarationMetabox {
 				'form'           => $form,
 				'hasInvoiceFile' => $hasInvoiceFile,
 				'hasEadFile'     => $hasEadFile,
+				'runWizardUrl'   => $runWizardUrl,
 				'translations'   => [
-					'addCustomsDeclarationItem' => __( 'Add item', 'packeta' ),
-					'delete'                    => __( 'Delete', 'packeta' ),
-					'itemsLabel'                => __( 'Items', 'packeta' ),
-					'fileUploaded'              => __( 'File uploaded.', 'packeta' ),
+					'addCustomsDeclarationItem' => $this->wpAdapter->__( 'Add item', 'packeta' ),
+					'delete'                    => $this->wpAdapter->__( 'Delete', 'packeta' ),
+					'itemsLabel'                => $this->wpAdapter->__( 'Items', 'packeta' ),
+					'fileUploaded'              => $this->wpAdapter->__( 'File uploaded.', 'packeta' ),
+					'runWizard'                 => $this->wpAdapter->__( 'Run customs declaration wizard', 'packeta' ),
 				],
 			]
 		);
@@ -266,6 +277,9 @@ class CustomsDeclarationMetabox {
 		$form = $this->formFactory->create();
 
 		$activator = $form->addCheckbox( self::FORM_ACTIVATOR_NAME, __( 'View/hide customs declaration form', 'packeta' ) );
+		if ( $this->request->getQuery( 'wizard-order-detail-custom-declaration-enabled' ) === 'true' ) {
+			$activator->setValue( true );
+		}
 		$activator
 			->addCondition( Form::FILLED )
 				->toggle( 'customs-declaration-container' );
