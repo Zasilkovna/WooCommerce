@@ -307,10 +307,6 @@ class Checkout {
 	public function filterPaymentGateways( array $availableGateways ): array {
 		global $wp;
 
-		if ( ! is_checkout() ) {
-			return $availableGateways;
-		}
-
 		$order = null;
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$wpOrderPay = $wp->query_vars['order-pay'] ?? null;
