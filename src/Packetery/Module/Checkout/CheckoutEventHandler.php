@@ -4,12 +4,14 @@ declare( strict_types=1 );
 
 namespace Packetery\Module\Checkout;
 
-use Packetery\Module\Exception\ProductNotFoundException;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\ShippingProvider;
 use WC_Order_Item_Shipping;
 
+/**
+ * Class handles checkout events. E.g.: tax calculation
+ */
 class CheckoutEventHandler {
 
 	/**
@@ -40,9 +42,6 @@ class CheckoutEventHandler {
 		);
 	}
 
-	/**
-	 * @throws ProductNotFoundException Product not found.
-	 */
 	public function afterCalculateTaxes( WC_Order_Item_Shipping $shippingItem ): void {
 		if ( ! $this->optionsProvider->arePricesTaxInclusive() ) {
 			return;
