@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace Packetery\Module;
 
+use Packetery\Module\Command\CommandRegistrar;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\Hooks\HookRegistrar;
 
@@ -29,8 +30,17 @@ class Plugin {
 	 */
 	private $hookRegistrar;
 
-	public function __construct( HookRegistrar $hookRegistrar ) {
-		$this->hookRegistrar = $hookRegistrar;
+	/**
+	 * @var CommandRegistrar
+	 */
+	private $commandRegistrar;
+
+	public function __construct(
+		HookRegistrar $hookRegistrar,
+		CommandRegistrar $commandRegistrar
+	) {
+		$this->hookRegistrar    = $hookRegistrar;
+		$this->commandRegistrar = $commandRegistrar;
 	}
 
 	/**
@@ -53,6 +63,7 @@ class Plugin {
 	 */
 	public function run(): void {
 		$this->hookRegistrar->register();
+		$this->commandRegistrar->register();
 	}
 
 	/**
