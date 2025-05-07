@@ -34,14 +34,18 @@ class CreatePacketMapper {
 	private $carrierOptionsFactory;
 
 	/**
-	 * CreatePacketMapper constructor.
-	 *
-	 * @param CoreHelper            $coreHelper
-	 * @param CarrierOptionsFactory $carrierOptionsFactory
+	 * @var string
 	 */
-	public function __construct( CoreHelper $coreHelper, CarrierOptionsFactory $carrierOptionsFactory ) {
+	private $affiliateId;
+
+	public function __construct(
+		CoreHelper $coreHelper,
+		CarrierOptionsFactory $carrierOptionsFactory,
+		string $affiliateId
+	) {
 		$this->coreHelper            = $coreHelper;
 		$this->carrierOptionsFactory = $carrierOptionsFactory;
+		$this->affiliateId           = $affiliateId;
 	}
 
 	/**
@@ -69,6 +73,7 @@ class CreatePacketMapper {
 			'note'         => $order->getNote(),
 			'phone'        => $order->getPhone(),
 			'deliverOn'    => $this->coreHelper->getStringFromDateTime( $order->getDeliverOn(), CoreHelper::DATEPICKER_FORMAT ),
+			'affiliateId'  => $this->affiliateId,
 		];
 
 		$codValue = $order->getFinalCod();

@@ -25,7 +25,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 		return [
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
-				'country'            => 'cz',
+				'expectedCountry'    => 'cz',
 				'splitActive'        => true,
 				'adultContent'       => true,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'livePickupPoint', 'vendors' ],
@@ -35,7 +35,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
-				'country'            => 'cz',
+				'expectedCountry'    => 'cz',
 				'splitActive'        => true,
 				'adultContent'       => false,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors' ],
@@ -45,7 +45,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierCzechHdRequiresSize() ),
-				'country'            => 'cz',
+				'expectedCountry'    => 'cz',
 				'splitActive'        => true,
 				'adultContent'       => false,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors' ],
@@ -55,7 +55,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierGermanHd() ),
-				'country'            => 'de',
+				'expectedCountry'    => 'de',
 				'splitActive'        => true,
 				'adultContent'       => false,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors' ],
@@ -65,7 +65,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'              => new Order( 'dummyNumber123', DummyFactory::createCarrierGermanHd() ),
-				'country'            => 'de',
+				'expectedCountry'    => 'de',
 				'splitActive'        => true,
 				'adultContent'       => true,
 				'existingKeys'       => [ 'language', 'appIdentity', 'weight', 'vendors', 'livePickupPoint' ],
@@ -75,7 +75,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
-				'country'                => 'cz',
+				'expectedCountry'        => 'cz',
 				'splitActive'            => false,
 				'adultContent'           => true,
 				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers', 'livePickupPoint' ],
@@ -86,7 +86,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierZpointcz() ),
-				'country'                => 'cz',
+				'expectedCountry'        => 'cz',
 				'splitActive'            => false,
 				'adultContent'           => false,
 				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers' ],
@@ -97,7 +97,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierGermanPp() ),
-				'country'                => 'de',
+				'expectedCountry'        => 'de',
 				'splitActive'            => false,
 				'adultContent'           => false,
 				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers' ],
@@ -108,7 +108,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 			],
 			[
 				'order'                  => new Order( 'dummyNumber123', DummyFactory::createCarrierCzechHdRequiresSize() ),
-				'country'                => 'cz',
+				'expectedCountry'        => 'cz',
 				'splitActive'            => false,
 				'adultContent'           => false,
 				'existingKeys'           => [ 'language', 'appIdentity', 'weight', 'carriers' ],
@@ -332,7 +332,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 	 */
 	public function testGetCarrierForCheckout(
 		Carrier $carrier,
-		bool $isSplitActive,
+		bool $splitActive,
 		array $expectedKeys,
 		array $nonExistingKeys,
 		?string $addressValidation = null
@@ -363,7 +363,7 @@ class WidgetOptionsBuilderTest extends TestCase {
 
 		$featureFlagProviderMock
 			->method( 'isSplitActive' )
-			->willReturn( $isSplitActive );
+			->willReturn( $splitActive );
 
 		$result = $builder->getCarrierForCheckout(
 			$carrier,

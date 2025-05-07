@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.7.2
-Stable tag: 2.0.2
+Stable tag: 2.0.4
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 9.7.1
@@ -62,14 +62,11 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
-= 2.0.2 =
-Fixed: Fixed wp-cli compatibility issue.
-Fixed: In rare cases, translating the plugin into other languages did not work. However, we are not entirely sure that this fix will successfully resolve the issue.
-Fixed: The plugin will no longer display an error if $_POST contains invalid values from another plugin.
-Fixed: The plugin will no longer display an error if the WP methods delete_transient() or set_transient() return a different return value than the one specified in the PHPDoc.
+= 2.0.4 =
+Fixed: Shipping tax was not displayed in the order details (fixed only for advanced carrier settings).
 
-= 2.0.1 =
-Fixed: In certain situations, there was an error when displaying the "Log" page
-Fixed: In the order list, there was an error when displaying the date in the "saved to" column for orders to a pickup point if the e-shop uses shipment tracking
+= 2.0.3 =
+Added: Added taxes settings to options export.
+Fixed: Resolved error occuring when running in CLI environment.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

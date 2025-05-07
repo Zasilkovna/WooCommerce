@@ -305,15 +305,8 @@ class Checkout {
 	 * @return WC_Payment_Gateway[]
 	 */
 	public function filterPaymentGateways( array $availableGateways ): array {
-		global $wp;
-
-		if ( ! is_checkout() ) {
-			return $availableGateways;
-		}
-
-		$order = null;
-		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-		$wpOrderPay = $wp->query_vars['order-pay'] ?? null;
+		$order      = null;
+		$wpOrderPay = $this->checkoutService->getOrderPayParameter();
 		if ( is_numeric( $wpOrderPay ) ) {
 			$order = $this->orderRepository->getByIdWithValidCarrier( (int) $wpOrderPay );
 		}
