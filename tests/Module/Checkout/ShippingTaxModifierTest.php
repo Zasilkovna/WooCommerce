@@ -64,6 +64,26 @@ class ShippingTaxModifierTest extends TestCase {
 		$this->shippingTaxModifier->afterCalculateTaxes( $shippingItemMock );
 	}
 
+	public function testAfterCalculateTaxesSkipsWhenPacketaTaxesIsNotArray(): void {
+		$this->optionsProviderMock
+			->method( 'arePricesTaxInclusive' )
+			->willReturn( true );
+
+		$shippingItemMock = $this->createMock( WC_Order_Item_Shipping::class );
+		$shippingItemMock
+			->method( 'get_method_id' )
+			->willReturn( 'packeta_method_zpointcz' );
+
+		$shippingItemMock
+			->method( 'get_meta' )
+			->with( 'packetaTaxes' )
+			->willReturn( '' );
+
+		$shippingItemMock->expects( $this->never() )->method( 'set_taxes' );
+
+		$this->shippingTaxModifier->afterCalculateTaxes( $shippingItemMock );
+	}
+
 	public function testAfterCalculateTaxesSetsTaxes(): void {
 		$this->optionsProviderMock
 			->method( 'arePricesTaxInclusive' )
