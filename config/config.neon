@@ -143,3 +143,5 @@ services:
 	- Packetery\Module\Dashboard\DashboardItemBuilder
 	- Packetery\Module\Dashboard\DashboardHelper
 	- Packetery\Module\Carrier\CarrierUpdater
+	- Packetery\Module\Command\CommandRegistrar
+	- Packetery\Module\Command\PluginInitCommand

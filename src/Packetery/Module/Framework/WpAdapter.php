@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 use DateTimeZone;
+use WP_CLI;
 use WP_Error;
 use WP_Screen;
 use WP_Term;
@@ -204,5 +205,13 @@ class WpAdapter {
 			$callback,
 			$iconUrl
 		);
+	}
+
+	public function cliError( string $message ): void {
+		WP_CLI::error( $message );
+	}
+
+	public function cliSuccess( string $message ): void {
+		WP_CLI::success( $message );
 	}
 }
