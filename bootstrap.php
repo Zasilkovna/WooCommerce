@@ -9,6 +9,7 @@ use Packetery\Module\CompatibilityBridge;
 use Packetery\Module\WpdbTracyPanel;
 use Packetery\Nette\Bootstrap\Configurator;
 use Packetery\Nette\Http\RequestFactory;
+use Packetery\Nette\InvalidArgumentException;
 use Packetery\Nette\InvalidStateException;
 use Packetery\Tracy\Debugger;
 
@@ -21,11 +22,13 @@ try {
 	( new RequestFactory() )->fromGlobals();
 } catch ( InvalidStateException $invalidStateException ) {
 	$disableGetPostCookieParsing = true;
+} catch ( InvalidArgumentException $invalidArgumentException ) {
 }
 
 $configurator = new Configurator();
 $configurator->addDynamicParameters(
 	[
+		'consoleMode' => \PHP_SAPI === 'cli-server' || \PHP_SAPI === 'cli' || (defined( 'WP_CLI' ) && WP_CLI),
 		'disableGetPostCookieParsing' => $disableGetPostCookieParsing,
 	]
 );
