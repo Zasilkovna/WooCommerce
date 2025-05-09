@@ -174,11 +174,13 @@ class RateCalculator {
 	 */
 	public function createShippingRate( string $name, string $optionId, float $taxExclusiveCost, ?array $taxes ): array {
 		return [
-			'label'    => $name,
-			'id'       => $optionId,
-			'cost'     => $taxExclusiveCost,
-			'taxes'    => $taxes ?? '',
-			'calc_tax' => 'per_order',
+			'label'     => $name,
+			'id'        => $optionId,
+			'cost'      => $taxExclusiveCost,
+			'taxes'     => $taxes ?? '',
+			'meta_data' => [
+				'packetaTaxes' => $taxes,
+			],
 		];
 	}
 

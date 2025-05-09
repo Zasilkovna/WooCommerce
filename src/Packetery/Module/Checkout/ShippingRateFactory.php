@@ -209,6 +209,7 @@ class ShippingRateFactory {
 		if ( $this->isFreeShippingApplicable( $cost ) ) {
 			$carrierName = $this->formatCarrierNameWithFreeShipping( $carrierName );
 		}
+
 		$taxes = null;
 		if ( $cost > 0 && $this->optionsProvider->arePricesTaxInclusive() ) {
 			$rates            = $this->wcAdapter->taxGetShippingTaxRates();

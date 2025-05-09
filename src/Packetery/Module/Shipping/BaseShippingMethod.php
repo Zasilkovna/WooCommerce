@@ -101,6 +101,8 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$this->instance_form_fields = $this->get_instance_form_fields();
 		$this->title                = $this->get_option( 'title' );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		$this->tax_status = $this->get_option( 'tax_status', 'taxable' );
 	}
 
 	public function get_admin_options_html(): string {
@@ -172,6 +174,15 @@ abstract class BaseShippingMethod extends \WC_Shipping_Method {
 				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				'default'     => $this->method_title,
 				'desc_tip'    => true,
+			],
+			'tax_status'  => [
+				'title'   => __( 'Tax status', 'packeta' ),
+				'type'    => 'select',
+				'class'   => 'wc-enhanced-select',
+				'default' => 'taxable',
+				'options' => [
+					'taxable' => __( 'Taxable', 'packeta' ),
+				],
 			],
 			'custom_html' => [
 				'title'       => '',
