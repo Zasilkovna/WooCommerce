@@ -32,6 +32,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	$_SERVER['REQUEST_URI'] = '/wp-cli-fake-url';
+	$_SERVER['SCRIPT_NAME'] = '/wp-cli-fake-script.php';
+}
+
+
 /** @var Container $container */
 $container = require __DIR__ . '/bootstrap.php';
 /** @var Plugin $packetaPlugin */

@@ -148,3 +148,4 @@ services:
 	- Packetery\Module\Command\CommandRegistrar
 	- Packetery\Module\Command\PluginInitCommand
 	- Packetery\Module\Command\CarrierSettingsImportCommand(configPath: %appDir%/config/carrier-settings-import.php)
+	- Packetery\Module\Command\DemoOrderCommand(configPath: %appDir%/config/generate-demo-orders-config.php)
