@@ -76,7 +76,7 @@ class Checkout {
 	/**
 	 * @var ShippingTaxModifier
 	 */
-	private $checkoutEventHandler;
+	private $shippingTaxModifier;
 
 	/**
 	 * @var CartService
@@ -110,7 +110,7 @@ class Checkout {
 		PaymentHelper $paymentHelper,
 		CheckoutService $checkoutService,
 		CheckoutRenderer $renderer,
-		ShippingTaxModifier $checkoutEventHandler,
+		ShippingTaxModifier $shippingTaxModifier,
 		CartService $cartService,
 		SessionService $sessionService,
 		CheckoutValidator $validator,
@@ -127,7 +127,7 @@ class Checkout {
 		$this->paymentHelper           = $paymentHelper;
 		$this->checkoutService         = $checkoutService;
 		$this->renderer                = $renderer;
-		$this->checkoutEventHandler    = $checkoutEventHandler;
+		$this->shippingTaxModifier     = $shippingTaxModifier;
 		$this->cartService             = $cartService;
 		$this->sessionService          = $sessionService;
 		$this->validator               = $validator;
@@ -135,7 +135,7 @@ class Checkout {
 	}
 
 	public function registerHooks(): void {
-		$this->checkoutEventHandler->register();
+		$this->shippingTaxModifier->register();
 
 		// This action works for both classic and Divi templates.
 		$this->wpAdapter->addAction(

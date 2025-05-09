@@ -38,7 +38,7 @@ class CheckoutTest extends TestCase {
 	private Repository|MockObject $orderRepository;
 	private CurrencySwitcherService|MockObject $currencySwitcherService;
 	private CheckoutRenderer|MockObject $checkoutRenderer;
-	private ShippingTaxModifier|MockObject $checkoutEventHandler;
+	private ShippingTaxModifier|MockObject $shippingTaxModifier;
 	private SessionService|MockObject $sessionService;
 	private CheckoutValidator|MockObject $checkoutValidator;
 	private OrderUpdater|MockObject $orderUpdater;
@@ -57,7 +57,7 @@ class CheckoutTest extends TestCase {
 		$this->paymentHelper           = $this->createMock( PaymentHelper::class );
 		$this->checkoutService         = $this->createMock( CheckoutService::class );
 		$this->checkoutRenderer        = $this->createMock( CheckoutRenderer::class );
-		$this->checkoutEventHandler    = $this->createMock( ShippingTaxModifier::class );
+		$this->shippingTaxModifier     = $this->createMock( ShippingTaxModifier::class );
 		$this->cartService             = $this->createMock( CartService::class );
 		$this->sessionService          = $this->createMock( SessionService::class );
 		$this->checkoutValidator       = $this->createMock( CheckoutValidator::class );
@@ -76,7 +76,7 @@ class CheckoutTest extends TestCase {
 			$this->paymentHelper,
 			$this->checkoutService,
 			$this->checkoutRenderer,
-			$this->checkoutEventHandler,
+			$this->shippingTaxModifier,
 			$this->cartService,
 			$this->sessionService,
 			$this->checkoutValidator,
