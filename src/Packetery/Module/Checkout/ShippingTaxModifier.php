@@ -9,10 +9,7 @@ use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Shipping\ShippingProvider;
 use WC_Order_Item_Shipping;
 
-/**
- * Class handles checkout events. E.g.: tax calculation
- */
-class CheckoutEventHandler {
+class ShippingTaxModifier {
 
 	/**
 	 * @var OptionsProvider

@@ -74,7 +74,7 @@ class Checkout {
 	private $renderer;
 
 	/**
-	 * @var CheckoutEventHandler
+	 * @var ShippingTaxModifier
 	 */
 	private $checkoutEventHandler;
 
@@ -110,7 +110,7 @@ class Checkout {
 		PaymentHelper $paymentHelper,
 		CheckoutService $checkoutService,
 		CheckoutRenderer $renderer,
-		CheckoutEventHandler $checkoutEventHandler,
+		ShippingTaxModifier $checkoutEventHandler,
 		CartService $cartService,
 		SessionService $sessionService,
 		CheckoutValidator $validator,
