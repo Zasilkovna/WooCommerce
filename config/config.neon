@@ -12,6 +12,7 @@ parameters:
 	wsdlUrl: http://www.zasilkovna.cz/api/soap-php-bugfix.wsdl
 	trackingUrl: https://tracking.packeta.com/Z%s
 	supportEmailAddress: e-commerce.support@packeta.com
+	affiliateId: 51770072f717b057
 
 services:
 	- Packetery\Module\Framework\WpAdapter
@@ -108,7 +109,7 @@ services:
 	- Packetery\Module\QueryProcessor
 	- Packetery\Module\WeightCalculator
 	- Packetery\Module\Checkout\CurrencySwitcherService
-	- Packetery\Core\Api\Soap\CreatePacketMapper
+	- Packetery\Core\Api\Soap\CreatePacketMapper(affiliateId: %affiliateId%)
 	- Packetery\Module\Checkout\RateCalculator
 	- Packetery\Module\Carrier\PacketaPickupPointsConfig
 	- Packetery\Module\Carrier\EntityRepository

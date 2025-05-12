@@ -262,4 +262,14 @@ class CheckoutService {
 
 		return false;
 	}
+
+	/**
+	 * @return string|null|int
+	 */
+	public function getOrderPayParameter() {
+		global $wp;
+
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+		return $wp->query_vars['order-pay'] ?? null;
+	}
 }
