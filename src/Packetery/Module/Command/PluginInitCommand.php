@@ -40,7 +40,9 @@ class PluginInitCommand {
 	 * <sender>
 	 * : API sender.
 	 *
-	 * @when after_wp_load
+	 * ## EXAMPLES
+	 *
+	 *     wp packeta-plugin-init <api-password> <sender>
 	 */
 	public function __invoke( array $args ): void {
 		[ $apiPassword, $sender ] = $args;
