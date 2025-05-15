@@ -351,6 +351,9 @@ class HookRegistrar {
 			$this->registerFrontEnd();
 		}
 
+		$wcEmailHook = $this->optionsProvider->getEmailHook();
+		$this->wpAdapter->addAction( $wcEmailHook, [ $this->viewMail, 'renderEmailFooter' ] );
+
 		$this->wpAdapter->addFilter( 'woocommerce_shipping_methods', [ $this, 'addShippingMethods' ] );
 		$this->cronService->register();
 		$this->packetAutoSubmitter->register();
@@ -518,9 +521,6 @@ class HookRegistrar {
 
 	private function registerFrontEnd(): void {
 		$this->checkout->registerHooks();
-
-		$wcEmailHook = $this->optionsProvider->getEmailHook();
-		$this->wpAdapter->addAction( $wcEmailHook, [ $this->viewMail, 'renderEmailFooter' ] );
 
 		$this->wpAdapter->addAction( 'wp_enqueue_scripts', [ $this->assetManager, 'enqueueFrontAssets' ] );
 		$this->wpAdapter->addAction(
