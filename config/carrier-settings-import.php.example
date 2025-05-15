@@ -1,0 +1,60 @@
+<?php
+
+return [
+	'carriers' => [
+		'czzpoint' => [
+			'name' => 'Zásilkovna - Výdejní místa CZ',
+			'weight_limits' => [
+				[
+					'weight' => 30,
+					'price' => 100,
+				],
+			],
+			'default_COD_surcharge' => 20,
+		],
+		'skzpoint' => [
+			'name' => 'Zásilkovna - Výdejní místa SK',
+			'weight_limits' => [
+				[
+					'weight' => 30,
+					'price' => 150,
+				],
+			],
+			'default_COD_surcharge' => 30,
+		],
+		'106' => [
+			'name' => 'Zásilkovna - Doručení domů CZ',
+			'weight_limits' => [
+				[
+					'weight' => 30,
+					'price' => 110,
+				],
+			],
+			'default_COD_surcharge' => 20,
+		],
+		'131' => [
+			'name' => 'Zásilkovna - Doručení domů SK',
+			'weight_limits' => [
+				[
+					'weight' => 30,
+					'price' => 180,
+				],
+			],
+			'default_COD_surcharge' => 30,
+		],
+		'3060' => [
+			'name' => 'Paczkomaty',
+			'weight_limits' => [
+				[
+					'weight' => 25,
+					'price' => 200,
+				],
+			],
+			'default_COD_surcharge' => 40,
+		],
+	],
+	'global_settings' => [
+		'active' => true,
+		'pricing_type' => 'byWeight',
+	],
+]; 

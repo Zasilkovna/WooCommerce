@@ -126,6 +126,7 @@ services:
 	- Packetery\Module\Order\WcOrderActions
 	- Packetery\Module\ShippingZoneRepository
 	- Packetery\Module\Forms\StoredUntilFormFactory
+	- Packetery\Module\Forms\FormService
 	- Packetery\Module\Order\StoredUntilModal
 	- Packetery\Module\Order\PacketSetStoredUntil
 	- Packetery\Module\Hooks\HookRegistrar
@@ -146,3 +147,4 @@ services:
 	- Packetery\Module\Carrier\CarrierUpdater
 	- Packetery\Module\Command\CommandRegistrar
 	- Packetery\Module\Command\PluginInitCommand
+	- Packetery\Module\Command\CarrierSettingsImportCommand(configPath: %appDir%/config/carrier-settings-import.php)

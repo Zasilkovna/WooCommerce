@@ -10,3 +10,4 @@
 /node_modules/
 phpunit.xml
 soap-php-bugfix-dev.wsdl
+/config/carrier-settings-import.php
