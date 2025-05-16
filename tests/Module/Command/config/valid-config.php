@@ -1,4 +1,17 @@
 <?php
+/**
+ * Valid configuration for testing purposes.
+ *
+ * This file returns an array representing a valid configuration
+ * for use in positive test cases.
+ *
+ * Structure:
+ * - global_settings: array of global carrier settings
+ * - carriers: array of carrier configurations, each with required fields
+ *   such as 'name' and one omitted field
+ *
+ * @package Packetery
+ */
 
 return [
 	'global_settings' => [
