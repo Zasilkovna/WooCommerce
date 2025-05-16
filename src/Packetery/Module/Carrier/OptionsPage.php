@@ -165,7 +165,7 @@ class OptionsPage {
 	 *
 	 * @return Form
 	 */
-	private function createForm( array $carrierData ): Form {
+	public function createForm( array $carrierData ): Form {
 		$optionId = OptionPrefixer::getOptionId( $carrierData['id'] );
 
 		$form = $this->formFactory->create( $optionId );
@@ -494,35 +494,8 @@ class OptionsPage {
 	 * @return void
 	 */
 	public function updateOptions( Form $form ): void {
-		$options    = $form->getValues( 'array' );
-		$newVendors = $this->getCheckedVendors( $options );
-		if ( count( $newVendors ) > 0 ) {
-			$options['vendor_groups'] = $newVendors;
-		}
-
-		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
-		$persistedOptionsArray = $persistedOptions->toArray();
-
-		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {
-			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );
-			$options = $this->sortLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS, 'weight' );
-
-			$options[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ?? [];
-		}
-
-		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_PRODUCT_VALUE ) {
-			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
-			$options = $this->sortLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS, 'value' );
-
-			$options[ self::FORM_FIELD_WEIGHT_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_WEIGHT_LIMITS ] ?? [];
-		}
-
-		if ( isset( $options['surcharge_limits'] ) ) {
-			$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
-			$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
-		}
-
-		update_option( OptionPrefixer::getOptionId( $options['id'] ), $options );
+		$options = $form->getValues( 'array' );
+		$this->updateOptionsWithArray( $options );
 		$this->messageManager->flash_message( __( 'Settings saved', 'packeta' ), MessageManager::TYPE_SUCCESS, MessageManager::RENDERER_PACKETERY, 'carrier-country' );
 
 		if ( wp_safe_redirect(
@@ -1002,5 +975,36 @@ class OptionsPage {
 		$availableVendors = $this->getAvailableVendors( $carrierId );
 
 		return is_array( $availableVendors ) && $this->isAvailableVendorsCountLowerThanRequiredMinimum( $availableVendors );
+	}
+
+	public function updateOptionsWithArray( array $options ): void {
+		$newVendors = $this->getCheckedVendors( $options );
+		if ( count( $newVendors ) > 0 ) {
+			$options['vendor_groups'] = $newVendors;
+		}
+
+		$persistedOptions      = $this->carrierOptionsFactory->createByCarrierId( $options['id'] );
+		$persistedOptionsArray = $persistedOptions->toArray();
+
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_WEIGHT ) {
+			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS );
+			$options = $this->sortLimits( $options, self::FORM_FIELD_WEIGHT_LIMITS, 'weight' );
+
+			$options[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_PRODUCT_VALUE_LIMITS ] ?? [];
+		}
+
+		if ( $options[ self::FORM_FIELD_PRICING_TYPE ] === Options::PRICING_TYPE_BY_PRODUCT_VALUE ) {
+			$options = $this->mergeNewLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS );
+			$options = $this->sortLimits( $options, self::FORM_FIELD_PRODUCT_VALUE_LIMITS, 'value' );
+
+			$options[ self::FORM_FIELD_WEIGHT_LIMITS ] = $persistedOptionsArray[ self::FORM_FIELD_WEIGHT_LIMITS ] ?? [];
+		}
+
+		if ( isset( $options['surcharge_limits'] ) ) {
+			$options = $this->mergeNewLimits( $options, 'surcharge_limits' );
+			$options = $this->sortLimits( $options, 'surcharge_limits', 'order_price' );
+		}
+
+		$this->wpAdapter->updateOption( OptionPrefixer::getOptionId( $options['id'] ), $options );
 	}
 }

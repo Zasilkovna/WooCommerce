@@ -12,15 +12,23 @@ class CommandRegistrar {
 	 */
 	private $pluginInitCommand;
 
+	/**
+	 * @var CarrierSettingsImportCommand
+	 */
+	private $carrierBulkImportCommand;
+
 	public function __construct(
-		PluginInitCommand $pluginInitCommand
+		PluginInitCommand $pluginInitCommand,
+		CarrierSettingsImportCommand $carrierBulkImportCommand
 	) {
-		$this->pluginInitCommand = $pluginInitCommand;
+		$this->pluginInitCommand        = $pluginInitCommand;
+		$this->carrierBulkImportCommand = $carrierBulkImportCommand;
 	}
 
 	public function register(): void {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
 			WP_CLI::add_command( PluginInitCommand::NAME, $this->pluginInitCommand );
+			WP_CLI::add_command( CarrierSettingsImportCommand::NAME, $this->carrierBulkImportCommand );
 		}
 	}
 }
