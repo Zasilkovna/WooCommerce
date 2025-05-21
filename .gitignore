@@ -11,3 +11,4 @@
 phpunit.xml
 soap-php-bugfix-dev.wsdl
 /config/carrier-settings-import.php
+/config/generate-demo-orders-config.php

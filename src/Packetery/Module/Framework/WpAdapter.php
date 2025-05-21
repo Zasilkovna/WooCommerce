@@ -214,4 +214,8 @@ class WpAdapter {
 	public function cliSuccess( string $message ): void {
 		WP_CLI::success( $message );
 	}
+
+	public function cliLine( string $message ): void {
+		WP_CLI::line( $message );
+	}
 }
