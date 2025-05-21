@@ -12,3 +12,6 @@ phpunit.xml
 soap-php-bugfix-dev.wsdl
 /config/carrier-settings-import.php
 /config/generate-demo-orders-config.php
+/cli/demo-install/categories.tsv
+/cli/demo-install/sample-categories-errors.log
+/cli/demo-install/sample-categories.sh
