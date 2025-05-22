@@ -183,7 +183,17 @@ class DemoOrderCommand {
 					}
 
 					$packetaOrderData = $this->makePacketaOrderData( (string) $wcOrder->get_id(), $carrier );
-					$packetaOrder     = $this->builder->build( $wcOrder, $packetaOrderData );
+					// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+					if ( $packetaOrderData->point_id !== null && $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
+						$wcOrder->set_shipping_address_1( $packetaOrderData->point_street );
+						$wcOrder->set_shipping_address_2( '' );
+						$wcOrder->set_shipping_company( $packetaOrderData->point_name );
+
+						$wcOrder->set_shipping_city( $packetaOrderData->point_city );
+						$wcOrder->set_shipping_postcode( $packetaOrderData->point_zip );
+					}
+					// phpcs:enable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+					$packetaOrder = $this->builder->build( $wcOrder, $packetaOrderData );
 					$this->orderRepository->save( $packetaOrder );
 				}
 			}
