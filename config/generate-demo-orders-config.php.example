@@ -25,6 +25,7 @@ return [
 		'shipping_country'    => 'CZ',
 		'shipping_state'      => '',
 	],
+	'send_emails'          => false,
 	'list_disabled_emails' => [
 		'woocommerce_low_stock',
 		'woocommerce_no_stock',

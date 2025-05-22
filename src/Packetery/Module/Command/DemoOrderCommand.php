@@ -15,6 +15,13 @@ use WC_Customer;
 use WC_Order_Item_Shipping;
 use WP_User;
 
+/** @phpstan-type DemoOrderConfig array{
+ *     customer_email: string,
+ *     customer_address: array<string, string>,
+ *     send_emails: bool,
+ *     list_disabled_emails: list<string>,
+ * }
+ */
 class DemoOrderCommand {
 
 	public const NAME = 'packeta-plugin-build-demo-order';
@@ -54,13 +61,7 @@ class DemoOrderCommand {
 	 */
 	private $carrierOptionsFactory;
 
-	/**
-	 * @var array{
-	 *      customer_email: string,
-	 *      customer_address: array<string, string>,
-	 *      list_disabled_emails: list<string>
-	 *  }
-	 */
+	/** @var DemoOrderConfig */
 	private $validConfig;
 
 	public function __construct(
@@ -129,10 +130,11 @@ class DemoOrderCommand {
 		if ( isset( $assoc_args['carrier-ids'] ) ) {
 			$carrierIds = array_map( 'intval', explode( ',', sanitize_text_field( $assoc_args['carrier-ids'] ) ) );
 		}
-
-		$this->wpAdapter->cliLine( 'Disabling email sending' );
-		$this->disableEmails();
-		$this->wpAdapter->cliSuccess( 'Email sending has been disabled' );
+		if ( $this->validConfig['send_emails'] === false ) {
+			$this->wpAdapter->cliLine( 'Disabling email sending' );
+			$this->disableEmails();
+			$this->wpAdapter->cliSuccess( 'Email sending has been disabled' );
+		}
 
 		$this->wpAdapter->cliLine( 'Try create packeta demo customer' );
 		$customer = $this->createCustomerIfNotExists();
@@ -430,11 +432,7 @@ class DemoOrderCommand {
 	}
 
 	/**
-	 * @return array{
-	 *      customer_email: string,
-	 *      customer_address: array<string, string>,
-	 *      list_disabled_emails: list<string>
-	 *  }
+	 * @return DemoOrderConfig
 	 * @throws InvalidArgumentException When invalid config is provided.
 	 */
 	private function processConfig( array $config ): array {
