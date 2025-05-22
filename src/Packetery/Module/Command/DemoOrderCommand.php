@@ -18,8 +18,15 @@ use WP_User;
 /** @phpstan-type DemoOrderConfig array{
  *     customer_email: string,
  *     customer_address: array<string, string>,
+ *     package_dimensions?: array {
+ *          length: int,
+ *          width: int,
+ *          height: int,
+ *          weights: list<int>
+ *      }
  *     send_emails: bool,
  *     list_disabled_emails: list<string>,
+ *     shipping_addresses_by_country?: array<string, list<array<string, string>>>
  * }
  */
 class DemoOrderCommand {
@@ -344,6 +351,17 @@ class DemoOrderCommand {
 				$pickupPoint = $this->getFirstCarrierPointForCarrier( $carrier ); // jiný dopravce
 			}
 
+			if ( isset( $this->validConfig['package_dimensions'] ) ) {
+				$dimensions               = $this->validConfig['package_dimensions'];
+				$packetaOrderData->length = $dimensions['length'];
+				$packetaOrderData->width  = $dimensions['width'];
+				$packetaOrderData->height = $dimensions['height'];
+
+				$weights                  = $dimensions['weights'];
+				$randomIndex              = array_rand( $weights );
+				$packetaOrderData->weight = $weights[ $randomIndex ];
+			}
+
 			if ( $pickupPoint !== null ) {
 				// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 				$packetaOrderData->point_id     = (string) $pickupPoint['id'];
@@ -496,10 +514,19 @@ class DemoOrderCommand {
 	 * @throws InvalidArgumentException When invalid config is provided.
 	 */
 	private function processConfig( array $config ): array {
-		if ( ! isset( $config['customer_email'], $config['customer_address'], $config['list_disabled_emails'] ) ) {
+		if (
+			! isset( $config['customer_email'], $config['customer_address'], $config['list_disabled_emails'] )
+		) {
 			throw new InvalidArgumentException(
 				'Configuration must contain customer_email, customer_address and list_disabled_emails'
 			);
+		}
+		if ( isset( $config['package_dimensions'] ) ) {
+			foreach ( [ 'length', 'width', 'height', 'weight' ] as $key ) {
+				if ( ! isset( $config['package_dimensions'][ $key ] ) ) {
+					throw new InvalidArgumentException( "Missing package_dimensions[$key]" );
+				}
+			}
 		}
 
 		return $config;

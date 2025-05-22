@@ -8,7 +8,7 @@ class PacketaOrderData extends \stdClass {
 	public $id;
 
 	/** @var string */
-	public $carrier_id = '80';
+	public $carrier_id;
 
 	/** @var int */
 	public $is_exported = 0;
@@ -76,11 +76,11 @@ class PacketaOrderData extends \stdClass {
 	/** @var null|bool */
 	public $adult_content = null;
 
-	/** @var int */
-	public $cod = 50;
+	/** @var null|int */
+	public $cod = null;
 
-	/** @var int */
-	public $value = 50;
+	/** @var null|int */
+	public $value = null;
 
 	/** @var null|string */
 	public $api_error_message = null;
