@@ -79,15 +79,16 @@ class DemoOrderCommand {
 	 * ## OPTIONS
 	 *
 	 * [--payment-method=<payment-method>]
-	 * : Payment method to set. E.g., 'cod', 'bacs'. If not set, uses 'basc' by default.
+	 * : Optional. Payment method to use for the order. If not set, both 'basc' and 'cod' are used.
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp packeta-plugin-build-demo-order --count=5 --payment-method=cod
+	 *     wp packeta-plugin-build-demo-order --payment-method=cod
 	 *
 	 * @param string[] $args
 	 * @param array<string, mixed> $assoc_args
 	 */
+
 	// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 	public function __invoke( array $args, array $assoc_args ): void {
 		if ( ! is_file( $this->configPath ) ) {
@@ -111,7 +112,7 @@ class DemoOrderCommand {
 		}
 
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-		$paymentMethod = isset( $assoc_args['payment-method'] ) ? sanitize_text_field( $assoc_args['payment-method'] ) : 'basc';
+		$paymentMethods = isset( $assoc_args['payment-method'] ) ? [ sanitize_text_field( $assoc_args['payment-method'] ) ] : [ 'basc', 'cod' ];
 
 		$this->wpAdapter->cliLine( 'Disabling email sending' );
 		$this->disableEmails();
@@ -127,12 +128,14 @@ class DemoOrderCommand {
 		$count          = 0;
 
 		foreach ( $carriers as $carrier ) {
-			$count++;
-			$this->wpAdapter->cliLine( sprintf( 'Creating order %d/%d...', $count, $numbOfCarriers ) );
-			$wcOrder          = $this->makeWcOrder( $customer, $paymentMethod, $carrier );
-			$packetaOrderData = $this->makePacketaOrderData( (string) $wcOrder->get_id(), $carrier );
-			$packetaOrder     = $this->builder->build( $wcOrder, $packetaOrderData );
-			$this->orderRepository->save( $packetaOrder );
+			foreach ( $paymentMethods as $paymentMethod ) {
+				$count++;
+				$this->wpAdapter->cliLine( sprintf( 'Creating order %d/%d...', $count, $numbOfCarriers ) );
+				$wcOrder          = $this->makeWcOrder( $customer, $paymentMethod, $carrier );
+				$packetaOrderData = $this->makePacketaOrderData( (string) $wcOrder->get_id(), $carrier );
+				$packetaOrder     = $this->builder->build( $wcOrder, $packetaOrderData );
+				$this->orderRepository->save( $packetaOrder );
+			}
 		}
 		$this->wpAdapter->cliSuccess( 'Packeta demo orders have been successfully created' );
 	}
