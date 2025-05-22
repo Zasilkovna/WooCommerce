@@ -5,6 +5,7 @@ namespace Packetery\Module\Command;
 
 use InvalidArgumentException;
 use Packetery\Core\Entity\Carrier;
+use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
@@ -49,6 +50,11 @@ class DemoOrderCommand {
 	private $optionsProvider;
 
 	/**
+	 * @var CarrierOptionsFactory
+	 */
+	private $carrierOptionsFactory;
+
+	/**
 	 * @var array{
 	 *      customer_email: string,
 	 *      customer_address: array<string, string>,
@@ -63,14 +69,16 @@ class DemoOrderCommand {
 		Builder $builder,
 		Repository $orderRepository,
 		EntityRepository $carrierRepository,
-		OptionsProvider $optionsProvider
+		OptionsProvider $optionsProvider,
+		CarrierOptionsFactory $carrierOptionsFactory
 	) {
-		$this->configPath        = $configPath;
-		$this->wpAdapter         = $wpAdapter;
-		$this->builder           = $builder;
-		$this->orderRepository   = $orderRepository;
-		$this->carrierRepository = $carrierRepository;
-		$this->optionsProvider   = $optionsProvider;
+		$this->configPath            = $configPath;
+		$this->wpAdapter             = $wpAdapter;
+		$this->builder               = $builder;
+		$this->orderRepository       = $orderRepository;
+		$this->carrierRepository     = $carrierRepository;
+		$this->optionsProvider       = $optionsProvider;
+		$this->carrierOptionsFactory = $carrierOptionsFactory;
 	}
 
 	/**
@@ -301,7 +309,9 @@ class DemoOrderCommand {
 		$availableCarriers = array_filter(
 			$carriers,
 			function ( $carrier ) {
-				return $carrier->isAvailable() && ! $carrier->isDeleted();
+				$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
+
+				return $carrierOptions->isActive() && ! $carrier->isDeleted();
 			}
 		);
 
