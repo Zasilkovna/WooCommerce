@@ -89,9 +89,12 @@ class DemoOrderCommand {
 	 * [--payment-method=<payment-method>]
 	 * : Optional. Payment method to use for the order. If not set, both 'basc' and 'cod' are used.
 	 *
+	 * [--carrier-ids=<ids>]
+	 * : Optional. Comma-separated list of carrier IDs to use. If not set, all active carriers without customs declarations are used.
+	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp packeta-plugin-build-demo-order --payment-method=cod
+	 *     wp packeta-plugin-build-demo-order --payment-method=cod --carrier-ids=15,20
 	 *
 	 * @param string[] $args
 	 * @param array<string, mixed> $assoc_args
@@ -122,6 +125,11 @@ class DemoOrderCommand {
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		$paymentMethods = isset( $assoc_args['payment-method'] ) ? [ sanitize_text_field( $assoc_args['payment-method'] ) ] : [ 'basc', 'cod' ];
 
+		$carrierIds = null;
+		if ( isset( $assoc_args['carrier-ids'] ) ) {
+			$carrierIds = array_map( 'intval', explode( ',', sanitize_text_field( $assoc_args['carrier-ids'] ) ) );
+		}
+
 		$this->wpAdapter->cliLine( 'Disabling email sending' );
 		$this->disableEmails();
 		$this->wpAdapter->cliSuccess( 'Email sending has been disabled' );
@@ -131,7 +139,7 @@ class DemoOrderCommand {
 
 		$this->wpAdapter->cliLine( 'Start creating Packeta demo orders' );
 
-		$carriers       = $this->getFilteredCarriers();
+		$carriers       = $this->getFilteredCarriers( $carrierIds );
 		$numbOfCarriers = count( $carriers );
 		$count          = 0;
 
@@ -303,28 +311,42 @@ class DemoOrderCommand {
 		}
 	}
 
-	private function getFilteredCarriers(): array {
+	/**
+	 * @param int[]|null $filterIds
+	 * @return Carrier[]
+	 */
+	private function getFilteredCarriers( ?array $filterIds = null ): array {
 		$carriers = $this->carrierRepository->getAllCarriersIncludingNonFeed();
 
-		$availableCarriers = array_filter(
+		if ( is_array( $filterIds ) ) {
+			$filteredCarriers = array_filter(
+				$carriers,
+				function ( $carrier ) use ( $filterIds ) {
+					return in_array( (int) $carrier->getId(), $filterIds, true );
+				}
+			);
+
+			if ( count( $filteredCarriers ) === 0 ) {
+				$this->wpAdapter->cliError( 'No carriers found for the specified IDs.' );
+			}
+
+			return $filteredCarriers;
+		}
+
+		$filteredCarriers = array_filter(
 			$carriers,
 			function ( $carrier ) {
 				$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( $carrier->getId() );
 
-				return $carrierOptions->isActive() && ! $carrier->isDeleted();
+				return $carrierOptions->isActive()
+						&& ! $carrier->isDeleted()
+						&& ! $carrier->requiresCustomsDeclarations();
 			}
 		);
 
-		if ( count( $availableCarriers ) === 0 ) {
+		if ( count( $filteredCarriers ) === 0 ) {
 			$this->wpAdapter->cliError( 'No available carriers found.' );
 		}
-
-		$filteredCarriers = array_filter(
-			$availableCarriers,
-			function ( $carrier ) {
-				return ! $carrier->requiresCustomsDeclarations();
-			}
-		);
 
 		return $filteredCarriers;
 	}
