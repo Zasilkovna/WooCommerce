@@ -123,13 +123,14 @@ class DemoOrderCommand {
 			$this->wpAdapter->cliError( $invalidArgumentException->getMessage() );
 		}
 
-		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+		// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		$paymentMethods = isset( $assoc_args['payment-method'] ) ? [ sanitize_text_field( $assoc_args['payment-method'] ) ] : [ 'basc', 'cod' ];
 
 		$carrierIds = null;
 		if ( isset( $assoc_args['carrier-ids'] ) ) {
 			$carrierIds = array_map( 'intval', explode( ',', sanitize_text_field( $assoc_args['carrier-ids'] ) ) );
 		}
+		// phpcs:enable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
 		if ( $this->validConfig['send_emails'] === false ) {
 			$this->wpAdapter->cliLine( 'Disabling email sending' );
 			$this->disableEmails();
@@ -146,19 +147,68 @@ class DemoOrderCommand {
 		$count          = 0;
 
 		foreach ( $carriers as $carrier ) {
+			$countryCode = strtoupper( $carrier->getCountry() );
+			$addressList = $this->validConfig['shipping_addresses_by_country'][ $countryCode ] ?? null;
+
+			if ( ! is_array( $addressList ) || $addressList === [] ) {
+				$this->wpAdapter->cliLog(
+					sprintf(
+						"Skipping carrier ID %s (%s): no addresses configured for country '%s'.",
+						$carrier->getId(),
+						$carrier->getName(),
+						$countryCode
+					)
+				);
+
+				continue;
+			}
+
 			foreach ( $paymentMethods as $paymentMethod ) {
-				$count++;
-				$this->wpAdapter->cliLine( sprintf( 'Creating order %d/%d...', $count, $numbOfCarriers ) );
-				$wcOrder          = $this->makeWcOrder( $customer, $paymentMethod, $carrier );
-				$packetaOrderData = $this->makePacketaOrderData( (string) $wcOrder->get_id(), $carrier );
-				$packetaOrder     = $this->builder->build( $wcOrder, $packetaOrderData );
-				$this->orderRepository->save( $packetaOrder );
+				foreach ( $addressList as $addressIndex => $shippingAddress ) {
+					$count++;
+					$this->wpAdapter->cliLine(
+						sprintf(
+							'Creating order %d/%d for carrier %s and address #%d (%s)...',
+							$count,
+							$numbOfCarriers,
+							$carrier->getName(),
+							$addressIndex + 1,
+							$countryCode
+						)
+					);
+
+					$wcOrder = $this->makeWcOrder( $customer, $paymentMethod, $carrier, $shippingAddress );
+					if ( $wcOrder === null ) {
+						continue;
+					}
+
+					$packetaOrderData = $this->makePacketaOrderData( (string) $wcOrder->get_id(), $carrier );
+					$packetaOrder     = $this->builder->build( $wcOrder, $packetaOrderData );
+					$this->orderRepository->save( $packetaOrder );
+				}
 			}
 		}
+
 		$this->wpAdapter->cliSuccess( 'Packeta demo orders have been successfully created' );
 	}
 
-	private function makeWcOrder( WC_Customer $customer, string $paymentMethod, Carrier $carrier ): \WC_Order {
+	private function makeWcOrder( WC_Customer $customer, string $paymentMethod, Carrier $carrier, array $shippingAddress ): ?\WC_Order {
+		$countryCode = strtoupper( $carrier->getCountry() );
+		$phoneNumber = $shippingAddress['phone'] ?? null;
+
+		if ( $phoneNumber === null ) {
+			$this->wpAdapter->cliLog(
+				sprintf(
+					"Skipping order for carrier ID %s (%s): missing phone number for country code '%s'.",
+					$carrier->getId(),
+					$carrier->getName(),
+					$countryCode
+				)
+			);
+
+			return null;
+		}
+
 		$order    = new \WC_Order();
 		$products = $this->getProducts();
 
@@ -171,9 +221,9 @@ class DemoOrderCommand {
 		$order->set_created_via( 'Packeta demo order generator' );
 		$order->set_currency( get_woocommerce_currency() );
 		$order->set_address( $customer->get_billing(), 'billing' );
-		$order->set_address( ShippingAdreessDataFixtures::getAddressByCountry( $carrier->getCountry() ), 'shipping' );
+		$order->set_address( $shippingAddress, 'shipping' );
 		$order->set_billing_email( $customer->get_billing_email() );
-		$order->set_billing_phone( ShippingAdreessDataFixtures::getPhoneByCountry( $carrier->getCountry() ) );
+		$order->set_billing_phone( $phoneNumber );
 
 		$shippingItem = new WC_Order_Item_Shipping();
 		$shippingItem->set_method_title( $carrier->getName() );
