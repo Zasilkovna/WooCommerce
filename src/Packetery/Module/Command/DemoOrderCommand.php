@@ -12,6 +12,7 @@ use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order\Builder;
 use Packetery\Module\Order\Repository;
 use WC_Customer;
+use WC_Order;
 use WC_Order_Item_Shipping;
 use WP_User;
 
@@ -189,7 +190,7 @@ class DemoOrderCommand {
 						continue;
 					}
 
-					$packetaOrderData = $this->makePacketaOrderData( (string) $wcOrder->get_id(), $carrier );
+					$packetaOrderData = $this->makePacketaOrderData( $wcOrder, $carrier );
 					// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 					if ( $packetaOrderData->point_id !== null && $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
 						$wcOrder->set_shipping_address_1( $packetaOrderData->point_street );
@@ -338,11 +339,12 @@ class DemoOrderCommand {
 		return $customer;
 	}
 
-	private function makePacketaOrderData( string $orderId, Carrier $carrier ): PacketaOrderData {
+	private function makePacketaOrderData( WC_Order $wcOrder, Carrier $carrier ): PacketaOrderData {
 		$packetaOrderData     = new PacketaOrderData();
-		$packetaOrderData->id = $orderId;
+		$packetaOrderData->id = (string) $wcOrder->get_id();
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$packetaOrderData->carrier_id = $carrier->getId();
+		$packetaOrderData->value      = (float) $wcOrder->get_total( 'raw' );
 
 		if ( $carrier->hasPickupPoints() ) {
 			if ( ! is_numeric( $carrier->getId() ) ) {
