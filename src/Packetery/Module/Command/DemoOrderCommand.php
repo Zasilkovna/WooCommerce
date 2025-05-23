@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Packetery\Module\Command;
 
 use InvalidArgumentException;
+use Packetery\Core\CoreHelper;
 use Packetery\Core\Entity\Carrier;
 use Packetery\Module\Carrier\CarrierOptionsFactory;
 use Packetery\Module\Carrier\EntityRepository;
@@ -345,7 +346,8 @@ class DemoOrderCommand {
 		$packetaOrderData->id = (string) $wcOrder->get_id();
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 		$packetaOrderData->carrier_id = $carrier->getId();
-		$packetaOrderData->value      = (float) $wcOrder->get_total( 'raw' );
+		$packetaOrderData->value      = CoreHelper::simplifyFloat( (float) $wcOrder->get_total( 'raw' ), 0 );
+		$packetaOrderData->cod        = CoreHelper::simplifyFloat( (float) $wcOrder->get_total( 'raw' ), 0 );
 
 		if ( $carrier->hasPickupPoints() ) {
 			if ( ! is_numeric( $carrier->getId() ) ) {

@@ -76,10 +76,10 @@ class PacketaOrderData extends \stdClass {
 	/** @var null|bool */
 	public $adult_content = null;
 
-	/** @var null|int */
+	/** @var null|float */
 	public $cod = null;
 
-	/** @var null|int */
+	/** @var null|float */
 	public $value = null;
 
 	/** @var null|string */
