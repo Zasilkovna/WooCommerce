@@ -1,7 +1,9 @@
 <?php
 
 return [
+	// Settings for customer creation
 	'customer_email'                => 'john.packeta@example.cz',
+	// Billing and shipping address for customer account creation
 	'customer_address'              => [
 		'billing_first_name'  => 'John',
 		'billing_last_name'   => 'Packeta',
@@ -24,13 +26,16 @@ return [
 		'shipping_country'    => 'CZ',
 		'shipping_state'      => '',
 	],
+	// Settings for package dimensions. You can define multiple weights; one will be selected randomly for each order.
 	'package_dimensions'            => [
 		'length' => 30,
 		'width'  => 20,
 		'height' => 10,
-		'weight' => [5],
+		'weight' => [ 5 ],
 	],
+	// Settings for email sending. If set to false, emails listed below will not be sent.
 	'send_emails'                   => false,
+	// List of WooCommerce email actions that will be disabled if send_emails is false.
 	'list_disabled_emails'          => [
 		'woocommerce_low_stock',
 		'woocommerce_no_stock',
@@ -56,6 +61,8 @@ return [
 		'woocommerce_new_customer_note',
 		'woocommerce_created_customer',
 	],
+	// Shipping addresses used for order creation. You can define multiple addresses per country;
+	// an order will be created for each defined address.
 	'shipping_addresses_by_country' => [
 		'AT' => [
 			[
