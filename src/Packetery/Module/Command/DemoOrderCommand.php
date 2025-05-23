@@ -150,9 +150,9 @@ class DemoOrderCommand {
 
 		$this->wpAdapter->cliLine( 'Start creating Packeta demo orders' );
 
-		$carriers       = $this->getFilteredCarriers( $carrierIds );
-		$numbOfCarriers = count( $carriers );
-		$count          = 0;
+		$carriers    = $this->getFilteredCarriers( $carrierIds );
+		$totalOrders = $this->countPlannedOrders( $carriers, $paymentMethods );
+		$count       = 0;
 
 		foreach ( $carriers as $carrier ) {
 			$countryCode = strtoupper( $carrier->getCountry() );
@@ -176,10 +176,11 @@ class DemoOrderCommand {
 					$count++;
 					$this->wpAdapter->cliLine(
 						sprintf(
-							'Creating order %d/%d for carrier %s and address #%d (%s)...',
+							'Creating order %d/%d for carrier %s, payment method "%s", and address #%d (%s)...',
 							$count,
-							$numbOfCarriers,
+							$totalOrders,
 							$carrier->getName(),
+							$paymentMethod,
 							$addressIndex + 1,
 							$countryCode
 						)
@@ -532,5 +533,28 @@ class DemoOrderCommand {
 		}
 
 		return $config;
+	}
+
+	private function countPlannedOrders( array $carriers, array $paymentMethods ): int {
+		$total = 0;
+
+		foreach ( $carriers as $carrier ) {
+			$countryCode = strtoupper( $carrier->getCountry() );
+			$addressList = $this->validConfig['shipping_addresses_by_country'][ $countryCode ] ?? null;
+
+			if ( ! is_array( $addressList ) || $addressList === [] ) {
+				continue;
+			}
+
+			foreach ( $paymentMethods as $paymentMethod ) {
+				foreach ( $addressList as $shippingAddress ) {
+					if ( isset( $shippingAddress['phone'] ) && trim( $shippingAddress['phone'] ) !== '' ) {
+						$total++;
+					}
+				}
+			}
+		}
+
+		return $total;
 	}
 }
