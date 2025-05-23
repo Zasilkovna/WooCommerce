@@ -31,7 +31,7 @@ return [
 		'length' => 30,
 		'width'  => 20,
 		'height' => 10,
-		'weight' => [ 5 ],
+		'weights' => [ 5 ],
 	],
 	// Settings for email sending. If set to false, emails listed below will not be sent.
 	'send_emails'                   => false,

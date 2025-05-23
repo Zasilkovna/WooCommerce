@@ -522,7 +522,7 @@ class DemoOrderCommand {
 			);
 		}
 		if ( isset( $config['package_dimensions'] ) ) {
-			foreach ( [ 'length', 'width', 'height', 'weight' ] as $key ) {
+			foreach ( [ 'length', 'width', 'height', 'weights' ] as $key ) {
 				if ( ! isset( $config['package_dimensions'][ $key ] ) ) {
 					throw new InvalidArgumentException( "Missing package_dimensions[$key]" );
 				}
