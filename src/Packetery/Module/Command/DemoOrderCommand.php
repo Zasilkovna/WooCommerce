@@ -17,15 +17,18 @@ use WC_Order;
 use WC_Order_Item_Shipping;
 use WP_User;
 
-/** @phpstan-type DemoOrderConfig array{
+/**
+ * @phpstan-type PackageDimensions array{
+ *     length: int,
+ *     width: int,
+ *     height: int,
+ *     weights: list<int>
+ * }
+ *
+ * @phpstan-type DemoOrderConfig array{
  *     customer_email: string,
  *     customer_address: array<string, string>,
- *     package_dimensions?: array {
- *          length: int,
- *          width: int,
- *          height: int,
- *          weights: list<int>
- *      }
+ *     package_dimensions?: PackageDimensions,
  *     send_emails: bool,
  *     list_disabled_emails: list<string>,
  *     shipping_addresses_by_country?: array<string, list<array<string, string>>>
