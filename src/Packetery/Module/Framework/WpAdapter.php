@@ -218,4 +218,8 @@ class WpAdapter {
 	public function cliLine( string $message ): void {
 		WP_CLI::line( $message );
 	}
+
+	public function cliLog( string $message ): void {
+		WP_CLI::log( $message );
+	}
 }
