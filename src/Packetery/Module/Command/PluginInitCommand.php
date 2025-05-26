@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Packetery\Module\Command;
 
+use Packetery\Module\Forms\FormService;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options;
 use Packetery\Nette\Forms\Container;
@@ -21,12 +22,19 @@ class PluginInitCommand {
 	 */
 	private $optionsPage;
 
+	/**
+	 * @var FormService
+	 */
+	private $formService;
+
 	public function __construct(
 		WpAdapter $wpAdapter,
-		Options\Page $optionsPage
+		Options\Page $optionsPage,
+		FormService $formService
 	) {
 		$this->wpAdapter   = $wpAdapter;
 		$this->optionsPage = $optionsPage;
+		$this->formService = $formService;
 	}
 
 	/**
@@ -48,9 +56,12 @@ class PluginInitCommand {
 		[ $apiPassword, $sender ] = $args;
 
 		$values = [
-			'api_password'        => $apiPassword,
-			'sender'              => $sender,
-			'cod_payment_methods' => [ 'cod' ],
+			'api_password'                    => $apiPassword,
+			'sender'                          => $sender,
+			'cod_payment_methods'             => [ 'cod' ],
+			'checkout_detection'              => Options\OptionsProvider::AUTOMATIC_CHECKOUT_DETECTION,
+			'checkout_widget_button_location' => 'after_shipping_rate',
+			'email_hook'                      => 'woocommerce_email_footer',
 		];
 
 		$form = $this->optionsPage->create_form();
@@ -59,7 +70,7 @@ class PluginInitCommand {
 		$container->setValues( $values );
 
 		if ( ! $form->isValid() ) {
-			$this->wpAdapter->cliError( implode( PHP_EOL, $form->getErrors() ) );
+			$this->wpAdapter->cliError( $this->formService->formatFormErrorsToCliMessage( $form ) );
 		}
 
 		$values = $container->getValues( 'array' );
