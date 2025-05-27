@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Packetery\Module\Command;
 
 use InvalidArgumentException;
+use Packetery\Module\Carrier\Downloader;
+use Packetery\Module\Carrier\EntityRepository;
 use Packetery\Module\Carrier\OptionsPage;
 use Packetery\Module\Forms\FormService;
 use Packetery\Module\Framework\WpAdapter;
@@ -33,18 +35,32 @@ class CarrierSettingsImportCommand {
 	private $formService;
 
 	/**
+	 * @var Downloader
+	 */
+	private $carrierDownloader;
+
+	/**
+	 * @var EntityRepository
+	 */
+	private $carrierEntityRepository;
+
+	/**
 	 * @param string $configPath
 	 */
 	public function __construct(
 		$configPath,
 		WpAdapter $wpAdapter,
 		OptionsPage $optionsPage,
-		FormService $formService
+		FormService $formService,
+		Downloader $carrierDownloader,
+		EntityRepository $carrierEntityRepository
 	) {
-		$this->configPath  = $configPath;
-		$this->wpAdapter   = $wpAdapter;
-		$this->optionsPage = $optionsPage;
-		$this->formService = $formService;
+		$this->configPath              = $configPath;
+		$this->wpAdapter               = $wpAdapter;
+		$this->optionsPage             = $optionsPage;
+		$this->formService             = $formService;
+		$this->carrierDownloader       = $carrierDownloader;
+		$this->carrierEntityRepository = $carrierEntityRepository;
 	}
 
 	/**
@@ -64,6 +80,13 @@ class CarrierSettingsImportCommand {
 		$config = require $this->configPath;
 		if ( ! is_array( $config ) ) {
 			$this->wpAdapter->cliError( 'Config file must return an array.' );
+
+			return;
+		}
+
+		[ $message, $result ] = $this->carrierDownloader->run();
+		if ( $result !== 'success' ) {
+			$this->wpAdapter->cliError( $message );
 
 			return;
 		}
@@ -88,6 +111,12 @@ class CarrierSettingsImportCommand {
 		$carriers       = $config['carriers'];
 
 		foreach ( $carriers as $carrierId => $carrierConfig ) {
+			if ( $this->carrierEntityRepository->getAnyById( (string) $carrierId ) === null ) {
+				$this->wpAdapter->cliLog( "Carrier with ID {$carrierId} from config does not exist in database and will be skipped." );
+
+				continue;
+			}
+
 			$mergedConfig = array_merge(
 				$globalSettings,
 				[ 'id' => (string) $carrierId ],
