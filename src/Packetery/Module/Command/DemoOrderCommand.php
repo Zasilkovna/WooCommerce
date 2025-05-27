@@ -190,12 +190,12 @@ class DemoOrderCommand {
 						)
 					);
 
-					$wcOrder = $this->makeWcOrder( $customer, $paymentMethod, $carrier, $shippingAddress );
+					$wcOrder = $this->createWcOrder( $customer, $paymentMethod, $carrier, $shippingAddress );
 					if ( $wcOrder === null ) {
 						continue;
 					}
 
-					$packetaOrderData = $this->makePacketaOrderData( $wcOrder, $carrier );
+					$packetaOrderData = $this->createPacketaOrderData( $wcOrder, $carrier );
 					// phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 					if ( $packetaOrderData->point_id !== null && $this->optionsProvider->replaceShippingAddressWithPickupPointAddress() ) {
 						$wcOrder->set_shipping_address_1( $packetaOrderData->point_street );
@@ -215,7 +215,7 @@ class DemoOrderCommand {
 		$this->wpAdapter->cliSuccess( 'Packeta demo orders have been successfully created' );
 	}
 
-	private function makeWcOrder( WC_Customer $customer, string $paymentMethod, Carrier $carrier, array $shippingAddress ): ?\WC_Order {
+	private function createWcOrder( WC_Customer $customer, string $paymentMethod, Carrier $carrier, array $shippingAddress ): ?\WC_Order {
 		$countryCode = strtoupper( $carrier->getCountry() );
 		$phoneNumber = $shippingAddress['phone'] ?? null;
 
@@ -344,7 +344,7 @@ class DemoOrderCommand {
 		return $customer;
 	}
 
-	private function makePacketaOrderData( WC_Order $wcOrder, Carrier $carrier ): PacketaOrderData {
+	private function createPacketaOrderData( WC_Order $wcOrder, Carrier $carrier ): PacketaOrderData {
 		$packetaOrderData     = new PacketaOrderData();
 		$packetaOrderData->id = (string) $wcOrder->get_id();
 		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
