@@ -15,6 +15,7 @@ use Packetery\Module\Order\Repository;
 use WC_Customer;
 use WC_Order;
 use WC_Order_Item_Shipping;
+use WP_Filesystem_Base;
 use WP_User;
 
 /**
@@ -29,6 +30,7 @@ use WP_User;
  *     customer_email: string,
  *     customer_address: array<string, string>,
  *     package_dimensions?: PackageDimensions,
+ *     cache_for_pickup_points_in_seconds: int,
  *     send_emails: bool,
  *     list_disabled_emails: list<string>,
  *     shipping_addresses_by_country?: array<string, list<array<string, string>>>
@@ -359,9 +361,9 @@ class DemoOrderCommand {
 
 		if ( $carrier->hasPickupPoints() ) {
 			if ( ! is_numeric( $carrier->getId() ) ) {
-				$pickupPoint = $this->getFirstPickupPointForCarrier( $carrier ); // Zásilkovna
+				$pickupPoint = $this->getFirstPickupPointForCarrier( $carrier );
 			} else {
-				$pickupPoint = $this->getFirstCarrierPointForCarrier( $carrier ); // jiný dopravce
+				$pickupPoint = $this->getFirstCarrierPointForCarrier( $carrier );
 			}
 
 			if ( isset( $this->validConfig['package_dimensions'] ) ) {
@@ -452,26 +454,36 @@ class DemoOrderCommand {
 		$apiKey = $this->optionsProvider->get_api_key();
 
 		$url = sprintf(
-			'https://pickup-point.api.packeta.com/v5/%s/carrier_point/json?ids[]=%s',
-			$apiKey,
-			$carrier->getId()
+			'https://pickup-point.api.packeta.com/v5/%s/carrier_point/json',
+			$apiKey
 		);
 
-		$response = wp_remote_get( $url );
-
-		if ( is_wp_error( $response ) ) {
+		$data = $this->getCachedJsonFromUrl( $url, 'carriers_points' );
+		if ( $data === null ) {
 			return null;
 		}
 
-		$body = wp_remote_retrieve_body( $response );
+		$carrierId       = (int) $carrier->getId();
+		$matchingCarrier = null;
 
-		$data = json_decode( $body, true );
+		foreach ( $data['carriers'] ?? [] as $carrierData ) {
+			if ( isset( $carrierData['id'] ) && (int) $carrierData['id'] === $carrierId ) {
+				$matchingCarrier = $carrierData;
 
-		if ( ! isset( $data['carriers'][0]['points'] ) ) {
+				break;
+			}
+		}
+
+		if (
+			! is_array( $matchingCarrier ) ||
+			! isset( $matchingCarrier['points'] ) ||
+			! is_array( $matchingCarrier['points'] ) ||
+			count( $matchingCarrier['points'] ) === 0
+		) {
 			return null;
 		}
 
-		$point = $data['carriers'][0]['points'][0];
+		$point = $matchingCarrier['points'][0];
 
 		return [
 			'id'      => $point['code'],
@@ -500,15 +512,11 @@ class DemoOrderCommand {
 			$language
 		);
 
-		$response = wp_remote_get( $url );
-
-		if ( is_wp_error( $response ) ) {
+		$data = $this->getCachedJsonFromUrl( $url, $type . '_points' );
+		if ( $data === null ) {
 			return null;
 		}
 
-		$body = wp_remote_retrieve_body( $response );
-
-		$data = json_decode( $body, true );
 		foreach ( $data as $point ) {
 			if (
 				isset( $point['country'], $point['displayFrontend'] )
@@ -566,5 +574,42 @@ class DemoOrderCommand {
 		}
 
 		return $total;
+	}
+
+	private function getCachedJsonFromUrl( string $url, string $cacheKey ): ?array {
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+		global $wp_filesystem;
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+		if ( ! ( $wp_filesystem instanceof WP_Filesystem_Base ) ) {
+			require_once ABSPATH . '/wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
+		$cacheDir = WP_CONTENT_DIR . '/plugins/packeta/temp/';
+		if ( ! is_dir( $cacheDir ) ) {
+			wp_mkdir_p( $cacheDir );
+		}
+
+		$cacheFile = $cacheDir . $cacheKey . '.json';
+		$cacheTtl  = $this->validConfig['cache_for_pickup_points_in_seconds'];
+
+		if ( file_exists( $cacheFile ) && ( filemtime( $cacheFile ) + $cacheTtl > time() ) ) {
+			// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+			$contents = $wp_filesystem->get_contents( $cacheFile );
+			if ( $contents !== false ) {
+				return json_decode( $contents, true );
+			}
+		}
+
+		$response = wp_remote_get( $url );
+		if ( is_wp_error( $response ) ) {
+			return null;
+		}
+
+		$body = wp_remote_retrieve_body( $response );
+		// phpcs:ignore Squiz.NamingConventions.ValidVariableName.NotCamelCaps
+		$wp_filesystem->put_contents( $cacheFile, $body, FS_CHMOD_FILE );
+
+		return json_decode( $body, true );
 	}
 }

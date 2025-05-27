@@ -33,6 +33,8 @@ return [
 		'height' => 10,
 		'weights' => [ 5 ],
 	],
+	// Settings for cache in seconds
+	'cache_for_pickup_points_in_seconds'       => 86400, // 24 hours
 	// Settings for email sending. If set to false, emails listed below will not be sent.
 	'send_emails'                   => false,
 	// List of WooCommerce email actions that will be disabled if send_emails is false.
