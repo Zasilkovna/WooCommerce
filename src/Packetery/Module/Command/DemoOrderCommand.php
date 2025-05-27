@@ -100,7 +100,7 @@ class DemoOrderCommand {
 	 * ## OPTIONS
 	 *
 	 * [--payment-method=<payment-method>]
-	 * : Optional. Payment method to use for the order. If not set, both 'basc' and 'cod' are used.
+	 * : Optional. Payment method to use for the order. If not set, both 'bacs' and 'cod' are used.
 	 *
 	 * [--carrier-ids=<ids>]
 	 * : Optional. Comma-separated list of carrier IDs to use. If not set, all active carriers without customs declarations are used.
@@ -136,7 +136,7 @@ class DemoOrderCommand {
 		}
 
 		// phpcs:disable Squiz.NamingConventions.ValidVariableName.NotCamelCaps
-		$paymentMethods = isset( $assoc_args['payment-method'] ) ? [ sanitize_text_field( $assoc_args['payment-method'] ) ] : [ 'basc', 'cod' ];
+		$paymentMethods = isset( $assoc_args['payment-method'] ) ? [ sanitize_text_field( $assoc_args['payment-method'] ) ] : [ 'bacs', 'cod' ];
 
 		$carrierIds = null;
 		if ( isset( $assoc_args['carrier-ids'] ) ) {
@@ -255,6 +255,11 @@ class DemoOrderCommand {
 		$order->add_item( $shippingItem );
 
 		$order->set_payment_method( $paymentMethod );
+
+		$paymentGateways    = WC()->payment_gateways()->get_available_payment_gateways();
+		$paymentMethodTitle = $paymentGateways[ $paymentMethod ]->get_title() ?? ucfirst( $paymentMethod );
+		$order->set_payment_method_title( $paymentMethodTitle );
+
 		$order->set_status( 'on-hold' );
 
 		$order->calculate_totals( true );
