@@ -179,13 +179,13 @@ function parseCategoriesTsv( $filePath ): array {
 	// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 	$handle = fopen( $filePath, 'rb' );
 	if ( $handle !== false ) {
-		$headers = fgetcsv( $handle, 0, "\t" );
+		$headers = fgetcsv( $handle, 0, "\t", '"', '\\' );
 
 		$idIndex   = array_search( 'id', $headers, true );
 		$nameIndex = array_search( 'name', $headers, true );
 
 		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-		while ( $row = fgetcsv( $handle, 0, "\t" ) ) {
+		while ( $row = fgetcsv( $handle, 0, "\t", '"', '\\' ) ) {
 			if ( isset( $row[ $idIndex ], $row[ $nameIndex ] ) ) {
 				$categoriesMapping[ $row[ $nameIndex ] ] = (int) $row[ $idIndex ];
 			}
@@ -215,7 +215,12 @@ if ( ! file_exists( $csvFile ) ) {
 	fwrite( STDERR, "🛑 CSV with products not found.\n" );
 	exit( 1 );
 }
-$data     = array_map( 'str_getcsv', file( $csvFile ) );
+$data     = array_map(
+	function ( $line ) {
+		return str_getcsv( $line, ',', '"', '\\' );
+	},
+	file( $csvFile )
+);
 $headers  = array_map( 'trim', $data[0] );
 $products = array_slice( $data, 1 );
 
