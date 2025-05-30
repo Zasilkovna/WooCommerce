@@ -63,6 +63,7 @@ class PluginInitCommand {
 		}
 
 		$values = $container->getValues( 'array' );
+		$values = $this->optionsPage->sanitizePacketeryOptions( $values );
 		$this->wpAdapter->updateOption( Options\OptionNames::PACKETERY, $values );
 
 		$this->wpAdapter->cliSuccess( 'General plugin options updated' );
