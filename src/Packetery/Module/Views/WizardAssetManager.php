@@ -133,6 +133,7 @@ class WizardAssetManager {
 	private function enqueueOrderDetailTours( bool $isItFirstRunOrderDetailEditPacket ): void {
 		$basicTranslations = $this->getBasicTranslations();
 		if ( $this->request->getQuery( 'wizard-order-detail-edit-packet-enabled' ) === 'true' || $isItFirstRunOrderDetailEditPacket ) {
+			update_option( OptionNames::PACKETERY_TUTORIAL_ORDER_DETAIL_EDIT_PACKET, 0 );
 			$this->createOrderDetailEditPacketTour( $basicTranslations );
 		}
 		if ( $this->request->getQuery( 'wizard-order-detail-custom-declaration-enabled' ) === 'true' ) {
