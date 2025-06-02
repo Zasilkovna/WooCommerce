@@ -146,7 +146,7 @@ function packeteryExtractProductCreateCommand( array $mapping, array $categories
 
 	$cliCommand  = 'wp wc product create --user="' . $wpUser . '"';
 	$cliCommand .= ' ' . implode( ' ', $parameters );
-	$cliCommand .= ' --allow-root=1';
+	$cliCommand .= ' --allow-root';
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo $cliCommand . "\n";
 }
@@ -168,7 +168,7 @@ function packeteryGetCategoryList( array $categories, array $productData ): arra
 
 function packeteryExtractCategoryCreateCommand( string $wpUser, string $category ): void {
 	$cliCommand  = 'wp wc product_cat create --user="' . $wpUser . '" --name="' . $category . '"';
-	$cliCommand .= ' --allow-root=1';
+	$cliCommand .= ' --allow-root';
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo $cliCommand . "\n";
 }
