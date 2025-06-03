@@ -305,13 +305,13 @@ class CartServiceTest extends TestCase {
 							)
 						)
 						->willReturnCallback(
-							function ( $arg ) use ( $product1, $product2, &$index ) {
+							function ( $productId ) use ( $product1, $product2, &$index ) {
 								$index++;
-								if ( $arg === 1 && $index === 1 ) {
+								if ( $productId === 1 && $index === 1 ) {
 									return $product1;
 								}
 
-								if ( $arg === 2 && $index === 2 ) {
+								if ( $productId === 2 && $index === 2 ) {
 									return $product2;
 								}
 
@@ -367,13 +367,13 @@ class CartServiceTest extends TestCase {
 							)
 						)
 						->willReturnCallback(
-							function ( $arg ) use ( $product1, $product2, &$index ) {
+							function ( $productId ) use ( $product1, $product2, &$index ) {
 								$index++;
-								if ( $arg === 1 && $index === 1 ) {
+								if ( $productId === 1 && $index === 1 ) {
 									return $product1;
 								}
 
-								if ( $arg === 2 && $index === 2 ) {
+								if ( $productId === 2 && $index === 2 ) {
 									return $product2;
 								}
 
