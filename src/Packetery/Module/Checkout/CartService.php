@@ -158,7 +158,7 @@ class CartService {
 		}
 
 		$maxRate        = 0;
-		$resultTaxClass = false;
+		$resultTaxClass = null;
 		foreach ( $taxRates as $taxClassName => $taxClassRates ) {
 			foreach ( $taxClassRates as $rate ) {
 				if ( $rate['rate'] > $maxRate ) {
