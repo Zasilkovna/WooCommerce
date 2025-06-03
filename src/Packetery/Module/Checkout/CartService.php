@@ -137,7 +137,7 @@ class CartService {
 			if ( ! ( $product instanceof WC_Product ) ) {
 				throw new ProductNotFoundException( "Product {$cartProduct['product_id']} not found." );
 			}
-			if ( $product->is_taxable() ) {
+			if ( $product->is_taxable() && is_string( $product->get_tax_class() ) ) {
 				$taxClasses[] = $product->get_tax_class();
 			}
 		}
@@ -158,7 +158,7 @@ class CartService {
 		}
 
 		$maxRate        = 0;
-		$resultTaxClass = false;
+		$resultTaxClass = null;
 		foreach ( $taxRates as $taxClassName => $taxClassRates ) {
 			foreach ( $taxClassRates as $rate ) {
 				if ( $rate['rate'] > $maxRate ) {
