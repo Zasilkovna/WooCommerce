@@ -341,6 +341,50 @@ class CartServiceTest extends TestCase {
 		$this->assertEquals( 'standard', $this->cartService->getTaxClassWithMaxRate() );
 	}
 
+	public function testGetTaxClassWithMaxRateWithMultipleTaxClassesNoRates(): void {
+		$this->createCartServiceMock();
+		$this->wcAdapter->method( 'cartGetCartContent' )->willReturn(
+			[
+				[ 'product_id' => 1 ],
+				[ 'product_id' => 2 ],
+			]
+		);
+		$product1 = $this->createMock( WC_Product::class );
+		$product1->method( 'is_taxable' )->willReturn( true );
+		$product1->method( 'get_tax_class' )->willReturn( 'reduced' );
+		$product2 = $this->createMock( WC_Product::class );
+		$product2->method( 'is_taxable' )->willReturn( true );
+		$product2->method( 'get_tax_class' )->willReturn( 'standard' );
+
+		$index = 0;
+		$this->wcAdapter->expects( $this->exactly( 2 ) )
+						->method( 'productFactoryGetProduct' )
+						->with(
+							$this->callback(
+								function ( $arg ) {
+									return in_array( $arg, [ 1, 2 ], true );
+								}
+							)
+						)
+						->willReturnCallback(
+							function ( $arg ) use ( $product1, $product2, &$index ) {
+								$index++;
+								if ( $arg === 1 && $index === 1 ) {
+									return $product1;
+								}
+
+								if ( $arg === 2 && $index === 2 ) {
+									return $product2;
+								}
+
+								return null;
+							}
+						);
+
+		$this->wcAdapter->method( 'taxGetRates' )->willReturn( [] );
+		$this->assertNull( $this->cartService->getTaxClassWithMaxRate() );
+	}
+
 	public function testGetCartContentsTotalIncludingTaxWithNoTaxes(): void {
 		$this->createCartServiceMock();
 
