@@ -361,8 +361,8 @@ class CartServiceTest extends TestCase {
 						->method( 'productFactoryGetProduct' )
 						->with(
 							$this->callback(
-								function ( $arg ) {
-									return in_array( $arg, [ 1, 2 ], true );
+								function ( $productId ) {
+									return in_array( $productId, [ 1, 2 ], true );
 								}
 							)
 						)
