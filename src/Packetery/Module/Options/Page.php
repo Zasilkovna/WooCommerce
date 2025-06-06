@@ -633,10 +633,15 @@ class Page {
 			->setRequired( false )
 			->setDefaultValue( OptionsProvider::HIDE_CHECKOUT_LOGO_DEFAULT );
 
+		$container->addCheckbox( 'auto_email_info_insertion', __( 'Automatically insert packet and pickup point information into emails', 'packeta' ) )
+			->setRequired( false )
+			->setDefaultValue( OptionsProvider::AUTO_EMAIL_INFO_INSERTION_DEFAULT );
+
 		$container->addSelect(
 			'email_hook',
 			__( 'Hook used to view information in email', 'packeta' ),
 			[
+				''                                     => __( 'None', 'packeta' ),
 				'woocommerce_email_footer'             => 'woocommerce_email_footer',
 				'woocommerce_email_before_order_table' => 'woocommerce_email_before_order_table',
 				'woocommerce_email_after_order_table'  => 'woocommerce_email_after_order_table',
@@ -722,6 +727,10 @@ class Page {
 	 * @return array
 	 */
 	public function sanitizePacketeryOptions( array $options ): array {
+		if ( ! isset( $options['auto_email_info_insertion'] ) ) {
+			$options['auto_email_info_insertion'] = false;
+		}
+
 		$form = $this->create_form();
 		/**
 		 * Packetery container.
@@ -1004,6 +1013,7 @@ class Page {
 			'freeShippingTextDescription'            => __( 'If enabled, "FREE" will be displayed after the name of the shipping method, if free shipping is applied.', 'packeta' ),
 			'orderStatusChangeSettings'              => __( 'Order status change settings', 'packeta' ),
 			'dimensionsLabel'                        => __( 'Dimensions', 'packeta' ),
+			'autoEmailInfoInsertionDescription'      => __( 'When enabled, the plugin automatically adds packet and pickup point details to emails. Disable this if you prefer to insert them manually using shortcodes.', 'packeta' ),
 		];
 
 		$this->latteEngine->render( PACKETERY_PLUGIN_DIR . '/template/options/page.latte', $latteParams );
