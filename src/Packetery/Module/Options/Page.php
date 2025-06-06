@@ -592,6 +592,7 @@ class Page {
 			'email_hook',
 			__( 'Hook used to view information in email', 'packeta' ),
 			[
+				''                                     => __( 'None', 'packeta' ),
 				'woocommerce_email_footer'             => 'woocommerce_email_footer',
 				'woocommerce_email_before_order_table' => 'woocommerce_email_before_order_table',
 				'woocommerce_email_after_order_table'  => 'woocommerce_email_after_order_table',

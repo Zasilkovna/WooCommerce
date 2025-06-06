@@ -181,6 +181,84 @@ Available keys in the variable `$templateParams` are:
 * `isExternalCarrier` - true if selected delivery option is not one of Packeta Pick-up Points
 * `translations` - to examine the content, export this field during filter development
 
+## Email Templates and Shortcodes
+
+The plugin provides shortcodes that can be used in WooCommerce email templates to display Packeta-related information. All shortcodes require the `order_id` parameter to work.
+
+### Basic Shortcodes
+
+The following shortcodes are available for use in email templates:
+
+| Shortcode | Description |
+|-----------|-------------|
+| `[packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]` | Displays the tracking number if available |
+| `[packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]` | Displays the tracking URL if available |
+| `[packeta_pickup_point_id order_id="<?php echo $order->get_id(); ?>"]` | Displays the pickup point ID if available |
+| `[packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]` | Displays the pickup point name if available |
+| `[packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]` | Displays the full pickup point address if available |
+| `[packeta_pickup_point_street order_id="<?php echo $order->get_id(); ?>"]` | Displays the pickup point street if available |
+| `[packeta_pickup_point_city order_id="<?php echo $order->get_id(); ?>"]` | Displays the pickup point city if available |
+| `[packeta_pickup_point_zip order_id="<?php echo $order->get_id(); ?>"]` | Displays the pickup point ZIP if available |
+| `[packeta_pickup_point_country order_id="<?php echo $order->get_id(); ?>"]` | Displays the pickup point country if available |
+
+### Conditional Shortcodes
+
+You can use conditional shortcodes to display content only when certain conditions are met:
+
+#### If Submitted
+
+Use this to display content only when the order has been submitted to Packeta:
+
+```php
+[packeta_if_submitted order_id="<?php echo $order->get_id(); ?>"]
+    Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]
+    Track your package here: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]
+[/packeta_if_submitted]
+```
+
+#### If Pickup Point
+
+Use this to display content only when the order uses a pickup point:
+
+```php
+[packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
+    Your pickup point is: [packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]
+    Address: [packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]
+[/packeta_if_pickup_point]
+```
+
+### Usage in Email Templates
+
+You can use these shortcodes in your WooCommerce email templates. To add them to your email templates:
+
+1. Go to WooCommerce > Settings > Emails
+2. Click on any email template you want to customize (e.g., "New Order", "Processing Order", etc.)
+3. In the "Email content" section, you can add the shortcodes to customize the email content
+
+For example:
+
+```php
+<h2>Order Details</h2>
+<p>Order #<?php echo $order->get_order_number(); ?></p>
+
+[packeta_if_submitted order_id="<?php echo $order->get_id(); ?>"]
+    <h3>Shipping Information</h3>
+    <p>Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]</p>
+    <p>Track your package: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]</p>
+[/packeta_if_submitted]
+
+[packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
+    <h3>Pickup Point Information</h3>
+    <p>Name: [packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]</p>
+    <p>Address: [packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]</p>
+    <p>City: [packeta_pickup_point_city order_id="<?php echo $order->get_id(); ?>"]</p>
+    <p>ZIP: [packeta_pickup_point_zip order_id="<?php echo $order->get_id(); ?>"]</p>
+    <p>Country: [packeta_pickup_point_country order_id="<?php echo $order->get_id(); ?>"]</p>
+[/packeta_if_pickup_point]
+```
+
+Note: All shortcodes require the `order_id` parameter to work. If the order is not found or the required data is not available, the shortcodes will return empty strings (except for `pickupPointName` which returns "no order set" or "no PP set" for better debugging).
+
 ## Credits
 
 * 10up and their [WordPress.org Plugin Deploy](https://github.com/10up/action-wordpress-plugin-deploy) and [WordPress.org Plugin Readme/Assets Update](https://github.com/10up/action-wordpress-plugin-asset-update) Github Actions

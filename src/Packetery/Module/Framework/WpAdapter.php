@@ -155,4 +155,12 @@ class WpAdapter {
 	public function getAdminUrl( ?int $blogId = null, string $path = '', string $scheme = 'admin' ): string {
 		return get_admin_url( $blogId, $path, $scheme );
 	}
+
+	public function addShortcode( string $tag, callable $callback ): void {
+		add_shortcode( $tag, $callback );
+	}
+
+	public function doShortcode( string $content ): string {
+		return do_shortcode( $content );
+	}
 }
