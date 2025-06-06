@@ -43,6 +43,7 @@ services:
 	- Packetery\Module\Order\CustomsDeclarationMetabox
 	- Packetery\Module\Plugin
 	- Packetery\Module\Uninstaller
+	- Packetery\Module\Email\EmailShortcodes
 	latteEngineFactory: Packetery\Module\LatteEngineFactory
 	latteEngine: @latteEngineFactory::create(%latteTempFolder%)
 	- Packetery\Module\Options\Page(supportEmailAddress: %supportEmailAddress%)
