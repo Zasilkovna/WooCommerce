@@ -2,7 +2,7 @@ name: PHPUnit tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pre-release ]
   pull_request:
 
 jobs:
@@ -106,3 +106,60 @@ jobs:
         with:
           name: coverage-report
           path: ./tests-coverage/cobertura.xml
+
+      - name: Generate graphic representation of code coverage development
+        run: php cli/graph-coverage/generate-graph.php ${{ secrets.GITHUB_TOKEN }} ${{ github.base_ref }} temp/${{ github.base_ref }}.png
+
+      - name: Upload coverage graph
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-graph
+          path: temp/${{ github.base_ref }}.png
+
+      - name: Set GitHub run ID as environment variable
+        run: echo "RUN_ID=${{ github.run_id }}" >> $GITHUB_ENV
+
+      - name: Post graphic representation of code coverage development as comment in PR
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const artifactsResponse = await github.rest.actions.listArtifactsForRepo({
+              ...context.repo
+            });
+            
+            const artifacts = artifactsResponse.data.artifacts;
+            const artifact = artifacts.find(a => a.name === 'coverage-graph');
+            
+            if (!artifact) {
+              throw new Error('Artifact "coverage-graph" not found.');
+            }
+            
+            const runId = process.env.RUN_ID;
+            const imageUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}/artifacts/${artifact.id}`;
+            const commentBody = `
+            ## :bar_chart: Graphic representation of code coverage development
+            <a href="${imageUrl}">
+              Download code coverage development graph here.
+            </a>
+            `;
+            
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo,
+              issue_number: context.payload.pull_request.number,
+            });
+            
+            const existingComment = comments.find(comment => comment.body.includes(':bar_chart: Graphic representation of code coverage development'));
+            
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: existingComment.id,
+                body: commentBody,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                ...context.repo,
+                issue_number: context.payload.pull_request.number,
+                body: commentBody,
+              });
+            }
