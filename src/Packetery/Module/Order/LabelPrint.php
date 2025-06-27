@@ -18,6 +18,7 @@ use Packetery\Core\Log;
 use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\FormFactory;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
@@ -109,19 +110,10 @@ class LabelPrint {
 	private $moduleHelper;
 
 	/**
-	 * LabelPrint constructor.
-	 *
-	 * @param Engine                   $latteEngine              Latte Engine.
-	 * @param OptionsProvider          $optionsProvider          Options provider.
-	 * @param FormFactory              $formFactory              Form factory.
-	 * @param Http\Request             $httpRequest              Http Request.
-	 * @param Client                   $soapApiClient            SOAP API Client.
-	 * @param MessageManager           $messageManager           Message Manager.
-	 * @param Log\ILogger              $logger                   Logger.
-	 * @param Repository               $orderRepository          Order repository.
-	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Packet actions common logic.
-	 * @param ModuleHelper             $moduleHelper             ModuleHelper.
+	 * @var WpAdapter
 	 */
+	private $wpAdapter;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
@@ -132,7 +124,8 @@ class LabelPrint {
 		Log\ILogger $logger,
 		Repository $orderRepository,
 		PacketActionsCommonLogic $packetActionsCommonLogic,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		WpAdapter $wpAdapter
 	) {
 		$this->latteEngine              = $latteEngine;
 		$this->optionsProvider          = $optionsProvider;
@@ -144,6 +137,7 @@ class LabelPrint {
 		$this->orderRepository          = $orderRepository;
 		$this->packetActionsCommonLogic = $packetActionsCommonLogic;
 		$this->moduleHelper             = $moduleHelper;
+		$this->wpAdapter                = $wpAdapter;
 	}
 
 	/**
@@ -251,37 +245,60 @@ class LabelPrint {
 
 			$packetIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 		}
+		$packetIds = $this->prunePacketIds( $packetIds, $isCarrierLabels, $fallbackToPacketaLabel );
+
 		if ( count( $packetIds ) === 0 ) {
-			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
+			if ( $isCarrierLabels === true ) {
+				$this->messageManager->flash_message(
+					$this->wpAdapter->__( 'No orders have been selected for Packeta carriers', 'packeta' ),
+					'info'
+				);
+			} else {
+				$this->messageManager->flash_message(
+					$this->wpAdapter->__( 'No orders have been selected for Packeta pick-up points', 'packeta' ),
+					'info'
+				);
+			}
+
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 
 			return;
 		}
 
-		$maxOffset   = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
-		$form        = $this->createForm( $maxOffset );
-		$offsetParam = $this->httpRequest->getQuery( 'offset' );
-		if ( $maxOffset === 0 ) {
-			$offset = 0;
-		} elseif ( $offsetParam !== null ) {
-			$offset = (int) $offsetParam;
-		} elseif ( $form->isSubmitted() ) {
-			$data   = $form->getValues( 'array' );
-			$offset = $data['offset'];
-		} else {
+		$offset = $this->getOffset();
+		if ( $offset === null ) {
 			return;
 		}
 
-		if ( $isCarrierLabels ) {
+		if ( $isCarrierLabels === true ) {
 			$response = $this->requestCarrierLabels( $offset, $packetIds );
-			if ( $fallbackToPacketaLabel && $response->hasFault() ) {
+			if ( $fallbackToPacketaLabel === true && $response->hasFault() ) {
 				$response = $this->requestPacketaLabels( $offset, $packetIds );
 			}
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
 		if ( $response->hasFault() ) {
-			$message = __( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' );
+			if ( $fallbackToPacketaLabel === true && count( $packetIds ) === 1 ) {
+				$message = sprintf(
+					// translators: %s represents shipment tracking number
+					$this->wpAdapter->__( 'Label printing for shipment %s failed, you can find more information in the Packeta log.', 'packeta' ),
+					array_shift( $packetIds )
+				);
+			} elseif ( $isCarrierLabels === true ) {
+				$message = sprintf(
+					// translators: %s represents error message
+					$this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log. Error: %s', 'packeta' ),
+					$response->getFaultString()
+				);
+			} else {
+				$message = sprintf(
+					// translators: %s represents error message
+					$this->wpAdapter->__( 'Label printing failed, you can find more information in the Packeta log. Error: %s', 'packeta' ),
+					$response->getFaultString()
+				);
+			}
+
 			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
 			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
@@ -433,7 +450,6 @@ class LabelPrint {
 			if ( ! $response->hasFault() ) {
 				if ( $order !== null ) {
 					$order->setIsLabelPrinted( true );
-					$order->setCarrierNumber( $pairItem['courierNumber'] );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
@@ -521,6 +537,20 @@ class LabelPrint {
 	private function getPacketIdsWithCourierNumbers( array $packetIds ): array {
 		$pairs = [];
 		foreach ( $packetIds as $orderId => $packetId ) {
+			$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
+			$order   = null;
+			if ( $wcOrder !== null ) {
+				$order = $this->orderRepository->getByWcOrderWithValidCarrier( $wcOrder );
+			}
+			if ( $order !== null && $order->getCarrierNumber() !== null ) {
+				$pairs[ $orderId ] = [
+					'packetId'      => $packetId,
+					'courierNumber' => $order->getCarrierNumber(),
+				];
+
+				continue;
+			}
+
 			$request  = new Request\PacketCourierNumber( $packetId );
 			$response = $this->soapApiClient->packetCourierNumber( $request );
 			if ( $response->hasFault() ) {
@@ -540,14 +570,41 @@ class LabelPrint {
 				];
 				$record->orderId = $orderId;
 				$this->logger->add( $record );
-				$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
+
 				if ( $order !== null ) {
 					$order->updateApiErrorMessage( $response->getFaultString() );
 					$this->orderRepository->save( $order );
 				}
+				if ( $wcOrder !== null ) {
+					$wcOrder->add_order_note(
+						sprintf(
+							// translators: %s represents shipment id
+							$this->wpAdapter->__( 'Packeta: Unable to obtain carrier tracking number for shipment Z%s.', 'packeta' ),
+							$packetId
+						)
+					);
+					$wcOrder->save();
+				}
 
 				continue;
 			}
+
+			if ( $order !== null ) {
+				$order->setCarrierNumber( $response->getNumber() );
+				$this->orderRepository->save( $order );
+			}
+			if ( $wcOrder !== null ) {
+				$wcOrder->add_order_note(
+					sprintf(
+						// translators: %1$s represents shipment id and %2$s is carrier tracking number
+						$this->wpAdapter->__( 'Packeta: Shipment Z%1$s was assigned carrier tracking number: %2$s.', 'packeta' ),
+						$packetId,
+						$response->getNumber()
+					)
+				);
+				$wcOrder->save();
+			}
+
 			$pairs[ $orderId ] = [
 				'packetId'      => $packetId,
 				'courierNumber' => $response->getNumber(),
@@ -598,5 +655,37 @@ class LabelPrint {
 			)
 		);
 		$wcOrder->save();
+	}
+
+	private function getOffset(): ?int {
+		$maxOffset   = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
+		$form        = $this->createForm( $maxOffset );
+		$offsetParam = $this->httpRequest->getQuery( 'offset' );
+		if ( $maxOffset === 0 ) {
+			return 0;
+		}
+		if ( $offsetParam !== null ) {
+			return (int) $offsetParam;
+		}
+		if ( $form->isSubmitted() ) {
+			$data = $form->getValues( 'array' );
+
+			return (int) $data['offset'];
+		}
+
+		return null;
+	}
+
+	private function prunePacketIds( array $packetIds, bool $isCarrierLabels, bool $fallbackToPacketaLabel ): array {
+		if ( $isCarrierLabels === false && $fallbackToPacketaLabel === false ) {
+			foreach ( $packetIds as $orderId => $packetId ) {
+				$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
+				if ( $order !== null && $order->isExternalCarrier() ) {
+					unset( $packetIds[ $orderId ] );
+				}
+			}
+		}
+
+		return $packetIds;
 	}
 }
