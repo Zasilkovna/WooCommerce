@@ -270,22 +270,22 @@ class LabelPrint {
 			return;
 		}
 
-		if ( $isCarrierLabels ) {
+		if ( $isCarrierLabels === true ) {
 			$response = $this->requestCarrierLabels( $offset, $packetIds );
-			if ( $fallbackToPacketaLabel && $response->hasFault() ) {
+			if ( $fallbackToPacketaLabel === true && $response->hasFault() ) {
 				$response = $this->requestPacketaLabels( $offset, $packetIds );
 			}
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
 		if ( $response->hasFault() ) {
-			if ( $fallbackToPacketaLabel && count( $packetIds ) === 1 ) {
+			if ( $fallbackToPacketaLabel === true && count( $packetIds ) === 1 ) {
 				$message = sprintf(
 					// translators: %s represents shipment tracking number
 					$this->wpAdapter->__( 'Label printing for shipment %s failed, you can find more information in the Packeta log.', 'packeta' ),
 					array_shift( $packetIds )
 				);
-			} elseif ( $isCarrierLabels ) {
+			} elseif ( $isCarrierLabels === true ) {
 				$message = sprintf(
 					// translators: %s represents error message
 					$this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log. Error: %s', 'packeta' ),
