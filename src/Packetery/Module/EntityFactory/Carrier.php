@@ -24,6 +24,7 @@ class Carrier {
 	 */
 	private const AGE_VERIFIED_CARRIERS = [
 		'106',
+		'131',
 	];
 
 	/**
