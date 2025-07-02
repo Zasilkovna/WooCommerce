@@ -9,6 +9,7 @@ WC requires at least: 5.1
 WC tested up to: 9.9.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
 
 == Description ==
 
