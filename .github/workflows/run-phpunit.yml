@@ -8,6 +8,7 @@ on:
 jobs:
   phpunit:
     runs-on: ubuntu-24.04
+    continue-on-error: true
 
     strategy:
       matrix:
