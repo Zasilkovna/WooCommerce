@@ -2,13 +2,14 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
-Tested up to: 6.7.2
-Stable tag: 2.0.4
+Tested up to: 6.8.1
+Stable tag: 2.0.7
 Requires PHP: 7.2
 WC requires at least: 5.1
-WC tested up to: 9.7.1
+WC tested up to: 9.9.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
+Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
 
 == Description ==
 
@@ -62,11 +63,14 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
-= 2.0.4 =
-Fixed: Shipping tax was not displayed in the order details (fixed only for advanced carrier settings).
+= 2.0.7 =
+Updated: Enabled age verification for Home delivery Slovakia.
 
-= 2.0.3 =
-Added: Added taxes settings to options export.
-Fixed: Resolved error occuring when running in CLI environment.
+= 2.0.6 =
+Fixed: Checkout no longer fails to render in case no valid tax rates are found.
+
+= 2.0.5 =
+Updated: The payment method restriction set for the carrier has been implemented in the block checkout.
+Fixed: Packeta information is added to emails even when the order status is changed in administration.
 
 [See changelog for all versions](https://raw.githubusercontent.com/Zasilkovna/WooCommerce/main/changelog.txt)

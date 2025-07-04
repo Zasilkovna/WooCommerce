@@ -1,4 +1,14 @@
 == Changelog ==
+= 2.0.7 =
+Updated: Enabled age verification for Home delivery Slovakia.
+
+= 2.0.6 =
+Fixed: Checkout no longer fails to render in case no valid tax rates are found.
+
+= 2.0.5 =
+Updated: The payment method restriction set for the carrier has been implemented in the block checkout.
+Fixed: Packeta information is added to emails even when the order status is changed in administration.
+
 = 2.0.4 =
 Fixed: Shipping tax was not displayed in the order details (fixed only for advanced carrier settings).
 
