@@ -1,9 +1,4 @@
 <?php
-/**
- * Class LabelPrint.
- *
- * @package Packetery\Order
- */
 
 declare( strict_types=1 );
 
@@ -13,24 +8,19 @@ use Packetery\Core\Api\Soap\Client;
 use Packetery\Core\Api\Soap\ILabelResponse;
 use Packetery\Core\Api\Soap\Request;
 use Packetery\Core\Api\Soap\Response;
-use Packetery\Core\Entity\Order;
 use Packetery\Core\Log;
 use Packetery\Latte\Engine;
 use Packetery\Module\Dashboard\DashboardPage;
-use Packetery\Module\FormFactory;
+use Packetery\Module\Framework\WpAdapter;
+use Packetery\Module\Labels\CarrierLabelService;
+use Packetery\Module\Labels\LabelPrintParametersService;
 use Packetery\Module\MessageManager;
 use Packetery\Module\ModuleHelper;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Plugin;
 use Packetery\Module\Transients;
-use Packetery\Nette\Forms\Form;
 use Packetery\Nette\Http;
 
-/**
- * Class LabelPrint.
- *
- * @package Packetery\Order
- */
 class LabelPrint {
 
 	public const ACTION_PACKETA_LABELS = 'print_packeta_labels';
@@ -39,111 +29,91 @@ class LabelPrint {
 	public const MENU_SLUG             = 'label-print';
 
 	/**
-	 * PacketeryLatte Engine.
-	 *
-	 * @var Engine PacketeryLatte engine.
+	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Options Provider
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Form factory.
-	 *
-	 * @var FormFactory Form factory.
-	 */
-	private $formFactory;
-
-	/**
-	 * Http Request.
-	 *
 	 * @var Http\Request
 	 */
 	private $httpRequest;
 
 	/**
-	 * SOAP API Client.
-	 *
-	 * @var Client SOAP API Client.
+	 * @var Client
 	 */
 	private $soapApiClient;
 
 	/**
-	 * Message Manager.
-	 *
 	 * @var MessageManager
 	 */
 	private $messageManager;
 
 	/**
-	 * Logger.
-	 *
 	 * @var Log\ILogger
 	 */
 	private $logger;
 
 	/**
-	 * Order repository.
-	 *
 	 * @var Repository
 	 */
 	private $orderRepository;
 
 	/**
-	 * Packet actions common logic.
-	 *
 	 * @var PacketActionsCommonLogic
 	 */
 	private $packetActionsCommonLogic;
 
 	/**
-	 * ModuleHelper.
-	 *
 	 * @var ModuleHelper
 	 */
 	private $moduleHelper;
 
 	/**
-	 * LabelPrint constructor.
-	 *
-	 * @param Engine                   $latteEngine              Latte Engine.
-	 * @param OptionsProvider          $optionsProvider          Options provider.
-	 * @param FormFactory              $formFactory              Form factory.
-	 * @param Http\Request             $httpRequest              Http Request.
-	 * @param Client                   $soapApiClient            SOAP API Client.
-	 * @param MessageManager           $messageManager           Message Manager.
-	 * @param Log\ILogger              $logger                   Logger.
-	 * @param Repository               $orderRepository          Order repository.
-	 * @param PacketActionsCommonLogic $packetActionsCommonLogic Packet actions common logic.
-	 * @param ModuleHelper             $moduleHelper             ModuleHelper.
+	 * @var WpAdapter
 	 */
+	private $wpAdapter;
+
+	/**
+	 * @var CarrierLabelService
+	 */
+	private $carrierLabelService;
+
+	/**
+	 * @var LabelPrintParametersService
+	 */
+	private $labelPrintParametersService;
+
 	public function __construct(
 		Engine $latteEngine,
 		OptionsProvider $optionsProvider,
-		FormFactory $formFactory,
 		Http\Request $httpRequest,
 		Client $soapApiClient,
 		MessageManager $messageManager,
 		Log\ILogger $logger,
 		Repository $orderRepository,
 		PacketActionsCommonLogic $packetActionsCommonLogic,
-		ModuleHelper $moduleHelper
+		ModuleHelper $moduleHelper,
+		WpAdapter $wpAdapter,
+		CarrierLabelService $carrierLabelService,
+		LabelPrintParametersService $labelPrintParametersService
 	) {
-		$this->latteEngine              = $latteEngine;
-		$this->optionsProvider          = $optionsProvider;
-		$this->formFactory              = $formFactory;
-		$this->httpRequest              = $httpRequest;
-		$this->soapApiClient            = $soapApiClient;
-		$this->messageManager           = $messageManager;
-		$this->logger                   = $logger;
-		$this->orderRepository          = $orderRepository;
-		$this->packetActionsCommonLogic = $packetActionsCommonLogic;
-		$this->moduleHelper             = $moduleHelper;
+		$this->latteEngine                 = $latteEngine;
+		$this->optionsProvider             = $optionsProvider;
+		$this->httpRequest                 = $httpRequest;
+		$this->soapApiClient               = $soapApiClient;
+		$this->messageManager              = $messageManager;
+		$this->logger                      = $logger;
+		$this->orderRepository             = $orderRepository;
+		$this->packetActionsCommonLogic    = $packetActionsCommonLogic;
+		$this->moduleHelper                = $moduleHelper;
+		$this->wpAdapter                   = $wpAdapter;
+		$this->carrierLabelService         = $carrierLabelService;
+		$this->labelPrintParametersService = $labelPrintParametersService;
 	}
 
 	/**
@@ -165,25 +135,10 @@ class LabelPrint {
 	}
 
 	/**
-	 * Gets label type.
-	 *
-	 * @param Order $order Order.
-	 *
-	 * @return string
-	 */
-	public function getLabelFormatByOrder( Order $order ): string {
-		if ( $order->isExternalCarrier() ) {
-			return $this->optionsProvider->get_carrier_label_format();
-		}
-
-		return $this->optionsProvider->get_packeta_label_format();
-	}
-
-	/**
 	 * Prepares form and renders template.
 	 */
 	public function render(): void {
-		$form = $this->createForm( $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() ) );
+		$form = $this->labelPrintParametersService->createForm( $this->optionsProvider->getLabelMaxOffset( $this->labelPrintParametersService->getLabelFormat() ) );
 
 		$count           = 0;
 		$isCarrierLabels = ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS );
@@ -216,21 +171,6 @@ class LabelPrint {
 		);
 	}
 
-	/**
-	 * Gets label format for current job.
-	 *
-	 * @return string
-	 */
-	private function getLabelFormat(): string {
-		$packetaLabelFormat = $this->optionsProvider->get_packeta_label_format();
-		$carrierLabelFormat = $this->optionsProvider->get_carrier_label_format();
-
-		return ( $this->httpRequest->getQuery( self::LABEL_TYPE_PARAM ) === self::ACTION_CARRIER_LABELS ? $carrierLabelFormat : $packetaLabelFormat );
-	}
-
-	/**
-	 * Outputs pdf.
-	 */
 	public function outputLabelsPdf(): void {
 		if ( $this->httpRequest->getQuery( 'page' ) !== self::MENU_SLUG ) {
 			return;
@@ -251,44 +191,72 @@ class LabelPrint {
 
 			$packetIds = $this->getPacketIdsFromTransient( $orderIdsTransient, $isCarrierLabels );
 		}
+		$packetIds = $this->labelPrintParametersService->removeExternalCarrierPacketIds( $packetIds, $isCarrierLabels, $fallbackToPacketaLabel );
+
 		if ( count( $packetIds ) === 0 ) {
-			$this->messageManager->flash_message( __( 'No suitable orders were selected', 'packeta' ), 'info' );
+			if ( $isCarrierLabels === true ) {
+				$this->messageManager->flash_message(
+					$this->wpAdapter->__( 'No orders have been selected for Packeta carriers', 'packeta' ),
+					'info'
+				);
+			} else {
+				$this->messageManager->flash_message(
+					$this->wpAdapter->__( 'No orders have been selected for Packeta pick-up points', 'packeta' ),
+					'info'
+				);
+			}
+
 			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 
 			return;
 		}
 
-		$maxOffset   = $this->optionsProvider->getLabelMaxOffset( $this->getLabelFormat() );
-		$form        = $this->createForm( $maxOffset );
-		$offsetParam = $this->httpRequest->getQuery( 'offset' );
-		if ( $maxOffset === 0 ) {
-			$offset = 0;
-		} elseif ( $offsetParam !== null ) {
-			$offset = (int) $offsetParam;
-		} elseif ( $form->isSubmitted() ) {
-			$data   = $form->getValues( 'array' );
-			$offset = $data['offset'];
-		} else {
+		$offset = $this->labelPrintParametersService->getOffset();
+		if ( $offset === null ) {
 			return;
 		}
 
-		if ( $isCarrierLabels ) {
-			$response = $this->requestCarrierLabels( $offset, $packetIds );
-			if ( $fallbackToPacketaLabel && $response->hasFault() ) {
+		if ( $isCarrierLabels === true ) {
+			$packetIdsWithCourierNumbers = $this->carrierLabelService->getPacketIdsWithCourierNumbers( $packetIds );
+			if ( $packetIdsWithCourierNumbers === [] ) {
+				$this->flashMessageAndRedirect(
+					$this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log.', 'packeta' ),
+					$idParam
+				);
+
+				return;
+			}
+
+			$response = $this->requestCarrierLabels( $offset, $packetIdsWithCourierNumbers );
+			if ( $fallbackToPacketaLabel === true && $response->hasFault() ) {
 				$response = $this->requestPacketaLabels( $offset, $packetIds );
 			}
 		} else {
 			$response = $this->requestPacketaLabels( $offset, $packetIds );
 		}
-		if ( $response->hasFault() ) {
-			$message = __( 'Label printing failed, you can find more information in the Packeta log.', 'packeta' );
-			$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
 
-			$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
-			if ( $redirectTo === PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL && $idParam !== null ) {
-				$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
+		if ( $response->hasFault() ) {
+			if ( $fallbackToPacketaLabel === true && count( $packetIds ) === 1 ) {
+				$message = sprintf(
+					// translators: %s represents shipment tracking number
+					$this->wpAdapter->__( 'Label printing for shipment %s failed, you can find more information in the Packeta log.', 'packeta' ),
+					array_shift( $packetIds )
+				);
+			} elseif ( $isCarrierLabels === true ) {
+				$message = sprintf(
+					// translators: %s represents error message
+					$this->wpAdapter->__( 'Carrier label printing failed, you can find more information in the Packeta log. Error: %s', 'packeta' ),
+					$response->getFaultString()
+				);
+			} else {
+				$message = sprintf(
+					// translators: %s represents error message
+					$this->wpAdapter->__( 'Label printing failed, you can find more information in the Packeta log. Error: %s', 'packeta' ),
+					$response->getFaultString()
+				);
 			}
-			$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
+
+			$this->flashMessageAndRedirect( $message, $idParam );
 
 			return;
 		}
@@ -305,34 +273,6 @@ class LabelPrint {
 		echo $response->getPdfContents();
 		// @codingStandardsIgnoreEnd
 		exit;
-	}
-
-	/**
-	 * Creates offset setting form.
-	 *
-	 * @param int         $maxOffset Maximal offset.
-	 * @param string|null $name      Form name.
-	 *
-	 * @return Form
-	 */
-	public function createForm( int $maxOffset, ?string $name = null ): Form {
-		$form = $this->formFactory->create( $name );
-
-		$availableOffsets = [];
-		for ( $i = 0; $i <= $maxOffset; $i++ ) {
-			$availableOffsets[ $i ] = ( $i === 0 ?
-				__( "don't skip any field on a print sheet", 'packeta' ) :
-				// translators: %s is offset.
-				sprintf( __( 'skip %s fields on first sheet', 'packeta' ), $i )
-			);
-		}
-		$form->addSelect(
-			'offset',
-			__( 'Skip fields', 'packeta' ),
-			$availableOffsets
-		)->checkDefaultValue( false );
-
-		return $form;
 	}
 
 	/**
@@ -361,15 +301,11 @@ class LabelPrint {
 	}
 
 	/**
-	 * Prepares labels.
-	 *
-	 * @param int      $offset Offset value.
-	 * @param string[] $packetIds Packet ids.
-	 *
-	 * @return Response\PacketsLabelsPdf
+	 * @param int      $offset
+	 * @param string[] $packetIds
 	 */
 	private function requestPacketaLabels( int $offset, array $packetIds ): Response\PacketsLabelsPdf {
-		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->getLabelFormat(), $offset );
+		$request  = new Request\PacketsLabelsPdf( array_values( $packetIds ), $this->labelPrintParametersService->getLabelFormat(), $offset );
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 
 		foreach ( $packetIds as $orderId => $packetId ) {
@@ -412,17 +348,12 @@ class LabelPrint {
 	}
 
 	/**
-	 * Prepares carrier labels.
-	 *
-	 * @param int      $offset Offset value.
-	 * @param string[] $packetIds Packet ids.
-	 *
-	 * @return Response\PacketsCourierLabelsPdf
+	 * @param int     $offset
+	 * @param array[] $packetIdsWithCourierNumbers
 	 */
-	private function requestCarrierLabels( int $offset, array $packetIds ): Response\PacketsCourierLabelsPdf {
-		$packetIdsWithCourierNumbers = $this->getPacketIdsWithCourierNumbers( $packetIds );
-		$request                     = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->getLabelFormat(), $offset );
-		$response                    = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
+	private function requestCarrierLabels( int $offset, array $packetIdsWithCourierNumbers ): Response\PacketsCourierLabelsPdf {
+		$request  = new Request\PacketsCourierLabelsPdf( array_values( $packetIdsWithCourierNumbers ), $this->labelPrintParametersService->getLabelFormat(), $offset );
+		$response = $this->soapApiClient->packetsCarrierLabelsPdf( $request );
 
 		foreach ( $packetIdsWithCourierNumbers as $orderId => $pairItem ) {
 			$record          = new Log\Record();
@@ -433,7 +364,6 @@ class LabelPrint {
 			if ( ! $response->hasFault() ) {
 				if ( $order !== null ) {
 					$order->setIsLabelPrinted( true );
-					$order->setCarrierNumber( $pairItem['courierNumber'] );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
@@ -471,15 +401,11 @@ class LabelPrint {
 	 * @return string
 	 */
 	private function getFilename(): string {
-		return 'packeta_labels_' . strtolower( str_replace( ' ', '_', $this->getLabelFormat() ) ) . '.pdf';
+		return 'packeta_labels_' . strtolower( str_replace( ' ', '_', $this->labelPrintParametersService->getLabelFormat() ) ) . '.pdf';
 	}
 
 	/**
-	 * Gets saved packet ids.
-	 *
 	 * @param string[] $orderIds Order IDs from transient.
-	 * @param bool     $isCarrierLabels Are carrier labels requested?
-	 *
 	 * @return string[]
 	 */
 	private function getPacketIdsFromTransient( array $orderIds, bool $isCarrierLabels ): array {
@@ -498,8 +424,6 @@ class LabelPrint {
 	}
 
 	/**
-	 * Gets order IDs transient.
-	 *
 	 * @return string[]|null
 	 */
 	private function getOrderIdsTransient(): ?array {
@@ -512,61 +436,9 @@ class LabelPrint {
 	}
 
 	/**
-	 * Gets carrier packet numbers from API.
-	 *
-	 * @param string[] $packetIds List of packet ids.
-	 *
-	 * @return array<int, array{packetId: string, courierNumber: string}>
-	 */
-	private function getPacketIdsWithCourierNumbers( array $packetIds ): array {
-		$pairs = [];
-		foreach ( $packetIds as $orderId => $packetId ) {
-			$request  = new Request\PacketCourierNumber( $packetId );
-			$response = $this->soapApiClient->packetCourierNumber( $request );
-			if ( $response->hasFault() ) {
-				if ( $response->hasWrongPassword() ) {
-					$this->messageManager->flash_message( __( 'Please set a proper API password.', 'packeta' ), MessageManager::TYPE_ERROR );
-
-					return [];
-				}
-
-				$record          = new Log\Record();
-				$record->action  = Log\Record::ACTION_CARRIER_NUMBER_RETRIEVING;
-				$record->status  = Log\Record::STATUS_ERROR;
-				$record->title   = __( 'Carrier number could not be retrieved.', 'packeta' );
-				$record->params  = [
-					'packetId'     => $request->getPacketId(),
-					'errorMessage' => $response->getFaultString(),
-				];
-				$record->orderId = $orderId;
-				$this->logger->add( $record );
-				$order = $this->orderRepository->getByIdWithValidCarrier( $orderId );
-				if ( $order !== null ) {
-					$order->updateApiErrorMessage( $response->getFaultString() );
-					$this->orderRepository->save( $order );
-				}
-
-				continue;
-			}
-			$pairs[ $orderId ] = [
-				'packetId'      => $packetId,
-				'courierNumber' => $response->getNumber(),
-			];
-		}
-
-		return $pairs;
-	}
-
-	/**
 	 * Saves information about the creation of the label in the order note.
-	 *
-	 * @param int            $orderId  Order id.
-	 * @param string         $packetId Packet.
-	 * @param ILabelResponse $response Response.
-	 *
-	 * @return void
 	 */
-	private function addLabelCreationInfoToWcOrderNote( int $orderId, string $packetId, ILabelResponse $response ): void {
+	private function addLabelCreationInfoToWcOrderNote( int $orderId, string $packetId, ?ILabelResponse $response ): void {
 		$order   = $this->orderRepository->findById( $orderId );
 		$wcOrder = $this->orderRepository->getWcOrderById( $orderId );
 		if ( $wcOrder === null || $order === null ) {
@@ -586,7 +458,7 @@ class LabelPrint {
 				$message = __( 'Packeta: Label for packet %s has been created', 'packeta' );
 			}
 		} else {
-			// Response is of type Response\PacketsCourierLabelsPdf.
+			// Response is of type Response\PacketsCourierLabelsPdf or null.
 			// translators: %s represents a packet tracking link.
 			$message = __( 'Packeta: Carrier label for packet %s has been created', 'packeta' );
 		}
@@ -598,5 +470,15 @@ class LabelPrint {
 			)
 		);
 		$wcOrder->save();
+	}
+
+	public function flashMessageAndRedirect( string $message, ?int $idParam ): void {
+		$this->messageManager->flash_message( $message, MessageManager::TYPE_ERROR );
+
+		$redirectTo = $this->httpRequest->getQuery( PacketActionsCommonLogic::PARAM_REDIRECT_TO );
+		if ( $redirectTo === PacketActionsCommonLogic::REDIRECT_TO_ORDER_DETAIL && $idParam !== null ) {
+			$this->packetActionsCommonLogic->redirectTo( $redirectTo, $this->orderRepository->findById( $idParam ) );
+		}
+		$this->packetActionsCommonLogic->redirectTo( PacketActionsCommonLogic::REDIRECT_TO_ORDER_GRID );
 	}
 }

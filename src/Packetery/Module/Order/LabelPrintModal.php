@@ -1,9 +1,4 @@
 <?php
-/**
- * Class LabelPrintModal.
- *
- * @package Packetery
- */
 
 declare( strict_types=1 );
 
@@ -11,89 +6,60 @@ namespace Packetery\Module\Order;
 
 use Packetery\Latte\Engine;
 use Packetery\Module;
+use Packetery\Module\Labels\LabelPrintParametersService;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Nette\Forms\Controls\SubmitButton;
 use Packetery\Nette\Forms\Form;
 
-/**
- * Class LabelPrintModal.
- *
- * @package Packetery
- */
 class LabelPrintModal {
 
 	public const MODAL_ID_PACKET       = 'wc-packetery-order-detail-packet-label-print-modal';
 	public const MODAL_ID_PACKET_CLAIM = 'wc-packetery-order-detail-packet-claim-label-print-modal';
 
 	/**
-	 * Latte engine.
-	 *
 	 * @var Engine
 	 */
 	private $latteEngine;
 
 	/**
-	 * Label print.
-	 *
-	 * @var LabelPrint
+	 * @var LabelPrintParametersService
 	 */
-	private $labelPrint;
+	private $labelPrintParametersService;
 
 	/**
-	 * Options provider.
-	 *
 	 * @var OptionsProvider
 	 */
 	private $optionsProvider;
 
 	/**
-	 * Context resolver.
-	 *
 	 * @var Module\ContextResolver
 	 */
 	private $contextResolver;
 
 	/**
-	 * Order detail common logic.
-	 *
 	 * @var DetailCommonLogic
 	 */
 	private $detailCommonLogic;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param Engine                 $latteEngine       Latte engine.
-	 * @param LabelPrint             $labelPrint        Label print.
-	 * @param OptionsProvider        $optionsProvider   Options provider.
-	 * @param Module\ContextResolver $contextResolver   Context resolver.
-	 * @param DetailCommonLogic      $detailCommonLogic Detail common logic.
-	 */
 	public function __construct(
 		Engine $latteEngine,
-		LabelPrint $labelPrint,
+		LabelPrintParametersService $labelPrintParametersService,
 		OptionsProvider $optionsProvider,
 		Module\ContextResolver $contextResolver,
 		DetailCommonLogic $detailCommonLogic
 	) {
-		$this->latteEngine       = $latteEngine;
-		$this->labelPrint        = $labelPrint;
-		$this->optionsProvider   = $optionsProvider;
-		$this->contextResolver   = $contextResolver;
-		$this->detailCommonLogic = $detailCommonLogic;
+		$this->latteEngine                 = $latteEngine;
+		$this->labelPrintParametersService = $labelPrintParametersService;
+		$this->optionsProvider             = $optionsProvider;
+		$this->contextResolver             = $contextResolver;
+		$this->detailCommonLogic           = $detailCommonLogic;
 	}
 
-	/**
-	 * Registers order modal.
-	 */
 	public function register(): void {
 		add_action( 'admin_head', [ $this, 'renderPacketModal' ] );
 		add_action( 'admin_head', [ $this, 'renderPacketClaimModal' ] );
 	}
 
-	/**
-	 * Renders packet modal.
-	 */
 	public function renderPacketModal(): void {
 		if ( $this->contextResolver->isOrderDetailPage() === false ) {
 			return;
@@ -106,14 +72,11 @@ class LabelPrintModal {
 
 		$this->renderModal(
 			self::MODAL_ID_PACKET,
-			$this->labelPrint->getLabelFormatByOrder( $order ),
+			$this->labelPrintParametersService->getLabelFormatByOrder( $order ),
 			$order->getPacketId()
 		);
 	}
 
-	/**
-	 * Renders packet claim modal.
-	 */
 	public function renderPacketClaimModal(): void {
 		if ( $this->contextResolver->isOrderDetailPage() === false ) {
 			return;
@@ -126,20 +89,11 @@ class LabelPrintModal {
 
 		$this->renderModal(
 			self::MODAL_ID_PACKET_CLAIM,
-			$this->labelPrint->getLabelFormatByOrder( $order ),
+			$this->labelPrintParametersService->getLabelFormatByOrder( $order ),
 			$order->getPacketClaimId()
 		);
 	}
 
-	/**
-	 * Renders packet modal.
-	 *
-	 * @param string $id       Modal ID.
-	 * @param string $format   Label format.
-	 * @param string $packetId Packet ID.
-	 *
-	 * @return void
-	 */
 	private function renderModal( string $id, string $format, string $packetId ): void {
 		$form         = $this->createForm( sprintf( '%s_form', $id ), $format, $packetId );
 		$submitButton = $form['submit'];
@@ -164,17 +118,8 @@ class LabelPrintModal {
 		);
 	}
 
-	/**
-	 * Creates order modal form.
-	 *
-	 * @param string $name     Form name.
-	 * @param string $format   Format.
-	 * @param string $packetId Packet ID.
-	 *
-	 * @return Form
-	 */
 	public function createForm( string $name, string $format, string $packetId ): Form {
-		$form = $this->labelPrint->createForm( $this->optionsProvider->getLabelMaxOffset( $format ), $name );
+		$form = $this->labelPrintParametersService->createForm( $this->optionsProvider->getLabelMaxOffset( $format ), $name );
 		$form->addHidden( 'packet_id' )->setDefaultValue( $packetId );
 		$form->addSubmit( 'submit', __( 'Print', 'packeta' ) );
 		$form->addSubmit( 'cancel', __( 'Cancel', 'packeta' ) );
@@ -184,13 +129,6 @@ class LabelPrintModal {
 		return $form;
 	}
 
-	/**
-	 * On form success.
-	 *
-	 * @param Form $form Form.
-	 *
-	 * @return void
-	 */
 	public function onFormSuccess( Form $form ): void {
 		$order = $this->detailCommonLogic->getOrder();
 		if ( $order === null ) {
