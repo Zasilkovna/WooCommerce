@@ -5,21 +5,25 @@ declare(strict_types=1);
 namespace Tests\Module;
 
 use Packetery\Core\Entity\Order;
-use Packetery\Module\Email\Shortcodes;
+use Packetery\Core\Entity\PickupPoint;
+use Packetery\Module\Email\EmailShortcodes;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order\Repository;
 use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
-class ShortcodesTest extends TestCase {
+class EmailShortcodesTest extends TestCase {
+	private const PROCESSED_CONTENT = 'processed_content';
+	
 	private WpAdapter $wpAdapterMock;
 	private Repository $orderRepositoryMock;
-	private Shortcodes $shortcodes;
+	private EmailShortcodes $shortcodes;
 
-	protected function setUp(): void {
+	private function createShortcodes(): EmailShortcodes {
 		$this->wpAdapterMock       = $this->createMock( WpAdapter::class );
 		$this->orderRepositoryMock = $this->createMock( Repository::class );
-		$this->shortcodes          = new Shortcodes( $this->wpAdapterMock, $this->orderRepositoryMock );
+
+		return new EmailShortcodes( $this->wpAdapterMock, $this->orderRepositoryMock );
 	}
 
 	/**
@@ -27,62 +31,68 @@ class ShortcodesTest extends TestCase {
 	 */
 	public function testIfPickupPoint(
 		?Order $order,
-		?object $pickupPoint,
-		?string $expected
-	) {
+		?PickupPoint $pickupPoint,
+		string $expected
+	): void {
+		$this->shortcodes = $this->createShortcodes();
+
 		if ( $pickupPoint !== null && $order !== null ) {
 			$order->setPickupPoint( $pickupPoint );
 		}
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
-		if ( $expected === 'processed_content' ) {
-			$this->wpAdapterMock->method( 'doShortcode' )->willReturn( 'processed_content' );
-			$result = $this->shortcodes->ifPickupPoint( [ 'order_id' => 123 ], 'content' );
-			$this->assertSame( 'processed_content', $result );
-		} else {
-			$result = $this->shortcodes->ifPickupPoint( [ 'order_id' => 123 ], 'content' );
-			$this->assertSame( $expected, $result );
+
+		if ( $expected === self::PROCESSED_CONTENT ) {
+			$this->wpAdapterMock->method( 'doShortcode' )->willReturn( self::PROCESSED_CONTENT );
 		}
+
+		$result = $this->shortcodes->ifPickupPoint( [ 'order_id' => 123 ], 'content' );
+		$this->assertSame( $expected, $result );
 	}
 
 	public static function providerIfPickupPoint(): array {
 		return [
 			'no order'          => [ null, null, '' ],
 			'no pickup point'   => [ DummyFactory::createOrderCzHdIncomplete(), null, '' ],
-			'with pickup point' => [ DummyFactory::createOrderCzHdIncomplete(), DummyFactory::createPickupPoint(), 'processed_content' ],
+			'with pickup point' => [ DummyFactory::createOrderCzHdIncomplete(), DummyFactory::createPickupPoint(), self::PROCESSED_CONTENT ],
 		];
 	}
 
-	public function testIfCarrierReturnsEmptyWhenNoOrder(): void {
+	public function testIfExternalCarrierReturnsEmptyWhenNoOrder(): void {
+		$this->shortcodes = $this->createShortcodes();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( null );
-		$result = $this->shortcodes->ifCarrier( [ 'order_id' => 123 ], 'content' );
+		$result = $this->shortcodes->ifExternalCarrier( [ 'order_id' => 123 ], 'content' );
 		$this->assertSame( '', $result );
 	}
 
-	public function testIfCarrierReturnsEmptyWhenNotExternalCarrier(): void {
-		$carrier = DummyFactory::createCarrierCzechPp();
-		$order   = new Order( 'orderNumber', $carrier );
+	public function testIfExternalCarrierReturnsEmptyWhenNotExternalCarrier(): void {
+		$this->shortcodes = $this->createShortcodes();
+		$carrier          = DummyFactory::createCarrierCzechPp();
+		$order            = new Order( 'orderNumber', $carrier );
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
-		$result = $this->shortcodes->ifCarrier( [ 'order_id' => 123 ], 'content' );
+		$result = $this->shortcodes->ifExternalCarrier( [ 'order_id' => 123 ], 'content' );
 		$this->assertSame( '', $result );
 	}
 
-	public function testIfCarrierReturnsContentWhenExternalCarrier(): void {
-		$carrier = DummyFactory::createCarDeliveryCarrier();
-		$order   = new Order( 'orderNumber', $carrier );
+	public function testIfExternalCarrierReturnsContentWhenExternalCarrier(): void {
+		$this->shortcodes = $this->createShortcodes();
+		$carrier          = DummyFactory::createCarDeliveryCarrier();
+		$order            = new Order( 'orderNumber', $carrier );
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
-		$this->wpAdapterMock->method( 'doShortcode' )->willReturn( 'processed_content' );
-		$result = $this->shortcodes->ifCarrier( [ 'order_id' => 123 ], 'content' );
-		$this->assertSame( 'processed_content', $result );
+		$this->wpAdapterMock->method( 'doShortcode' )->willReturn( self::PROCESSED_CONTENT );
+		$result = $this->shortcodes->ifExternalCarrier( [ 'order_id' => 123 ], 'content' );
+		$this->assertSame( self::PROCESSED_CONTENT, $result );
 	}
 
 	public function testPickupPointAddressReturnsEmptyWhenNoOrder(): void {
+		$this->shortcodes = $this->createShortcodes();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( null );
 		$result = $this->shortcodes->pickupPointAddress( [ 'order_id' => 123 ] );
 		$this->assertSame( '', $result );
 	}
 
 	public function testPickupPointAddressReturnsEmptyWhenNoPickupPoint(): void {
-		$order = DummyFactory::createOrderCzHdIncomplete();
+		$this->shortcodes = $this->createShortcodes();
+		$order            = DummyFactory::createOrderCzHdIncomplete();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
 		$result = $this->shortcodes->pickupPointAddress( [ 'order_id' => 123 ] );
 		$this->assertSame( '', $result );
@@ -91,7 +101,8 @@ class ShortcodesTest extends TestCase {
 	/**
 	 * @dataProvider providerPickupPointAddress
 	 */
-	public function testPickupPointAddress( ?Order $order, ?object $pickupPoint, string $expected ): void {
+	public function testPickupPointAddress( ?Order $order, ?PickupPoint $pickupPoint, string $expected ): void {
+		$this->shortcodes = $this->createShortcodes();
 		if ( $pickupPoint !== null && $order !== null ) {
 			$order->setPickupPoint( $pickupPoint );
 		}
@@ -109,13 +120,15 @@ class ShortcodesTest extends TestCase {
 	}
 
 	public function testPickupPointStreetReturnsEmptyWhenNoOrder(): void {
+		$this->shortcodes = $this->createShortcodes();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( null );
 		$result = $this->shortcodes->pickupPointStreet( [ 'order_id' => 123 ] );
 		$this->assertSame( '', $result );
 	}
 
 	public function testPickupPointStreetReturnsEmptyWhenNoPickupPoint(): void {
-		$order = DummyFactory::createOrderCzHdIncomplete();
+		$this->shortcodes = $this->createShortcodes();
+		$order            = DummyFactory::createOrderCzHdIncomplete();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
 		$result = $this->shortcodes->pickupPointStreet( [ 'order_id' => 123 ] );
 		$this->assertSame( '', $result );
@@ -124,7 +137,8 @@ class ShortcodesTest extends TestCase {
 	/**
 	 * @dataProvider providerPickupPointStreet
 	 */
-	public function testPickupPointStreet( ?Order $order, ?object $pickupPoint, string $expected ): void {
+	public function testPickupPointStreet( ?Order $order, ?PickupPoint $pickupPoint, string $expected ): void {
+		$this->shortcodes = $this->createShortcodes();
 		if ( $pickupPoint !== null && $order !== null ) {
 			$order->setPickupPoint( $pickupPoint );
 		}
@@ -142,21 +156,24 @@ class ShortcodesTest extends TestCase {
 	}
 
 	public function testPickupPointCountryReturnsEmptyWhenNoOrder(): void {
+		$this->shortcodes = $this->createShortcodes();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( null );
 		$result = $this->shortcodes->pickupPointCountry( [ 'order_id' => 123 ] );
 		$this->assertSame( '', $result );
 	}
 
 	public function testPickupPointCountryReturnsEmptyWhenNoPickupPoint(): void {
-		$order = DummyFactory::createOrderCzHdIncomplete();
+		$this->shortcodes = $this->createShortcodes();
+		$order            = DummyFactory::createOrderCzHdIncomplete();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
 		$result = $this->shortcodes->pickupPointCountry( [ 'order_id' => 123 ] );
 		$this->assertSame( '', $result );
 	}
 
 	public function testPickupPointCountryReturnsCountryWhenPickupPointExists(): void {
-		$order       = DummyFactory::createOrderCzHdIncomplete();
-		$pickupPoint = DummyFactory::createPickupPoint();
+		$this->shortcodes = $this->createShortcodes();
+		$order            = DummyFactory::createOrderCzHdIncomplete();
+		$pickupPoint      = DummyFactory::createPickupPoint();
 		$order->setPickupPoint( $pickupPoint );
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
 		$result = $this->shortcodes->pickupPointCountry( [ 'order_id' => 123 ] );

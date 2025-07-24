@@ -12,7 +12,7 @@ use Packetery\Module\Checkout\CheckoutSettings;
 use Packetery\Module\CronService;
 use Packetery\Module\Dashboard\DashboardPage;
 use Packetery\Module\DashboardWidget;
-use Packetery\Module\Email\Shortcodes;
+use Packetery\Module\Email\EmailShortcodes;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Log;
 use Packetery\Module\MessageManager;
@@ -253,7 +253,7 @@ class HookRegistrar {
 	private $dashboardPage;
 
 	/**
-	 * @var Shortcodes
+	 * @var EmailShortcodes
 	 */
 	private $shortcodes;
 
@@ -299,7 +299,7 @@ class HookRegistrar {
 		ShippingProvider $shippingProvider,
 		WizardAssetManager $wizardAssetManager,
 		DashboardPage $dashboardPage,
-		Shortcodes $shortcodes
+		EmailShortcodes $shortcodes
 	) {
 		$this->messageManager            = $messageManager;
 		$this->checkout                  = $checkout;

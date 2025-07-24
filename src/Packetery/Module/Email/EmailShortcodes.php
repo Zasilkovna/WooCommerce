@@ -8,7 +8,7 @@ use Packetery\Core\Entity\Order;
 use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Order\Repository;
 
-class Shortcodes {
+class EmailShortcodes {
 	/** @var WpAdapter */
 	private $wpAdapter;
 
@@ -37,7 +37,7 @@ class Shortcodes {
 
 		$this->wpAdapter->addShortcode( 'packeta_if_packet_submitted', [ $this, 'ifPacketSubmitted' ] );
 		$this->wpAdapter->addShortcode( 'packeta_if_pickup_point', [ $this, 'ifPickupPoint' ] );
-		$this->wpAdapter->addShortcode( 'packeta_if_carrier', [ $this, 'ifCarrier' ] );
+		$this->wpAdapter->addShortcode( 'packeta_if_external_carrier', [ $this, 'ifExternalCarrier' ] );
 	}
 
 	private function findOrder( array $shortcodeAttributes ): ?Order {
@@ -192,7 +192,7 @@ class Shortcodes {
 		return $this->wpAdapter->doShortcode( $content );
 	}
 
-	public function ifCarrier( array $shortcodeAttributes, string $content = '' ): string {
+	public function ifExternalCarrier( array $shortcodeAttributes, string $content = '' ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
 			return '';

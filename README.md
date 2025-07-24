@@ -251,14 +251,14 @@ Use this to display content only when the order uses a pickup point:
 [/packeta_if_pickup_point]
 ```
 
-#### If carrier
+#### If External Carrier
 
-Use this to display content only when the order has a carrier assigned:
+Use this to display content only when the order uses an external carrier:
 
 ```php
-[packeta_if_carrier order_id="<?php echo $order->get_id(); ?>"]
+[packeta_if_external_carrier order_id="<?php echo $order->get_id(); ?>"]
 	Your order is shipped with: [packeta_carrier_name order_id="<?php echo $order->get_id(); ?>"]
-[/packeta_if_carrier]
+[/packeta_if_external_carrier]
 ```
 
 ### Usage in Email Templates
@@ -275,11 +275,11 @@ For example:
 <h2>Order Details</h2>
 <p>Order #<?php echo $order->get_order_number(); ?></p>
 
-[packeta_if_submitted order_id="<?php echo $order->get_id(); ?>"]
+[packeta_if_packet_submitted order_id="<?php echo $order->get_id(); ?>"]
 	<h3>Shipping Information</h3>
 	<p>Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]</p>
 	<p>Track your package: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]</p>
-[/packeta_if_submitted]
+[/packeta_if_packet_submitted]
 
 [packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
 	<h3>Pickup Point Information</h3>
@@ -291,7 +291,7 @@ For example:
 [/packeta_if_pickup_point]
 ```
 
-Note: All shortcodes require the `order_id` parameter to work. If the order is not found or the required data is not available, the shortcodes will return empty strings (except for `pickupPointName` which returns "no order set" or "no PP set" for better debugging).
+Note: All shortcodes require the `order_id` parameter to work. If the order is not found or the required data is not available, the shortcodes will return empty strings.
 
 ## Credits
 
