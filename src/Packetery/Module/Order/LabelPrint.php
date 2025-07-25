@@ -309,10 +309,15 @@ class LabelPrint {
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 
 		foreach ( $packetIds as $orderId => $packetId ) {
+			$isClaimLabel = false;
+			$order        = $this->orderRepository->getByIdWithValidCarrier( $orderId );
+			if ( $order !== null && $order->isPacketClaim( $packetId ) ) {
+				$isClaimLabel = true;
+			}
+
 			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_LABEL_PRINT;
+			$record->action  = $isClaimLabel ? Log\Record::ACTION_LABEL_CLAIM_PRINT : Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
 				if ( $order !== null ) {
@@ -320,10 +325,18 @@ class LabelPrint {
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
-				$record->title  = __( 'Label has been printed successfully.', 'packeta' );
+				if ( $isClaimLabel === true ) {
+					$record->title = $this->wpAdapter->__( 'Label claim has been printed successfully.', 'packeta' );
+				} else {
+					$record->title = $this->wpAdapter->__( 'Label has been printed successfully.', 'packeta' );
+				}
 			} else {
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Label could not be printed.', 'packeta' );
+				if ( $isClaimLabel === true ) {
+					$record->title = $this->wpAdapter->__( 'Label claim could not be printed.', 'packeta' );
+				} else {
+					$record->title = $this->wpAdapter->__( 'Label could not be printed.', 'packeta' );
+				}
 				$record->params = [
 					'packetId'          => $packetId,
 					'isPacketIdInvalid' => $response->hasInvalidPacketId( (string) $packetId ),
