@@ -295,21 +295,43 @@ class LabelPrint {
 		$response = $this->soapApiClient->packetsLabelsPdf( $request );
 
 		foreach ( $packetIds as $orderId => $packetId ) {
+			$isClaimAssistantLabel = false;
+			$order                 = $this->orderRepository->getByIdWithValidCarrier( $orderId );
+
+			if ( $order === null ) {
+				// TODO Only a temporary solution to prevent a situation where the order is null and we are unable to verify whether it is a printout from the claim assistant form.
+				// TODO Needs to be refactored - ticket PES-2896
+				$this->logLabelPrintWithoutWcOrder( $orderId, $packetId, $response, $request );
+
+				continue;
+			}
+
+			if ( $order->isPacketClaim( $packetId ) ) {
+				$isClaimAssistantLabel = true;
+			}
+
 			$record          = new Log\Record();
-			$record->action  = Log\Record::ACTION_LABEL_PRINT;
+			$record->action  = $isClaimAssistantLabel ? Log\Record::ACTION_CLAIM_LABEL_PRINT : Log\Record::ACTION_LABEL_PRINT;
 			$record->orderId = $orderId;
-			$order           = $this->orderRepository->getByIdWithValidCarrier( $orderId );
 
 			if ( ! $response->hasFault() ) {
-				if ( $order !== null ) {
+				if ( $isClaimAssistantLabel === false ) {
 					$order->setIsLabelPrinted( true );
 				}
 
 				$record->status = Log\Record::STATUS_SUCCESS;
-				$record->title  = __( 'Label has been printed successfully.', 'packeta' );
+				if ( $isClaimAssistantLabel === true ) {
+					$record->title = $this->wpAdapter->__( 'Claim assistant label was printed successfully.', 'packeta' );
+				} else {
+					$record->title = $this->wpAdapter->__( 'Label was printed successfully.', 'packeta' );
+				}
 			} else {
 				$record->status = Log\Record::STATUS_ERROR;
-				$record->title  = __( 'Label could not be printed.', 'packeta' );
+				if ( $isClaimAssistantLabel === true ) {
+					$record->title = $this->wpAdapter->__( 'Claim assistant label could not be printed.', 'packeta' );
+				} else {
+					$record->title = $this->wpAdapter->__( 'Label could not be printed.', 'packeta' );
+				}
 				$record->params = [
 					'packetId'          => $packetId,
 					'isPacketIdInvalid' => $response->hasInvalidPacketId( (string) $packetId ),
@@ -324,10 +346,8 @@ class LabelPrint {
 
 			$this->logger->add( $record );
 
-			if ( $order !== null ) {
-				$order->updateApiErrorMessage( $response->getFaultString() );
-				$this->orderRepository->save( $order );
-			}
+			$order->updateApiErrorMessage( $response->getFaultString() );
+			$this->orderRepository->save( $order );
 		}
 
 		return $response;
@@ -456,6 +476,34 @@ class LabelPrint {
 			)
 		);
 		$wcOrder->save();
+	}
+
+	/**
+	 * Logs label print operation when there is no WooCommerce order.
+	 */
+	private function logLabelPrintWithoutWcOrder( int $orderId, string $packetId, Response\PacketsLabelsPdf $response, Request\PacketsLabelsPdf $request ): void {
+		$record          = new Log\Record();
+		$record->action  = Log\Record::ACTION_LABEL_PRINT;
+		$record->orderId = $orderId;
+
+		if ( ! $response->hasFault() ) {
+			$record->status = Log\Record::STATUS_SUCCESS;
+			$record->title  = $this->wpAdapter->__( 'Label was printed successfully.', 'packeta' );
+		} else {
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = $this->wpAdapter->__( 'Label could not be printed.', 'packeta' );
+		}
+		$record->params = [
+			'packetId'          => $packetId,
+			'isPacketIdInvalid' => $response->hasInvalidPacketId( $packetId ),
+			'request'           => [
+				'packetIds' => $request->getPacketIds(),
+				'format'    => $request->getFormat(),
+				'offset'    => $request->getOffset(),
+			],
+			'errorMessage'      => $response->getFaultString(),
+		];
+		$this->logger->add( $record );
 	}
 
 	public function flashMessageAndRedirect( string $message, ?int $orderId ): void {
