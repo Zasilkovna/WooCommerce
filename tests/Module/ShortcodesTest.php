@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Core\DummyFactory;
 
 class EmailShortcodesTest extends TestCase {
-	private const PROCESSED_CONTENT = 'processed_content';
+	private const DUMMY_PROCESSED_CONTENT = 'processed_content';
 
 	private WpAdapter $wpAdapterMock;
 	private Repository $orderRepositoryMock;
@@ -40,10 +40,7 @@ class EmailShortcodesTest extends TestCase {
 			$order->setPickupPoint( $pickupPoint );
 		}
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
-
-		if ( $expected === self::PROCESSED_CONTENT ) {
-			$this->wpAdapterMock->method( 'doShortcode' )->willReturn( self::PROCESSED_CONTENT );
-		}
+		$this->wpAdapterMock->method( 'doShortcode' )->willReturn( $expected );
 
 		$result = $this->shortcodes->ifPickupPoint( [ 'order_id' => 123 ], 'content' );
 		$this->assertSame( $expected, $result );
@@ -53,7 +50,7 @@ class EmailShortcodesTest extends TestCase {
 		return [
 			'no order'          => [ null, null, '' ],
 			'no pickup point'   => [ DummyFactory::createOrderCzHdIncomplete(), null, '' ],
-			'with pickup point' => [ DummyFactory::createOrderCzHdIncomplete(), DummyFactory::createPickupPoint(), self::PROCESSED_CONTENT ],
+			'with pickup point' => [ DummyFactory::createOrderCzHdIncomplete(), DummyFactory::createPickupPoint(), self::DUMMY_PROCESSED_CONTENT ],
 		];
 	}
 
@@ -78,9 +75,9 @@ class EmailShortcodesTest extends TestCase {
 		$carrier          = DummyFactory::createCarDeliveryCarrier();
 		$order            = new Order( 'orderNumber', $carrier );
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
-		$this->wpAdapterMock->method( 'doShortcode' )->willReturn( self::PROCESSED_CONTENT );
+		$this->wpAdapterMock->method( 'doShortcode' )->willReturn( self::DUMMY_PROCESSED_CONTENT );
 		$result = $this->shortcodes->ifCarrier( [ 'order_id' => 123 ], 'content' );
-		$this->assertSame( self::PROCESSED_CONTENT, $result );
+		$this->assertSame( self::DUMMY_PROCESSED_CONTENT, $result );
 	}
 
 	public function testPickupPointAddressReturnsEmptyWhenNoOrder(): void {
