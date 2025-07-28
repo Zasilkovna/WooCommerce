@@ -251,14 +251,14 @@ Use this to display content only when the order uses a pickup point:
 [/packeta_if_pickup_point]
 ```
 
-#### If External Carrier
+#### If Carrier
 
 Use this to display content only when the order uses an external carrier:
 
 ```php
-[packeta_if_external_carrier order_id="<?php echo $order->get_id(); ?>"]
+[packeta_if_carrier order_id="<?php echo $order->get_id(); ?>"]
 	Your order is shipped with: [packeta_carrier_name order_id="<?php echo $order->get_id(); ?>"]
-[/packeta_if_external_carrier]
+[/packeta_if_carrier]
 ```
 
 ### Usage in Email Templates

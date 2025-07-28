@@ -14,7 +14,7 @@ use Tests\Core\DummyFactory;
 
 class EmailShortcodesTest extends TestCase {
 	private const PROCESSED_CONTENT = 'processed_content';
-	
+
 	private WpAdapter $wpAdapterMock;
 	private Repository $orderRepositoryMock;
 	private EmailShortcodes $shortcodes;
@@ -57,29 +57,29 @@ class EmailShortcodesTest extends TestCase {
 		];
 	}
 
-	public function testIfExternalCarrierReturnsEmptyWhenNoOrder(): void {
+	public function testIfCarrierReturnsEmptyWhenNoOrder(): void {
 		$this->shortcodes = $this->createShortcodes();
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( null );
-		$result = $this->shortcodes->ifExternalCarrier( [ 'order_id' => 123 ], 'content' );
+		$result = $this->shortcodes->ifCarrier( [ 'order_id' => 123 ], 'content' );
 		$this->assertSame( '', $result );
 	}
 
-	public function testIfExternalCarrierReturnsEmptyWhenNotExternalCarrier(): void {
+	public function testIfCarrierReturnsEmptyWhenNotExternalCarrier(): void {
 		$this->shortcodes = $this->createShortcodes();
 		$carrier          = DummyFactory::createCarrierCzechPp();
 		$order            = new Order( 'orderNumber', $carrier );
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
-		$result = $this->shortcodes->ifExternalCarrier( [ 'order_id' => 123 ], 'content' );
+		$result = $this->shortcodes->ifCarrier( [ 'order_id' => 123 ], 'content' );
 		$this->assertSame( '', $result );
 	}
 
-	public function testIfExternalCarrierReturnsContentWhenExternalCarrier(): void {
+	public function testIfCarrierReturnsContentWhenExternalCarrier(): void {
 		$this->shortcodes = $this->createShortcodes();
 		$carrier          = DummyFactory::createCarDeliveryCarrier();
 		$order            = new Order( 'orderNumber', $carrier );
 		$this->orderRepositoryMock->method( 'findById' )->willReturn( $order );
 		$this->wpAdapterMock->method( 'doShortcode' )->willReturn( self::PROCESSED_CONTENT );
-		$result = $this->shortcodes->ifExternalCarrier( [ 'order_id' => 123 ], 'content' );
+		$result = $this->shortcodes->ifCarrier( [ 'order_id' => 123 ], 'content' );
 		$this->assertSame( self::PROCESSED_CONTENT, $result );
 	}
 

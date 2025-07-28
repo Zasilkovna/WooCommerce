@@ -37,7 +37,7 @@ class EmailShortcodes {
 
 		$this->wpAdapter->addShortcode( 'packeta_if_packet_submitted', [ $this, 'ifPacketSubmitted' ] );
 		$this->wpAdapter->addShortcode( 'packeta_if_pickup_point', [ $this, 'ifPickupPoint' ] );
-		$this->wpAdapter->addShortcode( 'packeta_if_external_carrier', [ $this, 'ifExternalCarrier' ] );
+		$this->wpAdapter->addShortcode( 'packeta_if_carrier', [ $this, 'ifCarrier' ] );
 	}
 
 	private function findOrder( array $shortcodeAttributes ): ?Order {
@@ -192,7 +192,7 @@ class EmailShortcodes {
 		return $this->wpAdapter->doShortcode( $content );
 	}
 
-	public function ifExternalCarrier( array $shortcodeAttributes, string $content = '' ): string {
+	public function ifCarrier( array $shortcodeAttributes, string $content = '' ): string {
 		$order = $this->findOrder( $shortcodeAttributes );
 		if ( $order === null ) {
 			return '';
