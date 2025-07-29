@@ -99,7 +99,7 @@ class Page {
 			Record::ACTION_PACKET_CLAIM_SENDING      => __( 'Packet claim sending', 'packeta' ),
 			Record::ACTION_CARRIER_LABEL_PRINT       => __( 'Carrier label print', 'packeta' ),
 			Record::ACTION_LABEL_PRINT               => __( 'Label print', 'packeta' ),
-			Record::ACTION_LABEL_CLAIM_PRINT         => __( 'Label claim print', 'packeta' ),
+			Record::ACTION_LABEL_CLAIM_PRINT         => __( 'Claim assistant label printing', 'packeta' ),
 			Record::ACTION_CARRIER_LIST_UPDATE       => __( 'Carrier list update', 'packeta' ),
 			Record::ACTION_CARRIER_NUMBER_RETRIEVING => __( 'Getting external carrier tracking number', 'packeta' ),
 			Record::ACTION_CARRIER_TABLE_NOT_CREATED => __( 'Database carrier table was not created.', 'packeta' ),

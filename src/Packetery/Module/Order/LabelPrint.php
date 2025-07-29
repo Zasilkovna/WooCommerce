@@ -326,14 +326,14 @@ class LabelPrint {
 
 				$record->status = Log\Record::STATUS_SUCCESS;
 				if ( $isClaimLabel === true ) {
-					$record->title = $this->wpAdapter->__( 'Label claim has been printed successfully.', 'packeta' );
+					$record->title = $this->wpAdapter->__( 'Claim assistant label was printed successfully.', 'packeta' );
 				} else {
 					$record->title = $this->wpAdapter->__( 'Label has been printed successfully.', 'packeta' );
 				}
 			} else {
 				$record->status = Log\Record::STATUS_ERROR;
 				if ( $isClaimLabel === true ) {
-					$record->title = $this->wpAdapter->__( 'Label claim could not be printed.', 'packeta' );
+					$record->title = $this->wpAdapter->__( 'Claim assistant label could not be printed.', 'packeta' );
 				} else {
 					$record->title = $this->wpAdapter->__( 'Label could not be printed.', 'packeta' );
 				}
