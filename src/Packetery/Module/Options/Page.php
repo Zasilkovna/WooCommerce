@@ -727,10 +727,6 @@ class Page {
 	 * @return array
 	 */
 	public function sanitizePacketeryOptions( array $options ): array {
-		if ( ! isset( $options['auto_email_info_insertion'] ) ) {
-			$options['auto_email_info_insertion'] = false;
-		}
-
 		$form = $this->create_form();
 		/**
 		 * Packetery container.
@@ -738,6 +734,9 @@ class Page {
 		 * @var Container $packeteryContainer
 		 */
 		$packeteryContainer = $form[ self::FORM_FIELDS_CONTAINER ];
+		if ( ! isset( $options['auto_email_info_insertion'] ) ) {
+			$options['auto_email_info_insertion'] = false;
+		}
 		$packeteryContainer->setValues( $options );
 		if ( $form->isValid() === false ) {
 			foreach ( $packeteryContainer->getControls() as $control ) {
