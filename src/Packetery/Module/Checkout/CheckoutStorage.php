@@ -168,4 +168,10 @@ class CheckoutStorage {
 
 		return $isKeyMissingInCheckoutData && $isKeyPresentInSavedCarrierData;
 	}
+
+	public function migrateGuestSessionToUserSession( string $guestSessionId ): void {
+		$oldTransientId = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
+		$this->setTransient( $this->wpAdapter->getTransient( $oldTransientId ) );
+		$this->wpAdapter->deleteTransient( $oldTransientId );
+	}
 }
