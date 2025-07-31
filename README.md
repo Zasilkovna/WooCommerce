@@ -234,9 +234,9 @@ You can use conditional shortcodes to display content only when certain conditio
 Use this to display content only when the order has been submitted to Packeta:
 
 ```
-[packeta_if_packet_submitted order_id="123"]
-	Your tracking number is: [packeta_tracking_number order_id="123"]
-	Track your package here: [packeta_tracking_url order_id="123"]
+[packeta_if_packet_submitted order_id="<?php echo $order->get_id(); ?>"]
+	Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]
+	Track your package here: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]
 [/packeta_if_packet_submitted]
 ```
 
@@ -245,9 +245,9 @@ Use this to display content only when the order has been submitted to Packeta:
 Use this to display content only when the order uses a pickup point:
 
 ```
-[packeta_if_pickup_point order_id="123"]
-	Your pickup point is: [packeta_pickup_point_name order_id="123"]
-	Address: [packeta_pickup_point_address order_id="123"]
+[packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
+	Your pickup point is: [packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]
+	Address: [packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]
 [/packeta_if_pickup_point]
 ```
 
@@ -256,8 +256,8 @@ Use this to display content only when the order uses a pickup point:
 Use this to display content only when the order uses an external carrier:
 
 ```
-[packeta_if_carrier order_id="123"]
-	Your order is shipped with: [packeta_carrier_name order_id="123"]
+[packeta_if_carrier order_id="<?php echo $order->get_id(); ?>"]
+	Your order is shipped with: [packeta_carrier_name order_id="<?php echo $order->get_id(); ?>"]
 [/packeta_if_carrier]
 ```
 
@@ -273,21 +273,21 @@ For example:
 
 ```
 <h2>Order Details</h2>
-<p>Order #123</p>
+<p>Order <?php echo $order->get_order_number(); ?></p>
 
-[packeta_if_packet_submitted order_id="123"]
+[packeta_if_packet_submitted order_id="<?php echo $order->get_id(); ?>"]
 	<h3>Shipping Information</h3>
-	<p>Your tracking number is: [packeta_tracking_number order_id="123"]</p>
-	<p>Track your package: [packeta_tracking_url order_id="123"]</p>
+	<p>Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]</p>
+	<p>Track your package: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]</p>
 [/packeta_if_packet_submitted]
 
-[packeta_if_pickup_point order_id="123"]
+[packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
 	<h3>Pickup Point Information</h3>
-	<p>Name: [packeta_pickup_point_name order_id="123"]</p>
-	<p>Address: [packeta_pickup_point_address order_id="123"]</p>
-	<p>City: [packeta_pickup_point_city order_id="123"]</p>
-	<p>ZIP: [packeta_pickup_point_zip order_id="123"]</p>
-	<p>Country: [packeta_pickup_point_country order_id="123"]</p>
+	<p>Name: [packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]</p>
+	<p>Address: [packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]</p>
+	<p>City: [packeta_pickup_point_city order_id="<?php echo $order->get_id(); ?>"]</p>
+	<p>ZIP: [packeta_pickup_point_zip order_id="<?php echo $order->get_id(); ?>"]</p>
+	<p>Country: [packeta_pickup_point_country order_id="<?php echo $order->get_id(); ?>"]</p>
 [/packeta_if_pickup_point]
 ```
 
