@@ -3,7 +3,7 @@ Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
 Tested up to: 6.8.1
-Stable tag: 2.0.7
+Stable tag: 2.0.8
 Requires PHP: 7.2
 WC requires at least: 5.1
 WC tested up to: 9.9.3
@@ -63,6 +63,9 @@ We are constantly working on adding new features. If there is a feature you woul
 Please contact us at e-commerce.support@packeta.com .
 
 == Changelog ==
+= 2.0.8 =
+Fixed: Resolved data transfer from the checkout and pairing of the order with the plugin when registering a user in the checkout.
+
 = 2.0.7 =
 Updated: Enabled age verification for Home delivery Slovakia.
 
