@@ -28,9 +28,21 @@ class EmailShortcodesTest extends TestCase {
 
 	public static function providerIfPickupPoint(): array {
 		return [
-			'no order'          => [ null, null, '' ],
-			'no pickup point'   => [ DummyFactory::createOrderCzHdIncomplete(), null, '' ],
-			'with pickup point' => [ DummyFactory::createOrderCzHdIncomplete(), DummyFactory::createPickupPoint(), self::DUMMY_PROCESSED_CONTENT ],
+			'no order'          => [
+				'order'       => null,
+				'pickupPoint' => null,
+				'expected'    => '',
+			],
+			'no pickup point'   => [
+				'order'       => DummyFactory::createOrderCzHdIncomplete(),
+				'pickupPoint' => null,
+				'expected'    => '',
+			],
+			'with pickup point' => [
+				'order'       => DummyFactory::createOrderCzHdIncomplete(),
+				'pickupPoint' => DummyFactory::createPickupPoint(),
+				'expected'    => self::DUMMY_PROCESSED_CONTENT,
+			],
 		];
 	}
 
@@ -97,9 +109,21 @@ class EmailShortcodesTest extends TestCase {
 
 	public static function providerPickupPointAddress(): array {
 		return [
-			'no order'          => [ null, null, '' ],
-			'no pickup point'   => [ DummyFactory::createOrderCzHdIncomplete(), null, '' ],
-			'with pickup point' => [ DummyFactory::createOrderCzHdIncomplete(), DummyFactory::createPickupPoint(), DummyFactory::createPickupPoint()->getFullAddress() ],
+			'no order'          => [
+				'order'       => null,
+				'pickupPoint' => null,
+				'expected'    => '',
+			],
+			'no pickup point'   => [
+				'order'       => DummyFactory::createOrderCzHdIncomplete(),
+				'pickupPoint' => null,
+				'expected'    => '',
+			],
+			'with pickup point' => [
+				'order'       => DummyFactory::createOrderCzHdIncomplete(),
+				'pickupPoint' => DummyFactory::createPickupPoint(),
+				'expected'    => DummyFactory::createPickupPoint()->getFullAddress(),
+			],
 		];
 	}
 
@@ -133,9 +157,21 @@ class EmailShortcodesTest extends TestCase {
 
 	public static function providerPickupPointStreet(): array {
 		return [
-			'no order'          => [ null, null, '' ],
-			'no pickup point'   => [ DummyFactory::createOrderCzHdIncomplete(), null, '' ],
-			'with pickup point' => [ DummyFactory::createOrderCzHdIncomplete(), DummyFactory::createPickupPoint(), DummyFactory::createPickupPoint()->getStreet() ],
+			'no order'          => [
+				'order'       => null,
+				'pickupPoint' => null,
+				'expected'    => '',
+			],
+			'no pickup point'   => [
+				'order'       => DummyFactory::createOrderCzHdIncomplete(),
+				'pickupPoint' => null,
+				'expected'    => '',
+			],
+			'with pickup point' => [
+				'order'       => DummyFactory::createOrderCzHdIncomplete(),
+				'pickupPoint' => DummyFactory::createPickupPoint(),
+				'expected'    => DummyFactory::createPickupPoint()->getStreet(),
+			],
 		];
 	}
 
