@@ -11,6 +11,8 @@ use Packetery\Module\Options\OptionsProvider;
 use PHPUnit\Framework\TestCase;
 
 class OptionsProviderTest extends TestCase {
+	private const DUMMY_NONSENSE_VALUE = 'nonsense';
+
 	public static function dimensionsUnitProvider(): array {
 		return [
 			[
@@ -175,7 +177,7 @@ class OptionsProviderTest extends TestCase {
 				'expectedValue' => false,
 			],
 			[
-				'inputValue'    => 'nonsense',
+				'inputValue'    => self::DUMMY_NONSENSE_VALUE,
 				'expectedValue' => true,
 			],
 		];
@@ -192,6 +194,70 @@ class OptionsProviderTest extends TestCase {
 		$provider = new OptionsProvider( $wpAdapterMock );
 
 		$this->assertSame( $expectedValue, $provider->isWcCarrierConfigEnabledNullable() );
+	}
+
+	public static function autoEmailInfoInsertionEnabledProvider(): array {
+		return [
+			[
+				'inputValue'    => true,
+				'expectedValue' => true,
+			],
+			[
+				'inputValue'    => false,
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => null,
+				'expectedValue' => true,
+			],
+			[
+				'inputValue'    => 1,
+				'expectedValue' => true,
+			],
+			[
+				'inputValue'    => 0,
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => '1',
+				'expectedValue' => true,
+			],
+			[
+				'inputValue'    => '0',
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => '',
+				'expectedValue' => false,
+			],
+			[
+				'inputValue'    => self::DUMMY_NONSENSE_VALUE,
+				'expectedValue' => true,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider autoEmailInfoInsertionEnabledProvider
+	 */
+	public function testIsAutoEmailInfoInsertionEnabled( mixed $inputValue, bool $expectedValue ): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock->method( 'getOption' )
+						->willReturn( [ 'auto_email_info_insertion' => $inputValue ] );
+
+		$provider = new OptionsProvider( $wpAdapterMock );
+
+		$this->assertSame( $expectedValue, $provider->isAutoEmailInfoInsertionEnabled() );
+	}
+
+	public function testIsAutoEmailInfoInsertionEnabledReturnsDefaultWhenOptionNotSet(): void {
+		$wpAdapterMock = $this->createMock( WpAdapter::class );
+		$wpAdapterMock->method( 'getOption' )
+						->willReturn( [] );
+
+		$provider = new OptionsProvider( $wpAdapterMock );
+
+		$this->assertSame( true, $provider->isAutoEmailInfoInsertionEnabled() );
 	}
 
 	public function testGetPacketAutoSubmissionMappedUniqueEvents(): void {
