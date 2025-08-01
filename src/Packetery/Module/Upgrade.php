@@ -335,6 +335,7 @@ class Upgrade {
 			}
 
 			$this->orderRepository->save( $orderEntity );
+			// Ignore errors. Save the metadata even if the previous call fails.
 			$order->save_meta_data();
 		}
 	}

@@ -19,8 +19,9 @@ interface ILogger {
 	 * Adds log record.
 	 *
 	 * @param Record $record Record.
+	 * @return int|false The number of rows inserted, or false on error.
 	 */
-	public function add( Record $record ): void;
+	public function add( Record $record );
 
 	/**
 	 * Get logs.

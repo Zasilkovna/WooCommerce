@@ -399,10 +399,10 @@ class Repository {
 	 *
 	 * @param Order $order Order.
 	 *
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function save( Order $order ): void {
-		$this->saveData( $this->orderToDbArray( $order ) );
+	public function save( Order $order ) {
+		return $this->saveData( $this->orderToDbArray( $order ) );
 	}
 
 	/**
@@ -410,11 +410,12 @@ class Repository {
 	 *
 	 * @param array<string, int|string|null|DateTimeImmutable> $orderData Order data.
 	 *
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function saveData( array $orderData ): void {
+	public function saveData( array $orderData ) {
 		$this->onBeforeDataInsertion( $orderData );
-		$this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryOrder, $orderData, null, 'REPLACE' );
+
+		return $this->wpdbAdapter->insertReplaceHelper( $this->wpdbAdapter->packeteryOrder, $orderData, null, 'REPLACE' );
 	}
 
 	/**
@@ -682,11 +683,13 @@ class Repository {
 	 *
 	 * @param int $orderId Order id.
 	 *
-	 * @return void
+	 * @return bool true on success, false in case of db failure.
 	 */
-	public function delete( int $orderId ): void {
-		$this->customsDeclarationRepository->delete( (string) $orderId );
-		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryOrder, [ 'id' => $orderId ], '%d' );
+	public function delete( int $orderId ): bool {
+		$declarationDeletionSuccess = $this->customsDeclarationRepository->delete( (string) $orderId );
+		$updatedRowCount            = $this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryOrder, [ 'id' => $orderId ], '%d' );
+
+		return ! ( $declarationDeletionSuccess === false || $updatedRowCount === false );
 	}
 
 	/**

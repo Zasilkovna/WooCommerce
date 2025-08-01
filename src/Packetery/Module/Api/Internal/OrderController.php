@@ -15,6 +15,7 @@ use Packetery\Core\Validator;
 use Packetery\Module\Exception\InvalidCarrierException;
 use Packetery\Module\Forms\FormData\OrderFormData;
 use Packetery\Module\Forms\StoredUntilFormFactory;
+use Packetery\Module\Framework\WpAdapter;
 use Packetery\Module\Options\OptionsProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Form;
@@ -99,6 +100,11 @@ final class OrderController extends WP_REST_Controller {
 	private $optionsProvider;
 
 	/**
+	 * @var WpAdapter
+	 */
+	private $wpAdapter;
+
+	/**
 	 * Controller constructor.
 	 *
 	 * @param OrderRouter            $router                 Router.
@@ -120,7 +126,8 @@ final class OrderController extends WP_REST_Controller {
 		Form $orderForm,
 		StoredUntilFormFactory $storedUntilFormFactory,
 		PacketSetStoredUntil $packetSetStoredUntil,
-		OptionsProvider $optionsProvider
+		OptionsProvider $optionsProvider,
+		WpAdapter $wpAdapter
 	) {
 		$this->orderForm              = $orderForm;
 		$this->orderRepository        = $orderRepository;
@@ -131,6 +138,7 @@ final class OrderController extends WP_REST_Controller {
 		$this->storedUntilFormFactory = $storedUntilFormFactory;
 		$this->packetSetStoredUntil   = $packetSetStoredUntil;
 		$this->optionsProvider        = $optionsProvider;
+		$this->wpAdapter              = $wpAdapter;
 	}
 
 	/**
@@ -237,7 +245,10 @@ final class OrderController extends WP_REST_Controller {
 		$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );
 
-		$this->orderRepository->save( $order );
+		$updatedRowCount = $this->orderRepository->save( $order );
+		if ( $updatedRowCount === false ) {
+			return new WP_Error( 'order_not_updated', (string) $this->wpAdapter->__( 'An error occurred while saving the order. More details in WC log.', 'packeta' ), 400 );
+		}
 
 		$data['message'] = __( 'Success', 'packeta' );
 		$data['data']    = [
@@ -306,7 +317,10 @@ final class OrderController extends WP_REST_Controller {
 
 		$order->setStoredUntil( $this->coreHelper->getDateTimeFromString( $storedUntil ) );
 
-		$this->orderRepository->save( $order );
+		$updatedRowCount = $this->orderRepository->save( $order );
+		if ( $updatedRowCount === false ) {
+			return new WP_Error( 'order_not_updated', (string) $this->wpAdapter->__( 'Date set in the Packeta system, but an error occurred while saving the order. More details in WC log.', 'packeta' ), 400 );
+		}
 
 		$invalidFields        = $this->orderForm->getInvalidFieldsFromValidationResult( $this->orderValidator->validate( $order ) );
 		$invalidFieldsMessage = $this->orderForm->getInvalidFieldsMessageFromValidationResult( $invalidFields, $order );

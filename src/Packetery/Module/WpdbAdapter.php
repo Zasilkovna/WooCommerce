@@ -177,7 +177,7 @@ class WpdbAdapter {
 	 * @param array<string, int|string> $where       A named array of WHERE clauses (in column => value pairs).
 	 * @param string|null               $whereFormat Optional. An array of formats to be mapped to each of the values in $where.
 	 *
-	 * @return int|false The number of rows updated, or false on error.
+	 * @return int|false The number of rows deleted, or false on error.
 	 */
 	public function delete( string $table, array $where, ?string $whereFormat = null ) {
 		$result = $this->wpdb->delete( $table, $where, $whereFormat );
