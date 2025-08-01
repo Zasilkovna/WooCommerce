@@ -146,6 +146,7 @@ class Updater {
 		foreach ( $mappedData as $carrierId => $carrier ) {
 			if ( isset( $carriersInDb[ $carrierId ] ) ) {
 				$this->carrierRepository->update( $carrier, $carrierId );
+				// todo 1128 ignore?
 				$differences = $this->getArrayDifferences( $carriersInDb[ $carrierId ], $carrier );
 				if ( isset( $differences['available'] ) ) {
 					$carrierOptions = $this->carrierOptionsFactory->createByCarrierId( (string) $carrierId );
@@ -167,12 +168,26 @@ class Updater {
 				}
 				unset( $carriersInDb[ $carrierId ] );
 			} else {
-				$carrier['id'] = $carrierId;
-				$this->carrierRepository->insert( $carrier );
-				$this->addLogEntry(
-					// translators: %s is carrier name.
-					sprintf( __( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
-				);
+				$carrier['id']   = $carrierId;
+				$updatedRowCount = $this->carrierRepository->insert( $carrier );
+				if ( $updatedRowCount === false ) {
+					// translators: %s is a carrier name.
+					$message = sprintf( $this->wpAdapter->__( 'An error occurred while saving carrier "%s". More details in WC log.', 'packeta' ), $carrier['name'] );
+
+					$this->logMessages[] = $message;
+
+					$record         = new Record();
+					$record->action = Record::ACTION_CARRIER_LIST_UPDATE;
+					$record->status = Record::STATUS_ERROR;
+					$record->title  = $message;
+					$record->params = [];
+					$this->logger->add( $record );
+				} else {
+					$this->addLogEntry(
+					// translators: %s is a carrier name.
+						sprintf( $this->wpAdapter->__( 'A new carrier "%s" has been added.', 'packeta' ), $carrier['name'] )
+					);
+				}
 			}
 		}
 
