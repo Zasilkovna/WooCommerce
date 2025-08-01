@@ -233,7 +233,7 @@ You can use conditional shortcodes to display content only when certain conditio
 
 Use this to display content only when the order has been submitted to Packeta:
 
-```
+```php
 [packeta_if_packet_submitted order_id="<?php echo $order->get_id(); ?>"]
 	Your tracking number is: [packeta_tracking_number order_id="<?php echo $order->get_id(); ?>"]
 	Track your package here: [packeta_tracking_url order_id="<?php echo $order->get_id(); ?>"]
@@ -244,7 +244,7 @@ Use this to display content only when the order has been submitted to Packeta:
 
 Use this to display content only when the order uses a pickup point:
 
-```
+```php
 [packeta_if_pickup_point order_id="<?php echo $order->get_id(); ?>"]
 	Your pickup point is: [packeta_pickup_point_name order_id="<?php echo $order->get_id(); ?>"]
 	Address: [packeta_pickup_point_address order_id="<?php echo $order->get_id(); ?>"]
@@ -255,7 +255,7 @@ Use this to display content only when the order uses a pickup point:
 
 Use this to display content only when the order uses an external carrier:
 
-```
+```php
 [packeta_if_carrier order_id="<?php echo $order->get_id(); ?>"]
 	Your order is shipped with: [packeta_carrier_name order_id="<?php echo $order->get_id(); ?>"]
 [/packeta_if_carrier]
@@ -271,7 +271,7 @@ You can use these shortcodes in your WooCommerce email templates. To add them to
 
 For example:
 
-```
+```php
 <h2>Order Details</h2>
 <p>Order <?php echo $order->get_order_number(); ?></p>
 
