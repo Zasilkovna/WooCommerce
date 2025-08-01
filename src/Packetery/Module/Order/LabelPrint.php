@@ -341,6 +341,7 @@ class LabelPrint {
 			if ( $order !== null ) {
 				$order->updateApiErrorMessage( $response->getFaultString() );
 				$this->orderRepository->save( $order );
+				// todo 1128 ignore?
 			}
 		}
 
@@ -389,6 +390,7 @@ class LabelPrint {
 			if ( $order !== null ) {
 				$order->updateApiErrorMessage( $response->getFaultString() );
 				$this->orderRepository->save( $order );
+				// todo 1128 ignore?
 			}
 		}
 

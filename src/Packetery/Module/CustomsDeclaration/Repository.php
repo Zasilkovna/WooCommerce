@@ -178,17 +178,19 @@ class Repository {
 	 *
 	 * @param CustomsDeclaration $customsDeclaration Customs declaration.
 	 * @param array              $fieldsToOmit Fields to omit.
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [ 'invoice_file', 'ead_file' ] ): void {
+	public function save( CustomsDeclaration $customsDeclaration, array $fieldsToOmit = [ 'invoice_file', 'ead_file' ] ) {
 		if ( $customsDeclaration->getId() === null ) {
-			$this->wpdbAdapter->insertReplaceHelper(
+			$updatedRowCount = $this->wpdbAdapter->insertReplaceHelper(
 				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$this->declarationToDbArray( $customsDeclaration, $fieldsToOmit )
 			);
-			$customsDeclaration->setId( $this->wpdbAdapter->getLastInsertId() );
+			if ( $updatedRowCount !== false ) {
+				$customsDeclaration->setId( $this->wpdbAdapter->getLastInsertId() );
+			}
 		} else {
-			$this->wpdbAdapter->update(
+			$updatedRowCount = $this->wpdbAdapter->update(
 				$this->wpdbAdapter->packeteryCustomsDeclaration,
 				$this->declarationToDbArray( $customsDeclaration, $fieldsToOmit ),
 				[ 'id' => (int) $customsDeclaration->getId() ]
@@ -234,73 +236,85 @@ class Repository {
 				)
 			);
 		}
+
+		return $updatedRowCount;
 	}
 
 	/**
 	 * Saves customs declaration item.
 	 *
 	 * @param CustomsDeclarationItem $customsDeclarationItem Customs declaration item.
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function saveItem( CustomsDeclarationItem $customsDeclarationItem ): void {
+	public function saveItem( CustomsDeclarationItem $customsDeclarationItem ) {
 		if ( $customsDeclarationItem->getId() === null ) {
-			$this->wpdbAdapter->insert(
+			$updatedRowCount = $this->wpdbAdapter->insert(
 				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$this->declarationItemToDbArray( $customsDeclarationItem )
 			);
 			$customsDeclarationItem->setId( $this->wpdbAdapter->getLastInsertId() );
 		} else {
-			$this->wpdbAdapter->update(
+			$updatedRowCount = $this->wpdbAdapter->update(
 				$this->wpdbAdapter->packeteryCustomsDeclarationItem,
 				$this->declarationItemToDbArray( $customsDeclarationItem ),
 				[ 'id' => (int) $customsDeclarationItem->getId() ]
 			);
 		}
+
+		return $updatedRowCount;
 	}
 
 	/**
 	 * Deletes item.
 	 *
 	 * @param int $itemId Item ID.
-	 * @return void
+	 * @return int|false The number of rows updated, or false on error.
 	 */
-	public function deleteItem( int $itemId ): void {
-		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclarationItem, [ 'id' => $itemId ], '%d' );
+	public function deleteItem( int $itemId ) {
+		return $this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclarationItem, [ 'id' => $itemId ], '%d' );
 	}
 
 	/**
 	 * Deletes all items.
 	 *
 	 * @param string $customsDeclarationId Customs Declaration ID.
-	 * @return void
+	 * @return bool true on success, false in case of db failure.
 	 */
-	private function deleteItems( string $customsDeclarationId ): void {
+	private function deleteItems( string $customsDeclarationId ): bool {
 		$items = $this->getItemsByCustomsDeclarationId( $customsDeclarationId );
 
 		if ( count( $items ) === 0 ) {
-			return;
+			return true;
 		}
 
+		$success = true;
 		foreach ( $items as $item ) {
-			$this->deleteItem( (int) $item->getId() );
+			$updatedRowCount = $this->deleteItem( (int) $item->getId() );
+			if ( $updatedRowCount === false ) {
+				$success = false;
+			}
 		}
+
+		return $success;
 	}
 
 	/**
 	 * Completely deletes Customs Declaration with all its items.
 	 *
 	 * @param string $orderId Order ID.
-	 * @return void
+	 * @return bool true on success, false in case of db failure.
 	 */
-	public function delete( string $orderId ): void {
+	public function delete( string $orderId ): bool {
 		$customsDeclarationId = $this->getIdByOrderNumber( $orderId );
 
 		if ( $customsDeclarationId === null ) {
-			return;
+			return true;
 		}
 
-		$this->deleteItems( $customsDeclarationId );
-		$this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclaration, [ 'id' => $customsDeclarationId ], '%d' );
+		$itemsDeletionSuccess = $this->deleteItems( $customsDeclarationId );
+		$updatedRowCount      = $this->wpdbAdapter->delete( $this->wpdbAdapter->packeteryCustomsDeclaration, [ 'id' => $customsDeclarationId ], '%d' );
+
+		return ! ( $itemsDeletionSuccess === false || $updatedRowCount === false );
 	}
 
 	/**
