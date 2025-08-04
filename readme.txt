@@ -2,11 +2,11 @@
 Contributors: packeta
 Tags: WooCommerce, shipping
 Requires at least: 5.5
-Tested up to: 6.8.1
+Tested up to: 6.8.2
 Stable tag: 2.0.8
 Requires PHP: 7.2
 WC requires at least: 5.1
-WC tested up to: 9.9.3
+WC tested up to: 10.0.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 Official plugin for selecting Packeta pickup points or address delivery and submitting orders directly from your e-shop.
