@@ -1,4 +1,7 @@
 == Changelog ==
+= 2.0.8 =
+Fixed: Resolved data transfer from the checkout and pairing of the order with the plugin when registering a user in the checkout.
+
 = 2.0.7 =
 Updated: Enabled age verification for Home delivery Slovakia.
 
