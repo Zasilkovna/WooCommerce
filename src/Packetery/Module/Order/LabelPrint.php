@@ -320,7 +320,7 @@ class LabelPrint {
 			$record->orderId = $orderId;
 
 			if ( ! $response->hasFault() ) {
-				if ( $order !== null ) {
+				if ( $order !== null && $isClaimAssistantLabel === false ) {
 					$order->setIsLabelPrinted( true );
 				}
 
