@@ -311,7 +311,16 @@ class LabelPrint {
 		foreach ( $packetIds as $orderId => $packetId ) {
 			$isClaimAssistantLabel = false;
 			$order                 = $this->orderRepository->getByIdWithValidCarrier( $orderId );
-			if ( $order !== null && $order->isPacketClaim( $packetId ) ) {
+
+			if ( $order === null ) {
+				// TODO Only a temporary solution to prevent a situation where the order is null and we are unable to verify whether it is a printout from the claim assistant form.
+				// TODO Needs to be refactor
+				$this->logLabelPrintWithoutWcOrder( $orderId, $packetId, $response, $request );
+
+				continue;
+			}
+
+			if ( $order->isPacketClaim( $packetId ) ) {
 				$isClaimAssistantLabel = true;
 			}
 
@@ -320,7 +329,7 @@ class LabelPrint {
 			$record->orderId = $orderId;
 
 			if ( ! $response->hasFault() ) {
-				if ( $order !== null && $isClaimAssistantLabel === false ) {
+				if ( $isClaimAssistantLabel === false ) {
 					$order->setIsLabelPrinted( true );
 				}
 
@@ -351,10 +360,8 @@ class LabelPrint {
 
 			$this->logger->add( $record );
 
-			if ( $order !== null ) {
-				$order->updateApiErrorMessage( $response->getFaultString() );
-				$this->orderRepository->save( $order );
-			}
+			$order->updateApiErrorMessage( $response->getFaultString() );
+			$this->orderRepository->save( $order );
 		}
 
 		return $response;
@@ -483,6 +490,34 @@ class LabelPrint {
 			)
 		);
 		$wcOrder->save();
+	}
+
+	/**
+	 * Logs label print operation when there is no WooCommerce order.
+	 */
+	private function logLabelPrintWithoutWcOrder( int $orderId, string $packetId, Response\PacketsLabelsPdf $response, Request\PacketsLabelsPdf $request ): void {
+		$record          = new Log\Record();
+		$record->action  = Log\Record::ACTION_LABEL_PRINT;
+		$record->orderId = $orderId;
+
+		if ( ! $response->hasFault() ) {
+			$record->status = Log\Record::STATUS_SUCCESS;
+			$record->title  = $this->wpAdapter->__( 'Label was printed successfully, but we have no connection to WcOrder.', 'packeta' );
+		} else {
+			$record->status = Log\Record::STATUS_ERROR;
+			$record->title  = $this->wpAdapter->__( 'Label could not be printed and we have no connection to WcOrder.', 'packeta' );
+		}
+		$record->params = [
+			'packetId'          => $packetId,
+			'isPacketIdInvalid' => $response->hasInvalidPacketId( $packetId ),
+			'request'           => [
+				'packetIds' => $request->getPacketIds(),
+				'format'    => $request->getFormat(),
+				'offset'    => $request->getOffset(),
+			],
+			'errorMessage'      => $response->getFaultString(),
+		];
+		$this->logger->add( $record );
 	}
 
 	public function flashMessageAndRedirect( string $message, ?int $idParam ): void {
