@@ -314,7 +314,7 @@ class LabelPrint {
 
 			if ( $order === null ) {
 				// TODO Only a temporary solution to prevent a situation where the order is null and we are unable to verify whether it is a printout from the claim assistant form.
-				// TODO Needs to be refactor
+				// TODO Needs to be refactored - ticket PES-2896
 				$this->logLabelPrintWithoutWcOrder( $orderId, $packetId, $response, $request );
 
 				continue;
@@ -502,10 +502,10 @@ class LabelPrint {
 
 		if ( ! $response->hasFault() ) {
 			$record->status = Log\Record::STATUS_SUCCESS;
-			$record->title  = $this->wpAdapter->__( 'Label was printed successfully, but we have no connection to WcOrder.', 'packeta' );
+			$record->title  = $this->wpAdapter->__( 'Label was printed successfully, but we do not have complete order data.', 'packeta' );
 		} else {
 			$record->status = Log\Record::STATUS_ERROR;
-			$record->title  = $this->wpAdapter->__( 'Label could not be printed and we have no connection to WcOrder.', 'packeta' );
+			$record->title  = $this->wpAdapter->__( 'Label could not be printed and we do not have complete order data.', 'packeta' );
 		}
 		$record->params = [
 			'packetId'          => $packetId,
