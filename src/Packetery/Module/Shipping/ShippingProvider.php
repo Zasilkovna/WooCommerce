@@ -18,6 +18,13 @@ use WC_Order;
 class ShippingProvider {
 
 	/**
+	 * Cache pro dopravce
+	 *
+	 * @var array<string, Carrier|null>
+	 */
+	private static array $carrierCache = [];
+
+	/**
 	 * @var FeatureFlagProvider
 	 */
 	private $featureFlagProvider;
@@ -225,18 +232,103 @@ class ShippingProvider {
 	 *
 	 * @return array<string, string>
 	 */
-	public function sortMethods( array $methods ): array {
+	public function sortMethods(array $methods): array {
+		// Získání všech carrier ID z metod
+		$carrierIds = [];
+		foreach ($methods as $fullyQualifiedClassname => $methodTitle) {
+			if (defined("$fullyQualifiedClassname::CARRIER_ID")) {
+				$carrierIds[] = $fullyQualifiedClassname::CARRIER_ID;
+			}
+		}
+
+		// Předběžné načtení všech dopravců najednou
+		if (!empty($carrierIds)) {
+			$this->preloadCarriers($carrierIds);
+		}
+
 		uasort(
 			$methods,
-			function ( $classA, $classB ) {
-				$objectA = new $classA();
-				$objectB = new $classB();
+			function ($fullyQualifiedClassnameA, $fullyQualifiedClassnameB) {
+				$methodTitleA = null;
+				$methodTitleB = null;
 
-				// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-				return strcmp( $objectA->method_title, $objectB->method_title );
+				// Použití cache místo přímého volání repositáře
+				if (defined("$fullyQualifiedClassnameA::CARRIER_ID")) {
+					$carrier = $this->getCachedCarrier((int)$fullyQualifiedClassnameA::CARRIER_ID);
+					if ($carrier !== null) {
+						$methodTitleA = $carrier->getName();
+					}
+				}
+
+				if (defined("$fullyQualifiedClassnameB::CARRIER_ID")) {
+					$carrier = $this->getCachedCarrier((int)$fullyQualifiedClassnameB::CARRIER_ID);
+					if ($carrier !== null) {
+						$methodTitleB = $carrier->getName();
+					}
+				}
+
+				if ($methodTitleA === null || $methodTitleB === null) {
+					return 0;
+				}
+
+				return strcasecmp($methodTitleA, $methodTitleB);
 			}
 		);
 
 		return $methods;
+	}
+
+	/**
+	 * Předběžně načte dopravce do cache
+	 *
+	 * @param string[] $carrierIds ID dopravců
+	 * @return void
+	 */
+	private function preloadCarriers(array $carrierIds): void {
+		// Filtrujeme pouze ID, která ještě nemáme v cache
+		$missingIds = array_filter($carrierIds, function($id) {
+			return !isset(self::$carrierCache[$id]);
+		});
+
+		if (empty($missingIds)) {
+			return;
+		}
+
+		$inClause = $this->carrierRepository->getWpdbAdapter()->prepareInClause($missingIds);
+		$query = sprintf(
+			'SELECT * FROM `%s` WHERE `id` IN (%s)',
+			$this->carrierRepository->getWpdbAdapter()->packeteryCarrier,
+			$inClause
+		);
+
+		$results = $this->carrierRepository->getWpdbAdapter()->get_results($query, \ARRAY_A);
+
+		foreach ($results as $carrierData) {
+			$carrier = $this->carrierRepository->createEntityFromDbResult($carrierData);
+			self::$carrierCache[$carrier->getId()] = $carrier;
+		}
+	}
+
+	/**
+	 * Získá dopravce z cache nebo z databáze
+	 *
+	 * @param string $carrierId ID dopravce
+	 * @return Carrier|null
+	 */
+	private function getCachedCarrier(int $carrierId): ?Carrier {
+		if (!isset(self::$carrierCache[$carrierId])) {
+			self::$carrierCache[$carrierId] = $this->carrierRepository->getById($carrierId);
+		}
+
+		return self::$carrierCache[$carrierId];
+	}
+
+	/**
+	 * Vyčistí cache dopravců
+	 *
+	 * @return void
+	 */
+	public static function clearCarrierCache(): void {
+		self::$carrierCache = [];
 	}
 }
