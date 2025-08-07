@@ -265,6 +265,8 @@ class Metabox {
 		}
 		$runWizardUrl = $this->wpAdapter->adminUrl( "admin.php?page=wc-orders&action=edit&id={$orderId}&wizard-enabled=true&wizard-order-detail-edit-packet-enabled=true" );
 
+		$showRunWizardButton = (bool) $this->wpAdapter->applyFilters( 'packeta_order_detail_show_run_wizard_button', true );
+
 		$packetId = $order->getPacketId();
 		if ( $packetId !== null ) {
 			$packetCancelLink = $this->getOrderActionLink(
@@ -307,6 +309,8 @@ class Metabox {
 					'showLogsLink'               => $showLogsLink,
 					'packetClaimUrl'             => $packetClaimUrl,
 					'packetClaimCancelUrl'       => $packetClaimCancelUrl,
+					'runWizardUrl'               => $runWizardUrl,
+					'showRunWizardButton'        => $showRunWizardButton,
 					'storedUntil'                => $this->coreHelper->getStringFromDateTime( $order->getStoredUntil(), CoreHelper::DATEPICKER_FORMAT ),
 					'translations'               => [
 						'packetTrackingOnline'      => $this->wpAdapter->__( 'Packet tracking online', 'packeta' ),
@@ -327,6 +331,7 @@ class Metabox {
 						'packetClaimPassword'       => $this->wpAdapter->__( 'Packet claim password', 'packeta' ),
 						'submissionPassword'        => $this->wpAdapter->__( 'submission password', 'packeta' ),
 						'setStoredUntil'            => $this->wpAdapter->__( 'Set the pickup date extension', 'packeta' ),
+						'runWizard'                 => $this->wpAdapter->__( 'Run options wizard', 'packeta' ),
 					],
 				]
 			);
@@ -406,8 +411,6 @@ class Metabox {
 				}
 			}
 		}
-
-		$showRunWizardButton = (bool) $this->wpAdapter->applyFilters( 'packeta_order_detail_show_run_wizard_button', true );
 
 		$parts[ self::PART_MAIN ] = $this->latteEngine->renderToString(
 			PACKETERY_PLUGIN_DIR . '/template/order/metabox-form.latte',
