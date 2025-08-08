@@ -170,13 +170,42 @@ class CheckoutStorage {
 	}
 
 	public function migrateGuestSessionToUserSession( string $guestSessionId ): void {
-		$oldTransientId   = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
-		$oldTransientData = $this->wpAdapter->getTransient( $oldTransientId );
-		if ( is_array( $oldTransientData ) && $oldTransientData !== [] ) {
+		$oldTransientId       = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
+		$oldTransientData     = $this->wpAdapter->getTransient( $oldTransientId );
+		$isDataStructureValid = $this->validateDataStructure( $oldTransientData );
+		if ( $isDataStructureValid ) {
 			$this->setTransient( $oldTransientData );
 		}
 		if ( $oldTransientData !== false ) {
 			$this->wpAdapter->deleteTransient( $oldTransientId );
 		}
+	}
+
+	/**
+	 * Validates if the provided data has the structure array<string, array<string, mixed>>.
+	 *
+	 * @param mixed $data
+	 */
+	private function validateDataStructure( $data ): bool {
+		if ( ! is_array( $data ) || $data === [] ) {
+			return false;
+		}
+
+		foreach ( $data as $key => $value ) {
+			if ( ! is_string( $key ) ) {
+				return false;
+			}
+
+			if ( ! is_array( $value ) ) {
+				return false;
+			}
+			foreach ( $value as $nestedKey => $nestedValue ) {
+				if ( ! is_string( $nestedKey ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

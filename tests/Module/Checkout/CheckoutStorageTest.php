@@ -194,4 +194,77 @@ class CheckoutStorageTest extends TestCase {
 
 		$checkoutStorage->migrateGuestSessionToUserSession( $dummyGuestSessionId );
 	}
+
+	public static function validateDataStructureProvider(): array {
+		return [
+			'valid structure'             => [
+				'data'     => [
+					'shipping_method_1' => [
+						'point_id'   => '123',
+						'carrier_id' => '456',
+					],
+					'shipping_method_2' => [
+						'address_validated' => true,
+						'street'            => 'Main Street',
+					],
+				],
+				'expected' => true,
+			],
+			'empty array'                 => [
+				'data'     => [],
+				'expected' => false,
+			],
+			'not an array'                => [
+				'data'     => 'not an array',
+				'expected' => false,
+			],
+			'numeric key in top level'    => [
+				'data'     => [
+					0 => [
+						'point_id' => '123',
+					],
+				],
+				'expected' => false,
+			],
+			'value not an array'          => [
+				'data'     => [
+					'shipping_method_1' => 'not an array',
+				],
+				'expected' => false,
+			],
+			'numeric key in nested array' => [
+				'data'     => [
+					'shipping_method_1' => [
+						0 => 'numeric key',
+					],
+				],
+				'expected' => false,
+			],
+			'mixed valid and invalid'     => [
+				'data'     => [
+					'shipping_method_1' => [
+						'point_id' => '123',
+					],
+					0                   => [
+						'carrier_id' => '456',
+					],
+				],
+				'expected' => false,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider validateDataStructureProvider
+	 */
+	public function testValidateDataStructure( $data, bool $expected ): void {
+		$checkoutStorage = $this->createCheckoutStorage();
+
+		$reflection = new ReflectionClass( $checkoutStorage );
+
+		$validateDataStructure = $reflection->getMethod( 'validateDataStructure' );
+		$validateDataStructure->setAccessible( true );
+
+		$this->assertSame( $validateDataStructure->invoke( $checkoutStorage, $data ), $expected );
+	}
 }
