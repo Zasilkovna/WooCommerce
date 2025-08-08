@@ -11,6 +11,9 @@ use Packetery\Nette\Http\Request;
 
 use function is_array;
 
+/**
+ * @phpstan-type CheckoutData array<string, array<string, mixed>>
+ */
 class CheckoutStorage {
 
 	public const TRANSIENT_CHECKOUT_DATA_PREFIX = 'packeta_checkout_data_';
@@ -48,7 +51,7 @@ class CheckoutStorage {
 	}
 
 	/**
-	 * @param array<string, array<string, mixed>>|array{} $savedData
+	 * @param CheckoutData|array{} $savedData
 	 */
 	public function setTransient( array $savedData ): void {
 		$this->wpAdapter->setTransient(
@@ -173,7 +176,7 @@ class CheckoutStorage {
 		$oldTransientId   = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
 		$oldTransientData = $this->wpAdapter->getTransient( $oldTransientId );
 		if ( $this->validateDataStructure( $oldTransientData ) ) {
-			/** @var array<string, array<string, mixed>>|array{} $oldTransientData */
+			/** @var CheckoutData|array{} $oldTransientData */
 			$this->setTransient( $oldTransientData );
 		}
 		if ( $oldTransientData !== false ) {
@@ -182,7 +185,7 @@ class CheckoutStorage {
 	}
 
 	/**
-	 * Validates if the provided data has the structure array<string, array<string, mixed>>.
+	 * Validates if the provided data has the structure of CheckoutData.
 	 *
 	 * @param mixed $data
 	 */
@@ -199,6 +202,7 @@ class CheckoutStorage {
 			if ( ! is_array( $value ) ) {
 				return false;
 			}
+
 			foreach ( $value as $nestedKey => $nestedValue ) {
 				if ( ! is_string( $nestedKey ) ) {
 					return false;
