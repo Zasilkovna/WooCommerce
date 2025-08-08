@@ -170,12 +170,12 @@ class CheckoutStorage {
 	}
 
 	public function migrateGuestSessionToUserSession( string $guestSessionId ): void {
-		$oldTransientId = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
-		$savedData      = $this->wpAdapter->getTransient( $oldTransientId );
-		if ( is_array( $savedData ) && $savedData !== [] ) {
-			$this->setTransient( $savedData );
+		$oldTransientId   = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
+		$oldTransientData = $this->wpAdapter->getTransient( $oldTransientId );
+		if ( is_array( $oldTransientData ) && $oldTransientData !== [] ) {
+			$this->setTransient( $oldTransientData );
 		}
-		if ( $savedData !== false ) {
+		if ( $oldTransientData !== false ) {
 			$this->wpAdapter->deleteTransient( $oldTransientId );
 		}
 	}

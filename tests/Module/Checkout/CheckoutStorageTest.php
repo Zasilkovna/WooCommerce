@@ -143,7 +143,39 @@ class CheckoutStorageTest extends TestCase {
 		$checkoutStorage->migrateGuestSessionToUserSession( $dummyGuestSessionId );
 	}
 
-	public function testMigrateGuestSessionToUserSessionEmptyDataSaved(): void {
+	public static function transientDataProvider(): array {
+		return [
+			'do not set, delete v1' => [
+				'transientData' => [],
+			],
+			'do not set, delete v2' => [
+				'transientData' => 123,
+			],
+			'do not set, delete v3' => [
+				'transientData' => 123.45,
+			],
+			'do not set, delete v4' => [
+				'transientData' => 'foo',
+			],
+			'do not set, delete v5' => [
+				'transientData' => '',
+			],
+			'do not set, delete v6' => [
+				'transientData' => new \stdClass(),
+			],
+			'do not set, delete v7' => [
+				'transientData' => null,
+			],
+			'do not set, delete v8' => [
+				'transientData' => true,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider transientDataProvider
+	 */
+	public function testMigrateGuestSessionToUserSessionEmptyOrWrongTypeDataSaved( $transientData ): void {
 		$dummyGuestSessionId = 'dummy_guest_session_123';
 		$oldTransientId      = CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
 		$checkoutStorage     = $this->createCheckoutStorage();
@@ -151,7 +183,7 @@ class CheckoutStorageTest extends TestCase {
 		$this->wpAdapterMock->expects( $this->once() )
 							->method( 'getTransient' )
 							->with( $oldTransientId )
-							->willReturn( [] );
+							->willReturn( $transientData );
 
 		$this->wpAdapterMock->expects( $this->never() )
 							->method( 'setTransient' );
