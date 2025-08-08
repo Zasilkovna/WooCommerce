@@ -48,7 +48,7 @@ class CheckoutStorage {
 	}
 
 	/**
-	 * @param array<string, array<string, mixed>> $savedData
+	 * @param array<string, array<string, mixed>>|array{} $savedData
 	 */
 	public function setTransient( array $savedData ): void {
 		$this->wpAdapter->setTransient(
@@ -170,10 +170,10 @@ class CheckoutStorage {
 	}
 
 	public function migrateGuestSessionToUserSession( string $guestSessionId ): void {
-		$oldTransientId       = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
-		$oldTransientData     = $this->wpAdapter->getTransient( $oldTransientId );
-		$isDataStructureValid = $this->validateDataStructure( $oldTransientData );
-		if ( $isDataStructureValid ) {
+		$oldTransientId   = self::TRANSIENT_CHECKOUT_DATA_PREFIX . $guestSessionId;
+		$oldTransientData = $this->wpAdapter->getTransient( $oldTransientId );
+		if ( $this->validateDataStructure( $oldTransientData ) ) {
+			/** @var array<string, array<string, mixed>>|array{} $oldTransientData */
 			$this->setTransient( $oldTransientData );
 		}
 		if ( $oldTransientData !== false ) {
@@ -186,7 +186,7 @@ class CheckoutStorage {
 	 *
 	 * @param mixed $data
 	 */
-	private function validateDataStructure( $data ): bool {
+	public function validateDataStructure( $data ): bool {
 		if ( ! is_array( $data ) || $data === [] ) {
 			return false;
 		}

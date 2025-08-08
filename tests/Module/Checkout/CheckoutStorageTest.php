@@ -260,11 +260,6 @@ class CheckoutStorageTest extends TestCase {
 	public function testValidateDataStructure( $data, bool $expected ): void {
 		$checkoutStorage = $this->createCheckoutStorage();
 
-		$reflection = new ReflectionClass( $checkoutStorage );
-
-		$validateDataStructure = $reflection->getMethod( 'validateDataStructure' );
-		$validateDataStructure->setAccessible( true );
-
-		$this->assertSame( $validateDataStructure->invoke( $checkoutStorage, $data ), $expected );
+		$this->assertSame( $checkoutStorage->validateDataStructure( $data ), $expected );
 	}
 }

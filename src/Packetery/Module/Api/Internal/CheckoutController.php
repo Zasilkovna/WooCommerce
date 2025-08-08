@@ -149,7 +149,10 @@ final class CheckoutController extends WP_REST_Controller {
 
 			unset( $savedData[ $params['carrierId'] ] );
 
-			$this->checkoutStorage->setTransient( $savedData );
+			/** @var array<string, array<string, mixed>>|array{} $savedData */
+			if ( $savedData === [] || $this->checkoutStorage->validateDataStructure( $savedData ) ) {
+				$this->checkoutStorage->setTransient( $savedData );
+			}
 		}
 
 		return new WP_REST_Response( [], 200 );
@@ -176,6 +179,9 @@ final class CheckoutController extends WP_REST_Controller {
 			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
 		}
 
-		$this->checkoutStorage->setTransient( $savedData );
+		if ( $this->checkoutStorage->validateDataStructure( $savedData ) ) {
+			/** @var array<string, array<string, mixed>> $savedData */
+			$this->checkoutStorage->setTransient( $savedData );
+		}
 	}
 }
