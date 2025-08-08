@@ -18,7 +18,7 @@ use function get_transient;
  */
 trait TransientTrait {
 	/**
-	 * @return mixed
+	 * @return mixed|false False when not set.
 	 */
 	public function getTransient( string $transientName ) {
 		return get_transient( $transientName );

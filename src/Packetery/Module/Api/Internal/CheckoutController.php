@@ -19,7 +19,7 @@ use WP_REST_Server;
 /**
  * Class CheckoutController. Input is validated in Checkout. We use transient because WC session is not yet loaded.
  *
- * @package Packetery
+ * @phpstan-type CheckoutData array<string, array<string, mixed>>
  */
 final class CheckoutController extends WP_REST_Controller {
 
@@ -149,7 +149,10 @@ final class CheckoutController extends WP_REST_Controller {
 
 			unset( $savedData[ $params['carrierId'] ] );
 
-			$this->checkoutStorage->setTransient( $savedData );
+			/** @var CheckoutData|array{} $savedData */
+			if ( $savedData === [] || $this->checkoutStorage->validateDataStructure( $savedData ) ) {
+				$this->checkoutStorage->setTransient( $savedData );
+			}
 		}
 
 		return new WP_REST_Response( [], 200 );
@@ -176,6 +179,9 @@ final class CheckoutController extends WP_REST_Controller {
 			$savedData[ $rateId ][ $attribute['name'] ] = $parameters[ $attribute['name'] ];
 		}
 
-		$this->checkoutStorage->setTransient( $savedData );
+		if ( $this->checkoutStorage->validateDataStructure( $savedData ) ) {
+			/** @var CheckoutData $savedData */
+			$this->checkoutStorage->setTransient( $savedData );
+		}
 	}
 }
