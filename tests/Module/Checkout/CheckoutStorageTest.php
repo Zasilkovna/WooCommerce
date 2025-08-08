@@ -120,4 +120,20 @@ class CheckoutStorageTest extends TestCase {
 
 		$checkoutStorage->migrateGuestSessionToUserSession( $dummyGuestSessionId );
 	}
+
+	public function testMigrateGuestSessionToUserSessionNoDataSaved(): void {
+		$dummyGuestSessionId = 'dummy_guest_session_123';
+		$oldTransientId      = CheckoutStorage::TRANSIENT_CHECKOUT_DATA_PREFIX . $dummyGuestSessionId;
+		$checkoutStorage     = $this->createCheckoutStorage();
+
+		$this->wpAdapterMock->expects( $this->once() )
+							->method( 'getTransient' )
+							->with( $oldTransientId )
+							->willReturn( false );
+
+		$this->wpAdapterMock->expects( $this->never() )
+							->method( 'setTransient' );
+
+		$checkoutStorage->migrateGuestSessionToUserSession( $dummyGuestSessionId );
+	}
 }
