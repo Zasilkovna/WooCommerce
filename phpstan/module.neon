@@ -1,19 +1,11 @@
 includes:
 	- base.neon
+	- phpstan-baseline-module.neon
 parameters:
-	level: 6
+	level: 9
 	strictRules:
 		allRules: true
 	treatPhpDocTypesAsCertain: false
-	ignoreErrors:
-		-
-			message: '#Method .*::.*\(\) has parameter \$\w+ with no value type specified in iterable type array#'
-		-
-			message: '#Method .*::.*\(\) return type has no value type specified in iterable type array#'
-		-
-			identifier: requireOnce.fileNotFound
-		-
-			identifier: arrayFilter.strict
 	bootstrapFiles:
 		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
 		- ../vendor/php-stubs/woocommerce-stubs/woocommerce-packages-stubs.php
