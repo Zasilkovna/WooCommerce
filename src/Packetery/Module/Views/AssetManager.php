@@ -19,6 +19,7 @@ use Packetery\Module\Options\FlagManager\FeatureFlagProvider;
 use Packetery\Module\Order;
 use Packetery\Module\Order\Metabox;
 use Packetery\Module\Plugin;
+use Packetery\Module\WidgetUrlResolver;
 use Packetery\Nette\Http\Request;
 
 class AssetManager {
@@ -68,6 +69,11 @@ class AssetManager {
 	 */
 	private $checkoutService;
 
+	/**
+	 * @var WidgetUrlResolver
+	 */
+	private $widgetUrlResolver;
+
 	public function __construct(
 		ContextResolver $contextResolver,
 		FeatureFlagProvider $featureFlagProvider,
@@ -77,7 +83,8 @@ class AssetManager {
 		CheckoutSettings $checkoutSettings,
 		WpAdapter $wpAdapter,
 		WcAdapter $wcAdapter,
-		CheckoutService $checkoutService
+		CheckoutService $checkoutService,
+		WidgetUrlResolver $widgetUrlResolver
 	) {
 
 		$this->contextResolver     = $contextResolver;
@@ -89,6 +96,7 @@ class AssetManager {
 		$this->wpAdapter           = $wpAdapter;
 		$this->wcAdapter           = $wcAdapter;
 		$this->checkoutService     = $checkoutService;
+		$this->widgetUrlResolver   = $widgetUrlResolver;
 	}
 
 	/**
@@ -136,7 +144,7 @@ class AssetManager {
 			if ( $this->checkoutService->areBlocksUsedInCheckout() ) {
 				$this->wpAdapter->enqueueScript(
 					'packetery-widget-library',
-					'https://widget.packeta.com/v6/www/js/library.js',
+					$this->widgetUrlResolver->getUrl(),
 					[],
 					Plugin::VERSION,
 					false
@@ -316,7 +324,13 @@ class AssetManager {
 		}
 
 		if ( $pickupPointPickerSettings !== null || $addressPickerSettings !== null ) {
-			$this->wpAdapter->enqueueScript( 'packetery-widget-library', 'https://widget.packeta.com/v6/www/js/library.js', [], Plugin::VERSION, true );
+			$this->wpAdapter->enqueueScript(
+				'packetery-widget-library',
+				$this->widgetUrlResolver->getUrl(),
+				[],
+				Plugin::VERSION,
+				true
+			);
 		}
 
 		if ( $pickupPointPickerSettings !== null ) {
