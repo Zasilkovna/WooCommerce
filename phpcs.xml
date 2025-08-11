@@ -20,6 +20,7 @@
 	<file>tests</file>
 
 	<exclude-pattern>src/Packetery/Module/Shipping/Generated/</exclude-pattern>
+	<exclude-pattern>tests/bootstrap.php</exclude-pattern>
 
 	<!-- Configs -->
 	<config name="minimum_supported_wp_version" value="5.5"/>
