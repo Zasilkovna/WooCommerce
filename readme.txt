@@ -1,10 +1,10 @@
 === Packeta ===
 Contributors: packeta
 Tags: WooCommerce, shipping
-Requires at least: 5.5
+Requires at least: 6.3
 Tested up to: 6.8.1
 Stable tag: 2.0.7
-Requires PHP: 7.2
+Requires PHP: 7.4
 WC requires at least: 5.1
 WC tested up to: 9.9.3
 License: GPLv3
