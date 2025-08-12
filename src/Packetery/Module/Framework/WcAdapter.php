@@ -11,6 +11,7 @@ namespace Packetery\Module\Framework;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
 use stdClass;
+use WC_Admin_Status;
 use WC_Blocks_Utils;
 use WC_Data_Store;
 use WC_Logger;
@@ -155,5 +156,9 @@ class WcAdapter {
 		}
 
 		return [];
+	}
+
+	public function adminStatusStatusReport(): void {
+		WC_Admin_Status::status_report();
 	}
 }

@@ -214,6 +214,18 @@ class AssetManager {
 					'packetery-select2',
 				]
 			);
+
+			$this->wpAdapter->enqueueEditor();
+			$this->wpAdapter->enqueueScript( 'editor' );
+			$this->enqueueScript(
+				'packetery-bug-report-editor',
+				'public/js/bug-report-editor.js',
+				true,
+				[
+					'jquery',
+					'editor',
+				]
+			);
 		}
 
 		$isProductPage = $this->contextResolver->isProductPage();
