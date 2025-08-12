@@ -14,6 +14,9 @@ use Tests\Integration\IntegrationTestsHelper;
 use WP_REST_Request;
 
 class CheckoutControllerTest extends TestCase {
+	/**
+	 * @return array{CheckoutRouter, CheckoutStorage}
+	 */
 	private function registerRoutes(): array {
 		$container = IntegrationTestsHelper::getContainer();
 		/** @var Registrar $registrar */
@@ -89,8 +92,6 @@ class CheckoutControllerTest extends TestCase {
 	}
 
 	public function testRegisterRoutesAndEndpointsReturn200(): void {
-		/** @var CheckoutRouter $router */
-		/** @var CheckoutStorage $storage */
 		[ $router ] = $this->registerRoutes();
 
 		$request1 = new WP_REST_Request( 'POST', '/packeta/internal' . $router->getRoute( CheckoutRouter::PATH_SAVE_SELECTED_PICKUP_POINT ) );
@@ -114,8 +115,6 @@ class CheckoutControllerTest extends TestCase {
 	}
 
 	public function testSaveSelectedPickupPointPersistsAndIsReadableFromTransient(): void {
-		/** @var CheckoutRouter $router */
-		/** @var CheckoutStorage $storage */
 		[ $router, $storage ] = $this->registerRoutes();
 
 		$rateId  = 'rate_123';
@@ -129,15 +128,13 @@ class CheckoutControllerTest extends TestCase {
 		$saved = $storage->getFromTransient();
 		$this->assertIsArray( $saved );
 		$this->assertArrayHasKey( $rateId, $saved );
-		foreach ( Attribute::$pickupPointAttributes as $attrCfg ) {
-			$name = $attrCfg['name'];
+		foreach ( Attribute::$pickupPointAttributes as $attributeProperties ) {
+			$name = $attributeProperties['name'];
 			$this->assertSame( $payload[ $name ], $saved[ $rateId ][ $name ] ?? null, 'Saved value mismatch for ' . $name );
 		}
 	}
 
 	public function testRemoveSavedDataBehaviourAllSpecificAndInvalidState(): void {
-		/** @var CheckoutRouter $router */
-		/** @var CheckoutStorage $storage */
 		[ $router, $storage ] = $this->registerRoutes();
 
 		$storage->setTransient(
