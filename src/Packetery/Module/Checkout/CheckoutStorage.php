@@ -12,6 +12,9 @@ use Packetery\Nette\Http\Request;
 
 use function is_array;
 
+/**
+ * @phpstan-type CheckoutData array<string, array<string, mixed>>
+ */
 class CheckoutStorage {
 
 	/**
@@ -47,7 +50,7 @@ class CheckoutStorage {
 	}
 
 	/**
-	 * @param array<string, array<string, mixed>> $savedData
+	 * @param CheckoutData|array{} $savedData
 	 */
 	public function setTransient( array $savedData ): void {
 		$this->wpAdapter->setTransient(
@@ -166,5 +169,46 @@ class CheckoutStorage {
 		$isKeyPresentInSavedCarrierData = isset( $savedCarrierData[ $key ] ) && $savedCarrierData[ $key ] !== '';
 
 		return $isKeyMissingInCheckoutData && $isKeyPresentInSavedCarrierData;
+	}
+
+	public function migrateGuestSessionToUserSession( string $guestSessionId ): void {
+		$oldTransientId   = Transients::CHECKOUT_DATA_PREFIX . $guestSessionId;
+		$oldTransientData = $this->wpAdapter->getTransient( $oldTransientId );
+		if ( $this->validateDataStructure( $oldTransientData ) ) {
+			/** @var CheckoutData|array{} $oldTransientData */
+			$this->setTransient( $oldTransientData );
+		}
+		if ( $oldTransientData !== false ) {
+			$this->wpAdapter->deleteTransient( $oldTransientId );
+		}
+	}
+
+	/**
+	 * Validates if the provided data has the structure of CheckoutData.
+	 *
+	 * @param mixed $data
+	 */
+	public function validateDataStructure( $data ): bool {
+		if ( ! is_array( $data ) || $data === [] ) {
+			return false;
+		}
+
+		foreach ( $data as $key => $value ) {
+			if ( ! is_string( $key ) ) {
+				return false;
+			}
+
+			if ( ! is_array( $value ) ) {
+				return false;
+			}
+
+			foreach ( $value as $nestedKey => $nestedValue ) {
+				if ( ! is_string( $nestedKey ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

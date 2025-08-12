@@ -17,6 +17,7 @@ use Packetery\Module\Order;
 use Packetery\Module\Plugin;
 use Packetery\Module\Views\UrlBuilder;
 use Packetery\Module\WidgetOptionsBuilder;
+use Packetery\Module\WidgetUrlResolver;
 use WC_Cart;
 
 class CheckoutSettings {
@@ -86,6 +87,11 @@ class CheckoutSettings {
 	 */
 	private $wcAdapter;
 
+	/**
+	 * @var WidgetUrlResolver
+	 */
+	private $widgetUrlResolver;
+
 	public function __construct(
 		Carrier\EntityRepository $carrierEntityRepository,
 		WidgetOptionsBuilder $widgetOptionsBuilder,
@@ -99,7 +105,8 @@ class CheckoutSettings {
 		CartService $cartService,
 		SessionService $sessionService,
 		WpAdapter $wpAdapter,
-		WcAdapter $wcAdapter
+		WcAdapter $wcAdapter,
+		WidgetUrlResolver $widgetUrlResolver
 	) {
 
 		$this->carrierEntityRepository = $carrierEntityRepository;
@@ -115,6 +122,7 @@ class CheckoutSettings {
 		$this->sessionService          = $sessionService;
 		$this->wpAdapter               = $wpAdapter;
 		$this->wcAdapter               = $wcAdapter;
+		$this->widgetUrlResolver       = $widgetUrlResolver;
 	}
 
 	/**
@@ -178,6 +186,7 @@ class CheckoutSettings {
 			'adminAjaxUrl'               => $this->wpAdapter->adminUrl( 'admin-ajax.php' ),
 			'nonce'                      => (string) $this->wpAdapter->createNonce( 'wp_rest' ),
 			'savedData'                  => $this->storage->getFromTransient(),
+			'widgetUrl'                  => $this->widgetUrlResolver->getUrl(),
 			'translations'               => [
 				'packeta'                       => $this->wpAdapter->__( 'Packeta', 'packeta' ),
 				'choosePickupPoint'             => $this->wpAdapter->__( 'Choose pickup point', 'packeta' ),

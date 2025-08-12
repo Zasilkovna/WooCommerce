@@ -1,0 +1,3007 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Packetery\\Module\\Api\\BaseRouter\:\:registerRoute\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Api/BaseRouter.php
+
+		-
+			message: '#^Cannot access offset mixed on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Api/Internal/CheckoutController.php
+
+		-
+			message: '#^Method Packetery\\Module\\Api\\Internal\\CheckoutController\:\:save\(\) has parameter \$carrierAttrs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Api/Internal/CheckoutController.php
+
+		-
+			message: '#^Parameter \#1 \$value of method Packetery\\Module\\Options\\OptionsProvider\:\:getSanitizedDimensionValueInMm\(\) expects float\|string, float\|int\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Api/Internal/OrderController.php
+
+		-
+			message: '#^Parameter \#3 \$storedUntil of method Packetery\\Module\\Order\\PacketSetStoredUntil\:\:setStoredUntil\(\) expects DateTimeImmutable, DateTimeImmutable\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Api/Internal/OrderController.php
+
+		-
+			message: '#^Method Packetery\\Module\\Blocks\\BlockHooks\:\:saveShippingAndPaymentMethodsToSession\(\) has parameter \$orderUpdateData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Blocks/BlockHooks.php
+
+		-
+			message: '#^Method Packetery\\Module\\Blocks\\WidgetIntegration\:\:__construct\(\) has parameter \$settings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
+
+		-
+			message: '#^Path in require_once\(\) "\.//woocommerce/packages/woocommerce\-blocks/src/Integrations/IntegrationInterface\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
+
+		-
+			message: '#^Path in require_once\(\) "\.//woocommerce/src/Blocks/Integrations/IntegrationInterface\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: ../src/Packetery/Module/Blocks/WidgetIntegration.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CarrierActivityBridge\:\:getActiveCarrierIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CarrierActivityBridge.php
+
+		-
+			message: '#^Parameter \#2 \$options of class Packetery\\Module\\Carrier\\Options constructor expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CarrierOptionsFactory.php
+
+		-
+			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CarrierUpdater.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CarrierUpdater.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CarrierUpdater\:\:runUpdate\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CarrierUpdater.php
+
+		-
+			message: '#^Parameter \#2 \$datetime of static method DateTimeImmutable\:\:createFromFormat\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CarrierUpdater.php
+
+		-
+			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CountryListingPage\:\:getActiveCountries\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CountryListingPage\:\:getCarriersDataByCountry\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CountryListingPage\:\:getCarriersForOptionsExport\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Parameter \#2 \$needle of function stripos expects int\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$args of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CountryListingTemplateParams\:\:__construct\(\) has parameter \$carriersUpdate with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingTemplateParams.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CountryListingTemplateParams\:\:__construct\(\) has parameter \$countries with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingTemplateParams.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\CountryListingTemplateParams\:\:__construct\(\) has parameter \$translations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/CountryListingTemplateParams.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Downloader\:\:get_from_json\(\) should return array\<int, array\<string, string\>\>\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Downloader.php
+
+		-
+			message: '#^Argument of an invalid type array\|null supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: ../src/Packetery/Module/Carrier/EntityRepository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\EntityRepository\:\:getAllActiveCarriersList\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/EntityRepository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:__construct\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:getAddressValidation\(\) should return string but returns array\<string, bool\|string\>\|bool\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:getCodRoundingType\(\) should return int but returns array\<string, bool\|string\>\|bool\|int\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:getName\(\) should return string\|null but returns array\<string, bool\|string\>\|bool\|string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:getPricingType\(\) should return string but returns array\<string, bool\|string\>\|bool\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:getSizeRestrictions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:hasCouponFreeShippingActive\(\) should return bool but returns bool\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:isActive\(\) should return bool but returns array\<string, bool\|string\>\|bool\|string\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Options\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Only booleans are allowed in &&, bool\|string given on the right side\.$#'
+			identifier: booleanAnd.rightNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of function in_array expects array, array\<string, bool\|string\>\|bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Options.php
+
+		-
+			message: '#^Binary operation "\+\=" between array\<string, bool\|float\|string\> and mixed results in an error\.$#'
+			identifier: assignOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot access offset ''active'' on Packetery\\Nette\\ComponentModel\\IComponent\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 8
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot access offset ''id'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot access offset ''pricing_type'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot access offset ''vendor_groups'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot call method getCountry\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot call method getId\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot call method hasPickupPoints\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot call method isCarDelivery\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Cannot call method supportsAgeVerification\(\) on Packetery\\Core\\Entity\\Carrier\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:checkOverlapping\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:createForm\(\) has parameter \$carrierData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:createFormTemplate\(\) has parameter \$carrierData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getAvailableVendors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getCarrierTemplateData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getCheckedVendors\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getCheckedVendors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getTranslations\(\) should return array\<string, string\> but returns array\<string, string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getVendorCheckboxesConfig\(\) has parameter \$carrierOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:getVendorCheckboxesConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:isAvailableVendorsCountLowerThanRequiredMinimum\(\) has parameter \$availableVendors with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:mergeNewLimits\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:mergeNewLimits\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:sortLimits\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\OptionsPage\:\:sortLimits\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Only booleans are allowed in an if condition, bool\|Packetery\\Nette\\Forms\\SubmitterControl given\.$#'
+			identifier: if.condNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$carrierData of method Packetery\\Module\\Carrier\\OptionsPage\:\:createForm\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$carrierData of method Packetery\\Module\\Carrier\\OptionsPage\:\:createFormTemplate\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$carrierId of method Packetery\\Module\\Carrier\\OptionsPage\:\:renderCarrierDetail\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$countryCode of method Packetery\\Module\\Carrier\\OptionsPage\:\:createUrl\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$countryIso of method Packetery\\Module\\Carrier\\OptionsPage\:\:renderCountryCarriers\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Packetery\\Nette\\Forms\\Container\:\:setDefaults\(\) expects array\|object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Packetery\\Module\\Carrier\\OptionsPage\:\:getCheckedVendors\(\) expects array, array\|object given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#1 \$options of method Packetery\\Module\\Carrier\\OptionsPage\:\:mergeNewLimits\(\) expects array, array\|ArrayAccess given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#2 \$carrierId of method Packetery\\Module\\Carrier\\OptionsPage\:\:createUrl\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#2 \$carrierOptions of method Packetery\\Module\\Carrier\\OptionsPage\:\:getVendorCheckboxesConfig\(\) expects array\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Parameter \#2 \$options of method Packetery\\Module\\Carrier\\OptionsPage\:\:checkOverlapping\(\) expects array, array\|ArrayAccess given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Container\:\:\$onValidate \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Carrier\\OptionsPage\), ''validateOptions''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Container, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Carrier/OptionsPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:getActiveCarriers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:getAllRawIndexed\(\) should return array\<int, array\<string, bool\|float\|string\>\> but returns array\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:getByCountry\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:getById\(\) should return array\<string, string\>\|null but returns array\<string, mixed\>\|object\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:getCountriesWithUnavailable\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:insert\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:set_as_deleted\(\) has parameter \$carrierIdsNotInFeed with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Carrier\\Repository\:\:update\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_column expects array, array\<object\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Parameter \#2 \$values of function array_combine expects array, array\<object\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Carrier/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CartService\:\:getBiggestProductSize\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CartService.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CartService\:\:getDisallowedShippingRateIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CartService.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CartService\:\:isShippingRateRestrictedByProductsCategory\(\) has parameter \$cartProducts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CartService.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$arg1 of function max expects non\-empty\-array, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CartService.php
+
+		-
+			message: '#^Parameter \#1 \$name of method WC_Cart\:\:add_fee\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Checkout/Checkout.php
+
+		-
+			message: '#^Parameter \#2 \$taxClass of method Packetery\\Module\\Checkout\\Checkout\:\:calcTaxExclusiveFeeAmount\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Checkout/Checkout.php
+
+		-
+			message: '#^Parameter \#4 \$tax_class of method WC_Cart\:\:add_fee\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Checkout/Checkout.php
+
+		-
+			message: '#^Parameter \#1 \$array_arg of function current expects array\|object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutService.php
+
+		-
+			message: '#^Parameter \#1 \$chosenMethod of method Packetery\\Module\\Checkout\\CheckoutService\:\:getShippingMethodOptionId\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutService.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutSettings.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutSettings.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutSettings\:\:createSettings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutSettings.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutStorage\:\:getPostDataIncludingStoredData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutStorage\:\:getPostDataIncludingStoredData\(\) should return array but returns array\<mixed, mixed\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutStorage\:\:getPostDataIncludingStoredData\(\) should return array but returns array\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutStorage\:\:isKeyPresentInSavedDataButNotInPostData\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutStorage\:\:isKeyPresentInSavedDataButNotInPostData\(\) has parameter \$savedCarrierData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutStorage\:\:logInvalidOrderData\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Parameter \#1 \$checkoutData of method Packetery\\Module\\Checkout\\CheckoutStorage\:\:isKeyPresentInSavedDataButNotInPostData\(\) expects array, array\<mixed, mixed\>\|null given\.$#'
+			identifier: argument.type
+			count: 4
+			path: ../src/Packetery/Module/Checkout/CheckoutStorage.php
+
+		-
+			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
+			identifier: arrayFilter.strict
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Cannot access offset ''address_validation'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutValidator\:\:validateHomeDelivery\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\CheckoutValidator\:\:validatePickupPoint\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Parameter \#1 \$carrierId of method Packetery\\Module\\Carrier\\EntityRepository\:\:isValidForCountry\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Parameter \#1 \$carrierId of static method Packetery\\Module\\Carrier\\OptionPrefixer\:\:getOptionId\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Parameter \#1 \$input of function array_filter expects array, array\<string, bool\|string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Packetery\\Module\\Framework\\WcAdapter\:\:addNotice\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 7
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Parameter \#2 \$customerCountry of method Packetery\\Module\\Carrier\\EntityRepository\:\:isValidForCountry\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/CheckoutValidator.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: ../src/Packetery/Module/Checkout/CurrencySwitcherService.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\OrderUpdater\:\:getPropsFromCheckoutData\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\OrderUpdater\:\:getPropsFromCheckoutData\(\) has parameter \$propsToSave with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\OrderUpdater\:\:getPropsFromCheckoutData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\OrderUpdater\:\:updateCarDelivery\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\OrderUpdater\:\:updateHomeDelivery\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
+
+		-
+			message: '#^Only booleans are allowed in a negated boolean, string\|false given\.$#'
+			identifier: booleanNot.exprNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
+
+		-
+			message: '#^Parameter \#2 \$attributeName of method Packetery\\Module\\Order\\AttributeMapper\:\:toWcOrderShippingAddress\(\) expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/OrderUpdater.php
+
+		-
+			message: '#^Cannot call method get_free_shipping\(\) on class\-string\|object\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Checkout/RateCalculator.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: ../src/Packetery/Module/Checkout/RateCalculator.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\RateCalculator\:\:createShippingRate\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/RateCalculator.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\RateCalculator\:\:getCODSurcharge\(\) has parameter \$carrierOptions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/RateCalculator.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\SessionService\:\:filterUpdateShippingPackages\(\) has parameter \$packages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/SessionService.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\SessionService\:\:filterUpdateShippingPackages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/SessionService.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:canCreateShippingRate\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateAndApplyTaxes\(\) should return array\{label\: string, id\: string, cost\: float, taxes\: array\<int, float\>, calc_tax\: string\} but returns array\<string, array\|float\|string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateOfCarrier\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateOfCarrier\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRates\(\) has parameter \$allowedCarrierNames with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRates\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Parameter \#4 \$rateId of method Packetery\\Module\\Checkout\\ShippingRateFactory\:\:createShippingRateOfCarrier\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Parameter \#4 \$taxes of method Packetery\\Module\\Checkout\\RateCalculator\:\:createShippingRate\(\) expects array\<float\>\|null, array\<mixed\>\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Checkout/ShippingRateFactory.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ../src/Packetery/Module/ContextResolver.php
+
+		-
+			message: '#^Cannot access offset ''has_ead_file_content'' on array\<string, mixed\>\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Cannot access offset ''has_invoice_file_content'' on array\<string, mixed\>\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\CustomsDeclaration\\Repository\:\:declarationItemToDbArray\(\) should return array\<string, float\|int\|string\> but returns array\<string, float\|int\|string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\CustomsDeclaration\\Repository\:\:declarationToDbArray\(\) has parameter \$fieldsToOmit with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\CustomsDeclaration\\Repository\:\:declarationToDbArray\(\) should return array\<string, float\|int\|string\> but returns array\<string, float\|string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\CustomsDeclaration\\Repository\:\:getCustomsDeclarationItemRows\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\CustomsDeclaration\\Repository\:\:save\(\) has parameter \$fieldsToOmit with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Packetery\\Module\\EntityFactory\\CustomsDeclaration\:\:fromStandardizedStructure\(\) expects array, array\<string, mixed\>\|object given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/CustomsDeclaration/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$caption of class Packetery\\Module\\Dashboard\\DashboardItem constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 8
+			path: ../src/Packetery/Module/Dashboard/DashboardItemBuilder.php
+
+		-
+			message: '#^Parameter \#1 \$post of method Packetery\\Module\\Framework\\WpAdapter\:\:getEditPostLink\(\) expects int\|WP_Post, int\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Dashboard/DashboardItemBuilder.php
+
+		-
+			message: '#^Parameter \#3 \$description of class Packetery\\Module\\Dashboard\\DashboardItem constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 7
+			path: ../src/Packetery/Module/Dashboard/DashboardItemBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$pageTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Dashboard/DashboardPage.php
+
+		-
+			message: '#^Parameter \#3 \$menuTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Dashboard/DashboardPage.php
+
+		-
+			message: '#^Method Packetery\\Module\\DashboardWidget\:\:__construct\(\) has parameter \$surveyConfig with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/DashboardWidget.php
+
+		-
+			message: '#^Only booleans are allowed in &&, bool\|string given on the left side\.$#'
+			identifier: booleanAnd.leftNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/DashboardWidget.php
+
+		-
+			message: '#^Parameter \#2 \$url of class Packetery\\Module\\SurveyConfig constructor expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/DashboardWidget.php
+
+		-
+			message: '#^Parameter \#3 \$image of class Packetery\\Module\\SurveyConfig constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/DashboardWidget.php
+
+		-
+			message: '#^Parameter \#1 \$street of class Packetery\\Core\\Entity\\Address constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/EntityFactory/Address.php
+
+		-
+			message: '#^Parameter \#2 \$city of class Packetery\\Core\\Entity\\Address constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/EntityFactory/Address.php
+
+		-
+			message: '#^Parameter \#3 \$zip of class Packetery\\Core\\Entity\\Address constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/EntityFactory/Address.php
+
+		-
+			message: '#^Method Packetery\\Module\\EntityFactory\\CustomsDeclaration\:\:fromStandardizedStructure\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/EntityFactory/CustomsDeclaration.php
+
+		-
+			message: '#^Parameter \#5 \$invoiceIssueDate of class Packetery\\Core\\Entity\\CustomsDeclaration constructor expects DateTimeImmutable, DateTimeImmutable\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/EntityFactory/CustomsDeclaration.php
+
+		-
+			message: '#^Parameter \#1 \$time of function strtotime expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/FormValidators.php
+
+		-
+			message: '#^Parameter \#2 \$datetime of static method DateTimeImmutable\:\:createFromFormat\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/FormValidators.php
+
+		-
+			message: '#^Parameter \#2 \$subject of function preg_match expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/FormValidators.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:asScheduleSingleAction\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:calcTax\(\) has parameter \$rates with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:calcTax\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:cartCalculateShipping\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:cartFeesApiAddFee\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:cartFeesApiAddFee\(\) should return stdClass\|WP_Error but returns object\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:cartGetCartContent\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:sessionGetArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:shippingGetPackages\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:shippingZonesGetZoneMatchingPackage\(\) has parameter \$package with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:storeApiRegisterUpdateCallback\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:taxCalcInclusiveTax\(\) has parameter \$rates with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:taxCalcInclusiveTax\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:taxGetRates\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WcAdapter\:\:taxGetShippingTaxRates\(\) should return array\<int, array\<string, float\|string\>\> but returns array\<mixed, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Framework/WcAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:enqueueScript\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:enqueueScript\(\) has parameter \$deps with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:enqueueStyle\(\) has parameter \$deps with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:localizeScript\(\) has parameter \$l10n with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:remoteGet\(\) has parameter \$args with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:remoteGet\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:remoteRetrieveBody\(\) has parameter \$response with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Method Packetery\\Module\\Framework\\WpAdapter\:\:sendJson\(\) has parameter \$settings with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Parameter \#1 \$maybeint of function absint expects array\|bool\|float\|int\|resource\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Parameter \#3 \$scheme of function get_admin_url expects ''http''\|''https'', string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Framework/WpAdapter.php
+
+		-
+			message: '#^Parameter \#1 \$location of method Packetery\\Module\\Framework\\WpAdapter\:\:safeRedirect\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Hooks/HookRegistrar.php
+
+		-
+			message: '#^Method Packetery\\Module\\Hooks\\PluginHooks\:\:addPluginActionLinks\(\) has parameter \$links with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Hooks/PluginHooks.php
+
+		-
+			message: '#^Method Packetery\\Module\\Hooks\\PluginHooks\:\:addPluginActionLinks\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Hooks/PluginHooks.php
+
+		-
+			message: '#^Method Packetery\\Module\\Hooks\\PluginHooks\:\:addPluginRowMeta\(\) has parameter \$links with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Hooks/PluginHooks.php
+
+		-
+			message: '#^Method Packetery\\Module\\Hooks\\PluginHooks\:\:addPluginRowMeta\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Hooks/PluginHooks.php
+
+		-
+			message: '#^Parameter \#1 \$inputText of method Packetery\\Module\\Framework\\WpAdapter\:\:escAttr\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Hooks/PluginHooks.php
+
+		-
+			message: '#^Parameter \#1 \$inputText of method Packetery\\Module\\Framework\\WpAdapter\:\:escHtml\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Hooks/PluginHooks.php
+
+		-
+			message: '#^Parameter \#1 \$url of method Packetery\\Module\\Framework\\WpAdapter\:\:escUrl\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Hooks/PluginHooks.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: ../src/Packetery/Module/Hooks/UpdateOrderHook.php
+
+		-
+			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Labels/CarrierLabelService.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Packetery\\Module\\MessageManager\:\:flash_message\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Labels/CarrierLabelService.php
+
+		-
+			message: '#^Cannot access offset ''offset'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
+
+		-
+			message: '#^Method Packetery\\Module\\Labels\\LabelPrintParametersService\:\:removeExternalCarrierPacketIds\(\) has parameter \$packetIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
+
+		-
+			message: '#^Method Packetery\\Module\\Labels\\LabelPrintParametersService\:\:removeExternalCarrierPacketIds\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
+
+		-
+			message: '#^Only booleans are allowed in an if condition, bool\|Packetery\\Nette\\Forms\\SubmitterControl given\.$#'
+			identifier: if.condNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
+
+		-
+			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Labels/LabelPrintParametersService.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../src/Packetery/Module/Log/Page.php
+
+		-
+			message: '#^Parameter \#1 \$before of method Packetery\\Module\\Log\\Repository\:\:deleteOld\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Log/Purger.php
+
+		-
+			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
+			identifier: arrayFilter.strict
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Cannot access offset ''after'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Cannot call method setTimezone\(\) on DateTimeImmutable\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Log\\Repository\:\:getNote\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Log\\Repository\:\:getWhereClause\(\) has parameter \$where with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Log\\Repository\:\:remapToRecord\(\) has parameter \$logs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$modifier of method DateTimeImmutable\:\:modify\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$var of function count expects array\|Countable, array\<string, mixed\>\|bool\|float\|int\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Parameter \#2 \$orderId of method Packetery\\Module\\Log\\Repository\:\:getWhereClause\(\) expects int\|null, array\<string, mixed\>\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Parameter \#3 \$action of method Packetery\\Module\\Log\\Repository\:\:getWhereClause\(\) expects string\|null, array\<string, mixed\>\|bool\|float\|int\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Property Packetery\\Core\\Log\\Record\:\:\$params \(array\<string, mixed\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Log/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Message\:\:toArray\(\) should return array\<string, bool\|string\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Message.php
+
+		-
+			message: '#^Method Packetery\\Module\\MessageManager\:\:flashMessageArray\(\) has parameter \$message with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/MessageManager.php
+
+		-
+			message: '#^Property Packetery\\Module\\MessageManager\:\:\$messages \(array\<array\<string, string\>\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/MessageManager.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/ModuleHelper.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../src/Packetery/Module/ModuleHelper.php
+
+		-
+			message: '#^Method Packetery\\Module\\ModuleHelper\:\:convertArrayFloatsToStrings\(\) has parameter \$inputArray with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/ModuleHelper.php
+
+		-
+			message: '#^Method Packetery\\Module\\ModuleHelper\:\:convertArrayFloatsToStrings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/ModuleHelper.php
+
+		-
+			message: '#^Method Packetery\\Module\\ModuleHelper\:\:getOrderGridUrl\(\) has parameter \$queryVars with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/ModuleHelper.php
+
+		-
+			message: '#^Path in require_once\(\) "\./wp\-admin/includes/plugin\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: ../src/Packetery/Module/ModuleHelper.php
+
+		-
+			message: '#^Binary operation "\." between mixed and "\\n"\|"\\r\\n" results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Options/Exporter.php
+
+		-
+			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
+			identifier: arrayFilter.strict
+			count: 1
+			path: ../src/Packetery/Module/Options/Exporter.php
+
+		-
+			message: '#^Parameter \#1 \$taxClass of method Packetery\\Module\\Framework\\WcAdapter\:\:taxGetRates\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Exporter.php
+
+		-
+			message: '#^Binary operation "\+" between mixed and 1 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
+
+		-
+			message: '#^Cannot access offset ''features'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
+
+		-
+			message: '#^Cannot access offset ''split'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
+
+		-
+			message: '#^Cannot call method getTimestamp\(\) on DateTimeImmutable\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
+
+		-
+			message: '#^Cannot call method get_error_message\(\) on array\|WP_Error\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagDownloader.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\FlagManager\\FeatureFlagStorage\:\:setFlags\(\) has parameter \$flags with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/FlagManager/FeatureFlagStorage.php
+
+		-
+			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
+			identifier: arrayFilter.strict
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 5
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getAllOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getAutoOrderStatus\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getAutoOrderStatusFromMapping\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getCarrierLabelFormat\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getCheckoutDetection\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getCheckoutWidgetButtonLocation\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getCodPaymentMethods\(\) should return array\<string\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getDimensionsUnit\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getEmailHook\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getExistingStatusSyncingOrderStatuses\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getLabelFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getPacketAutoSubmissionPaymentMethodEventsMapping\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getPacketAutoSubmissionPaymentMethodEventsMapping\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getPacketaLabelFormats\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getStatusSyncingOrderStatuses\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getStatusSyncingPacketStatuses\(\) should return array\<string\> but returns array\<mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:getValidAutoOrderStatusFromMapping\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:get_api_key\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:get_api_password\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:get_carrier_label_format\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:get_packeta_label_format\(\) should return string but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:get_sender\(\) should return string\|null but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\OptionsProvider\:\:sanitizePaymentGatewayId\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Parameter \#1 \$input of function array_filter expects array, array\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Parameter \#1 \$maybe_status of function wc_is_order_status expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Property Packetery\\Module\\Options\\OptionsProvider\:\:\$advancedData \(array\<string, mixed\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Property Packetery\\Module\\Options\\OptionsProvider\:\:\$autoSubmissionData \(array\<string, mixed\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Property Packetery\\Module\\Options\\OptionsProvider\:\:\$data \(array\<string, mixed\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Property Packetery\\Module\\Options\\OptionsProvider\:\:\$syncData \(array\<string, mixed\>\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Options/OptionsProvider.php
+
+		-
+			message: '#^Binary operation "\." between mixed and '' '' results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot access offset ''default_dimensions_enabled'' on Packetery\\Nette\\ComponentModel\\IComponent\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot access offset ''default_weight_enabled'' on Packetery\\Nette\\ComponentModel\\IComponent\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot access offset ''dimensions_unit'' on Packetery\\Nette\\ComponentModel\\IComponent\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot access offset int\|string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot call method getCaption\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot call method getError\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot call method getName\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot call method hasErrors\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:customMenuOrder\(\) has parameter \$menuOrder with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:customMenuOrder\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:getChosenKeys\(\) has parameter \$choiceData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:getChosenKeys\(\) has parameter \$chosenHashedFormOrderStatuses with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:getChosenKeys\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:onAdvancedFormSuccess\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:onAutoSubmissionFormSuccess\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:onPacketStatusSyncFormSuccess\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:sanitizePacketeryOptions\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:sanitizePacketeryOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:translateStatuses\(\) has parameter \$choiceData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:translateStatuses\(\) has parameter \$formData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:translateStatuses\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:validatePacketeryOptions\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Page\:\:validatePacketeryOptions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#1 \$apiPassword of method Packetery\\Core\\Api\\Soap\\Client\:\:setApiPassword\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#1 \$key of function array_key_exists expects int\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#1 \$pageTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addMenuPage\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#1 \$senderLabel of method Packetery\\Module\\Options\\Page\:\:validateSender\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#1 \$string of function substr expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#2 \$caption of method Packetery\\Nette\\Forms\\Container\:\:addCheckbox\(\) expects object\|string\|null, int\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#2 \$datetime of static method DateTime\:\:createFromFormat\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of function in_array expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#2 \$menuTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addMenuPage\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#2 \$pageTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Parameter \#3 \$menuTitle of method Packetery\\Module\\Framework\\WpAdapter\:\:addSubmenuPage\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Options\\Page\), ''onAdvancedFormSucce…''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Options\\Page\), ''onAutoSubmissionFor…''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<array\{\$this\(Packetery\\Module\\Options\\Page\), ''onPacketStatusSyncF…''\}\|\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Options/Page.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Repository\:\:getAllOptionNamesByPrefixes\(\) should return array\<string\> but returns array\<bool\|float\|int\|string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Repository\:\:getAllTransientsByPrefixes\(\) should return array\<string\> but returns list\<string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Options\\Repository\:\:getExpiredTransientsByPrefix\(\) should return array\<string\> but returns array\<bool\|float\|int\|string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Options/Repository.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: ../src/Packetery/Module/Order/ApiExtender.php
+
+		-
+			message: '#^Cannot access offset ''method_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/ApiExtender.php
+
+		-
+			message: '#^Cannot access offset ''packeta'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/ApiExtender.php
+
+		-
+			message: '#^Cannot access offset ''shipping_lines'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: ../src/Packetery/Module/Order/ApiExtender.php
+
+		-
+			message: '#^Cannot access offset mixed on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/ApiExtender.php
+
+		-
+			message: '#^Parameter \#1 \$methodId of static method Packetery\\Module\\Shipping\\ShippingProvider\:\:isPacketaMethod\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/ApiExtender.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\AttributeMapper\:\:createAddress\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\AttributeMapper\:\:toCarDeliveryAddress\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\AttributeMapper\:\:toValidatedAddress\(\) has parameter \$values with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\AttributeMapper\:\:validatedAddressToWcOrderShippingAddress\(\) has parameter \$checkoutData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$city of method Packetery\\Core\\Entity\\PickupPoint\:\:setCity\(\) expects string\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$height of method Packetery\\Core\\Entity\\Size\:\:setHeight\(\) expects float\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$id of method Packetery\\Core\\Entity\\PickupPoint\:\:setId\(\) expects string\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$length of method Packetery\\Core\\Entity\\Size\:\:setLength\(\) expects float\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$name of method Packetery\\Core\\Entity\\PickupPoint\:\:setName\(\) expects string\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$street of method Packetery\\Core\\Entity\\PickupPoint\:\:setStreet\(\) expects string\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$url of method Packetery\\Core\\Entity\\PickupPoint\:\:setUrl\(\) expects string\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$width of method Packetery\\Core\\Entity\\Size\:\:setWidth\(\) expects float\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Parameter \#1 \$zip of method Packetery\\Core\\Entity\\PickupPoint\:\:setZip\(\) expects string\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/AttributeMapper.php
+
+		-
+			message: '#^Cannot access property \$city on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot access property \$county on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot access property \$houseNumber on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot access property \$latitude on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot access property \$longitude on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot access property \$street on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot access property \$zip on mixed\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot call method setTimezone\(\) on DateTimeImmutable\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Parameter \#1 \$orderNumber of method Packetery\\Module\\CustomsDeclaration\\Repository\:\:getByOrderNumber\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Parameter \#1 \$size of method Packetery\\Core\\Entity\\Order\:\:setSize\(\) expects Packetery\\Core\\Entity\\Size, Packetery\\Core\\Entity\\Size\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Builder.php
+
+		-
+			message: '#^Cannot access offset ''packetery_order_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/BulkActions.php
+
+		-
+			message: '#^Cannot access offset ''submit_to_api'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/BulkActions.php
+
+		-
+			message: '#^Parameter \#1 \$submissionResult of method Packetery\\Module\\Order\\PacketSubmitter\:\:getTranslatedSubmissionMessages\(\) expects array\<string, int\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/BulkActions.php
+
+		-
+			message: '#^Cannot access offset ''carrierId'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/CarrierModal.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\CarrierModal\:\:createNewCarrierOrder\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Order/CarrierModal.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\CarrierModal\:\:getCarrierOptionsByCountry\(\) should return array\<string\> but returns array\<string, string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Order/CarrierModal.php
+
+		-
+			message: '#^Parameter \#1 \$orderIds of method Packetery\\Module\\Order\\Repository\:\:getByIds\(\) expects array\<string\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/CollectionPrint.php
+
+		-
+			message: '#^Anonymous function should return float but returns float\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Cannot access offset ''fill_customs_declaration'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Cannot access offset ''packetery_customs_declaration'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\CustomsDeclarationMetabox\:\:createForm\(\) has parameter \$structureData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\CustomsDeclarationMetabox\:\:processUploadedFile\(\) has parameter \$containerValues with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Only booleans are allowed in an if condition, bool\|Packetery\\Nette\\Forms\\SubmitterControl given\.$#'
+			identifier: if.condNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Parameter \#1 \$orderNumber of method Packetery\\Module\\CustomsDeclaration\\Repository\:\:getByOrderNumber\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Parameter \#1 \$structureData of method Packetery\\Module\\Order\\CustomsDeclarationMetabox\:\:createForm\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Parameter \#2 \$orderId of method Packetery\\Module\\EntityFactory\\CustomsDeclaration\:\:fromStandardizedStructure\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, object\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/CustomsDeclarationMetabox.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ../src/Packetery/Module/Order/DetailCommonLogic.php
+
+		-
+			message: '#^Parameter \#1 \$filterOrdersToSubmitTitle of class Packetery\\Module\\Order\\GridLinksConfig constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/GridExtender.php
+
+		-
+			message: '#^Parameter \#1 \$text of function esc_html expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Order/GridExtender.php
+
+		-
+			message: '#^Parameter \#2 \$filterOrdersToPrintTitle of class Packetery\\Module\\Order\\GridLinksConfig constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/GridExtender.php
+
+		-
+			message: '#^Parameter \#3 \$orderGridRunWizardTitle of class Packetery\\Module\\Order\\GridLinksConfig constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/GridExtender.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\LabelPrint\:\:getOrderIdsTransient\(\) should return array\<string\>\|null but returns array\<mixed, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\LabelPrint\:\:requestCarrierLabels\(\) has parameter \$packetIdsWithCourierNumbers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Packetery\\Module\\MessageManager\:\:flash_message\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Packetery\\Module\\Order\\LabelPrint\:\:flashMessageAndRedirect\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Parameter \#1 \$trackingUrl of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Parameter \#2 \$text of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrint.php
+
+		-
+			message: '#^Cannot access offset ''offset'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrintModal.php
+
+		-
+			message: '#^Cannot access offset ''packet_id'' on array\|object\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Order/LabelPrintModal.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\Metabox\:\:getOrderActionLink\(\) has parameter \$extraParams with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\Metabox\:\:getPickupPointWidgetSettings\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Only booleans are allowed in &&, float\|int\|string\|true\|null given on the left side\.$#'
+			identifier: booleanAnd.leftNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$adultContent of method Packetery\\Core\\Entity\\Order\:\:setAdultContent\(\) expects bool\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$data of method Packetery\\Nette\\Forms\\Container\:\:setValues\(\) expects array\|object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$date of method Packetery\\Core\\CoreHelper\:\:getDateTimeFromString\(\) expects string\|null, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 7
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Packetery\\Module\\MessageManager\:\:flash_message\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$name of method Packetery\\Nette\\Forms\\Container\:\:addHidden\(\) expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$nonce of function wp_verify_nonce expects string, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$value of method Packetery\\Module\\Options\\OptionsProvider\:\:getSanitizedDimensionValueInMm\(\) expects float\|string, float\|int\|string\|true\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#1 \$value of static method Packetery\\Core\\CoreHelper\:\:simplifyFloat\(\) expects float\|null, float\|int\|string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#2 \$attributeName of method Packetery\\Module\\Order\\AttributeMapper\:\:toWcOrderShippingAddress\(\) expects string, bool\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#2 \$propsToSave of method Packetery\\Module\\Order\\AttributeMapper\:\:toOrderEntityPickupPoint\(\) expects array\<string, float\|int\|string\|true\|null\>, non\-empty\-array\<0\|1\|string, float\|int\|string\|true\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#2 \$propsToSave of method Packetery\\Module\\Order\\AttributeMapper\:\:toOrderSize\(\) expects array\<string, float\|int\|string\|true\|null\>, non\-empty\-array\<0\|1\|string, float\|int\|string\|true\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Parameter \#2 \$title of function add_meta_box expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Metabox.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ../src/Packetery/Module/Order/MetaboxesWrapper.php
+
+		-
+			message: '#^Parameter \#1 \$encoded_string of function parse_str expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketActionsCommonLogic.php
+
+		-
+			message: '#^Parameter \#1 \$nonce of function wp_verify_nonce expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketActionsCommonLogic.php
+
+		-
+			message: '#^Parameter \#1 \$redirectTo of method Packetery\\Module\\Order\\PacketActionsCommonLogic\:\:redirectTo\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketActionsCommonLogic.php
+
+		-
+			message: '#^Parameter \#1 \$orderId of method Packetery\\Module\\Order\\WcOrderActions\:\:updateOrderStatus\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketCanceller.php
+
+		-
+			message: '#^Parameter \#1 \$redirectTo of method Packetery\\Module\\Order\\PacketActionsCommonLogic\:\:redirectTo\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Order/PacketCanceller.php
+
+		-
+			message: '#^Parameter \#1 \$trackingUrl of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketCanceller.php
+
+		-
+			message: '#^Parameter \#2 \$packetId of method Packetery\\Module\\Order\\PacketCanceller\:\:cancelPacket\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketCanceller.php
+
+		-
+			message: '#^Parameter \#2 \$text of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketCanceller.php
+
+		-
+			message: '#^Parameter \#1 \$redirectTo of method Packetery\\Module\\Order\\PacketActionsCommonLogic\:\:redirectTo\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Order/PacketClaimSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$trackingUrl of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketClaimSubmitter.php
+
+		-
+			message: '#^Parameter \#2 \$text of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketClaimSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$packetId of class Packetery\\Core\\Api\\Soap\\Request\\PacketSetStoredUntil constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketSetStoredUntil.php
+
+		-
+			message: '#^Cannot call method get_data\(\) on WC_Order_Item_Shipping\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$message of method Packetery\\Module\\Message\:\:setText\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 3
+			path: ../src/Packetery/Module/Order/PacketSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$redirectTo of method Packetery\\Module\\Order\\PacketActionsCommonLogic\:\:redirectTo\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Order/PacketSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$str of function base64_encode expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/Order/PacketSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$trackingUrl of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$wcOrder of method Packetery\\Module\\Order\\PacketSubmitter\:\:submitPacket\(\) expects WC_Order, WC_Order\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketSubmitter.php
+
+		-
+			message: '#^Parameter \#2 \$text of method Packetery\\Module\\ModuleHelper\:\:createHtmlLink\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketSubmitter.php
+
+		-
+			message: '#^Parameter \#1 \$orderId of method Packetery\\Module\\Order\\WcOrderActions\:\:updateOrderStatus\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketSynchronizer.php
+
+		-
+			message: '#^Parameter \#1 \$packetId of class Packetery\\Core\\Api\\Soap\\Request\\PacketStatus constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/PacketSynchronizer.php
+
+		-
+			message: '#^Parameter \#2 \$translatedName of class Packetery\\Core\\Entity\\PacketStatus constructor expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 16
+			path: ../src/Packetery/Module/Order/PacketSynchronizer.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Argument of an invalid type array\<object\>\|null supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\Repository\:\:getDataById\(\) should return object\|null but returns array\<string, mixed\>\|object\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Order\\Repository\:\:processClauses\(\) should return array\<string, string\> but returns array\<string, string\|null\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Offset ''file'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: array\<mixed\>, object\?\: object\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Offset ''line'' might not exist on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: array\<mixed\>, object\?\: object\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$carrierId of method Packetery\\Module\\Carrier\\PacketaPickupPointsConfig\:\:isInternalPickupPointCarrier\(\) expects string, DateTimeImmutable\|string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$orderData of method Packetery\\Module\\Order\\Repository\:\:onBeforeDataInsertion\(\) expects array\<string, DateTimeImmutable\|string\|null\>, array\<string, DateTimeImmutable\|int\|string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Parameter \#1 \$orderData of method Packetery\\Module\\Order\\Repository\:\:saveData\(\) expects array\<string, DateTimeImmutable\|int\|string\|null\>, array\<string, bool\|float\|int\|string\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Parameter \#2 \$result of method Packetery\\Module\\Order\\Builder\:\:build\(\) expects stdClass, object given\.$#'
+			identifier: argument.type
+			count: 4
+			path: ../src/Packetery/Module/Order/Repository.php
+
+		-
+			message: '#^Method Packetery\\Module\\Plugin\:\:getSites\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Plugin.php
+
+		-
+			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
+			identifier: arrayFilter.strict
+			count: 1
+			path: ../src/Packetery/Module/Product/DataTab.php
+
+		-
+			message: '#^Only booleans are allowed in an if condition, bool\|Packetery\\Nette\\Forms\\SubmitterControl given\.$#'
+			identifier: if.condNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Product/DataTab.php
+
+		-
+			message: '#^Parameter \#1 \$input of function array_filter expects array, array\<string, bool\>\|string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Product/DataTab.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\|\(Closure\(Packetery\\Nette\\Forms\\Form, array\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Product/DataTab.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 4
+			path: ../src/Packetery/Module/Product/Entity.php
+
+		-
+			message: '#^Method Packetery\\Module\\Product\\Entity\:\:getDisallowedShippingRateChoices\(\) should return array\<string\> but returns array\<mixed, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Product/Entity.php
+
+		-
+			message: '#^Method Packetery\\Module\\ProductCategory\\Entity\:\:getDisallowedShippingRateChoices\(\) should return array\<string, bool\> but returns array\<mixed, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/ProductCategory/Entity.php
+
+		-
+			message: '#^Call to function array_filter\(\) requires parameter \#2 to be passed to avoid loose comparison semantics\.$#'
+			identifier: arrayFilter.strict
+			count: 1
+			path: ../src/Packetery/Module/ProductCategory/FormFields.php
+
+		-
+			message: '#^Only booleans are allowed in an if condition, bool\|Packetery\\Nette\\Forms\\SubmitterControl given\.$#'
+			identifier: if.condNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/ProductCategory/FormFields.php
+
+		-
+			message: '#^Property Packetery\\Nette\\Forms\\Form\:\:\$onSuccess \(array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\>\) does not accept non\-empty\-array\<\(callable\(array\|object\)\: void\)\|\(callable\(Packetery\\Nette\\Forms\\Form, array\|object\)\: void\)\|\(Closure\(Packetery\\Nette\\Forms\\Form, array\)\: void\)\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/ProductCategory/FormFields.php
+
+		-
+			message: '#^Parameter \#1 \$category of class Packetery\\Module\\ProductCategory\\Entity constructor expects WP_Term, WP_Error\|WP_Term\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/ProductCategory/ProductCategoryEntityFactory.php
+
+		-
+			message: '#^Method Packetery\\Module\\QueryProcessor\:\:getParamValues\(\) should return array\<string, null\> but returns array\<string, mixed\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/QueryProcessor.php
+
+		-
+			message: '#^Method Packetery\\Module\\Shipping\\BaseShippingMethod\:\:calculate_shipping\(\) has parameter \$package with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
+
+		-
+			message: '#^Method Packetery\\Module\\Shipping\\BaseShippingMethod\:\:get_instance_form_fields\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
+
+		-
+			message: '#^Parameter \#1 \$package of method Packetery\\Module\\Framework\\WcAdapter\:\:shippingZonesGetZoneMatchingPackage\(\) expects array\{contents\: array\<string, array\<string, mixed\>\>, contents_cost\: float, applied_coupons\: array, user\: array\{ID\: int\}, destination\: array\<string, string\>, cart_subtotal\: float, packetery_payment_method\: mixed, rates\: array\<string, WC_Shipping_Rate\>\}, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
+
+		-
+			message: '#^Property Packetery\\Module\\Shipping\\BaseShippingMethod\:\:\$options \(array\<string, string\|null\>\|false\|null\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
+
+		-
+			message: '#^Property WC_Shipping_Method\:\:\$title \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: ../src/Packetery/Module/Shipping/BaseShippingMethod.php
+
+		-
+			message: '#^Argument of an invalid type array\<int, array\<string, string\>\>\|null supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: ../src/Packetery/Module/Shipping/ShippingMethodGenerator.php
+
+		-
+			message: '#^Access to an undefined property object\:\:\$method_title\.$#'
+			identifier: property.notFound
+			count: 2
+			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Shipping\\ShippingProvider\:\:addActiveCarrierMethod\(\) should return array\<string, string\> but returns array\<string, Packetery\\Module\\Shipping\\BaseShippingMethod\|string\>\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\Shipping\\ShippingProvider\:\:getGeneratedClassnames\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
+
+		-
+			message: '#^Only booleans are allowed in a negated boolean, int\|false given\.$#'
+			identifier: booleanNot.exprNotBoolean
+			count: 1
+			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
+
+		-
+			message: '#^Only booleans are allowed in an if condition, int\|false given\.$#'
+			identifier: if.condNotBoolean
+			count: 3
+			path: ../src/Packetery/Module/Shipping/ShippingProvider.php
+
+		-
+			message: '#^Method Packetery\\Module\\ShippingZoneRepository\:\:getCountryCodesForShippingZone\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/ShippingZoneRepository.php
+
+		-
+			message: '#^Method Packetery\\Module\\ShippingZoneRepository\:\:getCountryCodesFromZoneLocations\(\) has parameter \$zoneLocations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/ShippingZoneRepository.php
+
+		-
+			message: '#^Method Packetery\\Module\\ShippingZoneRepository\:\:getCountryCodesFromZoneLocations\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/ShippingZoneRepository.php
+
+		-
+			message: '#^Method Packetery\\Module\\ShippingZoneRepository\:\:getDataStore\(\) should return WC_Shipping_Zone_Data_Store_Interface but returns WC_Data_Store\|WC_Shipping_Zone_Data_Store_Interface\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/ShippingZoneRepository.php
+
+		-
+			message: '#^Argument of an invalid type array\<WC_Order\>\|stdClass supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Cannot access offset ''received data'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$address of method Packetery\\Core\\Entity\\Order\:\:setDeliveryAddress\(\) expects Packetery\\Core\\Entity\\Address, Packetery\\Core\\Entity\\Address\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$carrierId of method Packetery\\Module\\Carrier\\EntityRepository\:\:getAnyById\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$county of method Packetery\\Core\\Entity\\Address\:\:setCounty\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$houseNumber of method Packetery\\Core\\Entity\\Address\:\:setHouseNumber\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$latitude of method Packetery\\Core\\Entity\\Address\:\:setLatitude\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$longitude of method Packetery\\Core\\Entity\\Address\:\:setLongitude\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$street of class Packetery\\Core\\Entity\\Address constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#1 \$version1 of function version_compare expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 9
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#2 \$carrier of class Packetery\\Core\\Entity\\Order constructor expects Packetery\\Core\\Entity\\Carrier, Packetery\\Core\\Entity\\Carrier\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#2 \$city of class Packetery\\Core\\Entity\\Address constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Parameter \#3 \$zip of class Packetery\\Core\\Entity\\Address constructor expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Upgrade.php
+
+		-
+			message: '#^Method Packetery\\Module\\Views\\AssetManager\:\:enqueueScript\(\) has parameter \$deps with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Views/AssetManager.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: ../src/Packetery/Module/Views/ViewMail.php
+
+		-
+			message: '#^Argument of an invalid type array\<WC_Order\>\|stdClass supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: ../src/Packetery/Module/Views/WizardAssetManager.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: ../src/Packetery/Module/Views/WizardAssetManager.php
+
+		-
+			message: '#^Method Packetery\\Module\\Views\\WizardAssetManager\:\:createOrderDetailCustomDeclarationTour\(\) has parameter \$basicTranslations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Views/WizardAssetManager.php
+
+		-
+			message: '#^Method Packetery\\Module\\Views\\WizardAssetManager\:\:createOrderDetailEditPacketTour\(\) has parameter \$basicTranslations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Views/WizardAssetManager.php
+
+		-
+			message: '#^Method Packetery\\Module\\Views\\WizardAssetManager\:\:createOrderGridEditPacketTour\(\) has parameter \$basicTranslations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Views/WizardAssetManager.php
+
+		-
+			message: '#^Method Packetery\\Module\\Views\\WizardAssetManager\:\:createOrderGridTour\(\) has parameter \$basicTranslations with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/Views/WizardAssetManager.php
+
+		-
+			message: '#^Parameter \#1 \$format of function sprintf expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/Views/WizardAssetManager.php
+
+		-
+			message: '#^Parameter \#2 \$args of function wp_remote_get expects array\{method\?\: string, timeout\?\: float, redirection\?\: int, httpversion\?\: string, user\-agent\?\: string, reject_unsafe_urls\?\: bool, blocking\?\: bool, headers\?\: array\|string, \.\.\.\}, non\-empty\-array\<int\|string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WebRequestClient.php
+
+		-
+			message: '#^Parameter \#2 \$args of function wp_remote_post expects array\{method\?\: string, timeout\?\: float, redirection\?\: int, httpversion\?\: string, user\-agent\?\: string, reject_unsafe_urls\?\: bool, blocking\?\: bool, headers\?\: array\|string, \.\.\.\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WebRequestClient.php
+
+		-
+			message: '#^Method Packetery\\Module\\WeightCalculator\:\:calculateOrderWeight\(\) should return float but returns float\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/WeightCalculator.php
+
+		-
+			message: '#^Argument of an invalid type array\|null supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Cannot access offset ''address_validation'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Cannot access offset ''vendor_groups'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Method Packetery\\Module\\WidgetOptionsBuilder\:\:createAddressForAdmin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Method Packetery\\Module\\WidgetOptionsBuilder\:\:createPickupPointForAdmin\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Method Packetery\\Module\\WidgetOptionsBuilder\:\:getCarrierForCheckout\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Method Packetery\\Module\\WidgetOptionsBuilder\:\:getWidgetVendorsParam\(\) has parameter \$vendorGroups with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Method Packetery\\Module\\WidgetOptionsBuilder\:\:getWidgetVendorsParam\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Parameter \#2 \$country of method Packetery\\Module\\WidgetOptionsBuilder\:\:getWidgetVendorsParam\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Parameter \#3 \$vendorGroups of method Packetery\\Module\\WidgetOptionsBuilder\:\:getWidgetVendorsParam\(\) expects array\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WidgetOptionsBuilder.php
+
+		-
+			message: '#^Method Packetery\\Module\\WpdbAdapter\:\:get_results\(\) should return array\<object\>\|null but returns array\<array\<mixed\>\|stdClass\>\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: ../src/Packetery/Module/WpdbAdapter.php
+
+		-
+			message: '#^Parameter \#1 \$query of method wpdb\:\:prepare\(\) expects literal\-string, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WpdbAdapter.php
+
+		-
+			message: '#^Parameter \#2 \$output of method wpdb\:\:get_results\(\) expects ''ARRAY_A''\|''ARRAY_N''\|''OBJECT''\|''OBJECT_K'', string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WpdbAdapter.php
+
+		-
+			message: '#^Parameter \#2 \$output of method wpdb\:\:get_row\(\) expects ''ARRAY_A''\|''ARRAY_N''\|''OBJECT'', string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WpdbAdapter.php
+
+		-
+			message: '#^Parameter \#4 \$type of method wpdb\:\:_insert_replace_helper\(\) expects ''INSERT''\|''REPLACE'', string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: ../src/Packetery/Module/WpdbAdapter.php
+
+		-
+			message: '#^Path in require_once\(\) "\./wp\-admin/includes/upgrade\.php" is not a file or it does not exist\.$#'
+			identifier: requireOnce.fileNotFound
+			count: 1
+			path: ../src/Packetery/Module/WpdbAdapter.php
+
+		-
+			message: '#^Binary operation "\*" between mixed and 1000 results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: ../src/Packetery/Module/WpdbTracyPanel.php
+
+		-
+			message: '#^Cannot use array destructuring on mixed\.$#'
+			identifier: offsetAccess.nonArray
+			count: 1
+			path: ../src/Packetery/Module/WpdbTracyPanel.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function strpos expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: ../src/Packetery/Module/WpdbTracyPanel.php
