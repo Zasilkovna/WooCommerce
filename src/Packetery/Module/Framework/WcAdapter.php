@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace Packetery\Module\Framework;
 
 use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use WC_Admin_Status;
 use WC_Blocks_Utils;
 use WC_Data_Store;
 use WC_Logger;
@@ -142,5 +143,9 @@ class WcAdapter {
 	 */
 	public function dataStoreLoad( string $objectType ): object {
 		return WC_Data_Store::load( $objectType );
+	}
+
+	public function adminStatusStatusReport(): void {
+		WC_Admin_Status::status_report();
 	}
 }

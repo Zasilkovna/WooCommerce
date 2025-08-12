@@ -213,4 +213,39 @@ class WpAdapter {
 	public function doShortcode( string $content ): string {
 		return do_shortcode( $content );
 	}
+
+	public function sanitizeEmail( string $email ): string {
+		return sanitize_email( $email );
+	}
+
+	public function wpKsesPost( string $content ): string {
+		return wp_kses_post( $content );
+	}
+
+	public function wpStripAllTags( string $content ): string {
+		return wp_strip_all_tags( $content );
+	}
+
+	public function enqueueEditor(): void {
+		wp_enqueue_editor();
+	}
+
+	public function getBlogInfo( string $show, string $filter ): string {
+		return get_bloginfo( $show, $filter );
+	}
+
+	/**
+	 * @param string   $to
+	 * @param string   $subject
+	 * @param string   $message
+	 * @param string[] $headers
+	 * @param string[] $attachments
+	 */
+	public function wpMail( string $to, string $subject, string $message, array $headers, array $attachments ): bool {
+		return wp_mail( $to, $subject, $message, $headers, $attachments );
+	}
+
+	public function currentTime( string $type, bool $gmt ): string {
+		return (string) current_time( $type, $gmt );
+	}
 }
